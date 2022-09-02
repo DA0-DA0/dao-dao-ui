@@ -41,8 +41,10 @@ export const makeProps = (): NftCardProps => ({
     amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
     denom: 'STARS',
   },
-  href: '/dog_nft.png',
-  hrefDestinationName: 'Stargaze',
+  externalLink: {
+    href: '/dog_nft.png',
+    name: 'Stargaze',
+  },
 })
 
 export const Default = Template.bind({})

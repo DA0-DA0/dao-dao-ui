@@ -9,8 +9,10 @@ import { Checkbox } from '../input'
 import { TooltipLikeDisplay } from '../TooltipLikeDisplay'
 
 export interface NftCardProps {
-  href?: string
-  hrefDestinationName?: string
+  externalLink?: {
+    href: string
+    name: string
+  }
   checkbox?: {
     checked: boolean
     onClick: () => void
@@ -26,8 +28,7 @@ export interface NftCardProps {
 }
 
 export const NftCard = ({
-  href,
-  hrefDestinationName,
+  externalLink,
   checkbox,
   imageUrl,
   createdBy,
@@ -42,16 +43,18 @@ export const NftCard = ({
       className={clsx(
         'group flex overflow-hidden relative flex-col items-stretch bg-primary rounded-lg ring-2 ring-inset ring-[transparent] transition',
         {
-          'hover:bg-card hover:ring-focus': href,
+          'hover:bg-card hover:ring-focus': externalLink || checkbox,
         },
         className
       )}
     >
-      <a
-        className="flex relative flex-col items-stretch"
-        href={href}
-        rel="noreferrer"
-        target="_blank"
+      <div
+        className={clsx(
+          'flex relative flex-col items-stretch',
+          // Make entire image clickable checkbox if present.
+          checkbox && 'cursor-pointer'
+        )}
+        onClick={checkbox?.onClick}
       >
         {imageUrl ? (
           <img
@@ -63,16 +66,24 @@ export const NftCard = ({
           <div className="aspect-square"></div>
         )}
 
-        {!!href && !!hrefDestinationName && (
-          <TooltipLikeDisplay
-            className="absolute bottom-4 left-4 shadow-dp4 opacity-0 group-hover:opacity-100 hover:!opacity-90 transition-opacity"
-            icon={<ArrowOutward color="currentColor" />}
-            label={t('button.openInDestination', {
-              destination: hrefDestinationName,
-            })}
-          />
+        {externalLink && (
+          <a
+            href={externalLink.href}
+            // Don't click on anything else, such as the checkbox.
+            onClick={(e) => e.stopPropagation()}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <TooltipLikeDisplay
+              className="absolute bottom-4 left-4 shadow-dp4 opacity-0 group-hover:opacity-100 hover:!opacity-90 transition-opacity"
+              icon={<ArrowOutward color="currentColor" />}
+              label={t('button.openInDestination', {
+                destination: externalLink.name,
+              })}
+            />
+          </a>
         )}
-      </a>
+      </div>
 
       {checkbox && (
         <Checkbox {...checkbox} className="absolute top-3 left-3 " />
