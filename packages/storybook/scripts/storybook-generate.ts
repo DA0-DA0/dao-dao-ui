@@ -223,11 +223,14 @@ const project = new Project({
         arg += '*.tsx'
       }
 
+      console.log('Adding files with glob pattern ' + arg)
+
       project.addSourceFilesAtPaths(arg)
     } else {
       // // Add all tsx files that exist as a descendant of a folder named `ui` or
       // // `components` in apps.
       // project.addSourceFilesAtPaths('../../apps/**/{ui,components}/**/*.tsx')
+
       // Add @dao-dao/ui package.
       project.addSourceFilesAtPaths('../ui/**/*.tsx')
       // Add all tsx files that exist as a descendant of a folder named `ui` in
