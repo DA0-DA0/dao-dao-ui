@@ -8,14 +8,11 @@ import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Checkbox } from '../input'
 import { TooltipLikeDisplay } from '../TooltipLikeDisplay'
 
-export interface NftCardProps {
+export interface NftInfo {
+  address: string
   externalLink?: {
     href: string
     name: string
-  }
-  checkbox?: {
-    checked: boolean
-    onClick: () => void
   }
   imageUrl?: string
   createdBy: string
@@ -24,6 +21,13 @@ export interface NftCardProps {
     denom: string
   }
   name: string
+}
+
+export interface NftCardProps extends NftInfo {
+  checkbox?: {
+    checked: boolean
+    onClick: () => void
+  }
   className?: string
 }
 
@@ -41,9 +45,11 @@ export const NftCard = ({
   return (
     <div
       className={clsx(
-        'group flex overflow-hidden relative flex-col items-stretch bg-primary rounded-lg ring-2 ring-inset ring-[transparent] transition',
+        'group flex overflow-hidden relative flex-col items-stretch bg-primary rounded-lg outline-2 outline ring-2 ring-inset ring-[transparent] transition',
         {
           'hover:bg-card hover:ring-focus': externalLink || checkbox,
+          'outline-[transparent]': !checkbox?.checked,
+          'outline-border-interactive-active': checkbox?.checked,
         },
         className
       )}
@@ -85,9 +91,7 @@ export const NftCard = ({
         )}
       </div>
 
-      {checkbox && (
-        <Checkbox {...checkbox} className="absolute top-3 left-3 " />
-      )}
+      {checkbox && <Checkbox {...checkbox} className="absolute top-3 left-3" />}
 
       <div
         className={clsx(

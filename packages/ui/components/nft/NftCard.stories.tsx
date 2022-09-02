@@ -32,20 +32,25 @@ const Template: ComponentStory<typeof NftCard> = (args) => {
 }
 
 let id = 0
-export const makeProps = (): NftCardProps => ({
-  createdBy: 'stars2afd31svj2f0z',
-  imageUrl: '/dog_nft.png',
-  name: `French Bulldog ${++id}`,
-  floorPrice: {
-    // Random price between 0 and 10000 with up to 6 decimals.
-    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
-    denom: 'STARS',
-  },
-  externalLink: {
-    href: '/dog_nft.png',
-    name: 'Stargaze',
-  },
-})
+export const makeProps = (): NftCardProps => {
+  id++
+
+  return {
+    address: `starsAddress${id}`,
+    createdBy: 'stars2afd31svj2f0z',
+    imageUrl: '/dog_nft.png',
+    name: `French Bulldog ${id}`,
+    floorPrice: {
+      // Random price between 0 and 10000 with up to 6 decimals.
+      amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+      denom: 'STARS',
+    },
+    externalLink: {
+      href: '/dog_nft.png',
+      name: 'Stargaze',
+    },
+  }
+}
 
 export const Default = Template.bind({})
 Default.args = makeProps()
@@ -61,7 +66,7 @@ Checkable.args = {
   ...makeProps(),
   checkbox: {
     checked: false,
-    onClick: () => alert('checkbox'),
+    onClick: () => {},
   },
 }
 Checkable.parameters = {
