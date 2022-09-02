@@ -45,7 +45,7 @@ export const NftCard = ({
   return (
     <div
       className={clsx(
-        'group flex overflow-hidden relative flex-col items-stretch bg-primary rounded-lg outline-2 outline ring-2 ring-inset ring-[transparent] transition',
+        'group flex overflow-hidden relative flex-col items-stretch bg-primary rounded-lg outline-2 outline ring-2 ring-inset ring-[transparent] transition-all',
         {
           'hover:bg-card hover:ring-focus': externalLink || checkbox,
           'outline-[transparent]': !checkbox?.checked,

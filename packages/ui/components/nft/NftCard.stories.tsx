@@ -69,9 +69,4 @@ Checkable.args = {
     onClick: () => {},
   },
 }
-Checkable.parameters = {
-  design: {
-    type: 'figma',
-    url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=126%3A15467',
-  },
-}
+Checkable.parameters = Default.parameters

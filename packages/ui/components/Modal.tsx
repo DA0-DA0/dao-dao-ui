@@ -15,6 +15,7 @@ export interface ModalProps {
     subtitle?: string
   }
   headerContent?: ReactNode
+  footerContent?: ReactNode
 }
 
 export const Modal = ({
@@ -25,6 +26,7 @@ export const Modal = ({
   hideCloseButton,
   header,
   headerContent,
+  footerContent,
 }: ModalProps) => {
   const handleKeyPress = useCallback(
     (event) => {
@@ -46,7 +48,7 @@ export const Modal = ({
   return (
     <div
       className={clsx(
-        'flex fixed top-0 left-0 z-10 justify-center items-center px-4 w-screen h-full backdrop-brightness-50 transition cursor-pointer backdrop-filter',
+        'flex fixed top-0 left-0 z-10 justify-center items-center p-4 w-screen h-full backdrop-brightness-50 transition cursor-pointer backdrop-filter',
         backdropClassName
       )}
       onClick={
@@ -56,7 +58,7 @@ export const Modal = ({
     >
       <div
         className={clsx(
-          'relative p-6 max-w-md h-min bg-background-base rounded-lg border border-border-secondary cursor-auto',
+          'overflow-hidden relative p-6 max-w-md h-min max-h-full bg-background-base rounded-lg border border-border-secondary cursor-auto',
           containerClassName
         )}
       >
@@ -71,7 +73,7 @@ export const Modal = ({
         )}
 
         {(header || headerContent) && (
-          <div className="p-6 pt-0 -mx-6 mb-6 space-y-1 border-b border-border-base">
+          <div className="py-5 px-6 pt-0 -mx-6 mb-6 space-y-1 border-b border-border-base">
             {header && (
               <>
                 <p className="header-text">{header.title}</p>
@@ -86,6 +88,12 @@ export const Modal = ({
         )}
 
         {children}
+
+        {footerContent && (
+          <div className="py-5 px-6 -mx-6 -mb-6 border-t border-border-secondary">
+            {footerContent}
+          </div>
+        )}
       </div>
     </div>
   )
