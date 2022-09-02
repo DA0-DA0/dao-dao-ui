@@ -82,9 +82,10 @@ const eslintConfig = {
               regex: '\\@dao\\-dao\\/ui\\/(components|theme)[^\'"]*',
               replacement: '@dao-dao/ui',
               files: {
-                // Let storybook files import specific UI files, like other
+                // Let storybook files (stories and files within the storybook
+                // package like decorators) import specific UI files, like other
                 // storybook files.
-                ignore: '.*\\.stories\\.tsx',
+                ignore: '.*\\.stories\\.tsx|packages/storybook',
               },
               message:
                 'Import from root @dao-dao/ui instead of a direct path. Ensure the export has been added to its sibling index.',

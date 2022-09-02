@@ -1,7 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Default as ProfileHomeCardStory } from 'components/profile/ProfileHomeCard.stories'
-
+import { Default as ProfileHomeCardStory } from '../profile/ProfileHomeCard.stories'
 import { SidebarWallet } from './SidebarWallet'
 
 export default {

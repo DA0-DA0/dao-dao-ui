@@ -2,8 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ContractVersion, secondsToWdhms } from '@dao-dao/utils'
 
-import { StatusDisplay, StatusDisplayProps } from 'components/StatusDisplay'
-
+import { StatusDisplay, StatusDisplayProps } from '../StatusDisplay'
 import * as StatusDisplayStories from '../StatusDisplay.stories'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
 import { ProposalYourVote, ProposalYourVoteProps } from './ProposalYourVote'

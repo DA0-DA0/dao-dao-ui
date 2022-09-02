@@ -8,8 +8,7 @@ import {
   Payments,
 } from '@dao-dao/icons'
 
-import { CopyToClipboardUnderline } from 'components/CopyToClipboard'
-
+import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { DaoInfoBar } from './DaoInfoBar'
 
 export default {

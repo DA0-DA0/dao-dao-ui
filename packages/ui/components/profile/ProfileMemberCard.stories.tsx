@@ -3,14 +3,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProfileMemberCardMembershipInfo } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui'
 import { makeProps as makeProfileMemberCardMembershipInfoProps } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui/ProfileMemberCardMembershipInfo.stories'
 
-import { UnstakingTaskStatus } from 'components'
-import { makeProps as makeUnstakingLineProps } from 'components/UnstakingLine.stories'
-
+import { makeProps as makeUnstakingLineProps } from '../UnstakingLine.stories'
+import { UnstakingTaskStatus } from '../UnstakingStatus'
 import { ProfileMemberCard, ProfileMemberCardProps } from './ProfileMemberCard'
 
 export default {
-  title:
-    'DAO DAO / packages / ui / components / profile / ProfileMemberCard',
+  title: 'DAO DAO / packages / ui / components / profile / ProfileMemberCard',
   component: ProfileMemberCard,
 } as ComponentMeta<typeof ProfileMemberCard>
 

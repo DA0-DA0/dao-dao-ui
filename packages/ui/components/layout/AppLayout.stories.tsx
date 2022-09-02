@@ -1,9 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { NavigationProps, SidebarWallet, SidebarWalletProps } from 'components'
-
 import { AppLayout } from './AppLayout'
+import { NavigationProps } from './Navigation'
 import { Default as NavigatonStory } from './Navigation.stories'
+import { SidebarWallet, SidebarWalletProps } from './SidebarWallet'
 import { Connected as ConnectedSidebarWalletStory } from './SidebarWallet.SidebarWallet.stories'
 
 export default {

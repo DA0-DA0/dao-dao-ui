@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { formatDate, secondsToWdhms } from '@dao-dao/utils'
 
-import { UnstakingStatus, UnstakingTaskStatus } from 'components'
+import { UnstakingStatus, UnstakingTaskStatus } from './UnstakingStatus'
 
 export interface UnstakingTask {
   status: UnstakingTaskStatus

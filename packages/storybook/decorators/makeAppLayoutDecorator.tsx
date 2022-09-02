@@ -6,9 +6,9 @@ import {
   NavigationProps,
   SidebarWallet,
   SidebarWalletProps,
-} from 'components/layout'
-import { DefaultArgs as NavigationStoryArgs } from 'stories/components/layout/Navigation.stories'
-import { Connected as ConnectedSidebarWalletStory } from '@dao-dao/ui/stories/components/layout/SidebarWallet/SidebarWallet.SidebarWallet.stories'
+} from '@dao-dao/ui'
+import { DefaultArgs as NavigationStoryArgs } from '@dao-dao/ui/components/layout/Navigation.stories'
+import { Connected as ConnectedSidebarWalletStory } from '@dao-dao/ui/components/layout/SidebarWallet.SidebarWallet.stories'
 
 export const makeAppLayoutDecorator: (
   // Require setting `rightSidebar` while allowing page stories to override any

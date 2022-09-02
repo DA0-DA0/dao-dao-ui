@@ -6,7 +6,7 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { DARK_MODE_EVENT_NAME, useDarkMode } from 'storybook-dark-mode'
 
-import { Theme, ThemeProvider } from '../theme'
+import { Theme, ThemeProvider } from '@dao-dao/ui'
 
 const channel = addons.getChannel()
 

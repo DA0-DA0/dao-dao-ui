@@ -4,8 +4,7 @@ import { DecoratorFn } from '@storybook/react'
 
 import { useDaoInfoContext } from '@dao-dao/common'
 import { ProposalModuleAdapterProvider } from '@dao-dao/proposal-module-adapter'
-
-import { Loader, Logo } from 'components'
+import { Loader, Logo } from '@dao-dao/ui'
 
 // Proposal module adapters registered in `DaoPageWrapperDecorator.tsx`
 

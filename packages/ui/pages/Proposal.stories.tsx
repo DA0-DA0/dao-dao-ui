@@ -7,9 +7,8 @@ import {
   makeProposalModuleAdapterDecorator,
 } from '@dao-dao/storybook/decorators'
 
-import { ProfileVoteCard, ProfileVoteCardProps } from 'components/profile'
-import { Default as ProfileVoteCardStory } from 'components/profile/ProfileVoteCard.stories'
-
+import { ProfileVoteCard, ProfileVoteCardProps } from '../components'
+import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVoteCard.stories'
 import { Proposal } from './Proposal'
 
 const proposalId = 'A72'
@@ -43,12 +42,12 @@ Default.args = {
   voteStatus:
     'If the current vote stands, the proposal will pass. If quorum reaches 50%, the proposal is applicable.',
   voteDisplay: (
-    <p className="p-4 text-center rounded-md border bg-background-primary border-border-secondary">
+    <p className="p-4 text-center bg-background-primary rounded-md border border-border-secondary">
       Vote display placeholder
     </p>
   ),
   votesCast: (
-    <p className="p-4 text-center rounded-md border bg-background-primary border-border-tertiary">
+    <p className="p-4 text-center bg-background-primary rounded-md border border-border-tertiary">
       Votes cast placeholder
     </p>
   ),

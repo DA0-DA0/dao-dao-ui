@@ -11,18 +11,18 @@ import {
   DaoInfoBar,
   DaoInfoBarProps,
   MembersTabProps,
+  ProfileMemberCard,
+  ProfileMemberCardProps,
   ProposalsTabProps,
   SubDaosTabProps,
   TreasuryAndNftsTabProps,
-} from 'components'
-import { Default as DaoInfoBarStory } from 'components/dao/DaoInfoBar.DaoInfoBar.stories'
-import { Default as MembersTabStory } from 'components/dao/tabs/MembersTab.stories'
-import { Default as ProposalsTabStory } from 'components/dao/tabs/ProposalsTab.stories'
-import { Default as SubDaosTabStory } from 'components/dao/tabs/SubDaosTab.stories'
-import { Default as TreasuryAndNftsTabStory } from 'components/dao/tabs/TreasuryAndNftsTab.stories'
-import { ProfileMemberCard, ProfileMemberCardProps } from 'components/profile'
-import { Default as ProfileMemberCardStory } from 'components/profile/ProfileMemberCard.stories'
-
+} from '../components'
+import { Default as DaoInfoBarStory } from '../components/dao/DaoInfoBar.DaoInfoBar.stories'
+import { Default as MembersTabStory } from '../components/dao/tabs/MembersTab.stories'
+import { Default as ProposalsTabStory } from '../components/dao/tabs/ProposalsTab.stories'
+import { Default as SubDaosTabStory } from '../components/dao/tabs/SubDaosTab.stories'
+import { Default as TreasuryAndNftsTabStory } from '../components/dao/tabs/TreasuryAndNftsTab.stories'
+import { Default as ProfileMemberCardStory } from '../components/profile/ProfileMemberCard.stories'
 import { DaoHome } from './DaoHome'
 
 export default {

@@ -5,11 +5,12 @@ import { useTranslation } from 'react-i18next'
 
 import { EdamameCrown } from '@dao-dao/icons'
 
-import { UnstakingModal, UnstakingTask, UnstakingTaskStatus } from 'components'
-
 import { Button } from './Button'
 import { IconButton } from './IconButton'
 import { Tooltip } from './Tooltip'
+import { UnstakingTask } from './UnstakingLine'
+import { UnstakingModal } from './UnstakingModal'
+import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export interface TokenStake {
   amount: number

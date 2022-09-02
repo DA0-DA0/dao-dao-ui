@@ -2,14 +2,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
 
-import { DefaultArgs as NavigationStoryArgs } from 'components/layout/Navigation.stories'
-import {
-  ProfileHomeCard,
-  ProfileHomeCardProps,
-} from 'components/profile/ProfileHomeCard'
-import { Default as ProfileHomeCardStory } from 'components/profile/ProfileHomeCard.stories'
-import { makeProps as makeProposalLineProps } from 'components/proposal/ProposalLine.ProposalLine.stories'
-
+import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
+import { DefaultArgs as NavigationStoryArgs } from '../components/layout/Navigation.stories'
+import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
+import { makeProps as makeProposalLineProps } from '../components/proposal/ProposalLine.ProposalLine.stories'
 import { Inbox } from './Inbox'
 
 export default {

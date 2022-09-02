@@ -1,12 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Loader } from 'components/Loader'
-
+import { Loader } from '../Loader'
 import { ProposalLineLoader } from './ProposalLine'
 
 export default {
-  title:
-    'DAO DAO / packages / ui / components / proposal / ProposalLineLoader',
+  title: 'DAO DAO / packages / ui / components / proposal / ProposalLineLoader',
   component: ProposalLineLoader,
 } as ComponentMeta<typeof ProposalLineLoader>
 

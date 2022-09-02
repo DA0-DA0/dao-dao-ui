@@ -3,12 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useDaoInfoContext } from '@dao-dao/common'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
-import {
-  ProposalList,
-  ProposalListProps,
-} from 'components/proposal/ProposalList'
-import { Default as ProposalListStory } from 'components/proposal/ProposalList.stories'
-
+import { ProposalList, ProposalListProps } from '../../proposal'
+import { Default as ProposalListStory } from '../../proposal/ProposalList.stories'
 import { ProposalsTab } from './ProposalsTab'
 
 export default {

@@ -4,9 +4,8 @@ import { useTranslation } from 'react-i18next'
 
 import { ArrowOutward } from '@dao-dao/icons'
 
-import { TooltipLikeDisplay } from 'components/TooltipLikeDisplay'
-
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
+import { TooltipLikeDisplay } from '../TooltipLikeDisplay'
 
 export interface NftCardProps {
   href?: string

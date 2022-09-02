@@ -1,15 +1,11 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  DropdownOption,
-  GridCardContainer,
-  NftCard,
-  NftCardProps,
-  TokenCard,
-  TokenCardProps,
-} from 'components'
-import { SortFn, useDropdownSorter } from 'hooks'
+import { SortFn, useDropdownSorter } from '../../../hooks'
+import { DropdownOption } from '../../Dropdown'
+import { GridCardContainer } from '../../GridCardContainer'
+import { NftCard, NftCardProps } from '../../nft'
+import { TokenCard, TokenCardProps } from '../../TokenCard'
 
 export interface TreasuryAndNftsTabProps {
   tokens: TokenCardProps[]

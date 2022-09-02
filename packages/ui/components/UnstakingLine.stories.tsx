@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Button, UnstakingTaskStatus } from 'components'
-
+import { Button } from './Button'
 import { UnstakingLine, UnstakingLineProps } from './UnstakingLine'
+import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export default {
   title: 'DAO DAO / packages / ui / components / UnstakingLine',

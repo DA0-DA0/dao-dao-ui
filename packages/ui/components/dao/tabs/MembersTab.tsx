@@ -4,12 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { ActionKey, FormProposalData } from '@dao-dao/actions'
 import { DaoInfo } from '@dao-dao/common'
 
-import {
-  ButtonLink,
-  DaoMemberCard,
-  DaoMemberCardProps,
-  GridCardContainer,
-} from 'components'
+import { ButtonLink } from '../../Button'
+import { GridCardContainer } from '../../GridCardContainer'
+import { DaoMemberCard, DaoMemberCardProps } from '../DaoMemberCard'
 
 export interface MembersTabProps {
   members: DaoMemberCardProps[]

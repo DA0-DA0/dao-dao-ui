@@ -1,11 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import {
-  UnstakingModal,
-  UnstakingModalProps,
-  UnstakingTaskStatus,
-} from 'components'
-import { makeProps as makeUnstakingLineProps } from 'components/UnstakingLine.stories'
+import { makeProps as makeUnstakingLineProps } from './UnstakingLine.stories'
+import { UnstakingModal, UnstakingModalProps } from './UnstakingModal'
+import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export default {
   title: 'DAO DAO / packages / ui / components / UnstakingModal',

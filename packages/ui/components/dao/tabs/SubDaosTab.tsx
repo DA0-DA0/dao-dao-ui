@@ -3,12 +3,9 @@ import { useTranslation } from 'react-i18next'
 
 import { DaoInfo } from '@dao-dao/common'
 
-import {
-  ButtonLink,
-  DaoCard,
-  DaoCardProps,
-  GridCardContainer,
-} from 'components'
+import { ButtonLink } from '../../Button'
+import { GridCardContainer } from '../../GridCardContainer'
+import { DaoCard, DaoCardProps } from '../DaoCard'
 
 export interface SubDaosTabProps {
   subdaos: DaoCardProps[]

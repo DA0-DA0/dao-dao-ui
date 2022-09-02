@@ -1,8 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { makeProps as makeUnstakingModalProps } from 'components/UnstakingModal.stories'
-
 import { TokenCard, TokenCardProps } from './TokenCard'
+import { makeProps as makeUnstakingModalProps } from './UnstakingModal.stories'
 
 export default {
   title: 'DAO DAO / packages / ui / components / TokenCard',

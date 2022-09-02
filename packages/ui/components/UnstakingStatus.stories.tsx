@@ -1,8 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { UnstakingTaskStatus } from 'components'
-
-import { UnstakingStatus } from './UnstakingStatus'
+import { UnstakingStatus, UnstakingTaskStatus } from './UnstakingStatus'
 
 export default {
   title: 'DAO DAO / packages / ui / components / UnstakingStatus',

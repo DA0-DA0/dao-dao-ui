@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next'
 
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { CopyToClipboardUnderline } from 'components/CopyToClipboard'
-import { ProfileImage } from 'components/profile'
+import { CopyToClipboardUnderline } from '../CopyToClipboard'
+import { ProfileImage } from '../profile'
 
 export interface DaoMemberCardProps {
   imageUrl?: string
