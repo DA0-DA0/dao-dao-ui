@@ -53,6 +53,28 @@ export const allContractsByCodeId = selectorFamily({
     },
 })
 
+export const blockHeightTimestampSafeSelector = selectorFamily<
+  Date | undefined,
+  number
+>({
+  key: 'blockHeightTimestampSafe',
+  get:
+    (blockHeight) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientSelector)
+      if (!client) {
+        return undefined
+      }
+
+      try {
+        const block = await client.getBlock(blockHeight)
+        return new Date(Date.parse(block.header.time))
+      } catch (error) {
+        console.error(error)
+      }
+    },
+})
+
 export const contractInstantiateTime = selectorFamily<Date | undefined, string>(
   {
     key: 'contractInstantiateTimeSelector',
@@ -76,8 +98,8 @@ export const contractInstantiateTime = selectorFamily<Date | undefined, string>(
         // command line but is not available from CosmJS so we need to run a
         // second query to get the block info.
         const height = events[0].height
-        const block = await client.getBlock(height)
-        return new Date(Date.parse(block.header.time))
+
+        return get(blockHeightTimestampSafeSelector(height))
       },
   }
 )
@@ -114,7 +136,7 @@ export const pagedContractsByCodeId = selectorFamily<
 
 export const contractAdminSelector = selectorFamily<string | undefined, string>(
   {
-    key: 'contractInstantiateTimeSelector',
+    key: 'contractAdminSelector',
     get:
       (address: string) =>
       async ({ get }) => {
