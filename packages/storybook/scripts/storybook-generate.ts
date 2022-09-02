@@ -1,9 +1,10 @@
-// `yarn storybook:generate` to generate all missing storybook files.
+// `yarn storybook:generate` to generate all missing storybook files for `.tsx`
+// files that exist as descendants of a `ui` folder.
 
 // `yarn storybook:generate <glob>` to generate just the missing storybook files
 // for the matching files. The argument will automatically be prefixed with
-// `**/` if it does not start with it, and suffixed with `.{ts,tsx}` if `.ts`
-// does not exist anywhere.
+// `../**/ui/**/` if it does not start with `.`, `/`, or `*`, and suffixed with
+// `*.tsx` if it does not end with `.tsx`.
 
 // Author: Noah Saso (@NoahSaso)
 
@@ -29,7 +30,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ${name} } from '${file}'
 
 export default {
-  title: 'DAO DAO UI V2 / ${titlePrefix + name}',
+  title: 'DAO DAO V2 / ${titlePrefix + name}',
   component: ${name},
 } as ComponentMeta<typeof ${name}>
 
@@ -63,16 +64,18 @@ Default.parameters = {
 }
 `.trimStart()
 
+const projectRoot = path.resolve(__dirname, '../../../')
+
 const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
   const baseName = sourceFile.getBaseNameWithoutExtension()
-  // Ignore index files.
-  if (baseName === 'index') {
+  // Ignore index and storybook files.
+  if (baseName === 'index' || baseName.endsWith('.stories')) {
     return
   }
 
   const extension = sourceFile.getExtension()
 
-  const pathFromRoot = sourceFile.getDirectoryPath().split('packages/ui/')[1]
+  const pathFromRoot = sourceFile.getDirectoryPath().split(projectRoot + '/')[1]
 
   let titlePrefix = pathFromRoot.replace(/\//g, ' / ')
   if (titlePrefix) {
@@ -159,9 +162,7 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
     ...componentFunctions,
   ]
 
-  const storyDirectory = sourceFile
-    .getDirectoryPath()
-    .replace('packages/ui', 'packages/ui/stories')
+  const storyDirectory = sourceFile.getDirectoryPath()
 
   const generate = async (
     output: string,
@@ -172,22 +173,13 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
       return
     }
 
-    const data = generateTemplate(
-      component,
-      pathFromRoot + '/' + baseName,
-      titlePrefix
-    )
+    const data = generateTemplate(component, './' + baseName, titlePrefix)
 
     await fs.promises.writeFile(output, data)
     console.log('Created ' + output)
   }
 
   if (components.length === 1) {
-    // Make directory if nonexistent.
-    if (!fs.existsSync(storyDirectory)) {
-      await fs.promises.mkdir(storyDirectory)
-    }
-
     const storyFilePath = path.resolve(
       storyDirectory,
       baseName + '.stories' + extension
@@ -196,15 +188,9 @@ const addMissingStoriesForSourceFile = async (sourceFile: SourceFile) => {
     await generate(storyFilePath, components[0])
   } else {
     for (const component of components) {
-      // Make directory if nonexistent.
-      const storyFileDirectory = path.resolve(storyDirectory, baseName)
-      if (!fs.existsSync(storyFileDirectory)) {
-        await fs.promises.mkdir(storyFileDirectory)
-      }
-
       const storyFilePath = path.resolve(
-        storyFileDirectory,
-        component.name + '.stories' + extension
+        storyDirectory,
+        baseName + '.' + component.name + '.stories' + extension
       )
 
       await generate(storyFilePath, component)
@@ -223,19 +209,32 @@ const project = new Project({
     // Use arg for source files glob pattern if present.
     let arg = process.argv[2]
     if (arg) {
-      // Automatically prefix with all levels glob.
-      if (!arg.startsWith('**/')) {
-        arg = '**/' + arg
+      // Automatically prefix with all levels with a `ui` folder glob if not
+      // starting with a path symbol.
+      if (
+        !arg.startsWith('.') &&
+        !arg.startsWith('/') &&
+        !arg.startsWith('*')
+      ) {
+        arg = '../**/ui/**/' + arg
       }
-      // Automatically add TypeScript extension if not supplied.
-      if (!arg.includes('.ts')) {
-        arg += '*.{ts,tsx}'
+      // Automatically add TypeScript extension if necessary.
+      if (!arg.endsWith('.tsx')) {
+        arg += '*.tsx'
       }
 
       project.addSourceFilesAtPaths(arg)
     } else {
-      // Add all pages and components.
-      project.addSourceFilesAtPaths('{pages,components}/**/*.{ts,tsx}')
+      // // Add all tsx files that exist as a descendant of a folder named `ui` or
+      // // `components` in apps.
+      // project.addSourceFilesAtPaths('../../apps/**/{ui,components}/**/*.tsx')
+      // Add @dao-dao/ui package.
+      project.addSourceFilesAtPaths('../ui/**/*.tsx')
+      // Add all tsx files that exist as a descendant of a folder named `ui` in
+      // the adapter packages.
+      project.addSourceFilesAtPaths(
+        '../{voting,proposal}-module-adapter/**/ui/**/*.tsx'
+      )
     }
 
     await Promise.all(

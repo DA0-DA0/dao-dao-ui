@@ -1,4 +1,4 @@
-import '../styles/index.css'
+import '@dao-dao/ui/styles/index.css'
 
 import i18n from './i18next'
 import { RecoilDecorator, ThemeDecorator } from '../decorators'
