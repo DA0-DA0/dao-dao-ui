@@ -1,7 +1,7 @@
+import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TooltipIcon } from '../TooltipIcon'
-import { Cw20StakedBalanceVotingProfileMembership } from './Cw20StakedBalanceVotingProfileMembership'
 import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
@@ -9,20 +9,16 @@ export interface ProfileCantVoteCardProps {
   daoName: string
   walletName: string
   profileImgUrl: string
-  tokenSymbol: string
-  unstakedTokenBalance: number
-  stakedTokenBalance: number
-  onStake: () => void
+  isMember: boolean
+  becomeMemberInfo: ReactNode
 }
 
 export const ProfileCantVoteCard = ({
   daoName,
   walletName,
   profileImgUrl,
-  tokenSymbol,
-  unstakedTokenBalance,
-  stakedTokenBalance,
-  onStake,
+  isMember,
+  becomeMemberInfo,
 }: ProfileCantVoteCardProps) => {
   const { t } = useTranslation()
 
@@ -32,11 +28,7 @@ export const ProfileCantVoteCard = ({
       compact
       imgUrl={profileImgUrl}
       underHeaderComponent={
-        <MembershipPill
-          daoName={daoName}
-          ghost
-          isMember={stakedTokenBalance > 0}
-        />
+        <MembershipPill daoName={daoName} ghost isMember={isMember} />
       }
       walletName={walletName}
     >
@@ -59,19 +51,11 @@ export const ProfileCantVoteCard = ({
         </div>
       </div>
 
-      <Cw20StakedBalanceVotingProfileMembership
-        className="p-6 border-t border-t-border-primary"
-        junoswapHref="https://junoswap.com"
-        onStake={onStake}
-        stakedTokenBalance={stakedTokenBalance}
-        tokenSymbol={tokenSymbol}
-        unstakedTokenBalance={unstakedTokenBalance}
-      >
-        {/* If currently has a staked token balance but cannot vote (since this card is indicating that they cannot vote on a proposal), this means they did not have voting power at the time of proposal creation. */}
-        {stakedTokenBalance > 0
-          ? t('profile.memberCantVote', { tokenSymbol, daoName })
-          : t('profile.notMember.stakeYourTokens', { tokenSymbol, daoName })}
-      </Cw20StakedBalanceVotingProfileMembership>
+      <div className="p-6 border-t border-t-border-primary">
+        <p className="mb-1 link-text">{t('title.membership')}</p>
+
+        {becomeMemberInfo}
+      </div>
     </ProfileCardWrapper>
   )
 }

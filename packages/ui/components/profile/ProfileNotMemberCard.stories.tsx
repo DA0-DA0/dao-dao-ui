@@ -1,5 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProfileCardNoVoteBecomeMemberInfo } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui'
+import { makeProps as makeProfileCardNoVoteBecomeMemberInfoProps } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui/ProfileCardNoVoteBecomeMemberInfo.stories'
+
 import { ProfileNotMemberCard } from './ProfileNotMemberCard'
 
 export default {
@@ -16,12 +19,15 @@ const Template: ComponentStory<typeof ProfileNotMemberCard> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  tokenSymbol: 'DOG',
-  unstakedTokenBalance: 0,
   daoName: 'Dog Dao',
   walletName: '@Modern-Edamame',
   profileImgUrl: '/dog_nft.png',
   established: new Date(),
+  becomeMemberInfo: (
+    <ProfileCardNoVoteBecomeMemberInfo
+      {...makeProfileCardNoVoteBecomeMemberInfoProps()}
+    />
+  ),
 }
 
 Default.parameters = {
@@ -34,5 +40,10 @@ Default.parameters = {
 export const HaveTokensToStake = Template.bind({})
 HaveTokensToStake.args = {
   ...Default.args,
-  unstakedTokenBalance: 100,
+  becomeMemberInfo: (
+    <ProfileCardNoVoteBecomeMemberInfo
+      {...makeProfileCardNoVoteBecomeMemberInfoProps(1600.5432)}
+    />
+  ),
 }
+HaveTokensToStake.parameters = Default.parameters

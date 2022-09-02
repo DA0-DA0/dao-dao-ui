@@ -19,8 +19,8 @@ export const MembershipPill = ({
   const { t } = useTranslation()
 
   const text = isMember
-    ? t('profile.member.memberOf', { daoName })
-    : t('profile.notMember.notAMember')
+    ? t('title.memberOfDao', { daoName })
+    : t('title.notAMember')
   const Icon = isMember ? CheckIcon : X
 
   return (

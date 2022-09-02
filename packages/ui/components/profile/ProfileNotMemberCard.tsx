@@ -1,27 +1,23 @@
+import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Cw20StakedBalanceVotingProfileMembership } from './Cw20StakedBalanceVotingProfileMembership'
 import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileNotMemberCardProps {
-  tokenSymbol: string
-  unstakedTokenBalance: number
   daoName: string
   walletName: string
   profileImgUrl: string
   established: Date
-  onStake: () => void
+  becomeMemberInfo: ReactNode
 }
 
 export const ProfileNotMemberCard = ({
-  tokenSymbol,
-  unstakedTokenBalance,
   daoName,
   walletName,
   profileImgUrl,
   established,
-  onStake,
+  becomeMemberInfo,
 }: ProfileNotMemberCardProps) => {
   const { t } = useTranslation()
 
@@ -34,15 +30,9 @@ export const ProfileNotMemberCard = ({
       }
       walletName={walletName}
     >
-      <Cw20StakedBalanceVotingProfileMembership
-        junoswapHref="https://junoswap.com"
-        onStake={onStake}
-        stakedTokenBalance={0}
-        tokenSymbol={tokenSymbol}
-        unstakedTokenBalance={unstakedTokenBalance}
-      >
-        {t('profile.notMember.stakeYourTokens', { tokenSymbol, daoName })}
-      </Cw20StakedBalanceVotingProfileMembership>
+      <p className="mb-1 link-text">{t('title.membership')}</p>
+
+      {becomeMemberInfo}
     </ProfileCardWrapper>
   )
 }

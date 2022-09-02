@@ -82,8 +82,7 @@ export const ProfileCardWrapper = ({
             <ProfileImage imageUrl={imgUrl} size="lg" />
             <div className="mt-6 text-text-body title-text">{walletName}</div>
             <div className="mt-2 mb-5 font-mono caption-text">
-              {t('profile.est')}
-              {formatDate(established)}
+              {t('info.establishedAbbr')} {formatDate(established)}
             </div>
             {underHeaderComponent}
           </div>

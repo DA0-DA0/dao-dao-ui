@@ -45,9 +45,7 @@ export const ProfileMemberCard = ({
       walletName={walletName}
     >
       <div className="p-6 pb-4 border-t border-t-border-primary">
-        <div className="flex flex-row justify-between items-center pb-3 text-text-body link-text">
-          <p>{t('title.yourMembership')}</p>
-        </div>
+        <p className="mb-3 link-text">{t('title.yourMembership')}</p>
 
         {membershipInfo}
       </div>

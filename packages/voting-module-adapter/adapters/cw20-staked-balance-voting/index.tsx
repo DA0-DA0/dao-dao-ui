@@ -10,6 +10,7 @@ import {
   DaoTreasuryFooter,
   Membership,
   MembershipMobileTab,
+  ProfileCardNoVoteBecomeMemberInfo,
   ProfileMemberCardMembershipInfo,
   ProposalCreationAdditionalAddresses,
   ProposalDetailsVotingPowerWidget,
@@ -57,6 +58,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
       VoteHeroStats,
       SdaMembershipPage,
       ProfileMemberCardMembershipInfo,
+      ProfileCardNoVoteBecomeMemberInfo,
 
       ProposalDetailsVotingPowerWidget,
       StakingModal,

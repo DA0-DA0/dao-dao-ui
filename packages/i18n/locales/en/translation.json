@@ -29,6 +29,7 @@
     "execute": "Execute",
     "follow": "Follow",
     "following": "Following",
+    "getTokens": "Get tokens on {{name}}",
     "gotIt": "Got it",
     "hideInstantiateMessage": "Hide Instantiate Message",
     "hidePreview": "Hide preview",
@@ -57,6 +58,7 @@
     "stake": "Stake",
     "stakeAllButProposalDeposit": "Stake all but the {{proposalDeposit}} ${{tokenSymbol}} proposal deposit",
     "stakeToJoinAndVote": "Stake your tokens to join the DAO and vote.",
+    "stakeTokenSymbol": "Stake ${{tokenSymbol}}",
     "stakeTokens": "Stake tokens",
     "stakeTokensSuggestion": "Stake some tokens so you can vote next time?",
     "unstake": "Unstake",
@@ -271,6 +273,7 @@
     "loading": "Loading...",
     "logo": "Logo",
     "majority": "Majority",
+    "memberCantVote": "You were not a member of {{daoName}} when this proposal was created, so you cannot vote on it. You will be able to vote on future proposals as long as you have ${{tokenSymbol}} staked at the time those proposals are created.",
     "members": "members",
     "mustHaveVotingPowerAtCreation": "You must have voting power at the time of proposal creation to vote.",
     "mustHaveVotingPowerAtCreationTooltip_closed": "You were unable to vote on this proposal because you didn't have any voting power at the time of proposal creation.",
@@ -328,6 +331,7 @@
     "remainingTime": "{{time}} remaining",
     "setAnImage": "Set an image",
     "stakeToIncreaseVotingPower": "Stake these to increase your voting power.",
+    "stakeYourTokensToJoin": "Stake your ${{tokenSymbol}} tokens to become a member of {{daoName}}.",
     "staked": "Staked",
     "stakes": "Stakes",
     "stakingAddress": "Staking",
@@ -372,21 +376,6 @@
   "meta": {
     "description": "DAOs for everyone.",
     "title": "DAO DAO"
-  },
-  "profile": {
-    "est": "Est. ",
-    "member": {
-      "memberOf": "Member of {{daoName}}"
-    },
-    "memberCantVote": "You were not a member of {{daoName}} when this proposal was created, so you cannot vote on it. You will be able to vote on future proposals as long as you have ${{tokenSymbol}} staked at the time those proposals are created.",
-    "notMember": {
-      "getTokens": "Get tokens on Junoswap",
-      "membership": "Membership",
-      "notAMember": "Not a Member",
-      "stakeToken": "Stake ${{tokenSymbol}}",
-      "stakeYourTokens": "Stake your ${{tokenSymbol}} tokens to become a member of {{daoName}}",
-      "yourHoldings": "Your Holdings"
-    }
   },
   "proposalModuleLabel": {
     "cw-govmod-single": "Single Choice"
@@ -472,6 +461,7 @@
     "lastUpdated": "Last updated",
     "manageMembers": "Manage members",
     "manageStaking": "Manage staking",
+    "memberOfDao": "Member of {{daoName}}",
     "memberVotingPowers": "Member voting powers",
     "members": "Members",
     "membership": "Membership",
@@ -482,6 +472,7 @@
     "newMember": "New member",
     "noHistory": "No history",
     "nobody": "Nobody",
+    "notAMember": "Not a Member",
     "numMembers_one": "{{count}} member",
     "numMembers_other": "{{count}} members",
     "numOpenProposals_one": "{{count}} Open Proposal",
