@@ -1,3 +1,4 @@
+import { Check, Close, PanToolOutlined, Texture } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProfileVoteCard } from './ProfileVoteCard'
@@ -20,6 +21,12 @@ Default.args = {
   walletName: '@Modern-Edamame',
   profileImgUrl: '/dog_nft.png',
   loading: false,
+  options: [
+    { Icon: Check, label: 'Yes', value: 'yes' },
+    { Icon: Close, label: 'No', value: 'no' },
+    { Icon: PanToolOutlined, label: 'No with veto', value: 'noWithVeto' },
+    { Icon: Texture, label: 'Abstain', value: 'abstain' },
+  ],
 }
 
 Default.parameters = {

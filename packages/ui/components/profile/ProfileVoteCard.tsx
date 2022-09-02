@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { formatPercentOf100 } from '@dao-dao/utils'
@@ -8,8 +9,15 @@ import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 import { ProfileVoteButton } from './ProfileVoteButton'
 
-export interface ProfileVoteCardProps {
-  variant: 'abstain' | 'noWithVeto' | 'no' | 'yes' | 'unselected'
+export interface ProfileVoteCardOption<T> {
+  Icon: ComponentType<{ className: string }>
+  label: string
+  value: T
+}
+
+export interface ProfileVoteCardProps<T> {
+  options: ProfileVoteCardOption<T>[]
+  selected?: T
   loading?: boolean
   votingPower: number
   daoName: string
@@ -17,14 +25,15 @@ export interface ProfileVoteCardProps {
   profileImgUrl: string
 }
 
-export const ProfileVoteCard = ({
-  variant,
+export const ProfileVoteCard = <T extends unknown>({
+  options,
+  selected,
   loading,
   votingPower,
   daoName,
   walletName,
   profileImgUrl,
-}: ProfileVoteCardProps) => {
+}: ProfileVoteCardProps<T>) => {
   const { t } = useTranslation()
 
   return (
@@ -46,26 +55,23 @@ export const ProfileVoteCard = ({
         <p className="font-mono text-text-primary">{t('info.pending')}</p>
       </div>
 
-      <ProfileVoteButton pressed={variant === 'yes'} variant="yes" />
-
-      <ProfileVoteButton pressed={variant === 'abstain'} variant="abstain" />
-
-      <ProfileVoteButton pressed={variant === 'no'} variant="no" />
-
-      <ProfileVoteButton
-        pressed={variant === 'noWithVeto'}
-        variant="noWithVeto"
-      />
+      {options.map((option, index) => (
+        <ProfileVoteButton
+          key={index}
+          option={option}
+          pressed={option.value === selected}
+        />
+      ))}
 
       <Button
         className="mt-4"
         contentContainerClassName={clsx('justify-center', {
-          'primary-text': variant === 'unselected',
+          'primary-text': !selected,
         })}
-        disabled={variant === 'unselected'}
+        disabled={!selected}
         loading={loading}
         size="lg"
-        variant={variant === 'unselected' || loading ? 'secondary' : 'primary'}
+        variant={!selected || loading ? 'secondary' : 'primary'}
       >
         {t('button.castYourVote')}
       </Button>

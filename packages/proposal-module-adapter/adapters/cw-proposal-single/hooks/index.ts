@@ -1,3 +1,4 @@
+export * from './useProfileVoteCardOptions'
 export * from './useProposalExecutionTxHash'
 export * from './useProposalExpirationString'
 export * from './useProposalProcessedTQ'

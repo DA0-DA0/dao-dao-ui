@@ -22,6 +22,7 @@ import {
 } from './components'
 import { makeGetProposalInfo } from './functions'
 import {
+  useProfileVoteCardOptions,
   useProposalExecutionTxHash,
   useProposalExpirationString,
   useProposalProcessedTQ,
@@ -81,6 +82,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
       useProposalExecutionTxHash,
       useProposalProcessedTQ,
       useProposalExpirationString,
+      useProfileVoteCardOptions,
     },
 
     // Components

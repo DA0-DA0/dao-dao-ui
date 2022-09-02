@@ -3,7 +3,7 @@ import { ComponentType } from 'react'
 
 import { Action, FormProposalData } from '@dao-dao/actions'
 import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
-import { LoaderProps, LogoProps } from '@dao-dao/ui'
+import { LoaderProps, LogoProps, ProfileVoteCardOption } from '@dao-dao/ui'
 import { ProcessedThresholdQuorum, ProposalModule } from '@dao-dao/utils'
 import { BaseProposalDetailsVotingPowerWidgetProps } from '@dao-dao/voting-module-adapter'
 
@@ -47,6 +47,7 @@ export interface IProposalModuleAdapter {
     useProposalExecutionTxHash: () => string | undefined
     useProposalProcessedTQ: () => ProcessedThresholdQuorum
     useProposalExpirationString: () => string | undefined
+    useProfileVoteCardOptions: () => ProfileVoteCardOption<unknown>[]
   }
 
   // Components

@@ -8,7 +8,8 @@
   "dependencies": {
     "@dao-dao/ui": "*",
     "@dao-dao/state": "*",
-    "@dao-dao/utils": "*"
+    "@dao-dao/utils": "*",
+    "@mui/icons-material": "^5.10.3"
   },
   "devDependencies": {
     "@dao-dao/storybook": "*",
