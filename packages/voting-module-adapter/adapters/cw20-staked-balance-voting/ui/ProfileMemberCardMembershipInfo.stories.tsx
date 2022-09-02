@@ -14,7 +14,11 @@ export default {
 
 const Template: ComponentStory<typeof ProfileMemberCardMembershipInfo> = (
   args
-) => <ProfileMemberCardMembershipInfo {...args} />
+) => (
+  <div className="max-w-xs">
+    <ProfileMemberCardMembershipInfo {...args} />
+  </div>
+)
 
 export const makeProps = (unstakingTasks?: UnstakingTask[]) => ({
   loadingClaiming: false,
