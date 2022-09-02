@@ -8,7 +8,7 @@ import { DaoPageWrapperDecorator } from 'decorators'
 import { makeProps as makeDaoMemberCardProps } from '../DaoMemberCard.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / components / dao / tabs / MembersTab',
+  title: 'DAO DAO V2 / components / dao / tabs / MembersTab',
   component: MembersTab,
   decorators: [DaoPageWrapperDecorator],
 } as ComponentMeta<typeof MembersTab>

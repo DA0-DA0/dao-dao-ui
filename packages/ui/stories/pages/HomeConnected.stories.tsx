@@ -10,7 +10,7 @@ import { Default as FeaturedDaosStory } from 'stories/components/dao/FeaturedDao
 import { Default as ProfileHomeCardStory } from 'stories/components/profile/ProfileHomeCard.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / pages / HomeConnected',
+  title: 'DAO DAO V2 / pages / HomeConnected',
   component: HomeConnected,
   decorators: [
     makeAppLayoutDecorator({

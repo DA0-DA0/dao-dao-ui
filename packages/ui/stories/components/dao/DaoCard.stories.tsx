@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { DaoCard, DaoCardProps } from 'components/dao/DaoCard'
 
 export default {
-  title: 'DAO DAO UI V2 / components / dao / DaoCard',
+  title: 'DAO DAO V2 / components / dao / DaoCard',
   component: DaoCard,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof DaoCard>

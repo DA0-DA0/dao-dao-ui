@@ -11,7 +11,7 @@ import { Default as ProfileHomeCardStory } from 'stories/components/profile/Prof
 import { makeProps as makeProposalLineProps } from 'stories/components/proposal/ProposalLine/ProposalLine.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / pages / Inbox',
+  title: 'DAO DAO V2 / pages / Inbox',
   component: Inbox,
   decorators: [
     makeAppLayoutDecorator({

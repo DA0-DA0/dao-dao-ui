@@ -12,7 +12,7 @@ import { CopyToClipboardUnderline } from 'components/CopyToClipboard'
 import { DaoInfoBar } from 'components/dao/DaoInfoBar'
 
 export default {
-  title: 'DAO DAO UI V2 / components / dao / DaoInfoBarProps',
+  title: 'DAO DAO V2 / components / dao / DaoInfoBarProps',
   component: DaoInfoBar,
 } as ComponentMeta<typeof DaoInfoBar>
 

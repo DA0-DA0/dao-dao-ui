@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { DaoImage } from 'components/dao/DaoImage'
 
 export default {
-  title: 'DAO DAO UI V2 / components / dao / DaoImage',
+  title: 'DAO DAO V2 / components / dao / DaoImage',
   component: DaoImage,
 } as ComponentMeta<typeof DaoImage>
 

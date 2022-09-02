@@ -22,7 +22,7 @@ import { Default as TreasuryAndNftsTabStory } from 'stories/components/dao/tabs/
 import { Default as ProfileMemberCardStory } from 'stories/components/profile/ProfileMemberCard.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / pages / DaoHome',
+  title: 'DAO DAO V2 / pages / DaoHome',
   component: DaoHome,
   decorators: [
     // Direct ancestor of rendered story.

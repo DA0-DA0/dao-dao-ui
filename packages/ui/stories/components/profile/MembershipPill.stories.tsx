@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { MembershipPill } from 'components/profile/MembershipPill'
 
 export default {
-  title: 'DAO DAO UI V2 / components / profile / MembershipPill',
+  title: 'DAO DAO V2 / components / profile / MembershipPill',
   component: MembershipPill,
 } as ComponentMeta<typeof MembershipPill>
 

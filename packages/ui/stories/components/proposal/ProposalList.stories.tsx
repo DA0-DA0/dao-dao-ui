@@ -5,7 +5,7 @@ import { ProposalList } from 'components/proposal/ProposalList'
 import { makeProps as makeProposalProps } from './ProposalLine/ProposalLine.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / components / proposal / ProposalList',
+  title: 'DAO DAO V2 / components / proposal / ProposalList',
   component: ProposalList,
 } as ComponentMeta<typeof ProposalList>
 

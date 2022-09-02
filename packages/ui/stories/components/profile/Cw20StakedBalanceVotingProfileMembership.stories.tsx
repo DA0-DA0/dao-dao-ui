@@ -4,7 +4,7 @@ import { Cw20StakedBalanceVotingProfileMembership } from 'components/profile/Cw2
 
 export default {
   title:
-    'DAO DAO UI V2 / components / profile / Cw20StakedBalanceVotingProfileMembership',
+    'DAO DAO V2 / components / profile / Cw20StakedBalanceVotingProfileMembership',
   component: Cw20StakedBalanceVotingProfileMembership,
 } as ComponentMeta<typeof Cw20StakedBalanceVotingProfileMembership>
 

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { SegmentedControls } from 'components/SegmentedControls'
 
 export default {
-  title: 'DAO DAO UI V2 / components / SegmentedControls',
+  title: 'DAO DAO V2 / components / SegmentedControls',
   component: SegmentedControls,
 } as ComponentMeta<typeof SegmentedControls>
 

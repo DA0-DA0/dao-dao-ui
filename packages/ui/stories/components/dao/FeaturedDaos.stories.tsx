@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { DaoCardInfo, FeaturedDaos } from 'components/dao'
 
 export default {
-  title: 'DAO DAO UI V2 / components / dao / FeaturedDaos',
+  title: 'DAO DAO V2 / components / dao / FeaturedDaos',
   component: FeaturedDaos,
 } as ComponentMeta<typeof FeaturedDaos>
 

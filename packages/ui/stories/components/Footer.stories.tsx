@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { Footer } from 'components/Footer'
 
 export default {
-  title: 'DAO DAO UI V2 / components / Footer',
+  title: 'DAO DAO V2 / components / Footer',
   component: Footer,
 } as ComponentMeta<typeof Footer>
 

@@ -6,7 +6,7 @@ import { HomeDisconnected } from 'pages/HomeDisconnected'
 import { Default as FeaturedDaos } from 'stories/components/dao/FeaturedDaos.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / pages / HomeDisconnected',
+  title: 'DAO DAO V2 / pages / HomeDisconnected',
   component: HomeDisconnected,
   decorators: [
     makeAppLayoutDecorator({

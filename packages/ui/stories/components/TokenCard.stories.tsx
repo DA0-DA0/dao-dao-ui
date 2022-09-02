@@ -4,7 +4,7 @@ import { TokenCard, TokenCardProps } from 'components/TokenCard'
 import { makeProps as makeUnstakingModalProps } from 'stories/components/UnstakingModal.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / components / TokenCard',
+  title: 'DAO DAO V2 / components / TokenCard',
   component: TokenCard,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof TokenCard>

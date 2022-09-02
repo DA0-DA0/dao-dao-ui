@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Dropdown } from 'components/Dropdown'
 
 export default {
-  title: 'DAO DAO UI V2 / components / Dropdown',
+  title: 'DAO DAO V2 / components / Dropdown',
   component: Dropdown,
 } as ComponentMeta<typeof Dropdown>
 

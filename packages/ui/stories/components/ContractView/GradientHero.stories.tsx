@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { GradientHero } from 'components/GradientHero'
 
 export default {
-  title: 'DAO DAO UI V2 / components / GradientHero',
+  title: 'DAO DAO V2 / components / GradientHero',
   component: GradientHero,
 } as ComponentMeta<typeof GradientHero>
 

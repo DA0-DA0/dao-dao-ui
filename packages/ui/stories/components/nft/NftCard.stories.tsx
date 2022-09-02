@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { NftCard, NftCardProps } from 'components/nft/NftCard'
 
 export default {
-  title: 'DAO DAO UI V2 / components / nft / NftCard',
+  title: 'DAO DAO V2 / components / nft / NftCard',
   component: NftCard,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof NftCard>

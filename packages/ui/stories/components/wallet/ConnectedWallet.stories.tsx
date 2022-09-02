@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ConnectedWallet } from 'components/wallet/ConnectedWallet'
 
 export default {
-  title: 'DAO DAO UI V2 / components / wallet / ConnectedWallet',
+  title: 'DAO DAO V2 / components / wallet / ConnectedWallet',
   component: ConnectedWallet,
 } as ComponentMeta<typeof ConnectedWallet>
 

@@ -14,7 +14,7 @@ import { Default as ProfileVoteCardStory } from 'stories/components/profile/Prof
 const proposalId = 'A72'
 
 export default {
-  title: 'DAO DAO UI V2 / pages / Proposal',
+  title: 'DAO DAO V2 / pages / Proposal',
   component: Proposal,
   decorators: [
     // Direct ancestor of rendered story.

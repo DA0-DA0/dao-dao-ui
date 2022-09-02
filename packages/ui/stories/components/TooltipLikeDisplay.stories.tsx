@@ -5,7 +5,7 @@ import { ArrowOutward } from '@dao-dao/icons'
 import { TooltipLikeDisplay } from 'components/TooltipLikeDisplay'
 
 export default {
-  title: 'DAO DAO UI V2 / components / TooltipLikeDisplay',
+  title: 'DAO DAO V2 / components / TooltipLikeDisplay',
   component: TooltipLikeDisplay,
 } as ComponentMeta<typeof TooltipLikeDisplay>
 

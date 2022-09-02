@@ -4,7 +4,7 @@ import { UnstakingTaskStatus } from 'components'
 import { UnstakingStatus } from 'components/UnstakingStatus'
 
 export default {
-  title: 'DAO DAO UI V2 / components / UnstakingStatus',
+  title: 'DAO DAO V2 / components / UnstakingStatus',
   component: UnstakingStatus,
 } as ComponentMeta<typeof UnstakingStatus>
 

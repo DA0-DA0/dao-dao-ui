@@ -5,7 +5,7 @@ import { ProposalStatusMap } from '@dao-dao/proposal-module-adapter/adapters/cw-
 import { StatusDisplay } from 'components/StatusDisplay'
 
 export default {
-  title: 'DAO DAO UI V2 / components / StatusDisplay',
+  title: 'DAO DAO V2 / components / StatusDisplay',
   component: StatusDisplay,
 } as ComponentMeta<typeof StatusDisplay>
 

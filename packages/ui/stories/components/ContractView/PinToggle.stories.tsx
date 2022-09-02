@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { PinToggle } from 'components/ContractView/PinToggle'
 
 export default {
-  title: 'DAO DAO UI V2 / components / ContractView / PinToggle',
+  title: 'DAO DAO V2 / components / ContractView / PinToggle',
   component: PinToggle,
 } as ComponentMeta<typeof PinToggle>
 

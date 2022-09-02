@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { DaoDropdown } from 'components/dao/DaoDropdown'
 
 export default {
-  title: 'DAO DAO UI V2 / components / dao / DaoDropdown',
+  title: 'DAO DAO V2 / components / dao / DaoDropdown',
   component: DaoDropdown,
 } as ComponentMeta<typeof DaoDropdown>
 

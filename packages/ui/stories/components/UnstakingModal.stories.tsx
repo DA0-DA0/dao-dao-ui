@@ -8,7 +8,7 @@ import {
 import { makeProps as makeUnstakingLineProps } from 'stories/components/UnstakingLine/UnstakingLine.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / components / UnstakingModal',
+  title: 'DAO DAO V2 / components / UnstakingModal',
   component: UnstakingModal,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof UnstakingModal>

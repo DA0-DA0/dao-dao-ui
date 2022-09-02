@@ -4,7 +4,7 @@ import { SidebarWallet } from 'components/layout/SidebarWallet'
 import { Default as ProfileHomeCardStory } from 'stories/components/profile/ProfileHomeCard.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / components / layout / SidebarWallet',
+  title: 'DAO DAO V2 / components / layout / SidebarWallet',
   component: SidebarWallet,
 } as ComponentMeta<typeof SidebarWallet>
 

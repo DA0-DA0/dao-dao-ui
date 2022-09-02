@@ -5,7 +5,7 @@ import { Inbox } from '@dao-dao/icons'
 import { Row } from 'components/layout/Row'
 
 export default {
-  title: 'DAO DAO UI V2 / components / layout / Row',
+  title: 'DAO DAO V2 / components / layout / Row',
   component: Row,
 } as ComponentMeta<typeof Row>
 

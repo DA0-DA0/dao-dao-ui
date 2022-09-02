@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProfileImage } from 'components/profile/ProfileImage'
 
 export default {
-  title: 'DAO DAO UI V2 / components / profile / ProfileImage',
+  title: 'DAO DAO V2 / components / profile / ProfileImage',
   component: ProfileImage,
 } as ComponentMeta<typeof ProfileImage>
 

@@ -15,7 +15,7 @@ import * as ProposalYourVoteStories from 'stories/components/proposal/ProposalYo
 import * as ProposalStatusStories from 'stories/components/StatusDisplay.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / components / proposal / ProposalLine',
+  title: 'DAO DAO V2 / components / proposal / ProposalLine',
   component: ProposalLine,
   // Don't export helper function `makeProps`.
   excludeStories: ['makeProps'],

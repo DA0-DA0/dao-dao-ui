@@ -4,7 +4,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { IconButtonLink } from 'components/IconButton/IconButtonLink'
 
 export default {
-  title: 'DAO DAO UI V2 / components / IconButton / IconButtonLink',
+  title: 'DAO DAO V2 / components / IconButton / IconButtonLink',
   component: IconButtonLink,
 } as ComponentMeta<typeof IconButtonLink>
 

@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { Navigation, NavigationProps } from 'components/layout/Navigation'
 
 export default {
-  title: 'DAO DAO UI V2 / components / layout / Navigation',
+  title: 'DAO DAO V2 / components / layout / Navigation',
   component: Navigation,
   excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof Navigation>

@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { Breadcrumbs } from 'components/Breadcrumbs'
 
 export default {
-  title: 'DAO DAO UI V2 / components / Breadcrumbs',
+  title: 'DAO DAO V2 / components / Breadcrumbs',
   component: Breadcrumbs,
 } as ComponentMeta<typeof Breadcrumbs>
 

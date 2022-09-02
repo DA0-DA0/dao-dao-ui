@@ -10,7 +10,7 @@ import {
 import { makeProps as makeUnstakingLineProps } from 'stories/components/UnstakingLine/UnstakingLine.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / components / profile / ProfileMemberCard',
+  title: 'DAO DAO V2 / components / profile / ProfileMemberCard',
   component: ProfileMemberCard,
 } as ComponentMeta<typeof ProfileMemberCard>
 

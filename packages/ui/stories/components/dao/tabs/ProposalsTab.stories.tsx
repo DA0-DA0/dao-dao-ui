@@ -11,7 +11,7 @@ import { DaoPageWrapperDecorator } from 'decorators'
 import { Default as ProposalListStory } from 'stories/components/proposal/ProposalList.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / components / dao / tabs / ProposalsTab',
+  title: 'DAO DAO V2 / components / dao / tabs / ProposalsTab',
   component: ProposalsTab,
   decorators: [DaoPageWrapperDecorator],
 } as ComponentMeta<typeof ProposalsTab>

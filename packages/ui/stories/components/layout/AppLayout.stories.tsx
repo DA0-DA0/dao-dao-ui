@@ -7,7 +7,7 @@ import { Default as NavigatonStory } from 'stories/components/layout/Navigation.
 import { Connected as ConnectedSidebarWalletStory } from 'stories/components/layout/SidebarWallet/SidebarWallet.stories'
 
 export default {
-  title: 'DAO DAO UI V2 / components / layout / AppLayout',
+  title: 'DAO DAO V2 / components / layout / AppLayout',
   component: AppLayout,
 } as ComponentMeta<typeof AppLayout>
 

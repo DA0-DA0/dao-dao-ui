@@ -6,7 +6,7 @@ import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import { ProfileVotedCard } from 'components/profile/ProfileVotedCard'
 
 export default {
-  title: 'DAO DAO UI V2 / components / profile / ProfileVotedCard',
+  title: 'DAO DAO V2 / components / profile / ProfileVotedCard',
   component: ProfileVotedCard,
 } as ComponentMeta<typeof ProfileVotedCard>
 

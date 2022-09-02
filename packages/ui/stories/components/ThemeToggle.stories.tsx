@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ThemeToggle } from 'components/ThemeToggle'
 
 export default {
-  title: 'DAO DAO UI V2 / components / ThemeToggle',
+  title: 'DAO DAO V2 / components / ThemeToggle',
   component: ThemeToggle,
 } as ComponentMeta<typeof ThemeToggle>
 

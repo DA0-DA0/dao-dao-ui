@@ -4,7 +4,7 @@ import { Button, UnstakingTaskStatus } from 'components'
 import { UnstakingLine, UnstakingLineProps } from 'components/UnstakingLine'
 
 export default {
-  title: 'DAO DAO UI V2 / components / UnstakingLine',
+  title: 'DAO DAO V2 / components / UnstakingLine',
   component: UnstakingLine,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof UnstakingLine>

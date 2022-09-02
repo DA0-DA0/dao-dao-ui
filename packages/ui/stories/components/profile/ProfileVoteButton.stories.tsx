@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProfileVoteButton } from 'components/profile/ProfileVoteButton'
 
 export default {
-  title: 'DAO DAO UI V2 / components / profile / ProfileVoteButton',
+  title: 'DAO DAO V2 / components / profile / ProfileVoteButton',
   component: ProfileVoteButton,
 } as ComponentMeta<typeof ProfileVoteButton>
 
