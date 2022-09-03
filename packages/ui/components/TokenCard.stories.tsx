@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import toast from 'react-hot-toast'
 
 import { TokenCard, TokenCardProps } from './TokenCard'
 import { makeProps as makeUnstakingModalProps } from './UnstakingModal.stories'
@@ -58,6 +59,7 @@ export const makeProps = (crown = false): TokenCardProps => {
     usdcUnitPrice: 5.38,
     unstakingDuration: '28 days',
     stakes,
+    onAddToken: () => toast.success('added'),
     onProposeClaim: () => alert('claim'),
     onProposeStake: () => alert('stake'),
   }

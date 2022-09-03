@@ -7,5 +7,5 @@ export interface SuccessToastProps {
 }
 
 export const SuccessToast = (props: SuccessToastProps) => (
-  <ToastCard containerClassName="text-light bg-dark" {...props} />
+  <ToastCard {...props} />
 )

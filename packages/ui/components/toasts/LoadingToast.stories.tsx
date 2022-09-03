@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { LoadingToast } from './LoadingToast'
 
 export default {
-  title: '(OLD DAO DAO) / components / toasts / LoadingToast',
+  title: 'DAO DAO / packages / ui / components / toasts / LoadingToast',
   component: LoadingToast,
 } as ComponentMeta<typeof LoadingToast>
 
@@ -24,5 +24,6 @@ Default.args = {
     },
     createdAt: Date.now(),
     visible: true,
+    height: 1,
   },
 }

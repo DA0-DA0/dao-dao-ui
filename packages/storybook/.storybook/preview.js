@@ -1,7 +1,7 @@
 import '@dao-dao/ui/styles/index.css'
 
 import i18n from './i18next'
-import { RecoilDecorator, ThemeDecorator } from '../decorators'
+import { NotificationsDecorator, RecoilDecorator, ThemeDecorator } from '../decorators'
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -23,4 +23,4 @@ export const parameters = {
   // in `ThemeDecorator`.
 }
 
-export const decorators = [ThemeDecorator, RecoilDecorator]
+export const decorators = [ThemeDecorator, RecoilDecorator, NotificationsDecorator]

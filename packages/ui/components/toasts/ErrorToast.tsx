@@ -7,5 +7,5 @@ export interface ErrorToastProps {
 }
 
 export const ErrorToast = (props: ErrorToastProps) => (
-  <ToastCard containerClassName="text-[#ffffff] bg-error" {...props} />
+  <ToastCard containerClassName="text-text-light bg-color-error" {...props} />
 )

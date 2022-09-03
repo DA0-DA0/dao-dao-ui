@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ErrorToast } from './ErrorToast'
 
 export default {
-  title: '(OLD DAO DAO) / components / toasts / ErrorToast',
+  title: 'DAO DAO / packages / ui / components / toasts / ErrorToast',
   component: ErrorToast,
 } as ComponentMeta<typeof ErrorToast>
 
@@ -16,7 +16,7 @@ Default.args = {
   toast: {
     type: 'error',
     id: 'toast',
-    message: 'Test toast',
+    message: 'Test error toast',
     pauseDuration: 0,
     ariaProps: {
       role: 'status',
@@ -24,5 +24,6 @@ Default.args = {
     },
     createdAt: Date.now(),
     visible: true,
+    height: 1,
   },
 }

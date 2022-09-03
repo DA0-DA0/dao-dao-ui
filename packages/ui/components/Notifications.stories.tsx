@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { Notifications } from './Notifications'
 
 export default {
-  title: '(OLD DAO DAO) / components / Notifications',
+  title: 'DAO DAO / packages / ui / components / Notifications',
   component: Notifications,
 } as ComponentMeta<typeof Notifications>
 

@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ToastCard } from './ToastCard'
 
 export default {
-  title: '(OLD DAO DAO) / components / toasts / ToastCard',
+  title: 'DAO DAO / packages / ui / components / toasts / ToastCard',
   component: ToastCard,
 } as ComponentMeta<typeof ToastCard>
 
@@ -13,7 +13,6 @@ const Template: ComponentStory<typeof ToastCard> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  containerClassName: 'text-light bg-dark',
   toast: {
     type: 'blank',
     id: 'toast',
@@ -25,5 +24,6 @@ Default.args = {
     },
     createdAt: Date.now(),
     visible: true,
+    height: 1,
   },
 }
