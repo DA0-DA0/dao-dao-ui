@@ -16,7 +16,9 @@ const Template: ComponentStory<typeof ActionSelector> = (args) => {
 }
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  onSelectAction: ({ key }) => alert(key),
+}
 Default.parameters = {
   design: {
     type: 'figma',

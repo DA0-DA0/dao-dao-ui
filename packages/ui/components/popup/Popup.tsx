@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import {
   ComponentType,
   Dispatch,
+  MutableRefObject,
   ReactNode,
   SetStateAction,
   useEffect,
@@ -20,6 +21,10 @@ export interface PopupProps {
     setOpen: Dispatch<SetStateAction<boolean>>
   ) => (event: KeyboardEvent) => any
   headerContent?: ReactNode
+  onOpen?: () => void
+  onClose?: () => void
+  // Give parent a way to access and control setOpen.
+  setOpenRef?: MutableRefObject<Dispatch<SetStateAction<boolean>> | null>
 }
 
 export const Popup = ({
@@ -30,9 +35,36 @@ export const Popup = ({
   popupClassName,
   getKeydownEventListener,
   headerContent,
+  onOpen,
+  onClose,
+  setOpenRef,
 }: PopupProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
+
+  // Store setOpen in ref so parent can control it.
+  useEffect(() => {
+    if (!setOpenRef) {
+      return
+    }
+
+    // Add ref on mount.
+    setOpenRef.current = setOpen
+
+    // Remove ref on unmount.
+    return () => {
+      setOpenRef.current = null
+    }
+  }, [setOpenRef])
+
+  // Trigger open callbacks.
+  useEffect(() => {
+    if (open) {
+      onOpen?.()
+    } else {
+      onClose?.()
+    }
+  }, [onClose, onOpen, open])
 
   // Close popup on escape if open.
   useEffect(() => {
@@ -97,7 +129,7 @@ export const Popup = ({
       {/* Popup */}
       <div
         className={clsx(
-          'absolute top-full z-10 mt-1 bg-component-dropdown rounded-lg border border-border-primary shadow-dp8 transition-all',
+          'flex absolute top-full z-10 flex-col mt-1 bg-component-dropdown rounded-lg border border-border-primary shadow-dp8 transition-all',
           // Position.
           {
             // Offset for outline of Trigger.
