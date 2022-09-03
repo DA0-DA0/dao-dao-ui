@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { SpendIcon, StakeIcon, UnstakeIcon } from '@dao-dao/actions'
+import { SpendIcon, StakeIcon } from '@dao-dao/actions'
 import { EdamameCrown } from '@dao-dao/icons'
 
 import { Button } from './Button'
@@ -34,8 +34,8 @@ export interface TokenCardProps {
   unstakingDuration: string
   stakes?: TokenStake[]
   onAddToken?: () => void
+  onProposeStakeUnstake: () => void
   onProposeClaim: () => void
-  onProposeStake: () => void
 }
 
 export const TokenCard = ({
@@ -51,8 +51,8 @@ export const TokenCard = ({
   unstakingDuration,
   stakes,
   onAddToken,
+  onProposeStakeUnstake,
   onProposeClaim,
-  onProposeStake,
 }: TokenCardProps) => {
   const { t } = useTranslation()
 
@@ -99,28 +99,18 @@ export const TokenCard = ({
         buttons: [
           {
             Icon: StakeIcon,
-            label: t('button.stakeTokens'),
-            onClick: onProposeStake,
-          },
-          {
-            Icon: UnstakeIcon,
-            label: t('button.unstakeTokens'),
-            onClick: onProposeStake,
+            label: t('button.stakeOrUnstake'),
+            onClick: onProposeStakeUnstake,
           },
           {
             Icon: SpendIcon,
-            label: t('button.claimRewards'),
-            onClick: onProposeStake,
-          },
-          {
-            Icon: SpendIcon,
-            label: t('button.claimUnstaked'),
-            onClick: onProposeStake,
+            label: t('button.claim'),
+            onClick: onProposeClaim,
           },
         ],
       },
     ],
-    [onAddToken, onProposeStake, t]
+    [onAddToken, onProposeClaim, onProposeStakeUnstake, t]
   )
 
   return (

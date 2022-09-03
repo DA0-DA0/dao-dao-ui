@@ -62,6 +62,7 @@
     "stake": "Stake",
     "stakeAllButProposalDeposit": "Stake all but the {{proposalDeposit}} ${{tokenSymbol}} proposal deposit",
     "stakeNft": "Stake NFT",
+    "stakeOrUnstake": "Stake or unstake",
     "stakeToJoinAndVote": "Stake your tokens to join the DAO and vote.",
     "stakeTokenSymbol": "Stake ${{tokenSymbol}}",
     "stakeTokens": "Stake tokens",
