@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { StakeIcon } from '@dao-dao/actions'
+import { SpendIcon, StakeIcon, UnstakeIcon } from '@dao-dao/actions'
 import { EdamameCrown } from '@dao-dao/icons'
 
 import { Button } from './Button'
@@ -102,6 +102,21 @@ export const TokenCard = ({
             label: t('button.stakeTokens'),
             onClick: onProposeStake,
           },
+          {
+            Icon: UnstakeIcon,
+            label: t('button.unstakeTokens'),
+            onClick: onProposeStake,
+          },
+          {
+            Icon: SpendIcon,
+            label: t('button.claimRewards'),
+            onClick: onProposeStake,
+          },
+          {
+            Icon: SpendIcon,
+            label: t('button.claimUnstaked'),
+            onClick: onProposeStake,
+          },
         ],
       },
     ],
@@ -150,7 +165,7 @@ export const TokenCard = ({
                   {...props}
                 />
               )}
-              popupClassName="w-[14rem]"
+              popupClassName="w-[16rem]"
               position="left"
               sections={buttonPopupSections}
             />

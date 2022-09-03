@@ -264,3 +264,8 @@ export const StakeIcon = () => {
   const { t } = useTranslation()
   return <Emoji label={t('emoji.box')} symbol="📥" />
 }
+
+export const UnstakeIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.box')} symbol="📤" />
+}
