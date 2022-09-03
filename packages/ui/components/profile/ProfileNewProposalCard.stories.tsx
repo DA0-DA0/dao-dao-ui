@@ -45,7 +45,7 @@ Default.args = {
       Icon: CancelOutlined,
       label: 'Failed proposals',
       value: 'No Refund',
-      valueClassName: 'bg-component-badge-error',
+      valueClassName: '!bg-component-badge-error',
     },
   ],
   addresses: [
