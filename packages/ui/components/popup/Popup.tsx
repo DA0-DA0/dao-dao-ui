@@ -1,5 +1,13 @@
 import clsx from 'clsx'
-import { ComponentType, ReactNode, useEffect, useRef, useState } from 'react'
+import {
+  ComponentType,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 export interface PopupProps {
   Trigger: ComponentType<{ onClick: () => void; open: boolean }>
@@ -7,6 +15,11 @@ export interface PopupProps {
   children: ReactNode | ReactNode[]
   wrapperClassName?: string
   popupClassName?: string
+  getKeydownEventListener?: (
+    open: boolean,
+    setOpen: Dispatch<SetStateAction<boolean>>
+  ) => (event: KeyboardEvent) => any
+  headerContent?: ReactNode
 }
 
 export const Popup = ({
@@ -15,9 +28,26 @@ export const Popup = ({
   children,
   wrapperClassName,
   popupClassName,
+  getKeydownEventListener,
+  headerContent,
 }: PopupProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
+
+  // Close popup on escape if open.
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    const handleKeyPress = (event: KeyboardEvent) =>
+      event.key === 'Escape' && setOpen(false)
+
+    // Attach event listener.
+    document.addEventListener('keydown', handleKeyPress)
+    // Clean up event listener.
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [open])
 
   // Listen for click not in bounds, and close if so. Adds listener only when
   // the dropdown is open.
@@ -44,6 +74,19 @@ export const Popup = ({
     return () => window.removeEventListener('click', closeIfClickOutside)
   }, [open])
 
+  // Apply keydown event listener.
+  useEffect(() => {
+    if (!getKeydownEventListener) {
+      return
+    }
+
+    const listener = getKeydownEventListener(open, setOpen)
+
+    document.addEventListener('keydown', listener)
+    // Clean up event listener on unmount.
+    return () => document.removeEventListener('keydown', listener)
+  }, [getKeydownEventListener, open])
+
   return (
     <div
       className={clsx('inline-block relative', wrapperClassName)}
@@ -69,6 +112,12 @@ export const Popup = ({
           popupClassName
         )}
       >
+        {headerContent && (
+          <div className="mb-4 border-b border-border-base">
+            <div className="p-4">{headerContent}</div>
+          </div>
+        )}
+
         {children}
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { SearchIcon } from '@heroicons/react/solid'
+import { Search } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -19,16 +19,16 @@ export const SearchBar = ({
   return (
     <div
       className={clsx(
-        'flex items-center px-3 text-tertiary border-b border-default',
+        'flex flex-row gap-1 items-center p-2 text-tertiary rounded-md border-2 border-border-interactive-focus focus:border-text-interactive-active active:border-text-interactive-active',
         containerClassName
       )}
     >
-      {!hideIcon && <SearchIcon className="w-5" />}
+      {!hideIcon && <Search className="w-6 h-6 text-icon-primary" />}
 
       <input
         autoFocus
         className={clsx(
-          'p-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none',
+          'grow py-1 pr-4 text-text-primary bg-transparent focus:outline-none secondary-text focus:ring-none',
           className
         )}
         placeholder={t('title.search')}

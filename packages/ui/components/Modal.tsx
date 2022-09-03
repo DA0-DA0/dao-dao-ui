@@ -1,6 +1,6 @@
 import { XIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { ReactNode, useCallback, useEffect } from 'react'
+import { ReactNode, useEffect } from 'react'
 
 import { IconButton } from './IconButton'
 
@@ -28,22 +28,16 @@ export const Modal = ({
   headerContent,
   footerContent,
 }: ModalProps) => {
-  const handleKeyPress = useCallback(
-    (event) => {
-      if (event.key === 'Escape') {
-        onClose()
-      }
-    },
-    [onClose]
-  )
-
+  // Close modal on escape.
   useEffect(() => {
-    // attach the event listener
-    document.addEventListener('keydown', handleKeyPress)
+    const handleKeyPress = (event: KeyboardEvent) =>
+      event.key === 'Escape' && onClose()
 
-    // remove the event listener
+    // Attach event listener.
+    document.addEventListener('keydown', handleKeyPress)
+    // Clean up event listener.
     return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [handleKeyPress])
+  }, [onClose])
 
   return (
     <div

@@ -5,7 +5,7 @@ import { useActions } from '@dao-dao/actions'
 import { ActionSelector } from './ActionSelector'
 
 export default {
-  title: '(OLD DAO DAO) / components / ActionSelector',
+  title: 'DAO DAO / packages / ui / components / ActionSelector',
   component: ActionSelector,
 } as ComponentMeta<typeof ActionSelector>
 
@@ -17,3 +17,9 @@ const Template: ComponentStory<typeof ActionSelector> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {}
+Default.parameters = {
+  design: {
+    type: 'figma',
+    url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=986%3A45783',
+  },
+}
