@@ -33,7 +33,7 @@ export const ButtonPopup = ({ sections, ...props }: ButtonPopupProps) => (
           <Button key={index} onClick={onClick} variant="ghost">
             {Icon && (
               <div className="flex justify-center items-center w-6 h-6">
-                <Icon className="w-full h-full text-icon-primary" />
+                <Icon className="w-5 h-5 text-icon-primary" />
               </div>
             )}
             <p className="text-text-body link-text">{label}</p>
