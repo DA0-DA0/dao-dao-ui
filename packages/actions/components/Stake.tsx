@@ -262,5 +262,5 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
 export const StakeIcon = () => {
   const { t } = useTranslation()
-  return <Emoji label={t('emoji.box')} symbol="📤" />
+  return <Emoji label={t('emoji.box')} symbol="📥" />
 }

@@ -7,6 +7,7 @@ export interface IconButtonifierProps {
   circular?: boolean
   Icon: ComponentType<{ className: string }>
   disabled?: boolean
+  focused?: boolean
   className?: string
   iconClassName?: string
 }
@@ -16,10 +17,13 @@ export const getIconButtonifiedClassNames = ({
   size = 'default',
   circular,
   disabled,
+  focused,
   className,
 }: Omit<IconButtonifierProps, 'icon'>) =>
   clsx(
-    'flex justify-center items-center focus:outline-2 transition-all focus:outline-focus',
+    'flex justify-center items-center focus:outline-2 focus:outline transition-all focus:outline-border-interactive-focus',
+
+    focused && 'outline-2 outline-border-interactive-focus outline',
 
     // Rounding.
     circular ? 'rounded-full' : 'rounded-md',

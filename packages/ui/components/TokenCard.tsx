@@ -1,12 +1,15 @@
 import { PlusIcon } from '@heroicons/react/outline'
+import { ExpandCircleDownOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { StakeIcon } from '@dao-dao/actions'
 import { EdamameCrown } from '@dao-dao/icons'
 
 import { Button } from './Button'
 import { IconButton } from './IconButton'
+import { ButtonPopup, ButtonPopupSection } from './popup'
 import { Tooltip } from './Tooltip'
 import { UnstakingTask } from './UnstakingLine'
 import { UnstakingModal } from './UnstakingModal'
@@ -31,7 +34,8 @@ export interface TokenCardProps {
   unstakingDuration: string
   stakes?: TokenStake[]
   onAddToken?: () => void
-  onClaim: () => void
+  onProposeClaim: () => void
+  onProposeStake: () => void
 }
 
 export const TokenCard = ({
@@ -47,7 +51,8 @@ export const TokenCard = ({
   unstakingDuration,
   stakes,
   onAddToken,
-  onClaim,
+  onProposeClaim,
+  onProposeStake,
 }: TokenCardProps) => {
   const { t } = useTranslation()
 
@@ -72,6 +77,36 @@ export const TokenCard = ({
   )
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
+
+  const buttonPopupSections: ButtonPopupSection[] = useMemo(
+    () => [
+      ...(onAddToken
+        ? [
+            {
+              label: t('title.token'),
+              buttons: [
+                {
+                  Icon: PlusIcon,
+                  label: t('button.addToKeplr'),
+                  onClick: onAddToken,
+                },
+              ],
+            },
+          ]
+        : []),
+      {
+        label: t('title.newProposalTo'),
+        buttons: [
+          {
+            Icon: StakeIcon,
+            label: t('button.stakeTokens'),
+            onClick: onProposeStake,
+          },
+        ],
+      },
+    ],
+    [onAddToken, onProposeStake, t]
+  )
 
   return (
     <>
@@ -104,18 +139,22 @@ export const TokenCard = ({
             </div>
           </div>
 
-          {onAddToken && (
-            <div className="absolute top-3 right-3">
-              <Tooltip title={t('info.addTokenTooltip')}>
+          <div className="absolute top-3 right-3">
+            <ButtonPopup
+              Trigger={({ open, ...props }) => (
                 <IconButton
-                  Icon={PlusIcon}
-                  circular
-                  onClick={onAddToken}
+                  Icon={ExpandCircleDownOutlined}
+                  className="!text-icon-secondary"
+                  focused={open}
                   variant="ghost"
+                  {...props}
                 />
-              </Tooltip>
-            </div>
-          )}
+              )}
+              popupClassName="w-[14rem]"
+              position="left"
+              sections={buttonPopupSections}
+            />
+          </div>
         </div>
 
         <div className="flex flex-col gap-3 py-4 px-6 border-t border-inactive">
@@ -233,7 +272,7 @@ export const TokenCard = ({
 
       {showUnstakingTokens && (
         <UnstakingModal
-          onClaim={onClaim}
+          onClaim={onProposeClaim}
           onClose={() => setShowUnstakingTokens(false)}
           tasks={unstakingTasks}
           unstakingDuration={unstakingDuration}
