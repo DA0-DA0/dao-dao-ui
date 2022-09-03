@@ -31,7 +31,6 @@ export interface TokenCardProps {
   unstakingDuration: string
   stakes?: TokenStake[]
   onAddToken?: () => void
-  onClickRewards: () => void
   onClaim: () => void
 }
 
@@ -48,7 +47,6 @@ export const TokenCard = ({
   unstakingDuration,
   stakes,
   onAddToken,
-  onClickRewards,
   onClaim,
 }: TokenCardProps) => {
   const { t } = useTranslation()
@@ -176,9 +174,7 @@ export const TokenCard = ({
             </div>
 
             <div className="flex flex-row gap-8 justify-between items-center">
-              <p className="secondary-text">
-                {t('info.validators', { count: stakes.length })}
-              </p>
+              <p className="secondary-text">{t('info.stakedTo')}</p>
 
               <p className="font-mono text-right text-text-body caption-text">
                 {stakes[0].validator}
@@ -204,23 +200,6 @@ export const TokenCard = ({
             </div>
 
             <div className="flex flex-row gap-8 justify-between items-center">
-              <p className="secondary-text">{t('info.pendingRewards')}</p>
-
-              <Tooltip title={t('info.createClaimProposal')}>
-                <Button
-                  className="font-mono text-right text-text-body underline-offset-2 caption-text"
-                  onClick={onClickRewards}
-                  variant="underline"
-                >
-                  {pendingRewards.toLocaleString(undefined, {
-                    maximumFractionDigits: tokenDecimals,
-                  })}{' '}
-                  ${tokenSymbol}
-                </Button>
-              </Tooltip>
-            </div>
-
-            <div className="flex flex-row gap-8 justify-between items-center">
               <p className="secondary-text">{t('title.unstakingTokens')}</p>
 
               <Button
@@ -236,6 +215,17 @@ export const TokenCard = ({
                 })}{' '}
                 ${tokenSymbol}
               </Button>
+            </div>
+
+            <div className="flex flex-row gap-8 justify-between items-center">
+              <p className="secondary-text">{t('info.pendingRewards')}</p>
+
+              <p className="font-mono text-right text-text-body caption-text">
+                {pendingRewards.toLocaleString(undefined, {
+                  maximumFractionDigits: tokenDecimals,
+                })}{' '}
+                ${tokenSymbol}
+              </p>
             </div>
           </div>
         )}

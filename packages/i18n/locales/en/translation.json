@@ -340,6 +340,7 @@
     "stakeToIncreaseVotingPower": "Stake these to increase your voting power.",
     "stakeYourTokensToJoin": "Stake your ${{tokenSymbol}} tokens to become a member of {{daoName}}.",
     "staked": "Staked",
+    "stakedTo": "Staked to...",
     "stakes": "Stakes",
     "stakingAddress": "Staking",
     "subDaoExplanation": "SubDAOs are children DAOs that help manage groups within your DAO.",
@@ -364,8 +365,6 @@
       "readyToClaim": "Ready to claim",
       "unstaking": "Unstaking"
     },
-    "validators_one": "Validator",
-    "validators_other": "Validators",
     "verifyingGovernanceToken": "Verifying CW20 token...",
     "voteAgain": "Vote again?",
     "votedOnProposal": "You voted <0/> on this proposal.",
