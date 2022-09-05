@@ -156,8 +156,8 @@ input[type='number']::-webkit-outer-spin-button {
     --background-interactive-selected: rgba(var(--v2-dark), 0.08);
     --background-interactive-pressed: rgba(var(--v2-dark), 0.15);
     --background-interactive-disabled: rgba(var(--v2-dark), 0.03);
-    --background-interactive-active: rgba(var(--v2-brand), 0.15);
-    --background-interactive-error: rgba(var(--v2-error), 0.08);
+    --background-interactive-active: rgba(var(--v2-brand), 0.25);
+    --background-interactive-error: rgba(var(--v2-error), 0.15);
     --background-interactive-valid: rgba(var(--v2-valid), 0.08);
     --background-button-hover: rgba(var(--v2-black), 0.95);
     --background-button-pressed: rgba(var(--v2-vanta), 1);
