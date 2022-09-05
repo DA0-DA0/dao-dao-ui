@@ -19,7 +19,7 @@ export interface FilterableItemPopupProps<T>
   extends Omit<PopupProps, 'headerContent' | 'children' | 'setOpenRef'> {
   items: T[]
   filterableItemKeys: Fuse.FuseOptionKey<T>[]
-  onSelect: (item: T) => void
+  onSelect: (item: T, index: number) => void
   searchPlaceholder?: string
   listClassName?: string
   closeOnSelect?: boolean
@@ -28,9 +28,9 @@ export interface FilterableItemPopupProps<T>
 export const FilterableItemPopup = <
   T extends {
     key: string | number
-    Icon: ComponentType
+    Icon?: ComponentType
     label: string
-    description: string
+    description?: string
   }
 >({
   items,
@@ -60,8 +60,8 @@ export const FilterableItemPopup = <
   )
 
   const onSelectItem = useCallback(
-    (item: T) => {
-      onSelect(item)
+    (item: T, index: number) => {
+      onSelect(item, index)
       // Close.
       if (closeOnSelect) {
         setOpenRef.current?.(false)
@@ -116,7 +116,7 @@ export const FilterableItemPopup = <
         case 'Enter':
           event.preventDefault()
           if (selectedIndex >= 0 && selectedIndex < filteredItems.length) {
-            onSelectItem(filteredItems[selectedIndex])
+            onSelectItem(filteredItems[selectedIndex], selectedIndex)
           }
           break
       }
@@ -178,15 +178,19 @@ export const FilterableItemPopup = <
               selectedIndex === index && 'bg-background-interactive-selected'
             )}
             contentContainerClassName="gap-4"
-            onClick={() => onSelectItem(item)}
+            onClick={() => onSelectItem(item, index)}
             variant="ghost"
           >
-            <p className="text-2xl">
-              <item.Icon />
-            </p>
+            {item.Icon && (
+              <p className="text-2xl">
+                <item.Icon />
+              </p>
+            )}
             <div className="space-y-1 text-left">
               <p className="text-text-body link-text">{item.label}</p>
-              <p className="secondary-text">{item.description}</p>
+              {item.description && (
+                <p className="secondary-text">{item.description}</p>
+              )}
             </div>
           </Button>
         ))}

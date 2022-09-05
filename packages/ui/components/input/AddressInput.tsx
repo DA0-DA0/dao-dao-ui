@@ -50,8 +50,10 @@ export const AddressInput = <
   return (
     <div
       className={clsx(
-        'flex gap-1 items-center py-2 px-3 font-mono text-sm bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
-        { 'ring-1 ring-error': error },
+        'flex gap-1 items-center py-2 px-3 font-mono text-sm bg-transparent focus-within:outline-none ring-1 focus-within:ring-2 transition secondary-text',
+        error
+          ? 'ring-border-interactive-error'
+          : 'ring-border-primary focus:ring-border-interactive-focus',
         containerClassName
       )}
     >

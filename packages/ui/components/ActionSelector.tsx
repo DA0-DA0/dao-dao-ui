@@ -61,7 +61,8 @@ export const ActionSelector = ({
               open ? 'text-icon-brand' : 'text-icon-primary'
             )}
           />{' '}
-          {t('button.addAnAction')}
+          {t('button.addAnAction')}{' '}
+          <p className="text-text-tertiary">{isMac ? '⌘' : '⌃'}A</p>
         </Button>
       )}
       filterableItemKeys={FILTERABLE_KEYS}

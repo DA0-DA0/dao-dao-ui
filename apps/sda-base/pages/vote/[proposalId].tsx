@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { FormProposalData, useActions } from '@dao-dao/actions'
+import { useActions } from '@dao-dao/actions'
 import {
   ConnectWalletButton,
   DaoProposalPageWrapperProps,
@@ -17,6 +17,7 @@ import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapter,
   useProposalModuleAdapterCommon,
+  useProposalModuleAdapterOptions,
 } from '@dao-dao/proposal-module-adapter'
 import { ErrorPage, LinkText } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
@@ -42,6 +43,7 @@ const InnerProposal = () => {
   const {
     hooks: { useActions: useProposalModuleActions },
   } = useProposalModuleAdapterCommon()
+  const { proposalModule } = useProposalModuleAdapterOptions()
 
   const {
     hooks: { useGovernanceTokenInfo, useActions: useVotingModuleActions },
@@ -76,8 +78,17 @@ const InnerProposal = () => {
     toast.success(t('success.proposalClosed'))
   }, [refreshProposalAndAll, t])
 
-  const duplicate = (data: FormProposalData) =>
-    router.push(`/propose?prefill=${encodeURIComponent(JSON.stringify(data))}`)
+  const duplicate = (data: any) =>
+    router.push(
+      `/propose?prefill=${encodeURIComponent(
+        JSON.stringify(
+          JSON.stringify({
+            proposalModuleAddress: proposalModule.address,
+            data,
+          })
+        )
+      )}`
+    )
 
   return (
     <div className="grid grid-cols-2 gap-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:max-w-page">

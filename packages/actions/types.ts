@@ -34,12 +34,6 @@ export interface ActionKeyAndData {
   data: any
 }
 
-export interface FormProposalData {
-  title: string
-  description: string
-  actionData: ActionKeyAndData[]
-}
-
 // A component which will render an action's input form.
 export type ActionComponentProps<T = undefined, D = any> = {
   coreAddress: string

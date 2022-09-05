@@ -1,8 +1,12 @@
 import { PlusIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'react-i18next'
 
-import { ActionKey, FormProposalData } from '@dao-dao/actions'
+import { ActionKey } from '@dao-dao/actions'
 import { DaoInfo } from '@dao-dao/common'
+import {
+  CwProposalSingleAdapter,
+  matchAdapter as matchProposalModuleAdapter,
+} from '@dao-dao/proposal-module-adapter'
 
 import { ButtonLink } from '../../Button'
 import { GridCardContainer } from '../../GridCardContainer'
@@ -23,18 +27,28 @@ export const MembersTab = ({
 }: MembersTabProps) => {
   const { t } = useTranslation()
 
-  const prefilledProposalFormData: FormProposalData = {
-    title: '',
-    description: '',
-    actionData: [
-      {
-        key: ActionKey.ManageMembers,
-        data: {
-          toAdd: [{ addr: '', weight: NaN }],
-          toRemove: [],
+  // If has single choice proposal module, can create prefill button.
+  const singleChoiceProposalModule = daoInfo.proposalModules.find(
+    ({ contractName }) =>
+      matchProposalModuleAdapter(contractName)?.id ===
+      CwProposalSingleAdapter.id
+  )
+
+  const prefilledProposalFormData = {
+    proposalModuleAddress: singleChoiceProposalModule?.address,
+    data: {
+      title: '',
+      description: '',
+      actionData: [
+        {
+          key: ActionKey.ManageMembers,
+          data: {
+            toAdd: [{ addr: '', weight: NaN }],
+            toRemove: [],
+          },
         },
-      },
-    ],
+      ],
+    },
   }
 
   return (
@@ -46,18 +60,21 @@ export const MembersTab = ({
             <p className="secondary-text">{t('info.newMemberExplanation')}</p>
           </div>
 
-          <ButtonLink
-            className="shrink-0"
-            disabled={!isMember}
-            href={`/dao/${
-              daoInfo.coreAddress
-            }/proposals/create?prefill=${encodeURIComponent(
-              JSON.stringify(prefilledProposalFormData)
-            )}`}
-          >
-            <PlusIcon className="w-4 h-4" />
-            {t('button.addMembers')}
-          </ButtonLink>
+          {/* Only show new member proposal prefill if has single choice proposal module. */}
+          {singleChoiceProposalModule && (
+            <ButtonLink
+              className="shrink-0"
+              disabled={!isMember}
+              href={`/dao/${
+                daoInfo.coreAddress
+              }/proposals/create?prefill=${encodeURIComponent(
+                JSON.stringify(prefilledProposalFormData)
+              )}`}
+            >
+              <PlusIcon className="w-4 h-4" />
+              {t('button.addMembers')}
+            </ButtonLink>
+          )}
         </div>
       )}
 

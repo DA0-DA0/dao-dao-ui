@@ -58,7 +58,7 @@ import {
 } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { BaseCreateProposalFormProps } from '../../../../types'
+import { BaseNewProposalProps } from '../../../../types'
 import { useActions as useProposalModuleActions } from '../hooks'
 
 enum ProposeSubmitValue {
@@ -70,7 +70,7 @@ interface ProposalData extends Omit<FormProposalData, 'actionData'> {
   msgs: CosmosMsgFor_Empty[]
 }
 
-interface CreateProposalFormProps extends BaseCreateProposalFormProps {
+interface CreateProposalFormProps extends BaseNewProposalProps {
   coreAddress: string
   proposalModule: ProposalModule
   Loader: ComponentType<LoaderProps>

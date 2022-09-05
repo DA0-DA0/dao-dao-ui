@@ -9,7 +9,8 @@
     "@dao-dao/ui": "*",
     "@dao-dao/state": "*",
     "@dao-dao/utils": "*",
-    "@mui/icons-material": "^5.10.3"
+    "@mui/icons-material": "^5.10.3",
+    "react-hook-form": "7.20.4"
   },
   "devDependencies": {
     "@dao-dao/storybook": "*",

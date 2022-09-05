@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { FormProposalData, useActions } from '@dao-dao/actions'
+import { useActions } from '@dao-dao/actions'
 import {
   ConnectWalletButton,
   DaoPageWrapper,
@@ -103,10 +103,13 @@ const InnerProposal = () => {
     toast.success(t('success.proposalClosed'))
   }, [refreshProposalAndAll, t])
 
-  const duplicate = (data: FormProposalData) =>
+  const duplicate = (data: any) =>
     router.push(
       `/dao/${coreAddress}/proposals/create?prefill=${encodeURIComponent(
-        JSON.stringify(data)
+        JSON.stringify({
+          proposalModuleAddress: proposalModule.address,
+          data,
+        })
       )}`
     )
 

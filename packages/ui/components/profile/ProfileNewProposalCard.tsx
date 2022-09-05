@@ -13,7 +13,7 @@ export interface ProfileNewProposalCardInfoLine {
   value: string
   valueClassName?: string
 }
-
+ProfileNewProposalCard
 export interface ProfileNewProposalCardAddress {
   label: string
   address: string

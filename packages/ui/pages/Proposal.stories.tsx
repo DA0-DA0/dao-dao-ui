@@ -23,7 +23,7 @@ export default {
     makeAppLayoutDecorator({
       rightSidebar: (
         <ProfileVoteCard
-          {...(ProfileVoteCardStory.args as ProfileVoteCardProps)}
+          {...(ProfileVoteCardStory.args as ProfileVoteCardProps<string>)}
         />
       ),
     }),

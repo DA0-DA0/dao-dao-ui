@@ -1,7 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ComponentType } from 'react'
 
-import { Action, FormProposalData } from '@dao-dao/actions'
+import { Action } from '@dao-dao/actions'
 import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
 import { LoaderProps, LogoProps, ProfileVoteCardOption } from '@dao-dao/ui'
 import { ProcessedThresholdQuorum, ProposalModule } from '@dao-dao/utils'
@@ -20,12 +20,14 @@ export interface IProposalModuleAdapterCommon {
     useProposalCount: () => number
     useActions: () => Action[]
     useDepositInfo?: () => CheckedDepositInfo | undefined
+    // Returns `proposalNumber` (ID of this proposal for this module)
+    useCreateProposal: (data: unknown) => number
   }
 
   // Components
   components: {
     ProposalModuleInfo: ComponentType<BaseProposalModuleInfo>
-    CreateProposalForm: ComponentType<BaseCreateProposalFormProps>
+    NewProposal: ComponentType<BaseNewProposalProps>
     DaoInfoVotingConfiguration: ComponentType
   }
 }
@@ -135,7 +137,7 @@ export interface BaseProposalDetailsProps {
   onVoteSuccess: () => void
   connected: boolean
   ConnectWalletButton: ComponentType
-  duplicate: (data: FormProposalData) => void
+  duplicate: (data: any) => void
   walletAddress?: string
   VotingPowerWidget?: ComponentType<BaseProposalDetailsVotingPowerWidgetProps>
 }
@@ -148,11 +150,8 @@ export interface BaseProposalModuleInfo {
   className?: string
 }
 
-export interface BaseCreateProposalFormProps {
-  connected: boolean
-  walletAddress?: string
+export interface BaseNewProposalProps {
   onCreateSuccess: (proposalId: string) => void
-  ConnectWalletButton: ComponentType
 }
 
 export interface BasePinnedProposalLineProps {
