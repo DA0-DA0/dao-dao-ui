@@ -172,16 +172,10 @@ export const Proposal = ({
           <MarkdownPreview markdown={description} />
 
           {!!decodedMessages?.length && (
-            <div className="my-9">
+            <div className="my-9 space-y-3">
               {actionList}
 
-              {showRaw && (
-                <CosmosMessageDisplay
-                  value={JSON.stringify(decodedMessages, undefined, 2)}
-                />
-              )}
-
-              <div className="flex flex-row gap-7 items-center mt-3">
+              <div className="flex flex-row gap-7 items-center">
                 <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
                   <AnalyticsOutlined className="text-icon-secondary" />
                   <p className="secondary-text">
@@ -196,6 +190,12 @@ export const Proposal = ({
                   <p className="secondary-text">{t('button.duplicate')}</p>
                 </Button>
               </div>
+
+              {showRaw && (
+                <CosmosMessageDisplay
+                  value={JSON.stringify(decodedMessages, undefined, 2)}
+                />
+              )}
             </div>
           )}
 

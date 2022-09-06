@@ -133,10 +133,7 @@ export const NewProposal = ({
 
   return (
     <FormProvider {...formMethods}>
-      <form
-        className="max-w-4xl"
-        onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
-      >
+      <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
         <div className="rounded-lg bg-background-tertiary">
           <div className="flex flex-row gap-6 justify-between items-center py-4 px-6 border-b border-border-secondary">
             <p className="primary-text text-text-body">
