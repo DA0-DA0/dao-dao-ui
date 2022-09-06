@@ -242,7 +242,7 @@ export const Wallet = ({
 
               <Tooltip
                 title={
-                  connected ? t('error.connectWalletToContinue') : undefined
+                  connected ? undefined : t('error.connectWalletToContinue')
                 }
               >
                 <Button
