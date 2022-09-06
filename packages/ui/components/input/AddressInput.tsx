@@ -50,14 +50,14 @@ export const AddressInput = <
   return (
     <div
       className={clsx(
-        'flex gap-1 items-center py-3 px-4 font-mono text-sm bg-transparent focus-within:outline-none ring-1 focus-within:ring-2 transition secondary-text',
+        'flex gap-2 items-center py-3 px-4 font-mono text-sm bg-transparent rounded-md focus-within:outline-none ring-1 focus-within:ring-2 transition secondary-text',
         error
           ? 'ring-border-interactive-error'
           : 'ring-border-primary focus:ring-border-interactive-focus',
         containerClassName
       )}
     >
-      <Wallet className="w-6 h-6" />
+      <Wallet className="w-5 h-5" />
       <input
         className={clsx(
           'w-full bg-transparent border-none outline-none ring-none body-text',

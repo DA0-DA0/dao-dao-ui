@@ -8,7 +8,10 @@ import {
   UseTransformToCosmos,
   walletActions,
 } from '@dao-dao/actions'
-import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
+import {
+  WalletProviderDecorator,
+  makeAppLayoutDecorator,
+} from '@dao-dao/storybook/decorators'
 
 import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
@@ -18,6 +21,7 @@ export default {
   title: 'DAO DAO / packages / ui / pages / Wallet',
   component: Wallet,
   decorators: [
+    WalletProviderDecorator,
     makeAppLayoutDecorator({
       rightSidebar: (
         <ProfileHomeCard

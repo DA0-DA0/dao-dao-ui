@@ -30,6 +30,7 @@ export const SelectInput = <
   validation,
   children,
   required,
+  className,
   ...props
 }: SelectInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
@@ -40,8 +41,11 @@ export const SelectInput = <
   return (
     <select
       className={clsx(
-        'py-2 px-3 text-body bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition',
-        { 'ring-1 ring-error': error }
+        'py-3 px-4 placeholder:text-text-tertiary text-text-body bg-transparent rounded-md focus:outline-none ring-1 focus:ring-2 transition secondary-text',
+        error
+          ? 'ring-border-interactive-error'
+          : 'ring-border-primary focus:ring-border-interactive-focus',
+        className
       )}
       {...props}
       {...(register &&
