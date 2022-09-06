@@ -1,3 +1,4 @@
+import type { MsgExec } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
 import { makeStargateMessage } from '@dao-dao/utils'
@@ -17,17 +18,14 @@ import {
 
 interface AuthzExecData {
   type_url: string
-  value: {
-    typeUrl: string
-    value: any
-  }
+  value: MsgExec
 }
 
 const useDefaults: UseDefaults<AuthzExecData> = () => ({
   type_url: '/cosmos.authz.v1beta1.MsgExec',
   value: {
-    typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
-    value: '',
+    grantee: '',
+    msgs: [],
   },
 })
 
@@ -47,12 +45,7 @@ const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = (
           type_url: data.type_url,
           value: {
             grantee: coreAddress,
-            msgs: [
-              {
-                typeUrl: data.value.typeUrl,
-                value: data.value.value,
-              },
-            ],
+            msgs: data.value.msgs,
           },
         },
       }),

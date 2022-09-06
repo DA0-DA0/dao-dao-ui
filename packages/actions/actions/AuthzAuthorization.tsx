@@ -17,11 +17,13 @@ import {
 } from '../types'
 
 interface AuthzData {
+  custom?: boolean
   type_url: string
   value: MsgGrant | MsgRevoke
 }
 
 const useDefaults: UseDefaults<AuthzData> = () => ({
+  custom: false,
   type_url: '/cosmos.authz.v1beta1.MsgGrant',
   value: {
     grantee: '',

@@ -3,13 +3,8 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  CodeMirrorInput,
-  InputErrorMessage,
-  InputLabel,
-  TextInput,
-} from '@dao-dao/ui'
-import { validateJSON, validateRequired } from '@dao-dao/utils'
+import { CodeMirrorInput, InputLabel } from '@dao-dao/ui'
+import { validateJSON } from '@dao-dao/utils'
 
 import { ActionCard, ActionComponent } from '..'
 
@@ -20,7 +15,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
 ) => {
   const { t } = useTranslation()
   const { fieldNamePrefix, onRemove, errors, isCreating } = props
-  const { register, control } = useFormContext()
+  const { control } = useFormContext()
 
   return (
     <ActionCard
@@ -29,20 +24,10 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
       title={t('title.authzExec')}
     >
       <div className="flex flex-col gap-1 items-stretch">
-        <InputLabel name={t('form.messageType')} />
-        <TextInput
-          disabled={!isCreating}
-          error={errors?.type_url}
-          fieldName={fieldNamePrefix + 'value.typeUrl'}
-          placeholder={!isCreating ? t('info.none') : t('form.messageType')}
-          register={register}
-          validation={[(v: string) => validateRequired(v)]}
+        <InputLabel
+          name={t('form.encodedMessages')}
+          tooltip={t('form.encodedMessagesTooltip')}
         />
-        <InputErrorMessage error={errors?.admin} />
-      </div>
-
-      <div className="flex flex-col gap-1 items-stretch">
-        <InputLabel name={t('form.message')} />
         <CodeMirrorInput
           control={control}
           error={errors?.value?.value}

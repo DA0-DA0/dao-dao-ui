@@ -1,12 +1,15 @@
+import { InformationCircleIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  FormSwitch,
   InputErrorMessage,
   InputLabel,
   SelectInput,
   TextInput,
+  Tooltip,
 } from '@dao-dao/ui'
 import {
   validateAddress,
@@ -23,7 +26,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
 ) => {
   const { t } = useTranslation()
   const { data, fieldNamePrefix, onRemove, errors, isCreating } = props
-  const { register } = useFormContext()
+  const { register, setValue, watch } = useFormContext()
 
   return (
     <ActionCard
@@ -66,17 +69,60 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         <InputErrorMessage error={errors?.admin} />
       </div>
 
-      <div className="flex flex-col gap-1 items-stretch">
-        <InputLabel name={t('form.messageType')} />
-        <TextInput
-          disabled={!isCreating}
-          error={errors?.value?.msgTypeUrl}
-          fieldName={fieldNamePrefix + 'value.msgTypeUrl'}
-          placeholder={!isCreating ? t('info.none') : t('form.messageType')}
-          register={register}
-          validation={[(v: string) => validateRequired(v)]}
+      {!data.custom ? (
+        <div className="flex flex-col gap-1 items-stretch">
+          <InputLabel name={t('form.messageType')} />
+          <SelectInput
+            disabled={!isCreating}
+            fieldName={fieldNamePrefix + 'value.msgTypeUrl'}
+            register={register}
+          >
+            <option value="/cosmos.staking.v1beta1.MsgDelegate">
+              {t('info.stake')}
+            </option>
+            <option value="/cosmos.staking.v1beta1.MsgUndelegate">
+              {t('info.unstake')}
+            </option>
+            <option value="/cosmos.staking.v1beta1.MsgBeginRedelegate">
+              {t('info.redelegate')}
+            </option>
+            <option value="/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward">
+              {t('info.withdrawStakingRewards')}
+            </option>
+          </SelectInput>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-1 items-stretch">
+          <InputLabel name={t('form.messageType')} />
+          <TextInput
+            disabled={!isCreating}
+            error={errors?.value?.msgTypeUrl}
+            fieldName={fieldNamePrefix + 'value.msgTypeUrl'}
+            placeholder={!isCreating ? t('info.none') : t('form.messageType')}
+            register={register}
+            validation={[(v: string) => validateRequired(v)]}
+          />
+          <InputErrorMessage error={errors?.value?.msgTypeUrl} />
+        </div>
+      )}
+
+      <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
+        <div className="flex flex-row gap-1">
+          <Tooltip label={t('form.authzCustomMessageTypeTooltip')}>
+            <InformationCircleIcon className="w-4 h-4 secondary-text" />
+          </Tooltip>
+
+          <p className="w-max secondary-text">
+            {t('form.authzUseCustomMessageType')}
+          </p>
+        </div>
+        <FormSwitch
+          fieldName={fieldNamePrefix + 'custom'}
+          readOnly={!isCreating}
+          setValue={setValue}
+          sizing="sm"
+          watch={watch}
         />
-        <InputErrorMessage error={errors?.admin} />
       </div>
     </ActionCard>
   )
