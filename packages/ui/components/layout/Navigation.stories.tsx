@@ -36,22 +36,27 @@ export const DefaultArgs: NavigationProps = {
   ],
   pinnedDaos: [
     {
+      coreAddress: 'core1',
       name: 'Core 1',
       imageUrl: '/placeholders/1.svg',
     },
     {
+      coreAddress: 'raw',
       name: 'Raw',
       imageUrl: '/placeholders/2.svg',
       subdaos: [
         {
+          coreAddress: 'payroll',
           name: 'Payroll',
           imageUrl: '/placeholders/3.svg',
         },
         {
+          coreAddress: 'pool',
           name: 'Pool distribution',
           imageUrl: '/placeholders/4.svg',
           subdaos: [
             {
+              coreAddress: 'native',
               name: 'Native tokens',
               imageUrl: '/placeholders/1.svg',
             },
@@ -60,18 +65,22 @@ export const DefaultArgs: NavigationProps = {
       ],
     },
     {
+      coreAddress: 'raw',
       name: 'Raw',
       imageUrl: '/placeholders/2.svg',
       subdaos: [
         {
+          coreAddress: 'payroll',
           name: 'Payroll',
           imageUrl: '/placeholders/3.svg',
         },
         {
+          coreAddress: 'pool',
           name: 'Pool distribution',
           imageUrl: '/placeholders/4.svg',
           subdaos: [
             {
+              coreAddress: 'native',
               name: 'Native tokens',
               imageUrl: '/placeholders/1.svg',
             },
@@ -80,18 +89,22 @@ export const DefaultArgs: NavigationProps = {
       ],
     },
     {
+      coreAddress: 'raw',
       name: 'Raw',
       imageUrl: '/placeholders/2.svg',
       subdaos: [
         {
+          coreAddress: 'payroll',
           name: 'Payroll',
           imageUrl: '/placeholders/3.svg',
         },
         {
+          coreAddress: 'pool',
           name: 'Pool distribution',
           imageUrl: '/placeholders/4.svg',
           subdaos: [
             {
+              coreAddress: 'native',
               name: 'Native tokens',
               imageUrl: '/placeholders/1.svg',
             },
@@ -100,6 +113,7 @@ export const DefaultArgs: NavigationProps = {
       ],
     },
     {
+      coreAddress: 'animals',
       name: 'Animals',
       imageUrl: '/placeholders/5.svg',
     },
