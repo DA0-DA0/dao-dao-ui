@@ -1,15 +1,10 @@
-import type {
-  MsgExec,
-  MsgGrant,
-  MsgRevoke,
-} from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
 import { makeStargateMessage } from '@dao-dao/utils'
 
 import {
-  AuthzIcon,
-  AuthzComponent as StatelessAuthzComponent,
+  AuthzExecIcon,
+  AuthzExecComponent as StatelessAuthzComponent,
 } from '../components'
 import {
   Action,
@@ -20,42 +15,51 @@ import {
   UseTransformToCosmos,
 } from '../types'
 
-interface AuthzData {
+interface AuthzExecData {
   type_url: string
-  value: MsgExec | MsgGrant | MsgRevoke
+  value: {
+    typeUrl: string
+    value: any
+  }
 }
 
-const useDefaults: UseDefaults<AuthzData> = () => ({
-  type_url: '/cosmos.authz.v1beta1.MsgGrant',
+const useDefaults: UseDefaults<AuthzExecData> = () => ({
+  type_url: '/cosmos.authz.v1beta1.MsgExec',
   value: {
-    grantee: '',
-    granter: '',
-    msgTypeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
+    typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
+    value: '',
   },
 })
 
 const Component: ActionComponent = (props) => {
+  console.log(props)
+
   return <StatelessAuthzComponent {...props} options={{}} />
 }
 
-const useTransformToCosmos: UseTransformToCosmos<AuthzData> = (
+const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = (
   coreAddress: string
 ) =>
   useCallback(
-    (data: AuthzData) =>
+    (data: AuthzExecData) =>
       makeStargateMessage({
         stargate: {
           type_url: data.type_url,
           value: {
-            ...data.value,
-            granter: coreAddress,
+            grantee: coreAddress,
+            msgs: [
+              {
+                typeUrl: data.value.typeUrl,
+                value: data.value.value,
+              },
+            ],
           },
         },
       }),
     [coreAddress]
   )
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
   msg: Record<string, any>
 ) =>
   useMemo(
@@ -72,12 +76,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
     [msg]
   )
 
-export const authzAction: Action<AuthzData> = {
-  key: ActionKey.Authz,
-  Icon: AuthzIcon,
-  label: 'Authz',
-  description:
-    'Grant / revoke authorizations, or execute an action on behalf of another account.',
+export const authzExecAction: Action<AuthzExecData> = {
+  key: ActionKey.AuthzExec,
+  Icon: AuthzExecIcon,
+  label: 'Authz Exec',
+  description: 'Perform an action on behalf of another account.',
   Component,
   useDefaults,
   useTransformToCosmos,

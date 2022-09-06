@@ -18,48 +18,43 @@ import { ActionCard, ActionComponent } from '..'
 
 export interface AuthzOptions {}
 
-export const AuthzComponent: ActionComponent<AuthzOptions> = (props) => {
+export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
+  props
+) => {
   const { t } = useTranslation()
-  const { fieldNamePrefix, onRemove, errors, isCreating } = props
+  const { data, fieldNamePrefix, onRemove, errors, isCreating } = props
   const { register } = useFormContext()
 
-  // TODO translations
   return (
-    <ActionCard Icon={AuthzIcon} onRemove={onRemove} title="Authz">
+    <ActionCard
+      Icon={AuthzAuthorizationIcon}
+      onRemove={onRemove}
+      title={t('title.authzAuthorization')}
+    >
       <div className="flex flex-col gap-1 items-stretch">
+        <InputLabel name={t('form.grantOrRevokeAuthz')} />
         <SelectInput
           disabled={!isCreating}
           fieldName={fieldNamePrefix + 'type_url'}
           register={register}
         >
-          <option value="/cosmos.authz.v1beta1.MsgExec">
-            Execute Authz TX
-          </option>
           <option value="/cosmos.authz.v1beta1.MsgGrant">
-            Grant Authorization
+            {t('form.grantAuthorizationOption')}
           </option>
           <option value="/cosmos.authz.v1beta1.MsgRevoke">
-            Revoke Authorization
+            {t('form.revokeAuthorizationOption')}
           </option>
         </SelectInput>
-
-        <InputLabel name="Message type" />
-        <TextInput
-          disabled={!isCreating}
-          error={errors?.admin}
-          fieldName={fieldNamePrefix + 'value.msgTypeUrl'}
-          placeholder={!isCreating ? t('info.none') : 'Message Type URL'}
-          register={register}
-          validation={[(v: string) => validateRequired(v)]}
-        />
-        <InputErrorMessage error={errors?.admin} />
       </div>
 
       <div className="flex flex-col gap-1 items-stretch">
-        <InputLabel name="Grantee" />
+        <InputLabel
+          name={t('form.granteeAddress')}
+          tooltip={t('form.granteeAddressTooltip')}
+        />
         <TextInput
           disabled={!isCreating}
-          error={errors?.admin}
+          error={errors?.value?.grantee}
           fieldName={fieldNamePrefix + 'value.grantee'}
           placeholder={!isCreating ? t('info.none') : 'juno...'}
           register={register}
@@ -70,11 +65,24 @@ export const AuthzComponent: ActionComponent<AuthzOptions> = (props) => {
         />
         <InputErrorMessage error={errors?.admin} />
       </div>
+
+      <div className="flex flex-col gap-1 items-stretch">
+        <InputLabel name={t('form.messageType')} />
+        <TextInput
+          disabled={!isCreating}
+          error={errors?.value?.msgTypeUrl}
+          fieldName={fieldNamePrefix + 'value.msgTypeUrl'}
+          placeholder={!isCreating ? t('info.none') : t('form.messageType')}
+          register={register}
+          validation={[(v: string) => validateRequired(v)]}
+        />
+        <InputErrorMessage error={errors?.admin} />
+      </div>
     </ActionCard>
   )
 }
 
-export const AuthzIcon = () => {
+export const AuthzAuthorizationIcon = () => {
   const { t } = useTranslation()
   return <Emoji label={t('emoji.key')} symbol="🔑" />
 }
