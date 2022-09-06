@@ -29,89 +29,96 @@ import {
   UseTransformToCosmos,
 } from '../types'
 
+// TODO: Convert this into a more generalizable 'context' abstraction.
+type WithIsWallet<T> = (isWallet: boolean) => T
+
 interface SpendData {
   to: string
   amount: number
   denom: string
 }
 
-const useDefaults: UseDefaults<SpendData> = () => {
-  const { address } = useWallet()
+const makeUseDefaults: WithIsWallet<UseDefaults<SpendData>> =
+  (isWallet) => () => {
+    const { address } = useWallet()
 
-  return {
-    to: address ?? '',
-    amount: 1,
-    denom: NATIVE_DENOM,
+    return {
+      to: (isWallet && address) || '',
+      amount: 1,
+      denom: NATIVE_DENOM,
+    }
   }
-}
 
-const useTransformToCosmos: UseTransformToCosmos<SpendData> = (
-  coreAddress: string
-) => {
-  const cw20Addresses = useRecoilValue(
-    CwCoreV0_1_0Selectors.allCw20TokenListSelector({
-      contractAddress: coreAddress,
-    })
-  )
-  const cw20Infos = useRecoilValue(
-    waitForAll(
-      cw20Addresses.map((contractAddress) =>
-        Cw20BaseSelectors.tokenInfoSelector({ contractAddress, params: [] })
+const makeUseTransformToCosmos: WithIsWallet<UseTransformToCosmos<SpendData>> =
+  (isWallet) => (coreAddress: string) => {
+    const cw20Addresses = useRecoilValue(
+      isWallet
+        ? // Cannot yet query for wallet's cw20 addresses.
+          constSelector([])
+        : // Get DAO's cw20 addresses.
+          CwCoreV0_1_0Selectors.allCw20TokenListSelector({
+            contractAddress: coreAddress,
+          })
+    )
+    const cw20Infos = useRecoilValue(
+      waitForAll(
+        cw20Addresses.map((contractAddress) =>
+          Cw20BaseSelectors.tokenInfoSelector({ contractAddress, params: [] })
+        )
       )
     )
-  )
-  const cw20Tokens = useMemo(
-    () =>
-      cw20Addresses.map((address, idx) => ({
-        address,
-        info: cw20Infos[idx],
-      })),
-    [cw20Addresses, cw20Infos]
-  )
+    const cw20Tokens = useMemo(
+      () =>
+        cw20Addresses.map((address, idx) => ({
+          address,
+          info: cw20Infos[idx],
+        })),
+      [cw20Addresses, cw20Infos]
+    )
 
-  return useCallback(
-    (data: SpendData) => {
-      if (data.denom === NATIVE_DENOM || data.denom.startsWith('ibc/')) {
-        const decimals = nativeTokenDecimals(data.denom)!
+    return useCallback(
+      (data: SpendData) => {
+        if (data.denom === NATIVE_DENOM || data.denom.startsWith('ibc/')) {
+          const decimals = nativeTokenDecimals(data.denom)!
+          const amount = convertDenomToMicroDenomWithDecimals(
+            data.amount,
+            decimals
+          )
+          const bank = makeBankMessage(amount, data.to, data.denom)
+          return { bank }
+        }
+
+        // Get cw20 token decimals from cw20 treasury list.
+        const cw20TokenInfo = cw20Tokens.find(
+          ({ address }) => address === data.denom
+        )?.info
+        if (!cw20TokenInfo) {
+          throw new Error(`Unknown token: ${data.denom}`)
+        }
+
         const amount = convertDenomToMicroDenomWithDecimals(
           data.amount,
-          decimals
+          cw20TokenInfo.decimals
         )
-        const bank = makeBankMessage(amount, data.to, data.denom)
-        return { bank }
-      }
 
-      // Get cw20 token decimals from cw20 treasury list.
-      const cw20TokenInfo = cw20Tokens.find(
-        ({ address }) => address === data.denom
-      )?.info
-      if (!cw20TokenInfo) {
-        throw new Error(`Unknown token: ${data.denom}`)
-      }
-
-      const amount = convertDenomToMicroDenomWithDecimals(
-        data.amount,
-        cw20TokenInfo.decimals
-      )
-
-      return makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: data.denom,
-            funds: [],
-            msg: {
-              transfer: {
-                recipient: data.to,
-                amount,
+        return makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: data.denom,
+              funds: [],
+              msg: {
+                transfer: {
+                  recipient: data.to,
+                  amount,
+                },
               },
             },
           },
-        },
-      })
-    },
-    [cw20Tokens]
-  )
-}
+        })
+      },
+      [cw20Tokens]
+    )
+  }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
@@ -180,54 +187,59 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   }, [msg, spentTokenDecimals, isTransfer])
 }
 
-const Component: ActionComponent = (props) => {
-  const nativeBalances = useRecoilValue(
-    nativeBalancesSelector(props.coreAddress)
-  )
-  const cw20AddressesAndBalances = useRecoilValue(
-    CwCoreV0_1_0Selectors.allCw20BalancesSelector({
-      contractAddress: props.coreAddress,
-    })
-  )
+const makeComponent: WithIsWallet<ActionComponent> = (isWallet) =>
+  function Component(props) {
+    const nativeBalances = useRecoilValue(
+      nativeBalancesSelector(props.coreAddress)
+    )
+    const cw20AddressesAndBalances = useRecoilValue(
+      isWallet
+        ? // Cannot yet query for wallet's cw20 addresses.
+          constSelector([])
+        : // Get DAO's cw20 addresses and ballances.
+          CwCoreV0_1_0Selectors.allCw20BalancesSelector({
+            contractAddress: props.coreAddress,
+          })
+    )
 
-  const cw20Infos = useRecoilValue(
-    waitForAll(
-      cw20AddressesAndBalances.map(({ addr }) =>
-        Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: addr,
-          params: [],
-        })
+    const cw20Infos = useRecoilValue(
+      waitForAll(
+        cw20AddressesAndBalances.map(({ addr }) =>
+          Cw20BaseSelectors.tokenInfoSelector({
+            contractAddress: addr,
+            params: [],
+          })
+        )
       )
     )
-  )
-  const cw20Balances = useMemo(
-    () =>
-      cw20AddressesAndBalances.map(({ addr, balance }, idx) => ({
-        address: addr,
-        balance,
-        info: cw20Infos[idx],
-      })),
-    [cw20AddressesAndBalances, cw20Infos]
-  )
+    const cw20Balances = useMemo(
+      () =>
+        cw20AddressesAndBalances.map(({ addr, balance }, idx) => ({
+          address: addr,
+          balance,
+          info: cw20Infos[idx],
+        })),
+      [cw20AddressesAndBalances, cw20Infos]
+    )
 
-  return (
-    <StatelessSpendComponent
-      {...props}
-      options={{
-        nativeBalances,
-        cw20Balances,
-      }}
-    />
-  )
-}
+    return (
+      <StatelessSpendComponent
+        {...props}
+        options={{
+          nativeBalances,
+          cw20Balances,
+        }}
+      />
+    )
+  }
 
-export const spendAction: Action<SpendData> = {
+export const makeSpendAction: WithIsWallet<Action<SpendData>> = (isWallet) => ({
   key: ActionKey.Spend,
   Icon: SpendIcon,
   label: 'Spend',
   description: 'Spend native or cw20 tokens from the treasury.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
+  Component: makeComponent(isWallet),
+  useDefaults: makeUseDefaults(isWallet),
+  useTransformToCosmos: makeUseTransformToCosmos(isWallet),
   useDecodedCosmosMsg,
-}
+})

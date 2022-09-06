@@ -24,6 +24,7 @@ import {
   UpdateProposalConfigIcon,
 } from './UpdateProposalConfigComponent'
 
+// TODO: Convert this into a more generalizable 'context' abstraction.
 type AsProposalModuleMaker<T> = (proposalModule: ProposalModule) => T
 
 export interface UpdateProposalConfigData {

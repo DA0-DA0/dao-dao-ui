@@ -5,13 +5,14 @@ import { executeAction } from './Execute'
 import { instantiateAction } from './Instantiate'
 import { migrateAction } from './MigrateContract'
 import { removeCw20Action } from './RemoveCw20'
-import { spendAction } from './Spend'
+import { makeSpendAction } from './Spend'
 import { stakeAction } from './Stake'
 import { updateAdminAction } from './UpdateAdmin'
 import { updateInfoAction } from './UpdateInfo'
 
 export const daoActions: Action[] = [
-  spendAction,
+  // TODO: Convert this into a more generalizable 'context' abstraction.
+  makeSpendAction(false),
   stakeAction,
   updateInfoAction,
   addCw20Action,
@@ -27,7 +28,8 @@ export const daoActions: Action[] = [
 ]
 
 export const walletActions: Action[] = [
-  // spendAction, // Need to figure out how to make balance queries work for wallet.
+  // TODO: Convert this into a more generalizable 'context' abstraction.
+  makeSpendAction(true),
   stakeAction,
   instantiateAction,
   executeAction,
