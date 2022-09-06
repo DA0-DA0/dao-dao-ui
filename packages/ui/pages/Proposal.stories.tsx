@@ -82,4 +82,7 @@ Default.parameters = {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=313%3A30661',
   },
+  nextRouter: {
+    asPath: '/dao/core1',
+  },
 }
