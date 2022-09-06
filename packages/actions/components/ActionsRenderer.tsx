@@ -4,14 +4,12 @@ import { FormProvider, useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
-import { ProposalModule } from '@dao-dao/utils'
 
 import { ActionAndData, ActionCardLoader } from '..'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
   coreAddress: string
-  proposalModule: ProposalModule
   actionData: ActionAndData[]
   Loader: ComponentType<LoaderProps>
   Logo: ComponentType<LogoProps>
@@ -19,7 +17,6 @@ export interface ActionsRendererProps {
 
 export const ActionsRenderer = ({
   coreAddress,
-  proposalModule,
   actionData,
   Loader,
   Logo,
@@ -62,7 +59,6 @@ export const ActionsRenderer = ({
                 fieldNamePrefix={`${index}.`}
                 index={index}
                 isCreating={false}
-                proposalModule={proposalModule}
               />
             </SuspenseLoader>
 

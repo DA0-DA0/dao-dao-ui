@@ -4,7 +4,6 @@ import { FieldErrors } from 'react-hook-form'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
-import { ProposalModule } from '@dao-dao/utils'
 
 export enum ActionKey {
   Spend = 'spend',
@@ -37,7 +36,6 @@ export interface ActionKeyAndData {
 // A component which will render an action's input form.
 export type ActionComponentProps<T = undefined, D = any> = {
   coreAddress: string
-  proposalModule: ProposalModule
   fieldNamePrefix: string
   allActionsWithData: ActionKeyAndData[]
   index: number
@@ -63,14 +61,10 @@ export type ActionComponent<T = undefined, D = any> = FunctionComponent<
   ActionComponentProps<T, D>
 >
 
-export type UseDefaults<D extends {} = any> = (
-  coreAddress: string,
-  proposalModule: ProposalModule
-) => D
+export type UseDefaults<D extends {} = any> = (coreAddress: string) => D
 
 export type UseTransformToCosmos<D extends {} = any> = (
-  coreAddress: string,
-  proposalModule: ProposalModule
+  coreAddress: string
 ) => (data: D) => CosmosMsgFor_Empty | undefined
 
 export interface DecodeCosmosMsgNoMatch {
@@ -83,8 +77,7 @@ export interface DecodeCosmosMsgMatch<D extends {} = any> {
 }
 export type UseDecodedCosmosMsg<D extends {} = any> = (
   msg: Record<string, any>,
-  coreAddress: string,
-  proposalModule: ProposalModule
+  coreAddress: string
 ) => DecodeCosmosMsgNoMatch | DecodeCosmosMsgMatch<D>
 
 // Defines a new action.

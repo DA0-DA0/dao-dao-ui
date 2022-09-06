@@ -10,7 +10,7 @@ import { stakeAction } from './Stake'
 import { updateAdminAction } from './UpdateAdmin'
 import { updateInfoAction } from './UpdateInfo'
 
-export const commonActions: Action[] = [
+export const daoActions: Action[] = [
   spendAction,
   stakeAction,
   updateInfoAction,
@@ -23,5 +23,14 @@ export const commonActions: Action[] = [
   executeAction,
   migrateAction,
   updateAdminAction,
+  customAction,
+]
+
+export const walletActions: Action[] = [
+  // spendAction, // Need to figure out how to make balance queries work for wallet.
+  stakeAction,
+  instantiateAction,
+  executeAction,
+  migrateAction,
   customAction,
 ]

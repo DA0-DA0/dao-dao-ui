@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
 
-import { commonActions } from '../actions'
+import { daoActions } from '../actions'
 import { Action } from '../types'
 
 export const useActions = (additionalActions?: Action[]): Action[] =>
   useMemo(
     () =>
-      commonActions
+      daoActions
         .concat(additionalActions ?? [])
         // Sort alphabetically.
         .sort((a, b) =>

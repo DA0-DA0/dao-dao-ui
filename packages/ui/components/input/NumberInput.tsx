@@ -61,12 +61,11 @@ export const NumberInput = <
   return (
     <div
       className={clsx(
-        'flex flex-row gap-1 items-center text-sm',
-        'py-3 px-4 bg-transparent rounded-md border focus:outline-none ring-1 focus:ring-2 transition secondary-text',
+        'flex flex-row gap-1 items-center py-3 px-4 bg-transparent rounded-md ring-1 focus-within:ring-2 transition',
         // Border
         error
           ? 'ring-border-interactive-error'
-          : 'ring-border-primary focus:ring-border-interactive-focus',
+          : 'ring-border-primary focus-within:ring-border-interactive-focus',
         // Sizing
         {
           'w-28': sizing === 'sm',
@@ -103,7 +102,7 @@ export const NumberInput = <
 
       <input
         className={clsx(
-          'w-full text-right bg-transparent border-none outline-none ring-none body-text',
+          'w-full text-right text-text-body bg-transparent border-none outline-none ring-none secondary-text',
           className
         )}
         disabled={disabled}

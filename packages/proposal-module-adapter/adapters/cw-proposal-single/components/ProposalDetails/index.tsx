@@ -139,7 +139,7 @@ export const ProposalDetails = ({
     const { data, action } = orderedActions
       .map((action) => ({
         action,
-        ...action.useDecodedCosmosMsg(message, coreAddress, proposalModule),
+        ...action.useDecodedCosmosMsg(message, coreAddress),
       }))
       // There will always be a match since custom matches all.
       .find(({ match }) => match)!
@@ -279,7 +279,6 @@ export const ProposalDetails = ({
               Logo={Logo}
               actionData={actionData}
               coreAddress={coreAddress}
-              proposalModule={proposalModule}
             />
           )}
         </>

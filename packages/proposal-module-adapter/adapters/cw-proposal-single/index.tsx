@@ -5,11 +5,11 @@ import {
   CreateProposalForm,
   DaoInfoVotingConfiguration,
   ProposalModuleInfo,
+  makeUseActions,
   makeUseDepositInfo,
   makeUseListAllProposalInfos,
   makeUseProposalCount,
   makeUseReverseProposalInfos,
-  useActions,
 } from './common'
 import {
   PinnedProposalLineDesktop,
@@ -40,7 +40,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter = {
       useReverseProposalInfos: makeUseReverseProposalInfos(proposalModule),
       useListAllProposalInfos: makeUseListAllProposalInfos(proposalModule),
       useProposalCount: makeUseProposalCount(proposalModule),
-      useActions,
+      useActions: makeUseActions(proposalModule),
       useDepositInfo: makeUseDepositInfo(proposalModule),
     },
 

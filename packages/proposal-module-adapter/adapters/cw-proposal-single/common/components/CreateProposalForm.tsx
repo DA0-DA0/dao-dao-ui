@@ -1,5 +1,5 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { EyeIcon, EyeOffIcon, PlusIcon } from '@heroicons/react/outline'
+import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { useRouter } from 'next/router'
 import { ComponentType, useCallback, useEffect, useMemo, useState } from 'react'
 import {
@@ -17,7 +17,6 @@ import {
   Action,
   ActionCardLoader,
   ActionKey,
-  FormProposalData,
   UseDefaults,
   UseTransformToCosmos,
   useActions,
@@ -59,15 +58,12 @@ import {
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { BaseNewProposalProps } from '../../../../types'
-import { useActions as useProposalModuleActions } from '../hooks'
+import { NewProposalData, NewProposalForm } from '../../types'
+import { makeUseActions as makeUseProposalModuleActions } from '../hooks'
 
 enum ProposeSubmitValue {
   Preview = 'Preview',
   Submit = 'Submit',
-}
-
-interface ProposalData extends Omit<FormProposalData, 'actionData'> {
-  msgs: CosmosMsgFor_Empty[]
 }
 
 interface CreateProposalFormProps extends BaseNewProposalProps {
@@ -75,6 +71,9 @@ interface CreateProposalFormProps extends BaseNewProposalProps {
   proposalModule: ProposalModule
   Loader: ComponentType<LoaderProps>
   Logo: ComponentType<LogoProps>
+  connected: boolean
+  walletAddress: string
+  ConnectWalletButton: ComponentType
 }
 
 export const CreateProposalForm = ({
@@ -149,7 +148,7 @@ export const CreateProposalForm = ({
   )
   const isPaused = 'Paused' in pauseInfo
 
-  const formMethods = useForm<FormProposalData>({
+  const formMethods = useForm<NewProposalForm>({
     mode: 'onChange',
     defaultValues: {
       title: '',
@@ -200,7 +199,7 @@ export const CreateProposalForm = ({
   })
 
   const votingModuleActions = useVotingModuleActions()
-  const proposalModuleActions = useProposalModuleActions()
+  const proposalModuleActions = makeUseProposalModuleActions(proposalModule)()
   const actions = useActions(
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
@@ -223,8 +222,8 @@ export const CreateProposalForm = ({
       ...acc,
       [action.key]: {
         action,
-        transform: action.useTransformToCosmos(coreAddress, proposalModule),
-        defaults: action.useDefaults(coreAddress, proposalModule),
+        transform: action.useTransformToCosmos(coreAddress),
+        defaults: action.useDefaults(coreAddress),
       },
     }),
     {}
@@ -271,7 +270,7 @@ export const CreateProposalForm = ({
   )
 
   const onSubmit = useCallback(
-    async (newProposalData: ProposalData) => {
+    async (newProposalData: NewProposalData) => {
       if (
         !connected ||
         // If required deposit, ensure the allowance and unstaked balance
@@ -346,7 +345,7 @@ export const CreateProposalForm = ({
     ]
   )
 
-  const onSubmitForm: SubmitHandler<FormProposalData> = useCallback(
+  const onSubmitForm: SubmitHandler<NewProposalForm> = useCallback(
     ({ actionData, ...data }, event) => {
       setShowSubmitErrorNote(false)
 
@@ -369,7 +368,7 @@ export const CreateProposalForm = ({
     [onSubmit, actionsWithData]
   )
 
-  const onSubmitError: SubmitErrorHandler<FormProposalData> = useCallback(
+  const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(
     () => setShowSubmitErrorNote(true),
     [setShowSubmitErrorNote]
   )
@@ -445,7 +444,6 @@ export const CreateProposalForm = ({
                       index={index}
                       isCreating
                       onRemove={() => remove(index)}
-                      proposalModule={proposalModule}
                     />
                   </SuspenseLoader>
                 </li>
@@ -453,15 +451,16 @@ export const CreateProposalForm = ({
             })}
           </ul>
           <div className="mt-2">
-            <Button
-              disabled={loading}
-              onClick={() => setShowActionSelector(true)}
-              type="button"
-              variant="secondary"
-            >
-              <PlusIcon className="inline h-4" /> {t('button.addAnAction')}{' '}
-              <p className="ml-4 text-secondary">{isMac ? '⌘' : '⌃'}A</p>
-            </Button>
+            <ActionSelector
+              actions={actions}
+              onSelectAction={({ key }) => {
+                append({
+                  key,
+                  data: actionsWithData[key]?.defaults ?? {},
+                })
+                setShowActionSelector(false)
+              }}
+            />
           </div>
         </div>
         <div className="flex gap-2 justify-end mt-4">
@@ -515,20 +514,6 @@ export const CreateProposalForm = ({
           </p>
         )}
       </form>
-
-      {showActionSelector && (
-        <ActionSelector
-          actions={actions}
-          onClose={() => setShowActionSelector(false)}
-          onSelectAction={({ key }) => {
-            append({
-              key,
-              data: actionsWithData[key]?.defaults ?? {},
-            })
-            setShowActionSelector(false)
-          }}
-        />
-      )}
     </FormProvider>
   )
 }

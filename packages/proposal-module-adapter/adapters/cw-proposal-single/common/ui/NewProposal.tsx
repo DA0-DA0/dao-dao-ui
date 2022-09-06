@@ -206,7 +206,6 @@ export const NewProposal = ({
                     index={index}
                     isCreating
                     onRemove={() => remove(index)}
-                    proposalModule={proposalModule}
                   />
                 </SuspenseLoader>
               )

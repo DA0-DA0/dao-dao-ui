@@ -12,6 +12,7 @@ import {
 import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
 import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
 import {
+  ProposalModule,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
@@ -22,6 +23,8 @@ import {
   UpdateProposalConfigComponent,
   UpdateProposalConfigIcon,
 } from './UpdateProposalConfigComponent'
+
+type AsProposalModuleMaker<T> = (proposalModule: ProposalModule) => T
 
 export interface UpdateProposalConfigData {
   onlyMembersExecute: boolean
@@ -93,59 +96,60 @@ const thresholdToTQData = (
   }
 }
 
-const useDefaults: UseDefaults<UpdateProposalConfigData> = (
-  _,
-  { address: proposalModuleAddress }
-) => {
-  const proposalModuleConfig = useRecoilValue(
-    CwProposalSingleSelectors.configSelector({
-      contractAddress: proposalModuleAddress,
-    })
-  )
+const makeUseDefaults: AsProposalModuleMaker<
+  UseDefaults<UpdateProposalConfigData>
+> =
+  ({ address: proposalModuleAddress }) =>
+  () => {
+    const proposalModuleConfig = useRecoilValue(
+      CwProposalSingleSelectors.configSelector({
+        contractAddress: proposalModuleAddress,
+      })
+    )
 
-  const proposalDepositTokenInfo = useRecoilValue(
-    proposalModuleConfig.deposit_info?.token
-      ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: proposalModuleConfig.deposit_info.token,
-          params: [],
-        })
-      : constSelector(undefined)
-  )
+    const proposalDepositTokenInfo = useRecoilValue(
+      proposalModuleConfig.deposit_info?.token
+        ? Cw20BaseSelectors.tokenInfoSelector({
+            contractAddress: proposalModuleConfig.deposit_info.token,
+            params: [],
+          })
+        : constSelector(undefined)
+    )
 
-  const onlyMembersExecute = proposalModuleConfig.only_members_execute
-  const depositRequired = !!proposalModuleConfig.deposit_info
-  const depositInfo = !!proposalModuleConfig.deposit_info
-    ? {
-        deposit: convertMicroDenomToDenomWithDecimals(
-          Number(proposalModuleConfig.deposit_info.deposit),
-          // A deposit being configured implies that a token will be present.
-          proposalDepositTokenInfo!.decimals
-        ),
-        refundFailedProposals:
-          proposalModuleConfig.deposit_info.refund_failed_proposals,
-      }
-    : {
-        deposit: 0,
-        refundFailedProposals: false,
-      }
-  const proposalDuration =
-    'time' in proposalModuleConfig.max_voting_period
-      ? proposalModuleConfig.max_voting_period.time
-      : 604800
-  const proposalDurationUnits = 'seconds'
+    const onlyMembersExecute = proposalModuleConfig.only_members_execute
+    const depositRequired = !!proposalModuleConfig.deposit_info
+    const depositInfo = !!proposalModuleConfig.deposit_info
+      ? {
+          deposit: convertMicroDenomToDenomWithDecimals(
+            Number(proposalModuleConfig.deposit_info.deposit),
+            // A deposit being configured implies that a token will be present.
+            proposalDepositTokenInfo!.decimals
+          ),
+          refundFailedProposals:
+            proposalModuleConfig.deposit_info.refund_failed_proposals,
+        }
+      : {
+          deposit: 0,
+          refundFailedProposals: false,
+        }
+    const proposalDuration =
+      'time' in proposalModuleConfig.max_voting_period
+        ? proposalModuleConfig.max_voting_period.time
+        : 604800
+    const proposalDurationUnits = 'seconds'
 
-  const allowRevoting = proposalModuleConfig.allow_revoting
+    const allowRevoting = proposalModuleConfig.allow_revoting
 
-  return {
-    onlyMembersExecute,
-    depositRequired,
-    depositInfo,
-    proposalDuration,
-    proposalDurationUnits,
-    allowRevoting,
-    ...thresholdToTQData(proposalModuleConfig.threshold),
+    return {
+      onlyMembersExecute,
+      depositRequired,
+      depositInfo,
+      proposalDuration,
+      proposalDurationUnits,
+      allowRevoting,
+      ...thresholdToTQData(proposalModuleConfig.threshold),
+    }
   }
-}
 
 const typePercentageToPercentageThreshold = (
   t: 'majority' | '%',
@@ -182,79 +186,80 @@ const maxVotingInfoToCosmos = (
   }
 }
 
-const useTransformToCosmos: UseTransformToCosmos<UpdateProposalConfigData> = (
-  _,
-  { address: proposalModuleAddress }
-) => {
-  const proposalModuleConfig = useRecoilValue(
-    CwProposalSingleSelectors.configSelector({
-      contractAddress: proposalModuleAddress,
-    })
-  )
+const makeUseTransformToCosmos: AsProposalModuleMaker<
+  UseTransformToCosmos<UpdateProposalConfigData>
+> =
+  ({ address: proposalModuleAddress }) =>
+  () => {
+    const proposalModuleConfig = useRecoilValue(
+      CwProposalSingleSelectors.configSelector({
+        contractAddress: proposalModuleAddress,
+      })
+    )
 
-  const {
-    hooks: { useGovernanceTokenInfo },
-  } = useVotingModuleAdapter()
-  const voteConversionDecimals =
-    useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
+    const {
+      hooks: { useGovernanceTokenInfo },
+    } = useVotingModuleAdapter()
+    const voteConversionDecimals =
+      useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
 
-  return useCallback(
-    (data: UpdateProposalConfigData) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: proposalModuleAddress,
-            funds: [],
-            msg: {
-              update_config: {
-                threshold: data.quorumEnabled
-                  ? {
-                      threshold_quorum: {
-                        quorum: typePercentageToPercentageThreshold(
-                          data.quorumType,
-                          data.quorumPercentage
-                        ),
-                        threshold: typePercentageToPercentageThreshold(
-                          data.thresholdType,
-                          data.thresholdPercentage
-                        ),
+    return useCallback(
+      (data: UpdateProposalConfigData) =>
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: proposalModuleAddress,
+              funds: [],
+              msg: {
+                update_config: {
+                  threshold: data.quorumEnabled
+                    ? {
+                        threshold_quorum: {
+                          quorum: typePercentageToPercentageThreshold(
+                            data.quorumType,
+                            data.quorumPercentage
+                          ),
+                          threshold: typePercentageToPercentageThreshold(
+                            data.thresholdType,
+                            data.thresholdPercentage
+                          ),
+                        },
+                      }
+                    : {
+                        absolute_percentage: {
+                          percentage: typePercentageToPercentageThreshold(
+                            data.thresholdType,
+                            data.thresholdPercentage
+                          ),
+                        },
                       },
-                    }
-                  : {
-                      absolute_percentage: {
-                        percentage: typePercentageToPercentageThreshold(
-                          data.thresholdType,
-                          data.thresholdPercentage
+                  max_voting_period: maxVotingInfoToCosmos(
+                    data.proposalDurationUnits,
+                    data.proposalDuration
+                  ),
+                  only_members_execute: data.onlyMembersExecute,
+                  allow_revoting: data.allowRevoting,
+                  dao: proposalModuleConfig.dao,
+                  ...(data.depositInfo &&
+                    data.depositRequired && {
+                      deposit_info: {
+                        deposit: convertDenomToMicroDenomWithDecimals(
+                          data.depositInfo.deposit,
+                          voteConversionDecimals
                         ),
+                        refund_failed_proposals:
+                          data.depositInfo.refundFailedProposals,
+                        token: { voting_module_token: {} },
                       },
-                    },
-                max_voting_period: maxVotingInfoToCosmos(
-                  data.proposalDurationUnits,
-                  data.proposalDuration
-                ),
-                only_members_execute: data.onlyMembersExecute,
-                allow_revoting: data.allowRevoting,
-                dao: proposalModuleConfig.dao,
-                ...(data.depositInfo &&
-                  data.depositRequired && {
-                    deposit_info: {
-                      deposit: convertDenomToMicroDenomWithDecimals(
-                        data.depositInfo.deposit,
-                        voteConversionDecimals
-                      ),
-                      refund_failed_proposals:
-                        data.depositInfo.refundFailedProposals,
-                      token: { voting_module_token: {} },
-                    },
-                  }),
+                    }),
+                },
               },
             },
           },
-        },
-      }),
-    [proposalModuleAddress, voteConversionDecimals, proposalModuleConfig.dao]
-  )
-}
+        }),
+      [voteConversionDecimals, proposalModuleConfig.dao]
+    )
+  }
 
 const Component: ActionComponent = (props) => {
   const {
@@ -333,14 +338,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   }, [msg, voteConversionDecimals])
 }
 
-export const makeUpdateProposalConfigAction =
-  (): Action<UpdateProposalConfigData> => ({
-    key: ActionKey.UpdateProposalConfig,
-    Icon: UpdateProposalConfigIcon,
-    label: 'Update Voting Config',
-    description: 'Update the voting paramaters for your DAO.',
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
-  })
+export const makeUpdateProposalConfigAction = (
+  proposalModule: ProposalModule
+): Action<UpdateProposalConfigData> => ({
+  key: ActionKey.UpdateProposalConfig,
+  Icon: UpdateProposalConfigIcon,
+  label: 'Update Voting Config',
+  description: 'Update the voting paramaters for your DAO.',
+  Component,
+  useDefaults: makeUseDefaults(proposalModule),
+  useTransformToCosmos: makeUseTransformToCosmos(proposalModule),
+  useDecodedCosmosMsg,
+})

@@ -17,7 +17,7 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 import { CwProposalSingleAdapter } from '../..'
 import { matchAdapter as matchProposalModuleAdapter } from '../../../../core'
 import { NewProposalForm } from '../../types'
-import { useActions as useProposalModuleActions } from '../hooks'
+import { makeUseActions as makeUseProposalModuleActions } from '../hooks'
 import { NewProposal } from './NewProposal'
 
 export default {
@@ -30,11 +30,19 @@ export default {
 const Template: ComponentStory<typeof NewProposal> = (args) => {
   const { coreAddress, proposalModules } = useDaoInfoContext()
 
+  const singleChoiceProposalModule = proposalModules.find(
+    ({ contractName }) =>
+      matchProposalModuleAdapter(contractName)?.id ===
+      CwProposalSingleAdapter.id
+  )!
+
   const {
     hooks: { useActions: useVotingModuleActions },
   } = useVotingModuleAdapter()
   const votingModuleActions = useVotingModuleActions()
-  const proposalModuleActions = useProposalModuleActions()
+  const proposalModuleActions = makeUseProposalModuleActions(
+    singleChoiceProposalModule
+  )()
   const actions = useActions(
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
@@ -77,12 +85,6 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
       actionData: [],
     },
   })
-
-  const singleChoiceProposalModule = proposalModules.find(
-    ({ contractName }) =>
-      matchProposalModuleAdapter(contractName)?.id ===
-      CwProposalSingleAdapter.id
-  )!
 
   return (
     <NewProposal
