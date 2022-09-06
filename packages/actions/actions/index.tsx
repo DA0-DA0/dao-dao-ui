@@ -1,5 +1,6 @@
 import { Action } from '../types'
 import { addCw20Action } from './AddCw20'
+import { authzAction } from './Authz'
 import { customAction } from './Custom'
 import { executeAction } from './Execute'
 import { instantiateAction } from './Instantiate'
@@ -14,6 +15,7 @@ export const commonActions: Action[] = [
   spendAction,
   stakeAction,
   updateInfoAction,
+  authzAction,
   addCw20Action,
   removeCw20Action,
   // TODO: Add back in once CW721s are displayed.

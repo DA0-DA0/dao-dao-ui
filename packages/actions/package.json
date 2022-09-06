@@ -6,14 +6,15 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@dao-dao/proposal-module-adapter": "*",
     "@dao-dao/state": "*",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@dao-dao/voting-module-adapter": "*",
-    "@dao-dao/proposal-module-adapter": "*",
     "@heroicons/react": "^1.0.6",
     "a11y-react-emoji": "^1.2.0",
     "clsx": "^1.1.1",
+    "cosmjs-types": "^0.5.1",
     "fuse.js": "^6.6.2",
     "react": "18.1.0",
     "react-hook-form": "7.20.4",

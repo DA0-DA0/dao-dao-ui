@@ -10,6 +10,7 @@ export enum ActionKey {
   Spend = 'spend',
   Mint = 'mint',
   Stake = 'stake',
+  Authz = 'authz',
   AddCw20 = 'addCw20',
   RemoveCw20 = 'removeCw20',
   AddCw721 = 'addCw721',

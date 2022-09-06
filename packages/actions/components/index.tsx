@@ -1,5 +1,6 @@
 export * from './AddCw20'
 export * from './AddCw721'
+export * from './Authz'
 export * from './Custom'
 export * from './Execute'
 export * from './Instantiate'

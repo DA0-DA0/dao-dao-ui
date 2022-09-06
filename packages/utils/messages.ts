@@ -1,4 +1,9 @@
-import { toAscii, toBase64 } from '@cosmjs/encoding'
+import { fromBase64, toAscii, toBase64 } from '@cosmjs/encoding'
+import {
+  Grant,
+  GenericAuthorization,
+} from 'cosmjs-types/cosmos/authz/v1beta1/authz'
+import { MsgGrant, MsgRevoke } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 
 import {
   BankMsg,
@@ -43,6 +48,14 @@ const BINARY_WASM_TYPES: { [key: string]: boolean } = {
   migrate: true,
 }
 
+// TODO refine types
+export function isStargateMsg(msg?: any): msg is any {
+  if (msg) {
+    return (msg as any).stargate !== undefined
+  }
+  return false
+}
+
 export function isWasmMsg(msg?: CosmosMsgFor_Empty): msg is { wasm: WasmMsg } {
   if (msg) {
     return (msg as any).wasm !== undefined
@@ -52,7 +65,7 @@ export function isWasmMsg(msg?: CosmosMsgFor_Empty): msg is { wasm: WasmMsg } {
 
 function getWasmMsgType(wasm: WasmMsg): WasmMsgType | undefined {
   for (const wasmType of WASM_TYPES) {
-    if (!!(wasm as any)[wasmType]) {
+    if (!!(wasm as any)[wasmToype]) {
       return wasmType
     }
   }
@@ -71,6 +84,7 @@ export function decodeMessages(
 ): { [key: string]: any }[] {
   const decodedMessageArray: any[] = []
   const proposalMsgs = Object.values(msgs)
+  console.log(proposalMsgs)
   for (const msgObj of proposalMsgs) {
     if (isWasmMsg(msgObj)) {
       const msgType = getWasmMsgType(msgObj.wasm)
@@ -92,6 +106,35 @@ export function decodeMessages(
           }
         }
       }
+    } else if (isStargateMsg(msgObj)) {
+      console.log(msgObj)
+      // let msg = {
+      //   stargate: {
+      //     type_url: msgObj.stargate.type_url,
+      //   },
+      // }
+
+      // switch (msgObj.stargate.type_url) {
+      //   case '/cosmos.authz.v1beta1.MsgGrant':
+      //     msg.stargate.value = MsgGrant.decode(
+      //       fromBase64(msgObj.stargate.value)
+      //     )
+      //     if (msg.stargate.value.grant?.authorization) {
+      //       msg.stargate.value.grant.authorization.value =
+      //         GenericAuthorization.decode(
+      //           msg.stargate.value.grant.authorization.value
+      //         )
+      //     }
+      //     decodedMessageArray.push(msg)
+      //     break
+      //   case '/cosmos.authz.v1beta1.MsgRevoke':
+      //     msg.stargate.value = MsgRevoke.decode(
+      //       fromBase64(msgObj.stargate.value)
+      //     )
+      //     break
+      // // TODO
+      // case '/cosmos.authz.v1beta1.MsgExec':
+      // }
     } else {
       decodedMessageArray.push(msgObj)
     }
@@ -131,6 +174,55 @@ export const makeWasmMessage = (message: {
     )
   }
   // Messages such as update or clear admin pass through without modification.
+  return msg
+}
+
+export const makeAuthzMessage = (message: { stargate: any }): any => {
+  let msg = message
+  switch (message.stargate.type_url) {
+    // TODO: this one is a bit tricky
+    // case '/cosmos.authz.v1beta1.MsgExec':
+    //   msg.stargate.value = MsgExec.fromPartial({})
+    //   break;
+    case '/cosmos.authz.v1beta1.MsgGrant':
+      msg.stargate.value = toBase64(
+        Uint8Array.from(
+          MsgGrant.encode(
+            MsgGrant.fromPartial({
+              grantee: message.stargate.value.grantee,
+              granter: message.stargate.value.granter,
+              grant: {
+                authorization: {
+                  typeUrl: '/cosmos.authz.v1beta1.GenericAuthorization',
+                  value: Uint8Array.from(
+                    GenericAuthorization.encode(
+                      GenericAuthorization.fromPartial({
+                        msg: message.stargate.value.msgTypeUrl,
+                      })
+                    ).finish()
+                  ),
+                },
+              },
+            })
+          ).finish()
+        )
+      )
+      break
+    case '/cosmos.authz.v1beta1.Msg/Revoke':
+      msg.stargate.value = toBase64(
+        Uint8Array.from(
+          MsgRevoke.encode(
+            MsgRevoke.fromPartial({
+              grantee: message.stargate.value.grantee,
+              granter: message.stargate.value.granter,
+              msgTypeUrl: message.stargate.value.msgTypeUrl,
+            })
+          ).finish()
+        )
+      )
+      break
+  }
+
   return msg
 }
 
