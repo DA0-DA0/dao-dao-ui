@@ -30,9 +30,14 @@ export const ButtonPopup = ({ sections, ...props }: ButtonPopupProps) => (
         {label && <p className="text-text-secondary link-text">{label}</p>}
 
         {buttons.map(({ Icon, label, onClick }, index) => (
-          <Button key={index} onClick={onClick} variant="ghost">
+          <Button
+            key={index}
+            contentContainerClassName="gap-3"
+            onClick={onClick}
+            variant="ghost"
+          >
             {Icon && (
-              <div className="flex justify-center items-center w-6 h-6">
+              <div className="flex justify-center items-center w-6 h-6 text-lg ">
                 <Icon className="w-5 h-5 text-icon-primary" />
               </div>
             )}
