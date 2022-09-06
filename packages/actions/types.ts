@@ -78,7 +78,7 @@ export type UseDefaults<D extends {} = any> = (
 export type UseTransformToCosmos<D extends {} = any> = (
   coreAddress: string,
   proposalModule: ProposalModule
-) => (data: D) => CosmosMsgFor_Empty | undefined
+) => (data: D) => CosmosMsgFor_Empty | { stargate: any } | undefined
 
 export interface DecodeCosmosMsgNoMatch {
   match: false

@@ -2,7 +2,12 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { InputErrorMessage, InputLabel, TextInput } from '@dao-dao/ui'
+import {
+  InputErrorMessage,
+  InputLabel,
+  SelectInput,
+  TextInput,
+} from '@dao-dao/ui'
 import {
   validateAddress,
   validateContractAddress,
@@ -20,9 +25,25 @@ export const AuthzComponent: ActionComponent<AuthzOptions> = (props) => {
 
   // TODO translations
   return (
-    <ActionCard Icon={AuthzIcon} onRemove={onRemove} title={t('Authz')}>
+    <ActionCard Icon={AuthzIcon} onRemove={onRemove} title="Authz">
       <div className="flex flex-col gap-1 items-stretch">
-        <InputLabel name={`${t('Message type')}`} />
+        <SelectInput
+          disabled={!isCreating}
+          fieldName={fieldNamePrefix + 'type_url'}
+          register={register}
+        >
+          <option value="/cosmos.authz.v1beta1.MsgExec">
+            Execute Authz TX
+          </option>
+          <option value="/cosmos.authz.v1beta1.MsgGrant">
+            Grant Authorization
+          </option>
+          <option value="/cosmos.authz.v1beta1.MsgRevoke">
+            Revoke Authorization
+          </option>
+        </SelectInput>
+
+        <InputLabel name="Message type" />
         <TextInput
           disabled={!isCreating}
           error={errors?.admin}
@@ -35,7 +56,7 @@ export const AuthzComponent: ActionComponent<AuthzOptions> = (props) => {
       </div>
 
       <div className="flex flex-col gap-1 items-stretch">
-        <InputLabel name={`${t('Grantee')}`} />
+        <InputLabel name="Grantee" />
         <TextInput
           disabled={!isCreating}
           error={errors?.admin}

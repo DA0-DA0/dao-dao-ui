@@ -5,7 +5,7 @@ import type {
 } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
-import { makeAuthzMessage } from '@dao-dao/utils'
+import { makeStargateMessage } from '@dao-dao/utils'
 
 import {
   AuthzIcon,
@@ -43,7 +43,7 @@ const useTransformToCosmos: UseTransformToCosmos<AuthzData> = (
 ) =>
   useCallback(
     (data: AuthzData) =>
-      makeAuthzMessage({
+      makeStargateMessage({
         stargate: {
           type_url: data.type_url,
           value: {
@@ -55,7 +55,6 @@ const useTransformToCosmos: UseTransformToCosmos<AuthzData> = (
     [coreAddress]
   )
 
-// TODO better validation
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
   msg: Record<string, any>
 ) =>
@@ -76,8 +75,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
 export const authzAction: Action<AuthzData> = {
   key: ActionKey.Authz,
   Icon: AuthzIcon,
-  label: 'Add an Authz grant authorization',
-  description: 'Allow another address to perform actions on behalf of the DAO.',
+  label: 'Authz',
+  description:
+    'Grant / revoke authorizations, or execute an action on behalf of another account.',
   Component,
   useDefaults,
   useTransformToCosmos,

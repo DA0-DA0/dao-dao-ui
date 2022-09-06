@@ -1,9 +1,10 @@
 import { fromBase64, toAscii, toBase64 } from '@cosmjs/encoding'
+import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
 import {
-  Grant,
-  GenericAuthorization,
-} from 'cosmjs-types/cosmos/authz/v1beta1/authz'
-import { MsgGrant, MsgRevoke } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
+  MsgExec,
+  MsgGrant,
+  MsgRevoke,
+} from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 
 import {
   BankMsg,
@@ -65,7 +66,7 @@ export function isWasmMsg(msg?: CosmosMsgFor_Empty): msg is { wasm: WasmMsg } {
 
 function getWasmMsgType(wasm: WasmMsg): WasmMsgType | undefined {
   for (const wasmType of WASM_TYPES) {
-    if (!!(wasm as any)[wasmToype]) {
+    if (!!(wasm as any)[wasmType]) {
       return wasmType
     }
   }
@@ -79,12 +80,14 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
   return false
 }
 
-export function decodeMessages(
-  msgs: ProposalResponse['msgs']
-): { [key: string]: any }[] {
+// Need to not use the old types package
+interface IHack extends Omit<ProposalResponse, 'msgs'> {
+  msgs: CosmosMsgFor_Empty[] | { stargate: { typeUrl: string; value?: any }[] }
+}
+
+export function decodeMessages(msgs: IHack['msgs']): { [key: string]: any }[] {
   const decodedMessageArray: any[] = []
   const proposalMsgs = Object.values(msgs)
-  console.log(proposalMsgs)
   for (const msgObj of proposalMsgs) {
     if (isWasmMsg(msgObj)) {
       const msgType = getWasmMsgType(msgObj.wasm)
@@ -107,34 +110,39 @@ export function decodeMessages(
         }
       }
     } else if (isStargateMsg(msgObj)) {
-      console.log(msgObj)
-      // let msg = {
-      //   stargate: {
-      //     type_url: msgObj.stargate.type_url,
-      //   },
-      // }
+      let msg = {
+        stargate: {
+          type_url: msgObj.stargate.type_url as string,
+        },
+      } as {
+        stargate: { type_url: string; value?: any }
+      }
 
-      // switch (msgObj.stargate.type_url) {
-      //   case '/cosmos.authz.v1beta1.MsgGrant':
-      //     msg.stargate.value = MsgGrant.decode(
-      //       fromBase64(msgObj.stargate.value)
-      //     )
-      //     if (msg.stargate.value.grant?.authorization) {
-      //       msg.stargate.value.grant.authorization.value =
-      //         GenericAuthorization.decode(
-      //           msg.stargate.value.grant.authorization.value
-      //         )
-      //     }
-      //     decodedMessageArray.push(msg)
-      //     break
-      //   case '/cosmos.authz.v1beta1.MsgRevoke':
-      //     msg.stargate.value = MsgRevoke.decode(
-      //       fromBase64(msgObj.stargate.value)
-      //     )
-      //     break
-      // // TODO
-      // case '/cosmos.authz.v1beta1.MsgExec':
-      // }
+      switch (msgObj.stargate.type_url) {
+        case '/cosmos.authz.v1beta1.MsgGrant':
+          msg.stargate.value = MsgGrant.decode(
+            fromBase64(msgObj.stargate.value)
+          )
+          if (msg.stargate.value.grant?.authorization) {
+            msg.stargate.value.grant.authorization.value =
+              GenericAuthorization.decode(
+                msg.stargate.value.grant.authorization.value
+              )
+          }
+          decodedMessageArray.push(msg)
+          break
+        case '/cosmos.authz.v1beta1.MsgRevoke':
+          console.log(msgObj)
+          msg.stargate.value = MsgRevoke.decode(
+            fromBase64(msgObj.stargate.value)
+          )
+          decodedMessageArray.push(msg)
+          break
+        case '/cosmos.authz.v1beta1.MsgExec':
+          msg.stargate.value = MsgExec.decode(fromBase64(msgObj.stargate.value))
+          decodedMessageArray.push(msg)
+          break
+      }
     } else {
       decodedMessageArray.push(msgObj)
     }
@@ -177,13 +185,23 @@ export const makeWasmMessage = (message: {
   return msg
 }
 
-export const makeAuthzMessage = (message: { stargate: any }): any => {
+export const makeStargateMessage = (message: {
+  stargate: { type_url: string; value: any }
+}): any => {
   let msg = message
   switch (message.stargate.type_url) {
-    // TODO: this one is a bit tricky
-    // case '/cosmos.authz.v1beta1.MsgExec':
-    //   msg.stargate.value = MsgExec.fromPartial({})
-    //   break;
+    case '/cosmos.authz.v1beta1.MsgExec':
+      msg.stargate.value = toBase64(
+        Uint8Array.from(
+          MsgExec.encode(
+            MsgExec.fromPartial({
+              grantee: message.stargate.value.grantee,
+              msgs: message.stargate.value.msgs,
+            })
+          ).finish()
+        )
+      )
+      break
     case '/cosmos.authz.v1beta1.MsgGrant':
       msg.stargate.value = toBase64(
         Uint8Array.from(
@@ -208,7 +226,7 @@ export const makeAuthzMessage = (message: { stargate: any }): any => {
         )
       )
       break
-    case '/cosmos.authz.v1beta1.Msg/Revoke':
+    case '/cosmos.authz.v1beta1.MsgRevoke':
       msg.stargate.value = toBase64(
         Uint8Array.from(
           MsgRevoke.encode(
