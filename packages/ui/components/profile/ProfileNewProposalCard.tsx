@@ -13,7 +13,7 @@ export interface ProfileNewProposalCardInfoLine {
   value: string
   valueClassName?: string
 }
-ProfileNewProposalCard
+
 export interface ProfileNewProposalCardAddress {
   label: string
   address: string
@@ -67,7 +67,7 @@ export const ProfileNewProposalCard = ({
 
             <p
               className={clsx(
-                'py-1 px-2 font-mono text-right text-text-primary bg-component-badge-primary rounded-full capton-text',
+                'py-1 px-2 font-mono text-right text-text-primary rounded-full border-2 border-component-badge-primary caption-text',
                 valueClassName
               )}
             >
