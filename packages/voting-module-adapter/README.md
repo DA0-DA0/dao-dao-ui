@@ -298,28 +298,7 @@ voting module code together.
 
 ## React Setup
 
-### **1. Register the desired voting module adapters**
-
-Registration should occur once, before any rendering. In a Next.js app, sticking
-this code in a `useEffect` in `_app.tsx` should work just fine.
-
-```tsx
-import {
-  Cw20StakedBalanceVotingAdapter,
-  Cw4VotingAdapter,
-  registerAdapters,
-} from '@dao-dao/voting-module-adapter'
-
-const App = () => {
-  useEffect(() => {
-    registerAdapters([Cw4VotingAdapter, Cw20StakedBalanceVotingAdapter])
-  }, [])
-
-  ...
-}
-```
-
-### **2. Wrap the app**
+### **1. Wrap the app**
 
 Add the `VotingModuleAdapterProvider` to your app, likely at a high enough level
 to encompass the entire app or entire pages. At this point, you must already
@@ -370,7 +349,7 @@ const votingModuleContractName = (
 
 </details>
 
-### **3. Use the hook**
+### **2. Use the hook**
 
 Now that the library has been setup, we can use the hook anywhere as a
 descendant of the Provider to access the voting module adapter interface.

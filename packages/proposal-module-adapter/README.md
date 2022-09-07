@@ -23,28 +23,7 @@ to, unsurprisingly, confusing and unreadable code.
 
 ## React Setup
 
-### **1. Register the desired proposal module adapters**
-
-Registration should occur once, before any rendering. In a Next.js app, sticking
-this code in a `useEffect` in `_app.tsx` should work just fine.
-
-```tsx
-import {
-  CwProposalMultipleAdapter,
-  CwProposalSingleAdapter,
-  registerAdapters,
-} from '@dao-dao/proposal-module-adapter'
-
-const App = () => {
-  useEffect(() => {
-    registerAdapters([CwProposalSingleAdapter, CwProposalMultipleAdapter])
-  }, [])
-
-  ...
-}
-```
-
-### **2. Wrap the app**
+### **1. Wrap the app**
 
 Add the `ProposalModuleAdapterProvider` to your app, likely at a high enough
 level to encompass entire pages. At this point, you must already know the
@@ -76,7 +55,7 @@ In the `@dao-dao/dapp` Next.js app, `proposalModules` and `coreAddress` are
 fetched via `getStaticProps` and passed to a common page wrapper component, on
 each page, and `proposalId` is extracted from the URL parameters.
 
-### **3. Use the hooks**
+### **2. Use the hooks**
 
 Now that the library has been setup, we can use the hook anywhere as a
 descendant of the Provider to access the proposal module adapter interface.
@@ -154,8 +133,8 @@ It's very easy to write an adapter, especially because TypeScript will tell you
 what fields and types you need based on the shared interface. You can also
 reference the existing adapters which follow the exact same pattern.
 
-All you need to do is define an adapter object and register it using the
-registration function shown above.
+All you need to do is define an adapter object and add it to the list of
+adapters in `core.ts`.
 
 ```ts
 import { ProposalModuleAdapter } from '@dao-dao/proposal-module-adapter/types'

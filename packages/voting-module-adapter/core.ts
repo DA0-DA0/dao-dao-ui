@@ -1,19 +1,27 @@
 import {
+  Cw20StakedBalanceVotingAdapter,
+  Cw4VotingAdapter,
+  CwNativeStakedBalanceVotingAdapter,
+  FallbackVotingAdapter,
+} from './adapters'
+import {
   IVotingModuleAdapterContext,
   IVotingModuleAdapterOptions,
   VotingModuleAdapter,
 } from './types'
 
-const registeredAdapters: VotingModuleAdapter[] = []
+export const adapters: readonly VotingModuleAdapter[] = [
+  Cw4VotingAdapter,
+  Cw20StakedBalanceVotingAdapter,
+  CwNativeStakedBalanceVotingAdapter,
 
-// Lazy loading adapters instead of defining objects reduces memory usage
-// and avoids cyclic dependencies when enums or other objects are stored in
-// the adapter object.
-export const registerAdapters = async (adapters: VotingModuleAdapter[]) =>
-  registeredAdapters.push(...adapters)
+  // Include fallback voting adapter last since it matches all voting modules,
+  // in case there is no adapter for the DAO's voting module.
+  FallbackVotingAdapter,
+]
 
 export const matchAdapter = (contractName: string) =>
-  registeredAdapters.find(({ matcher }) => matcher(contractName))
+  adapters.find(({ matcher }) => matcher(contractName))
 
 export const matchAndLoadAdapter = (
   contractName: string,
@@ -23,7 +31,7 @@ export const matchAndLoadAdapter = (
 
   if (!adapter) {
     throw new Error(
-      `Failed to find voting module adapter matching contract "${contractName}". Registered adapters: ${registeredAdapters
+      `Failed to find voting module adapter matching contract "${contractName}". Available adapters: ${adapters
         .map(({ id }) => id)
         .join(', ')}`
     )

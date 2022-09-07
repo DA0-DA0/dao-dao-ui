@@ -1,8 +1,8 @@
 import { MembershipAdapter } from './adapters'
 import { DaoCreationAdapter, IDaoCreationAdapter } from './types'
 
-// Able to include readonly version of adapters that have been registered.
-// Likely used for reading `displayInfo`.
+// Able to include readonly version of adapters. Likely used for reading
+// `displayInfo`.
 export const adapters: readonly DaoCreationAdapter[] = [MembershipAdapter]
 
 export const matchAdapter = (id: string) =>

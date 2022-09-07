@@ -4,26 +4,6 @@ import { DecoratorFn } from '@storybook/react'
 import { useMemo } from 'react'
 
 import { DaoInfo, DaoPageWrapper } from '@dao-dao/common'
-import {
-  CwProposalSingleAdapter,
-  registerAdapters as registerProposalModuleAdapters,
-} from '@dao-dao/proposal-module-adapter'
-import {
-  Cw20StakedBalanceVotingAdapter,
-  Cw4VotingAdapter,
-  CwNativeStakedBalanceVotingAdapter,
-  registerAdapters as registerVotingModuleAdapters,
-} from '@dao-dao/voting-module-adapter'
-
-// Register voting module adapters.
-registerVotingModuleAdapters([
-  Cw4VotingAdapter,
-  Cw20StakedBalanceVotingAdapter,
-  CwNativeStakedBalanceVotingAdapter,
-])
-
-// Register proposal module adapters.
-registerProposalModuleAdapters([CwProposalSingleAdapter])
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
   const info: DaoInfo = useMemo(

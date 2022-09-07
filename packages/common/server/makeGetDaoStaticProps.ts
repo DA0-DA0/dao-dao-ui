@@ -6,10 +6,8 @@ import removeMarkdown from 'remove-markdown'
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import {
   CommonProposalInfo,
-  CwProposalSingleAdapter,
   ProposalModuleAdapterError,
   matchAndLoadAdapter,
-  registerAdapters as registerProposalModuleAdapters,
 } from '@dao-dao/proposal-module-adapter'
 import { CwCoreV0_1_0QueryClient } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
@@ -315,13 +313,6 @@ export const makeGetDaoProposalStaticProps = ({
 
       let proposalInfo: CommonProposalInfo | undefined
       try {
-        // Register proposal module adapters.
-        registerProposalModuleAdapters([
-          CwProposalSingleAdapter,
-          // When adding new proposal module adapters here, don't forget to
-          // register in `DaoPageWrapper` as well.
-        ])
-
         const {
           options: {
             proposalModule: { prefix },
