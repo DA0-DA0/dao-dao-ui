@@ -11,7 +11,7 @@ export const DefaultNewDao: NewDao = {
   // Default to membership-based DAO.
   votingModuleAdapter: {
     id: Cw4VotingAdapter.id,
-    data: Cw4VotingAdapter.daoCreation.defaultConfig,
+    data: Cw4VotingAdapter.daoCreation!.defaultConfig,
   },
   // Default to single choice proposal configuration.
   proposalModuleAdapters: [

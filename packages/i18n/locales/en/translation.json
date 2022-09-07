@@ -78,9 +78,15 @@
     "prompt": "What are you looking for?"
   },
   "daoCreationAdapter": {
-    "membership": {
+    "cw20-staked-balance-voting": {
+      "description": "Fluid organization with many members who can join and leave as they wish. Members can alter their governance power and participation by exchanging tokens.",
+      "membership": "By staking tokens",
+      "name": "Token-based DAO",
+      "supplies": "Tokens"
+    },
+    "cw4-voting": {
       "description": "Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members.",
-      "membership": "By Invitation",
+      "membership": "By invitation",
       "name": "Membership DAO (Multisig)",
       "supplies": "None"
     }
@@ -159,6 +165,9 @@
     "automaticallyAddTokensTooltip": "Should tokens sent to the DAO get added to the treasury?",
     "codeID": "Code ID",
     "contractLabel": "Contract Label",
+    "daoDescriptionPlaceholder": "Give your DAO a description...",
+    "daoName": "DAO name",
+    "daoNamePlaceholder": "Give your DAO a name",
     "defaultTierName": "Core contributors",
     "description": "Description",
     "existingTokens": "Existing Tokens",
@@ -176,6 +185,7 @@
     "initialSupply": "Total token supply",
     "instantiatedAddress": "Instantiated Address",
     "junoAddress": "Juno address",
+    "maxCharacters": "Max of {{max}} characters",
     "membersAddress": "Member's address",
     "membersToAddOrUpdate": "Members to add/update",
     "membersToRemove": "Members to remove",
@@ -555,6 +565,7 @@
     },
     "status": "Status",
     "steps": "Steps",
+    "supplies": "Supplies",
     "tiers": "Tiers",
     "timeLeft": "Time left",
     "token": "Token",

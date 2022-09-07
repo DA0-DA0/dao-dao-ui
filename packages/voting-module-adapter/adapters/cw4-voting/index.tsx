@@ -54,10 +54,10 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
   daoCreation: {
     displayInfo: {
       Icon: DisplayInfoIcon,
-      nameI18nKey: 'daoCreationAdapter.membership.name',
-      descriptionI18nKey: 'daoCreationAdapter.membership.description',
-      suppliesI18nKey: 'daoCreationAdapter.membership.supplies',
-      membershipI18nKey: 'daoCreationAdapter.membership.membership',
+      nameI18nKey: 'daoCreationAdapter.cw4-voting.name',
+      descriptionI18nKey: 'daoCreationAdapter.cw4-voting.description',
+      suppliesI18nKey: 'daoCreationAdapter.cw4-voting.supplies',
+      membershipI18nKey: 'daoCreationAdapter.cw4-voting.membership',
     },
     defaultConfig: {},
   },

@@ -5,7 +5,7 @@ import {
   makeAppLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 
-import { DaoCreateSidebarCard } from '../../components/dao/DaoCreateSidebarCard'
+import { DaoCreateSidebarCard } from '../../components/dao'
 import { CreateDaoStart } from './Start'
 
 export default {

@@ -151,7 +151,9 @@ export type VotingModuleAdapter<DaoCreationConfig = any> = {
   matcher: (contractName: string) => boolean
   load: (options: IVotingModuleAdapterOptions) => IVotingModuleAdapter
 
-  daoCreation: {
+  // Filling out these fields will add a structure preset to the DAO creation
+  // flow.
+  daoCreation?: {
     displayInfo: {
       Icon: ComponentType
       nameI18nKey: string

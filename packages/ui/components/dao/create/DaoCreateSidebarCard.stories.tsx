@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { DaoCreateSidebarCard } from './DaoCreateSidebarCard'
 
 export default {
-  title: 'DAO DAO / packages / ui / components / dao / DaoCreateSidebarCard',
+  title:
+    'DAO DAO / packages / ui / components / dao / create / DaoCreateSidebarCard',
   component: DaoCreateSidebarCard,
 } as ComponentMeta<typeof DaoCreateSidebarCard>
 

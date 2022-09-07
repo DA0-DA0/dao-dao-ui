@@ -18,6 +18,7 @@ import {
   StakingModal,
   VoteHeroStats,
 } from './components'
+import { DisplayInfoIcon } from './daoCreation'
 import { useActions, useGovernanceTokenInfo, useStakingInfo } from './hooks'
 
 export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
@@ -65,4 +66,17 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter = {
       ClaimsPendingList,
     },
   }),
+
+  daoCreation: {
+    displayInfo: {
+      Icon: DisplayInfoIcon,
+      nameI18nKey: 'daoCreationAdapter.cw20-staked-balance-voting.name',
+      descriptionI18nKey:
+        'daoCreationAdapter.cw20-staked-balance-voting.description',
+      suppliesI18nKey: 'daoCreationAdapter.cw20-staked-balance-voting.supplies',
+      membershipI18nKey:
+        'daoCreationAdapter.cw20-staked-balance-voting.membership',
+    },
+    defaultConfig: {},
+  },
 }

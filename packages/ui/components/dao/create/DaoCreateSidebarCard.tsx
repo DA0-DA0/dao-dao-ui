@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-export type DaoCreateSidebarCardProps = {
+export interface DaoCreateSidebarCardProps {
   step: 1 | 2 | 3 | 4
 }
 
