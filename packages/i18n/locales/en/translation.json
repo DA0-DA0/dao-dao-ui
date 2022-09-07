@@ -77,6 +77,14 @@
     "navigateDao": "Navigate to DAO",
     "prompt": "What are you looking for?"
   },
+  "daoCreationAdapter": {
+    "membership": {
+      "description": "Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members.",
+      "membership": "By Invitation",
+      "name": "Membership DAO (Multisig)",
+      "supplies": "None"
+    }
+  },
   "emoji": {
     "baby": "Baby",
     "ballotBox": "Ballot box",
