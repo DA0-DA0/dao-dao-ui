@@ -236,7 +236,7 @@ const project = new Project({
       // Add all tsx files that exist as a descendant of a folder named `ui` in
       // the adapter packages.
       project.addSourceFilesAtPaths(
-        '../{voting,proposal}-module-adapter/**/ui/**/*.tsx'
+        '../{voting-module,proposal-module,dao-creation}-adapter/**/ui/**/*.tsx'
       )
     }
 
