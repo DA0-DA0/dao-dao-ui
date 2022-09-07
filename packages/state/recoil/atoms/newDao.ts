@@ -1,0 +1,43 @@
+import { atom } from 'recoil'
+
+import { CwProposalSingleAdapter } from '@dao-dao/proposal-module-adapter'
+import { Cw4VotingAdapter } from '@dao-dao/voting-module-adapter'
+
+export interface NewDao {
+  title: string
+  description: string
+  imageUrl?: string
+  votingModuleAdapter: {
+    id: string
+    data: any
+  }
+  proposalModuleAdapters: {
+    id: string
+    data: any
+  }[]
+  advancedVotingConfigEnabled: boolean
+}
+
+const DefaultNewDao: NewDao = {
+  title: '',
+  description: '',
+  imageUrl: undefined,
+  // Default to membership-based DAO.
+  votingModuleAdapter: {
+    id: Cw4VotingAdapter.id,
+    data: Cw4VotingAdapter.daoCreation.defaultConfig,
+  },
+  // Default to single choice proposal configuration.
+  proposalModuleAdapters: [
+    {
+      id: CwProposalSingleAdapter.id,
+      data: CwProposalSingleAdapter.daoCreation.defaultConfig,
+    },
+  ],
+  advancedVotingConfigEnabled: false,
+}
+
+export const newDaoAtom = atom<NewDao>({
+  key: 'newDao',
+  default: DefaultNewDao,
+})

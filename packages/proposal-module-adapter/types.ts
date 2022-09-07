@@ -21,7 +21,7 @@ export interface IProposalModuleAdapterCommon {
     useActions: () => Action[]
     useDepositInfo?: () => CheckedDepositInfo | undefined
     // Returns `proposalNumber` (ID of this proposal for this module)
-    useCreateProposal: (data: unknown) => number
+    // useCreateProposal: (data: unknown) => number
   }
 
   // Components
@@ -66,7 +66,7 @@ export interface IProposalModuleAdapter {
   }
 }
 
-export type ProposalModuleAdapter = {
+export type ProposalModuleAdapter<DaoCreationConfig = any> = {
   id: string
   matcher: (contractName: string) => boolean
 
@@ -75,6 +75,10 @@ export type ProposalModuleAdapter = {
   ) => IProposalModuleAdapterCommon
 
   load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter
+
+  daoCreation: {
+    defaultConfig: DaoCreationConfig
+  }
 }
 
 export interface IProposalModuleAdapterInitialOptions {

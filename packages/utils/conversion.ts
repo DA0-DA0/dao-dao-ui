@@ -1,3 +1,4 @@
+import { DurationUnits, DurationWithUnits } from '@dao-dao/tstypes'
 import { Expiration } from '@dao-dao/types/contracts/cw3-dao'
 
 export function convertMicroDenomToDenomWithDecimals(
@@ -58,3 +59,35 @@ export const zeroPad = (num: number, target: number) => {
 
 export const spacePad = (number: string, target: number) =>
   number.length >= length ? number : ' '.repeat(target - number.length) + number
+
+export const convertDurationWithUnitsToDuration = ({
+  units,
+  value,
+}: DurationWithUnits): { time: number } => {
+  let time
+  switch (units) {
+    case DurationUnits.Seconds:
+      time = value
+      break
+    case DurationUnits.Minutes:
+      time = value * 60
+      break
+    case DurationUnits.Hours:
+      time = value * 60 * 60
+      break
+    case DurationUnits.Days:
+      time = value * 60 * 60 * 24
+      break
+    case DurationUnits.Weeks:
+      time = value * 60 * 60 * 24 * 7
+      break
+    default:
+      throw new Error(`Unsupported duration unit: ${units}`)
+  }
+  return { time }
+}
+
+export const convertDurationWithUnitsToHumanReadableString = ({
+  units,
+  value,
+}: DurationWithUnits): string => `${value} ${units}`

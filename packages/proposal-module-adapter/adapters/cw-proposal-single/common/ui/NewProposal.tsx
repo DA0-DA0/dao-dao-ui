@@ -1,5 +1,5 @@
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
-import { ComponentType, useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -23,14 +23,13 @@ import {
   ActionSelector,
   Button,
   InputErrorMessage,
-  LoaderProps,
-  LogoProps,
   TextAreaInput,
   TextInput,
   Tooltip,
 } from '@dao-dao/ui'
-import { ProposalModule, validateRequired } from '@dao-dao/utils'
+import { validateRequired } from '@dao-dao/utils'
 
+import { IProposalModuleAdapterCommonOptions } from '../../../../types'
 import { NewProposalData, NewProposalForm } from '../../types'
 
 enum ProposeSubmitValue {
@@ -39,10 +38,7 @@ enum ProposeSubmitValue {
 }
 
 export interface NewProposalProps {
-  coreAddress: string
-  proposalModule: ProposalModule
-  Loader: ComponentType<LoaderProps>
-  Logo: ComponentType<LogoProps>
+  options: IProposalModuleAdapterCommonOptions
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
   isPaused: boolean
@@ -66,10 +62,7 @@ export interface NewProposalProps {
 // TODO: Add prefilling in stateful version.
 // TODO: Figure out where to put preview logic.
 export const NewProposal = ({
-  coreAddress,
-  proposalModule,
-  Loader,
-  Logo,
+  options: { coreAddress, Loader, Logo },
   createProposal,
   loading,
   isPaused,

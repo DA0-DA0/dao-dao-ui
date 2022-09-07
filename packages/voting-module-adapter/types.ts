@@ -146,10 +146,21 @@ export interface IVotingModuleAdapter {
   }
 }
 
-export type VotingModuleAdapter = {
+export type VotingModuleAdapter<DaoCreationConfig = any> = {
   id: string
   matcher: (contractName: string) => boolean
   load: (options: IVotingModuleAdapterOptions) => IVotingModuleAdapter
+
+  daoCreation: {
+    displayInfo: {
+      Icon: ComponentType
+      nameI18nKey: string
+      descriptionI18nKey: string
+      suppliesI18nKey: string
+      membershipI18nKey: string
+    }
+    defaultConfig: DaoCreationConfig
+  }
 }
 
 export interface IVotingModuleAdapterOptions {

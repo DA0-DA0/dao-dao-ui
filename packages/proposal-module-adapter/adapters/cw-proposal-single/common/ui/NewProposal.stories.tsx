@@ -91,17 +91,19 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
       {...args}
       actions={actions}
       actionsWithData={actionsWithData}
-      coreAddress={coreAddress}
       formMethods={formMethods}
-      proposalModule={singleChoiceProposalModule}
+      options={{
+        proposalModule: singleChoiceProposalModule,
+        coreAddress,
+        Loader,
+        Logo,
+      }}
     />
   )
 }
 
 export const Default = Template.bind({})
 Default.args = {
-  Loader,
-  Logo,
   createProposal: async (data) => {
     console.log(data)
     alert('submit')

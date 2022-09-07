@@ -1,21 +1,14 @@
 {
-  "name": "@dao-dao/dao-creation-adapter",
+  "name": "@dao-dao/tstypes",
   "version": "0.1.0",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
   "dependencies": {
-    "@dao-dao/ui": "*",
-    "@dao-dao/state": "*",
-    "@dao-dao/utils": "*",
-    "a11y-react-emoji": "^1.2.0"
   },
   "devDependencies": {
-    "@dao-dao/storybook": "*",
     "typescript": "^4.5.3",
-    "react-i18next": "^11.0.0",
-    "clsx": "^1.1.1",
     "react": "18.1.0"
   },
   "prettier": "@dao-dao/config/prettier",

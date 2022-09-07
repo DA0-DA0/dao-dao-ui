@@ -1,9 +1,10 @@
+import { DurationUnits } from '@dao-dao/tstypes'
 import { CWPROPOSALSINGLE_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { ProposalModuleAdapter } from '../../types'
 import {
-  CreateProposalForm,
   DaoInfoVotingConfiguration,
+  NewProposal,
   ProposalModuleInfo,
   makeUseActions,
   makeUseDepositInfo,
@@ -28,74 +29,96 @@ import {
   useProposalProcessedTQ,
   useProposalRefreshers,
 } from './hooks'
+import { DaoCreationConfig } from './types'
 
-export const CwProposalSingleAdapter: ProposalModuleAdapter = {
-  id: CWPROPOSALSINGLE_CONTRACT_NAME,
-  matcher: (contractName: string) =>
-    contractName.includes(CWPROPOSALSINGLE_CONTRACT_NAME),
+export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
+  {
+    id: CWPROPOSALSINGLE_CONTRACT_NAME,
+    matcher: (contractName: string) =>
+      contractName.includes(CWPROPOSALSINGLE_CONTRACT_NAME),
 
-  loadCommon: ({ proposalModule, coreAddress, Loader, Logo }) => ({
-    // Hooks
-    hooks: {
-      useReverseProposalInfos: makeUseReverseProposalInfos(proposalModule),
-      useListAllProposalInfos: makeUseListAllProposalInfos(proposalModule),
-      useProposalCount: makeUseProposalCount(proposalModule),
-      useActions: makeUseActions(proposalModule),
-      useDepositInfo: makeUseDepositInfo(proposalModule),
-    },
+    loadCommon: (options) => ({
+      // Hooks
+      hooks: {
+        useReverseProposalInfos: makeUseReverseProposalInfos(
+          options.proposalModule
+        ),
+        useListAllProposalInfos: makeUseListAllProposalInfos(
+          options.proposalModule
+        ),
+        useProposalCount: makeUseProposalCount(options.proposalModule),
+        useActions: makeUseActions(options.proposalModule),
+        useDepositInfo: makeUseDepositInfo(options.proposalModule),
+      },
 
-    // Components
-    components: {
-      ProposalModuleInfo: (props) => (
-        <ProposalModuleInfo
-          proposalModuleAddress={proposalModule.address}
-          {...props}
-        />
-      ),
-      CreateProposalForm: (props) => (
-        <CreateProposalForm
-          Loader={Loader}
-          Logo={Logo}
-          coreAddress={coreAddress}
-          proposalModule={proposalModule}
-          {...props}
-        />
-      ),
-      DaoInfoVotingConfiguration: (props) => (
-        <DaoInfoVotingConfiguration
-          proposalModule={proposalModule}
-          {...props}
-        />
-      ),
-    },
-  }),
+      // Components
+      components: {
+        ProposalModuleInfo: (props) => (
+          <ProposalModuleInfo
+            proposalModuleAddress={options.proposalModule.address}
+            {...props}
+          />
+        ),
+        NewProposal: (props) => <NewProposal options={options} {...props} />,
+        DaoInfoVotingConfiguration: (props) => (
+          <DaoInfoVotingConfiguration
+            proposalModule={options.proposalModule}
+            {...props}
+          />
+        ),
+      },
+    }),
 
-  load: (options) => ({
-    // Functions
-    functions: {
-      getProposalInfo: makeGetProposalInfo(options),
-    },
+    load: (options) => ({
+      // Functions
+      functions: {
+        getProposalInfo: makeGetProposalInfo(options),
+      },
 
-    // Hooks
-    hooks: {
-      useProposalRefreshers,
-      useProposalExecutionTxHash,
-      useProposalProcessedTQ,
-      useProposalExpirationString,
-      useProfileVoteCardOptions,
-    },
+      // Hooks
+      hooks: {
+        useProposalRefreshers,
+        useProposalExecutionTxHash,
+        useProposalProcessedTQ,
+        useProposalExpirationString,
+        useProfileVoteCardOptions,
+      },
 
-    // Components
-    components: {
-      ProposalVotes,
-      ProposalVoteDecisionStatus,
-      ProposalInfoCard,
-      ProposalDetails,
-      ProposalLine,
-      PinnedProposalLine: {
-        Desktop: PinnedProposalLineDesktop,
-        Mobile: PinnedProposalLineMobile,
+      // Components
+      components: {
+        ProposalVotes,
+        ProposalVoteDecisionStatus,
+        ProposalInfoCard,
+        ProposalDetails,
+        ProposalLine,
+        PinnedProposalLine: {
+          Desktop: PinnedProposalLineDesktop,
+          Mobile: PinnedProposalLineMobile,
+        },
+      },
+    }),
+
+    daoCreation: {
+      defaultConfig: {
+        threshold: {
+          majority: true,
+          value: 75,
+        },
+        quorumEnabled: true,
+        quorum: {
+          majority: false,
+          value: 20,
+        },
+        votingDuration: {
+          value: 1,
+          units: DurationUnits.Weeks,
+        },
+        proposalDeposit: {
+          amount: 0,
+          cw20Address: '',
+          refundFailed: false,
+        },
+        allowRevoting: false,
       },
     },
-  }),
-}
+  }
