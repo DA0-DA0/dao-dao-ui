@@ -17,9 +17,7 @@ export const AppLayout = ({
   rightSidebar,
 }: AppLayoutProps) => (
   <div className="flex flex-row items-stretch w-full h-full">
-    <div className="shrink-0 w-[264px]">
-      <Navigation {...navigationProps} />
-    </div>
+    <Navigation {...navigationProps} />
 
     <main className="overflow-y-auto grow pb-6 border-x border-border-base styled-scrollbar">
       {children}

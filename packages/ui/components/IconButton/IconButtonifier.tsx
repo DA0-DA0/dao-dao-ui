@@ -67,5 +67,5 @@ export const IconButtonifiedChildren = ({
   Icon,
   iconClassName,
 }: Pick<IconButtonifierProps, 'Icon' | 'iconClassName'>) => (
-  <Icon className={clsx('w-full h-full', iconClassName)} />
+  <Icon className={clsx('!w-full !h-full', iconClassName)} />
 )

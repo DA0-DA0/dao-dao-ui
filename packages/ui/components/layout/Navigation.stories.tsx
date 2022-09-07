@@ -1,4 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { useState } from 'react'
 
 import { Navigation, NavigationProps } from './Navigation'
 
@@ -8,11 +9,11 @@ export default {
   excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof Navigation>
 
-const Template: ComponentStory<typeof Navigation> = (args) => (
-  <div className="max-w-xs">
-    <Navigation {...args} />
-  </div>
-)
+const Template: ComponentStory<typeof Navigation> = (args) => {
+  const [compact, setCompact] = useState(false)
+
+  return <Navigation {...args} compact={compact} setCompact={setCompact} />
+}
 
 // Used in `makeAppLayoutDecorator` to provide a default layout for the page
 // stories. Ensure this has all props.
@@ -118,6 +119,8 @@ export const DefaultArgs: NavigationProps = {
       imageUrl: '/placeholders/5.svg',
     },
   ],
+  compact: false,
+  setCompact: (compact) => alert(`compact! ${compact}`),
 }
 
 export const Default = Template.bind({})

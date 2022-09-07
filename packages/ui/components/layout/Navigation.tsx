@@ -5,6 +5,8 @@ import {
   Add,
   HomeOutlined,
   InboxOutlined,
+  KeyboardDoubleArrowLeft,
+  KeyboardDoubleArrowRight,
   PushPinOutlined,
   Search,
 } from '@mui/icons-material'
@@ -17,7 +19,7 @@ import { usePlatform } from '@dao-dao/utils'
 
 import { ButtonLink } from '../Button'
 import { DaoDropdown, DaoDropdownInfo } from '../dao'
-import { IconButtonLink } from '../IconButton'
+import { IconButton, IconButtonLink } from '../IconButton'
 import { Logo } from '../Logo'
 import { PricePercentChange } from '../PricePercentChange'
 import { ThemeToggle } from '../ThemeToggle'
@@ -38,8 +40,13 @@ export interface NavigationProps {
   tokenPrices: TokenPrice[]
   pinnedDaos: DaoDropdownInfo[]
   hideInbox?: boolean
-  compact?: boolean
+  compact: boolean
+  setCompact: (compact: boolean) => void
 }
+
+// If this value is changed, change compact button display media query at the
+// bottom of this component so the user can toggle when not forced.
+const FORCE_COMPACT_NAVIGATION_AT_WIDTH = 1024
 
 export const Navigation = ({
   setCommandModalVisible,
@@ -48,10 +55,31 @@ export const Navigation = ({
   tokenPrices,
   pinnedDaos,
   hideInbox = false,
-  compact = false,
+  compact,
+  setCompact,
 }: NavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
+
+  // Use screen resize event to determine when compact should be forced.
+  const [forceCompact, setForceCompact] = useState(false)
+  useEffect(() => {
+    // Only run in browser.
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const updateForceCompact = () => {
+      setForceCompact(window.innerWidth < FORCE_COMPACT_NAVIGATION_AT_WIDTH)
+    }
+
+    window.addEventListener('resize', updateForceCompact)
+    // Clean up on umount
+    return () => window.removeEventListener('resize', updateForceCompact)
+  }, [])
+
+  // Automatically force compact on small screens.
+  compact ||= forceCompact
 
   const [showPinnedTopBorder, setShowPinnedTopBorder] = useState(false)
   const [showPinnedBottomBorder, setShowPinnedBottomBorder] = useState(false)
@@ -81,13 +109,14 @@ export const Navigation = ({
     // Add listener on mount, remove on cleanup.
     ref.addEventListener('scroll', updateBorders)
     return () => ref.removeEventListener('scroll', updateBorders)
-  }, [scrollablePinnedContainerRef])
+    // Update when compact is changed since positioning is different.
+  }, [scrollablePinnedContainerRef, compact])
 
   return (
     <nav
       className={clsx(
-        'flex flex-col justify-between p-6 pt-0 w-full h-full text-lg',
-        !compact && 'space-y-20'
+        'flex flex-col shrink-0 justify-between p-6 pt-0 w-full h-full text-lg',
+        compact ? '' : 'space-y-20 w-[264px]'
       )}
     >
       <div className={clsx(compact && 'space-y-5')}>
@@ -104,6 +133,13 @@ export const Navigation = ({
         </Link>
 
         <Row
+          Icon={HomeOutlined}
+          compact={compact}
+          label={t('title.home')}
+          localHref="/home"
+        />
+
+        <Row
           Icon={Search}
           compact={compact}
           label={t('title.search')}
@@ -118,13 +154,6 @@ export const Navigation = ({
               </div>
             </div>
           }
-        />
-
-        <Row
-          Icon={HomeOutlined}
-          compact={compact}
-          label={t('title.home')}
-          localHref="/home"
         />
 
         {!hideInbox && (
@@ -222,7 +251,10 @@ export const Navigation = ({
       )}
 
       <div
-        className={clsx('!mt-8', compact && 'flex flex-col grow justify-end')}
+        className={clsx(
+          'flex gap-2 !mt-8',
+          compact ? 'flex-col grow justify-end' : 'flex-row items-center'
+        )}
       >
         {compact ? (
           <Tooltip title={t('button.toggleTheme')}>
@@ -231,6 +263,16 @@ export const Navigation = ({
         ) : (
           <ThemeToggle />
         )}
+
+        <IconButton
+          Icon={compact ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft}
+          circular
+          // Can only manually set compact on large screen
+          className="hidden lg:flex"
+          onClick={() => setCompact(!compact)}
+          size={compact ? 'default' : 'xl'}
+          variant="secondary"
+        />
       </div>
     </nav>
   )
