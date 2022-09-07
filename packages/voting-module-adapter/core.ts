@@ -10,18 +10,16 @@ import {
   VotingModuleAdapter,
 } from './types'
 
-export const adapters: readonly VotingModuleAdapter[] = [
+export const getAdapters = (): readonly VotingModuleAdapter[] => [
   Cw4VotingAdapter,
   Cw20StakedBalanceVotingAdapter,
   CwNativeStakedBalanceVotingAdapter,
 
-  // Include fallback voting adapter last since it matches all voting modules,
-  // in case there is no adapter for the DAO's voting module.
   FallbackVotingAdapter,
 ]
 
 export const matchAdapter = (contractName: string) =>
-  adapters.find(({ matcher }) => matcher(contractName))
+  getAdapters().find(({ matcher }) => matcher(contractName))
 
 export const matchAndLoadAdapter = (
   contractName: string,
@@ -31,7 +29,7 @@ export const matchAndLoadAdapter = (
 
   if (!adapter) {
     throw new Error(
-      `Failed to find voting module adapter matching contract "${contractName}". Available adapters: ${adapters
+      `Failed to find voting module adapter matching contract "${contractName}". Available adapters: ${getAdapters()
         .map(({ id }) => id)
         .join(', ')}`
     )

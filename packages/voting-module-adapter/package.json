@@ -8,7 +8,8 @@
   "dependencies": {
     "@dao-dao/ui": "*",
     "@dao-dao/state": "*",
-    "@dao-dao/utils": "*"
+    "@dao-dao/utils": "*",
+    "a11y-react-emoji": "^1.2.0"
   },
   "devDependencies": {
     "@dao-dao/storybook": "*",

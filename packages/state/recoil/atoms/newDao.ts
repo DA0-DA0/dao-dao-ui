@@ -1,25 +1,11 @@
 import { atom } from 'recoil'
 
 import { CwProposalSingleAdapter } from '@dao-dao/proposal-module-adapter'
+import { NewDao } from '@dao-dao/tstypes'
 import { Cw4VotingAdapter } from '@dao-dao/voting-module-adapter'
 
-export interface NewDao {
-  title: string
-  description: string
-  imageUrl?: string
-  votingModuleAdapter: {
-    id: string
-    data: any
-  }
-  proposalModuleAdapters: {
-    id: string
-    data: any
-  }[]
-  advancedVotingConfigEnabled: boolean
-}
-
-const DefaultNewDao: NewDao = {
-  title: '',
+export const DefaultNewDao: NewDao = {
+  name: '',
   description: '',
   imageUrl: undefined,
   // Default to membership-based DAO.

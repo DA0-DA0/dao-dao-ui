@@ -8,12 +8,12 @@ import {
   ProposalModuleAdapter,
 } from './types'
 
-export const adapters: readonly ProposalModuleAdapter[] = [
+export const getAdapters = (): readonly ProposalModuleAdapter[] => [
   CwProposalSingleAdapter,
 ]
 
 export const matchAdapter = (contractName: string) =>
-  adapters.find(({ matcher }) => matcher(contractName))
+  getAdapters().find(({ matcher }) => matcher(contractName))
 
 export const matchAndLoadCommon = (
   proposalModule: ProposalModule,
@@ -25,7 +25,9 @@ export const matchAndLoadCommon = (
     throw new ProposalModuleAdapterError(
       `Failed to find proposal module adapter matching contract "${
         proposalModule.contractName
-      }". Available adapters: ${adapters.map(({ id }) => id).join(', ')}`
+      }". Available adapters: ${getAdapters()
+        .map(({ id }) => id)
+        .join(', ')}`
     )
   }
 
@@ -77,7 +79,9 @@ export const matchAndLoadAdapter = (
     throw new ProposalModuleAdapterError(
       `Failed to find proposal module adapter matching contract "${
         proposalModule.contractName
-      }". Available adapters: ${adapters.map(({ id }) => id).join(', ')}`
+      }". Available adapters: ${getAdapters()
+        .map(({ id }) => id)
+        .join(', ')}`
     )
   }
 

@@ -1,4 +1,4 @@
-import { PlusIcon } from '@heroicons/react/outline'
+import { Add } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useState } from 'react'
 import {
@@ -132,7 +132,7 @@ export const ImageSelector = <
     <>
       <button
         className={clsx(
-          'flex shrink-0 justify-center items-center bg-center bg-cover rounded-full border border-inactive transition',
+          'flex shrink-0 justify-center items-center bg-background-secondary bg-center bg-cover rounded-full border border-border-secondary transition',
           {
             'hover:ring': !disabled,
             'ring ring-error': error,
@@ -149,7 +149,7 @@ export const ImageSelector = <
         type="button"
       >
         {(typeof imageUrl !== 'string' || !imageUrl?.trim()) && (
-          <PlusIcon className="w-4" />
+          <Add className="w-6 h-6 text-icon-primary" />
         )}
       </button>
 

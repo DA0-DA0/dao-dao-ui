@@ -147,6 +147,7 @@
     "unexpectedError": "An unexpected error occurred."
   },
   "form": {
+    "addAnImage": "Add an image",
     "admin": "Admin",
     "advancedVotingConfigDescription": "Configure revoting, passing threshold, and quorum.",
     "advancedVotingConfigTitle": "Advanced configuration",

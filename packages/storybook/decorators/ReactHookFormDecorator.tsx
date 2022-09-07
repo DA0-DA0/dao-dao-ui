@@ -1,9 +1,8 @@
 import { action } from '@storybook/addon-actions'
 import { DecoratorFn } from '@storybook/react'
-import React, { PropsWithChildren } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-const StorybookFormProvider = ({ children }: PropsWithChildren<{}>) => {
+export const ReactHookFormDecorator: DecoratorFn = (Story) => {
   const methods = useForm({
     defaultValues: {
       // Used in various components to choose default values in inputs. Set
@@ -18,14 +17,8 @@ const StorybookFormProvider = ({ children }: PropsWithChildren<{}>) => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(action('react-hook-form submit'))}>
-        {children}
+        <Story />
       </form>
     </FormProvider>
   )
 }
-
-export const ReactHookFormDecorator: DecoratorFn = (Story) => (
-  <StorybookFormProvider>
-    <Story />
-  </StorybookFormProvider>
-)

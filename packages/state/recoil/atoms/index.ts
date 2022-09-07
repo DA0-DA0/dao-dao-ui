@@ -1,6 +1,7 @@
 export * from './chain'
 export * from './loading'
 export * from './misc'
+export * from './newDao'
 export * from './proposals'
 export * from './refresh'
 export * from './theme'

@@ -1,3 +1,4 @@
+export * from './CreateDaoFormDecorator'
 export * from './DaoPageWrapperDecorator'
 export * from './makeAppLayoutDecorator'
 export * from './makeProposalModuleAdapterDecorator'

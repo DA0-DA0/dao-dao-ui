@@ -38,8 +38,8 @@ export const validateAddress = (v: string) =>
 export const validateValidatorAddress = (v: string) =>
   isValidValidatorAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid address'
 
-export const validateUrl = (v: string) =>
-  isValidUrl(v) ||
+export const validateUrl = (v: string | undefined) =>
+  (v && isValidUrl(v)) ||
   'Invalid URL link, must start with https and end with png/jpeg/gif.'
 
 export const validateContractAddress = (v: string, required = true) =>

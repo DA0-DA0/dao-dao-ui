@@ -1,10 +1,23 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import {
+  CreateDaoFormDecorator,
+  makeAppLayoutDecorator,
+} from '@dao-dao/storybook/decorators'
+
+import { DaoCreateSidebarCard } from '../../components/dao/DaoCreateSidebarCard'
 import { CreateDaoStart } from './Start'
 
 export default {
   title: 'DAO DAO / packages / ui / pages / CreateDao / CreateDaoStart',
   component: CreateDaoStart,
+  decorators: [
+    // Direct ancestor of rendered story.
+    CreateDaoFormDecorator,
+    makeAppLayoutDecorator({
+      rightSidebar: <DaoCreateSidebarCard step={1} />,
+    }),
+  ],
 } as ComponentMeta<typeof CreateDaoStart>
 
 const Template: ComponentStory<typeof CreateDaoStart> = (args) => (
@@ -12,9 +25,7 @@ const Template: ComponentStory<typeof CreateDaoStart> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {
-  
-}
+Default.args = {}
 Default.parameters = {
   design: {
     type: 'figma',
