@@ -115,7 +115,7 @@ export const Navigation = ({
   return (
     <nav
       className={clsx(
-        'flex flex-col shrink-0 justify-between p-6 pt-0 w-full h-full text-lg',
+        'flex flex-col shrink-0 justify-between p-6 pt-0 h-full text-lg',
         compact ? '' : 'space-y-20 w-[264px]'
       )}
     >

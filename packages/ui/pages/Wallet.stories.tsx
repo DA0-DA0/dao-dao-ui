@@ -23,11 +23,13 @@ export default {
   decorators: [
     WalletProviderDecorator,
     makeAppLayoutDecorator({
-      rightSidebar: (
-        <ProfileHomeCard
-          {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
-        />
-      ),
+      rightSidebarProps: {
+        children: (
+          <ProfileHomeCard
+            {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
+          />
+        ),
+      },
     }),
   ],
 } as ComponentMeta<typeof Wallet>

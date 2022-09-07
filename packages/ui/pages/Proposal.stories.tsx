@@ -21,11 +21,13 @@ export default {
     makeProposalModuleAdapterDecorator(proposalId),
     DaoPageWrapperDecorator,
     makeAppLayoutDecorator({
-      rightSidebar: (
-        <ProfileVoteCard
-          {...(ProfileVoteCardStory.args as ProfileVoteCardProps<string>)}
-        />
-      ),
+      rightSidebarProps: {
+        children: (
+          <ProfileVoteCard
+            {...(ProfileVoteCardStory.args as ProfileVoteCardProps<string>)}
+          />
+        ),
+      },
     }),
   ],
 } as ComponentMeta<typeof Proposal>

@@ -13,11 +13,13 @@ export default {
   component: Inbox,
   decorators: [
     makeAppLayoutDecorator({
-      rightSidebar: (
-        <ProfileHomeCard
-          {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
-        />
-      ),
+      rightSidebarProps: {
+        children: (
+          <ProfileHomeCard
+            {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
+          />
+        ),
+      },
     }),
   ],
 } as ComponentMeta<typeof Inbox>

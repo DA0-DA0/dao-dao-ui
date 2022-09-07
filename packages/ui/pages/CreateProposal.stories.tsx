@@ -27,11 +27,13 @@ export default {
     // Direct ancestor of rendered story.
     DaoPageWrapperDecorator,
     makeAppLayoutDecorator({
-      rightSidebar: (
-        <ProfileNewProposalCard
-          {...(ProfileNewProposalCardStory.args as ProfileNewProposalCardProps)}
-        />
-      ),
+      rightSidebarProps: {
+        children: (
+          <ProfileNewProposalCard
+            {...(ProfileNewProposalCardStory.args as ProfileNewProposalCardProps)}
+          />
+        ),
+      },
     }),
   ],
 } as ComponentMeta<typeof CreateProposal>

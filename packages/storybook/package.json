@@ -6,7 +6,9 @@
     "start": "start-storybook --ci -p 6006",
     "generate": "ts-node --esm ./scripts/generate.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react": "18.1.0"
+  },
   "devDependencies": {
     "@dao-dao/config": "*",
     "@dao-dao/tsconfig": "*",

@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
 
-import { ProfileHomeDisconnectedCard } from '../components'
+import { ProfileHomeDisconnectedCard, SidebarWallet } from '../components'
 import { Default as FeaturedDaos } from '../components/dao/FeaturedDaos.stories'
 import { HomeDisconnected } from './HomeDisconnected'
 
@@ -14,10 +14,9 @@ export default {
       navigationProps: {
         hideInbox: true,
       },
-      rightSidebar: <ProfileHomeDisconnectedCard />,
-      sidebarWalletProps: {
-        connected: false,
-        onConnect: () => {},
+      rightSidebarProps: {
+        wallet: <SidebarWallet connected={false} onConnect={() => {}} />,
+        children: <ProfileHomeDisconnectedCard />,
       },
     }),
   ],

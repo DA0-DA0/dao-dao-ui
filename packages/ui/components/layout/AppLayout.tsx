@@ -1,20 +1,18 @@
 import { ReactNode } from 'react'
 
-import { Footer } from '../Footer'
 import { Navigation, NavigationProps } from './Navigation'
+import { RightSidebar, RightSidebarProps } from './RightSidebar'
 
 export interface AppLayoutProps {
   navigationProps: NavigationProps
   children: ReactNode
-  wallet: ReactNode
-  rightSidebar: ReactNode
+  rightSidebarProps: RightSidebarProps
 }
 
 export const AppLayout = ({
   navigationProps,
   children,
-  wallet,
-  rightSidebar,
+  rightSidebarProps,
 }: AppLayoutProps) => (
   <div className="flex flex-row items-stretch w-full h-full">
     <Navigation {...navigationProps} />
@@ -23,14 +21,6 @@ export const AppLayout = ({
       {children}
     </main>
 
-    <div className="flex flex-col shrink-0 items-stretch p-6 pt-0 w-96">
-      {wallet}
-
-      <div className="mt-2">{rightSidebar}</div>
-
-      <div className="mt-7">
-        <Footer />
-      </div>
-    </div>
+    <RightSidebar {...rightSidebarProps} />
   </div>
 )

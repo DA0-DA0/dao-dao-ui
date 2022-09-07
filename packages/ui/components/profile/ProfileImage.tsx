@@ -4,9 +4,14 @@ import clsx from 'clsx'
 export interface ProfileImageProps {
   imageUrl?: string
   size: 'sm' | 'lg'
+  className?: string
 }
 
-export const ProfileImage = ({ imageUrl, size }: ProfileImageProps) => (
+export const ProfileImage = ({
+  imageUrl,
+  size,
+  className,
+}: ProfileImageProps) => (
   <div
     className={clsx(
       imageUrl
@@ -17,7 +22,8 @@ export const ProfileImage = ({ imageUrl, size }: ProfileImageProps) => (
       {
         'w-10 h-10 rounded-xl': size === 'sm',
         'w-16 h-16 rounded-2xl': size === 'lg',
-      }
+      },
+      className
     )}
     style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
   >

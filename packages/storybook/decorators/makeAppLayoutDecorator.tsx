@@ -1,41 +1,34 @@
 import { DecoratorFn } from '@storybook/react'
+import { useState } from 'react'
 
-import {
-  AppLayout,
-  AppLayoutProps,
-  NavigationProps,
-  SidebarWallet,
-  SidebarWalletProps,
-} from '@dao-dao/ui'
+import { AppLayout, NavigationProps } from '@dao-dao/ui/components/layout'
 import { DefaultArgs as NavigationStoryArgs } from '@dao-dao/ui/components/layout/Navigation.stories'
-import { Connected as ConnectedSidebarWalletStory } from '@dao-dao/ui/components/layout/SidebarWallet.SidebarWallet.stories'
+import { RightSidebarProps } from '@dao-dao/ui/components/layout/RightSidebar'
+import { DefaultArgs as RightSidebarStoryArgs } from '@dao-dao/ui/components/layout/RightSidebar.stories'
 
-export const makeAppLayoutDecorator: (
-  // Require setting `rightSidebar` while allowing page stories to override any
-  // navigation props and sidebar wallet props.
-  props: Pick<AppLayoutProps, 'rightSidebar'> & {
-    navigationProps?: Partial<NavigationProps>
-    sidebarWalletProps?: SidebarWalletProps
-  }
-) => DecoratorFn =
-  ({ navigationProps, sidebarWalletProps, ...props }) =>
-  // eslint-disable-next-line react/display-name
-  (Story) =>
-    (
+export const makeAppLayoutDecorator: (props: {
+  navigationProps?: Partial<NavigationProps>
+  rightSidebarProps: Pick<RightSidebarProps, 'children'> &
+    Partial<Omit<RightSidebarProps, 'children'>>
+}) => DecoratorFn = ({ navigationProps, rightSidebarProps }) =>
+  function AppLayoutDecorator(Story) {
+    const [compact, setCompact] = useState(false)
+
+    return (
       <AppLayout
         navigationProps={{
           // Use default arguments from the Navigation story.
           ...NavigationStoryArgs,
+          compact,
+          setCompact,
           ...navigationProps,
         }}
-        wallet={
-          <SidebarWallet
-            {...(sidebarWalletProps ??
-              (ConnectedSidebarWalletStory.args as SidebarWalletProps))}
-          />
-        }
-        {...props}
+        rightSidebarProps={{
+          ...RightSidebarStoryArgs,
+          ...rightSidebarProps,
+        }}
       >
         <Story />
       </AppLayout>
     )
+  }

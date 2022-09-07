@@ -12,11 +12,13 @@ export default {
   component: HomeConnected,
   decorators: [
     makeAppLayoutDecorator({
-      rightSidebar: (
-        <ProfileHomeCard
-          {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
-        />
-      ),
+      rightSidebarProps: {
+        children: (
+          <ProfileHomeCard
+            {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
+          />
+        ),
+      },
     }),
   ],
 } as ComponentMeta<typeof HomeConnected>

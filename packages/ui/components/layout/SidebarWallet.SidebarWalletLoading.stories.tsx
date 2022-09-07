@@ -3,8 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { SidebarWalletLoading } from './SidebarWallet'
 
 export default {
-  title:
-    'DAO DAO / packages / ui / components / layout / SidebarWalletLoading',
+  title: 'DAO DAO / packages / ui / components / layout / SidebarWalletLoading',
   component: SidebarWalletLoading,
 } as ComponentMeta<typeof SidebarWalletLoading>
 

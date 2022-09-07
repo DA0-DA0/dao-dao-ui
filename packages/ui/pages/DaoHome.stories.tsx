@@ -32,11 +32,13 @@ export default {
     // Direct ancestor of rendered story.
     DaoPageWrapperDecorator,
     makeAppLayoutDecorator({
-      rightSidebar: (
-        <ProfileMemberCard
-          {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
-        />
-      ),
+      rightSidebarProps: {
+        children: (
+          <ProfileMemberCard
+            {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
+          />
+        ),
+      },
     }),
   ],
 } as ComponentMeta<typeof DaoHome>

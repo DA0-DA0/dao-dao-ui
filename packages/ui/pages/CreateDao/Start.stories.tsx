@@ -15,7 +15,9 @@ export default {
     // Direct ancestor of rendered story.
     CreateDaoFormDecorator,
     makeAppLayoutDecorator({
-      rightSidebar: <DaoCreateSidebarCard step={1} />,
+      rightSidebarProps: {
+        children: <DaoCreateSidebarCard step={1} />,
+      },
     }),
   ],
 } as ComponentMeta<typeof CreateDaoStart>
