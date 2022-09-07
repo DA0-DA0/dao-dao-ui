@@ -67,6 +67,7 @@
     "stakeTokenSymbol": "Stake ${{tokenSymbol}}",
     "stakeTokens": "Stake tokens",
     "stakeTokensSuggestion": "Stake some tokens so you can vote next time?",
+    "toggleTheme": "Toggle theme",
     "unstake": "Unstake",
     "unstakeTokens": "Unstake tokens",
     "useExistingToken": "Use an existing token",

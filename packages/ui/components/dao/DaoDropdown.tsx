@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { TriangleUp } from '@dao-dao/icons'
 
 import { IconButton } from '../IconButton'
+import { Tooltip } from '../Tooltip'
 
 export interface DaoDropdownInfo {
   coreAddress: string
@@ -23,6 +24,7 @@ export interface DaoDropdownProps {
   defaultExpanded?: boolean
   showSubdaos?: boolean
   indent?: number
+  compact?: boolean
 }
 
 export const DaoDropdown = ({
@@ -31,6 +33,7 @@ export const DaoDropdown = ({
   defaultExpanded = false,
   showSubdaos = true,
   indent = 0,
+  compact = false,
 }: DaoDropdownProps) => {
   const { t } = useTranslation()
   const { asPath } = useRouter()
@@ -46,7 +49,25 @@ export const DaoDropdown = ({
     }
   }, [expanded, expandedLocalStorageKey])
 
-  return (
+  // If compcat, just show image.
+  return compact ? (
+    <Link href={`/dao/${coreAddress}`}>
+      <a
+        className={clsx(
+          'flex flex-row justify-center items-center w-8 h-8 rounded-md hover:opacity-70 active:opacity-60 transition-opacity',
+          asPath.includes(coreAddress) && 'bg-background-interactive-selected'
+        )}
+      >
+        <Tooltip title={name}>
+          <img
+            alt={t('info.daosLogo')}
+            className="w-7 h-7 rounded-full"
+            src={imageUrl}
+          />
+        </Tooltip>
+      </a>
+    </Link>
+  ) : (
     <div>
       <div
         className={clsx(
@@ -85,11 +106,7 @@ export const DaoDropdown = ({
           </div>
 
           <Link href={`/dao/${coreAddress}`}>
-            <a
-              className={clsx(
-                'flex flex-row grow gap-2 items-center py-2 hover:opacity-70 active:opacity-60 transition-opacity'
-              )}
-            >
+            <a className="flex flex-row grow gap-2 items-center py-2 hover:opacity-70 active:opacity-60 transition-opacity">
               <img
                 alt={t('info.daosLogo')}
                 className="w-5 h-5 rounded-full"
@@ -112,7 +129,12 @@ export const DaoDropdown = ({
 
         {showSubdaos &&
           subdaos?.map((dao, index) => (
-            <DaoDropdown key={index} dao={dao} indent={indent + 1} />
+            <DaoDropdown
+              key={index}
+              compact={compact}
+              dao={dao}
+              indent={indent + 1}
+            />
           ))}
       </div>
     </div>

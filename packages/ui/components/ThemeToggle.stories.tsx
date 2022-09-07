@@ -7,7 +7,9 @@ export default {
   component: ThemeToggle,
 } as ComponentMeta<typeof ThemeToggle>
 
-const Template: ComponentStory<typeof ThemeToggle> = (_args) => <ThemeToggle />
+const Template: ComponentStory<typeof ThemeToggle> = (args) => (
+  <ThemeToggle {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {}

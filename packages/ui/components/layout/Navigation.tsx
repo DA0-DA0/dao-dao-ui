@@ -1,20 +1,27 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { SearchIcon } from '@heroicons/react/solid'
+import {
+  Add,
+  HomeOutlined,
+  InboxOutlined,
+  PushPinOutlined,
+  Search,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Home, Inbox, PinOutline } from '@dao-dao/icons'
 import { usePlatform } from '@dao-dao/utils'
 
 import { ButtonLink } from '../Button'
 import { DaoDropdown, DaoDropdownInfo } from '../dao'
+import { IconButtonLink } from '../IconButton'
 import { Logo } from '../Logo'
 import { PricePercentChange } from '../PricePercentChange'
 import { ThemeToggle } from '../ThemeToggle'
+import { Tooltip } from '../Tooltip'
 import { Row } from './Row'
 
 export interface TokenPrice {
@@ -31,6 +38,7 @@ export interface NavigationProps {
   tokenPrices: TokenPrice[]
   pinnedDaos: DaoDropdownInfo[]
   hideInbox?: boolean
+  compact?: boolean
 }
 
 export const Navigation = ({
@@ -39,7 +47,8 @@ export const Navigation = ({
   version,
   tokenPrices,
   pinnedDaos,
-  hideInbox,
+  hideInbox = false,
+  compact = false,
 }: NavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
@@ -75,18 +84,28 @@ export const Navigation = ({
   }, [scrollablePinnedContainerRef])
 
   return (
-    <nav className="flex flex-col justify-between p-6 pt-0 space-y-20 w-full h-full text-lg">
-      <div>
+    <nav
+      className={clsx(
+        'flex flex-col justify-between p-6 pt-0 w-full h-full text-lg',
+        !compact && 'space-y-20'
+      )}
+    >
+      <div className={clsx(compact && 'space-y-5')}>
         <Link href="/home">
-          <a className="flex flex-row gap-2 items-center mb-2 h-20 border-b border-border-secondary">
+          <a
+            className={clsx(
+              'flex flex-row gap-2 items-center h-20',
+              !compact && 'mb-2 border-b border-border-secondary'
+            )}
+          >
             <Logo size={32} />
-            <p className="header-text">{t('meta.title')}</p>
+            {!compact && <p className="header-text">{t('meta.title')}</p>}
           </a>
         </Link>
 
         <Row
-          Icon={SearchIcon}
-          iconClassName="!w-[18px] !h-[18px]"
+          Icon={Search}
+          compact={compact}
           label={t('title.search')}
           onClick={setCommandModalVisible}
           rightNode={
@@ -101,11 +120,17 @@ export const Navigation = ({
           }
         />
 
-        <Row Icon={Home} label={t('title.home')} localHref="/home" />
+        <Row
+          Icon={HomeOutlined}
+          compact={compact}
+          label={t('title.home')}
+          localHref="/home"
+        />
 
         {!hideInbox && (
           <Row
-            Icon={Inbox}
+            Icon={InboxOutlined}
+            compact={compact}
             label={
               inboxCount
                 ? t('title.inboxWithCount', { count: inboxCount })
@@ -116,9 +141,17 @@ export const Navigation = ({
           />
         )}
 
-        <Row Icon={PinOutline} defaultExpanded label={t('info.pinned')}>
+        <Row
+          Icon={PushPinOutlined}
+          compact={compact}
+          defaultExpanded
+          label={t('info.pinned')}
+        >
           <div
-            className="overflow-y-auto relative pr-5 -mr-5 max-h-[33vh] styled-scrollbar"
+            className={clsx(
+              'overflow-y-auto relative pr-5 -mr-5 max-h-[33vh] styled-scrollbar',
+              compact && 'mt-1 space-y-3 w-min'
+            )}
             ref={scrollablePinnedContainerRef}
           >
             {/* Top border */}
@@ -131,7 +164,12 @@ export const Navigation = ({
 
             {/* DAOs */}
             {pinnedDaos.map((dao, index) => (
-              <DaoDropdown key={index} dao={dao} defaultExpanded />
+              <DaoDropdown
+                key={index}
+                compact={compact}
+                dao={dao}
+                defaultExpanded
+              />
             ))}
 
             {/* Bottom border */}
@@ -144,34 +182,55 @@ export const Navigation = ({
           </div>
         </Row>
 
-        <ButtonLink
-          className="mt-12 w-full"
-          contentContainerClassName="justify-center"
-          href="/dao/create"
-          size="lg"
-        >
-          {t('button.createADAO')}
-        </ButtonLink>
+        {compact ? (
+          <Tooltip title={t('button.createADAO')}>
+            <IconButtonLink
+              Icon={Add}
+              className=""
+              href="/dao/create"
+              variant="primary"
+            />
+          </Tooltip>
+        ) : (
+          <ButtonLink
+            className="mt-12 w-full"
+            contentContainerClassName="justify-center"
+            href="/dao/create"
+            size="lg"
+          >
+            {t('button.createADAO')}
+          </ButtonLink>
+        )}
       </div>
 
-      <div className="space-y-3 font-mono caption-text">
-        <p>{t('info.daodaoWithVersion', { version })}</p>
+      {!compact && (
+        <div className="space-y-3 font-mono caption-text">
+          <p>{t('info.daodaoWithVersion', { version })}</p>
 
-        {tokenPrices.map(({ label, price, priceDenom, change }, index) => (
-          <div
-            key={index}
-            className="flex flex-row gap-2 justify-between items-end"
-          >
-            <p className="text-text-primary">
-              {label} = {price} ${priceDenom}
-            </p>
-            <PricePercentChange value={change} />
-          </div>
-        ))}
-
-        <div className="flex flex-row gap-3 items-center !mt-8">
-          <ThemeToggle />
+          {tokenPrices.map(({ label, price, priceDenom, change }, index) => (
+            <div
+              key={index}
+              className="flex flex-row gap-2 justify-between items-end"
+            >
+              <p className="text-text-primary">
+                {label} = {price} ${priceDenom}
+              </p>
+              <PricePercentChange value={change} />
+            </div>
+          ))}
         </div>
+      )}
+
+      <div
+        className={clsx('!mt-8', compact && 'flex flex-col grow justify-end')}
+      >
+        {compact ? (
+          <Tooltip title={t('button.toggleTheme')}>
+            <ThemeToggle compact />
+          </Tooltip>
+        ) : (
+          <ThemeToggle />
+        )}
       </div>
     </nav>
   )
