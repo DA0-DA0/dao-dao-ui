@@ -7,6 +7,7 @@ import {
   InboxOutlined,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
+  Menu,
   PushPinOutlined,
   Search,
 } from '@mui/icons-material'
@@ -44,9 +45,12 @@ export interface NavigationProps {
   setCompact: (compact: boolean) => void
 }
 
+// Width of `lg` tailwind selector.
 // If this value is changed, change compact button display media query at the
 // bottom of this component so the user can toggle when not forced.
 const FORCE_COMPACT_NAVIGATION_AT_WIDTH = 1024
+// Width of `sm` tailwind selector.
+const FORCE_MOBILE_NAVIGATION_AT_WIDTH = 640
 
 export const Navigation = ({
   setCommandModalVisible,
@@ -62,7 +66,7 @@ export const Navigation = ({
   const { isMac } = usePlatform()
 
   // Use screen resize event to determine when compact should be forced.
-  const [forceCompact, setForceCompact] = useState(false)
+  const [forceCompact, setForceCompact] = useState<boolean | undefined>()
   useEffect(() => {
     // Only run in browser.
     if (typeof window === 'undefined') {
@@ -70,7 +74,13 @@ export const Navigation = ({
     }
 
     const updateForceCompact = () => {
-      setForceCompact(window.innerWidth < FORCE_COMPACT_NAVIGATION_AT_WIDTH)
+      setForceCompact(
+        window.innerWidth < FORCE_MOBILE_NAVIGATION_AT_WIDTH
+          ? false
+          : window.innerWidth < FORCE_COMPACT_NAVIGATION_AT_WIDTH
+          ? true
+          : undefined
+      )
     }
 
     // Update on initialization.
@@ -81,8 +91,11 @@ export const Navigation = ({
     return () => window.removeEventListener('resize', updateForceCompact)
   }, [])
 
-  // Automatically force compact on small screens.
-  compact ||= forceCompact
+  // Automatically force compact on small screens and force non-compact when
+  // mobile since the nav will be full width.
+  if (forceCompact !== undefined) {
+    compact = forceCompact
+  }
 
   const [showPinnedTopBorder, setShowPinnedTopBorder] = useState(false)
   const [showPinnedBottomBorder, setShowPinnedBottomBorder] = useState(false)
@@ -115,19 +128,38 @@ export const Navigation = ({
     // Update when compact is changed since positioning is different.
   }, [scrollablePinnedContainerRef, compact])
 
+  const [responsiveVisible, setResponsiveVisible] = useState(false)
+
   return (
-    <nav
-      className={clsx(
-        'flex flex-col shrink-0 justify-between py-6 pt-0 h-full text-lg',
-        compact ? '' : 'px-6 space-y-20 w-[264px]'
-      )}
-    >
-      <div>
+    <>
+      <IconButton
+        Icon={Menu}
+        className="absolute top-1 left-1 z-20 sm:hidden"
+        onClick={() => setResponsiveVisible((v) => !v)}
+        size="sm"
+        variant="ghost"
+      />
+
+      <nav
+        className={clsx(
+          // General
+          'flex overflow-y-auto flex-col shrink-0 py-6 pt-0 h-full text-lg bg-background-base transition-all styled-scrollbar',
+          // If compact, items will manager their own padding so that
+          // highlighted rows fill the whole width.
+          !compact && 'px-6',
+          // Responsive
+          'absolute top-0 bottom-0 z-10 w-full',
+          responsiveVisible ? 'left-0' : '-left-full',
+          // Large
+          'sm:relative sm:left-0',
+          compact ? 'sm:w-min' : 'sm:w-[264px]'
+        )}
+      >
         <Link href="/home">
           <a
             className={clsx(
-              'flex flex-row gap-2 items-center h-20',
-              compact ? 'mx-6' : 'mb-2 border-b border-border-secondary'
+              'flex absolute top-0 right-0 left-0 flex-row gap-2 items-center px-6 h-20 bg-background-base',
+              !compact && 'border-b border-border-secondary'
             )}
           >
             <Logo size={32} />
@@ -135,148 +167,155 @@ export const Navigation = ({
           </a>
         </Link>
 
-        <Row
-          Icon={HomeOutlined}
-          compact={compact}
-          label={t('title.home')}
-          localHref="/home"
-        />
-
-        <Row
-          Icon={Search}
-          compact={compact}
-          label={t('title.search')}
-          onClick={setCommandModalVisible}
-          rightNode={
-            <div className="flex flex-row gap-1 items-center text-icon-primary legend-text">
-              <div className="flex justify-center items-center w-6 h-6 bg-background-interactive-disabled rounded-md">
-                <p>{isMac ? '⌘' : '⌃'}</p>
-              </div>
-              <div className="flex justify-center items-center w-6 h-6 bg-background-interactive-disabled rounded-md">
-                <p>k</p>
-              </div>
-            </div>
-          }
-        />
-
-        {!hideInbox && (
+        <div className={clsx('!mt-20', !compact && 'pt-2')}>
           <Row
-            Icon={InboxOutlined}
+            Icon={HomeOutlined}
             compact={compact}
-            label={
-              inboxCount
-                ? t('title.inboxWithCount', { count: inboxCount })
-                : t('title.inbox')
-            }
-            localHref="/inbox"
-            showBadge={inboxCount > 0}
+            label={t('title.home')}
+            localHref="/home"
           />
-        )}
 
-        <Row
-          Icon={PushPinOutlined}
-          compact={compact}
-          defaultExpanded
-          label={t('info.pinned')}
-        >
+          <Row
+            Icon={Search}
+            compact={compact}
+            label={t('title.search')}
+            onClick={setCommandModalVisible}
+            rightNode={
+              <div className="flex flex-row gap-1 items-center text-icon-primary legend-text">
+                <div className="flex justify-center items-center w-6 h-6 bg-background-interactive-disabled rounded-md">
+                  <p>{isMac ? '⌘' : '⌃'}</p>
+                </div>
+                <div className="flex justify-center items-center w-6 h-6 bg-background-interactive-disabled rounded-md">
+                  <p>k</p>
+                </div>
+              </div>
+            }
+          />
+
+          {!hideInbox && (
+            <Row
+              Icon={InboxOutlined}
+              compact={compact}
+              label={
+                inboxCount
+                  ? t('title.inboxWithCount', { count: inboxCount })
+                  : t('title.inbox')
+              }
+              localHref="/inbox"
+              showBadge={inboxCount > 0}
+            />
+          )}
+
+          <Row
+            Icon={PushPinOutlined}
+            compact={compact}
+            defaultExpanded
+            label={t('info.pinned')}
+          >
+            <div
+              className={clsx(
+                'overflow-y-auto relative pr-5 -mr-5 sm:max-h-[33vh] styled-scrollbar',
+                compact && 'mt-1 w-min'
+              )}
+              ref={scrollablePinnedContainerRef}
+            >
+              {/* Top border */}
+              <div
+                className={clsx(
+                  'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                  showPinnedTopBorder ? 'opacity-100' : 'opacity-0'
+                )}
+              ></div>
+
+              {/* DAOs */}
+              {pinnedDaos.map((dao, index) => (
+                <DaoDropdown
+                  key={index}
+                  compact={compact}
+                  dao={dao}
+                  defaultExpanded
+                />
+              ))}
+
+              {/* Bottom border */}
+              <div
+                className={clsx(
+                  'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                  showPinnedBottomBorder ? 'opacity-100' : 'opacity-0'
+                )}
+              ></div>
+            </div>
+          </Row>
+
+          {compact ? (
+            <Tooltip title={t('button.createADAO')}>
+              <IconButtonLink
+                Icon={Add}
+                className="mx-6 mt-3"
+                href="/dao/create"
+                variant="primary"
+              />
+            </Tooltip>
+          ) : (
+            <ButtonLink
+              className="mt-12 w-full"
+              contentContainerClassName="justify-center"
+              href="/dao/create"
+              size="lg"
+            >
+              {t('button.createADAO')}
+            </ButtonLink>
+          )}
+        </div>
+
+        <div className={clsx('flex flex-col grow gap-2 justify-end mt-20')}>
+          {!compact && (
+            <div className="space-y-3 font-mono caption-text">
+              <p>{t('info.daodaoWithVersion', { version })}</p>
+
+              {tokenPrices.map(
+                ({ label, price, priceDenom, change }, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-row gap-2 justify-between items-end"
+                  >
+                    <p className="text-text-primary">
+                      {label} = {price} ${priceDenom}
+                    </p>
+                    <PricePercentChange value={change} />
+                  </div>
+                )
+              )}
+            </div>
+          )}
+
           <div
             className={clsx(
-              'overflow-y-auto relative pr-5 -mr-5 max-h-[33vh] styled-scrollbar',
-              compact && 'mt-1 w-min'
+              'flex gap-2 mt-8',
+              compact ? 'flex-col mx-6' : 'flex-row items-center'
             )}
-            ref={scrollablePinnedContainerRef}
           >
-            {/* Top border */}
-            <div
-              className={clsx(
-                'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                showPinnedTopBorder ? 'opacity-100' : 'opacity-0'
-              )}
-            ></div>
+            {compact ? (
+              <Tooltip title={t('button.toggleTheme')}>
+                <ThemeToggle compact />
+              </Tooltip>
+            ) : (
+              <ThemeToggle />
+            )}
 
-            {/* DAOs */}
-            {pinnedDaos.map((dao, index) => (
-              <DaoDropdown
-                key={index}
-                compact={compact}
-                dao={dao}
-                defaultExpanded
-              />
-            ))}
-
-            {/* Bottom border */}
-            <div
-              className={clsx(
-                'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                showPinnedBottomBorder ? 'opacity-100' : 'opacity-0'
-              )}
-            ></div>
-          </div>
-        </Row>
-
-        {compact ? (
-          <Tooltip title={t('button.createADAO')}>
-            <IconButtonLink
-              Icon={Add}
-              className="mx-6 mt-3"
-              href="/dao/create"
-              variant="primary"
+            <IconButton
+              Icon={
+                compact ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft
+              }
+              circular
+              className="hidden lg:flex"
+              onClick={() => setCompact(!compact)}
+              size={compact ? 'default' : 'xl'}
+              variant="secondary"
             />
-          </Tooltip>
-        ) : (
-          <ButtonLink
-            className="mt-12 w-full"
-            contentContainerClassName="justify-center"
-            href="/dao/create"
-            size="lg"
-          >
-            {t('button.createADAO')}
-          </ButtonLink>
-        )}
-      </div>
-
-      {!compact && (
-        <div className="space-y-3 font-mono caption-text">
-          <p>{t('info.daodaoWithVersion', { version })}</p>
-
-          {tokenPrices.map(({ label, price, priceDenom, change }, index) => (
-            <div
-              key={index}
-              className="flex flex-row gap-2 justify-between items-end"
-            >
-              <p className="text-text-primary">
-                {label} = {price} ${priceDenom}
-              </p>
-              <PricePercentChange value={change} />
-            </div>
-          ))}
+          </div>
         </div>
-      )}
-
-      <div
-        className={clsx(
-          'flex gap-2 !mt-8',
-          compact ? 'flex-col grow justify-end mx-6' : 'flex-row items-center'
-        )}
-      >
-        {compact ? (
-          <Tooltip title={t('button.toggleTheme')}>
-            <ThemeToggle compact />
-          </Tooltip>
-        ) : (
-          <ThemeToggle />
-        )}
-
-        <IconButton
-          Icon={compact ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft}
-          circular
-          // Can only manually set compact on large screen
-          className={clsx('hidden lg:flex', compact && 'mx-6')}
-          onClick={() => setCompact(!compact)}
-          size={compact ? 'default' : 'xl'}
-          variant="secondary"
-        />
-      </div>
-    </nav>
+      </nav>
+    </>
   )
 }

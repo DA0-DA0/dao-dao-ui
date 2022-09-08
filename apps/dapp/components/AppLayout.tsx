@@ -7,7 +7,7 @@ import { PropsWithChildren, useCallback, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { SidebarWallet, WalletProvider } from '@dao-dao/common'
-import { mountedInBrowserAtom } from '@dao-dao/state'
+import { mountedInBrowserAtom, navigationCompact } from '@dao-dao/state'
 import { AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import { usePlatform } from '@dao-dao/utils'
 
@@ -36,6 +36,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   const [commandModalVisible, setCommandModalVisible] = useRecoilState(
     commandModalVisibleAtom
   )
+  const [compact, setCompact] = useRecoilState(navigationCompact)
 
   //! WALLET CONNECTION ERROR MODALS
   const { error } = useWalletManager()
@@ -96,9 +97,14 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
           tokenPrices: [],
           version: '2.0',
           pinnedDaos: [],
+          compact,
+          setCompact,
         }}
-        rightSidebar={undefined}
-        wallet={<SidebarWallet />}
+        rightSidebarProps={{
+          wallet: <SidebarWallet />,
+          // TODO: Set based on page.
+          children: null,
+        }}
       >
         {children}
       </StatelessAppLayout>

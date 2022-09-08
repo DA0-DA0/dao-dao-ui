@@ -40,11 +40,11 @@ export const RightSidebar = ({
         )}
       >
         {/* Show responsive close button. */}
-        <div className="overflow-hidden self-end px-1 -mr-3 max-h-full transition-all xl:max-h-0">
+        <div className="overflow-hidden self-end p-1 -mr-3 h-28 transition-all sm:h-auto xl:max-h-0">
           <IconButton
             Icon={KeyboardDoubleArrowRight}
             // Match ProfileImage rounding.
-            className="mt-4 mb-1 rounded-xl"
+            className="mt-3 rounded-xl"
             onClick={() => setResponsiveVisible(false)}
             size="lg"
             variant="secondary"
