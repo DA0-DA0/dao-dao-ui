@@ -57,8 +57,8 @@ const useDefaults: UseDefaults<CreateValidatorData> = () => ({
       "details": "A validator created and run by a DAO on DAO DAO."
     },
     "commission": {
-      "rate": "0.100000000000000000",
-      "maxRate": "0.200000000000000000",
+      "rate": "0.050000000000000000",
+      "maxRate": "0.150000000000000000",
       "maxChangeRate": "0.100000000000000000"
     },
     "minSelfDelegation": "1",
