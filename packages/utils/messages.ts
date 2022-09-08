@@ -1,10 +1,12 @@
-import { fromBase64, toAscii, toBase64 } from '@cosmjs/encoding'
+import { fromBase64, toAscii, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
 import {
   MsgExec,
   MsgGrant,
   MsgRevoke,
 } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
+import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
+import { MsgCreateValidator } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
 import {
   BankMsg,
@@ -142,6 +144,12 @@ export function decodeMessages(msgs: IHack['msgs']): { [key: string]: any }[] {
           msg.stargate.value = MsgExec.decode(fromBase64(msgObj.stargate.value))
           decodedMessageArray.push(msg)
           break
+        case '/cosmos.staking.v1beta1.MsgCreateValidator':
+          msg.stargate.value = MsgCreateValidator.decode(
+            fromBase64(msgObj.stargate.value)
+          )
+          decodedMessageArray.push(msg)
+          break
       }
     } else {
       decodedMessageArray.push(msgObj)
@@ -238,6 +246,28 @@ export const makeStargateMessage = (message: {
           ).finish()
         )
       )
+      break
+    case '/cosmos.staking.v1beta1.MsgCreateValidator':
+      let msgValue = msg.stargate.value
+
+      // TODO why does this not encode correctly?
+      msg.stargate.value = toBase64(
+        MsgCreateValidator.encode(
+          MsgCreateValidator.fromPartial({
+            ...msgValue,
+            // commission: 'override', // overriding commission gets us past invalid CosmosMsg
+            pubkey: {
+              typeUrl: msgValue.pubkey.typeUrl,
+              value: PubKey.encode(
+                PubKey.fromPartial({
+                  key: toUtf8(msgValue.pubkey.value.key),
+                })
+              ).finish(),
+            },
+          })
+        ).finish()
+      )
+
       break
   }
 

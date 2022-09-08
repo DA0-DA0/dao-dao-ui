@@ -70,6 +70,7 @@
     "mushroom": "Mushroom",
     "party": "Party",
     "people": "People",
+    "pick": "Mining pickaxe",
     "recycle": "Recycle",
     "robot": "Robot",
     "rocketShip": "Rocket ship",
@@ -113,7 +114,7 @@
     "notCw721Address": "This contract address is not a NFT (CW721).",
     "notEnoughForDeposit": "You do not have enough tokens in your balance to pay the proposal deposit",
     "pageNotFound": "We couldn't find that page.",
-    "proposalNotFound": "Proposal not found.",
+    "pbroposalNotFound": "Proposal not found.",
     "unexpectedError": "An unexpected error occurred."
   },
   "form": {
@@ -130,6 +131,8 @@
     "automaticallyAddTokensTooltip": "Should tokens sent to the DAO get added to the treasury?",
     "codeID": "Code ID",
     "contractLabel": "Contract Label",
+    "createValidatorMessage": "Create validator message",
+    "createValidatorMessageTooltip": "Information used to create a validator controlled by your DAO. NOTE: a node will have to be running, be sure to use the public key of this node (junod tendermint show).",
     "defaultTierName": "Core contributors",
     "description": "Description",
     "encodedMessages": "List of encoded messages",
@@ -392,6 +395,7 @@
     "contractVersion": "Contract Version",
     "createADAO": "Create a DAO",
     "createAProposal": "Create a proposal",
+    "createValidator": "Create a validator",
     "currentlyUnstaking": "Currently unstaking",
     "custom": "Custom",
     "dao": "DAO",

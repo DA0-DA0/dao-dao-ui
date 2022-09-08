@@ -2,6 +2,7 @@ import { Action } from '../types'
 import { addCw20Action } from './AddCw20'
 import { authzAuthorizationAction } from './AuthzAuthorization'
 import { authzExecAction } from './AuthzExec'
+import { createValidatorAction } from './CreateValidator'
 import { customAction } from './Custom'
 import { executeAction } from './Execute'
 import { instantiateAction } from './Instantiate'
@@ -19,6 +20,7 @@ export const commonActions: Action[] = [
   authzAuthorizationAction,
   authzExecAction,
   addCw20Action,
+  createValidatorAction,
   removeCw20Action,
   // TODO: Add back in once CW721s are displayed.
   // addCw721Action,
