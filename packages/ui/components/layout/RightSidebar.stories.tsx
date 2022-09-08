@@ -21,6 +21,7 @@ export const DefaultArgs: RightSidebarProps = {
     />
   ),
   children: <p>Right sidebar content</p>,
+  profileImageUrl: '/edamame.png',
 }
 
 export const Default = Template.bind({})

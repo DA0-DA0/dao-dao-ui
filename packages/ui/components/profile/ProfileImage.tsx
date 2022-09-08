@@ -5,12 +5,14 @@ export interface ProfileImageProps {
   imageUrl?: string
   size: 'sm' | 'lg'
   className?: string
+  onClick?: () => void
 }
 
 export const ProfileImage = ({
   imageUrl,
   size,
   className,
+  onClick,
 }: ProfileImageProps) => (
   <div
     className={clsx(
@@ -25,6 +27,7 @@ export const ProfileImage = ({
       },
       className
     )}
+    onClick={onClick}
     style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
   >
     {!imageUrl && (
