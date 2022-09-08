@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { AppLayout } from './AppLayout'
+import { AppLayout, AppLayoutProps } from './AppLayout'
 import { NavigationProps } from './Navigation'
 import { Default as NavigatonStory } from './Navigation.stories'
 import { PageHeader, PageHeaderProps } from './PageHeader'
@@ -12,7 +12,24 @@ import { Default as RightSidebarStory } from './RightSidebar.stories'
 export default {
   title: 'DAO DAO / packages / ui / components / layout / AppLayout',
   component: AppLayout,
+  excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof AppLayout>
+
+export const DefaultArgs: AppLayoutProps = {
+  navigationProps: NavigatonStory.args as NavigationProps,
+  children: (
+    <div className="flex flex-col px-6 h-full">
+      <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />
+
+      <div className="flex grow justify-center items-center">
+        <p>App content</p>
+      </div>
+    </div>
+  ),
+  rightSidebarProps: RightSidebarStory.args as RightSidebarProps,
+  responsiveNavigationEnabled: true,
+  toggleResponsiveNavigation: () => alert('toggle'),
+}
 
 const Template: ComponentStory<typeof AppLayout> = (args) => {
   const [compact, setCompact] = useState(false)
@@ -36,16 +53,4 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
 }
 
 export const Default = Template.bind({})
-Default.args = {
-  navigationProps: NavigatonStory.args as NavigationProps,
-  children: (
-    <div className="flex flex-col px-6 h-full">
-      <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />
-
-      <div className="flex grow justify-center items-center">
-        <p>App content</p>
-      </div>
-    </div>
-  ),
-  rightSidebarProps: RightSidebarStory.args as RightSidebarProps,
-}
+Default.args = DefaultArgs

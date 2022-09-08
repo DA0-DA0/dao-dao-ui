@@ -1,10 +1,11 @@
 import { DecoratorFn } from '@storybook/react'
-import { useState } from 'react'
 
-import { AppLayout, NavigationProps } from '@dao-dao/ui/components/layout'
-import { DefaultArgs as NavigationStoryArgs } from '@dao-dao/ui/components/layout/Navigation.stories'
+import {
+  Default as AppLayoutStory,
+  DefaultArgs as AppLayoutStoryArgs,
+} from '@dao-dao/ui/components/layout/AppLayout.stories'
+import { NavigationProps } from '@dao-dao/ui/components/layout/Navigation'
 import { RightSidebarProps } from '@dao-dao/ui/components/layout/RightSidebar'
-import { DefaultArgs as RightSidebarStoryArgs } from '@dao-dao/ui/components/layout/RightSidebar.stories'
 
 export const makeAppLayoutDecorator: (props: {
   navigationProps?: Partial<NavigationProps>
@@ -12,26 +13,21 @@ export const makeAppLayoutDecorator: (props: {
     Partial<Omit<RightSidebarProps, 'children'>>
 }) => DecoratorFn = ({ navigationProps, rightSidebarProps }) =>
   function AppLayoutDecorator(Story) {
-    const [compact, setCompact] = useState(false)
-    const [responsiveNavigation, setResponsiveNavigation] = useState(false)
-
     return (
-      <AppLayout
+      <AppLayoutStory
+        {...AppLayoutStoryArgs}
         navigationProps={{
-          // Use default arguments from the Navigation story.
-          ...NavigationStoryArgs,
-          compact,
-          setCompact,
-          responsiveMenuEnabled: responsiveNavigation,
+          // Allow overriding default arguments from the AppLayout story.
+          ...AppLayoutStoryArgs.navigationProps,
           ...navigationProps,
         }}
         rightSidebarProps={{
-          ...RightSidebarStoryArgs,
+          // Allow overriding default arguments from the AppLayout story.
+          ...AppLayoutStoryArgs.rightSidebarProps,
           ...rightSidebarProps,
         }}
-        toggleResponsiveNavigation={() => setResponsiveNavigation((v) => !v)}
       >
         <Story />
-      </AppLayout>
+      </AppLayoutStory>
     )
   }
