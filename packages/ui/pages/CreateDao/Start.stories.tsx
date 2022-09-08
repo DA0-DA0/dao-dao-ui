@@ -1,19 +1,19 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
-  CreateDaoFormDecorator,
   makeAppLayoutDecorator,
+  makeCreateDaoFormDecorator,
 } from '@dao-dao/storybook/decorators'
 
 import { DaoCreateSidebarCard } from '../../components/dao'
 import { CreateDaoStart } from './Start'
 
 export default {
-  title: 'DAO DAO / packages / ui / pages / CreateDao / CreateDaoStart',
+  title: 'DAO DAO / packages / ui / pages / CreateDao / Start',
   component: CreateDaoStart,
   decorators: [
     // Direct ancestor of rendered story.
-    CreateDaoFormDecorator,
+    makeCreateDaoFormDecorator(),
     makeAppLayoutDecorator({
       rightSidebarProps: {
         children: <DaoCreateSidebarCard step={1} />,

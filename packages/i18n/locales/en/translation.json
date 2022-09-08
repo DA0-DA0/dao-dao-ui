@@ -382,6 +382,7 @@
     "testnet": "Testnet",
     "tierMemberGovTokenAllocationTooltip": "This member will receive {{tokens}} ${{tokenSymbol}} when the DAO is created.",
     "timeLeft": "{{time}} left",
+    "today": "today",
     "token": "token",
     "tokens": "tokens",
     "tokensStaked": "{{amount}} ${{tokenSymbol}} staked",

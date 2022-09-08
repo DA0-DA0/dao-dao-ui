@@ -1,6 +1,6 @@
-export * from './CreateDaoFormDecorator'
 export * from './DaoPageWrapperDecorator'
 export * from './makeAppLayoutDecorator'
+export * from './makeCreateDaoFormDecorator'
 export * from './makeResponsiveNavigationContextDecorator'
 export * from './makeProposalModuleAdapterDecorator'
 export * from './NotificationsDecorator'

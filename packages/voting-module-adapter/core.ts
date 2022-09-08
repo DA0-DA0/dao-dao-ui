@@ -26,6 +26,9 @@ export const getAdapters = (): readonly VotingModuleAdapter[] => [
   FallbackVotingAdapter,
 ]
 
+export const getAdapterById = (id: string) =>
+  getAdapters().find((adapter) => adapter.id === id)
+
 export const matchAdapter = (contractName: string) =>
   getAdapters().find(({ matcher }) => matcher(contractName))
 
