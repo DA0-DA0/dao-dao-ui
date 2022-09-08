@@ -258,7 +258,7 @@ export const Navigation = ({
           </Tooltip>
         ) : (
           <ButtonLink
-            className="mt-12 w-full"
+            className="mt-8 w-full"
             contentContainerClassName="justify-center"
             href="/dao/create"
             size="lg"
@@ -268,7 +268,7 @@ export const Navigation = ({
         )}
       </div>
 
-      <div className={clsx('flex flex-col grow gap-2 justify-end mt-20')}>
+      <div className={clsx('flex flex-col grow gap-2 justify-end mt-8')}>
         {!compact && (
           <div className="space-y-3 font-mono caption-text">
             <p>{t('info.daodaoWithVersion', { version })}</p>
