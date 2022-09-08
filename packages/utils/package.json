@@ -15,10 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "0.28.10",
-    "@cosmjs/math": "^0.28.13",
     "@noahsaso/cosmodal": "0.6.1",
     "ajv": "^8.11.0",
-    "protobufjs": "^7.1.0",
     "react": "18.1.0"
   }
 }

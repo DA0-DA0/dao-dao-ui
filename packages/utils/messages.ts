@@ -5,15 +5,8 @@ import {
   MsgGrant,
   MsgRevoke,
 } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
-import {
-  Description,
-  CommissionRates,
-} from 'cosmjs-types/cosmos/staking/v1beta1/staking'
-import { MsgCreateValidator } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
-import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin'
-import { encodeMsgCreateValidator } from './encoding'
-import { Decimal } from '@cosmjs/math'
+import { MsgCreateValidator } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
 import {
   BankMsg,
@@ -257,29 +250,12 @@ export const makeStargateMessage = (message: {
     case '/cosmos.staking.v1beta1.MsgCreateValidator':
       let msgValue = msg.stargate.value
 
-      // let partial = MsgCreateValidator.fromJSON({
-      //   ...msgValue,
-      //   // description: Description.encode(
-      //   //   Description.fromPartial(msgValue.description)
-      //   // ).finish(),
-      //   // commission: CommissionRates.encode(msgValue.commission).finish(),
-      //   pubkey: {
-      //     typeUrl: msgValue.pubkey.typeUrl,
-      //     value: toBase64(
-      //       PubKey.encode(
-      //         PubKey.fromPartial({
-      //           key: toUtf8(msgValue.pubkey.value.key),
-      //         })
-      //       ).finish()
-      //     ),
-      //   },
-      //   // value: Coin.encode(Coin.fromPartial(msgValue.value)).finish(),
-      // })
-
+      // TODO why does this not encode correctly?
       msg.stargate.value = toBase64(
         MsgCreateValidator.encode(
           MsgCreateValidator.fromPartial({
             ...msgValue,
+            // commission: 'override', // overriding commission gets us past invalid CosmosMsg
             pubkey: {
               typeUrl: msgValue.pubkey.typeUrl,
               value: PubKey.encode(
@@ -292,43 +268,6 @@ export const makeStargateMessage = (message: {
         ).finish()
       )
 
-      // msg.stargate.value = toBase64(
-      //   Uint8Array.from(
-      //     encodeMsgCreateValidator({
-      //       ...msgValue,
-      //       description: {
-      //         typeUrl: '/cosmos.staking.vlbeta1.Description',
-      //         value: Uint8Array.from(
-      //           Description.encode(
-      //             Description.fromPartial(msgValue.description)
-      //           ).finish()
-      //         ),
-      //       },
-      //       commission: {
-      //         typeUrl: '/cosmos.staking.vlbeta1.CommissionRates',
-      //         value: Uint8Array.from(
-      //           CommissionRates.encode(msgValue.commission).finish()
-      //         ),
-      //       },
-      //       pubkey: {
-      //         typeUrl: msgValue.pubkey.typeUrl,
-      //         value: Uint8Array.from(
-      //           PubKey.encode(
-      //             PubKey.fromPartial({
-      //               key: toUtf8(JSON.stringify(msgValue.pubkey.value)),
-      //             })
-      //           ).finish()
-      //         ),
-      //       },
-      //       value: {
-      //         typeUrl: '/cosmos.base.v1beta1.Coin',
-      //         value: Uint8Array.from(
-      //           Coin.encode(Coin.fromPartial(msgValue.value)).finish()
-      //         ),
-      //       },
-      //     }).finish()
-      //   )
-      // )
       break
   }
 

@@ -1,4 +1,3 @@
-import type { MsgCreateValidator } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
 import { NATIVE_DENOM, makeStargateMessage } from '@dao-dao/utils'
