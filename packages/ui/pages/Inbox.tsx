@@ -5,6 +5,7 @@ import {
   DaoDropdown,
   DaoDropdownInfo,
   DropdownOption,
+  PageHeader,
   ProposalContainer,
   ProposalLine,
   ProposalLineProps,
@@ -68,9 +69,7 @@ export const Inbox = ({ daosWithProposals }: InboxProps) => {
 
   return (
     <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl h-full">
-      <p className="h-20 leading-[5rem] border-b border-border-secondary header-text">
-        {t('title.inbox')}
-      </p>
+      <PageHeader title={t('title.inbox')} />
 
       <div className="flex flex-row justify-between items-center mt-10">
         <p className="title-text">

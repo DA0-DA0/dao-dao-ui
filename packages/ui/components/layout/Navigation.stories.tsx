@@ -121,6 +121,7 @@ export const DefaultArgs: NavigationProps = {
   ],
   compact: false,
   setCompact: (compact) => alert(`compact! ${compact}`),
+  responsiveMenuEnabled: true,
 }
 
 export const Default = Template.bind({})

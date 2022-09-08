@@ -8,6 +8,7 @@ import {
   DropdownOption,
   FeaturedDaos,
   GridCardContainer,
+  PageHeader,
 } from '../components'
 import { SortFn, useDropdownSorter } from '../hooks'
 
@@ -34,14 +35,7 @@ export const HomeConnected = ({
 
   return (
     <div className="flex flex-col gap-8 items-center px-6">
-      <p
-        className={clsx(
-          'h-20 leading-[5rem] border-b border-border-secondary header-text',
-          maxWidth
-        )}
-      >
-        {t('title.home')}
-      </p>
+      <PageHeader className={maxWidth} title={t('title.home')} />
 
       <p className={clsx('title-text', maxWidth)}>{t('title.featuredDaos')}</p>
 

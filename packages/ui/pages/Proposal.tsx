@@ -14,12 +14,12 @@ import { IProposalModuleAdapterOptions } from '@dao-dao/proposal-module-adapter'
 import { formatDate } from '@dao-dao/utils'
 
 import {
-  Breadcrumbs,
   Button,
   ButtonLink,
   CopyToClipboardUnderline,
   CosmosMessageDisplay,
   MarkdownPreview,
+  PageHeader,
   ProposalIdDisplay,
 } from '../components'
 
@@ -127,15 +127,15 @@ export const Proposal = ({
 
   return (
     <div className="flex flex-col gap-10 items-stretch px-6 mx-auto max-w-5xl">
-      <div className="flex flex-row items-center h-20 border-b border-border-secondary">
-        <Breadcrumbs
-          crumbs={[
+      <PageHeader
+        breadcrumbs={{
+          crumbs: [
             { href: '/home', label: 'Home' },
             { href: `/dao/${dao.address}`, label: dao.name },
-          ]}
-          current={`${t('title.proposal')} ${proposalId}`}
-        />
-      </div>
+          ],
+          current: `${t('title.proposal')} ${proposalId}`,
+        }}
+      />
 
       <div className="grid grid-cols-[3fr,7fr] gap-[3.5rem]">
         <div>

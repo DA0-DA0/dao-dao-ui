@@ -28,6 +28,7 @@ import {
   CosmosMessageDisplay,
   Loader,
   Logo,
+  PageHeader,
   Tooltip,
 } from '../components'
 
@@ -119,9 +120,7 @@ export const Wallet = ({
 
   return (
     <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl">
-      <p className="h-20 leading-[5rem] border-b border-border-secondary header-text">
-        {t('title.wallet')}
-      </p>
+      <PageHeader title={t('title.wallet')} />
 
       <FormProvider {...formMethods}>
         <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>

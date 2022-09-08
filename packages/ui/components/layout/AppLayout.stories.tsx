@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { AppLayout } from './AppLayout'
 import { NavigationProps } from './Navigation'
 import { Default as NavigatonStory } from './Navigation.stories'
+import { PageHeader, PageHeaderProps } from './PageHeader'
+import { Default as PageHeaderStory } from './PageHeader.stories'
 import { RightSidebarProps } from './RightSidebar'
 import { Default as RightSidebarStory } from './RightSidebar.stories'
 
@@ -14,6 +16,7 @@ export default {
 
 const Template: ComponentStory<typeof AppLayout> = (args) => {
   const [compact, setCompact] = useState(false)
+  const [responsiveNavigation, setResponsiveNavigation] = useState(false)
 
   return (
     <AppLayout
@@ -22,7 +25,9 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
         ...args.navigationProps,
         compact,
         setCompact,
+        responsiveMenuEnabled: responsiveNavigation,
       }}
+      toggleResponsiveNavigation={() => setResponsiveNavigation((v) => !v)}
     />
   )
 }
@@ -31,8 +36,12 @@ export const Default = Template.bind({})
 Default.args = {
   navigationProps: NavigatonStory.args as NavigationProps,
   children: (
-    <div className="flex justify-center items-center h-full">
-      <p>App content</p>
+    <div className="flex flex-col px-6 h-full">
+      <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />
+
+      <div className="flex grow justify-center items-center">
+        <p>App content</p>
+      </div>
     </div>
   ),
   rightSidebarProps: RightSidebarStory.args as RightSidebarProps,

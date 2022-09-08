@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next'
 
 import { ArrowUpRight, Bubble, Code } from '@dao-dao/icons'
 
-import { ButtonLink } from './Button'
+import { ButtonLink } from '../Button'
 
 export const Footer = () => {
   const { t } = useTranslation()
 
   return (
-    <div className="max-w-sm text-text-tertiary">
+    <div className="text-text-tertiary">
       <p className="py-4">{t('splash.footerBeta')}</p>
       <div className="flex flex-col gap-1">
         <FooterItem

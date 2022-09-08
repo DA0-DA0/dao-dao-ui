@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { DaoInfo } from '@dao-dao/common'
 import { ProposalModule } from '@dao-dao/utils'
 
-import { Breadcrumbs, Dropdown } from '../components'
+import { Dropdown, PageHeader } from '../components'
 export interface CreateProposalProps {
   daoInfo: DaoInfo
   isMember: boolean
@@ -37,21 +37,21 @@ export const CreateProposal = ({
 
   return (
     <div className="flex flex-col gap-6 items-stretch px-6 mx-auto max-w-5xl">
-      <div className="flex flex-row justify-between items-center h-20 border-b border-border-secondary">
-        <Breadcrumbs
-          crumbs={[
+      <PageHeader
+        breadcrumbs={{
+          crumbs: [
             { href: '/home', label: 'Home' },
             { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
-          ]}
-          current={t('title.newProposal')}
-        />
-
+          ],
+          current: t('title.newProposal'),
+        }}
+      >
         <Dropdown
           onSelect={setProposalModule}
           options={proposalModuleItems}
           selected={proposalModule}
         />
-      </div>
+      </PageHeader>
 
       {!isMember && (
         <p className="text-text-error caption-text">

@@ -7,11 +7,11 @@ import { validateRequired, validateUrl } from '@dao-dao/utils'
 import { getAdapters } from '@dao-dao/voting-module-adapter'
 
 import {
-  Breadcrumbs,
   BreadcrumbsProps,
   GradientHero,
   ImageSelector,
   InputErrorMessage,
+  PageHeader,
   TextAreaInput,
   TextInput,
 } from '../../components'
@@ -51,12 +51,12 @@ export const CreateDaoStart = ({ extraCrumbs }: CreateDaoStartProps) => {
     // to children instead.
     <form className="flex flex-col items-stretch px-6 mx-auto max-w-6xl">
       <GradientHero>
-        <div className="flex flex-row items-center h-20">
-          <Breadcrumbs
-            crumbs={[{ href: '/home', label: 'Home' }, ...(extraCrumbs ?? [])]}
-            current={t('title.newDao')}
-          />
-        </div>
+        <PageHeader
+          breadcrumbs={{
+            crumbs: [{ href: '/home', label: 'Home' }, ...(extraCrumbs ?? [])],
+            current: t('title.newDao'),
+          }}
+        />
 
         <div className="flex flex-col items-center py-10">
           <ImageSelector

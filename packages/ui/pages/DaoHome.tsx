@@ -6,10 +6,10 @@ import { DaoInfo } from '@dao-dao/common'
 import { formatDate } from '@dao-dao/utils'
 
 import {
-  Breadcrumbs,
   DaoImage,
   GradientHero,
   MarkdownPreview,
+  PageHeader,
   PinToggle,
   SegmentedControls,
 } from '../components'
@@ -45,14 +45,14 @@ export const DaoHome = ({
     // to children instead.
     <div className="flex flex-col items-stretch mx-auto max-w-6xl">
       <GradientHero childContainerClassName="px-6">
-        <div className="flex flex-row gap-6 justify-between items-center h-20">
-          <Breadcrumbs
-            crumbs={[{ href: '/home', label: 'Home' }]}
-            current={daoInfo.name}
-          />
-
+        <PageHeader
+          breadcrumbs={{
+            crumbs: [{ href: '/home', label: 'Home' }],
+            current: daoInfo.name,
+          }}
+        >
           <PinToggle onPin={onPin} pinned={pinned} />
-        </div>
+        </PageHeader>
 
         <div className="flex flex-col items-center py-10">
           <DaoImage imageUrl={daoInfo.imageUrl} size="lg" />

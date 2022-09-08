@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { DaoCardInfo, FeaturedDaos } from '../components'
+import { DaoCardInfo, FeaturedDaos, PageHeader } from '../components'
 
 export interface HomeDisconnectedProps {
   featuredDaos: DaoCardInfo[]
@@ -16,14 +16,7 @@ export const HomeDisconnected = ({ featuredDaos }: HomeDisconnectedProps) => {
 
   return (
     <div className="flex flex-col gap-8 items-center px-6">
-      <p
-        className={clsx(
-          'h-20 leading-[5rem] border-b border-border-secondary header-text',
-          maxWidth
-        )}
-      >
-        {t('title.home')}
-      </p>
+      <PageHeader className={maxWidth} title={t('title.home')} />
 
       <p className={clsx('title-text', maxWidth)}>{t('title.featuredDaos')}</p>
 

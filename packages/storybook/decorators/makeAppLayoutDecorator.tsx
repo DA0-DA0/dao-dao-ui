@@ -13,6 +13,7 @@ export const makeAppLayoutDecorator: (props: {
 }) => DecoratorFn = ({ navigationProps, rightSidebarProps }) =>
   function AppLayoutDecorator(Story) {
     const [compact, setCompact] = useState(false)
+    const [responsiveNavigation, setResponsiveNavigation] = useState(false)
 
     return (
       <AppLayout
@@ -21,12 +22,14 @@ export const makeAppLayoutDecorator: (props: {
           ...NavigationStoryArgs,
           compact,
           setCompact,
+          responsiveMenuEnabled: responsiveNavigation,
           ...navigationProps,
         }}
         rightSidebarProps={{
           ...RightSidebarStoryArgs,
           ...rightSidebarProps,
         }}
+        toggleResponsiveNavigation={() => setResponsiveNavigation((v) => !v)}
       >
         <Story />
       </AppLayout>

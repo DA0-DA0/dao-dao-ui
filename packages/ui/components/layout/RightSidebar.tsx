@@ -2,9 +2,9 @@ import { KeyboardDoubleArrowRight } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ReactNode, useState } from 'react'
 
-import { Footer } from '../Footer'
 import { IconButton } from '../IconButton'
 import { ProfileImage } from '../profile'
+import { Footer } from './Footer'
 
 export interface RightSidebarProps {
   wallet: ReactNode
@@ -22,10 +22,10 @@ export const RightSidebar = ({
   return (
     <>
       <ProfileImage
-        className="absolute top-4 right-4 shadow-dp8 hover:opacity-80 active:opacity-70 transition cursor-pointer xl:hidden"
+        className="absolute top-6 right-4 z-10 shadow-dp8 hover:opacity-80 active:opacity-70 transition cursor-pointer xl:hidden"
         imageUrl={profileImageUrl}
         onClick={() => setResponsiveVisible((v) => !v)}
-        size="sm"
+        size="xs"
       />
 
       <div
@@ -33,7 +33,7 @@ export const RightSidebar = ({
           // General
           'flex flex-col items-stretch p-6 pt-0 w-full bg-background-base transition-all duration-[225ms] sm:w-96',
           // Responsive
-          'absolute top-0 bottom-0 z-10 shadow-dp8',
+          'absolute top-0 bottom-0 z-30 shadow-dp8',
           responsiveVisible
             ? 'right-0 opacity-100'
             : '-right-full opacity-0 sm:-right-96',
@@ -42,13 +42,12 @@ export const RightSidebar = ({
         )}
       >
         {/* Show responsive close button. */}
-        <div className="box-border flex overflow-hidden flex-row justify-end items-start py-4 pr-1 -mr-3 h-20 transition-all xl:py-0 xl:mt-0 xl:max-h-0">
+        <div className="box-border flex overflow-hidden flex-row justify-end items-start py-6 pr-1 -mr-3 h-20 transition-all xl:py-0 xl:mt-0 xl:max-h-0">
           <IconButton
             Icon={KeyboardDoubleArrowRight}
             // Match ProfileImage rounding.
-            className="rounded-xl"
+            circular
             onClick={() => setResponsiveVisible(false)}
-            size="lg"
             variant="secondary"
           />
         </div>
