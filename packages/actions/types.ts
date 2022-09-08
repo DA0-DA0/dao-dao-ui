@@ -13,6 +13,7 @@ export enum ActionKey {
   AuthzAuthorization = 'authzAuthorization',
   AuthzExec = 'authzExec',
   AddCw20 = 'addCw20',
+  CreateValidator = 'createValidator',
   RemoveCw20 = 'removeCw20',
   AddCw721 = 'addCw721',
   RemoveCw721 = 'removeCw721',
