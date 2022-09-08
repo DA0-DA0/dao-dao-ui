@@ -69,28 +69,9 @@ export const DefaultArgs: NavigationProps = {
       ],
     },
     {
-      coreAddress: 'raw',
-      name: 'Raw',
-      imageUrl: '/placeholders/2.svg',
-      subdaos: [
-        {
-          coreAddress: 'payroll',
-          name: 'Payroll',
-          imageUrl: '/placeholders/3.svg',
-        },
-        {
-          coreAddress: 'pool',
-          name: 'Pool distribution',
-          imageUrl: '/placeholders/4.svg',
-          subdaos: [
-            {
-              coreAddress: 'native',
-              name: 'Native tokens',
-              imageUrl: '/placeholders/1.svg',
-            },
-          ],
-        },
-      ],
+      coreAddress: 'core2',
+      name: 'Core 2',
+      imageUrl: '/placeholders/3.svg',
     },
     {
       coreAddress: 'raw',
@@ -115,6 +96,40 @@ export const DefaultArgs: NavigationProps = {
           ],
         },
       ],
+    },
+    {
+      coreAddress: 'core5',
+      name: 'Core 5',
+      imageUrl: '/placeholders/5.svg',
+    },
+    {
+      coreAddress: 'raw',
+      name: 'Raw',
+      imageUrl: '/placeholders/2.svg',
+      subdaos: [
+        {
+          coreAddress: 'payroll',
+          name: 'Payroll',
+          imageUrl: '/placeholders/3.svg',
+        },
+        {
+          coreAddress: 'pool',
+          name: 'Pool distribution',
+          imageUrl: '/placeholders/4.svg',
+          subdaos: [
+            {
+              coreAddress: 'native',
+              name: 'Native tokens',
+              imageUrl: '/placeholders/1.svg',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      coreAddress: 'core4',
+      name: 'Core 4',
+      imageUrl: '/placeholders/4.svg',
     },
     {
       coreAddress: 'animals',

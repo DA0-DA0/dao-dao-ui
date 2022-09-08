@@ -210,10 +210,12 @@ export const Navigation = ({
         >
           <div
             className={clsx(
-              'overflow-y-auto relative sm:max-h-[33vh] styled-scrollbar',
-              compact && 'mt-1 w-min',
-              // Shift scrollbar to the right a bit.
-              !compact && 'pr-5 -mr-5'
+              'overflow-y-auto relative sm:max-h-[33vh]',
+              compact
+                ? // Scrollbar looks weird and not clean when compact. No need.
+                  'mt-1 w-min no-scrollbar'
+                : // Shift scrollbar to the right a bit.
+                  'pr-5 -mr-5 styled-scrollbar'
             )}
             ref={scrollablePinnedContainerRef}
           >
