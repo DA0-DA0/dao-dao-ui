@@ -2,7 +2,7 @@
   "name": "@dao-dao/storybook",
   "version": "0.0.0",
   "scripts": {
-    "build-storybook": "build-storybook",
+    "build": "build-storybook",
     "start": "start-storybook --ci -p 6006",
     "generate": "ts-node --esm ./scripts/generate.ts"
   },
