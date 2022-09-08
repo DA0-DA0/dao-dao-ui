@@ -31,20 +31,22 @@ export const RightSidebar = ({
       <div
         className={clsx(
           // General
-          'flex flex-col items-stretch p-6 pt-0 w-full bg-background-base transition-all sm:w-96',
+          'flex flex-col items-stretch p-6 pt-0 w-full bg-background-base transition-all duration-[225ms] sm:w-96',
           // Responsive
           'absolute top-0 bottom-0 z-10 shadow-dp8',
-          responsiveVisible ? 'right-0' : '-right-full sm:-right-96',
+          responsiveVisible
+            ? 'right-0 opacity-100'
+            : '-right-full opacity-0 sm:-right-96',
           // Large
-          'xl:relative xl:left-0 xl:shrink-0 xl:shadow-none'
+          'xl:relative xl:left-0 xl:shrink-0 xl:shadow-none xl:opacity-100'
         )}
       >
         {/* Show responsive close button. */}
-        <div className="overflow-hidden self-end p-1 -mr-3 h-28 transition-all sm:h-auto xl:max-h-0">
+        <div className="box-border flex overflow-hidden flex-row justify-end items-start py-4 pr-1 -mr-3 h-20 transition-all xl:py-0 xl:mt-0 xl:max-h-0">
           <IconButton
             Icon={KeyboardDoubleArrowRight}
             // Match ProfileImage rounding.
-            className="mt-3 rounded-xl"
+            className="rounded-xl"
             onClick={() => setResponsiveVisible(false)}
             size="lg"
             variant="secondary"
