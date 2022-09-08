@@ -46,12 +46,25 @@ export interface NavigationProps {
   setCompact: (compact: boolean) => void
 }
 
-// Width of `lg` tailwind selector.
-// If this value is changed, change compact button display media query at the
-// bottom of this component so the user can toggle when not forced.
+// Width of `lg` tailwind selector. Don't change this without changing the
+// compact button media query class that shows the compact toggle at the very
+// bottom, so the user can toggle between compact and not compact mode when it
+// is not forced.
 const FORCE_COMPACT_NAVIGATION_AT_WIDTH = 1024
-// Width of `sm` tailwind selector.
+// Width of `sm` tailwind selector. Don't change this without changing all of
+// the `sm:` tailwind class media queries since they are set based on when it is
+// in responsive mobile mode.
 const FORCE_MOBILE_NAVIGATION_AT_WIDTH = 640
+
+// Force off when in responsive mobile mode since it displays full width when
+// open and we can show all details. Force on when larger than mobile but still
+// not very wide since it takes up a lot of space.
+const getForceCompact = () =>
+  window.innerWidth < FORCE_MOBILE_NAVIGATION_AT_WIDTH
+    ? false
+    : window.innerWidth < FORCE_COMPACT_NAVIGATION_AT_WIDTH
+    ? true
+    : undefined
 
 export const Navigation = ({
   setCommandModalVisible,
@@ -67,23 +80,18 @@ export const Navigation = ({
   const { isMac } = usePlatform()
   const { enabled: responsiveEnabled } = useResponsiveNavigationContext()
 
-  // Use screen resize event to determine when compact should be forced.
-  const [forceCompact, setForceCompact] = useState<boolean | undefined>()
+  // Use screen resize to determine when compact should be forced on or off.
+  const [forceCompact, setForceCompact] = useState<boolean | undefined>(
+    // Initialize with correct state to prevent flickering.
+    typeof window === 'undefined' ? true : getForceCompact()
+  )
   useEffect(() => {
     // Only run in browser.
     if (typeof window === 'undefined') {
       return
     }
 
-    const updateForceCompact = () => {
-      setForceCompact(
-        window.innerWidth < FORCE_MOBILE_NAVIGATION_AT_WIDTH
-          ? false
-          : window.innerWidth < FORCE_COMPACT_NAVIGATION_AT_WIDTH
-          ? true
-          : undefined
-      )
-    }
+    const updateForceCompact = () => setForceCompact(getForceCompact())
 
     // Update on initialization.
     updateForceCompact()
