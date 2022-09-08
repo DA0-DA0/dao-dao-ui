@@ -7,9 +7,8 @@ import { getAdapterById } from '@dao-dao/voting-module-adapter'
 
 import {
   BreadcrumbsProps,
-  DaoImage,
+  DaoHeader,
   GradientHero,
-  MarkdownPreview,
   PageHeader,
 } from '../../components'
 
@@ -57,19 +56,12 @@ export const CreateDaoGovernance = ({
           }}
         />
 
-        <div className="flex flex-col items-center py-10">
-          <DaoImage imageUrl={imageUrl} size="lg" />
-
-          <p className="mt-6 text-center hero-text">{name}</p>
-          <p className="mt-2 text-text-tertiary primary-text">
-            {t('info.establishedAbbr')} {t('info.today')}
-          </p>
-
-          <MarkdownPreview
-            className="mt-3 whitespace-pre-wrap body-text"
-            markdown={description}
-          />
-        </div>
+        <DaoHeader
+          description={description}
+          established={t('info.today')}
+          imageUrl={imageUrl}
+          name={name}
+        />
 
         <p className="mt-10 header-text">
           {t(daoCreationAdapter.displayInfo.nameI18nKey)}

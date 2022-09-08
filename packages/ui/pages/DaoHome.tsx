@@ -1,14 +1,12 @@
 import clsx from 'clsx'
 import { ReactNode, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { DaoInfo } from '@dao-dao/common'
 import { formatDate } from '@dao-dao/utils'
 
 import {
-  DaoImage,
+  DaoHeader,
   GradientHero,
-  MarkdownPreview,
   PageHeader,
   PinToggle,
   SegmentedControls,
@@ -36,8 +34,6 @@ export const DaoHome = ({
   subDaosTab,
   membersTab,
 }: DaoHomeProps) => {
-  const { t } = useTranslation()
-
   const [selectedTab, setSelectedTab] = useState(Tab.Proposals)
 
   return (
@@ -54,21 +50,12 @@ export const DaoHome = ({
           <PinToggle onPin={onPin} pinned={pinned} />
         </PageHeader>
 
-        <div className="flex flex-col items-center py-10">
-          <DaoImage imageUrl={daoInfo.imageUrl} size="lg" />
-
-          <p className="mt-6 text-center hero-text">{daoInfo.name}</p>
-          {daoInfo.created && (
-            <p className="mt-2 text-text-tertiary primary-text">
-              {t('info.establishedAbbr')} {formatDate(daoInfo.created)}
-            </p>
-          )}
-
-          <MarkdownPreview
-            className="mt-3 whitespace-pre-wrap body-text"
-            markdown={daoInfo.description}
-          />
-        </div>
+        <DaoHeader
+          description={daoInfo.description}
+          established={daoInfo.created && formatDate(daoInfo.created)}
+          imageUrl={daoInfo.imageUrl}
+          name={daoInfo.name}
+        />
 
         {daoInfoBar}
       </GradientHero>
