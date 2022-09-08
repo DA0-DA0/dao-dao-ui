@@ -67,12 +67,12 @@ export const Inbox = ({ daosWithProposals }: InboxProps) => {
   )
 
   return (
-    <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl">
+    <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl h-full">
       <p className="h-20 leading-[5rem] border-b border-border-secondary header-text">
         {t('title.inbox')}
       </p>
 
-      <div className="flex flex-row justify-between mt-10">
+      <div className="flex flex-row justify-between items-center mt-10">
         <p className="title-text">
           {t('title.numOpenProposals', { count: numOpenProposals })}
         </p>
@@ -84,14 +84,14 @@ export const Inbox = ({ daosWithProposals }: InboxProps) => {
         </div>
       </div>
 
-      <div className="mt-6 space-y-4">
+      <div className="overflow-y-auto grow pb-2 mt-6 space-y-4 styled-scrollbar">
         {sortedDaosWithProposals.map(({ dao, proposals }, index) => (
           <DaoDropdown
             key={index}
             dao={{
               ...dao,
               content: (
-                <ProposalContainer className="mt-4">
+                <ProposalContainer className="px-2 mt-4">
                   {proposals.map(({ props }, index) => (
                     <ProposalLine key={index} {...props} />
                   ))}

@@ -4,8 +4,7 @@ import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export default {
-  title:
-    'DAO DAO / packages / ui / components / profile / ProfileCardWrapper',
+  title: 'DAO DAO / packages / ui / components / profile / ProfileCardWrapper',
   component: ProfileCardWrapper,
 } as ComponentMeta<typeof ProfileCardWrapper>
 
@@ -17,7 +16,7 @@ const Template: ComponentStory<typeof ProfileCardWrapper> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  imgUrl: '/dog_nft.png',
+  imgUrl: '/edamame.png',
   walletName: '@wallet_name',
   established: new Date(),
   underHeaderComponent: <MembershipPill daoName="DAO" isMember={false} />,

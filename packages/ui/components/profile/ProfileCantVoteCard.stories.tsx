@@ -20,7 +20,7 @@ export const Default = Template.bind({})
 Default.args = {
   daoName: 'Dog Dao',
   walletName: '@Modern-Edamame',
-  profileImgUrl: '/dog_nft.png',
+  profileImgUrl: '/edamame.png',
   isMember: false,
   becomeMemberInfo: (
     <ProfileCardNoVoteBecomeMemberInfo
