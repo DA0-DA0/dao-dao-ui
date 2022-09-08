@@ -25,6 +25,7 @@ import { PricePercentChange } from '../PricePercentChange'
 import { ThemeToggle } from '../ThemeToggle'
 import { Tooltip } from '../Tooltip'
 import { PageHeader } from './PageHeader'
+import { useResponsiveNavigationContext } from './ResponsiveNavigationContext'
 import { Row } from './Row'
 
 export interface TokenPrice {
@@ -43,7 +44,6 @@ export interface NavigationProps {
   hideInbox?: boolean
   compact: boolean
   setCompact: (compact: boolean) => void
-  responsiveMenuEnabled: boolean
 }
 
 // Width of `lg` tailwind selector.
@@ -62,10 +62,10 @@ export const Navigation = ({
   hideInbox = false,
   compact,
   setCompact,
-  responsiveMenuEnabled,
 }: NavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
+  const { enabled: responsiveEnabled } = useResponsiveNavigationContext()
 
   // Use screen resize event to determine when compact should be forced.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>()
@@ -140,10 +140,10 @@ export const Navigation = ({
         !compact && 'px-6',
         // Responsive
         'absolute top-0 bottom-0 z-20 w-full',
-        responsiveMenuEnabled ? 'left-0' : '-left-full',
+        responsiveEnabled ? 'left-0' : '-left-full',
         // Large
         'sm:relative sm:left-0',
-        compact ? 'sm:w-auto' : 'sm:w-[264px]'
+        compact ? 'sm:w-min' : 'sm:w-[264px]'
       )}
     >
       <PageHeader

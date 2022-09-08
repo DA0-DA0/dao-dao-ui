@@ -1,13 +1,14 @@
-import { ReactNode } from 'react'
+import { ReactNode, useMemo } from 'react'
 
 import { Navigation, NavigationProps } from './Navigation'
+import { ResponsiveNavigationContext } from './ResponsiveNavigationContext'
 import { RightSidebar, RightSidebarProps } from './RightSidebar'
-import { ToggleResponsiveNavigationContext } from './ToggleResponsiveNavigationContext'
 
 export interface AppLayoutProps {
   navigationProps: NavigationProps
   children: ReactNode
   rightSidebarProps: RightSidebarProps
+  responsiveNavigationEnabled: boolean
   toggleResponsiveNavigation: () => void
 }
 
@@ -15,10 +16,17 @@ export const AppLayout = ({
   navigationProps,
   children,
   rightSidebarProps,
+  responsiveNavigationEnabled,
   toggleResponsiveNavigation,
 }: AppLayoutProps) => (
-  <ToggleResponsiveNavigationContext.Provider
-    value={toggleResponsiveNavigation}
+  <ResponsiveNavigationContext.Provider
+    value={useMemo(
+      () => ({
+        enabled: responsiveNavigationEnabled,
+        toggle: toggleResponsiveNavigation,
+      }),
+      [responsiveNavigationEnabled, toggleResponsiveNavigation]
+    )}
   >
     <div className="flex overflow-hidden relative flex-row items-stretch w-full h-full">
       <Navigation {...navigationProps} />
@@ -29,5 +37,5 @@ export const AppLayout = ({
 
       <RightSidebar {...rightSidebarProps} />
     </div>
-  </ToggleResponsiveNavigationContext.Provider>
+  </ResponsiveNavigationContext.Provider>
 )

@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 
 import { Breadcrumbs, BreadcrumbsProps } from '../Breadcrumbs'
 import { IconButton } from '../IconButton'
-import { useToggleResponsiveNavigationContext } from './ToggleResponsiveNavigationContext'
+import { useResponsiveNavigationContext } from './ResponsiveNavigationContext'
 
 export interface PageHeaderProps {
   title?: string
@@ -22,12 +22,12 @@ export const PageHeader = ({
   noBorder = false,
   children,
 }: PageHeaderProps) => {
-  const toggleResponsiveNavigation = useToggleResponsiveNavigationContext()
+  const { toggle } = useResponsiveNavigationContext()
 
   return (
     <div
       className={clsx(
-        'flex relative flex-row gap-6 items-center h-20',
+        'flex relative flex-row shrink-0 gap-6 items-center h-20',
         !noBorder && 'border-b border-border-secondary',
         className
       )}
@@ -35,7 +35,7 @@ export const PageHeader = ({
       <IconButton
         Icon={Menu}
         className="absolute -left-2 shrink-0 !outline-none sm:hidden"
-        onClick={() => toggleResponsiveNavigation()}
+        onClick={toggle}
         variant="ghost"
       />
 

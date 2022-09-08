@@ -16,7 +16,8 @@ export default {
 
 const Template: ComponentStory<typeof AppLayout> = (args) => {
   const [compact, setCompact] = useState(false)
-  const [responsiveNavigation, setResponsiveNavigation] = useState(false)
+  const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
+    useState(false)
 
   return (
     <AppLayout
@@ -25,9 +26,11 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
         ...args.navigationProps,
         compact,
         setCompact,
-        responsiveMenuEnabled: responsiveNavigation,
       }}
-      toggleResponsiveNavigation={() => setResponsiveNavigation((v) => !v)}
+      responsiveNavigationEnabled={responsiveNavigationEnabled}
+      toggleResponsiveNavigation={() =>
+        setResponsiveNavigationEnabled((v) => !v)
+      }
     />
   )
 }

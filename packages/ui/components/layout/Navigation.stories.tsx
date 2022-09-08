@@ -1,11 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { makeResponsiveNavigationContextDecorator } from '@dao-dao/storybook/decorators/makeResponsiveNavigationContextDecorator'
+
 import { Navigation, NavigationProps } from './Navigation'
 
 export default {
   title: 'DAO DAO / packages / ui / components / layout / Navigation',
   component: Navigation,
+  decorators: [makeResponsiveNavigationContextDecorator(true)],
   excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof Navigation>
 
@@ -121,7 +124,6 @@ export const DefaultArgs: NavigationProps = {
   ],
   compact: false,
   setCompact: (compact) => alert(`compact! ${compact}`),
-  responsiveMenuEnabled: true,
 }
 
 export const Default = Template.bind({})
