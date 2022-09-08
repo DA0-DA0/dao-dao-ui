@@ -259,9 +259,7 @@ export const makeStargateMessage = (message: {
             pubkey: {
               typeUrl: msgValue.pubkey.typeUrl,
               value: PubKey.encode(
-                PubKey.fromPartial({
-                  key: toUtf8(msgValue.pubkey.value.key),
-                })
+                PubKey.fromJSON(msgValue.pubkey.value),
               ).finish(),
             },
           })

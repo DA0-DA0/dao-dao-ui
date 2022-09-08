@@ -49,23 +49,23 @@ const useDefaults: UseDefaults<CreateValidatorData> = () => ({
    * }`, */
   value: `{
     "description": {
-      "moniker": "DAO Validator",
-      "identity": "40DE997A35620049",
-      "website": "https://daodao.zone",
-      "securityContact": "noreply@noreply.com",
-      "details": "A validator created and run by a DAO on DAO DAO."
+      "moniker": "node002",
+      "identity": "",
+      "website": "",
+      "securityContact": "",
+      "details": ""
     },
     "commission": {
-      "rate": "0.050000000000000000",
-      "maxRate": "0.150000000000000000",
-      "maxChangeRate": "0.100000000000000000"
+      "rate": "10",
+      "maxRate": "20",
+      "maxChangeRate": "1"
     },
     "minSelfDelegation": "1",
-    "delegatorAddress": "juno1wthwv7wq7sgw5fu7u3qrtfxss8d2q2jx8wztzwagad4w20azdquseal8ph",
-    "validatorAddress": "junovaloper1wthwv7wq7sgw5fu7u3qrtfxss8d2q2jx8wztzwagad4w20azdqus7q3dz8",
+    "delegatorAddress": "juno1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ys7tlgu0",
+    "validatorAddress": "junovaloper1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ysek3zll",
     "pubkey": {
       "typeUrl": "/cosmos.crypto.ed25519.PubKey",
-      "value": {"@type":"/cosmos.crypto.ed25519.PubKey","key":"3w7URQLq21V9PcNZxLu0RkRFanaXB975uIUxnI+b/BU="}
+      "value": {"@type":"/cosmos.crypto.ed25519.PubKey","key":"S3fuHfCiaU+tRGFlbbVMfxcbAL+hLk44YsLgpC27HQE="}
     },
     "value": {
       "denom": "${NATIVE_DENOM}",
