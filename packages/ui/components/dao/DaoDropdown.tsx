@@ -54,7 +54,7 @@ export const DaoDropdown = ({
     <Link href={`/dao/${coreAddress}`}>
       <a
         className={clsx(
-          'flex flex-row justify-center items-center w-8 h-8 rounded-md hover:opacity-70 active:opacity-60 transition-opacity',
+          'box-content flex flex-row justify-center items-center py-1.5 px-6 w-8 h-8 hover:opacity-70 active:opacity-60 transition-opacity',
           asPath.includes(coreAddress) && 'bg-background-interactive-selected'
         )}
       >

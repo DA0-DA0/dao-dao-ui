@@ -50,10 +50,10 @@ export const Row = ({
   return compact ? (
     <RowWrapper localHref={localHref}>
       <div
-        className={clsx('flex flex-row items-center body-text', {
+        className={clsx('flex flex-row items-center py-2.5 px-6 body-text', {
           'hover:opacity-70 active:opacity-60 transition-opacity cursor-pointer':
             onClick || localHref,
-          'bg-background-interactive-selected rounded-md':
+          'bg-background-interactive-selected':
             localHref && localHref === asPath,
         })}
         onClick={onClick}

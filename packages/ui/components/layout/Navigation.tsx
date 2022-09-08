@@ -73,6 +73,9 @@ export const Navigation = ({
       setForceCompact(window.innerWidth < FORCE_COMPACT_NAVIGATION_AT_WIDTH)
     }
 
+    // Update on initialization.
+    updateForceCompact()
+
     window.addEventListener('resize', updateForceCompact)
     // Clean up on umount
     return () => window.removeEventListener('resize', updateForceCompact)
@@ -115,16 +118,16 @@ export const Navigation = ({
   return (
     <nav
       className={clsx(
-        'flex flex-col shrink-0 justify-between p-6 pt-0 h-full text-lg',
-        compact ? '' : 'space-y-20 w-[264px]'
+        'flex flex-col shrink-0 justify-between py-6 pt-0 h-full text-lg',
+        compact ? '' : 'px-6 space-y-20 w-[264px]'
       )}
     >
-      <div className={clsx(compact && 'space-y-5')}>
+      <div>
         <Link href="/home">
           <a
             className={clsx(
               'flex flex-row gap-2 items-center h-20',
-              !compact && 'mb-2 border-b border-border-secondary'
+              compact ? 'mx-6' : 'mb-2 border-b border-border-secondary'
             )}
           >
             <Logo size={32} />
@@ -179,7 +182,7 @@ export const Navigation = ({
           <div
             className={clsx(
               'overflow-y-auto relative pr-5 -mr-5 max-h-[33vh] styled-scrollbar',
-              compact && 'mt-1 space-y-3 w-min'
+              compact && 'mt-1 w-min'
             )}
             ref={scrollablePinnedContainerRef}
           >
@@ -215,7 +218,7 @@ export const Navigation = ({
           <Tooltip title={t('button.createADAO')}>
             <IconButtonLink
               Icon={Add}
-              className=""
+              className="mx-6 mt-3"
               href="/dao/create"
               variant="primary"
             />
@@ -253,7 +256,7 @@ export const Navigation = ({
       <div
         className={clsx(
           'flex gap-2 !mt-8',
-          compact ? 'flex-col grow justify-end' : 'flex-row items-center'
+          compact ? 'flex-col grow justify-end mx-6' : 'flex-row items-center'
         )}
       >
         {compact ? (
@@ -268,7 +271,7 @@ export const Navigation = ({
           Icon={compact ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft}
           circular
           // Can only manually set compact on large screen
-          className="hidden lg:flex"
+          className={clsx('hidden lg:flex', compact && 'mx-6')}
           onClick={() => setCompact(!compact)}
           size={compact ? 'default' : 'xl'}
           variant="secondary"
