@@ -1,2 +1,5 @@
-# Storybook environment variables.
+# Storybook environment variables
 !.env
+
+# Storybook build
+storybook-static
