@@ -22,7 +22,7 @@ export const RightSidebar = ({
   return (
     <>
       <ProfileImage
-        className="absolute top-6 right-4 z-10 shadow-dp8 hover:opacity-80 active:opacity-70 transition cursor-pointer xl:hidden"
+        className="absolute top-6 right-4 z-10 shadow-dp4 hover:opacity-80 active:opacity-70 transition cursor-pointer xl:hidden"
         imageUrl={profileImageUrl}
         onClick={() => setResponsiveVisible((v) => !v)}
         size="xs"

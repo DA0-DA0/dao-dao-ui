@@ -18,7 +18,7 @@ export const Default = Template.bind({})
 // `makeAppLayoutDecorator`.
 Default.args = {
   walletName: '@Modern-Edamame',
-  profileImgUrl: '/edamame.png',
+  profileImgUrl: '/noah.jpg',
   established: new Date(),
   tokenSymbol: 'JUNO',
   unstakedBalance: 2400.111111,

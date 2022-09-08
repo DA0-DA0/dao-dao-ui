@@ -19,7 +19,7 @@ Default.args = {
   votingPower: 32.4,
   daoName: 'Dog Dao',
   walletName: '@Modern-Edamame',
-  profileImgUrl: '/edamame.png',
+  profileImgUrl: '/noah.jpg',
   loading: false,
   options: [
     { Icon: Check, label: 'Yes', value: 'yes' },
