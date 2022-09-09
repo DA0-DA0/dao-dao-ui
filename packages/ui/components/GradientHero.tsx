@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, useMemo } from 'react'
 
 import { useThemeContext } from '../theme'
 
@@ -14,15 +14,25 @@ export const GradientHero = ({
   childContainerClassName,
 }: GradientHeroProps) => {
   const { accentColor } = useThemeContext()
-  const baseRgb = accentColor
-    ? accentColor.split('(')[1].split(')')[0]
-    : 'var(--v2-brand)'
+  const baseRgb = useMemo(
+    () =>
+      (accentColor &&
+        // Convert to rgba with alpha of 0.4 if in rgb format.
+        (accentColor.startsWith('rgb')
+          ? `rgba(${accentColor.split('(')[1].split(')')[0]}, 0.4)`
+          : // Add alpha of #66 in hex (102, 40% of 255, in decimal) if hex format.
+          accentColor.startsWith('#')
+          ? `${accentColor.slice(0, 7)}66`
+          : undefined)) ||
+      'rgba(var(--v2-brand), 0.4)',
+    [accentColor]
+  )
 
   return (
     <div
       className={wrapperClassName}
       style={{
-        background: `linear-gradient(180deg, rgba(${baseRgb}, 0.4) 0%, rgba(var(--color-background-base), 0) 100%)`,
+        background: `linear-gradient(180deg, ${baseRgb} 0%, rgba(var(--color-background-base), 0) 100%)`,
       }}
     >
       <div

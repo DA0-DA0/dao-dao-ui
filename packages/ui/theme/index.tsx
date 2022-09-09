@@ -1,8 +1,10 @@
 import {
   PropsWithChildren,
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react'
 
@@ -18,7 +20,8 @@ export interface IThemeContext {
   theme: Theme
   themeChangeCount: number
   updateTheme: UpdateThemeFn
-  accentColor?: string
+  // Automatically falls back to brand color.
+  accentColor: string
   setAccentColor: SetAccentColorFn
 }
 
@@ -30,6 +33,7 @@ export const DEFAULT_THEME: IThemeContext = {
   updateTheme: (themeName: string) => {
     console.error(`do-nothing update for ${themeName}`)
   },
+  accentColor: '',
   setAccentColor: (accentColor: string | undefined) => {
     console.error(`do-nothing update for ${accentColor}`)
   },
@@ -42,22 +46,50 @@ export const ThemeProvider = ({
   theme,
   themeChangeCount,
   updateTheme,
-  accentColor,
-  setAccentColor,
-}: PropsWithChildren<IThemeContext>) => (
-  <ThemeContext.Provider
-    value={{
-      ...DEFAULT_THEME,
-      theme,
-      themeChangeCount,
-      updateTheme,
-      accentColor,
-      setAccentColor,
-    }}
-  >
-    {children}
-  </ThemeContext.Provider>
-)
+}: PropsWithChildren<
+  Omit<IThemeContext, 'accentColor' | 'setAccentColor'>
+>) => {
+  // This is the same as the `useNamedThemeColor` hook, but that hook assumes it
+  // is wrapped in this ThemeProvider, so let's just get the brand manually.
+  const [brandRgb, setBrandRgb] = useState<string | undefined>(
+    getNamedColorFromDOM('brand')
+  )
+  useEffect(
+    () => {
+      setBrandRgb(getNamedColorFromDOM('brand'))
+    },
+    // Re-fetch color when theme changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [themeChangeCount]
+  )
+
+  const [accentColor, _setAccentColor] = useState(
+    `rgb(${brandRgb || '123, 97, 255'})`
+  )
+  const setAccentColor = useCallback(
+    (accentColor: string | undefined) =>
+      _setAccentColor(accentColor || `rgb(${brandRgb})`),
+    [brandRgb]
+  )
+
+  return (
+    <ThemeContext.Provider
+      value={useMemo(
+        () => ({
+          ...DEFAULT_THEME,
+          theme,
+          themeChangeCount,
+          updateTheme,
+          accentColor,
+          setAccentColor,
+        }),
+        [accentColor, setAccentColor, theme, themeChangeCount, updateTheme]
+      )}
+    >
+      {children}
+    </ThemeContext.Provider>
+  )
+}
 
 export const useThemeContext = () => useContext(ThemeContext)
 

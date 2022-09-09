@@ -25,7 +25,6 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [_theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
-  const [accentColor, setAccentColor] = useState<string | undefined>()
 
   const isHomepage = router.pathname === '/'
   // Always display the homepage with dark theme.
@@ -47,8 +46,6 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
 
   return (
     <ThemeProvider
-      accentColor={accentColor}
-      setAccentColor={setAccentColor}
       theme={theme}
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}

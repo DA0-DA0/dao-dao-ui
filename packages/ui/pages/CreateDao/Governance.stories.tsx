@@ -16,11 +16,12 @@ export default {
     makeCreateDaoFormDecorator({
       name: 'Evil Cow DAO',
       description: "There are evil cows all over the place. Let's milk 'em!",
-      imageUrl: '/dog_nft.png',
+      imageUrl:
+        'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
     }),
     makeAppLayoutDecorator({
       rightSidebarProps: {
-        children: <DaoCreateSidebarCard step={1} />,
+        children: <DaoCreateSidebarCard step={2} />,
       },
     }),
   ],

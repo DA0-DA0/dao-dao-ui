@@ -19,7 +19,6 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
-  const [accentColor, setAccentColor] = useState<string | undefined>()
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -36,8 +35,6 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
 
   return (
     <ThemeProvider
-      accentColor={accentColor}
-      setAccentColor={setAccentColor}
       theme={theme}
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
