@@ -90,6 +90,9 @@
       "membership": "By invitation",
       "name": "Membership DAO (Multisig)",
       "supplies": "None"
+    },
+    "cw-proposal-single": {
+      "advancedWarning": "These are advanced features. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass."
     }
   },
   "emoji": {
@@ -216,6 +219,7 @@
     "requireProposalDepositTitle": "Require proposal deposit",
     "requireProposalDepositTooltip": "If enabled, requires that tokens are deposited to create a proposal.",
     "selectAnImage": "Select an image",
+    "showAdvancedSettings": "Show advanced settings",
     "smartContractAddress": "Smart Contract Address",
     "tierNameTitle": "Tier name",
     "tierNameTooltip": "The \"class\" of member. For example: \"Core developers\" or \"friends and family.\" These names are only for your reference.",
@@ -459,6 +463,7 @@
     "addCw20ToTreasury": "Display Token Balance in Treasury",
     "addCw721ToTreasury": "Display NFT Collection in Treasury",
     "addresses": "Addresses",
+    "advancedConfiguration": "Advanced configuration",
     "allVotes": "All votes",
     "apr": "APR",
     "aprReward": "APR reward",

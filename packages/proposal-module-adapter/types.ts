@@ -82,7 +82,7 @@ export type ProposalModuleAdapter<DaoCreationConfig = any> = {
 
     votingConfigurationItems: DaoCreationConfigItem[]
     votingConfigurationAdvancedItems?: DaoCreationConfigItem[]
-    votingConfigurationAdvancedWarnings?: string[]
+    votingConfigurationAdvancedWarningI18nKeys?: string[]
   }
 }
 

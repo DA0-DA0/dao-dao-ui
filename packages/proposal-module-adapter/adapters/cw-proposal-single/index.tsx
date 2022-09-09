@@ -22,6 +22,7 @@ import {
   ProposalVotes,
 } from './components'
 import {
+  AllowRevotingVotingConfigurationItem,
   ProposalDepositVotingConfigurationItem,
   VotingDurationVotingConfigurationItem,
 } from './daoCreation'
@@ -128,6 +129,10 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
       votingConfigurationItems: [
         VotingDurationVotingConfigurationItem,
         ProposalDepositVotingConfigurationItem,
+      ],
+      votingConfigurationAdvancedItems: [AllowRevotingVotingConfigurationItem],
+      votingConfigurationAdvancedWarningI18nKeys: [
+        'daoCreationAdapter.cw-proposal-single.advancedWarning',
       ],
     },
   }

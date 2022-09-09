@@ -167,7 +167,7 @@ export type VotingModuleAdapter<DaoCreationConfig = any> = {
     GovernanceConfiguration: ComponentType
     votingConfigurationItems: DaoCreationConfigItem[]
     votingConfigurationAdvancedItems?: DaoCreationConfigItem[]
-    votingConfigurationAdvancedWarnings?: string[]
+    votingConfigurationAdvancedWarningI18nKeys?: string[]
   }
 }
 

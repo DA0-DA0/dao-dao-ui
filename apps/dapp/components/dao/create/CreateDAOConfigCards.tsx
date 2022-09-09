@@ -418,7 +418,7 @@ export const CreateDAORefundFailedProposalDepositCard = ({
           readOnly={readOnly}
           setValue={setValue}
           sizing="sm"
-          watch={watch}
+          value={refundFailed}
         />
       )}
     </CreateDAOConfigCard>
@@ -532,7 +532,7 @@ export const CreateDAOAllowRevotingCard = ({
           readOnly={readOnly}
           setValue={setValue}
           sizing="sm"
-          watch={watch}
+          value={allowRevoting}
         />
       )}
     </CreateDAOConfigCard>

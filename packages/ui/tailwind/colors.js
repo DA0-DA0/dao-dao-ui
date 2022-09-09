@@ -37,6 +37,7 @@ const colors = {
     'color-active',
     'color-error',
     'color-valid',
+    'color-warning',
 
     /* Text */
     'text-primary',
@@ -48,6 +49,8 @@ const colors = {
     'text-interactive-active',
     'text-interactive-error',
     'text-interactive-valid',
+    'text-interactive-warning-title',
+    'text-interactive-warning-body',
     'text-button-primary',
     'text-button-disabled',
 
@@ -60,6 +63,7 @@ const colors = {
     'icon-interactive-active',
     'icon-interactive-error',
     'icon-interactive-valid',
+    'icon-interactive-warning',
     'icon-button-primary',
     'icon-button-disabled',
 
@@ -88,6 +92,7 @@ const colors = {
     'background-interactive-active',
     'background-interactive-error',
     'background-interactive-valid',
+    'background-interactive-warning',
     'background-button-hover',
     'background-button-pressed',
     'background-button-progress',

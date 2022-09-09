@@ -95,6 +95,7 @@ input[type='number']::-webkit-outer-spin-button {
     --v2-active: 179, 160, 255;
     --v2-error: 199, 62, 89;
     --v2-valid: 57, 166, 153;
+    --v2-warning: 255, 217, 102;
 
     --color-vanta: rgb(var(--v2-vanta));
     --color-black: rgb(var(--v2-black));
@@ -105,6 +106,7 @@ input[type='number']::-webkit-outer-spin-button {
     --color-active: rgb(var(--v2-active));
     --color-error: rgb(var(--v2-error));
     --color-valid: rgb(var(--v2-valid));
+    --color-warning: rgb(var(--v2-warning));
 
     --color-background-base: var(--v2-white);
 
@@ -119,6 +121,8 @@ input[type='number']::-webkit-outer-spin-button {
     --text-interactive-active: rgba(var(--v2-active), 0.95);
     --text-interactive-error: rgba(var(--v2-error), 0.95);
     --text-interactive-valid: rgba(var(--v2-valid), 0.95);
+    --text-interactive-warning-title: rgba(var(--v2-warning), 0.95);
+    --text-interactive-warning-body: rgba(var(--v2-warning), 0.7);
     --text-button-primary: rgba(var(--v2-white), 0.95);
     --text-button-disabled: rgba(var(--v2-light), 0.75);
 
@@ -131,6 +135,7 @@ input[type='number']::-webkit-outer-spin-button {
     --icon-interactive-active: rgba(var(--v2-active), 0.9);
     --icon-interactive-error: rgba(var(--v2-error), 0.9);
     --icon-interactive-valid: rgba(var(--v2-valid), 0.9);
+    --icon-interactive-warning: rgba(var(--v2-warning), 0.9);
     --icon-button-primary: rgba(var(--v2-light), 0.95);
     --icon-button-disabled: rgba(var(--v2-light), 0.7);
 
@@ -159,6 +164,7 @@ input[type='number']::-webkit-outer-spin-button {
     --background-interactive-active: rgba(var(--v2-brand), 0.25);
     --background-interactive-error: rgba(var(--v2-error), 0.15);
     --background-interactive-valid: rgba(var(--v2-valid), 0.08);
+    --background-interactive-warning: rgba(var(--v2-warning), 0.05);
     --background-button-hover: rgba(var(--v2-black), 0.95);
     --background-button-pressed: rgba(var(--v2-vanta), 1);
     --background-button-progress: rgba(var(--v2-dark), 0.75);

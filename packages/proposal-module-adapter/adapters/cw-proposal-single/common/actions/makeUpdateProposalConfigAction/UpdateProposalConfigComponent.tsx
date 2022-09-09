@@ -88,7 +88,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
               readOnly={!isCreating}
               setValue={setValue}
               sizing="sm"
-              watch={watch}
+              value={watch(fieldNamePrefix + 'depositRequired')}
             />
           </div>
         )}
@@ -107,7 +107,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             readOnly={!isCreating}
             setValue={setValue}
             sizing="sm"
-            watch={watch}
+            value={watch(fieldNamePrefix + 'onlyMembersExecute')}
           />
         </div>
       </div>
@@ -157,7 +157,9 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 readOnly={!isCreating}
                 setValue={setValue}
                 sizing="sm"
-                watch={watch}
+                value={watch(
+                  fieldNamePrefix + 'depositInfo.refundFailedProposals'
+                )}
               />
             </div>
           </div>
@@ -222,7 +224,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
               readOnly={!isCreating}
               setValue={setValue}
               sizing="sm"
-              watch={watch}
+              value={watch(fieldNamePrefix + 'quorumEnabled')}
             />
           </div>
 
@@ -350,7 +352,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
             fieldName={fieldNamePrefix + 'allowRevoting'}
             readOnly={!isCreating}
             setValue={setValue}
-            watch={watch}
+            value={watch(fieldNamePrefix + 'allowRevoting')}
           />
         </div>
       </div>

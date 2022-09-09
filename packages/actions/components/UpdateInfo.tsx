@@ -100,7 +100,7 @@ export const UpdateInfoComponent: ActionComponent<
                 readOnly={!isCreating}
                 setValue={setValue}
                 sizing="sm"
-                watch={watch}
+                value={watch(fieldNamePrefix + 'automatically_add_cw20s')}
               />
             </div>
             <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
@@ -118,7 +118,7 @@ export const UpdateInfoComponent: ActionComponent<
                 readOnly={!isCreating}
                 setValue={setValue}
                 sizing="sm"
-                watch={watch}
+                value={watch(fieldNamePrefix + 'automatically_add_cw721s')}
               />
             </div>
           </div>
