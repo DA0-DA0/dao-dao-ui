@@ -250,20 +250,16 @@ export const makeStargateMessage = (message: {
     case '/cosmos.staking.v1beta1.MsgCreateValidator':
       let msgValue = msg.stargate.value
 
-      // TODO why does this not encode correctly?
       msg.stargate.value = toBase64(
-        MsgCreateValidator.encode(
-          MsgCreateValidator.fromPartial({
-            ...msgValue,
-            // commission: 'override', // overriding commission gets us past invalid CosmosMsg
-            pubkey: {
-              typeUrl: msgValue.pubkey.typeUrl,
-              value: PubKey.encode(
-                PubKey.fromJSON(msgValue.pubkey.value)
-              ).finish(),
-            },
-          })
-        ).finish()
+        MsgCreateValidator.encode({
+          ...msgValue,
+          pubkey: {
+            typeUrl: msgValue.pubkey.typeUrl,
+            value: PubKey.encode(
+              PubKey.fromJSON(msgValue.pubkey.value)
+            ).finish(),
+          },
+        }).finish()
       )
 
       break

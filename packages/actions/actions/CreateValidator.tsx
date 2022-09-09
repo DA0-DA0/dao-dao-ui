@@ -22,40 +22,6 @@ interface CreateValidatorData {
 
 const useDefaults: UseDefaults<CreateValidatorData> = () => ({
   type_url: '/cosmos.staking.v1beta1.MsgCreateValidator',
-  /* value: `{
-   *   "description": {
-   *     "moniker": "<Validator name>",
-   *     "identity": "<optional identity signature (ex. UPort or Keybase)>",
-   *     "website": "<Your validator website>",
-   *     "securityContact": "<optional security contact email>",
-   *     "details": "<Description of your validator>"
-   *   },
-   *   "commission": {
-   *     "rate": "0.05",
-   *     "maxRate": "0.1",
-   *     "maxChangeRate": "0.1"
-   *   },
-   *   "minSelfDelegation": "1",
-   *   "delegatorAddress": "<YOUR DAO ADDRESS>",
-   *   "validatorAddress": "<YOUR DAO ADDRESS>",
-   *   "pubkey": {
-   *     "typeUrl": "/cosmos.crypto.secp256k1.PubKey",
-   *     "value": "<junovaloper address of the node (run: junod tendermint show)>"
-   *   },
-   *   "value": {
-   *     "denom": "${NATIVE_DENOM}",
-   *     "amount": "1"
-   *   }
-   * }`, */
-
-  // WARNING: Commission rates NOT decimals in the protobuf: https://github.com/cosmos/cosmos-sdk/issues/10863
-  // They are stored as 'ints' inside of strings, interpreted like so: `rate = string(int(decimal_rate * 10**18))`
-  //
-  // Ex:
-  // * rate = 0.05 -> 50000000000000000
-  // * maxRate = 0.1 -> 100000000000000000
-  // * maxChangeRate = 0.1 -> 100000000000000000
-
   value: `{
     "description": {
       "moniker": "DAO Validator",
