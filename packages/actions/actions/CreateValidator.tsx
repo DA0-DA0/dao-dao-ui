@@ -47,6 +47,15 @@ const useDefaults: UseDefaults<CreateValidatorData> = () => ({
    *     "amount": "1"
    *   }
    * }`, */
+
+  // WARNING: Commission rates NOT decimals in the protobuf: https://github.com/cosmos/cosmos-sdk/issues/10863
+  // They are stored as 'ints' inside of strings, interpreted like so: `rate = string(int(decimal_rate * 10**18))`
+  //
+  // Ex:
+  // * rate = 0.05 -> 50000000000000000
+  // * maxRate = 0.1 -> 100000000000000000
+  // * maxChangeRate = 0.1 -> 100000000000000000
+
   value: `{
     "description": {
       "moniker": "DAO Validator",
@@ -56,9 +65,9 @@ const useDefaults: UseDefaults<CreateValidatorData> = () => ({
       "details": "A validator created and run by a DAO on DAO DAO."
     },
     "commission": {
-      "rate": "10",
-      "maxRate": "20",
-      "maxChangeRate": "1"
+      "rate": "50000000000000000",
+      "maxRate": "100000000000000000",
+      "maxChangeRate": "100000000000000000"
     },
     "minSelfDelegation": "1",
     "delegatorAddress": "juno1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ys7tlgu0",
