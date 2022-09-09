@@ -79,6 +79,9 @@
     "prompt": "What are you looking for?"
   },
   "daoCreationAdapter": {
+    "cw-proposal-single": {
+      "advancedWarning": "These are advanced features. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass."
+    },
     "cw20-staked-balance-voting": {
       "description": "Fluid organization with many members who can join and leave as they wish. Members can alter their governance power and participation by exchanging tokens.",
       "membership": "By staking tokens",
@@ -90,9 +93,6 @@
       "membership": "By invitation",
       "name": "Membership DAO (Multisig)",
       "supplies": "None"
-    },
-    "cw-proposal-single": {
-      "advancedWarning": "These are advanced features. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass."
     }
   },
   "emoji": {
@@ -132,6 +132,7 @@
     "createProposalSubmitInvalid": "Correct the errors above before previewing or publishing.",
     "daoIsPaused": "You cannot create a proposal when the DAO is paused.",
     "daoNotFound": "DAO not found.",
+    "descriptionTooLong": "A DAO's description must be less than or equal to {{max}} characters long.",
     "errorOccurredOnPage": "An error occured on this page.",
     "failedParsingCoreVersion": "Failed to determine core version.",
     "failedToGetTokenInfo": "Failed to get token info. Please enter a valid CW20 contract address.",
@@ -143,6 +144,7 @@
     "invalidExecuteMessage": "Invalid execute message",
     "loadingData": "Failed to load data.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
+    "nameIncorrectLength": "A DAO's name must be between {{min}} and {{max}} characters.",
     "noGovTokenAddr": "You didn't provide an address for your governance token.",
     "noGovTokenInfo": "You didn't give enough information about your governance token.",
     "noMembers": "You haven't added any members to your DAO",

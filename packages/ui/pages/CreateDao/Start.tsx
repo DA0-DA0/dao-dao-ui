@@ -3,7 +3,13 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { NewDao } from '@dao-dao/tstypes'
-import { validateRequired, validateUrl } from '@dao-dao/utils'
+import {
+  MAX_DAO_DESCRIPTION_LENGTH,
+  MAX_DAO_NAME_LENGTH,
+  MIN_DAO_NAME_LENGTH,
+  validateRequired,
+  validateUrl,
+} from '@dao-dao/utils'
 import { getAdapters } from '@dao-dao/voting-module-adapter'
 
 import {
@@ -83,7 +89,17 @@ export const CreateDaoStart = ({ extraCrumbs }: CreateDaoStartProps) => {
               fieldName="name"
               placeholder={t('form.daoNamePlaceholder')}
               register={register}
-              validation={[validateRequired]}
+              validation={[
+                validateRequired,
+
+                (value) =>
+                  (value.length >= MIN_DAO_NAME_LENGTH &&
+                    value.length <= MAX_DAO_NAME_LENGTH) ||
+                  t('error.nameIncorrectLength', {
+                    min: MIN_DAO_NAME_LENGTH,
+                    max: MAX_DAO_NAME_LENGTH,
+                  }),
+              ]}
             />
             <InputErrorMessage error={errors.name} />
           </div>
@@ -94,7 +110,7 @@ export const CreateDaoStart = ({ extraCrumbs }: CreateDaoStartProps) => {
             <span className="text-text-tertiary">
               {/* eslint-disable-next-line i18next/no-literal-string */}
               {' – '}
-              {t('form.maxCharacters', { max: 130 })}
+              {t('form.maxCharacters', { max: MAX_DAO_DESCRIPTION_LENGTH })}
             </span>
           </p>
 
@@ -105,7 +121,14 @@ export const CreateDaoStart = ({ extraCrumbs }: CreateDaoStartProps) => {
               placeholder={t('form.daoDescriptionPlaceholder')}
               register={register}
               rows={5}
-              validation={[validateRequired]}
+              validation={[
+                validateRequired,
+                (value) =>
+                  value.length <= MAX_DAO_DESCRIPTION_LENGTH ||
+                  t('error.descriptionTooLong', {
+                    max: MAX_DAO_DESCRIPTION_LENGTH,
+                  }),
+              ]}
             />
             <InputErrorMessage error={errors.description} />
           </div>

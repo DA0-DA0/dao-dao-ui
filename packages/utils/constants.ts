@@ -97,13 +97,17 @@ export const CWPROPOSALMULTIPLE_CONTRACT_NAME = process.env
 
 export const JUNO_BLOCKS_PER_YEAR = 5086451
 
-// DAO Name min/max defined in cw-core.
+// DAO name min/max and description max defined in cw-core.
 export const MIN_DAO_NAME_LENGTH = parseInt(
   process.env.NEXT_PUBLIC_MIN_DAO_NAME_LENGTH || '3',
   10
 )
 export const MAX_DAO_NAME_LENGTH = parseInt(
   process.env.NEXT_PUBLIC_MAX_DAO_NAME_LENGTH || '50',
+  10
+)
+export const MAX_DAO_DESCRIPTION_LENGTH = parseInt(
+  process.env.NEXT_PUBLIC_MAX_DAO_DESCRIPTION_LENGTH || '130',
   10
 )
 
