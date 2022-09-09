@@ -21,6 +21,7 @@ import {
   ProposalVoteDecisionStatus,
   ProposalVotes,
 } from './components'
+import { VotingDurationVotingConfigurationItem } from './daoCreation'
 import { makeGetProposalInfo } from './functions'
 import {
   useProfileVoteCardOptions,
@@ -120,5 +121,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
         },
         allowRevoting: false,
       },
+
+      votingConfigurationItems: [VotingDurationVotingConfigurationItem],
     },
   }

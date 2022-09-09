@@ -10,7 +10,7 @@ import {
   SdaMembershipPage,
   VoteHeroStats,
 } from './components'
-import { DisplayInfoIcon } from './daoCreation'
+import { DisplayInfoIcon, GovernanceConfiguration } from './daoCreation'
 import { useActions } from './hooks'
 
 export const Cw4VotingAdapter: VotingModuleAdapter = {
@@ -60,5 +60,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
       membershipI18nKey: 'daoCreationAdapter.cw4-voting.membership',
     },
     defaultConfig: {},
+    GovernanceConfiguration,
+    votingConfigurationItems: [],
   },
 }

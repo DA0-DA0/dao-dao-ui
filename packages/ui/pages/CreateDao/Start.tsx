@@ -49,8 +49,8 @@ export const CreateDaoStart = ({ extraCrumbs }: CreateDaoStartProps) => {
   return (
     // No container padding because we want the gradient to expand. Apply px-6
     // to children instead.
-    <form className="flex flex-col items-stretch px-6 mx-auto max-w-6xl">
-      <GradientHero>
+    <form className="flex flex-col items-stretch mx-auto max-w-6xl">
+      <GradientHero childContainerClassName="px-6">
         <PageHeader
           breadcrumbs={{
             crumbs: [{ href: '/home', label: 'Home' }, ...(extraCrumbs ?? [])],
@@ -73,7 +73,7 @@ export const CreateDaoStart = ({ extraCrumbs }: CreateDaoStartProps) => {
         </div>
       </GradientHero>
 
-      <div className="bg-background-tertiary rounded-lg">
+      <div className="mx-6 bg-background-tertiary rounded-lg">
         <div className="flex flex-row gap-6 justify-between items-center py-4 px-6 border-b border-border-secondary">
           <p className="text-text-body primary-text">{t('form.daoName')}</p>
 
@@ -112,11 +112,11 @@ export const CreateDaoStart = ({ extraCrumbs }: CreateDaoStartProps) => {
         </div>
       </div>
 
-      <p className="my-6 text-text-body title-text">
+      <p className="m-6 text-text-body title-text">
         {t('title.chooseAStructure')}
       </p>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 mx-6 xl:grid-cols-2 2xl:grid-cols-3">
         {daoCreationAdapters.map(
           ({
             id,

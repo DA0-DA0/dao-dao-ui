@@ -44,11 +44,13 @@ export const CreateDaoGovernance = ({
     throw new Error(t('error.loadingData'))
   }
 
+  const { GovernanceConfiguration } = daoCreationAdapter
+
   return (
     // No container padding because we want the gradient to expand. Apply px-6
     // to children instead.
-    <form className="flex flex-col items-stretch px-6 mx-auto max-w-6xl">
-      <GradientHero>
+    <form className="flex flex-col items-stretch mx-auto max-w-6xl">
+      <GradientHero childContainerClassName="px-6">
         <PageHeader
           breadcrumbs={{
             crumbs: [{ href: '/home', label: 'Home' }, ...(extraCrumbs ?? [])],
@@ -63,10 +65,15 @@ export const CreateDaoGovernance = ({
           name={name}
         />
 
-        <p className="mt-10 header-text">
+        {/* TODO: Placeholder, remove */}
+        <p className="mt-10 text-center header-text">
           {t(daoCreationAdapter.displayInfo.nameI18nKey)}
         </p>
       </GradientHero>
+
+      <div className="mx-6">
+        <GovernanceConfiguration />
+      </div>
     </form>
   )
 }
