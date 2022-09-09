@@ -2,12 +2,10 @@ import { ComponentType, ReactNode } from 'react'
 
 import { SuspenseLoader } from '@dao-dao/common'
 
-import { CornerGradient } from '../../CornerGradient'
 import { Loader as DefaultLoader, LoaderProps } from '../../Loader'
 import { TooltipInfoIcon } from '../../TooltipInfoIcon'
 
 export interface DaoCreateConfigCardProps {
-  accentColor?: string
   Icon: ComponentType
   name: string
   description: string
@@ -17,7 +15,6 @@ export interface DaoCreateConfigCardProps {
 }
 
 export const DaoCreateConfigCard = ({
-  accentColor,
   Icon,
   name,
   description,
@@ -26,7 +23,6 @@ export const DaoCreateConfigCard = ({
   Loader = DefaultLoader,
 }: DaoCreateConfigCardProps) => (
   <div className="flex relative flex-col bg-background-tertiary rounded-lg">
-    {accentColor && <CornerGradient color={accentColor} />}
     {tooltip && (
       <TooltipInfoIcon className="absolute top-3 right-3" title={tooltip} />
     )}

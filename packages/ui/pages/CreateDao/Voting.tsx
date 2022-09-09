@@ -90,7 +90,6 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
             (
               {
                 onlyDisplayCondition,
-                accentColor,
                 Icon,
                 nameI18nKey,
                 descriptionI18nKey,
@@ -104,7 +103,6 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                 <DaoCreateConfigCard
                   key={index}
                   Icon={Icon}
-                  accentColor={accentColor}
                   description={t(descriptionI18nKey)}
                   input={
                     <Input
@@ -145,7 +143,6 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                 (
                   {
                     onlyDisplayCondition,
-                    accentColor,
                     Icon,
                     nameI18nKey,
                     descriptionI18nKey,
@@ -159,7 +156,6 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                     <DaoCreateConfigCard
                       key={`${index}:${itemIndex}`}
                       Icon={Icon}
-                      accentColor={accentColor}
                       description={t(descriptionI18nKey)}
                       input={
                         <Input

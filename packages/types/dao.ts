@@ -39,7 +39,6 @@ export interface DaoCreationConfigItemInputProps<
 
 export interface DaoCreationConfigItem<ModuleConfig extends FieldValues = any> {
   onlyDisplayCondition?: (newDao: NewDao) => boolean
-  accentColor?: string
   Icon: ComponentType
   nameI18nKey: string
   descriptionI18nKey: string

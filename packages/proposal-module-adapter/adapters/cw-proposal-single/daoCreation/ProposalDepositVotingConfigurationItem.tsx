@@ -76,7 +76,6 @@ export const ProposalDepositVotingConfigurationItem: DaoCreationConfigItem<DaoCr
     // CW20 token that can be used for deposit.
     onlyDisplayCondition: (newDao) =>
       newDao.votingModuleAdapter.id === Cw20StakedBalanceVotingAdapter.id,
-    accentColor: '#fccd031a',
     Icon: ProposalDepositIcon,
     nameI18nKey: 'form.proposalDepositTitle',
     descriptionI18nKey: 'form.proposalDepositDescription',

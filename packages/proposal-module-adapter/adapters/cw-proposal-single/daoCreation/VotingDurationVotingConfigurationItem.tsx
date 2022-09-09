@@ -78,7 +78,6 @@ export const VotingDurationInput = ({
 
 export const VotingDurationVotingConfigurationItem: DaoCreationConfigItem<DaoCreationConfig> =
   {
-    accentColor: '#c3935e1a',
     Icon: VotingDurationIcon,
     nameI18nKey: 'form.votingDurationTitle',
     descriptionI18nKey: 'form.votingDurationDescription',
