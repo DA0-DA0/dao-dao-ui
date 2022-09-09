@@ -23,9 +23,10 @@ export interface NewDao {
   advancedVotingConfigEnabled: boolean
 }
 
-export interface DaoCreationVotingConfigurationItemInputProps<
+export interface DaoCreationConfigItemInputProps<
   ModuleConfig extends FieldValues = any
 > {
+  newDao: NewDao
   data: ModuleConfig
   register: UseFormRegister<ModuleConfig>
   setValue: UseFormSetValue<ModuleConfig>
@@ -36,14 +37,12 @@ export interface DaoCreationVotingConfigurationItemInputProps<
   errors?: FormState<ModuleConfig>['errors']
 }
 
-export interface DaoCreationVotingConfigurationItem<
-  ModuleConfig extends FieldValues = any
-> {
+export interface DaoCreationConfigItem<ModuleConfig extends FieldValues = any> {
+  onlyDisplayCondition?: (newDao: NewDao) => boolean
+  accentColor?: string
   Icon: ComponentType
   nameI18nKey: string
   descriptionI18nKey: string
   tooltipI18nKey?: string
-  Input: ComponentType<
-    DaoCreationVotingConfigurationItemInputProps<ModuleConfig>
-  >
+  Input: ComponentType<DaoCreationConfigItemInputProps<ModuleConfig>>
 }

@@ -11,7 +11,7 @@ import {
   TokenInfoResponse,
 } from '@dao-dao/state/clients/cw20-base'
 import { Claim } from '@dao-dao/state/clients/stake-cw20'
-import { DaoCreationVotingConfigurationItem } from '@dao-dao/tstypes'
+import { DaoCreationConfigItem } from '@dao-dao/tstypes'
 import {
   DaoInfoBarItem,
   HeroStatProps,
@@ -165,8 +165,8 @@ export type VotingModuleAdapter<DaoCreationConfig = any> = {
     defaultConfig: DaoCreationConfig
 
     GovernanceConfiguration: ComponentType
-    votingConfigurationItems: DaoCreationVotingConfigurationItem[]
-    votingConfigurationAdvancedItems?: DaoCreationVotingConfigurationItem[]
+    votingConfigurationItems: DaoCreationConfigItem[]
+    votingConfigurationAdvancedItems?: DaoCreationConfigItem[]
     votingConfigurationAdvancedWarnings?: string[]
   }
 }

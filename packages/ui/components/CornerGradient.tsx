@@ -17,12 +17,12 @@ export interface CornerGradientProps {
  */
 export const CornerGradient = ({
   color,
-  gradientShape = '22.07% 77.03% at 3.52% 7.35%',
+  gradientShape = '86.22% 102.08% at 0% 114.93%',
   className,
 }: CornerGradientProps) => (
   <div
     className={clsx(
-      'absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none',
+      'absolute top-0 left-0 w-full h-full rounded-lg -scale-y-100 pointer-events-none',
       className
     )}
     style={{

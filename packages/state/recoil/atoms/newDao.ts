@@ -1,8 +1,8 @@
 import { atom } from 'recoil'
 
-import { CwProposalSingleAdapter } from '@dao-dao/proposal-module-adapter'
+import { CwProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single'
 import { NewDao } from '@dao-dao/tstypes'
-import { Cw4VotingAdapter } from '@dao-dao/voting-module-adapter'
+import { Cw4VotingAdapter } from '@dao-dao/voting-module-adapter/adapters/cw4-voting'
 
 export const DefaultNewDao: NewDao = {
   name: '',

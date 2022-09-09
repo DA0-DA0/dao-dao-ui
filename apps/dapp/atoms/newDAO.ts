@@ -13,26 +13,6 @@ export enum GovernanceTokenType {
 export interface NewDAO {
   tiers: NewDAOTier[]
   _tiersError?: undefined
-  governanceTokenOptions: {
-    type: GovernanceTokenType
-    newInfo: {
-      initialSupply: number
-      initialTreasuryPercent: number
-      imageUrl?: string
-      symbol: string
-      name: string
-    }
-    existingGovernanceTokenAddress?: string
-    // TokenInfoResponse
-    existingGovernanceTokenInfo?: {
-      decimals: number
-      name: string
-      symbol: string
-      total_supply: string
-      _error?: undefined
-    }
-    unregisterDuration: DurationWithUnits
-  }
 }
 
 export interface NewDAOTier {

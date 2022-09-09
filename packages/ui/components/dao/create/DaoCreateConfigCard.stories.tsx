@@ -8,27 +8,29 @@ import {
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators'
 import { NewDao } from '@dao-dao/tstypes'
 
-import { DaoVotingConfigurationCard } from './DaoVotingConfigurationCard'
+import { DaoCreateConfigCard } from './DaoCreateConfigCard'
 
 export default {
   title:
-    'DAO DAO / packages / ui / components / dao / create / DaoVotingConfigurationCard',
-  component: DaoVotingConfigurationCard,
+    'DAO DAO / packages / ui / components / dao / create / DaoCreateConfigCard',
+  component: DaoCreateConfigCard,
   decorators: [makeCreateDaoFormDecorator()],
-} as ComponentMeta<typeof DaoVotingConfigurationCard>
+} as ComponentMeta<typeof DaoCreateConfigCard>
 
-const Template: ComponentStory<typeof DaoVotingConfigurationCard> = (args) => {
+// TODO: Figure out why this story causes memory crash.
+const Template: ComponentStory<typeof DaoCreateConfigCard> = (args) => {
   const { register, watch, setValue } = useFormContext<NewDao>()
 
-  const data = watch('proposalModuleAdapters.0.data')
+  const newDao = watch()
 
   return (
     <div className="max-w-xs">
-      <DaoVotingConfigurationCard
+      <DaoCreateConfigCard
         {...args}
         input={
           <VotingDurationInput
-            data={data}
+            data={newDao.proposalModuleAdapters[0].data}
+            newDao={newDao}
             register={(fieldName, options) =>
               register(
                 (`proposalModuleAdapters.0.data.` +
@@ -59,6 +61,7 @@ const Template: ComponentStory<typeof DaoVotingConfigurationCard> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
+  accentColor: '#c3935e1a',
   Icon: VotingDurationIcon,
   name: 'Voting duration',
   description:

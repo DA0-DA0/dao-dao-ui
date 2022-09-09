@@ -15,7 +15,7 @@ import {
   GradientHero,
   PageHeader,
 } from '../../components'
-import { DaoVotingConfigurationCard } from '../../components/dao/create/DaoVotingConfigurationCard'
+import { DaoCreateConfigCard } from '../../components/dao/create/DaoCreateConfigCard'
 
 export interface CreateDaoVotingProps {
   // Used to insert parent DAO crumbs if creating SubDAO.
@@ -32,16 +32,19 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
     setValue,
   } = useFormContext<NewDao>()
 
-  const name = watch('name')
-  const description = watch('description')
-  const imageUrl = watch('imageUrl')
-  const selectedStructureId = watch('votingModuleAdapter.id')
-  const proposalModuleAdapters = watch('proposalModuleAdapters')
+  const newDao = watch()
+  const {
+    name,
+    description,
+    imageUrl,
+    votingModuleAdapter,
+    proposalModuleAdapters,
+  } = newDao
 
   // Get selected voting module adapter.
   const votingModuleDaoCreationAdapter = useMemo(
-    () => getVotingModuleAdapterById(selectedStructureId)?.daoCreation,
-    [selectedStructureId]
+    () => getVotingModuleAdapterById(votingModuleAdapter.id)?.daoCreation,
+    [votingModuleAdapter.id]
   )
   if (!votingModuleDaoCreationAdapter) {
     throw new Error(t('error.loadingData'))
@@ -85,50 +88,64 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
           {votingModuleDaoCreationAdapter.votingConfigurationItems.map(
             (
-              { Icon, nameI18nKey, descriptionI18nKey, tooltipI18nKey, Input },
+              {
+                onlyDisplayCondition,
+                accentColor,
+                Icon,
+                nameI18nKey,
+                descriptionI18nKey,
+                tooltipI18nKey,
+                Input,
+              },
               index
-            ) => (
-              <DaoVotingConfigurationCard
-                key={index}
-                Icon={Icon}
-                description={t(descriptionI18nKey)}
-                input={
-                  <Input
-                    data={watch('votingModuleAdapter.data')}
-                    errors={errors?.votingModuleAdapter?.data}
-                    register={(fieldName, options) =>
-                      register(
-                        ('votingModuleAdapter.data.' +
-                          fieldName) as `votingModuleAdapter.data.${string}`,
-                        options
-                      )
-                    }
-                    setValue={(fieldName, value, options) =>
-                      setValue(
-                        ('votingModuleAdapter.data.' +
-                          fieldName) as `votingModuleAdapter.data.${string}`,
-                        value,
-                        options
-                      )
-                    }
-                    watch={(fieldName) =>
-                      watch(
-                        ('votingModuleAdapter.data.' +
-                          fieldName) as `votingModuleAdapter.data.${string}`
-                      )
-                    }
-                  />
-                }
-                name={t(nameI18nKey)}
-                tooltip={tooltipI18nKey && t(tooltipI18nKey)}
-              />
-            )
+            ) =>
+              // If has display condition, check it. Otherwise display.
+              (onlyDisplayCondition?.(newDao) ?? true) && (
+                <DaoCreateConfigCard
+                  key={index}
+                  Icon={Icon}
+                  accentColor={accentColor}
+                  description={t(descriptionI18nKey)}
+                  input={
+                    <Input
+                      data={votingModuleAdapter.data}
+                      errors={errors?.votingModuleAdapter?.data}
+                      newDao={newDao}
+                      register={(fieldName, options) =>
+                        register(
+                          ('votingModuleAdapter.data.' +
+                            fieldName) as `votingModuleAdapter.data.${string}`,
+                          options
+                        )
+                      }
+                      setValue={(fieldName, value, options) =>
+                        setValue(
+                          ('votingModuleAdapter.data.' +
+                            fieldName) as `votingModuleAdapter.data.${string}`,
+                          value,
+                          options
+                        )
+                      }
+                      watch={(fieldName) =>
+                        watch(
+                          ('votingModuleAdapter.data.' +
+                            fieldName) as `votingModuleAdapter.data.${string}`
+                        )
+                      }
+                    />
+                  }
+                  name={t(nameI18nKey)}
+                  tooltip={tooltipI18nKey && t(tooltipI18nKey)}
+                />
+              )
           )}
           {proposalModuleDaoCreationAdapters.flatMap(
             ({ votingConfigurationItems }, index) =>
               votingConfigurationItems.map(
                 (
                   {
+                    onlyDisplayCondition,
+                    accentColor,
                     Icon,
                     nameI18nKey,
                     descriptionI18nKey,
@@ -136,42 +153,46 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                     Input,
                   },
                   itemIndex
-                ) => (
-                  <DaoVotingConfigurationCard
-                    key={`${index}:${itemIndex}`}
-                    Icon={Icon}
-                    description={t(descriptionI18nKey)}
-                    input={
-                      <Input
-                        data={watch(`proposalModuleAdapters.${index}.data`)}
-                        errors={errors?.proposalModuleAdapters?.[index]?.data}
-                        register={(fieldName, options) =>
-                          register(
-                            (`proposalModuleAdapters.${index}.data.` +
-                              fieldName) as `proposalModuleAdapters.${number}.data.${string}`,
-                            options
-                          )
-                        }
-                        setValue={(fieldName, value, options) =>
-                          setValue(
-                            (`proposalModuleAdapters.${index}.data.` +
-                              fieldName) as `proposalModuleAdapters.${number}.data.${string}`,
-                            value,
-                            options
-                          )
-                        }
-                        watch={(fieldName) =>
-                          watch(
-                            (`proposalModuleAdapters.${index}.data.` +
-                              fieldName) as `proposalModuleAdapters.${number}.data.${string}`
-                          )
-                        }
-                      />
-                    }
-                    name={t(nameI18nKey)}
-                    tooltip={tooltipI18nKey && t(tooltipI18nKey)}
-                  />
-                )
+                ) =>
+                  // If has display condition, check it. Otherwise display.
+                  (onlyDisplayCondition?.(newDao) ?? true) && (
+                    <DaoCreateConfigCard
+                      key={`${index}:${itemIndex}`}
+                      Icon={Icon}
+                      accentColor={accentColor}
+                      description={t(descriptionI18nKey)}
+                      input={
+                        <Input
+                          data={proposalModuleAdapters[index].data}
+                          errors={errors?.proposalModuleAdapters?.[index]?.data}
+                          newDao={newDao}
+                          register={(fieldName, options) =>
+                            register(
+                              (`proposalModuleAdapters.${index}.data.` +
+                                fieldName) as `proposalModuleAdapters.${number}.data.${string}`,
+                              options
+                            )
+                          }
+                          setValue={(fieldName, value, options) =>
+                            setValue(
+                              (`proposalModuleAdapters.${index}.data.` +
+                                fieldName) as `proposalModuleAdapters.${number}.data.${string}`,
+                              value,
+                              options
+                            )
+                          }
+                          watch={(fieldName) =>
+                            watch(
+                              (`proposalModuleAdapters.${index}.data.` +
+                                fieldName) as `proposalModuleAdapters.${number}.data.${string}`
+                            )
+                          }
+                        />
+                      }
+                      name={t(nameI18nKey)}
+                      tooltip={tooltipI18nKey && t(tooltipI18nKey)}
+                    />
+                  )
               )
           )}
         </div>
