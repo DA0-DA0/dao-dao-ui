@@ -3,8 +3,8 @@ import { useCallback, useMemo } from 'react'
 import { NATIVE_DENOM, makeStargateMessage } from '@dao-dao/utils'
 
 import {
-  CreateValidatorIcon,
-  CreateValidatorComponent as StatelessCreateValidatorComponent,
+  EditValidatorIcon,
+  EditValidatorComponent as StatelessEditValidatorComponent,
 } from '../components'
 import {
   Action,
@@ -15,13 +15,13 @@ import {
   UseTransformToCosmos,
 } from '../types'
 
-interface CreateValidatorData {
+interface EditValidatorData {
   type_url: string
   value: string
 }
 
-const useDefaults: UseDefaults<CreateValidatorData> = () => ({
-  type_url: '/cosmos.staking.v1beta1.MsgCreateValidator',
+const useDefaults: UseDefaults<EditValidatorData> = () => ({
+  type_url: '/cosmos.staking.v1beta1.MsgEditValidator',
   value: `{
     "description": {
       "moniker": "<validator name>",
@@ -30,34 +30,19 @@ const useDefaults: UseDefaults<CreateValidatorData> = () => ({
       "securityContact": "<optional security contact email>",
       "details": "<description of your validator>"
     },
-    "commission": {
-      "rate": "50000000000000000",
-      "maxRate": "200000000000000000",
-      "maxChangeRate": "100000000000000000"
-    },
+    "commissionRate": "50000000000000000",
     "minSelfDelegation": "1",
-    "delegatorAddress": "<your DAO address>",
-    "validatorAddress": "<your DAO valoper address>",
-    "pubkey": {
-      "typeUrl": "/cosmos.crypto.ed25519.PubKey",
-      "value": {
-        "@type":"/cosmos.crypto.ed25519.PubKey",
-        "key":"<the public key of your node (junod tendermint show-validator)>"}
-    },
-    "value": {
-      "denom": "${NATIVE_DENOM}",
-      "amount": "1000000"
-    }
+    "validatorAddress": "<your validator address>"
   }`,
 })
 
 const Component: ActionComponent = (props) => {
-  return <StatelessCreateValidatorComponent {...props} options={{}} />
+  return <StatelessEditValidatorComponent {...props} options={{}} />
 }
 
-const useTransformToCosmos: UseTransformToCosmos<CreateValidatorData> = () =>
+const useTransformToCosmos: UseTransformToCosmos<EditValidatorData> = () =>
   useCallback(
-    (data: CreateValidatorData) =>
+    (data: EditValidatorData) =>
       makeStargateMessage({
         stargate: {
           type_url: data.type_url,
@@ -67,7 +52,7 @@ const useTransformToCosmos: UseTransformToCosmos<CreateValidatorData> = () =>
     []
   )
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateValidatorData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<EditValidatorData> = (
   msg: Record<string, any>
 ) =>
   useMemo(
@@ -84,11 +69,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateValidatorData> = (
     [msg]
   )
 
-export const createValidatorAction: Action<CreateValidatorData> = {
-  key: ActionKey.CreateValidator,
-  Icon: CreateValidatorIcon,
-  label: 'Create Validator',
-  description: 'Create validator transaction',
+export const editValidatorAction: Action<EditValidatorData> = {
+  key: ActionKey.EditValidator,
+  Icon: EditValidatorIcon,
+  label: 'Edit Validator',
+  description: 'Edit information about a DAO controlled validator',
   Component,
   useDefaults,
   useTransformToCosmos,

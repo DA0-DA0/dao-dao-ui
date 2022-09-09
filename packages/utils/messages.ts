@@ -6,7 +6,10 @@ import {
   MsgRevoke,
 } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
-import { MsgCreateValidator } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
+import {
+  MsgCreateValidator,
+  MsgEditValidator,
+} from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
 import {
   BankMsg,
@@ -150,6 +153,12 @@ export function decodeMessages(msgs: IHack['msgs']): { [key: string]: any }[] {
           )
           decodedMessageArray.push(msg)
           break
+        case '/cosmos.staking.v1beta1.MsgEditValidator':
+          msg.stargate.value = MsgEditValidator.decode(
+            fromBase64(msgObj.stargate.value)
+          )
+          decodedMessageArray.push(msg)
+          break
       }
     } else {
       decodedMessageArray.push(msgObj)
@@ -249,7 +258,6 @@ export const makeStargateMessage = (message: {
       break
     case '/cosmos.staking.v1beta1.MsgCreateValidator':
       let msgValue = msg.stargate.value
-
       msg.stargate.value = toBase64(
         MsgCreateValidator.encode({
           ...msgValue,
@@ -261,7 +269,15 @@ export const makeStargateMessage = (message: {
           },
         }).finish()
       )
-
+      break
+    case '/cosmos.staking.v1beta1.MsgEditValidator':
+      msg.stargate.value = toBase64(
+        MsgEditValidator.encode(
+          MsgEditValidator.fromPartial({
+            ...msg.stargate.value,
+          })
+        ).finish()
+      )
       break
   }
 

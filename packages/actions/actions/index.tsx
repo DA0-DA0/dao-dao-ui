@@ -4,6 +4,7 @@ import { authzAuthorizationAction } from './AuthzAuthorization'
 import { authzExecAction } from './AuthzExec'
 import { createValidatorAction } from './CreateValidator'
 import { customAction } from './Custom'
+import { editValidatorAction } from './EditValidator'
 import { executeAction } from './Execute'
 import { instantiateAction } from './Instantiate'
 import { migrateAction } from './MigrateContract'
@@ -21,6 +22,7 @@ export const commonActions: Action[] = [
   authzExecAction,
   addCw20Action,
   createValidatorAction,
+  editValidatorAction,
   removeCw20Action,
   // TODO: Add back in once CW721s are displayed.
   // addCw721Action,
