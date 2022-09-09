@@ -49,11 +49,11 @@ const useDefaults: UseDefaults<CreateValidatorData> = () => ({
    * }`, */
   value: `{
     "description": {
-      "moniker": "node002",
-      "identity": "",
-      "website": "",
-      "securityContact": "",
-      "details": ""
+      "moniker": "DAO Validator",
+      "identity": "40DE997A35620049",
+      "website": "https://daodao.zone",
+      "securityContact": "noreply@noreply.com",
+      "details": "A validator created and run by a DAO on DAO DAO."
     },
     "commission": {
       "rate": "10",
