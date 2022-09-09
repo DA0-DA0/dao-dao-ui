@@ -22,7 +22,7 @@ export const AllowRevotingInput = ({
 
   return (
     <FormSwitchCard
-      containerClassName="self-end"
+      containerClassName="self-start"
       fieldName="allowRevoting"
       offLabel={t('info.no')}
       onLabel={t('info.yes')}
