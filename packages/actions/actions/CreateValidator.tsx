@@ -72,12 +72,14 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateValidatorData> = (
 ) =>
   useMemo(
     () =>
-      'stargate' in msg && msg.stargate.typeUrl && msg.stargate.value
+      'stargate' in msg &&
+      msg.stargate.type_url === '/cosmos.staking.v1beta1.MsgCreateValidator' &&
+      msg.stargate.value
         ? {
             match: true,
             data: {
               type_url: msg.stargate.type_url,
-              value: msg.stargate.value,
+              value: JSON.stringify(msg.stargate.value, null, 2),
             },
           }
         : { match: false },

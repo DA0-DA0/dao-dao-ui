@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 
-import { NATIVE_DENOM, makeStargateMessage } from '@dao-dao/utils'
+import { makeStargateMessage } from '@dao-dao/utils'
 
 import {
   EditValidatorIcon,
@@ -57,12 +57,14 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<EditValidatorData> = (
 ) =>
   useMemo(
     () =>
-      'stargate' in msg && msg.stargate.typeUrl && msg.stargate.value
+      'stargate' in msg &&
+      msg.stargate.type_url === '/cosmos.staking.v1beta1.MsgEditValidator' &&
+      msg.stargate.value
         ? {
             match: true,
             data: {
               type_url: msg.stargate.type_url,
-              value: msg.stargate.value,
+              value: JSON.stringify(msg.stargate.value, null, 2),
             },
           }
         : { match: false },
