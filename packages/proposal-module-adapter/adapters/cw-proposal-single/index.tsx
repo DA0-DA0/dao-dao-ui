@@ -24,6 +24,8 @@ import {
 import {
   AllowRevotingVotingConfigurationItem,
   ProposalDepositVotingConfigurationItem,
+  QuorumVotingConfigurationItem,
+  ThresholdVotingConfigurationItem,
   VotingDurationVotingConfigurationItem,
 } from './daoCreation'
 import { makeGetProposalInfo } from './functions'
@@ -130,7 +132,11 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
         VotingDurationVotingConfigurationItem,
         ProposalDepositVotingConfigurationItem,
       ],
-      votingConfigurationAdvancedItems: [AllowRevotingVotingConfigurationItem],
+      votingConfigurationAdvancedItems: [
+        AllowRevotingVotingConfigurationItem,
+        ThresholdVotingConfigurationItem,
+        QuorumVotingConfigurationItem,
+      ],
       votingConfigurationAdvancedWarningI18nKeys: [
         'daoCreationAdapter.cw-proposal-single.advancedWarning',
       ],

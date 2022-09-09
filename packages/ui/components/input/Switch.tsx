@@ -2,6 +2,8 @@ import clsx from 'clsx'
 import { FieldValues, Path, PathValue, UseFormSetValue } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { TooltipInfoIcon } from '../TooltipInfoIcon'
+
 export interface SwitchProps {
   enabled: boolean
   onClick?: () => void
@@ -55,12 +57,14 @@ export interface SwitchCardProps extends SwitchProps {
   containerClassName?: string
   onLabel?: string
   offLabel?: string
+  tooltip?: string
 }
 
 export const SwitchCard = ({
   containerClassName,
   onLabel: _onLabel,
   offLabel: _offLabel,
+  tooltip,
   ...props
 }: SwitchCardProps) => {
   const { t } = useTranslation()
@@ -75,9 +79,12 @@ export const SwitchCard = ({
         containerClassName
       )}
     >
-      <p className="min-w-[5rem] secondary-text">
-        {props.enabled ? onLabel : offLabel}
-      </p>
+      <div className="flex flex-row gap-1 items-center">
+        <p className="min-w-[5rem] secondary-text">
+          {props.enabled ? onLabel : offLabel}
+        </p>
+        {tooltip && <TooltipInfoIcon title={tooltip} />}
+      </div>
 
       <Switch {...props} />
     </div>

@@ -11,8 +11,6 @@ import { Theme, ThemeProvider } from '@dao-dao/ui'
 const channel = addons.getChannel()
 
 export const ThemeDecorator: DecoratorFn = (Story, ctx) => {
-  const [accentColor, setAccentColor] = useState<string>()
-
   const isDarkMode = useDarkMode()
   const [theme, setTheme] = useState<Theme>(
     isDarkMode ? Theme.Dark : Theme.Light
@@ -40,8 +38,6 @@ export const ThemeDecorator: DecoratorFn = (Story, ctx) => {
 
   return (
     <ThemeProvider
-      accentColor={accentColor}
-      setAccentColor={setAccentColor}
       theme={theme}
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}

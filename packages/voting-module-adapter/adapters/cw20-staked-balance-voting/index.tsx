@@ -19,7 +19,10 @@ import {
   StakingModal,
   VoteHeroStats,
 } from './components'
-import { DisplayInfoIcon } from './daoCreation'
+import {
+  DisplayInfoIcon,
+  UnstakingDurationVotingConfigurationItem,
+} from './daoCreation'
 import { useActions, useGovernanceTokenInfo, useStakingInfo } from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
 
@@ -89,12 +92,12 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConf
           symbol: '',
           name: '',
         },
-        unregisterDuration: {
+        unstakingDuration: {
           value: 2,
           units: DurationUnits.Weeks,
         },
       },
       GovernanceConfiguration: () => null,
-      votingConfigurationItems: [],
+      votingConfigurationItems: [UnstakingDurationVotingConfigurationItem],
     },
   }

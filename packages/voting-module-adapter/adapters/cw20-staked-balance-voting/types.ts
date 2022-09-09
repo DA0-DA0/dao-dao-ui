@@ -23,5 +23,5 @@ export interface DaoCreationConfig {
     total_supply: string
     _error?: undefined
   }
-  unregisterDuration: DurationWithUnits
+  unstakingDuration: DurationWithUnits
 }

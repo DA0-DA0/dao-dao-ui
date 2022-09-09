@@ -5,7 +5,7 @@ import {
   DaoCreationConfigItem,
   DaoCreationConfigItemInputProps,
 } from '@dao-dao/tstypes'
-import { NumberInput } from '@dao-dao/ui'
+import { FormSwitchCard, NumberInput } from '@dao-dao/ui'
 import { validateNonNegative } from '@dao-dao/utils'
 import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter'
 import {
@@ -23,7 +23,7 @@ export const ProposalDepositIcon = () => {
 export const ProposalDepositInput = ({
   newDao: { votingModuleAdapter },
   data: {
-    proposalDeposit: { amount },
+    proposalDeposit: { amount, refundFailed },
   },
   register,
   setValue,
@@ -43,29 +43,43 @@ export const ProposalDepositInput = ({
   } = votingModuleAdapter.data as Cw20StakedBalanceVotingConfig
 
   return (
-    <div className="flex flex-row gap-2 items-center">
-      <NumberInput
-        containerClassName="grow"
-        error={errors?.proposalDeposit?.amount}
-        fieldName="proposalDeposit.amount"
-        onMinus={() =>
-          setValue('proposalDeposit.amount', Math.max(amount - 1, 0))
-        }
-        onPlus={() =>
-          setValue('proposalDeposit.amount', Math.max(amount + 1, 0))
-        }
-        register={register}
-        sizing="sm"
-        step={1}
-        validation={[validateNonNegative]}
-      />
+    <div className="flex flex-col gap-3">
+      {amount > 0 && (
+        <FormSwitchCard
+          fieldName="proposalDeposit.refundFailed"
+          offLabel={t('form.refundFailedProposalsTitle')}
+          onLabel={t('form.refundFailedProposalsTitle')}
+          setValue={setValue}
+          sizing="sm"
+          tooltip={t('form.refundFailedProposalsTooltip')}
+          value={refundFailed}
+        />
+      )}
 
-      <p className="text-text-tertiary">
-        $
-        {(type === GovernanceTokenType.New
-          ? newSymbol
-          : existingGovernanceTokenInfo?.symbol) || t('info.tokens')}
-      </p>
+      <div className="flex flex-row gap-2 items-center">
+        <NumberInput
+          containerClassName="grow"
+          error={errors?.proposalDeposit?.amount}
+          fieldName="proposalDeposit.amount"
+          onMinus={() =>
+            setValue('proposalDeposit.amount', Math.max(amount - 1, 0))
+          }
+          onPlus={() =>
+            setValue('proposalDeposit.amount', Math.max(amount + 1, 0))
+          }
+          register={register}
+          sizing="sm"
+          step={1}
+          validation={[validateNonNegative]}
+        />
+
+        <p className="text-text-tertiary">
+          $
+          {(type === GovernanceTokenType.New
+            ? newSymbol
+            : existingGovernanceTokenInfo?.symbol) || t('info.tokens')}
+        </p>
+      </div>
     </div>
   )
 }
