@@ -1,4 +1,4 @@
-import { fromBase64, toAscii, toBase64, toUtf8 } from '@cosmjs/encoding'
+import { fromBase64, toAscii, toBase64 } from '@cosmjs/encoding'
 import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
 import {
   MsgExec,
@@ -259,9 +259,7 @@ export const makeStargateMessage = (message: {
             pubkey: {
               typeUrl: msgValue.pubkey.typeUrl,
               value: PubKey.encode(
-                PubKey.fromPartial({
-                  key: toUtf8(msgValue.pubkey.value.key),
-                })
+                PubKey.fromJSON(msgValue.pubkey.value)
               ).finish(),
             },
           })

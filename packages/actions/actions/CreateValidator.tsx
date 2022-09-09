@@ -47,6 +47,15 @@ const useDefaults: UseDefaults<CreateValidatorData> = () => ({
    *     "amount": "1"
    *   }
    * }`, */
+
+  // WARNING: Commission rates NOT decimals in the protobuf: https://github.com/cosmos/cosmos-sdk/issues/10863
+  // They are stored as 'ints' inside of strings, interpreted like so: `rate = string(int(decimal_rate * 10**18))`
+  //
+  // Ex:
+  // * rate = 0.05 -> 50000000000000000
+  // * maxRate = 0.1 -> 100000000000000000
+  // * maxChangeRate = 0.1 -> 100000000000000000
+
   value: `{
     "description": {
       "moniker": "DAO Validator",
@@ -56,16 +65,16 @@ const useDefaults: UseDefaults<CreateValidatorData> = () => ({
       "details": "A validator created and run by a DAO on DAO DAO."
     },
     "commission": {
-      "rate": "0.050000000000000000",
-      "maxRate": "0.150000000000000000",
-      "maxChangeRate": "0.100000000000000000"
+      "rate": "50000000000000000",
+      "maxRate": "100000000000000000",
+      "maxChangeRate": "100000000000000000"
     },
     "minSelfDelegation": "1",
-    "delegatorAddress": "juno1wthwv7wq7sgw5fu7u3qrtfxss8d2q2jx8wztzwagad4w20azdquseal8ph",
-    "validatorAddress": "junovaloper1wthwv7wq7sgw5fu7u3qrtfxss8d2q2jx8wztzwagad4w20azdqus7q3dz8",
+    "delegatorAddress": "juno1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ys7tlgu0",
+    "validatorAddress": "junovaloper1hrpna9v7vs3stzyd4z3xf00676kf78zpe2u5ksvljswn2vnjp3ysek3zll",
     "pubkey": {
       "typeUrl": "/cosmos.crypto.ed25519.PubKey",
-      "value": {"@type":"/cosmos.crypto.ed25519.PubKey","key":"3w7URQLq21V9PcNZxLu0RkRFanaXB975uIUxnI+b/BU="}
+      "value": {"@type":"/cosmos.crypto.ed25519.PubKey","key":"S3fuHfCiaU+tRGFlbbVMfxcbAL+hLk44YsLgpC27HQE="}
     },
     "value": {
       "denom": "${NATIVE_DENOM}",
