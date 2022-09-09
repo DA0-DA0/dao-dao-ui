@@ -6,6 +6,7 @@ import {
   MsgRevoke,
 } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
+import { MsgWithdrawValidatorCommission } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
 import {
   MsgCreateValidator,
   MsgEditValidator,
@@ -137,7 +138,6 @@ export function decodeMessages(msgs: IHack['msgs']): { [key: string]: any }[] {
           decodedMessageArray.push(msg)
           break
         case '/cosmos.authz.v1beta1.MsgRevoke':
-          console.log(msgObj)
           msg.stargate.value = MsgRevoke.decode(
             fromBase64(msgObj.stargate.value)
           )
@@ -155,6 +155,12 @@ export function decodeMessages(msgs: IHack['msgs']): { [key: string]: any }[] {
           break
         case '/cosmos.staking.v1beta1.MsgEditValidator':
           msg.stargate.value = MsgEditValidator.decode(
+            fromBase64(msgObj.stargate.value)
+          )
+          decodedMessageArray.push(msg)
+          break
+        case '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission':
+          msg.stargate.value = MsgWithdrawValidatorCommission.decode(
             fromBase64(msgObj.stargate.value)
           )
           decodedMessageArray.push(msg)
@@ -328,6 +334,7 @@ export enum StakeType {
   Undelegate = 'undelegate',
   Redelegate = 'redelegate',
   WithdrawDelegatorReward = 'withdraw_delegator_reward',
+  WithdrawValidatorCommission = 'withdraw_validator_commission',
 }
 
 export const makeStakingMessage = (
@@ -379,11 +386,31 @@ export const makeStakingMessage = (
 }
 
 export const makeDistributeMessage = (
+  type: `${StakeType}`,
   validator: string
-): CosmosMsgFor_Empty => ({
-  distribution: {
-    withdraw_delegator_reward: {
-      validator,
-    },
-  } as DistributionMsg,
-})
+): CosmosMsgFor_Empty | { stargate: any } => {
+  switch (type) {
+    case StakeType.WithdrawValidatorCommission:
+      console.log('meow')
+      return {
+        stargate: {
+          type_url:
+            '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission',
+          value: toBase64(
+            MsgWithdrawValidatorCommission.encode({
+              validatorAddress: validator,
+            }).finish()
+          ),
+        },
+      }
+      break
+    default:
+      return {
+        distribution: {
+          withdraw_delegator_reward: {
+            validator,
+          },
+        } as DistributionMsg,
+      }
+  }
+}
