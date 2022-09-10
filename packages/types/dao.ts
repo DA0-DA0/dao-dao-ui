@@ -23,7 +23,7 @@ export interface NewDao {
   advancedVotingConfigEnabled: boolean
 }
 
-export interface DaoCreationConfigItemInputProps<
+export interface DaoCreationGovernanceConfigInputProps<
   ModuleConfig extends FieldValues = any
 > {
   newDao: NewDao
@@ -37,11 +37,42 @@ export interface DaoCreationConfigItemInputProps<
   errors?: FormState<ModuleConfig>['errors']
 }
 
-export interface DaoCreationConfigItem<ModuleConfig extends FieldValues = any> {
+export interface DaoCreationGovernanceConfigReviewProps<
+  ModuleConfig extends FieldValues = any
+> {
+  newDao: NewDao
+  data: ModuleConfig
+}
+
+export interface DaoCreationVotingConfigItemInputProps<
+  ModuleConfig extends FieldValues = any
+> {
+  newDao: NewDao
+  data: ModuleConfig
+  register: UseFormRegister<ModuleConfig>
+  setValue: UseFormSetValue<ModuleConfig>
+  watch: <TFieldName extends FieldPath<ModuleConfig>>(
+    name: TFieldName,
+    defaultValue?: FieldPathValue<ModuleConfig, TFieldName>
+  ) => FieldPathValue<ModuleConfig, TFieldName>
+  errors?: FormState<ModuleConfig>['errors']
+}
+
+export interface DaoCreationVotingConfigItemReviewProps<
+  ModuleConfig extends FieldValues = any
+> {
+  newDao: NewDao
+  data: ModuleConfig
+}
+
+export interface DaoCreationVotingConfigItem<
+  ModuleConfig extends FieldValues = any
+> {
   onlyDisplayCondition?: (newDao: NewDao) => boolean
   Icon: ComponentType
   nameI18nKey: string
   descriptionI18nKey: string
   tooltipI18nKey?: string
-  Input: ComponentType<DaoCreationConfigItemInputProps<ModuleConfig>>
+  Input: ComponentType<DaoCreationVotingConfigItemInputProps<ModuleConfig>>
+  Review: ComponentType<DaoCreationVotingConfigItemReviewProps<ModuleConfig>>
 }

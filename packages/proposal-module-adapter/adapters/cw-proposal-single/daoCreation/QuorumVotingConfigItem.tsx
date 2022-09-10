@@ -2,8 +2,8 @@ import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
 import {
-  DaoCreationConfigItem,
-  DaoCreationConfigItemInputProps,
+  DaoCreationVotingConfigItem,
+  DaoCreationVotingConfigItemInputProps,
 } from '@dao-dao/tstypes'
 import { FormSwitchCard, NumberInput, SelectInput } from '@dao-dao/ui'
 import { validatePositive, validateRequired } from '@dao-dao/utils'
@@ -23,7 +23,7 @@ export const QuorumInput = ({
   register,
   setValue,
   errors,
-}: DaoCreationConfigItemInputProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
 
   return (
@@ -68,7 +68,7 @@ export const QuorumInput = ({
   )
 }
 
-export const QuorumVotingConfigurationItem: DaoCreationConfigItem<DaoCreationConfig> =
+export const QuorumVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
     Icon: QuorumIcon,
     nameI18nKey: 'form.quorumTitle',

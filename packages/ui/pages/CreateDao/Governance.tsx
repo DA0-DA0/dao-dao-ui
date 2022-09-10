@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { NewDao } from '@dao-dao/tstypes'
-import { getAdapterById } from '@dao-dao/voting-module-adapter'
+import { getAdapterById as getVotingModuleAdapterById } from '@dao-dao/voting-module-adapter'
 
 import {
   BreadcrumbsProps,
@@ -29,22 +29,23 @@ export const CreateDaoGovernance = ({
     setValue,
   } = useFormContext<NewDao>()
 
-  const name = watch('name')
-  const description = watch('description')
-  const imageUrl = watch('imageUrl')
-  const selectedStructureId = watch('votingModuleAdapter.id')
+  const newDao = watch()
+  const { name, description, imageUrl, votingModuleAdapter } = newDao
 
   // Get selected voting module adapter.
-  const daoCreationAdapter = useMemo(
-    () => getAdapterById(selectedStructureId)?.daoCreation,
-    [selectedStructureId]
+  const votingModuleDaoCreationAdapter = useMemo(
+    () => getVotingModuleAdapterById(votingModuleAdapter.id)?.daoCreation,
+    [votingModuleAdapter.id]
   )
-
-  if (!daoCreationAdapter) {
+  if (!votingModuleDaoCreationAdapter) {
     throw new Error(t('error.loadingData'))
   }
 
-  const { GovernanceConfiguration } = daoCreationAdapter
+  if (!votingModuleDaoCreationAdapter) {
+    throw new Error(t('error.loadingData'))
+  }
+
+  const { governanceConfig } = votingModuleDaoCreationAdapter
 
   return (
     // No container padding because we want the gradient to expand. Apply px-6
@@ -67,12 +68,37 @@ export const CreateDaoGovernance = ({
 
         {/* TODO: Placeholder, remove */}
         <p className="mt-10 text-center header-text">
-          {t(daoCreationAdapter.displayInfo.nameI18nKey)}
+          {t(votingModuleDaoCreationAdapter.displayInfo.nameI18nKey)}
         </p>
       </GradientHero>
 
       <div className="mx-6">
-        <GovernanceConfiguration />
+        <governanceConfig.Input
+          data={votingModuleAdapter.data}
+          errors={errors?.votingModuleAdapter?.data}
+          newDao={newDao}
+          register={(fieldName, options) =>
+            register(
+              ('votingModuleAdapter.data.' +
+                fieldName) as `votingModuleAdapter.data.${string}`,
+              options
+            )
+          }
+          setValue={(fieldName, value, options) =>
+            setValue(
+              ('votingModuleAdapter.data.' +
+                fieldName) as `votingModuleAdapter.data.${string}`,
+              value,
+              options
+            )
+          }
+          watch={(fieldName) =>
+            watch(
+              ('votingModuleAdapter.data.' +
+                fieldName) as `votingModuleAdapter.data.${string}`
+            )
+          }
+        />
       </div>
     </form>
   )

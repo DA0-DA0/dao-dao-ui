@@ -21,7 +21,9 @@ import {
 } from './components'
 import {
   DisplayInfoIcon,
-  UnstakingDurationVotingConfigurationItem,
+  GovernanceConfigurationInput,
+  GovernanceConfigurationReview,
+  UnstakingDurationVotingConfigItem,
 } from './daoCreation'
 import { useActions, useGovernanceTokenInfo, useStakingInfo } from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
@@ -97,7 +99,12 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConf
           units: DurationUnits.Weeks,
         },
       },
-      GovernanceConfiguration: () => null,
-      votingConfigurationItems: [UnstakingDurationVotingConfigurationItem],
+      governanceConfig: {
+        Input: GovernanceConfigurationInput,
+        Review: GovernanceConfigurationReview,
+      },
+      votingConfig: {
+        items: [UnstakingDurationVotingConfigItem],
+      },
     },
   }

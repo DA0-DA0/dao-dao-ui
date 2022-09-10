@@ -595,6 +595,7 @@
     "updateInfo": "Update Info",
     "vote": "Vote",
     "voteStatus": "Vote status",
+    "governanceConfiguration": "Governance configuration",
     "votingConfiguration": "Voting configuration",
     "votingPower": "Voting power",
     "votingPowerStaked": "Voting power (staked {{name}})",

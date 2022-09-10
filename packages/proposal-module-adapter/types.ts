@@ -3,7 +3,7 @@ import { ComponentType } from 'react'
 
 import { Action } from '@dao-dao/actions'
 import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
-import { DaoCreationConfigItem } from '@dao-dao/tstypes'
+import { DaoCreationVotingConfigItem } from '@dao-dao/tstypes'
 import { LoaderProps, LogoProps, ProfileVoteCardOption } from '@dao-dao/ui'
 import { ProcessedThresholdQuorum, ProposalModule } from '@dao-dao/utils'
 import { BaseProposalDetailsVotingPowerWidgetProps } from '@dao-dao/voting-module-adapter'
@@ -80,9 +80,11 @@ export type ProposalModuleAdapter<DaoCreationConfig = any> = {
   daoCreation: {
     defaultConfig: DaoCreationConfig
 
-    votingConfigurationItems: DaoCreationConfigItem[]
-    votingConfigurationAdvancedItems?: DaoCreationConfigItem[]
-    votingConfigurationAdvancedWarningI18nKeys?: string[]
+    votingConfig: {
+      items: DaoCreationVotingConfigItem[]
+      advancedItems?: DaoCreationVotingConfigItem[]
+      advancedWarningI18nKeys?: string[]
+    }
   }
 }
 

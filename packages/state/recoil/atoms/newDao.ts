@@ -8,7 +8,7 @@ export const DefaultNewDao: NewDao = {
   name: '',
   description: '',
   imageUrl: undefined,
-  // Default to membership-based DAO.
+  // TODO: Default to membership-based DAO.
   votingModuleAdapter: {
     id: Cw20StakedBalanceVotingAdapter.id,
     data: Cw20StakedBalanceVotingAdapter.daoCreation!.defaultConfig,

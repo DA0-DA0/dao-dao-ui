@@ -2,8 +2,8 @@ import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
 import {
-  DaoCreationConfigItem,
-  DaoCreationConfigItemInputProps,
+  DaoCreationVotingConfigItem,
+  DaoCreationVotingConfigItemInputProps,
 } from '@dao-dao/tstypes'
 import { NumberInput, SelectInput } from '@dao-dao/ui'
 import { validatePositive, validateRequired } from '@dao-dao/utils'
@@ -22,7 +22,7 @@ export const ThresholdInput = ({
   register,
   setValue,
   errors,
-}: DaoCreationConfigItemInputProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
 
   return (
@@ -56,7 +56,7 @@ export const ThresholdInput = ({
   )
 }
 
-export const ThresholdVotingConfigurationItem: DaoCreationConfigItem<DaoCreationConfig> =
+export const ThresholdVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
     Icon: ThresholdIcon,
     nameI18nKey: 'form.passingThresholdTitle',

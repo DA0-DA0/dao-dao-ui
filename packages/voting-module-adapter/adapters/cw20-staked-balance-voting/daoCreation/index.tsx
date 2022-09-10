@@ -1,2 +1,4 @@
 export * from './DisplayInfoIcon'
-export * from './UnstakingDurationVotingConfigurationItem'
+export * from './GovernanceConfigurationInput'
+export * from './GovernanceConfigurationReview'
+export * from './UnstakingDurationVotingConfigItem'

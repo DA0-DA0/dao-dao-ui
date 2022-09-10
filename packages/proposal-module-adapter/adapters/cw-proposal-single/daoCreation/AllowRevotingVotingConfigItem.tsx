@@ -2,8 +2,8 @@ import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
 import {
-  DaoCreationConfigItem,
-  DaoCreationConfigItemInputProps,
+  DaoCreationVotingConfigItem,
+  DaoCreationVotingConfigItemInputProps,
 } from '@dao-dao/tstypes'
 import { FormSwitchCard } from '@dao-dao/ui'
 
@@ -17,7 +17,7 @@ export const AllowRevotingIcon = () => {
 export const AllowRevotingInput = ({
   data: { allowRevoting },
   setValue,
-}: DaoCreationConfigItemInputProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
 
   return (
@@ -33,7 +33,7 @@ export const AllowRevotingInput = ({
   )
 }
 
-export const AllowRevotingVotingConfigurationItem: DaoCreationConfigItem<DaoCreationConfig> =
+export const AllowRevotingVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
     Icon: AllowRevotingIcon,
     nameI18nKey: 'form.allowRevotingTitle',

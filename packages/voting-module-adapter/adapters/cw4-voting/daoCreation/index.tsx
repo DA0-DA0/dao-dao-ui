@@ -1,2 +1,3 @@
 export * from './DisplayInfoIcon'
-export * from './GovernanceConfiguration'
+export * from './GovernanceConfigurationInput'
+export * from './GovernanceConfigurationReview'

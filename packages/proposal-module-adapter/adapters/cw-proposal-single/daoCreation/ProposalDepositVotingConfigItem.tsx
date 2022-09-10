@@ -2,8 +2,8 @@ import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
 import {
-  DaoCreationConfigItem,
-  DaoCreationConfigItemInputProps,
+  DaoCreationVotingConfigItem,
+  DaoCreationVotingConfigItemInputProps,
 } from '@dao-dao/tstypes'
 import { FormSwitchCard, NumberInput } from '@dao-dao/ui'
 import { validateNonNegative } from '@dao-dao/utils'
@@ -28,7 +28,7 @@ export const ProposalDepositInput = ({
   register,
   setValue,
   errors,
-}: DaoCreationConfigItemInputProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
 
   // Can only configure proposal deposit if we have a CW20 token to use.
@@ -84,7 +84,7 @@ export const ProposalDepositInput = ({
   )
 }
 
-export const ProposalDepositVotingConfigurationItem: DaoCreationConfigItem<DaoCreationConfig> =
+export const ProposalDepositVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
     // Only display if using cw20-staked-balance-voting since that creates a
     // CW20 token that can be used for deposit.

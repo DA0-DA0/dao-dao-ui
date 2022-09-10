@@ -22,11 +22,11 @@ import {
   ProposalVotes,
 } from './components'
 import {
-  AllowRevotingVotingConfigurationItem,
-  ProposalDepositVotingConfigurationItem,
-  QuorumVotingConfigurationItem,
-  ThresholdVotingConfigurationItem,
-  VotingDurationVotingConfigurationItem,
+  AllowRevotingVotingConfigItem,
+  ProposalDepositVotingConfigItem,
+  QuorumVotingConfigItem,
+  ThresholdVotingConfigItem,
+  VotingDurationVotingConfigItem,
 } from './daoCreation'
 import { makeGetProposalInfo } from './functions'
 import {
@@ -128,17 +128,19 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
         allowRevoting: false,
       },
 
-      votingConfigurationItems: [
-        VotingDurationVotingConfigurationItem,
-        ProposalDepositVotingConfigurationItem,
-      ],
-      votingConfigurationAdvancedItems: [
-        AllowRevotingVotingConfigurationItem,
-        ThresholdVotingConfigurationItem,
-        QuorumVotingConfigurationItem,
-      ],
-      votingConfigurationAdvancedWarningI18nKeys: [
-        'daoCreationAdapter.cw-proposal-single.advancedWarning',
-      ],
+      votingConfig: {
+        items: [
+          VotingDurationVotingConfigItem,
+          ProposalDepositVotingConfigItem,
+        ],
+        advancedItems: [
+          AllowRevotingVotingConfigItem,
+          ThresholdVotingConfigItem,
+          QuorumVotingConfigItem,
+        ],
+        advancedWarningI18nKeys: [
+          'daoCreationAdapter.cw-proposal-single.advancedWarning',
+        ],
+      },
     },
   }

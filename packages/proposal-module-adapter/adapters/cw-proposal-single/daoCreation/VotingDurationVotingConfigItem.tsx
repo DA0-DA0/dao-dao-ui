@@ -2,8 +2,8 @@ import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
 import {
-  DaoCreationConfigItem,
-  DaoCreationConfigItemInputProps,
+  DaoCreationVotingConfigItem,
+  DaoCreationVotingConfigItemInputProps,
   DurationUnits,
   DurationUnitsValues,
 } from '@dao-dao/tstypes'
@@ -22,7 +22,7 @@ export const VotingDurationInput = ({
   register,
   setValue,
   errors,
-}: DaoCreationConfigItemInputProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
 
   return (
@@ -76,7 +76,7 @@ export const VotingDurationInput = ({
   )
 }
 
-export const VotingDurationVotingConfigurationItem: DaoCreationConfigItem<DaoCreationConfig> =
+export const VotingDurationVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
     Icon: VotingDurationIcon,
     nameI18nKey: 'form.votingDurationTitle',

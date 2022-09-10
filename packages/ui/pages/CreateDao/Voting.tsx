@@ -67,16 +67,16 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
   // Combine all advanced warnings i18n keys into single array.
   const advancedWarningI18nKeys = useMemo(
     () => [
-      ...(votingModuleDaoCreationAdapter.votingConfigurationAdvancedWarningI18nKeys ??
+      ...(votingModuleDaoCreationAdapter.votingConfig.advancedWarningI18nKeys ??
         []),
       ...proposalModuleDaoCreationAdapters.flatMap(
-        ({ votingConfigurationAdvancedWarningI18nKeys }) =>
-          votingConfigurationAdvancedWarningI18nKeys ?? []
+        ({ votingConfig: { advancedWarningI18nKeys } }) =>
+          advancedWarningI18nKeys ?? []
       ),
     ],
     [
       proposalModuleDaoCreationAdapters,
-      votingModuleDaoCreationAdapter.votingConfigurationAdvancedWarningI18nKeys,
+      votingModuleDaoCreationAdapter.votingConfig.advancedWarningI18nKeys,
     ]
   )
 
@@ -116,7 +116,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
         </p>
 
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
-          {votingModuleDaoCreationAdapter.votingConfigurationItems.map(
+          {votingModuleDaoCreationAdapter.votingConfig.items.map(
             (
               {
                 onlyDisplayCondition,
@@ -168,8 +168,8 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
               )
           )}
           {proposalModuleDaoCreationAdapters.flatMap(
-            ({ votingConfigurationItems }, index) =>
-              votingConfigurationItems.map(
+            ({ votingConfig: { items } }, index) =>
+              items.map(
                 (
                   {
                     onlyDisplayCondition,
@@ -225,11 +225,9 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
       </div>
 
       {/* Only display advanced if there are advanced items to show. */}
-      {(!!votingModuleDaoCreationAdapter.votingConfigurationAdvancedItems
-        ?.length ||
+      {(!!votingModuleDaoCreationAdapter.votingConfig.advancedItems?.length ||
         proposalModuleDaoCreationAdapters.some(
-          ({ votingConfigurationAdvancedItems }) =>
-            !!votingConfigurationAdvancedItems?.length
+          ({ votingConfig: { advancedItems } }) => !!advancedItems?.length
         )) && (
         <div className="mx-6" ref={advancedConfigurationContainerRef}>
           <div className="flex flex-row justify-between items-end my-9">
@@ -289,7 +287,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
             )}
 
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
-              {votingModuleDaoCreationAdapter.votingConfigurationAdvancedItems?.map(
+              {votingModuleDaoCreationAdapter.votingConfig.advancedItems?.map(
                 (
                   {
                     onlyDisplayCondition,
@@ -341,8 +339,8 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                   )
               )}
               {proposalModuleDaoCreationAdapters.flatMap(
-                ({ votingConfigurationAdvancedItems }, index) =>
-                  votingConfigurationAdvancedItems?.map(
+                ({ votingConfig: { advancedItems } }, index) =>
+                  advancedItems?.map(
                     (
                       {
                         onlyDisplayCondition,
