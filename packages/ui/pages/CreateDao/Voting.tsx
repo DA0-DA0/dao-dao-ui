@@ -125,6 +125,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                 descriptionI18nKey,
                 tooltipI18nKey,
                 Input,
+                getInputError,
               },
               index
             ) =>
@@ -134,10 +135,11 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                   key={index}
                   Icon={Icon}
                   description={t(descriptionI18nKey)}
+                  error={getInputError(errors.votingModuleAdapter?.data)}
                   input={
                     <Input
                       data={votingModuleAdapter.data}
-                      errors={errors?.votingModuleAdapter?.data}
+                      errors={errors.votingModuleAdapter?.data}
                       newDao={newDao}
                       register={(fieldName, options) =>
                         register(
@@ -151,7 +153,11 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                           ('votingModuleAdapter.data.' +
                             fieldName) as `votingModuleAdapter.data.${string}`,
                           value,
-                          options
+                          {
+                            // Validate by default.
+                            shouldValidate: true,
+                            ...options,
+                          }
                         )
                       }
                       watch={(fieldName) =>
@@ -178,6 +184,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                     descriptionI18nKey,
                     tooltipI18nKey,
                     Input,
+                    getInputError,
                   },
                   itemIndex
                 ) =>
@@ -187,10 +194,13 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                       key={`${index}:${itemIndex}`}
                       Icon={Icon}
                       description={t(descriptionI18nKey)}
+                      error={getInputError(
+                        errors.proposalModuleAdapters?.[index]?.data
+                      )}
                       input={
                         <Input
                           data={proposalModuleAdapters[index].data}
-                          errors={errors?.proposalModuleAdapters?.[index]?.data}
+                          errors={errors.proposalModuleAdapters?.[index]?.data}
                           newDao={newDao}
                           register={(fieldName, options) =>
                             register(
@@ -204,7 +214,11 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                               (`proposalModuleAdapters.${index}.data.` +
                                 fieldName) as `proposalModuleAdapters.${number}.data.${string}`,
                               value,
-                              options
+                              {
+                                // Validate by default.
+                                shouldValidate: true,
+                                ...options,
+                              }
                             )
                           }
                           watch={(fieldName) =>
@@ -296,6 +310,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                     descriptionI18nKey,
                     tooltipI18nKey,
                     Input,
+                    getInputError,
                   },
                   index
                 ) =>
@@ -305,10 +320,11 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                       key={index}
                       Icon={Icon}
                       description={t(descriptionI18nKey)}
+                      error={getInputError(errors.votingModuleAdapter?.data)}
                       input={
                         <Input
                           data={votingModuleAdapter.data}
-                          errors={errors?.votingModuleAdapter?.data}
+                          errors={errors.votingModuleAdapter?.data}
                           newDao={newDao}
                           register={(fieldName, options) =>
                             register(
@@ -322,7 +338,11 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                               ('votingModuleAdapter.data.' +
                                 fieldName) as `votingModuleAdapter.data.${string}`,
                               value,
-                              options
+                              {
+                                // Validate by default.
+                                shouldValidate: true,
+                                ...options,
+                              }
                             )
                           }
                           watch={(fieldName) =>
@@ -349,6 +369,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                         descriptionI18nKey,
                         tooltipI18nKey,
                         Input,
+                        getInputError,
                       },
                       itemIndex
                     ) =>
@@ -358,11 +379,14 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                           key={`${index}:${itemIndex}`}
                           Icon={Icon}
                           description={t(descriptionI18nKey)}
+                          error={getInputError(
+                            errors.proposalModuleAdapters?.[index]?.data
+                          )}
                           input={
                             <Input
                               data={proposalModuleAdapters[index].data}
                               errors={
-                                errors?.proposalModuleAdapters?.[index]?.data
+                                errors.proposalModuleAdapters?.[index]?.data
                               }
                               newDao={newDao}
                               register={(fieldName, options) =>
@@ -377,7 +401,11 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                                   (`proposalModuleAdapters.${index}.data.` +
                                     fieldName) as `proposalModuleAdapters.${number}.data.${string}`,
                                   value,
-                                  options
+                                  {
+                                    // Validate by default.
+                                    shouldValidate: true,
+                                    ...options,
+                                  }
                                 )
                               }
                               watch={(fieldName) =>

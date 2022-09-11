@@ -86,5 +86,7 @@ export const UnstakingDurationVotingConfigItem: DaoCreationVotingConfigItem<DaoC
     nameI18nKey: 'form.unstakingDurationTitle',
     descriptionI18nKey: 'form.unstakingDurationDescription',
     Input: UnstakingDurationInput,
+    getInputError: ({ unstakingDuration } = {}) =>
+      unstakingDuration?.value || unstakingDuration?.units,
     Review: UnstakingDurationReview,
   }

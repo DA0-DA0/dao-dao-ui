@@ -76,5 +76,7 @@ export const ThresholdVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationC
     nameI18nKey: 'form.passingThresholdTitle',
     descriptionI18nKey: 'form.passingThresholdDescription',
     Input: ThresholdInput,
+    getInputError: ({ threshold } = {}) =>
+      threshold?.majority || threshold?.value,
     Review: ThresholdReview,
   }

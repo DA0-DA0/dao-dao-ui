@@ -47,6 +47,7 @@ export const AllowRevotingVotingConfigItem: DaoCreationVotingConfigItem<DaoCreat
     nameI18nKey: 'form.allowRevotingTitle',
     descriptionI18nKey: 'form.allowRevotingDescription',
     Input: AllowRevotingInput,
+    getInputError: ({ allowRevoting } = {}) => allowRevoting,
     Review: AllowRevotingReview,
     getReviewClassName: ({ allowRevoting }) =>
       allowRevoting ? 'bg-component-badge-valid' : 'bg-component-badge-error',

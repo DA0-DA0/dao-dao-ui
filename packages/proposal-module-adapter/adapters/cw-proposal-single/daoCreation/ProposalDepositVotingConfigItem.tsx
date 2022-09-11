@@ -130,5 +130,7 @@ export const ProposalDepositVotingConfigItem: DaoCreationVotingConfigItem<DaoCre
     nameI18nKey: 'form.proposalDepositTitle',
     descriptionI18nKey: 'form.proposalDepositDescription',
     Input: ProposalDepositInput,
+    getInputError: ({ proposalDeposit } = {}) =>
+      proposalDeposit?.amount || proposalDeposit?.refundFailed,
     Review: ProposalDepositReview,
   }

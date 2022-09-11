@@ -1,5 +1,7 @@
 import { ComponentType } from 'react'
 import {
+  FieldError,
+  FieldErrors,
   FieldPath,
   FieldPathValue,
   FieldValues,
@@ -74,6 +76,7 @@ export interface DaoCreationVotingConfigItem<
   descriptionI18nKey: string
   tooltipI18nKey?: string
   Input: ComponentType<DaoCreationVotingConfigItemInputProps<ModuleConfig>>
+  getInputError: (errors?: FieldErrors<ModuleConfig>) => FieldError | undefined
   Review: ComponentType<DaoCreationVotingConfigItemReviewProps<ModuleConfig>>
   getReviewClassName?: (data: ModuleConfig) => string
 }

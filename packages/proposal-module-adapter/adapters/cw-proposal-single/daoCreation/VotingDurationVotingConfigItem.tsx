@@ -94,5 +94,7 @@ export const VotingDurationVotingConfigItem: DaoCreationVotingConfigItem<DaoCrea
     nameI18nKey: 'form.votingDurationTitle',
     descriptionI18nKey: 'form.votingDurationDescription',
     Input: VotingDurationInput,
+    getInputError: ({ votingDuration } = {}) =>
+      votingDuration?.value || votingDuration?.units,
     Review: VotingDurationReview,
   }

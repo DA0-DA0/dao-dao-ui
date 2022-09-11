@@ -15,6 +15,7 @@ export const makeCreateDaoFormDecorator: (
         ...DefaultNewDao,
         ...defaults,
       },
+      mode: 'onChange',
     })
 
     const imageUrl = methods.watch('imageUrl')

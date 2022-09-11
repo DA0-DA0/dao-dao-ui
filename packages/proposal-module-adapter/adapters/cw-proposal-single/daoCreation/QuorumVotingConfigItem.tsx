@@ -97,5 +97,7 @@ export const QuorumVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConf
     nameI18nKey: 'form.quorumTitle',
     descriptionI18nKey: 'form.quorumDescription',
     Input: QuorumInput,
+    getInputError: ({ quorumEnabled, quorum } = {}) =>
+      quorumEnabled || quorum?.majority || quorum?.value,
     Review: QuorumReview,
   }

@@ -89,7 +89,11 @@ export const CreateDaoGovernance = ({
               ('votingModuleAdapter.data.' +
                 fieldName) as `votingModuleAdapter.data.${string}`,
               value,
-              options
+              {
+                // Validate by default.
+                shouldValidate: true,
+                ...options,
+              }
             )
           }
           watch={(fieldName) =>
