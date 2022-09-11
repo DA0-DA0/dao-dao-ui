@@ -1,9 +1,13 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ComponentType } from 'react'
+import { FieldValues } from 'react-hook-form'
 
 import { Action } from '@dao-dao/actions'
 import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
-import { DaoCreationVotingConfigItem } from '@dao-dao/tstypes'
+import {
+  DaoCreationGetInstantiateInfo,
+  DaoCreationVotingConfigItem,
+} from '@dao-dao/tstypes'
 import { LoaderProps, LogoProps, ProfileVoteCardOption } from '@dao-dao/ui'
 import { ProcessedThresholdQuorum, ProposalModule } from '@dao-dao/utils'
 import { BaseProposalDetailsVotingPowerWidgetProps } from '@dao-dao/voting-module-adapter'
@@ -67,26 +71,29 @@ export interface IProposalModuleAdapter {
   }
 }
 
-export type ProposalModuleAdapter<DaoCreationConfig = any> = {
-  id: string
-  matcher: (contractName: string) => boolean
+export type ProposalModuleAdapter<DaoCreationConfig extends FieldValues = any> =
+  {
+    id: string
+    matcher: (contractName: string) => boolean
 
-  loadCommon: (
-    options: IProposalModuleAdapterCommonOptions
-  ) => IProposalModuleAdapterCommon
+    loadCommon: (
+      options: IProposalModuleAdapterCommonOptions
+    ) => IProposalModuleAdapterCommon
 
-  load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter
+    load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter
 
-  daoCreation: {
-    defaultConfig: DaoCreationConfig
+    daoCreation: {
+      defaultConfig: DaoCreationConfig
 
-    votingConfig: {
-      items: DaoCreationVotingConfigItem[]
-      advancedItems?: DaoCreationVotingConfigItem[]
-      advancedWarningI18nKeys?: string[]
+      votingConfig: {
+        items: DaoCreationVotingConfigItem[]
+        advancedItems?: DaoCreationVotingConfigItem[]
+        advancedWarningI18nKeys?: string[]
+      }
+
+      getInstantiateInfo: DaoCreationGetInstantiateInfo<DaoCreationConfig>
     }
   }
-}
 
 export interface IProposalModuleAdapterInitialOptions {
   coreAddress: string

@@ -10,7 +10,8 @@
   "devDependencies": {
     "typescript": "^4.5.3",
     "react": "18.1.0",
-    "react-hook-form": "7.20.4"
+    "react-hook-form": "7.20.4",
+    "next-i18next": "^11.0.0"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true

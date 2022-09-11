@@ -1,5 +1,6 @@
 import { TFunction } from 'next-i18next'
 import { ComponentType, ReactNode } from 'react'
+import { FieldValues } from 'react-hook-form'
 
 import { Action } from '@dao-dao/actions'
 import {
@@ -12,6 +13,7 @@ import {
 } from '@dao-dao/state/clients/cw20-base'
 import { Claim } from '@dao-dao/state/clients/stake-cw20'
 import {
+  DaoCreationGetInstantiateInfo,
   DaoCreationGovernanceConfigInputProps,
   DaoCreationGovernanceConfigReviewProps,
   DaoCreationVotingConfigItem,
@@ -151,7 +153,7 @@ export interface IVotingModuleAdapter {
   }
 }
 
-export type VotingModuleAdapter<DaoCreationConfig = any> = {
+export type VotingModuleAdapter<DaoCreationConfig extends FieldValues = any> = {
   id: string
   matcher: (contractName: string) => boolean
   load: (options: IVotingModuleAdapterOptions) => IVotingModuleAdapter
@@ -177,6 +179,8 @@ export type VotingModuleAdapter<DaoCreationConfig = any> = {
       advancedItems?: DaoCreationVotingConfigItem[]
       advancedWarningI18nKeys?: string[]
     }
+
+    getInstantiateInfo: DaoCreationGetInstantiateInfo<DaoCreationConfig>
   }
 }
 

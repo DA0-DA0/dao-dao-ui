@@ -27,6 +27,7 @@ import {
   QuorumVotingConfigItem,
   ThresholdVotingConfigItem,
   VotingDurationVotingConfigItem,
+  getInstantiateInfo,
 } from './daoCreation'
 import { makeGetProposalInfo } from './functions'
 import {
@@ -141,5 +142,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
           'daoCreationAdapter.cw-proposal-single.advancedWarning',
         ],
       },
+
+      getInstantiateInfo,
     },
   }

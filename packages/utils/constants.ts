@@ -129,3 +129,8 @@ export const FEATURED_DAOS_CACHE_SECONDS = parseInt(
     (60 * 60 * 12).toString(),
   10
 )
+
+export const NEW_DAO_CW20_DECIMALS = parseInt(
+  process.env.NEXT_PUBLIC_NEW_DAO_CW20_DECIMALS || '6',
+  10
+)

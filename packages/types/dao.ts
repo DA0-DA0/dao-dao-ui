@@ -1,3 +1,4 @@
+import { TFunction } from 'next-i18next'
 import { ComponentType } from 'react'
 import {
   FieldError,
@@ -9,6 +10,8 @@ import {
   UseFormRegister,
   UseFormSetValue,
 } from 'react-hook-form'
+
+import { ModuleInstantiateInfo } from './contracts/cw-core-0.2.0'
 
 export interface NewDao {
   name: string
@@ -80,3 +83,7 @@ export interface DaoCreationVotingConfigItem<
   Review: ComponentType<DaoCreationVotingConfigItemReviewProps<ModuleConfig>>
   getReviewClassName?: (data: ModuleConfig) => string
 }
+
+export type DaoCreationGetInstantiateInfo<
+  ModuleConfig extends FieldValues = any
+> = (newDao: NewDao, data: ModuleConfig, t: TFunction) => ModuleInstantiateInfo

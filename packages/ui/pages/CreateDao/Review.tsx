@@ -55,6 +55,46 @@ export const CreateDaoReview = ({ extraCrumbs }: CreateDaoReviewProps) => {
     [proposalModuleAdapters]
   )
 
+  // Generate instantiation message.
+  // const generateInstantiateMsg = useCallback(() => {
+  //   // Generate voting module adapter instantiation message.
+  //   const votingModuleInstantiateInfo =
+  //     votingModuleDaoCreationAdapter.getInstantiateInfo(
+  //       newDao,
+  //       votingModuleAdapter.data,
+  //       t
+  //     )
+
+  //   // Generate proposal module adapters instantiation messages.
+  //   const proposalModuleInstantiateInfos =
+  //     proposalModuleDaoCreationAdapters.map(({ getInstantiateInfo }, index) =>
+  //       getInstantiateInfo(newDao, proposalModuleAdapters[index].data, t)
+  //     )
+
+  //   const instantiateMsg: InstantiateMsg = {
+  //     admin: null,
+  //     automatically_add_cw20s: true,
+  //     automatically_add_cw721s: true,
+  //     description,
+  //     image_url: imageUrl ?? null,
+  //     name,
+  //     proposal_modules_instantiate_info: proposalModuleInstantiateInfos,
+  //     voting_module_instantiate_info: votingModuleInstantiateInfo,
+  //   }
+
+  //   return instantiateMsg
+  // }, [
+  //   description,
+  //   imageUrl,
+  //   name,
+  //   newDao,
+  //   proposalModuleAdapters,
+  //   proposalModuleDaoCreationAdapters,
+  //   t,
+  //   votingModuleAdapter.data,
+  //   votingModuleDaoCreationAdapter,
+  // ])
+
   return (
     // No container padding because we want the gradient to expand. Apply px-6
     // to children instead.

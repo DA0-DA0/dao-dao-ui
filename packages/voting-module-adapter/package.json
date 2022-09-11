@@ -9,7 +9,8 @@
     "@dao-dao/ui": "*",
     "@dao-dao/state": "*",
     "@dao-dao/utils": "*",
-    "a11y-react-emoji": "^1.2.0"
+    "a11y-react-emoji": "^1.2.0",
+    "react-hook-form": "7.20.4"
   },
   "devDependencies": {
     "@dao-dao/storybook": "*",
