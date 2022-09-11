@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
+  DaoCreationVotingConfigItemReviewProps,
 } from '@dao-dao/tstypes'
 import { FormSwitchCard, NumberInput } from '@dao-dao/ui'
 import { validateNonNegative } from '@dao-dao/utils'
@@ -84,6 +85,41 @@ export const ProposalDepositInput = ({
   )
 }
 
+export const ProposalDepositReview = ({
+  newDao: { votingModuleAdapter },
+  data: {
+    proposalDeposit: { amount, refundFailed },
+  },
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
+  const { t } = useTranslation()
+
+  // Can only configure proposal deposit if we have a CW20 token to use.
+  if (votingModuleAdapter.id !== Cw20StakedBalanceVotingAdapter.id) {
+    throw new Error(t('error.loadingData'))
+  }
+  // Checked adapter type above.
+  const {
+    type,
+    newInfo: { symbol: newSymbol },
+    existingGovernanceTokenInfo,
+  } = votingModuleAdapter.data as Cw20StakedBalanceVotingConfig
+
+  return amount === 0 ? (
+    <>{t('info.none')}</>
+  ) : (
+    <>
+      {amount.toLocaleString()} $
+      {(type === GovernanceTokenType.New
+        ? newSymbol
+        : existingGovernanceTokenInfo?.symbol) || t('info.tokens')}
+      <br />
+      <span className="text-text-tertiary">
+        ({refundFailed ? t('info.refundedOnFailure') : t('info.nonRefundable')})
+      </span>
+    </>
+  )
+}
+
 export const ProposalDepositVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
     // Only display if using cw20-staked-balance-voting since that creates a
@@ -94,4 +130,5 @@ export const ProposalDepositVotingConfigItem: DaoCreationVotingConfigItem<DaoCre
     nameI18nKey: 'form.proposalDepositTitle',
     descriptionI18nKey: 'form.proposalDepositDescription',
     Input: ProposalDepositInput,
+    Review: ProposalDepositReview,
   }

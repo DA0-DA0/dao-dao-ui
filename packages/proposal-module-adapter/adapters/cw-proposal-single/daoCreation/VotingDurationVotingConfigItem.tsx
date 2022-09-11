@@ -4,11 +4,16 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
+  DaoCreationVotingConfigItemReviewProps,
   DurationUnits,
   DurationUnitsValues,
 } from '@dao-dao/tstypes'
 import { NumberInput, SelectInput } from '@dao-dao/ui'
-import { validatePositive, validateRequired } from '@dao-dao/utils'
+import {
+  convertDurationWithUnitsToHumanReadableString,
+  validatePositive,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'
 
@@ -76,10 +81,18 @@ export const VotingDurationInput = ({
   )
 }
 
+export const VotingDurationReview = ({
+  data: { votingDuration },
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
+  const { t } = useTranslation()
+  return <>{convertDurationWithUnitsToHumanReadableString(t, votingDuration)}</>
+}
+
 export const VotingDurationVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
     Icon: VotingDurationIcon,
     nameI18nKey: 'form.votingDurationTitle',
     descriptionI18nKey: 'form.votingDurationDescription',
     Input: VotingDurationInput,
+    Review: VotingDurationReview,
   }

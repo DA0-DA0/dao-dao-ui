@@ -4,9 +4,14 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
+  DaoCreationVotingConfigItemReviewProps,
 } from '@dao-dao/tstypes'
 import { NumberInput, SelectInput } from '@dao-dao/ui'
-import { validatePositive, validateRequired } from '@dao-dao/utils'
+import {
+  formatPercentOf100,
+  validatePositive,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'
 
@@ -56,10 +61,20 @@ export const ThresholdInput = ({
   )
 }
 
+export const ThresholdReview = ({
+  data: {
+    threshold: { majority, value },
+  },
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
+  const { t } = useTranslation()
+  return <>{majority ? t('info.majority') : formatPercentOf100(value)}</>
+}
+
 export const ThresholdVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
     Icon: ThresholdIcon,
     nameI18nKey: 'form.passingThresholdTitle',
     descriptionI18nKey: 'form.passingThresholdDescription',
     Input: ThresholdInput,
+    Review: ThresholdReview,
   }

@@ -1,3 +1,5 @@
+import { TFunction } from 'next-i18next'
+
 import { DurationUnits, DurationWithUnits } from '@dao-dao/tstypes'
 import { Expiration } from '@dao-dao/types/contracts/cw3-dao'
 
@@ -87,7 +89,10 @@ export const convertDurationWithUnitsToDuration = ({
   return { time }
 }
 
-export const convertDurationWithUnitsToHumanReadableString = ({
-  units,
-  value,
-}: DurationWithUnits): string => `${value} ${units}`
+export const convertDurationWithUnitsToHumanReadableString = (
+  t: TFunction,
+  { units, value }: DurationWithUnits
+): string =>
+  `${value} ${t(`unit.${units}`, {
+    count: value,
+  }).toLocaleLowerCase()}`

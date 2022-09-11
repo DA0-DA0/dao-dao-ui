@@ -4,10 +4,15 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
+  DaoCreationVotingConfigItemReviewProps,
   DurationUnitsValues,
 } from '@dao-dao/tstypes'
 import { NumberInput, SelectInput } from '@dao-dao/ui'
-import { validateNonNegative, validateRequired } from '@dao-dao/utils'
+import {
+  convertDurationWithUnitsToHumanReadableString,
+  validateNonNegative,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'
 
@@ -66,10 +71,20 @@ export const UnstakingDurationInput = ({
   )
 }
 
+export const UnstakingDurationReview = ({
+  data: { unstakingDuration },
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
+  const { t } = useTranslation()
+  return (
+    <>{convertDurationWithUnitsToHumanReadableString(t, unstakingDuration)}</>
+  )
+}
+
 export const UnstakingDurationVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
     Icon: UnstakingDurationIcon,
     nameI18nKey: 'form.unstakingDurationTitle',
     descriptionI18nKey: 'form.unstakingDurationDescription',
     Input: UnstakingDurationInput,
+    Review: UnstakingDurationReview,
   }

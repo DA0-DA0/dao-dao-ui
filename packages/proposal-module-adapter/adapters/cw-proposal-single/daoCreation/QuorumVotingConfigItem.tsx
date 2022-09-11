@@ -4,9 +4,14 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
+  DaoCreationVotingConfigItemReviewProps,
 } from '@dao-dao/tstypes'
 import { FormSwitchCard, NumberInput, SelectInput } from '@dao-dao/ui'
-import { validatePositive, validateRequired } from '@dao-dao/utils'
+import {
+  formatPercentOf100,
+  validatePositive,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'
 
@@ -68,10 +73,29 @@ export const QuorumInput = ({
   )
 }
 
+export const QuorumReview = ({
+  data: {
+    quorumEnabled,
+    quorum: { majority, value },
+  },
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
+  const { t } = useTranslation()
+  return (
+    <>
+      {quorumEnabled
+        ? majority
+          ? t('info.majority')
+          : formatPercentOf100(value)
+        : t('info.disabled')}
+    </>
+  )
+}
+
 export const QuorumVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
     Icon: QuorumIcon,
     nameI18nKey: 'form.quorumTitle',
     descriptionI18nKey: 'form.quorumDescription',
     Input: QuorumInput,
+    Review: QuorumReview,
   }

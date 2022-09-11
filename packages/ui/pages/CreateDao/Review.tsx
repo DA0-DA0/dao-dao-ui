@@ -11,10 +11,10 @@ import { getAdapterById as getVotingModuleAdapterById } from '@dao-dao/voting-mo
 
 import {
   BreadcrumbsProps,
+  DaoCreateConfigReviewCard,
   DaoHeader,
   GradientHero,
   PageHeader,
-  TooltipInfoIcon,
 } from '../../components'
 
 export interface CreateDaoReviewProps {
@@ -89,7 +89,7 @@ export const CreateDaoReview = ({ extraCrumbs }: CreateDaoReviewProps) => {
           {t('title.votingConfiguration')}
         </p>
 
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
           {votingModuleDaoCreationAdapter.votingConfig.items
             .concat(
               votingModuleDaoCreationAdapter.votingConfig.advancedItems ?? []
@@ -102,22 +102,24 @@ export const CreateDaoReview = ({ extraCrumbs }: CreateDaoReviewProps) => {
                   nameI18nKey,
                   tooltipI18nKey,
                   Review,
+                  getReviewClassName,
                 },
                 index
               ) =>
                 // If has display condition, check it. Otherwise display.
                 (onlyDisplayCondition?.(newDao) ?? true) && (
-                  // TODO: Make display correctly.
-                  <div key={index} className="">
-                    <p className="text-2xl">
-                      <Icon />
-                    </p>
-                    <p>{t(nameI18nKey)}</p>
-                    {tooltipI18nKey && (
-                      <TooltipInfoIcon title={t(tooltipI18nKey)} />
+                  <DaoCreateConfigReviewCard
+                    key={index}
+                    Icon={Icon}
+                    name={t(nameI18nKey)}
+                    review={
+                      <Review data={votingModuleAdapter.data} newDao={newDao} />
+                    }
+                    reviewClassName={getReviewClassName?.(
+                      votingModuleAdapter.data
                     )}
-                    {/* <Review data={votingModuleAdapter.data} newDao={newDao} /> */}
-                  </div>
+                    tooltip={tooltipI18nKey && t(tooltipI18nKey)}
+                  />
                 )
             )}
           {proposalModuleDaoCreationAdapters.flatMap(
@@ -130,25 +132,27 @@ export const CreateDaoReview = ({ extraCrumbs }: CreateDaoReviewProps) => {
                     nameI18nKey,
                     tooltipI18nKey,
                     Review,
+                    getReviewClassName,
                   },
                   itemIndex
                 ) =>
                   // If has display condition, check it. Otherwise display.
                   (onlyDisplayCondition?.(newDao) ?? true) && (
-                    // TODO: Make display correctly.
-                    <div key={`${index}:${itemIndex}`} className="">
-                      <p className="text-2xl">
-                        <Icon />
-                      </p>
-                      <p>{t(nameI18nKey)}</p>
-                      {tooltipI18nKey && (
-                        <TooltipInfoIcon title={t(tooltipI18nKey)} />
+                    <DaoCreateConfigReviewCard
+                      key={`${index}:${itemIndex}`}
+                      Icon={Icon}
+                      name={t(nameI18nKey)}
+                      review={
+                        <Review
+                          data={proposalModuleAdapters[index].data}
+                          newDao={newDao}
+                        />
+                      }
+                      reviewClassName={getReviewClassName?.(
+                        proposalModuleAdapters[index].data
                       )}
-                      {/* <Review
-                        data={proposalModuleAdapters[index].data}
-                        newDao={newDao}
-                      /> */}
-                    </div>
+                      tooltip={tooltipI18nKey && t(tooltipI18nKey)}
+                    />
                   )
               )
           )}

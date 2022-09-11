@@ -4,6 +4,7 @@ import {
   makeAppLayoutDecorator,
   makeCreateDaoFormDecorator,
 } from '@dao-dao/storybook/decorators'
+import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
 
 import { DaoCreateSidebarCard } from '../../components/dao'
 import { CreateDaoGovernance } from './Governance'
@@ -18,6 +19,10 @@ export default {
       description: "There are evil cows all over the place. Let's milk 'em!",
       imageUrl:
         'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
+      votingModuleAdapter: {
+        id: Cw20StakedBalanceVotingAdapter.id,
+        data: Cw20StakedBalanceVotingAdapter.daoCreation!.defaultConfig,
+      },
     }),
     makeAppLayoutDecorator({
       rightSidebarProps: {

@@ -5,7 +5,7 @@ import { SuspenseLoader } from '@dao-dao/common'
 import { Loader as DefaultLoader, LoaderProps } from '../../Loader'
 import { TooltipInfoIcon } from '../../TooltipInfoIcon'
 
-export interface DaoCreateConfigCardProps {
+export interface DaoCreateConfigInputCardProps {
   Icon: ComponentType
   name: string
   description: string
@@ -14,14 +14,14 @@ export interface DaoCreateConfigCardProps {
   Loader?: ComponentType<LoaderProps>
 }
 
-export const DaoCreateConfigCard = ({
+export const DaoCreateConfigInputCard = ({
   Icon,
   name,
   description,
   tooltip,
   input,
   Loader = DefaultLoader,
-}: DaoCreateConfigCardProps) => (
+}: DaoCreateConfigInputCardProps) => (
   <div className="flex relative flex-col bg-background-tertiary rounded-lg">
     {tooltip && (
       <TooltipInfoIcon className="absolute top-3 right-3" title={tooltip} />

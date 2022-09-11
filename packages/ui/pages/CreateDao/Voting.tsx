@@ -18,7 +18,7 @@ import {
   GradientHero,
   PageHeader,
 } from '../../components'
-import { DaoCreateConfigCard } from '../../components/dao/create/DaoCreateConfigCard'
+import { DaoCreateConfigInputCard } from '../../components/dao/create/DaoCreateConfigInputCard'
 
 export interface CreateDaoVotingProps {
   // Used to insert parent DAO crumbs if creating SubDAO.
@@ -130,7 +130,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
             ) =>
               // If has display condition, check it. Otherwise display.
               (onlyDisplayCondition?.(newDao) ?? true) && (
-                <DaoCreateConfigCard
+                <DaoCreateConfigInputCard
                   key={index}
                   Icon={Icon}
                   description={t(descriptionI18nKey)}
@@ -183,7 +183,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                 ) =>
                   // If has display condition, check it. Otherwise display.
                   (onlyDisplayCondition?.(newDao) ?? true) && (
-                    <DaoCreateConfigCard
+                    <DaoCreateConfigInputCard
                       key={`${index}:${itemIndex}`}
                       Icon={Icon}
                       description={t(descriptionI18nKey)}
@@ -301,7 +301,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                 ) =>
                   // If has display condition, check it. Otherwise display.
                   (onlyDisplayCondition?.(newDao) ?? true) && (
-                    <DaoCreateConfigCard
+                    <DaoCreateConfigInputCard
                       key={index}
                       Icon={Icon}
                       description={t(descriptionI18nKey)}
@@ -354,7 +354,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
                     ) =>
                       // If has display condition, check it. Otherwise display.
                       (onlyDisplayCondition?.(newDao) ?? true) && (
-                        <DaoCreateConfigCard
+                        <DaoCreateConfigInputCard
                           key={`${index}:${itemIndex}`}
                           Icon={Icon}
                           description={t(descriptionI18nKey)}

@@ -26,7 +26,6 @@ export interface DaoCreationConfig {
   votingDuration: DurationWithUnits
   proposalDeposit: {
     amount: number
-    cw20Address: string
     refundFailed: boolean
   }
   allowRevoting: boolean

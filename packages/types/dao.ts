@@ -75,4 +75,5 @@ export interface DaoCreationVotingConfigItem<
   tooltipI18nKey?: string
   Input: ComponentType<DaoCreationVotingConfigItemInputProps<ModuleConfig>>
   Review: ComponentType<DaoCreationVotingConfigItemReviewProps<ModuleConfig>>
+  getReviewClassName?: (data: ModuleConfig) => string
 }

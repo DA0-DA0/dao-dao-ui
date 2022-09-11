@@ -8,24 +8,24 @@ import {
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators'
 import { NewDao } from '@dao-dao/tstypes'
 
-import { DaoCreateConfigCard } from './DaoCreateConfigCard'
+import { DaoCreateConfigInputCard } from './DaoCreateConfigInputCard'
 
 export default {
   title:
-    'DAO DAO / packages / ui / components / dao / create / DaoCreateConfigCard',
-  component: DaoCreateConfigCard,
+    'DAO DAO / packages / ui / components / dao / create / DaoCreateConfigInputCard',
+  component: DaoCreateConfigInputCard,
   decorators: [makeCreateDaoFormDecorator()],
-} as ComponentMeta<typeof DaoCreateConfigCard>
+} as ComponentMeta<typeof DaoCreateConfigInputCard>
 
 // TODO: Figure out why this story causes memory crash.
-const Template: ComponentStory<typeof DaoCreateConfigCard> = (args) => {
+const Template: ComponentStory<typeof DaoCreateConfigInputCard> = (args) => {
   const { register, watch, setValue } = useFormContext<NewDao>()
 
   const newDao = watch()
 
   return (
     <div className="max-w-xs">
-      <DaoCreateConfigCard
+      <DaoCreateConfigInputCard
         {...args}
         input={
           <VotingDurationInput
@@ -61,7 +61,6 @@ const Template: ComponentStory<typeof DaoCreateConfigCard> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  accentColor: '#c3935e1a',
   Icon: VotingDurationIcon,
   name: 'Voting duration',
   description:

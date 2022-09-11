@@ -122,7 +122,6 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
         },
         proposalDeposit: {
           amount: 0,
-          cw20Address: '',
           refundFailed: false,
         },
         allowRevoting: false,
