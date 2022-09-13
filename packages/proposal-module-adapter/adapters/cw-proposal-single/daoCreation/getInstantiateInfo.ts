@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 import { InstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
 import {

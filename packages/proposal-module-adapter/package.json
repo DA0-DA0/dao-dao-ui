@@ -6,20 +6,21 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@dao-dao/ui": "*",
     "@dao-dao/state": "*",
+    "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@mui/icons-material": "^5.10.3",
     "a11y-react-emoji": "^1.2.0",
+    "buffer": "^6.0.3",
     "react-hook-form": "7.20.4"
   },
   "devDependencies": {
     "@dao-dao/storybook": "*",
     "@dao-dao/tstypes": "*",
-    "typescript": "^4.5.3",
-    "react-i18next": "^11.0.0",
     "clsx": "^1.1.1",
-    "react": "18.1.0"
+    "react": "18.1.0",
+    "react-i18next": "^11.0.0",
+    "typescript": "^4.5.3"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true

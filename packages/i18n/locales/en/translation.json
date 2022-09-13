@@ -71,6 +71,7 @@
     "unstake": "Unstake",
     "unstakeTokens": "Unstake tokens",
     "useExistingToken": "Use an existing token",
+    "withDecodedModuleMessages": "with Decoded Module Messages",
     "yes": "Yes"
   },
   "commandBar": {
