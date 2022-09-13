@@ -1,33 +1,34 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
+  WalletProviderDecorator,
   makeAppLayoutDecorator,
   makeCreateDaoFormDecorator,
 } from '@dao-dao/storybook/decorators'
 
-import { DaoCreateSidebarCard } from '../../components/dao'
+import { DaoCreateSidebarCard } from '../DaoCreateSidebarCard'
 import { CreateDaoStart } from './Start'
 
 export default {
-  title: 'DAO DAO / packages / ui / pages / CreateDao / Start',
+  title: 'DAO DAO / packages / ui / components / dao / create / pages / Start',
   component: CreateDaoStart,
   decorators: [
     // Direct ancestor of rendered story.
-    makeCreateDaoFormDecorator(),
+    makeCreateDaoFormDecorator(0),
     makeAppLayoutDecorator({
       rightSidebarProps: {
-        children: <DaoCreateSidebarCard step={1} />,
+        children: <DaoCreateSidebarCard />,
       },
     }),
+    WalletProviderDecorator,
   ],
 } as ComponentMeta<typeof CreateDaoStart>
 
-const Template: ComponentStory<typeof CreateDaoStart> = (args) => (
-  <CreateDaoStart {...args} />
-)
+// makeCreateDaoFormDecorator renders the page based on the initialIndex set to
+// `0` in the decorators above.
+const Template: ComponentStory<typeof CreateDaoStart> = (_args) => <></>
 
 export const Default = Template.bind({})
-Default.args = {}
 Default.parameters = {
   design: {
     type: 'figma',

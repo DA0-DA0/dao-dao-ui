@@ -1,14 +1,9 @@
 import clsx from 'clsx'
-import { ComponentType } from 'react'
 
-import { Logo as DefaultLogo, LogoProps } from './Logo'
+import { LoaderProps } from '@dao-dao/tstypes/ui/Loader'
+export * from '@dao-dao/tstypes/ui/Loader'
 
-export interface LoaderProps {
-  fill?: boolean
-  size?: number | string
-  className?: string
-  Logo?: ComponentType<LogoProps>
-}
+import { Logo as DefaultLogo } from './Logo'
 
 export const Loader = ({
   fill = true,

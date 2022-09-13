@@ -34,7 +34,6 @@ import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { SmallScreenNav } from '@/components'
-import { usePinnedDAOs } from '@/hooks'
 
 const InnerProposal = () => {
   const { t } = useTranslation()
@@ -74,7 +73,7 @@ const InnerProposal = () => {
   )
 
   const { refreshProposalAndAll } = useProposalRefreshers()
-  const { markPinnedProposalDone } = usePinnedDAOs()
+  const { markPinnedProposalDone } = usePinnedDaos()
 
   const onVoteSuccess = useCallback(async () => {
     refreshProposalAndAll()

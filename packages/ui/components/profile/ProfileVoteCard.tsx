@@ -1,29 +1,13 @@
 import clsx from 'clsx'
-import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ProfileVoteCardProps } from '@dao-dao/tstypes/ui/ProfileVoteCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from '../Button'
 import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 import { ProfileVoteButton } from './ProfileVoteButton'
-
-export interface ProfileVoteCardOption<T> {
-  Icon: ComponentType<{ className: string }>
-  label: string
-  value: T
-}
-
-export interface ProfileVoteCardProps<T> {
-  options: ProfileVoteCardOption<T>[]
-  selected?: T
-  loading?: boolean
-  votingPower: number
-  daoName: string
-  walletName: string
-  profileImgUrl: string
-}
 
 export const ProfileVoteCard = <T extends unknown>({
   options,

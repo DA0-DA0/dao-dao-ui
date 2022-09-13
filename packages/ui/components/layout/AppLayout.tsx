@@ -1,33 +1,18 @@
-import { ReactNode, useMemo } from 'react'
+import { AppLayoutProps } from '@dao-dao/tstypes/ui/AppLayout'
 
-import { Navigation, NavigationProps } from './Navigation'
-import { ResponsiveNavigationContext } from './ResponsiveNavigationContext'
-import { RightSidebar, RightSidebarProps } from './RightSidebar'
+import { AppLayoutContext } from './AppLayoutContext'
+import { Navigation } from './Navigation'
+import { RightSidebar } from './RightSidebar'
 
-export interface AppLayoutProps {
-  navigationProps: NavigationProps
-  children: ReactNode
-  rightSidebarProps: RightSidebarProps
-  responsiveNavigationEnabled: boolean
-  toggleResponsiveNavigation: () => void
-}
+export * from '@dao-dao/tstypes/ui/AppLayout'
 
 export const AppLayout = ({
   navigationProps,
   children,
   rightSidebarProps,
-  responsiveNavigationEnabled,
-  toggleResponsiveNavigation,
+  context,
 }: AppLayoutProps) => (
-  <ResponsiveNavigationContext.Provider
-    value={useMemo(
-      () => ({
-        enabled: responsiveNavigationEnabled,
-        toggle: toggleResponsiveNavigation,
-      }),
-      [responsiveNavigationEnabled, toggleResponsiveNavigation]
-    )}
-  >
+  <AppLayoutContext.Provider value={context}>
     <div className="flex overflow-hidden relative flex-row items-stretch w-full h-full">
       <Navigation {...navigationProps} />
 
@@ -37,5 +22,5 @@ export const AppLayout = ({
 
       <RightSidebar {...rightSidebarProps} />
     </div>
-  </ResponsiveNavigationContext.Provider>
+  </AppLayoutContext.Provider>
 )

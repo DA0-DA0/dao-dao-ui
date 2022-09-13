@@ -1,6 +1,3 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { useCallback } from 'react'
 import { useRecoilState } from 'recoil'
 
@@ -8,7 +5,7 @@ import {
   pinnedAddressesAtom,
   pinnedLatestProposalsMarkedDoneAtom,
   pinnedProposalsMarkedDoneAtom,
-} from '@/atoms'
+} from '../recoil/atoms/pinned'
 
 // There are three important pieces of state:
 
@@ -43,7 +40,7 @@ import {
 // and #5 will be the first one loaded next time without having to manually
 // filter out 2 and 4 like before, while keeping the localStorage size down.
 
-export const usePinnedDAOs = () => {
+export const usePinnedDaos = () => {
   const [pinnedAddresses, setPinnedAddresses] =
     useRecoilState(pinnedAddressesAtom)
   const [pinnedProposalsMarkedDone, setPinnedProposalsMarkedDone] =

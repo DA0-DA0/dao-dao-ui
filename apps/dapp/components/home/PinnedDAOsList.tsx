@@ -7,15 +7,14 @@ import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import { PinOutline } from '@dao-dao/icons'
+import { usePinnedDaos } from '@dao-dao/state'
 import { Button, GridCardContainer } from '@dao-dao/ui'
-
-import { usePinnedDAOs } from '@/hooks'
 
 import { PinnedDAOCard } from '../PinnedDAOCard'
 
 export const PinnedDAOsList = () => {
   const { t } = useTranslation()
-  const { pinnedAddresses } = usePinnedDAOs()
+  const { pinnedAddresses } = usePinnedDaos()
 
   return pinnedAddresses.length > 0 ? (
     // Don't render on server since pinnedAddresses come from localStorage,

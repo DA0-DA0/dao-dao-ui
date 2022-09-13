@@ -7,7 +7,7 @@ import {
   DaoCreationVotingConfigItemReviewProps,
 } from '@dao-dao/tstypes'
 import { FormSwitchCard, NumberInput } from '@dao-dao/ui'
-import { validateNonNegative } from '@dao-dao/utils'
+import { NEW_DAO_CW20_DECIMALS, validateNonNegative } from '@dao-dao/utils'
 import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter'
 import {
   DaoCreationConfig as Cw20StakedBalanceVotingConfig,
@@ -43,6 +43,12 @@ export const ProposalDepositInput = ({
     existingGovernanceTokenInfo,
   } = votingModuleAdapter.data as Cw20StakedBalanceVotingConfig
 
+  const decimals =
+    type === GovernanceTokenType.New
+      ? NEW_DAO_CW20_DECIMALS
+      : existingGovernanceTokenInfo?.decimals ?? NEW_DAO_CW20_DECIMALS
+  const minimum = 1 / Math.pow(10, decimals)
+
   return (
     <div className="flex flex-col gap-3">
       {amount > 0 && (
@@ -63,14 +69,14 @@ export const ProposalDepositInput = ({
           error={errors?.proposalDeposit?.amount}
           fieldName="proposalDeposit.amount"
           onMinus={() =>
-            setValue('proposalDeposit.amount', Math.max(amount - 1, 0))
+            setValue('proposalDeposit.amount', Math.max(amount - 1, minimum))
           }
           onPlus={() =>
-            setValue('proposalDeposit.amount', Math.max(amount + 1, 0))
+            setValue('proposalDeposit.amount', Math.max(amount + 1, minimum))
           }
           register={register}
           sizing="sm"
-          step={1}
+          step={minimum}
           validation={[validateNonNegative]}
         />
 

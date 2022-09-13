@@ -1,3 +1,5 @@
+export * from './pages'
+
 export * from './DaoCreateConfigInputCard'
 export * from './DaoCreateConfigReviewCard'
 export * from './DaoCreateSidebarCard'

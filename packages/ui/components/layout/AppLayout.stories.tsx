@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { AppLayout, AppLayoutProps } from './AppLayout'
 import { NavigationProps } from './Navigation'
@@ -27,27 +27,45 @@ export const DefaultArgs: AppLayoutProps = {
     </div>
   ),
   rightSidebarProps: RightSidebarStory.args as RightSidebarProps,
-  responsiveNavigationEnabled: true,
-  toggleResponsiveNavigation: () => alert('toggle'),
+  context: {
+    responsiveNavigation: {
+      enabled: true,
+      toggle: () => alert('toggle'),
+    },
+    daoCreation: {
+      pageIndex: 0,
+      setPageIndex: (pageIndex) => alert('set page index ' + pageIndex),
+    },
+  },
 }
 
 const Template: ComponentStory<typeof AppLayout> = (args) => {
   const [compact, setCompact] = useState(false)
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
+  const [pageIndex, setPageIndex] = useState(0)
 
   return (
     <AppLayout
       {...args}
+      context={useMemo(
+        () => ({
+          responsiveNavigation: {
+            enabled: responsiveNavigationEnabled,
+            toggle: () => setResponsiveNavigationEnabled((v) => !v),
+          },
+          daoCreation: {
+            pageIndex,
+            setPageIndex,
+          },
+        }),
+        [pageIndex, responsiveNavigationEnabled]
+      )}
       navigationProps={{
         ...args.navigationProps,
         compact,
         setCompact,
       }}
-      responsiveNavigationEnabled={responsiveNavigationEnabled}
-      toggleResponsiveNavigation={() =>
-        setResponsiveNavigationEnabled((v) => !v)
-      }
     />
   )
 }

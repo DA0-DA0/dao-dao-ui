@@ -1,11 +1,8 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-export interface LogoProps {
-  size?: number | string
-  className?: string
-  invert?: boolean
-}
+import { LogoProps } from '@dao-dao/tstypes/ui/Logo'
+export * from '@dao-dao/tstypes/ui/Logo'
 
 export const Logo = ({ size = 28, invert, className }: LogoProps) => {
   const { t } = useTranslation()

@@ -6,9 +6,8 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
+import { usePinnedDaos } from '@dao-dao/state'
 import { Button, DaoCard, DaoCardInfo, GridCardContainer } from '@dao-dao/ui'
-
-import { usePinnedDAOs } from '@/hooks'
 
 export interface FeaturedDAOsListProps {
   featuredDaos: DaoCardInfo[]
@@ -16,7 +15,7 @@ export interface FeaturedDAOsListProps {
 
 export const FeaturedDAOsList = ({ featuredDaos }: FeaturedDAOsListProps) => {
   const { t } = useTranslation()
-  const { pinnedAddresses, isPinned, setPinned, setUnpinned } = usePinnedDAOs()
+  const { pinnedAddresses, isPinned, setPinned, setUnpinned } = usePinnedDaos()
 
   return (
     // Don't render on server since pinnedAddresses come from localStorage,

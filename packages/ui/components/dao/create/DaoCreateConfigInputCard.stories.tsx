@@ -1,11 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { useFormContext } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 
 import {
   VotingDurationIcon,
   VotingDurationInput,
 } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/daoCreation'
-import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators'
+import { DefaultNewDao } from '@dao-dao/state'
 import { NewDao } from '@dao-dao/tstypes'
 
 import { DaoCreateConfigInputCard } from './DaoCreateConfigInputCard'
@@ -14,12 +14,14 @@ export default {
   title:
     'DAO DAO / packages / ui / components / dao / create / DaoCreateConfigInputCard',
   component: DaoCreateConfigInputCard,
-  decorators: [makeCreateDaoFormDecorator()],
+  decorators: [],
 } as ComponentMeta<typeof DaoCreateConfigInputCard>
 
-// TODO: Figure out why this story causes memory crash.
 const Template: ComponentStory<typeof DaoCreateConfigInputCard> = (args) => {
-  const { register, watch, setValue } = useFormContext<NewDao>()
+  const { register, watch, setValue } = useForm<NewDao>({
+    defaultValues: DefaultNewDao,
+    mode: 'onChange',
+  })
 
   const newDao = watch()
 

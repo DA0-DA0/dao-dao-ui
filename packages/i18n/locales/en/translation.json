@@ -10,6 +10,7 @@
     "addTier": "Add tier",
     "addToKeplr": "Add token to Keplr",
     "back": "Back",
+    "goBack": "Go back",
     "castYourVote": "Cast your vote",
     "claim": "Claim",
     "claimNumTokens": "Claim your {{amount}} ${{tokenSymbol}}",

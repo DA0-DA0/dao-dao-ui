@@ -17,7 +17,7 @@ import {
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { MemberCheck } from '@dao-dao/icons'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
-import { useVotingModule } from '@dao-dao/state'
+import { usePinnedDaos, useVotingModule } from '@dao-dao/state'
 import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Breadcrumbs,
@@ -42,7 +42,6 @@ import {
   DaoTreasuryHistory,
   SmallScreenNav,
 } from '@/components'
-import { usePinnedDAOs } from '@/hooks'
 
 enum MobileMenuTabSelection {
   Proposal,
@@ -158,7 +157,7 @@ const InnerDAOHome = () => {
     )
     .filter(Boolean) as CheckedDepositInfo[]
 
-  const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
+  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
   const pinned = isPinned(coreAddress)
 
   return (

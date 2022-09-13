@@ -1,6 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
-import { Duration } from '@dao-dao/types/contracts/cw3-dao'
+import { Duration } from '@dao-dao/tstypes/contracts/common'
+import {
+  StakingModalProps,
+  StakingMode,
+} from '@dao-dao/tstypes/ui/StakingModal'
 import {
   convertMicroDenomToDenomWithDecimals,
   durationIsNonZero,
@@ -12,42 +16,7 @@ import { ActionButton } from './ActionButton'
 import { AmountSelector } from './AmountSelector'
 import { PercentButton, PercentSelector } from './PercentSelector'
 
-export enum StakingMode {
-  Stake = 'stake',
-  Unstake = 'unstake',
-  Claim = 'claim',
-}
-
-export interface StakingModalProps {
-  // The mode to open the staking modal in.
-  mode: StakingMode
-  // The number of tokens in question.
-  amount: number
-  // Sets the number of tokens in question.
-  setAmount: (newAmount: number) => void
-  // Called when the staking modal is closed.
-  onClose: () => void
-  // The number of tokens that are currently claimable.
-  claimableTokens: number
-  // The number of tokens that are unstakable.
-  unstakableTokens: number
-  // The number of tokens that are stakable.
-  stakableTokens: number
-  // The duration for unstaking.
-  unstakingDuration: Duration | null
-  // Symbol for the token that is being staked.
-  tokenSymbol: string
-  // Decimals for the token that is being staked.
-  tokenDecimals: number
-  // Proposal deposit for the token that is being staked.
-  proposalDeposit?: number
-  // Is there an error?
-  error?: string | undefined
-  // Are we ready to stake? Ex: is wallet connected?
-  loading: boolean
-  // Triggered when the stake / unstake / claim button is pressed.
-  onAction: (mode: StakingMode, amount: number) => void
-}
+export * from '@dao-dao/tstypes/ui/StakingModal'
 
 export const StakingModal = ({
   mode,

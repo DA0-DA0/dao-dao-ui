@@ -11,12 +11,11 @@ import {
   CwCoreV0_1_0Selectors,
   cwCoreProposalModulesSelector,
   nativeBalanceSelector,
+  usePinnedDaos,
   useVotingModule,
 } from '@dao-dao/state'
 import { Loader, Logo } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
-
-import { usePinnedDAOs } from '@/hooks'
 
 import { ContractCard, LoadingContractCard } from './ContractCard'
 
@@ -35,7 +34,7 @@ const InnerPinnedDAOCard = ({ address }: PinnedDAOCardProps) => {
   })
   const proposalModules = useRecoilValue(cwCoreProposalModulesSelector(address))
 
-  const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
+  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
   const pinned = isPinned(address)
 
   if (totalVotingWeight === undefined) {

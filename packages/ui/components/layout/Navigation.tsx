@@ -15,36 +15,21 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { NavigationProps } from '@dao-dao/tstypes/ui/Navigation'
 import { usePlatform } from '@dao-dao/utils'
 
 import { ButtonLink } from '../Button'
-import { DaoDropdown, DaoDropdownInfo } from '../dao'
+import { DaoDropdown } from '../dao'
 import { IconButton, IconButtonLink } from '../IconButton'
 import { Logo } from '../Logo'
 import { PricePercentChange } from '../PricePercentChange'
 import { ThemeToggle } from '../ThemeToggle'
 import { Tooltip } from '../Tooltip'
+import { useAppLayoutContext } from './AppLayoutContext'
 import { PageHeader } from './PageHeader'
-import { useResponsiveNavigationContext } from './ResponsiveNavigationContext'
 import { Row } from './Row'
 
-export interface TokenPrice {
-  label: string
-  price: number
-  priceDenom: string
-  change: number
-}
-
-export interface NavigationProps {
-  setCommandModalVisible: () => void
-  inboxCount: number
-  version: string
-  tokenPrices: TokenPrice[]
-  pinnedDaos: DaoDropdownInfo[]
-  hideInbox?: boolean
-  compact: boolean
-  setCompact: (compact: boolean) => void
-}
+export * from '@dao-dao/tstypes/ui/Navigation'
 
 // Width of `lg` tailwind selector. Don't change this without changing the
 // compact button media query class that shows the compact toggle at the very
@@ -78,7 +63,8 @@ export const Navigation = ({
 }: NavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
-  const { enabled: responsiveEnabled } = useResponsiveNavigationContext()
+  const { enabled: responsiveEnabled } =
+    useAppLayoutContext().responsiveNavigation
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(

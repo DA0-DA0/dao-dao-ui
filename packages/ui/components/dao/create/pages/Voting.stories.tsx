@@ -1,17 +1,18 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLayoutDecorator'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
 
-import { DaoCreateSidebarCard } from '../../components/dao/create/DaoCreateSidebarCard'
+import { DaoCreateSidebarCard } from '../DaoCreateSidebarCard'
 import { CreateDaoVoting } from './Voting'
 
 export default {
-  title: 'DAO DAO / packages / ui / pages / CreateDao / Voting',
+  title: 'DAO DAO / packages / ui / components / dao / create / pages / Voting',
   component: CreateDaoVoting,
   decorators: [
     // Direct ancestor of rendered story.
-    makeCreateDaoFormDecorator({
+    makeCreateDaoFormDecorator(2, {
       name: 'Evil Cow DAO',
       description: "There are evil cows all over the place. Let's milk 'em!",
       imageUrl:
@@ -19,18 +20,18 @@ export default {
     }),
     makeAppLayoutDecorator({
       rightSidebarProps: {
-        children: <DaoCreateSidebarCard step={3} />,
+        children: <DaoCreateSidebarCard />,
       },
     }),
+    WalletProviderDecorator,
   ],
 } as ComponentMeta<typeof CreateDaoVoting>
 
-const Template: ComponentStory<typeof CreateDaoVoting> = (args) => (
-  <CreateDaoVoting {...args} />
-)
+// makeCreateDaoFormDecorator renders the page based on the initialIndex set to
+// `2` in the decorators above.
+const Template: ComponentStory<typeof CreateDaoVoting> = (_args) => <></>
 
 export const Default = Template.bind({})
-Default.args = {}
 Default.parameters = {
   design: {
     type: 'figma',

@@ -1,10 +1,6 @@
-import { ComponentType } from 'react'
+import { HeroStatProps } from '@dao-dao/tstypes/ui/HeroStat'
 
-export interface HeroStatProps {
-  Icon: ComponentType<{ className?: string }>
-  title: string
-  value: string | undefined
-}
+export * from '@dao-dao/tstypes/ui/HeroStat'
 
 export const HeroStat = ({ Icon, title, value }: HeroStatProps) => (
   <div className="flex gap-3 items-center">

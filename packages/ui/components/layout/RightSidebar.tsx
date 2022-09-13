@@ -1,16 +1,14 @@
 import { KeyboardDoubleArrowRight } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
+
+import { RightSidebarProps } from '@dao-dao/tstypes/ui/RightSidebar'
 
 import { IconButton } from '../IconButton'
 import { ProfileImage } from '../profile'
 import { Footer } from './Footer'
 
-export interface RightSidebarProps {
-  wallet: ReactNode
-  children: ReactNode
-  profileImageUrl?: string
-}
+export * from '@dao-dao/tstypes/ui/RightSidebar'
 
 export const RightSidebar = ({
   wallet,

@@ -1,4 +1,5 @@
 export * from './ConnectWalletButton'
+export * from './CreateDaoForm'
 export * from './DaoInfoBar'
 export * from './DaoPageWrapper'
 export * from './MobileNav'

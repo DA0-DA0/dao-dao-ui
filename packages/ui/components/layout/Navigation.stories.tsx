@@ -1,14 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { makeResponsiveNavigationContextDecorator } from '@dao-dao/storybook/decorators/makeResponsiveNavigationContextDecorator'
+import { makeAppLayoutContextDecorator } from '@dao-dao/storybook/decorators'
 
 import { Navigation, NavigationProps } from './Navigation'
 
 export default {
   title: 'DAO DAO / packages / ui / components / layout / Navigation',
   component: Navigation,
-  decorators: [makeResponsiveNavigationContextDecorator(true)],
+  decorators: [makeAppLayoutContextDecorator(true)],
   excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof Navigation>
 

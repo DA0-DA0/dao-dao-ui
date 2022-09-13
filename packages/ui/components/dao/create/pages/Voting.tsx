@@ -1,68 +1,31 @@
 import { WarningAmber } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useMemo, useRef } from 'react'
-import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ProposalModuleAdapter,
-  getAdapterById as getProposalModuleAdapterById,
-} from '@dao-dao/proposal-module-adapter'
-import { NewDao } from '@dao-dao/tstypes'
-import { getAdapterById as getVotingModuleAdapterById } from '@dao-dao/voting-module-adapter'
+import { CreateDaoContext } from '@dao-dao/tstypes'
 
-import {
-  BreadcrumbsProps,
-  DaoHeader,
-  FormCheckbox,
-  GradientHero,
-  PageHeader,
-} from '../../components'
-import { DaoCreateConfigInputCard } from '../../components/dao/create/DaoCreateConfigInputCard'
+import { FormCheckbox } from '../../../input/Checkbox'
+import { DaoCreateConfigInputCard } from '../DaoCreateConfigInputCard'
 
-export interface CreateDaoVotingProps {
-  // Used to insert parent DAO crumbs if creating SubDAO.
-  extraCrumbs?: BreadcrumbsProps['crumbs']
-}
-
-export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
-  const { t } = useTranslation()
-
-  const {
+export const CreateDaoVoting = ({
+  form: {
     formState: { errors },
     register,
     watch,
     setValue,
-  } = useFormContext<NewDao>()
+  },
+  votingModuleDaoCreationAdapter,
+  proposalModuleDaoCreationAdapters,
+}: CreateDaoContext) => {
+  const { t } = useTranslation()
 
   const newDao = watch()
   const {
-    name,
-    description,
-    imageUrl,
     votingModuleAdapter,
     proposalModuleAdapters,
     advancedVotingConfigEnabled,
   } = newDao
-
-  // Get selected voting module adapter.
-  const votingModuleDaoCreationAdapter = useMemo(
-    () => getVotingModuleAdapterById(votingModuleAdapter.id)?.daoCreation,
-    [votingModuleAdapter.id]
-  )
-  if (!votingModuleDaoCreationAdapter) {
-    throw new Error(t('error.loadingData'))
-  }
-
-  // Get all proposal module adapters.
-  const proposalModuleDaoCreationAdapters = useMemo(
-    () =>
-      proposalModuleAdapters
-        .map(({ id }) => getProposalModuleAdapterById(id)?.daoCreation)
-        // Remove undefined adapters.
-        .filter(Boolean) as ProposalModuleAdapter['daoCreation'][],
-    [proposalModuleAdapters]
-  )
 
   // Combine all advanced warnings i18n keys into single array.
   const advancedWarningI18nKeys = useMemo(
@@ -91,26 +54,8 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
   }, [advancedVotingConfigEnabled])
 
   return (
-    // No container padding because we want the gradient to expand. Apply px-6
-    // to children instead.
-    <form className="flex flex-col items-stretch mx-auto max-w-6xl">
-      <GradientHero childContainerClassName="px-6">
-        <PageHeader
-          breadcrumbs={{
-            crumbs: [{ href: '/home', label: 'Home' }, ...(extraCrumbs ?? [])],
-            current: name,
-          }}
-        />
-
-        <DaoHeader
-          description={description}
-          established={t('info.today')}
-          imageUrl={imageUrl}
-          name={name}
-        />
-      </GradientHero>
-
-      <div className="pb-6 mx-6 border-y border-t-border-base border-b-border-secondary">
+    <>
+      <div className="pb-6 border-b border-b-border-secondary">
         <p className="my-9 text-text-body title-text">
           {t('title.votingConfiguration')}
         </p>
@@ -243,8 +188,8 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
         proposalModuleDaoCreationAdapters.some(
           ({ votingConfig: { advancedItems } }) => !!advancedItems?.length
         )) && (
-        <div className="mx-6" ref={advancedConfigurationContainerRef}>
-          <div className="flex flex-row justify-between items-end my-9">
+        <div ref={advancedConfigurationContainerRef}>
+          <div className="flex flex-row justify-between items-end mt-7 -mb-7">
             <p className="text-text-body title-text">
               {t('title.advancedConfiguration')}
             </p>
@@ -272,7 +217,7 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
 
           <div
             className={clsx(
-              'flex flex-col gap-4',
+              'flex flex-col gap-4 mt-14',
               !advancedVotingConfigEnabled && 'hidden'
             )}
           >
@@ -426,6 +371,6 @@ export const CreateDaoVoting = ({ extraCrumbs }: CreateDaoVotingProps) => {
           </div>
         </div>
       )}
-    </form>
+    </>
   )
 }

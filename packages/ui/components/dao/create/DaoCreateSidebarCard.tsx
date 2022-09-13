@@ -3,12 +3,19 @@ import clsx from 'clsx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useAppLayoutContext } from '../../layout/AppLayoutContext'
+
 export interface DaoCreateSidebarCardProps {
-  step: 1 | 2 | 3 | 4
+  _pageIndex?: 0 | 1 | 2 | 3
 }
 
-export const DaoCreateSidebarCard = ({ step }: DaoCreateSidebarCardProps) => {
+export const DaoCreateSidebarCard = ({
+  _pageIndex,
+}: DaoCreateSidebarCardProps) => {
   const { t } = useTranslation()
+
+  const contextPageIndex = useAppLayoutContext().daoCreation.pageIndex
+  const pageIndex = _pageIndex ?? contextPageIndex
 
   const steps = useMemo(
     () => [
@@ -35,9 +42,9 @@ export const DaoCreateSidebarCard = ({ step }: DaoCreateSidebarCardProps) => {
         <div className="w-8 border-r-4 border-border-primary"></div>
         <div className="flex flex-col py-4">
           {steps.map((stepLabel, index) => {
-            const done = step > index + 1
-            const current = step === index + 1
-            const future = step < index + 1
+            const done = pageIndex > index
+            const current = pageIndex === index
+            const future = pageIndex < index
 
             return (
               <div
@@ -50,7 +57,8 @@ export const DaoCreateSidebarCard = ({ step }: DaoCreateSidebarCardProps) => {
                 <div
                   className={clsx(
                     'flex justify-center items-center w-6 h-6 rounded-full',
-                    ((current && step > 1) || future) && 'bg-background-base'
+                    ((current && pageIndex > 1) || future) &&
+                      'bg-background-base'
                   )}
                 >
                   <div

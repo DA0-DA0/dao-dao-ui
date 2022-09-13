@@ -1,85 +1,30 @@
-import { useMemo } from 'react'
-import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { NewDao } from '@dao-dao/tstypes'
+import { CreateDaoContext } from '@dao-dao/tstypes'
 import {
   MAX_DAO_DESCRIPTION_LENGTH,
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
   validateRequired,
-  validateUrl,
 } from '@dao-dao/utils'
-import { getAdapters } from '@dao-dao/voting-module-adapter'
 
-import {
-  BreadcrumbsProps,
-  GradientHero,
-  ImageSelector,
-  InputErrorMessage,
-  PageHeader,
-  TextAreaInput,
-  TextInput,
-} from '../../components'
-import { DaoStructureCard } from '../../components/dao/create/DaoStructureCard'
+import { InputErrorMessage, TextAreaInput, TextInput } from '../../../input'
+import { DaoStructureCard } from '../DaoStructureCard'
 
-export interface CreateDaoStartProps {
-  // Used to insert parent DAO crumbs if creating SubDAO.
-  extraCrumbs?: BreadcrumbsProps['crumbs']
-}
-
-export const CreateDaoStart = ({ extraCrumbs }: CreateDaoStartProps) => {
-  const { t } = useTranslation()
-
-  const {
+export const CreateDaoStart = ({
+  form: {
     formState: { errors },
     register,
     watch,
     setValue,
-  } = useFormContext<NewDao>()
-
-  const selectedStructureId = watch('votingModuleAdapter.id')
-
-  // Get voting module adapters with daoCreation fields set.
-  const daoCreationAdapters = useMemo(
-    () =>
-      getAdapters()
-        .filter(({ daoCreation }) => !!daoCreation?.displayInfo)
-        .map(({ id, daoCreation }) => ({
-          id,
-          displayInfo: daoCreation!.displayInfo!,
-        })),
-    []
-  )
+  },
+  availableVotingModuleAdapters,
+}: CreateDaoContext) => {
+  const { t } = useTranslation()
 
   return (
-    // No container padding because we want the gradient to expand. Apply px-6
-    // to children instead.
-    <form className="flex flex-col items-stretch mx-auto max-w-6xl">
-      <GradientHero childContainerClassName="px-6">
-        <PageHeader
-          breadcrumbs={{
-            crumbs: [{ href: '/home', label: 'Home' }, ...(extraCrumbs ?? [])],
-            current: t('title.newDao'),
-          }}
-        />
-
-        <div className="flex flex-col items-center py-10">
-          <ImageSelector
-            error={errors.imageUrl}
-            fieldName="imageUrl"
-            register={register}
-            validation={[validateUrl]}
-            watch={watch}
-          />
-
-          <p className="mt-6 text-text-tertiary primary-text">
-            {t('form.addAnImage')}
-          </p>
-        </div>
-      </GradientHero>
-
-      <div className="mx-6 bg-background-tertiary rounded-lg">
+    <>
+      <div className="bg-background-tertiary rounded-lg">
         <div className="flex flex-row gap-6 justify-between items-center py-4 px-6 border-b border-border-secondary">
           <p className="text-text-body primary-text">{t('form.daoName')}</p>
 
@@ -135,20 +80,23 @@ export const CreateDaoStart = ({ extraCrumbs }: CreateDaoStartProps) => {
         </div>
       </div>
 
-      <p className="m-6 text-text-body title-text">
+      <p className="my-6 text-text-body title-text">
         {t('title.chooseAStructure')}
       </p>
 
-      <div className="grid grid-cols-1 gap-4 mx-6 xl:grid-cols-2 2xl:grid-cols-3">
-        {daoCreationAdapters.map(
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+        {availableVotingModuleAdapters.map(
           ({
             id,
-            displayInfo: {
-              Icon,
-              nameI18nKey,
-              descriptionI18nKey,
-              suppliesI18nKey,
-              membershipI18nKey,
+            daoCreation: {
+              displayInfo: {
+                Icon,
+                nameI18nKey,
+                descriptionI18nKey,
+                suppliesI18nKey,
+                membershipI18nKey,
+              },
+              defaultConfig,
             },
           }) => (
             <DaoStructureCard
@@ -157,13 +105,15 @@ export const CreateDaoStart = ({ extraCrumbs }: CreateDaoStartProps) => {
               description={t(descriptionI18nKey)}
               membership={t(membershipI18nKey)}
               name={t(nameI18nKey)}
-              onSelect={() => setValue('votingModuleAdapter.id', id)}
-              selected={selectedStructureId === id}
+              onSelect={() =>
+                setValue('votingModuleAdapter', { id, data: defaultConfig })
+              }
+              selected={watch('votingModuleAdapter.id') === id}
               supplies={t(suppliesI18nKey)}
             />
           )
         )}
       </div>
-    </form>
+    </>
   )
 }

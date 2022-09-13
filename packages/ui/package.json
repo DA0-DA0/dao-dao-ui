@@ -8,6 +8,7 @@
   "dependencies": {
     "@dao-dao/i18n": "*",
     "@dao-dao/icons": "*",
+    "@dao-dao/tstypes": "*",
     "@dao-dao/types": "^0.0.8",
     "@dao-dao/utils": "*",
     "@emotion/react": "^11.10.4",

@@ -18,7 +18,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
-import { CwAdminFactoryHooks, useWalletBalance } from '@dao-dao/state'
+import {
+  CwAdminFactoryHooks,
+  usePinnedDaos,
+  useWalletBalance,
+} from '@dao-dao/state'
 import { InstantiateMsg as CwCoreInstantiateMsg } from '@dao-dao/state/clients/cw-core/0.1.0'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import {
@@ -56,8 +60,6 @@ import {
   newDAOAtom,
 } from '@/atoms'
 
-import { usePinnedDAOs } from './usePinnedDAOs'
-
 export type ValidateDAOFormPage = (
   newDAO: NewDAO,
   errors: FormState<NewDAO>['errors'],
@@ -92,7 +94,7 @@ export const useCreateDAOForm = (pageIndex: number) => {
     [createDAOFormPages, pageIndex]
   )
   const [newDAO, setNewDAO] = useRecoilState(newDAOAtom)
-  const { setPinned } = usePinnedDAOs()
+  const { setPinned } = usePinnedDaos()
   const [creating, setCreating] = useState(false)
 
   const {

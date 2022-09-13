@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'
+import { usePinnedDaos } from '@dao-dao/state'
 import {
   Button,
   DaoCardInfo,
@@ -31,7 +32,6 @@ import {
   HomepageCards,
   StatsCard,
 } from '@/components'
-import { usePinnedDAOs } from '@/hooks'
 
 interface HomePageProps {
   featuredDaos: DaoCardInfo[]
@@ -39,7 +39,7 @@ interface HomePageProps {
 
 const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
   const { t } = useTranslation()
-  const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
+  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
 
   const [tvl, setTVL] = useState<number>()
   const [daos, setDaos] = useState<number>()

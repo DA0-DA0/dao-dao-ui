@@ -4634,7 +4634,7 @@
     "@types/ace" "*"
     ajv "^6.12.0"
 
-"@types/lodash.clonedeep@^4.5.6":
+"@types/lodash.clonedeep@^4.5.0":
   version "4.5.7"
   resolved "https://registry.yarnpkg.com/@types/lodash.clonedeep/-/lodash.clonedeep-4.5.7.tgz#0e119f582ed6f9e6b373c04a644651763214f197"
   integrity sha512-ccNqkPptFIXrpVqUECi60/DFxjNKsfoQxSQsgcBJCX/fuX1wgyQieojkcWH/KpE3xzLoWN/2k+ZeGqIN3paSvw==

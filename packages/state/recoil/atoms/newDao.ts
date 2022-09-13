@@ -4,6 +4,8 @@ import { CwProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapte
 import { NewDao } from '@dao-dao/tstypes'
 import { Cw4VotingAdapter } from '@dao-dao/voting-module-adapter'
 
+import { localStorageEffectJSON } from '../effects'
+
 export const DefaultNewDao: NewDao = {
   name: '',
   description: '',
@@ -25,4 +27,5 @@ export const DefaultNewDao: NewDao = {
 export const newDaoAtom = atom<NewDao>({
   key: 'newDao',
   default: DefaultNewDao,
+  effects: [localStorageEffectJSON('newDao')],
 })

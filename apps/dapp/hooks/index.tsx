@@ -2,4 +2,3 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 export * from './useCreateDAOForm'
-export * from './usePinnedDAOs'

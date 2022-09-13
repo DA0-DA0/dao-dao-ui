@@ -10,10 +10,8 @@ import { useRecoilValue, waitForAll } from 'recoil'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
-import { cwCoreProposalModulesSelector } from '@dao-dao/state'
+import { cwCoreProposalModulesSelector, usePinnedDaos } from '@dao-dao/state'
 import { Loader, Logo, PinnedProposalLine, TooltipIcon } from '@dao-dao/ui'
-
-import { usePinnedDAOs } from '@/hooks'
 
 export const PinnedProposalsList = () => {
   const { t } = useTranslation()
@@ -45,7 +43,7 @@ const InnerPinnedProposalsList = () => {
     markPinnedProposalDone,
     cacheLatestProposalsMarkedDone,
     pinnedLatestProposalsMarkedDone,
-  } = usePinnedDAOs()
+  } = usePinnedDaos()
 
   // Keep constant since we call hooks in a loop and need the exact same hooks
   // to run in the same order every render. When someone favorites/unfavorites a

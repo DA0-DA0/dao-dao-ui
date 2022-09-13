@@ -3,7 +3,13 @@
 
 import { useWalletManager } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
-import { PropsWithChildren, useCallback, useEffect } from 'react'
+import {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { SidebarWallet, WalletProvider } from '@dao-dao/common'
@@ -74,6 +80,23 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     return () => document.removeEventListener('keydown', handleKeyPress)
   }, [handleKeyPress])
 
+  const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
+    useState(false)
+  const [pageIndex, setPageIndex] = useState(0)
+  const appLayoutContext = useMemo(
+    () => ({
+      responsiveNavigation: {
+        enabled: responsiveNavigationEnabled,
+        toggle: () => setResponsiveNavigationEnabled((v) => !v),
+      },
+      daoCreation: {
+        pageIndex,
+        setPageIndex,
+      },
+    }),
+    [pageIndex, responsiveNavigationEnabled]
+  )
+
   return (
     <>
       {installWarningVisible && (
@@ -90,6 +113,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
       )}
 
       <StatelessAppLayout
+        context={appLayoutContext}
         // TODO (v2): Set props correctly.
         navigationProps={{
           inboxCount: 0,

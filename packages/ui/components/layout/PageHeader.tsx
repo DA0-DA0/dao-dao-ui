@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 
 import { Breadcrumbs, BreadcrumbsProps } from '../Breadcrumbs'
 import { IconButton } from '../IconButton'
-import { useResponsiveNavigationContext } from './ResponsiveNavigationContext'
+import { useAppLayoutContext } from './AppLayoutContext'
 
 export interface PageHeaderProps {
   title?: string
@@ -22,7 +22,7 @@ export const PageHeader = ({
   noBorder = false,
   children,
 }: PageHeaderProps) => {
-  const { toggle } = useResponsiveNavigationContext()
+  const { toggle } = useAppLayoutContext().responsiveNavigation
 
   return (
     <div

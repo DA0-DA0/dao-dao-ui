@@ -1,19 +1,20 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CwProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single'
+import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLayoutDecorator'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
 import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
 
-import { DaoCreateSidebarCard } from '../../components/dao/create/DaoCreateSidebarCard'
+import { DaoCreateSidebarCard } from '../DaoCreateSidebarCard'
 import { CreateDaoReview } from './Review'
 
 export default {
-  title: 'DAO DAO / packages / ui / pages / CreateDao / Review',
+  title: 'DAO DAO / packages / ui / components / dao / create / pages / Review',
   component: CreateDaoReview,
   decorators: [
     // Direct ancestor of rendered story.
-    makeCreateDaoFormDecorator({
+    makeCreateDaoFormDecorator(3, {
       name: 'Evil Cow DAO',
       description: "There are evil cows all over the place. Let's milk 'em!",
       imageUrl:
@@ -45,18 +46,18 @@ export default {
     }),
     makeAppLayoutDecorator({
       rightSidebarProps: {
-        children: <DaoCreateSidebarCard step={4} />,
+        children: <DaoCreateSidebarCard />,
       },
     }),
+    WalletProviderDecorator,
   ],
 } as ComponentMeta<typeof CreateDaoReview>
 
-const Template: ComponentStory<typeof CreateDaoReview> = (args) => (
-  <CreateDaoReview {...args} />
-)
+// makeCreateDaoFormDecorator renders the page based on the initialIndex set to
+// `3` in the decorators above.
+const Template: ComponentStory<typeof CreateDaoReview> = (_args) => <></>
 
 export const Default = Template.bind({})
-Default.args = {}
 Default.parameters = {
   design: {
     type: 'figma',

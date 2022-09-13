@@ -1,4 +1,4 @@
-export type Binary = string
+import { Binary } from './common'
 
 export type Admin =
   | {

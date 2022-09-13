@@ -2,30 +2,16 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TriangleUp } from '@dao-dao/icons'
+import { DaoDropdownProps } from '@dao-dao/tstypes/ui/DaoDropdown'
 
 import { IconButton } from '../IconButton'
 import { Tooltip } from '../Tooltip'
 
-export interface DaoDropdownInfo {
-  coreAddress: string
-  imageUrl: string
-  name: string
-  subdaos?: DaoDropdownInfo[]
-  content?: ReactNode
-}
-
-export interface DaoDropdownProps {
-  dao: DaoDropdownInfo
-  expandedLocalStorageKey?: string
-  defaultExpanded?: boolean
-  showSubdaos?: boolean
-  indent?: number
-  compact?: boolean
-}
+export * from '@dao-dao/tstypes/ui/DaoDropdown'
 
 export const DaoDropdown = ({
   dao: { coreAddress, imageUrl, name, subdaos, content },

@@ -1,14 +1,11 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { atom } from 'recoil'
 
-import { localStorageEffect } from '@/atoms'
+import { localStorageEffectJSON } from '../effects'
 
 export const pinnedAddressesAtom = atom<string[]>({
   key: 'pinnedAddresses',
   default: [],
-  effects: [localStorageEffect('pinnedAddresses')],
+  effects: [localStorageEffectJSON('pinnedAddresses')],
 })
 
 // When marking a proposal as done, either by voting on it or manually pressing
@@ -20,7 +17,7 @@ export const pinnedProposalsMarkedDoneAtom = atom<
 >({
   key: 'pinnedProposalsMarkedDone',
   default: {},
-  effects: [localStorageEffect('pinnedProposalsMarkedDone')],
+  effects: [localStorageEffectJSON('pinnedProposalsMarkedDone')],
 })
 
 // Map DAO core address to most recent proposal ID by proposal module address to
@@ -32,5 +29,5 @@ export const pinnedLatestProposalsMarkedDoneAtom = atom<
 >({
   key: 'pinnedLatestProposalsMarkedDone',
   default: {},
-  effects: [localStorageEffect('pinnedLatestProposalsMarkedDone')],
+  effects: [localStorageEffectJSON('pinnedLatestProposalsMarkedDone')],
 })
