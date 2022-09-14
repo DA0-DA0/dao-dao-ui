@@ -34,7 +34,7 @@ import {
   validateTokenSymbol,
 } from '@dao-dao/utils'
 
-import { Cw4VotingAdapter } from '../../../index'
+import { Cw20StakedBalanceVotingAdapter } from '../index'
 import { DaoCreationConfig, GovernanceTokenType } from '../types'
 import { TierCard } from './TierCard'
 
@@ -66,7 +66,11 @@ export const GovernanceConfigurationInput = ({
 
   const addTierRef = useRef<HTMLButtonElement>(null)
   const addTier = useCallback(() => {
-    appendTier(cloneDeep(Cw4VotingAdapter.daoCreation!.defaultConfig.tiers[0]))
+    appendTier(
+      cloneDeep(
+        Cw20StakedBalanceVotingAdapter.daoCreation!.defaultConfig.tiers[0]
+      )
+    )
     // Scroll button to bottom of screen.
     addTierRef.current?.scrollIntoView({
       behavior: 'smooth',
@@ -162,18 +166,21 @@ export const GovernanceConfigurationInput = ({
 
   const barData: ChartDataEntry[] =
     tierFields.length === 1
-      ? data.tiers[0].members.map(({ address }, memberIndex) => ({
+      ? // Displaying each member of the first tier as separate pie wedges.
+        data.tiers[0].members.map(({ address }, memberIndex) => ({
           name: address.trim() || t('form.membersAddress'),
-          // Membership-based DAO tier weights are the same for each member.
-          value: (data.tiers[0].weight / totalMemberPercent) * 100,
+          // Governance token-based DAO tier weights are split amongst members.
+          value: data.tiers[0].weight / data.tiers[0].members.length,
           color:
             VOTING_POWER_DISTRIBUTION_COLORS[
               memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
             ],
         }))
-      : data.tiers.map(({ name, weight, members }, tierIndex) => ({
+      : // Displaying entire tier as one pie wedge.
+        data.tiers.map(({ name, weight }, tierIndex) => ({
           name: name.trim() || t('title.tierNum', { tier: tierIndex + 1 }),
-          value: ((weight * members.length) / totalMemberPercent) * 100,
+          // Governance token-based DAO tier weights are split amongst members.
+          value: weight,
           color:
             VOTING_POWER_DISTRIBUTION_COLORS[
               tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
@@ -341,7 +348,7 @@ export const GovernanceConfigurationInput = ({
               <p
                 className={clsx(
                   'secondary-text',
-                  !govTokenPercentsSumTo100 && 'text-text-error'
+                  !govTokenPercentsSumTo100 && 'text-text-interactive-error'
                 )}
               >
                 {govTokenPercentsSumTo100

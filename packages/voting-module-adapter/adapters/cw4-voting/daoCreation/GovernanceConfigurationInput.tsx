@@ -14,7 +14,7 @@ import {
   VOTING_POWER_DISTRIBUTION_COLORS,
 } from '@dao-dao/ui'
 
-import { Cw4VotingAdapter } from '../../../index'
+import { Cw4VotingAdapter } from '../index'
 import { DaoCreationConfig } from '../types'
 import { TierCard } from './TierCard'
 
@@ -78,18 +78,12 @@ export const GovernanceConfigurationInput = ({
 
   //! Bar chart data
 
-  const totalWeight = data.tiers.reduce(
-    // Multiply by member count since the tier's weight applies to each member.
-    (acc, { weight, members }) => acc + weight * members.length,
-    0
-  )
-
   const barData: ChartDataEntry[] =
     tierFields.length === 1
       ? data.tiers[0].members.map(({ address }, memberIndex) => ({
           name: address.trim() || t('form.membersAddress'),
-          // Membership-based DAO tier weights are the same for each member.
-          value: (data.tiers[0].weight / totalWeight) * 100,
+          // Membership-based DAO tier weights are for each member.
+          value: data.tiers[0].weight,
           color:
             VOTING_POWER_DISTRIBUTION_COLORS[
               memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
@@ -97,7 +91,8 @@ export const GovernanceConfigurationInput = ({
         }))
       : data.tiers.map(({ name, weight, members }, tierIndex) => ({
           name: name.trim() || t('title.tierNum', { tier: tierIndex + 1 }),
-          value: ((weight * members.length) / totalWeight) * 100,
+          // Membership-based DAO tier weights are for each member.
+          value: weight * members.length,
           color:
             VOTING_POWER_DISTRIBUTION_COLORS[
               tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length

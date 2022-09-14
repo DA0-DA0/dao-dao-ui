@@ -58,27 +58,23 @@ export const GovernanceConfigurationReview = ({
     )
   }
 
-  const totalWeight = tiers.reduce(
-    // Multiply by member count since the tier's weight applies to each member.
-    (acc, { weight, members }) => acc + weight * members.length,
-    0
-  )
-
   const onlyOneTier = tiers.length === 1
 
   const pieData: ChartDataEntry[] = onlyOneTier
-    ? tiers[0].members.map(({ address }, memberIndex) => ({
+    ? // Displaying each member of the first tier as separate pie wedges.
+      tiers[0].members.map(({ address }, memberIndex) => ({
         name: address,
-        // Governance Token-based DAO tier weights are distributed amongst
-        // members.
+        // Governance token-based DAO tier weights are split amongst members.
         value: tiers[0].weight / tiers[0].members.length,
         color:
           VOTING_POWER_DISTRIBUTION_COLORS[
             memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
           ],
       }))
-    : tiers.map(({ name, weight }, tierIndex) => ({
+    : // Displaying entire tier as one pie wedge.
+      tiers.map(({ name, weight }, tierIndex) => ({
         name,
+        // Governance token-based DAO tier weights are split amongst members.
         value: weight,
         color:
           VOTING_POWER_DISTRIBUTION_COLORS[
@@ -107,9 +103,8 @@ export const GovernanceConfigurationReview = ({
               memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
             ]
           : undefined,
-        readableValue: formatPercentOf100(
-          ((weight * members.length) / totalWeight) * 100
-        ),
+        // Governance token-based DAO tier weights are split amongst members.
+        readableValue: formatPercentOf100(weight / members.length),
       })),
     })
   )
