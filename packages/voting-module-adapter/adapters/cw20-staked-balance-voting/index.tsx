@@ -24,6 +24,7 @@ import {
   GovernanceConfigurationInput,
   GovernanceConfigurationReview,
   UnstakingDurationVotingConfigItem,
+  getInstantiateInfo,
 } from './daoCreation'
 import { useActions, useGovernanceTokenInfo, useStakingInfo } from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
@@ -87,13 +88,25 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConf
           'daoCreationAdapter.cw20-staked-balance-voting.membership',
       },
       defaultConfig: {
-        type: GovernanceTokenType.New,
+        tiers: [
+          {
+            name: '',
+            weight: 10,
+            members: [
+              {
+                address: '',
+              },
+            ],
+          },
+        ],
+        tokenType: GovernanceTokenType.New,
         newInfo: {
           initialSupply: 10000000,
           initialTreasuryPercent: 90,
           symbol: '',
           name: '',
         },
+        existingGovernanceTokenAddress: '',
         unstakingDuration: {
           value: 2,
           units: DurationUnits.Weeks,
@@ -106,5 +119,6 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConf
       votingConfig: {
         items: [UnstakingDurationVotingConfigItem],
       },
+      getInstantiateInfo,
     },
   }

@@ -27,8 +27,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     initial_members: initialMembers,
   }
 
-  console.log(msg)
-
   // Validate and throw error if invalid according to JSON schema.
   makeValidateMsg<InstantiateMsg>(instantiateSchema, t)(msg)
 

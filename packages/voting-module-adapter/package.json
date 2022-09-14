@@ -16,7 +16,8 @@
     "a11y-react-emoji": "^1.2.0",
     "buffer": "^6.0.3",
     "lodash.clonedeep": "^4.5.0",
-    "react-hook-form": "7.20.4"
+    "react-hook-form": "7.20.4",
+    "recoil": "^0.7.2"
   },
   "devDependencies": {
     "@dao-dao/storybook": "*",

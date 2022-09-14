@@ -20,6 +20,7 @@ export const QuorumIcon = () => {
   return <Emoji label={t('emoji.megaphone')} symbol="📣" />
 }
 
+// TODO: Quorum disabled warning?
 export const QuorumInput = ({
   data: {
     quorumEnabled,

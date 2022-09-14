@@ -35,9 +35,9 @@ export interface ProposalModule {
 export type CreateDaoCustomValidator = (setNewErrors: boolean) => void
 
 export interface CreateDaoContext<
-  VotingModuleAdapterModuleConfig extends FieldValues = any
+  VotingModuleAdapterModuleData extends FieldValues = any
 > {
-  form: UseFormReturn<NewDao<VotingModuleAdapterModuleConfig>>
+  form: UseFormReturn<NewDao<VotingModuleAdapterModuleData>>
   availableVotingModuleAdapters: Pick<
     Required<VotingModuleAdapter>,
     'id' | 'daoCreation'
@@ -76,54 +76,70 @@ export interface NewDaoTierMember {
 }
 
 export interface DaoCreationGovernanceConfigInputProps<
-  ModuleConfig extends FieldValues = any
+  VotingModuleAdapterData extends FieldValues = any
 > {
-  data: ModuleConfig
-  context: CreateDaoContext
+  data: VotingModuleAdapterData
+  // Used within a voting module adapter, so it's safe to apply the data
+  // generic.
+  context: CreateDaoContext<VotingModuleAdapterData>
 }
 
 export interface DaoCreationGovernanceConfigReviewProps<
-  ModuleConfig extends FieldValues = any
+  VotingModuleAdapterData extends FieldValues = any
 > {
-  newDao: NewDao
-  data: ModuleConfig
+  // Used within a voting module adapter, so it's safe to apply the data
+  // generic.
+  newDao: NewDao<VotingModuleAdapterData>
+  data: VotingModuleAdapterData
 }
 
 export interface DaoCreationVotingConfigItemInputProps<
-  ModuleConfig extends FieldValues = any
+  ModuleData extends FieldValues = any
 > {
-  newDao: NewDao
-  data: ModuleConfig
-  register: UseFormRegister<ModuleConfig>
-  setValue: UseFormSetValue<ModuleConfig>
-  watch: <TFieldName extends FieldPath<ModuleConfig>>(
+  // Used within voting and proposal module adapters, so the data generic passed
+  // in may not necessarily be the voting module adapter data. Must use `any`.
+  newDao: NewDao<any>
+  data: ModuleData
+  register: UseFormRegister<ModuleData>
+  setValue: UseFormSetValue<ModuleData>
+  watch: <TFieldName extends FieldPath<ModuleData>>(
     name: TFieldName,
-    defaultValue?: FieldPathValue<ModuleConfig, TFieldName>
-  ) => FieldPathValue<ModuleConfig, TFieldName>
-  errors?: FormState<ModuleConfig>['errors']
+    defaultValue?: FieldPathValue<ModuleData, TFieldName>
+  ) => FieldPathValue<ModuleData, TFieldName>
+  errors?: FormState<ModuleData>['errors']
 }
 
 export interface DaoCreationVotingConfigItemReviewProps<
-  ModuleConfig extends FieldValues = any
+  ModuleData extends FieldValues = any
 > {
-  newDao: NewDao
-  data: ModuleConfig
+  // Used within voting and proposal module adapters, so the data generic passed
+  // in may not necessarily be the voting module adapter data. Must use `any`.
+  newDao: NewDao<any>
+  data: ModuleData
 }
 
 export interface DaoCreationVotingConfigItem<
-  ModuleConfig extends FieldValues = any
+  ModuleData extends FieldValues = any
 > {
-  onlyDisplayCondition?: (newDao: NewDao) => boolean
+  // Used within voting and proposal module adapters, so the data generic passed
+  // in may not necessarily be the voting module adapter data. Must use `any`.
+  onlyDisplayCondition?: (newDao: NewDao<any>) => boolean
   Icon: ComponentType
   nameI18nKey: string
   descriptionI18nKey: string
   tooltipI18nKey?: string
-  Input: ComponentType<DaoCreationVotingConfigItemInputProps<ModuleConfig>>
-  getInputError: (errors?: FieldErrors<ModuleConfig>) => FieldError | undefined
-  Review: ComponentType<DaoCreationVotingConfigItemReviewProps<ModuleConfig>>
-  getReviewClassName?: (data: ModuleConfig) => string
+  Input: ComponentType<DaoCreationVotingConfigItemInputProps<ModuleData>>
+  getInputError: (errors?: FieldErrors<ModuleData>) => FieldError | undefined
+  Review: ComponentType<DaoCreationVotingConfigItemReviewProps<ModuleData>>
+  getReviewClassName?: (data: ModuleData) => string
 }
 
 export type DaoCreationGetInstantiateInfo<
-  ModuleConfig extends FieldValues = any
-> = (newDao: NewDao, data: ModuleConfig, t: TFunction) => ModuleInstantiateInfo
+  ModuleData extends FieldValues = any
+> = (
+  // Used within voting and proposal module adapters, so the data generic passed
+  // in may not necessarily be the voting module adapter data. Must use `any`.
+  newDao: NewDao<any>,
+  data: ModuleData,
+  t: TFunction
+) => ModuleInstantiateInfo

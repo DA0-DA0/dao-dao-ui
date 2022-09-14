@@ -50,7 +50,8 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   // existingGovernanceTokenInfo is set since we need to access its decimals.
   if (
     canSetDeposit &&
-    cw20StakedBalanceVotingAdapterData.type === GovernanceTokenType.Existing &&
+    cw20StakedBalanceVotingAdapterData.tokenType ===
+      GovernanceTokenType.Existing &&
     !cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo
   ) {
     throw new Error(t('errors.noGovTokenAddr'))
@@ -62,7 +63,8 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       ? {
           deposit: convertDenomToMicroDenomWithDecimals(
             proposalDeposit.amount,
-            cw20StakedBalanceVotingAdapterData.type === GovernanceTokenType.New
+            cw20StakedBalanceVotingAdapterData.tokenType ===
+              GovernanceTokenType.New
               ? NEW_DAO_CW20_DECIMALS
               : // Validated above that this is set.
                 cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo!

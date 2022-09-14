@@ -38,7 +38,7 @@ export const ProposalDepositInput = ({
   }
   // Checked adapter type above.
   const {
-    type,
+    tokenType: type,
     newInfo: { symbol: newSymbol },
     existingGovernanceTokenInfo,
   } = votingModuleAdapter.data as Cw20StakedBalanceVotingConfig
@@ -105,7 +105,7 @@ export const ProposalDepositReview = ({
   }
   // Checked adapter type above.
   const {
-    type,
+    tokenType: type,
     newInfo: { symbol: newSymbol },
     existingGovernanceTokenInfo,
   } = votingModuleAdapter.data as Cw20StakedBalanceVotingConfig

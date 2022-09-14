@@ -18,6 +18,7 @@ export interface TextInputProps<
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   required?: boolean
+  ghost?: boolean
 }
 
 /**
@@ -36,6 +37,7 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   validation,
   className,
   required,
+  ghost,
   ...rest
 }: TextInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
@@ -46,7 +48,10 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   return (
     <input
       className={clsx(
-        'py-3 px-4 w-full placeholder:text-text-tertiary text-text-body bg-transparent rounded-md focus:outline-none ring-1 focus:ring-2 transition secondary-text',
+        'w-full placeholder:text-text-tertiary text-text-body bg-transparent focus:outline-none transition secondary-text',
+        // Padding and outline
+        !ghost && 'py-3 px-4 rounded-md ring-1 focus:ring-2',
+        // Outline color
         error
           ? 'ring-border-interactive-error'
           : 'ring-border-primary focus:ring-border-interactive-focus',

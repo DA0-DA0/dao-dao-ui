@@ -24,6 +24,7 @@ export interface NumberInputProps<
   sizing?: 'sm' | 'md' | 'auto'
   required?: boolean
   setValueAs?: (value: any) => any
+  ghost?: boolean
 }
 
 /**
@@ -51,6 +52,7 @@ export const NumberInput = <
   containerClassName,
   required,
   setValueAs,
+  ghost,
   ...props
 }: NumberInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
@@ -61,8 +63,10 @@ export const NumberInput = <
   return (
     <div
       className={clsx(
-        'flex flex-row gap-1 items-center py-3 px-4 bg-transparent rounded-md ring-1 focus-within:ring-2 transition',
-        // Border
+        'flex flex-row gap-1 items-center bg-transparent transition',
+        // Padding and outline
+        !ghost && 'py-3 px-4 rounded-md ring-1 focus-within:ring-2',
+        // Outline color
         error
           ? 'ring-border-interactive-error'
           : 'ring-border-primary focus-within:ring-border-interactive-focus',
@@ -102,7 +106,7 @@ export const NumberInput = <
 
       <input
         className={clsx(
-          'w-full text-right text-text-body bg-transparent border-none outline-none ring-none secondary-text',
+          'grow w-full text-right text-text-body bg-transparent border-none outline-none ring-none secondary-text',
           className
         )}
         disabled={disabled}

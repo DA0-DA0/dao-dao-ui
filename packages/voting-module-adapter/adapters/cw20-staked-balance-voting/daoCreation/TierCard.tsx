@@ -20,9 +20,12 @@ import {
   InputLabel,
   NumberInput,
   TextInput,
+  TooltipInfoIcon,
   VOTING_POWER_DISTRIBUTION_COLORS,
 } from '@dao-dao/ui'
 import {
+  NEW_DAO_CW20_DECIMALS,
+  formatPercentOf100,
   validateAddress,
   validatePositive,
   validateRequired,
@@ -129,31 +132,43 @@ export const TierCard = ({
         <div className="flex flex-col grow p-6">
           <InputLabel
             containerProps={{ className: 'mb-2' }}
-            name={t('form.votingWeightPerMember')}
-            tooltip={t('form.votingWeightPerMemberTooltip', {
-              weight: tierVotingWeight.toLocaleString(),
+            name={t('form.percentOfTotalSupply')}
+            tooltip={t('form.percentOfTotalSupplyTooltip', {
+              weight: formatPercentOf100(tierVotingWeight),
             })}
           />
 
-          <NumberInput
-            error={errors.votingModuleAdapter?.data?.tiers?.[tierIndex]?.weight}
-            fieldName={`votingModuleAdapter.data.tiers.${tierIndex}.weight`}
-            onMinus={() =>
-              setValue(
-                `votingModuleAdapter.data.tiers.${tierIndex}.weight`,
-                Math.max((data.tiers?.[tierIndex]?.weight ?? 0) - 1, 1)
-              )
-            }
-            onPlus={() =>
-              setValue(
-                `votingModuleAdapter.data.tiers.${tierIndex}.weight`,
-                Math.max((data.tiers?.[tierIndex]?.weight ?? 0) + 1, 1)
-              )
-            }
-            register={register}
-            step={1}
-            validation={[validatePositive, validateRequired]}
-          />
+          <div className="flex flex-row gap-2 items-center">
+            <NumberInput
+              containerClassName="grow"
+              error={
+                errors.votingModuleAdapter?.data?.tiers?.[tierIndex]?.weight
+              }
+              fieldName={`votingModuleAdapter.data.tiers.${tierIndex}.weight`}
+              onMinus={() =>
+                setValue(
+                  `votingModuleAdapter.data.tiers.${tierIndex}.weight`,
+                  Math.max(
+                    (data.tiers?.[tierIndex]?.weight ?? 0) - 1,
+                    1 / 10 ** NEW_DAO_CW20_DECIMALS
+                  )
+                )
+              }
+              onPlus={() =>
+                setValue(
+                  `votingModuleAdapter.data.tiers.${tierIndex}.weight`,
+                  Math.max(
+                    (data.tiers?.[tierIndex]?.weight ?? 0) + 1,
+                    1 / 10 ** NEW_DAO_CW20_DECIMALS
+                  )
+                )
+              }
+              register={register}
+              step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
+              validation={[validatePositive, validateRequired]}
+            />
+            <InputLabel name="%" />
+          </div>
 
           <InputErrorMessage
             error={errors.votingModuleAdapter?.data?.tiers?.[tierIndex]?.weight}
@@ -208,6 +223,18 @@ export const TierCard = ({
                   }
                 />
               </div>
+
+              <TooltipInfoIcon
+                title={t('info.tierMemberGovTokenAllocationTooltip', {
+                  tokens: (
+                    (tierVotingWeight / members.length / 100) *
+                    data.newInfo.initialSupply
+                  ).toLocaleString(undefined, {
+                    maximumFractionDigits: NEW_DAO_CW20_DECIMALS,
+                  }),
+                  tokenSymbol: data.newInfo.symbol || t('info.tokens'),
+                })}
+              />
 
               <IconButton
                 Icon={Close}

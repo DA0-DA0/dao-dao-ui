@@ -1,4 +1,4 @@
-import { DurationWithUnits } from '@dao-dao/tstypes'
+import { DurationWithUnits, NewDaoTier } from '@dao-dao/tstypes'
 
 export enum GovernanceTokenType {
   New,
@@ -6,7 +6,10 @@ export enum GovernanceTokenType {
 }
 
 export interface DaoCreationConfig {
-  type: GovernanceTokenType
+  tiers: NewDaoTier[]
+  // For custom errors.
+  _tiersError?: undefined
+  tokenType: GovernanceTokenType
   newInfo: {
     initialSupply: number
     initialTreasuryPercent: number
@@ -14,7 +17,7 @@ export interface DaoCreationConfig {
     symbol: string
     name: string
   }
-  existingGovernanceTokenAddress?: string
+  existingGovernanceTokenAddress: string
   // TokenInfoResponse
   existingGovernanceTokenInfo?: {
     decimals: number

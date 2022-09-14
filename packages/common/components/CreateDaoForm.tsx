@@ -20,6 +20,7 @@ import {
   usePinnedDaos,
   useWalletBalance,
 } from '@dao-dao/state'
+import instantiateSchema from '@dao-dao/state/clients/cw-core/instantiate_schema_0.2.0.json'
 import {
   CreateDaoContext,
   CreateDaoCustomValidator,
@@ -40,6 +41,7 @@ import {
 import {
   CWCORE_CODE_ID,
   V1_FACTORY_CONTRACT_ADDRESS,
+  makeValidateMsg,
   processError,
   validateUrl,
 } from '@dao-dao/utils'
@@ -182,6 +184,11 @@ export const CreateDaoForm = ({
     [proposalModuleAdapters]
   )
 
+  const validateInstantiateMsg = useMemo(
+    () => makeValidateMsg<InstantiateMsg>(instantiateSchema, t),
+    [t]
+  )
+
   // Generate instantiation message.
   const generateInstantiateMsg = useCallback(() => {
     // Generate voting module adapter instantiation message.
@@ -209,6 +216,9 @@ export const CreateDaoForm = ({
       voting_module_instantiate_info: votingModuleInstantiateInfo,
     }
 
+    // Validate and throw error if invalid according to JSON schema.
+    validateInstantiateMsg(instantiateMsg)
+
     return instantiateMsg
   }, [
     description,
@@ -218,6 +228,7 @@ export const CreateDaoForm = ({
     proposalModuleAdapters,
     proposalModuleDaoCreationAdapters,
     t,
+    validateInstantiateMsg,
     votingModuleAdapter.data,
     votingModuleDaoCreationAdapter,
   ])
