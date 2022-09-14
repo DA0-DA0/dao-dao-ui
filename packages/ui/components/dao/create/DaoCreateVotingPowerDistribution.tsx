@@ -64,7 +64,7 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
 
   return (
     <div className="flex flex-col items-stretch bg-background-tertiary rounded-lg sm:flex-row">
-      <div className="flex flex-col shrink-0 gap-8 items-center p-6 border-b border-border-secondary sm:border-r">
+      <div className="flex flex-col shrink-0 gap-8 items-center p-6 border-b border-border-secondary sm:border-r sm:border-b-0">
         <p className="self-stretch text-text-body primary-text">
           {t('title.votingPower')}
         </p>
