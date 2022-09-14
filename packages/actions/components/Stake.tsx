@@ -66,7 +66,10 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   const validatePossibleSpend = useCallback(
     (denom: string, amount: string): string | boolean => {
       // Logic for undelegating or redelegating
-      if (stakeType === StakeType.Undelegate || stakeType === StakeType.Redelegate) {
+      if (
+        stakeType === StakeType.Undelegate ||
+        stakeType === StakeType.Redelegate
+      ) {
         const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
           nativeDelegatedBalance.amount,
           NATIVE_DECIMALS
