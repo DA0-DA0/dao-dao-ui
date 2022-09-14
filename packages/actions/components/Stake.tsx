@@ -65,8 +65,8 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
   const validatePossibleSpend = useCallback(
     (denom: string, amount: string): string | boolean => {
-      // Logic for undelegating
-      if (stakeType === StakeType.Undelegate) {
+      // Logic for undelegating or redelegating
+      if (stakeType === StakeType.Undelegate || stakeType === StakeType.Redelegate) {
         const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
           nativeDelegatedBalance.amount,
           NATIVE_DECIMALS
@@ -80,12 +80,14 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
           `${
             Number(nativeDelegatedBalance.amount) === 0
               ? 'No native token delegations for'
-              : `Max amount that can be undelegated is ${humanReadableAmount}`
+              : stakeType === StakeType.Undelegate
+              ? `Max amount that can be undelegated is ${humanReadableAmount}`
+              : `Max amount that can be redelegated is ${humanReadableAmount}`
           } ${nativeTokenLabel(denom)}.`
         )
       }
 
-      // All other staking amounts can use this logic
+      // All other staking types can use this logic
       const native = nativeBalances.find((coin) => coin.denom === denom)
       if (native) {
         const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
