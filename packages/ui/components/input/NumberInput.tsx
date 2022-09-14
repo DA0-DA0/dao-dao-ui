@@ -1,4 +1,4 @@
-import { MinusIcon, PlusIcon } from '@heroicons/react/outline'
+import { Add, Remove } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentProps } from 'react'
 import {
@@ -10,12 +10,14 @@ import {
   Validate,
 } from 'react-hook-form'
 
+import { IconButton, IconButtonProps } from '../IconButton'
+
 export interface NumberInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
 > extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
-  fieldName: FieldName
-  register: UseFormRegister<FV>
+  fieldName?: FieldName
+  register?: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   onMinus?: () => void
@@ -25,6 +27,12 @@ export interface NumberInputProps<
   required?: boolean
   setValueAs?: (value: any) => any
   ghost?: boolean
+  unit?: string
+  textClassName?: string
+  unitClassName?: string
+  iconClassName?: string
+  iconContainerClassName?: string
+  iconSize?: IconButtonProps['size']
 }
 
 /**
@@ -53,6 +61,12 @@ export const NumberInput = <
   required,
   setValueAs,
   ghost,
+  unit,
+  textClassName,
+  unitClassName,
+  iconClassName,
+  iconContainerClassName,
+  iconSize = 'sm',
   ...props
 }: NumberInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
@@ -63,7 +77,7 @@ export const NumberInput = <
   return (
     <div
       className={clsx(
-        'flex flex-row gap-1 items-center bg-transparent transition',
+        'flex flex-row gap-2 items-center bg-transparent transition',
         // Padding and outline
         !ghost && 'py-3 px-4 rounded-md ring-1 focus-within:ring-2',
         // Outline color
@@ -79,45 +93,60 @@ export const NumberInput = <
         containerClassName
       )}
     >
-      {onPlus && (
-        <button
-          className={clsx('transition secondary-text', {
-            'hover:body-text': !disabled,
-          })}
-          disabled={disabled}
-          onClick={onPlus}
-          type="button"
-        >
-          <PlusIcon className="w-4" />
-        </button>
-      )}
-      {onMinus && (
-        <button
-          className={clsx('transition secondary-text', {
-            'hover:body-text': !disabled,
-          })}
-          disabled={disabled}
-          onClick={onMinus}
-          type="button"
-        >
-          <MinusIcon className="w-4" />
-        </button>
-      )}
+      <div
+        className={clsx('flex flex-row items-center', iconContainerClassName)}
+      >
+        {onMinus && (
+          <IconButton
+            Icon={Remove}
+            disabled={disabled}
+            iconClassName={clsx('text-icon-secondary', iconClassName)}
+            onClick={onMinus}
+            size={iconSize}
+            variant="ghost"
+          />
+        )}
+        {onPlus && (
+          <IconButton
+            Icon={Add}
+            disabled={disabled}
+            iconClassName={clsx('text-icon-secondary', iconClassName)}
+            onClick={onPlus}
+            size={iconSize}
+            variant="ghost"
+          />
+        )}
+      </div>
 
       <input
         className={clsx(
           'grow w-full text-right text-text-body bg-transparent border-none outline-none ring-none secondary-text',
-          className
+          className,
+          textClassName
         )}
         disabled={disabled}
         type="number"
         {...props}
-        {...register(fieldName, {
-          required: required && 'Required',
-          validate,
-          ...(setValueAs ? { setValueAs } : { valueAsNumber: true }),
-        })}
+        {...(register &&
+          fieldName &&
+          register(fieldName, {
+            required: required && 'Required',
+            validate,
+            ...(setValueAs ? { setValueAs } : { valueAsNumber: true }),
+          }))}
       />
+
+      {unit && (
+        <p
+          className={clsx(
+            'shrink-0 text-right text-text-tertiary secondary-text',
+            textClassName,
+            unitClassName
+          )}
+        >
+          {unit}
+        </p>
+      )}
     </div>
   )
 }

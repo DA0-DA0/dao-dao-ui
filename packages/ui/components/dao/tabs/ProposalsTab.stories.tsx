@@ -4,7 +4,7 @@ import { useDaoInfoContext } from '@dao-dao/common'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
 import { ProposalList, ProposalListProps } from '../../proposal'
-import { Default as ProposalListStory } from '../../proposal/ProposalList.stories'
+import * as ProposalListStories from '../../proposal/ProposalList.stories'
 import { ProposalsTab } from './ProposalsTab'
 
 export default {
@@ -27,6 +27,16 @@ Default.args = {
     refundOnFailure: true,
   },
   proposalList: (
-    <ProposalList {...(ProposalListStory.args as ProposalListProps)} />
+    <ProposalList
+      {...(ProposalListStories.Default.args as ProposalListProps)}
+    />
+  ),
+}
+
+export const None = Template.bind({})
+None.args = {
+  ...Default.args,
+  proposalList: (
+    <ProposalList {...(ProposalListStories.None.args as ProposalListProps)} />
   ),
 }

@@ -14,7 +14,6 @@ export default {
   component: TierCard,
 } as ComponentMeta<typeof TierCard>
 
-// TODO: Fix memory crash.
 const Template: ComponentStory<typeof TierCard> = (args) => {
   const {
     control,

@@ -32,6 +32,8 @@ export interface CopyToClipboardProps {
   takeAll?: true
   loading?: boolean
   className?: string
+  textClassName?: string
+  onCopy?: () => void
 }
 
 export const CopyToClipboard = ({
@@ -41,6 +43,8 @@ export const CopyToClipboard = ({
   takeStartEnd,
   takeAll,
   className = 'font-mono text-xs',
+  textClassName,
+  onCopy,
 }: CopyToClipboardProps) => {
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
@@ -56,6 +60,7 @@ export const CopyToClipboard = ({
         setTimeout(() => setCopied(false), 2000)
         setCopied(true)
         toast.success(success || t('info.copiedToClipboard'))
+        onCopy?.()
       }}
       title={value}
       type="button"
@@ -66,7 +71,12 @@ export const CopyToClipboard = ({
         <Copy height="18px" width="18px" />
       )}
 
-      <span className="inline flex-1 p-1 truncate hover:bg-btn-secondary-hover rounded-md transition">
+      <span
+        className={clsx(
+          'inline flex-1 p-1 truncate hover:bg-btn-secondary-hover rounded-md transition',
+          textClassName
+        )}
+      >
         {takeStartEnd
           ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
           : takeAll
@@ -83,6 +93,7 @@ export const CopyToClipboardUnderline = ({
   takeN,
   takeStartEnd,
   className,
+  textClassName,
 }: CopyToClipboardProps) => {
   const { t } = useTranslation()
 
@@ -90,7 +101,8 @@ export const CopyToClipboardUnderline = ({
     <p
       className={clsx(
         'font-mono text-xs text-text-body underline truncate hover:opacity-80 active:opacity-70 transition-opacity cursor-pointer',
-        className
+        className,
+        textClassName
       )}
       onClick={() => {
         navigator.clipboard.writeText(value)

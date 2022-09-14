@@ -52,7 +52,7 @@ export const Modal = ({
     >
       <div
         className={clsx(
-          'overflow-hidden relative p-6 max-w-md h-min max-h-full bg-background-base rounded-lg border border-border-secondary shadow-dp8 cursor-auto',
+          'flex overflow-hidden relative flex-col p-6 max-w-md h-min max-h-full bg-background-base rounded-lg border border-border-secondary shadow-dp8 cursor-auto',
           containerClassName
         )}
       >
@@ -61,13 +61,14 @@ export const Modal = ({
             Icon={XIcon}
             circular
             className="absolute top-2 right-2"
+            iconClassName="text-icon-tertiary"
             onClick={onClose}
             variant="ghost"
           />
         )}
 
         {(header || headerContent) && (
-          <div className="py-5 px-6 pt-0 -mx-6 mb-6 space-y-1 border-b border-border-base">
+          <div className="flex flex-col shrink-0 gap-1 py-5 px-6 pt-0 -mx-6 mb-6 border-b border-border-base">
             {header && (
               <>
                 <p className="header-text">{header.title}</p>
@@ -84,7 +85,7 @@ export const Modal = ({
         {children}
 
         {footerContent && (
-          <div className="py-5 px-6 -mx-6 -mb-6 border-t border-border-secondary">
+          <div className="shrink-0 py-5 px-6 -mx-6 -mb-6 border-t border-border-secondary">
             {footerContent}
           </div>
         )}

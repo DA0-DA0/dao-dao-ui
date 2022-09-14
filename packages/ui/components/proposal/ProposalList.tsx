@@ -1,22 +1,25 @@
 import { useTranslation } from 'react-i18next'
 
-import { ArrowDropdown } from '@dao-dao/icons'
+import { ArrowDropdown, NoProposals } from '@dao-dao/icons'
 
+import { Button } from '../Button'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
 
 export interface ProposalListProps {
   openProposals: ProposalLineProps[]
   historyProposals: ProposalLineProps[]
+  createNewProposal: () => void
 }
 
 export const ProposalList = ({
   openProposals,
   historyProposals,
+  createNewProposal,
 }: ProposalListProps) => {
   const { t } = useTranslation()
 
-  return (
-    <>
+  return openProposals.length > 0 || historyProposals.length > 0 ? (
+    <div className="pt-6 border-t border-border-secondary">
       <p className="mb-6 text-text-body title-text">{t('title.proposals')}</p>
 
       {!!openProposals.length && (
@@ -42,6 +45,23 @@ export const ProposalList = ({
           <ProposalLine {...props} key={index} />
         ))}
       </div>
-    </>
+    </div>
+  ) : (
+    <div
+      className="flex flex-col gap-5 items-center py-10 rounded-md border-2 border-border-primary hover:border-border-interactive-hover border-dashed hover:border-solid transition-all cursor-pointer"
+      onClick={createNewProposal}
+    >
+      <NoProposals className="!w-14 !h-14 text-icon-tertiary" />
+
+      <p className="text-center text-text-tertiary secondary-text">
+        {t('info.noProposalYet')}
+        <br />
+        {t('info.createFirstOneQuestion')}
+      </p>
+
+      <Button onClick={createNewProposal} variant="secondary">
+        {t('button.newProposal')}
+      </Button>
+    </div>
   )
 }

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ComponentType, ReactNode, useMemo } from 'react'
+import { ComponentType, ReactNode } from 'react'
 
 import { ContractVersion } from '@dao-dao/utils'
 
@@ -33,15 +33,11 @@ export const ProposalLine = ({
   const msSinceUpdated = new Date().getTime() - lastUpdated.getTime()
 
   // Class names shared between desktop and mobile containers.
-  const sharedContainerClassNames = useMemo(
-    () =>
-      clsx(
-        'bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md transition cursor-pointer',
-        // If updated in the last day, highlight.
-        msSinceUpdated < 24 * 60 * 60 * 1000 && 'bg-purple-300/30',
-        className
-      ),
-    [msSinceUpdated, className]
+  const sharedContainerClassNames = clsx(
+    'bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md transition cursor-pointer',
+    // If updated in the last day, highlight.
+    msSinceUpdated < 24 * 60 * 60 * 1000 && 'bg-purple-300/30',
+    className
   )
 
   const contents = (

@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -22,6 +23,8 @@ export interface UnstakingLineProps {
   dateReplacement?: ReactNode
 }
 
+const sharedClassNames = 'bg-background-secondary rounded-md'
+
 export const UnstakingLine = ({
   task: { status, amount, tokenSymbol, tokenDecimals, date },
   dateReplacement,
@@ -36,21 +39,54 @@ export const UnstakingLine = ({
       : formatDate(date)
 
   return (
-    <div className="box-content grid grid-cols-[auto_1fr_auto] gap-8 items-center py-3 px-4 h-8 bg-background-secondary rounded-md">
-      <UnstakingStatus status={status} />
+    <>
+      {/* Desktop */}
+      <div
+        className={clsx(
+          sharedClassNames,
+          'box-content hidden grid-cols-[auto_1fr_auto] gap-8 items-center py-3 px-4 h-8 md:grid'
+        )}
+      >
+        <UnstakingStatus status={status} />
 
-      <p className="truncate body-text">
-        {amount.toLocaleString(undefined, {
-          maximumFractionDigits: tokenDecimals,
-        })}{' '}
-        ${tokenSymbol}
-      </p>
-
-      {dateReplacement || (
-        <p className="pr-2 font-mono text-right break-words caption-text">
-          {dateString}
+        <p className="truncate body-text">
+          {amount.toLocaleString(undefined, {
+            maximumFractionDigits: tokenDecimals,
+          })}{' '}
+          ${tokenSymbol}
         </p>
-      )}
-    </div>
+
+        {dateReplacement || (
+          <p className="pr-2 font-mono text-right break-words caption-text">
+            {dateString}
+          </p>
+        )}
+      </div>
+
+      {/* Mobile */}
+      <div
+        className={clsx(
+          sharedClassNames,
+          'box-content flex flex-col gap-2 p-4 md:hidden'
+        )}
+      >
+        <UnstakingStatus status={status} />
+
+        <div className="flex flex-row gap-4 justify-between items-end">
+          <p className="break-words body-text">
+            {amount.toLocaleString(undefined, {
+              maximumFractionDigits: tokenDecimals,
+            })}{' '}
+            ${tokenSymbol}
+          </p>
+
+          {dateReplacement || (
+            <p className="font-mono text-right break-words caption-text">
+              {dateString}
+            </p>
+          )}
+        </div>
+      </div>
+    </>
   )
 }

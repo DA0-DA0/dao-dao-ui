@@ -8,7 +8,7 @@ export enum StakingMode {
 
 export interface StakingModalProps {
   // The mode to open the staking modal in.
-  mode: StakingMode
+  initialMode: StakingMode
   // The number of tokens in question.
   amount: number
   // Sets the number of tokens in question.

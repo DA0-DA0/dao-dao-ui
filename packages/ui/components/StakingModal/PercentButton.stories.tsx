@@ -1,10 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { PercentButton } from './PercentSelector'
+import { PercentButton } from './PercentButton'
 
 export default {
-  title: '(OLD DAO DAO) / components / StakingModal / PercentButton',
+  title: 'DAO DAO / packages / ui / components / StakingModal / PercentButton',
   component: PercentButton,
 } as ComponentMeta<typeof PercentButton>
 

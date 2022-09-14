@@ -38,6 +38,8 @@ export interface DaoCardProps extends DaoCardInfo {
   onPin: () => void
   isMember: boolean
   className?: string
+  onMouseOver?: () => void
+  onMouseLeave?: () => void
 }
 
 export const DaoCard = ({
@@ -54,6 +56,8 @@ export const DaoCard = ({
   parentDao,
   isMember,
   className,
+  onMouseOver,
+  onMouseLeave,
 }: DaoCardProps) => {
   const { t } = useTranslation()
 
@@ -64,6 +68,8 @@ export const DaoCard = ({
           'flex relative flex-col justify-between items-center py-7 px-6 w-full h-[328px] bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md outline-transparent hover:outline-border-interactive-hover active:outline-border-interactive-focus outline transition-all',
           className
         )}
+        onMouseLeave={onMouseLeave}
+        onMouseOver={onMouseOver}
       >
         <div
           className={clsx(

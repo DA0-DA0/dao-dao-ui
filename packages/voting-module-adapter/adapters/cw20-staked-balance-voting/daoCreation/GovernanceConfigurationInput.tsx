@@ -277,7 +277,7 @@ export const GovernanceConfigurationInput = ({
               <div className="flex flex-col grow">
                 <div className="flex flex-row grow gap-2 items-center">
                   <NumberInput
-                    className="font-mono leading-5 text-right symbol-small-body-text text-text-secondary"
+                    className="font-mono leading-5 symbol-small-body-text text-text-secondary"
                     containerClassName="grow"
                     error={
                       errors.votingModuleAdapter?.data?.newInfo?.initialSupply
@@ -313,7 +313,7 @@ export const GovernanceConfigurationInput = ({
                 <div className="flex flex-col grow">
                   <div className="flex flex-row grow gap-2 items-center">
                     <NumberInput
-                      className="font-mono leading-5 text-right symbol-small-body-text text-text-secondary"
+                      className="font-mono leading-5 symbol-small-body-text text-text-secondary"
                       containerClassName="grow"
                       error={
                         errors.votingModuleAdapter?.data?.newInfo

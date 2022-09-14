@@ -1,3 +1,4 @@
+import { ChangeEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Duration } from '@dao-dao/tstypes/contracts/common'
@@ -11,15 +12,17 @@ import {
   humanReadableDuration,
 } from '@dao-dao/utils'
 
+import { Button } from '../Button'
+import { NumberInput } from '../input/NumberInput'
 import { Modal } from '../Modal'
-import { ActionButton } from './ActionButton'
-import { AmountSelector } from './AmountSelector'
-import { PercentButton, PercentSelector } from './PercentSelector'
+import { SegmentedControls } from '../SegmentedControls'
+import { Tooltip } from '../Tooltip'
+import { PercentButton } from './PercentButton'
 
 export * from '@dao-dao/tstypes/ui/StakingModal'
 
 export const StakingModal = ({
-  mode,
+  initialMode,
   amount,
   setAmount,
   onClose,
@@ -40,6 +43,7 @@ export const StakingModal = ({
 }: StakingModalProps) => {
   const { t } = useTranslation()
 
+  const [mode, setMode] = useState(initialMode)
   const maxTx = mode === StakingMode.Stake ? stakableTokens : unstakableTokens
 
   const invalidAmount = (): string | undefined => {
@@ -55,7 +59,34 @@ export const StakingModal = ({
   }
 
   return (
-    <Modal header={{ title: t(`title.stakingMode.${mode}`) }} onClose={onClose}>
+    <Modal
+      header={{
+        title:
+          mode === StakingMode.Claim
+            ? t('title.claimTokens')
+            : t('title.manageStaking'),
+      }}
+      headerContent={
+        mode === StakingMode.Claim ? undefined : (
+          <SegmentedControls
+            className="mt-5 w-max"
+            onSelect={setMode}
+            selected={mode}
+            tabs={[
+              {
+                label: t(`button.stakingMode.stake`),
+                value: StakingMode.Stake,
+              },
+              {
+                label: t(`button.stakingMode.unstake`),
+                value: StakingMode.Unstake,
+              },
+            ]}
+          />
+        )
+      }
+      onClose={onClose}
+    >
       {mode === StakingMode.Stake && (
         <StakeUnstakeModesBody
           amount={amount}
@@ -87,17 +118,21 @@ export const StakingModal = ({
         />
       )}
       <div className="flex justify-end pt-6">
-        <ActionButton
-          error={error || invalidAmount()}
-          loading={loading}
-          mode={mode}
-          onClick={() =>
-            onAction(
-              mode,
-              mode === StakingMode.Claim ? claimableTokens : amount
-            )
-          }
-        />
+        <Tooltip title={error || invalidAmount()}>
+          <Button
+            disabled={!!error}
+            loading={loading}
+            onClick={() =>
+              onAction(
+                mode,
+                mode === StakingMode.Claim ? claimableTokens : amount
+              )
+            }
+            size="lg"
+          >
+            {t(`button.stakingMode.${mode}`)}
+          </Button>
+        </Tooltip>
       </div>
     </Modal>
   )
@@ -128,9 +163,22 @@ const StakeUnstakeModesBody = ({
 
   return (
     <>
-      <div className="flex flex-col mt-5">
-        <h2 className="mb-3 primary-text">{t('title.chooseTokenAmount')}</h2>
-        <AmountSelector amount={amount} max={max} setAmount={setAmount} />
+      <div className="flex flex-col">
+        <h2 className="mb-6 primary-text">{t('title.chooseTokenAmount')}</h2>
+        <NumberInput
+          containerClassName="py-7 w-full h-20 pl-6 pr-8 bg-background-secondary rounded-md gap-4"
+          ghost
+          iconContainerClassName="gap-1"
+          iconSize="default"
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setAmount(e.target.valueAsNumber)
+          }
+          onMinus={() => setAmount(Math.max(Math.min(amount - 1, max), 0))}
+          onPlus={() => setAmount(Math.max(Math.min(amount + 1, max), 0))}
+          textClassName="font-mono leading-5 symbol-small-body-text"
+          unit={`$${tokenSymbol}`}
+          value={amount}
+        />
         {amount > max && (
           <span className="mt-1 ml-1 text-error caption-text">
             {t('error.cannotStakeMoreThanYouHave')}
@@ -140,22 +188,30 @@ const StakeUnstakeModesBody = ({
           {t('info.yourBalance') + ': '}
           {max.toLocaleString(undefined, {
             maximumFractionDigits: tokenDecimals,
-          })}
+          })}{' '}
+          ${tokenSymbol}
         </span>
-        <div className="mt-4">
-          <PercentSelector
-            amount={amount}
-            max={max}
-            setAmount={setAmount}
-            tokenDecimals={tokenDecimals}
-          />
+        <div className="mt-6">
+          <div className="grid grid-cols-5 gap-2">
+            {[10, 25, 50, 75, 100].map((percent) => (
+              <PercentButton
+                key={percent}
+                amount={amount}
+                label={`${percent}%`}
+                max={max}
+                percent={percent / 100}
+                setAmount={setAmount}
+                tokenDecimals={tokenDecimals}
+              />
+            ))}
+          </div>
           {mode === StakingMode.Stake &&
             !!proposalDeposit &&
             max > proposalDeposit && (
               <PercentButton
                 absoluteOffset={-proposalDeposit}
                 amount={amount}
-                className="mt-1"
+                className="mt-2"
                 label={t('button.stakeAllButProposalDeposit', {
                   proposalDeposit: proposalDeposit.toLocaleString(undefined, {
                     maximumFractionDigits: tokenDecimals,
@@ -171,16 +227,20 @@ const StakeUnstakeModesBody = ({
         </div>
       </div>
 
-      {mode === StakingMode.Unstake &&
+      {(mode === StakingMode.Stake || mode === StakingMode.Unstake) &&
         unstakingDuration &&
         durationIsNonZero(unstakingDuration) && (
-          <>
-            <hr className="mt-3" />
-            <UnstakingDurationDisplay
-              mode={mode}
-              unstakingDuration={unstakingDuration}
-            />
-          </>
+          <div className="px-6 pt-7 -mx-6 mt-7 space-y-5 border-t border-border-secondary">
+            <p className="text-text-secondary primary-text">
+              {t('title.unstakingPeriod') +
+                `: ${humanReadableDuration(unstakingDuration)}`}
+            </p>
+            <p className="text-text-secondary body-text">
+              {t('info.unstakingMechanics', {
+                humanReadableTime: humanReadableDuration(unstakingDuration),
+              })}
+            </p>
+          </div>
         )}
     </>
   )
@@ -200,7 +260,7 @@ const ClaimModeBody = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col py-3 mt-3">
+    <div className="flex flex-col">
       <h2 className="font-medium">
         {convertMicroDenomToDenomWithDecimals(
           amount,
@@ -211,34 +271,6 @@ const ClaimModeBody = ({
         ${tokenSymbol} {t('info.available')}
       </h2>
       <p className="mt-3 mb-3 text-sm">{t('info.claimToReceiveUnstaked')}</p>
-    </div>
-  )
-}
-
-interface UnstakingDurationDisplayProps {
-  unstakingDuration: Duration
-  mode: StakingMode
-}
-
-const UnstakingDurationDisplay = ({
-  unstakingDuration,
-  mode,
-}: UnstakingDurationDisplayProps) => {
-  const { t } = useTranslation()
-
-  return (
-    <div className="mt-3 secondary-text">
-      <h2 className="link-text">
-        {mode === StakingMode.Unstake
-          ? t('info.aboutToUnstake')
-          : t('title.unstakingPeriod') +
-            `: ${humanReadableDuration(unstakingDuration)}`}
-      </h2>
-      <p className="mt-3">
-        {t('info.unstakingMechanics', {
-          humanReadableTime: humanReadableDuration(unstakingDuration),
-        })}
-      </p>
     </div>
   )
 }

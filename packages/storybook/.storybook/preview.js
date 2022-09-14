@@ -19,6 +19,14 @@ export const parameters = {
   nextRouter: {
     isReady: true,
   },
+  // Fixes out of memory error caused by react-hook-form circular references
+  // that storybook does not know how to handle.
+  // https://github.com/storybookjs/storybook/issues/12747
+  docs: {
+    source: {
+      type: 'code'
+    },
+  },
   // No need to enable `darkMode.stylePreview` because we handle theme manually
   // in `ThemeDecorator`.
 }

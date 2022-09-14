@@ -74,62 +74,64 @@ export const UnstakingModal = ({
       {...modalProps}
       containerClassName={clsx('w-full max-w-2xl', containerClassName)}
     >
-      {/* Only show if something is ready to claim. */}
-      {readyToClaim.length > 0 && (
-        <>
-          <div className="mb-5 space-y-1">
-            {readyToClaim.map((task, index) => (
-              <UnstakingLine
-                key={index}
-                dateReplacement={
-                  <Button onClick={() => onClaim(task.tokenSymbol)}>
-                    {t('button.claim')}
-                  </Button>
-                }
-                task={task}
-              />
+      <div className="overflow-y-scroll grow pr-4 -mr-4 styled-scrollbar">
+        {/* Only show if something is ready to claim. */}
+        {readyToClaim.length > 0 && (
+          <>
+            <div className="mb-5 space-y-1">
+              {readyToClaim.map((task, index) => (
+                <UnstakingLine
+                  key={index}
+                  dateReplacement={
+                    <Button onClick={() => onClaim(task.tokenSymbol)}>
+                      {t('button.claim')}
+                    </Button>
+                  }
+                  task={task}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        <div className="flex flex-row gap-3 items-center ml-2 text-text-secondary link-text">
+          <ArrowDropdown
+            className={clsx('w-2 h-2', {
+              '-rotate-90': unstaking.length === 0,
+            })}
+          />
+
+          <p>{t('title.numTasks', { count: unstaking.length })}</p>
+        </div>
+
+        {unstaking.length > 0 && (
+          <div className="mt-5 space-y-1">
+            {unstaking.map((task, index) => (
+              <UnstakingLine key={index} task={task} />
             ))}
           </div>
-        </>
-      )}
+        )}
 
-      <div className="flex flex-row gap-3 items-center ml-2 text-text-secondary link-text">
-        <ArrowDropdown
-          className={clsx('w-2 h-2', {
-            '-rotate-90': unstaking.length === 0,
-          })}
-        />
+        <div className="flex flex-row gap-3 items-center mt-6 ml-2 text-text-secondary link-text">
+          <ArrowDropdown
+            className={clsx('w-2 h-2', {
+              '-rotate-90': claimed.length === 0,
+            })}
+          />
 
-        <p>{t('title.numTasks', { count: unstaking.length })}</p>
-      </div>
-
-      {unstaking.length > 0 && (
-        <div className="mt-5 space-y-1">
-          {unstaking.map((task, index) => (
-            <UnstakingLine key={index} task={task} />
-          ))}
+          <p>
+            {claimed.length === 0 ? t('title.noHistory') : t('title.history')}
+          </p>
         </div>
-      )}
 
-      <div className="flex flex-row gap-3 items-center mt-6 ml-2 text-text-secondary link-text">
-        <ArrowDropdown
-          className={clsx('w-2 h-2', {
-            '-rotate-90': claimed.length === 0,
-          })}
-        />
-
-        <p>
-          {claimed.length === 0 ? t('title.noHistory') : t('title.history')}
-        </p>
+        {claimed.length > 0 && (
+          <div className="mt-5 space-y-1">
+            {claimed.map((task, index) => (
+              <UnstakingLine key={index} task={task} />
+            ))}
+          </div>
+        )}
       </div>
-
-      {claimed.length > 0 && (
-        <div className="mt-5 space-y-1">
-          {claimed.map((task, index) => (
-            <UnstakingLine key={index} task={task} />
-          ))}
-        </div>
-      )}
     </Modal>
   )
 }

@@ -28,4 +28,12 @@ Default.args = {
       ['Yes', 'No', 'Abstain'][Math.floor(Math.random() * 3)]
     )
   ),
+  createNewProposal: () => alert('new proposal'),
+}
+
+export const None = Template.bind({})
+None.args = {
+  openProposals: [],
+  historyProposals: [],
+  createNewProposal: () => alert('new proposal'),
 }

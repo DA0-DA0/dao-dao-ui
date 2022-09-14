@@ -2,23 +2,6 @@ import clsx from 'clsx'
 
 import { Button } from '../Button'
 
-export interface PercentSelectorProps {
-  max: number
-  amount: number
-  tokenDecimals: number
-  setAmount: (newAmount: number) => void
-}
-
-export const PercentSelector = (props: PercentSelectorProps) => (
-  <div className="grid grid-cols-5 gap-1">
-    <PercentButton label="10%" percent={0.1} {...props} />
-    <PercentButton label="25%" percent={0.25} {...props} />
-    <PercentButton label="50%" percent={0.5} {...props} />
-    <PercentButton label="75%" percent={0.75} {...props} />
-    <PercentButton label="100%" percent={1} {...props} />
-  </div>
-)
-
 export interface PercentButtonProps {
   label: string
   max: number
@@ -59,6 +42,7 @@ export const PercentButton = ({
       (max * percent + (absoluteOffset ?? 0)).toFixed(tokenDecimals) ===
       amount.toFixed(tokenDecimals)
     }
+    size="lg"
     variant="secondary"
   >
     {label}

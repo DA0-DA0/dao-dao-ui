@@ -13,8 +13,8 @@ export interface TextInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
 > extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
-  fieldName: FieldName
-  register: UseFormRegister<FV>
+  fieldName?: FieldName
+  register?: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   required?: boolean
@@ -59,7 +59,9 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
       )}
       type="text"
       {...rest}
-      {...register(fieldName, { required: required && 'Required', validate })}
+      {...(register &&
+        fieldName &&
+        register(fieldName, { required: required && 'Required', validate }))}
     />
   )
 }

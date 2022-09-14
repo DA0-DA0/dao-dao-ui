@@ -2,8 +2,9 @@ import { CheckIcon } from '@heroicons/react/outline'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/cw20-base'
+import { Claim } from '@dao-dao/tstypes/contracts/stake-cw20'
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
-import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
 import {
   claimAvailable,
   convertMicroDenomToDenomWithDecimals,

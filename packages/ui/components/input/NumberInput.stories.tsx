@@ -13,6 +13,7 @@ export default {
 
 const Template: ComponentStory<typeof NumberInput> = (args) => {
   const { register, watch, setValue } = useFormContext()
+
   return (
     <NumberInput
       {...args}
@@ -33,6 +34,13 @@ const Template: ComponentStory<typeof NumberInput> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
+  containerClassName: 'max-w-xs',
   fieldName: 'fieldName' as any,
   placeholder: 'Enter a number',
+}
+
+export const Ghost = Template.bind({})
+Ghost.args = {
+  ...Default.args,
+  ghost: true,
 }
