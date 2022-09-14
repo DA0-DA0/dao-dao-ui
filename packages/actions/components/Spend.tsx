@@ -173,6 +173,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             error={errors?.denom}
             fieldName={fieldNamePrefix + 'denom'}
             register={register}
+            style={{ maxWidth: '8.2rem' }}
           >
             {nativeBalances.map(({ denom }) => (
               <option key={denom} value={denom}>
