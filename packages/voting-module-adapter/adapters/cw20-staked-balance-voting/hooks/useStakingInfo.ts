@@ -60,7 +60,10 @@ export const useStakingInfo = ({
   )
 
   const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
-  const refreshClaims = () => _setClaimsId((id) => id + 1)
+  const refreshClaims = useCallback(
+    () => _setClaimsId((id) => id + 1),
+    [_setClaimsId]
+  )
 
   const claims = useRecoilValue(
     fetchClaims && walletAddress

@@ -1,5 +1,5 @@
 import { CheckIcon } from '@heroicons/react/outline'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Duration } from '@dao-dao/types/contracts/cw3-dao'
@@ -47,8 +47,13 @@ export const ClaimsListItem = ({
   iconURI,
 }: ClaimsListItemProps) => {
   const { t } = useTranslation()
-  const available = claimAvailable(claim, blockHeight)
-  const initialDurationRemaining = claimDurationRemaining(claim, blockHeight)
+  const { available, initialDurationRemaining } = useMemo(
+    () => ({
+      available: claimAvailable(claim, blockHeight),
+      initialDurationRemaining: claimDurationRemaining(claim, blockHeight),
+    }),
+    [blockHeight, claim]
+  )
 
   // Format for humans each second to count down.
   const [durationRemainingForHumans, setDurationRemainingForHumans] = useState(
@@ -65,11 +70,12 @@ export const ClaimsListItem = ({
     const id = setInterval(update, 1000)
 
     return () => clearInterval(id)
-  }, [claim, blockHeight, setDurationRemainingForHumans])
+  }, [blockHeight, claim])
 
   // Notify when the claim expires.
   const initialDurationRemainingTime =
-    'time' in initialDurationRemaining && initialDurationRemaining.time
+    'time' in initialDurationRemaining &&
+    Math.round(initialDurationRemaining.time)
   useEffect(() => {
     if (initialDurationRemainingTime) {
       const id = setTimeout(
