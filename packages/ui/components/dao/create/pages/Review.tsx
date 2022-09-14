@@ -25,6 +25,7 @@ export const CreateDaoReview = ({
   const togglePreviewRef = useRef<HTMLDivElement>(null)
   const [previewJson, setPreviewJson] = useState<string>()
   const [previewError, setPreviewError] = useState<string>()
+  const [scrollToPreview, setScrollToPreview] = useState(false)
   const generatePreview = useCallback(
     (scroll = true) => {
       setPreviewJson(undefined)
@@ -47,16 +48,27 @@ export const CreateDaoReview = ({
         console.error(err)
         setPreviewError(processError(err))
       } finally {
-        // Scroll to preview output or error.
-        if (scroll) {
-          togglePreviewRef.current?.scrollIntoView({
-            behavior: 'smooth',
-          })
-        }
+        // Scroll to preview output or error once the state updates.
+        setScrollToPreview(scroll)
       }
     },
     [decodeModuleMessages, generateInstantiateMsg]
   )
+  // When scrollToPreview is true and either previewJson or previewError is set,
+  // scroll to it. This effect waits for the state to update before scrolling,
+  // since the DOM needs time to render.
+  useEffect(() => {
+    if (!scrollToPreview || (!previewJson && !previewError)) {
+      return
+    }
+
+    // Scroll.
+    togglePreviewRef.current?.scrollIntoView({
+      behavior: 'smooth',
+    })
+
+    setScrollToPreview(false)
+  }, [previewJson, previewError, scrollToPreview])
 
   const togglePreview = useCallback(() => {
     // If already displaying and error does not exist (should always be true
