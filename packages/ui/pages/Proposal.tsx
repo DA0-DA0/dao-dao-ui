@@ -201,7 +201,7 @@ export const Proposal = ({
 
           {voteDisplay}
 
-          <div className="mt-6">{votesCast}</div>
+          <div className="mt-10">{votesCast}</div>
         </div>
       </div>
     </div>

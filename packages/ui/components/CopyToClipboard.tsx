@@ -92,6 +92,7 @@ export const CopyToClipboardUnderline = ({
   success,
   takeN,
   takeStartEnd,
+  takeAll,
   className,
   textClassName,
 }: CopyToClipboardProps) => {
@@ -111,6 +112,8 @@ export const CopyToClipboardUnderline = ({
     >
       {takeStartEnd
         ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
+        : takeAll
+        ? value
         : concatAddressBoth(value, takeN)}
     </p>
   )
@@ -119,7 +122,9 @@ export const CopyToClipboardUnderline = ({
 export const CopyToClipboardMobile = ({
   value,
   success,
-  takeN = 7,
+  takeN,
+  takeStartEnd,
+  takeAll,
 }: CopyToClipboardProps) => {
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
@@ -133,7 +138,11 @@ export const CopyToClipboardMobile = ({
           <Copy height="18px" width="18px" />
         )}
         <span className="inline py-1 hover:bg-btn-secondary-hover transition">
-          {concatAddressBoth(value, takeN)}
+          {takeStartEnd
+            ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
+            : takeAll
+            ? value
+            : concatAddressBoth(value, takeN)}
         </span>
       </div>
       <Button

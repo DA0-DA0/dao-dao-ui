@@ -9,6 +9,8 @@ import {
 
 import { ProfileVoteCard, ProfileVoteCardProps } from '../components'
 import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVoteCard.stories'
+import { ProposalVotes } from '../components/proposal/ProposalVotes'
+import { makeProps as makeProposalVotesProps } from '../components/proposal/ProposalVotes.stories'
 import { Proposal } from './Proposal'
 
 const proposalId = 'A72'
@@ -48,11 +50,7 @@ Default.args = {
       Vote display placeholder
     </p>
   ),
-  votesCast: (
-    <p className="p-4 text-center bg-background-primary rounded-md border border-border-tertiary">
-      Votes cast placeholder
-    </p>
-  ),
+  votesCast: <ProposalVotes {...makeProposalVotesProps()} />,
   proposalStatus: 'Open',
   dao: {
     name: 'Dog Dao',

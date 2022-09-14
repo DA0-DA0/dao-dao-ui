@@ -1,4 +1,4 @@
-import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import { Check, Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
@@ -19,11 +19,11 @@ export const VoteDisplay = ({ vote, className }: VoteDisplayProps) => {
 
   return vote === Vote.Yes ? (
     <p className={clsx(commonClassNames, 'text-valid')}>
-      <CheckIcon className="inline w-4" /> {t('info.yesVote')}
+      <Check className="!w-4 !h-4" /> {t('info.yesVote')}
     </p>
   ) : vote === Vote.No ? (
     <p className={clsx(commonClassNames, 'text-error')}>
-      <XIcon className="inline w-4" /> {t('info.noVote')}
+      <Close className="!w-4 !h-4" /> {t('info.noVote')}
     </p>
   ) : vote === Vote.Abstain ? (
     <p className={clsx(commonClassNames, 'text-secondary')}>

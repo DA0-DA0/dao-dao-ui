@@ -9,6 +9,8 @@ import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 import { ProfileVoteButton } from './ProfileVoteButton'
 
+export * from '@dao-dao/tstypes/ui/ProfileVoteCard'
+
 export const ProfileVoteCard = <T extends unknown>({
   options,
   selected,
