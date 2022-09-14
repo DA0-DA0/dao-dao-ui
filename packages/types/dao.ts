@@ -34,8 +34,10 @@ export interface ProposalModule {
 
 export type CreateDaoCustomValidator = (setNewErrors: boolean) => void
 
-export interface CreateDaoContext {
-  form: UseFormReturn<NewDao>
+export interface CreateDaoContext<
+  VotingModuleAdapterModuleConfig extends FieldValues = any
+> {
+  form: UseFormReturn<NewDao<VotingModuleAdapterModuleConfig>>
   availableVotingModuleAdapters: Pick<
     Required<VotingModuleAdapter>,
     'id' | 'daoCreation'
@@ -46,13 +48,13 @@ export interface CreateDaoContext {
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
 }
 
-export interface NewDao {
+export interface NewDao<VotingModuleAdapterData extends FieldValues = any> {
   name: string
   description: string
   imageUrl?: string
   votingModuleAdapter: {
     id: string
-    data: any
+    data: VotingModuleAdapterData
   }
   proposalModuleAdapters: {
     id: string
@@ -61,18 +63,23 @@ export interface NewDao {
   advancedVotingConfigEnabled: boolean
 }
 
+export interface NewDaoTier {
+  name: string
+  weight: number
+  members: NewDaoTierMember[]
+  // For custom errors.
+  _error?: undefined
+}
+
+export interface NewDaoTierMember {
+  address: string
+}
+
 export interface DaoCreationGovernanceConfigInputProps<
   ModuleConfig extends FieldValues = any
 > {
-  newDao: NewDao
   data: ModuleConfig
-  register: UseFormRegister<ModuleConfig>
-  setValue: UseFormSetValue<ModuleConfig>
-  watch: <TFieldName extends FieldPath<ModuleConfig>>(
-    name: TFieldName,
-    defaultValue?: FieldPathValue<ModuleConfig, TFieldName>
-  ) => FieldPathValue<ModuleConfig, TFieldName>
-  errors?: FormState<ModuleConfig>['errors']
+  context: CreateDaoContext
 }
 
 export interface DaoCreationGovernanceConfigReviewProps<

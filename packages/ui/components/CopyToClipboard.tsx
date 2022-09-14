@@ -29,17 +29,20 @@ export interface CopyToClipboardProps {
     start: number
     end: number
   }
+  takeAll?: true
   loading?: boolean
   className?: string
 }
 
 export const CopyToClipboard = ({
   value,
-  success = 'Copied to clipboard!',
+  success,
   takeN,
   takeStartEnd,
+  takeAll,
   className = 'font-mono text-xs',
 }: CopyToClipboardProps) => {
+  const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
 
   return (
@@ -52,7 +55,7 @@ export const CopyToClipboard = ({
         navigator.clipboard.writeText(value)
         setTimeout(() => setCopied(false), 2000)
         setCopied(true)
-        toast.success(success)
+        toast.success(success || t('info.copiedToClipboard'))
       }}
       title={value}
       type="button"
@@ -66,6 +69,8 @@ export const CopyToClipboard = ({
       <span className="inline flex-1 p-1 truncate hover:bg-btn-secondary-hover rounded-md transition">
         {takeStartEnd
           ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
+          : takeAll
+          ? value
           : concatAddressBoth(value, takeN)}
       </span>
     </button>
@@ -74,30 +79,34 @@ export const CopyToClipboard = ({
 
 export const CopyToClipboardUnderline = ({
   value,
-  success = 'Copied to clipboard!',
+  success,
   takeN,
   takeStartEnd,
   className,
-}: CopyToClipboardProps) => (
-  <p
-    className={clsx(
-      'font-mono text-xs text-text-body underline truncate hover:opacity-80 active:opacity-70 transition-opacity cursor-pointer',
-      className
-    )}
-    onClick={() => {
-      navigator.clipboard.writeText(value)
-      toast.success(success)
-    }}
-  >
-    {takeStartEnd
-      ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
-      : concatAddressBoth(value, takeN)}
-  </p>
-)
+}: CopyToClipboardProps) => {
+  const { t } = useTranslation()
+
+  return (
+    <p
+      className={clsx(
+        'font-mono text-xs text-text-body underline truncate hover:opacity-80 active:opacity-70 transition-opacity cursor-pointer',
+        className
+      )}
+      onClick={() => {
+        navigator.clipboard.writeText(value)
+        toast.success(success || t('info.copiedToClipboard'))
+      }}
+    >
+      {takeStartEnd
+        ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
+        : concatAddressBoth(value, takeN)}
+    </p>
+  )
+}
 
 export const CopyToClipboardMobile = ({
   value,
-  success = 'Copied to clipboard',
+  success,
   takeN = 7,
 }: CopyToClipboardProps) => {
   const { t } = useTranslation()
@@ -120,7 +129,7 @@ export const CopyToClipboardMobile = ({
           navigator.clipboard.writeText(value)
           setTimeout(() => setCopied(false), 2000)
           setCopied(true)
-          toast.success(success)
+          toast.success(success || t('info.copiedToClipboard'))
         }}
         size="sm"
         variant="secondary"

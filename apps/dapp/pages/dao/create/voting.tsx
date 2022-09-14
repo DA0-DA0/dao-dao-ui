@@ -51,7 +51,6 @@ import {
   CreateDAOQuorumCard,
   CreateDAORefundFailedProposalDepositCard,
   CreateDAOThresholdCard,
-  CreateDAOTier,
   CreateDAOUnstakingDurationCard,
   CreateDAOVotingDurationCard,
   SmallScreenNav,

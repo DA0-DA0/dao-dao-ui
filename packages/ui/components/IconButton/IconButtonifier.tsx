@@ -66,6 +66,19 @@ export const getIconButtonifiedClassNames = ({
 export const IconButtonifiedChildren = ({
   Icon,
   iconClassName,
-}: Pick<IconButtonifierProps, 'Icon' | 'iconClassName'>) => (
-  <Icon className={clsx('!w-full !h-full', iconClassName)} />
+  size,
+}: Pick<IconButtonifierProps, 'Icon' | 'iconClassName' | 'size'>) => (
+  <Icon
+    className={clsx(
+      // Sizes.
+      {
+        '!w-4 !h-4': size === 'xs',
+        '!w-[1.125rem] !h-[1.125rem]': size === 'sm',
+        '!w-6 !h-6': size === 'default',
+        '!w-7 !h-7': size === 'lg',
+        '!w-[1.875rem] !h-[1.875rem]': size === 'xl',
+      },
+      iconClassName
+    )}
+  />
 )

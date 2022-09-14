@@ -36,7 +36,7 @@ folder `ui` to group stateless components.
 
 Because of this pattern, if the argument does **not** start with `.` (period),
 `/` (forward slash), or `*` (asterisk)—which are all symbols related to
-path/glob syntax—it will automatically be prefixed with `../**/ui/**/`. This
+path/glob syntax—it will automatically be prefixed with `../**/ui/**/*`. This
 will match all files and folders, descendant of `packages`, that have a folder
 named `ui` as an ancestor at any level in the tree below `packages`.
 
@@ -54,7 +54,7 @@ targeting.
 # All files that lives somewhere inside the `packages` folder with a name that starts with `ILoveMyNewHome` and an ancestor folder named `ui`, such as a new component in the UI package at `packages/ui/components/ILoveMyNewHomeInTheUiPackage.tsx`.
 yarn generate ILoveMyNewHome
 
-# All files that live somewhere inside the `packages` folder, are immediate children of any folder named `dao`, and have an ancestor folder named `ui`, such as `packages/ui/components/dao/*.tsx`
+# All files that live somewhere inside the `packages` folder, are immediate children of any folder that ends with `dao`, and have an ancestor folder named `ui`, such as `packages/ui/components/dao/*.tsx` or `packages/ui/components/some_dao/*.tsx`
 yarn generate dao/
 
 # All files named `MyComponent.tsx` that are descendants of `packages/storybook` at any level

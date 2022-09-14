@@ -3,7 +3,7 @@
 
 // `yarn storybook:generate <glob>` to generate just the missing storybook files
 // for the matching files. The argument will automatically be prefixed with
-// `../**/ui/**/` if it does not start with `.`, `/`, or `*`, and suffixed with
+// `../**/ui/**/*` if it does not start with `.`, `/`, or `*`, and suffixed with
 // `*.tsx` if it does not end with `.tsx`.
 
 // Author: Noah Saso (@NoahSaso)
@@ -216,7 +216,7 @@ const project = new Project({
         !arg.startsWith('/') &&
         !arg.startsWith('*')
       ) {
-        arg = '../**/ui/**/' + arg
+        arg = '../**/ui/**/*' + arg
       }
       // Automatically add TypeScript extension if necessary.
       if (!arg.endsWith('.tsx')) {

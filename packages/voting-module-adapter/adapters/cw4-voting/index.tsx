@@ -14,10 +14,12 @@ import {
   DisplayInfoIcon,
   GovernanceConfigurationInput,
   GovernanceConfigurationReview,
+  getInstantiateInfo,
 } from './daoCreation'
 import { useActions } from './hooks'
+import { DaoCreationConfig } from './types'
 
-export const Cw4VotingAdapter: VotingModuleAdapter = {
+export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
   id: CW4VOTING_CONTRACT_NAME,
   matcher: (contractName: string) =>
     contractName.includes(CW4VOTING_CONTRACT_NAME),
@@ -63,7 +65,19 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
       suppliesI18nKey: 'daoCreationAdapter.cw4-voting.supplies',
       membershipI18nKey: 'daoCreationAdapter.cw4-voting.membership',
     },
-    defaultConfig: {},
+    defaultConfig: {
+      tiers: [
+        {
+          name: '',
+          weight: 1,
+          members: [
+            {
+              address: '',
+            },
+          ],
+        },
+      ],
+    },
     governanceConfig: {
       Input: GovernanceConfigurationInput,
       Review: GovernanceConfigurationReview,
@@ -71,5 +85,6 @@ export const Cw4VotingAdapter: VotingModuleAdapter = {
     votingConfig: {
       items: [],
     },
+    getInstantiateInfo,
   },
 }
