@@ -5,7 +5,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { DaoCreationGovernanceConfigInputProps } from '@dao-dao/tstypes'
+import {
+  CreateDaoCustomValidator,
+  DaoCreationGovernanceConfigInputProps,
+} from '@dao-dao/tstypes'
 import {
   Button,
   ChartDataEntry,
@@ -26,7 +29,10 @@ export const GovernanceConfigurationInput = ({
       formState: { errors },
       register,
       setValue,
+      setError,
+      clearErrors,
     },
+    setCustomValidator,
   },
 }: DaoCreationGovernanceConfigInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
@@ -75,6 +81,62 @@ export const GovernanceConfigurationInput = ({
       )
     }
   }, [data.tiers, loadedPage, setValue, t, walletAddress])
+
+  //! Validate tiers.
+  // Custom validation function for this page. Called upon attempt to navigate
+  // forward.
+  const customValidator: CreateDaoCustomValidator = useCallback(
+    (setNewErrors) => {
+      let valid = true
+
+      const totalWeight =
+        data.tiers.reduce(
+          (acc, { weight, members }) => acc + weight * members.length,
+          0
+        ) || 0
+      // Ensure voting power has been given to at least one member.
+      if (totalWeight === 0) {
+        if (setNewErrors) {
+          setError('votingModuleAdapter.data._tiersError', {
+            message: t('errors.noVotingPower'),
+          })
+        }
+        valid = false
+      } else if (errors?.votingModuleAdapter?.data?._tiersError) {
+        clearErrors('votingModuleAdapter.data._tiersError')
+      }
+
+      // Ensure each tier has at least one member.
+      data.tiers.forEach((tier, tierIndex) => {
+        if (tier.members.length === 0) {
+          if (setNewErrors) {
+            setError(`votingModuleAdapter.data.tiers.${tierIndex}._error`, {
+              message: t('errors.noMembers'),
+            })
+          }
+          valid = false
+        } else if (
+          errors?.votingModuleAdapter?.data?.tiers?.[tierIndex]?._error
+        ) {
+          clearErrors(`votingModuleAdapter.data.tiers.${tierIndex}._error`)
+        }
+      })
+
+      return valid
+    },
+    [
+      clearErrors,
+      data.tiers,
+      errors?.votingModuleAdapter?.data?._tiersError,
+      errors?.votingModuleAdapter?.data?.tiers,
+      setError,
+      t,
+    ]
+  )
+  // Update with function reference as needed.
+  useEffect(() => {
+    setCustomValidator(customValidator)
+  }, [customValidator, setCustomValidator])
 
   //! Bar chart data
 

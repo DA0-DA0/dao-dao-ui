@@ -6,7 +6,7 @@ import {
   blockHeightTimestampSafeSelector,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { ProposalModule } from '@dao-dao/utils'
+import { ProposalModule } from '@dao-dao/tstypes'
 
 import { CommonProposalListInfo } from '../../../../types'
 

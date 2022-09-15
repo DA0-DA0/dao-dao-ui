@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ContractVersion, secondsToWdhms } from '@dao-dao/utils'
+import { ContractVersion } from '@dao-dao/tstypes'
+import { secondsToWdhms } from '@dao-dao/utils'
 
 import { StatusDisplay, StatusDisplayProps } from '../StatusDisplay'
 import * as StatusDisplayStories from '../StatusDisplay.stories'

@@ -20,8 +20,16 @@ export const localStorageEffect =
     // Namespace localStorage keys to prevent collisions.
     const namespacedKey = getLocalStorageNamespacedKey(key)
 
-    const savedValue = localStorage.getItem(namespacedKey)
-    if (savedValue !== null) setSelf(parse(savedValue))
+    let savedValue = localStorage.getItem(namespacedKey)
+    // If exists without namespace, prefix with current namespace for backwards
+    // compatibility.
+    if (savedValue === null && (savedValue = localStorage.getItem(key))) {
+      localStorage.setItem(namespacedKey, savedValue)
+    }
+
+    if (savedValue !== null) {
+      setSelf(parse(savedValue))
+    }
 
     onSet((newValue: T, _: any, isReset: boolean) => {
       if (isReset) {

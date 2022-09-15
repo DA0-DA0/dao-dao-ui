@@ -2,8 +2,8 @@ import { parseCoins } from '@cosmjs/proto-signing'
 import { IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily, waitForAll } from 'recoil'
 
+import { ContractVersion } from '@dao-dao/tstypes'
 import {
-  ContractVersion,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,

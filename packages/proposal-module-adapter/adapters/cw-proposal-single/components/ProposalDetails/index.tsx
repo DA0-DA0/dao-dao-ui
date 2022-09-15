@@ -15,6 +15,7 @@ import {
   useVotingModule,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { ContractVersion } from '@dao-dao/tstypes'
 import {
   Button,
   CloseProposal,
@@ -23,7 +24,6 @@ import {
   MarkdownPreview,
 } from '@dao-dao/ui'
 import {
-  ContractVersion,
   decodeMessages,
   decodedMessagesString,
   processError,

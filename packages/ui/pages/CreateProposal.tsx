@@ -2,7 +2,7 @@ import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoInfo } from '@dao-dao/common'
-import { ProposalModule } from '@dao-dao/utils'
+import { ProposalModule } from '@dao-dao/tstypes'
 
 import { Dropdown, PageHeader, useAppLayoutContext } from '../components'
 export interface CreateProposalProps {

@@ -324,14 +324,12 @@ export const CreateDaoForm = ({
 
               // Clear saved creation data.
               setNewDaoAtom(DefaultNewDao)
-              router.push(`/dao/${address}`)
-              // Don't stop creating loading on success since we're
-              // navigating, and it's weird when loading stops and
-              // nothing happens for a sec.
+              // TODO: Show DAO creation success modal
             }
           } catch (err) {
             // toast.promise above will handle displaying the error
             console.error(err)
+          } finally {
             setCreating(false)
           }
         } else {
@@ -365,7 +363,6 @@ export const CreateDaoForm = ({
       createDaoWithFactory,
       setPinned,
       refreshBalances,
-      router,
     ]
   )
 

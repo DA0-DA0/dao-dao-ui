@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 import { TriangleUp } from '@dao-dao/icons'
 import { DaoDropdownProps } from '@dao-dao/tstypes/ui/DaoDropdown'
+import { getFallbackImage } from '@dao-dao/utils'
 
 import { IconButton } from '../IconButton'
 import { Tooltip } from '../Tooltip'
@@ -48,7 +49,7 @@ export const DaoDropdown = ({
           <img
             alt={t('info.daosLogo')}
             className="w-7 h-7 rounded-full"
-            src={imageUrl}
+            src={imageUrl || getFallbackImage(coreAddress)}
           />
         </Tooltip>
       </a>
@@ -96,7 +97,7 @@ export const DaoDropdown = ({
               <img
                 alt={t('info.daosLogo')}
                 className="w-5 h-5 rounded-full"
-                src={imageUrl}
+                src={imageUrl || getFallbackImage(coreAddress)}
               />
 
               <p className="text-text-body link-text">{name}</p>

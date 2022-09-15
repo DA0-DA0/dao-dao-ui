@@ -5,22 +5,7 @@ import {
   CwCoreV0_2_0QueryClient,
 } from '@dao-dao/state/clients'
 import { InfoResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
-
-export enum ContractVersion {
-  V0_1_0 = '0.1.0',
-  V0_2_0 = '0.2.0',
-}
-
-export enum ProposalModuleType {
-  CwProposalSingle = 'CwProposalSingle',
-  CwProposalMultiple = 'CwProposalMultiple',
-}
-
-export interface ProposalModule {
-  contractName: string
-  address: string
-  prefix: string
-}
+import { ContractVersion, ProposalModule } from '@dao-dao/tstypes'
 
 export const parseContractVersion = (
   version: string

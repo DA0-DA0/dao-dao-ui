@@ -8,6 +8,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
+import { ProposalModule } from '@dao-dao/tstypes'
 import {
   DaoNotFound,
   Loader as DefaultLoader,
@@ -17,7 +18,6 @@ import {
   LoaderProps,
   LogoProps,
 } from '@dao-dao/ui'
-import { ProposalModule } from '@dao-dao/utils'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 import { WalletProvider } from './WalletProvider'

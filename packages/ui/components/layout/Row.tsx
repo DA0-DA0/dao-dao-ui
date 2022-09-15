@@ -6,6 +6,7 @@ import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { UnfoldLess, UnfoldMore } from '@dao-dao/icons'
 
 import { IconButton } from '../IconButton'
+import { Loader } from '../Loader'
 import { Tooltip } from '../Tooltip'
 
 export interface RowProps {
@@ -19,6 +20,7 @@ export interface RowProps {
   defaultExpanded?: boolean
   localHref?: string
   compact?: boolean
+  loading?: boolean
 }
 
 export const Row = ({
@@ -32,6 +34,7 @@ export const Row = ({
   defaultExpanded = false,
   localHref,
   compact = false,
+  loading = false,
 }: RowProps) => {
   const { asPath } = useRouter()
   const [expanded, setExpanded] = useState(
@@ -59,7 +62,12 @@ export const Row = ({
         onClick={onClick}
       >
         <Tooltip title={label}>
-          <div className="flex relative justify-center items-center w-8 h-8">
+          <div
+            className={clsx(
+              'flex relative justify-center items-center w-8 h-8',
+              loading && 'animate-pulse'
+            )}
+          >
             <Icon className="!w-8 !h-8" />
             {showBadge && (
               <div className="absolute -top-[0.1875rem] -right-[0.1875rem] w-1.5 h-1.5 bg-icon-interactive-active rounded-full"></div>
@@ -89,8 +97,12 @@ export const Row = ({
         </div>
 
         <p className="grow">{label}</p>
-        {/* If children exist, display expand button. */}
-        {children ? (
+
+        {/* Override expand button with loader. */}
+        {loading ? (
+          <Loader className="!justify-end" size={24} />
+        ) : // If children exist, display expand button.
+        children ? (
           <IconButton
             Icon={ExpandButton}
             className="text-icon-secondary"

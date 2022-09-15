@@ -10,8 +10,9 @@ import {
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 // eslint-disable-next-line regex/invalid
 import { contractVersionSelector } from '@dao-dao/state/recoil/selectors/contract'
+import { ContractVersion } from '@dao-dao/tstypes'
 import { CopyToClipboard, ProposalIdDisplay, Tooltip } from '@dao-dao/ui'
-import { CHAIN_TXN_URL_PREFIX, ContractVersion } from '@dao-dao/utils'
+import { CHAIN_TXN_URL_PREFIX } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
 import { BaseProposalInfoCardProps } from '../../../types'

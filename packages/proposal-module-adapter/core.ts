@@ -1,4 +1,4 @@
-import { ProposalModule } from '@dao-dao/utils'
+import { ProposalModule } from '@dao-dao/tstypes'
 
 import { CwProposalSingleAdapter } from './adapters'
 import {

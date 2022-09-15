@@ -30,3 +30,9 @@ export const refreshProposalsIdAtom = atom<number>({
   key: 'refreshProposalsId',
   default: 0,
 })
+
+// Change this to refresh the token USDC price for a denom.
+export const refreshTokenUsdcPriceIdAtom = atomFamily<number, string>({
+  key: 'refreshTokenUsdcPriceId',
+  default: 0,
+})

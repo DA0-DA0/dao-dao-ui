@@ -17,6 +17,7 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/i18n',
   '@dao-dao/voting-module-adapter',
   '@dao-dao/proposal-module-adapter',
+  '@dao-dao/tstypes',
 ])
 
 const { withSentryConfig } = require('@sentry/nextjs')

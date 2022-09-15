@@ -11,28 +11,11 @@ import {
   FEATURED_DAOS_URL,
 } from '@dao-dao/utils'
 
-import {
-  FeaturedDAOsList,
-  PinnedDAOsList,
-  PinnedProposalsList,
-  SmallScreenNav,
-} from '@/components'
-
 interface HomePageProps {
   featuredDaos: DaoCardInfo[]
 }
 
-const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => (
-  <>
-    <SmallScreenNav />
-
-    <div className="p-4 space-y-6 max-w-6xl md:p-6">
-      <PinnedProposalsList />
-      <PinnedDAOsList />
-      <FeaturedDAOsList featuredDaos={featuredDaos} />
-    </div>
-  </>
-)
+const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => <></>
 
 export default HomePage
 

@@ -73,7 +73,7 @@ const InnerDaoProposals = () => {
           href={`/dao/${coreAddress}/proposals/create`}
         >
           <a>
-            <Tooltip label={tooltip}>
+            <Tooltip title={tooltip}>
               <Button disabled={!isMember} size="sm">
                 {t('button.createAProposal')}
               </Button>

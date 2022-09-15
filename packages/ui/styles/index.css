@@ -17,6 +17,13 @@
   font-style: normal;
 }
 
+/* Fill full window height. */
+html,
+body,
+div#__next {
+  height: 100%;
+}
+
 /* Outline the tooltip arrow. */
 .MuiTooltip-arrow::before {
   border-width: 1px;

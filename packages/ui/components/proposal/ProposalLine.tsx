@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType, ReactNode } from 'react'
 
-import { ContractVersion } from '@dao-dao/utils'
+import { ContractVersion } from '@dao-dao/tstypes'
 
 import { LoaderProps } from '../Loader'
 import { Tooltip } from '../Tooltip'

@@ -4,8 +4,8 @@ import {
   CwProposalSingleSelectors,
   contractVersionSelector,
 } from '@dao-dao/state'
+import { ContractVersion } from '@dao-dao/tstypes'
 import { ProposalLine as StatelessProposalLine } from '@dao-dao/ui'
-import { ContractVersion } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { BaseProposalLineProps } from '../../../types'

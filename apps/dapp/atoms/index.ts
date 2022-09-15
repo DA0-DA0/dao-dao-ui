@@ -3,5 +3,4 @@
 
 export * from './command'
 export * from './localStorageEffect'
-export * from './newDAO'
 export * from './status'

@@ -10,16 +10,28 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from 'recoil'
+import {
+  useRecoilState,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from 'recoil'
 
 import { SidebarWallet, WalletProvider } from '@dao-dao/common'
 import {
   mountedInBrowserAtom,
   navigationCompactAtom,
+  pinnedDaosDropdownInfoAtom,
+  refreshTokenUsdcPriceIdAtom,
   tokenUsdcPriceSelector,
 } from '@dao-dao/state'
 import { AppLayout as StatelessAppLayout } from '@dao-dao/ui'
-import { NATIVE_DENOM, nativeTokenLabel, usePlatform } from '@dao-dao/utils'
+import {
+  NATIVE_DENOM,
+  nativeTokenLabel,
+  processError,
+  usePlatform,
+} from '@dao-dao/utils'
 
 import {
   betaWarningAcceptedAtom,
@@ -102,9 +114,40 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   )
 
   //! Token prices
+  const setRefreshTokenUsdcPriceId = useSetRecoilState(
+    refreshTokenUsdcPriceIdAtom(NATIVE_DENOM)
+  )
   const nativeUsdcPriceLoadable = useRecoilValueLoadable(
     tokenUsdcPriceSelector({ denom: NATIVE_DENOM })
   )
+  // Refresh native token price every minute.
+  useEffect(() => {
+    const interval = setInterval(
+      () => setRefreshTokenUsdcPriceId((id) => id + 1),
+      60 * 1000
+    )
+    return () => clearInterval(interval)
+  }, [setRefreshTokenUsdcPriceId])
+
+  //! Pinned DAOs
+  const pinnedDaoDropdownInfos = useRecoilValueLoadable(
+    pinnedDaosDropdownInfoAtom
+  )
+
+  //! Loadable errors.
+  useEffect(() => {
+    if (nativeUsdcPriceLoadable.state === 'hasError') {
+      console.error(processError(nativeUsdcPriceLoadable.contents))
+    }
+    if (pinnedDaoDropdownInfos.state === 'hasError') {
+      console.error(processError(pinnedDaoDropdownInfos.contents))
+    }
+  }, [
+    nativeUsdcPriceLoadable.contents,
+    nativeUsdcPriceLoadable.state,
+    pinnedDaoDropdownInfos.contents,
+    pinnedDaoDropdownInfos.state,
+  ])
 
   return (
     <>
@@ -130,25 +173,42 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
           },
           setCommandModalVisible: () => setCommandModalVisible(true),
           tokenPrices:
-            nativeUsdcPriceLoadable.state !== 'hasValue' ||
-            !nativeUsdcPriceLoadable.contents
+            nativeUsdcPriceLoadable.state === 'loading'
               ? { loading: true }
               : {
                   loading: false,
-                  data: [
-                    {
-                      label: nativeTokenLabel(NATIVE_DENOM),
-                      price: nativeUsdcPriceLoadable.contents,
-                      priceDenom: 'USDC',
-                      change: 0,
-                    },
-                  ],
+                  data:
+                    nativeUsdcPriceLoadable.state === 'hasValue' &&
+                    nativeUsdcPriceLoadable.contents
+                      ? [
+                          {
+                            label: nativeTokenLabel(NATIVE_DENOM),
+                            price: Number(
+                              nativeUsdcPriceLoadable.contents.toLocaleString(
+                                undefined,
+                                { maximumFractionDigits: 3 }
+                              )
+                            ),
+                            priceDenom: 'USDC',
+                            // TODO: Retrieve.
+                            change: 13.37,
+                          },
+                        ]
+                      : [],
                 },
           version: '2.0',
-          // TODO: Get inbox pinned DAOs.
-          pinnedDaos: {
-            loading: true,
-          },
+          pinnedDaos:
+            pinnedDaoDropdownInfos.state === 'loading'
+              ? {
+                  loading: true,
+                }
+              : {
+                  loading: false,
+                  data:
+                    pinnedDaoDropdownInfos.state === 'hasValue'
+                      ? pinnedDaoDropdownInfos.contents
+                      : [],
+                },
           compact,
           setCompact,
         }}

@@ -9,7 +9,7 @@ import {
   useProposalModuleAdapter,
   useProposalModuleAdapterOptions,
 } from '@dao-dao/proposal-module-adapter'
-import { ProposalModule } from '@dao-dao/utils'
+import { ProposalModule } from '@dao-dao/tstypes'
 
 import { Button } from '../Button'
 import { Loader as DefaultLoader, LoaderProps } from '../Loader'
@@ -36,7 +36,7 @@ export const PinnedProposalLine = ({
   ...props
 }: PinnedProposalLineProps) => (
   <ProposalModuleAdapterProvider
-    ProviderLoader={() => <ProposalLineLoader Logo={Logo} />}
+    ProviderLoader={() => <ProposalLineLoader Loader={Loader} />}
     initialOptions={{
       coreAddress,
       Logo,
@@ -62,10 +62,10 @@ const InnerPinnedProposalLine = ({
   const {
     components: { PinnedProposalLine },
   } = useProposalModuleAdapter()
-  const { Logo } = useProposalModuleAdapterOptions()
+  const { Loader } = useProposalModuleAdapterOptions()
 
   return (
-    <SuspenseLoader fallback={<ProposalLineLoader Logo={Logo} />}>
+    <SuspenseLoader fallback={<ProposalLineLoader Loader={Loader} />}>
       <div className="flex flex-row gap-1 items-cener">
         <Link href={proposalViewUrl}>
           <a className="grow">

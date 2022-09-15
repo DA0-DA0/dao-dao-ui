@@ -6,6 +6,7 @@ import {
   USDC_SWAP_ADDRESS,
 } from '@dao-dao/utils'
 
+import { refreshTokenUsdcPriceIdAtom } from '../atoms/refresh'
 import { cosmWasmClientSelector, nativeBalanceSelector } from './chain'
 import { cw20BalancesInfoSelector } from './clients/cw-core/0.1.0'
 import { poolsListSelector } from './pools'
@@ -18,6 +19,8 @@ export const tokenUsdcPriceSelector = selectorFamily<
   get:
     ({ denom, tokenDecimals }) =>
     async ({ get }) => {
+      get(refreshTokenUsdcPriceIdAtom(denom))
+
       const tokens = get(poolsListSelector)
       if (!tokens) {
         return
@@ -63,7 +66,7 @@ export const tokenUsdcPriceSelector = selectorFamily<
 
       // Don't need to query again for price of native token
       if (denom === NATIVE_DENOM) {
-        return Number(nativeUSDC) * Math.pow(10, -NATIVE_DECIMALS)
+        return Number(nativeUSDC)
       }
 
       // Get token price in terms of native token

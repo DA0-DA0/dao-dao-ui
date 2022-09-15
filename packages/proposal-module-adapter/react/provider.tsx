@@ -1,6 +1,6 @@
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
 
-import { ProposalModule } from '@dao-dao/utils'
+import { ProposalModule } from '@dao-dao/tstypes'
 
 import { matchAndLoadAdapter } from '../core'
 import {

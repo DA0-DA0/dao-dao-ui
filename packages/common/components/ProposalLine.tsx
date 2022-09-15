@@ -7,6 +7,7 @@ import {
   useProposalModuleAdapter,
   useProposalModuleAdapterOptions,
 } from '@dao-dao/proposal-module-adapter'
+import { ProposalModule } from '@dao-dao/tstypes'
 import {
   Loader as DefaultLoader,
   Logo as DefaultLogo,
@@ -14,7 +15,6 @@ import {
   LogoProps,
   ProposalLineLoader,
 } from '@dao-dao/ui'
-import { ProposalModule } from '@dao-dao/utils'
 
 export interface ProposalLineProps {
   coreAddress: string

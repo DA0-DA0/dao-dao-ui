@@ -19,11 +19,6 @@ import {
 import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
-export enum ProposalModuleType {
-  CwProposalSingle = 'CwProposalSingle',
-  CwProposalMultiple = 'CwProposalMultiple',
-}
-
 export interface ProposalModule {
   contractName: string
   address: string

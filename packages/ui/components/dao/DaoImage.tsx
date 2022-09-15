@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 
-import { getCardFallbackImage } from '@dao-dao/utils'
+import { getFallbackImage } from '@dao-dao/utils'
 
 export interface DaoImageProps {
   size: 'sm' | 'lg'
@@ -37,7 +37,7 @@ export const DaoImage = ({
       })}
       style={{
         backgroundImage: `url(${
-          imageUrl || getCardFallbackImage(coreAddress || '')
+          imageUrl || getFallbackImage(coreAddress || '')
         })`,
       }}
     ></div>
