@@ -498,7 +498,6 @@ export const CreateDaoForm = ({
                 <p>{t(CreateDaoSubmitLabel.Back)}</p>
               </Button>
             )}
-            {/* SubmitButton (input tags) can't display the loading spinner. */}
             <Button loading={creating} type="submit" value={submitValue}>
               {submitValue}
             </Button>

@@ -17,9 +17,20 @@ export type SidebarWalletProps =
 export const SidebarWallet = (props: SidebarWalletProps) => (
   <div className="flex flex-col shrink-0 justify-center h-20">
     {props.connected ? (
-      <ConnectedWallet {...props} />
+      <ConnectedWallet
+        {...{
+          ...props,
+          connected: undefined,
+        }}
+      />
     ) : (
-      <ConnectWallet className="self-end" {...props} />
+      <ConnectWallet
+        className="self-end"
+        {...{
+          ...props,
+          connected: undefined,
+        }}
+      />
     )}
   </div>
 )

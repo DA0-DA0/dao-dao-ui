@@ -72,8 +72,9 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
     props: {
       ...(await serverSideTranslations(locale, ['translation'])),
       featuredDaos: featuredDaos.map(
-        ({ name, description, image, href, TVL }) => ({
-          coreAddress: '',
+        ({ name, description, image, href, TVL }, index) => ({
+          // TODO: Retrieve.
+          coreAddress: index.toString(),
           name,
           description,
           imageUrl: image,
@@ -82,6 +83,8 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
           tokenSymbol: 'USDC',
           // TODO: Retrieve.
           proposalCount: 0,
+          // TODO: Retrieve.
+          // parentDao: {},
         })
       ),
     },

@@ -6,6 +6,7 @@ import {
   IconButtonifiedChildren,
   IconButtonifierProps,
   getIconButtonifiedClassNames,
+  getNonIconButtonifierProps,
 } from './IconButtonifier'
 
 export type IconButtonLinkProps = ComponentPropsWithoutRef<'a'> &
@@ -25,7 +26,7 @@ export const IconButtonLink = forwardRef<
       href={href}
       rel="noreferrer"
       target="_blank"
-      {...props}
+      {...getNonIconButtonifierProps(props)}
       className={className}
       ref={ref}
     >
@@ -33,7 +34,7 @@ export const IconButtonLink = forwardRef<
     </a>
   ) : (
     <Link href={href ?? '#'}>
-      <a {...props} className={className} ref={ref}>
+      <a {...getNonIconButtonifierProps(props)} className={className} ref={ref}>
         <IconButtonifiedChildren {...props} />
       </a>
     </Link>

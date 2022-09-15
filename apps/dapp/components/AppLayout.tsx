@@ -198,7 +198,9 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
                 },
           version: '2.0',
           pinnedDaos:
-            pinnedDaoDropdownInfos.state === 'loading'
+            pinnedDaoDropdownInfos.state === 'loading' ||
+            // If on server, start by loading to prevent hyration error.
+            typeof window === 'undefined'
               ? {
                   loading: true,
                 }

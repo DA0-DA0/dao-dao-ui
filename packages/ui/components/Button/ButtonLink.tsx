@@ -6,6 +6,7 @@ import {
   ButtonifiedChildren,
   ButtonifierProps,
   getButtonifiedClassNames,
+  getNonButtonifierProps,
 } from './Buttonifier'
 
 export type ButtonLinkProps = ComponentPropsWithoutRef<'a'> & ButtonifierProps
@@ -23,7 +24,7 @@ export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
         href={href}
         rel="noreferrer"
         target="_blank"
-        {...props}
+        {...getNonButtonifierProps(props)}
         className={className}
         ref={ref}
       >
@@ -31,7 +32,7 @@ export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
       </a>
     ) : (
       <Link href={href ?? '#'}>
-        <a {...props} className={className} ref={ref}>
+        <a {...getNonButtonifierProps(props)} className={className} ref={ref}>
           <ButtonifiedChildren {...props}>{children}</ButtonifiedChildren>
         </a>
       </Link>

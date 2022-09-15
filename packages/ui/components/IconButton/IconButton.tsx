@@ -4,6 +4,7 @@ import {
   IconButtonifiedChildren,
   IconButtonifierProps,
   getIconButtonifiedClassNames,
+  getNonIconButtonifierProps,
 } from './IconButtonifier'
 
 export type IconButtonProps = ComponentPropsWithoutRef<'button'> &
@@ -13,7 +14,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   function IconButton({ type = 'button', ...props }, ref) {
     return (
       <button
-        {...props}
+        {...getNonIconButtonifierProps(props)}
         className={getIconButtonifiedClassNames(props)}
         ref={ref}
         type={type}
