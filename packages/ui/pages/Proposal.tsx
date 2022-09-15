@@ -71,11 +71,7 @@ export const Proposal = ({
 
   const [showRaw, setShowRaw] = useState(false)
 
-  const info: {
-    Icon: ComponentType<{ className: string }>
-    label: string
-    Value: ComponentType<{ className: string }>
-  }[] = [
+  const info: ProposalStatusAndInfoProps['info'] = [
     {
       Icon: ListAltRounded,
       label: t('title.proposal'),
@@ -137,40 +133,8 @@ export const Proposal = ({
         }}
       />
 
-      <div className="grid grid-cols-[3fr,7fr] gap-[3.5rem]">
-        <div>
-          <div className="flex flex-col gap-4 pb-10">
-            <div className="flex flex-row gap-3 items-center">
-              <AnalyticsOutlined className="w-6 h-6 text-icon-secondary" />
-              <p className="secondary-text">{t('title.status')}</p>
-            </div>
-
-            {/* TODO: const helpfulStatusText =
-              proposal.status === Status.Open && threshold && quorum
-                ? thresholdReached && quorumMet
-                  ? 'If the current vote stands, this proposal will pass.'
-                  : !thresholdReached && quorumMet
-                  ? "If the current vote stands, this proposal will fail because insufficient 'Yes' votes have been cast."
-                  : thresholdReached && !quorumMet
-                  ? 'If the current vote stands, this proposal will fail due to a lack of voter participation.'
-                  : undefined
-                : undefined */}
-            <p className="text-text-secondary body-text">{voteStatus}</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 items-center py-8 border-y border-border-secondary">
-            {info.map(({ Icon, label, Value }, index) => (
-              <Fragment key={index}>
-                <div className="flex flex-row gap-3 items-center">
-                  <Icon className="w-6 h-6 text-icon-secondary" />
-                  <p className="secondary-text">{label}</p>
-                </div>
-
-                <Value className="!font-mono !text-base !font-medium !leading-5 text-left !text-text-body" />
-              </Fragment>
-            ))}
-          </div>
-        </div>
+      <div className="grid grid-cols-1 gap-[3.5rem] md:grid-cols-[3fr,7fr]">
+        <ProposalStatusAndInfo info={info} status={voteStatus} />
 
         <div>
           <p className="mb-11 hero-text">{title}</p>
@@ -209,10 +173,77 @@ export const Proposal = ({
             </div>
           )}
 
+          <ProposalStatusAndInfo info={info} inline status={voteStatus} />
+
           {voteTally}
 
           <div className="mt-10">{votesCast}</div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+interface ProposalStatusAndInfoProps {
+  status: string
+  info: {
+    Icon: ComponentType<{ className: string }>
+    label: string
+    Value: ComponentType<{ className: string }>
+  }[]
+  inline?: boolean
+}
+
+const ProposalStatusAndInfo = ({
+  status,
+  info,
+  inline = false,
+}: ProposalStatusAndInfoProps) => {
+  const { t } = useTranslation()
+
+  return (
+    <div
+      className={clsx(
+        inline
+          ? 'mb-4 bg-background-tertiary rounded-lg border border-border-secondary md:hidden'
+          : 'hidden md:block'
+      )}
+    >
+      <div className={clsx('flex flex-col gap-4', inline ? 'p-6' : 'pb-10')}>
+        <div className="flex flex-row gap-3 items-center">
+          <AnalyticsOutlined className="w-6 h-6 text-icon-secondary" />
+          <p className="secondary-text">{t('title.status')}</p>
+        </div>
+
+        {/* TODO: const helpfulStatusText =
+          proposal.status === Status.Open && threshold && quorum
+            ? thresholdReached && quorumMet
+              ? 'If the current vote stands, this proposal will pass.'
+              : !thresholdReached && quorumMet
+              ? "If the current vote stands, this proposal will fail because insufficient 'Yes' votes have been cast."
+              : thresholdReached && !quorumMet
+              ? 'If the current vote stands, this proposal will fail due to a lack of voter participation.'
+              : undefined
+            : undefined */}
+        <p className="text-text-secondary body-text">{status}</p>
+      </div>
+
+      <div
+        className={clsx(
+          'grid grid-cols-2 gap-3 items-center border-t border-border-secondary',
+          inline ? 'p-6' : 'py-8 border-b'
+        )}
+      >
+        {info.map(({ Icon, label, Value }, index) => (
+          <Fragment key={index}>
+            <div className="flex flex-row gap-3 items-center">
+              <Icon className="w-6 h-6 text-icon-secondary" />
+              <p className="secondary-text">{label}</p>
+            </div>
+
+            <Value className="!font-mono !text-base !font-medium !leading-5 text-left !text-text-body" />
+          </Fragment>
+        ))}
       </div>
     </div>
   )
