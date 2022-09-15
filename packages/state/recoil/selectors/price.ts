@@ -10,11 +10,11 @@ import { cosmWasmClientSelector, nativeBalanceSelector } from './chain'
 import { cw20BalancesInfoSelector } from './clients/cw-core/0.1.0'
 import { poolsListSelector } from './pools'
 
-export const tokenUSDCPriceSelector = selectorFamily<
+export const tokenUsdcPriceSelector = selectorFamily<
   number | undefined,
   { denom: string; tokenDecimals?: number }
 >({
-  key: 'tokenUSDCPriceSelector',
+  key: 'tokenUsdcPrice',
   get:
     ({ denom, tokenDecimals }) =>
     async ({ get }) => {
@@ -98,7 +98,7 @@ export const tokenUSDCPriceSelector = selectorFamily<
 })
 
 export const addressTVLSelector = selectorFamily<number, { address: string }>({
-  key: 'tokenUSDCPriceSelector',
+  key: 'addressTVL',
   get:
     ({ address }) =>
     async ({ get }) => {
@@ -113,7 +113,7 @@ export const addressTVLSelector = selectorFamily<number, { address: string }>({
       }
 
       const prices = balances.map(({ amount, denom }) => {
-        const price = get(tokenUSDCPriceSelector({ denom }))
+        const price = get(tokenUsdcPriceSelector({ denom }))
         return price ? Number(amount) * price : 0
       })
 

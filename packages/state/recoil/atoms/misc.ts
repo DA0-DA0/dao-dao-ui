@@ -11,7 +11,7 @@ export const mountedInBrowserAtom = atom({
   default: false,
 })
 
-export const navigationCompact = atom({
+export const navigationCompactAtom = atom({
   key: 'navigationCompact',
   default: false,
   effects: [localStorageEffectJSON('navigationCompact')],

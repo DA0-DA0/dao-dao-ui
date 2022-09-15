@@ -6,7 +6,7 @@ import {
   CwNativeStakedBalanceVotingSelectors,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
-  tokenUSDCPriceSelector,
+  tokenUsdcPriceSelector,
 } from '@dao-dao/state'
 import {
   MarketingInfoResponse,
@@ -86,7 +86,7 @@ export const useGovernanceTokenInfo = ({
   // Price info
   const price = useRecoilValue(
     fetchUSDCPrice && governanceTokenInfo
-      ? tokenUSDCPriceSelector({
+      ? tokenUsdcPriceSelector({
           denom,
           tokenDecimals: governanceTokenInfo.decimals,
         })

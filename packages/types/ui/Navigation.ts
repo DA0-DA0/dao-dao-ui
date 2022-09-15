@@ -1,6 +1,7 @@
+import { LoadingData } from './common'
 import { DaoDropdownInfo } from './DaoDropdown'
 
-export interface TokenPrice {
+export interface NavigationTokenPrice {
   label: string
   price: number
   priceDenom: string
@@ -9,10 +10,10 @@ export interface TokenPrice {
 
 export interface NavigationProps {
   setCommandModalVisible: () => void
-  inboxCount: number
+  inboxCount: LoadingData<number>
   version: string
-  tokenPrices: TokenPrice[]
-  pinnedDaos: DaoDropdownInfo[]
+  tokenPrices: LoadingData<NavigationTokenPrice[]>
+  pinnedDaos: LoadingData<DaoDropdownInfo[]>
   hideInbox?: boolean
   compact: boolean
   setCompact: (compact: boolean) => void

@@ -21,6 +21,7 @@ import { usePlatform } from '@dao-dao/utils'
 import { ButtonLink } from '../Button'
 import { DaoDropdown } from '../dao'
 import { IconButton, IconButtonLink } from '../IconButton'
+import { Loader } from '../Loader'
 import { Logo } from '../Logo'
 import { PricePercentChange } from '../PricePercentChange'
 import { ThemeToggle } from '../ThemeToggle'
@@ -187,12 +188,13 @@ export const Navigation = ({
             Icon={InboxOutlined}
             compact={compact}
             label={
-              inboxCount
-                ? t('title.inboxWithCount', { count: inboxCount })
+              !inboxCount.loading && inboxCount.data > 0
+                ? t('title.inboxWithCount', { count: inboxCount.data })
                 : t('title.inbox')
             }
+            loading={inboxCount.loading}
             localHref="/inbox"
-            showBadge={inboxCount > 0}
+            showBadge={!inboxCount.loading && inboxCount.data > 0}
           />
         )}
 
@@ -201,44 +203,48 @@ export const Navigation = ({
           compact={compact}
           defaultExpanded
           label={t('info.pinned')}
+          loading={pinnedDaos.loading}
         >
-          <div
-            className={clsx(
-              'overflow-y-auto relative sm:max-h-[33vh]',
-              compact
-                ? // Scrollbar looks weird and not clean when compact. No need.
-                  'mt-1 w-min no-scrollbar'
-                : // Shift scrollbar to the right a bit.
-                  'pr-5 -mr-5 styled-scrollbar'
-            )}
-            ref={scrollablePinnedContainerRef}
-          >
-            {/* Top border */}
+          {!pinnedDaos.loading && (
             <div
               className={clsx(
-                'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                showPinnedTopBorder ? 'opacity-100' : 'opacity-0'
+                'relative sm:max-h-[33vh]',
+                !pinnedDaos.loading && 'overflow-y-auto',
+                compact
+                  ? // Scrollbar looks weird and not clean when compact. No need.
+                    'mt-1 w-min no-scrollbar'
+                  : // Shift scrollbar to the right a bit.
+                    'pr-5 -mr-5 styled-scrollbar'
               )}
-            ></div>
+              ref={scrollablePinnedContainerRef}
+            >
+              {/* Top border */}
+              <div
+                className={clsx(
+                  'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                  showPinnedTopBorder ? 'opacity-100' : 'opacity-0'
+                )}
+              ></div>
 
-            {/* DAOs */}
-            {pinnedDaos.map((dao, index) => (
-              <DaoDropdown
-                key={index}
-                compact={compact}
-                dao={dao}
-                defaultExpanded
-              />
-            ))}
+              {/* DAOs */}
+              {pinnedDaos.data.map((dao, index) => (
+                <DaoDropdown
+                  key={index}
+                  compact={compact}
+                  dao={dao}
+                  defaultExpanded
+                />
+              ))}
 
-            {/* Bottom border */}
-            <div
-              className={clsx(
-                'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                showPinnedBottomBorder ? 'opacity-100' : 'opacity-0'
-              )}
-            ></div>
-          </div>
+              {/* Bottom border */}
+              <div
+                className={clsx(
+                  'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                  showPinnedBottomBorder ? 'opacity-100' : 'opacity-0'
+                )}
+              ></div>
+            </div>
+          )}
         </Row>
 
         {compact ? (
@@ -267,17 +273,23 @@ export const Navigation = ({
           <div className="space-y-3 font-mono caption-text">
             <p>{t('info.daodaoWithVersion', { version })}</p>
 
-            {tokenPrices.map(({ label, price, priceDenom, change }, index) => (
-              <div
-                key={index}
-                className="flex flex-row gap-2 justify-between items-end"
-              >
-                <p className="text-text-primary">
-                  {label} = {price} ${priceDenom}
-                </p>
-                <PricePercentChange value={change} />
-              </div>
-            ))}
+            {tokenPrices.loading ? (
+              <Loader className="!justify-start" size={38} />
+            ) : (
+              tokenPrices.data.map(
+                ({ label, price, priceDenom, change }, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-row gap-2 justify-between items-end"
+                  >
+                    <p className="text-text-primary">
+                      {label} = {price} ${priceDenom}
+                    </p>
+                    <PricePercentChange value={change} />
+                  </div>
+                )
+              )
+            )}
           </div>
         )}
 

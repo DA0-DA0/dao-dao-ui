@@ -10,12 +10,16 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import { SidebarWallet, WalletProvider } from '@dao-dao/common'
-import { mountedInBrowserAtom, navigationCompact } from '@dao-dao/state'
+import {
+  mountedInBrowserAtom,
+  navigationCompactAtom,
+  tokenUsdcPriceSelector,
+} from '@dao-dao/state'
 import { AppLayout as StatelessAppLayout } from '@dao-dao/ui'
-import { usePlatform } from '@dao-dao/utils'
+import { NATIVE_DENOM, nativeTokenLabel, usePlatform } from '@dao-dao/utils'
 
 import {
   betaWarningAcceptedAtom,
@@ -42,7 +46,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   const [commandModalVisible, setCommandModalVisible] = useRecoilState(
     commandModalVisibleAtom
   )
-  const [compact, setCompact] = useRecoilState(navigationCompact)
+  const [compact, setCompact] = useRecoilState(navigationCompactAtom)
 
   //! WALLET CONNECTION ERROR MODALS
   const { error } = useWalletManager()
@@ -82,7 +86,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
-  const [pageIndex, setPageIndex] = useState(0)
+  const [daoCreationPageIndex, setDaoCreationPageIndex] = useState(0)
   const appLayoutContext = useMemo(
     () => ({
       responsiveNavigation: {
@@ -90,11 +94,16 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         toggle: () => setResponsiveNavigationEnabled((v) => !v),
       },
       daoCreation: {
-        pageIndex,
-        setPageIndex,
+        pageIndex: daoCreationPageIndex,
+        setPageIndex: setDaoCreationPageIndex,
       },
     }),
-    [pageIndex, responsiveNavigationEnabled]
+    [daoCreationPageIndex, responsiveNavigationEnabled]
+  )
+
+  //! Token prices
+  const nativeUsdcPriceLoadable = useRecoilValueLoadable(
+    tokenUsdcPriceSelector({ denom: NATIVE_DENOM })
   )
 
   return (
@@ -114,20 +123,39 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
       <StatelessAppLayout
         context={appLayoutContext}
-        // TODO (v2): Set props correctly.
         navigationProps={{
-          inboxCount: 0,
+          // TODO: Get inbox count.
+          inboxCount: {
+            loading: true,
+          },
           setCommandModalVisible: () => setCommandModalVisible(true),
-          tokenPrices: [],
+          tokenPrices:
+            nativeUsdcPriceLoadable.state !== 'hasValue' ||
+            !nativeUsdcPriceLoadable.contents
+              ? { loading: true }
+              : {
+                  loading: false,
+                  data: [
+                    {
+                      label: nativeTokenLabel(NATIVE_DENOM),
+                      price: nativeUsdcPriceLoadable.contents,
+                      priceDenom: 'USDC',
+                      change: 0,
+                    },
+                  ],
+                },
           version: '2.0',
-          pinnedDaos: [],
+          // TODO: Get inbox pinned DAOs.
+          pinnedDaos: {
+            loading: true,
+          },
           compact,
           setCompact,
         }}
         rightSidebarProps={{
           wallet: <SidebarWallet />,
-          // TODO: Set based on page.
-          children: null,
+          // TODO: Get profile image URL.
+          profileImageUrl: undefined,
         }}
       >
         {children}

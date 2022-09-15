@@ -4,7 +4,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   Cw20BaseSelectors,
   Cw20StakedBalanceVotingSelectors,
-  tokenUSDCPriceSelector,
+  tokenUsdcPriceSelector,
 } from '@dao-dao/state'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -70,7 +70,7 @@ export const useGovernanceTokenInfo = ({
   // Price info
   const price = useRecoilValue(
     fetchUSDCPrice
-      ? tokenUSDCPriceSelector({
+      ? tokenUsdcPriceSelector({
           denom: governanceTokenAddress,
           tokenDecimals: governanceTokenInfo.decimals,
         })
