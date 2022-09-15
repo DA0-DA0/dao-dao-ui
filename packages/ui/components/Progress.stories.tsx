@@ -3,40 +3,36 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { Progress } from './Progress'
 
 export default {
-  title: '(OLD DAO DAO) / components / Progress',
+  title: 'DAO DAO / packages / ui / components / Progress',
   component: Progress,
 } as ComponentMeta<typeof Progress>
 
 const Template: ComponentStory<typeof Progress> = (args) => (
-  <Progress {...args} />
+  <div className="max-w-xl">
+    <Progress {...args} />
+  </div>
 )
 
 export const Default = Template.bind({})
 Default.args = {
   rows: [
     {
-      thickness: 3,
+      thickness: 10,
       data: [
         {
           value: 73,
-          color: 'rgb(var(--valid))',
+          color: 'var(--icon-interactive-valid)',
         },
         {
           value: 12,
-          color: 'rgb(var(--error))',
+          color: 'var(--icon-interactive-error)',
         },
         {
           value: 2,
-          // Secondary is dark with 80% opacity.
-          color: 'rgba(var(--dark), 0.8)',
+          color: 'var(--icon-tertiary)',
         },
       ],
     },
   ],
-  verticalBars: [
-    {
-      value: 67,
-      color: 'rgba(var(--dark), 0.5)',
-    },
-  ],
+  caretPosition: 67,
 }

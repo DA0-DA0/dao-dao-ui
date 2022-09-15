@@ -18,7 +18,7 @@ import {
   ProposalDetails,
   ProposalInfoCard,
   ProposalLine,
-  ProposalVoteDecisionStatus,
+  ProposalVoteTally,
   ProposalVotes,
 } from './components'
 import {
@@ -95,7 +95,7 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
       // Components
       components: {
         ProposalVotes,
-        ProposalVoteDecisionStatus,
+        ProposalVoteTally,
         ProposalInfoCard,
         ProposalDetails,
         ProposalLine,

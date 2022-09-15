@@ -14,7 +14,7 @@ export const Tooltip = ({
   classes,
   ...props
 }: TooltipProps) =>
-  title === undefined ? (
+  !title ? (
     <>{children}</>
   ) : (
     <MaterialTooltip

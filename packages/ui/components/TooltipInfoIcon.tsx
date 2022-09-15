@@ -5,11 +5,12 @@ import { IconButton, IconButtonProps } from './IconButton'
 import { Tooltip, TooltipProps } from './Tooltip'
 
 export type TooltipInfoIconProps = Omit<TooltipProps, 'children'> &
-  Pick<IconButtonProps, 'size' | 'className'>
+  Pick<IconButtonProps, 'size' | 'className' | 'iconClassName'>
 
 export const TooltipInfoIcon = ({
   size,
   className,
+  iconClassName,
   ...props
 }: TooltipInfoIconProps) => (
   <Tooltip {...props}>
@@ -21,6 +22,7 @@ export const TooltipInfoIcon = ({
         '!p-1.5 !bg-transparent hover:!bg-btn-ghost-hover !outline-none cursor-help',
         className
       )}
+      iconClassName={iconClassName}
       size={size}
       variant="ghost"
     />

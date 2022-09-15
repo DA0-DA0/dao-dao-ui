@@ -6,8 +6,8 @@ import {
   ProcessedTQ,
   ProcessedTQType,
   ProcessedThresholdQuorum,
-  formatPercentOf100,
-} from '@dao-dao/utils'
+} from '@dao-dao/tstypes'
+import { formatPercentOf100 } from '@dao-dao/utils'
 
 export const useProcessTQ = () => {
   const { t } = useTranslation()

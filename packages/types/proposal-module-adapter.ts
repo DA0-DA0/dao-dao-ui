@@ -61,7 +61,7 @@ export interface IProposalModuleAdapter {
   // Components
   components: {
     ProposalVotes: ComponentType<BaseProposalVotesProps>
-    ProposalVoteDecisionStatus: ComponentType<BaseProposalVoteDecisionStatusProps>
+    ProposalVoteTally: ComponentType<BaseProposalVoteTallyProps>
     ProposalInfoCard: ComponentType<BaseProposalInfoCardProps>
     ProposalDetails: ComponentType<BaseProposalDetailsProps>
     ProposalLine: ComponentType<BaseProposalLineProps>
@@ -140,7 +140,7 @@ export interface BaseProposalVotesProps {
   className?: string
 }
 
-export interface BaseProposalVoteDecisionStatusProps {
+export interface BaseProposalVoteTallyProps {
   voteConversionDecimals: number
 }
 

@@ -25,7 +25,7 @@ import {
 
 export interface ProposalProps {
   voteStatus: string
-  voteDisplay: ReactNode
+  voteTally: ReactNode
   votesCast: ReactNode
   proposalStatus: string
   dao: {
@@ -48,7 +48,7 @@ export interface ProposalProps {
 
 export const Proposal = ({
   voteStatus,
-  voteDisplay,
+  voteTally,
   votesCast,
   proposalStatus,
   dao,
@@ -145,6 +145,16 @@ export const Proposal = ({
               <p className="secondary-text">{t('title.status')}</p>
             </div>
 
+            {/* TODO: const helpfulStatusText =
+              proposal.status === Status.Open && threshold && quorum
+                ? thresholdReached && quorumMet
+                  ? 'If the current vote stands, this proposal will pass.'
+                  : !thresholdReached && quorumMet
+                  ? "If the current vote stands, this proposal will fail because insufficient 'Yes' votes have been cast."
+                  : thresholdReached && !quorumMet
+                  ? 'If the current vote stands, this proposal will fail due to a lack of voter participation.'
+                  : undefined
+                : undefined */}
             <p className="text-text-secondary body-text">{voteStatus}</p>
           </div>
 
@@ -199,7 +209,7 @@ export const Proposal = ({
             </div>
           )}
 
-          {voteDisplay}
+          {voteTally}
 
           <div className="mt-10">{votesCast}</div>
         </div>

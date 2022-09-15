@@ -2,6 +2,11 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { useProposalModuleAdapterOptions } from '@dao-dao/proposal-module-adapter'
 import {
+  ProposalVoteTally,
+  ProposalVoteTallyProps,
+} from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ui/ProposalVoteTally'
+import { Default as ProposalVoteTallyStory } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ui/ProposalVoteTally.stories'
+import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
   makeProposalModuleAdapterDecorator,
@@ -45,10 +50,10 @@ export const Default = Template.bind({})
 Default.args = {
   voteStatus:
     'If the current vote stands, the proposal will pass. If quorum reaches 50%, the proposal is applicable.',
-  voteDisplay: (
-    <p className="p-4 text-center bg-background-primary rounded-md border border-border-secondary">
-      Vote display placeholder
-    </p>
+  voteTally: (
+    <ProposalVoteTally
+      {...(ProposalVoteTallyStory.args as ProposalVoteTallyProps)}
+    />
   ),
   votesCast: <ProposalVotes {...makeProposalVotesProps()} />,
   proposalStatus: 'Open',
