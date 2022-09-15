@@ -4,7 +4,9 @@ import { selectorFamily, waitForAll } from 'recoil'
 
 import { ContractVersion } from '@dao-dao/tstypes'
 import {
+  CHAIN_BECH32_PREFIX,
   convertMicroDenomToDenomWithDecimals,
+  isValidContractAddress,
   nativeTokenDecimals,
   nativeTokenLabel,
   parseContractVersion,
@@ -15,6 +17,7 @@ import {
   cosmWasmClientSelector,
 } from './chain'
 import { CwCoreV0_1_0Selectors } from './clients'
+import { infoSelector } from './clients/cw-core/0.2.0'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
@@ -222,5 +225,39 @@ export const contractVersionSelector = selectorFamily<ContractVersion, string>({
       }
 
       return version
+    },
+})
+
+export const isContractSelector = selectorFamily<
+  boolean,
+  { contractAddress: string; name: string }
+>({
+  key: 'isContract',
+  get:
+    ({ contractAddress, name }) =>
+    async ({ get }) => {
+      if (!isValidContractAddress(contractAddress, CHAIN_BECH32_PREFIX)) {
+        return false
+      }
+
+      try {
+        // All InfoResponses are the same, so just use cw-core's.
+        const {
+          info: { contract },
+        } = get(infoSelector({ contractAddress, params: [] }))
+
+        return contract.includes(name)
+      } catch (err) {
+        // Invalid query enum info variant, different contract.
+        if (
+          err instanceof Error &&
+          err.message.includes('Error parsing into type')
+        ) {
+          return false
+        }
+
+        // Rethrow other errors because it should not have failed.
+        throw err
+      }
     },
 })

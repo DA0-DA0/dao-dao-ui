@@ -6,6 +6,7 @@ export * from './dao'
 export * from './home'
 export * from './HomepageCards'
 export * from './splash'
+export * from './profile'
 
 export * from './AppLayout'
 export * from './BetaWarning'

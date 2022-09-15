@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/proposal-module-adapter'
 import { CwCoreV0_1_0QueryClient } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
-import { ContractVersion } from '@dao-dao/tstypes'
+import { ContractVersion, ProposalModule } from '@dao-dao/tstypes'
 import { Loader, Logo } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
@@ -19,7 +19,6 @@ import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
-  ProposalModule,
   cosmWasmClientRouter,
   fetchProposalModules,
   parseContractVersion,

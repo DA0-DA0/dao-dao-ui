@@ -1,6 +1,5 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   Cw20StakedBalanceVotingAdapter,
   matchAdapter,
@@ -8,23 +7,28 @@ import {
 
 import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '..'
 import {
+  ActiveProposalModulesResponse,
+  AdminNominationResponse,
   AdminResponse,
   ConfigResponse,
   Cw20BalancesResponse,
   Cw20TokenListResponse,
   Cw721TokenListResponse,
+  CwCoreV0_2_0Client,
+  CwCoreV0_2_0QueryClient,
+  DaoURIResponse,
   DumpStateResponse,
-  CwCoreClient as ExecuteClient,
   GetItemResponse,
   InfoResponse,
   ListItemsResponse,
+  ListSubDaosResponse,
   PauseInfoResponse,
   ProposalModulesResponse,
-  CwCoreV0_1_0QueryClient as QueryClient,
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '../../../../clients/cw-core/0.2.0'
+import { TokenInfoResponse } from '../../../../clients/cw20-base'
 import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
@@ -35,13 +39,16 @@ type QueryClientParams = {
   contractAddress: string
 }
 
-const queryClient = selectorFamily<QueryClient, QueryClientParams>({
+export const queryClient = selectorFamily<
+  CwCoreV0_2_0QueryClient,
+  QueryClientParams
+>({
   key: 'cwCoreV0_2_0QueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      return new QueryClient(client, contractAddress)
+      return new CwCoreV0_2_0QueryClient(client, contractAddress)
     },
 })
 
@@ -51,7 +58,7 @@ export type ExecuteClientParams = {
 }
 
 export const executeClient = selectorFamily<
-  ExecuteClient | undefined,
+  CwCoreV0_2_0Client | undefined,
   ExecuteClientParams
 >({
   key: 'cwCoreV0_2_0ExecuteClient',
@@ -61,134 +68,266 @@ export const executeClient = selectorFamily<
       const client = get(signingCosmWasmClientAtom)
       if (!client) return
 
-      return new ExecuteClient(client, sender, contractAddress)
+      return new CwCoreV0_2_0Client(client, sender, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
 
-export const adminSelector = selectorFamily<AdminResponse, QueryClientParams>({
+export const adminSelector = selectorFamily<
+  AdminResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['admin']>
+  }
+>({
   key: 'cwCoreV0_2_0Admin',
   get:
-    (queryClientParams) =>
+    ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
-      return await client.admin()
+      return await client.admin(...params)
     },
 })
-
-export const configSelector = selectorFamily<ConfigResponse, QueryClientParams>(
-  {
-    key: 'cwCoreV0_2_0Config',
-    get:
-      (queryClientParams) =>
-      async ({ get }) => {
-        const client = get(queryClient(queryClientParams))
-
-        return await client.config()
-      },
+export const adminNominationSelector = selectorFamily<
+  AdminNominationResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['adminNomination']>
   }
-)
-
-export const votingModuleSelector = selectorFamily<
-  VotingModuleResponse,
-  QueryClientParams
 >({
-  key: 'cwCoreV0_2_0VotingModule',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      return await client.votingModule()
-    },
-})
-
-export const pauseInfoSelector = selectorFamily<
-  PauseInfoResponse,
-  QueryClientParams
->({
-  key: 'cwCoreV0_2_0PauseInfo',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      return await client.pauseInfo()
-    },
-})
-
-export const proposalModulesSelector = selectorFamily<
-  ProposalModulesResponse,
-  QueryClientParams & { params: Parameters<QueryClient['proposalModules']> }
->({
-  key: 'cwCoreV0_2_0ProposalModules',
+  key: 'cwCoreV0_2_0AdminNomination',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
-      return await client.proposalModules(...params)
+      return await client.adminNomination(...params)
     },
 })
-
-export const dumpStateSelector = selectorFamily<
-  DumpStateResponse,
-  QueryClientParams
+export const configSelector = selectorFamily<
+  ConfigResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['config']>
+  }
 >({
-  key: 'cwCoreV0_2_0DumpState',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      return await client.dumpState()
-    },
-})
-
-export const getItemSelector = selectorFamily<
-  GetItemResponse,
-  QueryClientParams & { params: Parameters<QueryClient['getItem']> }
->({
-  key: 'cwCoreV0_2_0GetItem',
+  key: 'cwCoreV0_2_0Config',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
-      return await client.getItem(...params)
+      return await client.config(...params)
     },
 })
-
-export const listItemsSelector = selectorFamily<
-  ListItemsResponse,
-  QueryClientParams & { params: Parameters<QueryClient['listItems']> }
+export const cw20BalancesSelector = selectorFamily<
+  Cw20BalancesResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['cw20Balances']>
+  }
 >({
-  key: 'cwCoreV0_2_0ListItems',
+  key: 'cwCoreV0_2_0Cw20Balances',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
-      return await client.listItems(...params)
+      get(refreshWalletBalancesIdAtom(queryClientParams.contractAddress))
+      return await client.cw20Balances(...params)
     },
 })
-
 export const cw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse,
-  QueryClientParams & { params: Parameters<QueryClient['cw20TokenList']> }
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['cw20TokenList']>
+  }
 >({
   key: 'cwCoreV0_2_0Cw20TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
       return await client.cw20TokenList(...params)
     },
 })
+export const cw721TokenListSelector = selectorFamily<
+  Cw721TokenListResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['cw721TokenList']>
+  }
+>({
+  key: 'cwCoreV0_2_0Cw721TokenList',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.cw721TokenList(...params)
+    },
+})
+export const dumpStateSelector = selectorFamily<
+  DumpStateResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['dumpState']>
+  }
+>({
+  key: 'cwCoreV0_2_0DumpState',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.dumpState(...params)
+    },
+})
+export const getItemSelector = selectorFamily<
+  GetItemResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['getItem']>
+  }
+>({
+  key: 'cwCoreV0_2_0GetItem',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.getItem(...params)
+    },
+})
+export const listItemsSelector = selectorFamily<
+  ListItemsResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['listItems']>
+  }
+>({
+  key: 'cwCoreV0_2_0ListItems',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.listItems(...params)
+    },
+})
+export const proposalModulesSelector = selectorFamily<
+  ProposalModulesResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['proposalModules']>
+  }
+>({
+  key: 'cwCoreV0_2_0ProposalModules',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.proposalModules(...params)
+    },
+})
+export const activeProposalModulesSelector = selectorFamily<
+  ActiveProposalModulesResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['activeProposalModules']>
+  }
+>({
+  key: 'cwCoreV0_2_0ActiveProposalModules',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.activeProposalModules(...params)
+    },
+})
+export const pauseInfoSelector = selectorFamily<
+  PauseInfoResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['pauseInfo']>
+  }
+>({
+  key: 'cwCoreV0_2_0PauseInfo',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.pauseInfo(...params)
+    },
+})
+export const votingModuleSelector = selectorFamily<
+  VotingModuleResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['votingModule']>
+  }
+>({
+  key: 'cwCoreV0_2_0VotingModule',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.votingModule(...params)
+    },
+})
+export const listSubDaosSelector = selectorFamily<
+  ListSubDaosResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['listSubDaos']>
+  }
+>({
+  key: 'cwCoreV0_2_0ListSubDaos',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.listSubDaos(...params)
+    },
+})
+export const daoURISelector = selectorFamily<
+  DaoURIResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['daoURI']>
+  }
+>({
+  key: 'cwCoreV0_2_0DaoURI',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.daoURI(...params)
+    },
+})
+export const votingPowerAtHeightSelector = selectorFamily<
+  VotingPowerAtHeightResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['votingPowerAtHeight']>
+  }
+>({
+  key: 'cwCoreV0_2_0VotingPowerAtHeight',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.votingPowerAtHeight(...params)
+    },
+})
+export const totalPowerAtHeightSelector = selectorFamily<
+  TotalPowerAtHeightResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['totalPowerAtHeight']>
+  }
+>({
+  key: 'cwCoreV0_2_0TotalPowerAtHeight',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.totalPowerAtHeight(...params)
+    },
+})
+export const infoSelector = selectorFamily<
+  InfoResponse,
+  QueryClientParams & {
+    params: Parameters<CwCoreV0_2_0QueryClient['info']>
+  }
+>({
+  key: 'cwCoreV0_2_0Info',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.info(...params)
+    },
+})
 
-const CW20_TOKEN_LIST_LIMIT = 10
+const CW20_TOKEN_LIST_LIMIT = 30
 export const allCw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse,
   QueryClientParams
@@ -198,50 +337,54 @@ export const allCw20TokenListSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       //! Check if has governance token, and add to list if necessary.
-      const votingModuleAddress = get(votingModuleSelector(queryClientParams))
-      // All `info` queries are the same, so just use cw-core's info query.
-      const votingModuleInfo = get(
-        infoSelector({ contractAddress: votingModuleAddress })
+      const votingModuleAddress = get(
+        votingModuleSelector({ ...queryClientParams, params: [] })
       )
+      // All `info` queries are the same, so just use cw-core's info query.
+      const votingModuleInfo = votingModuleAddress
+        ? get(
+            infoSelector({ contractAddress: votingModuleAddress, params: [] })
+          )
+        : undefined
 
       let hasGovernanceToken
       try {
         hasGovernanceToken =
+          !!votingModuleInfo &&
           matchAdapter(votingModuleInfo.info.contract)?.id ===
-          Cw20StakedBalanceVotingAdapter.id
+            Cw20StakedBalanceVotingAdapter.id
       } catch {
         hasGovernanceToken = false
       }
-      const governanceTokenAddress = hasGovernanceToken
-        ? get(
-            Cw20StakedBalanceVotingSelectors.tokenContractSelector({
-              contractAddress: votingModuleAddress,
-            })
-          )
-        : undefined
+      const governanceTokenAddress =
+        votingModuleAddress && hasGovernanceToken
+          ? get(
+              Cw20StakedBalanceVotingSelectors.tokenContractSelector({
+                contractAddress: votingModuleAddress,
+              })
+            )
+          : undefined
 
       //! Get all tokens.
-      let startAt: string | undefined
-
       const tokenList: Cw20TokenListResponse = []
       while (true) {
         const response = await get(
           cw20TokenListSelector({
             ...queryClientParams,
-            params: [{ startAt, limit: CW20_TOKEN_LIST_LIMIT }],
+            params: [
+              {
+                startAfter: tokenList[tokenList.length - 1],
+                limit: CW20_TOKEN_LIST_LIMIT,
+              },
+            ],
           })
         )
         if (!response.length) break
 
-        // Don't double-add last token since we set startAt to it for
-        // the next query.
-        tokenList.push(...response.slice(0, -1))
-        startAt = response[response.length - 1]
+        tokenList.push(...response)
 
         // If we have less than the limit of items, we've exhausted them.
         if (response.length < CW20_TOKEN_LIST_LIMIT) {
-          // Add last token to the list since we ignored it.
-          tokenList.push(response[response.length - 1])
           break
         }
       }
@@ -259,36 +402,6 @@ export const allCw20TokenListSelector = selectorFamily<
     },
 })
 
-export const cw721TokenListSelector = selectorFamily<
-  Cw721TokenListResponse,
-  QueryClientParams & { params: Parameters<QueryClient['cw721TokenList']> }
->({
-  key: 'cwCoreV0_2_0Cw721TokenList',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      return await client.cw721TokenList(...params)
-    },
-})
-
-export const cw20BalancesSelector = selectorFamily<
-  Cw20BalancesResponse,
-  QueryClientParams & { params: Parameters<QueryClient['cw20Balances']> }
->({
-  key: 'cwCoreV0_2_0Cw20Balances',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      get(refreshWalletBalancesIdAtom(queryClientParams.contractAddress))
-
-      return await client.cw20Balances(...params)
-    },
-})
-
 const CW20_BALANCES_LIMIT = 10
 export const allCw20BalancesSelector = selectorFamily<
   Cw20BalancesResponse,
@@ -299,10 +412,12 @@ export const allCw20BalancesSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       //! Check if has governance token, and add to list if necessary.
-      const votingModuleAddress = get(votingModuleSelector(queryClientParams))
+      const votingModuleAddress = get(
+        votingModuleSelector({ ...queryClientParams, params: [] })
+      )
       // All `info` queries are the same, so just use cw-core's info query.
       const votingModuleInfo = get(
-        infoSelector({ contractAddress: votingModuleAddress })
+        infoSelector({ contractAddress: votingModuleAddress, params: [] })
       )
 
       let hasGovernanceToken
@@ -330,27 +445,25 @@ export const allCw20BalancesSelector = selectorFamily<
         : undefined
 
       //! Get all balances.
-      let startAt: string | undefined
-
       const balances: Cw20BalancesResponse = []
       while (true) {
         const response = await get(
           cw20BalancesSelector({
             ...queryClientParams,
-            params: [{ startAt, limit: CW20_BALANCES_LIMIT }],
+            params: [
+              {
+                startAfter: balances[balances.length - 1].addr,
+                limit: CW20_BALANCES_LIMIT,
+              },
+            ],
           })
         )
         if (!response.length) break
 
-        // Don't double-add last balance since we set startAt to it for
-        // the next query.
-        balances.push(...response.slice(0, -1))
-        startAt = response[response.length - 1].addr
+        balances.push(...response)
 
         // If we have less than the limit of items, we've exhausted them.
         if (response.length < CW20_BALANCES_LIMIT) {
-          // Add last balance to the list since we ignored it.
-          balances.push(response[response.length - 1])
           break
         }
       }
@@ -374,11 +487,11 @@ export const allCw20BalancesSelector = selectorFamily<
 
 export const cw20BalancesInfoSelector = selectorFamily<
   { symbol: string; denom: string; amount: string; decimals: number }[],
-  { address: string }
+  string
 >({
-  key: 'cw20BalancesInfo',
+  key: 'cwCoreV0_2_0Cw20BalancesInfo',
   get:
-    ({ address }) =>
+    (address) =>
     async ({ get }) => {
       const cw20List = get(
         allCw20BalancesSelector({ contractAddress: address })
@@ -395,57 +508,47 @@ export const cw20BalancesInfoSelector = selectorFamily<
         )
       ).filter(Boolean) as TokenInfoResponse[]
 
-      const cw20Tokens = cw20Info.map((info, idx) => {
-        return {
-          symbol: info.symbol,
-          denom: cw20List[idx].addr,
-          amount: cw20List[idx].balance,
-          decimals: info.decimals,
-        }
-      })
-      return cw20Tokens
+      return cw20Info.map(({ symbol, decimals }, idx) => ({
+        symbol,
+        denom: cw20List[idx].addr,
+        amount: cw20List[idx].balance,
+        decimals,
+      }))
     },
 })
 
-export const votingPowerAtHeightSelector = selectorFamily<
-  VotingPowerAtHeightResponse,
-  QueryClientParams & { params: Parameters<QueryClient['votingPowerAtHeight']> }
+const CW721_TOKEN_LIST_LIMIT = 30
+export const allCw721TokenListSelector = selectorFamily<
+  Cw721TokenListResponse | undefined,
+  QueryClientParams
 >({
-  key: 'cwCoreV0_2_0VotingPowerAtHeight',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      get(refreshWalletBalancesIdAtom(params[0].address))
-
-      return await client.votingPowerAtHeight(...params)
-    },
-})
-
-export const totalPowerAtHeightSelector = selectorFamily<
-  TotalPowerAtHeightResponse,
-  QueryClientParams & { params: Parameters<QueryClient['totalPowerAtHeight']> }
->({
-  key: 'cwCoreV0_2_0TotalPowerAtHeight',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      get(refreshWalletBalancesIdAtom(undefined))
-
-      return await client.totalPowerAtHeight(...params)
-    },
-})
-
-export const infoSelector = selectorFamily<InfoResponse, QueryClientParams>({
-  key: 'cwCoreV0_2_0Info',
+  key: 'cwCoreV0_2_0AllCw721TokenList',
   get:
     (queryClientParams) =>
     async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
+      const tokenList: Cw721TokenListResponse = []
+      while (true) {
+        const response = await get(
+          cw721TokenListSelector({
+            ...queryClientParams,
+            params: [
+              {
+                startAfter: tokenList[tokenList.length - 1],
+                limit: CW721_TOKEN_LIST_LIMIT,
+              },
+            ],
+          })
+        )
+        if (!response?.length) break
 
-      return await client.info()
+        tokenList.push(...response)
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < CW721_TOKEN_LIST_LIMIT) {
+          break
+        }
+      }
+
+      return tokenList
     },
 })

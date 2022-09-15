@@ -41,9 +41,7 @@ import { DaoCreationConfig } from './types'
 
 export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
   {
-    id: CWPROPOSALSINGLE_CONTRACT_NAME,
-    matcher: (contractName: string) =>
-      contractName.includes(CWPROPOSALSINGLE_CONTRACT_NAME),
+    contractName: CWPROPOSALSINGLE_CONTRACT_NAME,
 
     loadCommon: (options) => ({
       // Hooks
@@ -105,6 +103,12 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
         },
       },
     }),
+
+    queries: {
+      proposalCount: {
+        proposal_count: {},
+      },
+    },
 
     daoCreation: {
       defaultConfig: {

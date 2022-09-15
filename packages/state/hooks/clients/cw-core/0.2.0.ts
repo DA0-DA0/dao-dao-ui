@@ -6,7 +6,7 @@ import { useRecoilValueLoadable } from 'recoil'
 
 import { validateCwCoreInstantiateMsg } from '@dao-dao/utils'
 
-import { CwCoreClient as ExecuteClient } from '../../../clients/cw-core/0.2.0'
+import { CwCoreV0_2_0Client as ExecuteClient } from '../../../clients/cw-core/0.2.0'
 import {
   ExecuteClientParams,
   executeClient,

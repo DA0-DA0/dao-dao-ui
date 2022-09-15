@@ -64,7 +64,10 @@ export const fetchProposalModules = async (
 
   const getV0_2_0ProposalModules = async () =>
     (
-      await new CwCoreV0_2_0QueryClient(cwClient, coreAddress).proposalModules({
+      await new CwCoreV0_2_0QueryClient(
+        cwClient,
+        coreAddress
+      ).activeProposalModules({
         startAfter: paginationStart,
         limit,
       })

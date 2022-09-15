@@ -19,8 +19,8 @@ const Template: ComponentStory<typeof HomeConnected> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  featuredDaos: FeaturedDaosStory.args!.featuredDaos,
-  pinnedDaos: FeaturedDaosStory.args!.featuredDaos,
+  featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
+  pinnedDaos: { loading: false, data: FeaturedDaosStory.args!.featuredDaos! },
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { AccountBalance, Link } from '@dao-dao/icons'
-import { addressTVLSelector } from '@dao-dao/state'
+import { daoTvlSelector } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   DaoInfoBarItem,
@@ -37,9 +37,7 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
   const votingModuleItems = useDaoInfoBarItems()
   const { coreAddress } = useDaoInfoContext()
 
-  const treasuryUsdcValue = useRecoilValue(
-    addressTVLSelector({ address: coreAddress })
-  )
+  const treasuryUsdcValue = useRecoilValue(daoTvlSelector(coreAddress))
 
   const items: DaoInfoBarItem[] = useMemo(
     () => [

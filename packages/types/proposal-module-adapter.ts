@@ -74,14 +74,17 @@ export interface IProposalModuleAdapter {
 
 export type ProposalModuleAdapter<DaoCreationConfig extends FieldValues = any> =
   {
-    id: string
-    matcher: (contractName: string) => boolean
+    contractName: string
 
     loadCommon: (
       options: IProposalModuleAdapterCommonOptions
     ) => IProposalModuleAdapterCommon
 
     load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter
+
+    queries: {
+      proposalCount: Record<string, unknown>
+    }
 
     daoCreation: {
       defaultConfig: DaoCreationConfig
@@ -115,7 +118,7 @@ export interface IProposalModuleAdapterOptions
 }
 
 export interface IProposalModuleContext {
-  id: string
+  contractName: string
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
   common: IProposalModuleAdapterCommon

@@ -9,29 +9,12 @@ import {
   Governance,
   ParentDaoArrow,
 } from '@dao-dao/icons'
+import { DaoCardInfo } from '@dao-dao/tstypes/dao'
 import { formatDate } from '@dao-dao/utils'
 
 import { IconButton, IconButtonLink } from '../IconButton'
 import { Tooltip } from '../Tooltip'
 import { DaoImage } from './DaoImage'
-
-export interface DaoCardInfo {
-  coreAddress: string
-  name: string
-  description: string
-  imageUrl: string
-  established: Date
-  href: string
-
-  tokenBalance: number
-  tokenSymbol: string
-  proposalCount: number
-
-  parentDao?: {
-    href: string
-    imageUrl: string
-  }
-}
 
 export interface DaoCardProps extends DaoCardInfo {
   pinned: boolean
@@ -43,6 +26,7 @@ export interface DaoCardProps extends DaoCardInfo {
 }
 
 export const DaoCard = ({
+  coreAddress,
   name,
   description,
   imageUrl,
@@ -115,9 +99,16 @@ export const DaoCard = ({
         </div>
 
         <div className="flex flex-col items-center">
-          <DaoImage imageUrl={imageUrl} parentDao={parentDao} size="sm" />
+          <DaoImage
+            coreAddress={coreAddress}
+            imageUrl={imageUrl}
+            parentDao={parentDao}
+            size="sm"
+          />
           <p className="mt-2 primary-text">{name}</p>
-          <p className="mt-1 caption-text">{formatDate(established)}</p>
+          {established && (
+            <p className="mt-1 caption-text">{formatDate(established)}</p>
+          )}
         </div>
 
         <div className="self-stretch">

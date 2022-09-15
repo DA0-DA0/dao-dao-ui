@@ -19,6 +19,26 @@ import {
 import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
+export interface DaoInfo {
+  coreAddress: string
+  name: string
+  description: string
+  imageUrl?: string
+  established?: Date
+  href: string
+
+  parentDao?: DaoInfo
+}
+
+export interface DaoCardInfo extends Omit<DaoInfo, 'parentDao'> {
+  // Only need a few properties.
+  parentDao?: Pick<DaoInfo, 'coreAddress' | 'imageUrl' | 'href'>
+
+  tokenBalance: number
+  tokenSymbol: string
+  proposalCount: number
+}
+
 export interface ProposalModule {
   contractName: string
   address: string

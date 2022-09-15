@@ -14,7 +14,7 @@ import {
   Cw20TokenListResponse,
   Cw721TokenListResponse,
   DumpStateResponse,
-  CwCoreClient as ExecuteClient,
+  CwCoreV0_1_0Client as ExecuteClient,
   GetItemResponse,
   InfoResponse,
   ListItemsResponse,

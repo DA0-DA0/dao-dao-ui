@@ -1,13 +1,16 @@
 import clsx from 'clsx'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { LoadingData } from '@dao-dao/tstypes'
+import { DaoCardInfo } from '@dao-dao/tstypes/dao'
 
 import {
   DaoCard,
-  DaoCardInfo,
   DropdownOption,
   FeaturedDaos,
   GridCardContainer,
+  Loader,
   PageHeader,
   useAppLayoutContext,
 } from '../components'
@@ -15,7 +18,7 @@ import { SortFn, useDropdownSorter } from '../hooks'
 
 export interface HomeConnectedProps {
   featuredDaos: DaoCardInfo[]
-  pinnedDaos: DaoCardInfo[]
+  pinnedDaos: LoadingData<DaoCardInfo[]>
   rightSidebarContent: ReactNode
 }
 
@@ -31,9 +34,9 @@ export const HomeConnected = ({
   const { t } = useTranslation()
   const { RightSidebarContent } = useAppLayoutContext()
 
-  const sortOptions = useMemo(() => getSortOptions(pinnedDaos), [pinnedDaos])
+  const sortOptions = getSortOptions(pinnedDaos.loading ? [] : pinnedDaos.data)
   const { sortedData: sortedPinnedDaos, Dropdown } = useDropdownSorter(
-    pinnedDaos,
+    pinnedDaos.loading ? [] : pinnedDaos.data,
     sortOptions[0].value
   )
 
@@ -95,17 +98,24 @@ export const HomeConnected = ({
           </div>
         </div>
 
-        <GridCardContainer className={clsx('mt-1', maxWidth)}>
-          {sortedPinnedDaos.map((props) => (
-            <DaoCard
-              key={props.coreAddress}
-              isMember={false}
-              onPin={() => {}}
-              pinned
-              {...props}
-            />
-          ))}
-        </GridCardContainer>
+        {pinnedDaos.loading ? (
+          <Loader />
+        ) : pinnedDaos.data.length === 0 ? (
+          // TODO: Add graphic here.
+          <p className="text-text-error">placeholder for graphic</p>
+        ) : (
+          <GridCardContainer className={clsx('mt-1', maxWidth)}>
+            {sortedPinnedDaos.map((props) => (
+              <DaoCard
+                key={props.coreAddress}
+                isMember={false}
+                onPin={() => {}}
+                pinned
+                {...props}
+              />
+            ))}
+          </GridCardContainer>
+        )}
       </div>
     </>
   )
@@ -131,10 +141,16 @@ const getSortOptions = (
   },
   {
     label: 'Newest',
-    value: (a, b) => b.established.getTime() - a.established.getTime(),
+    value: (a, b) =>
+      // Put empty ones last.
+      (b.established?.getTime() ?? -Infinity) -
+      (a.established?.getTime() ?? -Infinity),
   },
   {
     label: 'Oldest',
-    value: (a, b) => a.established.getTime() - b.established.getTime(),
+    value: (a, b) =>
+      // Put empty ones last.
+      (a.established?.getTime() ?? Infinity) -
+      (b.established?.getTime() ?? Infinity),
   },
 ]

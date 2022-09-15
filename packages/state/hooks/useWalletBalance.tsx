@@ -11,9 +11,19 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import { nativeBalanceSelector, refreshWalletBalancesIdAtom } from '../recoil'
+import {
+  nativeBalanceSelector,
+  nativeDelegatedBalanceSelector,
+  refreshWalletBalancesIdAtom,
+} from '../recoil'
 
-export const useWalletBalance = () => {
+export interface UseWalletBalanceReturn {
+  walletBalance: number | undefined
+  walletStakedBalance: number | undefined
+  refreshBalances: () => void
+}
+
+export const useWalletBalance = (): UseWalletBalanceReturn => {
   const { address } = useWallet()
 
   // Fetch wallet balance.
@@ -31,6 +41,22 @@ export const useWalletBalance = () => {
         )
       : undefined
 
+  // Fetch staked wallet balance.
+  const {
+    state: walletStakedNativeBalanceState,
+    contents: walletStakedNativeBalanceContents,
+  } = useRecoilValueLoadable(
+    address ? nativeDelegatedBalanceSelector(address) : constSelector(undefined)
+  )
+  const walletStakedBalance =
+    walletStakedNativeBalanceState === 'hasValue' &&
+    walletStakedNativeBalanceContents
+      ? convertMicroDenomToDenomWithDecimals(
+          walletStakedNativeBalanceContents.amount,
+          NATIVE_DECIMALS
+        )
+      : undefined
+
   const setRefreshWalletBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(address ?? '')
   )
@@ -39,5 +65,5 @@ export const useWalletBalance = () => {
     [setRefreshWalletBalancesId]
   )
 
-  return { walletBalance, refreshBalances }
+  return { walletBalance, walletStakedBalance, refreshBalances }
 }

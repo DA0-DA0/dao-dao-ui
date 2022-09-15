@@ -1,6 +1,7 @@
 import { TFunction } from 'next-i18next'
+import { Loadable } from 'recoil'
 
-import { DurationUnits, DurationWithUnits } from '@dao-dao/tstypes'
+import { DurationUnits, DurationWithUnits, LoadingData } from '@dao-dao/tstypes'
 import { Expiration } from '@dao-dao/types/contracts/cw3-dao'
 
 export function convertMicroDenomToDenomWithDecimals(
@@ -96,3 +97,20 @@ export const convertDurationWithUnitsToHumanReadableString = (
   `${value} ${t(`unit.${units}`, {
     count: value,
   }).toLocaleLowerCase()}`
+
+// Convert Recoil loadable into our generic data loader type.
+export const loadableToLoadingData = <T>(
+  loadable: Loadable<T>,
+  defaultValue: T,
+  onError?: (error: any) => void
+): LoadingData<T> => {
+  if (loadable.state === 'hasError') {
+    onError?.(loadable.contents)
+  }
+
+  return loadable.state === 'loading'
+    ? { loading: true }
+    : loadable.state === 'hasValue'
+    ? { loading: false, data: loadable.contents }
+    : { loading: false, data: defaultValue }
+}

@@ -8,7 +8,7 @@ import {
 
 import { refreshTokenUsdcPriceIdAtom } from '../atoms/refresh'
 import { cosmWasmClientSelector, nativeBalanceSelector } from './chain'
-import { cw20BalancesInfoSelector } from './clients/cw-core/0.1.0'
+import { CwCoreV0_1_0Selectors } from './clients'
 import { poolsListSelector } from './pools'
 
 export const tokenUsdcPriceSelector = selectorFamily<
@@ -100,13 +100,15 @@ export const tokenUsdcPriceSelector = selectorFamily<
     },
 })
 
-export const addressTVLSelector = selectorFamily<number, { address: string }>({
-  key: 'addressTVL',
+export const daoTvlSelector = selectorFamily<number, string>({
+  key: 'daoTvl',
   get:
-    ({ address }) =>
+    (coreAddress) =>
     async ({ get }) => {
-      const nativeBalances = get(nativeBalanceSelector(address))
-      const cw20Balances = get(cw20BalancesInfoSelector(address))
+      const nativeBalances = get(nativeBalanceSelector(coreAddress))
+      const cw20Balances = get(
+        CwCoreV0_1_0Selectors.cw20BalancesInfoSelector(coreAddress)
+      )
 
       let balances = cw20Balances
         ? cw20Balances.map(({ amount, denom }) => ({ amount, denom }))

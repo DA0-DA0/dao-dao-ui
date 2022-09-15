@@ -182,7 +182,7 @@ export const getVoteV1Selector = selectorFamily<
   VoteResponse,
   QueryClientParams & { params: Parameters<QueryClient['getVoteV1']> }
 >({
-  key: 'cwProposalSingleGetVote',
+  key: 'cwProposalSingleGetVoteV1',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -203,7 +203,7 @@ export const getVoteV2Selector = selectorFamily<
   VoteResponse,
   QueryClientParams & { params: Parameters<QueryClient['getVoteV2']> }
 >({
-  key: 'cwProposalSingleGetVote',
+  key: 'cwProposalSingleGetVoteV2',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {

@@ -27,6 +27,10 @@ export const makeProps = (): DaoCardProps => ({
   onPin: () => {},
 
   parentDao: {
+    coreAddress: 'parentDaoCoreAddress',
+    name: 'Parent DAO',
+    description: 'I am a Parent DAO',
+    established: new Date(),
     href: '#',
     imageUrl: '/placeholders/2.svg',
   },

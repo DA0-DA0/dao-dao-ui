@@ -84,6 +84,8 @@ export const STAKECW20_CODE_ID = parseInt(
   10
 )
 // Contract Names
+export const CWCORE_CONTRACT_NAME = process.env
+  .NEXT_PUBLIC_CWCORE_CONTRACT_NAME as string
 export const CW4VOTING_CONTRACT_NAME = process.env
   .NEXT_PUBLIC_CW4VOTING_CONTRACT_NAME as string
 export const CW20STAKEDBALANCEVOTING_CONTRACT_NAME = process.env

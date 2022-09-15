@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 
 import { ArrowOutward, Layers, Payments } from '@dao-dao/icons'
+import { getFallbackImage } from '@dao-dao/utils'
 
 import { ButtonLink } from '../Button'
 import { IconButton } from '../IconButton'
@@ -9,7 +10,8 @@ import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileHomeCardProps {
   walletName: string
-  profileImgUrl: string
+  walletAddress: string
+  profileImgUrl: string | undefined | null
   established: Date
   tokenSymbol: string
   unstakedBalance: number
@@ -21,6 +23,7 @@ export interface ProfileHomeCardProps {
 
 export const ProfileHomeCard = ({
   walletName,
+  walletAddress,
   profileImgUrl,
   established,
   tokenSymbol,
@@ -37,7 +40,7 @@ export const ProfileHomeCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0"
       established={established}
-      imgUrl={profileImgUrl}
+      imgUrl={profileImgUrl || getFallbackImage(walletAddress)}
       underHeaderComponent={
         <div className="grid grid-cols-[1fr_1px_1fr] gap-2 justify-items-center items-center self-stretch mt-3">
           <div className="flex flex-col items-stretch text-center">

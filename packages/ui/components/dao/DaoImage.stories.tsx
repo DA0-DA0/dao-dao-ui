@@ -22,6 +22,7 @@ SmallWithParent.args = {
   size: 'sm',
   imageUrl: '/placeholders/1.svg',
   parentDao: {
+    coreAddress: 'parent',
     href: '#',
     imageUrl: '/placeholders/2.svg',
   },
@@ -38,6 +39,7 @@ LargeWithParent.args = {
   size: 'lg',
   imageUrl: '/placeholders/1.svg',
   parentDao: {
+    coreAddress: 'parent',
     href: '#',
     imageUrl: '/placeholders/2.svg',
   },

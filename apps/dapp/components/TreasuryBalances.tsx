@@ -8,7 +8,7 @@ import { useDaoInfoContext } from '@dao-dao/common'
 import {
   Cw20BaseSelectors,
   CwCoreV0_1_0Selectors,
-  addressTVLSelector,
+  daoTvlSelector,
   nativeBalancesSelector,
 } from '@dao-dao/state'
 import { TreasuryBalances as StatelessTreasuryBalances } from '@dao-dao/ui'
@@ -76,7 +76,7 @@ export const TreasuryBalances = () => {
     [nativeBalances]
   )
 
-  const usdcValue = useRecoilValue(addressTVLSelector({ address: coreAddress }))
+  const usdcValue = useRecoilValue(daoTvlSelector(coreAddress))
 
   return (
     <StatelessTreasuryBalances

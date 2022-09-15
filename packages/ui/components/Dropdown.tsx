@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ArrowDropdown } from '@dao-dao/icons'
@@ -38,22 +38,16 @@ export const Dropdown = <T extends unknown>({
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
-  const selectedOptions = useMemo(
-    () =>
-      selected && Array.isArray(selected)
-        ? options.filter(({ value }) => selected.includes(value))
-        : options.filter(({ value }) => selected === value),
-    [selected, options]
-  )
+
+  const selectedOptions =
+    selected && Array.isArray(selected)
+      ? options.filter(({ value }) => selected.includes(value))
+      : options.filter(({ value }) => selected === value)
 
   // Set width of dropdown to this so it stays constant.
-  const longestLabelLength = useMemo(
-    () =>
-      Math.max(
-        placeholder?.length ?? 0,
-        ...options.map(({ label }) => label.length)
-      ),
-    [options, placeholder?.length]
+  const longestLabelLength = Math.max(
+    placeholder?.length ?? 0,
+    ...options.map(({ label }) => label.length)
   )
 
   // Listen for click not in dropdown bounds, and close if so. Adds listener

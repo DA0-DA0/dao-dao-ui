@@ -20,11 +20,8 @@ export const getAdapters = (): readonly ProposalModuleAdapter[] => [
   CwProposalSingleAdapter,
 ]
 
-export const getAdapterById = (id: string) =>
-  getAdapters().find((adapter) => adapter.id === id)
-
 export const matchAdapter = (contractName: string) =>
-  getAdapters().find(({ matcher }) => matcher(contractName))
+  getAdapters().find((adapter) => adapter.contractName === contractName)
 
 export const matchAndLoadCommon = (
   proposalModule: ProposalModule,
@@ -37,7 +34,7 @@ export const matchAndLoadCommon = (
       `Failed to find proposal module adapter matching contract "${
         proposalModule.contractName
       }". Available adapters: ${getAdapters()
-        .map(({ id }) => id)
+        .map(({ contractName }) => contractName)
         .join(', ')}`
     )
   }
@@ -91,7 +88,7 @@ export const matchAndLoadAdapter = (
       `Failed to find proposal module adapter matching contract "${
         proposalModule.contractName
       }". Available adapters: ${getAdapters()
-        .map(({ id }) => id)
+        .map(({ contractName }) => contractName)
         .join(', ')}`
     )
   }
@@ -104,10 +101,13 @@ export const matchAndLoadAdapter = (
   }
 
   return {
-    id: adapter.id,
+    contractName: adapter.contractName,
     options: adapterOptions,
     adapter: adapter.load(adapterOptions),
-    common: matchAndLoadCommon(proposalModule, initialOptions),
+    common: adapter.loadCommon({
+      ...initialOptions,
+      proposalModule,
+    }),
   }
 }
 
