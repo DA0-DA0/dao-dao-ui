@@ -90,6 +90,10 @@ export const StakeComponent: TemplateComponent = ({
     denom: string,
     amount: string
   ): string | boolean => {
+    // If we are redelegating, don't validate the undelegated treasury amount.
+    if (stakeType === 'redelegate') {
+      return true
+    }
     const native = nativeBalances.find((coin) => coin.denom == denom)
     if (native) {
       const humanReadableAmount = convertMicroDenomToDenomWithDecimals(
