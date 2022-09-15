@@ -1,5 +1,5 @@
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
-import { useCallback, useState } from 'react'
+import { ReactNode, useCallback, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -30,6 +30,7 @@ import {
   Logo,
   PageHeader,
   Tooltip,
+  useAppLayoutContext,
 } from '../components'
 
 export interface WalletForm {
@@ -55,6 +56,7 @@ export interface WalletProps {
   execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
   walletAddress: string
   loading: boolean
+  rightSidebarContent: ReactNode
 }
 
 enum SubmitValue {
@@ -70,8 +72,10 @@ export const Wallet = ({
   execute,
   walletAddress,
   loading,
+  rightSidebarContent,
 }: WalletProps) => {
   const { t } = useTranslation()
+  const { RightSidebarContent } = useAppLayoutContext()
 
   const {
     control,
@@ -119,12 +123,15 @@ export const Wallet = ({
   )
 
   return (
-    <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl">
-      <PageHeader title={t('title.wallet')} />
+    <>
+      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
 
-      <FormProvider {...formMethods}>
-        <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
-          {/* <div className="bg-background-tertiary rounded-lg">
+      <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl">
+        <PageHeader title={t('title.wallet')} />
+
+        <FormProvider {...formMethods}>
+          <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
+            {/* <div className="bg-background-tertiary rounded-lg">
             <div className="flex flex-row gap-6 justify-between items-center py-4 px-6 border-b border-border-secondary">
               <p className="text-text-body primary-text">
                 {t('form.proposalsName')}
@@ -164,117 +171,120 @@ export const Wallet = ({
             </div>
           </div> */}
 
-          <p className="my-6 text-text-body title-text">
-            {t('title.actions', { count: proposalActionData.length })}
-          </p>
+            <p className="my-6 text-text-body title-text">
+              {t('title.actions', { count: proposalActionData.length })}
+            </p>
 
-          {proposalActionData.length > 0 && (
-            <div className="flex flex-col gap-1 mb-4">
-              {proposalActionData.map((actionData, index) => {
-                const Component =
-                  actionsWithData[actionData.key]?.action?.Component
-                if (!Component) {
-                  throw new Error(
-                    `Error detecting action type "${actionData.key}".`
+            {proposalActionData.length > 0 && (
+              <div className="flex flex-col gap-1 mb-4">
+                {proposalActionData.map((actionData, index) => {
+                  const Component =
+                    actionsWithData[actionData.key]?.action?.Component
+                  if (!Component) {
+                    throw new Error(
+                      `Error detecting action type "${actionData.key}".`
+                    )
+                  }
+
+                  return (
+                    <SuspenseLoader
+                      key={index}
+                      fallback={<ActionCardLoader Loader={Loader} />}
+                    >
+                      <Component
+                        Loader={Loader}
+                        Logo={Logo}
+                        allActionsWithData={proposalActionData}
+                        coreAddress={walletAddress}
+                        data={actionData.data}
+                        errors={errors.actionData?.[index]?.data || {}}
+                        fieldNamePrefix={`actionData.${index}.data.`}
+                        index={index}
+                        isCreating
+                        onRemove={() => remove(index)}
+                      />
+                    </SuspenseLoader>
                   )
-                }
+                })}
+              </div>
+            )}
 
-                return (
-                  <SuspenseLoader
-                    key={index}
-                    fallback={<ActionCardLoader Loader={Loader} />}
-                  >
-                    <Component
-                      Loader={Loader}
-                      Logo={Logo}
-                      allActionsWithData={proposalActionData}
-                      coreAddress={walletAddress}
-                      data={actionData.data}
-                      errors={errors.actionData?.[index]?.data || {}}
-                      fieldNamePrefix={`actionData.${index}.data.`}
-                      index={index}
-                      isCreating
-                      onRemove={() => remove(index)}
-                    />
-                  </SuspenseLoader>
-                )
-              })}
+            <div className="mb-6">
+              <ActionSelector
+                actions={actions}
+                onSelectAction={({ key }) => {
+                  append({
+                    key,
+                    data: actionsWithData[key]?.defaults ?? {},
+                  })
+                }}
+              />
             </div>
-          )}
 
-          <div className="mb-6">
-            <ActionSelector
-              actions={actions}
-              onSelectAction={({ key }) => {
-                append({
-                  key,
-                  data: actionsWithData[key]?.defaults ?? {},
-                })
-              }}
-            />
-          </div>
+            <div className="flex flex-row gap-6 justify-between items-center py-6 border-y border-border-secondary">
+              <p className="text-text-body title-text">
+                {t('info.reviewYourTransaction')}
+              </p>
 
-          <div className="flex flex-row gap-6 justify-between items-center py-6 border-y border-border-secondary">
-            <p className="text-text-body title-text">
-              {t('info.reviewYourTransaction')}
-            </p>
-
-            <div className="flex flex-row gap-2 justify-end items-center">
-              <Button
-                disabled={loading}
-                type="submit"
-                value={SubmitValue.Preview}
-                variant="secondary"
-              >
-                {showPreview ? (
-                  <>
-                    {t('button.hidePreview')}
-                    <EyeOffIcon className="w-5 h-5" />
-                  </>
-                ) : (
-                  <>
-                    {t('button.preview')}
-                    <EyeIcon className="w-5 h-5" />
-                  </>
-                )}
-              </Button>
-
-              <Tooltip
-                title={
-                  connected ? undefined : t('error.connectWalletToContinue')
-                }
-              >
+              <div className="flex flex-row gap-2 justify-end items-center">
                 <Button
-                  disabled={!connected}
-                  loading={loading}
+                  disabled={loading}
                   type="submit"
-                  value={SubmitValue.Submit}
+                  value={SubmitValue.Preview}
+                  variant="secondary"
                 >
-                  {t('button.execute') + ' '}
-                  <Airplane className="w-4 h-4" />
+                  {showPreview ? (
+                    <>
+                      {t('button.hidePreview')}
+                      <EyeOffIcon className="w-5 h-5" />
+                    </>
+                  ) : (
+                    <>
+                      {t('button.preview')}
+                      <EyeIcon className="w-5 h-5" />
+                    </>
+                  )}
                 </Button>
-              </Tooltip>
+
+                <Tooltip
+                  title={
+                    connected ? undefined : t('error.connectWalletToContinue')
+                  }
+                >
+                  <Button
+                    disabled={!connected}
+                    loading={loading}
+                    type="submit"
+                    value={SubmitValue.Submit}
+                  >
+                    {t('button.execute') + ' '}
+                    <Airplane className="w-4 h-4" />
+                  </Button>
+                </Tooltip>
+              </div>
             </div>
-          </div>
 
-          {showSubmitErrorNote && (
-            <p className="mt-2 text-right text-text-error secondary-text">
-              {t('error.createProposalSubmitInvalid')}
-            </p>
-          )}
+            {showSubmitErrorNote && (
+              <p className="mt-2 text-right text-text-error secondary-text">
+                {t('error.createProposalSubmitInvalid')}
+              </p>
+            )}
 
-          {showPreview && (
-            <CosmosMessageDisplay
-              value={decodedMessagesString(
-                proposalActionData
-                  .map(({ key, data }) => actionsWithData[key]?.transform(data))
-                  // Filter out undefined messages.
-                  .filter(Boolean) as CosmosMsgFor_Empty[]
-              )}
-            />
-          )}
-        </form>
-      </FormProvider>
-    </div>
+            {showPreview && (
+              <CosmosMessageDisplay
+                value={decodedMessagesString(
+                  proposalActionData
+                    .map(({ key, data }) =>
+                      actionsWithData[key]?.transform(data)
+                    )
+                    // Filter out undefined messages.
+                    .filter(Boolean) as CosmosMsgFor_Empty[]
+                )}
+              />
+            )}
+          </form>
+        </FormProvider>
+      </div>
+    </>
   )
 }

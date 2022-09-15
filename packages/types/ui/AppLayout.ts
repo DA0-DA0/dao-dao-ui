@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ComponentType, ReactNode } from 'react'
 
 import { NavigationProps } from './Navigation'
 import { RightSidebarProps } from './RightSidebar'
@@ -12,11 +12,12 @@ export interface IAppLayoutContext {
     pageIndex: number
     setPageIndex: (pageIndex: number) => void
   }
+  RightSidebarContent: ComponentType<{ children: ReactNode }>
 }
 
 export interface AppLayoutProps {
   navigationProps: NavigationProps
   children: ReactNode
-  rightSidebarProps: RightSidebarProps
-  context: IAppLayoutContext
+  rightSidebarProps: Omit<RightSidebarProps, 'setContentRef'>
+  context: Omit<IAppLayoutContext, 'RightSidebarContent'>
 }

@@ -21,6 +21,7 @@ import {
   MarkdownPreview,
   PageHeader,
   ProposalIdDisplay,
+  useAppLayoutContext,
 } from '../components'
 
 export interface ProposalProps {
@@ -44,6 +45,7 @@ export interface ProposalProps {
   actionList: ReactNode
   proposalModuleAdapterOptions: IProposalModuleAdapterOptions
   onDuplicate: () => void
+  rightSidebarContent: ReactNode
 }
 
 export const Proposal = ({
@@ -66,8 +68,10 @@ export const Proposal = ({
     Logo,
   },
   onDuplicate,
+  rightSidebarContent,
 }: ProposalProps) => {
   const { t } = useTranslation()
+  const { RightSidebarContent } = useAppLayoutContext()
 
   const [showRaw, setShowRaw] = useState(false)
 
@@ -122,65 +126,69 @@ export const Proposal = ({
   ]
 
   return (
-    <div className="flex flex-col gap-10 items-stretch px-6 mx-auto max-w-5xl">
-      <PageHeader
-        breadcrumbs={{
-          crumbs: [
-            { href: '/home', label: 'Home' },
-            { href: `/dao/${dao.address}`, label: dao.name },
-          ],
-          current: `${t('title.proposal')} ${proposalId}`,
-        }}
-      />
+    <>
+      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
 
-      <div className="grid grid-cols-1 gap-[3.5rem] md:grid-cols-[3fr,7fr]">
-        <ProposalStatusAndInfo info={info} status={voteStatus} />
+      <div className="flex flex-col gap-10 items-stretch px-6 mx-auto max-w-5xl">
+        <PageHeader
+          breadcrumbs={{
+            crumbs: [
+              { href: '/home', label: 'Home' },
+              { href: `/dao/${dao.address}`, label: dao.name },
+            ],
+            current: `${t('title.proposal')} ${proposalId}`,
+          }}
+        />
 
-        <div>
-          <p className="mb-11 hero-text">{title}</p>
+        <div className="grid grid-cols-1 gap-[3.5rem] md:grid-cols-[3fr,7fr]">
+          <ProposalStatusAndInfo info={info} status={voteStatus} />
 
-          <p className="mb-4 font-mono caption-text">
-            {`@${creator.name} – ${formatDate(created)}`}
-          </p>
+          <div>
+            <p className="mb-11 hero-text">{title}</p>
 
-          <MarkdownPreview markdown={description} />
+            <p className="mb-4 font-mono caption-text">
+              {`@${creator.name} – ${formatDate(created)}`}
+            </p>
 
-          {!!decodedMessages?.length && (
-            <div className="my-9 space-y-3">
-              {actionList}
+            <MarkdownPreview markdown={description} />
 
-              <div className="flex flex-row gap-7 items-center">
-                <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
-                  <AnalyticsOutlined className="text-icon-secondary" />
-                  <p className="secondary-text">
-                    {showRaw
-                      ? t('button.hideRawData')
-                      : t('button.showRawData')}
-                  </p>
-                </Button>
+            {!!decodedMessages?.length && (
+              <div className="my-9 space-y-3">
+                {actionList}
 
-                <Button onClick={onDuplicate} variant="ghost">
-                  <CopyAllOutlined className="text-icon-secondary" />
-                  <p className="secondary-text">{t('button.duplicate')}</p>
-                </Button>
+                <div className="flex flex-row gap-7 items-center">
+                  <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
+                    <AnalyticsOutlined className="text-icon-secondary" />
+                    <p className="secondary-text">
+                      {showRaw
+                        ? t('button.hideRawData')
+                        : t('button.showRawData')}
+                    </p>
+                  </Button>
+
+                  <Button onClick={onDuplicate} variant="ghost">
+                    <CopyAllOutlined className="text-icon-secondary" />
+                    <p className="secondary-text">{t('button.duplicate')}</p>
+                  </Button>
+                </div>
+
+                {showRaw && (
+                  <CosmosMessageDisplay
+                    value={JSON.stringify(decodedMessages, undefined, 2)}
+                  />
+                )}
               </div>
+            )}
 
-              {showRaw && (
-                <CosmosMessageDisplay
-                  value={JSON.stringify(decodedMessages, undefined, 2)}
-                />
-              )}
-            </div>
-          )}
+            <ProposalStatusAndInfo info={info} inline status={voteStatus} />
 
-          <ProposalStatusAndInfo info={info} inline status={voteStatus} />
+            {voteTally}
 
-          {voteTally}
-
-          <div className="mt-10">{votesCast}</div>
+            <div className="mt-10">{votesCast}</div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

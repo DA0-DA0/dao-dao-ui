@@ -31,6 +31,7 @@ import {
   BreadcrumbsProps,
   Button,
   CreateDaoPages,
+  DaoCreateSidebarCard,
   DaoHeader,
   GradientHero,
   ImageSelector,
@@ -77,6 +78,11 @@ export const CreateDaoForm = ({
   const { t } = useTranslation()
   const router = useRouter()
   const { setPinned } = usePinnedDaos()
+
+  const {
+    daoCreation: { pageIndex, setPageIndex },
+    RightSidebarContent,
+  } = useAppLayoutContext()
 
   const [_newDaoAtom, setNewDaoAtom] = useRecoilState(newDaoAtom)
   const form = useForm<NewDao>({
@@ -131,7 +137,6 @@ export const CreateDaoForm = ({
   }, [imageUrl, setAccentColor])
 
   //! Page state
-  const { pageIndex, setPageIndex } = useAppLayoutContext().daoCreation
   // Initialize on mount.
   // TODO: Check if this method of initializing page index causes problems when
   // creating a DAO more than once without refreshing the page. Might need to
@@ -424,79 +429,87 @@ export const CreateDaoForm = ({
   const Page = CreateDaoPages[pageIndex]
 
   return (
-    // No container padding because we want the gradient to expand. Apply px-6
-    // to children instead.
-    <form
-      className="flex flex-col items-stretch mx-auto max-w-6xl"
-      onSubmit={formOnSubmit}
-    >
-      <GradientHero childContainerClassName="px-6">
-        <PageHeader
-          breadcrumbs={{
-            crumbs: [{ href: '/home', label: 'Home' }, ...(extraCrumbs ?? [])],
-            current: name.trim() || t('title.newDao'),
-          }}
-        />
+    <>
+      <RightSidebarContent>
+        <DaoCreateSidebarCard />
+      </RightSidebarContent>
 
-        {/* Show image selector or DAO header depending on page. */}
-        {pageIndex === 0 ? (
-          <div className="flex flex-col items-center py-10">
-            <ImageSelector
-              error={form.formState.errors.imageUrl}
-              fieldName="imageUrl"
-              register={form.register}
-              validation={[validateUrl]}
-              watch={form.watch}
-            />
-
-            <p className="mt-6 text-text-tertiary primary-text">
-              {t('form.addAnImage')}
-            </p>
-          </div>
-        ) : (
-          <DaoHeader
-            description={description}
-            established={t('info.today')}
-            imageUrl={imageUrl}
-            name={name}
+      {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
+      <form
+        className="flex flex-col items-stretch mx-auto max-w-6xl"
+        onSubmit={formOnSubmit}
+      >
+        <GradientHero childContainerClassName="px-6">
+          <PageHeader
+            breadcrumbs={{
+              crumbs: [
+                { href: '/home', label: 'Home' },
+                ...(extraCrumbs ?? []),
+              ],
+              current: name.trim() || t('title.newDao'),
+            }}
           />
-        )}
-      </GradientHero>
 
-      <div className="mx-6">
-        {/* Divider line shown after first page. */}
-        {pageIndex > 0 && (
-          <div className="mb-7 w-full h-[1px] bg-border-base"></div>
-        )}
+          {/* Show image selector or DAO header depending on page. */}
+          {pageIndex === 0 ? (
+            <div className="flex flex-col items-center py-10">
+              <ImageSelector
+                error={form.formState.errors.imageUrl}
+                fieldName="imageUrl"
+                register={form.register}
+                validation={[validateUrl]}
+                watch={form.watch}
+              />
 
-        <div className="mb-14">
-          <Page {...createDaoContext} />
-        </div>
-
-        <div
-          className="flex flex-row items-center py-7 border-y border-border-secondary"
-          // justify-end doesn't work in tailwind for some reason
-          style={{
-            justifyContent: showBack ? 'space-between' : 'flex-end',
-          }}
-        >
-          {showBack && (
-            <Button
-              disabled={creating}
-              type="submit"
-              value={t(CreateDaoSubmitLabel.Back)}
-              variant="secondary"
-            >
-              <ArrowBack className="!w-4 !h-4 text-icon-primary" />
-              <p>{t(CreateDaoSubmitLabel.Back)}</p>
-            </Button>
+              <p className="mt-6 text-text-tertiary primary-text">
+                {t('form.addAnImage')}
+              </p>
+            </div>
+          ) : (
+            <DaoHeader
+              description={description}
+              established={t('info.today')}
+              imageUrl={imageUrl}
+              name={name}
+            />
           )}
-          {/* SubmitButton (input tags) can't display the loading spinner. */}
-          <Button loading={creating} type="submit" value={submitValue}>
-            {submitValue}
-          </Button>
+        </GradientHero>
+
+        <div className="mx-6">
+          {/* Divider line shown after first page. */}
+          {pageIndex > 0 && (
+            <div className="mb-7 w-full h-[1px] bg-border-base"></div>
+          )}
+
+          <div className="mb-14">
+            <Page {...createDaoContext} />
+          </div>
+
+          <div
+            className="flex flex-row items-center py-7 border-y border-border-secondary"
+            // justify-end doesn't work in tailwind for some reason
+            style={{
+              justifyContent: showBack ? 'space-between' : 'flex-end',
+            }}
+          >
+            {showBack && (
+              <Button
+                disabled={creating}
+                type="submit"
+                value={t(CreateDaoSubmitLabel.Back)}
+                variant="secondary"
+              >
+                <ArrowBack className="!w-4 !h-4 text-icon-primary" />
+                <p>{t(CreateDaoSubmitLabel.Back)}</p>
+              </Button>
+            )}
+            {/* SubmitButton (input tags) can't display the loading spinner. */}
+            <Button loading={creating} type="submit" value={submitValue}>
+              {submitValue}
+            </Button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </>
   )
 }

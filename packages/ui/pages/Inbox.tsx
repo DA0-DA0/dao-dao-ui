@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -9,6 +9,7 @@ import {
   ProposalContainer,
   ProposalLine,
   ProposalLineProps,
+  useAppLayoutContext,
 } from '../components'
 import { SortFn, useDropdownSorter } from '../hooks'
 
@@ -25,10 +26,15 @@ export interface DaoWithProposals {
 
 export interface InboxProps {
   daosWithProposals: DaoWithProposals[]
+  rightSidebarContent: ReactNode
 }
 
-export const Inbox = ({ daosWithProposals }: InboxProps) => {
+export const Inbox = ({
+  daosWithProposals,
+  rightSidebarContent,
+}: InboxProps) => {
   const { t } = useTranslation()
+  const { RightSidebarContent } = useAppLayoutContext()
 
   const {
     sortedData: _sortedDaosWithProposals,
@@ -68,41 +74,45 @@ export const Inbox = ({ daosWithProposals }: InboxProps) => {
   )
 
   return (
-    <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl h-full">
-      <PageHeader title={t('title.inbox')} />
+    <>
+      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
 
-      <div className="flex flex-row justify-between items-center mt-10">
-        <p className="title-text">
-          {t('title.numOpenProposals', { count: numOpenProposals })}
-        </p>
+      <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl h-full">
+        <PageHeader title={t('title.inbox')} />
 
-        <div className="flex flex-row gap-6 justify-between items-center">
-          <p className="text-text-body primary-text">{t('title.sortBy')}</p>
+        <div className="flex flex-row justify-between items-center mt-10">
+          <p className="title-text">
+            {t('title.numOpenProposals', { count: numOpenProposals })}
+          </p>
 
-          <Dropdown options={sortOptions} />
+          <div className="flex flex-row gap-6 justify-between items-center">
+            <p className="text-text-body primary-text">{t('title.sortBy')}</p>
+
+            <Dropdown options={sortOptions} />
+          </div>
+        </div>
+
+        <div className="overflow-y-auto grow pb-2 mt-6 space-y-4 styled-scrollbar">
+          {sortedDaosWithProposals.map(({ dao, proposals }, index) => (
+            <DaoDropdown
+              key={index}
+              dao={{
+                ...dao,
+                content: (
+                  <ProposalContainer className="px-2 mt-4">
+                    {proposals.map(({ props }, index) => (
+                      <ProposalLine key={index} {...props} />
+                    ))}
+                  </ProposalContainer>
+                ),
+              }}
+              defaultExpanded
+              showSubdaos={false}
+            />
+          ))}
         </div>
       </div>
-
-      <div className="overflow-y-auto grow pb-2 mt-6 space-y-4 styled-scrollbar">
-        {sortedDaosWithProposals.map(({ dao, proposals }, index) => (
-          <DaoDropdown
-            key={index}
-            dao={{
-              ...dao,
-              content: (
-                <ProposalContainer className="px-2 mt-4">
-                  {proposals.map(({ props }, index) => (
-                    <ProposalLine key={index} {...props} />
-                  ))}
-                </ProposalContainer>
-              ),
-            }}
-            defaultExpanded
-            showSubdaos={false}
-          />
-        ))}
-      </div>
-    </div>
+    </>
   )
 }
 

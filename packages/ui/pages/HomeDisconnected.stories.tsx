@@ -16,7 +16,6 @@ export default {
       },
       rightSidebarProps: {
         wallet: <SidebarWallet connected={false} onConnect={() => {}} />,
-        children: <ProfileHomeDisconnectedCard />,
       },
     }),
   ],
@@ -29,6 +28,7 @@ const Template: ComponentStory<typeof HomeDisconnected> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   featuredDaos: FeaturedDaos.args?.featuredDaos,
+  rightSidebarContent: <ProfileHomeDisconnectedCard />,
 }
 Default.parameters = {
   design: {

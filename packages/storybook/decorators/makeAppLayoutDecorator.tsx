@@ -7,11 +7,10 @@ import {
 import { NavigationProps } from '@dao-dao/ui/components/layout/Navigation'
 import { RightSidebarProps } from '@dao-dao/ui/components/layout/RightSidebar'
 
-export const makeAppLayoutDecorator: (props: {
+export const makeAppLayoutDecorator: (props?: {
   navigationProps?: Partial<NavigationProps>
-  rightSidebarProps: Pick<RightSidebarProps, 'children'> &
-    Partial<Omit<RightSidebarProps, 'children'>>
-}) => DecoratorFn = ({ navigationProps, rightSidebarProps }) =>
+  rightSidebarProps?: Partial<Omit<RightSidebarProps, 'setContentRef'>>
+}) => DecoratorFn = ({ navigationProps, rightSidebarProps } = {}) =>
   function AppLayoutDecorator(Story) {
     return (
       <AppLayoutStory

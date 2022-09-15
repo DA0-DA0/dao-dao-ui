@@ -10,17 +10,7 @@ import { HomeConnected } from './HomeConnected'
 export default {
   title: 'DAO DAO / packages / ui / pages / HomeConnected',
   component: HomeConnected,
-  decorators: [
-    makeAppLayoutDecorator({
-      rightSidebarProps: {
-        children: (
-          <ProfileHomeCard
-            {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
-          />
-        ),
-      },
-    }),
-  ],
+  decorators: [makeAppLayoutDecorator()],
 } as ComponentMeta<typeof HomeConnected>
 
 const Template: ComponentStory<typeof HomeConnected> = (args) => (
@@ -31,6 +21,9 @@ export const Default = Template.bind({})
 Default.args = {
   featuredDaos: FeaturedDaosStory.args!.featuredDaos,
   pinnedDaos: FeaturedDaosStory.args!.featuredDaos,
+  rightSidebarContent: (
+    <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
+  ),
 }
 Default.parameters = {
   design: {

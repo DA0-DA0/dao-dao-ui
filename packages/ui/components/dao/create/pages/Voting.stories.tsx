@@ -4,7 +4,6 @@ import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLayoutDecorator'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
 
-import { DaoCreateSidebarCard } from '../DaoCreateSidebarCard'
 import { CreateDaoVoting } from './Voting'
 
 export default {
@@ -18,11 +17,7 @@ export default {
       imageUrl:
         'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
     }),
-    makeAppLayoutDecorator({
-      rightSidebarProps: {
-        children: <DaoCreateSidebarCard />,
-      },
-    }),
+    makeAppLayoutDecorator(),
     WalletProviderDecorator,
   ],
 } as ComponentMeta<typeof CreateDaoVoting>

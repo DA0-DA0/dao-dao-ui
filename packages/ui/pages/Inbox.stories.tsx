@@ -11,17 +11,7 @@ import { Inbox } from './Inbox'
 export default {
   title: 'DAO DAO / packages / ui / pages / Inbox',
   component: Inbox,
-  decorators: [
-    makeAppLayoutDecorator({
-      rightSidebarProps: {
-        children: (
-          <ProfileHomeCard
-            {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
-          />
-        ),
-      },
-    }),
-  ],
+  decorators: [makeAppLayoutDecorator()],
 } as ComponentMeta<typeof Inbox>
 
 const Template: ComponentStory<typeof Inbox> = (args) => <Inbox {...args} />
@@ -45,6 +35,9 @@ Default.args = {
       }
     }),
   })),
+  rightSidebarContent: (
+    <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
+  ),
 }
 Default.parameters = {
   design: {

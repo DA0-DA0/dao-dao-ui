@@ -1,8 +1,12 @@
 import { KeyboardDoubleArrowRight } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 
-import { RightSidebarProps } from '@dao-dao/tstypes/ui/RightSidebar'
+import {
+  RightSidebarContentProps,
+  RightSidebarProps,
+} from '@dao-dao/tstypes/ui/RightSidebar'
 
 import { IconButton } from '../IconButton'
 import { ProfileImage } from '../profile'
@@ -12,7 +16,7 @@ export * from '@dao-dao/tstypes/ui/RightSidebar'
 
 export const RightSidebar = ({
   wallet,
-  children,
+  setContentRef,
   profileImageUrl,
 }: RightSidebarProps) => {
   const [responsiveVisible, setResponsiveVisible] = useState(false)
@@ -53,7 +57,7 @@ export const RightSidebar = ({
         {wallet}
 
         <div className="overflow-y-scroll py-1 pr-4 mt-1 -mr-4 styled-scrollbar">
-          <div>{children}</div>
+          <div ref={setContentRef}></div>
 
           <div className="mt-7">
             <Footer />
@@ -63,3 +67,49 @@ export const RightSidebar = ({
     </>
   )
 }
+
+// This is a function that generates a function component, used in pages to
+// render content in the right sidebar (which is located in a separate React
+// tree due to the nature of `AppLayout` managing the layout of the navigation
+// bar, main page content, and right sidebar). This function uses a reference to
+// the container `div` (seen above with property `ref={setContentRef}`) and
+// provides a function component that will funnel its `children` into a React
+// portal (https://reactjs.org/docs/portals.html). More specifically,
+// `AppLayout` passes a ref callback to the `RightSidebar` component defined
+// above. In this callback, `AppLayout` calls this maker function and stores the
+// result (the `RightSidebarContent` function component) in a `useState` hook.
+// The `useState` hook is initialized to the result of this maker function with
+// an argument of `null`, which safely renders nothing before the ref callback
+// executes (letting the pages use consistent syntax and removing the need to
+// listen for any state/event updates). This state value is passed into the
+// `AppLayoutContext.Provider` so that descendants of the context provider (such
+// as page components) can retrieve the `RightSidebarContent` component via
+// `useAppLayoutContext` in `AppLayoutContext.tsx` and specify what renders in
+// the sidebar. When the `useState` hook is updated with the result of this
+// maker function called with a valid container element reference (which occurs
+// when the container `div` above renders), the `RightSidebarContent` value
+// located in the `useState` hook in `AppLayout` and retrieved via the context
+// hook in pages is updated with a component that is able to create the portal,
+// and the page re-renders, displaying the content. The API for a page is as
+// simple as:
+//
+// export const Page = () => { const { RightSidebarContent } =
+//   useAppLayoutContext()
+
+//   return (
+//     <>
+//       <RightSidebarContent>
+//         <ProfileCard title="@Modern-Edamame" />
+//       </RightSidebarContent>
+
+//       {/* ... Page content here ... */}
+//     </>
+//   )
+// }
+//
+// See https://malcolmkee.com/blog/portal-to-subtree/ for an example using
+// portals to render components across subtrees with similar syntax.
+export const makeRightSidebarContent = (container: HTMLDivElement | null) =>
+  function RightSidebarContent({ children }: RightSidebarContentProps) {
+    return container ? createPortal(children, container) : null
+  }

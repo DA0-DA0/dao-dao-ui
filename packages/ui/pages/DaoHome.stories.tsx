@@ -31,15 +31,7 @@ export default {
   decorators: [
     // Direct ancestor of rendered story.
     DaoPageWrapperDecorator,
-    makeAppLayoutDecorator({
-      rightSidebarProps: {
-        children: (
-          <ProfileMemberCard
-            {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
-          />
-        ),
-      },
-    }),
+    makeAppLayoutDecorator(),
   ],
 } as ComponentMeta<typeof DaoHome>
 
@@ -72,6 +64,11 @@ Default.args = {
   ),
   membersTab: (
     <MembersTabStory {...(MembersTabStory.args as MembersTabProps)} />
+  ),
+  rightSidebarContent: (
+    <ProfileMemberCard
+      {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
+    />
   ),
 }
 Default.parameters = {

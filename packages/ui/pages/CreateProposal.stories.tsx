@@ -26,15 +26,7 @@ export default {
   decorators: [
     // Direct ancestor of rendered story.
     DaoPageWrapperDecorator,
-    makeAppLayoutDecorator({
-      rightSidebarProps: {
-        children: (
-          <ProfileNewProposalCard
-            {...(ProfileNewProposalCardStory.args as ProfileNewProposalCardProps)}
-          />
-        ),
-      },
-    }),
+    makeAppLayoutDecorator(),
   ],
 } as ComponentMeta<typeof CreateProposal>
 
@@ -66,6 +58,11 @@ const Template: ComponentStory<typeof CreateProposal> = (args) => {
 export const Default = Template.bind({})
 Default.args = {
   isMember: true,
+  rightSidebarContent: (
+    <ProfileNewProposalCard
+      {...(ProfileNewProposalCardStory.args as ProfileNewProposalCardProps)}
+    />
+  ),
 }
 Default.parameters = {
   design: {

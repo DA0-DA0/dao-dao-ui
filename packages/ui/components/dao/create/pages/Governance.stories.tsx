@@ -7,7 +7,6 @@ import {
 } from '@dao-dao/storybook/decorators'
 import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
 
-import { DaoCreateSidebarCard } from '../DaoCreateSidebarCard'
 import { CreateDaoGovernance } from './Governance'
 
 export default {
@@ -26,11 +25,7 @@ export default {
         data: Cw20StakedBalanceVotingAdapter.daoCreation!.defaultConfig,
       },
     }),
-    makeAppLayoutDecorator({
-      rightSidebarProps: {
-        children: <DaoCreateSidebarCard />,
-      },
-    }),
+    makeAppLayoutDecorator(),
     WalletProviderDecorator,
   ],
 } as ComponentMeta<typeof CreateDaoGovernance>

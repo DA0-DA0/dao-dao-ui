@@ -7,18 +7,12 @@ import {
   makeCreateDaoFormDecorator,
 } from '@dao-dao/storybook/decorators'
 
-import { DaoCreateSidebarCard } from '../components/dao/create/DaoCreateSidebarCard'
-
 export default {
   title: 'DAO DAO / packages / ui / pages / CreateDao',
   decorators: [
     // Direct ancestor of rendered story.
     makeCreateDaoFormDecorator(0),
-    makeAppLayoutDecorator({
-      rightSidebarProps: {
-        children: <DaoCreateSidebarCard />,
-      },
-    }),
+    makeAppLayoutDecorator(),
     WalletProviderDecorator,
   ],
 } as ComponentMeta<ComponentType>

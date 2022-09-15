@@ -4,13 +4,14 @@ import { useTranslation } from 'react-i18next'
 import { DaoInfo } from '@dao-dao/common'
 import { ProposalModule } from '@dao-dao/utils'
 
-import { Dropdown, PageHeader } from '../components'
+import { Dropdown, PageHeader, useAppLayoutContext } from '../components'
 export interface CreateProposalProps {
   daoInfo: DaoInfo
   isMember: boolean
   proposalModule: ProposalModule
   setProposalModule: (proposalModule: ProposalModule) => void
   newProposal: ReactNode
+  rightSidebarContent: ReactNode
 }
 
 export const CreateProposal = ({
@@ -19,8 +20,10 @@ export const CreateProposal = ({
   proposalModule,
   setProposalModule,
   newProposal,
+  rightSidebarContent,
 }: CreateProposalProps) => {
   const { t } = useTranslation()
+  const { RightSidebarContent } = useAppLayoutContext()
 
   const proposalModuleItems = useMemo(
     () =>
@@ -36,32 +39,36 @@ export const CreateProposal = ({
   )
 
   return (
-    <div className="flex flex-col gap-6 items-stretch px-6 mx-auto max-w-5xl">
-      <PageHeader
-        breadcrumbs={{
-          crumbs: [
-            { href: '/home', label: 'Home' },
-            { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
-          ],
-          current: t('title.newProposal'),
-        }}
-      >
-        <Dropdown
-          onSelect={setProposalModule}
-          options={proposalModuleItems}
-          selected={proposalModule}
-        />
-      </PageHeader>
+    <>
+      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
 
-      {!isMember && (
-        <p className="text-text-error caption-text">
-          {t('error.mustBeMemberToCreateProposal')}
-        </p>
-      )}
+      <div className="flex flex-col gap-6 items-stretch px-6 mx-auto max-w-5xl">
+        <PageHeader
+          breadcrumbs={{
+            crumbs: [
+              { href: '/home', label: 'Home' },
+              { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
+            ],
+            current: t('title.newProposal'),
+          }}
+        >
+          <Dropdown
+            onSelect={setProposalModule}
+            options={proposalModuleItems}
+            selected={proposalModule}
+          />
+        </PageHeader>
 
-      <p className="text-text-body title-text">{t('title.newProposal')}</p>
+        {!isMember && (
+          <p className="text-text-error caption-text">
+            {t('error.mustBeMemberToCreateProposal')}
+          </p>
+        )}
 
-      {newProposal}
-    </div>
+        <p className="text-text-body title-text">{t('title.newProposal')}</p>
+
+        {newProposal}
+      </div>
+    </>
   )
 }

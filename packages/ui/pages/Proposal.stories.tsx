@@ -27,15 +27,7 @@ export default {
     // Direct ancestor of rendered story.
     makeProposalModuleAdapterDecorator(proposalId),
     DaoPageWrapperDecorator,
-    makeAppLayoutDecorator({
-      rightSidebarProps: {
-        children: (
-          <ProfileVoteCard
-            {...(ProfileVoteCardStory.args as ProfileVoteCardProps<string>)}
-          />
-        ),
-      },
-    }),
+    makeAppLayoutDecorator(),
   ],
 } as ComponentMeta<typeof Proposal>
 
@@ -80,6 +72,11 @@ Default.args = {
     <p className="p-4 text-center rounded-md border border-border-primary">
       Action list placeholder
     </p>
+  ),
+  rightSidebarContent: (
+    <ProfileVoteCard
+      {...(ProfileVoteCardStory.args as ProfileVoteCardProps<string>)}
+    />
   ),
 }
 Default.parameters = {

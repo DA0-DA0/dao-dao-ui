@@ -20,18 +20,7 @@ import { Wallet, WalletForm } from './Wallet'
 export default {
   title: 'DAO DAO / packages / ui / pages / Wallet',
   component: Wallet,
-  decorators: [
-    WalletProviderDecorator,
-    makeAppLayoutDecorator({
-      rightSidebarProps: {
-        children: (
-          <ProfileHomeCard
-            {...(ProfileHomeCardStory.args as ProfileHomeCardProps)}
-          />
-        ),
-      },
-    }),
-  ],
+  decorators: [WalletProviderDecorator, makeAppLayoutDecorator()],
 } as ComponentMeta<typeof Wallet>
 
 const Template: ComponentStory<typeof Wallet> = (args) => {
@@ -85,6 +74,9 @@ Default.args = {
   },
   walletAddress: 'juno16mrjtqffn3awme2eczhlpwzj7mnatkeluvhj6c',
   loading: false,
+  rightSidebarContent: (
+    <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
+  ),
 }
 Default.parameters = {
   design: {

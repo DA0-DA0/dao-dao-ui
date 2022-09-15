@@ -10,6 +10,7 @@ import {
   PageHeader,
   PinToggle,
   SegmentedControls,
+  useAppLayoutContext,
 } from '../components'
 
 export interface DaoHomeProps {
@@ -22,6 +23,7 @@ export interface DaoHomeProps {
   treasuryAndNftsTab: ReactNode
   subDaosTab: ReactNode
   membersTab: ReactNode
+  rightSidebarContent: ReactNode
 }
 
 export const DaoHome = ({
@@ -33,61 +35,66 @@ export const DaoHome = ({
   treasuryAndNftsTab,
   subDaosTab,
   membersTab,
+  rightSidebarContent,
 }: DaoHomeProps) => {
+  const { RightSidebarContent } = useAppLayoutContext()
   const [selectedTab, setSelectedTab] = useState(Tab.Proposals)
 
   return (
-    // No container padding because we want the gradient to expand. Apply px-6
-    // to children instead.
-    <div className="flex flex-col items-stretch mx-auto max-w-6xl">
-      <GradientHero childContainerClassName="px-6">
-        <PageHeader
-          breadcrumbs={{
-            crumbs: [{ href: '/home', label: 'Home' }],
-            current: daoInfo.name,
-          }}
-        >
-          <PinToggle onPin={onPin} pinned={pinned} />
-        </PageHeader>
+    <>
+      <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
 
-        <DaoHeader
-          description={daoInfo.description}
-          established={daoInfo.created && formatDate(daoInfo.created)}
-          imageUrl={daoInfo.imageUrl}
-          name={daoInfo.name}
-        />
-
-        {daoInfoBar}
-      </GradientHero>
-
-      <div className="px-6">
-        <div className="flex flex-col items-center py-6 border-y border-t-border-base border-b-border-secondary">
-          <SegmentedControls
-            className="shrink w-full max-w-2xl"
-            onSelect={setSelectedTab}
-            selected={selectedTab}
-            tabs={tabs}
-          />
-        </div>
-
-        <div className="py-6">
-          <div className={clsx(selectedTab !== Tab.Proposals && 'hidden')}>
-            {proposalsTab}
-          </div>
-          <div
-            className={clsx(selectedTab !== Tab.TreasuryAndNfts && 'hidden')}
+      {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
+      <div className="flex flex-col items-stretch mx-auto max-w-6xl">
+        <GradientHero childContainerClassName="px-6">
+          <PageHeader
+            breadcrumbs={{
+              crumbs: [{ href: '/home', label: 'Home' }],
+              current: daoInfo.name,
+            }}
           >
-            {treasuryAndNftsTab}
+            <PinToggle onPin={onPin} pinned={pinned} />
+          </PageHeader>
+
+          <DaoHeader
+            description={daoInfo.description}
+            established={daoInfo.created && formatDate(daoInfo.created)}
+            imageUrl={daoInfo.imageUrl}
+            name={daoInfo.name}
+          />
+
+          {daoInfoBar}
+        </GradientHero>
+
+        <div className="px-6">
+          <div className="flex flex-col items-center py-6 border-y border-t-border-base border-b-border-secondary">
+            <SegmentedControls
+              className="shrink w-full max-w-2xl"
+              onSelect={setSelectedTab}
+              selected={selectedTab}
+              tabs={tabs}
+            />
           </div>
-          <div className={clsx(selectedTab !== Tab.SubDaos && 'hidden')}>
-            {subDaosTab}
-          </div>
-          <div className={clsx(selectedTab !== Tab.Members && 'hidden')}>
-            {membersTab}
+
+          <div className="py-6">
+            <div className={clsx(selectedTab !== Tab.Proposals && 'hidden')}>
+              {proposalsTab}
+            </div>
+            <div
+              className={clsx(selectedTab !== Tab.TreasuryAndNfts && 'hidden')}
+            >
+              {treasuryAndNftsTab}
+            </div>
+            <div className={clsx(selectedTab !== Tab.SubDaos && 'hidden')}>
+              {subDaosTab}
+            </div>
+            <div className={clsx(selectedTab !== Tab.Members && 'hidden')}>
+              {membersTab}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

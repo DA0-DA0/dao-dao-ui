@@ -6,8 +6,7 @@ import { NavigationProps } from './Navigation'
 import { Default as NavigatonStory } from './Navigation.stories'
 import { PageHeader, PageHeaderProps } from './PageHeader'
 import { Default as PageHeaderStory } from './PageHeader.stories'
-import { RightSidebarProps } from './RightSidebar'
-import { Default as RightSidebarStory } from './RightSidebar.stories'
+import { DefaultArgs as RightSidebarStoryArgs } from './RightSidebar.stories'
 
 export default {
   title: 'DAO DAO / packages / ui / components / layout / AppLayout',
@@ -26,7 +25,7 @@ export const DefaultArgs: AppLayoutProps = {
       </div>
     </div>
   ),
-  rightSidebarProps: RightSidebarStory.args as RightSidebarProps,
+  rightSidebarProps: RightSidebarStoryArgs,
   context: {
     responsiveNavigation: {
       enabled: true,

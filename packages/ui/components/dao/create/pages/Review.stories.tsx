@@ -6,7 +6,6 @@ import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLay
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
 import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
 
-import { DaoCreateSidebarCard } from '../DaoCreateSidebarCard'
 import { CreateDaoReview } from './Review'
 
 export default {
@@ -44,11 +43,7 @@ export default {
         },
       ],
     }),
-    makeAppLayoutDecorator({
-      rightSidebarProps: {
-        children: <DaoCreateSidebarCard />,
-      },
-    }),
+    makeAppLayoutDecorator(),
     WalletProviderDecorator,
   ],
 } as ComponentMeta<typeof CreateDaoReview>

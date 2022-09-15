@@ -20,7 +20,7 @@ export const DefaultArgs: RightSidebarProps = {
       {...(ConnectedSidebarWalletStory.args as SidebarWalletProps)}
     />
   ),
-  children: <p>Right sidebar content</p>,
+  setContentRef: () => {},
   profileImageUrl: '/noah.jpg',
 }
 
