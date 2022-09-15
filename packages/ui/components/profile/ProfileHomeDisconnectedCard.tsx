@@ -1,19 +1,35 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Disconnected, Layers, Payments } from '@dao-dao/icons'
 
+import { ProfileImage } from './ProfileImage'
+
 export const ProfileHomeDisconnectedCard = () => {
   const { t } = useTranslation()
+  const [cyclopsMode, setCyclopsMode] = useState(false)
 
   return (
     <div className="relative rounded-lg border border-border-primary">
       <div className="p-6">
         <div className="flex flex-col justify-center items-center pt-4">
-          <div className="flex justify-center items-center w-16 h-16 bg-component-widget rounded-2xl border border-border-primary">
-            <Disconnected className="w-5 h-5 text-icon-interactive-disabled" />
-          </div>
+          {cyclopsMode ? (
+            <ProfileImage
+              imageUrl="/odysseus.jpg"
+              onClick={() => setCyclopsMode(false)}
+              size="lg"
+            />
+          ) : (
+            <div
+              className="flex justify-center items-center w-16 h-16 bg-component-widget rounded-2xl border border-border-primary"
+              onClick={() => setCyclopsMode(true)}
+            >
+              <Disconnected className="w-5 h-5 text-icon-interactive-disabled" />
+            </div>
+          )}
           <div className="mt-6 text-text-body title-text">
-            {t('title.nobody')}
+            {/* eslint-disable-next-line i18next/no-literal-string */}
+            {cyclopsMode ? 'Odysseus' : t('title.nobody')}
           </div>
           <div className="mt-2 mb-5 font-mono caption-text">
             {t('info.connectYourWallet')}
