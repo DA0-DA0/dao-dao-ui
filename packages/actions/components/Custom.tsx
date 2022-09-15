@@ -1,12 +1,11 @@
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
-import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { Trans } from '@dao-dao/common'
 import { ActionComponent } from '@dao-dao/tstypes/actions'
-import { CodeMirrorInput } from '@dao-dao/ui'
+import { CodeMirrorInput, CustomEmoji } from '@dao-dao/ui'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
 import { ActionCard } from './ActionCard'
@@ -24,7 +23,11 @@ export const CustomComponent: ActionComponent = ({
   const { control } = useFormContext()
 
   return (
-    <ActionCard Icon={CustomIcon} onRemove={onRemove} title={t('title.custom')}>
+    <ActionCard
+      Icon={CustomEmoji}
+      onRemove={onRemove}
+      title={t('title.custom')}
+    >
       <CodeMirrorInput
         control={control}
         error={errors?.message}
@@ -78,9 +81,4 @@ export const CustomComponent: ActionComponent = ({
       </div>
     </ActionCard>
   )
-}
-
-export const CustomIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.robot')} symbol="🤖" />
 }

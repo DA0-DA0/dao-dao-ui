@@ -1,4 +1,3 @@
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -9,6 +8,7 @@ import {
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
+  MigrateContractEmoji,
   NumberInput,
 } from '@dao-dao/ui'
 import {
@@ -40,7 +40,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
 
   return (
     <ActionCard
-      Icon={MigrateContractIcon}
+      Icon={MigrateContractEmoji}
       onRemove={onRemove}
       title={t('title.migrateSmartContract')}
     >
@@ -99,9 +99,4 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const MigrateContractIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.whale')} symbol="🐋" />
 }

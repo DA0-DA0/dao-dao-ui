@@ -1,6 +1,5 @@
 import { Coin } from '@cosmjs/stargate'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
-import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -9,6 +8,7 @@ import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   Button,
   CodeMirrorInput,
+  ExecuteEmoji,
   InputErrorMessage,
   InputLabel,
   TextInput,
@@ -48,7 +48,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
 
   return (
     <ActionCard
-      Icon={ExecuteIcon}
+      Icon={ExecuteEmoji}
       onRemove={onRemove}
       title={t('title.executeSmartContract')}
     >
@@ -137,9 +137,4 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       </div>
     </ActionCard>
   )
-}
-
-export const ExecuteIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.swords')} symbol="⚔️" />
 }

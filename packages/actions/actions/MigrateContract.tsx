@@ -10,11 +10,9 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+import { MigrateContractEmoji } from '@dao-dao/ui'
 
-import {
-  MigrateContractIcon,
-  MigrateContractComponent as StatelessMigrateContractComponent,
-} from '../components/MigrateContract'
+import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components/MigrateContract'
 
 interface MigrateData {
   contract: string
@@ -79,7 +77,7 @@ const Component: ActionComponent = (props) => {
 
 export const migrateAction: Action<MigrateData> = {
   key: ActionKey.Migrate,
-  Icon: MigrateContractIcon,
+  Icon: MigrateContractEmoji,
   label: 'Migrate Smart Contract',
   description: 'Migrate a CosmWasm contract to a new code ID.',
   Component,

@@ -10,11 +10,9 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+import { UpdateAdminEmoji } from '@dao-dao/ui'
 
-import {
-  UpdateAdminComponent as StatelessUpdateAdminComponent,
-  UpdateAdminIcon,
-} from '../components/UpdateAdmin'
+import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components/UpdateAdmin'
 
 interface UpdateAdminData {
   contract: string
@@ -75,7 +73,7 @@ const Component: ActionComponent = (props) => {
 
 export const updateAdminAction: Action<UpdateAdminData> = {
   key: ActionKey.UpdateAdmin,
-  Icon: UpdateAdminIcon,
+  Icon: UpdateAdminEmoji,
   label: 'Update Contract Admin',
   description: 'Update the CosmWasm level admin of a smart contract.',
   Component,

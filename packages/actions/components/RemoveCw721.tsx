@@ -1,4 +1,3 @@
-import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +11,7 @@ import {
   FormattedJSONDisplayProps,
   InputErrorMessage,
   InputLabel,
+  RemoveCw721Emoji,
 } from '@dao-dao/ui'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
@@ -46,7 +46,7 @@ export const RemoveCw721Component: ActionComponent<RemoveCw721Options> = ({
 
   return (
     <ActionCard
-      Icon={RemoveCw721Icon}
+      Icon={RemoveCw721Emoji}
       onRemove={onRemove}
       title={t('title.removeCw721FromTreasury')}
     >
@@ -98,9 +98,4 @@ export const RemoveCw721Component: ActionComponent<RemoveCw721Options> = ({
       <FormattedJSONDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
   )
-}
-
-export const RemoveCw721Icon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.x')} symbol="❌" />
 }

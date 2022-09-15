@@ -9,12 +9,12 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+import { UpdateInfoEmoji } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {
   UpdateInfoComponent as Component,
   UpdateInfoData,
-  UpdateInfoIcon,
 } from '../components/UpdateInfo'
 
 const useDefaults: UseDefaults<UpdateInfoData> = (coreAddress: string) => {
@@ -91,7 +91,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateInfoData> = (
 
 export const updateInfoAction: Action<UpdateInfoData> = {
   key: ActionKey.UpdateInfo,
-  Icon: UpdateInfoIcon,
+  Icon: UpdateInfoEmoji,
   label: 'Update Info',
   description: "Update your DAO's name, image, and description.",
   Component,

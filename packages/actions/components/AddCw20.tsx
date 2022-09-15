@@ -1,9 +1,9 @@
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
+  AddCw20Emoji,
   AddressInput,
   FormattedJSONDisplay,
   FormattedJSONDisplayProps,
@@ -34,7 +34,7 @@ export const AddCw20Component: ActionComponent<AddCw20Options> = ({
 
   return (
     <ActionCard
-      Icon={AddCw20Icon}
+      Icon={AddCw20Emoji}
       onRemove={onRemove}
       title={t('title.addCw20ToTreasury')}
     >
@@ -63,9 +63,4 @@ export const AddCw20Component: ActionComponent<AddCw20Options> = ({
       <FormattedJSONDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
   )
-}
-
-export const AddCw20Icon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.token')} symbol="🔘" />
 }

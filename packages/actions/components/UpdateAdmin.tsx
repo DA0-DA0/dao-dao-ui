@@ -1,9 +1,13 @@
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ActionComponent } from '@dao-dao/tstypes/actions'
-import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/ui'
+import {
+  AddressInput,
+  InputErrorMessage,
+  InputLabel,
+  UpdateAdminEmoji,
+} from '@dao-dao/ui'
 import {
   validateAddress,
   validateContractAddress,
@@ -31,7 +35,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
 
   return (
     <ActionCard
-      Icon={UpdateAdminIcon}
+      Icon={UpdateAdminEmoji}
       onRemove={onRemove}
       title={t('title.updateContractAdmin')}
     >
@@ -68,9 +72,4 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const UpdateAdminIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.mushroom')} symbol="🍄" />
 }

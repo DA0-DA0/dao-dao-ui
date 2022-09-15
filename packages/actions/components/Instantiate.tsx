@@ -1,6 +1,5 @@
 import { Coin } from '@cosmjs/stargate'
 import { CheckIcon, XIcon } from '@heroicons/react/outline'
-import Emoji from 'a11y-react-emoji'
 import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +11,7 @@ import {
   CopyToClipboard,
   InputErrorMessage,
   InputLabel,
+  InstantiateEmoji,
   NumberInput,
   TextInput,
 } from '@dao-dao/ui'
@@ -59,7 +59,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
   return (
     <ActionCard
-      Icon={InstantiateIcon}
+      Icon={InstantiateEmoji}
       onRemove={onRemove}
       title={t('title.instantiateSmartContract')}
     >
@@ -186,9 +186,4 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       </div>
     </ActionCard>
   )
-}
-
-export const InstantiateIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.baby')} symbol="👶" />
 }

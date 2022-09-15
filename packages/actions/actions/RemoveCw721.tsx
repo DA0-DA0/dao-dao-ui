@@ -18,12 +18,10 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+import { RemoveCw721Emoji } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import {
-  RemoveCw721Icon,
-  RemoveCw721Component as StatelessRemoveCw721Component,
-} from '../components/RemoveCw721'
+import { RemoveCw721Component as StatelessRemoveCw721Component } from '../components/RemoveCw721'
 
 interface RemoveCw721Data {
   address: string
@@ -167,7 +165,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw721Data> = (
 
 export const removeCw721Action: Action<RemoveCw721Data> = {
   key: ActionKey.RemoveCw721,
-  Icon: RemoveCw721Icon,
+  Icon: RemoveCw721Emoji,
   label: 'Remove NFT Collection from Treasury',
   description:
     'Stop displaying the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.',

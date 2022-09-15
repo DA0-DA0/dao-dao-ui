@@ -1,5 +1,4 @@
 import { InformationCircleIcon } from '@heroicons/react/outline'
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -13,6 +12,7 @@ import {
   TextAreaInput,
   TextInput,
   Tooltip,
+  UpdateInfoEmoji,
 } from '@dao-dao/ui'
 import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
@@ -33,7 +33,7 @@ export const UpdateInfoComponent: ActionComponent<
 
   return (
     <ActionCard
-      Icon={UpdateInfoIcon}
+      Icon={UpdateInfoEmoji}
       onRemove={onRemove}
       title={t('title.updateInfo')}
     >
@@ -134,9 +134,4 @@ export const UpdateInfoComponent: ActionComponent<
       </div>
     </ActionCard>
   )
-}
-
-export const UpdateInfoIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.info')} symbol="ℹ️" />
 }

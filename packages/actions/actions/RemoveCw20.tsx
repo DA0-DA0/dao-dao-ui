@@ -18,12 +18,10 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+import { RemoveCw20Emoji } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import {
-  RemoveCw20Icon,
-  RemoveCw20Component as StatelessRemoveCw20Component,
-} from '../components/RemoveCw20'
+import { RemoveCw20Component as StatelessRemoveCw20Component } from '../components/RemoveCw20'
 
 interface RemoveCw20Data {
   address: string
@@ -166,7 +164,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw20Data> = (
 
 export const removeCw20Action: Action<RemoveCw20Data> = {
   key: ActionKey.RemoveCw20,
-  Icon: RemoveCw20Icon,
+  Icon: RemoveCw20Emoji,
   label: 'Remove Token Balance from Treasury',
   description:
     "Stop displaying the DAO's balance of a CW20 token in the treasury view.",

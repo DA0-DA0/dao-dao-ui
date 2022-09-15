@@ -17,6 +17,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+import { InstantiateEmoji } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
@@ -24,10 +25,7 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import {
-  InstantiateIcon,
-  InstantiateComponent as StatelessInstantiateComponent,
-} from '../components/Instantiate'
+import { InstantiateComponent as StatelessInstantiateComponent } from '../components/Instantiate'
 
 interface InstantiateData {
   admin: string
@@ -196,7 +194,7 @@ const Component: ActionComponent = (props) => {
 
 export const instantiateAction: Action<InstantiateData> = {
   key: ActionKey.Instantiate,
-  Icon: InstantiateIcon,
+  Icon: InstantiateEmoji,
   label: 'Instantiate Smart Contract',
   description: 'Instantiate a smart contract.',
   Component,
