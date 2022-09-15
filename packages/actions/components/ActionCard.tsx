@@ -1,9 +1,7 @@
 import { XIcon } from '@heroicons/react/solid'
 import { ComponentType, ReactNode } from 'react'
 
-import { LoaderProps } from '@dao-dao/ui'
-
-import { ActionComponentProps } from '..'
+import { ActionComponentProps } from '@dao-dao/tstypes/actions'
 
 interface ActionCardProps extends Pick<ActionComponentProps, 'onRemove'> {
   children: ReactNode | ReactNode[]
@@ -34,15 +32,5 @@ export const ActionCard = ({
     </div>
 
     {children}
-  </div>
-)
-
-export interface ActionCardLoaderProps {
-  Loader: ComponentType<LoaderProps>
-}
-
-export const ActionCardLoader = ({ Loader }: ActionCardLoaderProps) => (
-  <div className="p-3 my-2 bg-primary rounded-lg">
-    <Loader />
   </div>
 )

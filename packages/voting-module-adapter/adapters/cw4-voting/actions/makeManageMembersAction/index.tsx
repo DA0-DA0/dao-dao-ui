@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useCw4VotingModule } from '@dao-dao/state'
 import {
   Action,
   ActionComponent,
@@ -8,8 +9,7 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/actions'
-import { useCw4VotingModule } from '@dao-dao/state'
+} from '@dao-dao/tstypes/actions'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {

@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { Trans } from '@dao-dao/common'
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   AddressInput,
   CodeMirrorInput,
@@ -17,7 +18,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'
 
 export interface MigrateOptions {

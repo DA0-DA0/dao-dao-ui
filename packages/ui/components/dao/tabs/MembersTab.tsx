@@ -1,12 +1,12 @@
 import { PlusIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'react-i18next'
 
-import { ActionKey } from '@dao-dao/actions'
 import { DaoInfo } from '@dao-dao/common'
 import {
   CwProposalSingleAdapter,
   matchAdapter as matchProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
+import { ActionKey } from '@dao-dao/tstypes'
 
 import { ButtonLink } from '../../Button'
 import { GridCardContainer } from '../../GridCardContainer'

@@ -2,20 +2,20 @@ import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
-import { makeWasmMessage } from '@dao-dao/utils'
-
-import {
-  UpdateInfoComponent as Component,
-  UpdateInfoData,
-  UpdateInfoIcon,
-} from '../components'
 import {
   Action,
   ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import {
+  UpdateInfoComponent as Component,
+  UpdateInfoData,
+  UpdateInfoIcon,
+} from '../components/UpdateInfo'
 
 const useDefaults: UseDefaults<UpdateInfoData> = (coreAddress: string) => {
   const config = useRecoilValue(

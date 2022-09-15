@@ -2,7 +2,8 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionCard, ActionComponent } from '@dao-dao/actions'
+import { ActionCard } from '@dao-dao/actions'
+import { ActionComponent } from '@dao-dao/tstypes'
 import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
 import {
   validateAddress,

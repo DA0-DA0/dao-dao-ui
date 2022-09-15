@@ -4,6 +4,7 @@ import { ComponentProps, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import { InputErrorMessage, NumberInput, SelectInput } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
@@ -14,8 +15,6 @@ import {
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
-
-import { ActionComponent } from '..'
 
 export type NativeCoinSelectorProps = ComponentProps<
   ActionComponent<{ nativeBalances: readonly Coin[] }>

@@ -4,11 +4,11 @@ import Fuse from 'fuse.js'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Action } from '@dao-dao/actions'
+import { Action } from '@dao-dao/tstypes/actions'
 import { usePlatform } from '@dao-dao/utils'
 
-import { Button } from './Button'
-import { FilterableItemPopup, FilterableItemPopupProps } from './popup'
+import { Button } from '../Button'
+import { FilterableItemPopup, FilterableItemPopupProps } from '../popup'
 
 export interface ActionSelectorProps {
   actions: Action[]

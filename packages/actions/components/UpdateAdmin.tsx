@@ -2,6 +2,7 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/ui'
 import {
   validateAddress,
@@ -9,7 +10,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'
 
 export interface UpdateAdminOptions {

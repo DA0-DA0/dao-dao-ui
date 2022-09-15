@@ -1,15 +1,16 @@
 import { Coin } from '@cosmjs/stargate'
-import Emoji from 'a11y-react-emoji'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
 import {
   AddressInput,
   InputErrorMessage,
   NumberInput,
   SelectInput,
+  SpendEmoji,
 } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
@@ -22,7 +23,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 
 interface SpendOptions {
   nativeBalances: readonly Coin[]
@@ -136,7 +137,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   )
 
   return (
-    <ActionCard Icon={SpendIcon} onRemove={onRemove} title={t('title.spend')}>
+    <ActionCard Icon={SpendEmoji} onRemove={onRemove} title={t('title.spend')}>
       <div className="flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 items-center">
           <NumberInput
@@ -211,9 +212,4 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const SpendIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.money')} symbol="💵" />
 }

@@ -5,7 +5,7 @@ import { useActions } from '@dao-dao/actions'
 import { ActionSelector } from './ActionSelector'
 
 export default {
-  title: 'DAO DAO / packages / ui / components / ActionSelector',
+  title: 'DAO DAO / packages / ui / components / actions / ActionSelector',
   component: ActionSelector,
 } as ComponentMeta<typeof ActionSelector>
 

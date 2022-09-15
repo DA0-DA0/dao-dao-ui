@@ -2,6 +2,7 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   AddressInput,
   FormattedJSONDisplay,
@@ -14,7 +15,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils/validation'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 
 interface AddCw721Options {
   additionalAddressError?: string

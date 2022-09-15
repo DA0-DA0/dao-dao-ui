@@ -3,8 +3,9 @@ import Emoji from 'a11y-react-emoji'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionCard, ActionComponent } from '@dao-dao/actions'
+import { ActionCard } from '@dao-dao/actions'
 import { Member } from '@dao-dao/state/clients/cw4-group'
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   AddressInput,
   Button,

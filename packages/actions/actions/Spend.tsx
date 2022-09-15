@@ -8,6 +8,15 @@ import {
   nativeBalancesSelector,
 } from '@dao-dao/state'
 import {
+  Action,
+  ActionComponent,
+  ActionKey,
+  UseDecodedCosmosMsg,
+  UseDefaults,
+  UseTransformToCosmos,
+} from '@dao-dao/tstypes/actions'
+import { SpendEmoji } from '@dao-dao/ui'
+import {
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -16,18 +25,7 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
-import {
-  SpendIcon,
-  SpendComponent as StatelessSpendComponent,
-} from '../components'
-import {
-  Action,
-  ActionComponent,
-  ActionKey,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
-} from '../types'
+import { SpendComponent as StatelessSpendComponent } from '../components/Spend'
 
 // TODO: Convert this into a more generalizable 'context' abstraction.
 type WithIsWallet<T> = (isWallet: boolean) => T
@@ -235,7 +233,7 @@ const makeComponent: WithIsWallet<ActionComponent> = (isWallet) =>
 
 export const makeSpendAction: WithIsWallet<Action<SpendData>> = (isWallet) => ({
   key: ActionKey.Spend,
-  Icon: SpendIcon,
+  Icon: SpendEmoji,
   label: 'Spend',
   description: 'Spend native or cw20 tokens from the treasury.',
   Component: makeComponent(isWallet),

@@ -13,14 +13,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import {
-  Action,
-  ActionCardLoader,
-  ActionKey,
-  UseDefaults,
-  UseTransformToCosmos,
-  useActions,
-} from '@dao-dao/actions'
+import { useActions } from '@dao-dao/actions'
 import { SuspenseLoader } from '@dao-dao/common'
 import { Airplane } from '@dao-dao/icons'
 import {
@@ -33,8 +26,16 @@ import {
   refreshWalletBalancesIdAtom,
   useVotingModule,
 } from '@dao-dao/state'
+import {
+  Action,
+  ActionKey,
+  ProposalModule,
+  UseDefaults,
+  UseTransformToCosmos,
+} from '@dao-dao/tstypes'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import {
+  ActionCardLoader,
   ActionSelector,
   Button,
   CosmosMessageDisplay,
@@ -48,7 +49,6 @@ import {
   Tooltip,
 } from '@dao-dao/ui'
 import {
-  ProposalModule,
   decodedMessagesString,
   expirationExpired,
   processError,

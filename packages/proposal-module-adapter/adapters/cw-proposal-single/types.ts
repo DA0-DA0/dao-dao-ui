@@ -1,6 +1,5 @@
-import { ActionKeyAndData } from '@dao-dao/actions'
 import { CosmosMsg_for_Empty } from '@dao-dao/state/clients/cw-proposal-single'
-import { DurationWithUnits } from '@dao-dao/tstypes'
+import { ActionKeyAndData, DurationWithUnits } from '@dao-dao/tstypes'
 
 export interface NewProposalForm {
   title: string

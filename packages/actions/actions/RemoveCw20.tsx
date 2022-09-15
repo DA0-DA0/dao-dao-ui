@@ -10,12 +10,6 @@ import {
 
 import { Cw20BaseSelectors, CwCoreV0_1_0Selectors } from '@dao-dao/state'
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { makeWasmMessage } from '@dao-dao/utils'
-
-import {
-  RemoveCw20Icon,
-  RemoveCw20Component as StatelessRemoveCw20Component,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -23,7 +17,13 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import {
+  RemoveCw20Icon,
+  RemoveCw20Component as StatelessRemoveCw20Component,
+} from '../components/RemoveCw20'
 
 interface RemoveCw20Data {
   address: string

@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   AddressInput,
   Button,
@@ -14,7 +15,7 @@ import {
 } from '@dao-dao/ui'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 
 interface Token {
   address: string

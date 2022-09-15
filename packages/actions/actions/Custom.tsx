@@ -1,16 +1,16 @@
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
-import { makeWasmMessage } from '@dao-dao/utils'
-
-import { CustomComponent as Component, CustomIcon } from '../components'
 import {
   Action,
   ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import { CustomComponent as Component, CustomIcon } from '../components/Custom'
 
 interface CustomData {
   message: string

@@ -10,6 +10,14 @@ import {
   transactionEventsSelector,
 } from '@dao-dao/state'
 import {
+  Action,
+  ActionComponent,
+  ActionKey,
+  UseDecodedCosmosMsg,
+  UseDefaults,
+  UseTransformToCosmos,
+} from '@dao-dao/tstypes/actions'
+import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -19,15 +27,7 @@ import {
 import {
   InstantiateIcon,
   InstantiateComponent as StatelessInstantiateComponent,
-} from '../components'
-import {
-  Action,
-  ActionComponent,
-  ActionKey,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
-} from '../types'
+} from '../components/Instantiate'
 
 interface InstantiateData {
   admin: string

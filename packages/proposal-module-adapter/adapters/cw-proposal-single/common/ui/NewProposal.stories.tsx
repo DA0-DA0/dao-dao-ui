@@ -2,15 +2,15 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 
+import { useActions } from '@dao-dao/actions'
+import { useDaoInfoContext } from '@dao-dao/common'
+import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import {
   Action,
   ActionKey,
   UseDefaults,
   UseTransformToCosmos,
-  useActions,
-} from '@dao-dao/actions'
-import { useDaoInfoContext } from '@dao-dao/common'
-import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
+} from '@dao-dao/tstypes'
 import { Loader, Logo } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 

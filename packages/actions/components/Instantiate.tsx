@@ -5,6 +5,7 @@ import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   Button,
   CodeMirrorInput,
@@ -23,12 +24,11 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { ActionCard } from './ActionCard'
 import {
-  ActionCard,
-  ActionComponent,
   NativeCoinSelector,
   NativeCoinSelectorProps,
-} from '..'
+} from './NativeCoinSelector'
 
 export interface InstantiateOptions {
   nativeBalances: readonly Coin[]

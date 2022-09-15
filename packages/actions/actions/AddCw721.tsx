@@ -4,12 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw721BaseSelectors } from '@dao-dao/state'
-import { makeWasmMessage } from '@dao-dao/utils'
-
-import {
-  AddCw721Icon,
-  AddCw721Component as StatelessAddCw721Component,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -17,7 +11,13 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import {
+  AddCw721Icon,
+  AddCw721Component as StatelessAddCw721Component,
+} from '../components/AddCw721'
 
 interface AddCw721Data {
   address: string

@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   FormSwitch,
   ImageSelector,
@@ -19,7 +20,7 @@ import {
   validateUrl,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 
 export type UpdateInfoData = ConfigResponse
 

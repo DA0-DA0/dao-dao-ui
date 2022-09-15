@@ -5,6 +5,14 @@ import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
 import {
+  Action,
+  ActionComponent,
+  ActionKey,
+  UseDecodedCosmosMsg,
+  UseDefaults,
+  UseTransformToCosmos,
+} from '@dao-dao/tstypes/actions'
+import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -14,15 +22,7 @@ import {
 import {
   ExecuteIcon,
   ExecuteComponent as StatelessExecuteComponent,
-} from '../components'
-import {
-  Action,
-  ActionComponent,
-  ActionKey,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
-} from '../types'
+} from '../components/Execute'
 
 interface ExecuteData {
   address: string

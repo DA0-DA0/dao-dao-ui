@@ -3,9 +3,8 @@ import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { LoaderProps, LogoProps } from '@dao-dao/ui'
-
-import { ActionAndData, ActionCardLoader } from '..'
+import { ActionAndData } from '@dao-dao/tstypes/actions'
+import { ActionCardLoader, LoaderProps, LogoProps } from '@dao-dao/ui'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {

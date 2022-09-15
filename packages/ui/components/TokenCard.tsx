@@ -4,10 +4,10 @@ import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { SpendIcon, StakeIcon } from '@dao-dao/actions'
 import { EdamameCrown } from '@dao-dao/icons'
 
 import { Button } from './Button'
+import { SpendEmoji, StakeEmoji } from './emoji'
 import { IconButton } from './IconButton'
 import { ButtonPopup, ButtonPopupSection } from './popup'
 import { Tooltip } from './Tooltip'
@@ -98,12 +98,12 @@ export const TokenCard = ({
         label: t('title.newProposalTo'),
         buttons: [
           {
-            Icon: StakeIcon,
+            Icon: StakeEmoji,
             label: t('button.stakeOrUnstake'),
             onClick: onProposeStakeUnstake,
           },
           {
-            Icon: SpendIcon,
+            Icon: SpendEmoji,
             label: t('button.claim'),
             onClick: onProposeClaim,
           },

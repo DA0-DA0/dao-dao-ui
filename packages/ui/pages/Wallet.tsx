@@ -9,20 +9,20 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { SuspenseLoader } from '@dao-dao/common'
+import { Airplane } from '@dao-dao/icons'
 import {
   Action,
-  ActionCardLoader,
   ActionKey,
   ActionKeyAndData,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/actions'
-import { SuspenseLoader } from '@dao-dao/common'
-import { Airplane } from '@dao-dao/icons'
+} from '@dao-dao/tstypes'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
 import { decodedMessagesString } from '@dao-dao/utils'
 
 import {
+  ActionCardLoader,
   ActionSelector,
   Button,
   CosmosMessageDisplay,

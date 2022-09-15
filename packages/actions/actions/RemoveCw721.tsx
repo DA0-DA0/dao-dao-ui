@@ -10,12 +10,6 @@ import {
 
 import { Cw721BaseSelectors, CwCoreV0_1_0Selectors } from '@dao-dao/state'
 import { ContractInfoResponse } from '@dao-dao/state/clients/cw721-base'
-import { makeWasmMessage } from '@dao-dao/utils'
-
-import {
-  RemoveCw721Icon,
-  RemoveCw721Component as StatelessRemoveCw721Component,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -23,7 +17,13 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import {
+  RemoveCw721Icon,
+  RemoveCw721Component as StatelessRemoveCw721Component,
+} from '../components/RemoveCw721'
 
 interface RemoveCw721Data {
   address: string

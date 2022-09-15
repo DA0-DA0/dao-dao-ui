@@ -2,11 +2,6 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
-
-import {
-  MigrateContractIcon,
-  MigrateContractComponent as StatelessMigrateContractComponent,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -14,7 +9,12 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+
+import {
+  MigrateContractIcon,
+  MigrateContractComponent as StatelessMigrateContractComponent,
+} from '../components/MigrateContract'
 
 interface MigrateData {
   contract: string

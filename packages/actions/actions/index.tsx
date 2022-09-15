@@ -1,4 +1,4 @@
-import { Action } from '../types'
+import { Action } from '@dao-dao/tstypes/actions'
 import { addCw20Action } from './AddCw20'
 import { customAction } from './Custom'
 import { executeAction } from './Execute'

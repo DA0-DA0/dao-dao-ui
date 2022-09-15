@@ -1,17 +1,17 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
+import { walletActions } from '@dao-dao/actions'
+import {
+  WalletProviderDecorator,
+  makeAppLayoutDecorator,
+} from '@dao-dao/storybook/decorators'
 import {
   Action,
   ActionKey,
   UseDefaults,
   UseTransformToCosmos,
-  walletActions,
-} from '@dao-dao/actions'
-import {
-  WalletProviderDecorator,
-  makeAppLayoutDecorator,
-} from '@dao-dao/storybook/decorators'
+} from '@dao-dao/tstypes'
 
 import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'

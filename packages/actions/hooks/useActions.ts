@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 
+import { Action } from '@dao-dao/tstypes/actions'
+
 import { daoActions } from '../actions'
-import { Action } from '../types'
 
 export const useActions = (additionalActions?: Action[]): Action[] =>
   useMemo(

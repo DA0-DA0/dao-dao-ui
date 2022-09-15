@@ -1,15 +1,16 @@
 import { Coin } from '@cosmjs/stargate'
 import { InformationCircleIcon } from '@heroicons/react/outline'
-import Emoji from 'a11y-react-emoji'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   AddressInput,
   InputErrorMessage,
   NumberInput,
   SelectInput,
+  StakeEmoji,
 } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
@@ -23,7 +24,7 @@ import {
   validateValidatorAddress,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 
 export const stakeActions: { type: StakeType; name: string }[] = [
   {
@@ -150,7 +151,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   ])
 
   return (
-    <ActionCard Icon={StakeIcon} onRemove={onRemove} title={t('title.stake')}>
+    <ActionCard Icon={StakeEmoji} onRemove={onRemove} title={t('title.stake')}>
       <div className="flex flex-row gap-4 mt-2">
         <SelectInput
           defaultValue={stakeActions[0].type}
@@ -258,9 +259,4 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const StakeIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.box')} symbol="📥" />
 }

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { ActionAndData, ActionKey, ActionsRenderer } from '@dao-dao/actions'
+import { ActionsRenderer } from '@dao-dao/actions'
 import { Trans } from '@dao-dao/common'
 import {
   CwCoreV0_1_0Selectors,
@@ -15,7 +15,7 @@ import {
   useVotingModule,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { ContractVersion } from '@dao-dao/tstypes'
+import { ActionAndData, ActionKey, ContractVersion } from '@dao-dao/tstypes'
 import {
   Button,
   CloseProposal,
