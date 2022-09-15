@@ -1,11 +1,9 @@
-import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 
-import { ArrowOutward, Layers, Payments } from '@dao-dao/icons'
+import { Layers, Payments } from '@dao-dao/icons'
 import { getFallbackImage } from '@dao-dao/utils'
 
 import { ButtonLink } from '../Button'
-import { IconButton } from '../IconButton'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileHomeCardProps {
@@ -34,7 +32,6 @@ export const ProfileHomeCard = ({
   inboxProposalCount,
 }: ProfileHomeCardProps) => {
   const { t } = useTranslation()
-  const router = useRouter()
 
   return (
     <ProfileCardWrapper
@@ -78,19 +75,9 @@ export const ProfileHomeCard = ({
         <div className="flex flex-row justify-between items-center secondary-text">
           <p>{t('title.membership')}</p>
 
-          <div className="flex flex-row gap-1 items-center">
-            <p className="font-mono text-text-primary">
-              {t('info.numDaos', { count: numDaos })}
-            </p>
-
-            <IconButton
-              Icon={ArrowOutward}
-              iconClassName="w-[0.625rem] h-[0.625rem]"
-              onClick={() => router.push('/daos')}
-              size="sm"
-              variant="ghost"
-            />
-          </div>
+          <p className="font-mono text-text-primary">
+            {t('info.numDaos', { count: numDaos })}
+          </p>
         </div>
 
         <div className="flex flex-row justify-between items-center mt-3 secondary-text">

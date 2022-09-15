@@ -28,6 +28,7 @@ import {
 import { AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
+  loadableToLoadingData,
   nativeTokenLabel,
   processError,
   usePlatform,
@@ -130,7 +131,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   }, [setRefreshTokenUsdcPriceId])
 
   //! Pinned DAOs
-  const pinnedDaoDropdownInfos = useRecoilValueLoadable(
+  const pinnedDaoDropdownInfosLoadable = useRecoilValueLoadable(
     pinnedDaosDropdownInfoAtom
   )
 
@@ -139,14 +140,14 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     if (nativeUsdcPriceLoadable.state === 'hasError') {
       console.error(processError(nativeUsdcPriceLoadable.contents))
     }
-    if (pinnedDaoDropdownInfos.state === 'hasError') {
-      console.error(processError(pinnedDaoDropdownInfos.contents))
+    if (pinnedDaoDropdownInfosLoadable.state === 'hasError') {
+      console.error(processError(pinnedDaoDropdownInfosLoadable.contents))
     }
   }, [
     nativeUsdcPriceLoadable.contents,
     nativeUsdcPriceLoadable.state,
-    pinnedDaoDropdownInfos.contents,
-    pinnedDaoDropdownInfos.state,
+    pinnedDaoDropdownInfosLoadable.contents,
+    pinnedDaoDropdownInfosLoadable.state,
   ])
 
   return (
@@ -197,20 +198,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
                       : [],
                 },
           version: '2.0',
-          pinnedDaos:
-            pinnedDaoDropdownInfos.state === 'loading' ||
-            // If on server, start by loading to prevent hyration error.
-            typeof window === 'undefined'
-              ? {
-                  loading: true,
-                }
-              : {
-                  loading: false,
-                  data:
-                    pinnedDaoDropdownInfos.state === 'hasValue'
-                      ? pinnedDaoDropdownInfos.contents
-                      : [],
-                },
+          pinnedDaos: loadableToLoadingData(pinnedDaoDropdownInfosLoadable, []),
           compact,
           setCompact,
         }}

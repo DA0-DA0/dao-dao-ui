@@ -108,7 +108,9 @@ export const loadableToLoadingData = <T>(
     onError?.(loadable.contents)
   }
 
-  return loadable.state === 'loading'
+  return loadable.state === 'loading' ||
+    // If on server, start by loading to prevent hyration error.
+    typeof window === 'undefined'
     ? { loading: true }
     : loadable.state === 'hasValue'
     ? { loading: false, data: loadable.contents }
