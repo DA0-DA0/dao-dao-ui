@@ -42,7 +42,7 @@ export const Modal = ({
   return (
     <div
       className={clsx(
-        'flex fixed top-0 left-0 z-10 justify-center items-center p-4 w-screen h-full backdrop-brightness-50 transition cursor-pointer backdrop-filter',
+        'flex fixed top-0 left-0 z-40 justify-center items-center p-4 w-screen h-full backdrop-brightness-50 transition cursor-pointer backdrop-filter',
         backdropClassName
       )}
       onClick={

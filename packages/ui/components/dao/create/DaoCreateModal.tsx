@@ -42,7 +42,7 @@ export const DaoCreateModal = ({
     >
       {confettiVisible && (
         <Confetti
-          gravity={0.042069}
+          gravity={0.042069 * 3.1337}
           numberOfPieces={1337}
           onConfettiComplete={() => setConfettiVisible(false)}
           recycle={recycleConfetti}
@@ -52,7 +52,7 @@ export const DaoCreateModal = ({
       <DaoCard
         {...daoCardProps}
         className={clsx(
-          'my-10 mx-auto max-w-[18rem] shadow-dp8',
+          'mx-auto mt-4 mb-10 max-w-[18rem] shadow-dp8',
           daoCardClassName
         )}
         onMouseLeave={() => setRecycleConfetti(false)}
@@ -63,7 +63,7 @@ export const DaoCreateModal = ({
       />
 
       <CopyToClipboard
-        className="p-4 font-mono bg-background-secondary hover:bg-btn-secondary-hover rounded-md shadow-dp4 symbol-small-body-text"
+        className="gap-4 p-4 font-mono text-left bg-background-secondary hover:bg-btn-secondary-hover rounded-md shadow-dp4 symbol-small-body-text"
         onCopy={() => {
           setResetConfetti(true)
           setConfettiVisible(false)
