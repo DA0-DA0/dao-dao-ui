@@ -2,6 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { useWallet } from '@noahsaso/cosmodal'
+import { useEffect } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { daoCardInfoLazyDataSelector, usePinnedDaos } from '@dao-dao/state'
@@ -19,6 +20,13 @@ export const DaoCard = (props: DaoCardInfo) => {
       walletAddress,
     })
   )
+
+  //! Loadable errors.
+  useEffect(() => {
+    if (lazyDataLoadable.state === 'hasError') {
+      console.error(lazyDataLoadable.contents)
+    }
+  }, [lazyDataLoadable.contents, lazyDataLoadable.state])
 
   return (
     <StatelessDaoCard

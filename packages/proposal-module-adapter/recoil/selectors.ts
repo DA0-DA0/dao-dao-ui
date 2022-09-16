@@ -35,15 +35,25 @@ export const proposalModuleAdapterProposalCountSelector = selectorFamily<
   get:
     (contractAddress) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
       const adapter = get(proposalModuleAdapterSelector(contractAddress))
       if (!adapter) {
         return
       }
 
-      return await client.queryContractSmart(
-        contractAddress,
-        adapter.queries.proposalCount
-      )
+      const client = get(cosmWasmClientSelector)
+      try {
+        return await client.queryContractSmart(
+          contractAddress,
+          adapter.queries.proposalCount
+        )
+      } catch (err) {
+        // v1 cw-core throws error if no proposals have been made, so return 0
+        // for backwards compatibility.
+        if (err instanceof Error && err.message.includes('u64 not found')) {
+          return 0
+        }
+
+        throw err
+      }
     },
 })

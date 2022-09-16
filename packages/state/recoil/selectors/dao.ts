@@ -101,6 +101,8 @@ export const daoCardInfoSelector = selectorFamily<
       let parentDao: DaoCardInfo['parentDao']
       if (
         admin &&
+        // A DAO without a parent DAO may be its own admin.
+        admin !== coreAddress &&
         get(
           isContractSelector({
             contractAddress: admin,
