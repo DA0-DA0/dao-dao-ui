@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { pinnedDaoCardInfoAtom, usePinnedDaos } from '@dao-dao/state'
+import { pinnedDaoCardInfoSelector } from '@dao-dao/state'
 import { DaoCardInfo } from '@dao-dao/tstypes'
 import { Home, ProfileHomeDisconnectedCard } from '@dao-dao/ui'
 import {
@@ -15,7 +15,7 @@ import {
   loadableToLoadingData,
 } from '@dao-dao/utils'
 
-import { ProfileHomeCard } from '@/components'
+import { DaoCard, ProfileHomeCard } from '@/components'
 import { getFeaturedDaos } from '@/server'
 
 interface HomePageProps {
@@ -23,11 +23,10 @@ interface HomePageProps {
 }
 
 const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => {
-  const { connected, address: walletAddress } = useWallet()
+  const { connected } = useWallet()
 
-  const { isPinned: isDaoPinned, setPinned, setUnpinned } = usePinnedDaos()
   const pinnedDaosLoadable = useRecoilValueLoadable(
-    pinnedDaoCardInfoAtom({ walletAddress, daoUrlPrefix: `/dao/` })
+    pinnedDaoCardInfoSelector({ daoUrlPrefix: `/dao/` })
   )
 
   //! Loadable errors.
@@ -47,11 +46,7 @@ const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => {
         ? {
             connected,
             pinnedDaos: loadableToLoadingData(pinnedDaosLoadable, []),
-            isDaoPinned,
-            onPin: (coreAddress) =>
-              isDaoPinned(coreAddress)
-                ? setUnpinned(coreAddress)
-                : setPinned(coreAddress),
+            DaoCard,
           }
         : {
             connected,

@@ -44,10 +44,15 @@ const makeFeaturedDao = (): DaoCardInfo => ({
     imageUrl: `/placeholders/${((id + 1) % 5) + 1}.svg`,
   },
 
-  isMember: Math.random() < 0.5,
-  tokenBalance: 120,
-  tokenSymbol: 'JUNO',
-  proposalCount: 25,
+  lazyData: {
+    loading: false,
+    data: {
+      isMember: Math.random() < 0.5,
+      tokenBalance: 120,
+      tokenSymbol: 'JUNO',
+      proposalCount: 25,
+    },
+  },
 })
 
 export const Default = Template.bind({})
@@ -60,24 +65,18 @@ Default.args = {
       ...makeFeaturedDao(),
       name: 'DAO DAO',
       established: new Date('August 11, 2022 16:20:00'),
-      isMember: true,
     },
     makeFeaturedDao(),
     {
       ...makeFeaturedDao(),
       established: new Date(),
-      isMember: true,
     },
     {
       ...makeFeaturedDao(),
       name: 'A different DAO',
-      isMember: true,
     },
     makeFeaturedDao(),
     makeFeaturedDao(),
-    {
-      ...makeFeaturedDao(),
-      isMember: true,
-    },
+    makeFeaturedDao(),
   ],
 }

@@ -17,6 +17,7 @@ import {
   ModuleInstantiateInfo,
 } from './contracts/cw-core-0.2.0'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
+import { LoadingData } from './ui'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 export interface DaoDisplayInfo {
@@ -30,14 +31,18 @@ export interface DaoDisplayInfo {
   parentDao?: DaoDisplayInfo
 }
 
-export interface DaoCardInfo extends Omit<DaoDisplayInfo, 'parentDao'> {
-  // Only need a few properties.
-  parentDao?: Pick<DaoDisplayInfo, 'coreAddress' | 'imageUrl' | 'href'>
-
+export interface DaoCardInfoLazyData {
   isMember: boolean
   tokenBalance: number
   tokenSymbol: string
   proposalCount: number
+}
+
+export interface DaoCardInfo extends Omit<DaoDisplayInfo, 'parentDao'> {
+  // Only need a few properties.
+  parentDao?: Pick<DaoDisplayInfo, 'coreAddress' | 'imageUrl' | 'href'>
+
+  lazyData: LoadingData<DaoCardInfoLazyData>
 }
 
 export interface ProposalModule {

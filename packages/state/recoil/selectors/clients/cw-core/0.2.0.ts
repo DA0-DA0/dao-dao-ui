@@ -519,7 +519,7 @@ export const cw20BalancesInfoSelector = selectorFamily<
 
 const CW721_TOKEN_LIST_LIMIT = 30
 export const allCw721TokenListSelector = selectorFamily<
-  Cw721TokenListResponse | undefined,
+  Cw721TokenListResponse,
   QueryClientParams
 >({
   key: 'cwCoreV0_2_0AllCw721TokenList',
@@ -550,5 +550,42 @@ export const allCw721TokenListSelector = selectorFamily<
       }
 
       return tokenList
+    },
+})
+
+const SUBDAO_LIST_LIMIT = 30
+export const listAllSubDaosSelector = selectorFamily<
+  ListSubDaosResponse,
+  QueryClientParams
+>({
+  key: 'cwCoreV0_2_0ListAllSubDaos',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const subdaos: ListSubDaosResponse = []
+
+      while (true) {
+        const response = await get(
+          listSubDaosSelector({
+            ...queryClientParams,
+            params: [
+              {
+                startAfter: subdaos[subdaos.length - 1].addr,
+                limit: SUBDAO_LIST_LIMIT,
+              },
+            ],
+          })
+        )
+        if (!response?.length) break
+
+        subdaos.push(...response)
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < SUBDAO_LIST_LIMIT) {
+          break
+        }
+      }
+
+      return subdaos
     },
 })

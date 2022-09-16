@@ -28,24 +28,38 @@ export const makeProps = (): DaoCardProps => ({
 
   parentDao: {
     coreAddress: 'parentDaoCoreAddress',
-    name: 'Parent DAO',
-    description: 'I am a Parent DAO',
-    established: new Date(),
     href: '#',
     imageUrl: '/placeholders/2.svg',
   },
 
-  tokenBalance: 120,
-  tokenSymbol: 'JUNO',
-  proposalCount: 25,
+  lazyData: {
+    loading: false,
+    data: {
+      tokenBalance: 120,
+      tokenSymbol: 'JUNO',
+      proposalCount: 25,
+      isMember: Math.random() < 0.5,
+    },
+  },
 
   showIsMember: true,
 })
 
 export const Default = Template.bind({})
 Default.args = makeProps()
-
 Default.parameters = {
+  design: {
+    type: 'figma',
+    url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=77%3A9575',
+  },
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  ...makeProps(),
+  lazyData: { loading: true },
+}
+Loading.parameters = {
   design: {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=77%3A9575',

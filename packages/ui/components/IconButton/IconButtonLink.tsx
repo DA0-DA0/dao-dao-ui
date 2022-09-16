@@ -1,7 +1,7 @@
 import clsx from 'clsx'
-import Link from 'next/link'
 import { ComponentPropsWithoutRef, forwardRef } from 'react'
 
+import { LinkWrapper } from '../LinkWrapper'
 import {
   IconButtonifiedChildren,
   IconButtonifierProps,
@@ -15,28 +15,16 @@ export type IconButtonLinkProps = ComponentPropsWithoutRef<'a'> &
 export const IconButtonLink = forwardRef<
   HTMLAnchorElement,
   IconButtonLinkProps
->(function IconButtonLink({ href, ...props }, ref) {
+>(function IconButtonLink(props, ref) {
   const className = clsx(getIconButtonifiedClassNames(props), 'inline-block')
 
-  // Remote link if starts with http (non-relative path).
-  const remote = href?.startsWith('http')
-
-  return remote ? (
-    <a
-      href={href}
-      rel="noreferrer"
-      target="_blank"
+  return (
+    <LinkWrapper
       {...getNonIconButtonifierProps(props)}
       className={className}
       ref={ref}
     >
       <IconButtonifiedChildren {...props} />
-    </a>
-  ) : (
-    <Link href={href ?? '#'}>
-      <a {...getNonIconButtonifierProps(props)} className={className} ref={ref}>
-        <IconButtonifiedChildren {...props} />
-      </a>
-    </Link>
+    </LinkWrapper>
   )
 })

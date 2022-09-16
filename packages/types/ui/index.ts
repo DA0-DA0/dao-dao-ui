@@ -1,6 +1,7 @@
 export * from './ActionCardLoader'
 export * from './AppLayout'
 export * from './common'
+export * from './DaoCard'
 export * from './DaoDropdown'
 export * from './DaoInfoBar'
 export * from './HeroStat'

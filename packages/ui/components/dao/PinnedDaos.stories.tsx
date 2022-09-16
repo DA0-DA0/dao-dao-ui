@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { DaoCard } from './DaoCard'
 import { Default as FeaturedDaosStory } from './FeaturedDaos.stories'
 import { PinnedDaos } from './PinnedDaos'
 
@@ -15,14 +16,19 @@ const Template: ComponentStory<typeof PinnedDaos> = (args) => {
   return (
     <PinnedDaos
       {...args}
-      isDaoPinned={(coreAddress) => pinned.includes(coreAddress)}
-      onPin={(coreAddress) =>
-        setPinned((current) =>
-          current.includes(coreAddress)
-            ? current.filter((a) => a !== coreAddress)
-            : [...current, coreAddress]
-        )
-      }
+      DaoCard={(props) => (
+        <DaoCard
+          {...props}
+          onPin={() =>
+            setPinned((current) =>
+              current.includes(props.coreAddress)
+                ? current.filter((a) => a !== props.coreAddress)
+                : [...current, props.coreAddress]
+            )
+          }
+          pinned={pinned.includes(props.coreAddress)}
+        />
+      )}
     />
   )
 }

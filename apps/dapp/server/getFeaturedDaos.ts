@@ -28,13 +28,18 @@ export const getFeaturedDaos = async (): Promise<DaoCardInfo[]> => {
     description,
     imageUrl: image,
     href,
-    tokenBalance: TVL,
-    tokenSymbol: 'USDC',
-    // Does not matter, check will not show up on featured DAO card.
-    isMember: false,
-    // TODO: Retrieve.
-    proposalCount: 0,
     // TODO: Retrieve.
     // parentDao: {},
+    lazyData: {
+      loading: false,
+      data: {
+        tokenBalance: TVL,
+        tokenSymbol: 'USDC',
+        // Does not matter, check will not show up on featured DAO card.
+        isMember: false,
+        // TODO: Retrieve.
+        proposalCount: 0,
+      },
+    },
   }))
 }

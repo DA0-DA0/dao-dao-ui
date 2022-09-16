@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoCardInfo, LoadingData } from '@dao-dao/tstypes'
@@ -7,19 +7,13 @@ import { SortFn, useDropdownSorter } from '../../hooks/useDropdownSorter'
 import { Dropdown, DropdownOption } from '../Dropdown'
 import { GridCardContainer } from '../GridCardContainer'
 import { Loader } from '../Loader'
-import { DaoCard } from './DaoCard'
 
 export interface PinnedDaosProps {
+  DaoCard: ComponentType<DaoCardInfo>
   pinnedDaos: LoadingData<DaoCardInfo[]>
-  isDaoPinned: (coreAddress: string) => boolean
-  onPin: (coreAddress: string) => void
 }
 
-export const PinnedDaos = ({
-  pinnedDaos,
-  isDaoPinned,
-  onPin,
-}: PinnedDaosProps) => {
+export const PinnedDaos = ({ DaoCard, pinnedDaos }: PinnedDaosProps) => {
   const { t } = useTranslation()
 
   const sortOptions = useMemo(
@@ -49,12 +43,7 @@ export const PinnedDaos = ({
       ) : (
         <GridCardContainer className="mt-1">
           {sortedPinnedDaos.map((props) => (
-            <DaoCard
-              key={props.coreAddress}
-              onPin={() => onPin(props.coreAddress)}
-              pinned={isDaoPinned(props.coreAddress)}
-              {...props}
-            />
+            <DaoCard key={props.coreAddress} {...props} />
           ))}
         </GridCardContainer>
       )}

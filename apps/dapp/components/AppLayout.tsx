@@ -21,7 +21,7 @@ import { SidebarWallet, WalletProvider } from '@dao-dao/common'
 import {
   mountedInBrowserAtom,
   navigationCompactAtom,
-  pinnedDaosDropdownInfoAtom,
+  pinnedDaosDropdownInfoSelector,
   refreshTokenUsdcPriceIdAtom,
   tokenUsdcPriceSelector,
 } from '@dao-dao/state'
@@ -126,7 +126,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   //! Pinned DAOs
   const pinnedDaoDropdownInfosLoadable = useRecoilValueLoadable(
-    pinnedDaosDropdownInfoAtom
+    pinnedDaosDropdownInfoSelector
   )
 
   //! Loadable errors.
