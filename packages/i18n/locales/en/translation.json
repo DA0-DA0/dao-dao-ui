@@ -156,7 +156,7 @@
     "nameIncorrectLength": "A DAO's name must be between {{min}} and {{max}} characters.",
     "noGovTokenAddr": "You didn't provide an address for your governance token.",
     "noGovTokenInfo": "You didn't give enough information about your governance token.",
-    "noMembers": "You haven't added any members to your DAO",
+    "noMembers": "You haven't added any members to your DAO.",
     "noProposalModule": "This DAO does not have a proposal module.",
     "noProposalsFound": "No proposals found.",
     "noVotingPower": "You have not given anyone voting power. Add some members to your DAO.",

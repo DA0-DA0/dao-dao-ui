@@ -123,7 +123,7 @@ export const GovernanceConfigurationInput = ({
       if (totalWeight === 0) {
         if (setNewErrors) {
           setError('votingModuleAdapter.data._tiersError', {
-            message: t('errors.noVotingPower'),
+            message: t('error.noVotingPower'),
           })
         }
         valid = false
@@ -136,7 +136,7 @@ export const GovernanceConfigurationInput = ({
         if (tier.members.length === 0) {
           if (setNewErrors) {
             setError(`votingModuleAdapter.data.tiers.${tierIndex}._error`, {
-              message: t('errors.noMembers'),
+              message: t('error.noMembers'),
             })
           }
           valid = false

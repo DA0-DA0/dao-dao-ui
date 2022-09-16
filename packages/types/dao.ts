@@ -19,7 +19,7 @@ import {
 import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
-export interface DaoInfo {
+export interface DaoDisplayInfo {
   coreAddress: string
   name: string
   description: string
@@ -27,12 +27,12 @@ export interface DaoInfo {
   established?: Date
   href: string
 
-  parentDao?: DaoInfo
+  parentDao?: DaoDisplayInfo
 }
 
-export interface DaoCardInfo extends Omit<DaoInfo, 'parentDao'> {
+export interface DaoCardInfo extends Omit<DaoDisplayInfo, 'parentDao'> {
   // Only need a few properties.
-  parentDao?: Pick<DaoInfo, 'coreAddress' | 'imageUrl' | 'href'>
+  parentDao?: Pick<DaoDisplayInfo, 'coreAddress' | 'imageUrl' | 'href'>
 
   tokenBalance: number
   tokenSymbol: string

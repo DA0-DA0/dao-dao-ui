@@ -11,7 +11,7 @@ import { DaoCard, DaoCardProps } from '../DaoCard'
 
 export interface DaoCreateModalProps {
   modalProps: Omit<ModalProps, 'header' | 'children'>
-  daoCardProps: Omit<DaoCardProps, 'onMouseOver'>
+  daoCardProps: Omit<DaoCardProps, 'onMouseOver' | 'onMouseLeave'>
 }
 
 export const DaoCreateModal = ({

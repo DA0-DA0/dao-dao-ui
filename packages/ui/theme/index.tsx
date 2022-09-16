@@ -51,25 +51,15 @@ export const ThemeProvider = ({
 >) => {
   // This is the same as the `useNamedThemeColor` hook, but that hook assumes it
   // is wrapped in this ThemeProvider, so let's just get the brand manually.
-  const [brandRgb, setBrandRgb] = useState<string | undefined>(
-    getNamedColorFromDOM('brand')
-  )
-  useEffect(
-    () => {
-      setBrandRgb(getNamedColorFromDOM('brand'))
-    },
-    // Re-fetch color when theme changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [themeChangeCount]
-  )
-
   const [accentColor, _setAccentColor] = useState(
-    `rgb(${brandRgb || '123, 97, 255'})`
+    `rgb(${getNamedColorFromDOM('v2-brand') || '123, 97, 255'})`
   )
   const setAccentColor = useCallback(
     (accentColor: string | undefined) =>
-      _setAccentColor(accentColor || `rgb(${brandRgb})`),
-    [brandRgb]
+      _setAccentColor(
+        accentColor || `rgb(${getNamedColorFromDOM('v2-brand')})`
+      ),
+    []
   )
 
   return (
@@ -113,5 +103,5 @@ export const useNamedThemeColor = (colorName: string) => {
 
 const getNamedColorFromDOM = (colorName: string) =>
   typeof getComputedStyle !== 'undefined'
-    ? getComputedStyle(document.body).getPropertyValue(`--${colorName}`)
+    ? getComputedStyle(document.body).getPropertyValue(`--${colorName}`).trim()
     : undefined

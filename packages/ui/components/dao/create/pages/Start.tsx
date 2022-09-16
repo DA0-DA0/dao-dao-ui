@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash.clonedeep'
 import { useTranslation } from 'react-i18next'
 
 import { CreateDaoContext } from '@dao-dao/tstypes'
@@ -16,7 +17,7 @@ export const CreateDaoStart = ({
     formState: { errors },
     register,
     watch,
-    setValue,
+    resetField,
   },
   availableVotingModuleAdapters,
 }: CreateDaoContext) => {
@@ -106,7 +107,12 @@ export const CreateDaoStart = ({
               membership={t(membershipI18nKey)}
               name={t(nameI18nKey)}
               onSelect={() =>
-                setValue('votingModuleAdapter', { id, data: defaultConfig })
+                resetField('votingModuleAdapter', {
+                  defaultValue: {
+                    id,
+                    data: cloneDeep(defaultConfig),
+                  },
+                })
               }
               selected={watch('votingModuleAdapter.id') === id}
               supplies={t(suppliesI18nKey)}

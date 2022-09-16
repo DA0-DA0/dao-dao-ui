@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 
-import { DaoInfo } from '@dao-dao/tstypes/dao'
+import { DaoDisplayInfo } from '@dao-dao/tstypes/dao'
 import { getFallbackImage } from '@dao-dao/utils'
 
 export interface DaoImageProps {
@@ -9,7 +9,7 @@ export interface DaoImageProps {
   imageUrl: string | undefined | null
   // Used to get placeholder image if no `imageUrl` present.
   coreAddress?: string
-  parentDao?: Pick<DaoInfo, 'imageUrl' | 'href' | 'coreAddress'>
+  parentDao?: Pick<DaoDisplayInfo, 'imageUrl' | 'href' | 'coreAddress'>
   className?: string
 }
 

@@ -2,7 +2,7 @@ import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { ArrowBack } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -23,6 +23,7 @@ import instantiateSchema from '@dao-dao/state/clients/cw-core/instantiate_schema
 import {
   CreateDaoContext,
   CreateDaoCustomValidator,
+  DaoDisplayInfo,
   NewDao,
 } from '@dao-dao/tstypes'
 import { InstantiateMsg } from '@dao-dao/tstypes/contracts/cw-core-0.2.0'
@@ -30,6 +31,7 @@ import {
   BreadcrumbsProps,
   Button,
   CreateDaoPages,
+  DaoCreateModal,
   DaoCreateSidebarCard,
   DaoHeader,
   GradientHero,
@@ -40,15 +42,23 @@ import {
 } from '@dao-dao/ui'
 import {
   CWCORE_CODE_ID,
+  NATIVE_DENOM,
   V1_FACTORY_CONTRACT_ADDRESS,
+  convertMicroDenomToDenomWithDecimals,
   makeValidateMsg,
+  nativeTokenLabel,
   processError,
   validateUrl,
 } from '@dao-dao/utils'
 import {
+  Cw20StakedBalanceVotingAdapter,
   getAdapterById as getVotingModuleAdapterById,
   getAdapters as getVotingModuleAdapters,
 } from '@dao-dao/voting-module-adapter'
+import {
+  DaoCreationConfig as Cw20StakedBalalanceVotingCreationConfig,
+  GovernanceTokenType,
+} from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/types'
 
 // i18n keys
 export enum CreateDaoSubmitLabel {
@@ -59,9 +69,11 @@ export enum CreateDaoSubmitLabel {
 }
 
 export interface CreateDaoFormProps {
-  children: ReactNode
   // Used to insert parent DAO crumbs if creating SubDAO.
   extraCrumbs?: BreadcrumbsProps['crumbs']
+  parentDao?: DaoDisplayInfo
+
+  daoUrlPrefix: string
 
   // Primarily for testing in storybook.
   defaults?: Partial<NewDao>
@@ -71,11 +83,13 @@ export interface CreateDaoFormProps {
 // TODO: Add NextSeo with title description and URL in page that uses this component.
 export const CreateDaoForm = ({
   extraCrumbs,
+  parentDao,
+  daoUrlPrefix,
   defaults,
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
-  const { setPinned } = usePinnedDaos()
+  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
 
   const {
     daoCreation: { pageIndex, setPageIndex },
@@ -286,6 +300,15 @@ export const CreateDaoForm = ({
     [t]
   )
 
+  const [customValidator, setCustomValidator] =
+    useState<CreateDaoCustomValidator>()
+
+  const [createdDaoCoreAddress, setCreatedDaoCoreAddress] = useState<string>()
+  const cw20StakedBalanceVotingData =
+    votingModuleAdapter.id === Cw20StakedBalanceVotingAdapter.id
+      ? (votingModuleAdapter.data as Cw20StakedBalalanceVotingCreationConfig)
+      : undefined
+
   const onSubmit: SubmitHandler<NewDao> = useCallback(
     async (values, event) => {
       // If navigating, no need to display errors.
@@ -299,7 +322,7 @@ export const CreateDaoForm = ({
         if (connected) {
           setCreating(true)
           try {
-            const address = await toast.promise(
+            const coreAddress = await toast.promise(
               createDaoWithFactory().then(
                 // TODO: Figure out better solution for detecting block.
                 (address) =>
@@ -315,14 +338,16 @@ export const CreateDaoForm = ({
               }
             )
 
-            if (address) {
-              setPinned(address)
+            if (coreAddress) {
+              setPinned(coreAddress)
 
               await refreshBalances()
 
               // Clear saved creation data.
               setNewDaoAtom(DefaultNewDao)
-              // TODO: Show DAO creation success modal
+
+              // Show DAO created modal
+              setCreatedDaoCoreAddress(coreAddress)
             }
           } catch (err) {
             // toast.promise above will handle displaying the error
@@ -343,6 +368,10 @@ export const CreateDaoForm = ({
         // Deep clone to prevent values from becoming readOnly.
         ...cloneDeep(values),
       }))
+
+      // Clear custom validation function in case next page does not override
+      // the previous page's.
+      setCustomValidator(undefined)
 
       // Navigate pages.
       const pageDelta = parseSubmitterValueDelta(submitterValue)
@@ -383,8 +412,6 @@ export const CreateDaoForm = ({
     [form, onSubmit, onError]
   )
 
-  const [customValidator, setCustomValidator] =
-    useState<CreateDaoCustomValidator>()
   const formOnSubmit = useCallback(
     (...args: Parameters<typeof _handleSubmit>) => {
       const nativeEvent = args[0]?.nativeEvent as SubmitEvent
@@ -408,7 +435,7 @@ export const CreateDaoForm = ({
       form,
       availableVotingModuleAdapters,
       generateInstantiateMsg,
-      setCustomValidator,
+      setCustomValidator: (fn) => setCustomValidator(() => fn),
       votingModuleDaoCreationAdapter,
       proposalModuleDaoCreationAdapters,
     }),
@@ -504,6 +531,65 @@ export const CreateDaoForm = ({
           </div>
         </div>
       </form>
+
+      {createdDaoCoreAddress && (
+        <DaoCreateModal
+          daoCardProps={{
+            coreAddress: createdDaoCoreAddress,
+            name,
+            description,
+            imageUrl,
+            established: new Date(),
+            href: daoUrlPrefix + createdDaoCoreAddress,
+            pinned: isPinned(createdDaoCoreAddress),
+            onPin: () =>
+              isPinned(createdDaoCoreAddress)
+                ? setUnpinned(createdDaoCoreAddress)
+                : setPinned(createdDaoCoreAddress),
+            isMember: false,
+            proposalCount: 0,
+            parentDao,
+            // Display governance token supply if using governance tokens.
+            ...(votingModuleAdapter.id === Cw20StakedBalanceVotingAdapter.id &&
+            cw20StakedBalanceVotingData
+              ? {
+                  tokenBalance:
+                    cw20StakedBalanceVotingData.tokenType ===
+                    GovernanceTokenType.New
+                      ? cw20StakedBalanceVotingData.newInfo.initialSupply
+                      : // If using existing token but no token info loaded (should
+                      // be impossible), just display 0.
+                      !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                      ? 0
+                      : // If using existing token, convert supply from query using decimals.
+                        convertMicroDenomToDenomWithDecimals(
+                          cw20StakedBalanceVotingData
+                            .existingGovernanceTokenInfo.total_supply,
+                          cw20StakedBalanceVotingData
+                            .existingGovernanceTokenInfo.decimals
+                        ),
+                  tokenSymbol:
+                    cw20StakedBalanceVotingData.tokenType ===
+                    GovernanceTokenType.New
+                      ? cw20StakedBalanceVotingData.newInfo.symbol
+                      : // If using existing token but no token info loaded (should
+                      // be impossible), the tokenBalance above will be set to
+                      // 0, so use NATIVE_DENOM here so this value is accurate.
+                      !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                      ? nativeTokenLabel(NATIVE_DENOM)
+                      : cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                          ?.symbol || t('info.token').toLocaleUpperCase(),
+                }
+              : {
+                  tokenBalance: 0,
+                  tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+                }),
+          }}
+          modalProps={{
+            onClose: () => setCreatedDaoCoreAddress(undefined),
+          }}
+        />
+      )}
     </>
   )
 }
