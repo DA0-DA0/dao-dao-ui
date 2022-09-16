@@ -99,19 +99,14 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
-  const [daoCreationPageIndex, setDaoCreationPageIndex] = useState(0)
   const appLayoutContext = useMemo(
     () => ({
       responsiveNavigation: {
         enabled: responsiveNavigationEnabled,
         toggle: () => setResponsiveNavigationEnabled((v) => !v),
       },
-      daoCreation: {
-        pageIndex: daoCreationPageIndex,
-        setPageIndex: setDaoCreationPageIndex,
-      },
     }),
-    [daoCreationPageIndex, responsiveNavigationEnabled]
+    [responsiveNavigationEnabled]
   )
 
   //! Token prices

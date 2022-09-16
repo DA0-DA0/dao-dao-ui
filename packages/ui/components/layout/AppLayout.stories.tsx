@@ -31,10 +31,6 @@ export const DefaultArgs: AppLayoutProps = {
       enabled: true,
       toggle: () => alert('toggle'),
     },
-    daoCreation: {
-      pageIndex: 0,
-      setPageIndex: (pageIndex) => alert('set page index ' + pageIndex),
-    },
   },
 }
 
@@ -42,7 +38,6 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
   const [compact, setCompact] = useState(false)
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
-  const [pageIndex, setPageIndex] = useState(0)
 
   return (
     <AppLayout
@@ -53,12 +48,8 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
             enabled: responsiveNavigationEnabled,
             toggle: () => setResponsiveNavigationEnabled((v) => !v),
           },
-          daoCreation: {
-            pageIndex,
-            setPageIndex,
-          },
         }),
-        [pageIndex, responsiveNavigationEnabled]
+        [responsiveNavigationEnabled]
       )}
       navigationProps={{
         ...args.navigationProps,

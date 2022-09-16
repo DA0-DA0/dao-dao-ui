@@ -8,10 +8,6 @@ export interface IAppLayoutContext {
     enabled: boolean
     toggle: () => void
   }
-  daoCreation: {
-    pageIndex: number
-    setPageIndex: (pageIndex: number) => void
-  }
   RightSidebarContent: ComponentType<{ children: ReactNode }>
 }
 

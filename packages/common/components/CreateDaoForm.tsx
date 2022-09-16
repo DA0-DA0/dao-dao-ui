@@ -91,10 +91,7 @@ export const CreateDaoForm = ({
   const { t } = useTranslation()
   const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
 
-  const {
-    daoCreation: { pageIndex, setPageIndex },
-    RightSidebarContent,
-  } = useAppLayoutContext()
+  const { RightSidebarContent } = useAppLayoutContext()
 
   const [_newDaoAtom, setNewDaoAtom] = useRecoilState(newDaoAtom)
   const form = useForm<NewDao>({
@@ -149,13 +146,7 @@ export const CreateDaoForm = ({
   }, [imageUrl, setAccentColor])
 
   //! Page state
-  // Initialize on mount.
-  // TODO: Check if this method of initializing page index causes problems when
-  // creating a DAO more than once without refreshing the page. Might need to
-  // use a router hook that checks when this component is re-displayed.
-  useEffect(() => {
-    setPageIndex(initialPageIndex)
-  }, [initialPageIndex, setPageIndex])
+  const [pageIndex, setPageIndex] = useState(initialPageIndex)
 
   const showBack = pageIndex > 0
   const submitValue =
@@ -453,7 +444,10 @@ export const CreateDaoForm = ({
   return (
     <>
       <RightSidebarContent>
-        <DaoCreateSidebarCard />
+        <DaoCreateSidebarCard
+          // Once created, set pageIndex to 4 to show all checkboxes.
+          pageIndex={createdDaoCoreAddress ? 4 : pageIndex}
+        />
       </RightSidebarContent>
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}

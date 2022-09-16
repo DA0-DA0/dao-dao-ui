@@ -12,7 +12,6 @@ export const makeAppLayoutContextDecorator: (
     const [responsiveEnabled, setResponsiveEnabled] = useState(
       defaultResponsiveEnabled
     )
-    const [pageIndex, setPageIndex] = useState(0)
 
     return (
       <AppLayoutContext.Provider
@@ -22,12 +21,9 @@ export const makeAppLayoutContextDecorator: (
               enabled: responsiveEnabled,
               toggle: () => setResponsiveEnabled((v) => !v),
             },
-            daoCreation: {
-              pageIndex,
-              setPageIndex,
-            },
+            RightSidebarContent: () => null,
           }),
-          [pageIndex, responsiveEnabled]
+          [responsiveEnabled]
         )}
       >
         <Story />

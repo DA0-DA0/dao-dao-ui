@@ -1,31 +1,15 @@
 import { Check } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useAppLayoutContext } from '../../layout/AppLayoutContext'
-
 export interface DaoCreateSidebarCardProps {
-  _pageIndex?: 0 | 1 | 2 | 3
+  pageIndex: number
 }
 
 export const DaoCreateSidebarCard = ({
-  _pageIndex,
+  pageIndex,
 }: DaoCreateSidebarCardProps) => {
   const { t } = useTranslation()
-
-  const contextPageIndex = useAppLayoutContext().daoCreation.pageIndex
-  const pageIndex = _pageIndex ?? contextPageIndex
-
-  const steps = useMemo(
-    () => [
-      t('info.createStep1'),
-      t('info.createStep2'),
-      t('info.createStep3'),
-      t('info.createStep4'),
-    ],
-    [t]
-  )
 
   return (
     <div className="relative rounded-lg border border-border-primary">
@@ -41,7 +25,12 @@ export const DaoCreateSidebarCard = ({
       <div className="flex flex-row items-stretch">
         <div className="w-8 border-r-4 border-border-primary"></div>
         <div className="flex flex-col py-4">
-          {steps.map((stepLabel, index) => {
+          {[
+            t('info.createStep1'),
+            t('info.createStep2'),
+            t('info.createStep3'),
+            t('info.createStep4'),
+          ].map((stepLabel, index) => {
             const done = pageIndex > index
             const current = pageIndex === index
             const future = pageIndex < index

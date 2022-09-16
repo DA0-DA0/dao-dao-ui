@@ -16,7 +16,7 @@ const Template: ComponentStory<typeof DaoCreateSidebarCard> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  _pageIndex: 3,
+  pageIndex: 3,
 }
 Default.parameters = {
   design: {
