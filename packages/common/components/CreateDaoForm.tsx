@@ -385,7 +385,7 @@ export const CreateDaoForm = ({
   )
 
   const onError: SubmitErrorHandler<NewDao> = useCallback(
-    (_, event) => {
+    (errors, event) => {
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
@@ -393,6 +393,8 @@ export const CreateDaoForm = ({
       const pageDelta = parseSubmitterValueDelta(submitterValue)
       if (pageDelta < 0) {
         return onSubmit(form.getValues(), event)
+      } else {
+        console.error('Form errors', errors)
       }
     },
     [form, onSubmit, parseSubmitterValueDelta]

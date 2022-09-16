@@ -60,7 +60,7 @@ export const CreateProposal = ({
         </PageHeader>
 
         {!isMember && (
-          <p className="text-text-error caption-text">
+          <p className="text-text-interactive-error caption-text">
             {t('error.mustBeMemberToCreateProposal')}
           </p>
         )}

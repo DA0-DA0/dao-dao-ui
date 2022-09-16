@@ -57,6 +57,7 @@ export interface WalletProps {
   walletAddress: string
   loading: boolean
   rightSidebarContent: ReactNode
+  error?: string
 }
 
 enum SubmitValue {
@@ -73,6 +74,7 @@ export const Wallet = ({
   walletAddress,
   loading,
   rightSidebarContent,
+  error,
 }: WalletProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent } = useAppLayoutContext()
@@ -118,7 +120,11 @@ export const Wallet = ({
   )
 
   const onSubmitError: SubmitErrorHandler<WalletForm> = useCallback(
-    () => setShowSubmitErrorNote(true),
+    (errors) => {
+      console.error('Form errors', errors)
+
+      setShowSubmitErrorNote(true)
+    },
     [setShowSubmitErrorNote]
   )
 
@@ -130,7 +136,10 @@ export const Wallet = ({
         <PageHeader title={t('title.wallet')} />
 
         <FormProvider {...formMethods}>
-          <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
+          >
             {/* <div className="bg-background-tertiary rounded-lg">
             <div className="flex flex-row gap-6 justify-between items-center py-4 px-6 border-b border-border-secondary">
               <p className="text-text-body primary-text">
@@ -171,12 +180,12 @@ export const Wallet = ({
             </div>
           </div> */}
 
-            <p className="my-6 text-text-body title-text">
+            <p className="mt-6 mb-2 text-text-body title-text">
               {t('title.actions', { count: proposalActionData.length })}
             </p>
 
             {proposalActionData.length > 0 && (
-              <div className="flex flex-col gap-1 mb-4">
+              <div className="flex flex-col gap-1">
                 {proposalActionData.map((actionData, index) => {
                   const Component =
                     actionsWithData[actionData.key]?.action?.Component
@@ -209,7 +218,7 @@ export const Wallet = ({
               </div>
             )}
 
-            <div className="mb-6">
+            <div className="mb-2">
               <ActionSelector
                 actions={actions}
                 onSelectAction={({ key }) => {
@@ -265,8 +274,14 @@ export const Wallet = ({
             </div>
 
             {showSubmitErrorNote && (
-              <p className="mt-2 text-right text-text-error secondary-text">
+              <p className="self-end max-w-prose text-base text-right text-text-interactive-error secondary-text">
                 {t('error.createProposalSubmitInvalid')}
+              </p>
+            )}
+
+            {error && (
+              <p className="self-end max-w-prose text-sm text-right text-text-interactive-error secondary-text">
+                {error}
               </p>
             )}
 

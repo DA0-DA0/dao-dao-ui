@@ -20,7 +20,7 @@ export interface ProposalInfo {
 }
 
 export interface DaoWithProposals {
-  dao: DaoDropdownInfo
+  dao: Omit<DaoDropdownInfo, 'content' | 'subdaos'>
   proposals: ProposalInfo[]
 }
 

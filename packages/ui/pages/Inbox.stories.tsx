@@ -18,23 +18,25 @@ const Template: ComponentStory<typeof Inbox> = (args) => <Inbox {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  daosWithProposals: NavigationStoryArgs.pinnedDaos.map((dao) => ({
-    dao,
-    // Generate between 1 and 3 proposals.
-    proposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
-      // Random time in the next 3 days.
-      const secondsRemaining = Math.floor(Math.random() * 3 * 24 * 60 * 60)
+  daosWithProposals: NavigationStoryArgs.pinnedDaos.loading
+    ? []
+    : NavigationStoryArgs.pinnedDaos.data.map((dao) => ({
+        dao,
+        // Generate between 1 and 3 proposals.
+        proposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
+          // Random time in the next 3 days.
+          const secondsRemaining = Math.floor(Math.random() * 3 * 24 * 60 * 60)
 
-      return {
-        secondsRemaining,
-        // Random time in the past 3 days.
-        created: new Date(
-          Date.now() - Math.floor(Math.random() * 3 * 24 * 60 * 60)
-        ),
-        props: makeProposalLineProps(secondsRemaining),
-      }
-    }),
-  })),
+          return {
+            secondsRemaining,
+            // Random time in the past 3 days.
+            created: new Date(
+              Date.now() - Math.floor(Math.random() * 3 * 24 * 60 * 60)
+            ),
+            props: makeProposalLineProps(secondsRemaining),
+          }
+        }),
+      })),
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),

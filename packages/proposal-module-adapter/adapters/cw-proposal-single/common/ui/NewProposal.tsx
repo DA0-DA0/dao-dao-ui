@@ -272,7 +272,7 @@ export const NewProposal = ({
         </div>
 
         {showSubmitErrorNote && (
-          <p className="mt-2 text-right text-text-error secondary-text">
+          <p className="mt-2 text-right text-text-interactive-error secondary-text">
             {t('error.createProposalSubmitInvalid')}
           </p>
         )}

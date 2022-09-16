@@ -102,7 +102,7 @@ export const HomeConnected = ({
           <Loader />
         ) : pinnedDaos.data.length === 0 ? (
           // TODO: Add graphic here.
-          <p className="text-text-error">placeholder for graphic</p>
+          <p className="text-text-interactive-error">placeholder for graphic</p>
         ) : (
           <GridCardContainer className={clsx('mt-1', maxWidth)}>
             {sortedPinnedDaos.map((props) => (
