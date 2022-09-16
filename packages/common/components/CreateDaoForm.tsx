@@ -542,7 +542,7 @@ export const CreateDaoForm = ({
               isPinned(createdDaoCoreAddress)
                 ? setUnpinned(createdDaoCoreAddress)
                 : setPinned(createdDaoCoreAddress),
-            isMember: false,
+            showIsMember: false,
             proposalCount: 0,
             parentDao,
             // Display governance token supply if using governance tokens.

@@ -76,16 +76,18 @@ export const ConnectedWallet = ({
           />
         </Tooltip>
 
-        <Tooltip title={t('info.disconnectWalletTooltip')}>
-          <IconButton
-            Icon={X}
-            className="text-icon-secondary"
-            iconClassName="w-5 h-5"
-            onClick={onDisconnect}
-            size="sm"
-            variant="ghost"
-          />
-        </Tooltip>
+        {onDisconnect && (
+          <Tooltip title={t('info.disconnectWalletTooltip')}>
+            <IconButton
+              Icon={X}
+              className="text-icon-secondary"
+              iconClassName="w-5 h-5"
+              onClick={onDisconnect}
+              size="sm"
+              variant="ghost"
+            />
+          </Tooltip>
+        )}
       </div>
     </div>
   )

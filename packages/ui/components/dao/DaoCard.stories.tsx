@@ -39,7 +39,7 @@ export const makeProps = (): DaoCardProps => ({
   tokenSymbol: 'JUNO',
   proposalCount: 25,
 
-  isMember: true,
+  showIsMember: true,
 })
 
 export const Default = Template.bind({})

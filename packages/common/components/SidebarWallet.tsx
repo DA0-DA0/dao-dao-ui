@@ -24,7 +24,7 @@ export const SidebarWallet = () => {
       {connected && connectedWallet ? (
         <OriginalSidebarWallet
           connected
-          onDisconnect={isEmbeddedKeplrMobileWeb ? disconnect : undefined}
+          onDisconnect={isEmbeddedKeplrMobileWeb ? undefined : disconnect}
           tokenBalance={walletBalance}
           tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
           walletAddress={connectedWallet.address}

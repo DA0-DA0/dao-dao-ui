@@ -40,7 +40,7 @@ export const FeaturedDAOsList = ({ featuredDaos }: FeaturedDAOsListProps) => {
         {featuredDaos.map((props) => (
           <DaoCard
             key={props.coreAddress}
-            isMember={false}
+            showIsMember={false}
             onPin={() =>
               isPinned(props.coreAddress)
                 ? setUnpinned(props.coreAddress)

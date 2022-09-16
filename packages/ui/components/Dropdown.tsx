@@ -15,7 +15,7 @@ export interface DropdownProps<T> {
   options: DropdownOption<T>[]
   placeholder?: string
   selected?: T | T[]
-  onSelect: (option: T) => void
+  onSelect: (option: T, index: number) => void
   containerClassName?: string
   labelContainerClassName?: string
   labelClassName?: string
@@ -137,7 +137,7 @@ export const Dropdown = <T extends unknown>({
               key={index}
               className="rounded-none"
               onClick={() => {
-                onSelect(option.value)
+                onSelect(option.value, index)
 
                 if (!keepOpenOnSelect) {
                   setOpen(false)

@@ -34,6 +34,7 @@ export interface DaoCardInfo extends Omit<DaoDisplayInfo, 'parentDao'> {
   // Only need a few properties.
   parentDao?: Pick<DaoDisplayInfo, 'coreAddress' | 'imageUrl' | 'href'>
 
+  isMember: boolean
   tokenBalance: number
   tokenSymbol: string
   proposalCount: number

@@ -2,26 +2,37 @@ import clsx from 'clsx'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DaoCardInfo } from '@dao-dao/tstypes/dao'
+
 import {
-  DaoCardInfo,
   FeaturedDaos,
   PageHeader,
+  PinnedDaos,
+  PinnedDaosProps,
   useAppLayoutContext,
 } from '../components'
 
-export interface HomeDisconnectedProps {
+export type HomeProps = {
   featuredDaos: DaoCardInfo[]
   rightSidebarContent: ReactNode
-}
+} & (
+  | {
+      connected: false
+    }
+  | ({
+      connected: true
+    } & PinnedDaosProps)
+)
 
 const maxWidth = 'mx-auto w-full max-w-5xl'
 // Max width of 5xl = 64rem, container padding of 6 = 1.5rem
 const widthOfSidePadding = 'w-[max((100%-64rem)/2,1.5rem)]'
 
-export const HomeDisconnected = ({
+export const Home = ({
   featuredDaos,
   rightSidebarContent,
-}: HomeDisconnectedProps) => {
+  ...props
+}: HomeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent } = useAppLayoutContext()
 
@@ -39,7 +50,7 @@ export const HomeDisconnected = ({
         {/* Featured DAOs container */}
         {/* Margin offsets container padding. */}
         <div className="relative self-stretch px-[1px] -mx-6">
-          {/* Left shadow. */}
+          {/* Left shadow */}
           <div
             className={clsx(
               'absolute top-0 bottom-0 left-0 z-10',
@@ -57,7 +68,7 @@ export const HomeDisconnected = ({
             onPin={() => {}}
           />
 
-          {/* Right shadow. */}
+          {/* Right shadow */}
           <div
             className={clsx(
               'absolute top-0 right-0 bottom-0 z-10',
@@ -69,6 +80,21 @@ export const HomeDisconnected = ({
             }}
           ></div>
         </div>
+
+        {/* Pinned DAOs */}
+        {props.connected && (
+          <div className={clsx('flex flex-col gap-8', maxWidth)}>
+            {/* Divider */}
+            <div className="h-[1px] bg-border-secondary"></div>
+
+            <PinnedDaos
+              {...{
+                ...props,
+                connected: undefined,
+              }}
+            />
+          </div>
+        )}
       </div>
     </>
   )

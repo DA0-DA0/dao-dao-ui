@@ -1,7 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { DaoCardInfo } from './DaoCard'
+import { DaoCardInfo } from '@dao-dao/tstypes'
+
 import { FeaturedDaos } from './FeaturedDaos'
 
 export default {
@@ -11,6 +12,7 @@ export default {
 
 const Template: ComponentStory<typeof FeaturedDaos> = (args) => {
   const [pinned, setPinned] = useState<string[]>([])
+
   return (
     <FeaturedDaos
       {...args}
@@ -26,47 +28,56 @@ const Template: ComponentStory<typeof FeaturedDaos> = (args) => {
   )
 }
 
-const featuredDao: DaoCardInfo = {
-  coreAddress: 'coreAddress',
-  name: 'Modern DAO',
+let id = 0
+const makeFeaturedDao = (): DaoCardInfo => ({
+  coreAddress: 'coreAddress' + ++id,
+  name: 'Modern DAO ' + id,
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
-  imageUrl: '/placeholders/1.svg',
+  imageUrl: `/placeholders/${(id % 5) + 1}.svg`,
   href: '/',
   established: new Date('May 14, 2022 00:00:00'),
 
   parentDao: {
+    coreAddress: 'parent',
     href: '/home',
-    imageUrl: '/placeholders/2.svg',
+    imageUrl: `/placeholders/${((id + 1) % 5) + 1}.svg`,
   },
 
+  isMember: Math.random() < 0.5,
   tokenBalance: 120,
   tokenSymbol: 'JUNO',
   proposalCount: 25,
-}
+})
 
 export const Default = Template.bind({})
 // Clone object to prevent comparison issues in pages with sorting (like
 // `HomeConnected`).
 Default.args = {
   featuredDaos: [
-    featuredDao,
+    makeFeaturedDao(),
     {
-      ...featuredDao,
+      ...makeFeaturedDao(),
       name: 'DAO DAO',
       established: new Date('August 11, 2022 16:20:00'),
+      isMember: true,
     },
-    { ...featuredDao },
+    makeFeaturedDao(),
     {
-      ...featuredDao,
+      ...makeFeaturedDao(),
       established: new Date(),
+      isMember: true,
     },
     {
-      ...featuredDao,
+      ...makeFeaturedDao(),
       name: 'A different DAO',
+      isMember: true,
     },
-    { ...featuredDao },
-    { ...featuredDao },
-    { ...featuredDao },
+    makeFeaturedDao(),
+    makeFeaturedDao(),
+    {
+      ...makeFeaturedDao(),
+      isMember: true,
+    },
   ],
 }

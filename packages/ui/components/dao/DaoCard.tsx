@@ -19,7 +19,7 @@ import { DaoImage } from './DaoImage'
 export interface DaoCardProps extends DaoCardInfo {
   pinned: boolean
   onPin: () => void
-  isMember: boolean
+  showIsMember?: boolean
   className?: string
   onMouseOver?: () => void
   onMouseLeave?: () => void
@@ -39,6 +39,7 @@ export const DaoCard = ({
   onPin,
   parentDao,
   isMember,
+  showIsMember = true,
   className,
   onMouseOver,
   onMouseLeave,
@@ -90,7 +91,7 @@ export const DaoCard = ({
               variant="ghost"
             />
 
-            {isMember && (
+            {showIsMember && isMember && (
               <Tooltip title={t('info.youAreMember')}>
                 <Check className="w-4 h-4 text-icon-secondary" />
               </Tooltip>

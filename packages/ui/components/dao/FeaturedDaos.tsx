@@ -9,9 +9,10 @@ import {
   useState,
 } from 'react'
 
+import { DaoCardInfo } from '@dao-dao/tstypes'
 import { useIsVisible } from '@dao-dao/utils'
 
-import { DaoCard, DaoCardInfo } from '.'
+import { DaoCard } from './DaoCard'
 
 export interface FeaturedDaosProps {
   featuredDaos: DaoCardInfo[]
@@ -30,8 +31,8 @@ export const FeaturedDaos = ({
   const scrollRef = createRef<HTMLDivElement>()
   const mirrorRef = createRef<HTMLDivElement>()
 
-  // Don't scroll this element if it isn't visible as the scrolling is
-  // a reasonably heavy operation.
+  // Don't scroll this element if it isn't visible as the scrolling is a
+  // reasonably heavy operation.
   const scrollVisible = useIsVisible(scrollRef)
   const mirrorVisible = useIsVisible(mirrorRef)
   const componentIsVisible = scrollVisible || mirrorVisible
@@ -88,37 +89,35 @@ export const FeaturedDaos = ({
   }, [scrollRef, autoscroll, componentIsVisible])
 
   return (
-    <>
-      <div
-        className="overflow-auto w-screen no-scrollbar"
-        onMouseEnter={() => setAutoscroll(false)}
-        onMouseLeave={() => setAutoscroll(true)}
-        onScroll={handleScroll}
-        ref={scrollRef}
-      >
-        <div className="flex flex-row gap-4 py-[1px] w-max">
-          {featuredDaos.map((props) => (
-            <DaoCard
-              key={props.coreAddress}
-              className="!w-[260px]"
-              isMember={false}
-              onPin={() => onPin(props.coreAddress)}
-              pinned={isDaoPinned(props.coreAddress)}
-              {...props}
-            />
-          ))}
-          {featuredDaos.map((props) => (
-            <DaoCard
-              key={props.coreAddress}
-              className="!w-[260px] is-clone"
-              isMember={false}
-              onPin={() => onPin(props.coreAddress)}
-              pinned={isDaoPinned(props.coreAddress)}
-              {...props}
-            />
-          ))}
-        </div>
+    <div
+      className="overflow-scroll w-full no-scrollbar"
+      onMouseEnter={() => setAutoscroll(false)}
+      onMouseLeave={() => setAutoscroll(true)}
+      onScroll={handleScroll}
+      ref={scrollRef}
+    >
+      <div className="flex flex-row gap-4 py-[2px] w-max">
+        {featuredDaos.map((props) => (
+          <DaoCard
+            key={props.coreAddress}
+            className="!w-[260px]"
+            onPin={() => onPin(props.coreAddress)}
+            pinned={isDaoPinned(props.coreAddress)}
+            showIsMember={false}
+            {...props}
+          />
+        ))}
+        {featuredDaos.map((props) => (
+          <DaoCard
+            key={props.coreAddress}
+            className="!w-[260px] is-clone"
+            onPin={() => onPin(props.coreAddress)}
+            pinned={isDaoPinned(props.coreAddress)}
+            showIsMember={false}
+            {...props}
+          />
+        ))}
       </div>
-    </>
+    </div>
   )
 }

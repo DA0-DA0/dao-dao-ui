@@ -3,46 +3,59 @@
 
 import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
+import { useEffect } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { pinnedDaoCardInfoAtom } from '@dao-dao/state'
+import { pinnedDaoCardInfoAtom, usePinnedDaos } from '@dao-dao/state'
 import { DaoCardInfo } from '@dao-dao/tstypes'
+import { Home, ProfileHomeDisconnectedCard } from '@dao-dao/ui'
 import {
-  HomeConnected,
-  HomeDisconnected,
-  ProfileHomeDisconnectedCard,
-} from '@dao-dao/ui'
-import {
-  CI,
   FEATURED_DAOS_CACHE_SECONDS,
-  FEATURED_DAOS_URL,
   loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import { ProfileHomeCard } from '@/components'
+import { getFeaturedDaos } from '@/server'
 
 interface HomePageProps {
   featuredDaos: DaoCardInfo[]
 }
 
 const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => {
-  const { connected } = useWallet()
+  const { connected, address: walletAddress } = useWallet()
 
+  const { isPinned: isDaoPinned, setPinned, setUnpinned } = usePinnedDaos()
   const pinnedDaosLoadable = useRecoilValueLoadable(
-    pinnedDaoCardInfoAtom({ daoUrlPrefix: `/dao/` })
+    pinnedDaoCardInfoAtom({ walletAddress, daoUrlPrefix: `/dao/` })
   )
 
-  return connected ? (
-    <HomeConnected
+  //! Loadable errors.
+  useEffect(() => {
+    if (pinnedDaosLoadable.state === 'hasError') {
+      console.error(pinnedDaosLoadable.contents)
+    }
+  }, [pinnedDaosLoadable.contents, pinnedDaosLoadable.state])
+
+  return (
+    <Home
       featuredDaos={featuredDaos}
-      pinnedDaos={loadableToLoadingData(pinnedDaosLoadable, [])}
-      rightSidebarContent={<ProfileHomeCard />}
-    />
-  ) : (
-    <HomeDisconnected
-      featuredDaos={featuredDaos}
-      rightSidebarContent={<ProfileHomeDisconnectedCard />}
+      rightSidebarContent={
+        connected ? <ProfileHomeCard /> : <ProfileHomeDisconnectedCard />
+      }
+      {...(connected
+        ? {
+            connected,
+            pinnedDaos: loadableToLoadingData(pinnedDaosLoadable, []),
+            isDaoPinned,
+            onPin: (coreAddress) =>
+              isDaoPinned(coreAddress)
+                ? setUnpinned(coreAddress)
+                : setPinned(coreAddress),
+          }
+        : {
+            connected,
+          })}
     />
   )
 }
@@ -51,43 +64,10 @@ export default HomePage
 
 export const getStaticProps: GetStaticProps<HomePageProps> = async ({
   locale,
-}) => {
-  const featuredDaos: {
-    name: string
-    description: string
-    image: string
-    href: string
-    TVL: number
-  }[] = []
-  if (!CI) {
-    const resp = await fetch(FEATURED_DAOS_URL)
-    // These are returned as a timeseries in the form [{time, value}, ...].
-    const featuredDaosOverTime = await resp.json()
-    featuredDaos.push(
-      ...featuredDaosOverTime[featuredDaosOverTime.length - 1].value
-    )
-  }
-
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['translation'])),
-      featuredDaos: featuredDaos.map(
-        ({ name, description, image, href, TVL }, index) => ({
-          // TODO: Retrieve.
-          coreAddress: index.toString(),
-          name,
-          description,
-          imageUrl: image,
-          href,
-          tokenBalance: TVL,
-          tokenSymbol: 'USDC',
-          // TODO: Retrieve.
-          proposalCount: 0,
-          // TODO: Retrieve.
-          // parentDao: {},
-        })
-      ),
-    },
+}) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['translation'])),
+    featuredDaos: await getFeaturedDaos(),
     revalidate: FEATURED_DAOS_CACHE_SECONDS,
-  }
-}
+  },
+})

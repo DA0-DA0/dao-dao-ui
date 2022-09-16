@@ -38,6 +38,11 @@ export const ProfileCardWrapper = ({
   const [averageImgColor, setAverageImgColor] = useState<string>()
   // Get average color of image URL.
   useEffect(() => {
+    // Only need this in compact mode.
+    if (!compact) {
+      return
+    }
+
     const absoluteUrl = new URL(imgUrl, document.baseURI).href
     fetch(`https://fac.withoutdoing.com/${absoluteUrl}`)
       .then((response) => response.text())
@@ -54,7 +59,7 @@ export const ProfileCardWrapper = ({
             (color.length === 7 ? '33' : '')
         )
       })
-  }, [imgUrl])
+  }, [compact, imgUrl])
 
   return (
     <div className="relative rounded-lg border border-border-primary">

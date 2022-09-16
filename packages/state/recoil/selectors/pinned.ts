@@ -10,8 +10,14 @@ import { ContractVersion, DaoCardInfo } from '@dao-dao/tstypes'
 import { DaoDropdownInfo } from '@dao-dao/ui'
 import { CWCORE_CONTRACT_NAME } from '@dao-dao/utils'
 
-import { DumpStateResponse as CwCoreV0_1_0DumpStateResponse } from '../../clients/cw-core/0.1.0'
-import { DumpStateResponse as CwCoreV0_2_0DumpStateResponse } from '../../clients/cw-core/0.2.0'
+import {
+  ConfigResponse as CwCoreV0_1_0ConfigResponse,
+  DumpStateResponse as CwCoreV0_1_0DumpStateResponse,
+} from '../../clients/cw-core/0.1.0'
+import {
+  ConfigResponse as CwCoreV0_2_0ConfigResponse,
+  DumpStateResponse as CwCoreV0_2_0DumpStateResponse,
+} from '../../clients/cw-core/0.2.0'
 import { pinnedAddressesAtom } from '../atoms'
 import { CwCoreV0_1_0Selectors, CwCoreV0_2_0Selectors } from './clients'
 import {
@@ -26,23 +32,29 @@ export const pinnedDaosDropdownInfoAtom = selector<DaoDropdownInfo[]>({
   key: 'pinnedDaosDropdownInfo',
   get: ({ get }) => {
     const pinnedAddresses = get(pinnedAddressesAtom)
-    return pinnedAddresses
-      .map((coreAddress) => get(daoDropdownInfoAtom(coreAddress)))
-      .filter(Boolean) as DaoDropdownInfo[]
+    return get(
+      waitForAll(
+        pinnedAddresses.map((coreAddress) => daoDropdownInfoAtom(coreAddress))
+      )
+    ).filter(Boolean) as DaoDropdownInfo[]
   },
 })
 
 export const pinnedDaoCardInfoAtom = selectorFamily<
   DaoCardInfo[],
-  { daoUrlPrefix: string }
+  { walletAddress?: string; daoUrlPrefix: string }
 >({
   key: 'pinnedDaoCardInfo',
   get:
-    ({ daoUrlPrefix }) =>
+    ({ walletAddress, daoUrlPrefix }) =>
     ({ get }) => {
       const pinnedAddresses = get(pinnedAddressesAtom)
-      return pinnedAddresses.map((coreAddress) =>
-        get(daoCardInfoAtom({ coreAddress, daoUrlPrefix }))
+      return get(
+        waitForAll(
+          pinnedAddresses.map((coreAddress) =>
+            daoCardInfoAtom({ coreAddress, walletAddress, daoUrlPrefix })
+          )
+        )
       )
     },
 })
@@ -90,13 +102,24 @@ export const daoDropdownInfoAtom: (
 
 export const daoCardInfoAtom = selectorFamily<
   DaoCardInfo,
-  { coreAddress: string; daoUrlPrefix: string }
+  { coreAddress: string; walletAddress?: string; daoUrlPrefix: string }
 >({
   key: 'daoCardInfo',
   get:
-    ({ coreAddress, daoUrlPrefix }) =>
+    ({ coreAddress, walletAddress, daoUrlPrefix }) =>
     ({ get }) => {
       const tvl = get(daoTvlSelector(coreAddress))
+
+      const walletVotingWeight = walletAddress
+        ? Number(
+            get(
+              CwCoreV0_2_0Selectors.votingPowerAtHeightSelector({
+                contractAddress: coreAddress,
+                params: [{ address: walletAddress }],
+              })
+            ).power
+          )
+        : 0
 
       const {
         config,
@@ -136,27 +159,19 @@ export const daoCardInfoAtom = selectorFamily<
         )
       ) {
         const {
-          config: parentConfig,
-          created_timestamp: parentCreatedTimestamp,
-        }: CwCoreV0_1_0DumpStateResponse | CwCoreV0_2_0DumpStateResponse = get(
-          // Both v1 and v2 have a dump_state query.
-          CwCoreV0_2_0Selectors.dumpStateSelector({
+          image_url,
+        }: CwCoreV0_1_0ConfigResponse | CwCoreV0_2_0ConfigResponse = get(
+          // Both v1 and v2 have a config query.
+          CwCoreV0_2_0Selectors.configSelector({
             contractAddress: admin,
             params: [],
           })
         )
-        const parentEstablished =
-          typeof parentCreatedTimestamp === 'number'
-            ? new Date(parentCreatedTimestamp)
-            : get(contractInstantiateTimeSelector(admin))
 
         parentDao = {
           coreAddress,
-          name: parentConfig.name,
-          description: parentConfig.description,
-          imageUrl: parentConfig.image_url || undefined,
+          imageUrl: image_url || undefined,
           href: daoUrlPrefix + admin,
-          established: parentEstablished,
         }
       }
 
@@ -167,6 +182,7 @@ export const daoCardInfoAtom = selectorFamily<
         imageUrl: config.image_url || undefined,
         href: daoUrlPrefix + coreAddress,
         established,
+        isMember: walletVotingWeight > 0,
         tokenBalance: tvl,
         tokenSymbol: 'USDC',
         proposalCount: proposalModuleCounts.reduce(

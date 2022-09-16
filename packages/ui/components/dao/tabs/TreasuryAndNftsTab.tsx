@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SortFn, useDropdownSorter } from '../../../hooks'
-import { DropdownOption } from '../../Dropdown'
+import { Dropdown, DropdownOption } from '../../Dropdown'
 import { GridCardContainer } from '../../GridCardContainer'
 import { NftCard, NftCardProps } from '../../nft'
 import { TokenCard, TokenCardProps } from '../../TokenCard'
@@ -25,10 +25,8 @@ export const TreasuryAndNftsTab = ({
     [tokens]
   )
 
-  const { sortedData: sortedNfts, Dropdown } = useDropdownSorter(
-    nfts,
-    sortOptions[0].value
-  )
+  const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
+    useDropdownSorter(nfts, sortOptions)
 
   return (
     <>
@@ -52,7 +50,7 @@ export const TreasuryAndNftsTab = ({
         <div className="flex flex-row gap-6 justify-between items-center">
           <p className="text-text-body primary-text">{t('title.sortBy')}</p>
 
-          <Dropdown options={sortOptions} />
+          <Dropdown {...sortDropdownProps} />
         </div>
       </div>
 

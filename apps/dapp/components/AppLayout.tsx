@@ -30,7 +30,6 @@ import {
   NATIVE_DENOM,
   loadableToLoadingData,
   nativeTokenLabel,
-  processError,
   usePlatform,
 } from '@dao-dao/utils'
 
@@ -133,10 +132,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   //! Loadable errors.
   useEffect(() => {
     if (nativeUsdcPriceLoadable.state === 'hasError') {
-      console.error(processError(nativeUsdcPriceLoadable.contents))
+      console.error(nativeUsdcPriceLoadable.contents)
     }
     if (pinnedDaoDropdownInfosLoadable.state === 'hasError') {
-      console.error(processError(pinnedDaoDropdownInfosLoadable.contents))
+      console.error(pinnedDaoDropdownInfosLoadable.contents)
     }
   }, [
     nativeUsdcPriceLoadable.contents,

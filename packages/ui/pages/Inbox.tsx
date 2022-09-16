@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoDropdown,
   DaoDropdownInfo,
+  Dropdown,
   DropdownOption,
   PageHeader,
   ProposalContainer,
@@ -38,9 +39,9 @@ export const Inbox = ({
 
   const {
     sortedData: _sortedDaosWithProposals,
-    Dropdown,
+    dropdownProps: sortDropdownProps,
     selectedSortFn,
-  } = useDropdownSorter(daosWithProposals, sortOptions[0].value)
+  } = useDropdownSorter(daosWithProposals, sortOptions)
 
   // Sort proposals within DAOs using the same proposal comparator used to
   // compare the DAOs. Sort options operate on the proposals in each DAO and
@@ -88,7 +89,7 @@ export const Inbox = ({
           <div className="flex flex-row gap-6 justify-between items-center">
             <p className="text-text-body primary-text">{t('title.sortBy')}</p>
 
-            <Dropdown options={sortOptions} />
+            <Dropdown {...sortDropdownProps} />
           </div>
         </div>
 
