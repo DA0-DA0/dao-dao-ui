@@ -3,7 +3,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/ui'
 import { makeProps as makeUnstakingLineProps } from '@dao-dao/ui/components/UnstakingLine.stories'
 
-import { ProfileMemberCardMembershipInfo } from './ProfileMemberCardMembershipInfo'
+import {
+  ProfileMemberCardMembershipInfo,
+  ProfileMemberCardMembershipInfoProps,
+} from './ProfileMemberCardMembershipInfo'
 
 export default {
   title:
@@ -20,10 +23,13 @@ const Template: ComponentStory<typeof ProfileMemberCardMembershipInfo> = (
   </div>
 )
 
-export const makeProps = (unstakingTasks?: UnstakingTask[]) => ({
-  loadingClaiming: false,
-  loadingManaging: false,
+export const makeProps = (
+  unstakingTasks?: UnstakingTask[]
+): ProfileMemberCardMembershipInfoProps => ({
+  claimingLoading: false,
+  stakingLoading: false,
   onClaim: () => alert('claim'),
+  onStake: () => alert('stake'),
   stakedTokens: 50,
   tokenDecimals: 6,
   tokenSymbol: 'DOG',

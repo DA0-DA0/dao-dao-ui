@@ -181,3 +181,30 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
       }
     },
 })
+
+export const subDaoCardInfosSelector = selectorFamily<
+  DaoCardInfo[],
+  { coreAddress: string; daoUrlPrefix: string }
+>({
+  key: 'subDaoCardInfos',
+  get:
+    ({ coreAddress, daoUrlPrefix }) =>
+    ({ get }) => {
+      const subdaos = get(
+        CwCoreV0_2_0Selectors.listAllSubDaosSelector({
+          contractAddress: coreAddress,
+        })
+      )
+
+      return get(
+        waitForAll(
+          subdaos.map(({ addr }) =>
+            daoCardInfoSelector({
+              coreAddress: addr,
+              daoUrlPrefix,
+            })
+          )
+        )
+      )
+    },
+})

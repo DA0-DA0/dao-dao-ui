@@ -8,7 +8,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { ProposalModule } from '@dao-dao/tstypes'
+import { ContractVersion, ProposalModule } from '@dao-dao/tstypes'
 import {
   DaoNotFound,
   Loader as DefaultLoader,
@@ -24,6 +24,7 @@ import { WalletProvider } from './WalletProvider'
 
 export interface DaoInfo {
   coreAddress: string
+  coreVersion: ContractVersion
   votingModuleAddress: string
   votingModuleContractName: string
   proposalModules: ProposalModule[]
@@ -31,6 +32,11 @@ export interface DaoInfo {
   description: string
   imageUrl: string | null
   created: Date | undefined
+}
+
+export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
+  // Created needs to be serialized and de-serialized.
+  created: string | null
 }
 
 const DaoInfoContext = createContext<DaoInfo | null>(null)
@@ -50,7 +56,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   url?: string | null
   title: string
   description: string
-  info?: DaoInfo
+  serializedInfo?: DaoInfoSerializable
   error?: string
   Logo?: ComponentType<LogoProps>
   Loader?: ComponentType<LoaderProps>
@@ -65,38 +71,47 @@ export const DaoPageWrapper = ({
   url,
   title,
   description,
-  info,
+  serializedInfo,
   error,
   children,
   PageLoader = DefaultPageLoader,
   ...innerProps
-}: DaoPageWrapperProps) => (
-  <>
-    <NextSeo
-      description={description}
-      openGraph={{
-        ...(!!url && { url }),
-        type: 'website',
-        title,
-        description,
-        ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
-      }}
-      title={title}
-    />
+}: DaoPageWrapperProps) => {
+  const info: DaoInfo | undefined = serializedInfo && {
+    ...serializedInfo,
+    created: serializedInfo.created
+      ? new Date(serializedInfo.created)
+      : undefined,
+  }
 
-    <SuspenseLoader fallback={<PageLoader />}>
-      {info ? (
-        <InnerDaoPageWrapper info={info} {...innerProps}>
-          {children}
-        </InnerDaoPageWrapper>
-      ) : error ? (
-        <ErrorPage500 error={error} />
-      ) : (
-        <DaoNotFound />
-      )}
-    </SuspenseLoader>
-  </>
-)
+  return (
+    <>
+      <NextSeo
+        description={description}
+        openGraph={{
+          ...(!!url && { url }),
+          type: 'website',
+          title,
+          description,
+          ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
+        }}
+        title={title}
+      />
+
+      <SuspenseLoader fallback={<PageLoader />}>
+        {info ? (
+          <InnerDaoPageWrapper info={info} {...innerProps}>
+            {children}
+          </InnerDaoPageWrapper>
+        ) : error ? (
+          <ErrorPage500 error={error} />
+        ) : (
+          <DaoNotFound />
+        )}
+      </SuspenseLoader>
+    </>
+  )
+}
 
 interface InnerDaoPageWrapperProps
   extends Pick<DaoPageWrapperProps, 'Logo' | 'Loader' | 'children'> {

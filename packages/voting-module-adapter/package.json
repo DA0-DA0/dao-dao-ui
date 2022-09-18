@@ -17,6 +17,7 @@
     "buffer": "^6.0.3",
     "lodash.clonedeep": "^4.5.0",
     "react-hook-form": "7.20.4",
+    "react-hot-toast": "^2.1.1",
     "recoil": "^0.7.2"
   },
   "devDependencies": {

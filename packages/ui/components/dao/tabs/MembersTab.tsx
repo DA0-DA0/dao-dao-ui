@@ -30,8 +30,8 @@ export const MembersTab = ({
   // If has single choice proposal module, can create prefill button.
   const singleChoiceProposalModule = daoInfo.proposalModules.find(
     ({ contractName }) =>
-      matchProposalModuleAdapter(contractName)?.id ===
-      CwProposalSingleAdapter.id
+      matchProposalModuleAdapter(contractName)?.contractName ===
+      CwProposalSingleAdapter.contractName
   )
 
   const prefilledProposalFormData = {

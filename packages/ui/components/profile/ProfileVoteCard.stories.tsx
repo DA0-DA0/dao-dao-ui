@@ -18,6 +18,7 @@ export const Default = Template.bind({})
 Default.args = {
   votingPower: 32.4,
   daoName: 'Dog Dao',
+  walletAddress: 'wallet',
   walletName: '@Modern-Edamame',
   profileImgUrl: '/noah.jpg',
   loading: false,

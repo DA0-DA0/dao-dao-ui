@@ -5,7 +5,7 @@ import { Disconnected, Layers, Payments } from '@dao-dao/icons'
 
 import { ProfileImage } from './ProfileImage'
 
-export const ProfileHomeDisconnectedCard = () => {
+export const ProfileDisconnectedCard = () => {
   const { t } = useTranslation()
   const [cyclopsMode, setCyclopsMode] = useState(false)
 

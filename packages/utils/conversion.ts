@@ -4,6 +4,8 @@ import { Loadable } from 'recoil'
 import { DurationUnits, DurationWithUnits, LoadingData } from '@dao-dao/tstypes'
 import { Expiration } from '@dao-dao/types/contracts/cw3-dao'
 
+import { JUNO_BLOCKS_PER_YEAR } from './constants'
+
 export function convertMicroDenomToDenomWithDecimals(
   amount: number | string,
   decimals: number
@@ -116,3 +118,16 @@ export const loadableToLoadingData = <T>(
     ? { loading: false, data: loadable.contents }
     : { loading: false, data: defaultValue }
 }
+
+export const convertExpirationToDate = (
+  expiration: Expiration
+): Date | undefined =>
+  'at_height' in expiration
+    ? new Date(Date.now() + convertBlocksToSeconds(expiration.at_height) * 1000)
+    : 'at_time' in expiration
+    ? // Timestamp is in nanoseconds, convert to microseconds.
+      new Date(Date.now() + Number(expiration.at_time) / 1e6)
+    : undefined
+
+export const convertBlocksToSeconds = (blocks: number) =>
+  ((blocks * 1) / JUNO_BLOCKS_PER_YEAR) * 365 * 24 * 60 * 60

@@ -17,8 +17,9 @@ export interface ProfileMemberCardProps {
   loadingClaiming?: boolean
   loadingManaging?: boolean
   daoName: string
+  walletAddress: string
   walletName: string
-  profileImgUrl: string
+  profileImgUrl: string | undefined | null
   openProposals?: boolean
   established: Date
   membershipInfo: ReactNode
@@ -28,6 +29,7 @@ export const ProfileMemberCard = ({
   loadingClaiming,
   loadingManaging,
   daoName,
+  walletAddress,
   walletName,
   profileImgUrl,
   openProposals,
@@ -42,6 +44,7 @@ export const ProfileMemberCard = ({
       established={established}
       imgUrl={profileImgUrl}
       underHeaderComponent={<MembershipPill daoName={daoName} isMember />}
+      walletAddress={walletAddress}
       walletName={walletName}
     >
       <div className="p-6 pb-4 border-t border-t-border-primary">

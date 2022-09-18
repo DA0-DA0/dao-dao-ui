@@ -1,26 +1,26 @@
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { Member } from '../clients/cw4-voting'
 import {
   Cw4GroupSelectors,
   Cw4VotingSelectors,
   CwCoreV0_1_0Selectors,
-} from '../recoil'
+} from '@dao-dao/state'
+import { Member } from '@dao-dao/state/clients/cw4-voting'
 
-interface UseCw4VotingModuleOptions {
+interface UseVotingModuleOptions {
   fetchMembers?: boolean
 }
 
-interface UseCw4VotingModuleResponse {
+interface UseVotingModuleReturn {
   votingModuleAddress: string
   cw4GroupAddress: string
   members: Member[] | undefined
 }
 
-export const useCw4VotingModule = (
+export const useVotingModule = (
   coreAddress: string,
-  { fetchMembers }: UseCw4VotingModuleOptions = {}
-): UseCw4VotingModuleResponse => {
+  { fetchMembers }: UseVotingModuleOptions = {}
+): UseVotingModuleReturn => {
   const votingModuleAddress = useRecoilValue(
     CwCoreV0_1_0Selectors.votingModuleSelector({ contractAddress: coreAddress })
   )

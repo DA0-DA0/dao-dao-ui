@@ -5,11 +5,10 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { TriangleUp } from '@dao-dao/icons'
 import { DaoDropdownProps } from '@dao-dao/tstypes/ui/DaoDropdown'
 import { getFallbackImage } from '@dao-dao/utils'
 
-import { IconButton } from '../IconButton'
+import { DropdownIconButton } from '../IconButton'
 import { Tooltip } from '../Tooltip'
 
 export * from '@dao-dao/tstypes/ui/DaoDropdown'
@@ -76,16 +75,10 @@ export const DaoDropdown = ({
         <div className="flex flex-row grow gap-2 items-center ml-2">
           <div className="flex shrink-0 justify-center items-center w-6 h-6">
             {subdaos?.length || content ? (
-              <IconButton
-                Icon={TriangleUp}
+              <DropdownIconButton
                 className="text-icon-primary"
-                iconClassName={clsx(
-                  'transition-transform',
-                  expanded ? 'rotate-180' : 'rotate-90'
-                )}
-                onClick={() => setExpanded((e) => !e)}
-                size="xs"
-                variant="ghost"
+                open={expanded}
+                toggle={() => setExpanded((e) => !e)}
               />
             ) : (
               <div className="w-1 h-1 bg-icon-interactive-disabled rounded-full"></div>

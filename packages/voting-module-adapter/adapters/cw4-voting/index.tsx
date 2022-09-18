@@ -3,9 +3,10 @@ import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
-  DaoThinInfoContent,
   Membership,
   MembershipMobileTab,
+  ProfileCardNoVoteBecomeMemberInfo,
+  ProfileMemberCardMembershipInfo,
   ProposalCreationAdditionalAddresses,
   SdaMembershipPage,
   VoteHeroStats,
@@ -16,7 +17,7 @@ import {
   GovernanceConfigurationReview,
   getInstantiateInfo,
 } from './daoCreation'
-import { useActions } from './hooks'
+import { useActions, useDaoInfoBarItems } from './hooks'
 import { DaoCreationConfig } from './types'
 
 export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
@@ -38,6 +39,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
     // Hooks
     hooks: {
       useActions,
+      useDaoInfoBarItems,
     },
 
     // Components
@@ -47,10 +49,11 @@ export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
         MobileTab: MembershipMobileTab,
         Mobile: () => <Membership primaryText />,
       },
-      DaoThinInfoContent,
       DaoTreasuryFooter: () => null,
       DaoInfoAdditionalAddresses: () => null,
       DaoInfoVotingConfiguration: () => null,
+      ProfileCardNoVoteBecomeMemberInfo,
+      ProfileMemberCardMembershipInfo,
       ProposalCreationAdditionalAddresses,
       VoteHeroStats,
       SdaMembershipPage,

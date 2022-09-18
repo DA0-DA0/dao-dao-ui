@@ -17,6 +17,7 @@ export const ProfileVoteCard = <T extends unknown>({
   loading,
   votingPower,
   daoName,
+  walletAddress,
   walletName,
   profileImgUrl,
 }: ProfileVoteCardProps<T>) => {
@@ -27,6 +28,7 @@ export const ProfileVoteCard = <T extends unknown>({
       compact
       imgUrl={profileImgUrl}
       underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
+      walletAddress={walletAddress}
       walletName={walletName}
     >
       <div className="flex flex-row justify-between items-center secondary-text">

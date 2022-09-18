@@ -35,10 +35,6 @@ export interface MembershipMobileTabProps {
   selected: boolean
 }
 
-export interface BaseDaoThinInfoContentProps {
-  proposalCount: number
-}
-
 export interface BaseVoteHeroStatsProps {
   loader?: boolean
   additionalStats?: (HeroStatProps & { link?: boolean })[]
@@ -53,10 +49,18 @@ export interface BaseProposalDetailsVotingPowerWidgetProps {
   depositInfo?: CheckedDepositInfo
 }
 
+export interface BaseProfileMemberCardMembershipInfoProps {
+  deposit: string | undefined
+}
+
+export interface BaseProfileCardNoVoteBecomeMemberInfoProps {
+  deposit: string | undefined
+}
+
 export interface BaseStakingModalProps {
-  mode: StakingMode
+  initialMode?: StakingMode
   onClose: () => void
-  deposit?: string
+  maxDeposit?: string
 }
 
 export interface BaseClaimsPendingListProps {
@@ -132,15 +136,14 @@ export interface IVotingModuleAdapter {
       MobileTab: ComponentType<MembershipMobileTabProps>
       Mobile: ComponentType<BaseMembershipProps>
     }
-    DaoThinInfoContent: ComponentType<BaseDaoThinInfoContentProps>
     DaoTreasuryFooter: ComponentType
     DaoInfoAdditionalAddresses: ComponentType
     DaoInfoVotingConfiguration: ComponentType
     ProposalCreationAdditionalAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
-    ProfileMemberCardMembershipInfo: ComponentType
-    ProfileCardNoVoteBecomeMemberInfo: ComponentType
+    ProfileMemberCardMembershipInfo: ComponentType<BaseProfileMemberCardMembershipInfoProps>
+    ProfileCardNoVoteBecomeMemberInfo: ComponentType<BaseProfileCardNoVoteBecomeMemberInfoProps>
 
     ProposalDetailsVotingPowerWidget?: ComponentType<BaseProposalDetailsVotingPowerWidgetProps>
     StakingModal?: ComponentType<BaseStakingModalProps>

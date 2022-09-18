@@ -1,22 +1,37 @@
+import clsx from 'clsx'
+import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ArrowDropdown, NoProposals } from '@dao-dao/icons'
+import { NoProposals } from '@dao-dao/icons'
 
 import { Button } from '../Button'
-import { ProposalLine, ProposalLineProps } from './ProposalLine'
+import { DropdownIconButton } from '../IconButton'
+import { Loader } from '../Loader'
 
-export interface ProposalListProps {
-  openProposals: ProposalLineProps[]
-  historyProposals: ProposalLineProps[]
+export interface ProposalListProps<T> {
+  ProposalLine: ComponentType<T>
+  openProposals: T[]
+  historyProposals: T[]
   createNewProposal: () => void
+  canLoadMore: boolean
+  loadMore: () => void
+  loadingMore: boolean
+  isMember: boolean
 }
 
-export const ProposalList = ({
+export const ProposalList = <T extends {}>({
+  ProposalLine,
   openProposals,
   historyProposals,
   createNewProposal,
-}: ProposalListProps) => {
+  canLoadMore,
+  loadMore,
+  loadingMore,
+  isMember,
+}: ProposalListProps<T>) => {
   const { t } = useTranslation()
+
+  const [historyExpanded, setHistoryExpanded] = useState(true)
 
   return openProposals.length > 0 || historyProposals.length > 0 ? (
     <div className="pt-6 border-t border-border-secondary">
@@ -31,7 +46,11 @@ export const ProposalList = ({
       )}
 
       <div className="flex flex-row gap-3 items-center mt-3 ml-2 text-text-secondary link-text">
-        <ArrowDropdown className="w-2 h-2" />
+        <DropdownIconButton
+          className="text-icon-primary"
+          open={historyExpanded}
+          toggle={() => setHistoryExpanded((e) => !e)}
+        />
 
         <p>
           {/* eslint-disable-next-line i18next/no-literal-string */}
@@ -40,11 +59,30 @@ export const ProposalList = ({
         </p>
       </div>
 
-      <div className="mt-6 space-y-1">
-        {historyProposals.map((props, index) => (
-          <ProposalLine {...props} key={index} />
-        ))}
+      <div className={clsx(!historyExpanded && 'hidden')}>
+        <div className="mt-6 space-y-1">
+          {historyProposals.map((props, index) => (
+            <ProposalLine {...props} key={index} />
+          ))}
+        </div>
+
+        {(canLoadMore || loadingMore) && (
+          <div className="flex flex-row justify-end mt-4">
+            <Button
+              className="secondary"
+              loading={loadingMore}
+              onClick={loadMore}
+            >
+              {t('button.loadMore')}
+            </Button>
+          </div>
+        )}
       </div>
+    </div>
+  ) : // If loading but no proposals are display yet, just show loader.
+  loadingMore ? (
+    <div className="pt-6 border-t border-border-secondary">
+      <Loader fill={false} />
     </div>
   ) : (
     <div
@@ -55,13 +93,19 @@ export const ProposalList = ({
 
       <p className="text-center text-text-tertiary secondary-text">
         {t('info.noProposalYet')}
-        <br />
-        {t('info.createFirstOneQuestion')}
+        {isMember && (
+          <>
+            <br />
+            {t('info.createFirstOneQuestion')}
+          </>
+        )}
       </p>
 
-      <Button onClick={createNewProposal} variant="secondary">
-        {t('button.newProposal')}
-      </Button>
+      {isMember && (
+        <Button onClick={createNewProposal} variant="secondary">
+          {t('button.newProposal')}
+        </Button>
+      )}
     </div>
   )
 }

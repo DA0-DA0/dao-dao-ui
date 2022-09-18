@@ -23,6 +23,7 @@ const Template: ComponentStory<typeof ProfileNewProposalCard> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   daoName: 'Dog Dao',
+  walletAddress: 'wallet',
   walletName: 'Modern-Edamame',
   profileImgUrl: '/noah.jpg',
   lines: [

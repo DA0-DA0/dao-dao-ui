@@ -179,21 +179,21 @@ const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
 }) => (
   <DaoPageWrapper {...props}>
     <SuspenseLoader fallback={<PageLoader />}>
-      {props.proposalId && props.info ? (
+      {props.proposalId && props.serializedInfo ? (
         <ProposalModuleAdapterProvider
           initialOptions={{
-            coreAddress: props.info.coreAddress,
+            coreAddress: props.serializedInfo.coreAddress,
             Logo,
             Loader,
           }}
           proposalId={props.proposalId}
-          proposalModules={props.info.proposalModules}
+          proposalModules={props.serializedInfo.proposalModules}
         >
           <InnerProposal />
         </ProposalModuleAdapterProvider>
       ) : (
         <ProposalNotFound
-          homeHref={props.info ? `/dao/${props.info.coreAddress}` : '/home'}
+          homeHref={props.serializedInfo ? `/dao/${props.serializedInfo.coreAddress}` : '/home'}
         />
       )}
     </SuspenseLoader>

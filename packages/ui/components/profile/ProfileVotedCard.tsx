@@ -8,14 +8,16 @@ import { ProfileCardWrapper } from './ProfileCardWrapper'
 export interface ProfileVotedCardProps {
   votingPower: number
   daoName: string
+  walletAddress: string
   walletName: string
-  profileImgUrl: string
+  profileImgUrl: string | undefined | null
   vote: ReactNode
 }
 
 export const ProfileVotedCard = ({
   votingPower,
   daoName,
+  walletAddress,
   walletName,
   profileImgUrl,
   vote,
@@ -27,6 +29,7 @@ export const ProfileVotedCard = ({
       compact
       imgUrl={profileImgUrl}
       underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
+      walletAddress={walletAddress}
       walletName={walletName}
     >
       <div className="flex flex-row justify-between items-center secondary-text">

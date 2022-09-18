@@ -17,6 +17,7 @@ const Template: ComponentStory<typeof ProfileCardWrapper> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   imgUrl: '/noah.jpg',
+  walletAddress: 'wallet',
   walletName: '@wallet_name',
   established: new Date(),
   underHeaderComponent: <MembershipPill daoName="DAO" isMember={false} />,

@@ -13,7 +13,7 @@ export interface UnstakingTask {
   tokenDecimals: number
   // If unstaking or ready to claim, date it will be/was unstaked.
   // If claimed, date it was claimed.
-  date: Date
+  date?: Date
 }
 
 export interface UnstakingLineProps {
@@ -31,12 +31,13 @@ export const UnstakingLine = ({
 }: UnstakingLineProps) => {
   const { t } = useTranslation()
 
-  const dateString =
-    status === UnstakingTaskStatus.Unstaking
+  const dateString = date
+    ? status === UnstakingTaskStatus.Unstaking
       ? t('info.timeLeft', {
           time: secondsToWdhms((date.getTime() - Date.now()) / 1000, 1),
         })
       : formatDate(date)
+    : undefined
 
   return (
     <>
@@ -80,11 +81,12 @@ export const UnstakingLine = ({
             ${tokenSymbol}
           </p>
 
-          {dateReplacement || (
-            <p className="font-mono text-right break-words caption-text">
-              {dateString}
-            </p>
-          )}
+          {dateReplacement ||
+            (dateString && (
+              <p className="font-mono text-right break-words caption-text">
+                {dateString}
+              </p>
+            ))}
         </div>
       </div>
     </>

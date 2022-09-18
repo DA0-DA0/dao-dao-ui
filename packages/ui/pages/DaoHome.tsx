@@ -22,7 +22,7 @@ export interface DaoHomeProps {
   proposalsTab: ReactNode
   treasuryAndNftsTab: ReactNode
   subDaosTab: ReactNode
-  membersTab: ReactNode
+  membersTab?: ReactNode
   rightSidebarContent: ReactNode
 }
 
@@ -39,6 +39,17 @@ export const DaoHome = ({
 }: DaoHomeProps) => {
   const { RightSidebarContent } = useAppLayoutContext()
   const [selectedTab, setSelectedTab] = useState(Tab.Proposals)
+
+  const tabs = [
+    Tab.Proposals,
+    Tab.TreasuryAndNfts,
+    Tab.SubDaos,
+    // Don't include Members if no membersTab.
+    ...(membersTab !== undefined ? [Tab.Members] : []),
+  ].map((tab) => ({
+    label: tab,
+    value: tab,
+  }))
 
   return (
     <>
@@ -88,9 +99,11 @@ export const DaoHome = ({
             <div className={clsx(selectedTab !== Tab.SubDaos && 'hidden')}>
               {subDaosTab}
             </div>
-            <div className={clsx(selectedTab !== Tab.Members && 'hidden')}>
-              {membersTab}
-            </div>
+            {membersTab !== undefined && (
+              <div className={clsx(selectedTab !== Tab.Members && 'hidden')}>
+                {membersTab}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -104,10 +117,3 @@ enum Tab {
   SubDaos = 'SubDAOs',
   Members = 'Members',
 }
-
-const tabs = [Tab.Proposals, Tab.TreasuryAndNfts, Tab.SubDaos, Tab.Members].map(
-  (tab) => ({
-    label: tab,
-    value: tab,
-  })
-)

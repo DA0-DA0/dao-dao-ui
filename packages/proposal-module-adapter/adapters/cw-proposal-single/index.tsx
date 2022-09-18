@@ -6,11 +6,11 @@ import {
   DaoInfoVotingConfiguration,
   NewProposal,
   ProposalModuleInfo,
+  makeDepositInfo,
+  makeReverseProposalInfos,
   makeUseActions,
-  makeUseDepositInfo,
   makeUseListAllProposalInfos,
   makeUseProposalCount,
-  makeUseReverseProposalInfos,
 } from './common'
 import {
   PinnedProposalLineDesktop,
@@ -44,17 +44,19 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
     contractName: CWPROPOSALSINGLE_CONTRACT_NAME,
 
     loadCommon: (options) => ({
+      // Selectors
+      selectors: {
+        reverseProposalInfos: makeReverseProposalInfos(options),
+        depositInfo: makeDepositInfo(options),
+      },
+
       // Hooks
       hooks: {
-        useReverseProposalInfos: makeUseReverseProposalInfos(
-          options.proposalModule
-        ),
         useListAllProposalInfos: makeUseListAllProposalInfos(
           options.proposalModule
         ),
         useProposalCount: makeUseProposalCount(options.proposalModule),
         useActions: makeUseActions(options.proposalModule),
-        useDepositInfo: makeUseDepositInfo(options.proposalModule),
       },
 
       // Components

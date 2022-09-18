@@ -21,7 +21,11 @@ export const getAdapters = (): readonly ProposalModuleAdapter[] => [
 ]
 
 export const matchAdapter = (contractName: string) =>
-  getAdapters().find((adapter) => adapter.contractName === contractName)
+  getAdapters().find((adapter) =>
+    standardizeContractName(contractName).includes(
+      standardizeContractName(adapter.contractName)
+    )
+  )
 
 export const matchAndLoadCommon = (
   proposalModule: ProposalModule,
@@ -117,3 +121,7 @@ export class ProposalModuleAdapterError extends Error {
     this.name = 'ProposalModuleAdapterError'
   }
 }
+
+// Standardize for comparisons.
+const standardizeContractName = (contractName: string) =>
+  contractName.replace('crates.io:', '').trim()

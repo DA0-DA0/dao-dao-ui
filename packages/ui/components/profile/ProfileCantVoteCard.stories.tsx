@@ -19,6 +19,7 @@ const Template: ComponentStory<typeof ProfileCantVoteCard> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   daoName: 'Dog Dao',
+  walletAddress: 'wallet',
   walletName: '@Modern-Edamame',
   profileImgUrl: '/noah.jpg',
   isMember: false,

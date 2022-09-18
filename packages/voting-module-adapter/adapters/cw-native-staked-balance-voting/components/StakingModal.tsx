@@ -35,7 +35,7 @@ export const StakingModal = (props: BaseStakingModalProps) => (
 const InnerStakingModal = ({
   mode,
   onClose,
-  deposit,
+  maxDeposit: deposit,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()

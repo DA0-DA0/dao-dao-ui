@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProposalLine, ProposalLineProps } from './ProposalLine'
 import { makeProps as makeProposalProps } from './ProposalLine.ProposalLine.stories'
 import { ProposalList } from './ProposalList'
 
@@ -8,9 +9,9 @@ export default {
   component: ProposalList,
 } as ComponentMeta<typeof ProposalList>
 
-const Template: ComponentStory<typeof ProposalList> = (args) => (
-  <ProposalList {...args} />
-)
+const Template: ComponentStory<typeof ProposalList<ProposalLineProps>> = (
+  args
+) => <ProposalList {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
@@ -28,12 +29,35 @@ Default.args = {
       ['Yes', 'No', 'Abstain'][Math.floor(Math.random() * 3)]
     )
   ),
+  ProposalLine,
   createNewProposal: () => alert('new proposal'),
+  canLoadMore: true,
+  loadMore: () => alert('load more'),
+  loadingMore: false,
+  isMember: true,
 }
 
 export const None = Template.bind({})
 None.args = {
+  ...Default.args,
   openProposals: [],
   historyProposals: [],
-  createNewProposal: () => alert('new proposal'),
+}
+
+export const NoneNotMember = Template.bind({})
+NoneNotMember.args = {
+  ...None.args,
+  isMember: false,
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  ...Default.args,
+  loadingMore: true,
+}
+
+export const LoadingNone = Template.bind({})
+LoadingNone.args = {
+  ...None.args,
+  loadingMore: true,
 }

@@ -21,14 +21,16 @@ export interface ProfileNewProposalCardAddress {
 
 export interface ProfileNewProposalCardProps {
   daoName: string
+  walletAddress: string
   walletName: string
-  profileImgUrl: string
+  profileImgUrl: string | undefined | null
   lines: ProfileNewProposalCardInfoLine[]
   addresses: ProfileNewProposalCardAddress[]
 }
 
 export const ProfileNewProposalCard = ({
   daoName,
+  walletAddress,
   walletName,
   profileImgUrl,
   lines,
@@ -50,6 +52,7 @@ export const ProfileNewProposalCard = ({
       compact
       imgUrl={profileImgUrl}
       underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
+      walletAddress={walletAddress}
       walletName={walletName}
     >
       <div className="p-6 space-y-4">

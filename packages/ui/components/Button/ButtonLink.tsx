@@ -6,7 +6,7 @@ import {
   ButtonifiedChildren,
   ButtonifierProps,
   getButtonifiedClassNames,
-  getNonButtonifierProps,
+  getPassthroughProps,
 } from './Buttonifier'
 
 export type ButtonLinkProps = ComponentPropsWithoutRef<'a'> & ButtonifierProps
@@ -18,7 +18,7 @@ export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
 
     return (
       <LinkWrapper
-        {...getNonButtonifierProps(props)}
+        {...getPassthroughProps(props)}
         className={className}
         ref={ref}
       >

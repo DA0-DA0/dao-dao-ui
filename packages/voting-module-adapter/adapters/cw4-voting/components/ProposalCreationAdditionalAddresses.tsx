@@ -1,15 +1,15 @@
 import { useTranslation } from 'react-i18next'
 
-import { useCw4VotingModule } from '@dao-dao/state'
 import { CopyToClipboard } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { useVotingModule } from '../hooks/useVotingModule'
 
 export const ProposalCreationAdditionalAddresses = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
-  const { cw4GroupAddress } = useCw4VotingModule(coreAddress)
+  const { cw4GroupAddress } = useVotingModule(coreAddress)
 
   return (
     <>

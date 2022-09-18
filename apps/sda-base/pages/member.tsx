@@ -1,5 +1,6 @@
 import type { NextPage } from 'next'
 import React, { useMemo } from 'react'
+import { useRecoilValue, waitForAll } from 'recoil'
 
 import { useDaoInfoContext } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
@@ -16,7 +17,7 @@ const InnerMembershipPage = () => {
   } = useVotingModuleAdapter()
 
   const { coreAddress, proposalModules } = useDaoInfoContext()
-  const useDepositInfoHooks = useMemo(
+  const depositInfoSelectors = useMemo(
     () =>
       proposalModules.map(
         (proposalModule) =>
@@ -24,16 +25,13 @@ const InnerMembershipPage = () => {
             coreAddress,
             Loader,
             Logo,
-          }).hooks.useDepositInfo
+          }).selectors.depositInfo
       ),
     [coreAddress, proposalModules]
   )
-  const proposalModuleDepositInfos = useDepositInfoHooks
-    .map((useDepositInfo) =>
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      useDepositInfo?.()
-    )
-    .filter(Boolean) as CheckedDepositInfo[]
+  const proposalModuleDepositInfos = useRecoilValue(
+    waitForAll(depositInfoSelectors)
+  ).filter(Boolean) as CheckedDepositInfo[]
 
   return (
     <SdaMembershipPage

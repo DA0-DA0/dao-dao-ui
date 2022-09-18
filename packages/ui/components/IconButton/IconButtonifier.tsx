@@ -12,14 +12,13 @@ export interface IconButtonifierProps {
   iconClassName?: string
 }
 
-// Get props the IconButtonifier does not use so the element wrappers can pass
-// them through.
+// Get props that should pass through the IconButtonifier. None of the
+// IconButtonifier props should pass through except `disabled`.
 export const getNonIconButtonifierProps = <P extends IconButtonifierProps>({
   variant: _variant,
   size: _size,
   circular: _circular,
   Icon: _Icon,
-  disabled: _disabled,
   focused: _focused,
   className: _className,
   iconClassName: _iconClassName,

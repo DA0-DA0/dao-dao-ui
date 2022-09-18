@@ -193,15 +193,16 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               .filter(Boolean)
               .join(' | '),
           description: overrideDescription ?? config.description,
-          info: {
+          serializedInfo: {
             coreAddress,
+            coreVersion,
             votingModuleAddress,
             votingModuleContractName,
             proposalModules,
             name: config.name,
             description: config.description,
             imageUrl: overrideImageUrl ?? config.image_url ?? null,
-            created,
+            created: created?.toJSON() ?? null,
           },
           ...additionalProps,
         },

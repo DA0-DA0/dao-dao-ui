@@ -23,12 +23,12 @@ export const ProposalDetailsVotingPowerWidget = ({
 
       {showStaking && (
         <StakingModal
-          deposit={
+          initialMode={StakingMode.Stake}
+          maxDeposit={
             depositInfo?.token === governanceTokenAddress
               ? depositInfo.deposit
               : undefined
           }
-          mode={StakingMode.Stake}
           onClose={() => setShowStaking(false)}
         />
       )}

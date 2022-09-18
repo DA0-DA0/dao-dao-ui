@@ -12,6 +12,7 @@ export interface ProfileVoteCardProps<T> {
   loading?: boolean
   votingPower: number
   daoName: string
+  walletAddress: string
   walletName: string
-  profileImgUrl: string
+  profileImgUrl: string | undefined | null
 }

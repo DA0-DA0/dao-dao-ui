@@ -7,14 +7,16 @@ import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileCantVoteCardProps {
   daoName: string
+  walletAddress: string
   walletName: string
-  profileImgUrl: string
+  profileImgUrl: string | undefined | null
   isMember: boolean
   becomeMemberInfo: ReactNode
 }
 
 export const ProfileCantVoteCard = ({
   daoName,
+  walletAddress,
   walletName,
   profileImgUrl,
   isMember,
@@ -30,6 +32,7 @@ export const ProfileCantVoteCard = ({
       underHeaderComponent={
         <MembershipPill daoName={daoName} ghost isMember={isMember} />
       }
+      walletAddress={walletAddress}
       walletName={walletName}
     >
       <div className="p-6 border-t border-t-border-primary">

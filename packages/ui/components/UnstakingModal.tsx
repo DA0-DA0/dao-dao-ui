@@ -10,7 +10,7 @@ import { UnstakingLine, UnstakingTask } from './UnstakingLine'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export interface UnstakingModalProps extends Omit<ModalProps, 'children'> {
-  unstakingDuration: string
+  unstakingDuration?: string
   tasks: UnstakingTask[]
   onClaim: (tokenSymbol: string) => void
 }
@@ -28,7 +28,11 @@ export const UnstakingModal = ({
     title: modalProps.header?.title || t('title.unstaking'),
     subtitle:
       modalProps.header?.subtitle ||
-      t('info.unstakingDurationExplanation', { duration: unstakingDuration }),
+      (unstakingDuration
+        ? t('info.unstakingDurationExplanation', {
+            duration: unstakingDuration,
+          })
+        : t('info.unstakingDurationNoneExplanation')),
   }
 
   // Combine into tasks grouped by token.

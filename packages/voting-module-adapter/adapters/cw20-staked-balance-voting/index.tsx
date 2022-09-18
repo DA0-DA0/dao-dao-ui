@@ -7,7 +7,6 @@ import {
   ClaimsPendingList,
   DaoInfoAdditionalAddresses,
   DaoInfoVotingConfiguration,
-  DaoThinInfoContent,
   DaoTreasuryFooter,
   Membership,
   MembershipMobileTab,
@@ -26,7 +25,12 @@ import {
   UnstakingDurationVotingConfigItem,
   getInstantiateInfo,
 } from './daoCreation'
-import { useActions, useGovernanceTokenInfo, useStakingInfo } from './hooks'
+import {
+  useActions,
+  useDaoInfoBarItems,
+  useGovernanceTokenInfo,
+  useStakingInfo,
+} from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
 
 export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConfig> =
@@ -49,6 +53,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConf
       // Hooks
       hooks: {
         useActions,
+        useDaoInfoBarItems,
         useGovernanceTokenInfo,
         useStakingInfo,
       },
@@ -60,7 +65,6 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConf
           MobileTab: MembershipMobileTab,
           Mobile: (props) => <Membership {...props} primaryText />,
         },
-        DaoThinInfoContent,
         DaoTreasuryFooter,
         DaoInfoAdditionalAddresses,
         DaoInfoVotingConfiguration,

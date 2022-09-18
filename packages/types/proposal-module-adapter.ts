@@ -1,6 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
+import { RecoilValueReadOnly } from 'recoil'
 
 import { Action } from './actions'
 import { CheckedDepositInfo } from './contracts/cw-proposal-single'
@@ -14,18 +15,19 @@ import { ProcessedThresholdQuorum } from './utils'
 import { BaseProposalDetailsVotingPowerWidgetProps } from './voting-module-adapter'
 
 export interface IProposalModuleAdapterCommon {
+  // Selectors
+  selectors: {
+    reverseProposalInfos: ReverseProposalInfosSelector
+    depositInfo: DepositInfoSelector
+  }
+
   // Hooks
   hooks: {
-    useReverseProposalInfos: (
-      startBefore: number | undefined,
-      limit: number | undefined
-    ) => CommonProposalListInfo[]
     useListAllProposalInfos: (
       startAfter: number | undefined
     ) => CommonProposalListInfo[]
     useProposalCount: () => number
     useActions: () => Action[]
-    useDepositInfo?: () => CheckedDepositInfo | undefined
     // Returns `proposalNumber` (ID of this proposal for this module)
     // useCreateProposal: (data: unknown) => number
   }
@@ -125,6 +127,15 @@ export interface IProposalModuleContext {
 }
 
 // Internal Adapter Types
+
+export type ReverseProposalInfosSelector = (data: {
+  startBefore: number | undefined
+  limit: number | undefined
+}) => RecoilValueReadOnly<CommonProposalListInfo[]>
+
+export type DepositInfoSelector = RecoilValueReadOnly<
+  CheckedDepositInfo | undefined
+>
 
 export interface CommonProposalListInfo {
   id: string

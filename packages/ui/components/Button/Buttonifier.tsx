@@ -20,16 +20,15 @@ export interface ButtonifierProps {
   children?: ReactNode | ReactNode[]
 }
 
-// Get props the Buttonifier does not use so the element wrappers can pass them
-// through.
-export const getNonButtonifierProps = <P extends ButtonifierProps>({
+// Get props that should pass through the Buttonifier. None of the Buttonifier
+// props should pass through except `disabled`.
+export const getPassthroughProps = <P extends ButtonifierProps>({
   variant: _variant,
   size: _size,
   loading: _loading,
   contentContainerClassName: _contentContainerClassName,
   pressed: _pressed,
   hovering: _hovering,
-  disabled: _disabled,
   showBadge: _showBadge,
   Logo: _Logo,
   className: _className,

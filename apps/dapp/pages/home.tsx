@@ -9,7 +9,7 @@ import { useRecoilValueLoadable } from 'recoil'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { pinnedDaoCardInfoSelector } from '@dao-dao/state'
 import { DaoCardInfo } from '@dao-dao/tstypes'
-import { Home, ProfileHomeDisconnectedCard } from '@dao-dao/ui'
+import { Home, ProfileDisconnectedCard } from '@dao-dao/ui'
 import {
   FEATURED_DAOS_CACHE_SECONDS,
   loadableToLoadingData,
@@ -40,7 +40,7 @@ const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => {
     <Home
       featuredDaos={featuredDaos}
       rightSidebarContent={
-        connected ? <ProfileHomeCard /> : <ProfileHomeDisconnectedCard />
+        connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }
       {...(connected
         ? {

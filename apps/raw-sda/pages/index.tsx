@@ -122,7 +122,7 @@ const InnerStake = () => {
 
       {showStakingMode !== undefined && (
         <StakingModal
-          mode={showStakingMode}
+          initialMode={showStakingMode}
           onClose={() => setShowStakingMode(undefined)}
         />
       )}

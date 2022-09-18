@@ -11,21 +11,22 @@ import {
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 export interface ProfileMemberCardMembershipInfoProps {
-  loadingClaiming: boolean
-  loadingManaging: boolean
+  claimingLoading: boolean
+  stakingLoading: boolean
   votingPower: number
   tokenSymbol: string
   stakedTokens: number
   tokenDecimals: number
   unstakingTasks: UnstakingTask[]
   unstakedTokens: number
-  unstakingDuration: string
+  unstakingDuration?: string
   onClaim: () => void
+  onStake: () => void
 }
 
 export const ProfileMemberCardMembershipInfo = ({
-  loadingClaiming,
-  loadingManaging,
+  claimingLoading,
+  stakingLoading,
   votingPower,
   tokenSymbol,
   stakedTokens,
@@ -34,6 +35,7 @@ export const ProfileMemberCardMembershipInfo = ({
   unstakedTokens,
   unstakingDuration,
   onClaim,
+  onStake,
 }: ProfileMemberCardMembershipInfoProps) => {
   const { t } = useTranslation()
 
@@ -60,7 +62,6 @@ export const ProfileMemberCardMembershipInfo = ({
     [unstakingTasks]
   )
 
-  const [showManageStake, setShowManageStake] = useState(false)
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
 
   return (
@@ -119,8 +120,8 @@ export const ProfileMemberCardMembershipInfo = ({
         <Button
           className="mb-2 w-full"
           contentContainerClassName="justify-center"
-          disabled={loadingManaging}
-          loading={loadingClaiming}
+          disabled={stakingLoading}
+          loading={claimingLoading}
           onClick={onClaim}
           size="lg"
           variant="primary"
@@ -137,18 +138,14 @@ export const ProfileMemberCardMembershipInfo = ({
       <Button
         className="w-full"
         contentContainerClassName="justify-center"
-        disabled={loadingClaiming}
-        loading={loadingManaging}
-        onClick={() => setShowManageStake(true)}
+        disabled={claimingLoading}
+        loading={stakingLoading}
+        onClick={onStake}
         size="lg"
         variant="secondary"
       >
         {t('button.manageStake', { tokenSymbol })}
       </Button>
-
-      {/* {showManageStake && (
-        <StakingModal {...} />
-      )} */}
 
       {showUnstakingTokens && (
         <UnstakingModal

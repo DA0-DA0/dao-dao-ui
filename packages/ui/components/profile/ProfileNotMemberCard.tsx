@@ -6,14 +6,16 @@ import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export interface ProfileNotMemberCardProps {
   daoName: string
+  walletAddress: string
   walletName: string
-  profileImgUrl: string
+  profileImgUrl: string | undefined | null
   established: Date
   becomeMemberInfo: ReactNode
 }
 
 export const ProfileNotMemberCard = ({
   daoName,
+  walletAddress,
   walletName,
   profileImgUrl,
   established,
@@ -28,6 +30,7 @@ export const ProfileNotMemberCard = ({
       underHeaderComponent={
         <MembershipPill daoName={daoName} isMember={false} />
       }
+      walletAddress={walletAddress}
       walletName={walletName}
     >
       <p className="mb-1 link-text">{t('title.membership')}</p>

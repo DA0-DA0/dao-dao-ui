@@ -6,7 +6,7 @@ import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
 import {
   ProfileHomeCard,
   ProfileHomeCardProps,
-  ProfileHomeDisconnectedCard,
+  ProfileDisconnectedCard,
   SidebarWallet,
 } from '../components'
 import { Default as FeaturedDaosStory } from '../components/dao/FeaturedDaos.stories'
@@ -61,7 +61,7 @@ export const Disconnected = Template.bind({})
 Disconnected.args = {
   featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
   connected: false,
-  rightSidebarContent: <ProfileHomeDisconnectedCard />,
+  rightSidebarContent: <ProfileDisconnectedCard />,
 }
 Disconnected.parameters = {
   ...Connected.parameters,

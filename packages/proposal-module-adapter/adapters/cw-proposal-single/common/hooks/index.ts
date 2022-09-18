@@ -1,6 +1,4 @@
-export * from './makeUseDepositInfo'
 export * from './makeUseListAllProposalInfos'
 export * from './makeUseProposalCount'
-export * from './makeUseReverseProposalInfos'
 export * from './makeUseActions'
 export * from './useProcessTQ'

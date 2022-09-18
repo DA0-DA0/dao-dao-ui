@@ -2,14 +2,15 @@ import clsx from 'clsx'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { formatDate } from '@dao-dao/utils'
+import { formatDate, getFallbackImage } from '@dao-dao/utils'
 
 import { CornerGradient } from '../CornerGradient'
 import { ProfileImage } from './ProfileImage'
 
 export type ProfileCardWrapperProps = {
   children: ReactNode | ReactNode[]
-  imgUrl: string
+  imgUrl: string | undefined | null
+  walletAddress: string
   walletName: string
   underHeaderComponent: ReactNode
   childContainerClassName?: string
@@ -27,6 +28,7 @@ export type ProfileCardWrapperProps = {
 export const ProfileCardWrapper = ({
   children,
   imgUrl,
+  walletAddress,
   walletName,
   established,
   compact,
@@ -39,7 +41,7 @@ export const ProfileCardWrapper = ({
   // Get average color of image URL.
   useEffect(() => {
     // Only need this in compact mode.
-    if (!compact) {
+    if (!compact || !imgUrl) {
       return
     }
 
@@ -71,7 +73,10 @@ export const ProfileCardWrapper = ({
       <div className="p-6">
         {compact ? (
           <div className="flex flex-row gap-3 items-stretch">
-            <ProfileImage imageUrl={imgUrl} size="sm" />
+            <ProfileImage
+              imageUrl={imgUrl || getFallbackImage(walletAddress)}
+              size="sm"
+            />
 
             <div className="flex flex-col gap-1">
               <div className="text-text-body title-text">{walletName}</div>
@@ -80,7 +85,10 @@ export const ProfileCardWrapper = ({
           </div>
         ) : (
           <div className="flex flex-col justify-center items-center pt-4">
-            <ProfileImage imageUrl={imgUrl} size="lg" />
+            <ProfileImage
+              imageUrl={imgUrl || getFallbackImage(walletAddress)}
+              size="lg"
+            />
             <div className="mt-6 text-text-body title-text">{walletName}</div>
             <div className="mt-2 mb-5 font-mono caption-text">
               {t('info.establishedAbbr')} {formatDate(established)}

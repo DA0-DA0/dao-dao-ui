@@ -1,19 +1,30 @@
 import { PlusIcon } from '@heroicons/react/solid'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoInfo } from '@dao-dao/common'
+import { DaoCardInfo, LoaderProps, LoadingData } from '@dao-dao/tstypes'
+import { Loader as DefaultLoader } from '@dao-dao/ui'
 
 import { ButtonLink } from '../../Button'
 import { GridCardContainer } from '../../GridCardContainer'
-import { DaoCard, DaoCardProps } from '../DaoCard'
 
 export interface SubDaosTabProps {
-  subdaos: DaoCardProps[]
+  DaoCard: ComponentType<DaoCardInfo>
+  subDaos: LoadingData<DaoCardInfo[]>
   isMember: boolean
   daoInfo: DaoInfo
+  Loader?: ComponentType<LoaderProps>
 }
 
-export const SubDaosTab = ({ subdaos, isMember, daoInfo }: SubDaosTabProps) => {
+// TODO: Add upgrade info if DAO does not yet support subDAOs.
+export const SubDaosTab = ({
+  DaoCard,
+  subDaos: subdaos,
+  isMember,
+  daoInfo,
+  Loader = DefaultLoader,
+}: SubDaosTabProps) => {
   const { t } = useTranslation()
 
   return (
@@ -36,18 +47,24 @@ export const SubDaosTab = ({ subdaos, isMember, daoInfo }: SubDaosTabProps) => {
         </ButtonLink>
       </div>
 
-      <p className="mb-6 text-text-body title-text">
-        {t('title.numSubDaos', { count: subdaos.length })}
-      </p>
-
-      {subdaos.length ? (
-        <GridCardContainer>
-          {subdaos.map((props, index) => (
-            <DaoCard {...props} key={index} />
-          ))}
-        </GridCardContainer>
+      {subdaos.loading ? (
+        <Loader fill={false} />
       ) : (
-        <p className="secondary-text">{t('info.noSubDaos')}</p>
+        <>
+          <p className="mb-6 text-text-body title-text">
+            {t('title.numSubDaos', { count: subdaos.data.length })}
+          </p>
+
+          {subdaos.data.length ? (
+            <GridCardContainer>
+              {subdaos.data.map((props, index) => (
+                <DaoCard {...props} key={index} />
+              ))}
+            </GridCardContainer>
+          ) : (
+            <p className="secondary-text">{t('info.noSubDaos')}</p>
+          )}
+        </>
       )}
     </>
   )

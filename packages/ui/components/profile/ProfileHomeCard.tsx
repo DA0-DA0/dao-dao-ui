@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
 import { Layers, Payments } from '@dao-dao/icons'
-import { getFallbackImage } from '@dao-dao/utils'
 
 import { ButtonLink } from '../Button'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
@@ -37,7 +36,7 @@ export const ProfileHomeCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0"
       established={established}
-      imgUrl={profileImgUrl || getFallbackImage(walletAddress)}
+      imgUrl={profileImgUrl}
       underHeaderComponent={
         <div className="grid grid-cols-[1fr_1px_1fr] gap-2 justify-items-center items-center self-stretch mt-3">
           <div className="flex flex-col items-stretch text-center">
@@ -69,6 +68,7 @@ export const ProfileHomeCard = ({
           </div>
         </div>
       }
+      walletAddress={walletAddress}
       walletName={walletName}
     >
       <div className="p-6">

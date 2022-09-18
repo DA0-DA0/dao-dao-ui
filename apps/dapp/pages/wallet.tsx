@@ -16,7 +16,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
 import {
-  ProfileHomeDisconnectedCard,
+  ProfileDisconnectedCard,
   Wallet,
   WalletForm,
   WalletProps,
@@ -105,7 +105,7 @@ const WalletPage: NextPage = () => {
       formMethods={formMethods}
       loading={loading}
       rightSidebarContent={
-        connected ? <ProfileHomeCard /> : <ProfileHomeDisconnectedCard />
+        connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }
       walletAddress={walletAddress ?? ''}
     />
