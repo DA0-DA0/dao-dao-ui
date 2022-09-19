@@ -23,7 +23,7 @@ import { useDaoInfoContext } from './DaoPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
 // Max = 30
-const PROP_LOAD_LIMIT = 30
+const PROP_LOAD_LIMIT = 25
 
 export interface ProposalListProps {
   proposalCreateUrl: string
