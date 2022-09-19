@@ -22,8 +22,9 @@ import {
 import { useDaoInfoContext } from './DaoPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
-// Max = 30
-const PROP_LOAD_LIMIT = 25
+// Contracts enforce a max of 30, though this is on the edge for DAOs with
+// proposals that have a large size.
+const PROP_LOAD_LIMIT = 20
 
 export interface ProposalListProps {
   proposalCreateUrl: string
