@@ -46,7 +46,7 @@ export const tokenUSDCPriceSelector = selectorFamily<
 
       // Query for price of 1000000 tokens since decimals are not returned
       // by API. This will give us up to 10^-6 precision for calculations
-      const tokenAmount = 1000000
+      const tokenAmount = Math.pow(10, NATIVE_DECIMALS)
 
       // Query and calculate price for 1 native token
       const nativeUSDC =
@@ -91,7 +91,10 @@ export const tokenUSDCPriceSelector = selectorFamily<
       const price =
         Number(tokenPairPrice) *
         Number(nativeUSDC) *
-        Math.pow(10, -denomDecimals)
+        // Need to divide out token decimals and NATIVE_DECIMALS twice as we
+        // query prices in terms of Math.pow(10, NATIVE_DECIMALS) and if we're
+        // here we've done so twice.
+        Math.pow(10, -(denomDecimals + NATIVE_DECIMALS * 2))
 
       return price
     },
