@@ -18,7 +18,8 @@ import {
   ProposalList as StatelessProposalList,
 } from '@dao-dao/ui'
 
-// Max = 30
+// Contracts enforce a max of 30, though this is on the edge for DAOs with
+// proposals that have a large size.
 const PROP_LOAD_LIMIT = 20
 
 export const ProposalList = () => {
