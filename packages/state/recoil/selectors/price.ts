@@ -85,7 +85,7 @@ export const usdcPerMicroTokenSelector = selectorFamily<
         ) / tokenAmount
 
       // (uUSDC / uJUNO) / ( uTOKEN / uJUNO )
-      // price = (uTOKEN / uJUNO) / (uUSDC / uJUNO) = uTOKEN / uUSDC
+      // price = (uUSDC / uJUNO) / (uTOKEN / uJUNO) = uUSDC / uTOKEN
       const price =
         Number(nativeUSDC) /
         Number(tokenPairPrice) /
