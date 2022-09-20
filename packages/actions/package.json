@@ -6,11 +6,11 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@dao-dao/proposal-module-adapter": "*",
     "@dao-dao/state": "*",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@dao-dao/voting-module-adapter": "*",
-    "@dao-dao/proposal-module-adapter": "*",
     "@heroicons/react": "^1.0.6",
     "a11y-react-emoji": "^1.2.0",
     "clsx": "^1.1.1",
@@ -24,7 +24,7 @@
     "@dao-dao/tsconfig": "*",
     "@dao-dao/types": "^1.0.0",
     "eslint": "^8.18.0",
-    "typescript": "^4.5.3"
+    "typescript": "^4.8.3"
   },
   "peerDependencies": {
     "@noahsaso/cosmodal": "0.6.1"

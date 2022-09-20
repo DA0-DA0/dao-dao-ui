@@ -6,8 +6,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@dao-dao/ui": "*",
     "@dao-dao/state": "*",
+    "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
@@ -23,10 +23,10 @@
   "devDependencies": {
     "@dao-dao/storybook": "*",
     "@types/lodash.clonedeep": "^4.5.0",
-    "typescript": "^4.5.3",
-    "react-i18next": "^11.0.0",
     "clsx": "^1.1.1",
-    "react": "18.1.0"
+    "react": "18.1.0",
+    "react-i18next": "^11.0.0",
+    "typescript": "^4.8.3"
   },
   "peerDependencies": {
     "@noahsaso/cosmodal": "0.6.1"
