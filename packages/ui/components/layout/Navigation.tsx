@@ -69,8 +69,9 @@ export const Navigation = ({
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
-    // Initialize with correct state to prevent flickering.
-    typeof window === 'undefined' ? true : getForceCompact()
+    // Initialize compact to prevent hydration errors and let navigation animate
+    // opening on load.
+    true
   )
   useEffect(() => {
     // Only run in browser.

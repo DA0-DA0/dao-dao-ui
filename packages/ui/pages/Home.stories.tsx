@@ -25,8 +25,8 @@ const Template: ComponentStory<typeof Home> = (args) => {
     <Home
       {...args}
       {...(args.connected && {
-        isDaoPinned: (coreAddress) => pinned.includes(coreAddress),
-        onPin: (coreAddress) =>
+        isDaoPinned: (coreAddress: string) => pinned.includes(coreAddress),
+        onPin: (coreAddress: string) =>
           setPinned((current) =>
             current.includes(coreAddress)
               ? current.filter((a) => a !== coreAddress)
@@ -39,7 +39,11 @@ const Template: ComponentStory<typeof Home> = (args) => {
 
 export const Connected = Template.bind({})
 Connected.args = {
-  featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
+  featuredDaosProps: {
+    featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
+    isDaoPinned: () => false,
+    onPin: (address) => alert('pin ' + address),
+  },
   connected: true,
   pinnedDaos: { loading: false, data: FeaturedDaosStory.args!.featuredDaos! },
   rightSidebarContent: (
@@ -59,7 +63,11 @@ Connected.decorators = [makeAppLayoutDecorator()]
 
 export const Disconnected = Template.bind({})
 Disconnected.args = {
-  featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
+  featuredDaosProps: {
+    featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
+    isDaoPinned: () => false,
+    onPin: (address) => alert('pin ' + address),
+  },
   connected: false,
   rightSidebarContent: <ProfileDisconnectedCard />,
 }

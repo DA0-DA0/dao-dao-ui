@@ -2,10 +2,9 @@ import clsx from 'clsx'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoCardInfo } from '@dao-dao/tstypes/dao'
-
 import {
   FeaturedDaos,
+  FeaturedDaosProps,
   PageHeader,
   PinnedDaos,
   PinnedDaosProps,
@@ -13,7 +12,7 @@ import {
 } from '../components'
 
 export type HomeProps = {
-  featuredDaos: DaoCardInfo[]
+  featuredDaosProps: FeaturedDaosProps
   rightSidebarContent: ReactNode
 } & (
   | {
@@ -29,7 +28,7 @@ const maxWidth = 'mx-auto w-full max-w-5xl'
 const widthOfSidePadding = 'w-[max((100%-64rem)/2,1.5rem)]'
 
 export const Home = ({
-  featuredDaos,
+  featuredDaosProps,
   rightSidebarContent,
   ...props
 }: HomeProps) => {
@@ -62,11 +61,7 @@ export const Home = ({
             }}
           ></div>
 
-          <FeaturedDaos
-            featuredDaos={featuredDaos}
-            isDaoPinned={() => false}
-            onPin={() => {}}
-          />
+          <FeaturedDaos {...featuredDaosProps} />
 
           {/* Right shadow */}
           <div
