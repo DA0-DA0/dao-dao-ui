@@ -6,6 +6,10 @@ Storybook renderer for all packages in the monorepo.
 
 ```bash
 yarn start
+
+# OR, from the root of this monorepo:
+
+yarn storybook start
 ```
 
 This will launch the storybook server, accessible via a web browser at [http://localhost:6006](http://localhost:6006).
