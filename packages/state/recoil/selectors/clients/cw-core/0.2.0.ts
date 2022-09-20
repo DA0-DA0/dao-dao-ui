@@ -404,7 +404,9 @@ export const allCw20TokenListSelector = selectorFamily<
 
 const CW20_BALANCES_LIMIT = 10
 export const allCw20BalancesSelector = selectorFamily<
-  Cw20BalancesResponse,
+  (Cw20BalancesResponse[number] & {
+    isGovernanceToken: boolean
+  })[],
   QueryClientParams
 >({
   key: 'cwCoreV0_2_0AllCw20Balances',
@@ -452,7 +454,7 @@ export const allCw20BalancesSelector = selectorFamily<
             ...queryClientParams,
             params: [
               {
-                startAfter: balances[balances.length - 1].addr,
+                startAfter: balances[balances.length - 1]?.addr,
                 limit: CW20_BALANCES_LIMIT,
               },
             ],
@@ -481,12 +483,23 @@ export const allCw20BalancesSelector = selectorFamily<
         })
       }
 
-      return balances
+      return balances.map((balance) => ({
+        ...balance,
+        isGovernanceToken:
+          !!governanceTokenAddress && governanceTokenAddress === balance.addr,
+      }))
     },
 })
 
 export const cw20BalancesInfoSelector = selectorFamily<
-  { symbol: string; denom: string; amount: string; decimals: number }[],
+  {
+    symbol: string
+    denom: string
+    amount: string
+    decimals: number
+    imageUrl: string | undefined
+    isGovernanceToken: boolean
+  }[],
   string
 >({
   key: 'cwCoreV0_2_0Cw20BalancesInfo',
@@ -508,12 +521,37 @@ export const cw20BalancesInfoSelector = selectorFamily<
         )
       ).filter(Boolean) as TokenInfoResponse[]
 
-      return cw20Info.map(({ symbol, decimals }, idx) => ({
-        symbol,
-        denom: cw20List[idx].addr,
-        amount: cw20List[idx].balance,
-        decimals,
-      }))
+      const cw20MarketingInfo = get(
+        waitForAll(
+          cw20List.map(({ addr }) =>
+            Cw20BaseSelectors.marketingInfoSelector({
+              contractAddress: addr,
+              params: [],
+            })
+          )
+        )
+      )
+
+      return cw20Info.map(({ symbol, decimals }, idx) => {
+        const {
+          addr: denom,
+          balance: amount,
+          isGovernanceToken,
+        } = cw20List[idx]
+        const logoInfo = cw20MarketingInfo[idx].logo
+
+        return {
+          symbol,
+          denom,
+          amount,
+          decimals,
+          imageUrl:
+            !!logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
+              ? logoInfo.url
+              : undefined,
+          isGovernanceToken,
+        }
+      })
     },
 })
 
@@ -570,7 +608,7 @@ export const listAllSubDaosSelector = selectorFamily<
             ...queryClientParams,
             params: [
               {
-                startAfter: subdaos[subdaos.length - 1].addr,
+                startAfter: subdaos[subdaos.length - 1]?.addr,
                 limit: SUBDAO_LIST_LIMIT,
               },
             ],

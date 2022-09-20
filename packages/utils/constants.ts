@@ -12,7 +12,10 @@ export const WC_ICON_PATH = process.env.NEXT_PUBLIC_WC_ICON_PATH as string
 export const LEGACY_URL_PREFIX = process.env
   .NEXT_PUBLIC_LEGACY_URL_PREFIX as string
 
-export const NATIVE_DECIMALS = 6
+export const NATIVE_DECIMALS = parseInt(
+  process.env.NEXT_PUBLIC_NATIVE_DECIMALS || '6',
+  10
+)
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
 
 export const STATUS_COLORS: { [key: string]: string } = {

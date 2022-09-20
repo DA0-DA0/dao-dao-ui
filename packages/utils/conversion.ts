@@ -1,7 +1,12 @@
 import { TFunction } from 'next-i18next'
 import { Loadable } from 'recoil'
 
-import { DurationUnits, DurationWithUnits, LoadingData } from '@dao-dao/tstypes'
+import {
+  Duration,
+  DurationUnits,
+  DurationWithUnits,
+  LoadingData,
+} from '@dao-dao/tstypes'
 import { Expiration } from '@dao-dao/types/contracts/cw3-dao'
 
 import { JUNO_BLOCKS_PER_YEAR } from './constants'
@@ -131,3 +136,6 @@ export const convertExpirationToDate = (
 
 export const convertBlocksToSeconds = (blocks: number) =>
   ((blocks * 1) / JUNO_BLOCKS_PER_YEAR) * 365 * 24 * 60 * 60
+
+export const durationToSeconds = (duration: Duration) =>
+  'height' in duration ? convertBlocksToSeconds(duration.height) : duration.time

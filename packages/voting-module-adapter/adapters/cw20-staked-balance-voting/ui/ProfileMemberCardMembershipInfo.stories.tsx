@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/ui'
+import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
 import { makeProps as makeUnstakingLineProps } from '@dao-dao/ui/components/UnstakingLine.stories'
 
 import {
@@ -34,7 +34,7 @@ export const makeProps = (
   tokenDecimals: 6,
   tokenSymbol: 'DOG',
   unstakedTokens: 45.413,
-  unstakingDuration: '28 days',
+  unstakingDurationSeconds: 28 * 24 * 3600,
   unstakingTasks: unstakingTasks ?? [
     makeUnstakingLineProps(UnstakingTaskStatus.ReadyToClaim, 'DOG').task,
     makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,

@@ -3,12 +3,14 @@
 import { DecoratorFn } from '@storybook/react'
 import { useMemo } from 'react'
 
-import { DaoInfo, DaoPageWrapper } from '@dao-dao/common'
+import { DaoInfoSerializable, DaoPageWrapper } from '@dao-dao/common'
+import { ContractVersion } from '@dao-dao/tstypes'
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
-  const info: DaoInfo = useMemo(
+  const serializedInfo: DaoInfoSerializable = useMemo(
     () => ({
       coreAddress: 'daoCoreAddress',
+      coreVersion: ContractVersion.V0_2_0,
       votingModuleAddress: 'votingModuleAddress',
       votingModuleContractName: 'crates.io:cw20-staked-balance-voting',
       proposalModules: [
@@ -24,16 +26,16 @@ export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
       // Random date in the past 12 months.
       created: new Date(
         Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
-      ),
+      ).toJSON(),
     }),
     []
   )
 
   return (
     <DaoPageWrapper
-      description={info.description}
-      info={info}
-      title={info.name}
+      description={serializedInfo.description}
+      serializedInfo={serializedInfo}
+      title={serializedInfo.name}
     >
       <Story />
     </DaoPageWrapper>

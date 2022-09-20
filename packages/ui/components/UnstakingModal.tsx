@@ -3,10 +3,11 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ArrowDropdown } from '@dao-dao/icons'
+import { UnstakingTask } from '@dao-dao/tstypes'
 
 import { Button } from './Button'
 import { Modal, ModalProps } from './Modal'
-import { UnstakingLine, UnstakingTask } from './UnstakingLine'
+import { UnstakingLine } from './UnstakingLine'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export interface UnstakingModalProps extends Omit<ModalProps, 'children'> {
@@ -40,7 +41,11 @@ export const UnstakingModal = ({
     () =>
       tasks
         .filter(({ status }) => status === UnstakingTaskStatus.ReadyToClaim)
-        .sort((a, b) => a.date.getTime() - b.date.getTime())
+        .sort(
+          (a, b) =>
+            // Place undefined last.
+            (a.date?.getTime() ?? Infinity) - (b.date?.getTime() ?? Infinity)
+        )
         .reduce((combinedTasks, task) => {
           const existingTask = combinedTasks.find(
             ({ tokenSymbol }) => tokenSymbol === task.tokenSymbol
@@ -62,14 +67,22 @@ export const UnstakingModal = ({
     () =>
       tasks
         .filter(({ status }) => status === UnstakingTaskStatus.Unstaking)
-        .sort((a, b) => a.date.getTime() - b.date.getTime()),
+        .sort(
+          (a, b) =>
+            // Place undefined last.
+            (a.date?.getTime() ?? Infinity) - (b.date?.getTime() ?? Infinity)
+        ),
     [tasks]
   )
   const claimed = useMemo(
     () =>
       tasks
         .filter(({ status }) => status === UnstakingTaskStatus.Claimed)
-        .sort((a, b) => b.date.getTime() - a.date.getTime()),
+        .sort(
+          (a, b) =>
+            // Place undefined last.
+            (b.date?.getTime() ?? -Infinity) - (a.date?.getTime() ?? -Infinity)
+        ),
     [tasks]
   )
 

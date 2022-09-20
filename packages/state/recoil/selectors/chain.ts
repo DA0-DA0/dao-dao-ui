@@ -1,13 +1,19 @@
-import { LcdClient } from '@cosmjs/launchpad'
 import { Coin } from '@cosmjs/stargate'
+import { cosmos } from 'interchain'
 import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 
+import { Delegation, UnbondingDelegation, Validator } from '@dao-dao/tstypes'
 import {
   CHAIN_REST_ENDPOINT,
   CHAIN_RPC_ENDPOINT,
+  NATIVE_DECIMALS,
   NATIVE_DENOM,
   cosmWasmClientRouter,
+  getAllLcdResponse,
+  nativeTokenDecimals,
+  nativeTokenLabel,
+  nativeTokenLogoURI,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -25,7 +31,12 @@ export const cosmWasmClientSelector = selector({
 
 export const lcdClientSelector = selector({
   key: 'lcdClient',
-  get: () => new LcdClient(CHAIN_REST_ENDPOINT),
+  get: async () =>
+    (
+      await cosmos.ClientFactory.createLCDClient({
+        restEndpoint: CHAIN_REST_ENDPOINT,
+      })
+    ).cosmos,
 })
 
 export const blockHeightSelector = selector({
@@ -65,10 +76,19 @@ export const blockHeightTimestampSafeSelector = selectorFamily<
     },
 })
 
-export const nativeBalancesSelector = selectorFamily({
+export const nativeBalancesSelector = selectorFamily<
+  {
+    denom: string
+    amount: string
+    decimals: number
+    label: string
+    imageUrl: string | undefined
+  }[],
+  string
+>({
   key: 'nativeBalances',
   get:
-    (address: string) =>
+    (address) =>
     async ({ get }) => {
       const client = get(stargateClientSelector)
 
@@ -83,7 +103,13 @@ export const nativeBalancesSelector = selectorFamily({
         })
       }
 
-      return balances
+      return balances.map(({ amount, denom }) => ({
+        amount,
+        denom,
+        decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
+        label: nativeTokenLabel(denom),
+        imageUrl: nativeTokenLogoURI(denom),
+      }))
     },
 })
 
@@ -148,13 +174,164 @@ export const nativeSupplySelector = selectorFamily({
     async ({ get }) => {
       const client = get(lcdClientSelector)
 
-      const {
-        amount: { amount },
-      }: {
-        amount: Coin
-      } = await client.get('/cosmos/bank/v1beta1/supply/' + denom)
+      return (
+        await client.bank.v1beta1.supplyOf({
+          denom,
+        })
+      ).amount.amount
+    },
+})
 
-      return amount
+export const validatorSelector = selectorFamily<Validator, string>({
+  key: 'validator',
+  get:
+    (validatorAddr: string) =>
+    async ({ get }) => {
+      const client = get(lcdClientSelector)
+      const {
+        validator: {
+          description: { moniker, website, details },
+        },
+      } = await client.staking.v1beta1.validator({
+        validatorAddr,
+      })
+
+      return {
+        address: validatorAddr,
+        moniker,
+        website,
+        details,
+      }
+    },
+})
+
+export const nativeUnstakingDurationSecondsSelector = selector({
+  key: 'nativeUnstakingDurationSeconds',
+  get: async ({ get }) => {
+    const client = get(lcdClientSelector)
+    const { params } = await client.staking.v1beta1.params()
+    // Incorrectly typed.
+    // `unbonding_time` is serialized with an `s` suffix indicating seconds.
+    return parseInt(
+      (params.unbonding_time as unknown as string).split('s')[0],
+      10
+    )
+  },
+})
+
+export const nativeStakingInfoSelector = selectorFamily<
+  {
+    delegations: Delegation[]
+    unbondingDelegations: UnbondingDelegation[]
+  },
+  string
+>({
+  key: 'nativeStakingInfo',
+  get:
+    (delegatorAddr: string) =>
+    async ({ get }) => {
+      const client = get(lcdClientSelector)
+
+      const delegatorDelegations =
+        client.staking.v1beta1.delegatorDelegations.bind(client.staking.v1beta1)
+      const delegations = await getAllLcdResponse(
+        delegatorDelegations,
+        {
+          delegatorAddr,
+        },
+        'delegation_responses'
+      )
+
+      const delegatorValidators =
+        client.staking.v1beta1.delegatorValidators.bind(client.staking.v1beta1)
+      const validators = await getAllLcdResponse(
+        delegatorValidators,
+        {
+          delegatorAddr,
+        },
+        'validators'
+      )
+
+      const { rewards } =
+        await client.distribution.v1beta1.delegationTotalRewards({
+          delegatorAddress: delegatorAddr,
+        })
+
+      const delegatorUnbondingDelegations =
+        client.staking.v1beta1.delegatorUnbondingDelegations.bind(
+          client.staking.v1beta1
+        )
+      const unbondingDelegations = await getAllLcdResponse(
+        delegatorUnbondingDelegations,
+        {
+          delegatorAddr,
+        },
+        'unbonding_responses'
+      )
+
+      return {
+        delegations: delegations
+          .map(
+            ({
+              delegation: { validator_address: address },
+              balance: delegationBalance,
+            }): Delegation | undefined => {
+              // Only allow NATIVE_DENOM.
+              if (delegationBalance.denom !== NATIVE_DENOM) {
+                return
+              }
+
+              const { description } =
+                validators.find(
+                  ({ operator_address }) => operator_address === address
+                ) ?? {}
+              const pendingReward = rewards
+                .find(({ validator_address }) => validator_address === address)
+                ?.reward.find(({ denom }) => denom === NATIVE_DENOM)
+
+              if (!description || !pendingReward) {
+                return
+              }
+
+              const { moniker, website, details } = description
+
+              return {
+                validator: {
+                  address,
+                  moniker,
+                  website,
+                  details,
+                },
+                delegated: delegationBalance,
+                pendingReward,
+              }
+            }
+          )
+          .filter(Boolean) as Delegation[],
+
+        // Only returns native token unbondings, no need to check.
+        unbondingDelegations: unbondingDelegations.flatMap(
+          ({ validator_address, entries }) => {
+            const validator = get(validatorSelector(validator_address))
+
+            return entries.map(
+              ({
+                creation_height,
+                completion_time,
+                balance,
+              }): UnbondingDelegation => ({
+                validator,
+                balance: {
+                  amount: balance,
+                  denom: NATIVE_DENOM,
+                },
+                startedAtHeight: creation_height.toNumber(),
+                finishesAt: completion_time,
+              })
+            )
+          }
+        ),
+      }
     },
 })
 

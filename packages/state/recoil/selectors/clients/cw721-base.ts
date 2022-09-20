@@ -202,3 +202,45 @@ export const minterSelector = selectorFamily<
       return await client.minter(...params)
     },
 })
+
+const ALL_TOKENS_FOR_OWNER_LIMIT = 30
+export const cw721BaseAllTokensForOwnerSelector = selectorFamily<
+  TokensResponse['tokens'],
+  QueryClientParams & {
+    owner: string
+  }
+>({
+  key: 'cw721BaseAllTokensForOwner',
+  get:
+    ({ owner, ...queryClientParams }) =>
+    async ({ get }) => {
+      const tokens: TokensResponse['tokens'] = []
+      while (true) {
+        const response = await get(
+          tokensSelector({
+            ...queryClientParams,
+            params: [
+              {
+                owner,
+                startAfter: tokens[tokens.length - 1],
+                limit: ALL_TOKENS_FOR_OWNER_LIMIT,
+              },
+            ],
+          })
+        )?.tokens
+
+        if (!response?.length) {
+          break
+        }
+
+        tokens.push(...response)
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < ALL_TOKENS_FOR_OWNER_LIMIT) {
+          break
+        }
+      }
+
+      return tokens
+    },
+})

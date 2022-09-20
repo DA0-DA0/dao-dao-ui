@@ -2,19 +2,10 @@ import clsx from 'clsx'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
 import { formatDate, secondsToWdhms } from '@dao-dao/utils'
 
-import { UnstakingStatus, UnstakingTaskStatus } from './UnstakingStatus'
-
-export interface UnstakingTask {
-  status: UnstakingTaskStatus
-  amount: number
-  tokenSymbol: string
-  tokenDecimals: number
-  // If unstaking or ready to claim, date it will be/was unstaked.
-  // If claimed, date it was claimed.
-  date?: Date
-}
+import { UnstakingStatus } from './UnstakingStatus'
 
 export interface UnstakingLineProps {
   task: UnstakingTask

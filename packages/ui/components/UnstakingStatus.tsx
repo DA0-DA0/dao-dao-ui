@@ -3,13 +3,11 @@ import clsx from 'clsx'
 import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { UnstakingTaskStatus } from '@dao-dao/tstypes'
 import { StatusDisplay } from '@dao-dao/ui'
 
-export enum UnstakingTaskStatus {
-  Unstaking = 'unstaking',
-  ReadyToClaim = 'readyToClaim',
-  Claimed = 'claimed',
-}
+export { UnstakingTaskStatus }
+
 const UnstakingTaskStatusValues = Object.values(UnstakingTaskStatus)
 
 export interface UnstakingStatusProps {

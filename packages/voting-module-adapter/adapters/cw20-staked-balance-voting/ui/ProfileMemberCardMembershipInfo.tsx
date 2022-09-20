@@ -2,13 +2,9 @@ import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Button,
-  UnstakingModal,
-  UnstakingTask,
-  UnstakingTaskStatus,
-} from '@dao-dao/ui'
-import { formatPercentOf100 } from '@dao-dao/utils'
+import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
+import { Button, UnstakingModal } from '@dao-dao/ui'
+import { formatPercentOf100, secondsToWdhms } from '@dao-dao/utils'
 
 export interface ProfileMemberCardMembershipInfoProps {
   claimingLoading: boolean
@@ -19,7 +15,7 @@ export interface ProfileMemberCardMembershipInfoProps {
   tokenDecimals: number
   unstakingTasks: UnstakingTask[]
   unstakedTokens: number
-  unstakingDuration?: string
+  unstakingDurationSeconds: number | undefined
   onClaim: () => void
   onStake: () => void
 }
@@ -33,7 +29,7 @@ export const ProfileMemberCardMembershipInfo = ({
   tokenDecimals,
   unstakingTasks,
   unstakedTokens,
-  unstakingDuration,
+  unstakingDurationSeconds,
   onClaim,
   onStake,
 }: ProfileMemberCardMembershipInfoProps) => {
@@ -152,7 +148,11 @@ export const ProfileMemberCardMembershipInfo = ({
           onClaim={onClaim}
           onClose={() => setShowUnstakingTokens(false)}
           tasks={unstakingTasks}
-          unstakingDuration={unstakingDuration}
+          unstakingDuration={
+            unstakingDurationSeconds
+              ? secondsToWdhms(unstakingDurationSeconds)
+              : undefined
+          }
         />
       )}
     </>

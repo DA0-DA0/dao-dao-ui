@@ -31,7 +31,7 @@ import {
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { ProposalsTab, SubDaosTab } from '@/components'
+import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 
 const InnerDaoHome = () => {
   const {
@@ -134,8 +134,7 @@ const InnerDaoHome = () => {
         )
       }
       subDaosTab={<SubDaosTab />}
-      // TODO: Create.
-      treasuryAndNftsTab={null}
+      treasuryAndNftsTab={<TreasuryAndNftsTab />}
     />
   )
 }

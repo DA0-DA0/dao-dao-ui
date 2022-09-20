@@ -9,12 +9,11 @@ import {
   stakingLoadingAtom,
   useWalletBalance,
 } from '@dao-dao/state'
-import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/ui'
+import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
 import {
   convertExpirationToDate,
   convertMicroDenomToDenomWithDecimals,
-  durationIsNonZero,
-  humanReadableDuration,
+  durationToSeconds,
   processError,
 } from '@dao-dao/utils'
 
@@ -53,6 +52,7 @@ export const ProfileMemberCardMembershipInfo = ({
   } = useStakingInfo({
     fetchClaims: true,
     fetchWalletStakedValue: true,
+    fetchTotalStakedValue: true,
   })
 
   if (
@@ -156,10 +156,9 @@ export const ProfileMemberCardMembershipInfo = ({
           unstakedBalance,
           governanceTokenInfo.decimals
         )}
-        unstakingDuration={
-          unstakingDuration && durationIsNonZero(unstakingDuration)
-            ? humanReadableDuration(unstakingDuration)
-            : undefined
+        unstakingDurationSeconds={
+          (unstakingDuration && durationToSeconds(unstakingDuration)) ||
+          undefined
         }
         unstakingTasks={unstakingTasks}
         votingPower={(walletStakedValue / totalStakedValue) * 100}

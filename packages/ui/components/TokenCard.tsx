@@ -5,34 +5,18 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { EdamameCrown } from '@dao-dao/icons'
+import { TokenCardInfo } from '@dao-dao/tstypes'
+import { secondsToWdhms } from '@dao-dao/utils'
 
 import { Button } from './Button'
 import { SpendEmoji, StakeEmoji } from './emoji'
 import { IconButton } from './IconButton'
 import { ButtonPopup, ButtonPopupSection } from './popup'
 import { Tooltip } from './Tooltip'
-import { UnstakingTask } from './UnstakingLine'
 import { UnstakingModal } from './UnstakingModal'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
-export interface TokenStake {
-  amount: number
-  validator: string
-  rewards: number
-}
-
-export interface TokenCardProps {
-  crown?: boolean
-  tokenSymbol: string
-  subtitle?: string
-  imageUrl: string
-  totalBalance: number
-  unstakedBalance: number
-  unstakingTasks: UnstakingTask[]
-  tokenDecimals: number
-  usdcUnitPrice: number
-  unstakingDuration: string
-  stakes?: TokenStake[]
+export interface TokenCardProps extends TokenCardInfo {
   onAddToken?: () => void
   onProposeStakeUnstake: () => void
   onProposeClaim: () => void
@@ -41,15 +25,16 @@ export interface TokenCardProps {
 export const TokenCard = ({
   crown,
   tokenSymbol,
+  tokenDecimals,
   subtitle,
   imageUrl,
-  totalBalance,
   unstakedBalance,
-  unstakingTasks,
-  tokenDecimals,
   usdcUnitPrice,
-  unstakingDuration,
-  stakes,
+  stakingInfo: { unstakingTasks, unstakingDurationSeconds, stakes } = {
+    unstakingTasks: [],
+    unstakingDurationSeconds: undefined,
+    stakes: [],
+  },
   onAddToken,
   onProposeStakeUnstake,
   onProposeClaim,
@@ -60,6 +45,7 @@ export const TokenCard = ({
     () => stakes?.reduce((acc, stake) => acc + stake.amount, 0) ?? 0,
     [stakes]
   )
+  const totalBalance = unstakedBalance + totalStaked
   const pendingRewards = useMemo(
     () => stakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0,
     [stakes]
@@ -121,7 +107,7 @@ export const TokenCard = ({
             <div className="relative">
               {/* Image */}
               <div
-                className="w-10 h-10 bg-center rounded-full bg-fill"
+                className="w-10 h-10 bg-center bg-cover rounded-full"
                 style={{
                   backgroundImage: `url(${imageUrl})`,
                 }}
@@ -182,24 +168,27 @@ export const TokenCard = ({
             </div>
           </div>
 
-          <div className="flex flex-row gap-8 justify-between items-start">
-            <p className="link-text">{t('info.availableBalance')}</p>
-            {/* leading-5 to match link-text's line-height. */}
-            <div className="flex flex-col gap-1 items-end font-mono text-right caption-text">
-              <p className="leading-5 text-text-body">
-                {unstakedBalance.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
-                })}{' '}
-                ${tokenSymbol}
-              </p>
-              <p>
-                {t('format.token', {
-                  val: unstakedBalance * usdcUnitPrice,
-                  tokenSymbol: 'USDC',
-                })}
-              </p>
+          {/* Only display `unstakedBalance` if different from `totalBalance` (i.e. there is nothing staked.) */}
+          {unstakedBalance !== totalBalance && (
+            <div className="flex flex-row gap-8 justify-between items-start">
+              <p className="link-text">{t('info.availableBalance')}</p>
+              {/* leading-5 to match link-text's line-height. */}
+              <div className="flex flex-col gap-1 items-end font-mono text-right caption-text">
+                <p className="leading-5 text-text-body">
+                  {unstakedBalance.toLocaleString(undefined, {
+                    maximumFractionDigits: tokenDecimals,
+                  })}{' '}
+                  ${tokenSymbol}
+                </p>
+                <p>
+                  {t('format.token', {
+                    val: unstakedBalance * usdcUnitPrice,
+                    tokenSymbol: 'USDC',
+                  })}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {!!stakes?.length && (
@@ -280,7 +269,11 @@ export const TokenCard = ({
           onClaim={onProposeClaim}
           onClose={() => setShowUnstakingTokens(false)}
           tasks={unstakingTasks}
-          unstakingDuration={unstakingDuration}
+          unstakingDuration={
+            unstakingDurationSeconds
+              ? secondsToWdhms(unstakingDurationSeconds)
+              : undefined
+          }
         />
       )}
     </>

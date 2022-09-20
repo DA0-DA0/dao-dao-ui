@@ -12,6 +12,7 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
+import { Validator } from './chain'
 import {
   InstantiateMsg,
   ModuleInstantiateInfo,
@@ -43,6 +44,63 @@ export interface DaoCardInfo extends Omit<DaoDisplayInfo, 'parentDao'> {
   parentDao?: Pick<DaoDisplayInfo, 'coreAddress' | 'imageUrl' | 'href'>
 
   lazyData: LoadingData<DaoCardInfoLazyData>
+}
+
+export enum UnstakingTaskStatus {
+  Unstaking = 'unstaking',
+  ReadyToClaim = 'readyToClaim',
+  Claimed = 'claimed',
+}
+
+export interface UnstakingTask {
+  status: UnstakingTaskStatus
+  amount: number
+  tokenSymbol: string
+  tokenDecimals: number
+  // If unstaking or ready to claim, date it will be/was unstaked.
+  // If claimed, date it was claimed.
+  date?: Date
+}
+
+export interface TokenStake {
+  validator: Validator
+  amount: number
+  rewards: number
+}
+
+export interface TokenCardStakingInfo {
+  unstakingTasks: UnstakingTask[]
+  unstakingDurationSeconds: number | undefined
+  stakes: TokenStake[]
+}
+
+export interface TokenCardInfo {
+  crown?: boolean
+  tokenSymbol: string
+  tokenDecimals: number
+  subtitle?: string
+  imageUrl: string
+  unstakedBalance: number
+  usdcUnitPrice: number
+  // Defined if this is a Cw20 token.
+  cw20Address?: string
+
+  stakingInfo?: TokenCardStakingInfo
+}
+
+export interface NftCardInfo {
+  address: string
+  externalLink?: {
+    href: string
+    name: string
+  }
+  imageUrl?: string
+  createdBy: string
+  floorPrice?: {
+    amount: number
+    denom: string
+  }
+  name: string
 }
 
 export interface ProposalModule {

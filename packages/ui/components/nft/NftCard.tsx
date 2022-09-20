@@ -3,27 +3,13 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { ArrowOutward } from '@dao-dao/icons'
+import { NftCardInfo } from '@dao-dao/tstypes'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Checkbox } from '../input'
 import { TooltipLikeDisplay } from '../TooltipLikeDisplay'
 
-export interface NftInfo {
-  address: string
-  externalLink?: {
-    href: string
-    name: string
-  }
-  imageUrl?: string
-  createdBy: string
-  floorPrice?: {
-    amount: number
-    denom: string
-  }
-  name: string
-}
-
-export interface NftCardProps extends NftInfo {
+export interface NftCardProps extends NftCardInfo {
   checkbox?: {
     checked: boolean
     onClick: () => void

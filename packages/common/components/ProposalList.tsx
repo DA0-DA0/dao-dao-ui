@@ -19,7 +19,7 @@ import {
 } from '@dao-dao/ui'
 
 // Max = 30
-const PROP_LOAD_LIMIT = 30
+const PROP_LOAD_LIMIT = 20
 
 export const ProposalList = () => {
   const router = useRouter()

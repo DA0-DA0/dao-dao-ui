@@ -5,9 +5,17 @@ import {
   ContractVersion,
   DaoCardInfo,
   DaoCardInfoLazyData,
+  NftCardInfo,
+  TokenCardInfo,
+  TokenCardStakingInfo,
 } from '@dao-dao/tstypes'
-import { DaoDropdownInfo } from '@dao-dao/ui'
-import { CWCORE_CONTRACT_NAME } from '@dao-dao/utils'
+import { DaoDropdownInfo, UnstakingTaskStatus } from '@dao-dao/ui'
+import {
+  CWCORE_CONTRACT_NAME,
+  NATIVE_DENOM,
+  convertMicroDenomToDenomWithDecimals,
+  getFallbackImage,
+} from '@dao-dao/utils'
 
 import {
   ConfigResponse as CwCoreV0_1_0ConfigResponse,
@@ -17,13 +25,23 @@ import {
   ConfigResponse as CwCoreV0_2_0ConfigResponse,
   DumpStateResponse as CwCoreV0_2_0DumpStateResponse,
 } from '../../clients/cw-core/0.2.0'
-import { CwCoreV0_1_0Selectors, CwCoreV0_2_0Selectors } from './clients'
+import { NftInfoResponse } from '../../clients/cw721-base'
+import {
+  nativeBalancesSelector,
+  nativeStakingInfoSelector,
+  nativeUnstakingDurationSecondsSelector,
+} from './chain'
+import {
+  Cw721BaseSelectors,
+  CwCoreV0_1_0Selectors,
+  CwCoreV0_2_0Selectors,
+} from './clients'
 import {
   contractInstantiateTimeSelector,
   contractVersionSelector,
   isContractSelector,
 } from './contract'
-import { daoTvlSelector } from './price'
+import { daoTvlSelector, tokenUsdcPriceSelector } from './price'
 import { cwCoreProposalModulesSelector } from './proposal'
 
 export const daoDropdownInfoSelector: (
@@ -206,5 +224,188 @@ export const subDaoCardInfosSelector = selectorFamily<
           )
         )
       )
+    },
+})
+
+export const treasuryTokenCardInfosSelector = selectorFamily<
+  TokenCardInfo[],
+  string
+>({
+  key: 'treasuryTokenCardInfos',
+  get:
+    (coreAddress) =>
+    ({ get }) => {
+      const nativeBalances = get(nativeBalancesSelector(coreAddress))
+      const cw20s = get(
+        CwCoreV0_2_0Selectors.cw20BalancesInfoSelector(coreAddress)
+      )
+
+      const infos: TokenCardInfo[] = [
+        ...nativeBalances.map(
+          ({ denom, amount, decimals, label, imageUrl }) => {
+            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+              amount,
+              decimals
+            )
+            const usdcUnitPrice =
+              get(tokenUsdcPriceSelector({ denom, tokenDecimals: decimals })) ??
+              0
+
+            let stakingInfo: TokenCardStakingInfo | undefined
+            // For now, stakingInfo only exists for native token, until ICA.
+            if (denom === NATIVE_DENOM) {
+              const { delegations, unbondingDelegations } = get(
+                nativeStakingInfoSelector(coreAddress)
+              )
+
+              stakingInfo = {
+                unstakingTasks: unbondingDelegations.map(
+                  ({ balance, finishesAt }) => ({
+                    status: UnstakingTaskStatus.Unstaking,
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      balance.amount,
+                      decimals
+                    ),
+                    tokenSymbol: label,
+                    tokenDecimals: decimals,
+                    date: finishesAt,
+                  })
+                ),
+                unstakingDurationSeconds: get(
+                  nativeUnstakingDurationSecondsSelector
+                ),
+                stakes: delegations.map(
+                  ({ validator, delegated, pendingReward }) => ({
+                    validator,
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      delegated.amount,
+                      decimals
+                    ),
+                    rewards: convertMicroDenomToDenomWithDecimals(
+                      pendingReward.amount,
+                      decimals
+                    ),
+                  })
+                ),
+              }
+            }
+
+            return {
+              // TODO: Make true if native token DAO and using this denom.
+              crown: false,
+              tokenSymbol: label,
+              tokenDecimals: decimals,
+              // TODO: Retrieve subtitle.
+              // subtitle: '',
+              imageUrl: imageUrl || getFallbackImage(denom),
+              unstakedBalance,
+              usdcUnitPrice,
+
+              stakingInfo,
+            }
+          }
+        ),
+        ...cw20s.map(
+          ({
+            symbol,
+            denom,
+            amount,
+            decimals,
+            imageUrl,
+            isGovernanceToken,
+          }) => {
+            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+              amount,
+              decimals
+            )
+            const usdcUnitPrice =
+              get(tokenUsdcPriceSelector({ denom, tokenDecimals: decimals })) ??
+              0
+
+            return {
+              crown: isGovernanceToken,
+              tokenSymbol: symbol,
+              tokenDecimals: decimals,
+              // TODO: Choose subtitle.
+              // subtitle: '',
+              // `denom` is an address, so all would fallback to the same image
+              // if using `denom` instead of `symbol` here (since fallback image
+              // is based on the first character).
+              imageUrl: imageUrl || getFallbackImage(symbol),
+              unstakedBalance,
+              usdcUnitPrice,
+              cw20Address: denom,
+              // No unstaking info for CW20.
+            }
+          }
+        ),
+      ]
+
+      return infos
+    },
+})
+
+export const nftTokenUriDataSelector = selectorFamily<unknown, string>({
+  key: 'nftTokenUriData',
+  get: (tokenUri) => async () => {
+    const response = await fetch(tokenUri)
+    console.log(response)
+    return response
+  },
+})
+
+export const nftCardInfosSelector = selectorFamily<NftCardInfo[], string>({
+  key: 'nftCardInfos',
+  get:
+    (coreAddress) =>
+    ({ get }) => {
+      const nftCollectionAddresses = get(
+        CwCoreV0_2_0Selectors.allCw721TokenListSelector({
+          contractAddress: coreAddress,
+        })
+      )
+
+      const nftCollectionTokenIds = get(
+        waitForAll(
+          nftCollectionAddresses.map((collectionAddress) =>
+            Cw721BaseSelectors.cw721BaseAllTokensForOwnerSelector({
+              contractAddress: collectionAddress,
+              owner: coreAddress,
+            })
+          )
+        )
+      )
+
+      const nftTokenInfos = get(
+        waitForAll(
+          nftCollectionAddresses.flatMap((collectionAddress, index) =>
+            nftCollectionTokenIds[index].map((tokenId) =>
+              Cw721BaseSelectors.nftInfoSelector({
+                contractAddress: collectionAddress,
+                params: [{ tokenId }],
+              })
+            )
+          )
+        )
+      ).filter(Boolean) as NftInfoResponse[]
+
+      const nftTokenUriDataResponses = get(
+        waitForAll(
+          nftTokenInfos
+            .filter(({ token_uri }) => !!token_uri)
+            .map(({ token_uri }) => nftTokenUriDataSelector(token_uri!))
+        )
+      )
+
+      console.log(
+        nftCollectionAddresses,
+        nftCollectionTokenIds,
+        nftTokenInfos,
+        nftTokenUriDataResponses
+      )
+
+      const infos: NftCardInfo[] = []
+
+      return infos
     },
 })
