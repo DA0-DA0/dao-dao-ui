@@ -3,6 +3,7 @@ import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
+  MembersTab,
   Membership,
   MembershipMobileTab,
   ProfileCardNoVoteBecomeMemberInfo,
@@ -44,6 +45,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
 
     // Components
     components: {
+      MembersTab,
       Membership: {
         Desktop: () => <Membership />,
         MobileTab: MembershipMobileTab,

@@ -1,5 +1,6 @@
 export * from './Membership'
 export * from './MembershipMobileTab'
+export * from './MembersTab'
 export * from './ProfileCardNoVoteBecomeMemberInfo'
 export * from './ProfileMemberCardMembershipInfo'
 export * from './ProposalCreationAdditionalAddresses'

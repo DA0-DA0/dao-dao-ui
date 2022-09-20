@@ -16,7 +16,7 @@ const Template: ComponentStory<typeof DaoMemberCard> = (args) => (
 
 export const makeProps = (): DaoMemberCardProps => ({
   imageUrl: '/noah.jpg',
-  name: 'Modern-Edamame',
+  name: '@Modern-Edamame',
   address: 'juno1abczhsdyechxcjz90y',
   // Random number between 0 and 31 with 2 decimals.
   votingPowerPercent: Math.floor(Math.random() * (30 * 1e2) + 1e2) / 1e2,

@@ -26,7 +26,7 @@ export const DaoMemberCard = ({
         {/* Image */}
         <ProfileImage imageUrl={imageUrl} size="lg" />
         {/* Name */}
-        <p className="mt-4 mb-1 text-text-body title-text">@{name}</p>
+        <p className="mt-4 mb-1 text-text-body title-text">{name}</p>
         {/* Address */}
         <div className="flex flex-row gap-1 items-center">
           <p className="font-mono text-base italic text-text-tertiary">#</p>
@@ -34,8 +34,8 @@ export const DaoMemberCard = ({
           <CopyToClipboardUnderline
             className="text-text-tertiary"
             takeStartEnd={{
-              start: 7,
-              end: 14,
+              start: 12,
+              end: 8,
             }}
             value={address}
           />

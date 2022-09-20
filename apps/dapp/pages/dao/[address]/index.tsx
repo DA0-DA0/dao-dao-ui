@@ -43,6 +43,7 @@ const InnerDaoHome = () => {
   const daoInfo = useDaoInfoContext()
   const {
     components: {
+      MembersTab,
       ProfileCardNoVoteBecomeMemberInfo,
       ProfileMemberCardMembershipInfo,
     },
@@ -79,8 +80,7 @@ const InnerDaoHome = () => {
     <DaoHome
       daoInfo={daoInfo}
       daoInfoBar={<DaoInfoBar />}
-      // Add to voting module adapter.
-      membersTab={undefined}
+      membersTab={MembersTab && <MembersTab />}
       onPin={() =>
         pinned
           ? setUnpinned(daoInfo.coreAddress)

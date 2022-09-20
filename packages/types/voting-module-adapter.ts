@@ -131,6 +131,7 @@ export interface IVotingModuleAdapter {
 
   // Components
   components: {
+    MembersTab?: ComponentType
     Membership: {
       Desktop: ComponentType<BaseMembershipProps>
       MobileTab: ComponentType<MembershipMobileTabProps>

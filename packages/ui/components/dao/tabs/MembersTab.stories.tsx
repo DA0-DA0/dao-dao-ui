@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
 import { makeProps as makeDaoMemberCardProps } from '../DaoMemberCard.stories'
@@ -13,7 +12,7 @@ export default {
 } as ComponentMeta<typeof MembersTab>
 
 const Template: ComponentStory<typeof MembersTab> = (args) => (
-  <MembersTab {...args} daoInfo={useDaoInfoContext()} />
+  <MembersTab {...args} />
 )
 
 export const Default = Template.bind({})
@@ -26,5 +25,5 @@ Default.args = {
     makeDaoMemberCardProps(),
   ],
   isMember: true,
-  showAddMember: true,
+  addMemberHref: '#',
 }

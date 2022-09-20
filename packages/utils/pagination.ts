@@ -1,9 +1,9 @@
-import { Long } from '@osmonauts/helpers'
 import {
   PageRequest,
   PageResponseSDKType,
 } from 'interchain/types/codegen/cosmos/base/query/v1beta1/pagination'
 
+// TODO: Verify this works.
 export const getAllLcdResponse = async <
   P extends { pagination?: PageRequest; [key: string]: any },
   R extends { pagination?: PageResponseSDKType; [key: string]: any },
@@ -23,13 +23,7 @@ export const getAllLcdResponse = async <
     })
 
     pagination = response.pagination?.next_key?.length
-      ? {
-          key: response.pagination.next_key,
-          offset: Long.ZERO,
-          limit: Long.MAX_VALUE,
-          countTotal: false,
-          reverse: false,
-        }
+      ? { key: response.pagination.next_key }
       : undefined
 
     data.push(...response[key])
