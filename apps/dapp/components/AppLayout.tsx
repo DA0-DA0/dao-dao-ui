@@ -114,7 +114,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     refreshTokenUsdcPriceIdAtom(NATIVE_DENOM)
   )
   const usdcPricePerMacroNativeLoadable = useRecoilValueLoadable(
-    usdcPerMacroTokenSelector({ denom: NATIVE_DENOM, decimals: NATIVE_DECIMALS })
+    usdcPerMacroTokenSelector({
+      denom: NATIVE_DENOM,
+      decimals: NATIVE_DECIMALS,
+    })
   )
   // Refresh native token price every minute.
   useEffect(() => {
@@ -180,9 +183,12 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
                           {
                             label: nativeTokenLabel(NATIVE_DENOM),
                             price: Number(
-                              usdcPricePerMacroNativeLoadable.contents.toLocaleString(undefined, {
-                                maximumFractionDigits: 3,
-                              })
+                              usdcPricePerMacroNativeLoadable.contents.toLocaleString(
+                                undefined,
+                                {
+                                  maximumFractionDigits: 3,
+                                }
+                              )
                             ),
                             priceDenom: 'USDC',
                             // TODO: Retrieve.

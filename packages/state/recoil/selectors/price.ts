@@ -87,13 +87,13 @@ export const usdcPerMacroTokenSelector = selectorFamily<
           ).token1_amount
         ) / tokenAmount
 
-        const price =
+      const price =
         // (uUSDC / uJUNO) * (uJUNO / uTOKEN) = uUSDC / uTOKEN
-        (Number(nativeUSDC) * Number(tokenPairPrice)) /
-        // Divide out the number of decimals in USDC.
-          Math.pow(10, NATIVE_DECIMALS)
+        ((Number(nativeUSDC) * Number(tokenPairPrice)) /
+          // Divide out the number of decimals in USDC.
+          Math.pow(10, NATIVE_DECIMALS)) *
         // Mutltiply by the number of decimals in TOKEN.
-        * Math.pow(10, decimals)
+        Math.pow(10, decimals)
 
       return price
     },
@@ -110,10 +110,16 @@ export const daoTvlSelector = selectorFamily<number, string>({
       )
 
       let balances = cw20Balances
-        ? cw20Balances.map(({ amount, denom, decimals }) => ({ amount, denom, decimals }))
+        ? cw20Balances.map(({ amount, denom, decimals }) => ({
+            amount,
+            denom,
+            decimals,
+          }))
         : []
       if (nativeBalance) {
-        balances = [{...nativeBalance, decimals: NATIVE_DECIMALS}].concat(balances)
+        balances = [{ ...nativeBalance, decimals: NATIVE_DECIMALS }].concat(
+          balances
+        )
       }
 
       const prices = balances.map(({ amount, denom, decimals }) => {

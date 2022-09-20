@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useTranslation } from 'react-i18next'
 
 import { useDaoInfoContext } from '@dao-dao/common'
@@ -20,7 +19,6 @@ export const MembersTab = () => {
   const { t } = useTranslation()
   const { coreAddress, proposalModules } = useDaoInfoContext()
 
-  const { name } = useWallet()
   const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,
   })

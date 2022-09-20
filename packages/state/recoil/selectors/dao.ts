@@ -247,7 +247,8 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               amount,
               decimals
             )
-            const usdcUnitPrice = get(usdcPerMacroTokenSelector({ denom, decimals })) ?? 0
+            const usdcUnitPrice =
+              get(usdcPerMacroTokenSelector({ denom, decimals })) ?? 0
 
             let stakingInfo: TokenCardStakingInfo | undefined
             // For now, stakingInfo only exists for native token, until ICA.
@@ -316,7 +317,8 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               amount,
               decimals
             )
-            const usdcUnitPrice = get(usdcPerMacroTokenSelector({ denom, decimals })) ?? 0
+            const usdcUnitPrice =
+              get(usdcPerMacroTokenSelector({ denom, decimals })) ?? 0
 
             return {
               crown: isGovernanceToken,

@@ -87,8 +87,8 @@ export const useGovernanceTokenInfo = ({
   const price = useRecoilValue(
     fetchUsdcPrice && governanceTokenInfo
       ? usdcPerMacroTokenSelector({
-        denom,
-        decimals: governanceTokenInfo.decimals,
+          denom,
+          decimals: governanceTokenInfo.decimals,
         })
       : constSelector(undefined)
   )
