@@ -71,8 +71,8 @@ export const usdcPerMicroTokenSelector = selectorFamily<
         return Number(nativeUSDC) / Math.pow(10, NATIVE_DECIMALS)
       }
 
-      // Get token price in terms of native token
-      // uTOKEN / uJUNO
+      // Get juno price in terms of the native token.
+      // uJUNO / uTOKEN
       const tokenPairPrice =
         Number(
           (
@@ -84,11 +84,9 @@ export const usdcPerMicroTokenSelector = selectorFamily<
           ).token1_amount
         ) / tokenAmount
 
-      // (uUSDC / uJUNO) / ( uTOKEN / uJUNO )
-      // price = (uUSDC / uJUNO) / (uTOKEN / uJUNO) = uUSDC / uTOKEN
+      // price = (uUSDC / uJUNO) * (uJUNO / uTOKEN) = uUSDC / uTOKEN
       const price =
-        Number(nativeUSDC) /
-        Number(tokenPairPrice) /
+        (Number(nativeUSDC) * Number(tokenPairPrice)) /
         // Divide out the number of decimals in USDC.
         Math.pow(10, NATIVE_DECIMALS)
 
