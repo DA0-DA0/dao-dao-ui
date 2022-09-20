@@ -25,13 +25,13 @@ export function convertMicroDenomToDenomWithDecimals(
 export function convertDenomToMicroDenomWithDecimals(
   amount: number | string,
   decimals: number
-): string {
+) {
   if (typeof amount === 'string') {
     amount = Number(amount)
   }
   // Need to round. Example: `8.029409 * Math.pow(10, 6)`.
   amount = Math.round(amount * Math.pow(10, decimals))
-  return isNaN(amount) ? '0' : String(amount)
+  return isNaN(amount) ? 0 : amount
 }
 
 export function convertFromMicroDenom(denom: string) {

@@ -71,7 +71,7 @@ export interface BaseClaimsPendingListProps {
 export interface UseGovernanceTokenInfoOptions {
   fetchWalletBalance?: boolean
   fetchTreasuryBalance?: boolean
-  fetchUSDCPrice?: boolean
+  fetchUsdcPrice?: boolean
 }
 
 export interface UseGovernanceTokenInfoResponse {

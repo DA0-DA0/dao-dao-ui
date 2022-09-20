@@ -6,7 +6,7 @@ import {
   CwNativeStakedBalanceVotingSelectors,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
-  usdcPerMicroTokenSelector,
+  usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
 import {
   MarketingInfoResponse,
@@ -27,7 +27,7 @@ import {
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
-  fetchUSDCPrice = false,
+  fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
@@ -85,9 +85,10 @@ export const useGovernanceTokenInfo = ({
 
   // Price info
   const price = useRecoilValue(
-    fetchUSDCPrice && governanceTokenInfo
-      ? usdcPerMicroTokenSelector({
-          denom,
+    fetchUsdcPrice && governanceTokenInfo
+      ? usdcPerMacroTokenSelector({
+        denom,
+        decimals: governanceTokenInfo.decimals,
         })
       : constSelector(undefined)
   )

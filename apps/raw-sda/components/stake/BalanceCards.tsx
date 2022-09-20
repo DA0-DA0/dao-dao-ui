@@ -28,7 +28,7 @@ export const UnstakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
     price,
   } = useGovernanceTokenInfo?.({
     fetchWalletBalance: true,
-    fetchUSDCPrice: true,
+    fetchUsdcPrice: true,
   }) ?? {}
 
   if (!governanceTokenInfo || (connected && _unstakedBalance === undefined)) {
@@ -37,10 +37,6 @@ export const UnstakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
 
   const unstakedBalance = convertMicroDenomToDenomWithDecimals(
     _unstakedBalance ?? 0,
-    governanceTokenInfo.decimals
-  )
-  const unstakedBalanceUsdc = price && convertMicroDenomToDenomWithDecimals(
-    (_unstakedBalance ?? 0) * price,
     governanceTokenInfo.decimals
   )
 
@@ -57,10 +53,10 @@ export const UnstakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
       </div>
 
       <div className="flex flex-row flex-wrap justify-between items-center">
-        {unstakedBalanceUsdc !== undefined && (
+        {price !== undefined && (
           <p className="text-lg font-medium">
             ${' '}
-            {unstakedBalanceUsdc.toLocaleString(undefined, {
+            {(unstakedBalance * price).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             })}{' '}
             USD
@@ -88,7 +84,7 @@ export const StakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
   const { connected } = useWalletManager()
   const { governanceTokenInfo, price } =
     useGovernanceTokenInfo?.({
-      fetchUSDCPrice: true,
+      fetchUsdcPrice: true,
     }) ?? {}
   const { totalStakedValue, walletStakedValue } =
     useStakingInfo?.({
@@ -106,10 +102,6 @@ export const StakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
 
   const stakedValue = convertMicroDenomToDenomWithDecimals(
     walletStakedValue ?? 0,
-    governanceTokenInfo.decimals
-  )
-  const stakedValueUsdc = price && convertMicroDenomToDenomWithDecimals(
-    (walletStakedValue ?? 0) * price,
     governanceTokenInfo.decimals
   )
 
@@ -141,10 +133,10 @@ export const StakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
       </div>
 
       <div className="flex flex-row flex-wrap justify-between items-center">
-        {stakedValueUsdc !== undefined && (
+        {price !== undefined && (
           <p className="text-lg font-medium">
             ${' '}
-            {stakedValueUsdc.toLocaleString(undefined, {
+            {(stakedValue * price).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             })}{' '}
             USD

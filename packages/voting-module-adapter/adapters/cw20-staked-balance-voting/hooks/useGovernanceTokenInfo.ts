@@ -4,7 +4,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   Cw20BaseSelectors,
   Cw20StakedBalanceVotingSelectors,
-  usdcPerMicroTokenSelector,
+  usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -16,7 +16,7 @@ import {
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
-  fetchUSDCPrice = false,
+  fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
@@ -69,9 +69,10 @@ export const useGovernanceTokenInfo = ({
 
   // Price info
   const price = useRecoilValue(
-    fetchUSDCPrice
-      ? usdcPerMicroTokenSelector({
+    fetchUsdcPrice
+      ? usdcPerMacroTokenSelector({
           denom: governanceTokenAddress,
+          decimals: governanceTokenInfo.decimals,
         })
       : constSelector(undefined)
   )

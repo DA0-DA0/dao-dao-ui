@@ -20,7 +20,7 @@ export const StakeHeader = () => {
     price: governanceTokenPrice,
   } = useGovernanceTokenInfo?.({
     fetchTreasuryBalance: true,
-    fetchUSDCPrice: true,
+    fetchUsdcPrice: true,
   }) ?? {}
 
   const { totalStakedValue } =
@@ -54,7 +54,7 @@ export const StakeHeader = () => {
         1 {governanceTokenInfo.symbol} =
         {governanceTokenPrice !== undefined
           ? ' $' +
-            convertMicroDenomToDenomWithDecimals(governanceTokenPrice, governanceTokenInfo.decimals).toLocaleString(undefined, {
+            governanceTokenPrice.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }) +

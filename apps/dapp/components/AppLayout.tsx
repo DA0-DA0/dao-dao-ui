@@ -23,10 +23,11 @@ import {
   navigationCompactAtom,
   pinnedDaosDropdownInfoSelector,
   refreshTokenUsdcPriceIdAtom,
-  tokenUsdcPriceSelector,
+  usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
 import { AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import {
+  NATIVE_DECIMALS,
   NATIVE_DENOM,
   loadableToLoadingData,
   nativeTokenLabel,
@@ -112,8 +113,8 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   const setRefreshTokenUsdcPriceId = useSetRecoilState(
     refreshTokenUsdcPriceIdAtom(NATIVE_DENOM)
   )
-  const nativeUsdcPriceLoadable = useRecoilValueLoadable(
-    tokenUsdcPriceSelector({ denom: NATIVE_DENOM })
+  const usdcPricePerMacroNativeLoadable = useRecoilValueLoadable(
+    usdcPerMacroTokenSelector({ denom: NATIVE_DENOM, decimals: NATIVE_DECIMALS })
   )
   // Refresh native token price every minute.
   useEffect(() => {
@@ -131,15 +132,15 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   //! Loadable errors.
   useEffect(() => {
-    if (nativeUsdcPriceLoadable.state === 'hasError') {
-      console.error(nativeUsdcPriceLoadable.contents)
+    if (usdcPricePerMacroNativeLoadable.state === 'hasError') {
+      console.error(usdcPricePerMacroNativeLoadable.contents)
     }
     if (pinnedDaoDropdownInfosLoadable.state === 'hasError') {
       console.error(pinnedDaoDropdownInfosLoadable.contents)
     }
   }, [
-    nativeUsdcPriceLoadable.contents,
-    nativeUsdcPriceLoadable.state,
+    usdcPricePerMacroNativeLoadable.contents,
+    usdcPricePerMacroNativeLoadable.state,
     pinnedDaoDropdownInfosLoadable.contents,
     pinnedDaoDropdownInfosLoadable.state,
   ])
@@ -168,21 +169,20 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
           },
           setCommandModalVisible: () => setCommandModalVisible(true),
           tokenPrices:
-            nativeUsdcPriceLoadable.state === 'loading'
+            usdcPricePerMacroNativeLoadable.state === 'loading'
               ? { loading: true }
               : {
                   loading: false,
                   data:
-                    nativeUsdcPriceLoadable.state === 'hasValue' &&
-                    nativeUsdcPriceLoadable.contents
+                    usdcPricePerMacroNativeLoadable.state === 'hasValue' &&
+                    usdcPricePerMacroNativeLoadable.contents
                       ? [
                           {
                             label: nativeTokenLabel(NATIVE_DENOM),
                             price: Number(
-                              nativeUsdcPriceLoadable.contents.toLocaleString(
-                                undefined,
-                                { maximumFractionDigits: 3 }
-                              )
+                              usdcPricePerMacroNativeLoadable.contents.toLocaleString(undefined, {
+                                maximumFractionDigits: 3,
+                              })
                             ),
                             priceDenom: 'USDC',
                             // TODO: Retrieve.

@@ -11,16 +11,16 @@ import { cosmWasmClientSelector, nativeBalanceSelector } from './chain'
 import { CwCoreV0_1_0Selectors } from './clients'
 import { poolsListSelector } from './pools'
 
-// Gets the price of a token in USDC / uTOKEN. DENOM may either be a native
-// denomination or the address of a cw20 token. Price data is only avaliable for
+// Gets the price of a token in USDC / TOKEN. DENOM may either be a native
+// denomination or the address of a cw20 token. Price data is only available for
 // tokens that are tradable on Junoswap.
-export const usdcPerMicroTokenSelector = selectorFamily<
+export const usdcPerMacroTokenSelector = selectorFamily<
   number | undefined,
-  { denom: string }
+  { denom: string; decimals: number }
 >({
-  key: 'tokenUsdcPrice',
+  key: 'usdcPerMicroToken',
   get:
-    ({ denom }) =>
+    ({ denom, decimals }) =>
     async ({ get }) => {
       get(refreshTokenUsdcPriceIdAtom(denom))
 
@@ -68,10 +68,10 @@ export const usdcPerMicroTokenSelector = selectorFamily<
           ).token2_amount
         ) / tokenAmount
 
-      // Don't need to query again for price of native token
+      // Don't need to query again for price of native token.
       if (denom === NATIVE_DENOM) {
-        // USDC / uJUNO
-        return Number(nativeUSDC) / Math.pow(10, NATIVE_DECIMALS)
+        // USDC / JUNO
+        return Number(nativeUSDC)
       }
 
       // Get juno price in terms of the native token.
@@ -87,11 +87,13 @@ export const usdcPerMicroTokenSelector = selectorFamily<
           ).token1_amount
         ) / tokenAmount
 
-      // price = (uUSDC / uJUNO) * (uJUNO / uTOKEN) = uUSDC / uTOKEN
-      const price =
+        const price =
+        // (uUSDC / uJUNO) * (uJUNO / uTOKEN) = uUSDC / uTOKEN
         (Number(nativeUSDC) * Number(tokenPairPrice)) /
         // Divide out the number of decimals in USDC.
-        Math.pow(10, NATIVE_DECIMALS)
+          Math.pow(10, NATIVE_DECIMALS)
+        // Mutltiply by the number of decimals in TOKEN.
+        * Math.pow(10, decimals)
 
       return price
     },
@@ -102,20 +104,20 @@ export const daoTvlSelector = selectorFamily<number, string>({
   get:
     (coreAddress) =>
     async ({ get }) => {
-      const nativeBalances = get(nativeBalanceSelector(coreAddress))
+      const nativeBalance = get(nativeBalanceSelector(coreAddress))
       const cw20Balances = get(
         CwCoreV0_1_0Selectors.cw20BalancesInfoSelector(coreAddress)
       )
 
       let balances = cw20Balances
-        ? cw20Balances.map(({ amount, denom }) => ({ amount, denom }))
+        ? cw20Balances.map(({ amount, denom, decimals }) => ({ amount, denom, decimals }))
         : []
-      if (nativeBalances) {
-        balances = [nativeBalances].concat(balances)
+      if (nativeBalance) {
+        balances = [{...nativeBalance, decimals: NATIVE_DECIMALS}].concat(balances)
       }
 
-      const prices = balances.map(({ amount, denom }) => {
-        const price = get(usdcPerMicroTokenSelector({ denom }))
+      const prices = balances.map(({ amount, denom, decimals }) => {
+        const price = get(usdcPerMacroTokenSelector({ denom, decimals }))
         return price ? Number(amount) * price : 0
       })
 
