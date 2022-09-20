@@ -3,8 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProposalNotFound } from './ProposalNotFound'
 
 export default {
-  title:
-    'DAO DAO / packages / ui / components / not_found / ProposalNotFound',
+  title: 'DAO DAO / packages / ui / components / not_found / ProposalNotFound',
   component: ProposalNotFound,
 } as ComponentMeta<typeof ProposalNotFound>
 

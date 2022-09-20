@@ -6,8 +6,7 @@ import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import { ProposalYourVote } from './ProposalYourVote'
 
 export default {
-  title:
-    'DAO DAO / packages / ui / components / proposal / ProposalYourVote',
+  title: 'DAO DAO / packages / ui / components / proposal / ProposalYourVote',
   component: ProposalYourVote,
 } as ComponentMeta<typeof ProposalYourVote>
 

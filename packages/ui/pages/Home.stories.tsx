@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
 
 import {
+  ProfileDisconnectedCard,
   ProfileHomeCard,
   ProfileHomeCardProps,
-  ProfileDisconnectedCard,
   SidebarWallet,
 } from '../components'
 import { Default as FeaturedDaosStory } from '../components/dao/FeaturedDaos.stories'

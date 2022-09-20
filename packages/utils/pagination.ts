@@ -4,20 +4,17 @@ import {
   PageResponseSDKType,
 } from 'interchain/types/codegen/cosmos/base/query/v1beta1/pagination'
 
-import { KeysMatching } from '@dao-dao/tstypes'
-
 export const getAllLcdResponse = async <
-  P extends { pagination?: PageRequest },
-  OP extends Omit<P, 'pagination'>,
-  R extends { pagination?: PageResponseSDKType },
-  K extends KeysMatching<R, unknown[]>
+  P extends { pagination?: PageRequest; [key: string]: any },
+  R extends { pagination?: PageResponseSDKType; [key: string]: any },
+  K extends keyof R
 >(
-  queryFn: (params: OP) => Promise<R>,
-  params: OP,
+  queryFn: (params: P) => Promise<R>,
+  params: P,
   key: K
 ): Promise<R[K]> => {
   let pagination: PageRequest | undefined
-  const data = []
+  const data = [] as R[K]
 
   do {
     const response = await queryFn({
@@ -35,8 +32,8 @@ export const getAllLcdResponse = async <
         }
       : undefined
 
-    data.push(...(response[key] as unknown as unknown[]))
+    data.push(...response[key])
   } while (pagination !== undefined)
 
-  return data as R[K]
+  return data
 }

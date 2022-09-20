@@ -250,12 +250,12 @@ const InnerMembership = ({
 
       {showStakingMode !== undefined && (
         <StakingModal
+          initialMode={showStakingMode}
           maxDeposit={
             maxGovernanceTokenProposalDeposit
               ? maxGovernanceTokenProposalDeposit.toString()
               : undefined
           }
-          initialMode={showStakingMode}
           onClose={() => setShowStakingMode(undefined)}
         />
       )}
