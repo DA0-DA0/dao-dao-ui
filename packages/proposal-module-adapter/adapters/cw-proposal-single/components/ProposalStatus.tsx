@@ -38,7 +38,7 @@ export const ProposalStatusMap: Record<
   [Status.Open]: {
     Icon: Open,
     iconClassName: 'text-icon-primary',
-    textClassName: 'body-text',
+    textClassName: 'text-text-body',
   },
   [Status.Rejected]: {
     Icon: Rejected,
@@ -52,18 +52,12 @@ export const ProposalStatusMap: Record<
   },
   [Status.Executed]: {
     Icon: Executed,
-    iconClassName: 'text-icon-primary',
-    textClassName: 'body-text',
+    iconClassName: 'text-icon-secondary',
+    textClassName: 'text-text-secondary',
   },
   [Status.Closed]: {
-    Icon: (props) => (
-      <StopIcon
-        {...props}
-        // Weirdly is a bit brighter than the other icons, so dim it.
-        className={clsx(props.className, 'opacity-80')}
-      />
-    ),
-    iconClassName: 'text-icon-interactive-valid',
-    textClassName: 'text-text-interactive-valid',
+    Icon: StopIcon,
+    iconClassName: 'text-icon-tertiary',
+    textClassName: 'text-text-tertiary',
   },
 }
