@@ -39,6 +39,10 @@ export const UnstakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
     _unstakedBalance ?? 0,
     governanceTokenInfo.decimals
   )
+  const unstakedBalanceUsdc = price && convertMicroDenomToDenomWithDecimals(
+    (_unstakedBalance ?? 0) * price,
+    governanceTokenInfo.decimals
+  )
 
   return (
     <>
@@ -53,10 +57,10 @@ export const UnstakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
       </div>
 
       <div className="flex flex-row flex-wrap justify-between items-center">
-        {price && (
+        {unstakedBalanceUsdc !== undefined && (
           <p className="text-lg font-medium">
             ${' '}
-            {(unstakedBalance * price).toLocaleString(undefined, {
+            {unstakedBalanceUsdc.toLocaleString(undefined, {
               maximumFractionDigits: 2,
             })}{' '}
             USD
@@ -104,6 +108,10 @@ export const StakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
     walletStakedValue ?? 0,
     governanceTokenInfo.decimals
   )
+  const stakedValueUsdc = price && convertMicroDenomToDenomWithDecimals(
+    (walletStakedValue ?? 0) * price,
+    governanceTokenInfo.decimals
+  )
 
   return (
     <>
@@ -133,10 +141,10 @@ export const StakedBalanceCard = ({ setShowStakingMode }: CardProps) => {
       </div>
 
       <div className="flex flex-row flex-wrap justify-between items-center">
-        {price && (
+        {stakedValueUsdc !== undefined && (
           <p className="text-lg font-medium">
             ${' '}
-            {(stakedValue * price).toLocaleString(undefined, {
+            {stakedValueUsdc.toLocaleString(undefined, {
               maximumFractionDigits: 2,
             })}{' '}
             USD

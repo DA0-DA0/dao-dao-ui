@@ -52,9 +52,9 @@ export const StakeHeader = () => {
 
       <p className="p-5 mt-12 w-full font-studiofeixen text-2xl  text-center border-t border-inactive">
         1 {governanceTokenInfo.symbol} =
-        {governanceTokenPrice
+        {governanceTokenPrice !== undefined
           ? ' $' +
-            governanceTokenPrice.toLocaleString(undefined, {
+            convertMicroDenomToDenomWithDecimals(governanceTokenPrice, governanceTokenInfo.decimals).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }) +
