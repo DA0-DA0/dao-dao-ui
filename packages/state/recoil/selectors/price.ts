@@ -10,13 +10,16 @@ import { cosmWasmClientSelector, nativeBalanceSelector } from './chain'
 import { cw20BalancesInfoSelector } from './clients/cw-core/0.1.0'
 import { poolsListSelector } from './pools'
 
-export const tokenUSDCPriceSelector = selectorFamily<
+// Gets the price of a token in USDC / uTOKEN. DENOM may either be a native
+// denomination or the address of a cw20 token. Price data is only avaliable for
+// tokens that are tradable on Junoswap.
+export const usdcPerMicroTokenSelector = selectorFamily<
   number | undefined,
-  { denom: string; tokenDecimals?: number }
+  { denom: string }
 >({
   key: 'tokenUSDCPriceSelector',
   get:
-    ({ denom, tokenDecimals }) =>
+    ({ denom }) =>
     async ({ get }) => {
       const tokens = get(poolsListSelector)
       if (!tokens) {
@@ -49,6 +52,7 @@ export const tokenUSDCPriceSelector = selectorFamily<
       const tokenAmount = Math.pow(10, NATIVE_DECIMALS)
 
       // Query and calculate price for 1 native token
+      // uUSDC / uJUNO
       const nativeUSDC =
         Number(
           (usdcSwap
@@ -63,10 +67,12 @@ export const tokenUSDCPriceSelector = selectorFamily<
 
       // Don't need to query again for price of native token
       if (denom === NATIVE_DENOM) {
-        return Number(nativeUSDC) * Math.pow(10, -NATIVE_DECIMALS)
+        // USDC / uJUNO
+        return Number(nativeUSDC) / Math.pow(10, NATIVE_DECIMALS)
       }
 
       // Get token price in terms of native token
+      // uTOKEN / uJUNO
       const tokenPairPrice =
         Number(
           (
@@ -78,23 +84,13 @@ export const tokenUSDCPriceSelector = selectorFamily<
           ).token1_amount
         ) / tokenAmount
 
-      const denomSwapAssetInfo = denomSwap.pool_assets.find(
-        ({ denom: pool_denom, token_address }) =>
-          denom === pool_denom || token_address === denom
-      )
-      const denomDecimals = tokenDecimals
-        ? tokenDecimals
-        : denomSwapAssetInfo
-        ? denomSwapAssetInfo.decimals
-        : NATIVE_DECIMALS
-
+      // (uUSDC / uJUNO) / ( uTOKEN / uJUNO )
+      // price = (uTOKEN / uJUNO) / (uUSDC / uJUNO) = uTOKEN / uUSDC
       const price =
-        Number(tokenPairPrice) *
-        Number(nativeUSDC) *
-        // Need to divide out token decimals and NATIVE_DECIMALS twice as we
-        // query prices in terms of Math.pow(10, NATIVE_DECIMALS) and if we're
-        // here we've done so twice.
-        Math.pow(10, -(denomDecimals + NATIVE_DECIMALS * 2))
+        Number(nativeUSDC) /
+        Number(tokenPairPrice) /
+        // Divide out the number of decimals in USDC.
+        Math.pow(10, NATIVE_DECIMALS)
 
       return price
     },
@@ -116,7 +112,7 @@ export const addressTVLSelector = selectorFamily<number, { address: string }>({
       }
 
       const prices = balances.map(({ amount, denom }) => {
-        const price = get(tokenUSDCPriceSelector({ denom }))
+        const price = get(usdcPerMicroTokenSelector({ denom }))
         return price ? Number(amount) * price : 0
       })
 
