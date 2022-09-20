@@ -5,6 +5,7 @@ import { DaoInfo } from '@dao-dao/common'
 import { ProposalModule } from '@dao-dao/tstypes'
 
 import { Dropdown, PageHeader, useAppLayoutContext } from '../components'
+
 export interface CreateProposalProps {
   daoInfo: DaoInfo
   isMember: boolean
@@ -49,15 +50,17 @@ export const CreateProposal = ({
               { href: '/home', label: 'Home' },
               { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
             ],
-            current: t('title.newProposal'),
+            current: t('title.createProposal'),
           }}
-        >
-          <Dropdown
-            onSelect={setProposalModule}
-            options={proposalModuleItems}
-            selected={proposalModule}
-          />
-        </PageHeader>
+          rightNode={
+            <Dropdown
+              containerClassName="hidden sm:block"
+              onSelect={setProposalModule}
+              options={proposalModuleItems}
+              selected={proposalModule}
+            />
+          }
+        />
 
         {!isMember && (
           <p className="text-text-interactive-error caption-text">
@@ -65,7 +68,17 @@ export const CreateProposal = ({
           </p>
         )}
 
-        <p className="text-text-body title-text">{t('title.newProposal')}</p>
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-text-body title-text">{t('title.newProposal')}</p>
+
+          {/* Show in PageHeader on large screens. */}
+          <Dropdown
+            containerClassName="sm:hidden"
+            onSelect={setProposalModule}
+            options={proposalModuleItems}
+            selected={proposalModule}
+          />
+        </div>
 
         {newProposal}
       </div>

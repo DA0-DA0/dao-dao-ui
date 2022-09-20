@@ -11,7 +11,11 @@ export interface PageHeaderProps {
   breadcrumbs?: BreadcrumbsProps
   className?: string
   noBorder?: boolean
-  children?: ReactNode
+  // Center title, breadcrumbs, or centerNode (whichever is displayed) even when
+  // not responsive.
+  forceCenter?: boolean
+  centerNode?: ReactNode
+  rightNode?: ReactNode
 }
 
 // Title and breadcrumbs are mutually exclusive. Title takes precedence.
@@ -20,35 +24,47 @@ export const PageHeader = ({
   breadcrumbs,
   className,
   noBorder = false,
-  children,
+  forceCenter = false,
+  centerNode,
+  rightNode,
 }: PageHeaderProps) => {
   const { toggle } = useAppLayoutContext().responsiveNavigation
 
   return (
     <div
       className={clsx(
-        'flex relative flex-row shrink-0 gap-6 items-center h-20',
+        'relative shrink-0 h-20',
         !noBorder && 'border-b border-border-secondary',
         className
       )}
     >
-      <IconButton
-        Icon={Menu}
-        className="absolute -left-2 shrink-0 !outline-none sm:hidden"
-        onClick={toggle}
-        variant="ghost"
-      />
-
-      {title ? (
-        <p className="pl-10 leading-[5rem] sm:pl-0 header-text">{title}</p>
-      ) : breadcrumbs ? (
-        <Breadcrumbs
-          {...breadcrumbs}
-          className={clsx('pl-10 sm:pl-0', breadcrumbs.className)}
+      <div className="flex absolute top-0 bottom-0 -left-2 flex-col justify-center">
+        <IconButton
+          Icon={Menu}
+          className="!outline-none sm:hidden"
+          onClick={toggle}
+          variant="ghost"
         />
-      ) : null}
+      </div>
 
-      {children}
+      <div
+        className={clsx(
+          'flex flex-row justify-center items-center w-full h-full',
+          !forceCenter && 'sm:justify-start'
+        )}
+      >
+        {title ? (
+          <p className="leading-[5rem] header-text">{title}</p>
+        ) : breadcrumbs ? (
+          <Breadcrumbs {...breadcrumbs} />
+        ) : (
+          centerNode
+        )}
+      </div>
+
+      <div className="flex absolute top-0 right-0 bottom-0 flex-col justify-center">
+        {rightNode}
+      </div>
     </div>
   )
 }

@@ -1,9 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { useState } from 'react'
 
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
 
 import {
+  DaoCard,
   ProfileDisconnectedCard,
   ProfileHomeCard,
   ProfileHomeCardProps,
@@ -18,24 +18,7 @@ export default {
   component: Home,
 } as ComponentMeta<typeof Home>
 
-const Template: ComponentStory<typeof Home> = (args) => {
-  const [pinned, setPinned] = useState<string[]>([])
-
-  return (
-    <Home
-      {...args}
-      {...(args.connected && {
-        isDaoPinned: (coreAddress: string) => pinned.includes(coreAddress),
-        onPin: (coreAddress: string) =>
-          setPinned((current) =>
-            current.includes(coreAddress)
-              ? current.filter((a) => a !== coreAddress)
-              : [...current, coreAddress]
-          ),
-      })}
-    />
-  )
-}
+const Template: ComponentStory<typeof Home> = (args) => <Home {...args} />
 
 export const Connected = Template.bind({})
 Connected.args = {
@@ -45,7 +28,16 @@ Connected.args = {
     onPin: (address) => alert('pin ' + address),
   },
   connected: true,
-  pinnedDaos: { loading: false, data: FeaturedDaosStory.args!.featuredDaos! },
+  pinnedDaosProps: {
+    pinnedDaos: { loading: false, data: FeaturedDaosStory.args!.featuredDaos! },
+    DaoCard: (props) => (
+      <DaoCard
+        {...props}
+        onPin={() => alert('pin ' + props.coreAddress)}
+        pinned={false}
+      />
+    ),
+  },
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),

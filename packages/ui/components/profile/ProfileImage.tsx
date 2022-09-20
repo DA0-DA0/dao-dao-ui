@@ -5,6 +5,7 @@ export interface ProfileImageProps {
   imageUrl?: string
   size: 'xs' | 'sm' | 'lg'
   className?: string
+  fallbackIconClassName?: string
   onClick?: () => void
 }
 
@@ -12,6 +13,7 @@ export const ProfileImage = ({
   imageUrl,
   size,
   className,
+  fallbackIconClassName,
   onClick,
 }: ProfileImageProps) => (
   <div
@@ -32,7 +34,12 @@ export const ProfileImage = ({
     style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
   >
     {!imageUrl && (
-      <PersonOutline className="!w-1/2 !h-1/2 text-icon-interactive-disabled" />
+      <PersonOutline
+        className={clsx(
+          '!w-1/2 !h-1/2 text-icon-interactive-disabled',
+          fallbackIconClassName
+        )}
+      />
     )}
   </div>
 )

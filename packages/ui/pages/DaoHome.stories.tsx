@@ -11,10 +11,12 @@ import {
   DaoInfoBar,
   DaoInfoBarProps,
   MembersTabProps,
+  NftCardProps,
   ProfileMemberCard,
   ProfileMemberCardProps,
   ProposalsTabProps,
   SubDaosTabProps,
+  TokenCardProps,
   TreasuryAndNftsTabProps,
 } from '../components'
 import { Default as DaoInfoBarStory } from '../components/dao/DaoInfoBar.DaoInfoBar.stories'
@@ -56,7 +58,10 @@ Default.args = {
   ),
   treasuryAndNftsTab: (
     <TreasuryAndNftsTabStory
-      {...(TreasuryAndNftsTabStory.args as TreasuryAndNftsTabProps)}
+      {...(TreasuryAndNftsTabStory.args as TreasuryAndNftsTabProps<
+        TokenCardProps,
+        NftCardProps
+      >)}
     />
   ),
   subDaosTab: (

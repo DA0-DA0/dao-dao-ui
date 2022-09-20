@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
-import { AppLayout, AppLayoutProps } from './AppLayout'
+import { AppLayout, AppLayoutProps, IAppLayoutContext } from './AppLayout'
 import { NavigationProps } from './Navigation'
 import { Default as NavigatonStory } from './Navigation.stories'
 import { PageHeader, PageHeaderProps } from './PageHeader'
@@ -26,10 +26,15 @@ export const DefaultArgs: AppLayoutProps = {
     </div>
   ),
   rightSidebarProps: RightSidebarStoryArgs,
+  profileImageUrl: '/noah.jpg',
   context: {
     responsiveNavigation: {
       enabled: true,
-      toggle: () => alert('toggle'),
+      toggle: () => alert('toggle nav'),
+    },
+    responsiveRightSidebar: {
+      enabled: false,
+      toggle: () => alert('toggle right'),
     },
   },
 }
@@ -38,19 +43,28 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
   const [compact, setCompact] = useState(false)
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
+  const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
+    useState(false)
+
+  const appLayoutContext: Omit<IAppLayoutContext, 'RightSidebarContent'> =
+    useMemo(
+      () => ({
+        responsiveNavigation: {
+          enabled: responsiveNavigationEnabled,
+          toggle: () => setResponsiveNavigationEnabled((v) => !v),
+        },
+        responsiveRightSidebar: {
+          enabled: responsiveRightSidebarEnabled,
+          toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
+        },
+      }),
+      [responsiveNavigationEnabled, responsiveRightSidebarEnabled]
+    )
 
   return (
     <AppLayout
       {...args}
-      context={useMemo(
-        () => ({
-          responsiveNavigation: {
-            enabled: responsiveNavigationEnabled,
-            toggle: () => setResponsiveNavigationEnabled((v) => !v),
-          },
-        }),
-        [responsiveNavigationEnabled]
-      )}
+      context={appLayoutContext}
       navigationProps={{
         ...args.navigationProps,
         compact,

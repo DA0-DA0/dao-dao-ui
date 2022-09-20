@@ -18,9 +18,10 @@ export type HomeProps = {
   | {
       connected: false
     }
-  | ({
+  | {
       connected: true
-    } & PinnedDaosProps)
+      pinnedDaosProps: PinnedDaosProps
+    }
 )
 
 const maxWidth = 'mx-auto w-full max-w-5xl'
@@ -82,12 +83,7 @@ export const Home = ({
             {/* Divider */}
             <div className="h-[1px] bg-border-secondary"></div>
 
-            <PinnedDaos
-              {...{
-                ...props,
-                connected: undefined,
-              }}
-            />
+            <PinnedDaos {...props.pinnedDaosProps} />
           </div>
         )}
       </div>

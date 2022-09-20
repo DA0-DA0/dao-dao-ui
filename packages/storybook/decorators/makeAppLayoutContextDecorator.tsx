@@ -9,21 +9,26 @@ export const makeAppLayoutContextDecorator: (
   defaultResponsiveEnabled?: boolean
 ) => DecoratorFn = (defaultResponsiveEnabled = false) =>
   function ResponsiveNavigationContextDecorator(Story) {
-    const [responsiveEnabled, setResponsiveEnabled] = useState(
-      defaultResponsiveEnabled
-    )
+    const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
+      useState(false)
+    const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
+      useState(false)
 
     return (
       <AppLayoutContext.Provider
         value={useMemo(
           () => ({
             responsiveNavigation: {
-              enabled: responsiveEnabled,
-              toggle: () => setResponsiveEnabled((v) => !v),
+              enabled: responsiveNavigationEnabled,
+              toggle: () => setResponsiveNavigationEnabled((v) => !v),
+            },
+            responsiveRightSidebar: {
+              enabled: responsiveRightSidebarEnabled,
+              toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
             },
             RightSidebarContent: () => null,
           }),
-          [responsiveEnabled]
+          [responsiveNavigationEnabled, responsiveRightSidebarEnabled]
         )}
       >
         <Story />

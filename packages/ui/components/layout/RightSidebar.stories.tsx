@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { makeAppLayoutContextDecorator } from '@dao-dao/storybook/decorators'
+
 import { RightSidebar, RightSidebarProps } from './RightSidebar'
 import { SidebarWallet, SidebarWalletProps } from './SidebarWallet'
 import { Connected as ConnectedSidebarWalletStory } from './SidebarWallet.SidebarWallet.stories'
@@ -7,6 +9,7 @@ import { Connected as ConnectedSidebarWalletStory } from './SidebarWallet.Sideba
 export default {
   title: 'DAO DAO / packages / ui / components / layout / RightSidebar',
   component: RightSidebar,
+  decorators: [makeAppLayoutContextDecorator(true)],
   excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof RightSidebar>
 
@@ -21,14 +24,7 @@ export const DefaultArgs: RightSidebarProps = {
     />
   ),
   setContentRef: () => {},
-  profileImageUrl: '/noah.jpg',
 }
 
 export const Default = Template.bind({})
 Default.args = DefaultArgs
-Default.parameters = {
-  design: {
-    type: 'figma',
-    url: '',
-  },
-}

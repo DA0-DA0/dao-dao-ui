@@ -210,7 +210,7 @@ export const TokenCard = ({
               <p className="secondary-text">{t('info.stakedTo')}</p>
 
               <p className="font-mono text-right text-text-body caption-text">
-                {stakes[0].validator}
+                {stakes[0].validator.moniker}
                 {stakes.length > 1 && (
                   <>
                     ,{' '}
@@ -218,7 +218,7 @@ export const TokenCard = ({
                       title={
                         <>
                           {stakes.slice(1).map(({ validator }, index) => (
-                            <p key={index}>{validator}</p>
+                            <p key={index}>{validator.moniker}</p>
                           ))}
                         </>
                       }

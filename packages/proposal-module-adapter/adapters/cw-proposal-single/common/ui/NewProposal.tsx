@@ -264,7 +264,7 @@ export const NewProposal = ({
                 type="submit"
                 value={ProposeSubmitValue.Submit}
               >
-                {t('button.publishProposal') + ' '}
+                <p>{t('button.publish')}</p>
                 <Airplane className="w-4 h-4" />
               </Button>
             </Tooltip>

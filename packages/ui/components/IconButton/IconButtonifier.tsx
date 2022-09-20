@@ -52,26 +52,27 @@ export const getIconButtonifiedClassNames = ({
 
     // Primary variant
     variant === 'primary' && {
-      'text-white': true,
       // Default
-      'bg-btn hover:bg-btn-hover active:bg-btn-pressed': !disabled,
+      'text-icon-button-primary bg-background-button hover:bg-background-button-hover active:bg-background-button-pressed':
+        !disabled,
       // Disabled
-      'bg-btn-disabled': disabled,
+      'text-icon-button-disabled bg-background-button-disabled': disabled,
     },
     // Secondary variant
     variant === 'secondary' && {
-      'text-dark': true,
       // Default
-      'text-dark bg-btn-secondary hover:bg-btn-secondary-hover active:bg-btn-secondary-pressed':
+      'text-icon-primary bg-background-primary hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
         !disabled,
       // Disabled
-      'bg-btn-secondary-disabled': disabled,
+      'text-icon-interactive-disabled bg-background-button-disabled': disabled,
     },
     // Ghost variant
     variant === 'ghost' && {
-      'text-dark bg-transparent': true,
       // Default
-      'hover:bg-btn-ghost-hover active:bg-btn-secondary': !disabled,
+      'text-icon-secondary bg-transparent hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
+        !disabled,
+      // Disabled
+      'text-icon-interactive-disabled': disabled,
     },
     className
   )

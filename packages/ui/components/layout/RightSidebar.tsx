@@ -1,6 +1,5 @@
 import { KeyboardDoubleArrowRight } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import {
@@ -9,34 +8,32 @@ import {
 } from '@dao-dao/tstypes/ui/RightSidebar'
 
 import { IconButton } from '../IconButton'
-import { ProfileImage } from '../profile'
+import { useAppLayoutContext } from './AppLayoutContext'
 import { Footer } from './Footer'
 
 export * from '@dao-dao/tstypes/ui/RightSidebar'
 
-export const RightSidebar = ({
-  wallet,
-  setContentRef,
-  profileImageUrl,
-}: RightSidebarProps) => {
-  const [responsiveVisible, setResponsiveVisible] = useState(false)
+export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
+  const { enabled: responsiveEnabled, toggle: toggleResponsive } =
+    useAppLayoutContext().responsiveRightSidebar
 
   return (
     <>
-      <ProfileImage
-        className="absolute top-6 right-4 z-10 shadow-dp4 hover:opacity-80 active:opacity-70 transition cursor-pointer xl:hidden"
-        imageUrl={profileImageUrl}
-        onClick={() => setResponsiveVisible((v) => !v)}
-        size="xs"
-      />
+      {/* Layer underneath that allows closing the responsive sidebar by tapping on visible parts of the page. */}
+      {responsiveEnabled && (
+        <div
+          className="absolute top-0 right-0 bottom-0 left-0 z-[29] cursor-pointer xl:hidden"
+          onClick={() => responsiveEnabled && toggleResponsive()}
+        ></div>
+      )}
 
       <div
         className={clsx(
           // General
-          'flex flex-col items-stretch p-6 pt-0 w-full bg-background-base transition-all duration-[225ms] sm:w-96',
+          'flex flex-col items-stretch p-6 pt-0 w-[90vw] bg-background-base transition-all duration-[225ms] sm:w-96',
           // Responsive
           'absolute top-0 bottom-0 z-30 shadow-dp8',
-          responsiveVisible
+          responsiveEnabled
             ? 'right-0 opacity-100'
             : '-right-full opacity-0 sm:-right-96',
           // Large
@@ -44,12 +41,12 @@ export const RightSidebar = ({
         )}
       >
         {/* Show responsive close button. */}
-        <div className="box-border flex overflow-hidden flex-row justify-end items-start py-6 pr-1 -mr-3 h-20 transition-all xl:py-0 xl:mt-0 xl:max-h-0">
+        <div className="absolute right-4 bottom-4 z-40 bg-background-base rounded-full shadow-dp8 transition cursor-pointer xl:hidden">
           <IconButton
             Icon={KeyboardDoubleArrowRight}
             // Match ProfileImage rounding.
             circular
-            onClick={() => setResponsiveVisible(false)}
+            onClick={toggleResponsive}
             variant="secondary"
           />
         </div>

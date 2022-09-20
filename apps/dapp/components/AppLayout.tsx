@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { useWalletManager } from '@noahsaso/cosmodal'
+import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import {
   PropsWithChildren,
@@ -25,10 +25,11 @@ import {
   refreshTokenUsdcPriceIdAtom,
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
-import { AppLayout as StatelessAppLayout } from '@dao-dao/ui'
+import { IAppLayoutContext, AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
+  getFallbackImage,
   loadableToLoadingData,
   nativeTokenLabel,
   usePlatform,
@@ -62,7 +63,11 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   const [compact, setCompact] = useRecoilState(navigationCompactAtom)
 
   //! WALLET CONNECTION ERROR MODALS
-  const { error } = useWalletManager()
+  const {
+    error,
+    status,
+    connectedWallet: { address: walletAddress = '' } = {},
+  } = useWalletManager()
   useEffect(() => {
     setInstallWarningVisible(
       error instanceof Error &&
@@ -99,15 +104,22 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
-  const appLayoutContext = useMemo(
-    () => ({
-      responsiveNavigation: {
-        enabled: responsiveNavigationEnabled,
-        toggle: () => setResponsiveNavigationEnabled((v) => !v),
-      },
-    }),
-    [responsiveNavigationEnabled]
-  )
+  const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
+    useState(false)
+  const appLayoutContext: Omit<IAppLayoutContext, 'RightSidebarContent'> =
+    useMemo(
+      () => ({
+        responsiveNavigation: {
+          enabled: responsiveNavigationEnabled,
+          toggle: () => setResponsiveNavigationEnabled((v) => !v),
+        },
+        responsiveRightSidebar: {
+          enabled: responsiveRightSidebarEnabled,
+          toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
+        },
+      }),
+      [responsiveNavigationEnabled, responsiveRightSidebarEnabled]
+    )
 
   //! Token prices
   const setRefreshTokenUsdcPriceId = useSetRecoilState(
@@ -202,10 +214,14 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
           compact,
           setCompact,
         }}
+        profileImageUrl={
+          status === WalletConnectionStatus.Connected
+            ? // TODO: Get profile image URL.
+              getFallbackImage(walletAddress)
+            : undefined
+        }
         rightSidebarProps={{
           wallet: <SidebarWallet />,
-          // TODO: Get profile image URL.
-          profileImageUrl: undefined,
         }}
       >
         {children}

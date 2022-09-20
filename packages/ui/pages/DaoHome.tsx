@@ -63,9 +63,8 @@ export const DaoHome = ({
               crumbs: [{ href: '/home', label: 'Home' }],
               current: daoInfo.name,
             }}
-          >
-            <PinToggle onPin={onPin} pinned={pinned} />
-          </PageHeader>
+            rightNode={<PinToggle onPin={onPin} pinned={pinned} />}
+          />
 
           <DaoHeader
             description={daoInfo.description}

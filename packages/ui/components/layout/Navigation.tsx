@@ -64,8 +64,13 @@ export const Navigation = ({
 }: NavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
-  const { enabled: responsiveEnabled } =
-    useAppLayoutContext().responsiveNavigation
+  const {
+    responsiveNavigation: {
+      enabled: responsiveEnabled,
+      toggle: toggleResponsive,
+    },
+    responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
+  } = useAppLayoutContext()
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
@@ -127,197 +132,210 @@ export const Navigation = ({
   }, [scrollablePinnedContainerRef, compact])
 
   return (
-    <nav
-      className={clsx(
-        // General
-        'flex overflow-y-auto flex-col shrink-0 py-6 pt-0 h-full text-lg bg-background-base transition-all styled-scrollbar',
-        // If compact, items will manager their own padding so that
-        // highlighted rows fill the whole width.
-        !compact && 'px-6',
-        // Responsive
-        'absolute top-0 bottom-0 z-20 w-full',
-        responsiveEnabled ? 'left-0' : '-left-full',
-        // Large
-        'sm:relative sm:left-0',
-        compact ? 'sm:w-min' : 'sm:w-[264px]'
-      )}
-    >
-      <PageHeader
-        className={clsx(
-          // Responsive
-          'justify-center',
-          // Large
-          !compact && 'sm:justify-start'
-        )}
-        noBorder={compact}
-      >
-        <Link href="/home">
-          <a className="flex flex-row gap-2 items-center">
-            <Logo size={32} />
-            {!compact && <p className="header-text">{t('meta.title')}</p>}
-          </a>
-        </Link>
-      </PageHeader>
-
-      <div className={clsx(!compact && 'pt-2')}>
-        <Row
-          Icon={HomeOutlined}
-          compact={compact}
-          label={t('title.home')}
-          localHref="/home"
-        />
-
-        <Row
-          Icon={Search}
-          compact={compact}
-          label={t('title.search')}
-          onClick={setCommandModalVisible}
-          rightNode={
-            <div className="flex flex-row gap-1 items-center text-icon-primary legend-text">
-              <div className="flex justify-center items-center w-6 h-6 bg-background-interactive-disabled rounded-md">
-                <p>{isMac ? '⌘' : '⌃'}</p>
-              </div>
-              <div className="flex justify-center items-center w-6 h-6 bg-background-interactive-disabled rounded-md">
-                <p>k</p>
-              </div>
-            </div>
-          }
-        />
-
-        {!hideInbox && (
-          <Row
-            Icon={InboxOutlined}
-            compact={compact}
-            label={
-              !inboxCount.loading && inboxCount.data > 0
-                ? t('title.inboxWithCount', { count: inboxCount.data })
-                : t('title.inbox')
-            }
-            loading={inboxCount.loading}
-            localHref="/inbox"
-            showBadge={!inboxCount.loading && inboxCount.data > 0}
-          />
-        )}
-
-        <Row
-          Icon={PushPinOutlined}
-          compact={compact}
-          defaultExpanded
-          label={t('info.pinned')}
-          loading={pinnedDaos.loading}
-        >
-          {!pinnedDaos.loading && (
-            <div
-              className={clsx(
-                'relative sm:max-h-[33vh]',
-                !pinnedDaos.loading && 'overflow-y-auto',
-                compact
-                  ? // Scrollbar looks weird and not clean when compact. No need.
-                    'mt-1 w-min no-scrollbar'
-                  : // Shift scrollbar to the right a bit.
-                    'pr-5 -mr-5 styled-scrollbar'
-              )}
-              ref={scrollablePinnedContainerRef}
-            >
-              {/* Top border */}
-              <div
-                className={clsx(
-                  'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                  showPinnedTopBorder ? 'opacity-100' : 'opacity-0'
-                )}
-              ></div>
-
-              {/* DAOs */}
-              {pinnedDaos.data.map((dao, index) => (
-                <DaoDropdown
-                  key={index}
-                  compact={compact}
-                  dao={dao}
-                  defaultExpanded
-                />
-              ))}
-
-              {/* Bottom border */}
-              <div
-                className={clsx(
-                  'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                  showPinnedBottomBorder ? 'opacity-100' : 'opacity-0'
-                )}
-              ></div>
-            </div>
-          )}
-        </Row>
-
-        {compact ? (
-          <Tooltip title={t('button.createADAO')}>
-            <IconButtonLink
-              Icon={Add}
-              className="mx-6 mt-3"
-              href="/dao/create"
-              variant="primary"
-            />
-          </Tooltip>
-        ) : (
-          <ButtonLink
-            className="mt-8 w-full"
-            contentContainerClassName="justify-center"
-            href="/dao/create"
-            size="lg"
-          >
-            {t('button.createADAO')}
-          </ButtonLink>
-        )}
-      </div>
-
-      <div className={clsx('flex flex-col grow gap-2 justify-end mt-8')}>
-        {!compact && (
-          <div className="space-y-3 font-mono caption-text">
-            <p>{t('info.daodaoWithVersion', { version })}</p>
-
-            {tokenPrices.loading ? (
-              <Loader className="!justify-start" size={38} />
-            ) : (
-              tokenPrices.data.map(
-                ({ label, price, priceDenom, change }, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-row gap-2 justify-between items-end"
-                  >
-                    <p className="text-text-primary">
-                      {label} = {price} ${priceDenom}
-                    </p>
-                    <PricePercentChange value={change} />
-                  </div>
-                )
-              )
-            )}
-          </div>
-        )}
-
+    <>
+      {/* Layer underneath that allows closing the responsive navigation by tapping on visible parts of the page. */}
+      {responsiveEnabled && (
         <div
-          className={clsx(
-            'flex gap-2 mt-8',
-            compact ? 'flex-col mx-6' : 'flex-row items-center'
+          className="absolute top-0 right-0 bottom-0 left-0 z-[19] cursor-pointer sm:hidden"
+          onClick={() => responsiveEnabled && toggleResponsive()}
+        ></div>
+      )}
+
+      <nav
+        className={clsx(
+          // General
+          'flex overflow-y-auto flex-col shrink-0 py-6 pt-0 h-full text-lg bg-background-base transition-all no-scrollbar',
+          // If compact, items will manager their own padding so that
+          // highlighted rows fill the whole width.
+          !compact && 'px-6',
+          // Responsive
+          'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8',
+          responsiveEnabled ? 'left-0' : '-left-full',
+          // Large
+          'sm:relative sm:left-0 sm:shadow-none',
+          compact ? 'sm:w-min' : 'sm:w-[264px]',
+
+          // Dim if responsive right sidebar is open. Right sidebar can be responsive up to xl size. After that, it automatically displays.
+          responsiveRightSidebarEnabled
+            ? 'opacity-30 xl:opacity-100'
+            : 'opacity-100'
+        )}
+      >
+        <PageHeader
+          centerNode={
+            <Link href="/home">
+              <a className="flex flex-row gap-2 items-center">
+                <Logo size={32} />
+                {!compact && <p className="header-text">{t('meta.title')}</p>}
+              </a>
+            </Link>
+          }
+          forceCenter={compact}
+          noBorder={compact}
+        />
+
+        <div className={clsx(!compact && 'pt-2')}>
+          <Row
+            Icon={HomeOutlined}
+            compact={compact}
+            label={t('title.home')}
+            localHref="/home"
+          />
+
+          <Row
+            Icon={Search}
+            compact={compact}
+            label={t('title.search')}
+            onClick={setCommandModalVisible}
+            rightNode={
+              <div className="flex flex-row gap-1 items-center text-icon-primary legend-text">
+                <div className="flex justify-center items-center w-6 h-6 bg-background-interactive-disabled rounded-md">
+                  <p>{isMac ? '⌘' : '⌃'}</p>
+                </div>
+                <div className="flex justify-center items-center w-6 h-6 bg-background-interactive-disabled rounded-md">
+                  <p>k</p>
+                </div>
+              </div>
+            }
+          />
+
+          {!hideInbox && (
+            <Row
+              Icon={InboxOutlined}
+              compact={compact}
+              label={
+                !inboxCount.loading && inboxCount.data > 0
+                  ? t('title.inboxWithCount', { count: inboxCount.data })
+                  : t('title.inbox')
+              }
+              loading={inboxCount.loading}
+              localHref="/inbox"
+              showBadge={!inboxCount.loading && inboxCount.data > 0}
+            />
           )}
-        >
+
+          <Row
+            Icon={PushPinOutlined}
+            compact={compact}
+            defaultExpanded
+            label={t('info.pinned')}
+            loading={pinnedDaos.loading}
+          >
+            {!pinnedDaos.loading && (
+              <div
+                className={clsx(
+                  'relative sm:max-h-[33vh]',
+                  !pinnedDaos.loading && 'overflow-y-auto',
+                  compact
+                    ? // Scrollbar looks weird and not clean when compact. No need.
+                      'mt-1 w-min no-scrollbar'
+                    : // Shift scrollbar to the right a bit.
+                      'pr-5 -mr-5 styled-scrollbar'
+                )}
+                ref={scrollablePinnedContainerRef}
+              >
+                {/* Top border */}
+                <div
+                  className={clsx(
+                    'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                    showPinnedTopBorder ? 'opacity-100' : 'opacity-0'
+                  )}
+                ></div>
+
+                {/* DAOs */}
+                {pinnedDaos.data.map((dao, index) => (
+                  <DaoDropdown
+                    key={index}
+                    compact={compact}
+                    dao={dao}
+                    defaultExpanded
+                  />
+                ))}
+
+                {/* Bottom border */}
+                <div
+                  className={clsx(
+                    'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                    showPinnedBottomBorder ? 'opacity-100' : 'opacity-0'
+                  )}
+                ></div>
+              </div>
+            )}
+          </Row>
+
           {compact ? (
-            <Tooltip title={t('button.toggleTheme')}>
-              <ThemeToggle compact />
+            <Tooltip title={t('button.createADAO')}>
+              <IconButtonLink
+                Icon={Add}
+                className="mx-6 mt-3"
+                href="/dao/create"
+                variant="primary"
+              />
             </Tooltip>
           ) : (
-            <ThemeToggle />
+            <ButtonLink
+              className="mt-8 w-full"
+              contentContainerClassName="justify-center"
+              href="/dao/create"
+              size="lg"
+            >
+              {t('button.createADAO')}
+            </ButtonLink>
+          )}
+        </div>
+
+        <div className={clsx('flex flex-col grow gap-2 justify-end mt-8')}>
+          {!compact && (
+            <div className="space-y-3 font-mono caption-text">
+              <p>{t('info.daodaoWithVersion', { version })}</p>
+
+              {tokenPrices.loading ? (
+                <Loader className="!justify-start" size={38} />
+              ) : (
+                tokenPrices.data.map(
+                  ({ label, price, priceDenom, change }, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-row gap-2 justify-between items-end"
+                    >
+                      <p className="text-text-primary">
+                        {label} = {price} ${priceDenom}
+                      </p>
+                      <PricePercentChange value={change} />
+                    </div>
+                  )
+                )
+              )}
+            </div>
           )}
 
-          <IconButton
-            Icon={compact ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft}
-            circular
-            className="hidden lg:flex"
-            onClick={() => setCompact(!compact)}
-            size={compact ? 'default' : 'xl'}
-            variant="secondary"
-          />
+          <div
+            className={clsx(
+              'flex gap-2 mt-8',
+              compact ? 'flex-col mx-6' : 'flex-row items-center'
+            )}
+          >
+            {compact ? (
+              <Tooltip title={t('button.toggleTheme')}>
+                <ThemeToggle compact />
+              </Tooltip>
+            ) : (
+              <ThemeToggle />
+            )}
+
+            <IconButton
+              Icon={
+                compact ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft
+              }
+              circular
+              className="hidden lg:flex"
+              onClick={() => setCompact(!compact)}
+              size={compact ? 'default' : 'xl'}
+              variant="secondary"
+            />
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   )
 }

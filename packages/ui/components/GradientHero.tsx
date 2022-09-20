@@ -1,8 +1,9 @@
-import { ReactNode } from 'react'
+import { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 import { useThemeContext } from '../theme'
 
-export interface GradientHeroProps {
+export interface GradientHeroProps
+  extends Omit<ComponentPropsWithoutRef<'div'>, 'className' | 'style'> {
   children: ReactNode
   wrapperClassName?: string
   childContainerClassName?: string
@@ -12,6 +13,7 @@ export const GradientHero = ({
   children,
   wrapperClassName,
   childContainerClassName,
+  ...props
 }: GradientHeroProps) => {
   const { accentColor } = useThemeContext()
   const baseRgb =
@@ -27,6 +29,7 @@ export const GradientHero = ({
 
   return (
     <div
+      {...props}
       className={wrapperClassName}
       style={{
         background: `linear-gradient(180deg, ${baseRgb} 0%, rgba(var(--color-background-base), 0) 100%)`,
