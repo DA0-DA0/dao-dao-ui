@@ -23,6 +23,7 @@ import {
   useProposalModuleAdapterCommon,
   useProposalModuleAdapterOptions,
 } from '@dao-dao/proposal-module-adapter'
+import { usePinnedDaos } from '@dao-dao/state'
 import {
   Breadcrumbs,
   Loader,
@@ -33,8 +34,6 @@ import {
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import { SmallScreenNav } from '@/components'
-
 const InnerProposal = () => {
   const { t } = useTranslation()
   const router = useRouter()
@@ -42,12 +41,7 @@ const InnerProposal = () => {
   const { address: walletAddress, connected } = useWallet()
 
   const {
-    components: {
-      ProposalVotes,
-      ProposalVoteDecisionStatus,
-      ProposalInfoCard,
-      ProposalDetails,
-    },
+    components: { ProposalVotes, ProposalInfoCard, ProposalDetails },
     hooks: { useProposalRefreshers },
   } = useProposalModuleAdapter()
   const {
@@ -117,13 +111,17 @@ const InnerProposal = () => {
       <div className="col-span-4 w-full lg:p-6">
         <Breadcrumbs
           crumbs={[
-            ['/home', t('title.home')],
-            [`/dao/${coreAddress}`, name],
-            [router.asPath, `Proposal ${proposalId}`],
+            {
+              label: t('title.home'),
+              href: '/home',
+            },
+            {
+              label: name,
+              href: `/dao/${coreAddress}`,
+            },
           ]}
+          current={`Proposal ${proposalId}`}
         />
-
-        <SmallScreenNav />
 
         <div className="flex flex-col gap-6 p-6 max-w-3xl lg:p-0 lg:mt-6">
           <div className="lg:hidden">
@@ -149,10 +147,6 @@ const InnerProposal = () => {
             <h3 className="mb-6 text-base font-medium">
               {t('title.voteStatus')}
             </h3>
-
-            <ProposalVoteDecisionStatus
-              voteConversionDecimals={voteConversionDecimals}
-            />
           </div>
         </div>
 
@@ -165,9 +159,6 @@ const InnerProposal = () => {
         <h3 className="mt-8 mb-6 text-base font-medium">
           {t('title.voteStatus')}
         </h3>
-        <ProposalVoteDecisionStatus
-          voteConversionDecimals={voteConversionDecimals}
-        />
       </div>
     </div>
   )
@@ -193,7 +184,11 @@ const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
         </ProposalModuleAdapterProvider>
       ) : (
         <ProposalNotFound
-          homeHref={props.serializedInfo ? `/dao/${props.serializedInfo.coreAddress}` : '/home'}
+          homeHref={
+            props.serializedInfo
+              ? `/dao/${props.serializedInfo.coreAddress}`
+              : '/home'
+          }
         />
       )}
     </SuspenseLoader>

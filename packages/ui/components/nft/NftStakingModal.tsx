@@ -2,18 +2,20 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
+import { NftCardInfo } from '@dao-dao/tstypes'
+
 import { Button } from '../Button'
 import { Modal, ModalProps } from '../Modal'
-import { NftCard, NftInfo } from './NftCard'
+import { NftCard } from './NftCard'
 
 export interface NftStakingModalProps extends Omit<ModalProps, 'children'> {
-  nfts: NftInfo[]
+  nfts: NftCardInfo[]
   collection: {
     name: string
     total: number
   }
   selectedAddresses: string[]
-  onNftClick: (nft: NftInfo) => void
+  onNftClick: (nft: NftCardInfo) => void
   onSelectAll: () => void
   onDeselectAll: () => void
   onStake: () => void

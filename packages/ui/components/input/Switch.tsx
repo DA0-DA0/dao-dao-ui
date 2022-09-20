@@ -1,6 +1,8 @@
 import clsx from 'clsx'
-import { FieldValues, Path, PathValue, UseFormSetValue } from 'react-hook-form'
+import { FieldValues, UseFormSetValue } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+
+import { BooleanFieldNames } from '@dao-dao/tstypes'
 
 import { TooltipInfoIcon } from '../TooltipInfoIcon'
 
@@ -90,13 +92,6 @@ export const SwitchCard = ({
     </div>
   )
 }
-
-// Return the field name paths that have type boolean.
-export type BooleanFieldNames<FV extends FieldValues> = {
-  [Property in Path<FV>]: PathValue<FV, Property> extends boolean | undefined
-    ? Property
-    : never
-}[Path<FV>]
 
 export type FormSwitchWrapperProps<
   Props,

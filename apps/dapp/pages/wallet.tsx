@@ -68,7 +68,7 @@ const WalletPage: NextPage = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const execute: WalletProps['execute'] = useCallback(
-    async (data) => {
+    async (_data) => {
       if (!signingCosmWasmClient || !walletAddress) {
         setError(t('error.connectWalletToContinue'))
         return
@@ -79,11 +79,11 @@ const WalletPage: NextPage = () => {
 
       try {
         // TODO: Make this work.
-        const tx = await signingCosmWasmClient.signAndBroadcast(
-          walletAddress,
-          data,
-          'auto'
-        )
+        // const tx = await signingCosmWasmClient.signAndBroadcast(
+        //   walletAddress,
+        //   data,
+        //   'auto'
+        // )
       } catch (err) {
         const error = processError(err)
         console.error(error)

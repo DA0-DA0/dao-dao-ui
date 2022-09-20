@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { CwProposalSingleSelectors } from '@dao-dao/state'
-import { ProcessedThresholdQuorum } from '@dao-dao/utils'
+import { ProcessedThresholdQuorum } from '@dao-dao/tstypes'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useProcessTQ } from '../common'

@@ -51,16 +51,14 @@ export const Inbox = ({
   const sortedDaosWithProposals = useMemo(
     () =>
       selectedSortFn
-        ? _sortedDaosWithProposals.map(
-            ({ proposals, ...daosWithProposals }) => ({
-              ...daosWithProposals,
-              proposals: proposals
-                // Map to interface with proposals property to take advantage of function.
-                .map((proposal) => ({ proposals: [proposal] }))
-                .sort(selectedSortFn as SortFn<{ proposals: ProposalInfo[] }>)
-                .map(({ proposals }) => proposals[0]),
-            })
-          )
+        ? _sortedDaosWithProposals.map(({ dao, proposals }) => ({
+            dao,
+            proposals: proposals
+              // Map to interface with proposals property to take advantage of function.
+              .map((proposal) => ({ proposals: [proposal] }))
+              .sort(selectedSortFn as SortFn<{ proposals: ProposalInfo[] }>)
+              .map(({ proposals }) => proposals[0]),
+          }))
         : _sortedDaosWithProposals,
     [_sortedDaosWithProposals, selectedSortFn]
   )

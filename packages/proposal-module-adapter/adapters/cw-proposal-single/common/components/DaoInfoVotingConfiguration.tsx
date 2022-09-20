@@ -4,11 +4,9 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import { Votes } from '@dao-dao/icons'
 import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
+import { ProposalModule } from '@dao-dao/tstypes'
 import { GovInfoListItem } from '@dao-dao/ui'
-import {
-  ProposalModule,
-  convertMicroDenomToDenomWithDecimals,
-} from '@dao-dao/utils'
+import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { useProcessTQ } from '../hooks'
 

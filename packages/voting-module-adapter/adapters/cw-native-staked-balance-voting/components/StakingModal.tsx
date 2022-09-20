@@ -33,9 +33,9 @@ export const StakingModal = (props: BaseStakingModalProps) => (
 )
 
 const InnerStakingModal = ({
-  mode,
+  initialMode = StakingMode.Stake,
   onClose,
-  maxDeposit: deposit,
+  maxDeposit,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
@@ -77,10 +77,12 @@ const InnerStakingModal = ({
   // When staking, default to all unstaked balance (less proposal deposit if
   // exists).
   const [amount, setAmount] = useState(
-    mode === StakingMode.Stake
+    initialMode === StakingMode.Stake
       ? convertMicroDenomToDenomWithDecimals(
-          !!deposit && Number(deposit) > 0 && unstakedBalance > Number(deposit)
-            ? unstakedBalance - Number(deposit)
+          !!maxDeposit &&
+            Number(maxDeposit) > 0 &&
+            unstakedBalance > Number(maxDeposit)
+            ? unstakedBalance - Number(maxDeposit)
             : unstakedBalance,
           governanceTokenInfo.decimals
         )
@@ -246,15 +248,15 @@ const InnerStakingModal = ({
     <StatelessStakingModal
       amount={amount}
       claimableTokens={sumClaimsAvailable}
-      error={connected ? undefined : 'Please connect your wallet.'}
+      error={connected ? undefined : t('error.connectWalletToContinue')}
+      initialMode={initialMode}
       loading={stakingLoading}
-      initialMode={mode}
       onAction={onAction}
       onClose={onClose}
       proposalDeposit={
-        deposit
+        maxDeposit
           ? convertMicroDenomToDenomWithDecimals(
-              deposit,
+              maxDeposit,
               governanceTokenInfo.decimals
             )
           : undefined

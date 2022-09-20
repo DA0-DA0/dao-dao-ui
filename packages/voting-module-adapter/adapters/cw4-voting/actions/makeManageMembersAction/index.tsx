@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useCw4VotingModule } from '@dao-dao/state'
 import {
   Action,
   ActionComponent,
@@ -12,6 +11,7 @@ import {
 } from '@dao-dao/tstypes/actions'
 import { makeWasmMessage } from '@dao-dao/utils'
 
+import { useVotingModule as useCw4VotingModule } from '../../hooks/useVotingModule'
 import {
   ManageMembersData,
   ManageMembersIcon,

@@ -8,11 +8,12 @@ import { KeysMatching } from '@dao-dao/tstypes'
 
 export const getAllLcdResponse = async <
   P extends { pagination?: PageRequest },
+  OP extends Omit<P, 'pagination'>,
   R extends { pagination?: PageResponseSDKType },
   K extends KeysMatching<R, unknown[]>
 >(
-  queryFn: (params: P) => Promise<R>,
-  params: P,
+  queryFn: (params: OP) => Promise<R>,
+  params: OP,
   key: K
 ): Promise<R[K]> => {
   let pagination: PageRequest | undefined
@@ -34,7 +35,7 @@ export const getAllLcdResponse = async <
         }
       : undefined
 
-    data.push(...(response[key] as unknown[]))
+    data.push(...(response[key] as unknown as unknown[]))
   } while (pagination !== undefined)
 
   return data as R[K]

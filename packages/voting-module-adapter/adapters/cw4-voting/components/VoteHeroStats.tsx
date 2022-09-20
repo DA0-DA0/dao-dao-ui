@@ -3,11 +3,11 @@
 import { useTranslation } from 'react-i18next'
 
 import { Wallet } from '@dao-dao/icons'
-import { useCw4VotingModule } from '@dao-dao/state'
 import { HeroStat, HeroStatLink } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { BaseVoteHeroStatsProps } from '../../../types'
+import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
 
 export const VoteHeroStats = ({ loader, ...props }: BaseVoteHeroStatsProps) =>
   loader ? (

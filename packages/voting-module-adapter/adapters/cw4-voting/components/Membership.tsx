@@ -2,10 +2,11 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { useCw4VotingModule, useVotingModule } from '@dao-dao/state'
+import { useVotingModule } from '@dao-dao/state'
 import { MultisigMemberList, MultisigMemberListLoader } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
 
 interface MembershipProps {
   primaryText?: boolean

@@ -17,7 +17,7 @@ export const DefaultNewDao: NewDao = {
   // Default to single choice proposal configuration.
   proposalModuleAdapters: [
     {
-      id: CwProposalSingleAdapter.id,
+      id: CwProposalSingleAdapter.contractName,
       data: CwProposalSingleAdapter.daoCreation.defaultConfig,
     },
   ],

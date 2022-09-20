@@ -5,15 +5,21 @@ import { VotingModuleAdapter } from '../../types'
 import {
   ClaimsPendingList,
   DaoInfoVotingConfiguration,
-  DaoThinInfoContent,
   Membership,
   MembershipMobileTab,
+  ProfileCardNoVoteBecomeMemberInfo,
+  ProfileMemberCardMembershipInfo,
   ProposalDetailsVotingPowerWidget,
   SdaMembershipPage,
   StakingModal,
   VoteHeroStats,
 } from './components'
-import { useActions, useGovernanceTokenInfo, useStakingInfo } from './hooks'
+import {
+  useActions,
+  useDaoInfoBarItems,
+  useGovernanceTokenInfo,
+  useStakingInfo,
+} from './hooks'
 
 export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
   id: CWNATIVESTAKEDBALANCEVOTING_CONTRACT_NAME,
@@ -34,6 +40,7 @@ export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
     // Hooks
     hooks: {
       useActions,
+      useDaoInfoBarItems,
       useGovernanceTokenInfo,
       useStakingInfo,
     },
@@ -45,10 +52,11 @@ export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
         MobileTab: MembershipMobileTab,
         Mobile: (props) => <Membership {...props} primaryText />,
       },
-      DaoThinInfoContent,
       DaoTreasuryFooter: () => null,
       DaoInfoAdditionalAddresses: () => null,
       DaoInfoVotingConfiguration,
+      ProfileMemberCardMembershipInfo,
+      ProfileCardNoVoteBecomeMemberInfo,
       ProposalCreationAdditionalAddresses: () => null,
       VoteHeroStats,
       SdaMembershipPage,

@@ -1,18 +1,18 @@
 import { useCallback, useMemo } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
+import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   Action,
   ActionComponent,
   ActionKey,
+  ProposalModule,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/actions'
-import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
-import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
+} from '@dao-dao/tstypes'
 import {
-  ProposalModule,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,

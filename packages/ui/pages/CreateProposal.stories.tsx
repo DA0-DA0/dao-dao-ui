@@ -37,8 +37,8 @@ const Template: ComponentStory<typeof CreateProposal> = (args) => {
     // Default to single choice proposal module.
     daoInfo.proposalModules.find(
       ({ contractName }) =>
-        matchProposalModuleAdapter(contractName)?.id ===
-        CwProposalSingleAdapter.id
+        matchProposalModuleAdapter(contractName)?.contractName ===
+        CwProposalSingleAdapter.contractName
     )!
   )
 

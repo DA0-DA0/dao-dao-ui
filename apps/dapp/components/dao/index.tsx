@@ -4,5 +4,4 @@
 export * from './tabs'
 
 export * from './DaoCard'
-export * from './DaoProposals'
 export * from './DaoTreasuryHistory'

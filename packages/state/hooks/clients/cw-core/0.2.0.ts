@@ -4,8 +4,6 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { validateCwCoreInstantiateMsg } from '@dao-dao/utils'
-
 import { CwCoreV0_2_0Client as ExecuteClient } from '../../../clients/cw-core/0.2.0'
 import {
   ExecuteClientParams,
@@ -40,7 +38,6 @@ const wrapExecuteHook =
 export const useExecuteAdminMsgs = wrapExecuteHook('executeAdminMsgs')
 export const useExecuteProposalHook = wrapExecuteHook('executeProposalHook')
 export const usePause = wrapExecuteHook('pause')
-export const useUpdateAdmin = wrapExecuteHook('updateAdmin')
 export const useUpdateConfig = wrapExecuteHook('updateConfig')
 export const useUpdateVotingModule = wrapExecuteHook('updateVotingModule')
 export const useUpdateProposalModules = wrapExecuteHook('updateProposalModules')
@@ -50,29 +47,3 @@ export const useReceive = wrapExecuteHook('receive')
 export const useReceiveNft = wrapExecuteHook('receiveNft')
 export const useUpdateCw20List = wrapExecuteHook('updateCw20List')
 export const useUpdateCw721List = wrapExecuteHook('updateCw721List')
-
-type ParametersExceptFirst<F> = F extends (arg0: any, ...rest: infer R) => any
-  ? R
-  : never
-interface UseInstantiateParams
-  extends Omit<ExecuteClientParams, 'contractAddress'> {
-  codeId: number
-}
-export const useInstantiate = ({ codeId, ...params }: UseInstantiateParams) => {
-  const clientLoadable = useRecoilValueLoadable(
-    // contractAddress irrelevant when instantiating a new contract.
-    executeClient({ ...params, contractAddress: '' })
-  )
-  const client =
-    clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
-
-  return useCallback(
-    (...args: ParametersExceptFirst<ExecuteClient['instantiate']>) => {
-      validateCwCoreInstantiateMsg(args[0])
-
-      if (client) return client.instantiate(codeId, ...args)
-      throw new Error('Client undefined.')
-    },
-    [client, codeId]
-  )
-}

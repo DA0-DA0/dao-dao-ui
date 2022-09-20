@@ -1,6 +1,8 @@
 import { Check } from '@mui/icons-material'
 import clsx from 'clsx'
-import { FieldValues, Path, PathValue, UseFormSetValue } from 'react-hook-form'
+import { FieldValues, UseFormSetValue } from 'react-hook-form'
+
+import { BooleanFieldNames } from '@dao-dao/tstypes'
 
 export interface CheckboxProps {
   checked: boolean
@@ -43,13 +45,6 @@ export const Checkbox = ({
     />
   </div>
 )
-
-// Return the field name paths that have type boolean.
-export type BooleanFieldNames<FV extends FieldValues> = {
-  [Property in Path<FV>]: PathValue<FV, Property> extends boolean | undefined
-    ? Property
-    : never
-}[Path<FV>]
 
 export type FormCheckboxWrapperProps<
   Props,

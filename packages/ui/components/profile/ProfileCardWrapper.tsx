@@ -89,10 +89,14 @@ export const ProfileCardWrapper = ({
               imageUrl={imgUrl || getFallbackImage(walletAddress)}
               size="lg"
             />
-            <div className="mt-6 text-text-body title-text">{walletName}</div>
-            <div className="mt-2 mb-5 font-mono caption-text">
-              {t('info.establishedAbbr')} {formatDate(established)}
+            <div className="mt-6 mb-5 text-text-body title-text">
+              {walletName}
             </div>
+            {established && (
+              <div className="-mt-3 mb-5 font-mono caption-text">
+                {t('info.establishedAbbr')} {formatDate(established)}
+              </div>
+            )}
             {underHeaderComponent}
           </div>
         )}
