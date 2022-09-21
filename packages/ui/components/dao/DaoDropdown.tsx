@@ -35,7 +35,7 @@ export const DaoDropdown = ({
     }
   }, [expanded, expandedLocalStorageKey])
 
-  // If compcat, just show image.
+  // If compact, just show image.
   return compact ? (
     <Link href={`/dao/${coreAddress}`}>
       <a
@@ -46,7 +46,7 @@ export const DaoDropdown = ({
       >
         <Tooltip title={name}>
           <img
-            alt={t('info.daosLogo')}
+            alt=""
             className="w-7 h-7 rounded-full"
             src={imageUrl || getFallbackImage(coreAddress)}
           />
@@ -88,7 +88,7 @@ export const DaoDropdown = ({
           <Link href={`/dao/${coreAddress}`}>
             <a className="flex flex-row grow gap-2 items-center py-2 hover:opacity-70 active:opacity-60 transition-opacity">
               <img
-                alt={t('info.daosLogo')}
+                alt=""
                 className="w-5 h-5 rounded-full"
                 src={imageUrl || getFallbackImage(coreAddress)}
               />
