@@ -60,7 +60,7 @@ export const AppLayout = ({
           )}
         >
           <div
-            className="absolute right-4 bottom-4 z-10 bg-background-base rounded-full shadow-dp8 cursor-pointer xl:hidden"
+            className="absolute right-4 bottom-4 z-10 bg-background-base rounded-full shadow-dp8 cursor-pointer sm:right-6 sm:bottom-6 xl:hidden"
             onClick={context.responsiveRightSidebar.toggle}
           >
             <ProfileImage

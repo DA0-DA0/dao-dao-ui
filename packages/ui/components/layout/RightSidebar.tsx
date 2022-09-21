@@ -41,7 +41,7 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
         )}
       >
         {/* Show responsive close button. */}
-        <div className="absolute right-4 bottom-4 z-40 bg-background-base rounded-full shadow-dp8 transition cursor-pointer xl:hidden">
+        <div className="absolute right-4 bottom-4 z-40 bg-background-base rounded-full shadow-dp8 transition cursor-pointer sm:right-6 sm:bottom-6 xl:hidden">
           <IconButton
             Icon={KeyboardDoubleArrowRight}
             // Match ProfileImage rounding.
