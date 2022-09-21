@@ -1,7 +1,6 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { useWallet } from '@noahsaso/cosmodal'
-import { useRouter } from 'next/router'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -39,9 +38,8 @@ import {
 export type NewProposalProps = BaseNewProposalProps &
   Pick<StatelessNewProposalProps, 'options'>
 
-export const NewProposal = ({ onCreateSuccess, options }: NewProposalProps) => {
+export const NewProposal = ({ onCreateSuccess, prefill, options }: NewProposalProps) => {
   const { t } = useTranslation()
-  const router = useRouter()
   const { coreVersion } = useDaoInfoContext()
   const { connected, address: walletAddress } = useWallet()
   const { isMember = false } = useVotingModule(options.coreAddress, {
@@ -96,28 +94,12 @@ export const NewProposal = ({ onCreateSuccess, options }: NewProposalProps) => {
 
   const formMethods = useForm<NewProposalForm>({
     mode: 'onChange',
-    defaultValues: {
+    defaultValues: prefill || {
       title: '',
       description: '',
       actionData: [],
     },
   })
-
-  // Prefill form with data from parameter once ready.
-  useEffect(() => {
-    const potentialDefaultValue = router.query.prefill
-    if (!router.isReady || typeof potentialDefaultValue !== 'string') {
-      return
-    }
-
-    try {
-      const data = JSON.parse(potentialDefaultValue)
-      if (data.constructor.name === 'Object') {
-        formMethods.reset(data)
-      }
-      // If failed to parse, do nothing.
-    } catch {}
-  }, [router.query.prefill, router.isReady, formMethods])
 
   const config = useRecoilValue(
     CwProposalSingleSelectors.configSelector({

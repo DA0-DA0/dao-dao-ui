@@ -147,7 +147,9 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
               </div>
             )
           })}
-        {!isCreating && toRemoveFields.length === 0 && (
+        {(isCreating
+          ? currentSubDaos.length === 0
+          : toRemoveFields.length === 0) && (
           <p className="text-xs italic text-tertiary">{t('info.none')}</p>
         )}
       </div>

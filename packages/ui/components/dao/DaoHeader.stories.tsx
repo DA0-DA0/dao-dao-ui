@@ -15,6 +15,7 @@ const Template: ComponentStory<typeof DaoHeader> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
+  coreAddress: 'modern',
   name: 'Modern DAO',
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',

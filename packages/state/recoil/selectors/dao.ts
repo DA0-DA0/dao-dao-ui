@@ -139,7 +139,7 @@ export const daoCardInfoSelector = selectorFamily<
         )
 
         parentDao = {
-          coreAddress,
+          coreAddress: admin,
           imageUrl: image_url || undefined,
           href: daoUrlPrefix + admin,
         }
@@ -347,7 +347,6 @@ export const nftTokenUriDataSelector = selectorFamily<unknown, string>({
   key: 'nftTokenUriData',
   get: (tokenUri) => async () => {
     const response = await fetch(tokenUri)
-    console.log(response)
     return response
   },
 })
@@ -393,13 +392,6 @@ export const nftCardInfosSelector = selectorFamily<NftCardInfo[], string>({
             .filter(({ token_uri }) => !!token_uri)
             .map(({ token_uri }) => nftTokenUriDataSelector(token_uri!))
         )
-      )
-
-      console.log(
-        nftCollectionAddresses,
-        nftCollectionTokenIds,
-        nftTokenInfos,
-        nftTokenUriDataResponses
       )
 
       const infos: NftCardInfo[] = []

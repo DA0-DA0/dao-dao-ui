@@ -4,6 +4,7 @@ import { MarkdownPreview } from '../MarkdownPreview'
 import { DaoImage } from './DaoImage'
 
 export interface DaoHeaderProps {
+  coreAddress: string
   name: string
   description: string
   imageUrl?: string | null
@@ -11,6 +12,7 @@ export interface DaoHeaderProps {
 }
 
 export const DaoHeader = ({
+  coreAddress,
   name,
   description,
   imageUrl,
@@ -20,7 +22,7 @@ export const DaoHeader = ({
 
   return (
     <div className="flex flex-col items-center py-10">
-      <DaoImage imageUrl={imageUrl} size="lg" />
+      <DaoImage imageUrl={imageUrl} coreAddress={coreAddress} size="lg" />
 
       <p className="mt-6 text-center hero-text">{name}</p>
       {established && (
