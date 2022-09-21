@@ -3947,10 +3947,10 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
-"@osmonauts/ast@^0.23.0":
-  version "0.23.0"
-  resolved "https://registry.yarnpkg.com/@osmonauts/ast/-/ast-0.23.0.tgz#43d689a07887458e1d13d572190f49fef8b6f27f"
-  integrity sha512-9zO+R7ouxIRXq4o2GQyT8QTssAE79qLxR/T6x3hJCDk7pzBFNbzmfNHb0qvExVY2bKEPtVNDuRUM/Y/YU/oZ5Q==
+"@osmonauts/ast@^0.22.3":
+  version "0.22.3"
+  resolved "https://registry.yarnpkg.com/@osmonauts/ast/-/ast-0.22.3.tgz#fe5d23137f8aa85bbf8a552d66afc81f81fdf629"
+  integrity sha512-umrWpbbOAwzOqTgk4LE/2Oi3daaDev+O6Lsj/j4Uo9PnmMf2PdWUNRFZ7KTwoqrLChxDQf+ZYod9HiJyLvtLvg==
   dependencies:
     "@babel/runtime" "^7.18.9"
     "@babel/types" "7.18.13"
@@ -3960,10 +3960,10 @@
     case "1.6.3"
     dotty "0.1.2"
 
-"@osmonauts/helpers@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@osmonauts/helpers/-/helpers-0.6.0.tgz#86324110ba1ec76637836ef6ec12ce263e1a7a97"
-  integrity sha512-l62tWR/0W4R+5wRvMeRK0zlaJ8WZhULKsQAZ7kNzggL0pbndIAV+0BJ/jEBbNletoeGtuV8rpi6Wo+w+RmtZGw==
+"@osmonauts/helpers@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@osmonauts/helpers/-/helpers-0.5.0.tgz#afc4c3d43e991af5bbd48a5274ea6b501dc7ef48"
+  integrity sha512-GMr7DSLs8z97Ql4fO1Z/MP3tqIdmFLcaE4rJMzP7pbdLvf8f3IzRj6hYhfrAxrR/dYIJKabxhrJ9OuE36Jnrpg==
   dependencies:
     "@babel/runtime" "^7.18.9"
     "@cosmjs/amino" "0.28.13"
@@ -3974,10 +3974,10 @@
     long "^5.2.0"
     protobufjs "^6.11.3"
 
-"@osmonauts/lcd@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@osmonauts/lcd/-/lcd-0.6.0.tgz#9545b793b77b4a175e6dc733341940fe192c6655"
-  integrity sha512-vz9VavXrEfxZoXbSAfNfk90MLpn34XtBYPV3L9YilE+s56AhqYxUh83nne9J5somnTRfGnyR3oeV8C+lHkqiuA==
+"@osmonauts/lcd@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@osmonauts/lcd/-/lcd-0.5.1.tgz#fa1163dd11e6880ac8e982fe26033cd25b27adec"
+  integrity sha512-u9HaSUz1k1ElWlvEapBipFM0NjaptmXimJdY9OGiAPPHTroMjTALT1Zwb1+Xh4IzqiMF+7eCWFzbb+5p42uxiw==
   dependencies:
     "@babel/runtime" "^7.18.9"
     axios "0.27.2"
@@ -3994,10 +3994,10 @@
     glob "8.0.3"
     mkdirp "1.0.4"
 
-"@osmonauts/telescope@^0.27.0":
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/@osmonauts/telescope/-/telescope-0.27.0.tgz#c4041debfe419c91b5cb147926a5a55ec2a88198"
-  integrity sha512-GHB924rPBAce4ahTuTOX9JxFkd1sbO7s26lVNEglQn2qj7ThtsfxF/l0PXGQd3XrSDvw74wa3EkphPqvy4b8dg==
+"@osmonauts/telescope@^0.26.3":
+  version "0.26.3"
+  resolved "https://registry.yarnpkg.com/@osmonauts/telescope/-/telescope-0.26.3.tgz#f6d9e493d83f7a7de349eecad3818c7fa64266f0"
+  integrity sha512-abCS/B75411nU6n+6brEJzLUl31zHN+Suf5V+zMTDGNM6GLut9fFTyBN0a99MDr1NsKjJKHz16CScKgX3cGdVg==
   dependencies:
     "@babel/core" "7.18.13"
     "@babel/generator" "7.18.13"
@@ -4012,7 +4012,7 @@
     "@babel/traverse" "7.18.13"
     "@babel/types" "7.18.13"
     "@cosmwasm/ts-codegen" "0.16.1"
-    "@osmonauts/ast" "^0.23.0"
+    "@osmonauts/ast" "^0.22.3"
     "@osmonauts/proto-parser" "^0.17.2"
     "@osmonauts/types" "^0.13.1"
     "@osmonauts/utils" "^0.4.0"
@@ -12314,19 +12314,19 @@ intercept-stdout@^0.1.2:
   dependencies:
     lodash.toarray "^3.0.0"
 
-interchain@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/interchain/-/interchain-0.3.1.tgz#d210ddfb048d305c173b5ef08b892a484bc18841"
-  integrity sha512-sMFtjHGFbmZ2SFwcHpFXrhEuodu8zgXK7k2CB0L1LED5fTqFNV0tE71kjMDO1hmwkMEl2KIpShVAnViSnabk7Q==
+interchain@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/interchain/-/interchain-0.2.3.tgz#9238aafc3bd858b309ae4925244683846f457523"
+  integrity sha512-mTmGF2arRkGfna1HGaEM5pmaB9qNgT2sL4tiI5s7COnVTCP/6s0ioMtN+/V98kLufOLMlSvhul7fwHLtvTFgtQ==
   dependencies:
     "@babel/runtime" "^7.19.0"
     "@cosmjs/amino" "0.29.0"
     "@cosmjs/proto-signing" "0.29.0"
     "@cosmjs/stargate" "0.29.0"
     "@cosmjs/tendermint-rpc" "^0.29.0"
-    "@osmonauts/helpers" "^0.6.0"
-    "@osmonauts/lcd" "^0.6.0"
-    "@osmonauts/telescope" "^0.27.0"
+    "@osmonauts/helpers" "^0.5.0"
+    "@osmonauts/lcd" "^0.5.1"
+    "@osmonauts/telescope" "^0.26.3"
     protobufjs "^6.11.2"
 
 internal-slot@^1.0.3:
