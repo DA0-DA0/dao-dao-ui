@@ -53,8 +53,10 @@ const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => {
       {...(connected
         ? {
             connected,
-            pinnedDaos: loadableToLoadingData(pinnedDaosLoadable, []),
-            DaoCard,
+            pinnedDaosProps: {
+              pinnedDaos: loadableToLoadingData(pinnedDaosLoadable, []),
+              DaoCard,
+            },
           }
         : {
             connected,
