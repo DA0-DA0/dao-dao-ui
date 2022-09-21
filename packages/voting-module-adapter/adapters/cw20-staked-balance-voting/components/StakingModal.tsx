@@ -139,7 +139,7 @@ const InnerStakingModal = ({
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
               governanceTokenInfo.decimals
-            ),
+            ).toString(),
             contract: stakingContractAddress,
             msg: btoa('{"stake": {}}'),
           })
@@ -190,11 +190,9 @@ const InnerStakingModal = ({
         if (
           Math.abs(
             Number(walletStakedBalance.balance) -
-              Number(
-                convertDenomToMicroDenomWithDecimals(
-                  amountToUnstake,
-                  governanceTokenInfo.decimals
-                )
+              convertDenomToMicroDenomWithDecimals(
+                amountToUnstake,
+                governanceTokenInfo.decimals
               )
           ) <= 1
         ) {
@@ -211,7 +209,7 @@ const InnerStakingModal = ({
             amount: convertDenomToMicroDenomWithDecimals(
               amountToUnstake,
               governanceTokenInfo.decimals
-            ),
+            ).toString(),
           })
 
           // TODO: Figure out better solution for detecting block.

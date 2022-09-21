@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { DaoDropdownProps } from '@dao-dao/tstypes/ui/DaoDropdown'
 import { getFallbackImage } from '@dao-dao/utils'
@@ -21,7 +20,6 @@ export const DaoDropdown = ({
   indent = 0,
   compact = false,
 }: DaoDropdownProps) => {
-  const { t } = useTranslation()
   const { asPath } = useRouter()
 
   const [expanded, setExpanded] = useState(

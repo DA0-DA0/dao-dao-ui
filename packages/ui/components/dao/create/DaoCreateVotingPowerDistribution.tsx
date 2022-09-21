@@ -159,7 +159,6 @@ const PieChart = ({ data, className }: ChartProps) => (
 export const DaoCreateVotingPowerDistributionBarChart = ({
   data,
 }: ChartProps) => {
-  const { t } = useTranslation()
   const darkRgb = useNamedThemeColor('dark')
 
   return (

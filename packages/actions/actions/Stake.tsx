@@ -56,7 +56,7 @@ const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
     const amount = convertDenomToMicroDenomWithDecimals(data.amount, decimals)
     return makeStakingMessage(
       data.stakeType,
-      amount,
+      amount.toString(),
       data.denom,
       data.validator,
       data.fromValidator

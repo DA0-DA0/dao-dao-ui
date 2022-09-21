@@ -69,7 +69,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
               : // Validated above that this is set.
                 cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo!
                   .decimals
-          ),
+          ).toString(),
           refund_failed_proposals: proposalDeposit.refundFailed,
           token: { voting_module_token: {} },
         }

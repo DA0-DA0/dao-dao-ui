@@ -56,7 +56,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           NATIVE_DECIMALS
         )
         return (
-          Number(microAmount) <= Number(native.amount) ||
+          microAmount <= Number(native.amount) ||
           t('error.cantSpendMoreThanTreasury', {
             amount: convertMicroDenomToDenomWithDecimals(
               native.amount,
@@ -75,7 +75,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           cw20.info.decimals
         )
         return (
-          Number(microAmount) <= Number(cw20.balance) ||
+          microAmount <= Number(cw20.balance) ||
           t('error.cantSpendMoreThanTreasury', {
             amount: convertMicroDenomToDenomWithDecimals(
               cw20.balance,

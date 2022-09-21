@@ -43,17 +43,15 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
             // evenly amongst members.
             (weight / members.length / 100) * initialSupply,
             NEW_DAO_CW20_DECIMALS
-          ),
+          ).toString(),
         }))
     )
     // To prevent rounding issues, treasury balance becomes the
     // remaining tokens after the member weights are distributed.
     const microInitialTreasuryBalance = (
-      Number(
-        convertDenomToMicroDenomWithDecimals(
-          initialSupply,
-          NEW_DAO_CW20_DECIMALS
-        )
+      convertDenomToMicroDenomWithDecimals(
+        initialSupply,
+        NEW_DAO_CW20_DECIMALS
       ) -
       microInitialBalances.reduce((acc, { amount }) => acc + Number(amount), 0)
     ).toString()

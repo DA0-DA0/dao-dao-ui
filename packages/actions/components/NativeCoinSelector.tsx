@@ -45,7 +45,7 @@ export const NativeCoinSelector = ({
           NATIVE_DECIMALS
         )
         return (
-          Number(microAmount) <= Number(native.amount) ||
+          microAmount <= Number(native.amount) ||
           t('error.cantSpendMoreThanTreasury', {
             amount: convertMicroDenomToDenomWithDecimals(
               native.amount,

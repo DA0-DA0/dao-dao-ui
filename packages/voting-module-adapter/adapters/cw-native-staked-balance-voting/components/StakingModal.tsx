@@ -160,7 +160,7 @@ const InnerStakingModal = ({
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
               governanceTokenInfo.decimals
-            ),
+            ).toString(),
           })
 
           // TODO: Figure out better solution for detecting block.

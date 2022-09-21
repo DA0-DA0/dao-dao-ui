@@ -80,7 +80,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
           NATIVE_DECIMALS
         )
         return (
-          Number(microAmount) <= Number(nativeDelegatedBalance.amount) ||
+          microAmount <= Number(nativeDelegatedBalance.amount) ||
           `${
             Number(nativeDelegatedBalance.amount) === 0
               ? 'No native token delegations for'
@@ -103,7 +103,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
           NATIVE_DECIMALS
         )
         return (
-          Number(microAmount) <= Number(native.amount) ||
+          microAmount <= Number(native.amount) ||
           `The treasury ${
             Number(native.amount) === 0
               ? 'has no'

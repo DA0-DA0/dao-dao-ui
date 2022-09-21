@@ -82,7 +82,7 @@ const makeUseTransformToCosmos: WithIsWallet<UseTransformToCosmos<SpendData>> =
             data.amount,
             decimals
           )
-          const bank = makeBankMessage(amount, data.to, data.denom)
+          const bank = makeBankMessage(amount.toString(), data.to, data.denom)
           return { bank }
         }
 
