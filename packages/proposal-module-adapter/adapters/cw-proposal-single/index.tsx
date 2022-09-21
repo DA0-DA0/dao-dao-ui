@@ -1,5 +1,4 @@
 import { DurationUnits } from '@dao-dao/tstypes'
-import { CWPROPOSALSINGLE_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { ProposalModuleAdapter } from '../../types'
 import {
@@ -41,7 +40,8 @@ import { DaoCreationConfig } from './types'
 
 export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
   {
-    contractName: CWPROPOSALSINGLE_CONTRACT_NAME,
+    id: 'cw-proposal-single',
+    contractNames: ['cw-govmod-single', 'cw-proposal-single'],
 
     loadCommon: (options) => ({
       // Selectors

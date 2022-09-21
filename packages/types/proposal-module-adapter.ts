@@ -76,7 +76,8 @@ export interface IProposalModuleAdapter {
 
 export type ProposalModuleAdapter<DaoCreationConfig extends FieldValues = any> =
   {
-    contractName: string
+    id: string
+    contractNames: string[]
 
     loadCommon: (
       options: IProposalModuleAdapterCommonOptions

@@ -15,7 +15,7 @@ export const proposalModuleAdapterSelector = selectorFamily<
   get:
     (contractAddress) =>
     ({ get }) =>
-      getAdapters().find(({ contractName }) =>
+      getAdapters().find(({ id: contractName }) =>
         get(
           isContractSelector({
             contractAddress,

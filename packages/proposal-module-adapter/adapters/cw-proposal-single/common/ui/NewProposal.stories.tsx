@@ -32,8 +32,8 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
 
   const singleChoiceProposalModule = proposalModules.find(
     ({ contractName }) =>
-      matchProposalModuleAdapter(contractName)?.contractName ===
-      CwProposalSingleAdapter.contractName
+      matchProposalModuleAdapter(contractName)?.id ===
+      CwProposalSingleAdapter.id
   )!
 
   const {

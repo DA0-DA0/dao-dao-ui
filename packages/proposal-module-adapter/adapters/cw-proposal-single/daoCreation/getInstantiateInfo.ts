@@ -4,7 +4,6 @@ import { InstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
 import {
   CWPROPOSALSINGLE_CODE_ID,
-  CWPROPOSALSINGLE_CONTRACT_NAME,
   NEW_DAO_CW20_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
@@ -16,6 +15,7 @@ import {
   GovernanceTokenType,
 } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/types'
 
+import { CwProposalSingleAdapter } from '../../index'
 import { DaoCreationConfig } from '../types'
 import { convertThresholdValueToPercentageThreshold } from '../utils'
 import instantiateSchema from './instantiate_schema.json'
@@ -96,7 +96,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   return {
     admin: { core_contract: {} },
     code_id: CWPROPOSALSINGLE_CODE_ID,
-    label: `DAO_${name}_${CWPROPOSALSINGLE_CONTRACT_NAME}`,
+    label: `DAO_${name}_${CwProposalSingleAdapter.id}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }
 }

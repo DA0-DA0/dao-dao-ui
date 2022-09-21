@@ -34,8 +34,8 @@ export const MembersTab = () => {
   // If has single choice proposal module, can create prefill button.
   const singleChoiceProposalModule = proposalModules.find(
     ({ contractName }) =>
-      matchProposalModuleAdapter(contractName)?.contractName ===
-      CwProposalSingleAdapter.contractName
+      matchProposalModuleAdapter(contractName)?.id ===
+      CwProposalSingleAdapter.id
   )
 
   // Only show new member proposal prefill if has single choice proposal module.
