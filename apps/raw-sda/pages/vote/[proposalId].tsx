@@ -11,6 +11,7 @@ import {
   DaoProposalPageWrapperProps,
   SuspenseLoader,
   Trans,
+  useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
 import {
@@ -30,6 +31,7 @@ const InnerProposal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { address: walletAddress, connected } = useWallet()
+  const { coreVersion } = useDaoInfoContext()
 
   const {
     components: {
@@ -55,6 +57,7 @@ const InnerProposal = () => {
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()
   const actions = useActions(
+    coreVersion,
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]

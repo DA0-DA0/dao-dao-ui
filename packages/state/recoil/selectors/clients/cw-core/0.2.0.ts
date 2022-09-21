@@ -627,3 +627,29 @@ export const listAllSubDaosSelector = selectorFamily<
       return subdaos
     },
 })
+export const allSubDaoConfigsSelector = selectorFamily<
+  ({ address: string } & ConfigResponse)[],
+  QueryClientParams
+>({
+  key: 'cwCoreV0_2_0AllSubDaoConfigs',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const subDaos = get(listAllSubDaosSelector(queryClientParams))
+      const subDaoConfigs = get(
+        waitForAll(
+          subDaos.map(({ addr }) =>
+            configSelector({
+              contractAddress: addr,
+              params: [],
+            })
+          )
+        )
+      )
+
+      return subDaos.map(({ addr }, index) => ({
+        address: addr,
+        ...subDaoConfigs[index]
+      }))
+    },
+})

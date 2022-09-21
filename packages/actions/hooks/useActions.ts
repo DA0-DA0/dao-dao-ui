@@ -2,12 +2,16 @@ import { useMemo } from 'react'
 
 import { Action } from '@dao-dao/tstypes/actions'
 
-import { daoActions } from '../actions'
+import { getDaoActions } from '../actions'
+import { ContractVersion } from '@dao-dao/tstypes'
 
-export const useActions = (additionalActions?: Action[]): Action[] =>
+export const useActions = (
+  coreVersion: ContractVersion,
+  additionalActions?: Action[]
+): Action[] =>
   useMemo(
     () =>
-      daoActions
+      getDaoActions(coreVersion)
         .concat(additionalActions ?? [])
         // Sort alphabetically.
         .sort((a, b) =>

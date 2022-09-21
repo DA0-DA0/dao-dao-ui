@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { useActions } from '@dao-dao/actions'
-import { SuspenseLoader } from '@dao-dao/common'
+import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
 import { Airplane } from '@dao-dao/icons'
 import {
   Cw20BaseHooks,
@@ -89,6 +89,7 @@ export const CreateProposalForm = ({
   const { t } = useTranslation()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const { coreVersion } = useDaoInfoContext()
 
   const {
     hooks: { useActions: useVotingModuleActions },
@@ -201,6 +202,7 @@ export const CreateProposalForm = ({
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = makeUseProposalModuleActions(proposalModule)()
   const actions = useActions(
+    coreVersion,
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]

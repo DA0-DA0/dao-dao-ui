@@ -68,7 +68,7 @@
     "@svgr/cli": "^6.1.1",
     "@types/jest": "^27.0.2",
     "@types/jsoneditor": "^9.5.1",
-    "autoprefixer": "^10.4.0",
+    "autoprefixer": "^9.8.6",
     "babel-loader": "^8.2.3",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",

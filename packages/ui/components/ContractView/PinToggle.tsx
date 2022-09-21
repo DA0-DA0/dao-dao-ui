@@ -15,7 +15,7 @@ export const PinToggle = ({ pinned, onPin }: PinToggleProps) => {
   return (
     <Button onClick={(_e) => onPin()} variant="secondary">
       {/* Don't show text on mobile, header too small. */}
-      <p className="hidden text-text-body sm:body">
+      <p className="hidden text-text-body sm:block">
         {pinned ? t('button.following') : t('button.follow')}
       </p>
       <PushPin className="w-4 h-4 text-icon-primary" />

@@ -37,7 +37,7 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 const InnerProposal = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, name } = useDaoInfoContext()
+  const { coreAddress, coreVersion, name } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
 
   const {
@@ -60,6 +60,7 @@ const InnerProposal = () => {
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()
   const actions = useActions(
+    coreVersion,
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]

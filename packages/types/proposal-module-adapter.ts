@@ -3,6 +3,8 @@ import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
+import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
+
 import { Action } from './actions'
 import { CheckedDepositInfo } from './contracts/cw-proposal-single'
 import {
@@ -28,6 +30,7 @@ export interface IProposalModuleAdapterCommon {
     ) => CommonProposalListInfo[]
     useProposalCount: () => number
     useActions: () => Action[]
+    useProfileNewProposalCardInfoLines: () => ProfileNewProposalCardInfoLine[]
     // Returns `proposalNumber` (ID of this proposal for this module)
     // useCreateProposal: (data: unknown) => number
   }

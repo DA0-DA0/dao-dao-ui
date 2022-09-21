@@ -10,6 +10,7 @@ import {
   makeUseActions,
   makeUseListAllProposalInfos,
   makeUseProposalCount,
+  makeUseProfileNewProposalCardInfoLines,
 } from './common'
 import {
   PinnedProposalLineDesktop,
@@ -57,6 +58,8 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
         ),
         useProposalCount: makeUseProposalCount(options.proposalModule),
         useActions: makeUseActions(options.proposalModule),
+        useProfileNewProposalCardInfoLines:
+          makeUseProfileNewProposalCardInfoLines(options.proposalModule),
       },
 
       // Components

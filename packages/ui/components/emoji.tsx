@@ -57,3 +57,8 @@ export const UpdateInfoEmoji = () => {
   const { t } = useTranslation()
   return <Emoji label={t('emoji.info')} symbol="ℹ️" />
 }
+
+export const ManageSubDaosEmoji = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.family')} symbol="👨‍👦" />
+}

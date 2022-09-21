@@ -28,7 +28,7 @@ export default {
 } as ComponentMeta<typeof NewProposal>
 
 const Template: ComponentStory<typeof NewProposal> = (args) => {
-  const { coreAddress, proposalModules } = useDaoInfoContext()
+  const { coreAddress, coreVersion, proposalModules } = useDaoInfoContext()
 
   const singleChoiceProposalModule = proposalModules.find(
     ({ contractName }) =>
@@ -44,6 +44,7 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
     singleChoiceProposalModule
   )()
   const actions = useActions(
+    coreVersion,
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]

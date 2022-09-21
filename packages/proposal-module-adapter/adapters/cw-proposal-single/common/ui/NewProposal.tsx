@@ -59,7 +59,6 @@ export interface NewProposalProps {
   formMethods: UseFormReturn<NewProposalForm, object>
 }
 
-// TODO: Add prefilling in stateful version.
 // TODO: Figure out where to put preview logic.
 export const NewProposal = ({
   options: { coreAddress, Loader, Logo },

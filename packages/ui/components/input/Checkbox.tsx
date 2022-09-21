@@ -26,13 +26,15 @@ export const Checkbox = ({
     className={clsx(
       'group inline-flex justify-center items-center rounded outline-1 outline-border-primary outline transition-all',
       checked ? 'bg-component-pill' : 'bg-background-button',
-      !readOnly && {
-        'hover:bg-background-button-hover active:bg-background-button-pressed  active:outline-2 cursor-pointer':
-          true,
-        // Respond to parent group as well.
-        'group-hover:bg-background-button-hover group-active:bg-background-button-pressed group-active:outline-2':
-          styleWithGroup,
-      },
+      readOnly
+        ? 'pointer-events-none'
+        : {
+            'hover:bg-background-button-hover active:bg-background-button-pressed  active:outline-2 cursor-pointer':
+              true,
+            // Respond to parent group as well.
+            'group-hover:bg-background-button-hover group-active:bg-background-button-pressed group-active:outline-2':
+              styleWithGroup,
+          },
       className
     )}
     onClick={readOnly ? undefined : onClick}

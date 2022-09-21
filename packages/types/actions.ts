@@ -4,6 +4,7 @@ import { FieldErrors } from 'react-hook-form'
 
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 
+import { ContractVersion } from './contract'
 import { CosmosMsgFor_Empty } from './contracts/common'
 
 export enum ActionKey {
@@ -15,6 +16,7 @@ export enum ActionKey {
   AddCw721 = 'addCw721',
   RemoveCw721 = 'removeCw721',
   ManageMembers = 'manageMembers',
+  ManageSubDaos = 'manageSubDaos',
   UpdateInfo = 'updateInfo',
   UpdateProposalConfig = 'updateProposalConfig',
   Instantiate = 'instantiate',
@@ -94,4 +96,6 @@ export interface Action<O extends {} = any, D extends {} = any> {
   useTransformToCosmos: UseTransformToCosmos<D>
   // Hook to make function to convert decoded msg to form display fields.
   useDecodedCosmosMsg: UseDecodedCosmosMsg<D>
+  // Optionally support only these coreVersions.
+  supportedCoreVersions?: ContractVersion[]
 }
