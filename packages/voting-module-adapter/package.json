@@ -21,7 +21,6 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
-    "@dao-dao/storybook": "*",
     "@types/lodash.clonedeep": "^4.5.0",
     "clsx": "^1.1.1",
     "react": "18.1.0",
@@ -29,6 +28,7 @@
     "typescript": "^4.8.3"
   },
   "peerDependencies": {
+    "@dao-dao/storybook": "*",
     "@noahsaso/cosmodal": "0.6.1"
   },
   "prettier": "@dao-dao/config/prettier",
