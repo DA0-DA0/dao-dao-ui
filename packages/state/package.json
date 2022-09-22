@@ -10,6 +10,7 @@
     "@cosmjs/cosmwasm-stargate": "0.28.10",
     "@cosmjs/proto-signing": "0.28.10",
     "@dao-dao/ui": "*",
+    "@osmonauts/lcd": "^0.6.0",
     "@walletconnect/browser-utils": "^1.7.8",
     "@walletconnect/client": "^1.7.8",
     "ajv": "^8.11.0",

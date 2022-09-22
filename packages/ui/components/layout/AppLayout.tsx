@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react'
 import { RightSidebarProps } from '@dao-dao/tstypes'
 import { AppLayoutProps } from '@dao-dao/tstypes/ui/AppLayout'
 
+import { ErrorBoundary } from '../ErrorBoundary'
 import { ProfileImage } from '../profile/ProfileImage'
 import { AppLayoutContext } from './AppLayoutContext'
 import { Navigation } from './Navigation'
@@ -44,7 +45,9 @@ export const AppLayout = ({
       }}
     >
       <div className="flex overflow-hidden relative flex-row items-stretch w-full h-full">
-        <Navigation {...navigationProps} />
+        <ErrorBoundary>
+          <Navigation {...navigationProps} />
+        </ErrorBoundary>
 
         <main
           className={clsx(
@@ -71,13 +74,15 @@ export const AppLayout = ({
             />
           </div>
 
-          {children}
+          <ErrorBoundary>{children}</ErrorBoundary>
         </main>
 
-        <RightSidebar
-          {...rightSidebarProps}
-          setContentRef={setRightSidebarContentRef}
-        />
+        <ErrorBoundary>
+          <RightSidebar
+            {...rightSidebarProps}
+            setContentRef={setRightSidebarContentRef}
+          />
+        </ErrorBoundary>
       </div>
     </AppLayoutContext.Provider>
   )

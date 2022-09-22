@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
-import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
+import { Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 import { AppLayout, HomepageLayout } from '@/components'
@@ -50,13 +50,11 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <ErrorBoundary>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
 
-        <Notifications />
-      </ErrorBoundary>
+      <Notifications />
     </ThemeProvider>
   )
 }
