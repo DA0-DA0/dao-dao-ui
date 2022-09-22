@@ -328,6 +328,7 @@
     "haveNotCastVote": "You have not yet cast a vote.",
     "hideFromPageTooltip": "Hide from this page.",
     "historySinceDate": "History since {{date}}",
+    "inboxDescription": "Open proposals for your pinned DAOs.",
     "jsonIsValid": "json is valid",
     "keplrModalWalletExplanation": "Your wallet is your digital identity on the blockchain. Having one lets you interact with web3 applications like DAO DAO.\nWe recommend the Keplr wallet.",
     "loading": "Loading...",

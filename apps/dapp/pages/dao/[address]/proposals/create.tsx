@@ -67,15 +67,12 @@ const InnerProposalCreate = () => {
       return
     }
 
-    // Prefill checked once router is ready.
-    setPrefillChecked(true)
-
-    const potentialDefaultValue = router.query.prefill
-    if (typeof potentialDefaultValue !== 'string') {
-      return
-    }
-
     try {
+      const potentialDefaultValue = router.query.prefill
+      if (typeof potentialDefaultValue !== 'string') {
+        return
+      }
+
       const prefillData = JSON.parse(potentialDefaultValue)
       if (
         prefillData.constructor.name === 'Object' &&
@@ -92,12 +89,14 @@ const InnerProposalCreate = () => {
 
         if (matchingProposalModule) {
           setSelectedProposalModule(matchingProposalModule)
-          setPrefill(data.data)
+          setPrefill(data)
         }
       }
       // If failed to parse, do nothing.
     } catch (error) {
       console.error(error)
+    } finally {
+      setPrefillChecked(true)
     }
   }, [router.query.prefill, router.isReady, daoInfo.proposalModules])
 

@@ -26,6 +26,7 @@ import {
   CHAIN_TXN_URL_PREFIX,
   convertExpirationToDate,
   dateToWdhms,
+  formatDate,
 } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
@@ -105,8 +106,17 @@ export const ProposalStatusAndInfo = ({
       ? ([
           {
             Icon: HourglassTopRounded,
-            label: t('title.timeLeft'),
-            Value: (props) => <p {...props}>{dateToWdhms(expirationDate)}</p>,
+            label:
+              expirationDate.getTime() > Date.now()
+                ? t('title.timeLeft')
+                : t('info.completed'),
+            Value: (props) => (
+              <p {...props}>
+                {expirationDate.getTime() > Date.now()
+                  ? dateToWdhms(expirationDate)
+                  : formatDate(expirationDate)}
+              </p>
+            ),
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),

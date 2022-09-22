@@ -26,17 +26,21 @@ const GET_OPEN_PROPOSALS_WITH_WALLET_VOTES = gql`
 
 interface GetOpenProposalsWithWalletVotes {
   proposalModules: {
-    id: string
-    proposals: {
+    nodes: {
       id: string
-      num: number
-      votes: {
-        wallet: {
+      proposals: {
+        nodes: {
           id: string
-        }
-      }[]
+          num: number
+          votes: {
+            nodes: {
+              id: string
+            }[]
+          }
+        }[]
+      }
     }[]
-  }[]
+  }
 }
 
 export const useOpenProposalsWithWalletVotesQuery = (
