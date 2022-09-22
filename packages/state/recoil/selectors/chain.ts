@@ -1,5 +1,5 @@
 import { Coin } from '@cosmjs/stargate'
-import { cosmos } from 'interchain'
+import { cosmos } from 'interchain-lcd'
 import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 

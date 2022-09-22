@@ -14,7 +14,7 @@
     "@walletconnect/client": "^1.7.8",
     "ajv": "^8.11.0",
     "graphql": "^16.6.0",
-    "interchain": "^0.4.0",
+    "interchain-lcd": "^0.1.1",
     "react": "18.1.0",
     "recoil": "^0.7.2"
   },
