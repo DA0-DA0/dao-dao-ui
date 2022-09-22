@@ -111,6 +111,9 @@ const InnerDaoHome = () => {
             />
           ) : (
             <ProfileNotMemberCard
+              daoName={daoInfo.name}
+              established={new Date()}
+              // TODO: Retrieve.
               notMemberInfo={
                 <ProfileCardNotMemberInfo
                   deposit={
@@ -121,9 +124,6 @@ const InnerDaoHome = () => {
                   proposalContext={false}
                 />
               }
-              daoName={daoInfo.name}
-              // TODO: Retrieve.
-              established={new Date()}
               // TODO: Retrieve.
               profileImgUrl={undefined}
               walletAddress={walletAddress}

@@ -19,11 +19,11 @@ import {
 
 import { SidebarWallet, WalletProvider } from '@dao-dao/common'
 import {
+  SubQueryProvider,
   mountedInBrowserAtom,
   navigationCompactAtom,
   pinnedDaoDropdownInfosSelector,
   refreshTokenUsdcPriceIdAtom,
-  SubQueryProvider,
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
 import { IAppLayoutContext, AppLayout as StatelessAppLayout } from '@dao-dao/ui'

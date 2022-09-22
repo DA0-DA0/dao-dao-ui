@@ -30,14 +30,16 @@ Default.args = {
     data: NavigationStoryArgs.pinnedDaos.loading
       ? []
       : NavigationStoryArgs.pinnedDaos.data.map((dao) => ({
-        dao,
-        // Generate between 1 and 3 proposals.
-        proposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
-          // Random time in the next 3 days.
-          const secondsRemaining = Math.floor(Math.random() * 3 * 24 * 60 * 60)
-          return makeProposalLineProps(secondsRemaining)
-        }),
-      }))
+          dao,
+          // Generate between 1 and 3 proposals.
+          proposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
+            // Random time in the next 3 days.
+            const secondsRemaining = Math.floor(
+              Math.random() * 3 * 24 * 60 * 60
+            )
+            return makeProposalLineProps(secondsRemaining)
+          }),
+        })),
   },
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
@@ -57,7 +59,7 @@ Default.parameters = {
 export const Loading = Template.bind({})
 Loading.args = {
   daosWithProposals: {
-    loading: true
+    loading: true,
   },
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />

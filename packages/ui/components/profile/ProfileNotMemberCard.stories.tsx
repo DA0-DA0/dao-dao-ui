@@ -25,9 +25,7 @@ Default.args = {
   profileImgUrl: '/noah.jpg',
   established: new Date(),
   notMemberInfo: (
-    <ProfileCardNotMemberInfo
-      {...makeProfileCardNotMemberInfoProps()}
-    />
+    <ProfileCardNotMemberInfo {...makeProfileCardNotMemberInfoProps()} />
   ),
 }
 

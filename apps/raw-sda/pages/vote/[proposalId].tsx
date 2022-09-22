@@ -16,10 +16,7 @@ import {
 import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
 import {
   ProposalModuleAdapterProvider,
-  useProposalModuleAdapter,
-  useProposalModuleAdapterCommon,
   useProposalModuleAdapterContext,
-  useProposalModuleAdapterOptions,
 } from '@dao-dao/proposal-module-adapter'
 import { ErrorPage, LinkText } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'

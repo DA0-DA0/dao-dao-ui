@@ -12,9 +12,7 @@ export default {
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof ProfileCardNotMemberInfo>
 
-const Template: ComponentStory<typeof ProfileCardNotMemberInfo> = (
-  args
-) => (
+const Template: ComponentStory<typeof ProfileCardNotMemberInfo> = (args) => (
   <div className="max-w-[320px]">
     <ProfileCardNotMemberInfo {...args} />
   </div>

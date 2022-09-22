@@ -9,7 +9,9 @@ import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 import { ProfileCardNotMemberInfo as StatelessProfileCardNotMemberInfo } from '../ui'
 import { StakingModal } from './StakingModal'
 
-export const ProfileCardNotMemberInfo = (props: BaseProfileCardNotMemberInfoProps) => {
+export const ProfileCardNotMemberInfo = (
+  props: BaseProfileCardNotMemberInfoProps
+) => {
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
 

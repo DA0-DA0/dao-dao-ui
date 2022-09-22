@@ -116,20 +116,21 @@ export const ProposalVotes = () => {
   return (
     <StatelessProposalVotes
       canLoadMore={canLoadMore}
-      loadMore={loadMore}
-      loadingMore={loading}
-      votes={votes}
-      // Only return dates once subquery data has loaded.
       getDateVoted={
         proposalVotesSubquery.loading || !proposalVotesSubquery.data?.proposal
           ? undefined
           : (voterAddress) => {
-              const votedAt = proposalVotesSubquery.data?.proposal?.votes.nodes.find(
-                ({ walletId }) => walletId === voterAddress
-              )?.votedAt
+              const votedAt =
+                proposalVotesSubquery.data?.proposal?.votes.nodes.find(
+                  ({ walletId }) => walletId === voterAddress
+                )?.votedAt
               return votedAt ? new Date(votedAt) : undefined
             }
       }
+      loadMore={loadMore}
+      loadingMore={loading}
+      // Only return dates once subquery data has loaded.
+      votes={votes}
     />
   )
 }

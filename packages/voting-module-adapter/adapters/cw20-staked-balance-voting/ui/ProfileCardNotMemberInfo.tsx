@@ -2,10 +2,11 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { ArrowOutward } from '@dao-dao/icons'
-import { Button, ButtonLink } from '@dao-dao/ui'
 import { BaseProfileCardNotMemberInfoProps } from '@dao-dao/tstypes'
+import { Button, ButtonLink } from '@dao-dao/ui'
 
-export interface ProfileCardNotMemberInfoProps extends BaseProfileCardNotMemberInfoProps {
+export interface ProfileCardNotMemberInfoProps
+  extends BaseProfileCardNotMemberInfoProps {
   tokenSymbol: string
   tokenDecimals: number
   unstakedTokenBalance: number
@@ -24,7 +25,7 @@ export const ProfileCardNotMemberInfo = ({
   daoName,
   onStake,
   junoswapHref,
-  proposalContext
+  proposalContext,
 }: ProfileCardNotMemberInfoProps) => {
   const { t } = useTranslation()
 

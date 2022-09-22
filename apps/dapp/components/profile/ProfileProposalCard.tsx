@@ -112,6 +112,7 @@ export const ProfileProposalCard = ({
   ) : (
     <ProfileCantVoteCard
       {...commonProps}
+      isMember={isMember}
       notMemberInfo={
         <ProfileCardNotMemberInfo
           deposit={
@@ -122,7 +123,6 @@ export const ProfileProposalCard = ({
           proposalContext={true}
         />
       }
-      isMember={isMember}
     />
   )
 }

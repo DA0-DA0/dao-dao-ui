@@ -4,28 +4,18 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect, useMemo } from 'react'
-import { useRecoilValue, useRecoilValueLoadable } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
+import { ProposalLine, ProposalLineProps } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
-  pinnedDaoCardInfoSelector,
   pinnedDaosWithProposalModulesSelector,
   useOpenProposalsWithWalletVotesQuery,
-  usePinnedDaos,
 } from '@dao-dao/state'
-import { DaoCardInfo, ProposalModule } from '@dao-dao/tstypes'
-import {
-  DaoWithProposals,
-  Home,
-  Inbox,
-  ProfileDisconnectedCard,
-} from '@dao-dao/ui'
+import { ProposalModule } from '@dao-dao/tstypes'
+import { DaoWithProposals, Inbox, ProfileDisconnectedCard } from '@dao-dao/ui'
 
 import { ProfileHomeCard } from '@/components'
-import {
-  ProposalLine,
-  ProposalLineProps,
-} from '@dao-dao/common'
 
 const InboxPage: NextPage = () => {
   const { connected, address: walletAddress = '' } = useWallet()
@@ -43,7 +33,10 @@ const InboxPage: NextPage = () => {
     loading,
     error,
     data: openUnvotedProposals,
-  } = useOpenProposalsWithWalletVotesQuery(proposalModuleAddresses, walletAddress)
+  } = useOpenProposalsWithWalletVotesQuery(
+    proposalModuleAddresses,
+    walletAddress
+  )
 
   //! Loading errors.
   useEffect(() => {
@@ -56,7 +49,10 @@ const InboxPage: NextPage = () => {
     () =>
       pinnedDaosWithProposalModules
         .map(
-          ({ dao, proposalModules }): DaoWithProposals<ProposalLineProps> | undefined => {
+          ({
+            dao,
+            proposalModules,
+          }): DaoWithProposals<ProposalLineProps> | undefined => {
             // Get open unvoted proposal numbers for all proposal module.
             const proposalModulesWithNumbers =
               (openUnvotedProposals?.proposalModules
@@ -104,14 +100,12 @@ const InboxPage: NextPage = () => {
           }
         )
         .filter(Boolean) as DaoWithProposals<ProposalLineProps>[],
-    []
+    [openUnvotedProposals?.proposalModules, pinnedDaosWithProposalModules]
   )
 
   return (
     <Inbox
-      rightSidebarContent={
-        connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
-      }
+      ProposalLine={ProposalLine}
       daosWithProposals={
         loading || !openUnvotedProposals
           ? { loading: true }
@@ -120,7 +114,9 @@ const InboxPage: NextPage = () => {
               data: daosWithProposals,
             }
       }
-      ProposalLine={ProposalLine}
+      rightSidebarContent={
+        connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
+      }
     />
   )
 }

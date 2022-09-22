@@ -5,7 +5,7 @@ const GET_OPEN_PROPOSALS_WITH_WALLET_VOTES = gql`
     $proposalModuleAddresses: [String!]
     $walletAddress: String!
   ) {
-    proposalModules(filter: { id: { in:  $proposalModuleAddresses } }) {
+    proposalModules(filter: { id: { in: $proposalModuleAddresses } }) {
       nodes {
         id
         proposals(filter: { open: { equalTo: true } }) {
@@ -43,11 +43,14 @@ export const useOpenProposalsWithWalletVotesQuery = (
   proposalModuleAddresses: string[],
   walletAddress: string
 ) =>
-  useQuery<GetOpenProposalsWithWalletVotes>(GET_OPEN_PROPOSALS_WITH_WALLET_VOTES, {
-    variables: {
-      proposalModuleAddresses,
-      walletAddress,
-    },
-    // Refresh every 30 seconds.
-    pollInterval: 30 * 1000,
-  })
+  useQuery<GetOpenProposalsWithWalletVotes>(
+    GET_OPEN_PROPOSALS_WITH_WALLET_VOTES,
+    {
+      variables: {
+        proposalModuleAddresses,
+        walletAddress,
+      },
+      // Refresh every 30 seconds.
+      pollInterval: 30 * 1000,
+    }
+  )

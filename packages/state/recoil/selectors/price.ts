@@ -1,10 +1,10 @@
 import { selectorFamily } from 'recoil'
 
 import {
-  convertMicroDenomToDenomWithDecimals,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   USDC_SWAP_ADDRESS,
+  convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
 import { refreshTokenUsdcPriceIdAtom } from '../atoms/refresh'

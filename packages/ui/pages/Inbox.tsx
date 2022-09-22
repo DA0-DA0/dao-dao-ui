@@ -1,12 +1,11 @@
-import { LoadingData } from '@dao-dao/tstypes'
 import { ComponentType, ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { LoadingData } from '@dao-dao/tstypes'
 
 import {
   DaoDropdown,
   DaoDropdownInfo,
-  Dropdown,
-  DropdownOption,
   Loader,
   PageHeader,
   ProposalContainer,
@@ -51,10 +50,10 @@ export const Inbox = <T extends {}>({
         <PageHeader title={t('title.inbox')} />
 
         {daosWithProposals.loading ? (
-          <Loader fill={false} className="mt-10" />
+          <Loader className="mt-10" fill={false} />
         ) : (
           <>
-            <p className="title-text mt-10">
+            <p className="mt-10 title-text">
               {t('title.numOpenProposals', { count: numOpenProposals })}
             </p>
 

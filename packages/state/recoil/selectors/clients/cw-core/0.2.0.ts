@@ -649,7 +649,7 @@ export const allSubDaoConfigsSelector = selectorFamily<
 
       return subDaos.map(({ addr }, index) => ({
         address: addr,
-        ...subDaoConfigs[index]
+        ...subDaoConfigs[index],
       }))
     },
 })

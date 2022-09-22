@@ -9,13 +9,13 @@ import { TokenCardInfo } from '@dao-dao/tstypes'
 import { secondsToWdhms } from '@dao-dao/utils'
 
 import { Button } from './Button'
+import { CopyToClipboard, concatAddressStartEnd } from './CopyToClipboard'
 import { SpendEmoji, StakeEmoji } from './emoji'
 import { IconButton } from './IconButton'
 import { ButtonPopup, ButtonPopupSection } from './popup'
 import { Tooltip } from './Tooltip'
 import { UnstakingModal } from './UnstakingModal'
 import { UnstakingTaskStatus } from './UnstakingStatus'
-import { concatAddressStartEnd, CopyToClipboard } from './CopyToClipboard'
 
 export interface TokenCardProps extends TokenCardInfo {
   onAddToken?: () => void

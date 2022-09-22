@@ -1,7 +1,9 @@
-import { BaseProfileCardNotMemberInfoProps } from '@dao-dao/tstypes'
 import { useTranslation } from 'react-i18next'
 
-export interface ProfileCardNotMemberInfoProps extends BaseProfileCardNotMemberInfoProps {
+import { BaseProfileCardNotMemberInfoProps } from '@dao-dao/tstypes'
+
+export interface ProfileCardNotMemberInfoProps
+  extends BaseProfileCardNotMemberInfoProps {
   daoName: string
 }
 
@@ -13,7 +15,10 @@ export const ProfileCardNotMemberInfo = ({
 
   return (
     <p className="secondary-text">
-      {t('info.membershipDaoNotMemberInfo', { daoName, context: proposalContext ? 'proposal' : 'dao' })}
+      {t('info.membershipDaoNotMemberInfo', {
+        daoName,
+        context: proposalContext ? 'proposal' : 'dao',
+      })}
     </p>
   )
 }
