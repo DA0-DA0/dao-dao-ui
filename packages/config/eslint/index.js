@@ -11,6 +11,7 @@ const tsConfig = fs.existsSync('tsconfig.json')
 
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {
+  ignorePatterns: ['**/node_modules/**', '**/.next/**'],
   extends: ['next/core-web-vitals', 'plugin:prettier/recommended'],
   plugins: ['tailwindcss'],
   rules: {
@@ -23,6 +24,7 @@ const eslintConfig = {
   overrides: [
     {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
+      excludedFiles: ['**/node_modules/**', '**/.next/**'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: tsConfig,
@@ -151,7 +153,7 @@ const eslintConfig = {
     {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
       // Don't care about i18n in storybook files.
-      excludedFiles: ['**/*.stories.tsx'],
+      excludedFiles: ['**/*.stories.tsx', '**/node_modules/**', '**/.next/**'],
       extends: ['plugin:react-i18n/recommended', 'plugin:i18next/recommended'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
