@@ -72,7 +72,7 @@ const InnerInbox = () => {
                     ({ address }) => id === address
                   )
                   if (!proposalModule) {
-                    return
+                    return undefined
                   }
 
                   const proposalNumbers = proposals.nodes
@@ -82,6 +82,11 @@ const InnerInbox = () => {
                       ({ votes }) => votes.nodes.length === 0
                     )
                     .map(({ num }) => num)
+
+                  // Don't show if no open proposals.
+                  if (!proposalNumbers.length) {
+                    return undefined
+                  }
 
                   return {
                     proposalModule,
