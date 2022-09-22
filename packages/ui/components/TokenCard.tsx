@@ -15,6 +15,7 @@ import { ButtonPopup, ButtonPopupSection } from './popup'
 import { Tooltip } from './Tooltip'
 import { UnstakingModal } from './UnstakingModal'
 import { UnstakingTaskStatus } from './UnstakingStatus'
+import { concatAddressStartEnd, CopyToClipboard } from './CopyToClipboard'
 
 export interface TokenCardProps extends TokenCardInfo {
   onAddToken?: () => void
@@ -99,11 +100,16 @@ export const TokenCard = ({
     [onAddToken, onProposeClaim, onProposeStakeUnstake, t]
   )
 
+  // Truncate IBC denominations to prevent overflow.
+  const originalTokenSymbol = tokenSymbol
+  const isIbc = tokenSymbol.toLowerCase().startsWith('ibc')
+  tokenSymbol = isIbc ? concatAddressStartEnd(tokenSymbol, 3, 2) : tokenSymbol
+
   return (
     <>
       <div className="bg-background-tertiary rounded-lg">
         <div className="relative p-5">
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-4 pr-5">
             <div className="relative">
               {/* Image */}
               <div
@@ -125,7 +131,19 @@ export const TokenCard = ({
 
             {/* Titles */}
             <div className="flex flex-col gap-1">
-              <p className="title-text">${tokenSymbol}</p>
+              {/* We're dealing with an IBC token we don't know about. Instead of showing a long hash, allow the user to copy it. */}
+              {isIbc ? (
+                <CopyToClipboard
+                  className="title-text"
+                  takeStartEnd={{
+                    start: 8,
+                    end: 4,
+                  }}
+                  value={originalTokenSymbol}
+                />
+              ) : (
+                <p className="title-text">${tokenSymbol}</p>
+              )}
               <p className="caption-text">{subtitle}</p>
             </div>
           </div>
