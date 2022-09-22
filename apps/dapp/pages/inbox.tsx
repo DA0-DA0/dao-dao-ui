@@ -1,6 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
+import { NetworkStatus } from '@apollo/client'
 import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
 import { NextSeo } from 'next-seo'
@@ -43,6 +44,8 @@ const InnerInbox = () => {
     loading,
     error,
     data: openUnvotedProposals,
+    refetch,
+    networkStatus,
   } = useOpenProposalsWithWalletVotesQuery(
     proposalModuleAddresses,
     walletAddress
@@ -129,6 +132,8 @@ const InnerInbox = () => {
               data: daosWithProposals,
             }
       }
+      onRefresh={() => refetch()}
+      refreshing={loading || networkStatus === NetworkStatus.refetch}
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }

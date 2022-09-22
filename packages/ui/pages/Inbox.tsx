@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+import { Refresh } from '@mui/icons-material'
 import { ComponentType, ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -6,6 +8,7 @@ import { LoadingData } from '@dao-dao/tstypes'
 import {
   DaoDropdown,
   DaoDropdownInfo,
+  IconButton,
   Loader,
   PageHeader,
   ProposalContainer,
@@ -21,12 +24,16 @@ export interface InboxProps<T> {
   daosWithProposals: LoadingData<DaoWithProposals<T>[]>
   rightSidebarContent: ReactNode
   ProposalLine: ComponentType<T>
+  onRefresh: () => void
+  refreshing: boolean
 }
 
 export const Inbox = <T extends {}>({
   daosWithProposals,
   rightSidebarContent,
   ProposalLine,
+  onRefresh,
+  refreshing,
 }: InboxProps<T>) => {
   const { t } = useTranslation()
   const { RightSidebarContent } = useAppLayoutContext()
@@ -53,9 +60,20 @@ export const Inbox = <T extends {}>({
           <Loader className="mt-10" fill={false} />
         ) : (
           <>
-            <p className="mt-10 title-text">
-              {t('title.numOpenProposals', { count: numOpenProposals })}
-            </p>
+            <div className="flex flex-row gap-6 justify-between items-center mt-10">
+              <p className="title-text">
+                {t('title.numOpenProposals', { count: numOpenProposals })}
+              </p>
+
+              <IconButton
+                Icon={Refresh}
+                circular
+                className={clsx(refreshing && 'animate-spin-medium')}
+                disabled={refreshing}
+                onClick={onRefresh}
+                variant="ghost"
+              />
+            </div>
 
             <div className="overflow-y-auto grow pb-2 mt-6 space-y-4 styled-scrollbar">
               {daosWithProposals.data.map(({ dao, proposals }, index) => (
