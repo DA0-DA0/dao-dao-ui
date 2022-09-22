@@ -1,5 +1,6 @@
 import clsx from 'clsx'
-import { useCallback, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useCallback, useEffect, useState } from 'react'
 
 import { RightSidebarProps } from '@dao-dao/tstypes'
 import { AppLayoutProps } from '@dao-dao/tstypes/ui/AppLayout'
@@ -19,6 +20,7 @@ export const AppLayout = ({
   profileImageUrl,
   context,
 }: AppLayoutProps) => {
+  const router = useRouter()
   // See comment on makeRightSidebarContent in RightSidebar.tsx for information
   // on what this is and how it works and why it exists.
   // Use state setting function since we want to return a function
@@ -34,6 +36,17 @@ export const AppLayout = ({
         setRightSidebarContent(() => makeRightSidebarContent(ref)),
       []
     )
+
+  // On route change, close responsive bars.
+  useEffect(() => {
+    context.responsiveNavigation.enabled &&
+      context.responsiveNavigation.toggle()
+    context.responsiveRightSidebar.enabled &&
+      context.responsiveRightSidebar.toggle()
+
+    // Only toggle on route change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.asPath])
 
   return (
     <AppLayoutContext.Provider

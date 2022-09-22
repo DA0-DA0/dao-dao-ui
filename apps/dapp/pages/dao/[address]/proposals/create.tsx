@@ -63,8 +63,15 @@ const InnerProposalCreate = () => {
 
   // Prefill form with data from parameter once ready.
   useEffect(() => {
+    if (!router.isReady) {
+      return
+    }
+
+    // Prefill checked once router is ready.
+    setPrefillChecked(true)
+
     const potentialDefaultValue = router.query.prefill
-    if (!router.isReady || typeof potentialDefaultValue !== 'string') {
+    if (typeof potentialDefaultValue !== 'string') {
       return
     }
 
@@ -89,9 +96,9 @@ const InnerProposalCreate = () => {
         }
       }
       // If failed to parse, do nothing.
-    } catch {}
-
-    setPrefillChecked(true)
+    } catch (error) {
+      console.error(error)
+    }
   }, [router.query.prefill, router.isReady, daoInfo.proposalModules])
 
   return (
