@@ -1,2 +1,2 @@
-export * from './ProfileCardNoVoteBecomeMemberInfo'
+export * from './ProfileCardNotMemberInfo'
 export * from './ProfileMemberCardMembershipInfo'

@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileCardNoVoteBecomeMemberInfo } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui'
-import { makeProps as makeProfileCardNoVoteBecomeMemberInfoProps } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui/ProfileCardNoVoteBecomeMemberInfo.stories'
+import { ProfileCardNotMemberInfo } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui'
+import { makeProps as makeProfileCardNotMemberInfoProps } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui/ProfileCardNotMemberInfo.stories'
 
 import { ProfileCantVoteCard } from './ProfileCantVoteCard'
 
@@ -23,9 +23,9 @@ Default.args = {
   walletName: '@Modern-Edamame',
   profileImgUrl: '/noah.jpg',
   isMember: false,
-  becomeMemberInfo: (
-    <ProfileCardNoVoteBecomeMemberInfo
-      {...makeProfileCardNoVoteBecomeMemberInfoProps(2.34)}
+  notMemberInfo: (
+    <ProfileCardNotMemberInfo
+      {...makeProfileCardNotMemberInfoProps(2.34)}
     />
   ),
 }
@@ -41,9 +41,9 @@ export const CurrentMember = Template.bind({})
 CurrentMember.args = {
   ...Default.args,
   isMember: true,
-  becomeMemberInfo: (
-    <ProfileCardNoVoteBecomeMemberInfo
-      {...makeProfileCardNoVoteBecomeMemberInfoProps(34, 791.386)}
+  notMemberInfo: (
+    <ProfileCardNotMemberInfo
+      {...makeProfileCardNotMemberInfoProps(34, 791.386)}
     />
   ),
 }

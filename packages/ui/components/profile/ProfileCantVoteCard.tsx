@@ -11,7 +11,7 @@ export interface ProfileCantVoteCardProps {
   walletName: string
   profileImgUrl: string | undefined | null
   isMember: boolean
-  becomeMemberInfo: ReactNode
+  notMemberInfo: ReactNode
 }
 
 export const ProfileCantVoteCard = ({
@@ -20,7 +20,7 @@ export const ProfileCantVoteCard = ({
   walletName,
   profileImgUrl,
   isMember,
-  becomeMemberInfo,
+  notMemberInfo,
 }: ProfileCantVoteCardProps) => {
   const { t } = useTranslation()
 
@@ -50,14 +50,14 @@ export const ProfileCantVoteCard = ({
 
         <div className="flex flex-row justify-between items-center mt-3 secondary-text">
           <p>{t('title.vote')}</p>
-          <p className="text-text-interactive-error">{t('info.none')}</p>
+          <p className="text-text-tertiary">{t('info.none')}</p>
         </div>
       </div>
 
       <div className="p-6 border-t border-t-border-primary">
         <p className="mb-1 link-text">{t('title.membership')}</p>
 
-        {becomeMemberInfo}
+        {notMemberInfo}
       </div>
     </ProfileCardWrapper>
   )

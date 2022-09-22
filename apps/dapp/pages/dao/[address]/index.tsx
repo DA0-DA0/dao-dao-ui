@@ -44,7 +44,7 @@ const InnerDaoHome = () => {
   const {
     components: {
       MembersTab,
-      ProfileCardNoVoteBecomeMemberInfo,
+      ProfileCardNotMemberInfo,
       ProfileMemberCardMembershipInfo,
     },
   } = useVotingModuleAdapter()
@@ -111,13 +111,14 @@ const InnerDaoHome = () => {
             />
           ) : (
             <ProfileNotMemberCard
-              becomeMemberInfo={
-                <ProfileCardNoVoteBecomeMemberInfo
+              notMemberInfo={
+                <ProfileCardNotMemberInfo
                   deposit={
                     maxProposalModuleDeposit > 0
                       ? maxProposalModuleDeposit.toString()
                       : undefined
                   }
+                  proposalContext={false}
                 />
               }
               daoName={daoInfo.name}

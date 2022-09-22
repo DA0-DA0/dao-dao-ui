@@ -53,8 +53,10 @@ export interface BaseProfileMemberCardMembershipInfoProps {
   deposit: string | undefined
 }
 
-export interface BaseProfileCardNoVoteBecomeMemberInfoProps {
+export interface BaseProfileCardNotMemberInfoProps {
   deposit: string | undefined
+  // If this is being displayed in the context of a proposal.
+  proposalContext: boolean
 }
 
 export interface BaseStakingModalProps {
@@ -144,7 +146,7 @@ export interface IVotingModuleAdapter {
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
     ProfileMemberCardMembershipInfo: ComponentType<BaseProfileMemberCardMembershipInfoProps>
-    ProfileCardNoVoteBecomeMemberInfo: ComponentType<BaseProfileCardNoVoteBecomeMemberInfoProps>
+    ProfileCardNotMemberInfo: ComponentType<BaseProfileCardNotMemberInfoProps>
 
     ProposalDetailsVotingPowerWidget?: ComponentType<BaseProposalDetailsVotingPowerWidgetProps>
     StakingModal?: ComponentType<BaseStakingModalProps>

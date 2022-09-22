@@ -10,7 +10,7 @@ export interface ProfileNotMemberCardProps {
   walletName: string
   profileImgUrl: string | undefined | null
   established: Date
-  becomeMemberInfo: ReactNode
+  notMemberInfo: ReactNode
 }
 
 export const ProfileNotMemberCard = ({
@@ -19,7 +19,7 @@ export const ProfileNotMemberCard = ({
   walletName,
   profileImgUrl,
   established,
-  becomeMemberInfo,
+  notMemberInfo,
 }: ProfileNotMemberCardProps) => {
   const { t } = useTranslation()
 
@@ -35,7 +35,7 @@ export const ProfileNotMemberCard = ({
     >
       <p className="mb-1 link-text">{t('title.membership')}</p>
 
-      {becomeMemberInfo}
+      {notMemberInfo}
     </ProfileCardWrapper>
   )
 }

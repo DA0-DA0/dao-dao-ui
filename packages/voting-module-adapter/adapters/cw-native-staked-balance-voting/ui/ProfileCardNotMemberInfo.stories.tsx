@@ -1,29 +1,29 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
-  ProfileCardNoVoteBecomeMemberInfo,
-  ProfileCardNoVoteBecomeMemberInfoProps,
-} from './ProfileCardNoVoteBecomeMemberInfo'
+  ProfileCardNotMemberInfo,
+  ProfileCardNotMemberInfoProps,
+} from './ProfileCardNotMemberInfo'
 
 export default {
   title:
-    'DAO DAO / packages / voting-module-adapter / adapters / cw20-staked-balance-voting / ui / ProfileCardNoVoteBecomeMemberInfo',
-  component: ProfileCardNoVoteBecomeMemberInfo,
+    'DAO DAO / packages / voting-module-adapter / adapters / cw20-staked-balance-voting / ui / ProfileCardNotMemberInfo',
+  component: ProfileCardNotMemberInfo,
   excludeStories: ['makeProps'],
-} as ComponentMeta<typeof ProfileCardNoVoteBecomeMemberInfo>
+} as ComponentMeta<typeof ProfileCardNotMemberInfo>
 
-const Template: ComponentStory<typeof ProfileCardNoVoteBecomeMemberInfo> = (
+const Template: ComponentStory<typeof ProfileCardNotMemberInfo> = (
   args
 ) => (
   <div className="max-w-[320px]">
-    <ProfileCardNoVoteBecomeMemberInfo {...args} />
+    <ProfileCardNotMemberInfo {...args} />
   </div>
 )
 
 export const makeProps = (
   unstakedTokenBalance = 0,
   stakedTokenBalance = 0
-): ProfileCardNoVoteBecomeMemberInfoProps => ({
+): ProfileCardNotMemberInfoProps => ({
   tokenSymbol: 'DOG',
   tokenDecimals: 6,
   unstakedTokenBalance,
@@ -31,6 +31,8 @@ export const makeProps = (
   junoswapHref: 'https://junoswap.com',
   daoName: 'Dog Dao',
   onStake: () => alert('stake'),
+  proposalContext: true,
+  deposit: undefined,
 })
 
 export const Default = Template.bind({})
@@ -40,6 +42,12 @@ Default.parameters = {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=94%3A14824',
   },
+}
+
+export const DefaultDao = Template.bind({})
+DefaultDao.args = {
+  ...Default.args,
+  proposalContext: false,
 }
 
 export const HasUnstaked = Template.bind({})

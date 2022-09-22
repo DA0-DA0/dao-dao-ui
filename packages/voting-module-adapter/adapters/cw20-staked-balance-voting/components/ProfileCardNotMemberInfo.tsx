@@ -4,14 +4,12 @@ import { useTranslation } from 'react-i18next'
 import { useDaoInfoContext } from '@dao-dao/common'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { BaseProfileCardNoVoteBecomeMemberInfoProps } from '../../../types'
+import { BaseProfileCardNotMemberInfoProps } from '../../../types'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
-import { ProfileCardNoVoteBecomeMemberInfo as StatelessProfileCardNoVoteBecomeMemberInfo } from '../ui'
+import { ProfileCardNotMemberInfo as StatelessProfileCardNotMemberInfo } from '../ui'
 import { StakingModal } from './StakingModal'
 
-export const ProfileCardNoVoteBecomeMemberInfo = ({
-  deposit,
-}: BaseProfileCardNoVoteBecomeMemberInfoProps) => {
+export const ProfileCardNotMemberInfo = (props: BaseProfileCardNotMemberInfoProps) => {
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
 
@@ -35,12 +33,12 @@ export const ProfileCardNoVoteBecomeMemberInfo = ({
     <>
       {showStakingModal && (
         <StakingModal
-          maxDeposit={deposit}
+          maxDeposit={props.deposit}
           onClose={() => setShowStakingModal(false)}
         />
       )}
 
-      <StatelessProfileCardNoVoteBecomeMemberInfo
+      <StatelessProfileCardNotMemberInfo
         daoName={daoName}
         onStake={() => setShowStakingModal(true)}
         stakedTokenBalance={convertMicroDenomToDenomWithDecimals(
@@ -53,6 +51,7 @@ export const ProfileCardNoVoteBecomeMemberInfo = ({
           unstakedBalance,
           governanceTokenInfo.decimals
         )}
+        {...props}
       />
     </>
   )

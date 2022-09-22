@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next'
 
 import { ArrowOutward } from '@dao-dao/icons'
 import { Button, ButtonLink } from '@dao-dao/ui'
+import { BaseProfileCardNotMemberInfoProps } from '@dao-dao/tstypes'
 
-export interface ProfileCardNoVoteBecomeMemberInfoProps {
+export interface ProfileCardNotMemberInfoProps extends BaseProfileCardNotMemberInfoProps {
   tokenSymbol: string
   tokenDecimals: number
   unstakedTokenBalance: number
@@ -15,7 +16,7 @@ export interface ProfileCardNoVoteBecomeMemberInfoProps {
   junoswapHref?: string
 }
 
-export const ProfileCardNoVoteBecomeMemberInfo = ({
+export const ProfileCardNotMemberInfo = ({
   tokenSymbol,
   tokenDecimals,
   unstakedTokenBalance,
@@ -23,15 +24,16 @@ export const ProfileCardNoVoteBecomeMemberInfo = ({
   daoName,
   onStake,
   junoswapHref,
-}: ProfileCardNoVoteBecomeMemberInfoProps) => {
+  proposalContext,
+}: ProfileCardNotMemberInfoProps) => {
   const { t } = useTranslation()
 
   return (
     <>
       <p className="mb-3 secondary-text">
-        {/* If currently has staked tokens but cannot vote (since this info is shown when they cannot vote and instructs them how to become a member), this means they did not have voting power at the time of proposal creation. */}
-        {stakedTokenBalance > 0
-          ? t('info.memberCantVoteToken', { tokenSymbol, daoName })
+        {/* If currently has staked tokens but cannot vote (since this info is shown when they cannot vote and instructs them how to become a member), this means they did not have voting power at the time of proposal creation. Show proposal-specific message when in a proposal. */}
+        {stakedTokenBalance > 0 && proposalContext
+          ? t('info.tokenDaoNotMemberInfoProposal', { tokenSymbol, daoName })
           : t('info.stakeYourTokensToJoin', { tokenSymbol, daoName })}
       </p>
 
