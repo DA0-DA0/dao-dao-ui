@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { Fragment, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo, { Formatter } from 'react-timeago'
@@ -10,7 +11,6 @@ import { Loader } from '../Loader'
 import { Tooltip } from '../Tooltip'
 
 export interface ProposalVote {
-  when: Date
   voterAddress: string
   vote: ReactNode
   votingPowerPercent: number
@@ -18,6 +18,7 @@ export interface ProposalVote {
 
 export interface ProposalVotesProps {
   votes: ProposalVote[]
+  getDateVoted?: (voterAddress: string) => Date | undefined
   canLoadMore: boolean
   loadMore: () => void
   loadingMore: boolean
@@ -25,6 +26,7 @@ export interface ProposalVotesProps {
 
 export const ProposalVotes = ({
   votes,
+  getDateVoted,
   canLoadMore,
   loadMore,
   loadingMore,
@@ -36,6 +38,17 @@ export const ProposalVotes = ({
       value,
       unit: t(`unit.${unit}s`, { count: value }).toLocaleLowerCase(),
     })
+
+  const votesWithDate = votes
+    .map((vote) => ({
+      ...vote,
+      when: getDateVoted?.(vote.voterAddress),
+    }))
+    .sort(
+      (a, b) =>
+        // Sort those without a date last.
+        (b.when?.getTime() ?? -Infinity) - (a.when?.getTime() ?? -Infinity)
+    )
 
   return (
     <>
@@ -56,11 +69,20 @@ export const ProposalVotes = ({
           </p>
 
           {/* Votes */}
-          {votes.map(
+          {votesWithDate.map(
             ({ when, voterAddress, vote, votingPowerPercent }, index) => (
               <Fragment key={index}>
-                <p className="hidden text-text-body xs:block caption-text">
-                  <TimeAgo date={when} formatter={timeAgoFormatter} />
+                <p
+                  className={clsx(
+                    'hidden xs:block caption-text',
+                    when ? 'text-text-body' : 'text-text-tertiary'
+                  )}
+                >
+                  {when ? (
+                    <TimeAgo date={when} formatter={timeAgoFormatter} />
+                  ) : (
+                    '?'
+                  )}
                 </p>
                 <CopyToClipboardUnderline
                   className="font-mono text-text-body caption-text"
@@ -68,7 +90,11 @@ export const ProposalVotes = ({
                   value={voterAddress}
                 />
                 <Tooltip
-                  title={<TimeAgo date={when} formatter={timeAgoFormatter} />}
+                  title={
+                    when ? (
+                      <TimeAgo date={when} formatter={timeAgoFormatter} />
+                    ) : undefined
+                  }
                 >
                   <div>{vote}</div>
                 </Tooltip>

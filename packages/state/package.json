@@ -6,12 +6,14 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@apollo/client": "^3.6.9",
     "@cosmjs/cosmwasm-stargate": "0.28.10",
     "@cosmjs/proto-signing": "0.28.10",
     "@dao-dao/ui": "*",
     "@walletconnect/browser-utils": "^1.7.8",
     "@walletconnect/client": "^1.7.8",
     "ajv": "^8.11.0",
+    "graphql": "^16.6.0",
     "interchain": "^0.4.0",
     "react": "18.1.0",
     "recoil": "^0.7.2"

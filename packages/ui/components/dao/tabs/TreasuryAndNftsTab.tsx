@@ -91,30 +91,36 @@ export const TreasuryAndNftsTab = <
         <p className="mb-9 secondary-text">{t('info.nothingFound')}</p>
       )}
 
-      <div className="flex flex-row justify-between mb-6">
-        <p className="title-text">
-          {nfts.loading
-            ? t('title.nfts')
-            : t('title.numNfts', { count: nfts.data.length })}
-        </p>
+      {(nfts.loading || nfts.data.length > 0) && (
+        <>
+          <div className="flex flex-row justify-between mb-6">
+            <p className="title-text">
+              {nfts.loading
+                ? t('title.nfts')
+                : t('title.numNfts', { count: nfts.data.length })}
+            </p>
 
-        {!nfts.loading && nfts.data.length > 0 && (
-          <div className="flex flex-row gap-6 justify-between items-center">
-            <p className="text-text-body primary-text">{t('title.sortBy')}</p>
+            {!nfts.loading && nfts.data.length > 0 && (
+              <div className="flex flex-row gap-6 justify-between items-center">
+                <p className="text-text-body primary-text">
+                  {t('title.sortBy')}
+                </p>
 
-            <Dropdown {...sortDropdownProps} />
+                <Dropdown {...sortDropdownProps} />
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {nfts.loading ? (
-        <Loader fill={false} />
-      ) : (
-        <GridCardContainer className="pb-6">
-          {sortedNfts.map((props, index) => (
-            <NftCard {...props} key={index} />
-          ))}
-        </GridCardContainer>
+          {nfts.loading ? (
+            <Loader fill={false} />
+          ) : (
+            <GridCardContainer className="pb-6">
+              {sortedNfts.map((props, index) => (
+                <NftCard {...props} key={index} />
+              ))}
+            </GridCardContainer>
+          )}
+        </>
       )}
     </>
   )

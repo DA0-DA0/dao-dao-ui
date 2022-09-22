@@ -25,9 +25,11 @@ const Template: ComponentStory<typeof Inbox<ProposalLineProps>> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  daosWithProposals: NavigationStoryArgs.pinnedDaos.loading
-    ? []
-    : NavigationStoryArgs.pinnedDaos.data.map((dao) => ({
+  daosWithProposals: {
+    loading: false,
+    data: NavigationStoryArgs.pinnedDaos.loading
+      ? []
+      : NavigationStoryArgs.pinnedDaos.data.map((dao) => ({
         dao,
         // Generate between 1 and 3 proposals.
         proposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
@@ -35,7 +37,8 @@ Default.args = {
           const secondsRemaining = Math.floor(Math.random() * 3 * 24 * 60 * 60)
           return makeProposalLineProps(secondsRemaining)
         }),
-      })),
+      }))
+  },
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
@@ -49,4 +52,15 @@ Default.parameters = {
   nextRouter: {
     asPath: '/inbox',
   },
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  daosWithProposals: {
+    loading: true
+  },
+  rightSidebarContent: (
+    <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
+  ),
+  ProposalLine,
 }

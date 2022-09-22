@@ -1,6 +1,7 @@
 import { selectorFamily } from 'recoil'
 
 import {
+  convertMicroDenomToDenomWithDecimals,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   USDC_SWAP_ADDRESS,
@@ -18,7 +19,7 @@ export const usdcPerMacroTokenSelector = selectorFamily<
   number | undefined,
   { denom: string; decimals: number }
 >({
-  key: 'usdcPerMicroToken',
+  key: 'usdcPerMacroToken',
   get:
     ({ denom, decimals }) =>
     async ({ get }) => {
@@ -124,7 +125,9 @@ export const daoTvlSelector = selectorFamily<number, string>({
 
       const prices = balances.map(({ amount, denom, decimals }) => {
         const price = get(usdcPerMacroTokenSelector({ denom, decimals }))
-        return price ? Number(amount) * price : 0
+        return price
+          ? convertMicroDenomToDenomWithDecimals(amount, decimals) * price
+          : 0
       })
 
       return prices.reduce((price, total) => price + total, 0)

@@ -21,10 +21,6 @@ const Template: ComponentStory<typeof ProposalVotes> = (args) => (
 export const makeProps = (): ProposalVotesProps => ({
   votes: [...Array(10)]
     .map(() => ({
-      when: new Date(
-        // Within the past 5 days.
-        Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000
-      ),
       voterAddress: 'juno123ihuprfiuosdjfiu98349fi0ewjgui',
       // 25% chance of No, 75% chance of Yes
       vote: (
@@ -34,8 +30,11 @@ export const makeProps = (): ProposalVotesProps => ({
         />
       ),
       votingPowerPercent: 0.0432,
-    }))
-    .sort((a, b) => b.when.getTime() - a.when.getTime()),
+    })),
+  // Within the past 5 days.
+  getDateVoted: () => new Date(
+    Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000
+  ),
   canLoadMore: true,
   loadingMore: false,
   loadMore: () => alert('load'),

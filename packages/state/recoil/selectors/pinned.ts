@@ -5,9 +5,10 @@ import { DaoDropdownInfo } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom } from '../atoms'
 import { daoCardInfoSelector, daoDropdownInfoSelector } from './dao'
+import { cwCoreProposalModulesSelector } from './proposal'
 
-export const pinnedDaosDropdownInfoSelector = selector<DaoDropdownInfo[]>({
-  key: 'pinnedDaosDropdownInfo',
+export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
+  key: 'pinnedDaoDropdownInfo',
   get: ({ get }) => {
     const pinnedAddresses = get(pinnedAddressesAtom)
     return get(
@@ -37,4 +38,22 @@ export const pinnedDaoCardInfoSelector = selectorFamily<
         )
       )
     },
+})
+
+export const pinnedDaosWithProposalModulesSelector = selector({
+  key: 'pinnedDaosWithProposalModules',
+  get: ({ get }) => {
+    const daoDropdownInfos = get(pinnedDaoDropdownInfosSelector)
+    const proposalModules = get(
+      waitForAll(
+        daoDropdownInfos.map(({ coreAddress }) =>
+          cwCoreProposalModulesSelector(coreAddress)
+        )
+      )
+    )
+    return daoDropdownInfos.map((dao, index) => ({
+      dao,
+      proposalModules: proposalModules[index],
+    }))
+  },
 })

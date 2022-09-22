@@ -4,6 +4,7 @@ import { useRecoilCallback, useRecoilValue } from 'recoil'
 import {
   CwProposalSingleSelectors,
   refreshProposalIdAtom,
+  useProposalVotesQuery,
 } from '@dao-dao/state'
 import {
   ProposalVote,
@@ -30,6 +31,12 @@ export const ProposalVotes = () => {
         },
       ],
     })
+  )
+
+  // Get proposal vote timestamps from subquery.
+  const proposalVotesSubquery = useProposalVotesQuery(
+    proposalModuleAddress,
+    proposalNumber
   )
 
   const totalPower = Number(proposal.total_power)
@@ -65,8 +72,6 @@ export const ProposalVotes = () => {
             ...votes,
             ...newVotes.map(
               ({ vote, voter, power }): ProposalVote => ({
-                // TODO: Set correctly.
-                when: new Date(),
                 voterAddress: voter,
                 vote: (
                   <VoteDisplay
@@ -114,6 +119,17 @@ export const ProposalVotes = () => {
       loadMore={loadMore}
       loadingMore={loading}
       votes={votes}
+      // Only return dates once subquery data has loaded.
+      getDateVoted={
+        proposalVotesSubquery.loading || !proposalVotesSubquery.data?.proposal
+          ? undefined
+          : (voterAddress) => {
+              const votedAt = proposalVotesSubquery.data?.proposal?.votes.nodes.find(
+                ({ walletId }) => walletId === voterAddress
+              )?.votedAt
+              return votedAt ? new Date(votedAt) : undefined
+            }
+      }
     />
   )
 }
