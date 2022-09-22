@@ -1,4 +1,4 @@
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import { cosmWasmClientSelector, isContractSelector } from '@dao-dao/state'
 import { ProposalModuleAdapter } from '@dao-dao/tstypes'
@@ -15,13 +15,17 @@ export const proposalModuleAdapterSelector = selectorFamily<
   get:
     (contractAddress) =>
     ({ get }) =>
-      getAdapters().find(({ id: contractName }) =>
+      getAdapters().find(({ contractNames }) =>
         get(
-          isContractSelector({
-            contractAddress,
-            name: contractName,
-          })
-        )
+          waitForAll(
+            contractNames.map((contractName) =>
+              isContractSelector({
+                contractAddress,
+                name: contractName,
+              })
+            )
+          )
+        ).some(Boolean)
       ),
 })
 

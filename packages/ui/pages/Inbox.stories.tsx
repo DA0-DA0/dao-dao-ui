@@ -2,7 +2,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
 
-import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
+import {
+  ProfileHomeCard,
+  ProfileHomeCardProps,
+  ProposalLine,
+  ProposalLineProps,
+} from '../components'
 import { DefaultArgs as NavigationStoryArgs } from '../components/layout/Navigation.stories'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
 import { makeProps as makeProposalLineProps } from '../components/proposal/ProposalLine.ProposalLine.stories'
@@ -14,7 +19,9 @@ export default {
   decorators: [makeAppLayoutDecorator()],
 } as ComponentMeta<typeof Inbox>
 
-const Template: ComponentStory<typeof Inbox> = (args) => <Inbox {...args} />
+const Template: ComponentStory<typeof Inbox<ProposalLineProps>> = (args) => (
+  <Inbox {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
@@ -26,20 +33,13 @@ Default.args = {
         proposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
           // Random time in the next 3 days.
           const secondsRemaining = Math.floor(Math.random() * 3 * 24 * 60 * 60)
-
-          return {
-            secondsRemaining,
-            // Random time in the past 3 days.
-            created: new Date(
-              Date.now() - Math.floor(Math.random() * 3 * 24 * 60 * 60)
-            ),
-            props: makeProposalLineProps(secondsRemaining),
-          }
+          return makeProposalLineProps(secondsRemaining)
         }),
       })),
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
+  ProposalLine,
 }
 Default.parameters = {
   design: {

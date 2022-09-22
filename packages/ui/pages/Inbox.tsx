@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from 'react'
+import { ComponentType, ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -8,64 +8,27 @@ import {
   DropdownOption,
   PageHeader,
   ProposalContainer,
-  ProposalLine,
-  ProposalLineProps,
   useAppLayoutContext,
 } from '../components'
-import { SortFn, useDropdownSorter } from '../hooks'
 
-export interface ProposalInfo {
-  secondsRemaining: number
-  created: Date
-  props: ProposalLineProps
-}
-
-export interface DaoWithProposals {
+export interface DaoWithProposals<T> {
   dao: Omit<DaoDropdownInfo, 'content' | 'subdaos'>
-  proposals: ProposalInfo[]
+  proposals: T[]
 }
 
-export interface InboxProps {
-  daosWithProposals: DaoWithProposals[]
+export interface InboxProps<T> {
+  daosWithProposals: DaoWithProposals<T>[]
   rightSidebarContent: ReactNode
+  ProposalLine: ComponentType<T>
 }
 
-export const Inbox = ({
+export const Inbox = <T extends {}>({
   daosWithProposals,
   rightSidebarContent,
-}: InboxProps) => {
+  ProposalLine,
+}: InboxProps<T>) => {
   const { t } = useTranslation()
   const { RightSidebarContent } = useAppLayoutContext()
-
-  const {
-    sortedData: _sortedDaosWithProposals,
-    dropdownProps: sortDropdownProps,
-    selectedSortFn,
-  } = useDropdownSorter(daosWithProposals, sortOptions)
-
-  // Sort proposals within DAOs using the same proposal comparator used to
-  // compare the DAOs. Sort options operate on the proposals in each DAO and
-  // order the DAOs and proposals accordingly. If a DAO contains a proposal that
-  // should be before all other proposals in another DAO, it should be displayed
-  // first.
-  const sortedDaosWithProposals = useMemo(
-    () =>
-      selectedSortFn
-        ? _sortedDaosWithProposals.map(
-            ({ proposals, ...sortedDaoWithProposals }) => ({
-              ...sortedDaoWithProposals,
-              proposals: proposals
-                .map((proposal) => ({
-                  ...sortedDaoWithProposals,
-                  proposals: [proposal],
-                }))
-                .sort(selectedSortFn)
-                .map(({ proposals }) => proposals[0]),
-            })
-          )
-        : _sortedDaosWithProposals,
-    [_sortedDaosWithProposals, selectedSortFn]
-  )
 
   const numOpenProposals = useMemo(
     () =>
@@ -83,27 +46,19 @@ export const Inbox = ({
       <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl h-full">
         <PageHeader title={t('title.inbox')} />
 
-        <div className="flex flex-row justify-between items-center mt-10">
-          <p className="title-text">
-            {t('title.numOpenProposals', { count: numOpenProposals })}
-          </p>
-
-          <div className="flex flex-row gap-6 justify-between items-center">
-            <p className="text-text-body primary-text">{t('title.sortBy')}</p>
-
-            <Dropdown {...sortDropdownProps} />
-          </div>
-        </div>
+        <p className="title-text mt-10">
+          {t('title.numOpenProposals', { count: numOpenProposals })}
+        </p>
 
         <div className="overflow-y-auto grow pb-2 mt-6 space-y-4 styled-scrollbar">
-          {sortedDaosWithProposals.map(({ dao, proposals }, index) => (
+          {daosWithProposals.map(({ dao, proposals }, index) => (
             <DaoDropdown
               key={index}
               dao={{
                 ...dao,
                 content: (
                   <ProposalContainer className="px-2 mt-4">
-                    {proposals.map(({ props }, index) => (
+                    {proposals.map((props, index) => (
                       <ProposalLine key={index} {...props} />
                     ))}
                   </ProposalContainer>
@@ -118,30 +73,3 @@ export const Inbox = ({
     </>
   )
 }
-
-const sortOptions: DropdownOption<SortFn<DaoWithProposals>>[] = [
-  {
-    label: 'Expiry',
-    value: (a, b) =>
-      Math.min(
-        Infinity,
-        ...a.proposals.map(({ secondsRemaining }) => secondsRemaining)
-      ) -
-      Math.min(
-        Infinity,
-        ...b.proposals.map(({ secondsRemaining }) => secondsRemaining)
-      ),
-  },
-  {
-    label: 'Newest',
-    value: (a, b) =>
-      Math.min(...b.proposals.map(({ created }) => created.getTime())) -
-      Math.min(...a.proposals.map(({ created }) => created.getTime())),
-  },
-  {
-    label: 'Oldest',
-    value: (a, b) =>
-      Math.min(...a.proposals.map(({ created }) => created.getTime())) -
-      Math.min(...b.proposals.map(({ created }) => created.getTime())),
-  },
-]
