@@ -8,7 +8,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { ContractVersion, ProposalModule } from '@dao-dao/tstypes'
+import { CommonProposalInfo, DaoInfo } from '@dao-dao/tstypes'
 import {
   DaoNotFound,
   Loader as DefaultLoader,
@@ -21,18 +21,6 @@ import {
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 import { WalletProvider } from './WalletProvider'
-
-export interface DaoInfo {
-  coreAddress: string
-  coreVersion: ContractVersion
-  votingModuleAddress: string
-  votingModuleContractName: string
-  proposalModules: ProposalModule[]
-  name: string
-  description: string
-  imageUrl: string | null
-  created: Date | undefined
-}
 
 export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
   // Created needs to be serialized and de-serialized.
@@ -64,7 +52,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
 }>
 
 export interface DaoProposalPageWrapperProps extends DaoPageWrapperProps {
-  proposalId: string | undefined
+  proposalInfo: CommonProposalInfo | undefined
 }
 
 export const DaoPageWrapper = ({

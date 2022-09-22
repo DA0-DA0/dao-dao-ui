@@ -5,8 +5,9 @@ import {
   CwProposalSingleAdapter,
   matchAdapter as matchProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
+import { NewProposalForm } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/types'
 import { useVotingModule } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/tstypes'
+import { ActionKey, ProposalPrefill } from '@dao-dao/tstypes'
 import {
   DaoMemberCardProps,
   MembersTab as StatelessMembersTab,
@@ -32,29 +33,33 @@ export const MembersTab = () => {
   }
 
   // If has single choice proposal module, can create prefill button.
-  const singleChoiceProposalModule = proposalModules.find(
+  const singleChoiceProposalModule = proposalModules.some(
     ({ contractName }) =>
       matchProposalModuleAdapter(contractName)?.id ===
       CwProposalSingleAdapter.id
   )
 
   // Only show new member proposal prefill if has single choice proposal module.
-  const prefilledProposalFormData = singleChoiceProposalModule && {
-    proposalModuleAddress: singleChoiceProposalModule.address,
-    data: {
-      title: '',
-      description: '',
-      actionData: [
-        {
-          key: ActionKey.ManageMembers,
-          data: {
-            toAdd: [{ addr: '', weight: NaN }],
-            toRemove: [],
-          },
+  const prefilledProposalFormData:
+    | ProposalPrefill<NewProposalForm>
+    | undefined = singleChoiceProposalModule
+    ? {
+        id: CwProposalSingleAdapter.id,
+        data: {
+          title: '',
+          description: '',
+          actionData: [
+            {
+              key: ActionKey.ManageMembers,
+              data: {
+                toAdd: [{ addr: '', weight: NaN }],
+                toRemove: [],
+              },
+            },
+          ],
         },
-      ],
-    },
-  }
+      }
+    : undefined
 
   const memberCards: DaoMemberCardProps[] = members.map(({ addr, weight }) => ({
     // TODO: Retrieve.

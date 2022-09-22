@@ -1,7 +1,11 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
 import { CwProposalSingleQueryClient } from '@dao-dao/state'
-import { ProposalResponse } from '@dao-dao/state/clients/cw-proposal-single'
+import {
+  ProposalResponse,
+  Status,
+} from '@dao-dao/state/clients/cw-proposal-single'
+import { processError } from '@dao-dao/utils'
 
 import {
   CommonProposalInfo,
@@ -10,7 +14,7 @@ import {
 
 export const makeGetProposalInfo =
   ({
-    proposalModule: { address },
+    proposalModule: { address, prefix },
     proposalNumber,
   }: IProposalModuleAdapterOptions) =>
   async (
@@ -36,11 +40,32 @@ export const makeGetProposalInfo =
       console.error(err)
     }
 
-    return (
-      proposalResponse && {
-        id: proposalResponse.id,
-        title: proposalResponse.proposal.title,
-        description: proposalResponse.proposal.description,
-      }
-    )
+    if (!proposalResponse) {
+      return
+    }
+
+    const { id, proposal } = proposalResponse
+
+    // Use timestamp if available, or block height otherwise.
+    let createdAtEpoch: number | null = null
+    try {
+      createdAtEpoch = new Date(
+        proposal.created
+          ? proposal.created
+          : (await cosmWasmClient.getBlock(proposal.start_height)).header.time
+      ).getTime()
+    } catch (err) {
+      console.error(processError(err))
+    }
+
+    return {
+      id: `${prefix}${id}`,
+      title: proposal.title,
+      description: proposal.description,
+      creationHeight: proposal.start_height,
+      votingOpen: proposal.status === Status.Open,
+      expiration: proposal.expiration,
+      createdAtEpoch,
+      createdByAddress: proposal.proposer,
+    }
   }

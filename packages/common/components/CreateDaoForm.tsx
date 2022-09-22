@@ -10,7 +10,7 @@ import { useRecoilState } from 'recoil'
 
 import {
   ProposalModuleAdapter,
-  matchAdapter as matchProposalModuleAdapter,
+  getAdapterById as getProposalModuleAdapterById,
 } from '@dao-dao/proposal-module-adapter'
 import {
   CwAdminFactoryHooks,
@@ -186,7 +186,7 @@ export const CreateDaoForm = ({
   const proposalModuleDaoCreationAdapters = useMemo(
     () =>
       proposalModuleAdapters
-        .map(({ id }) => matchProposalModuleAdapter(id)?.daoCreation)
+        .map(({ id }) => getProposalModuleAdapterById(id)?.daoCreation)
         // Remove undefined adapters.
         .filter(Boolean) as Required<ProposalModuleAdapter>['daoCreation'][],
     [proposalModuleAdapters]

@@ -457,6 +457,21 @@
     "cw-govmod-single": "Single Choice",
     "cw-proposal-single": "Single Choice"
   },
+  "proposalStatusTitle": {
+    "closed": "Closed",
+    "executed": "Executed",
+    "execution_failed": "Execution failed",
+    "open": "Open",
+    "passed": "Passed",
+    "rejected": "Rejected"
+  },
+  "proposalVoteTitle": {
+    "abstain": "Abstain",
+    "no": "No",
+    "none": "None",
+    "pending": "Pending",
+    "yes": "Yes"
+  },
   "splash": {
     "anyoneCanParticipate": "Anyone from your community can be a full participant.",
     "createExploreJoin": "Create, explore, and join DAOs",

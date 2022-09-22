@@ -2,8 +2,12 @@ import { PlusIcon } from '@heroicons/react/solid'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfo } from '@dao-dao/common'
-import { DaoCardInfo, LoaderProps, LoadingData } from '@dao-dao/tstypes'
+import {
+  DaoCardInfo,
+  DaoInfo,
+  LoaderProps,
+  LoadingData,
+} from '@dao-dao/tstypes'
 import { Loader as DefaultLoader } from '@dao-dao/ui'
 
 import { ButtonLink } from '../../Button'

@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { useProposalModuleAdapterOptions } from '@dao-dao/proposal-module-adapter'
+import { useDaoInfoContext } from '@dao-dao/common'
 import {
   ProposalVoteTally,
   ProposalVoteTallyProps,
@@ -12,8 +12,13 @@ import {
   makeProposalModuleAdapterDecorator,
 } from '@dao-dao/storybook/decorators'
 
-import { ProfileVoteCard, ProfileVoteCardProps } from '../components'
+import {
+  ProfileVoteCard,
+  ProfileVoteCardProps,
+  ProposalStatusAndInfoProps,
+} from '../components'
 import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVoteCard.stories'
+import { Default as ProposalStatusAndInfoStory } from '../components/proposal/ProposalStatusAndInfo.stories'
 import { ProposalVotes } from '../components/proposal/ProposalVotes'
 import { makeProps as makeProposalVotesProps } from '../components/proposal/ProposalVotes.stories'
 import { Proposal } from './Proposal'
@@ -32,45 +37,51 @@ export default {
 } as ComponentMeta<typeof Proposal>
 
 const Template: ComponentStory<typeof Proposal> = (args) => (
-  <Proposal
-    {...args}
-    proposalModuleAdapterOptions={useProposalModuleAdapterOptions()}
-  />
+  <Proposal {...args} daoInfo={useDaoInfoContext()} />
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  voteStatus:
-    'If the current vote stands, the proposal will pass. If quorum reaches 50%, the proposal is applicable.',
+  ProposalStatusAndInfo: (props) => (
+    <ProposalStatusAndInfoStory
+      {...(ProposalStatusAndInfoStory.args as ProposalStatusAndInfoProps)}
+      {...props}
+    />
+  ),
+  proposalInfo: {
+    id: 'B2',
+    title: 'Enable liquidity rewards for Junoswap LPs',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed diam eget risus varius blandit sit amet non magna. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla sed consectetur. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.\n\nAenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Cras mattis consectetur purus sit amet fermentum. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Maecenas sed diam eget risus varius blandit sit amet non magna.',
+    votingOpen: true,
+    creationHeight: 1,
+    // Random date in the past 5 days.
+    createdAtEpoch: new Date(
+      Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000
+    ).getTime(),
+    // Random date in the next 5 days.
+    // Nanoseconds
+    expiration: {
+      at_time: (
+        (Date.now() + Math.random() * 5 * 24 * 60 * 60 * 1000) *
+        1000000
+      ).toString(),
+    },
+    createdByAddress: 'juno789def000ghi',
+  },
   voteTally: (
     <ProposalVoteTally
       {...(ProposalVoteTallyStory.args as ProposalVoteTallyProps)}
     />
   ),
   votesCast: <ProposalVotes {...makeProposalVotesProps()} />,
-  proposalStatus: 'Open',
-  dao: {
-    name: 'Dog Dao',
-    address: 'juno123abc456xyz',
-  },
   creator: {
     name: 'Ben2x4',
     address: 'juno789def000ghi',
   },
-  // Random date in the past 5 days.
-  created: new Date(Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000),
-  expiration: '3 days',
-  title: 'Enable liquidity rewards for Junoswap LPs',
-  description:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed diam eget risus varius blandit sit amet non magna. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla sed consectetur. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.\n\nAenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Cras mattis consectetur purus sit amet fermentum. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Maecenas sed diam eget risus varius blandit sit amet non magna.',
-  decodedMessages: [
-    {
-      custom: {},
-    },
-  ],
-  actionList: (
+  actionDisplay: (
     <p className="p-4 text-center rounded-md border border-border-primary">
-      Action list placeholder
+      Action display placeholder
     </p>
   ),
   rightSidebarContent: (

@@ -306,7 +306,7 @@ export const makeGetDaoProposalStaticProps = ({
         return {
           followingTitle: t('error.proposalNotFound'),
           additionalProps: {
-            proposalId: undefined,
+            proposalInfo: undefined,
           },
         }
       }
@@ -363,8 +363,8 @@ export const makeGetDaoProposalStaticProps = ({
           proposalInfo?.description ?? ''
         ).slice(0, MAX_META_CHARS_PROPOSAL_DESCRIPTION),
         additionalProps: {
-          // If proposal does not exist, pass undefined to indicate 404.
-          proposalId: proposalInfo ? proposalId : undefined,
+          // If proposal does not exist, undefined indicates 404.
+          proposalInfo,
         },
       }
     },

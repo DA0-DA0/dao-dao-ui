@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 
+import { ContractVersion } from '@dao-dao/tstypes'
 import { Action } from '@dao-dao/tstypes/actions'
 
 import { getDaoActions } from '../actions'
-import { ContractVersion } from '@dao-dao/tstypes'
 
 export const useActions = (
   coreVersion: ContractVersion,
@@ -17,5 +17,5 @@ export const useActions = (
         .sort((a, b) =>
           a.label.toLowerCase().localeCompare(b.label.toLowerCase())
         ),
-    [additionalActions]
+    [additionalActions, coreVersion]
   )

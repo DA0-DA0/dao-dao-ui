@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { ComponentType } from 'react'
 
 import { SuspenseLoader } from '@dao-dao/common'
@@ -57,9 +56,7 @@ const InnerProposalLine = ({ proposalViewUrl }: InnerProposalLineProps) => {
 
   return (
     <SuspenseLoader fallback={<ProposalLineLoader Loader={Loader} />}>
-      <Link href={proposalViewUrl}>
-        <ProposalLine />
-      </Link>
+      <ProposalLine href={proposalViewUrl} />
     </SuspenseLoader>
   )
 }

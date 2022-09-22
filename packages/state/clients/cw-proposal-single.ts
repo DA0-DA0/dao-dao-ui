@@ -226,6 +226,7 @@ export enum Status {
   Rejected = 'rejected',
   Passed = 'passed',
   Executed = 'executed',
+  ExecutionFailed = 'execution_failed',
   Closed = 'closed',
 }
 export interface ListProposalsResponse {

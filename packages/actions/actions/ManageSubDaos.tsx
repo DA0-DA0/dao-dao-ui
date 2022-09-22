@@ -87,8 +87,6 @@ const Component: ActionComponent = (props) => {
     })
   )
 
-  console.log(props.data)
-
   return (
     <StatelessManageSubDaosComponent
       {...props}

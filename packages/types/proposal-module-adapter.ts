@@ -6,11 +6,13 @@ import { RecoilValueReadOnly } from 'recoil'
 import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
 
 import { Action } from './actions'
+import { Expiration } from './contracts'
 import { CheckedDepositInfo } from './contracts/cw-proposal-single'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
   ProposalModule,
+  ProposalPrefill,
 } from './dao'
 import { LoaderProps, LogoProps, ProfileVoteCardOption } from './ui'
 import { ProcessedThresholdQuorum } from './utils'
@@ -43,7 +45,7 @@ export interface IProposalModuleAdapterCommon {
   }
 }
 
-export interface IProposalModuleAdapter {
+export interface IProposalModuleAdapter<Vote extends unknown = any> {
   // Functions
   functions: {
     getProposalInfo: (
@@ -59,51 +61,56 @@ export interface IProposalModuleAdapter {
     }
     useProposalExecutionTxHash: () => string | undefined
     useProposalProcessedTQ: () => ProcessedThresholdQuorum
-    useProposalExpirationString: () => string | undefined
-    useProfileVoteCardOptions: () => ProfileVoteCardOption<unknown>[]
+    useProfileVoteCardOptions: () => ProfileVoteCardOption<Vote>[]
+    useWalletVoteInfo: () => WalletVoteInfo<Vote>
+    useCastVote: (onSuccess?: () => void | Promise<void>) => {
+      castVote: (vote: Vote) => Promise<void>
+      castingVote: boolean
+    }
   }
 
   // Components
   components: {
-    ProposalVotes: ComponentType<BaseProposalVotesProps>
+    ProposalStatusAndInfo: ComponentType<BaseProposalStatusAndInfoProps>
+    ProposalActionDisplay: ComponentType<BaseProposalActionDisplayProps>
+    ProposalWalletVote: ComponentType<BaseProposalWalletVoteProps<Vote>>
+    ProposalVotes: ComponentType
     ProposalVoteTally: ComponentType<BaseProposalVoteTallyProps>
     ProposalInfoCard: ComponentType<BaseProposalInfoCardProps>
     ProposalDetails: ComponentType<BaseProposalDetailsProps>
     ProposalLine: ComponentType<BaseProposalLineProps>
-    PinnedProposalLine: {
-      Desktop: ComponentType<BasePinnedProposalLineProps>
-      Mobile: ComponentType<BasePinnedProposalLineProps>
-    }
   }
 }
 
-export type ProposalModuleAdapter<DaoCreationConfig extends FieldValues = any> =
-  {
-    id: string
-    contractNames: string[]
+export type ProposalModuleAdapter<
+  DaoCreationConfig extends FieldValues = any,
+  Vote extends unknown = any
+> = {
+  id: string
+  contractNames: string[]
 
-    loadCommon: (
-      options: IProposalModuleAdapterCommonOptions
-    ) => IProposalModuleAdapterCommon
+  loadCommon: (
+    options: IProposalModuleAdapterCommonOptions
+  ) => IProposalModuleAdapterCommon
 
-    load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter
+  load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter<Vote>
 
-    queries: {
-      proposalCount: Record<string, unknown>
-    }
-
-    daoCreation: {
-      defaultConfig: DaoCreationConfig
-
-      votingConfig: {
-        items: DaoCreationVotingConfigItem[]
-        advancedItems?: DaoCreationVotingConfigItem[]
-        advancedWarningI18nKeys?: string[]
-      }
-
-      getInstantiateInfo: DaoCreationGetInstantiateInfo<DaoCreationConfig>
-    }
+  queries: {
+    proposalCount: Record<string, unknown>
   }
+
+  daoCreation: {
+    defaultConfig: DaoCreationConfig
+
+    votingConfig: {
+      items: DaoCreationVotingConfigItem[]
+      advancedItems?: DaoCreationVotingConfigItem[]
+      advancedWarningI18nKeys?: string[]
+    }
+
+    getInstantiateInfo: DaoCreationGetInstantiateInfo<DaoCreationConfig>
+  }
+}
 
 export interface IProposalModuleAdapterInitialOptions {
   coreAddress: string
@@ -124,7 +131,7 @@ export interface IProposalModuleAdapterOptions
 }
 
 export interface IProposalModuleContext {
-  contractName: string
+  id: string
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
   common: IProposalModuleAdapterCommon
@@ -149,13 +156,30 @@ export interface CommonProposalListInfo {
 }
 
 export interface CommonProposalInfo {
-  id: number
+  id: string
   title: string
   description: string
+  creationHeight: number
+  votingOpen: boolean
+  expiration: Expiration
+  createdAtEpoch: number | null
+  createdByAddress: string
 }
 
-export interface BaseProposalVotesProps {
-  className?: string
+export interface BaseProposalStatusAndInfoProps {
+  inline?: boolean
+}
+
+export interface BaseProposalActionDisplayProps<D extends any = any> {
+  onDuplicate: (data: ProposalPrefill<D>) => void
+  availableActions: Action[]
+  onCloseSuccess: () => void | Promise<void>
+  onExecuteSuccess: () => void | Promise<void>
+}
+
+export interface BaseProposalWalletVoteProps<T> {
+  vote: T | undefined
+  fallback: 'pending' | 'none'
 }
 
 export interface BaseProposalVoteTallyProps {
@@ -180,7 +204,7 @@ export interface BaseProposalDetailsProps {
 }
 
 export interface BaseProposalLineProps {
-  walletAddress?: string
+  href: string
 }
 
 export interface BaseProposalModuleInfo {
@@ -189,8 +213,13 @@ export interface BaseProposalModuleInfo {
 
 export interface BaseNewProposalProps {
   onCreateSuccess: (proposalId: string) => void
+  prefill: any
 }
 
-export interface BasePinnedProposalLineProps {
-  className?: string
+export interface WalletVoteInfo<T> {
+  // Present if voted.
+  vote: T | undefined
+  couldVote: boolean
+  canVote: boolean
+  votingPowerPercent: number
 }

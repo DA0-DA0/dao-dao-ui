@@ -26,7 +26,8 @@ export const useProposalExecutionTxHash = () => {
   )
 
   const executionTxHash = useRecoilValue(
-    proposal.status === Status.Executed
+    proposal.status === Status.Executed ||
+      proposal.status === Status.ExecutionFailed
       ? proposalExecutionTXHashSelector({
           contractAddress: proposalModuleAddress,
           proposalId: proposalNumber,

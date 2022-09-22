@@ -16,9 +16,7 @@ import {
 import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
 import {
   ProposalModuleAdapterProvider,
-  useProposalModuleAdapter,
-  useProposalModuleAdapterCommon,
-  useProposalModuleAdapterOptions,
+  useProposalModuleAdapterContext,
 } from '@dao-dao/proposal-module-adapter'
 import { ErrorPage, LinkText } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
@@ -34,18 +32,15 @@ const InnerProposal = () => {
   const { coreVersion } = useDaoInfoContext()
 
   const {
-    components: {
-      ProposalVotes,
-      ProposalVoteDecisionStatus,
-      ProposalInfoCard,
-      ProposalDetails,
+    id: proposalModuleAdapterId,
+    adapter: {
+      components: { ProposalVotes, ProposalInfoCard, ProposalDetails },
+      hooks: { useProposalRefreshers },
     },
-    hooks: { useProposalRefreshers },
-  } = useProposalModuleAdapter()
-  const {
-    hooks: { useActions: useProposalModuleActions },
-  } = useProposalModuleAdapterCommon()
-  const { proposalModule } = useProposalModuleAdapterOptions()
+    common: {
+      hooks: { useActions: useProposalModuleActions },
+    },
+  } = useProposalModuleAdapterContext()
 
   const {
     hooks: { useGovernanceTokenInfo, useActions: useVotingModuleActions },
@@ -86,7 +81,7 @@ const InnerProposal = () => {
       `/propose?prefill=${encodeURIComponent(
         JSON.stringify(
           JSON.stringify({
-            proposalModuleAddress: proposalModule.address,
+            id: proposalModuleAdapterId,
             data,
           })
         )

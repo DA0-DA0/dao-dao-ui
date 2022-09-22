@@ -1,26 +1,27 @@
 import { StopIcon } from '@heroicons/react/outline'
+import { Block } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, SVGProps } from 'react'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Approved, Executed, Open, Rejected } from '@dao-dao/icons'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { StatusDisplay } from '@dao-dao/ui'
-import { convertToTitlecase } from '@dao-dao/utils'
 
 export interface ProposalStatusProps {
   status: Status
 }
 
 export const ProposalStatus = ({ status }: ProposalStatusProps) => {
+  const { t } = useTranslation()
   const { Icon, iconClassName, textClassName } = ProposalStatusMap[status]
 
   return (
     <StatusDisplay
-      icon={<Icon className={clsx(iconClassName, 'w-[19px] h-[19px]')} />}
+      icon={<Icon className={clsx(iconClassName, '!w-[19px] !h-[19px]')} />}
       label={
-        // Width of longest status label.
-        <p className={clsx('w-[8ch]', textClassName)}>
-          {convertToTitlecase(status)}
+        <p className={clsx('w-[14ch]', textClassName)}>
+          {t(`proposalStatusTitle.${status}`)}
         </p>
       }
     />
@@ -30,7 +31,7 @@ export const ProposalStatus = ({ status }: ProposalStatusProps) => {
 export const ProposalStatusMap: Record<
   Status,
   {
-    Icon: ComponentType<SVGProps<SVGSVGElement>>
+    Icon: (props: { className: string }) => ReactElement
     iconClassName: string
     textClassName: string
   }
@@ -54,6 +55,11 @@ export const ProposalStatusMap: Record<
     Icon: Executed,
     iconClassName: 'text-icon-secondary',
     textClassName: 'text-text-secondary',
+  },
+  [Status.ExecutionFailed]: {
+    Icon: Block,
+    iconClassName: '!text-icon-interactive-error',
+    textClassName: '!text-text-interactive-error',
   },
   [Status.Closed]: {
     Icon: StopIcon,

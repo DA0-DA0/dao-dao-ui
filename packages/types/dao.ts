@@ -13,6 +13,7 @@ import {
 } from 'react-hook-form'
 
 import { Validator } from './chain'
+import { ContractVersion } from './contract'
 import {
   InstantiateMsg,
   ModuleInstantiateInfo,
@@ -20,6 +21,19 @@ import {
 import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { LoadingData } from './ui'
 import { VotingModuleAdapter } from './voting-module-adapter'
+
+// Context
+export interface DaoInfo {
+  coreAddress: string
+  coreVersion: ContractVersion
+  votingModuleAddress: string
+  votingModuleContractName: string
+  proposalModules: ProposalModule[]
+  name: string
+  description: string
+  imageUrl: string | null
+  created: Date | undefined
+}
 
 export interface DaoDisplayInfo {
   coreAddress: string
@@ -107,6 +121,13 @@ export interface ProposalModule {
   contractName: string
   address: string
   prefix: string
+}
+
+export interface ProposalPrefill<FormData> {
+  // Proposal module adapter ID
+  id: string
+  // Proposal module adapter proposal creation form data
+  data: FormData
 }
 
 //! Create DAO

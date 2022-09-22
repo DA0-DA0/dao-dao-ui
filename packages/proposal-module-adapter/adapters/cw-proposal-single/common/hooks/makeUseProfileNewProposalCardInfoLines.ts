@@ -1,15 +1,17 @@
-import { CwProposalSingleSelectors, Cw20BaseSelectors } from '@dao-dao/state'
+import {
+  AttachMoney,
+  CancelOutlined,
+  FlagOutlined,
+  MultilineChart,
+} from '@mui/icons-material'
+import { useTranslation } from 'react-i18next'
+import { constSelector, useRecoilValue } from 'recoil'
+
+import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
 import { ProposalModule } from '@dao-dao/tstypes'
 import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
-import {
-  MultilineChart,
-  FlagOutlined,
-  AttachMoney,
-  CancelOutlined,
-} from '@mui/icons-material'
-import { useTranslation } from 'react-i18next'
-import { useRecoilValue, constSelector } from 'recoil'
+
 import { useProcessTQ } from './useProcessTQ'
 
 export const makeUseProfileNewProposalCardInfoLines =

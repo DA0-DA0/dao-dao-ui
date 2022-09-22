@@ -6,8 +6,11 @@ import { secondsToWdhms } from '@dao-dao/utils'
 import { StatusDisplay, StatusDisplayProps } from '../StatusDisplay'
 import * as StatusDisplayStories from '../StatusDisplay.stories'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
-import { ProposalYourVote, ProposalYourVoteProps } from './ProposalYourVote'
-import * as ProposalYourVoteStories from './ProposalYourVote.stories'
+import {
+  ProposalWalletVote,
+  ProposalWalletVoteProps,
+} from './ProposalWalletVote'
+import * as ProposalWalletVoteStories from './ProposalWalletVote.stories'
 
 export default {
   title: 'DAO DAO / packages / ui / components / proposal / ProposalLine',
@@ -24,8 +27,9 @@ export const makeProps = (
   // 3 days.
   secondsRemaining = 3 * 24 * 60 * 60,
   status: Omit<keyof typeof StatusDisplayStories, 'default'> = 'Open',
-  vote: Omit<keyof typeof ProposalYourVoteStories, 'default'> = 'Pending'
+  vote: Omit<keyof typeof ProposalWalletVoteStories, 'default'> = 'Pending'
 ): ProposalLineProps => ({
+  href: '#',
   proposalPrefix: 'A',
   proposalNumber: Math.floor(Math.random() * 100),
   proposalModuleVersion: ContractVersion.V0_2_0,
@@ -38,9 +42,10 @@ export const makeProps = (
     />
   ),
   vote: (
-    <ProposalYourVote
-      {...(ProposalYourVoteStories[vote as keyof typeof ProposalYourVoteStories]
-        .args as ProposalYourVoteProps)}
+    <ProposalWalletVote
+      {...(ProposalWalletVoteStories[
+        vote as keyof typeof ProposalWalletVoteStories
+      ].args as ProposalWalletVoteProps)}
     />
   ),
   lastUpdated: new Date(

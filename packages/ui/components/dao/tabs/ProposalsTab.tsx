@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfo } from '@dao-dao/common'
+import { DaoInfo } from '@dao-dao/tstypes'
 import { usePlatform } from '@dao-dao/utils'
 
 import { ButtonLink } from '../../Button'

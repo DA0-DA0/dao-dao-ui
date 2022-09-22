@@ -1,3 +1,4 @@
+import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import { DurationUnits } from '@dao-dao/tstypes'
 
 import { ProposalModuleAdapter } from '../../types'
@@ -9,17 +10,18 @@ import {
   makeReverseProposalInfos,
   makeUseActions,
   makeUseListAllProposalInfos,
-  makeUseProposalCount,
   makeUseProfileNewProposalCardInfoLines,
+  makeUseProposalCount,
 } from './common'
 import {
-  PinnedProposalLineDesktop,
-  PinnedProposalLineMobile,
+  ProposalActionDisplay,
   ProposalDetails,
   ProposalInfoCard,
   ProposalLine,
+  ProposalStatusAndInfo,
   ProposalVoteTally,
   ProposalVotes,
+  ProposalWalletVote,
 } from './components'
 import {
   AllowRevotingVotingConfigItem,
@@ -31,127 +33,130 @@ import {
 } from './daoCreation'
 import { makeGetProposalInfo } from './functions'
 import {
+  useCastVote,
   useProfileVoteCardOptions,
   useProposalExecutionTxHash,
-  useProposalExpirationString,
   useProposalProcessedTQ,
   useProposalRefreshers,
+  useWalletVoteInfo,
 } from './hooks'
 import { DaoCreationConfig } from './types'
 
-export const CwProposalSingleAdapter: ProposalModuleAdapter<DaoCreationConfig> =
-  {
-    id: 'cw-proposal-single',
-    contractNames: ['cw-govmod-single', 'cw-proposal-single'],
+export const CwProposalSingleAdapter: ProposalModuleAdapter<
+  DaoCreationConfig,
+  Vote
+> = {
+  id: 'cw-proposal-single',
+  contractNames: ['cw-govmod-single', 'cw-proposal-single'],
 
-    loadCommon: (options) => ({
-      // Selectors
-      selectors: {
-        reverseProposalInfos: makeReverseProposalInfos(options),
-        depositInfo: makeDepositInfo(options),
-      },
-
-      // Hooks
-      hooks: {
-        useListAllProposalInfos: makeUseListAllProposalInfos(
-          options.proposalModule
-        ),
-        useProposalCount: makeUseProposalCount(options.proposalModule),
-        useActions: makeUseActions(options.proposalModule),
-        useProfileNewProposalCardInfoLines:
-          makeUseProfileNewProposalCardInfoLines(options.proposalModule),
-      },
-
-      // Components
-      components: {
-        ProposalModuleInfo: (props) => (
-          <ProposalModuleInfo
-            proposalModuleAddress={options.proposalModule.address}
-            {...props}
-          />
-        ),
-        NewProposal: (props) => <NewProposal options={options} {...props} />,
-        DaoInfoVotingConfiguration: (props) => (
-          <DaoInfoVotingConfiguration
-            proposalModule={options.proposalModule}
-            {...props}
-          />
-        ),
-      },
-    }),
-
-    load: (options) => ({
-      // Functions
-      functions: {
-        getProposalInfo: makeGetProposalInfo(options),
-      },
-
-      // Hooks
-      hooks: {
-        useProposalRefreshers,
-        useProposalExecutionTxHash,
-        useProposalProcessedTQ,
-        useProposalExpirationString,
-        useProfileVoteCardOptions,
-      },
-
-      // Components
-      components: {
-        ProposalVotes,
-        ProposalVoteTally,
-        ProposalInfoCard,
-        ProposalDetails,
-        ProposalLine,
-        PinnedProposalLine: {
-          Desktop: PinnedProposalLineDesktop,
-          Mobile: PinnedProposalLineMobile,
-        },
-      },
-    }),
-
-    queries: {
-      proposalCount: {
-        proposal_count: {},
-      },
+  loadCommon: (options) => ({
+    // Selectors
+    selectors: {
+      reverseProposalInfos: makeReverseProposalInfos(options),
+      depositInfo: makeDepositInfo(options),
     },
 
-    daoCreation: {
-      defaultConfig: {
-        threshold: {
-          majority: true,
-          value: 75,
-        },
-        quorumEnabled: true,
-        quorum: {
-          majority: false,
-          value: 20,
-        },
-        votingDuration: {
-          value: 1,
-          units: DurationUnits.Weeks,
-        },
-        proposalDeposit: {
-          amount: 0,
-          refundFailed: false,
-        },
-        allowRevoting: false,
-      },
-
-      votingConfig: {
-        items: [
-          VotingDurationVotingConfigItem,
-          ProposalDepositVotingConfigItem,
-        ],
-        advancedItems: [
-          AllowRevotingVotingConfigItem,
-          ThresholdVotingConfigItem,
-          QuorumVotingConfigItem,
-        ],
-        advancedWarningI18nKeys: [
-          'daoCreationAdapter.cw-proposal-single.advancedWarning',
-        ],
-      },
-
-      getInstantiateInfo,
+    // Hooks
+    hooks: {
+      useListAllProposalInfos: makeUseListAllProposalInfos(
+        options.proposalModule
+      ),
+      useProposalCount: makeUseProposalCount(options.proposalModule),
+      useActions: makeUseActions(options.proposalModule),
+      useProfileNewProposalCardInfoLines:
+        makeUseProfileNewProposalCardInfoLines(options.proposalModule),
     },
-  }
+
+    // Components
+    components: {
+      ProposalModuleInfo: (props) => (
+        <ProposalModuleInfo
+          proposalModuleAddress={options.proposalModule.address}
+          {...props}
+        />
+      ),
+      NewProposal: (props) => <NewProposal options={options} {...props} />,
+      DaoInfoVotingConfiguration: (props) => (
+        <DaoInfoVotingConfiguration
+          proposalModule={options.proposalModule}
+          {...props}
+        />
+      ),
+    },
+  }),
+
+  load: (options) => ({
+    // Selectors
+    selectors: {},
+
+    // Functions
+    functions: {
+      getProposalInfo: makeGetProposalInfo(options),
+    },
+
+    // Hooks
+    hooks: {
+      useCastVote,
+      useProposalRefreshers,
+      useProposalExecutionTxHash,
+      useProposalProcessedTQ,
+      useProfileVoteCardOptions,
+      useWalletVoteInfo,
+    },
+
+    // Components
+    components: {
+      ProposalStatusAndInfo,
+      ProposalActionDisplay,
+      ProposalWalletVote,
+      ProposalVotes,
+      ProposalVoteTally,
+      ProposalInfoCard,
+      ProposalDetails,
+      ProposalLine,
+    },
+  }),
+
+  queries: {
+    proposalCount: {
+      proposal_count: {},
+    },
+  },
+
+  daoCreation: {
+    defaultConfig: {
+      threshold: {
+        majority: true,
+        value: 75,
+      },
+      quorumEnabled: true,
+      quorum: {
+        majority: false,
+        value: 20,
+      },
+      votingDuration: {
+        value: 1,
+        units: DurationUnits.Weeks,
+      },
+      proposalDeposit: {
+        amount: 0,
+        refundFailed: false,
+      },
+      allowRevoting: false,
+    },
+
+    votingConfig: {
+      items: [VotingDurationVotingConfigItem, ProposalDepositVotingConfigItem],
+      advancedItems: [
+        AllowRevotingVotingConfigItem,
+        ThresholdVotingConfigItem,
+        QuorumVotingConfigItem,
+      ],
+      advancedWarningI18nKeys: [
+        'daoCreationAdapter.cw-proposal-single.advancedWarning',
+      ],
+    },
+
+    getInstantiateInfo,
+  },
+}

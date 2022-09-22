@@ -1,8 +1,7 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfo } from '@dao-dao/common'
-import { ProposalModule } from '@dao-dao/tstypes'
+import { DaoInfo, ProposalModule } from '@dao-dao/tstypes'
 
 import { Dropdown, PageHeader, useAppLayoutContext } from '../components'
 

@@ -36,6 +36,9 @@ export const makeProps = (): ProposalVotesProps => ({
       votingPowerPercent: 0.0432,
     }))
     .sort((a, b) => b.when.getTime() - a.when.getTime()),
+  canLoadMore: true,
+  loadingMore: false,
+  loadMore: () => alert('load'),
 })
 
 export const Default = Template.bind({})
@@ -45,4 +48,17 @@ Default.parameters = {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/Dao-2.0?node-id=983%3A90882',
   },
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  ...makeProps(),
+  loadingMore: true,
+}
+
+export const LoadingNone = Template.bind({})
+LoadingNone.args = {
+  votes: [],
+  canLoadMore: true,
+  loadingMore: true,
 }

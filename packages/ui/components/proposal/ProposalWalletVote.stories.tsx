@@ -1,22 +1,22 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalVoteClassNameMap } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ProposalYourVote'
+import { ProposalWalletVoteClassNameMap } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ProposalWalletVote'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 
-import { ProposalYourVote } from './ProposalYourVote'
+import { ProposalWalletVote } from './ProposalWalletVote'
 
 export default {
-  title: 'DAO DAO / packages / ui / components / proposal / ProposalYourVote',
-  component: ProposalYourVote,
-} as ComponentMeta<typeof ProposalYourVote>
+  title: 'DAO DAO / packages / ui / components / proposal / ProposalWalletVote',
+  component: ProposalWalletVote,
+} as ComponentMeta<typeof ProposalWalletVote>
 
-const Template: ComponentStory<typeof ProposalYourVote> = (args) => (
-  <ProposalYourVote {...args} />
+const Template: ComponentStory<typeof ProposalWalletVote> = (args) => (
+  <ProposalWalletVote {...args} />
 )
 
 export const Pending = Template.bind({})
 Pending.args = {
-  className: ProposalVoteClassNameMap['pending'],
+  className: ProposalWalletVoteClassNameMap['pending'],
   label: 'Pending',
   showBadge: true,
 }
@@ -29,7 +29,7 @@ Pending.parameters = {
 
 export const Yes = Template.bind({})
 Yes.args = {
-  className: ProposalVoteClassNameMap[Vote.Yes],
+  className: ProposalWalletVoteClassNameMap[Vote.Yes],
   label: 'Yes',
   showBadge: false,
 }
@@ -37,7 +37,7 @@ Yes.parameters = Pending.parameters
 
 export const No = Template.bind({})
 No.args = {
-  className: ProposalVoteClassNameMap[Vote.No],
+  className: ProposalWalletVoteClassNameMap[Vote.No],
   label: 'No',
   showBadge: false,
 }
@@ -45,7 +45,7 @@ No.parameters = Pending.parameters
 
 export const Abstain = Template.bind({})
 Abstain.args = {
-  className: ProposalVoteClassNameMap[Vote.Abstain],
+  className: ProposalWalletVoteClassNameMap[Vote.Abstain],
   label: 'Abstain',
   showBadge: false,
 }

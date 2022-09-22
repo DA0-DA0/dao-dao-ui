@@ -38,7 +38,11 @@ import {
 export type NewProposalProps = BaseNewProposalProps &
   Pick<StatelessNewProposalProps, 'options'>
 
-export const NewProposal = ({ onCreateSuccess, prefill, options }: NewProposalProps) => {
+export const NewProposal = ({
+  onCreateSuccess,
+  prefill,
+  options,
+}: NewProposalProps) => {
   const { t } = useTranslation()
   const { coreVersion } = useDaoInfoContext()
   const { connected, address: walletAddress } = useWallet()

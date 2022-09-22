@@ -87,7 +87,7 @@ export const InnerProfileNewProposalCard = ({
   return (
     <StatelessProfileNewProposalCard
       // TODO: Add to voting module adapter.
-      addresses={{ loading: false, data: [] }}
+      addresses={{ loading: true }}
       daoName={name}
       lines={{ loading: false, data: lines }}
       // TODO: Retrieve.

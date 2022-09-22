@@ -18,6 +18,7 @@ import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapter,
   useProposalModuleAdapterCommon,
+  useProposalModuleAdapterContext,
   useProposalModuleAdapterOptions,
 } from '@dao-dao/proposal-module-adapter'
 import { ErrorPage, LinkText } from '@dao-dao/ui'
@@ -34,18 +35,15 @@ const InnerProposal = () => {
   const { coreVersion } = useDaoInfoContext()
 
   const {
-    components: {
-      ProposalVotes,
-      ProposalVoteDecisionStatus,
-      ProposalInfoCard,
-      ProposalDetails,
+    id: proposalModuleAdapterId,
+    adapter: {
+      components: { ProposalVotes, ProposalInfoCard, ProposalDetails },
+      hooks: { useProposalRefreshers },
     },
-    hooks: { useProposalRefreshers },
-  } = useProposalModuleAdapter()
-  const {
-    hooks: { useActions: useProposalModuleActions },
-  } = useProposalModuleAdapterCommon()
-  const { proposalModule } = useProposalModuleAdapterOptions()
+    common: {
+      hooks: { useActions: useProposalModuleActions },
+    },
+  } = useProposalModuleAdapterContext()
 
   const {
     hooks: { useGovernanceTokenInfo, useActions: useVotingModuleActions },
@@ -85,7 +83,7 @@ const InnerProposal = () => {
     router.push(
       `/propose?prefill=${encodeURIComponent(
         JSON.stringify({
-          proposalModuleAddress: proposalModule.address,
+          id: proposalModuleAdapterId,
           data,
         })
       )}`

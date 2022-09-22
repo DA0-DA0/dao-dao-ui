@@ -1,7 +1,9 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
+import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
+import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
 import {
@@ -17,11 +19,17 @@ import {
   matchAdapter as matchProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
 import { useVotingModule } from '@dao-dao/state'
-import { CreateProposal, Loader, Logo, PageLoader } from '@dao-dao/ui'
+import { ProposalPrefill } from '@dao-dao/tstypes'
+import {
+  CreateProposal,
+  Loader,
+  Logo,
+  PageLoader,
+  ProfileDisconnectedCard,
+} from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 
 import { ProfileNewProposalCard } from '@/components'
-import { useRouter } from 'next/router'
 
 const InnerProposalCreate = () => {
   const router = useRouter()
@@ -29,6 +37,7 @@ const InnerProposalCreate = () => {
   const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
     fetchMembership: true,
   })
+  const { connected } = useWallet()
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(
     // Default to single choice proposal module or first otherwise.
@@ -60,16 +69,20 @@ const InnerProposalCreate = () => {
     }
 
     try {
-      const data = JSON.parse(potentialDefaultValue)
+      const prefillData = JSON.parse(potentialDefaultValue)
       if (
-        data.constructor.name === 'Object' &&
-        'proposalModuleAddress' in data &&
-        'data' in data
+        prefillData.constructor.name === 'Object' &&
+        'id' in prefillData &&
+        'data' in prefillData
       ) {
+        const { id, data } = prefillData as ProposalPrefill<any>
+
         // Attempt to find proposal module to prefill and set if found.
         const matchingProposalModule = daoInfo.proposalModules.find(
-          ({ address }) => data.proposalModuleAddress === address
+          ({ contractName }) =>
+            matchProposalModuleAdapter(contractName)?.id === id
         )
+
         if (matchingProposalModule) {
           setSelectedProposalModule(matchingProposalModule)
           setPrefill(data.data)
@@ -79,7 +92,7 @@ const InnerProposalCreate = () => {
     } catch {}
 
     setPrefillChecked(true)
-  }, [router.query.prefill, router.isReady])
+  }, [router.query.prefill, router.isReady, daoInfo.proposalModules])
 
   return (
     <CreateProposal
@@ -98,7 +111,11 @@ const InnerProposalCreate = () => {
       }
       proposalModule={selectedProposalModule}
       rightSidebarContent={
-        <ProfileNewProposalCard proposalModule={selectedProposalModule} />
+        connected ? (
+          <ProfileNewProposalCard proposalModule={selectedProposalModule} />
+        ) : (
+          <ProfileDisconnectedCard />
+        )
       }
       setProposalModule={setSelectedProposalModule}
     />

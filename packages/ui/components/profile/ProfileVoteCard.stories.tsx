@@ -1,6 +1,8 @@
 import { Check, Close, PanToolOutlined, Texture } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProposalWalletVote, ProposalWalletVoteProps } from '../proposal'
+import { Pending as ProposalWalletVoteStory } from '../proposal/ProposalWalletVote.stories'
 import { ProfileVoteCard } from './ProfileVoteCard'
 
 export default {
@@ -16,6 +18,11 @@ const Template: ComponentStory<typeof ProfileVoteCard> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
+  currentVoteDisplay: (
+    <ProposalWalletVote
+      {...(ProposalWalletVoteStory.args as ProposalWalletVoteProps)}
+    />
+  ),
   votingPower: 32.4,
   daoName: 'Dog Dao',
   walletAddress: 'wallet',
@@ -29,7 +36,6 @@ Default.args = {
     { Icon: Texture, label: 'Abstain', value: 'abstain' },
   ],
 }
-
 Default.parameters = {
   design: {
     type: 'figma',

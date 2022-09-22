@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
-import { formatDate, secondsToWdhms } from '@dao-dao/utils'
+import { dateToWdhms, formatDate } from '@dao-dao/utils'
 
 import { UnstakingStatus } from './UnstakingStatus'
 
@@ -25,7 +25,7 @@ export const UnstakingLine = ({
   const dateString = date
     ? status === UnstakingTaskStatus.Unstaking
       ? t('info.timeLeft', {
-          time: secondsToWdhms((date.getTime() - Date.now()) / 1000, 1),
+          time: dateToWdhms(date, 1),
         })
       : formatDate(date)
     : undefined

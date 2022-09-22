@@ -131,11 +131,11 @@ export const convertExpirationToDate = (
     ? new Date(Date.now() + convertBlocksToSeconds(expiration.at_height) * 1000)
     : 'at_time' in expiration
     ? // Timestamp is in nanoseconds, convert to microseconds.
-      new Date(Date.now() + Number(expiration.at_time) / 1e6)
+      new Date(Number(expiration.at_time) / 1e6)
     : undefined
 
 export const convertBlocksToSeconds = (blocks: number) =>
-  ((blocks * 1) / JUNO_BLOCKS_PER_YEAR) * 365 * 24 * 60 * 60
+  (blocks / JUNO_BLOCKS_PER_YEAR) * 365 * 24 * 60 * 60
 
 export const durationToSeconds = (duration: Duration) =>
   'height' in duration ? convertBlocksToSeconds(duration.height) : duration.time

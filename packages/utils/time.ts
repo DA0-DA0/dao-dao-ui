@@ -8,7 +8,7 @@ export const secondsToWdhms = (
 ): string => {
   const secondsInt = Math.ceil(Number(seconds))
   if (secondsInt === 0) {
-    return '0 secs'
+    return `0 ${abbreviate ? 'secs' : 'seconds'}`
   }
 
   // Abbreviate automatically if more than 1 unit and not set.
@@ -44,3 +44,13 @@ export const secondsToWdhms = (
       .join(', ')
   )
 }
+
+// Converts Date to string from the current point with no sign.
+// Example: dateToWdhms(new Date(Date.now() + 1000)) === '1 second'
+//          dateToWdhms(new Date(Date.now() - 1000)) === '1 second'
+export const dateToWdhms = (date: Date, numUnits = 2, abbreviate = false) =>
+  secondsToWdhms(
+    Math.abs(date.getTime() - Date.now()) / 1000,
+    numUnits,
+    abbreviate
+  )

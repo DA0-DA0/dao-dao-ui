@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ReactNode, useState } from 'react'
 
-import { DaoInfo } from '@dao-dao/common'
+import { DaoInfo } from '@dao-dao/tstypes'
 import { formatDate } from '@dao-dao/utils'
 
 import {
@@ -67,6 +67,7 @@ export const DaoHome = ({
           />
 
           <DaoHeader
+            coreAddress={daoInfo.coreAddress}
             description={daoInfo.description}
             established={daoInfo.created && formatDate(daoInfo.created)}
             imageUrl={daoInfo.imageUrl}

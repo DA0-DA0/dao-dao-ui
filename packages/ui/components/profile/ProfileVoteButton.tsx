@@ -5,11 +5,13 @@ import { Button } from '../Button'
 
 export interface ProfileVoteButtonProps {
   option: ProfileVoteCardOption<unknown>
+  onClick: () => void
   pressed?: boolean
 }
 
 export const ProfileVoteButton = ({
   option: { label, Icon },
+  onClick,
   pressed = false,
 }: ProfileVoteButtonProps) => (
   <Button
@@ -19,6 +21,7 @@ export const ProfileVoteButton = ({
     contentContainerClassName={clsx('justify-between text-sm', {
       'primary-text': !pressed,
     })}
+    onClick={onClick}
     pressed={pressed}
     size="lg"
     variant="secondary"

@@ -1,19 +1,19 @@
-import { constSelector, useRecoilValue } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
 import {
   CwProposalSingleSelectors,
   contractVersionSelector,
 } from '@dao-dao/state'
-import { ContractVersion } from '@dao-dao/tstypes'
 import { ProposalLine as StatelessProposalLine } from '@dao-dao/ui'
+import { convertExpirationToDate, dateToWdhms } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { BaseProposalLineProps } from '../../../types'
-import { useProposalExpirationString } from '../hooks'
+import { useWalletVoteInfo } from '../hooks'
 import { ProposalStatus } from './ProposalStatus'
-import { ProposalYourVote } from './ProposalYourVote'
+import { ProposalWalletVote } from './ProposalWalletVote'
 
-export const ProposalLine = ({ walletAddress }: BaseProposalLineProps) => {
+export const ProposalLine = ({ href }: BaseProposalLineProps) => {
   const {
     proposalModule: { address: proposalModuleAddress, prefix: proposalPrefix },
     proposalNumber,
@@ -33,33 +33,28 @@ export const ProposalLine = ({ walletAddress }: BaseProposalLineProps) => {
     })
   )
 
-  const voteSelector =
-    proposalModuleVersion === ContractVersion.V0_1_0
-      ? CwProposalSingleSelectors.getVoteV1Selector
-      : CwProposalSingleSelectors.getVoteV2Selector
-  const walletVote =
-    useRecoilValue(
-      walletAddress
-        ? voteSelector({
-            contractAddress: proposalModuleAddress,
-            params: [{ proposalId: proposalNumber, voter: walletAddress }],
-          })
-        : constSelector(undefined)
-    )?.vote?.vote ?? undefined
+  const { canVote, vote } = useWalletVoteInfo()
 
-  const expirationString = useProposalExpirationString()
+  const expirationDate = convertExpirationToDate(proposal.expiration)
   const lastUpdated = new Date(Number(proposal.last_updated) / 1000000)
 
   return (
     <StatelessProposalLine
-      expiration={expirationString ?? ''}
+      expiration={expirationDate ? dateToWdhms(expirationDate) : ''}
+      href={href}
       lastUpdated={lastUpdated}
       proposalModuleVersion={proposalModuleVersion}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
       status={<ProposalStatus status={proposal.status} />}
       title={proposal.title}
-      vote={walletVote && <ProposalYourVote vote={walletVote} />}
+      // Even if no vote, display pending if can vote. If can't vote and didn't
+      // vote, show nothing.
+      vote={
+        (vote || canVote) && (
+          <ProposalWalletVote fallback="pending" vote={vote} />
+        )
+      }
     />
   )
 }

@@ -232,21 +232,15 @@ export const nativeStakingInfoSelector = selectorFamily<
     async ({ get }) => {
       const client = get(lcdClientSelector)
 
-      const _delegations = client.staking.v1beta1.delegatorDelegations.bind(
-        client.staking.v1beta1
-      )
       const delegations = await getAllLcdResponse(
-        _delegations,
+        client.staking.v1beta1.delegatorDelegations,
         {
           delegatorAddr,
         },
         'delegation_responses'
       )
-      const _validators = client.staking.v1beta1.delegatorValidators.bind(
-        client.staking.v1beta1
-      )
       const validators = await getAllLcdResponse(
-        _validators,
+        client.staking.v1beta1.delegatorValidators,
         {
           delegatorAddr,
         },
@@ -256,12 +250,8 @@ export const nativeStakingInfoSelector = selectorFamily<
         await client.distribution.v1beta1.delegationTotalRewards({
           delegatorAddress: delegatorAddr,
         })
-      const _unbondingDelegations =
-        client.staking.v1beta1.delegatorUnbondingDelegations.bind(
-          client.staking.v1beta1
-        )
       const unbondingDelegations = await getAllLcdResponse(
-        _unbondingDelegations,
+        client.staking.v1beta1.delegatorUnbondingDelegations,
         {
           delegatorAddr,
         },

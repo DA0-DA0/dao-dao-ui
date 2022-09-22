@@ -20,6 +20,9 @@ export const getAdapters = (): readonly ProposalModuleAdapter[] => [
   CwProposalSingleAdapter,
 ]
 
+export const getAdapterById = (id: string) =>
+  getAdapters().find((adapter) => adapter.id === id)
+
 export const matchAdapter = (contractNameToMatch: string) =>
   getAdapters().find((adapter) =>
     adapter.contractNames.some((contractName) =>
@@ -105,7 +108,7 @@ export const matchAndLoadAdapter = (
   }
 
   return {
-    contractName: adapter.id,
+    id: adapter.id,
     options: adapterOptions,
     adapter: adapter.load(adapterOptions),
     common: adapter.loadCommon({

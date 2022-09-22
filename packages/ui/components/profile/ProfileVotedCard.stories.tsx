@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalYourVote } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ProposalYourVote'
+import { ProposalWalletVote } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ProposalWalletVote'
 import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 
 import { ProfileVotedCard } from './ProfileVotedCard'
@@ -23,7 +23,7 @@ Default.args = {
   walletAddress: 'wallet',
   walletName: '@Modern-Edamame',
   profileImgUrl: '/noah.jpg',
-  vote: <ProposalYourVote vote={Vote.Yes} />,
+  vote: <ProposalWalletVote fallback="none" vote={Vote.Yes} />,
 }
 
 Default.parameters = {

@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProfileVoteCardProps } from '@dao-dao/tstypes/ui/ProfileVoteCard'
@@ -13,15 +14,19 @@ export * from '@dao-dao/tstypes/ui/ProfileVoteCard'
 
 export const ProfileVoteCard = <T extends unknown>({
   options,
-  selected,
+  currentVote,
+  currentVoteDisplay,
   loading,
   votingPower,
   daoName,
   walletAddress,
   walletName,
   profileImgUrl,
+  onCastVote,
 }: ProfileVoteCardProps<T>) => {
   const { t } = useTranslation()
+
+  const [selected, setSelected] = useState(currentVote)
 
   return (
     <ProfileCardWrapper
@@ -40,12 +45,13 @@ export const ProfileVoteCard = <T extends unknown>({
 
       <div className="flex flex-row justify-between items-center mt-3 mb-4 secondary-text">
         <p>{t('title.vote')}</p>
-        <p className="font-mono text-text-primary">{t('info.pending')}</p>
+        {currentVoteDisplay}
       </div>
 
       {options.map((option, index) => (
         <ProfileVoteButton
           key={index}
+          onClick={() => setSelected(option.value)}
           option={option}
           pressed={option.value === selected}
         />
@@ -58,6 +64,7 @@ export const ProfileVoteCard = <T extends unknown>({
         })}
         disabled={!selected}
         loading={loading}
+        onClick={() => selected && onCastVote(selected)}
         size="lg"
         variant={!selected || loading ? 'secondary' : 'primary'}
       >
