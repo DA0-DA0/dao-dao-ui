@@ -36,3 +36,9 @@ export const refreshTokenUsdcPriceIdAtom = atomFamily<number, string>({
   key: 'refreshTokenUsdcPriceId',
   default: 0,
 })
+
+// Change this to refresh the current block height.
+export const refreshBlockHeightAtom = atom<number>({
+  key: 'refreshBlockHeight',
+  default: 0,
+})

@@ -1,6 +1,5 @@
+import { PushPin, PushPinOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
-
-import { PushPin } from '@dao-dao/icons'
 
 import { Button } from '../Button'
 
@@ -11,6 +10,7 @@ export interface PinToggleProps {
 
 export const PinToggle = ({ pinned, onPin }: PinToggleProps) => {
   const { t } = useTranslation()
+  const Icon = pinned ? PushPin : PushPinOutlined
 
   return (
     <Button onClick={(_e) => onPin()} variant="secondary">
@@ -18,7 +18,7 @@ export const PinToggle = ({ pinned, onPin }: PinToggleProps) => {
       <p className="hidden text-text-body sm:block">
         {pinned ? t('button.following') : t('button.follow')}
       </p>
-      <PushPin className="w-4 h-4 text-icon-primary" />
+      <Icon className="!w-4 !h-4 !text-icon-primary" />
     </Button>
   )
 }

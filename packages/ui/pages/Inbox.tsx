@@ -69,7 +69,6 @@ export const Inbox = <T extends {}>({
                 Icon={Refresh}
                 circular
                 className={clsx(refreshing && 'animate-spin-medium')}
-                disabled={refreshing}
                 onClick={onRefresh}
                 variant="ghost"
               />

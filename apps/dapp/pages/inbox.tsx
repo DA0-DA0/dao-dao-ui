@@ -1,11 +1,9 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { NetworkStatus } from '@apollo/client'
 import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
 import { NextSeo } from 'next-seo'
-import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -15,11 +13,7 @@ import {
   SuspenseLoader,
 } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import {
-  pinnedDaosWithProposalModulesSelector,
-  useOpenProposalsWithWalletVotesQuery,
-} from '@dao-dao/state'
-import { ProposalModule } from '@dao-dao/tstypes'
+import { pinnedDaoDropdownInfosSelector } from '@dao-dao/state'
 import {
   DaoWithProposals,
   Inbox,
@@ -28,112 +22,58 @@ import {
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 
-import { ProfileHomeCard } from '@/components'
+import { ProfileHomeCard, useDAppContext } from '@/components'
 
 const InnerInbox = () => {
-  const { connected, address: walletAddress = '' } = useWallet()
-  const pinnedDaosWithProposalModules = useRecoilValue(
-    pinnedDaosWithProposalModulesSelector
-  )
-
-  const proposalModuleAddresses = pinnedDaosWithProposalModules.flatMap(
-    ({ proposalModules }) => proposalModules.map(({ address }) => address)
-  )
+  const { connected } = useWallet()
+  const pinnedDaoDropdownInfos = useRecoilValue(pinnedDaoDropdownInfosSelector)
 
   const {
-    loading,
-    error,
-    data: openUnvotedProposals,
-    refetch,
-    networkStatus,
-  } = useOpenProposalsWithWalletVotesQuery(
-    proposalModuleAddresses,
-    walletAddress
-  )
+    inbox: { loading, refetching, refetch, daosWithOpenUnvotedProposals },
+  } = useDAppContext()
 
-  //! Loading errors.
-  useEffect(() => {
-    if (error) {
-      console.error(error)
-    }
-  }, [error])
-
-  const daosWithProposals = useMemo(
-    () =>
-      pinnedDaosWithProposalModules
-        .map(
-          ({
-            dao,
-            proposalModules,
-          }): DaoWithProposals<ProposalLineProps> | undefined => {
-            // Get open unvoted proposal numbers for all proposal module.
-            const proposalModulesWithNumbers =
-              (openUnvotedProposals?.proposalModules.nodes
-                .map(({ id, proposals }) => {
-                  // Check if any proposal modules match.
-                  const proposalModule = proposalModules.find(
-                    ({ address }) => id === address
-                  )
-                  if (!proposalModule) {
-                    return undefined
-                  }
-
-                  const proposalNumbers = proposals.nodes
-                    .filter(
-                      // Only select proposals not voted on by the current
-                      // wallet. Wallet filter performed in the query.
-                      ({ votes }) => votes.nodes.length === 0
-                    )
-                    .map(({ num }) => num)
-
-                  // Don't show if no open proposals.
-                  if (!proposalNumbers.length) {
-                    return undefined
-                  }
-
-                  return {
-                    proposalModule,
-                    proposalNumbers,
-                  }
-                })
-                .filter(Boolean) ?? []) as {
-                proposalModule: ProposalModule
-                proposalNumbers: number[]
-              }[]
-
-            return proposalModulesWithNumbers.length
-              ? {
-                  dao,
-                  proposals: proposalModulesWithNumbers.flatMap(
-                    ({ proposalModule: { prefix }, proposalNumbers }) =>
-                      proposalNumbers.map((proposalNumber) => ({
-                        proposalId: `${prefix}${proposalNumber}`,
-                        proposalModules,
-                        coreAddress: dao.coreAddress,
-                        proposalViewUrl: `/dao/${dao.coreAddress}/proposals/${prefix}${proposalNumber}`,
-                      }))
-                  ),
-                }
-              : undefined
-          }
+  const daosWithProposals = daosWithOpenUnvotedProposals
+    .map(
+      ({
+        coreAddress,
+        proposalModules,
+        openUnvotedProposals,
+      }): DaoWithProposals<ProposalLineProps> | undefined => {
+        const daoDropdownInfo = pinnedDaoDropdownInfos.find(
+          (dao) => dao.coreAddress === coreAddress
         )
-        .filter(Boolean) as DaoWithProposals<ProposalLineProps>[],
-    [openUnvotedProposals?.proposalModules, pinnedDaosWithProposalModules]
-  )
+        if (!daoDropdownInfo || !openUnvotedProposals?.length) {
+          return undefined
+        }
+
+        return {
+          dao: daoDropdownInfo,
+          proposals: openUnvotedProposals.map(
+            ({ proposalModule: { prefix }, proposalNumber }) => ({
+              proposalId: `${prefix}${proposalNumber}`,
+              proposalModules,
+              coreAddress,
+              proposalViewUrl: `/dao/${coreAddress}/proposals/${prefix}${proposalNumber}`,
+            })
+          ),
+        }
+      }
+    )
+    .filter(Boolean) as DaoWithProposals<ProposalLineProps>[]
 
   return (
     <Inbox
       ProposalLine={ProposalLine}
       daosWithProposals={
-        loading || !openUnvotedProposals
+        loading
           ? { loading: true }
           : {
               loading: false,
               data: daosWithProposals,
             }
       }
-      onRefresh={() => refetch()}
-      refreshing={loading || networkStatus === NetworkStatus.refetch}
+      onRefresh={refetch}
+      refreshing={loading || refetching}
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }

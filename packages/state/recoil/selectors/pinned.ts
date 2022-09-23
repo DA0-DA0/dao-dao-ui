@@ -43,16 +43,16 @@ export const pinnedDaoCardInfoSelector = selectorFamily<
 export const pinnedDaosWithProposalModulesSelector = selector({
   key: 'pinnedDaosWithProposalModules',
   get: ({ get }) => {
-    const daoDropdownInfos = get(pinnedDaoDropdownInfosSelector)
+    const daoAddresses = get(pinnedAddressesAtom)
     const proposalModules = get(
       waitForAll(
-        daoDropdownInfos.map(({ coreAddress }) =>
+        daoAddresses.map((coreAddress) =>
           cwCoreProposalModulesSelector(coreAddress)
         )
       )
     )
-    return daoDropdownInfos.map((dao, index) => ({
-      dao,
+    return daoAddresses.map((coreAddress, index) => ({
+      coreAddress,
       proposalModules: proposalModules[index],
     }))
   },

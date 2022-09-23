@@ -17,7 +17,10 @@ import {
   stargateClientRouter,
 } from '@dao-dao/utils'
 
-import { refreshWalletBalancesIdAtom } from '../atoms/refresh'
+import {
+  refreshBlockHeightAtom,
+  refreshWalletBalancesIdAtom,
+} from '../atoms/refresh'
 
 export const stargateClientSelector = selector({
   key: 'stargateClient',
@@ -43,6 +46,7 @@ export const blockHeightSelector = selector({
   key: 'blockHeight',
   get: async ({ get }) => {
     const client = get(cosmWasmClientSelector)
+    get(refreshBlockHeightAtom)
     return await client.getHeight()
   },
 })

@@ -23,6 +23,7 @@ import {
   mountedInBrowserAtom,
   navigationCompactAtom,
   pinnedDaoDropdownInfosSelector,
+  refreshBlockHeightAtom,
   refreshTokenUsdcPriceIdAtom,
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
@@ -45,6 +46,7 @@ import {
 
 import { BetaWarningModal } from './BetaWarning'
 import { CommandModal } from './CommandModal'
+import { DAppProvider, useDAppContext } from './DAppContext'
 import { InstallKeplr } from './InstallKeplr'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 
@@ -141,6 +143,17 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     return () => clearInterval(interval)
   }, [setRefreshTokenUsdcPriceId])
 
+  //! Block height
+  const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
+  // Refresh block height every minute.
+  useEffect(() => {
+    const interval = setInterval(
+      () => setRefreshBlockHeight((id) => id + 1),
+      60 * 1000
+    )
+    return () => clearInterval(interval)
+  }, [setRefreshBlockHeight])
+
   //! Pinned DAOs
   const pinnedDaoDropdownInfosLoadable = useRecoilValueLoadable(
     pinnedDaoDropdownInfosSelector
@@ -161,6 +174,9 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     pinnedDaoDropdownInfosLoadable.state,
   ])
 
+  //! Inbox
+  const { inbox } = useDAppContext()
+
   return (
     <>
       {installWarningVisible && (
@@ -179,10 +195,18 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
       <StatelessAppLayout
         context={appLayoutContext}
         navigationProps={{
-          // TODO: Get inbox count.
-          inboxCount: {
-            loading: true,
-          },
+          inboxCount: inbox.loading
+            ? {
+                loading: true,
+              }
+            : {
+                loading: false,
+                data: inbox.daosWithOpenUnvotedProposals.reduce(
+                  (acc, { openUnvotedProposals }) =>
+                    acc + (openUnvotedProposals?.length ?? 0),
+                  0
+                ),
+              },
           setCommandModalVisible: () => setCommandModalVisible(true),
           tokenPrices:
             usdcPricePerMacroNativeLoadable.state === 'loading'
@@ -247,7 +271,9 @@ export const AppLayout = ({ children }: PropsWithChildren<{}>) => {
   ) : (
     <WalletProvider>
       <SubQueryProvider>
-        <AppLayoutInner>{children}</AppLayoutInner>
+        <DAppProvider>
+          <AppLayoutInner>{children}</AppLayoutInner>
+        </DAppProvider>
       </SubQueryProvider>
     </WalletProvider>
   )

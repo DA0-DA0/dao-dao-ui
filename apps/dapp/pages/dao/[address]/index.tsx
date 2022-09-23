@@ -33,6 +33,7 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 
+// TODO: Add 'this is not DAO' if Error parsing into type query failure. Probably in static props.
 const InnerDaoHome = () => {
   const {
     connected,
