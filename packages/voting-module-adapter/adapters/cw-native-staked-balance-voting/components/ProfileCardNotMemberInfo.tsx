@@ -9,9 +9,9 @@ import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 import { ProfileCardNotMemberInfo as StatelessProfileCardNotMemberInfo } from '../ui'
 import { StakingModal } from './StakingModal'
 
-export const ProfileCardNotMemberInfo = ({
-  deposit,
-}: BaseProfileCardNotMemberInfoProps) => {
+export const ProfileCardNotMemberInfo = (
+  props: BaseProfileCardNotMemberInfoProps
+) => {
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
 
@@ -35,7 +35,7 @@ export const ProfileCardNotMemberInfo = ({
     <>
       {showStakingModal && (
         <StakingModal
-          maxDeposit={deposit}
+          maxDeposit={props.deposit}
           onClose={() => setShowStakingModal(false)}
         />
       )}
@@ -53,6 +53,7 @@ export const ProfileCardNotMemberInfo = ({
           unstakedBalance,
           governanceTokenInfo.decimals
         )}
+        {...props}
       />
     </>
   )
