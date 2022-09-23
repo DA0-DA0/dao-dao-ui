@@ -11234,10 +11234,10 @@ intercept-stdout@^0.1.2:
   dependencies:
     lodash.toarray "^3.0.0"
 
-interchain-lcd@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/interchain-lcd/-/interchain-lcd-0.1.1.tgz#e112e48ec8aaa2ab609fc6db40032a3716bdb6f2"
-  integrity sha512-ZjokvLGzYZ1ZMRN1QWYsSORcv68t1pOgWc8joZuP4NYcyLTe4GlzALeI2kS40YNrqo91LDWvDv4IVrt51VXiBA==
+interchain-lcd@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/interchain-lcd/-/interchain-lcd-0.3.0.tgz#30212b999e76c42d5f8e1559a448403ad1570b92"
+  integrity sha512-RV38c2G/zI2lMuWFrOLB/QJQpD+j7RqnnNQyxxxJ6lvpbOFblN6bY+khnPTGjHugf/44PagcLfaH1muiBcc0vw==
   dependencies:
     "@babel/runtime" "^7.18.9"
     "@cosmjs/amino" "0.29.0"
@@ -11245,6 +11245,7 @@ interchain-lcd@^0.1.1:
     "@cosmjs/stargate" "0.29.0"
     "@cosmjs/tendermint-rpc" "^0.29.0"
     "@osmonauts/helpers" "^0.6.0"
+    "@osmonauts/lcd" "^0.6.0"
     protobufjs "^6.11.2"
 
 internal-slot@^1.0.3:
@@ -17222,16 +17223,6 @@ terser-webpack-plugin@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/terser-webpack-plugin/-/terser-webpack-plugin-4.2.3.tgz#28daef4a83bd17c1db0297070adc07fc8cfc6a9a"
   integrity sha512-jTgXh40RnvOrLQNgIkwEKnQ8rmHjHK4u+6UBEi+W+FPmvb+uo+chJXntKe7/3lW5mNysgSWD60KyesnhW8D6MQ==
-  dependencies:
-    cacache "^15.0.5"
-    find-cache-dir "^3.3.1"
-    jest-worker "^26.5.0"
-    p-limit "^3.0.2"
-    schema-utils "^3.0.0"
-    serialize-javascript "^5.0.1"
-    source-map "^0.6.1"
-    terser "^5.3.4"
-    webpack-sources "^1.4.3"
 
 terser-webpack-plugin@^5.0.3:
   version "5.3.4"
