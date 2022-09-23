@@ -7,16 +7,19 @@ import { useWalletBalance } from '@dao-dao/state'
 import { ProfileHomeCard as StatelessProfileHomeCard } from '@dao-dao/ui'
 import { NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
+import { useDAppContext } from '../DAppContext'
+
 export const ProfileHomeCard = () => {
   const { address, name } = useWallet()
   const { walletBalance, walletStakedBalance } = useWalletBalance()
+
+  const { inbox } = useDAppContext()
 
   return (
     <StatelessProfileHomeCard
       // TODO: Retrieve.
       established={new Date()}
-      // TODO: Retrieve.
-      inboxProposalCount={0}
+      inboxProposalCount={inbox.proposalCount}
       // TODO: Retrieve.
       numDaos={0}
       // TODO: Retrieve.

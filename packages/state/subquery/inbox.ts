@@ -184,6 +184,12 @@ export const useInbox = () => {
         )
       : []
 
+  const proposalCount = daosWithOpenUnvotedProposals.reduce(
+    (acc, { openUnvotedProposals }) =>
+      acc + (openUnvotedProposals?.length ?? 0),
+    0
+  )
+
   return {
     loading:
       blockHeightLoadable.state === 'loading' ||
@@ -196,6 +202,7 @@ export const useInbox = () => {
       networkStatus === NetworkStatus.refetch,
     error,
     daosWithOpenUnvotedProposals,
+    proposalCount,
     // Force no arguments.
     refetch: () => refetch(),
   }

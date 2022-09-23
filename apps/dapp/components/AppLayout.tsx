@@ -201,11 +201,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
               }
             : {
                 loading: false,
-                data: inbox.daosWithOpenUnvotedProposals.reduce(
-                  (acc, { openUnvotedProposals }) =>
-                    acc + (openUnvotedProposals?.length ?? 0),
-                  0
-                ),
+                data: inbox.proposalCount,
               },
           setCommandModalVisible: () => setCommandModalVisible(true),
           tokenPrices:
