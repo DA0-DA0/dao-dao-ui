@@ -1,5 +1,6 @@
 export * from './ActionCardLoader'
 export * from './AppLayout'
+export * from './Breadcrumbs'
 export * from './common'
 export * from './DaoCard'
 export * from './DaoDropdown'

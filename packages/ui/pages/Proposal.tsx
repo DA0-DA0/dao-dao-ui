@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { CommonProposalInfo } from '@dao-dao/proposal-module-adapter'
 import { BaseProposalStatusAndInfoProps, DaoInfo } from '@dao-dao/tstypes'
-import { formatDate } from '@dao-dao/utils'
+import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import { MarkdownPreview, PageHeader, useAppLayoutContext } from '../components'
 
@@ -62,6 +62,7 @@ export const Proposal = ({
           breadcrumbs={{
             crumbs: [
               { href: '/home', label: 'Home' },
+              ...getParentDaoBreadcrumbs(daoInfo.parentDao),
               { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
             ],
             current: `${t('title.proposal')} ${id}`,

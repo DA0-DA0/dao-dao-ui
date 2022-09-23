@@ -17,6 +17,8 @@
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.3",
+    "axios": "^0.26.1",
+    "fast-average-color-node": "^2.1.0",
     "i18next": "^21.8.10",
     "lodash.clonedeep": "^4.5.0",
     "next-seo": "^5.4.0",

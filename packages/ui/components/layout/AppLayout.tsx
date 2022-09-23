@@ -64,7 +64,7 @@ export const AppLayout = ({
 
         <main
           className={clsx(
-            'overflow-y-auto grow pb-6 border-x border-border-base transition-opacity styled-scrollbar',
+            'overflow-y-auto grow pb-6 border-x border-border-base transition-opacity no-scrollbar',
             // Navigation bar can be responsive up to sm size. After that, it
             // automatically displays.
             context.responsiveNavigation.enabled

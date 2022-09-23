@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { ReactNode, useState } from 'react'
 
 import { DaoInfo } from '@dao-dao/tstypes'
-import { formatDate } from '@dao-dao/utils'
+import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {
   DaoHeader,
@@ -60,7 +60,10 @@ export const DaoHome = ({
         <GradientHero childContainerClassName="px-6">
           <PageHeader
             breadcrumbs={{
-              crumbs: [{ href: '/home', label: 'Home' }],
+              crumbs: [
+                { href: '/home', label: 'Home' },
+                ...getParentDaoBreadcrumbs(daoInfo.parentDao),
+              ],
               current: daoInfo.name,
             }}
             rightNode={<PinToggle onPin={onPin} pinned={pinned} />}

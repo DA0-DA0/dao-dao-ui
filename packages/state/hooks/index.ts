@@ -1,4 +1,5 @@
 export * from './clients'
+export * from './useLoadableCacher'
 export * from './usePinnedDaos'
 export * from './useVotingModule'
 export * from './useWalletBalance'

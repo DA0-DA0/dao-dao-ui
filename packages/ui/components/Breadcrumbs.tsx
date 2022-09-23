@@ -9,14 +9,8 @@ import { Button } from './Button'
 import { GradientHero } from './GradientHero'
 import { IconButton } from './IconButton'
 
-export interface BreadcrumbsProps {
-  crumbs: {
-    href: string
-    label: ReactNode
-  }[]
-  current: ReactNode
-  className?: string
-}
+import { BreadcrumbsProps } from '@dao-dao/tstypes/ui/Breadcrumbs'
+export * from '@dao-dao/tstypes/ui/Breadcrumbs'
 
 export const Breadcrumbs = ({
   crumbs,

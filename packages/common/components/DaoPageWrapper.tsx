@@ -1,14 +1,20 @@
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import {
   ComponentType,
   PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { CommonProposalInfo, DaoInfo } from '@dao-dao/tstypes'
+import {
+  CommonProposalInfo,
+  DaoInfo,
+  DaoInfoSerializable,
+} from '@dao-dao/tstypes'
 import {
   DaoNotFound,
   Loader as DefaultLoader,
@@ -17,15 +23,11 @@ import {
   ErrorPage500,
   LoaderProps,
   LogoProps,
+  useThemeContext,
 } from '@dao-dao/ui'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 import { WalletProvider } from './WalletProvider'
-
-export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
-  // Created needs to be serialized and de-serialized.
-  created: string | null
-}
 
 const DaoInfoContext = createContext<DaoInfo | null>(null)
 
@@ -44,6 +46,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   url?: string | null
   title: string
   description: string
+  accentColor?: string | null
   serializedInfo?: DaoInfoSerializable
   error?: string
   Logo?: ComponentType<LogoProps>
@@ -59,12 +62,39 @@ export const DaoPageWrapper = ({
   url,
   title,
   description,
+  accentColor,
   serializedInfo,
   error,
   children,
   PageLoader = DefaultPageLoader,
   ...innerProps
 }: DaoPageWrapperProps) => {
+  const { isReady, isFallback } = useRouter()
+  const { setAccentColor, theme } = useThemeContext()
+
+  // Set theme's accentColor.
+  useEffect(() => {
+    if (!isReady || isFallback) return
+
+    // Only set the accent color if we have enough contrast.
+    if (accentColor) {
+      const rgb = accentColor
+        .replace(/^rgba?\(|\s+|\)$/g, '')
+        .split(',')
+        .map(Number)
+      const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
+      if (
+        (theme === 'dark' && brightness < 100) ||
+        (theme === 'light' && brightness > 255 - 100)
+      ) {
+        setAccentColor(undefined)
+        return
+      }
+    }
+
+    setAccentColor(accentColor ?? undefined)
+  }, [accentColor, setAccentColor, isReady, isFallback, theme])
+
   const info: DaoInfo | undefined = serializedInfo && {
     ...serializedInfo,
     created: serializedInfo.created

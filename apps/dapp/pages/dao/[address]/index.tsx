@@ -2,11 +2,8 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { useWallet } from '@noahsaso/cosmodal'
-import axios from 'axios'
-import { getAverageColor } from 'fast-average-color-node'
-import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
-import { useRouter } from 'next/router'
-import React, { useEffect, useMemo } from 'react'
+import type { GetStaticPaths, NextPage } from 'next'
+import React, { useMemo } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
@@ -26,7 +23,6 @@ import {
   ProfileDisconnectedCard,
   ProfileMemberCard,
   ProfileNotMemberCard,
-  useThemeContext,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
@@ -141,46 +137,14 @@ const InnerDaoHome = () => {
   )
 }
 
-interface DaoHomePageProps extends DaoPageWrapperProps {
-  accentColor?: string
-}
-
-const DaoHomePage: NextPage<DaoHomePageProps> = ({
-  accentColor,
+const DaoHomePage: NextPage<DaoPageWrapperProps> = ({
   children: _,
   ...props
-}) => {
-  const { isReady, isFallback } = useRouter()
-
-  const { setAccentColor, theme } = useThemeContext()
-
-  // Only set the accent color if we have enough contrast.
-  if (accentColor) {
-    const rgb = accentColor
-      .replace(/^rgba?\(|\s+|\)$/g, '')
-      .split(',')
-      .map(Number)
-    const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
-    if (
-      (theme === 'dark' && brightness < 100) ||
-      (theme === 'light' && brightness > 255 - 100)
-    ) {
-      accentColor = undefined
-    }
-  }
-
-  useEffect(() => {
-    if (!isReady || isFallback) return
-
-    setAccentColor(accentColor)
-  }, [accentColor, setAccentColor, isReady, isFallback])
-
-  return (
-    <DaoPageWrapper {...props}>
-      <InnerDaoHome />
-    </DaoPageWrapper>
-  )
-}
+}) => (
+  <DaoPageWrapper {...props}>
+    <InnerDaoHome />
+  </DaoPageWrapper>
+)
 
 export default DaoHomePage
 
@@ -190,29 +154,8 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetDaoStaticProps({
-    getProps: async ({ coreAddress, config: { image_url } }) => {
-      const url = `${SITE_URL}/dao/${coreAddress}`
-
-      if (!image_url) {
-        return { url }
-      }
-
-      try {
-        const response = await axios.get(image_url, {
-          responseType: 'arraybuffer',
-        })
-        const buffer = Buffer.from(response.data, 'binary')
-        const result = await getAverageColor(buffer)
-
-        return {
-          url,
-          additionalProps: { accentColor: result.rgb },
-        }
-      } catch (error) {
-        // If fail to load image or get color, don't prevent page render.
-        console.error(error)
-      }
-    },
-  })
+export const getStaticProps = makeGetDaoStaticProps({
+  getProps: async ({ coreAddress }) => ({
+    url: `${SITE_URL}/dao/${coreAddress}`,
+  }),
+})

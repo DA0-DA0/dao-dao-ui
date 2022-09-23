@@ -44,7 +44,7 @@ export const SubDaosTab = ({
         <ButtonLink
           className="shrink-0"
           disabled={!isMember}
-          href={`/dao/${daoInfo.coreAddress}/subdaos/create`}
+          href={`/dao/${daoInfo.coreAddress}/create`}
         >
           <PlusIcon className="w-4 h-4" />
           {t('button.newSubDao')}

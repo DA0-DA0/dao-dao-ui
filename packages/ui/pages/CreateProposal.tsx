@@ -2,6 +2,7 @@ import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoInfo, ProposalModule } from '@dao-dao/tstypes'
+import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import { Dropdown, PageHeader, useAppLayoutContext } from '../components'
 
@@ -42,11 +43,12 @@ export const CreateProposal = ({
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
 
-      <div className="flex flex-col gap-6 items-stretch px-6 mx-auto max-w-5xl">
+      <div className="flex flex-col gap-6 items-stretch px-6 mx-auto max-w-6xl">
         <PageHeader
           breadcrumbs={{
             crumbs: [
               { href: '/home', label: 'Home' },
+              ...getParentDaoBreadcrumbs(daoInfo.parentDao),
               { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
             ],
             current: t('title.createProposal'),

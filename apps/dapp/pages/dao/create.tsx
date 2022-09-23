@@ -5,11 +5,11 @@ import { GetStaticProps, NextPage } from 'next'
 
 import { CreateDaoForm, SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { Loader } from '@dao-dao/ui'
+import { PageLoader } from '@dao-dao/ui'
 
 const CreateDaoPage: NextPage = () => (
   // Prevent hydration errors due to localStorage form stuff.
-  <SuspenseLoader fallback={<Loader />}>
+  <SuspenseLoader fallback={<PageLoader />}>
     <CreateDaoForm daoUrlPrefix="/dao/" />
   </SuspenseLoader>
 )

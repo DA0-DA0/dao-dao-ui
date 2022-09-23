@@ -1,4 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import axios from 'axios'
+import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticProps, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
@@ -9,9 +11,16 @@ import {
   ProposalModuleAdapterError,
   matchAndLoadAdapter,
 } from '@dao-dao/proposal-module-adapter'
-import { CwCoreV0_1_0QueryClient } from '@dao-dao/state'
+import {
+  CwCoreV0_1_0QueryClient,
+  CwCoreV0_2_0QueryClient,
+} from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
-import { ContractVersion, ProposalModule } from '@dao-dao/tstypes'
+import {
+  ContractVersion,
+  DaoParentInfo,
+  ProposalModule,
+} from '@dao-dao/tstypes'
 import { Loader, Logo } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
@@ -97,15 +106,17 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
       const coreClient = new CwCoreV0_1_0QueryClient(cwClient, coreAddress)
 
-      const config = await coreClient.config()
+      const {
+        admin,
+        config,
+        version: { version },
+        voting_module: votingModuleAddress,
+      } = await coreClient.dumpState()
 
-      const coreInfo = (await coreClient.info()).info
-      coreVersion = parseContractVersion(coreInfo.version)
+      coreVersion = parseContractVersion(version)
       if (!coreVersion) {
         throw new Error(serverT('error.failedParsingCoreVersion'))
       }
-
-      const votingModuleAddress = await coreClient.votingModule()
 
       // If no contract name, will display fallback voting module adapter.
       let votingModuleContractName = 'fallback'
@@ -183,6 +194,23 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           proposalModules,
         })) ?? {}
 
+      // Get DAO accent color.
+      let accentColor: string | null = null
+      if (config.image_url) {
+        try {
+          const response = await axios.get(config.image_url, {
+            responseType: 'arraybuffer',
+          })
+          const buffer = Buffer.from(response.data, 'binary')
+          const result = await getAverageColor(buffer)
+
+          accentColor = result.rgb
+        } catch (error) {
+          // If fail to load image or get color, don't prevent page render.
+          console.error(error)
+        }
+      }
+
       return {
         props: {
           ...i18nProps,
@@ -193,6 +221,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               .filter(Boolean)
               .join(' | '),
           description: overrideDescription ?? config.description,
+          accentColor,
           serializedInfo: {
             coreAddress,
             coreVersion,
@@ -203,6 +232,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             description: config.description,
             imageUrl: overrideImageUrl ?? config.image_url ?? null,
             created: created?.toJSON() ?? null,
+            parentDao: await loadParentDaoInfo(cwClient, coreAddress, admin),
           },
           ...additionalProps,
         },
@@ -372,4 +402,34 @@ export const makeGetDaoProposalStaticProps = ({
 
 export class RedirectError {
   constructor(public redirect: Redirect) {}
+}
+
+const loadParentDaoInfo = async (
+  cwClient: CosmWasmClient,
+  subDaoAddress: string,
+  subDaoAdmin: string | null | undefined
+): Promise<DaoParentInfo | null> => {
+  // If no admin or admin is set to itself, does not have parent DAO.
+  if (!subDaoAdmin || subDaoAdmin === subDaoAddress) {
+    return null
+  }
+
+  try {
+    const parentClient = new CwCoreV0_2_0QueryClient(cwClient, subDaoAdmin)
+    const {
+      admin,
+      config: { name, image_url },
+    } = await parentClient.dumpState()
+
+    return {
+      coreAddress: subDaoAdmin,
+      name: name,
+      imageUrl: image_url ?? null,
+      parentDao: await loadParentDaoInfo(cwClient, subDaoAdmin, admin),
+    }
+  } catch (err) {
+    // Don't prevent page render if failed to load parent DAO info.
+    console.error(err)
+    return null
+  }
 }

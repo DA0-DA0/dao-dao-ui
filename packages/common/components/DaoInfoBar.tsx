@@ -1,12 +1,9 @@
-import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
 
 import { AccountBalance, Link } from '@dao-dao/icons'
-import { daoTvlSelector } from '@dao-dao/state'
+import { daoTvlSelector, useLoadableCacher } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
-  DaoInfoBarItem,
   DaoInfoBarLoader,
   DaoInfoBarProps,
   DaoInfoBar as StatelessDaoInfoBar,
@@ -37,39 +34,44 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
   const votingModuleItems = useDaoInfoBarItems()
   const { coreAddress } = useDaoInfoContext()
 
-  const treasuryUsdcValue = useRecoilValue(daoTvlSelector(coreAddress))
-
-  const items: DaoInfoBarItem[] = useMemo(
-    () => [
-      // Common items.
-      {
-        Icon: Link,
-        label: t('title.daosAddress'),
-        value: (
-          <CopyToClipboardUnderline
-            // Inherit color and font size from parent.
-            className="text-[1em] text-inherit"
-            takeStartEnd={{
-              start: 6,
-              end: 4,
-            }}
-            value={coreAddress}
-          />
-        ),
-      },
-      {
-        Icon: AccountBalance,
-        label: t('title.daoTreasury'),
-        value: t('format.token', {
-          val: treasuryUsdcValue,
-          tokenSymbol: 'USDC',
-        }),
-      },
-      // Voting module-specific items.
-      ...votingModuleItems,
-    ],
-    [t, coreAddress, treasuryUsdcValue, votingModuleItems]
+  const treasuryUsdcValueLoadable = useLoadableCacher(
+    daoTvlSelector(coreAddress)
   )
 
-  return <StatelessDaoInfoBar items={items} {...props} />
+  return (
+    <StatelessDaoInfoBar
+      items={[
+        // Common items.
+        {
+          Icon: Link,
+          label: t('title.daosAddress'),
+          value: (
+            <CopyToClipboardUnderline
+              // Inherit color and font size from parent.
+              className="text-[1em] text-inherit"
+              takeStartEnd={{
+                start: 6,
+                end: 4,
+              }}
+              value={coreAddress}
+            />
+          ),
+        },
+        {
+          Icon: AccountBalance,
+          label: t('title.daoTreasury'),
+          value:
+            treasuryUsdcValueLoadable.state !== 'hasValue'
+              ? `... $USDC`
+              : t('format.token', {
+                  val: treasuryUsdcValueLoadable.contents,
+                  tokenSymbol: 'USDC',
+                }),
+        },
+        // Voting module-specific items.
+        ...votingModuleItems,
+      ]}
+      {...props}
+    />
+  )
 }

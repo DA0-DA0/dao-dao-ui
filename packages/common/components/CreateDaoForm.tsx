@@ -28,7 +28,6 @@ import {
 } from '@dao-dao/tstypes'
 import { InstantiateMsg } from '@dao-dao/tstypes/contracts/cw-core-0.2.0'
 import {
-  BreadcrumbsProps,
   Button,
   CreateDaoPages,
   DaoCreateModal,
@@ -45,6 +44,7 @@ import {
   NATIVE_DENOM,
   V1_FACTORY_CONTRACT_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
+  getParentDaoBreadcrumbs,
   makeValidateMsg,
   nativeTokenLabel,
   processError,
@@ -69,8 +69,6 @@ export enum CreateDaoSubmitLabel {
 }
 
 export interface CreateDaoFormProps {
-  // Used to insert parent DAO crumbs if creating SubDAO.
-  extraCrumbs?: BreadcrumbsProps['crumbs']
   parentDao?: DaoDisplayInfo
 
   daoUrlPrefix: string
@@ -82,7 +80,6 @@ export interface CreateDaoFormProps {
 
 // TODO: Add NextSeo with title description and URL in page that uses this component.
 export const CreateDaoForm = ({
-  extraCrumbs,
   parentDao,
   daoUrlPrefix,
   defaults,
@@ -214,7 +211,8 @@ export const CreateDaoForm = ({
       )
 
     const instantiateMsg: InstantiateMsg = {
-      admin: null,
+      // If parentDao exists, let's make a subDAO :D
+      admin: parentDao?.coreAddress ?? null,
       automatically_add_cw20s: true,
       automatically_add_cw721s: true,
       description,
@@ -233,6 +231,7 @@ export const CreateDaoForm = ({
     imageUrl,
     name,
     newDao,
+    parentDao?.coreAddress,
     proposalModuleAdapters,
     proposalModuleDaoCreationAdapters,
     t,
@@ -462,9 +461,19 @@ export const CreateDaoForm = ({
             breadcrumbs={{
               crumbs: [
                 { href: '/home', label: 'Home' },
-                ...(extraCrumbs ?? []),
+                ...getParentDaoBreadcrumbs(parentDao),
+                ...(parentDao
+                  ? [
+                      {
+                        href: parentDao.href,
+                        label: parentDao.name,
+                      },
+                    ]
+                  : []),
               ],
-              current: name.trim() || t('title.newDao'),
+              current:
+                name.trim() ||
+                (parentDao ? t('title.newSubDao') : t('title.newDao')),
             }}
           />
 

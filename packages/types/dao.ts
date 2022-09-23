@@ -22,6 +22,8 @@ import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { LoadingData } from './ui'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
+// TODO: Cleanup/standardize all these different DaoInfo types.
+
 // Context
 export interface DaoInfo {
   coreAddress: string
@@ -33,13 +35,27 @@ export interface DaoInfo {
   description: string
   imageUrl: string | null
   created: Date | undefined
+
+  parentDao: DaoParentInfo | null
+}
+
+export interface DaoParentInfo {
+  coreAddress: string
+  name: string
+  imageUrl?: string | null
+  parentDao?: DaoParentInfo | null
+}
+
+export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
+  // Created needs to be serialized and de-serialized.
+  created: string | null
 }
 
 export interface DaoDisplayInfo {
   coreAddress: string
   name: string
   description: string
-  imageUrl?: string
+  imageUrl?: string | null
   established?: Date
   href: string
 
