@@ -1,4 +1,4 @@
-import { atom } from 'recoil'
+import { atomFamily } from 'recoil'
 
 import { CwProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single'
 import { NewDao } from '@dao-dao/tstypes'
@@ -24,8 +24,10 @@ export const DefaultNewDao: NewDao = {
   advancedVotingConfigEnabled: false,
 }
 
-export const newDaoAtom = atom<NewDao>({
+// Store each subDAO creation state separately. Main DAO creation state uses an
+// empty string.
+export const newDaoAtom = atomFamily<NewDao, string>({
   key: 'newDao',
   default: DefaultNewDao,
-  effects: [localStorageEffectJSON('newDao')],
+  effects: [localStorageEffectJSON],
 })

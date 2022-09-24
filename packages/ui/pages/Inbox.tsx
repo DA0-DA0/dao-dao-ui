@@ -74,19 +74,19 @@ export const Inbox = <T extends {}>({
               />
             </div>
 
-            <div className="overflow-y-auto grow pb-2 mt-6 space-y-4 styled-scrollbar">
+            <div className="overflow-y-auto grow pb-2 mt-6 space-y-4 no-scrollbar">
               {daosWithProposals.data.map(({ dao, proposals }, index) => (
                 <DaoDropdown
                   key={index}
                   dao={{
                     ...dao,
-                    content: (
+                    content: proposals.length ? (
                       <ProposalContainer className="px-2 mt-4">
                         {proposals.map((props, index) => (
                           <ProposalLine key={index} {...props} />
                         ))}
                       </ProposalContainer>
-                    ),
+                    ) : undefined,
                   }}
                   defaultExpanded
                   showSubdaos={false}

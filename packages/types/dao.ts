@@ -22,7 +22,7 @@ import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { LoadingData } from './ui'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
-// TODO: Cleanup/standardize all these different DaoInfo types.
+// TODO: Clean up/standardize all these different DaoInfo types.
 
 // Context
 export interface DaoInfo {
@@ -57,9 +57,8 @@ export interface DaoDisplayInfo {
   description: string
   imageUrl?: string | null
   established?: Date
-  href: string
 
-  parentDao?: DaoDisplayInfo
+  parentDao?: DaoParentInfo
 }
 
 export interface DaoCardInfoLazyData {
@@ -69,10 +68,7 @@ export interface DaoCardInfoLazyData {
   proposalCount: number
 }
 
-export interface DaoCardInfo extends Omit<DaoDisplayInfo, 'parentDao'> {
-  // Only need a few properties.
-  parentDao?: Pick<DaoDisplayInfo, 'coreAddress' | 'imageUrl' | 'href'>
-
+export interface DaoCardInfo extends DaoDisplayInfo {
   lazyData: LoadingData<DaoCardInfoLazyData>
 }
 

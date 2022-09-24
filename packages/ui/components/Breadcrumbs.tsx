@@ -1,15 +1,15 @@
 import { ArrowDropDown, Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
 
 import { ArrowForward } from '@dao-dao/icons'
+import { BreadcrumbsProps } from '@dao-dao/tstypes/ui/Breadcrumbs'
 
 import { Button } from './Button'
 import { GradientHero } from './GradientHero'
 import { IconButton } from './IconButton'
 
-import { BreadcrumbsProps } from '@dao-dao/tstypes/ui/Breadcrumbs'
 export * from '@dao-dao/tstypes/ui/Breadcrumbs'
 
 export const Breadcrumbs = ({

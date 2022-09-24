@@ -55,6 +55,7 @@ Connected.decorators = [makeAppLayoutDecorator()]
 
 export const Disconnected = Template.bind({})
 Disconnected.args = {
+  ...Connected.args,
   featuredDaosProps: {
     featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
     isDaoPinned: () => false,

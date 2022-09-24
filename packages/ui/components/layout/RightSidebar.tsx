@@ -53,7 +53,7 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
 
         {wallet}
 
-        <div className="overflow-y-scroll py-1 pr-4 mt-1 -mr-4 styled-scrollbar">
+        <div className="overflow-y-scroll py-1 pr-4 mt-1 -mr-4 no-scrollbar">
           <div ref={setContentRef}></div>
 
           <div className="mt-7">

@@ -37,6 +37,7 @@ export const SubDaosTab = () => {
   return (
     <StatelessSubDaosTab
       DaoCard={DaoCard}
+      createSubDaoHref={`/dao/${daoInfo.coreAddress}/create`}
       daoInfo={daoInfo}
       isMember={isMember}
       subDaos={loadableToLoadingData(subDaoCardInfosLoadable, [])}

@@ -7,11 +7,10 @@ export const getLocalStorageNamespacedKey = (key: string) =>
 
 export const localStorageEffect =
   <T>(
-    key: string,
     serialize: (value: T) => string,
     parse: (saved: string) => T
   ): AtomEffect<T> =>
-  ({ setSelf, onSet }) => {
+  ({ node: { key }, setSelf, onSet }) => {
     // Do nothing on server.
     if (typeof localStorage === 'undefined') {
       return
@@ -40,5 +39,7 @@ export const localStorageEffect =
     })
   }
 
-export const localStorageEffectJSON = <T>(key: string): AtomEffect<T> =>
-  localStorageEffect(key, JSON.stringify, JSON.parse)
+export const localStorageEffectJSON = localStorageEffect(
+  JSON.stringify,
+  JSON.parse
+)

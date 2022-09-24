@@ -23,7 +23,6 @@ export const DaoCard = ({
   name,
   description,
   imageUrl,
-  href,
   established,
   pinned,
   onPin,
@@ -42,7 +41,7 @@ export const DaoCard = ({
         'flex relative flex-col justify-between items-center py-7 px-6 w-full h-[328px] bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md outline-transparent hover:outline-border-interactive-hover active:outline-border-interactive-focus outline transition-all',
         className
       )}
-      href={href}
+      href={`/dao/${coreAddress}`}
       onMouseLeave={onMouseLeave}
       onMouseOver={onMouseOver}
     >
@@ -59,7 +58,7 @@ export const DaoCard = ({
           <IconButtonLink
             Icon={ParentDaoArrow}
             className="text-icon-interactive-disabled"
-            href={parentDao.href}
+            href={`/dao/${parentDao.coreAddress}`}
             // Don't click on DAO card.
             onClick={(event) => event.preventDefault()}
             title={t('info.gotoParent')}

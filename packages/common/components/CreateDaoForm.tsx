@@ -23,7 +23,7 @@ import instantiateSchema from '@dao-dao/state/clients/cw-core/instantiate_schema
 import {
   CreateDaoContext,
   CreateDaoCustomValidator,
-  DaoDisplayInfo,
+  DaoParentInfo,
   NewDao,
 } from '@dao-dao/tstypes'
 import { InstantiateMsg } from '@dao-dao/tstypes/contracts/cw-core-0.2.0'
@@ -69,9 +69,7 @@ export enum CreateDaoSubmitLabel {
 }
 
 export interface CreateDaoFormProps {
-  parentDao?: DaoDisplayInfo
-
-  daoUrlPrefix: string
+  parentDao?: DaoParentInfo
 
   // Primarily for testing in storybook.
   defaults?: Partial<NewDao>
@@ -81,7 +79,6 @@ export interface CreateDaoFormProps {
 // TODO: Add NextSeo with title description and URL in page that uses this component.
 export const CreateDaoForm = ({
   parentDao,
-  daoUrlPrefix,
   defaults,
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
@@ -90,7 +87,11 @@ export const CreateDaoForm = ({
 
   const { RightSidebarContent } = useAppLayoutContext()
 
-  const [_newDaoAtom, setNewDaoAtom] = useRecoilState(newDaoAtom)
+  const [createdDaoCoreAddress, setCreatedDaoCoreAddress] = useState<string>()
+
+  const [_newDaoAtom, setNewDaoAtom] = useRecoilState(
+    newDaoAtom(parentDao?.coreAddress ?? '')
+  )
   const form = useForm<NewDao>({
     // Don't clone every render.
     defaultValues: useMemo(
@@ -114,10 +115,17 @@ export const CreateDaoForm = ({
 
   // Debounce saving latest data to atom and thus localStorage every 10 seconds.
   useEffect(() => {
+    // If created DAO, clear saved data and don't update.
+    if (createdDaoCoreAddress) {
+      // Clear saved form data.
+      setNewDaoAtom(DefaultNewDao)
+      return
+    }
+
     // Deep clone to prevent values from becoming readOnly.
     const timeout = setTimeout(() => setNewDaoAtom(cloneDeep(newDao)), 10000)
     return () => clearTimeout(timeout)
-  }, [newDao, setNewDaoAtom])
+  }, [newDao, setNewDaoAtom, createdDaoCoreAddress])
 
   // Set accent color based on image provided.
   const { setAccentColor } = useThemeContext()
@@ -293,7 +301,6 @@ export const CreateDaoForm = ({
   const [customValidator, setCustomValidator] =
     useState<CreateDaoCustomValidator>()
 
-  const [createdDaoCoreAddress, setCreatedDaoCoreAddress] = useState<string>()
   const cw20StakedBalanceVotingData =
     votingModuleAdapter.id === Cw20StakedBalanceVotingAdapter.id
       ? (votingModuleAdapter.data as Cw20StakedBalalanceVotingCreationConfig)
@@ -332,9 +339,6 @@ export const CreateDaoForm = ({
               setPinned(coreAddress)
 
               await refreshBalances()
-
-              // Clear saved creation data.
-              setNewDaoAtom(DefaultNewDao)
 
               // Show DAO created modal
               setCreatedDaoCoreAddress(coreAddress)
@@ -462,14 +466,6 @@ export const CreateDaoForm = ({
               crumbs: [
                 { href: '/home', label: 'Home' },
                 ...getParentDaoBreadcrumbs(parentDao),
-                ...(parentDao
-                  ? [
-                      {
-                        href: parentDao.href,
-                        label: parentDao.name,
-                      },
-                    ]
-                  : []),
               ],
               current:
                 name.trim() ||
@@ -545,7 +541,6 @@ export const CreateDaoForm = ({
             description,
             imageUrl,
             established: new Date(),
-            href: daoUrlPrefix + createdDaoCoreAddress,
             pinned: isPinned(createdDaoCoreAddress),
             onPin: () =>
               isPinned(createdDaoCoreAddress)

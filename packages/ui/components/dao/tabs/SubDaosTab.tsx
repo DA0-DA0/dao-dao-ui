@@ -1,4 +1,5 @@
 import { PlusIcon } from '@heroicons/react/solid'
+import { EscalatorWarning } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -8,7 +9,7 @@ import {
   LoaderProps,
   LoadingData,
 } from '@dao-dao/tstypes'
-import { Loader as DefaultLoader } from '@dao-dao/ui'
+import { Loader as DefaultLoader, NoContent } from '@dao-dao/ui'
 
 import { ButtonLink } from '../../Button'
 import { GridCardContainer } from '../../GridCardContainer'
@@ -18,6 +19,7 @@ export interface SubDaosTabProps {
   subDaos: LoadingData<DaoCardInfo[]>
   isMember: boolean
   daoInfo: DaoInfo
+  createSubDaoHref?: string
   Loader?: ComponentType<LoaderProps>
 }
 
@@ -27,13 +29,14 @@ export const SubDaosTab = ({
   subDaos: subdaos,
   isMember,
   daoInfo,
+  createSubDaoHref,
   Loader = DefaultLoader,
 }: SubDaosTabProps) => {
   const { t } = useTranslation()
 
   return (
     <>
-      <div className="flex flex-row gap-8 justify-between items-center pb-6 mb-6 border-b border-b-border-secondary">
+      <div className="flex flex-row gap-8 justify-between items-center pb-6">
         <div className="flex flex-row flex-wrap gap-x-4 gap-y-1 items-center">
           <p className="text-text-body title-text">
             {t('title.createASubDao')}
@@ -52,23 +55,29 @@ export const SubDaosTab = ({
       </div>
 
       {subdaos.loading ? (
-        <Loader fill={false} />
-      ) : (
+        <div className="pt-6 border-t border-border-secondary">
+          <Loader fill={false} />
+        </div>
+      ) : subdaos.data.length > 0 ? (
         <>
-          <p className="mb-6 text-text-body title-text">
+          <p className="pt-6 mb-6 text-text-body border-t border-border-secondary title-text">
             {t('title.numSubDaos', { count: subdaos.data.length })}
           </p>
 
-          {subdaos.data.length ? (
-            <GridCardContainer>
-              {subdaos.data.map((props, index) => (
-                <DaoCard {...props} key={index} />
-              ))}
-            </GridCardContainer>
-          ) : (
-            <p className="secondary-text">{t('info.noSubDaos')}</p>
-          )}
+          <GridCardContainer>
+            {subdaos.data.map((props, index) => (
+              <DaoCard {...props} key={index} />
+            ))}
+          </GridCardContainer>
         </>
+      ) : (
+        <NoContent
+          Icon={EscalatorWarning}
+          actionNudge={t('info.createFirstOneQuestion')}
+          body={t('info.noSubDaosYet')}
+          buttonLabel={t('button.newSubDao')}
+          href={isMember ? createSubDaoHref : undefined}
+        />
       )}
     </>
   )

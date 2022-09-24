@@ -129,6 +129,7 @@ export const daoCardInfoSelector = selectorFamily<
         )
       ) {
         const {
+          name,
           image_url,
         }: CwCoreV0_1_0ConfigResponse | CwCoreV0_2_0ConfigResponse = get(
           // Both v1 and v2 have a config query.
@@ -140,8 +141,8 @@ export const daoCardInfoSelector = selectorFamily<
 
         parentDao = {
           coreAddress: admin,
+          name,
           imageUrl: image_url || undefined,
-          href: daoUrlPrefix + admin,
         }
       }
 

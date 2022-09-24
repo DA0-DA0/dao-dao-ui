@@ -7,12 +7,13 @@ import { NoProposals } from '@dao-dao/icons'
 import { Button } from '../Button'
 import { DropdownIconButton } from '../IconButton'
 import { Loader } from '../Loader'
+import { NoContent } from '../NoContent'
 
 export interface ProposalListProps<T> {
   ProposalLine: ComponentType<T>
   openProposals: T[]
   historyProposals: T[]
-  createNewProposal: () => void
+  createNewProposalHref: string
   canLoadMore: boolean
   loadMore: () => void
   loadingMore: boolean
@@ -23,7 +24,7 @@ export const ProposalList = <T extends {}>({
   ProposalLine,
   openProposals,
   historyProposals,
-  createNewProposal,
+  createNewProposalHref,
   canLoadMore,
   loadMore,
   loadingMore,
@@ -85,27 +86,12 @@ export const ProposalList = <T extends {}>({
       <Loader fill={false} />
     </div>
   ) : (
-    <div
-      className="flex flex-col gap-5 items-center py-10 rounded-md border-2 border-border-primary hover:border-border-interactive-hover border-dashed hover:border-solid transition-all cursor-pointer"
-      onClick={createNewProposal}
-    >
-      <NoProposals className="!w-14 !h-14 text-icon-tertiary" />
-
-      <p className="text-center text-text-tertiary secondary-text">
-        {t('info.noProposalYet')}
-        {isMember && (
-          <>
-            <br />
-            {t('info.createFirstOneQuestion')}
-          </>
-        )}
-      </p>
-
-      {isMember && (
-        <Button onClick={createNewProposal} variant="secondary">
-          {t('button.newProposal')}
-        </Button>
-      )}
-    </div>
+    <NoContent
+      Icon={NoProposals}
+      actionNudge={t('info.createFirstOneQuestion')}
+      body={t('info.noProposalsYet')}
+      buttonLabel={t('button.newProposal')}
+      href={isMember ? createNewProposalHref : undefined}
+    />
   )
 }

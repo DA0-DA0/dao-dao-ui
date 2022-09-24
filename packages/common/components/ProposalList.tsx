@@ -1,7 +1,6 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import { useRecoilCallback } from 'recoil'
 
@@ -23,7 +22,6 @@ import {
 const PROP_LOAD_LIMIT = 20
 
 export const ProposalList = () => {
-  const router = useRouter()
   const { coreAddress, proposalModules } = useDaoInfoContext()
   const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,
@@ -170,9 +168,7 @@ export const ProposalList = () => {
     <StatelessProposalList
       ProposalLine={ProposalLine}
       canLoadMore={canLoadMore}
-      createNewProposal={() =>
-        router.push(`/dao/${coreAddress}/proposals/create`)
-      }
+      createNewProposalHref={`/dao/${coreAddress}/proposals/create`}
       historyProposals={historyProposals}
       isMember={isMember}
       loadMore={loadMore}

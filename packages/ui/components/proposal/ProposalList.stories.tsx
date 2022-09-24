@@ -30,7 +30,7 @@ Default.args = {
     )
   ),
   ProposalLine,
-  createNewProposal: () => alert('new proposal'),
+  createNewProposalHref: '#',
   canLoadMore: true,
   loadMore: () => alert('load more'),
   loadingMore: false,

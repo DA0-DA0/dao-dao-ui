@@ -16,7 +16,11 @@ export const IconButtonLink = forwardRef<
   HTMLAnchorElement,
   IconButtonLinkProps
 >(function IconButtonLink(props, ref) {
-  const className = clsx(getIconButtonifiedClassNames(props), 'inline-block')
+  const className = clsx(
+    getIconButtonifiedClassNames(props),
+    'inline-block',
+    props.disabled && 'pointer-events-none'
+  )
 
   return (
     <LinkWrapper

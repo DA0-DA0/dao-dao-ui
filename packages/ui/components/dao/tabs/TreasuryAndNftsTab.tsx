@@ -1,3 +1,4 @@
+import { Image } from '@mui/icons-material'
 import { ComponentType, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -7,6 +8,7 @@ import { SortFn, useDropdownSorter } from '../../../hooks'
 import { Dropdown, DropdownOption } from '../../Dropdown'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Loader } from '../../Loader'
+import { NoContent } from '../../NoContent'
 
 export interface TreasuryAndNftsTabProps<
   T extends TokenCardInfo,
@@ -16,6 +18,8 @@ export interface TreasuryAndNftsTabProps<
   TokenCard: ComponentType<T>
   nfts: LoadingData<N[]>
   NftCard: ComponentType<N>
+  isMember: boolean
+  registerNftCollectionHref?: string
 }
 
 export const TreasuryAndNftsTab = <
@@ -26,6 +30,8 @@ export const TreasuryAndNftsTab = <
   TokenCard,
   nfts,
   NftCard,
+  isMember,
+  registerNftCollectionHref,
 }: TreasuryAndNftsTabProps<T, N>) => {
   const sortOptions = useRef<DropdownOption<SortFn<N>>[]>([
     {
@@ -79,19 +85,21 @@ export const TreasuryAndNftsTab = <
     <>
       <p className="mb-6 text-text-body title-text">{t('title.treasury')}</p>
 
-      {tokens.loading ? (
-        <Loader fill={false} />
-      ) : tokens.data.length ? (
-        <GridCardContainer className="mb-9">
-          {sortedTokens.map((props, index) => (
-            <TokenCard {...props} key={index} />
-          ))}
-        </GridCardContainer>
-      ) : (
-        <p className="mb-9 secondary-text">{t('info.nothingFound')}</p>
-      )}
+      <div className="mb-9">
+        {tokens.loading ? (
+          <Loader fill={false} />
+        ) : tokens.data.length ? (
+          <GridCardContainer>
+            {sortedTokens.map((props, index) => (
+              <TokenCard {...props} key={index} />
+            ))}
+          </GridCardContainer>
+        ) : (
+          <p className="secondary-text">{t('info.nothingFound')}</p>
+        )}
+      </div>
 
-      {(nfts.loading || nfts.data.length > 0) && (
+      {nfts.loading || nfts.data.length > 0 ? (
         <>
           <div className="flex flex-row justify-between mb-6">
             <p className="title-text">
@@ -121,6 +129,14 @@ export const TreasuryAndNftsTab = <
             </GridCardContainer>
           )}
         </>
+      ) : (
+        <NoContent
+          Icon={Image}
+          actionNudge={t('info.areTheyMissingQuestion')}
+          body={t('info.noNftsYet')}
+          buttonLabel={t('button.registerNftCollection')}
+          href={isMember ? registerNftCollectionHref : undefined}
+        />
       )}
     </>
   )

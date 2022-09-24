@@ -10,7 +10,7 @@ import { PageLoader } from '@dao-dao/ui'
 const CreateDaoPage: NextPage = () => (
   // Prevent hydration errors due to localStorage form stuff.
   <SuspenseLoader fallback={<PageLoader />}>
-    <CreateDaoForm daoUrlPrefix="/dao/" />
+    <CreateDaoForm />
   </SuspenseLoader>
 )
 

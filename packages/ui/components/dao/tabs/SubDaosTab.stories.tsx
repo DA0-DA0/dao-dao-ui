@@ -51,6 +51,7 @@ Default.args = {
       makeDaoCardProps(),
     ],
   },
+  createSubDaoHref: '#',
 }
 
 export const Loading = Template.bind({})

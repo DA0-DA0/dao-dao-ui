@@ -4,7 +4,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect } from 'react'
-import { useRecoilValueLoadable } from 'recoil'
+import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { pinnedDaoCardInfoSelector, usePinnedDaos } from '@dao-dao/state'
@@ -15,6 +15,7 @@ import {
   loadableToLoadingData,
 } from '@dao-dao/utils'
 
+import { commandModalVisibleAtom } from '@/atoms'
 import { DaoCard, ProfileHomeCard } from '@/components'
 import { getFeaturedDaos } from '@/server'
 
@@ -25,6 +26,8 @@ interface HomePageProps {
 const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => {
   const { connected } = useWallet()
   const { isPinned: isDaoPinned, setPinned, setUnpinned } = usePinnedDaos()
+
+  const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
 
   const pinnedDaosLoadable = useRecoilValueLoadable(
     pinnedDaoCardInfoSelector({ daoUrlPrefix: `/dao/` })
@@ -39,6 +42,7 @@ const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => {
 
   return (
     <Home
+      connected={connected}
       featuredDaosProps={{
         featuredDaos,
         isDaoPinned,
@@ -47,20 +51,14 @@ const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => {
             ? setUnpinned(coreAddress)
             : setPinned(coreAddress),
       }}
+      pinnedDaosProps={{
+        DaoCard,
+        openSearch: () => setCommandModalVisible(true),
+        pinnedDaos: loadableToLoadingData(pinnedDaosLoadable, []),
+      }}
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }
-      {...(connected
-        ? {
-            connected,
-            pinnedDaosProps: {
-              pinnedDaos: loadableToLoadingData(pinnedDaosLoadable, []),
-              DaoCard,
-            },
-          }
-        : {
-            connected,
-          })}
     />
   )
 }

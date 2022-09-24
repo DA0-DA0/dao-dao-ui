@@ -84,18 +84,18 @@ export type UseDecodedCosmosMsg<D extends {} = any> = (
 ) => DecodeCosmosMsgNoMatch | DecodeCosmosMsgMatch<D>
 
 // Defines a new action.
-export interface Action<O extends {} = any, D extends {} = any> {
+export interface Action<Data extends {} = any, Options extends {} = any> {
   key: ActionKey
   Icon: ComponentType
   label: string
   description: string
-  Component: ActionComponent<O>
+  Component: ActionComponent<Options>
   // Hook to get default fields for form display.
-  useDefaults: UseDefaults<D>
+  useDefaults: UseDefaults<Data>
   // Hook to make function to convert action data to CosmosMsgFor_Empty.
-  useTransformToCosmos: UseTransformToCosmos<D>
+  useTransformToCosmos: UseTransformToCosmos<Data>
   // Hook to make function to convert decoded msg to form display fields.
-  useDecodedCosmosMsg: UseDecodedCosmosMsg<D>
+  useDecodedCosmosMsg: UseDecodedCosmosMsg<Data>
   // Optionally support only these coreVersions.
   supportedCoreVersions?: ContractVersion[]
 }

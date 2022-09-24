@@ -13,16 +13,10 @@ import {
 
 export type HomeProps = {
   featuredDaosProps: FeaturedDaosProps
+  pinnedDaosProps: PinnedDaosProps
   rightSidebarContent: ReactNode
-} & (
-  | {
-      connected: false
-    }
-  | {
-      connected: true
-      pinnedDaosProps: PinnedDaosProps
-    }
-)
+  connected: boolean
+}
 
 const maxWidth = 'mx-auto w-full max-w-5xl'
 // Max width of 5xl = 64rem, container padding of 6 = 1.5rem
@@ -77,15 +71,13 @@ export const Home = ({
           ></div>
         </div>
 
-        {/* Pinned DAOs */}
-        {props.connected && (
-          <div className={clsx('flex flex-col gap-8', maxWidth)}>
-            {/* Divider */}
-            <div className="h-[1px] bg-border-secondary"></div>
+        {/* Divider */}
+        <div className={clsx('h-[1px] bg-border-secondary', maxWidth)}></div>
 
-            <PinnedDaos {...props.pinnedDaosProps} />
-          </div>
-        )}
+        {/* Pinned DAOs */}
+        <div className={clsx('flex flex-col gap-8', maxWidth)}>
+          <PinnedDaos {...props.pinnedDaosProps} />
+        </div>
       </div>
     </>
   )

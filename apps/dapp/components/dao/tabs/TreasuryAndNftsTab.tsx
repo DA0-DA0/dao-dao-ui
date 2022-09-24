@@ -3,10 +3,13 @@
 import { useEffect } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
+import { addCw721Action } from '@dao-dao/actions/actions/AddCw721'
 import { useDaoInfoContext } from '@dao-dao/common'
 import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
+  useEncodedProposalPrefill,
+  useVotingModule,
 } from '@dao-dao/state'
 import {
   NftCard,
@@ -18,6 +21,9 @@ import { TokenCard } from '@/components'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
+  const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
+    fetchMembership: true,
+  })
 
   const treasuryTokenCardInfosLoadable = useRecoilValueLoadable(
     treasuryTokenCardInfosSelector(daoInfo.coreAddress)
@@ -41,11 +47,20 @@ export const TreasuryAndNftsTab = () => {
     treasuryTokenCardInfosLoadable.state,
   ])
 
+  const encodedProposalPrefill = useEncodedProposalPrefill({
+    action: addCw721Action,
+  })
+
   return (
     <StatelessTreasuryAndNftsTab
       NftCard={NftCard}
       TokenCard={TokenCard}
+      isMember={isMember}
       nfts={loadableToLoadingData(nftCardInfosLoadable, [])}
+      registerNftCollectionHref={
+        encodedProposalPrefill &&
+        `/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefill}`
+      }
       tokens={loadableToLoadingData(treasuryTokenCardInfosLoadable, [])}
     />
   )

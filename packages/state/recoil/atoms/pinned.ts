@@ -5,7 +5,7 @@ import { localStorageEffectJSON } from '../effects'
 export const pinnedAddressesAtom = atom<string[]>({
   key: 'pinnedAddresses',
   default: [],
-  effects: [localStorageEffectJSON('pinnedAddresses')],
+  effects: [localStorageEffectJSON],
 })
 
 // When marking a proposal as done, either by voting on it or manually pressing
@@ -17,7 +17,7 @@ export const pinnedProposalsMarkedDoneAtom = atom<
 >({
   key: 'pinnedProposalsMarkedDone',
   default: {},
-  effects: [localStorageEffectJSON('pinnedProposalsMarkedDone')],
+  effects: [localStorageEffectJSON],
 })
 
 // Map DAO core address to most recent proposal ID by proposal module address to
@@ -29,5 +29,5 @@ export const pinnedLatestProposalsMarkedDoneAtom = atom<
 >({
   key: 'pinnedLatestProposalsMarkedDone',
   default: {},
-  effects: [localStorageEffectJSON('pinnedLatestProposalsMarkedDone')],
+  effects: [localStorageEffectJSON],
 })

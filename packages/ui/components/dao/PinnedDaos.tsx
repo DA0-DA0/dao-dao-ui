@@ -1,3 +1,4 @@
+import { PushPinOutlined } from '@mui/icons-material'
 import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -7,13 +8,19 @@ import { SortFn, useDropdownSorter } from '../../hooks/useDropdownSorter'
 import { Dropdown, DropdownOption } from '../Dropdown'
 import { GridCardContainer } from '../GridCardContainer'
 import { Loader } from '../Loader'
+import { NoContent } from '../NoContent'
 
 export interface PinnedDaosProps {
   DaoCard: ComponentType<DaoCardInfo>
   pinnedDaos: LoadingData<DaoCardInfo[]>
+  openSearch: () => void
 }
 
-export const PinnedDaos = ({ DaoCard, pinnedDaos }: PinnedDaosProps) => {
+export const PinnedDaos = ({
+  DaoCard,
+  pinnedDaos,
+  openSearch,
+}: PinnedDaosProps) => {
   const { t } = useTranslation()
 
   const sortOptions = useMemo(
@@ -38,10 +45,15 @@ export const PinnedDaos = ({ DaoCard, pinnedDaos }: PinnedDaosProps) => {
       {pinnedDaos.loading ? (
         <Loader />
       ) : pinnedDaos.data.length === 0 ? (
-        // TODO: Add graphic here.
-        <p className="text-text-interactive-error">placeholder for graphic</p>
+        <NoContent
+          Icon={PushPinOutlined}
+          actionNudge={t('info.wouldYouLikeToSearchQuestion')}
+          body={t('info.noDaosPinnedYet')}
+          buttonLabel={t('button.searchDaos')}
+          onClick={openSearch}
+        />
       ) : (
-        <GridCardContainer className="mt-1">
+        <GridCardContainer>
           {sortedPinnedDaos.map((props) => (
             <DaoCard key={props.coreAddress} {...props} />
           ))}

@@ -224,13 +224,9 @@ export const Navigation = ({
             {!pinnedDaos.loading && (
               <div
                 className={clsx(
-                  'relative sm:max-h-[33vh]',
+                  'relative sm:max-h-[33vh] no-scrollbar',
                   !pinnedDaos.loading && 'overflow-y-auto',
-                  compact
-                    ? // Scrollbar looks weird and not clean when compact. No need.
-                      'mt-1 w-min no-scrollbar'
-                    : // Shift scrollbar to the right a bit.
-                      'pr-5 -mr-5 styled-scrollbar'
+                  compact && 'mt-1 w-min'
                 )}
                 ref={scrollablePinnedContainerRef}
               >

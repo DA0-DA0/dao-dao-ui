@@ -42,7 +42,7 @@ const InnerInbox = () => {
         const daoDropdownInfo = pinnedDaoDropdownInfos.find(
           (dao) => dao.coreAddress === coreAddress
         )
-        if (!daoDropdownInfo || !openUnvotedProposals?.length) {
+        if (!daoDropdownInfo || !openUnvotedProposals) {
           return undefined
         }
 

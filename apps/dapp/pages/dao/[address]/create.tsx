@@ -13,17 +13,15 @@ import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { SITE_URL, getFallbackImage } from '@dao-dao/utils'
 
 const InnerCreateSubDaoPage = () => {
-  const { coreAddress, name, description, imageUrl } = useDaoInfoContext()
+  const { coreAddress, name, imageUrl, parentDao } = useDaoInfoContext()
 
   return (
     <CreateDaoForm
-      daoUrlPrefix="/dao/"
       parentDao={{
         coreAddress,
         name,
-        description,
         imageUrl: imageUrl || getFallbackImage(coreAddress),
-        href: `/dao/${coreAddress}`,
+        parentDao,
       }}
     />
   )

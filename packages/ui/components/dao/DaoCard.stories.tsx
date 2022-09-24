@@ -20,7 +20,6 @@ export const makeProps = (): DaoCardProps => ({
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
   imageUrl: '/placeholders/1.svg',
-  href: '/',
   established: new Date('May 14, 2022 00:00:00'),
 
   pinned: false,
@@ -28,7 +27,7 @@ export const makeProps = (): DaoCardProps => ({
 
   parentDao: {
     coreAddress: 'parentDaoCoreAddress',
-    href: '#',
+    name: 'parent',
     imageUrl: '/placeholders/2.svg',
   },
 

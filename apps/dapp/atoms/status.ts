@@ -3,12 +3,12 @@
 
 import { atom } from 'recoil'
 
-import { localStorageEffect } from './localStorageEffect'
+import { localStorageEffectJSON } from '@dao-dao/state/recoil/effects'
 
 export const betaWarningAcceptedAtom = atom<boolean>({
   key: 'betaWarningAccepted',
   default: false,
-  effects: [localStorageEffect<boolean>('betaWarningAccepted')],
+  effects: [localStorageEffectJSON],
 })
 
 export const installWarningVisibleAtom = atom<boolean>({
