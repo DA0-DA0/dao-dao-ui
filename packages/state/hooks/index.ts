@@ -1,6 +1,7 @@
 export * from './clients'
 export * from './useCachedLoadable'
 export * from './useEncodedProposalPrefill'
+export * from './useNotifyBrowser'
 export * from './usePinnedDaos'
 export * from './useVotingModule'
 export * from './useWalletBalance'
