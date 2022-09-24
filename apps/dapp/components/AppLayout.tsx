@@ -10,6 +10,8 @@ import {
   useMemo,
   useState,
 } from 'react'
+import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   useRecoilState,
   useRecoilValue,
@@ -52,6 +54,7 @@ import { InstallKeplr } from './InstallKeplr'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
 
 const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
+  const { t } = useTranslation()
   const router = useRouter()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
@@ -177,6 +180,34 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   //! Inbox
   const { inbox } = useDAppContext()
+  // Inbox notifications
+  const [lastProposalCount, setLastProposalCount] = useState(
+    inbox.proposalCount
+  )
+  const [inboxNotificationsActive, setInboxNotificationsActive] =
+    useState(false)
+  useEffect(() => {
+    // Start sending notifications after 30 seconds of the page being loaded and
+    // the inbox proposal count not changing. Inbox updates once per minute
+    // because of blockHeight refresher so this should activate 30 seconds from
+    // when the inbox data first loads.
+    if (!inboxNotificationsActive) {
+      const timeout = setTimeout(
+        () => setInboxNotificationsActive(true),
+        30 * 1000
+      )
+      return () => clearTimeout(timeout)
+    }
+
+    if (inbox.proposalCount > lastProposalCount) {
+      toast.success(
+        t('info.newProposalsInInbox', {
+          count: inbox.proposalCount - lastProposalCount,
+        })
+      )
+    }
+    setLastProposalCount(inbox.proposalCount)
+  }, [inbox.proposalCount, inboxNotificationsActive, lastProposalCount, t])
 
   return (
     <>

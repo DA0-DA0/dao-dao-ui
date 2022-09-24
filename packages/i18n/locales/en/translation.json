@@ -345,6 +345,8 @@
     "mustHaveVotingPowerAtCreationTooltip_open": "You are unable to vote on this proposal because you didn't have any voting power at the time of proposal creation.",
     "name": "Name",
     "newMemberExplanation": "To add a new member, the DAO must pass a proposal.",
+    "newProposalsInInbox_one": "There is {{count}} new proposal in your inbox.",
+    "newProposalsInInbox_other": "There are {{count}} new proposals in your inbox.",
     "nftImage": "NFT image",
     "no": "No",
     "noDaosPinnedYet": "You have not yet pinned any DAOs.",
