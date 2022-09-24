@@ -2,7 +2,7 @@ import { NetworkStatus, gql, useQuery } from '@apollo/client'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect, useMemo } from 'react'
 
-import { useLoadableCacher } from '../hooks/useLoadableCacher'
+import { useCachedLoadable } from '../hooks/useCachedLoadable'
 import { blockHeightSelector } from '../recoil/selectors/chain'
 import { pinnedDaosWithProposalModulesSelector } from '../recoil/selectors/pinned'
 
@@ -94,13 +94,13 @@ interface GetOpenProposalsWithWalletVotesVariables {
 export const useInbox = () => {
   const { address: walletAddress } = useWallet()
 
-  const blockHeightLoadable = useLoadableCacher(blockHeightSelector)
+  const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
   const blockHeight =
     blockHeightLoadable.state === 'hasValue'
       ? blockHeightLoadable.contents
       : undefined
 
-  const pinnedDaosWithProposalModulesLoadable = useLoadableCacher(
+  const pinnedDaosWithProposalModulesLoadable = useCachedLoadable(
     pinnedDaosWithProposalModulesSelector
   )
 

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { AccountBalance, Link } from '@dao-dao/icons'
-import { daoTvlSelector, useLoadableCacher } from '@dao-dao/state'
+import { daoTvlSelector, useCachedLoadable } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   DaoInfoBarLoader,
@@ -34,7 +34,7 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
   const votingModuleItems = useDaoInfoBarItems()
   const { coreAddress } = useDaoInfoContext()
 
-  const treasuryUsdcValueLoadable = useLoadableCacher(
+  const treasuryUsdcValueLoadable = useCachedLoadable(
     daoTvlSelector(coreAddress)
   )
 

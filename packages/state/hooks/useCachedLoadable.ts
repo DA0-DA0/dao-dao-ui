@@ -1,26 +1,13 @@
 import { useEffect, useState } from 'react'
 import { RecoilValue, useRecoilValueLoadable } from 'recoil'
 
-export type LoadableCacherReturn<T> =
-  | {
-      state: 'loading'
-      contents: undefined
-    }
-  | {
-      state: 'hasValue'
-      contents: T
-      updating: boolean
-    }
-  | {
-      state: 'hasError'
-      contents: any
-    }
+import { CachedLoadable } from '@dao-dao/tstypes'
 
 // Keep cache of previously loaded data until next data is ready. Essentially,
 // memoize a loadable to prevent UI flickering.
-export const useLoadableCacher = <T extends unknown>(
+export const useCachedLoadable = <T extends unknown>(
   recoilValue: RecoilValue<T>
-): LoadableCacherReturn<T> => {
+): CachedLoadable<T> => {
   const loadable = useRecoilValueLoadable(recoilValue)
 
   const [contents, setContents] = useState<T | undefined>(

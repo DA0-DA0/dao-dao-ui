@@ -19,7 +19,7 @@ export interface TreasuryAndNftsTabProps<
   nfts: LoadingData<N[]>
   NftCard: ComponentType<N>
   isMember: boolean
-  registerNftCollectionHref?: string
+  addCollectionHref?: string
 }
 
 export const TreasuryAndNftsTab = <
@@ -31,7 +31,7 @@ export const TreasuryAndNftsTab = <
   nfts,
   NftCard,
   isMember,
-  registerNftCollectionHref,
+  addCollectionHref,
 }: TreasuryAndNftsTabProps<T, N>) => {
   const sortOptions = useRef<DropdownOption<SortFn<N>>[]>([
     {
@@ -134,8 +134,8 @@ export const TreasuryAndNftsTab = <
           Icon={Image}
           actionNudge={t('info.areTheyMissingQuestion')}
           body={t('info.noNftsYet')}
-          buttonLabel={t('button.registerNftCollection')}
-          href={isMember ? registerNftCollectionHref : undefined}
+          buttonLabel={t('button.addCollection')}
+          href={isMember ? addCollectionHref : undefined}
         />
       )}
     </>

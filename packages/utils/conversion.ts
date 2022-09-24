@@ -2,6 +2,7 @@ import { TFunction } from 'next-i18next'
 import { Loadable } from 'recoil'
 
 import {
+  CachedLoadable,
   Duration,
   DurationUnits,
   DurationWithUnits,
@@ -107,7 +108,7 @@ export const convertDurationWithUnitsToHumanReadableString = (
 
 // Convert Recoil loadable into our generic data loader type.
 export const loadableToLoadingData = <T>(
-  loadable: Loadable<T>,
+  loadable: CachedLoadable<T> | Loadable<T>,
   defaultValue: T,
   onError?: (error: any) => void
 ): LoadingData<T> => {

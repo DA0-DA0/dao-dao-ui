@@ -26,7 +26,7 @@ import {
   refreshBlockHeightAtom,
   refreshTokenUsdcPriceIdAtom,
   usdcPerMacroTokenSelector,
-  useLoadableCacher,
+  useCachedLoadable,
 } from '@dao-dao/state'
 import { IAppLayoutContext, AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import {
@@ -129,7 +129,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   const setRefreshTokenUsdcPriceId = useSetRecoilState(
     refreshTokenUsdcPriceIdAtom(NATIVE_DENOM)
   )
-  const usdcPricePerMacroNativeLoadable = useLoadableCacher(
+  const usdcPricePerMacroNativeLoadable = useCachedLoadable(
     usdcPerMacroTokenSelector({
       denom: NATIVE_DENOM,
       decimals: NATIVE_DECIMALS,

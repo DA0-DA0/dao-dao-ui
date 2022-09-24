@@ -38,7 +38,7 @@ Default.args = {
   },
   NftCard,
   isMember: true,
-  registerNftCollectionHref: '#',
+  addCollectionHref: '#',
 }
 
 export const Loading = Template.bind({})
@@ -48,5 +48,5 @@ Loading.args = {
   nfts: { loading: true },
   NftCard,
   isMember: true,
-  registerNftCollectionHref: '#',
+  addCollectionHref: '#',
 }

@@ -1,7 +1,6 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 import { useEffect } from 'react'
-import { useRecoilValueLoadable } from 'recoil'
 
 import { addCw721Action } from '@dao-dao/actions/actions/AddCw721'
 import { useDaoInfoContext } from '@dao-dao/common'
@@ -9,6 +8,7 @@ import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
   useEncodedProposalPrefill,
+  useCachedLoadable,
   useVotingModule,
 } from '@dao-dao/state'
 import {
@@ -25,10 +25,10 @@ export const TreasuryAndNftsTab = () => {
     fetchMembership: true,
   })
 
-  const treasuryTokenCardInfosLoadable = useRecoilValueLoadable(
+  const treasuryTokenCardInfosLoadable = useCachedLoadable(
     treasuryTokenCardInfosSelector(daoInfo.coreAddress)
   )
-  const nftCardInfosLoadable = useRecoilValueLoadable(
+  const nftCardInfosLoadable = useCachedLoadable(
     nftCardInfosSelector(daoInfo.coreAddress)
   )
 
@@ -55,12 +55,12 @@ export const TreasuryAndNftsTab = () => {
     <StatelessTreasuryAndNftsTab
       NftCard={NftCard}
       TokenCard={TokenCard}
-      isMember={isMember}
-      nfts={loadableToLoadingData(nftCardInfosLoadable, [])}
-      registerNftCollectionHref={
+      addCollectionHref={
         encodedProposalPrefill &&
         `/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefill}`
       }
+      isMember={isMember}
+      nfts={loadableToLoadingData(nftCardInfosLoadable, [])}
       tokens={loadableToLoadingData(treasuryTokenCardInfosLoadable, [])}
     />
   )
