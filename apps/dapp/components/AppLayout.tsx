@@ -12,7 +12,6 @@ import {
 } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import Notification from 'react-web-notification'
 import {
   useRecoilState,
   useRecoilValue,
@@ -30,7 +29,6 @@ import {
   refreshTokenUsdcPriceIdAtom,
   usdcPerMacroTokenSelector,
   useCachedLoadable,
-  useNotifyBrowser,
 } from '@dao-dao/state'
 import { IAppLayoutContext, AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import {
@@ -188,13 +186,16 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   )
   useEffect(() => {
     if (inbox.proposalCount > lastProposalCount) {
-      setTimeout(() =>
-      toast.success(
-        t('info.openProposalsInInbox', {
-          count: inbox.proposalCount,
-        })
-        // 5 second delay.
-      ), 5 * 1000)
+      setTimeout(
+        () =>
+          toast.success(
+            t('info.openProposalsInInbox', {
+              count: inbox.proposalCount,
+            })
+          ),
+        // 3 second delay.
+        3 * 1000
+      )
     }
     setLastProposalCount(inbox.proposalCount)
   }, [inbox.proposalCount, lastProposalCount, t])
