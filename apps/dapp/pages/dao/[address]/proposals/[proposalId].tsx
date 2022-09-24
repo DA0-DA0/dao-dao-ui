@@ -60,10 +60,8 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     },
   } = useProposalModuleAdapterContext()
   const {
-    hooks: { useActions: useVotingModuleActions, useGovernanceTokenInfo },
+    hooks: { useActions: useVotingModuleActions },
   } = useVotingModuleAdapter()
-  const voteConversionDecimals =
-    useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
 
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()
@@ -140,9 +138,7 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
           <ProfileDisconnectedCard />
         )
       }
-      voteTally={
-        <ProposalVoteTally voteConversionDecimals={voteConversionDecimals} />
-      }
+      voteTally={<ProposalVoteTally />}
       votesCast={<ProposalVotes />}
     />
   )
