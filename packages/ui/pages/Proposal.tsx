@@ -87,7 +87,7 @@ export const Proposal = ({
                 .join(' – ')}
             </p>
 
-            <MarkdownPreview markdown={description} />
+            <MarkdownPreview className="max-w-full" markdown={description} />
 
             <div className="mt-9 mb-3">{actionDisplay}</div>
 
