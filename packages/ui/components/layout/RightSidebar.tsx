@@ -37,7 +37,7 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
             ? 'right-0 opacity-100'
             : '-right-full opacity-0 pointer-events-none sm:-right-96',
           // Large
-          'xl:relative xl:left-0 xl:shrink-0 xl:shadow-none xl:opacity-100'
+          'xl:relative xl:left-0 xl:shrink-0 xl:shadow-none xl:opacity-100 xl:pointer-events-auto'
         )}
       >
         {/* Show responsive close button. */}

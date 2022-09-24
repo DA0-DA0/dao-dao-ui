@@ -187,8 +187,8 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   useEffect(() => {
     if (inbox.proposalCount > lastProposalCount) {
       toast.success(
-        t('info.newProposalsInInbox', {
-          count: inbox.proposalCount - lastProposalCount,
+        t('info.openProposalsInInbox', {
+          count: inbox.proposalCount,
         })
       )
     }
