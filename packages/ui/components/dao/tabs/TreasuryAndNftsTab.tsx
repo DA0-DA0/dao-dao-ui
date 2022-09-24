@@ -89,7 +89,7 @@ export const TreasuryAndNftsTab = <
         {tokens.loading ? (
           <Loader fill={false} />
         ) : tokens.data.length ? (
-          <GridCardContainer>
+          <GridCardContainer cardType="short">
             {sortedTokens.map((props, index) => (
               <TokenCard {...props} key={index} />
             ))}

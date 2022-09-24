@@ -22,6 +22,7 @@ import {
 import { decodeMessages, processError } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterContext } from '../../../react'
+import { useProposal } from '../hooks'
 import { NewProposalForm } from '../types'
 
 export const ProposalActionDisplay = ({
@@ -46,16 +47,7 @@ export const ProposalActionDisplay = ({
       contractAddress: proposalModule.address,
     })
   )
-  const { proposal } = useRecoilValue(
-    CwProposalSingleSelectors.proposalSelector({
-      contractAddress: proposalModule.address,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    })
-  )
+  const proposal = useProposal()
 
   const decodedMessages = useMemo(
     () => decodeMessages(proposal.msgs),
@@ -133,9 +125,9 @@ export const ProposalActionDisplay = ({
   }, [connected, closeProposal, proposalNumber, onCloseSuccess])
 
   return (
-    <>
+    <div className="space-y-6">
       {decodedMessages?.length ? (
-        <div className="my-9 space-y-3">
+        <div className="space-y-3">
           <ActionsRenderer
             Loader={Loader}
             Logo={Logo}
@@ -183,25 +175,21 @@ export const ProposalActionDisplay = ({
       {proposal.status === Status.Passed &&
         // Show if anyone can execute OR if the wallet is a member.
         (!config.only_members_execute || isMember) && (
-          <div className="my-6">
-            <ExecuteProposal
-              loading={loading}
-              messages={proposal.msgs.length}
-              onExecute={onExecute}
-            />
-          </div>
+          <ExecuteProposal
+            loading={loading}
+            messages={proposal.msgs.length}
+            onExecute={onExecute}
+          />
         )}
       {proposal.status === Status.Rejected && (
-        <div className="my-6">
-          <CloseProposal
-            loading={loading}
-            onClose={onClose}
-            willRefundProposalDeposit={
-              proposal.deposit_info?.refund_failed_proposals ?? false
-            }
-          />
-        </div>
+        <CloseProposal
+          loading={loading}
+          onClose={onClose}
+          willRefundProposalDeposit={
+            proposal.deposit_info?.refund_failed_proposals ?? false
+          }
+        />
       )}
-    </>
+    </div>
   )
 }

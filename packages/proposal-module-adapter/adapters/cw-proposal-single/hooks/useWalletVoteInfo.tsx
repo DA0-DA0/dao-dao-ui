@@ -12,6 +12,7 @@ import { Status, Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import { ContractVersion, WalletVoteInfo } from '@dao-dao/tstypes'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
+import { useProposal } from './useProposal'
 
 export const useWalletVoteInfo = (): WalletVoteInfo<Vote> => {
   const { t } = useTranslation()
@@ -26,16 +27,7 @@ export const useWalletVoteInfo = (): WalletVoteInfo<Vote> => {
     throw new Error(t('error.loadingData'))
   }
 
-  const { proposal } = useRecoilValue(
-    CwProposalSingleSelectors.proposalSelector({
-      contractAddress: proposalModule.address,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    })
-  )
+  const proposal = useProposal()
 
   const proposalModuleVersion = useRecoilValue(
     contractVersionSelector(proposalModule.address)

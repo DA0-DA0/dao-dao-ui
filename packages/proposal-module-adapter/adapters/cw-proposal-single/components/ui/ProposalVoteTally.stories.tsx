@@ -18,19 +18,31 @@ const Template: ComponentStory<typeof ProposalVoteTally> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  threshold: {
-    type: ProcessedTQType.Majority,
-    display: 'Majority',
+  votesInfo: {
+    threshold: {
+      type: ProcessedTQType.Majority,
+      display: 'Majority',
+    },
+    quorum: {
+      type: ProcessedTQType.Percent,
+      value: 34,
+      display: '34%',
+    },
+    yesVotes: 873,
+    noVotes: 54,
+    abstainVotes: 73,
+    totalVotingPower: 3703,
+    turnoutTotal: 1000,
+    turnoutPercent: (1000 / 3703) * 100,
+    turnoutYesPercent: 87.3,
+    turnoutNoPercent: 5.4,
+    turnoutAbstainPercent: 7.3,
+    totalYesPercent: (873 / 3703) * 100,
+    totalNoPercent: (54 / 3703) * 100,
+    totalAbstainPercent: (73 / 3703) * 100,
+    thresholdReached: false,
+    quorumReached: false,
   },
-  quorum: {
-    type: ProcessedTQType.Percent,
-    value: 34,
-    display: '34%',
-  },
-  yesVotes: 873,
-  noVotes: 54,
-  abstainVotes: 73,
-  totalVotingPower: 3703,
   open: true,
 }
 Default.parameters = {
@@ -43,6 +55,9 @@ Default.parameters = {
 export const NoQuorum = Template.bind({})
 NoQuorum.args = {
   ...Default.args,
-  quorum: undefined,
+  votesInfo: {
+    ...Default.args!.votesInfo!,
+    quorum: undefined,
+  },
 }
 NoQuorum.parameters = Default.parameters

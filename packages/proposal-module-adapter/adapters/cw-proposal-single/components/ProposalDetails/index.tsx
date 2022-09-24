@@ -31,6 +31,7 @@ import {
 
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
 import { BaseProposalDetailsProps } from '../../../../types'
+import { useProposal } from '../../hooks'
 import { VoteDisplay } from '../VoteDisplay'
 import { Vote, VoteChoice } from './Vote'
 
@@ -55,16 +56,7 @@ export const ProposalDetails = ({
       contractAddress: proposalModule.address,
     })
   )
-  const { proposal } = useRecoilValue(
-    CwProposalSingleSelectors.proposalSelector({
-      contractAddress: proposalModule.address,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    })
-  )
+  const proposal = useProposal()
 
   const proposalModuleVersion = useRecoilValue(
     contractVersionSelector(proposalModule.address)

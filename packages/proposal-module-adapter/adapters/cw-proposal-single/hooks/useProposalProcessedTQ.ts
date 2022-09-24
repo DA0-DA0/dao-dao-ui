@@ -1,29 +1,12 @@
 import { useMemo } from 'react'
-import { useRecoilValue } from 'recoil'
 
-import { CwProposalSingleSelectors } from '@dao-dao/state'
 import { ProcessedThresholdQuorum } from '@dao-dao/tstypes'
 
-import { useProposalModuleAdapterOptions } from '../../../react'
 import { useProcessTQ } from '../common'
+import { useProposal } from './useProposal'
 
 export const useProposalProcessedTQ = (): ProcessedThresholdQuorum => {
-  const {
-    proposalModule: { address: proposalModuleAddress },
-    proposalNumber,
-  } = useProposalModuleAdapterOptions()
-
-  const { proposal } = useRecoilValue(
-    CwProposalSingleSelectors.proposalSelector({
-      contractAddress: proposalModuleAddress,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    })
-  )
-
+  const proposal = useProposal()
   const processTQ = useProcessTQ()
 
   return useMemo(

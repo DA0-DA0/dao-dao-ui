@@ -23,9 +23,8 @@ export const ProposalStatusAndInfo = ({
   return (
     <div
       className={clsx(
-        inline
-          ? 'mb-4 bg-background-tertiary rounded-lg border border-border-secondary md:hidden'
-          : 'hidden md:block'
+        inline &&
+          'bg-background-tertiary rounded-lg border border-border-secondary'
       )}
     >
       <div className={clsx('flex flex-col gap-4', inline ? 'p-6' : 'pb-10')}>

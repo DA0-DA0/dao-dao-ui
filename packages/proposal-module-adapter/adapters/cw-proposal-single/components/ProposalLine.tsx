@@ -1,16 +1,13 @@
 import { useRecoilValue } from 'recoil'
 
-import {
-  CwProposalSingleSelectors,
-  contractVersionSelector,
-} from '@dao-dao/state'
+import { contractVersionSelector } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { ProposalLine as StatelessProposalLine } from '@dao-dao/ui'
 import { convertExpirationToDate, dateToWdhms } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { BaseProposalLineProps } from '../../../types'
-import { useWalletVoteInfo } from '../hooks'
+import { useProposal, useWalletVoteInfo } from '../hooks'
 import { ProposalStatus } from './ProposalStatus'
 import { ProposalWalletVote } from './ProposalWalletVote'
 
@@ -23,16 +20,7 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
   const proposalModuleVersion = useRecoilValue(
     contractVersionSelector(proposalModuleAddress)
   )
-  const { proposal } = useRecoilValue(
-    CwProposalSingleSelectors.proposalSelector({
-      contractAddress: proposalModuleAddress,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    })
-  )
+  const proposal = useProposal()
 
   const { canVote, vote } = useWalletVoteInfo()
 

@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/ui'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
+import { useProposal } from '../hooks'
 import { VoteDisplay } from './VoteDisplay'
 
 const VOTE_LIMIT = 30
@@ -22,16 +23,7 @@ export const ProposalVotes = () => {
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const { proposal } = useRecoilValue(
-    CwProposalSingleSelectors.proposalSelector({
-      contractAddress: proposalModuleAddress,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    })
-  )
+  const proposal = useProposal()
 
   // Get proposal vote timestamps from subquery.
   const proposalVotesSubquery = useProposalVotesQuery(

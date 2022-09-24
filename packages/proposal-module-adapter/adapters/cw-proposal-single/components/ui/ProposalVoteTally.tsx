@@ -1,68 +1,48 @@
 import { Check, Close } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { ProcessedTQ, ProcessedTQType } from '@dao-dao/tstypes'
+import { ProcessedTQType } from '@dao-dao/tstypes'
 import { Progress, Tooltip, TooltipInfoIcon } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
+import { VotesInfo } from '../../types'
+
 export interface ProposalVoteTallyProps {
-  threshold: ProcessedTQ
-  quorum?: ProcessedTQ
-  yesVotes: number
-  noVotes: number
-  abstainVotes: number
-  totalVotingPower: number
+  votesInfo: VotesInfo
   open: boolean
 }
 
 export const ProposalVoteTally = ({
-  threshold,
-  quorum,
-  yesVotes,
-  noVotes,
-  abstainVotes,
-  totalVotingPower,
+  votesInfo: {
+    threshold,
+    quorum,
+    // Raw info
+    yesVotes,
+    noVotes,
+    abstainVotes,
+    totalVotingPower,
+    turnoutTotal,
+    // Turnout percents
+    turnoutPercent,
+    turnoutYesPercent,
+    turnoutNoPercent,
+    turnoutAbstainPercent,
+    // Total percents
+    totalYesPercent,
+    totalNoPercent,
+    totalAbstainPercent,
+    // Meta
+    thresholdReached,
+    quorumReached,
+  },
   open,
 }: ProposalVoteTallyProps) => {
   const { t } = useTranslation()
-
-  const turnoutTotal = yesVotes + noVotes + abstainVotes
-  const turnoutYesPercent = turnoutTotal ? (yesVotes / turnoutTotal) * 100 : 0
-  const turnoutNoPercent = turnoutTotal ? (noVotes / turnoutTotal) * 100 : 0
-  const turnoutAbstainPercent = turnoutTotal
-    ? (abstainVotes / turnoutTotal) * 100
-    : 0
-
-  const turnoutPercent = (turnoutTotal / totalVotingPower) * 100
-  const totalYesPercent = (yesVotes / totalVotingPower) * 100
-  const totalNoPercent = (noVotes / totalVotingPower) * 100
-  const totalAbstainPercent = (abstainVotes / totalVotingPower) * 100
 
   // When only abstain votes have been cast and there is no quorum,
   // align the abstain progress bar to the right to line up with Abstain
   // text.
   const onlyAbstain = yesVotes === 0 && noVotes === 0 && abstainVotes > 0
-
-  const thresholdReached =
-    !!threshold &&
-    // All abstain fails, so we need at least 1 yes vote to reach threshold.
-    yesVotes > 0 &&
-    (threshold.type === ProcessedTQType.Majority
-      ? // Majority
-        yesVotes >
-        ((quorum ? turnoutTotal : totalVotingPower) - abstainVotes) / 2
-      : // Percent
-        yesVotes >=
-        ((quorum ? turnoutTotal : totalVotingPower) - abstainVotes) *
-          (threshold.value /
-            (threshold.type === ProcessedTQType.Percent ? 100 : 1)))
-  const quorumMet =
-    !!quorum &&
-    (quorum.type === ProcessedTQType.Majority
-      ? // Majority
-        turnoutTotal > totalVotingPower / 2
-      : // Percent
-        turnoutPercent >= quorum.value)
 
   const effectiveYesPercent = quorum ? turnoutYesPercent : totalYesPercent
   const effectiveNoPercent = quorum ? turnoutNoPercent : totalNoPercent
@@ -231,7 +211,7 @@ export const ProposalVoteTally = ({
                 <p className="text-text-body">{effectiveQuorum.display}</p>
               </Tooltip>
 
-              {quorumMet ? (
+              {quorumReached ? (
                 <Tooltip title={t('info.reached')}>
                   <Check className="!w-5 !h-5 text-icon-primary" />
                 </Tooltip>

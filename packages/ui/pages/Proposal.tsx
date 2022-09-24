@@ -70,25 +70,34 @@ export const Proposal = ({
         />
 
         <div className="grid grid-cols-1 gap-[3.5rem] md:grid-cols-[minmax(0,3fr),minmax(0,7fr)]">
-          <ProposalStatusAndInfo inline={false} />
+          <div className="hidden md:block">
+            <ProposalStatusAndInfo inline={false} />
+          </div>
 
           <div>
             <p className="mb-11 hero-text">{title}</p>
 
             <p className="mb-4 font-mono caption-text">
-              {creator.name}
-              {!!createdAtEpoch && ` – ${formatDate(new Date(createdAtEpoch))}`}
+              {[
+                creator.name,
+                !!createdAtEpoch && formatDate(new Date(createdAtEpoch)),
+              ]
+                .filter(Boolean)
+                // eslint-disable-next-line i18next/no-literal-string
+                .join(' – ')}
             </p>
 
             <MarkdownPreview markdown={description} />
 
-            {actionDisplay}
+            <div className="mt-9 mb-3">{actionDisplay}</div>
 
-            <ProposalStatusAndInfo inline />
+            <div className="md:hidden">
+              <ProposalStatusAndInfo inline />
+            </div>
 
-            {voteTally}
+            <div className="mt-3">{voteTally}</div>
 
-            <div className="mt-10">{votesCast}</div>
+            <div className="!mt-10">{votesCast}</div>
           </div>
         </div>
       </div>

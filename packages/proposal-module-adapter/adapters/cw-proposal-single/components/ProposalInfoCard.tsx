@@ -16,7 +16,7 @@ import { CHAIN_TXN_URL_PREFIX } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
 import { BaseProposalInfoCardProps } from '../../../types'
-import { useProposalExecutionTxHash } from '../hooks'
+import { useProposal, useProposalExecutionTxHash } from '../hooks'
 import { ProposalStatus } from './ProposalStatus'
 import { VoteDisplay } from './VoteDisplay'
 
@@ -31,16 +31,7 @@ export const ProposalInfoCard = ({
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const { proposal } = useRecoilValue(
-    CwProposalSingleSelectors.proposalSelector({
-      contractAddress: proposalModuleAddress,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    })
-  )
+  const proposal = useProposal()
 
   const proposalModuleVersion = useRecoilValue(
     contractVersionSelector(proposalModuleAddress)

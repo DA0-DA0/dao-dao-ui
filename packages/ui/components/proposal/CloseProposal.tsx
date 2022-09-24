@@ -24,7 +24,7 @@ export const CloseProposal = ({
   return (
     <>
       {!partyMode && (
-        <div className="flex gap-4 justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+        <div className="flex gap-4 justify-between items-center p-4 bg-primary rounded-lg border border-default">
           <div className="flex gap-2 items-center">
             <button
               className="mr-1 text-2xl"
@@ -48,7 +48,7 @@ export const CloseProposal = ({
         </div>
       )}
       {partyMode && (
-        <div className="flex gap-4 justify-between items-center p-4 max-w-3xl bg-primary rounded-lg border border-default">
+        <div className="flex gap-4 justify-between items-center p-4 bg-primary rounded-lg border border-default">
           <div className="flex gap-2 items-center">
             <button
               className={clsx(

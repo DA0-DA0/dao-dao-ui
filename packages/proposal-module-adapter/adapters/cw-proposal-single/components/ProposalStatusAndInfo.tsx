@@ -8,10 +8,9 @@ import {
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
 
 import { useDaoInfoContext } from '@dao-dao/common'
-import { CwProposalSingleSelectors } from '@dao-dao/state'
+import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { BaseProposalStatusAndInfoProps } from '@dao-dao/tstypes'
 import {
   ButtonLink,
@@ -27,10 +26,11 @@ import {
   convertExpirationToDate,
   dateToWdhms,
   formatDate,
+  formatPercentOf100,
 } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { useProposalExecutionTxHash } from '../hooks'
+import { useProposal, useProposalExecutionTxHash, useVotesInfo } from '../hooks'
 
 export const ProposalStatusAndInfo = ({
   inline,
@@ -39,16 +39,7 @@ export const ProposalStatusAndInfo = ({
   const daoInfo = useDaoInfoContext()
   const { proposalNumber, proposalModule } = useProposalModuleAdapterOptions()
 
-  const { proposal } = useRecoilValue(
-    CwProposalSingleSelectors.proposalSelector({
-      contractAddress: proposalModule.address,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    })
-  )
+  const proposal = useProposal()
 
   const executionTxHash = useProposalExecutionTxHash()
   const expirationDate = convertExpirationToDate(proposal.expiration)
@@ -147,21 +138,34 @@ export const ProposalStatusAndInfo = ({
       : []),
   ]
 
-  /* TODO: const helpfulStatusText =
-        proposal.status === Status.Open && threshold && quorum
-          ? thresholdReached && quorumMet
-            ? 'If the current vote stands, this proposal will pass.'
-            : !thresholdReached && quorumMet
-            ? "If the current vote stands, this proposal will fail because insufficient 'Yes' votes have been cast."
-            : thresholdReached && !quorumMet
-            ? 'If the current vote stands, this proposal will fail due to a lack of voter participation.'
-            : undefined
-          : undefined */
+  const {
+    quorum,
+    thresholdReached,
+    quorumReached,
+    turnoutPercent,
+    turnoutYesPercent,
+  } = useVotesInfo()
+
+  const status =
+    proposal.status === Status.Open
+      ? thresholdReached && (!quorum || quorumReached)
+        ? 'If the current vote stands, this proposal will pass.'
+        : !thresholdReached && (!quorum || quorumReached)
+        ? "If the current vote stands, this proposal will fail because insufficient 'Yes' votes have been cast."
+        : thresholdReached && quorum && !quorumReached
+        ? 'If the current vote stands, this proposal will fail due to a lack of voter participation.'
+        : 'If the current vote stands, this proposal will fail.'
+      : `This proposal is no longer open for voting. ${formatPercentOf100(
+          turnoutPercent
+        )} of all votes were cast, and ${formatPercentOf100(
+          turnoutYesPercent
+        )} of them were 'Yes'.`
+
   return (
     <StatelessProposalStatusAndInfo
       info={info}
       inline={inline}
-      status={'todo'}
+      status={status}
     />
   )
 }

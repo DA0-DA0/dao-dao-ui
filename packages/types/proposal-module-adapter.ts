@@ -75,7 +75,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
     ProposalActionDisplay: ComponentType<BaseProposalActionDisplayProps>
     ProposalWalletVote: ComponentType<BaseProposalWalletVoteProps<Vote>>
     ProposalVotes: ComponentType
-    ProposalVoteTally: ComponentType<BaseProposalVoteTallyProps>
+    ProposalVoteTally: ComponentType
     ProposalInfoCard: ComponentType<BaseProposalInfoCardProps>
     ProposalDetails: ComponentType<BaseProposalDetailsProps>
     ProposalLine: ComponentType<BaseProposalLineProps>
@@ -180,10 +180,6 @@ export interface BaseProposalActionDisplayProps<D extends any = any> {
 export interface BaseProposalWalletVoteProps<T> {
   vote: T | undefined
   fallback: 'pending' | 'none'
-}
-
-export interface BaseProposalVoteTallyProps {
-  voteConversionDecimals: number
 }
 
 export interface BaseProposalInfoCardProps {

@@ -1,12 +1,10 @@
 import { constSelector, useRecoilValue } from 'recoil'
 
-import {
-  CwProposalSingleSelectors,
-  proposalExecutionTXHashSelector,
-} from '@dao-dao/state'
+import { proposalExecutionTXHashSelector } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
+import { useProposal } from './useProposal'
 
 export const useProposalExecutionTxHash = () => {
   const {
@@ -14,16 +12,7 @@ export const useProposalExecutionTxHash = () => {
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const { proposal } = useRecoilValue(
-    CwProposalSingleSelectors.proposalSelector({
-      contractAddress: proposalModuleAddress,
-      params: [
-        {
-          proposalId: proposalNumber,
-        },
-      ],
-    })
-  )
+  const proposal = useProposal()
 
   const executionTxHash = useRecoilValue(
     proposal.status === Status.Executed ||
