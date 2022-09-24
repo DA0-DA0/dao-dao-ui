@@ -63,7 +63,11 @@ export const ProposalLine = ({
         {/* Mobile */}
         <div className="flex flex-col gap-2 justify-between p-4 min-h-[9.5rem] text-sm rounded-md md:hidden">
           <div className="flex flex-col gap-2">
-            {status}
+            <div className="flex flex-row justify-between items-start">
+              {status}
+              {vote}
+            </div>
+
             <p className="col-span-3 break-words body-text">{title}</p>
           </div>
 
@@ -77,7 +81,6 @@ export const ProposalLine = ({
             <p className="font-mono text-center break-words caption-text">
               {expiration}
             </p>
-            {vote}
           </div>
         </div>
       </a>

@@ -8,7 +8,11 @@ export const ProposalIdDisplay = ({
   proposalNumber,
 }: ProposalIdDisplayProps) => (
   <>
-    {proposalPrefix ? `${proposalPrefix} #` : '#'}
-    {proposalNumber.toString().padStart(7 - proposalPrefix.length, '0')}
+    <span className="text-text-primary">{proposalPrefix}</span>
+    <span className="text-text-tertiary">
+      {' '}
+      {'0'.repeat(7 - proposalPrefix.length - proposalNumber.toString().length)}
+    </span>
+    <span className="text-text-primary">{proposalNumber}</span>
   </>
 )
