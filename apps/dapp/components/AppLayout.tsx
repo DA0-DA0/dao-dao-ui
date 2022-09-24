@@ -184,21 +184,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   const [lastProposalCount, setLastProposalCount] = useState(
     inbox.proposalCount
   )
-  const [inboxNotificationsActive, setInboxNotificationsActive] =
-    useState(false)
   useEffect(() => {
-    // Start sending notifications after 30 seconds of the page being loaded and
-    // the inbox proposal count not changing. Inbox updates once per minute
-    // because of blockHeight refresher so this should activate 30 seconds from
-    // when the inbox data first loads.
-    if (!inboxNotificationsActive) {
-      const timeout = setTimeout(
-        () => setInboxNotificationsActive(true),
-        30 * 1000
-      )
-      return () => clearTimeout(timeout)
-    }
-
     if (inbox.proposalCount > lastProposalCount) {
       toast.success(
         t('info.newProposalsInInbox', {
@@ -207,7 +193,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
       )
     }
     setLastProposalCount(inbox.proposalCount)
-  }, [inbox.proposalCount, inboxNotificationsActive, lastProposalCount, t])
+  }, [inbox.proposalCount, lastProposalCount, t])
 
   return (
     <>
