@@ -1,15 +1,16 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeProps as makeDaoCardProps } from '../DaoCard.stories'
-import { DaoCreateModal } from './DaoCreateModal'
+import { DaoCreatedModal } from './DaoCreatedModal'
 
 export default {
-  title: 'DAO DAO / packages / ui / components / dao / create / DaoCreateModal',
-  component: DaoCreateModal,
-} as ComponentMeta<typeof DaoCreateModal>
+  title:
+    'DAO DAO / packages / ui / components / dao / create / DaoCreatedModal',
+  component: DaoCreatedModal,
+} as ComponentMeta<typeof DaoCreatedModal>
 
-const Template: ComponentStory<typeof DaoCreateModal> = (args) => (
-  <DaoCreateModal {...args} />
+const Template: ComponentStory<typeof DaoCreatedModal> = (args) => (
+  <DaoCreatedModal {...args} />
 )
 
 export const Default = Template.bind({})
@@ -17,7 +18,7 @@ Default.args = {
   modalProps: {
     onClose: () => alert('close'),
   },
-  daoCardProps: makeDaoCardProps(),
+  itemProps: makeDaoCardProps(),
 }
 Default.parameters = {
   design: {

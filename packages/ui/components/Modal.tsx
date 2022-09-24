@@ -52,7 +52,7 @@ export const Modal = ({
     >
       <div
         className={clsx(
-          'flex overflow-hidden relative flex-col p-6 max-w-md h-min max-h-full bg-background-base rounded-lg border border-border-secondary shadow-dp8 cursor-auto',
+          'flex overflow-y-auto relative flex-col p-6 max-w-md h-min max-h-full bg-background-base rounded-lg border border-border-secondary shadow-dp8 cursor-auto no-scrollbar',
           containerClassName
         )}
       >

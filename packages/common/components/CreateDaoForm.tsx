@@ -30,7 +30,7 @@ import { InstantiateMsg } from '@dao-dao/tstypes/contracts/cw-core-0.2.0'
 import {
   Button,
   CreateDaoPages,
-  DaoCreateModal,
+  DaoCreatedModal,
   DaoCreateSidebarCard,
   DaoHeader,
   GradientHero,
@@ -534,7 +534,7 @@ export const CreateDaoForm = ({
       </form>
 
       {createdDaoCoreAddress && (
-        <DaoCreateModal
+        <DaoCreatedModal
           daoCardProps={{
             coreAddress: createdDaoCoreAddress,
             name,

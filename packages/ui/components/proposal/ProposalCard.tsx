@@ -2,8 +2,8 @@ import clsx from 'clsx'
 
 import { ProposalCardProps } from '@dao-dao/tstypes/ui/ProposalCard'
 
+import { DaoImage } from '../dao/DaoImage'
 import { LinkWrapper } from '../LinkWrapper'
-import { DaoImage } from './DaoImage'
 
 export * from '@dao-dao/tstypes/ui/ProposalCard'
 
@@ -19,7 +19,7 @@ export const ProposalCard = ({
 }: ProposalCardProps) => (
   <LinkWrapper
     className={clsx(
-      'flex flex-col w-full bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md outline-transparent hover:outline-border-interactive-hover active:outline-border-interactive-focus outline transition-all',
+      'flex relative flex-col w-full bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md outline-transparent hover:outline-border-interactive-hover active:outline-border-interactive-focus outline transition-all',
       className
     )}
     href={`/dao/${coreAddress}/proposals/${id}`}

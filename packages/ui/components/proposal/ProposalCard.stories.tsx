@@ -6,7 +6,7 @@ import { Open } from '@dao-dao/icons'
 import { ProposalCard, ProposalCardProps } from './ProposalCard'
 
 export default {
-  title: 'DAO DAO / packages / ui / components / dao / ProposalCard',
+  title: 'DAO DAO / packages / ui / components / proposal / ProposalCard',
   component: ProposalCard,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof ProposalCard>
