@@ -34,7 +34,7 @@
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
     "@meilisearch/instant-meilisearch": "0.7.0",
-    "@noahsaso/cosmodal": "0.6.1",
+    "@noahsaso/cosmodal": "0.6.2",
     "@sentry/nextjs": "^7.7.0",
     "@tailwindcss/line-clamp": "^0.3.1",
     "@tailwindcss/typography": "^0.5.1",
