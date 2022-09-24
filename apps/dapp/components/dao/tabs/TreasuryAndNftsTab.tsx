@@ -7,8 +7,8 @@ import { useDaoInfoContext } from '@dao-dao/common'
 import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
-  useEncodedProposalPrefill,
   useCachedLoadable,
+  useEncodedProposalPrefill,
   useVotingModule,
 } from '@dao-dao/state'
 import {
