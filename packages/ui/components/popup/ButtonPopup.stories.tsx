@@ -3,8 +3,7 @@ import { PlusIcon } from '@heroicons/react/solid'
 import { ExpandCircleDownOutlined } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { StakeIcon } from '@dao-dao/actions'
-
+import { StakeEmoji } from '../emoji'
 import { IconButton } from '../IconButton'
 import { ButtonPopup } from './ButtonPopup'
 
@@ -39,7 +38,7 @@ Default.args = {
           onClick: () => alert('button1'),
         },
         {
-          Icon: StakeIcon,
+          Icon: StakeEmoji,
           label: 'Button 2',
           onClick: () => alert('button2'),
         },
