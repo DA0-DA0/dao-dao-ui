@@ -74,7 +74,7 @@ export const Inbox = <T extends {}>({
               />
             </div>
 
-            <div className="overflow-y-auto grow pb-2 mt-6 space-y-4 no-scrollbar">
+            <div className="grow my-6 space-y-4">
               {daosWithProposals.data.map(({ dao, proposals }, index) => (
                 <DaoDropdown
                   key={index}

@@ -30,18 +30,18 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
       <div
         className={clsx(
           // General
-          'flex flex-col items-stretch p-6 pt-0 w-[90vw] bg-background-base transition-all duration-[225ms] sm:w-96',
+          'flex overflow-y-auto flex-col items-stretch p-6 pt-0 w-[90vw] bg-background-base transition-all duration-[225ms] sm:w-96 no-scrollbar',
           // Responsive
           'absolute top-0 bottom-0 z-30 shadow-dp8',
           responsiveEnabled
             ? 'right-0 opacity-100'
-            : '-right-full opacity-0 sm:-right-96',
+            : '-right-full opacity-0 pointer-events-none sm:-right-96',
           // Large
           'xl:relative xl:left-0 xl:shrink-0 xl:shadow-none xl:opacity-100'
         )}
       >
         {/* Show responsive close button. */}
-        <div className="absolute right-4 bottom-4 z-40 bg-background-base rounded-full shadow-dp8 transition cursor-pointer sm:right-6 sm:bottom-6 xl:hidden">
+        <div className="fixed right-4 bottom-4 z-40 bg-background-base rounded-full shadow-dp8 transition cursor-pointer sm:right-6 sm:bottom-6 xl:hidden">
           <IconButton
             Icon={KeyboardDoubleArrowRight}
             // Match ProfileImage rounding.
@@ -53,7 +53,7 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
 
         {wallet}
 
-        <div className="overflow-y-auto py-1 pr-4 mt-1 -mr-4 no-scrollbar">
+        <div className="mt-1">
           <div ref={setContentRef}></div>
 
           <div className="mt-7">
