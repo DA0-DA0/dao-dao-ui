@@ -1,10 +1,9 @@
 import clsx from 'clsx'
 import Link from 'next/link'
-import { ComponentType, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { ContractVersion } from '@dao-dao/tstypes'
 
-import { LoaderProps } from '../Loader'
 import { Tooltip } from '../Tooltip'
 import { ProposalIdDisplay } from './ProposalIdDisplay'
 
@@ -94,21 +93,17 @@ export const ProposalLine = ({
   )
 }
 
-export interface ProposalLineLoaderProps {
-  Loader: ComponentType<LoaderProps>
-}
-
-export const ProposalLineLoader = (props: ProposalLineLoaderProps) => (
+export const ProposalLineLoader = () => (
   <>
-    <ProposalLineLoaderDesktop {...props} />
-    <ProposalLineLoaderMobile {...props} />
+    <ProposalLineLoaderDesktop />
+    <ProposalLineLoaderMobile />
   </>
 )
 
-const ProposalLineLoaderDesktop = ({ Loader }: ProposalLineLoaderProps) => (
-  <Loader className="hidden h-12 bg-primary rounded-md" />
+const ProposalLineLoaderDesktop = () => (
+  <div className="hidden h-12 bg-primary rounded-md animate-pulse md:block"></div>
 )
 
-const ProposalLineLoaderMobile = ({ Loader }: ProposalLineLoaderProps) => (
-  <Loader className="hidden h-[9.5rem] bg-primary rounded-md" />
+const ProposalLineLoaderMobile = () => (
+  <div className="h-[9.5rem] bg-primary rounded-md animate-pulse md:hidden"></div>
 )

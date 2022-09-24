@@ -18,9 +18,7 @@ export const Loader = ({
       className
     )}
   >
-    <div className="animate-spin-medium">
-      <Logo size={size} />
-    </div>
+    <Logo className="animate-spin-medium" size={size} />
   </div>
 )
 

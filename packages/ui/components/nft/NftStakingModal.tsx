@@ -14,7 +14,8 @@ export interface NftStakingModalProps extends Omit<ModalProps, 'children'> {
     name: string
     total: number
   }
-  selectedAddresses: string[]
+  selectedIds: string[]
+  getIdForNft: (nft: NftCardInfo) => string
   onNftClick: (nft: NftCardInfo) => void
   onSelectAll: () => void
   onDeselectAll: () => void
@@ -24,7 +25,8 @@ export interface NftStakingModalProps extends Omit<ModalProps, 'children'> {
 export const NftStakingModal = ({
   nfts,
   collection: { name, total },
-  selectedAddresses,
+  selectedIds,
+  getIdForNft,
   onNftClick,
   onSelectAll,
   onDeselectAll,
@@ -52,7 +54,7 @@ export const NftStakingModal = ({
       footerContent={
         <div className="flex flex-row gap-6 justify-between items-center">
           <div className="flex flex-row flex-wrap gap-4 items-center">
-            {t('info.numNftsSelected', { count: selectedAddresses.length })}
+            {t('info.numNftsSelected', { count: selectedIds.length })}
           </div>
 
           <Button onClick={onStake}>{t('button.stakeNft')}</Button>
@@ -69,13 +71,11 @@ export const NftStakingModal = ({
             <Button
               className="text-text-interactive-active"
               onClick={
-                nfts.length === selectedAddresses.length
-                  ? onDeselectAll
-                  : onSelectAll
+                nfts.length === selectedIds.length ? onDeselectAll : onSelectAll
               }
               variant="underline"
             >
-              {nfts.length === selectedAddresses.length
+              {nfts.length === selectedIds.length
                 ? t('button.deselectAllNfts', { count: nfts.length })
                 : t('button.selectAllNfts', { count: nfts.length })}
             </Button>
@@ -87,13 +87,13 @@ export const NftStakingModal = ({
         </div>
       }
     >
-      <div className="grid overflow-y-auto grid-cols-1 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 md:grid-cols-2">
+      <div className="grid overflow-y-auto grid-cols-1 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 md:grid-cols-2 no-scrollbar">
         {nfts.map((nft) => (
           <NftCard
-            key={nft.address}
+            key={getIdForNft(nft)}
             {...nft}
             checkbox={{
-              checked: selectedAddresses.includes(nft.address),
+              checked: selectedIds.includes(getIdForNft(nft)),
               onClick: () => onNftClick(nft),
             }}
           />

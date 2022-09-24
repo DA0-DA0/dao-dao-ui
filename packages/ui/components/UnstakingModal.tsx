@@ -91,7 +91,7 @@ export const UnstakingModal = ({
       {...modalProps}
       containerClassName={clsx('w-full max-w-2xl', containerClassName)}
     >
-      <div className="overflow-y-scroll grow pr-4 -mr-4 no-scrollbar">
+      <div className="overflow-y-auto grow pr-4 -mr-4 no-scrollbar">
         {/* Only show if something is ready to claim. */}
         {readyToClaim.length > 0 && (
           <>

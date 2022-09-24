@@ -131,7 +131,7 @@ export const Dropdown = <T extends unknown>({
           }
         )}
       >
-        <div className="flex overflow-y-scroll flex-col gap-[1px] h-full max-h-80 border-t border-t-border-base">
+        <div className="flex overflow-y-auto flex-col gap-[1px] h-full max-h-80 border-t border-t-border-base no-scrollbar">
           {options.map((option, index) => (
             <Button
               key={index}

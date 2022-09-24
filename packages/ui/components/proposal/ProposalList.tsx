@@ -80,7 +80,7 @@ export const ProposalList = <T extends {}>({
         )}
       </div>
     </div>
-  ) : // If loading but no proposals are display yet, just show loader.
+  ) : // If loading but no proposals are loaded yet, just show loader.
   loadingMore ? (
     <div className="pt-6 border-t border-border-secondary">
       <Loader fill={false} />

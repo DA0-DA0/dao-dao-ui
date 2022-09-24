@@ -115,7 +115,8 @@ export interface TokenCardInfo {
 }
 
 export interface NftCardInfo {
-  address: string
+  collectionAddress: string
+  tokenId: string
   externalLink?: {
     href: string
     name: string

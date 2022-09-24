@@ -4,7 +4,6 @@ import { SuspenseLoader } from '@dao-dao/common'
 import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapter,
-  useProposalModuleAdapterOptions,
 } from '@dao-dao/proposal-module-adapter'
 import { ProposalModule } from '@dao-dao/tstypes'
 import {
@@ -33,7 +32,7 @@ export const ProposalLine = ({
   ...props
 }: ProposalLineProps) => (
   <ProposalModuleAdapterProvider
-    ProviderLoader={() => <ProposalLineLoader Loader={Loader} />}
+    ProviderLoader={() => <ProposalLineLoader />}
     initialOptions={{
       coreAddress,
       Logo,
@@ -52,10 +51,9 @@ const InnerProposalLine = ({ proposalViewUrl }: InnerProposalLineProps) => {
   const {
     components: { ProposalLine },
   } = useProposalModuleAdapter()
-  const { Loader } = useProposalModuleAdapterOptions()
 
   return (
-    <SuspenseLoader fallback={<ProposalLineLoader Loader={Loader} />}>
+    <SuspenseLoader fallback={<ProposalLineLoader />}>
       <ProposalLine href={proposalViewUrl} />
     </SuspenseLoader>
   )

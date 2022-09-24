@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Loader } from '../Loader'
 import { ProposalLineLoader } from './ProposalLine'
 
 export default {
@@ -8,11 +7,9 @@ export default {
   component: ProposalLineLoader,
 } as ComponentMeta<typeof ProposalLineLoader>
 
-const Template: ComponentStory<typeof ProposalLineLoader> = (args) => (
-  <ProposalLineLoader {...args} />
+const Template: ComponentStory<typeof ProposalLineLoader> = (_args) => (
+  <ProposalLineLoader />
 )
 
 export const Default = Template.bind({})
-Default.args = {
-  Loader,
-}
+Default.args = {}

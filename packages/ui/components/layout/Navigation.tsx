@@ -224,8 +224,8 @@ export const Navigation = ({
             {!pinnedDaos.loading && (
               <div
                 className={clsx(
-                  'relative sm:max-h-[33vh] no-scrollbar',
-                  !pinnedDaos.loading && 'overflow-y-auto',
+                  'relative sm:max-h-[33vh]',
+                  !pinnedDaos.loading && 'overflow-y-auto no-scrollbar',
                   compact && 'mt-1 w-min'
                 )}
                 ref={scrollablePinnedContainerRef}

@@ -16,17 +16,18 @@ const Template: ComponentStory<typeof NftStakingModal> = (args) => {
     <NftStakingModal
       {...args}
       onDeselectAll={() => setSelected([])}
-      onNftClick={({ address }) =>
+      onNftClick={(nft) => {
+        const key = args.getIdForNft(nft)
         setSelected((current) =>
-          current.includes(address)
-            ? current.filter((a) => a !== address)
-            : [...current, address]
+          current.includes(key)
+            ? current.filter((a) => a !== key)
+            : [...current, key]
         )
-      }
+      }}
       onSelectAll={() =>
-        setSelected(args.nfts?.map(({ address }) => address) ?? [])
+        setSelected(args.nfts?.map((nft) => args.getIdForNft(nft)) ?? [])
       }
-      selectedAddresses={selected}
+      selectedIds={selected}
     />
   )
 }
@@ -45,6 +46,7 @@ Default.args = {
     total: 99,
   },
   onStake: () => alert('stake'),
+  getIdForNft: (nft) => `${nft.collectionAddress}:${nft.tokenId}`,
 }
 Default.parameters = {
   design: {

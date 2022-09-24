@@ -36,7 +36,8 @@ export const makeProps = (): NftCardProps => {
   id++
 
   return {
-    address: `starsAddress${id}`,
+    collectionAddress: 'starsCollectionAddress',
+    tokenId: `${id}`,
     createdBy: 'stars2afd31svj2f0z',
     imageUrl: '/dog_nft.png',
     name: `French Bulldog ${id}`,

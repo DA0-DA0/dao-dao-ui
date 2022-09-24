@@ -4,6 +4,7 @@ import {
   CwProposalSingleSelectors,
   contractVersionSelector,
 } from '@dao-dao/state'
+import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { ProposalLine as StatelessProposalLine } from '@dao-dao/ui'
 import { convertExpirationToDate, dateToWdhms } from '@dao-dao/utils'
 
@@ -40,7 +41,11 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
 
   return (
     <StatelessProposalLine
-      expiration={expirationDate ? dateToWdhms(expirationDate) : ''}
+      expiration={
+        proposal.status === Status.Open && expirationDate
+          ? dateToWdhms(expirationDate)
+          : ''
+      }
       href={href}
       lastUpdated={lastUpdated}
       proposalModuleVersion={proposalModuleVersion}

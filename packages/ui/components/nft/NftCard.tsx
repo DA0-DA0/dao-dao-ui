@@ -51,7 +51,7 @@ export const NftCard = ({
         {imageUrl ? (
           <img
             alt={t('info.nftImage')}
-            className="aspect-square"
+            className="aspect-square object-cover"
             src={imageUrl}
           />
         ) : (

@@ -387,15 +387,31 @@ export const nftCardInfosSelector = selectorFamily<NftCardInfo[], string>({
         )
       ).filter(Boolean) as NftInfoResponse[]
 
-      const nftTokenUriDataResponses = get(
-        waitForAll(
-          nftTokenInfos
-            .filter(({ token_uri }) => !!token_uri)
-            .map(({ token_uri }) => nftTokenUriDataSelector(token_uri!))
-        )
-      )
+      // const nftTokenUriDataResponses = get(
+      //   waitForAll(
+      //     nftTokenInfos
+      //       .filter(({ token_uri }) => !!token_uri)
+      //       .map(({ token_uri }) => nftTokenUriDataSelector(token_uri!))
+      //   )
+      // )
 
-      const infos: NftCardInfo[] = []
+      const infos: NftCardInfo[] = nftTokenInfos.map(
+        ({ token_uri }, index) => ({
+          collectionAddress: '',
+          tokenId: '',
+          // externalLink?: {
+          //   href: string
+          //   name: string
+          // }
+          imageUrl: token_uri!,
+          createdBy: '',
+          // floorPrice?: {
+          //   amount: number
+          //   denom: string
+          // }
+          name: index.toString(),
+        })
+      )
 
       return infos
     },
