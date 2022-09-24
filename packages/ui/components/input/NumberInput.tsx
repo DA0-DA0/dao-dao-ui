@@ -96,7 +96,7 @@ export const NumberInput = <
       <div
         className={clsx('flex flex-row items-center', iconContainerClassName)}
       >
-        {onMinus && (
+        {onMinus && !disabled && (
           <IconButton
             Icon={Remove}
             disabled={disabled}
@@ -106,7 +106,7 @@ export const NumberInput = <
             variant="ghost"
           />
         )}
-        {onPlus && (
+        {onPlus && !disabled && (
           <IconButton
             Icon={Add}
             disabled={disabled}

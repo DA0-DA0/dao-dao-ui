@@ -45,6 +45,7 @@ export const SelectInput = <
         error
           ? 'ring-border-interactive-error'
           : 'ring-border-primary focus:ring-border-interactive-focus',
+        props.disabled && 'appearance-none',
         className
       )}
       {...props}
