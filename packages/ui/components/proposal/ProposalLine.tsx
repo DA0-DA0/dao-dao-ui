@@ -48,13 +48,13 @@ export const ProposalLine = ({
       >
         {/* Desktop */}
         <div className="hidden flex-row gap-6 items-center p-3 h-12 md:flex">
-          <p className="w-10 font-mono caption-text">
+          <p className="shrink-0 font-mono caption-text">
             <ProposalIdDisplay
               proposalNumber={proposalNumber}
               proposalPrefix={proposalPrefix}
             />
           </p>
-          <div className="w-20">
+          <div className="shrink-0 w-20">
             <Status />
           </div>
           <p className="grow truncate body-text">{title}</p>
@@ -67,7 +67,7 @@ export const ProposalLine = ({
         {/* Mobile */}
         <div className="flex flex-col gap-2 justify-between p-4 min-h-[9.5rem] text-sm rounded-md md:hidden">
           <div className="flex flex-col gap-2">
-            <p className="w-10 font-mono caption-text">
+            <p className="font-mono caption-text">
               <ProposalIdDisplay
                 proposalNumber={proposalNumber}
                 proposalPrefix={proposalPrefix}
