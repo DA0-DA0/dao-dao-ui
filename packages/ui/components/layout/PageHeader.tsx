@@ -69,19 +69,9 @@ export const PageHeader = ({
         />
       )}
 
-      {/* Use z-index of 9 to hide underneath Breadcrumbs responsive popup. */}
-      <div className="flex absolute top-0 bottom-0 -left-2 z-[9] flex-col justify-center">
-        <IconButton
-          Icon={Menu}
-          className="!outline-none sm:hidden"
-          onClick={toggle}
-          variant="ghost"
-        />
-      </div>
-
       <div
         className={clsx(
-          'flex relative z-10 flex-row justify-center items-center w-full h-full',
+          'flex relative flex-row justify-center items-center w-full h-full',
           !forceCenter && 'sm:justify-start'
         )}
       >
@@ -94,15 +84,23 @@ export const PageHeader = ({
         )}
       </div>
 
-      {/* Use z-index of 9 to hide underneath Breadcrumbs responsive popup. */}
-      <div className="flex absolute top-0 right-0 bottom-0 z-[9] flex-col justify-center">
+      {/* Place left and right components here below the center component so they take higher touch precedence over the Breadcrumbs container. */}
+      <div className="flex absolute top-0 bottom-0 -left-2 flex-col justify-center">
+        <IconButton
+          Icon={Menu}
+          className="!outline-none sm:hidden"
+          onClick={toggle}
+          variant="ghost"
+        />
+      </div>
+
+      <div className="flex absolute top-0 right-0 bottom-0 flex-col justify-center">
         {rightNode}
       </div>
 
-      {/* Make border with div so we can set z-index and padding. */}
-      {/* Use z-index of 9 to hide underneath Breadcrumbs responsive popup. */}
+      {/* Use div for border so we can set absolute positioning and padding. */}
       {!noBorder && (
-        <div className="absolute right-0 bottom-0 left-0 z-[9] h-[1px] bg-border-secondary"></div>
+        <div className="absolute right-0 bottom-0 left-0 h-[1px] bg-border-secondary"></div>
       )}
     </div>
   )
