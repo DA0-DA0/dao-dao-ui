@@ -101,7 +101,7 @@ export const TreasuryAndNftsTab = <
           ) : (
             <GridCardContainer className="pb-6">
               {sortedNfts.map((props, index) => (
-                <NftCard {...props} key={index} />
+                <NftCard {...(props as N)} key={index} />
               ))}
 
               <NoContent
