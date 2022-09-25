@@ -94,7 +94,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       return {
         props: {
           ...i18nProps,
-          title: serverT('error.daoNotFound'),
+          title: serverT('title.daoNotFound'),
           description: '',
         },
       }
@@ -334,14 +334,14 @@ export const makeGetDaoProposalStaticProps = ({
       // If invalid proposal ID, not found.
       if (typeof proposalId !== 'string') {
         return {
-          followingTitle: t('error.proposalNotFound'),
+          followingTitle: t('title.proposalNotFound'),
           additionalProps: {
             proposalInfo: undefined,
           },
         }
       }
 
-      let proposalInfo: CommonProposalInfo | undefined
+      let proposalInfo: CommonProposalInfo | null = null
       try {
         const {
           options: {
@@ -365,7 +365,7 @@ export const makeGetDaoProposalStaticProps = ({
         }
 
         // undefined if proposal does not exist.
-        proposalInfo = await getProposalInfo(cwClient)
+        proposalInfo = (await getProposalInfo(cwClient)) ?? null
       } catch (error) {
         // Rethrow.
         if (error instanceof RedirectError) {
@@ -388,7 +388,7 @@ export const makeGetDaoProposalStaticProps = ({
         url: getProposalUrlPrefix(params) + proposalId,
         followingTitle: proposalInfo
           ? proposalInfo.title
-          : t('error.proposalNotFound'),
+          : t('title.proposalNotFound'),
         overrideDescription: removeMarkdown(
           proposalInfo?.description ?? ''
         ).slice(0, MAX_META_CHARS_PROPOSAL_DESCRIPTION),

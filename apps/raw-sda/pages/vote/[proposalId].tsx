@@ -140,7 +140,7 @@ const ProposalNotFound = () => {
   const { t } = useTranslation()
 
   return (
-    <ErrorPage title={t('error.proposalNotFound')}>
+    <ErrorPage title={t('title.proposalNotFound')}>
       <p>
         <Trans Loader={Loader} i18nKey="error.couldntFindProposal">
           We couldn&apos;t find a proposal with that ID. See all proposals on
