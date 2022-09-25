@@ -69,7 +69,8 @@ export const PageHeader = ({
         />
       )}
 
-      <div className="flex absolute top-0 bottom-0 -left-2 z-10 flex-col justify-center">
+      {/* Use z-index of 9 to hide underneath Breadcrumbs responsive popup. */}
+      <div className="flex absolute top-0 bottom-0 -left-2 z-[9] flex-col justify-center">
         <IconButton
           Icon={Menu}
           className="!outline-none sm:hidden"
@@ -93,7 +94,8 @@ export const PageHeader = ({
         )}
       </div>
 
-      <div className="flex absolute top-0 right-0 bottom-0 z-10 flex-col justify-center">
+      {/* Use z-index of 9 to hide underneath Breadcrumbs responsive popup. */}
+      <div className="flex absolute top-0 right-0 bottom-0 z-[9] flex-col justify-center">
         {rightNode}
       </div>
 
