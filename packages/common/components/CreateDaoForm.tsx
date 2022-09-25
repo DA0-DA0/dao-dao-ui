@@ -467,7 +467,7 @@ export const CreateDaoForm = ({
       />
 
       {/* Offset to match PageHeader gradient which shows the hidden top portion. */}
-      <TopGradient className="-top-20"  />
+      <TopGradient className="-top-20" />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
       <form
@@ -498,38 +498,36 @@ export const CreateDaoForm = ({
           />
         )}
 
-        <div className="mx-6">
-          {/* Divider line shown after first page. */}
-          {pageIndex > 0 && (
-            <div className="mb-7 w-full h-[1px] bg-border-base"></div>
-          )}
+        {/* Divider line shown after first page. */}
+        {pageIndex > 0 && (
+          <div className="mb-7 w-full h-[1px] bg-border-base"></div>
+        )}
 
-          <div className="mb-14">
-            <Page {...createDaoContext} />
-          </div>
+        <div className="mb-14">
+          <Page {...createDaoContext} />
+        </div>
 
-          <div
-            className="flex flex-row items-center py-7 border-y border-border-secondary"
-            // justify-end doesn't work in tailwind for some reason
-            style={{
-              justifyContent: showBack ? 'space-between' : 'flex-end',
-            }}
-          >
-            {showBack && (
-              <Button
-                disabled={creating}
-                type="submit"
-                value={t(CreateDaoSubmitLabel.Back)}
-                variant="secondary"
-              >
-                <ArrowBack className="!w-4 !h-4 text-icon-primary" />
-                <p>{t(CreateDaoSubmitLabel.Back)}</p>
-              </Button>
-            )}
-            <Button loading={creating} type="submit" value={submitValue}>
-              {submitValue}
+        <div
+          className="flex flex-row items-center py-7 border-y border-border-secondary"
+          // justify-end doesn't work in tailwind for some reason
+          style={{
+            justifyContent: showBack ? 'space-between' : 'flex-end',
+          }}
+        >
+          {showBack && (
+            <Button
+              disabled={creating}
+              type="submit"
+              value={t(CreateDaoSubmitLabel.Back)}
+              variant="secondary"
+            >
+              <ArrowBack className="!w-4 !h-4 text-icon-primary" />
+              <p>{t(CreateDaoSubmitLabel.Back)}</p>
             </Button>
-          </div>
+          )}
+          <Button loading={creating} type="submit" value={submitValue}>
+            {submitValue}
+          </Button>
         </div>
       </form>
 
