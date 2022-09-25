@@ -14,6 +14,7 @@ import {
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import {
+  BaseNewProposalProps,
   CwProposalSingleAdapter,
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
@@ -26,6 +27,7 @@ import {
   Logo,
   PageLoader,
   ProfileDisconnectedCard,
+  ProposalCreatedModal,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 
@@ -100,31 +102,50 @@ const InnerProposalCreate = () => {
     }
   }, [router.query.prefill, router.isReady, daoInfo.proposalModules])
 
+  const [createdProposal, setCreatedProposal] =
+    useState<Parameters<BaseNewProposalProps['onCreateSuccess']>[0]>()
+
   return (
-    <CreateProposal
-      daoInfo={daoInfo}
-      isMember={isMember}
-      newProposal={
-        prefillChecked ? (
-          // TODO: Display proposal created card or navigate on success.
-          <SelectedNewProposal
-            onCreateSuccess={(proposalId) => alert(proposalId)}
-            prefill={prefill}
-          />
-        ) : (
-          <Loader />
-        )
-      }
-      proposalModule={selectedProposalModule}
-      rightSidebarContent={
-        connected ? (
-          <ProfileNewProposalCard proposalModule={selectedProposalModule} />
-        ) : (
-          <ProfileDisconnectedCard />
-        )
-      }
-      setProposalModule={setSelectedProposalModule}
-    />
+    <>
+      <CreateProposal
+        daoInfo={daoInfo}
+        isMember={isMember}
+        newProposal={
+          prefillChecked ? (
+            <SelectedNewProposal
+              onCreateSuccess={setCreatedProposal}
+              prefill={prefill}
+            />
+          ) : (
+            <Loader />
+          )
+        }
+        proposalModule={selectedProposalModule}
+        rightSidebarContent={
+          connected ? (
+            <ProfileNewProposalCard proposalModule={selectedProposalModule} />
+          ) : (
+            <ProfileDisconnectedCard />
+          )
+        }
+        setProposalModule={setSelectedProposalModule}
+      />
+
+      {createdProposal && (
+        <ProposalCreatedModal
+          itemProps={{
+            dao: {
+              coreAddress: daoInfo.coreAddress,
+              imageUrl: daoInfo.imageUrl,
+            },
+            ...createdProposal,
+          }}
+          modalProps={{
+            onClose: () => setCreatedProposal(undefined),
+          }}
+        />
+      )}
+    </>
   )
 }
 

@@ -8,6 +8,7 @@ import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { useActions } from '@dao-dao/actions'
 import { useDaoInfoContext } from '@dao-dao/common'
+import { Open } from '@dao-dao/icons'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,
@@ -15,6 +16,7 @@ import {
   CwProposalSingleHooks,
   CwProposalSingleSelectors,
   blockHeightSelector,
+  cosmWasmClientSelector,
   refreshWalletBalancesIdAtom,
   useVotingModule,
 } from '@dao-dao/state'
@@ -24,10 +26,16 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes'
-import { expirationExpired, processError } from '@dao-dao/utils'
+import {
+  convertExpirationToDate,
+  dateToWdhms,
+  expirationExpired,
+  processError,
+} from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { BaseNewProposalProps } from '../../../../types'
+import { makeGetProposalInfo } from '../../functions'
 import { NewProposalData, NewProposalForm } from '../../types'
 import { makeUseActions as makeUseProposalModuleActions } from '../hooks'
 import {
@@ -160,6 +168,7 @@ export const NewProposal = ({
     [setRefreshWalletBalancesId]
   )
 
+  const cosmWasmClient = useRecoilValue(cosmWasmClientSelector)
   const createProposal = useCallback(
     async (newProposalData: NewProposalData) => {
       if (
@@ -212,12 +221,40 @@ export const NewProposal = ({
         const proposalNumber = Number(
           findAttribute(response.logs, 'wasm', 'proposal_id').value
         )
+        const proposalId = `${options.proposalModule.prefix}${proposalNumber}`
 
-        onCreateSuccess(`${options.proposalModule.prefix}${proposalNumber}`)
+        const proposalInfo = await makeGetProposalInfo({
+          ...options,
+          proposalNumber,
+          proposalId,
+        })(cosmWasmClient)
+        const expirationDate =
+          proposalInfo && convertExpirationToDate(proposalInfo.expiration)
+
+        // TODO: Get more info, like threshold and quorum.
+        onCreateSuccess(
+          proposalInfo
+            ? {
+                id: proposalId,
+                title: formMethods.getValues('title'),
+                description: formMethods.getValues('description'),
+                info: expirationDate
+                  ? [
+                      {
+                        Icon: Open,
+                        label: dateToWdhms(expirationDate),
+                      },
+                    ]
+                  : [],
+              }
+            : {
+                id: proposalId,
+                title: formMethods.getValues('title'),
+                description: formMethods.getValues('description'),
+                info: [],
+              }
+        )
         // Don't stop loading indicator since we are navigating.
-
-        // TODO: Show proposal creation card here instead of navigating. Or in
-        // onCreateSuccess maybe?
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
@@ -231,11 +268,12 @@ export const NewProposal = ({
       t,
       blockHeight,
       increaseAllowance,
-      options.proposalModule.address,
-      options.proposalModule.prefix,
+      options,
       refreshBalances,
       doPropose,
+      cosmWasmClient,
       onCreateSuccess,
+      formMethods,
     ]
   )
 

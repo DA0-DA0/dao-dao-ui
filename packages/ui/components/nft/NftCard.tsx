@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ArrowOutward } from '@dao-dao/icons'
 import { NftCardInfo } from '@dao-dao/tstypes'
+import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Checkbox } from '../input'
@@ -52,7 +53,7 @@ export const NftCard = ({
           <img
             alt={t('info.nftImage')}
             className="aspect-square object-cover"
-            src={imageUrl}
+            src={transformIpfsUrlToHttpsIfNecessary(imageUrl)}
           />
         ) : (
           <div className="aspect-square"></div>

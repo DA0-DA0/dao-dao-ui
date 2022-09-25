@@ -15,7 +15,7 @@ import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { useActions } from '@dao-dao/actions'
 import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
-import { Airplane } from '@dao-dao/icons'
+import { Airplane, Open } from '@dao-dao/icons'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,
@@ -23,6 +23,7 @@ import {
   CwProposalSingleHooks,
   CwProposalSingleSelectors,
   blockHeightSelector,
+  cosmWasmClientSelector,
   refreshWalletBalancesIdAtom,
   useVotingModule,
 } from '@dao-dao/state'
@@ -49,6 +50,8 @@ import {
   Tooltip,
 } from '@dao-dao/ui'
 import {
+  convertExpirationToDate,
+  dateToWdhms,
   decodedMessagesString,
   expirationExpired,
   processError,
@@ -58,6 +61,7 @@ import {
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { BaseNewProposalProps } from '../../../../types'
+import { makeGetProposalInfo } from '../../functions'
 import { NewProposalData, NewProposalForm } from '../../types'
 import { makeUseActions as makeUseProposalModuleActions } from '../hooks'
 
@@ -271,6 +275,7 @@ export const CreateProposalForm = ({
     [setRefreshWalletBalancesId]
   )
 
+  const cosmWasmClient = useRecoilValue(cosmWasmClientSelector)
   const onSubmit = useCallback(
     async (newProposalData: NewProposalData) => {
       if (
@@ -324,7 +329,41 @@ export const CreateProposalForm = ({
           findAttribute(response.logs, 'wasm', 'proposal_id').value
         )
 
-        onCreateSuccess(`${proposalModulePrefix}${proposalNumber}`)
+        const proposalId = `${proposalModulePrefix}${proposalNumber}`
+
+        const proposalInfo = await makeGetProposalInfo({
+          proposalModule,
+          proposalNumber,
+          proposalId,
+          coreAddress,
+          Logo,
+          Loader,
+        })(cosmWasmClient)
+        const expirationDate =
+          proposalInfo && convertExpirationToDate(proposalInfo.expiration)
+
+        onCreateSuccess(
+          proposalInfo
+            ? {
+                id: proposalId,
+                title: formMethods.getValues('title'),
+                description: formMethods.getValues('description'),
+                info: expirationDate
+                  ? [
+                      {
+                        Icon: Open,
+                        label: dateToWdhms(expirationDate),
+                      },
+                    ]
+                  : [],
+              }
+            : {
+                id: proposalId,
+                title: formMethods.getValues('title'),
+                description: formMethods.getValues('description'),
+                info: [],
+              }
+        )
         // Don't stop loading indicator since we are navigating.
       } catch (err) {
         console.error(err)
@@ -342,8 +381,14 @@ export const CreateProposalForm = ({
       proposalModuleAddress,
       refreshBalances,
       createProposal,
-      onCreateSuccess,
       proposalModulePrefix,
+      proposalModule,
+      coreAddress,
+      Logo,
+      Loader,
+      cosmWasmClient,
+      onCreateSuccess,
+      formMethods,
     ]
   )
 

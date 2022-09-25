@@ -14,7 +14,12 @@ import {
   ProposalModule,
   ProposalPrefill,
 } from './dao'
-import { LoaderProps, LogoProps, ProfileVoteCardOption } from './ui'
+import {
+  LoaderProps,
+  LogoProps,
+  ProfileVoteCardOption,
+  ProposalCardProps,
+} from './ui'
 import { ProcessedThresholdQuorum } from './utils'
 import { BaseProposalDetailsVotingPowerWidgetProps } from './voting-module-adapter'
 
@@ -208,7 +213,12 @@ export interface BaseProposalModuleInfo {
 }
 
 export interface BaseNewProposalProps {
-  onCreateSuccess: (proposalId: string) => void
+  onCreateSuccess: (
+    newProposalProps: Pick<
+      ProposalCardProps,
+      'id' | 'title' | 'description' | 'info'
+    >
+  ) => void
   prefill: any
 }
 

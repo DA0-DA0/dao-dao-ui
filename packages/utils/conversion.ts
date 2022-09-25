@@ -140,3 +140,7 @@ export const convertBlocksToSeconds = (blocks: number) =>
 
 export const durationToSeconds = (duration: Duration) =>
   'height' in duration ? convertBlocksToSeconds(duration.height) : duration.time
+
+// Use Cloudflare's IPFS gateway.
+export const transformIpfsUrlToHttpsIfNecessary = (ipfsUrl: string) =>
+  ipfsUrl.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/')

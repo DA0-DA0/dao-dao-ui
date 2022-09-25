@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import removeMarkdown from 'remove-markdown'
 
 import { ProposalCardProps } from '@dao-dao/tstypes/ui/ProposalCard'
 
@@ -19,7 +20,7 @@ export const ProposalCard = ({
 }: ProposalCardProps) => (
   <LinkWrapper
     className={clsx(
-      'flex relative flex-col w-full bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md outline-transparent hover:outline-border-interactive-hover active:outline-border-interactive-focus outline transition-all',
+      'flex relative flex-col w-full bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md ring-1 ring-inset ring-transparent hover:ring-border-interactive-hover active:ring-border-interactive-focus transition-all',
       className
     )}
     href={`/dao/${coreAddress}/proposals/${id}`}
@@ -45,7 +46,9 @@ export const ProposalCard = ({
         </p>
       </DaoImage>
       <p className="text-center text-text-body primary-text">{title}</p>
-      <p className="break-words line-clamp-4 secondary-text">{description}</p>
+      <p className="break-words line-clamp-4 secondary-text">
+        {removeMarkdown(description)}
+      </p>
     </div>
 
     <div className="flex flex-col gap-2 self-stretch py-5 px-6 border-t border-border-secondary">

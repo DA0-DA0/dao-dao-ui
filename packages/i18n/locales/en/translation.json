@@ -21,6 +21,7 @@
     "connectWallet": "Connect wallet",
     "continue": "Continue",
     "copy": "Copy",
+    "copyToClipboard": "Copy to clipboard",
     "create": "Create",
     "createADAO": "Create a DAO",
     "createAProposal": "Create a proposal",

@@ -1,6 +1,7 @@
 import { Check } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
+import removeMarkdown from 'remove-markdown'
 
 import {
   DaoCardPin,
@@ -38,7 +39,7 @@ export const DaoCard = ({
   return (
     <LinkWrapper
       className={clsx(
-        'flex relative flex-col justify-between items-center py-7 px-6 w-full h-[328px] bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md outline-transparent hover:outline-border-interactive-hover active:outline-border-interactive-focus outline transition-all',
+        'flex relative flex-col justify-between items-center py-7 px-6 w-full h-[328px] bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md ring-1 ring-inset ring-transparent hover:ring-border-interactive-hover active:ring-border-interactive-focus transition-all',
         className
       )}
       href={`/dao/${coreAddress}`}
@@ -103,7 +104,7 @@ export const DaoCard = ({
 
       <div className="self-stretch">
         <p className="mb-5 w-full break-words line-clamp-3 secondary-text">
-          {description}
+          {removeMarkdown(description)}
         </p>
 
         <div

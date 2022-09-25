@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Copy } from '@dao-dao/icons'
 
 import { Button } from './Button'
+import { Tooltip } from './Tooltip'
 
 export const concatAddressStartEnd = (
   address: string,
@@ -34,6 +35,7 @@ export interface CopyToClipboardProps {
   className?: string
   textClassName?: string
   onCopy?: () => void
+  tooltip?: string
 }
 
 export const CopyToClipboard = ({
@@ -45,45 +47,48 @@ export const CopyToClipboard = ({
   className = 'font-mono text-xs',
   textClassName,
   onCopy,
+  tooltip,
 }: CopyToClipboardProps) => {
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
 
   return (
-    <button
-      className={clsx(
-        'flex overflow-hidden flex-row gap-1 items-center',
-        className
-      )}
-      onClick={() => {
-        navigator.clipboard.writeText(value)
-        setTimeout(() => setCopied(false), 2000)
-        setCopied(true)
-        toast.success(success || t('info.copiedToClipboard'))
-        onCopy?.()
-      }}
-      title={value}
-      type="button"
-    >
-      {copied ? (
-        <CheckCircleIcon className="w-[18px]" />
-      ) : (
-        <Copy height="18px" width="18px" />
-      )}
-
-      <span
+    <Tooltip title={tooltip}>
+      <button
         className={clsx(
-          'inline flex-1 p-1 truncate hover:bg-btn-secondary-hover rounded-md transition',
-          textClassName
+          'flex overflow-hidden flex-row gap-1 items-center',
+          className
         )}
+        onClick={() => {
+          navigator.clipboard.writeText(value)
+          setTimeout(() => setCopied(false), 2000)
+          setCopied(true)
+          toast.success(success || t('info.copiedToClipboard'))
+          onCopy?.()
+        }}
+        title={value}
+        type="button"
       >
-        {takeStartEnd
-          ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
-          : takeAll
-          ? value
-          : concatAddressBoth(value, takeN)}
-      </span>
-    </button>
+        {copied ? (
+          <CheckCircleIcon className="w-[18px]" />
+        ) : (
+          <Copy height="18px" width="18px" />
+        )}
+
+        <span
+          className={clsx(
+            'inline flex-1 p-1 truncate hover:bg-background-button-secondary-default rounded-md transition',
+            textClassName
+          )}
+        >
+          {takeStartEnd
+            ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
+            : takeAll
+            ? value
+            : concatAddressBoth(value, takeN)}
+        </span>
+      </button>
+    </Tooltip>
   )
 }
 
@@ -137,7 +142,7 @@ export const CopyToClipboardMobile = ({
         ) : (
           <Copy height="18px" width="18px" />
         )}
-        <span className="inline py-1 hover:bg-btn-secondary-hover transition">
+        <span className="inline py-1 hover:bg-background-button-secondary-default transition">
           {takeStartEnd
             ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
             : takeAll

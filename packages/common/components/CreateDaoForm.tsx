@@ -535,7 +535,7 @@ export const CreateDaoForm = ({
 
       {createdDaoCoreAddress && (
         <DaoCreatedModal
-          daoCardProps={{
+          itemProps={{
             coreAddress: createdDaoCoreAddress,
             name,
             description,

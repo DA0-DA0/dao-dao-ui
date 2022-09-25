@@ -72,7 +72,9 @@ export const TreasuryAndNftsTab = <
       tokens.loading
         ? []
         : // `sort` mutates, so let's make a copy of the array first.
-          [...tokens.data].sort((a, b) =>
+          // TODO: Figure out why data is undefined when loading happens.
+          // Probably useCachedLoadable's fault.
+          [...(tokens.data || [])].sort((a, b) =>
             !!a.crown === !!b.crown ? 0 : a.crown ? -1 : 1
           ),
     [tokens]

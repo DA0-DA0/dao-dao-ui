@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType, useEffect, useState } from 'react'
 import Confetti from 'react-confetti'
+import { useTranslation } from 'react-i18next'
 
 import { CopyToClipboard } from './CopyToClipboard'
 import { Modal, ModalProps } from './Modal'
@@ -25,6 +26,8 @@ export const ItemCreatedModal = <
   url,
   ...props
 }: ItemCreatedModalProps<T>) => {
+  const { t } = useTranslation()
+
   const [confettiVisible, setConfettiVisible] = useState(true)
   const [recycleConfetti, setRecycleConfetti] = useState(false)
   // Turn confetti off and back on.
@@ -42,7 +45,7 @@ export const ItemCreatedModal = <
       containerClassName={clsx('max-w-lg', modalContainerClassName)}
       header={header}
     >
-      <div className="flex relative flex-col gap-10 p-6 pt-8 -m-6">
+      <div className="overflow-hidden relative p-6 pt-8 -m-6">
         {confettiVisible && (
           <Confetti
             className="!z-10"
@@ -53,30 +56,36 @@ export const ItemCreatedModal = <
           />
         )}
 
-        <div className="relative z-20 self-center space-y-10 max-w-[18rem] bg-background-base shadow-dp8">
-          <props.Item
-            {...props.itemProps}
-            className="w-full"
-            onMouseLeave={() => setRecycleConfetti(false)}
-            onMouseOver={() => {
-              setRecycleConfetti(true)
-              setConfettiVisible(true)
-            }}
-          />
-        </div>
+        <div className="flex overflow-y-auto relative z-20 flex-col gap-10 w-full h-full">
+          <div className="shrink-0 self-center w-[18rem] max-w-[90%] bg-background-base rounded-md shadow-dp8">
+            <props.Item
+              {...props.itemProps}
+              className={clsx(
+                // Force same rounded corners as parent, just in case.
+                'w-full !rounded-md',
+                props.itemProps.className
+              )}
+              onMouseLeave={() => setRecycleConfetti(false)}
+              onMouseOver={() => {
+                setRecycleConfetti(true)
+                setConfettiVisible(true)
+              }}
+            />
+          </div>
 
-        <div className="overflow-hidden relative z-20 shrink-0 bg-background-base rounded-md shadow-dp4">
-          <CopyToClipboard
-            className="gap-4 p-4 w-full font-mono text-left bg-background-secondary hover:bg-btn-secondary-hover symbol-small-body-text"
-            onCopy={() => {
-              setResetConfetti(true)
-              setConfettiVisible(false)
-            }}
-            // Move hover background to whole container.
-            takeAll
-            textClassName="!bg-transparent"
-            value={url}
-          />
+          <div className="shrink-0 bg-background-base rounded-md shadow-dp4">
+            <CopyToClipboard
+              className="gap-4 p-4 w-full font-mono text-left bg-background-secondary hover:bg-background-button-secondary-default rounded-md transition symbol-small-body-text"
+              onCopy={() => {
+                setResetConfetti(true)
+                setConfettiVisible(false)
+              }}
+              takeAll
+              textClassName="!bg-transparent"
+              tooltip={t('button.copyToClipboard')}
+              value={url}
+            />
+          </div>
         </div>
       </div>
     </Modal>
