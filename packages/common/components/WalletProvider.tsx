@@ -18,6 +18,9 @@ import {
   CHAIN_REST_ENDPOINT,
   CHAIN_RPC_ENDPOINT,
   SITE_URL,
+  STARGAZE_CHAIN_ID,
+  STARGAZE_REST_ENDPOINT,
+  STARGAZE_RPC_ENDPOINT,
   WC_ICON_PATH,
 } from '@dao-dao/utils'
 
@@ -46,6 +49,12 @@ export const WalletProvider = ({
           ...ChainInfoMap[CHAIN_ID as ChainInfoID],
           rpc: CHAIN_RPC_ENDPOINT,
           rest: CHAIN_REST_ENDPOINT,
+        },
+        {
+          ...ChainInfoMap[ChainInfoID.Stargaze1],
+          chainId: STARGAZE_CHAIN_ID,
+          rpc: STARGAZE_RPC_ENDPOINT,
+          rest: STARGAZE_REST_ENDPOINT,
         },
       ]}
       classNames={{

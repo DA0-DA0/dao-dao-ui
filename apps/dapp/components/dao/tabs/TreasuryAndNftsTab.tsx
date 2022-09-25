@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 
 import { addCw721Action } from '@dao-dao/actions/actions/AddCw721'
-import { useDaoInfoContext } from '@dao-dao/common'
+import { StargazeNftImportModal, useDaoInfoContext } from '@dao-dao/common'
 import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
@@ -54,6 +54,7 @@ export const TreasuryAndNftsTab = () => {
   return (
     <StatelessTreasuryAndNftsTab
       NftCard={NftCard}
+      StargazeNftImportModal={StargazeNftImportModal}
       TokenCard={TokenCard}
       addCollectionHref={
         encodedProposalPrefill &&

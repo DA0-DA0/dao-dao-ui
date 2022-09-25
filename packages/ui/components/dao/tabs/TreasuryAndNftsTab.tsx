@@ -1,5 +1,5 @@
 import { Image } from '@mui/icons-material'
-import { ComponentType, useMemo, useRef } from 'react'
+import { ComponentType, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData, NftCardInfo, TokenCardInfo } from '@dao-dao/tstypes'
@@ -8,6 +8,7 @@ import { SortFn, useDropdownSorter } from '../../../hooks'
 import { Dropdown, DropdownOption } from '../../Dropdown'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Loader } from '../../Loader'
+import { ModalProps } from '../../Modal'
 import { NoContent } from '../../NoContent'
 
 export interface TreasuryAndNftsTabProps<
@@ -20,6 +21,7 @@ export interface TreasuryAndNftsTabProps<
   NftCard: ComponentType<N>
   isMember: boolean
   addCollectionHref?: string
+  StargazeNftImportModal: ComponentType<Pick<ModalProps, 'onClose'>>
 }
 
 export const TreasuryAndNftsTab = <
@@ -32,7 +34,11 @@ export const TreasuryAndNftsTab = <
   NftCard,
   isMember,
   addCollectionHref,
+  StargazeNftImportModal,
 }: TreasuryAndNftsTabProps<T, N>) => {
+  const [showImportStargazeNftsModal, setShowImportStargazeNftsModal] =
+    useState(false)
+
   const sortOptions = useRef<DropdownOption<SortFn<N>>[]>([
     {
       label: 'A → Z',
@@ -72,7 +78,7 @@ export const TreasuryAndNftsTab = <
       tokens.loading
         ? []
         : // `sort` mutates, so let's make a copy of the array first.
-          // TODO: Figure out why data is undefined when loading happens.
+          // TODO: Figure out why data is undefined sometimes when not loading.
           // Probably useCachedLoadable's fault.
           [...(tokens.data || [])].sort((a, b) =>
             !!a.crown === !!b.crown ? 0 : a.crown ? -1 : 1
@@ -88,7 +94,7 @@ export const TreasuryAndNftsTab = <
       <p className="mb-6 text-text-body title-text">{t('title.treasury')}</p>
 
       <div className="mb-9">
-        {tokens.loading ? (
+        {tokens.loading || !tokens.data ? (
           <Loader fill={false} />
         ) : tokens.data.length ? (
           <GridCardContainer cardType="short">
@@ -128,6 +134,14 @@ export const TreasuryAndNftsTab = <
               {sortedNfts.map((props, index) => (
                 <NftCard {...props} key={index} />
               ))}
+
+              <NoContent
+                Icon={Image}
+                body={t('info.depositFromStargazeQuestion')}
+                buttonLabel={t('button.deposit')}
+                className="justify-center min-h-[20rem]"
+                onClick={() => setShowImportStargazeNftsModal(true)}
+              />
             </GridCardContainer>
           )}
         </>
@@ -138,6 +152,12 @@ export const TreasuryAndNftsTab = <
           body={t('info.noNftsYet')}
           buttonLabel={t('button.addCollection')}
           href={isMember ? addCollectionHref : undefined}
+        />
+      )}
+
+      {showImportStargazeNftsModal && (
+        <StargazeNftImportModal
+          onClose={() => setShowImportStargazeNftsModal(false)}
         />
       )}
     </>

@@ -20,10 +20,15 @@ import {
   OwnerOfResponse,
   TokensResponse,
 } from '../../../clients/cw721-base'
-import { cosmWasmClientSelector } from '../chain'
+import {
+  cosmWasmClientSelector,
+  stargazeCosmWasmClientSelector,
+} from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
+  // TODO: Generalize.
+  stargaze?: boolean
 }
 export const queryClient = selectorFamily<
   Cw721BaseQueryClient,
@@ -31,9 +36,11 @@ export const queryClient = selectorFamily<
 >({
   key: 'cw721BaseQueryClient',
   get:
-    ({ contractAddress }) =>
+    ({ contractAddress, stargaze }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = stargaze
+        ? get(stargazeCosmWasmClientSelector)
+        : get(cosmWasmClientSelector)
       return new Cw721BaseQueryClient(client, contractAddress)
     },
 })

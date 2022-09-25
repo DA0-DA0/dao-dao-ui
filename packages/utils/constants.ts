@@ -139,3 +139,15 @@ export const NEW_DAO_CW20_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_NEW_DAO_CW20_DECIMALS || '6',
   10
 )
+
+// Stargaze
+export const STARGAZE_CHAIN_ID = process.env
+  .NEXT_PUBLIC_STARGAZE_CHAIN_ID as string
+export const STARGAZE_RPC_ENDPOINT = process.env
+  .NEXT_PUBLIC_STARGAZE_RPC_ENDPOINT as string
+export const STARGAZE_REST_ENDPOINT = process.env
+  .NEXT_PUBLIC_STARGAZE_REST_ENDPOINT as string
+export const STARGAZE_PROFILE_API_TEMPLATE = process.env
+  .NEXT_PUBLIC_STARGAZE_PROFILE_API_TEMPLATE as string
+export const STARGAZE_URL_BASE = process.env
+  .NEXT_PUBLIC_STARGAZE_URL_BASE as string

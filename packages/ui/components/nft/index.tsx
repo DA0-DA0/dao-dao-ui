@@ -1,2 +1,2 @@
 export * from './NftCard'
-export * from './NftStakingModal'
+export * from './NftSelectionModal'

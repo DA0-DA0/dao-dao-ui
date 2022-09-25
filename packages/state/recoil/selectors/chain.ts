@@ -1,5 +1,11 @@
 import { Coin } from '@cosmjs/stargate'
 import { cosmos } from 'interchain-lcd'
+import { DelegationDelegatorRewardSDKType } from 'interchain-lcd/types/codegen/cosmos/distribution/v1beta1/distribution'
+import {
+  DelegationResponseSDKType,
+  UnbondingDelegationSDKType,
+  ValidatorSDKType,
+} from 'interchain-lcd/types/codegen/cosmos/staking/v1beta1/staking'
 import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 
@@ -9,6 +15,7 @@ import {
   CHAIN_RPC_ENDPOINT,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
+  STARGAZE_RPC_ENDPOINT,
   cosmWasmClientRouter,
   getAllLcdResponse,
   nativeTokenDecimals,
@@ -30,6 +37,11 @@ export const stargateClientSelector = selector({
 export const cosmWasmClientSelector = selector({
   key: 'cosmWasmClient',
   get: () => cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT),
+})
+
+export const stargazeCosmWasmClientSelector = selector({
+  key: 'stargazeCosmWasmClient',
+  get: () => cosmWasmClientRouter.connect(STARGAZE_RPC_ENDPOINT),
 })
 
 export const lcdClientSelector = selector({
@@ -224,10 +236,11 @@ export const nativeUnstakingDurationSecondsSelector = selector({
 })
 
 export const nativeStakingInfoSelector = selectorFamily<
-  {
-    delegations: Delegation[]
-    unbondingDelegations: UnbondingDelegation[]
-  },
+  | {
+      delegations: Delegation[]
+      unbondingDelegations: UnbondingDelegation[]
+    }
+  | undefined,
   string
 >({
   key: 'nativeStakingInfo',
@@ -236,31 +249,41 @@ export const nativeStakingInfoSelector = selectorFamily<
     async ({ get }) => {
       const client = get(lcdClientSelector)
 
-      const delegations = await getAllLcdResponse(
-        client.staking.v1beta1.delegatorDelegations,
-        {
-          delegatorAddr,
-        },
-        'delegation_responses'
-      )
-      const validators = await getAllLcdResponse(
-        client.staking.v1beta1.delegatorValidators,
-        {
-          delegatorAddr,
-        },
-        'validators'
-      )
-      const { rewards } =
-        await client.distribution.v1beta1.delegationTotalRewards({
-          delegatorAddress: delegatorAddr,
-        })
-      const unbondingDelegations = await getAllLcdResponse(
-        client.staking.v1beta1.delegatorUnbondingDelegations,
-        {
-          delegatorAddr,
-        },
-        'unbonding_responses'
-      )
+      let delegations: DelegationResponseSDKType[]
+      let validators: ValidatorSDKType[]
+      let rewards: DelegationDelegatorRewardSDKType[]
+      let unbondingDelegations: UnbondingDelegationSDKType[]
+      try {
+        delegations = await getAllLcdResponse(
+          client.staking.v1beta1.delegatorDelegations,
+          {
+            delegatorAddr,
+          },
+          'delegation_responses'
+        )
+        validators = await getAllLcdResponse(
+          client.staking.v1beta1.delegatorValidators,
+          {
+            delegatorAddr,
+          },
+          'validators'
+        )
+        rewards = (
+          await client.distribution.v1beta1.delegationTotalRewards({
+            delegatorAddress: delegatorAddr,
+          })
+        ).rewards
+        unbondingDelegations = await getAllLcdResponse(
+          client.staking.v1beta1.delegatorUnbondingDelegations,
+          {
+            delegatorAddr,
+          },
+          'unbonding_responses'
+        )
+      } catch (error) {
+        console.error(error)
+        return undefined
+      }
 
       return {
         delegations: delegations

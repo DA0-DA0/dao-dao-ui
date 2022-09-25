@@ -42,3 +42,9 @@ export const refreshBlockHeightAtom = atom<number>({
   key: 'refreshBlockHeight',
   default: 0,
 })
+
+// Change this to refresh the list of stargaze NFTs for a wallet.
+export const refreshWalletStargazeNftsAtom = atomFamily<number, string>({
+  key: 'refreshWalletStargazeNfts',
+  default: 0,
+})

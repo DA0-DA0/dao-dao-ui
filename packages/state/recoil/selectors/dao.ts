@@ -18,6 +18,7 @@ import { DaoDropdownInfo, UnstakingTaskStatus } from '@dao-dao/ui'
 import {
   CWCORE_CONTRACT_NAME,
   NATIVE_DENOM,
+  STARGAZE_URL_BASE,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   transformIpfsUrlToHttpsIfNecessary,
@@ -31,7 +32,7 @@ import {
   ConfigResponse as CwCoreV0_2_0ConfigResponse,
   DumpStateResponse as CwCoreV0_2_0DumpStateResponse,
 } from '../../clients/cw-core/0.2.0'
-import { NftInfoResponse } from '../../clients/cw721-base'
+import { ContractInfoResponse, NftInfoResponse } from '../../clients/cw721-base'
 import {
   nativeBalancesSelector,
   nativeStakingInfoSelector,
@@ -260,12 +261,12 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             let stakingInfo: TokenCardStakingInfo | undefined
             // For now, stakingInfo only exists for native token, until ICA.
             if (denom === NATIVE_DENOM) {
-              const { delegations, unbondingDelegations } = get(
+              const nativeStakingInfo = get(
                 nativeStakingInfoSelector(coreAddress)
               )
 
-              stakingInfo = {
-                unstakingTasks: unbondingDelegations.map(
+              stakingInfo = nativeStakingInfo && {
+                unstakingTasks: nativeStakingInfo.unbondingDelegations.map(
                   ({ balance, finishesAt }) => ({
                     status: UnstakingTaskStatus.Unstaking,
                     amount: convertMicroDenomToDenomWithDecimals(
@@ -280,7 +281,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
                 unstakingDurationSeconds: get(
                   nativeUnstakingDurationSecondsSelector
                 ),
-                stakes: delegations.map(
+                stakes: nativeStakingInfo.delegations.map(
                   ({ validator, delegated, pendingReward }) => ({
                     validator,
                     amount: convertMicroDenomToDenomWithDecimals(
@@ -353,9 +354,13 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
 export const nftTokenUriDataSelector = selectorFamily({
   key: 'nftTokenUriData',
   get: (tokenUri: string) => async () => {
-    // Transform IPFS url if necessary.
-    const response = await fetch(transformIpfsUrlToHttpsIfNecessary(tokenUri))
-    return await response.text()
+    try {
+      // Transform IPFS url if necessary.
+      const response = await fetch(transformIpfsUrlToHttpsIfNecessary(tokenUri))
+      return await response.text()
+    } catch {
+      return undefined
+    }
   },
 })
 
@@ -370,6 +375,17 @@ export const nftCardInfosSelector = selectorFamily<NftCardInfo[], string>({
         })
       )
 
+      const nftCollectionInfos = get(
+        waitForAll(
+          nftCollectionAddresses.map((collectionAddress) =>
+            Cw721BaseSelectors.contractInfoSelector({
+              contractAddress: collectionAddress,
+              params: [],
+            })
+          )
+        )
+      )
+
       const nftCollectionTokenIds = get(
         waitForAll(
           nftCollectionAddresses.map((collectionAddress) =>
@@ -381,83 +397,149 @@ export const nftCardInfosSelector = selectorFamily<NftCardInfo[], string>({
         )
       )
 
-      const nftTokenInfos = get(
-        waitForAll(
-          nftCollectionAddresses.flatMap((collectionAddress, index) =>
-            nftCollectionTokenIds[index].map((tokenId) =>
-              Cw721BaseSelectors.nftInfoSelector({
-                contractAddress: collectionAddress,
-                params: [{ tokenId }],
-              })
+      const collectionsWithTokens = nftCollectionAddresses
+        .map((junoCollectionAddress, index) => {
+          const junoCollectionInfo = nftCollectionInfos[index]
+          if (!junoCollectionInfo) {
+            return
+          }
+
+          const tokenIds = nftCollectionTokenIds[index]
+
+          const infos = get(
+            waitForAll(
+              tokenIds.map((tokenId) =>
+                Cw721BaseSelectors.nftInfoSelector({
+                  contractAddress: junoCollectionAddress,
+                  params: [{ tokenId }],
+                })
+              )
             )
           )
-        )
-      ).filter(Boolean) as NftInfoResponse[]
 
-      const nftTokenUriDataResponses = get(
-        waitForAll(
-          nftTokenInfos.map(({ token_uri }) =>
-            token_uri
-              ? nftTokenUriDataSelector(token_uri)
+          const uriDataResponses = get(
+            waitForAll(
+              infos.map(({ token_uri } = { token_uri: undefined }) =>
+                token_uri
+                  ? nftTokenUriDataSelector(token_uri)
+                  : constSelector(undefined)
+              )
+            )
+          )
+
+          // TODO: Identify IBC'd Stargaze NFT collections better.
+          const stargazeCollectionAddress = junoCollectionInfo.name.startsWith(
+            'wasm.'
+          )
+            ? junoCollectionInfo.name.split('/').pop()
+            : undefined
+          const stargazeCollectionInfo = get(
+            stargazeCollectionAddress
+              ? Cw721BaseSelectors.contractInfoSelector({
+                  contractAddress: stargazeCollectionAddress,
+                  stargaze: true,
+                  params: [],
+                })
               : constSelector(undefined)
           )
-        )
-      )
 
-      const infos: NftCardInfo[] = (
-        await Promise.all(
-          nftTokenInfos.map(
-            async ({ token_uri }, index): Promise<NftCardInfo | undefined> => {
-              const info: NftCardInfo = {
-                collectionAddress: '',
-                tokenId: '',
-                // externalLink?: {
-                //   href: string
-                //   name: string
-                // }
-                imageUrl: token_uri!,
-                createdBy: '',
-                // floorPrice?: {
-                //   amount: number
-                //   denom: string
-                // }
-                name: index.toString(),
-              }
+          return {
+            junoCollectionAddress,
+            junoCollectionInfo,
+            stargazeCollectionAddress,
+            stargazeCollectionInfo,
+            tokens: tokenIds
+              .map((tokenId, index) => ({
+                tokenId,
+                info: infos[index],
+                uriDataResponse: uriDataResponses[index],
+              }))
+              .filter(
+                ({ info, uriDataResponse }) => !!info && !!uriDataResponse
+              ) as {
+              tokenId: string
+              info: NftInfoResponse
+              uriDataResponse: string
+            }[],
+          }
+        })
+        .filter(Boolean) as {
+        junoCollectionAddress: string
+        junoCollectionInfo: ContractInfoResponse
+        stargazeCollectionAddress?: string
+        stargazeCollectionInfo?: ContractInfoResponse
+        tokens: {
+          tokenId: string
+          info: NftInfoResponse
+          uriDataResponse: string
+        }[]
+      }[]
 
-              const tokenUriResponse = nftTokenUriDataResponses[index]
-              if (!tokenUriResponse) {
-                return undefined
-              }
-
-              try {
-                const json = JSON.parse(tokenUriResponse)
-                console.log(json)
-
-                info.name = json.name
-                info.imageUrl =
-                  typeof json.image === 'string'
-                    ? transformIpfsUrlToHttpsIfNecessary(json.image)
-                    : ''
-
-                if (typeof json.external_url === 'string') {
-                  const externalUrl = transformIpfsUrlToHttpsIfNecessary(
-                    json.external_url
-                  )
-                  const externalUrlDomain = new URL(externalUrl).hostname
-                  info.externalLink = {
-                    href: externalUrl,
-                    name: HostnameMap[externalUrlDomain] ?? externalUrlDomain,
-                  }
+      const infos: NftCardInfo[] = collectionsWithTokens
+        .flatMap(
+          ({
+            junoCollectionAddress,
+            stargazeCollectionAddress,
+            junoCollectionInfo,
+            stargazeCollectionInfo,
+            tokens,
+          }) =>
+            tokens.map(
+              ({
+                tokenId,
+                info: nftInfo,
+                uriDataResponse,
+              }): NftCardInfo | undefined => {
+                const info: NftCardInfo = {
+                  collection: {
+                    address: stargazeCollectionAddress ?? junoCollectionAddress,
+                    name:
+                      stargazeCollectionInfo?.name ??
+                      (junoCollectionInfo.name || 'Cyber Dogs'),
+                  },
+                  tokenId,
+                  externalLink: stargazeCollectionAddress?.startsWith('stars')
+                    ? {
+                        href: `${STARGAZE_URL_BASE}/media/${stargazeCollectionAddress}/${tokenId}`,
+                        name: 'Stargaze',
+                      }
+                    : undefined,
+                  imageUrl: nftInfo.token_uri ?? '',
+                  // floorPrice?: {
+                  //   amount: number
+                  //   denom: string
+                  // }
+                  name: '1',
                 }
-              } catch (err) {
-                console.error(err)
-              }
 
-              return info
-            }
-          )
+                try {
+                  const json = JSON.parse(uriDataResponse)
+
+                  info.name = json.name
+                  info.imageUrl =
+                    typeof json.image === 'string'
+                      ? transformIpfsUrlToHttpsIfNecessary(json.image)
+                      : ''
+
+                  if (typeof json.external_url === 'string') {
+                    const externalUrl = transformIpfsUrlToHttpsIfNecessary(
+                      json.external_url
+                    )
+                    const externalUrlDomain = new URL(externalUrl).hostname
+                    info.externalLink = {
+                      href: externalUrl,
+                      name: HostnameMap[externalUrlDomain] ?? externalUrlDomain,
+                    }
+                  }
+                } catch (err) {
+                  console.error(err)
+                }
+
+                return info
+              }
+            )
         )
-      ).filter(Boolean) as NftCardInfo[]
+        .filter(Boolean) as NftCardInfo[]
 
       return infos
     },

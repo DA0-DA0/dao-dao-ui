@@ -15,7 +15,7 @@ import {
 import { Validator } from './chain'
 import { ContractVersion } from './contract'
 import {
-  InstantiateMsg,
+  CwCoreV0_2_0InstantiateMsg,
   ModuleInstantiateInfo,
 } from './contracts/cw-core-0.2.0'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
@@ -115,14 +115,16 @@ export interface TokenCardInfo {
 }
 
 export interface NftCardInfo {
-  collectionAddress: string
+  collection: {
+    address: string
+    name: string
+  }
   tokenId: string
   externalLink?: {
     href: string
     name: string
   }
   imageUrl?: string
-  createdBy: string
   floorPrice?: {
     amount: number
     denom: string
@@ -157,7 +159,7 @@ export interface CreateDaoContext<
   >[]
   votingModuleDaoCreationAdapter: Required<VotingModuleAdapter>['daoCreation']
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
-  generateInstantiateMsg: () => InstantiateMsg
+  generateInstantiateMsg: () => CwCoreV0_2_0InstantiateMsg
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
 }
 

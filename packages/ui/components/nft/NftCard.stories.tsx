@@ -36,11 +36,13 @@ export const makeProps = (): NftCardProps => {
   id++
 
   return {
-    collectionAddress: 'starsCollectionAddress',
+    collection: {
+      address: 'starsCollectionAddress',
+      name: 'French Bulldog',
+    },
     tokenId: `${id}`,
-    createdBy: 'stars2afd31svj2f0z',
     imageUrl: '/dog_nft.png',
-    name: `French Bulldog ${id}`,
+    name: '1',
     floorPrice: {
       // Random price between 0 and 10000 with up to 6 decimals.
       amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,

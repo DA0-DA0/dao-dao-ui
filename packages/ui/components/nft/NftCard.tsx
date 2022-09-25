@@ -19,10 +19,10 @@ export interface NftCardProps extends NftCardInfo {
 }
 
 export const NftCard = ({
+  collection,
   externalLink,
   checkbox,
   imageUrl,
-  createdBy,
   floorPrice,
   name,
   className,
@@ -91,10 +91,10 @@ export const NftCard = ({
       >
         {/* Created by */}
         <div className="flex flex-col gap-1 items-start">
-          <p className="secondary-text">{t('info.createdBy')}</p>
+          <p className="secondary-text">{t('title.collection')}</p>
           <CopyToClipboardUnderline
             takeStartEnd={{ start: 7, end: 5 }}
-            value={createdBy}
+            value={collection.address}
           />
         </div>
 
@@ -119,7 +119,12 @@ export const NftCard = ({
         )}
       </div>
 
-      <p className="py-4 px-6 min-h-[5.5rem] primary-text">{name}</p>
+      {/* If name is only a number, prefix with collection name. */}
+      <p className="py-4 px-6 min-h-[5.5rem] primary-text">
+        {/^[0-9]+$/.test(name.trim())
+          ? `${collection.name} ${name.trim()}`
+          : name}
+      </p>
     </div>
   )
 }

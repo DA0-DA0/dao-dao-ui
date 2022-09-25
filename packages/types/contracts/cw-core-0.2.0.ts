@@ -37,7 +37,7 @@ export interface InitialItem {
   name: string
 }
 
-export interface InstantiateMsg {
+export interface CwCoreV0_2_0InstantiateMsg {
   admin?: string | null
   automatically_add_cw20s: boolean
   automatically_add_cw721s: boolean
