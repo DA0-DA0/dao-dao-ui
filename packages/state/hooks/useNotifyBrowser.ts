@@ -63,7 +63,7 @@ export const useNotifyBrowser = () => {
       // Trigger onClick when appropriate.
       notification.onclick = onClick ?? null
     },
-    [granted]
+    [granted, windowFocused]
   )
 
   return notifyBrowser
