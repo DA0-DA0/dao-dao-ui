@@ -28,7 +28,6 @@ import {
   CosmosMessageDisplay,
   Loader,
   Logo,
-  PageHeader,
   Tooltip,
   useAppLayoutContext,
 } from '../components'
@@ -77,7 +76,7 @@ export const Wallet = ({
   error,
 }: WalletProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const {
     control,
@@ -131,10 +130,9 @@ export const Wallet = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
+      <PageHeader title={t('title.wallet')} />
 
-      <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl">
-        <PageHeader title={t('title.wallet')} />
-
+      <div className="flex flex-col items-stretch mx-auto max-w-5xl">
         <FormProvider {...formMethods}>
           <form
             className="flex flex-col gap-4"

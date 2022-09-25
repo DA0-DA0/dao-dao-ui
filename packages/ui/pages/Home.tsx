@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import {
   FeaturedDaos,
   FeaturedDaosProps,
-  PageHeader,
   PinnedDaos,
   PinnedDaosProps,
   useAppLayoutContext,
@@ -28,15 +27,14 @@ export const Home = ({
   ...props
 }: HomeProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
+      <PageHeader className={maxWidth} title={t('title.home')} />
 
-      <div className="flex flex-col gap-8 items-center px-6">
-        <PageHeader className={maxWidth} title={t('title.home')} />
-
+      <div className="flex flex-col gap-8 items-center">
         <p className={clsx('title-text', maxWidth)}>
           {t('title.featuredDaos')}
         </p>

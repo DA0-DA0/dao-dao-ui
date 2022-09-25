@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { DaoInfo, ProposalModule } from '@dao-dao/tstypes'
 import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
-import { Dropdown, PageHeader, useAppLayoutContext } from '../components'
+import { Dropdown, useAppLayoutContext } from '../components'
 
 export interface CreateProposalProps {
   daoInfo: DaoInfo
@@ -24,7 +24,7 @@ export const CreateProposal = ({
   rightSidebarContent,
 }: CreateProposalProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const proposalModuleItems = useMemo(
     () =>
@@ -42,27 +42,26 @@ export const CreateProposal = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
+      <PageHeader
+        breadcrumbs={{
+          crumbs: [
+            { href: '/home', label: 'Home' },
+            ...getParentDaoBreadcrumbs(daoInfo.parentDao),
+            { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
+          ],
+          current: t('title.createProposal'),
+        }}
+        rightNode={
+          <Dropdown
+            containerClassName="hidden sm:block"
+            onSelect={setProposalModule}
+            options={proposalModuleItems}
+            selected={proposalModule}
+          />
+        }
+      />
 
-      <div className="flex flex-col gap-6 items-stretch px-6 mx-auto max-w-6xl">
-        <PageHeader
-          breadcrumbs={{
-            crumbs: [
-              { href: '/home', label: 'Home' },
-              ...getParentDaoBreadcrumbs(daoInfo.parentDao),
-              { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
-            ],
-            current: t('title.createProposal'),
-          }}
-          rightNode={
-            <Dropdown
-              containerClassName="hidden sm:block"
-              onSelect={setProposalModule}
-              options={proposalModuleItems}
-              selected={proposalModule}
-            />
-          }
-        />
-
+      <div className="flex flex-col gap-6 items-stretch mx-auto max-w-6xl">
         {!isMember && (
           <p className="text-text-interactive-error caption-text">
             {t('error.mustBeMemberToCreateProposal')}

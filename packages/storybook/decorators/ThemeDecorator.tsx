@@ -18,6 +18,10 @@ export const ThemeDecorator: DecoratorFn = (Story, ctx) => {
 
   const [themeChangeCount, setThemeChangeCount] = useState(0)
   useEffect(() => {
+    // Add body-text to storybook body to simulate real app.
+    !document.body.classList.contains('body-text') &&
+      document.body.classList.add('body-text')
+
     // Ensure correct theme class is set on document.
     Object.values(Theme).forEach((value) =>
       document.documentElement.classList.toggle(value, value === theme)
@@ -26,7 +30,7 @@ export const ThemeDecorator: DecoratorFn = (Story, ctx) => {
     setThemeChangeCount((c) => c + 1)
   }, [theme])
 
-  // Update theme when dark mode value changes.
+  // Update storybook theme when dark mode value changes.
   useEffect(() => {
     const updater = (value: boolean) =>
       setTheme(value ? Theme.Dark : Theme.Light)

@@ -9,6 +9,7 @@ import { ErrorBoundary } from '../ErrorBoundary'
 import { ProfileImage } from '../profile/ProfileImage'
 import { AppLayoutContext } from './AppLayoutContext'
 import { Navigation } from './Navigation'
+import { makePageHeader } from './PageHeader'
 import { RightSidebar, makeRightSidebarContent } from './RightSidebar'
 
 export * from '@dao-dao/tstypes/ui/AppLayout'
@@ -37,6 +38,15 @@ export const AppLayout = ({
       []
     )
 
+  const [PageHeader, setPageHeader] = useState(() => makePageHeader(null))
+  const setPageHeaderRef = useCallback(
+    (ref: HTMLDivElement | null) =>
+      // Use state setting function since we want to return a function
+      // (component).
+      setPageHeader(() => makePageHeader(ref)),
+    []
+  )
+
   // On route change, close responsive bars.
   useEffect(() => {
     context.responsiveNavigation.enabled &&
@@ -52,19 +62,20 @@ export const AppLayout = ({
     <AppLayoutContext.Provider
       value={{
         ...context,
-        // Include the right sidebar portal renderer in the context to be
-        // accessed by pages.
+        // Include the right sidebar and page header portal renderers in the
+        // context to be accessed by pages.
         RightSidebarContent,
+        PageHeader,
       }}
     >
-      <div className="flex overflow-hidden relative flex-row items-stretch w-full h-full">
+      <div className="flex overflow-hidden relative z-[1] flex-row items-stretch w-full h-full">
         <ErrorBoundary>
           <Navigation {...navigationProps} />
         </ErrorBoundary>
 
         <main
           className={clsx(
-            'overflow-y-auto grow border-x border-border-base transition-opacity no-scrollbar',
+            'flex overflow-hidden flex-col grow border-x border-border-base transition-opacity',
             // Navigation bar can be responsive up to sm size. After that, it
             // automatically displays.
             context.responsiveNavigation.enabled
@@ -87,7 +98,18 @@ export const AppLayout = ({
             />
           </div>
 
-          <ErrorBoundary>{children}</ErrorBoundary>
+          <div className="shrink-0" ref={setPageHeaderRef}></div>
+
+          {/* Make horizontal padding 1 unit more than page header so that the body is not touching the sides of the page header's bottom border when it scrolls. */}
+          <div
+            className="overflow-y-auto relative grow px-7 pt-10 pb-6 no-scrollbar"
+            // PageHeader uses this ID to obtain this element and track its
+            // scroll position so that it can move the top gradient accordingly
+            // to match the underlying gradient on the page.
+            id="main-content-scrollable"
+          >
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </div>
         </main>
 
         <ErrorBoundary>

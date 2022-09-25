@@ -1,20 +1,15 @@
-import { ComponentPropsWithoutRef, ReactNode } from 'react'
+import clsx from 'clsx'
+import { ComponentPropsWithoutRef } from 'react'
 
 import { useThemeContext } from '../theme'
 
-export interface GradientHeroProps
-  extends Omit<ComponentPropsWithoutRef<'div'>, 'className' | 'style'> {
-  children: ReactNode
-  wrapperClassName?: string
-  childContainerClassName?: string
-}
+export type TopGradientProps = Omit<ComponentPropsWithoutRef<'div'>, 'children'>
 
-export const GradientHero = ({
-  children,
-  wrapperClassName,
-  childContainerClassName,
+export const TopGradient = ({
+  className,
+  style,
   ...props
-}: GradientHeroProps) => {
+}: TopGradientProps) => {
   const { accentColor } = useThemeContext()
   const baseRgb =
     (accentColor &&
@@ -30,18 +25,18 @@ export const GradientHero = ({
   return (
     <div
       {...props}
-      className={wrapperClassName}
+      className={clsx('absolute top-0 right-0 left-0 z-0', className)}
       style={{
+        ...style,
         background: `linear-gradient(180deg, ${baseRgb} 0%, rgba(var(--color-background-base), 0) 100%)`,
       }}
     >
       <div
-        className={childContainerClassName}
         style={{
           backgroundImage: `linear-gradient(270deg, rgb(var(--color-background-base)) 0%, rgba(var(--color-background-base), 0) 50%, rgb(var(--color-background-base)) 100%)`,
         }}
       >
-        {children}
+        <div className="h-[50vh]"></div>
       </div>
     </div>
   )

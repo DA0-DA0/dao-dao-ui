@@ -33,9 +33,8 @@ import {
   DaoCreateSidebarCard,
   DaoCreatedModal,
   DaoHeader,
-  GradientHero,
   ImageSelector,
-  PageHeader,
+  TopGradient,
   useAppLayoutContext,
   useThemeContext,
 } from '@dao-dao/ui'
@@ -85,7 +84,7 @@ export const CreateDaoForm = ({
   const { t } = useTranslation()
   const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
 
-  const { RightSidebarContent } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const [createdDaoCoreAddress, setCreatedDaoCoreAddress] = useState<string>()
 
@@ -454,49 +453,50 @@ export const CreateDaoForm = ({
           pageIndex={createdDaoCoreAddress ? 4 : pageIndex}
         />
       </RightSidebarContent>
+      <PageHeader
+        breadcrumbs={{
+          crumbs: [
+            { href: '/home', label: 'Home' },
+            ...getParentDaoBreadcrumbs(parentDao),
+          ],
+          current:
+            name.trim() ||
+            (parentDao ? t('title.newSubDao') : t('title.newDao')),
+        }}
+        gradient
+      />
+
+      {/* Offset to match PageHeader gradient which shows the hidden top portion. */}
+      <TopGradient className="-top-20"  />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
       <form
-        className="flex flex-col items-stretch mx-auto max-w-6xl"
+        className="flex relative z-[1] flex-col items-stretch mx-auto max-w-6xl"
         onSubmit={formOnSubmit}
       >
-        <GradientHero childContainerClassName="px-6">
-          <PageHeader
-            breadcrumbs={{
-              crumbs: [
-                { href: '/home', label: 'Home' },
-                ...getParentDaoBreadcrumbs(parentDao),
-              ],
-              current:
-                name.trim() ||
-                (parentDao ? t('title.newSubDao') : t('title.newDao')),
-            }}
-          />
-
-          {/* Show image selector or DAO header depending on page. */}
-          {pageIndex === 0 ? (
-            <div className="flex flex-col items-center py-10">
-              <ImageSelector
-                error={form.formState.errors.imageUrl}
-                fieldName="imageUrl"
-                register={form.register}
-                validation={[validateUrl]}
-                watch={form.watch}
-              />
-
-              <p className="mt-6 text-text-tertiary primary-text">
-                {t('form.addAnImage')}
-              </p>
-            </div>
-          ) : (
-            <DaoHeader
-              description={description}
-              established={t('info.today')}
-              imageUrl={imageUrl}
-              name={name}
+        {/* Show image selector or DAO header depending on page. */}
+        {pageIndex === 0 ? (
+          <div className="flex flex-col items-center py-10">
+            <ImageSelector
+              error={form.formState.errors.imageUrl}
+              fieldName="imageUrl"
+              register={form.register}
+              validation={[validateUrl]}
+              watch={form.watch}
             />
-          )}
-        </GradientHero>
+
+            <p className="mt-6 text-text-tertiary primary-text">
+              {t('form.addAnImage')}
+            </p>
+          </div>
+        ) : (
+          <DaoHeader
+            description={description}
+            established={t('info.today')}
+            imageUrl={imageUrl}
+            name={name}
+          />
+        )}
 
         <div className="mx-6">
           {/* Divider line shown after first page. */}

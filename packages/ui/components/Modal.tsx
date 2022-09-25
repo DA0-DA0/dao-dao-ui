@@ -1,6 +1,7 @@
 import { XIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import { ReactNode, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
 import { IconButton } from './IconButton'
 
@@ -39,7 +40,7 @@ export const Modal = ({
     return () => document.removeEventListener('keydown', handleKeyPress)
   }, [onClose])
 
-  return (
+  return createPortal(
     <div
       className={clsx(
         'flex fixed top-0 left-0 z-40 justify-center items-center p-4 w-screen h-full backdrop-brightness-50 transition cursor-pointer backdrop-filter',
@@ -90,6 +91,7 @@ export const Modal = ({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

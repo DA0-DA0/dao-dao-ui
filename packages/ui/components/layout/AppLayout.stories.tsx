@@ -46,20 +46,22 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
   const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
     useState(false)
 
-  const appLayoutContext: Omit<IAppLayoutContext, 'RightSidebarContent'> =
-    useMemo(
-      () => ({
-        responsiveNavigation: {
-          enabled: responsiveNavigationEnabled,
-          toggle: () => setResponsiveNavigationEnabled((v) => !v),
-        },
-        responsiveRightSidebar: {
-          enabled: responsiveRightSidebarEnabled,
-          toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
-        },
-      }),
-      [responsiveNavigationEnabled, responsiveRightSidebarEnabled]
-    )
+  const appLayoutContext: Omit<
+    IAppLayoutContext,
+    'RightSidebarContent' | 'PageHeader'
+  > = useMemo(
+    () => ({
+      responsiveNavigation: {
+        enabled: responsiveNavigationEnabled,
+        toggle: () => setResponsiveNavigationEnabled((v) => !v),
+      },
+      responsiveRightSidebar: {
+        enabled: responsiveRightSidebarEnabled,
+        toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
+      },
+    }),
+    [responsiveNavigationEnabled, responsiveRightSidebarEnabled]
+  )
 
   return (
     <AppLayout

@@ -5,7 +5,7 @@ import { CommonProposalInfo } from '@dao-dao/proposal-module-adapter'
 import { BaseProposalStatusAndInfoProps, DaoInfo } from '@dao-dao/tstypes'
 import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
-import { MarkdownPreview, PageHeader, useAppLayoutContext } from '../components'
+import { MarkdownPreview, useAppLayoutContext } from '../components'
 
 export interface ProposalProps {
   proposalInfo: CommonProposalInfo
@@ -32,7 +32,7 @@ export const Proposal = ({
   rightSidebarContent,
 }: ProposalProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   // Scroll to hash manually if available since this component and thus the
   // desired target anchor text won't be ready right when the page renders.
@@ -56,49 +56,48 @@ export const Proposal = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
+      <PageHeader
+        breadcrumbs={{
+          crumbs: [
+            { href: '/home', label: 'Home' },
+            ...getParentDaoBreadcrumbs(daoInfo.parentDao),
+            { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
+          ],
+          current: `${t('title.proposal')} ${id}`,
+        }}
+      />
 
-      <div className="flex overflow-hidden flex-col items-stretch px-6 mx-auto max-w-5xl h-[100vh]">
-        <PageHeader
-          breadcrumbs={{
-            crumbs: [
-              { href: '/home', label: 'Home' },
-              ...getParentDaoBreadcrumbs(daoInfo.parentDao),
-              { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
-            ],
-            current: `${t('title.proposal')} ${id}`,
-          }}
-        />
+      {/* Undo container (in AppLayout) pt-10 on the top and pb-6 on the bottom so we can add those to our scrollable view instead. Also set height to full height of parent and some overflow to account for extended margins. */}
+      <div className="relative mx-auto -mt-10 -mb-6 max-w-5xl h-[calc(100%+4rem)]">
+        <div className="hidden absolute top-10 left-0 w-[18rem] md:block">
+          <ProposalStatusAndInfo inline={false} />
+        </div>
 
-        <div className="overflow-hidden relative h-full">
-          <div className="hidden absolute top-10 left-0 w-[18rem] md:block">
-            <ProposalStatusAndInfo inline={false} />
+        {/* Make entire pane scrollable, even space around and under status and info card on the side. */}
+        <div className="overflow-y-auto absolute top-0 right-0 bottom-0 left-0 pt-10 pb-6 h-full md:pl-[21rem] no-scrollbar">
+          <p className="mb-11 hero-text">{title}</p>
+
+          <p className="mb-4 font-mono caption-text">
+            {[
+              creator.name,
+              !!createdAtEpoch && formatDate(new Date(createdAtEpoch)),
+            ]
+              .filter(Boolean)
+              // eslint-disable-next-line i18next/no-literal-string
+              .join(' – ')}
+          </p>
+
+          <MarkdownPreview className="max-w-full" markdown={description} />
+
+          <div className="mt-9 mb-3">{actionDisplay}</div>
+
+          <div className="md:hidden">
+            <ProposalStatusAndInfo inline />
           </div>
 
-          <div className="overflow-y-auto absolute top-0 right-0 bottom-0 left-0 px-1 pt-10 pb-6 h-full md:pl-[21rem] no-scrollbar">
-            <p className="mb-11 hero-text">{title}</p>
+          <div className="mt-3">{voteTally}</div>
 
-            <p className="mb-4 font-mono caption-text">
-              {[
-                creator.name,
-                !!createdAtEpoch && formatDate(new Date(createdAtEpoch)),
-              ]
-                .filter(Boolean)
-                // eslint-disable-next-line i18next/no-literal-string
-                .join(' – ')}
-            </p>
-
-            <MarkdownPreview className="max-w-full" markdown={description} />
-
-            <div className="mt-9 mb-3">{actionDisplay}</div>
-
-            <div className="md:hidden">
-              <ProposalStatusAndInfo inline />
-            </div>
-
-            <div className="mt-3">{voteTally}</div>
-
-            <div className="mt-10">{votesCast}</div>
-          </div>
+          <div className="mt-10">{votesCast}</div>
         </div>
       </div>
     </>

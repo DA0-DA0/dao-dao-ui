@@ -6,10 +6,9 @@ import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {
   DaoHeader,
-  GradientHero,
-  PageHeader,
   PinToggle,
   SegmentedControls,
+  TopGradient,
   useAppLayoutContext,
 } from '../components'
 
@@ -37,7 +36,7 @@ export const DaoHome = ({
   membersTab,
   rightSidebarContent,
 }: DaoHomeProps) => {
-  const { RightSidebarContent } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
   const [selectedTab, setSelectedTab] = useState(Tab.Proposals)
 
   const tabs = [
@@ -54,60 +53,58 @@ export const DaoHome = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
+      <PageHeader
+        breadcrumbs={{
+          crumbs: [
+            { href: '/home', label: 'Home' },
+            ...getParentDaoBreadcrumbs(daoInfo.parentDao),
+          ],
+          current: daoInfo.name,
+        }}
+        gradient
+        rightNode={<PinToggle onPin={onPin} pinned={pinned} />}
+      />
 
-      {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
-      <div className="flex flex-col items-stretch mx-auto max-w-6xl">
-        <GradientHero childContainerClassName="px-6">
-          <PageHeader
-            breadcrumbs={{
-              crumbs: [
-                { href: '/home', label: 'Home' },
-                ...getParentDaoBreadcrumbs(daoInfo.parentDao),
-              ],
-              current: daoInfo.name,
-            }}
-            rightNode={<PinToggle onPin={onPin} pinned={pinned} />}
+      {/* Offset to match PageHeader gradient which shows the hidden top portion. */}
+      <TopGradient className="-top-20" />
+
+      <div className="flex relative z-[1] flex-col items-stretch mx-auto max-w-6xl">
+        <DaoHeader
+          coreAddress={daoInfo.coreAddress}
+          description={daoInfo.description}
+          established={daoInfo.created && formatDate(daoInfo.created)}
+          imageUrl={daoInfo.imageUrl}
+          name={daoInfo.name}
+        />
+
+        {daoInfoBar}
+
+        <div className="flex flex-col items-center py-6 border-y border-t-border-base border-b-border-secondary">
+          <SegmentedControls
+            className="shrink w-full max-w-2xl"
+            onSelect={setSelectedTab}
+            selected={selectedTab}
+            tabs={tabs}
           />
+        </div>
 
-          <DaoHeader
-            coreAddress={daoInfo.coreAddress}
-            description={daoInfo.description}
-            established={daoInfo.created && formatDate(daoInfo.created)}
-            imageUrl={daoInfo.imageUrl}
-            name={daoInfo.name}
-          />
-
-          {daoInfoBar}
-        </GradientHero>
-
-        <div className="px-6">
-          <div className="flex flex-col items-center py-6 border-y border-t-border-base border-b-border-secondary">
-            <SegmentedControls
-              className="shrink w-full max-w-2xl"
-              onSelect={setSelectedTab}
-              selected={selectedTab}
-              tabs={tabs}
-            />
+        <div className="pt-6">
+          <div className={clsx(selectedTab !== Tab.Proposals && 'hidden')}>
+            {proposalsTab}
           </div>
-
-          <div className="py-6">
-            <div className={clsx(selectedTab !== Tab.Proposals && 'hidden')}>
-              {proposalsTab}
-            </div>
-            <div
-              className={clsx(selectedTab !== Tab.TreasuryAndNfts && 'hidden')}
-            >
-              {treasuryAndNftsTab}
-            </div>
-            <div className={clsx(selectedTab !== Tab.SubDaos && 'hidden')}>
-              {subDaosTab}
-            </div>
-            {membersTab !== undefined && (
-              <div className={clsx(selectedTab !== Tab.Members && 'hidden')}>
-                {membersTab}
-              </div>
-            )}
+          <div
+            className={clsx(selectedTab !== Tab.TreasuryAndNfts && 'hidden')}
+          >
+            {treasuryAndNftsTab}
           </div>
+          <div className={clsx(selectedTab !== Tab.SubDaos && 'hidden')}>
+            {subDaosTab}
+          </div>
+          {membersTab !== undefined && (
+            <div className={clsx(selectedTab !== Tab.Members && 'hidden')}>
+              {membersTab}
+            </div>
+          )}
         </div>
       </div>
     </>

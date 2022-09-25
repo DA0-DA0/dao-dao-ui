@@ -1,6 +1,6 @@
 import { Refresh } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, ReactNode, useMemo } from 'react'
+import { ComponentType, ReactNode, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/tstypes'
@@ -10,7 +10,6 @@ import {
   DaoDropdownInfo,
   IconButton,
   Loader,
-  PageHeader,
   ProposalContainer,
   useAppLayoutContext,
 } from '../components'
@@ -36,7 +35,7 @@ export const Inbox = <T extends {}>({
   refreshing,
 }: InboxProps<T>) => {
   const { t } = useTranslation()
-  const { RightSidebarContent } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const numOpenProposals = useMemo(
     () =>
@@ -49,32 +48,56 @@ export const Inbox = <T extends {}>({
     [daosWithProposals]
   )
 
+  const [refreshSpinning, setRefreshSpinning] = useState(false)
+  // Start spinning refresh icon if refreshing sets to true. Turn off once the
+  // iteration completes (in `onAnimationIteration` below).
+  useEffect(() => {
+    refreshing && setRefreshSpinning(true)
+  }, [refreshing])
+
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
+      <PageHeader
+        rightNode={
+          <IconButton
+            Icon={Refresh}
+            circular
+            className={clsx(
+              'transition-opacity',
+              daosWithProposals.loading
+                ? 'opacity-0 pointer-events-none'
+                : 'opacity-100',
+              refreshSpinning && 'animate-spin-medium'
+            )}
+            // If spinning but no longer refreshing, stop after iteration.
+            onAnimationIteration={
+              refreshSpinning && !refreshing
+                ? () => setRefreshSpinning(false)
+                : undefined
+            }
+            onClick={() => {
+              // Perform one spin even if refresh completes immediately. It will
+              // stop after 1 iteration if `refreshing` does not become true.
+              setRefreshSpinning(true)
+              onRefresh()
+            }}
+            variant="ghost"
+          />
+        }
+        title={t('title.inbox')}
+      />
 
-      <div className="flex flex-col items-stretch px-6 mx-auto max-w-5xl h-full">
-        <PageHeader title={t('title.inbox')} />
-
+      <div className="flex flex-col items-stretch mx-auto max-w-5xl">
         {daosWithProposals.loading ? (
-          <Loader className="mt-10" fill={false} />
+          <Loader fill={false} />
         ) : (
           <>
-            <div className="flex flex-row gap-6 justify-between items-center mt-10">
-              <p className="title-text">
-                {t('title.numOpenProposals', { count: numOpenProposals })}
-              </p>
+            <p className="title-text">
+              {t('title.numOpenProposals', { count: numOpenProposals })}
+            </p>
 
-              <IconButton
-                Icon={Refresh}
-                circular
-                className={clsx(refreshing && 'animate-spin-medium')}
-                onClick={onRefresh}
-                variant="ghost"
-              />
-            </div>
-
-            <div className="grow my-6 space-y-4">
+            <div className="grow mt-6 space-y-4">
               {daosWithProposals.data.map(({ dao, proposals }, index) => (
                 <DaoDropdown
                   key={index}
