@@ -51,6 +51,7 @@ export const CreateProposal = ({
           ],
           current: t('title.createProposal'),
         }}
+        className="mx-auto max-w-6xl"
         rightNode={
           <Dropdown
             containerClassName="hidden sm:block"

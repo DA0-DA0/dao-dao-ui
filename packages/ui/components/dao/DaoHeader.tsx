@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { MarkdownPreview } from '../MarkdownPreview'
-import { DaoImage } from './DaoImage'
+import { DaoImage, DaoImageProps } from './DaoImage'
 
 export interface DaoHeaderProps {
   coreAddress?: string
@@ -9,6 +9,7 @@ export interface DaoHeaderProps {
   description: string
   imageUrl?: string | null
   established?: string
+  parentDao: DaoImageProps['parentDao']
 }
 
 export const DaoHeader = ({
@@ -17,12 +18,18 @@ export const DaoHeader = ({
   description,
   imageUrl,
   established,
+  parentDao,
 }: DaoHeaderProps) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex flex-col items-center py-10">
-      <DaoImage coreAddress={coreAddress} imageUrl={imageUrl} size="lg" />
+      <DaoImage
+        coreAddress={coreAddress}
+        imageUrl={imageUrl}
+        parentDao={parentDao}
+        size="lg"
+      />
 
       <p className="mt-6 text-center hero-text">{name}</p>
       {established && (

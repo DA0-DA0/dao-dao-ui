@@ -98,7 +98,7 @@ export const AppLayout = ({
             />
           </div>
 
-          <div className="shrink-0" ref={setPageHeaderRef}></div>
+          <div className="shrink-0 px-6" ref={setPageHeaderRef}></div>
 
           {/* Make horizontal padding 1 unit more than page header so that the body is not touching the sides of the page header's bottom border when it scrolls. */}
           <div

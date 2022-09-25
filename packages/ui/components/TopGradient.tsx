@@ -11,7 +11,7 @@ export const TopGradient = ({
   ...props
 }: TopGradientProps) => {
   const { accentColor } = useThemeContext()
-  const baseRgb =
+  const baseColor =
     (accentColor &&
       // Convert to rgba with alpha of 0.4 if in rgb format.
       (accentColor.startsWith('rgb')
@@ -25,10 +25,13 @@ export const TopGradient = ({
   return (
     <div
       {...props}
-      className={clsx('absolute top-0 right-0 left-0 z-0', className)}
+      className={clsx(
+        'absolute top-0 right-0 left-0 z-0 opacity-40',
+        className
+      )}
       style={{
         ...style,
-        background: `linear-gradient(180deg, ${baseRgb} 0%, rgba(var(--color-background-base), 0) 100%)`,
+        background: `linear-gradient(180deg, ${baseColor} 0%, rgba(var(--color-background-base), 0) 100%)`,
       }}
     >
       <div

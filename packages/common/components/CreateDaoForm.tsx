@@ -34,7 +34,6 @@ import {
   DaoCreatedModal,
   DaoHeader,
   ImageSelector,
-  TopGradient,
   useAppLayoutContext,
   useThemeContext,
 } from '@dao-dao/ui'
@@ -463,11 +462,9 @@ export const CreateDaoForm = ({
             name.trim() ||
             (parentDao ? t('title.newSubDao') : t('title.newDao')),
         }}
+        className="mx-auto max-w-6xl"
         gradient
       />
-
-      {/* Offset to match PageHeader gradient which shows the hidden top portion. */}
-      <TopGradient className="-top-20" />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
       <form
@@ -495,6 +492,7 @@ export const CreateDaoForm = ({
             established={t('info.today')}
             imageUrl={imageUrl}
             name={name}
+            parentDao={parentDao}
           />
         )}
 

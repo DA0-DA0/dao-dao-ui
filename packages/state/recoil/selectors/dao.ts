@@ -22,6 +22,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getNftName,
+  processError,
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
@@ -99,24 +100,34 @@ export const daoDropdownInfoSelector: (
 })
 
 export const daoCardInfoSelector = selectorFamily<
-  DaoCardInfo,
+  DaoCardInfo | undefined,
   { coreAddress: string; daoUrlPrefix: string }
 >({
   key: 'daoCardInfo',
   get:
     ({ coreAddress, daoUrlPrefix }) =>
     ({ get }) => {
+      let dumpedState:
+        | CwCoreV0_1_0DumpStateResponse
+        | CwCoreV0_2_0DumpStateResponse
+      try {
+        dumpedState = get(
+          // Both v1 and v2 have a dump_state query.
+          CwCoreV0_2_0Selectors.dumpStateSelector({
+            contractAddress: coreAddress,
+            params: [],
+          })
+        )
+      } catch (err) {
+        console.error(processError(err))
+        return
+      }
+
       const {
         config,
         created_timestamp, // Only present for v2.
         admin,
-      }: CwCoreV0_1_0DumpStateResponse | CwCoreV0_2_0DumpStateResponse = get(
-        // Both v1 and v2 have a dump_state query.
-        CwCoreV0_2_0Selectors.dumpStateSelector({
-          contractAddress: coreAddress,
-          params: [],
-        })
-      )
+      } = dumpedState
 
       const established =
         typeof created_timestamp === 'number'
@@ -232,7 +243,7 @@ export const subDaoCardInfosSelector = selectorFamily<
             })
           )
         )
-      )
+      ).filter(Boolean) as DaoCardInfo[]
     },
 })
 

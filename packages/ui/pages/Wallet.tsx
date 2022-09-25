@@ -130,7 +130,7 @@ export const Wallet = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader title={t('title.wallet')} />
+      <PageHeader className="mx-auto max-w-5xl" title={t('title.wallet')} />
 
       <div className="flex flex-col items-stretch mx-auto max-w-5xl">
         <FormProvider {...formMethods}>

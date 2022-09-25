@@ -59,6 +59,7 @@ export const Inbox = <T extends {}>({
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeader
+        className="mx-auto max-w-5xl"
         rightNode={
           <IconButton
             Icon={Refresh}

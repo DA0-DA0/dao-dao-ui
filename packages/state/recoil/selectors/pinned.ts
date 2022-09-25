@@ -36,7 +36,7 @@ export const pinnedDaoCardInfoSelector = selectorFamily<
             daoCardInfoSelector({ coreAddress, daoUrlPrefix })
           )
         )
-      )
+      ).filter(Boolean) as DaoCardInfo[]
     },
 })
 

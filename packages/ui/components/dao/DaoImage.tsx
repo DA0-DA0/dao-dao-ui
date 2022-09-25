@@ -10,7 +10,7 @@ export interface DaoImageProps {
   imageUrl: string | undefined | null
   // Used to get placeholder image if no `imageUrl` present.
   coreAddress?: string
-  parentDao?: Pick<DaoParentInfo, 'coreAddress' | 'imageUrl'>
+  parentDao?: Pick<DaoParentInfo, 'coreAddress' | 'imageUrl'> | null
   className?: string
   imageClassName?: string
   children?: ReactNode

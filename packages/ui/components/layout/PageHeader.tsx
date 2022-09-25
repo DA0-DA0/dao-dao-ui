@@ -36,12 +36,7 @@ export const PageHeader = ({
 }: PageHeaderProps) => {
   const { toggle } = useAppLayoutContext().responsiveNavigation
 
-  // Intelligently move gradient to match page. A page should display the
-  // TopGradient offset by the height of this header (i.e. "-top-20"), and this
-  // header covers the top part of that gradient. This PageHeader component then
-  // shows just that covered top part so it looks cohesive. Since there are two
-  // different gradients lined up, we need to keep them lined up by tracking
-  // scroll movement manually.
+  // Intelligently move gradient to match scroll of page.
   const [scrollableScrollTop, setScrollableScrollTop] = useState(0)
   useEffect(() => {
     if (typeof document === 'undefined' || !gradient) {
@@ -64,11 +59,7 @@ export const PageHeader = ({
 
   return (
     <div
-      className={clsx(
-        'overflow-y-hidden relative shrink-0',
-        PAGE_HEADER_HEIGHT_CLASS_NAMES,
-        className
-      )}
+      className={clsx('relative', PAGE_HEADER_HEIGHT_CLASS_NAMES, className)}
     >
       {gradient && (
         <TopGradient
@@ -78,7 +69,7 @@ export const PageHeader = ({
         />
       )}
 
-      <div className="flex absolute top-0 bottom-0 left-4 z-10 flex-col justify-center">
+      <div className="flex absolute top-0 bottom-0 -left-2 z-10 flex-col justify-center">
         <IconButton
           Icon={Menu}
           className="!outline-none sm:hidden"
@@ -89,7 +80,7 @@ export const PageHeader = ({
 
       <div
         className={clsx(
-          'flex relative z-10 flex-row justify-center items-center px-6 w-full h-full',
+          'flex relative z-10 flex-row justify-center items-center w-full h-full',
           !forceCenter && 'sm:justify-start'
         )}
       >
@@ -102,14 +93,14 @@ export const PageHeader = ({
         )}
       </div>
 
-      <div className="flex absolute top-0 right-6 bottom-0 z-10 flex-col justify-center">
+      <div className="flex absolute top-0 right-0 bottom-0 z-10 flex-col justify-center">
         {rightNode}
       </div>
 
       {/* Make border with div so we can set z-index and padding. */}
       {/* Use z-index of 9 to hide underneath Breadcrumbs responsive popup. */}
       {!noBorder && (
-        <div className="absolute right-6 bottom-0 left-6 z-[9] h-[1px] bg-border-secondary"></div>
+        <div className="absolute right-0 bottom-0 left-0 z-[9] h-[1px] bg-border-secondary"></div>
       )}
     </div>
   )

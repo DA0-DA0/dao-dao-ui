@@ -8,7 +8,6 @@ import {
   DaoHeader,
   PinToggle,
   SegmentedControls,
-  TopGradient,
   useAppLayoutContext,
 } from '../components'
 
@@ -61,12 +60,10 @@ export const DaoHome = ({
           ],
           current: daoInfo.name,
         }}
+        className="mx-auto max-w-6xl"
         gradient
         rightNode={<PinToggle onPin={onPin} pinned={pinned} />}
       />
-
-      {/* Offset to match PageHeader gradient which shows the hidden top portion. */}
-      <TopGradient className="-top-20" />
 
       <div className="flex relative z-[1] flex-col items-stretch mx-auto max-w-6xl">
         <DaoHeader
@@ -75,6 +72,7 @@ export const DaoHome = ({
           established={daoInfo.created && formatDate(daoInfo.created)}
           imageUrl={daoInfo.imageUrl}
           name={daoInfo.name}
+          parentDao={daoInfo.parentDao}
         />
 
         {daoInfoBar}
@@ -88,7 +86,7 @@ export const DaoHome = ({
           />
         </div>
 
-        <div className="pt-6">
+        <div className="py-6">
           <div className={clsx(selectedTab !== Tab.Proposals && 'hidden')}>
             {proposalsTab}
           </div>

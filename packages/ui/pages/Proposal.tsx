@@ -65,10 +65,11 @@ export const Proposal = ({
           ],
           current: `${t('title.proposal')} ${id}`,
         }}
+        className="mx-auto max-w-6xl"
       />
 
       {/* Undo container (in AppLayout) pt-10 on the top and pb-6 on the bottom so we can add those to our scrollable view instead. Also set height to full height of parent and some overflow to account for extended margins. */}
-      <div className="relative mx-auto -mt-10 -mb-6 max-w-5xl h-[calc(100%+4rem)]">
+      <div className="relative mx-auto -mt-10 -mb-6 max-w-6xl h-[calc(100%+4rem)]">
         <div className="hidden absolute top-10 left-0 w-[18rem] md:block">
           <ProposalStatusAndInfo inline={false} />
         </div>
