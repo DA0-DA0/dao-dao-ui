@@ -119,12 +119,7 @@ export const NftCard = ({
         )}
       </div>
 
-      {/* If name is only a number, prefix with collection name. */}
-      <p className="py-4 px-6 min-h-[5.5rem] primary-text">
-        {/^[0-9]+$/.test(name.trim())
-          ? `${collection.name} ${name.trim()}`
-          : name}
-      </p>
+      <p className="py-4 px-6 min-h-[5.5rem] primary-text">{name}</p>
     </div>
   )
 }

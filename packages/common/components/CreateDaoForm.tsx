@@ -30,8 +30,8 @@ import { CwCoreV0_2_0InstantiateMsg } from '@dao-dao/tstypes/contracts/cw-core-0
 import {
   Button,
   CreateDaoPages,
-  DaoCreatedModal,
   DaoCreateSidebarCard,
+  DaoCreatedModal,
   DaoHeader,
   GradientHero,
   ImageSelector,

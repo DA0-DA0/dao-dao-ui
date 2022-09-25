@@ -126,10 +126,16 @@ export const loadableToLoadingData = <T>(
 }
 
 export const convertExpirationToDate = (
-  expiration: Expiration
+  expiration: Expiration,
+  // For converting height to rough date.
+  currentBlockHeight: number
 ): Date | undefined =>
-  'at_height' in expiration
-    ? new Date(Date.now() + convertBlocksToSeconds(expiration.at_height) * 1000)
+  'at_height' in expiration && currentBlockHeight > 0
+    ? new Date(
+        Date.now() +
+          convertBlocksToSeconds(expiration.at_height - currentBlockHeight) *
+            1000
+      )
     : 'at_time' in expiration
     ? // Timestamp is in nanoseconds, convert to microseconds.
       new Date(Number(expiration.at_time) / 1e6)

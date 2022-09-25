@@ -24,7 +24,7 @@ Default.args = {
     makeProposalProps(
       undefined,
       // Pick one at random.
-      ['Passed', 'Rejected'][Math.floor(Math.random() * 2)],
+      (['passed', 'rejected'] as const)[Math.floor(Math.random() * 2)],
       // Pick one at random.
       ['Yes', 'No', 'Abstain'][Math.floor(Math.random() * 3)]
     )

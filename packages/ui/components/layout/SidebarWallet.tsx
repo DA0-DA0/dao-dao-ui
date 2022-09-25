@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+
 import { Loader } from '../Loader'
 import {
   ConnectWallet,
@@ -5,6 +7,7 @@ import {
   ConnectedWallet,
   ConnectedWalletProps,
 } from '../wallet'
+import { PAGE_HEADER_HEIGHT_CLASS_NAMES } from './PageHeader'
 
 export type SidebarWalletProps =
   | ({
@@ -15,7 +18,12 @@ export type SidebarWalletProps =
     } & Omit<ConnectWalletProps, 'className'>)
 
 export const SidebarWallet = (props: SidebarWalletProps) => (
-  <div className="flex flex-col shrink-0 justify-center h-20">
+  <div
+    className={clsx(
+      'flex flex-col shrink-0 justify-center',
+      PAGE_HEADER_HEIGHT_CLASS_NAMES
+    )}
+  >
     {props.connected ? (
       <ConnectedWallet
         {...{

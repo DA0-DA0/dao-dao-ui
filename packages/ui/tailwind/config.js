@@ -23,7 +23,11 @@ const tailwindConfig = {
   ],
   theme: {
     screens: {
-      xs: '416px',
+      // xs = 410px chosen because in the tiers of mobile screen sizes, the
+      // larger phone viewport widths start just above 410px (Google Pixels at
+      // 412px, iPhones at 414px).
+      // https://mediag.com/blog/popular-screen-resolutions-designing-for-all/
+      xs: '410px',
       ...defaultTheme.screens,
     },
     extend: {

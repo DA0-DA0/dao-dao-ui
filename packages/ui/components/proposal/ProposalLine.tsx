@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import Link from 'next/link'
-import { ReactNode } from 'react'
+import { ComponentType, ReactNode } from 'react'
 
 import { ContractVersion } from '@dao-dao/tstypes'
 
@@ -13,8 +13,9 @@ export interface ProposalLineProps {
   proposalModuleVersion: ContractVersion
   title: string
   expiration: string
-  status: ReactNode
+  Status: ComponentType<{ dimmed?: boolean }>
   vote: ReactNode
+  votingOpen: boolean
   lastUpdated: Date
   href: string
   className?: string
@@ -26,8 +27,9 @@ export const ProposalLine = ({
   proposalModuleVersion,
   title,
   expiration,
-  status,
+  Status,
   vote,
+  votingOpen,
   lastUpdated,
   href,
   className,
@@ -52,9 +54,11 @@ export const ProposalLine = ({
               proposalPrefix={proposalPrefix}
             />
           </p>
-          {status}
+          <div className="w-20">
+            <Status />
+          </div>
           <p className="grow truncate body-text">{title}</p>
-          <p className="font-mono text-right break-words caption-text">
+          <p className="shrink-0 font-mono text-right break-words caption-text">
             {expiration}
           </p>
           {vote}
@@ -63,24 +67,35 @@ export const ProposalLine = ({
         {/* Mobile */}
         <div className="flex flex-col gap-2 justify-between p-4 min-h-[9.5rem] text-sm rounded-md md:hidden">
           <div className="flex flex-col gap-2">
-            <div className="flex flex-row justify-between items-start">
-              {status}
-              {vote}
-            </div>
-
-            <p className="col-span-3 break-words body-text">{title}</p>
-          </div>
-
-          <div className="flex flex-row gap-6 justify-between items-center">
             <p className="font-mono caption-text">
               <ProposalIdDisplay
                 proposalNumber={proposalNumber}
                 proposalPrefix={proposalPrefix}
               />
             </p>
-            <p className="font-mono text-center break-words caption-text">
-              {expiration}
+
+            <p className="col-span-3 break-words line-clamp-2 body-text">
+              {title}
             </p>
+          </div>
+
+          <div className="flex flex-row gap-6 justify-between items-center">
+            <div className="flex flex-row gap-2 items-center">
+              <Status dimmed />
+
+              <p
+                className={clsx(
+                  'font-mono leading-5 text-center text-text-tertiary break-words link-text',
+                  !votingOpen && 'hidden xs:inline-block'
+                )}
+              >
+                {/* eslint-disable-next-line i18next/no-literal-string */}
+                <span className="inline-block mr-2">–</span>
+                {expiration}
+              </p>
+            </div>
+
+            {vote}
           </div>
         </div>
       </a>

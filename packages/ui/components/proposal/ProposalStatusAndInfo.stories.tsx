@@ -1,7 +1,6 @@
 import {
   AccountCircleOutlined,
   HourglassTopRounded,
-  ListAltRounded,
   RotateRightOutlined,
 } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
@@ -10,7 +9,6 @@ import clsx from 'clsx'
 import { ButtonLink } from '../Button'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Logo } from '../Logo'
-import { ProposalIdDisplay } from './ProposalIdDisplay'
 import { ProposalStatusAndInfo } from './ProposalStatusAndInfo'
 
 export default {
@@ -30,22 +28,17 @@ Default.args = {
   status: 'If the current vote stands, the proposal will pass.',
   info: [
     {
-      Icon: ListAltRounded,
-      label: 'Proposal',
-      Value: (props) => (
-        <p {...props}>
-          <ProposalIdDisplay proposalNumber={2} proposalPrefix="B" />
-        </p>
-      ),
-    },
-    {
       Icon: ({ className }) => (
         <Logo className={clsx('m-[0.125rem] !w-5 !h-5', className)} />
       ),
       label: 'DAO',
       Value: (props) => (
-        <ButtonLink variant="underline" {...props}>
-          DAO
+        <ButtonLink
+          onClick={() => alert('go to dao name')}
+          variant="underline"
+          {...props}
+        >
+          DAO Name
         </ButtonLink>
       ),
     },

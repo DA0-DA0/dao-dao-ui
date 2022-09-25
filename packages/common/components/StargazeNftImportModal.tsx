@@ -2,7 +2,6 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { ComponentType, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector } from 'recoil'
 
 import {
   useCachedLoadable,
@@ -46,7 +45,7 @@ export const InnerStargazeNftImportModal = ({
     useCachedLoadable(
       stargazeWalletAddress
         ? walletStargazeNftCardInfosSelector(stargazeWalletAddress)
-        : constSelector([])
+        : undefined
     ),
     []
   )

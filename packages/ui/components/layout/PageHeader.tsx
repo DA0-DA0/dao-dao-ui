@@ -18,6 +18,8 @@ export interface PageHeaderProps {
   rightNode?: ReactNode
 }
 
+export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-20'
+
 // Title and breadcrumbs are mutually exclusive. Title takes precedence.
 export const PageHeader = ({
   title,
@@ -33,7 +35,8 @@ export const PageHeader = ({
   return (
     <div
       className={clsx(
-        'relative shrink-0 h-20',
+        'relative shrink-0',
+        PAGE_HEADER_HEIGHT_CLASS_NAMES,
         !noBorder && 'border-b border-border-secondary',
         className
       )}

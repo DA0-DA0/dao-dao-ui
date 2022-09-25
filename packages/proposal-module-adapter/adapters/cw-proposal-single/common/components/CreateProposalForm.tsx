@@ -340,7 +340,8 @@ export const CreateProposalForm = ({
           Loader,
         })(cosmWasmClient)
         const expirationDate =
-          proposalInfo && convertExpirationToDate(proposalInfo.expiration)
+          proposalInfo &&
+          convertExpirationToDate(proposalInfo.expiration, blockHeight)
 
         onCreateSuccess(
           proposalInfo

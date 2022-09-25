@@ -20,9 +20,7 @@ Open.args = {
       className={`w-5 h-5 ${ProposalStatusMap.open.iconClassName}`}
     />
   ),
-  label: (
-    <p className={`w-[8ch] ${ProposalStatusMap.open.textClassName}`}>Open</p>
-  ),
+  label: <p className={ProposalStatusMap.open.textClassName}>Open</p>,
 }
 Open.parameters = {
   design: {
@@ -38,11 +36,7 @@ Passed.args = {
       className={`w-5 h-5 ${ProposalStatusMap.passed.iconClassName}`}
     />
   ),
-  label: (
-    <p className={`w-[8ch] ${ProposalStatusMap.passed.textClassName}`}>
-      Passed
-    </p>
-  ),
+  label: <p className={ProposalStatusMap.passed.textClassName}>Passed</p>,
 }
 Passed.parameters = Open.parameters
 
@@ -53,10 +47,6 @@ Rejected.args = {
       className={`w-5 h-5 ${ProposalStatusMap.rejected.iconClassName}`}
     />
   ),
-  label: (
-    <p className={`w-[8ch] ${ProposalStatusMap.rejected.textClassName}`}>
-      Rejected
-    </p>
-  ),
+  label: <p className={ProposalStatusMap.rejected.textClassName}>Rejected</p>,
 }
 Rejected.parameters = Open.parameters

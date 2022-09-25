@@ -1,7 +1,6 @@
 import {
   AccountCircleOutlined,
   HourglassTopRounded,
-  ListAltRounded,
   OpenInNew,
   RotateRightOutlined,
   Tag,
@@ -10,6 +9,7 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { useDaoInfoContext } from '@dao-dao/common'
+import { blockHeightSelector, useCachedLoadable } from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { BaseProposalStatusAndInfoProps } from '@dao-dao/tstypes'
 import {
@@ -17,7 +17,6 @@ import {
   CopyToClipboardUnderline,
   IconButtonLink,
   Logo,
-  ProposalIdDisplay,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
 } from '@dao-dao/ui'
@@ -29,7 +28,6 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
-import { useProposalModuleAdapterOptions } from '../../../react'
 import { useProposal, useProposalExecutionTxHash, useVotesInfo } from '../hooks'
 
 export const ProposalStatusAndInfo = ({
@@ -37,26 +35,17 @@ export const ProposalStatusAndInfo = ({
 }: BaseProposalStatusAndInfoProps) => {
   const { t } = useTranslation()
   const daoInfo = useDaoInfoContext()
-  const { proposalNumber, proposalModule } = useProposalModuleAdapterOptions()
 
   const proposal = useProposal()
 
   const executionTxHash = useProposalExecutionTxHash()
-  const expirationDate = convertExpirationToDate(proposal.expiration)
+  const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
+  const expirationDate = convertExpirationToDate(
+    proposal.expiration,
+    blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
+  )
 
   const info: ProposalStatusAndInfoProps['info'] = [
-    {
-      Icon: ListAltRounded,
-      label: t('title.proposal'),
-      Value: (props) => (
-        <p {...props}>
-          <ProposalIdDisplay
-            proposalNumber={proposalNumber}
-            proposalPrefix={proposalModule.prefix}
-          />
-        </p>
-      ),
-    },
     {
       Icon: ({ className }) => (
         <Logo className={clsx('m-[0.125rem] !w-5 !h-5', className)} />

@@ -1,5 +1,5 @@
 import { Image } from '@mui/icons-material'
-import { ComponentType, useMemo, useRef, useState } from 'react'
+import { ComponentType, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData, NftCardInfo, TokenCardInfo } from '@dao-dao/tstypes'
@@ -39,37 +39,6 @@ export const TreasuryAndNftsTab = <
   const [showImportStargazeNftsModal, setShowImportStargazeNftsModal] =
     useState(false)
 
-  const sortOptions = useRef<DropdownOption<SortFn<N>>[]>([
-    {
-      label: 'A → Z',
-      value: (a, b) =>
-        a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleUpperCase()),
-    },
-    {
-      label: 'Z → A',
-      value: (a, b) =>
-        b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleUpperCase()),
-    },
-    {
-      label: 'Lowest floor price',
-      value: (a, b) =>
-        !a.floorPrice
-          ? 1
-          : !b.floorPrice
-          ? -1
-          : a.floorPrice.amount - b.floorPrice.amount,
-    },
-    {
-      label: 'Highest floor price',
-      value: (a, b) =>
-        !a.floorPrice
-          ? 1
-          : !b.floorPrice
-          ? -1
-          : b.floorPrice.amount - a.floorPrice.amount,
-    },
-  ])
-
   const { t } = useTranslation()
 
   // Sort crowned tokens first.
@@ -87,7 +56,7 @@ export const TreasuryAndNftsTab = <
   )
 
   const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
-    useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions.current)
+    useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
 
   return (
     <>
@@ -163,3 +132,36 @@ export const TreasuryAndNftsTab = <
     </>
   )
 }
+
+const sortOptions: DropdownOption<
+  SortFn<Pick<NftCardInfo, 'name' | 'floorPrice'>>
+>[] = [
+  {
+    label: 'A → Z',
+    value: (a, b) =>
+      a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()),
+  },
+  {
+    label: 'Z → A',
+    value: (a, b) =>
+      b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase()),
+  },
+  {
+    label: 'Lowest floor price',
+    value: (a, b) =>
+      !a.floorPrice
+        ? 1
+        : !b.floorPrice
+        ? -1
+        : a.floorPrice.amount - b.floorPrice.amount,
+  },
+  {
+    label: 'Highest floor price',
+    value: (a, b) =>
+      !a.floorPrice
+        ? 1
+        : !b.floorPrice
+        ? -1
+        : b.floorPrice.amount - a.floorPrice.amount,
+  },
+]

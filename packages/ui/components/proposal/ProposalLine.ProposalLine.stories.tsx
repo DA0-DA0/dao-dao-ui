@@ -1,10 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import {
+  ProposalStatus,
+  ProposalStatusMap,
+} from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ProposalStatus'
 import { ContractVersion } from '@dao-dao/tstypes'
-import { secondsToWdhms } from '@dao-dao/utils'
+import { formatDate, secondsToWdhms } from '@dao-dao/utils'
 
-import { StatusDisplay, StatusDisplayProps } from '../StatusDisplay'
-import * as StatusDisplayStories from '../StatusDisplay.stories'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
 import {
   ProposalWalletVote,
@@ -25,20 +27,24 @@ const Template: ComponentStory<typeof ProposalLine> = (args) => (
 
 export const makeProps = (
   // 3 days.
-  secondsRemaining = 3 * 24 * 60 * 60,
-  status: Omit<keyof typeof StatusDisplayStories, 'default'> = 'Open',
+  secondsFromNow = 3 * 24 * 60 * 60,
+  status: `${keyof typeof ProposalStatusMap}` = 'open',
   vote: Omit<keyof typeof ProposalWalletVoteStories, 'default'> = 'Pending'
 ): ProposalLineProps => ({
   href: '#',
   proposalPrefix: 'A',
   proposalNumber: Math.floor(Math.random() * 100),
   proposalModuleVersion: ContractVersion.V0_2_0,
-  title: 'Give everyone 1 million dollars.',
-  expiration: secondsToWdhms(secondsRemaining, 1) + ' left',
-  status: (
-    <StatusDisplay
-      {...(StatusDisplayStories[status as keyof typeof StatusDisplayStories]
-        .args as StatusDisplayProps)}
+  title:
+    "Give everyone 1 million dollars, which is a lot of money, but how much though? Let's find out.",
+  expiration:
+    status === 'open'
+      ? secondsToWdhms(secondsFromNow, 1) + ' left'
+      : formatDate(new Date(Date.now() - secondsFromNow * 1000)),
+  Status: ({ dimmed }) => (
+    <ProposalStatus
+      dimmed={dimmed}
+      status={status as keyof typeof ProposalStatusMap}
     />
   ),
   vote: (
@@ -48,6 +54,7 @@ export const makeProps = (
       ].args as ProposalWalletVoteProps)}
     />
   ),
+  votingOpen: status === 'open',
   lastUpdated: new Date(
     // Last updated 2 days ago.
     new Date().getTime() - 48 * 60 * 60 * 1000

@@ -57,7 +57,7 @@ export const Proposal = ({
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
 
-      <div className="flex flex-col gap-10 items-stretch px-6 mx-auto max-w-5xl">
+      <div className="flex overflow-hidden flex-col items-stretch px-6 mx-auto max-w-5xl h-[100vh]">
         <PageHeader
           breadcrumbs={{
             crumbs: [
@@ -69,12 +69,12 @@ export const Proposal = ({
           }}
         />
 
-        <div className="grid grid-cols-1 gap-[3.5rem] md:grid-cols-[minmax(0,3fr),minmax(0,7fr)]">
-          <div className="hidden md:block">
+        <div className="overflow-hidden relative h-full">
+          <div className="hidden absolute top-10 left-0 w-[18rem] md:block">
             <ProposalStatusAndInfo inline={false} />
           </div>
 
-          <div>
+          <div className="overflow-y-auto absolute top-0 right-0 bottom-0 left-0 px-1 pt-10 pb-6 h-full md:pl-[21rem] no-scrollbar">
             <p className="mb-11 hero-text">{title}</p>
 
             <p className="mb-4 font-mono caption-text">
@@ -97,7 +97,7 @@ export const Proposal = ({
 
             <div className="mt-3">{voteTally}</div>
 
-            <div className="!mt-10">{votesCast}</div>
+            <div className="mt-10">{votesCast}</div>
           </div>
         </div>
       </div>

@@ -90,20 +90,10 @@ export const NftSelectionModal = ({
                   : t('button.selectAllNfts', { count: nfts.data.length }))}
             </Button>
           )}
-
-          {!nfts.loading && (
-            <p className="text-right text-text-secondary link-text">
-              {t('info.numOfTotalNfts', {
-                count: nfts.data.length,
-                total: '?',
-                name: '?',
-              })}
-            </p>
-          )}
         </div>
       }
     >
-      {nfts.loading ? (
+      {nfts.loading || !nfts.data.length ? (
         <Loader className="mb-6" fill={false} />
       ) : (
         <div className="grid overflow-y-auto grid-cols-1 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 xs:grid-cols-2 sm:grid-cols-3 no-scrollbar">

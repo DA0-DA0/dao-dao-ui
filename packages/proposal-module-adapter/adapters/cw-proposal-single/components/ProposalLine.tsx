@@ -1,9 +1,17 @@
 import { useRecoilValue } from 'recoil'
 
-import { contractVersionSelector } from '@dao-dao/state'
+import {
+  blockHeightSelector,
+  contractVersionSelector,
+  useCachedLoadable,
+} from '@dao-dao/state'
 import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { ProposalLine as StatelessProposalLine } from '@dao-dao/ui'
-import { convertExpirationToDate, dateToWdhms } from '@dao-dao/utils'
+import {
+  convertExpirationToDate,
+  dateToWdhms,
+  formatDate,
+} from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { BaseProposalLineProps } from '../../../types'
@@ -24,22 +32,28 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
 
   const { canVote, vote } = useWalletVoteInfo()
 
-  const expirationDate = convertExpirationToDate(proposal.expiration)
+  const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
+  const expirationDate = convertExpirationToDate(
+    proposal.expiration,
+    blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
+  )
   const lastUpdated = new Date(Number(proposal.last_updated) / 1000000)
 
   return (
     <StatelessProposalLine
+      Status={({ dimmed }) => (
+        <ProposalStatus dimmed={dimmed} status={proposal.status} />
+      )}
       expiration={
-        proposal.status === Status.Open && expirationDate
-          ? dateToWdhms(expirationDate)
-          : ''
+        (proposal.status === Status.Open
+          ? expirationDate && dateToWdhms(expirationDate)
+          : expirationDate && formatDate(expirationDate)) || ''
       }
       href={href}
       lastUpdated={lastUpdated}
       proposalModuleVersion={proposalModuleVersion}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
-      status={<ProposalStatus status={proposal.status} />}
       title={proposal.title}
       // Even if no vote, display pending if can vote. If can't vote and didn't
       // vote, show nothing.
@@ -48,6 +62,7 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
           <ProposalWalletVote fallback="pending" vote={vote} />
         )
       }
+      votingOpen={proposal.status === Status.Open}
     />
   )
 }

@@ -18,6 +18,7 @@ import {
   blockHeightSelector,
   cosmWasmClientSelector,
   refreshWalletBalancesIdAtom,
+  useCachedLoadable,
   useVotingModule,
 } from '@dao-dao/state'
 import {
@@ -119,7 +120,11 @@ export const NewProposal = ({
     })
   )
 
-  const blockHeight = useRecoilValue(blockHeightSelector)
+  const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
+  const blockHeight =
+    blockHeightLoadable.state === 'hasValue'
+      ? blockHeightLoadable.contents
+      : undefined
 
   const requiredProposalDeposit = Number(config.deposit_info?.deposit ?? '0')
 
@@ -173,6 +178,7 @@ export const NewProposal = ({
     async (newProposalData: NewProposalData) => {
       if (
         !connected ||
+        !blockHeight ||
         // If required deposit, ensure the allowance and unstaked balance
         // data have loaded.
         (requiredProposalDeposit && !allowanceResponse)
@@ -229,7 +235,8 @@ export const NewProposal = ({
           proposalId,
         })(cosmWasmClient)
         const expirationDate =
-          proposalInfo && convertExpirationToDate(proposalInfo.expiration)
+          proposalInfo &&
+          convertExpirationToDate(proposalInfo.expiration, blockHeight)
 
         // TODO: Get more info, like threshold and quorum.
         onCreateSuccess(

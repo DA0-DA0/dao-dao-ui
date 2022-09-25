@@ -6,7 +6,9 @@ import { useRecoilValue } from 'recoil'
 
 import {
   StakeCw20Hooks,
+  blockHeightSelector,
   stakingLoadingAtom,
+  useCachedLoadable,
   useWalletBalance,
 } from '@dao-dao/state'
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
@@ -119,6 +121,8 @@ export const ProfileMemberCardMembershipInfo = ({
     t,
   ])
 
+  const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
+
   const unstakingTasks: UnstakingTask[] = [
     ...claimsAvailable.map(({ amount, release_at }) => ({
       status: UnstakingTaskStatus.ReadyToClaim,
@@ -128,7 +132,12 @@ export const ProfileMemberCardMembershipInfo = ({
       ),
       tokenSymbol: governanceTokenInfo.symbol,
       tokenDecimals: governanceTokenInfo.decimals,
-      date: convertExpirationToDate(release_at),
+      date: convertExpirationToDate(
+        release_at,
+        blockHeightLoadable.state === 'hasValue'
+          ? blockHeightLoadable.contents
+          : 0
+      ),
     })),
   ]
 

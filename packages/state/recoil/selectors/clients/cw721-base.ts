@@ -45,7 +45,7 @@ export const queryClient = selectorFamily<
     },
 })
 export const ownerOfSelector = selectorFamily<
-  OwnerOfResponse | undefined,
+  OwnerOfResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['ownerOf']>
   }
@@ -55,12 +55,11 @@ export const ownerOfSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.ownerOf(...params)
     },
 })
 export const approvalSelector = selectorFamily<
-  ApprovalResponse | undefined,
+  ApprovalResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['approval']>
   }
@@ -70,12 +69,11 @@ export const approvalSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.approval(...params)
     },
 })
 export const approvalsSelector = selectorFamily<
-  ApprovalsResponse | undefined,
+  ApprovalsResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['approvals']>
   }
@@ -85,12 +83,11 @@ export const approvalsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.approvals(...params)
     },
 })
 export const allOperatorsSelector = selectorFamily<
-  AllOperatorsResponse | undefined,
+  AllOperatorsResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allOperators']>
   }
@@ -100,12 +97,11 @@ export const allOperatorsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.allOperators(...params)
     },
 })
 export const numTokensSelector = selectorFamily<
-  NumTokensResponse | undefined,
+  NumTokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['numTokens']>
   }
@@ -115,12 +111,11 @@ export const numTokensSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.numTokens(...params)
     },
 })
 export const contractInfoSelector = selectorFamily<
-  ContractInfoResponse | undefined,
+  ContractInfoResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['contractInfo']>
   }
@@ -130,12 +125,11 @@ export const contractInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.contractInfo(...params)
     },
 })
 export const nftInfoSelector = selectorFamily<
-  NftInfoResponse | undefined,
+  NftInfoResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['nftInfo']>
   }
@@ -145,12 +139,11 @@ export const nftInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.nftInfo(...params)
     },
 })
 export const allNftInfoSelector = selectorFamily<
-  AllNftInfoResponse | undefined,
+  AllNftInfoResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allNftInfo']>
   }
@@ -160,12 +153,11 @@ export const allNftInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.allNftInfo(...params)
     },
 })
 export const tokensSelector = selectorFamily<
-  TokensResponse | undefined,
+  TokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['tokens']>
   }
@@ -175,12 +167,11 @@ export const tokensSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.tokens(...params)
     },
 })
 export const allTokensSelector = selectorFamily<
-  AllTokensResponse | undefined,
+  AllTokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allTokens']>
   }
@@ -190,12 +181,11 @@ export const allTokensSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.allTokens(...params)
     },
 })
 export const minterSelector = selectorFamily<
-  MinterResponse | undefined,
+  MinterResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['minter']>
   }
@@ -205,7 +195,6 @@ export const minterSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      if (!client) return
       return await client.minter(...params)
     },
 })

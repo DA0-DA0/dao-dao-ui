@@ -10,17 +10,34 @@ import { StatusDisplay } from '@dao-dao/ui'
 
 export interface ProposalStatusProps {
   status: Status
+  // Dim
+  dimmed?: boolean
 }
 
-export const ProposalStatus = ({ status }: ProposalStatusProps) => {
+export const ProposalStatus = ({
+  status,
+  dimmed = false,
+}: ProposalStatusProps) => {
   const { t } = useTranslation()
   const { Icon, iconClassName, textClassName } = ProposalStatusMap[status]
 
   return (
     <StatusDisplay
-      icon={<Icon className={clsx(iconClassName, '!w-[19px] !h-[19px]')} />}
+      icon={
+        <Icon
+          className={clsx(
+            '!w-5 !h-5',
+            dimmed ? 'text-icon-tertiary' : iconClassName
+          )}
+        />
+      }
       label={
-        <p className={clsx('w-[14ch]', textClassName)}>
+        <p
+          className={clsx(
+            'leading-5',
+            dimmed ? 'text-text-tertiary' : textClassName
+          )}
+        >
           {t(`proposalStatusTitle.${status}`)}
         </p>
       }

@@ -5,6 +5,7 @@ import { StargazeNft } from '@dao-dao/tstypes/nft'
 import {
   STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_URL_BASE,
+  getNftName,
 } from '@dao-dao/utils'
 
 import { refreshWalletStargazeNftsAtom } from '../atoms/refresh'
@@ -45,10 +46,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
           //   amount: 0,
           //   denom: '',
           // }
-          // If name is only a number, prefix with collection name.
-          name: /^[0-9]+$/.test(name.trim())
-            ? `${collection.name} ${name.trim()}`
-            : name,
+          name: getNftName(collection.name, name),
         })
       )
 
