@@ -51,7 +51,9 @@ export const PageHeader = ({
     }
 
     const onScroll = (event: Event) =>
-      setScrollableScrollTop((event.target as HTMLDivElement).scrollTop)
+      setScrollableScrollTop(
+        Math.max((event.target as HTMLDivElement).scrollTop, 0)
+      )
 
     gradientScrollElement.addEventListener('scroll', onScroll)
     return () => gradientScrollElement.removeEventListener('scroll', onScroll)
