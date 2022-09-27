@@ -70,12 +70,12 @@ export const Proposal = ({
 
       {/* Undo container (in AppLayout) pt-10 on the top and pb-6 on the bottom so we can add those to our scrollable view instead. Also set height to full height of parent and some overflow to account for extended margins. */}
       <div className="relative mx-auto -mt-10 -mb-6 max-w-6xl h-[calc(100%+4rem)]">
-        <div className="hidden absolute top-10 left-0 w-[18rem] md:block">
+        <div className="hidden absolute top-10 left-0 z-[2] w-[18rem] md:block">
           <ProposalStatusAndInfo inline={false} />
         </div>
 
         {/* Make entire pane scrollable, even space around and under status and info card on the side. */}
-        <div className="overflow-y-auto absolute top-0 right-0 bottom-0 left-0 pt-10 pb-6 h-full md:pl-[21rem] no-scrollbar">
+        <div className="overflow-y-auto absolute top-0 right-0 bottom-0 left-0 z-[1] pt-10 pb-6 h-full md:pl-[21rem] no-scrollbar">
           <p className="mb-11 hero-text">{title}</p>
 
           <p className="mb-4 font-mono caption-text">
