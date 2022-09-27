@@ -104,13 +104,14 @@ export const TreasuryAndNftsTab = <
                 <NftCard {...(props as N)} key={index} />
               ))}
 
-              <NoContent
+              {/* TODO: Uncomment when ICS721 is ready. */}
+              {/* <NoContent
                 Icon={Image}
                 body={t('info.depositFromStargazeQuestion')}
                 buttonLabel={t('button.deposit')}
                 className="justify-center min-h-[20rem]"
                 onClick={() => setShowImportStargazeNftsModal(true)}
-              />
+              /> */}
             </GridCardContainer>
           )}
         </>
@@ -147,7 +148,7 @@ const sortOptions: DropdownOption<
       b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase()),
   },
   {
-    label: 'Lowest floor price',
+    label: 'Lowest floor',
     value: (a, b) =>
       !a.floorPrice
         ? 1
@@ -156,7 +157,7 @@ const sortOptions: DropdownOption<
         : a.floorPrice.amount - b.floorPrice.amount,
   },
   {
-    label: 'Highest floor price',
+    label: 'Highest floor',
     value: (a, b) =>
       !a.floorPrice
         ? 1
