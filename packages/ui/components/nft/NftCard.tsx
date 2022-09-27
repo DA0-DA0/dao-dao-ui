@@ -1,10 +1,11 @@
-/* eslint-disable @next/next/no-img-element */
+import { ImageNotSupported } from '@mui/icons-material'
 import clsx from 'clsx'
+import Image from 'next/image'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ArrowOutward } from '@dao-dao/icons'
 import { NftCardInfo } from '@dao-dao/tstypes'
-import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Checkbox } from '../input'
@@ -29,6 +30,9 @@ export const NftCard = ({
 }: NftCardProps) => {
   const { t } = useTranslation()
 
+  // Loading if imageUrl is present.
+  const [imageLoading, setImageLoading] = useState(!!imageUrl)
+
   return (
     <div
       className={clsx(
@@ -38,6 +42,7 @@ export const NftCard = ({
           'outline-[transparent]': !checkbox?.checked,
           'outline-border-interactive-active': checkbox?.checked,
         },
+        imageLoading && imageUrl && 'animate-pulse',
         className
       )}
     >
@@ -50,13 +55,18 @@ export const NftCard = ({
         onClick={checkbox?.onClick}
       >
         {imageUrl ? (
-          <img
+          <Image
             alt={t('info.nftImage')}
             className="aspect-square object-cover"
-            src={transformIpfsUrlToHttpsIfNecessary(imageUrl)}
+            height={500}
+            onLoadingComplete={() => setImageLoading(false)}
+            src={`/api/image?url=${encodeURIComponent(imageUrl)}`}
+            width={500}
           />
         ) : (
-          <div className="aspect-square"></div>
+          <div className="aspect-square flex justify-center items-center">
+            <ImageNotSupported className="!w-14 !h-14 text-icon-tertiary" />
+          </div>
         )}
 
         {externalLink && (

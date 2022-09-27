@@ -147,6 +147,8 @@ export const convertBlocksToSeconds = (blocks: number) =>
 export const durationToSeconds = (duration: Duration) =>
   'height' in duration ? convertBlocksToSeconds(duration.height) : duration.time
 
-// Use Cloudflare's IPFS gateway.
+// Use Stargaze's IPFS gateway.
 export const transformIpfsUrlToHttpsIfNecessary = (ipfsUrl: string) =>
-  ipfsUrl.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/')
+  ipfsUrl.startsWith('ipfs://')
+    ? ipfsUrl.replace('ipfs://', 'https://ipfs.stargaze.zone/ipfs/')
+    : ipfsUrl

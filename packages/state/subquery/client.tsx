@@ -16,6 +16,7 @@ export const client = new ApolloClient({
         daos: 'https://api.subquery.network/sq/NoahSaso/dao-dao-daos',
       },
       createHttpLink: () => createHttpLink(),
+      httpSuffix: '',
     }),
   ]),
   cache: new InMemoryCache(),

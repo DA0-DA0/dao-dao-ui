@@ -29,11 +29,10 @@ Default.parameters = {
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=94%3A14674',
   },
 }
-
 export const Compact = Template.bind({})
 Compact.args = {
   imgUrl:
-    'https://cloudflare-ipfs.com/ipfs/bafybeibnuzc52kmcu4c5pxxwkr3vyp34gsrdomlvw3e66w4ltidr2v4oxi',
+    'https://ipfs.stargaze.zone/ipfs/bafybeibnuzc52kmcu4c5pxxwkr3vyp34gsrdomlvw3e66w4ltidr2v4oxi',
   walletName: '@wallet_name',
   compact: true,
   children: <p>Content!</p>,
