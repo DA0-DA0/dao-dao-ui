@@ -22,7 +22,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getNftName,
-  processError,
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
@@ -107,19 +106,18 @@ export const daoCardInfoSelector = selectorFamily<
   get:
     ({ coreAddress, daoUrlPrefix }) =>
     ({ get }) => {
-      let dumpedState:
+      const dumpedState:
         | CwCoreV0_1_0DumpStateResponse
         | CwCoreV0_2_0DumpStateResponse
-      try {
-        dumpedState = get(
-          // Both v1 and v2 have a dump_state query.
-          CwCoreV0_2_0Selectors.dumpStateSelector({
-            contractAddress: coreAddress,
-            params: [],
-          })
-        )
-      } catch (err) {
-        console.error(processError(err))
+        | undefined = get(
+        // Both v1 and v2 have a dump_state query.
+        CwCoreV0_2_0Selectors.dumpStateSelector({
+          contractAddress: coreAddress,
+          params: [],
+        })
+      )
+      // If undefined, probably invalid contract address.
+      if (!dumpedState) {
         return
       }
 

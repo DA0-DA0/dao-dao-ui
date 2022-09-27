@@ -12,12 +12,7 @@ import {
 } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import {
-  useRecoilState,
-  useRecoilValue,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-} from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { SidebarWallet, WalletProvider } from '@dao-dao/common'
 import {
@@ -161,7 +156,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   }, [setRefreshBlockHeight])
 
   //! Pinned DAOs
-  const pinnedDaoDropdownInfosLoadable = useRecoilValueLoadable(
+  const pinnedDaoDropdownInfosLoadable = useCachedLoadable(
     pinnedDaoDropdownInfosSelector
   )
 

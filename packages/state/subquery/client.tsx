@@ -12,8 +12,8 @@ export const client = new ApolloClient({
   link: ApolloLink.from([
     new MultiAPILink({
       endpoints: {
-        proposals: 'https://api.subquery.network/sq/NoahSaso/dao-dao-v2-inbox',
         daos: 'https://api.subquery.network/sq/NoahSaso/dao-dao-daos',
+        proposals: 'https://api.subquery.network/sq/NoahSaso/dao-dao-proposals',
       },
       createHttpLink: () => createHttpLink(),
       httpSuffix: '',

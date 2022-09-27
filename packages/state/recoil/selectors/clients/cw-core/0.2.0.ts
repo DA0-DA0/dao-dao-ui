@@ -159,7 +159,7 @@ export const cw721TokenListSelector = selectorFamily<
     },
 })
 export const dumpStateSelector = selectorFamily<
-  DumpStateResponse,
+  DumpStateResponse | undefined,
   QueryClientParams & {
     params: Parameters<CwCoreV0_2_0QueryClient['dumpState']>
   }
@@ -169,7 +169,11 @@ export const dumpStateSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      return await client.dumpState(...params)
+      try {
+        return await client.dumpState(...params)
+      } catch (err) {
+        console.error(err)
+      }
     },
 })
 export const getItemSelector = selectorFamily<

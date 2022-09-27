@@ -4,10 +4,14 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect } from 'react'
-import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { pinnedDaoCardInfoSelector, usePinnedDaos } from '@dao-dao/state'
+import {
+  pinnedDaoCardInfoSelector,
+  useCachedLoadable,
+  usePinnedDaos,
+} from '@dao-dao/state'
 import { DaoCardInfo } from '@dao-dao/tstypes'
 import { Home, ProfileDisconnectedCard } from '@dao-dao/ui'
 import {
@@ -29,7 +33,7 @@ const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => {
 
   const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
 
-  const pinnedDaosLoadable = useRecoilValueLoadable(
+  const pinnedDaosLoadable = useCachedLoadable(
     pinnedDaoCardInfoSelector({ daoUrlPrefix: `/dao/` })
   )
 

@@ -32,7 +32,7 @@ export const PinnedDaos = ({
 
   return (
     <>
-      <div className="flex flex-row justify-between mt-2">
+      <div className="flex flex-col gap-4 mt-2 xs:flex-row xs:justify-between xs:items-center">
         <p className="title-text">{t('title.pinned')}</p>
 
         <div className="flex flex-row gap-6 justify-between items-center">
