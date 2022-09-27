@@ -313,6 +313,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               // TODO: Make true if native token DAO and using this denom.
               crown: false,
               tokenSymbol: label,
+              tokenDenom: denom,
               tokenDecimals: decimals,
               // TODO: Retrieve subtitle.
               // subtitle: '',
@@ -343,6 +344,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             return {
               crown: isGovernanceToken,
               tokenSymbol: symbol,
+              tokenDenom: denom,
               tokenDecimals: decimals,
               // TODO: Choose subtitle.
               // subtitle: '',

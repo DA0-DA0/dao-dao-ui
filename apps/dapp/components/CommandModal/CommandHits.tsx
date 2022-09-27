@@ -30,13 +30,13 @@ const HitView = ({
       onClick={onClick}
     >
       {hit.hitType === HitType.Dao ? (
-        hit.image_url ? (
+        hit.imageUrl ? (
           <div
             aria-label={t('info.daosLogo')}
             className="w-[24px] h-[24px] bg-center bg-cover rounded-full"
             role="img"
             style={{
-              backgroundImage: `url(${hit.image_url})`,
+              backgroundImage: `url(${hit.imageUrl})`,
             }}
           ></div>
         ) : (

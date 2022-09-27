@@ -2,14 +2,13 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import Fuse from 'fuse.js'
-import { MeiliSearch } from 'meilisearch'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { useSearchDaos } from '@dao-dao/state'
 import { Modal } from '@dao-dao/ui'
-import { SEARCH_API_KEY, SEARCH_INDEX, SEARCH_URL } from '@dao-dao/utils'
 
 import { CommandBar } from './CommandBar'
 import { CommandHits } from './CommandHits'
@@ -61,10 +60,7 @@ export interface ActionHit {
 export interface DaoHit {
   id: string
   name: string
-  description: string
-  image_url: string | undefined
-  proposal_count: number
-  treasury_balance: string
+  imageUrl: string | undefined
   hitType: HitType.Dao
   navigatesOnSelect?: boolean
 }
@@ -141,13 +137,6 @@ const FUSE_OPTIONS = {
   keys: ['id', 'name'],
 }
 
-const searchClient = new MeiliSearch({
-  host: SEARCH_URL,
-  apiKey: SEARCH_API_KEY,
-})
-
-const index = searchClient.index(SEARCH_INDEX)
-
 // See design at https://unique-linseed-f29.notion.site/Command-Bar-Implementation-016afb79411f47d1b46c318409cc1547
 export const CommandModal = ({ onClose }: CommandModalProps) => {
   const router = useRouter()
@@ -159,14 +148,26 @@ export const CommandModal = ({ onClose }: CommandModalProps) => {
   const [hits, setHits] = useState<Hit[]>([])
   const [navigatingFromHit, setNavigatingFromHit] = useState<Hit>()
 
+  const queryResults = useSearchDaos({
+    query: input,
+  })
+
   useEffect(() => {
     ;(async () => {
-      const res = await index.search(input)
-      const daoHits = res.hits.slice(0, MAX_DAOS_DISPLAYED).map((hit) => ({
-        ...hit,
-        hitType: HitType.Dao,
-        navigatesOnSelect: commandState.type === CommandStateType.NavigateDao,
-      })) as DaoHit[]
+      const data = queryResults.data?.daos || queryResults.previousData?.daos
+      if (!data) {
+        return
+      }
+
+      const daoHits = data.nodes
+        .slice(0, MAX_DAOS_DISPLAYED)
+        .map(({ id, name, imageUrl }) => ({
+          id,
+          name,
+          imageUrl: imageUrl ?? undefined,
+          hitType: HitType.Dao,
+          navigatesOnSelect: commandState.type === CommandStateType.NavigateDao,
+        })) as DaoHit[]
 
       const baseHits: Hit[] =
         commandState.type === CommandStateType.Home

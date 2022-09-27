@@ -48,7 +48,12 @@ export const TreasuryAndNftsTab = () => {
   ])
 
   const encodedProposalPrefill = useEncodedProposalPrefill({
-    action: addCw721Action,
+    actions: [
+      {
+        action: addCw721Action,
+        data: addCw721Action.useDefaults(daoInfo.coreAddress),
+      },
+    ],
   })
 
   return (

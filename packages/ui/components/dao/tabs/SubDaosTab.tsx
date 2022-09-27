@@ -1,9 +1,10 @@
 import { PlusIcon } from '@heroicons/react/solid'
-import { EscalatorWarning } from '@mui/icons-material'
+import { EscalatorWarning, Upgrade } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ContractVersion,
   DaoCardInfo,
   DaoInfo,
   LoaderProps,
@@ -20,6 +21,7 @@ export interface SubDaosTabProps {
   isMember: boolean
   daoInfo: DaoInfo
   createSubDaoHref?: string
+  upgradeToV2Href?: string
   Loader?: ComponentType<LoaderProps>
 }
 
@@ -30,6 +32,7 @@ export const SubDaosTab = ({
   isMember,
   daoInfo,
   createSubDaoHref,
+  upgradeToV2Href,
   Loader = DefaultLoader,
 }: SubDaosTabProps) => {
   const { t } = useTranslation()
@@ -46,7 +49,8 @@ export const SubDaosTab = ({
 
         <ButtonLink
           className="shrink-0"
-          disabled={!isMember}
+          // Disabled for v1 DAOs, not supported.
+          disabled={!isMember || daoInfo.coreVersion === ContractVersion.V0_1_0}
           href={`/dao/${daoInfo.coreAddress}/create`}
         >
           <PlusIcon className="w-4 h-4" />
@@ -54,7 +58,18 @@ export const SubDaosTab = ({
         </ButtonLink>
       </div>
 
-      {subdaos.loading ? (
+      {daoInfo.coreVersion === ContractVersion.V0_1_0 ? (
+        <NoContent
+          Icon={Upgrade}
+          actionNudge={t('info.submitUpgradeProposal')}
+          body={t('error.daoFeatureUnsupported', {
+            name: daoInfo.name,
+            feature: t('title.subDaos'),
+          })}
+          buttonLabel={t('button.proposeUpgrade')}
+          href={isMember ? upgradeToV2Href : undefined}
+        />
+      ) : subdaos.loading ? (
         <div className="pt-6 border-t border-border-secondary">
           <Loader fill={false} />
         </div>

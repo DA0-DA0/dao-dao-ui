@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 
 import { DaoInfo } from '@dao-dao/tstypes'
 import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
@@ -36,7 +36,17 @@ export const DaoHome = ({
   rightSidebarContent,
 }: DaoHomeProps) => {
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
-  const [selectedTab, setSelectedTab] = useState(Tab.Proposals)
+
+  const windowHash =
+    typeof window === 'undefined'
+      ? undefined
+      : window.location.hash.replace('#', '')
+  // Default to tab from URL hash if present.
+  const [selectedTab, setSelectedTab] = useState(
+    windowHash && TabValues.includes(windowHash as Tab)
+      ? (windowHash as Tab)
+      : Tab.Proposals
+  )
 
   const tabs = [
     Tab.Proposals,
@@ -45,9 +55,20 @@ export const DaoHome = ({
     // Don't include Members if no membersTab.
     ...(membersTab !== undefined ? [Tab.Members] : []),
   ].map((tab) => ({
-    label: tab,
+    label: TabTitleMap[tab],
     value: tab,
   }))
+
+  // Store selected tab in URL hash.
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    if (window.location.hash.replace('#', '') !== selectedTab) {
+      window.location.hash = selectedTab
+    }
+  }, [selectedTab])
 
   return (
     <>
@@ -109,9 +130,18 @@ export const DaoHome = ({
   )
 }
 
+// Value used in URL hash.
 enum Tab {
-  Proposals = 'Proposals',
-  TreasuryAndNfts = 'Treasury & NFTs',
-  SubDaos = 'SubDAOs',
-  Members = 'Members',
+  Proposals = 'proposals',
+  TreasuryAndNfts = 'treasury',
+  SubDaos = 'subdaos',
+  Members = 'members',
+}
+const TabValues = Object.values(Tab)
+
+export const TabTitleMap: Record<Tab, string> = {
+  [Tab.Proposals]: 'Proposals',
+  [Tab.TreasuryAndNfts]: 'Treasury & NFTs',
+  [Tab.SubDaos]: 'SubDAOs',
+  [Tab.Members]: 'Members',
 }

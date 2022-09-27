@@ -5,25 +5,27 @@ import {
 } from '@dao-dao/proposal-module-adapter'
 import { NewProposalForm } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/types'
 import { Action, ProposalPrefill } from '@dao-dao/tstypes'
+import { useRef } from 'react'
 
-export interface UseProposalPrefillUrlOptions<D extends {}> {
-  action: Action<any, D>
-  data?: D
+interface ActionAndData<Data extends {} = any> {
+  action: Action<Data, any>
+  data: Data
+}
+
+export interface UseEncodedProposalPrefillUrlOptions {
+  actions: ActionAndData[]
   title?: string
   description?: string
   proposalModuleId?: string
 }
 
-export const useEncodedProposalPrefill = <D extends {}>({
-  action,
+export const useEncodedProposalPrefill = ({
   title = '',
   description = '',
-  data,
+  actions,
   proposalModuleId = CwProposalSingleAdapter.id,
-}: UseProposalPrefillUrlOptions<D>): string | undefined => {
-  const { coreAddress, proposalModules } = useDaoInfoContext()
-
-  const defaults = action.useDefaults(coreAddress)
+}: UseEncodedProposalPrefillUrlOptions): string | undefined => {
+  const { proposalModules } = useDaoInfoContext()
 
   const hasProposalModule = proposalModules.some(
     ({ contractName }) =>
@@ -38,12 +40,10 @@ export const useEncodedProposalPrefill = <D extends {}>({
     data: {
       title,
       description,
-      actionData: [
-        {
-          key: action.key,
-          data: data ?? defaults,
-        },
-      ],
+      actionData: actions.map(({ action: { key }, data }) => ({
+        key,
+        data,
+      })),
     },
   }
 

@@ -103,6 +103,7 @@ export interface TokenCardStakingInfo {
 export interface TokenCardInfo {
   crown?: boolean
   tokenSymbol: string
+  tokenDenom: string
   tokenDecimals: number
   subtitle?: string
   imageUrl: string

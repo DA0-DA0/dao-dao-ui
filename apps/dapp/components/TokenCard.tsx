@@ -2,17 +2,75 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
+import { stakeAction } from '@dao-dao/actions/actions/Stake'
 import { useDaoInfoContext } from '@dao-dao/common'
+import { useEncodedProposalPrefill } from '@dao-dao/state'
 import { TokenCardInfo } from '@dao-dao/tstypes/dao'
 import { TokenCard as StatelessTokenCard } from '@dao-dao/ui'
-import { useAddToken } from '@dao-dao/utils'
+import { StakeType, useAddToken } from '@dao-dao/utils'
 
 export const TokenCard = (props: TokenCardInfo) => {
   const router = useRouter()
   const { coreAddress } = useDaoInfoContext()
 
   const addToken = useAddToken()
+
+  const stakesWithRewards =
+    props.stakingInfo?.stakes.filter(({ rewards }) => rewards > 0) ?? []
+  const encodedProposalPrefillClaim = useEncodedProposalPrefill({
+    actions: stakesWithRewards.map(({ validator: { address } }) => ({
+      action: stakeAction,
+      data: {
+        stakeType: StakeType.WithdrawDelegatorReward,
+        validator: address,
+        // Default values, not needed for displaying this type of message.
+        amount: 1,
+        denom: props.tokenDenom,
+      },
+    })),
+  })
+  const encodedProposalPrefillStakeUnstake = useEncodedProposalPrefill({
+    // If has unstaked, show stake action by default.
+    actions:
+      props.unstakedBalance > 0
+        ? [
+            {
+              action: stakeAction,
+              data: {
+                stakeType: StakeType.Delegate,
+                validator: '',
+                amount: props.unstakedBalance,
+                denom: props.tokenDenom,
+              },
+            },
+          ]
+        : // If has only staked, show unstake actions by default.
+          props.stakingInfo?.stakes.map(({ validator, amount }) => ({
+            action: stakeAction,
+            data: {
+              stakeType: StakeType.Undelegate,
+              validator,
+              amount,
+              denom: props.tokenDenom,
+            },
+          })) ?? [],
+  })
+
+  useEffect(() => {
+    router.prefetch(
+      `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillClaim}`
+    )
+    router.prefetch(
+      `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillStakeUnstake}`
+    )
+  }, [
+    coreAddress,
+    encodedProposalPrefillClaim,
+    encodedProposalPrefillStakeUnstake,
+    router,
+  ])
 
   return (
     <StatelessTokenCard
@@ -22,13 +80,22 @@ export const TokenCard = (props: TokenCardInfo) => {
           ? () => props.cw20Address && addToken(props.cw20Address)
           : undefined
       }
-      // TODO: Make prefill message.
-      onProposeClaim={() =>
-        router.push(`/dao/${coreAddress}/proposals/create?prefill=`)
+      onProposeClaim={
+        stakesWithRewards.length > 0 && encodedProposalPrefillClaim
+          ? () =>
+              router.push(
+                `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillClaim}`
+              )
+          : undefined
       }
-      // TODO: Make prefill message.
-      onProposeStakeUnstake={() =>
-        router.push(`/dao/${coreAddress}/proposals/create?prefill=`)
+      onProposeStakeUnstake={
+        (props.unstakedBalance > 0 || !!props.stakingInfo?.stakes.length) &&
+        encodedProposalPrefillStakeUnstake
+          ? () =>
+              router.push(
+                `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillStakeUnstake}`
+              )
+          : undefined
       }
     />
   )

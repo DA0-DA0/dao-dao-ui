@@ -31,11 +31,15 @@ export const MembersTab = () => {
   // Only make the action once.
   const [manageMembersAction] = useState(() => makeManageMembersAction())
   const encodedProposalPrefill = useEncodedProposalPrefill({
-    action: manageMembersAction,
-    data: {
-      toAdd: [{ addr: '', weight: NaN }],
-      toRemove: [],
-    },
+    actions: [
+      {
+        action: manageMembersAction,
+        data: {
+          toAdd: [{ addr: '', weight: NaN }],
+          toRemove: [],
+        },
+      },
+    ],
   })
 
   const memberCards: DaoMemberCardProps[] = members.map(({ addr, weight }) => ({

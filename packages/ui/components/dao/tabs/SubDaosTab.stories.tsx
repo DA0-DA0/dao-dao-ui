@@ -52,6 +52,7 @@ Default.args = {
     ],
   },
   createSubDaoHref: '#',
+  upgradeToV2Href: '#',
 }
 
 export const Loading = Template.bind({})

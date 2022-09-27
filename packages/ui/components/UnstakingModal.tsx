@@ -13,7 +13,7 @@ import { UnstakingTaskStatus } from './UnstakingStatus'
 export interface UnstakingModalProps extends Omit<ModalProps, 'children'> {
   unstakingDuration?: string
   tasks: UnstakingTask[]
-  onClaim: (tokenSymbol: string) => void
+  onClaim?: (tokenSymbol: string) => void
 }
 
 export const UnstakingModal = ({
@@ -100,9 +100,11 @@ export const UnstakingModal = ({
                 <UnstakingLine
                   key={index}
                   dateReplacement={
-                    <Button onClick={() => onClaim(task.tokenSymbol)}>
-                      {t('button.claim')}
-                    </Button>
+                    onClaim && (
+                      <Button onClick={() => onClaim(task.tokenSymbol)}>
+                        {t('button.claim')}
+                      </Button>
+                    )
                   }
                   task={task}
                 />

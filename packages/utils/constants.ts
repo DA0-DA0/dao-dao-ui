@@ -47,10 +47,6 @@ export const POOLS_LIST_URL = process.env.NEXT_PUBLIC_POOLS_LIST_URL as string
 export const FEATURED_DAOS_URL = process.env
   .NEXT_PUBLIC_FEATURED_DAOS_URL as string
 
-export const SEARCH_URL = process.env.NEXT_PUBLIC_SEARCH_URL as string
-export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
-export const SEARCH_INDEX = process.env.NEXT_PUBLIC_SEARCH_INDEX as string
-
 export const CI = process.env.CI === 'true'
 
 // Contract Code IDs

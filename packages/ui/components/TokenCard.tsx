@@ -19,8 +19,8 @@ import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export interface TokenCardProps extends TokenCardInfo {
   onAddToken?: () => void
-  onProposeStakeUnstake: () => void
-  onProposeClaim: () => void
+  onProposeStakeUnstake?: () => void
+  onProposeClaim?: () => void
 }
 
 export const TokenCard = ({
@@ -81,21 +81,33 @@ export const TokenCard = ({
             },
           ]
         : []),
-      {
-        label: t('title.newProposalTo'),
-        buttons: [
-          {
-            Icon: StakeEmoji,
-            label: t('button.stakeOrUnstake'),
-            onClick: onProposeStakeUnstake,
-          },
-          {
-            Icon: SpendEmoji,
-            label: t('button.claim'),
-            onClick: onProposeClaim,
-          },
-        ],
-      },
+      ...(onProposeStakeUnstake || onProposeClaim
+        ? [
+            {
+              label: t('title.newProposalTo'),
+              buttons: [
+                ...(onProposeStakeUnstake
+                  ? [
+                      {
+                        Icon: StakeEmoji,
+                        label: t('button.stakeOrUnstake'),
+                        onClick: onProposeStakeUnstake,
+                      },
+                    ]
+                  : []),
+                ...(onProposeClaim
+                  ? [
+                      {
+                        Icon: SpendEmoji,
+                        label: t('button.claim'),
+                        onClick: onProposeClaim,
+                      },
+                    ]
+                  : []),
+              ],
+            },
+          ]
+        : []),
     ],
     [onAddToken, onProposeClaim, onProposeStakeUnstake, t]
   )
@@ -148,22 +160,24 @@ export const TokenCard = ({
             </div>
           </div>
 
-          <div className="absolute top-3 right-3">
-            <ButtonPopup
-              Trigger={({ open, ...props }) => (
-                <IconButton
-                  Icon={ExpandCircleDownOutlined}
-                  className="!text-icon-secondary"
-                  focused={open}
-                  variant="ghost"
-                  {...props}
-                />
-              )}
-              popupClassName="w-[16rem]"
-              position="left"
-              sections={buttonPopupSections}
-            />
-          </div>
+          {buttonPopupSections.length > 0 && (
+            <div className="absolute top-3 right-3">
+              <ButtonPopup
+                Trigger={({ open, ...props }) => (
+                  <IconButton
+                    Icon={ExpandCircleDownOutlined}
+                    className="!text-icon-secondary"
+                    focused={open}
+                    variant="ghost"
+                    {...props}
+                  />
+                )}
+                popupClassName="w-[16rem]"
+                position="left"
+                sections={buttonPopupSections}
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-3 py-4 px-6 border-t border-inactive">

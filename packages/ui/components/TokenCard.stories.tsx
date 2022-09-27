@@ -72,6 +72,7 @@ export const makeProps = (crown = false): TokenCardProps => {
     crown,
     imageUrl: `/placeholders/${Math.floor(Math.random() * 5) + 1}.svg`,
     tokenSymbol: 'JUNO',
+    tokenDenom: 'ujuno',
     subtitle: 'Juno Network',
     unstakedBalance,
     tokenDecimals: 6,

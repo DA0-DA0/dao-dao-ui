@@ -4,7 +4,11 @@ import { useEffect } from 'react'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { useDaoInfoContext } from '@dao-dao/common'
-import { subDaoCardInfosSelector, useVotingModule } from '@dao-dao/state'
+import {
+  subDaoCardInfosSelector,
+  useEncodedProposalPrefill,
+  useVotingModule,
+} from '@dao-dao/state'
 import { ContractVersion } from '@dao-dao/tstypes'
 import { SubDaosTab as StatelessSubDaosTab } from '@dao-dao/ui'
 import { loadableToLoadingData } from '@dao-dao/utils'
@@ -34,6 +38,11 @@ export const SubDaosTab = () => {
     }
   }, [subDaoCardInfosLoadable.contents, subDaoCardInfosLoadable.state])
 
+  // TODO: Add specific v1 to v2 migrate action.
+  const encodedProposalPrefillUpgrade = useEncodedProposalPrefill({
+    actions: [],
+  })
+
   return (
     <StatelessSubDaosTab
       DaoCard={DaoCard}
@@ -41,6 +50,7 @@ export const SubDaosTab = () => {
       daoInfo={daoInfo}
       isMember={isMember}
       subDaos={loadableToLoadingData(subDaoCardInfosLoadable, [])}
+      upgradeToV2Href={`/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefillUpgrade}`}
     />
   )
 }

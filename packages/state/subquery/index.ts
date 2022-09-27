@@ -1,4 +1,5 @@
 export * from './client'
+export * from './daos'
 export * from './inbox'
 export * from './proposal'
 export * from './votes'
