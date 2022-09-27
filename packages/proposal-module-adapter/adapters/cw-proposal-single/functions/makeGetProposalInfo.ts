@@ -5,6 +5,13 @@ import {
   ProposalResponse,
   Status,
 } from '@dao-dao/state/clients/cw-proposal-single'
+import {
+  GET_PROPOSAL,
+  GetProposal,
+  GetProposalOperationVariables,
+  getGetProposalSubqueryId,
+  client as subqueryClient,
+} from '@dao-dao/state/subquery'
 import { processError } from '@dao-dao/utils'
 
 import {
@@ -13,14 +20,14 @@ import {
 } from '../../../types'
 
 export const makeGetProposalInfo =
-  ({
-    proposalModule: { address, prefix },
-    proposalNumber,
-  }: IProposalModuleAdapterOptions) =>
+  ({ proposalModule, proposalNumber }: IProposalModuleAdapterOptions) =>
   async (
     cosmWasmClient: CosmWasmClient
   ): Promise<CommonProposalInfo | undefined> => {
-    const queryClient = new CwProposalSingleQueryClient(cosmWasmClient, address)
+    const queryClient = new CwProposalSingleQueryClient(
+      cosmWasmClient,
+      proposalModule.address
+    )
 
     let proposalResponse: ProposalResponse | undefined
     try {
@@ -49,9 +56,17 @@ export const makeGetProposalInfo =
     // Use timestamp if available, or block height otherwise.
     let createdAtEpoch: number | null = null
     try {
+      const proposalSubquery = await subqueryClient.query<
+        GetProposal,
+        GetProposalOperationVariables
+      >({
+        query: GET_PROPOSAL,
+        variables: { id: getGetProposalSubqueryId(proposalModule.address, id) },
+      })
+
       createdAtEpoch = new Date(
-        proposal.created
-          ? proposal.created
+        proposalSubquery.data?.proposal?.createdAt
+          ? proposalSubquery.data?.proposal?.createdAt
           : (await cosmWasmClient.getBlock(proposal.start_height)).header.time
       ).getTime()
     } catch (err) {
@@ -59,10 +74,9 @@ export const makeGetProposalInfo =
     }
 
     return {
-      id: `${prefix}${id}`,
+      id: `${proposalModule.prefix}${id}`,
       title: proposal.title,
       description: proposal.description,
-      creationHeight: proposal.start_height,
       votingOpen: proposal.status === Status.Open,
       expiration: proposal.expiration,
       createdAtEpoch,

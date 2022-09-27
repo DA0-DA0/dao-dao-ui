@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 
 // $id is {proposalModuleAddress}:{proposalNumber}
 const GET_PROPOSAL_VOTES = gql`
-  query GetProposalVotes($id: String!) {
+  query GetProposalVotes($id: String!) @api(name: proposals) {
     proposal(id: $id) {
       votes {
         nodes {

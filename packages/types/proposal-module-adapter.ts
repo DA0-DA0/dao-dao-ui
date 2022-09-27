@@ -164,7 +164,6 @@ export interface CommonProposalInfo {
   id: string
   title: string
   description: string
-  creationHeight: number
   votingOpen: boolean
   expiration: Expiration
   createdAtEpoch: number | null

@@ -24,7 +24,7 @@ const GET_OPEN_PROPOSALS_WITH_WALLET_VOTES = gql`
     $walletAddress: String = ""
     $currentDate: Datetime!
     $currentHeight: Int!
-  ) {
+  ) @api(name: proposals) {
     proposalModules(filter: { id: { in: $proposalModuleAddresses } }) {
       nodes {
         id
