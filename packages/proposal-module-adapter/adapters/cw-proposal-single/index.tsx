@@ -40,16 +40,27 @@ import {
   useProposalRefreshers,
   useWalletVoteInfo,
 } from './hooks'
-import { DaoCreationConfig } from './types'
+import { DaoCreationConfig, NewProposalForm } from './types'
 
 export const CwProposalSingleAdapter: ProposalModuleAdapter<
   DaoCreationConfig,
-  Vote
+  Vote,
+  NewProposalForm
 > = {
   id: 'cw-proposal-single',
   contractNames: ['cw-govmod-single', 'cw-proposal-single'],
 
   loadCommon: (options) => ({
+    // Fields
+    fields: {
+      defaultNewProposalForm: {
+        title: '',
+        description: '',
+        actionData: [],
+      },
+      newProposalFormTitleKey: 'title',
+    },
+
     // Selectors
     selectors: {
       reverseProposalInfos: makeReverseProposalInfos(options),

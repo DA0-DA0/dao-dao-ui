@@ -146,6 +146,13 @@ export interface ProposalPrefill<FormData> {
   data: FormData
 }
 
+export interface ProposalDraft<FormData = any> {
+  name: string
+  createdAt: number
+  lastUpdatedAt: number
+  proposal: ProposalPrefill<FormData>
+}
+
 //! Create DAO
 
 export type CreateDaoCustomValidator = (setNewErrors: boolean) => void

@@ -54,7 +54,7 @@ export const CreateProposal = ({
         className="mx-auto max-w-6xl"
         rightNode={
           <Dropdown
-            containerClassName="hidden sm:block"
+            containerClassName="hidden lg:block"
             onSelect={setProposalModule}
             options={proposalModuleItems}
             selected={proposalModule}
@@ -74,7 +74,7 @@ export const CreateProposal = ({
 
           {/* Show in PageHeader on large screens. */}
           <Dropdown
-            containerClassName="sm:hidden"
+            containerClassName="lg:hidden"
             onSelect={setProposalModule}
             options={proposalModuleItems}
             selected={proposalModule}

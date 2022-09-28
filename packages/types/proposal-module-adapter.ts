@@ -1,6 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ComponentType } from 'react'
-import { FieldValues } from 'react-hook-form'
+import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
 import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
@@ -11,6 +11,7 @@ import { CheckedDepositInfo } from './contracts/cw-proposal-single'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
+  ProposalDraft,
   ProposalModule,
   ProposalPrefill,
 } from './dao'
@@ -23,7 +24,13 @@ import {
 import { ProcessedThresholdQuorum } from './utils'
 import { BaseProposalDetailsVotingPowerWidgetProps } from './voting-module-adapter'
 
-export interface IProposalModuleAdapterCommon {
+export interface IProposalModuleAdapterCommon<FormData extends FieldValues = any> {
+  // Fields
+  fields: {
+    defaultNewProposalForm: FormData
+    newProposalFormTitleKey: FieldPath<FormData>
+  }
+
   // Selectors
   selectors: {
     reverseProposalInfos: ReverseProposalInfosSelector
@@ -89,14 +96,15 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
 
 export type ProposalModuleAdapter<
   DaoCreationConfig extends FieldValues = any,
-  Vote extends unknown = any
+  Vote extends unknown = any,
+  FormData extends FieldValues = any
 > = {
   id: string
   contractNames: string[]
 
   loadCommon: (
     options: IProposalModuleAdapterCommonOptions
-  ) => IProposalModuleAdapterCommon
+  ) => IProposalModuleAdapterCommon<FormData>
 
   load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter<Vote>
 
@@ -211,14 +219,18 @@ export interface BaseProposalModuleInfo {
   className?: string
 }
 
-export interface BaseNewProposalProps {
+export interface BaseNewProposalProps<FormData = any> {
   onCreateSuccess: (
     newProposalProps: Pick<
       ProposalCardProps,
       'id' | 'title' | 'description' | 'info'
     >
   ) => void
-  prefill: any
+  draft?: ProposalDraft<FormData>
+  saveDraft: () => void
+  drafts: ProposalDraft[]
+  loadDraft: (index: number) => void
+  draftSaving: boolean
 }
 
 export interface WalletVoteInfo<T> {

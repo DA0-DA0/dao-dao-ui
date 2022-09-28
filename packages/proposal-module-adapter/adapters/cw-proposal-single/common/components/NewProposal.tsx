@@ -1,7 +1,7 @@
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -44,13 +44,13 @@ import {
   NewProposalProps as StatelessNewProposalProps,
 } from '../ui/NewProposal'
 
-export type NewProposalProps = BaseNewProposalProps &
+export type NewProposalProps = BaseNewProposalProps<NewProposalForm> &
   Pick<StatelessNewProposalProps, 'options'>
 
 export const NewProposal = ({
   onCreateSuccess,
-  prefill,
   options,
+  ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
   const { coreVersion } = useDaoInfoContext()
@@ -105,14 +105,7 @@ export const NewProposal = ({
     {}
   )
 
-  const formMethods = useForm<NewProposalForm>({
-    mode: 'onChange',
-    defaultValues: prefill || {
-      title: '',
-      description: '',
-      actionData: [],
-    },
-  })
+  const formMethods = useFormContext<NewProposalForm>()
 
   const config = useRecoilValue(
     CwProposalSingleSelectors.configSelector({
@@ -291,11 +284,11 @@ export const NewProposal = ({
       connected={connected}
       createProposal={createProposal}
       depositUnsatisfied={!depositSatisfied}
-      formMethods={formMethods}
       isMember={isMember}
       isPaused={isPaused}
       loading={loading}
       options={options}
+      {...props}
     />
   )
 }

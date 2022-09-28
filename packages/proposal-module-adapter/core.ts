@@ -46,10 +46,13 @@ export const matchAndLoadCommon = (
     )
   }
 
-  return adapter.loadCommon({
-    ...initialOptions,
-    proposalModule,
-  })
+  return {
+    id: adapter.id,
+    ...adapter.loadCommon({
+      ...initialOptions,
+      proposalModule,
+    }),
+  }
 }
 
 export const matchAndLoadAdapter = (

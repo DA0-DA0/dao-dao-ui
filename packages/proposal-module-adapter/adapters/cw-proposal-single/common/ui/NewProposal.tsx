@@ -1,11 +1,11 @@
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import { useCallback, useState } from 'react'
 import {
-  FormProvider,
   SubmitErrorHandler,
   SubmitHandler,
-  UseFormReturn,
   useFieldArray,
+  useFormContext,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -22,6 +22,7 @@ import {
   ActionCardLoader,
   ActionSelector,
   Button,
+  FilterableItemPopup,
   InputErrorMessage,
   TextAreaInput,
   TextInput,
@@ -29,7 +30,10 @@ import {
 } from '@dao-dao/ui'
 import { validateRequired } from '@dao-dao/utils'
 
-import { IProposalModuleAdapterCommonOptions } from '../../../../types'
+import {
+  BaseNewProposalProps,
+  IProposalModuleAdapterCommonOptions,
+} from '../../../../types'
 import { NewProposalData, NewProposalForm } from '../../types'
 
 enum ProposeSubmitValue {
@@ -37,7 +41,11 @@ enum ProposeSubmitValue {
   Submit = 'Submit',
 }
 
-export interface NewProposalProps {
+export interface NewProposalProps
+  extends Pick<
+    BaseNewProposalProps<NewProposalForm>,
+    'draft' | 'saveDraft' | 'drafts' | 'loadDraft' | 'draftSaving'
+  > {
   options: IProposalModuleAdapterCommonOptions
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
@@ -56,7 +64,6 @@ export interface NewProposalProps {
       }
     >
   >
-  formMethods: UseFormReturn<NewProposalForm, object>
 }
 
 // TODO: Figure out where to put preview logic.
@@ -70,7 +77,11 @@ export const NewProposal = ({
   connected,
   actions,
   actionsWithData,
-  formMethods,
+  draft,
+  saveDraft,
+  drafts,
+  loadDraft,
+  draftSaving,
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
@@ -82,7 +93,7 @@ export const NewProposal = ({
     handleSubmit,
     watch,
     formState: { errors },
-  } = formMethods
+  } = useFormContext<NewProposalForm>()
 
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
@@ -123,159 +134,219 @@ export const NewProposal = ({
     [setShowSubmitErrorNote]
   )
 
+  const proposalName = watch('title')
+
   return (
-    <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
-        <div className="rounded-lg bg-background-tertiary">
-          <div className="flex flex-row gap-6 justify-between items-center py-4 px-6 border-b border-border-secondary">
-            <p className="primary-text text-text-body">
-              {t('form.proposalsName')}
-            </p>
-
-            <div className="flex flex-col grow">
-              <TextInput
-                error={errors.title}
-                fieldName="title"
-                placeholder={t('form.proposalsNamePlaceholder')}
-                register={register}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.title} />
-            </div>
-          </div>
-          <div className="flex flex-col gap-4 p-6 pt-5">
-            <p className="primary-text text-text-body">
-              {t('form.description')}
-              <span className="text-text-tertiary">
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                {' – '}
-                {t('info.supportsMarkdownFormat')}
-              </span>
-            </p>
-
-            <div className="flex flex-col">
-              <TextAreaInput
-                error={errors.description}
-                fieldName="description"
-                placeholder={t('form.proposalsDescriptionPlaceholder')}
-                register={register}
-                rows={5}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.description} />
-            </div>
-          </div>
-        </div>
-
-        <p className="my-6 title-text text-text-body">
-          {t('title.actions', { count: proposalActionData.length })}
-        </p>
-
-        {proposalActionData.length > 0 && (
-          <div className="flex flex-col gap-1 mb-4">
-            {proposalActionData.map((actionData, index) => {
-              const Component =
-                actionsWithData[actionData.key]?.action?.Component
-              if (!Component) {
-                throw new Error(
-                  `Error detecting action type "${actionData.key}".`
-                )
-              }
-
-              return (
-                <SuspenseLoader
-                  key={index}
-                  fallback={<ActionCardLoader Loader={Loader} />}
-                >
-                  <Component
-                    Loader={Loader}
-                    Logo={Logo}
-                    allActionsWithData={proposalActionData}
-                    coreAddress={coreAddress}
-                    data={actionData.data}
-                    errors={errors.actionData?.[index]?.data || {}}
-                    fieldNamePrefix={`actionData.${index}.data.`}
-                    index={index}
-                    isCreating
-                    onRemove={() => remove(index)}
-                  />
-                </SuspenseLoader>
-              )
-            })}
-          </div>
-        )}
-
-        <div className="mb-6">
-          <ActionSelector
-            actions={actions}
-            onSelectAction={({ key }) => {
-              append({
-                key,
-                data: actionsWithData[key]?.defaults ?? {},
-              })
-            }}
-          />
-        </div>
-
-        <div className="flex flex-row gap-6 justify-between items-center py-6 border-y border-border-secondary">
-          <p className="text-text-body title-text">
-            {t('info.reviewYourProposal')}
+    <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
+      <div className="rounded-lg bg-background-tertiary">
+        <div className="flex flex-row gap-6 justify-between items-center py-4 px-6 border-b border-border-secondary">
+          <p className="primary-text text-text-body">
+            {t('form.proposalsName')}
           </p>
 
-          <div className="flex flex-row gap-2 justify-end items-center">
+          <div className="flex flex-col grow">
+            <TextInput
+              error={errors.title}
+              fieldName="title"
+              placeholder={t('form.proposalsNamePlaceholder')}
+              register={register}
+              validation={[validateRequired]}
+            />
+            <InputErrorMessage error={errors.title} />
+          </div>
+        </div>
+        <div className="flex flex-col gap-4 p-6 pt-5">
+          <p className="primary-text text-text-body">
+            {t('form.description')}
+            <span className="text-text-tertiary">
+              {/* eslint-disable-next-line i18next/no-literal-string */}
+              {' – '}
+              {t('info.supportsMarkdownFormat')}
+            </span>
+          </p>
+
+          <div className="flex flex-col">
+            <TextAreaInput
+              error={errors.description}
+              fieldName="description"
+              placeholder={t('form.proposalsDescriptionPlaceholder')}
+              register={register}
+              rows={5}
+              validation={[validateRequired]}
+            />
+            <InputErrorMessage error={errors.description} />
+          </div>
+        </div>
+      </div>
+
+      <p className="my-6 title-text text-text-body">
+        {t('title.actions', { count: proposalActionData.length })}
+      </p>
+
+      {proposalActionData.length > 0 && (
+        <div className="flex flex-col gap-1 mb-4">
+          {proposalActionData.map((actionData, index) => {
+            const Component = actionsWithData[actionData.key]?.action?.Component
+            if (!Component) {
+              throw new Error(
+                `Error detecting action type "${actionData.key}".`
+              )
+            }
+
+            return (
+              <SuspenseLoader
+                key={index}
+                fallback={<ActionCardLoader Loader={Loader} />}
+              >
+                <Component
+                  Loader={Loader}
+                  Logo={Logo}
+                  allActionsWithData={proposalActionData}
+                  coreAddress={coreAddress}
+                  data={actionData.data}
+                  errors={errors.actionData?.[index]?.data || {}}
+                  fieldNamePrefix={`actionData.${index}.data.`}
+                  index={index}
+                  isCreating
+                  onRemove={() => remove(index)}
+                />
+              </SuspenseLoader>
+            )
+          })}
+        </div>
+      )}
+
+      <div className="mb-6">
+        <ActionSelector
+          actions={actions}
+          onSelectAction={({ key }) => {
+            append({
+              key,
+              data: actionsWithData[key]?.defaults ?? {},
+            })
+          }}
+        />
+      </div>
+
+      <div className="flex flex-row gap-6 justify-between items-center py-6 border-y border-border-secondary">
+        <p className="text-text-body title-text">
+          {t('info.reviewYourProposal')}
+        </p>
+
+        <div className="flex flex-row gap-2 justify-end items-center">
+          <Button
+            disabled={loading}
+            type="submit"
+            value={ProposeSubmitValue.Preview}
+            variant="secondary"
+          >
+            {showPreview ? (
+              <>
+                {t('button.hidePreview')}
+                <EyeOffIcon className="w-5 h-5" />
+              </>
+            ) : (
+              <>
+                {t('button.preview')}
+                <EyeIcon className="w-5 h-5" />
+              </>
+            )}
+          </Button>
+
+          <Tooltip
+            title={
+              !connected
+                ? t('error.connectWalletToContinue')
+                : !isMember
+                ? t('error.mustBeMemberToCreateProposal')
+                : depositUnsatisfied
+                ? t('error.notEnoughForDeposit')
+                : isPaused
+                ? t('error.daoIsPaused')
+                : undefined
+            }
+          >
             <Button
-              disabled={loading}
+              disabled={
+                !connected || !isMember || depositUnsatisfied || isPaused
+              }
+              loading={loading}
               type="submit"
-              value={ProposeSubmitValue.Preview}
-              variant="secondary"
+              value={ProposeSubmitValue.Submit}
             >
-              {showPreview ? (
-                <>
-                  {t('button.hidePreview')}
-                  <EyeOffIcon className="w-5 h-5" />
-                </>
-              ) : (
-                <>
-                  {t('button.preview')}
-                  <EyeIcon className="w-5 h-5" />
-                </>
-              )}
+              <p>{t('button.publish')}</p>
+              <Airplane className="w-4 h-4" />
             </Button>
+          </Tooltip>
+        </div>
+      </div>
+
+      {showSubmitErrorNote && (
+        <p className="mt-2 text-right text-text-interactive-error secondary-text">
+          {t('error.createProposalSubmitInvalid')}
+        </p>
+      )}
+
+      <div className="flex flex-row gap-2 justify-end mt-4">
+        {draft ? (
+          <p
+            className={clsx(
+              'italic caption-text',
+              draftSaving && 'animate-pulse'
+            )}
+          >
+            {draftSaving
+              ? t('info.draftSaving')
+              : t('info.draftSavedAtTime', {
+                  time: new Date(draft.lastUpdatedAt).toLocaleTimeString(),
+                })}
+          </p>
+        ) : (
+          <>
+            {drafts.length > 0 && (
+              <FilterableItemPopup
+                Trigger={({ open, ...props }) => (
+                  <Button pressed={open} variant="secondary" {...props}>
+                    {t('button.loadDraft')}
+                  </Button>
+                )}
+                filterableItemKeys={FILTERABLE_KEYS}
+                items={drafts.map(({ name, createdAt, lastUpdatedAt }) => ({
+                  key: createdAt,
+                  label: name,
+                  description: (
+                    <>
+                      Created: {new Date(createdAt).toLocaleString()}
+                      <br />
+                      Last updated: {new Date(lastUpdatedAt).toLocaleString()}
+                    </>
+                  ),
+                }))}
+                onSelect={(_, index) => loadDraft(index)}
+                popupClassName="!w-[24rem] max-w-[96vw] max-h-[96vh]"
+                position="left"
+                searchPlaceholder={t('info.searchDraftPlaceholder')}
+              />
+            )}
 
             <Tooltip
               title={
-                !connected
-                  ? t('error.connectWalletToContinue')
-                  : !isMember
-                  ? t('error.mustBeMemberToCreateProposal')
-                  : depositUnsatisfied
-                  ? t('error.notEnoughForDeposit')
-                  : isPaused
-                  ? t('error.daoIsPaused')
-                  : undefined
+                proposalName ? undefined : t('info.enterNameBeforeSavingDraft')
               }
             >
               <Button
-                disabled={
-                  !connected || !isMember || depositUnsatisfied || isPaused
-                }
-                loading={loading}
-                type="submit"
-                value={ProposeSubmitValue.Submit}
+                disabled={!proposalName}
+                onClick={saveDraft}
+                variant="secondary"
               >
-                <p>{t('button.publish')}</p>
-                <Airplane className="w-4 h-4" />
+                {t('button.saveDraft')}
               </Button>
             </Tooltip>
-          </div>
-        </div>
-
-        {showSubmitErrorNote && (
-          <p className="mt-2 text-right text-text-interactive-error secondary-text">
-            {t('error.createProposalSubmitInvalid')}
-          </p>
+          </>
         )}
-      </form>
-    </FormProvider>
+      </div>
+    </form>
   )
 }
+
+const FILTERABLE_KEYS = ['name']

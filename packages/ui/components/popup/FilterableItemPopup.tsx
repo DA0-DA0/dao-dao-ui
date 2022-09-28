@@ -3,6 +3,7 @@ import Fuse from 'fuse.js'
 import {
   ComponentType,
   Dispatch,
+  ReactNode,
   SetStateAction,
   useCallback,
   useEffect,
@@ -29,8 +30,8 @@ export const FilterableItemPopup = <
   T extends {
     key: string | number
     Icon?: ComponentType
-    label: string
-    description?: string
+    label: ReactNode
+    description?: ReactNode
   }
 >({
   items,
@@ -51,6 +52,7 @@ export const FilterableItemPopup = <
   )
   const itemsListRef = useRef<HTMLDivElement>(null)
   const searchBarRef = useRef<HTMLInputElement>(null)
+  const openRef = useRef<boolean | null>(null)
   const setOpenRef = useRef<Dispatch<SetStateAction<boolean>> | null>(null)
 
   const [filter, setFilter] = useState('')
@@ -94,6 +96,11 @@ export const FilterableItemPopup = <
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
+      // If openRef is unset or false (so, closed), do not take over keypresses.
+      if (!openRef.current) {
+        return
+      }
+
       switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowUp':

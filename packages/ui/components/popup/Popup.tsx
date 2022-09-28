@@ -23,7 +23,8 @@ export interface PopupProps {
   headerContent?: ReactNode
   onOpen?: () => void
   onClose?: () => void
-  // Give parent a way to access and control setOpen.
+  // Give parent a way to access and control open and setOpen.
+  openRef?: MutableRefObject<boolean | null>
   setOpenRef?: MutableRefObject<Dispatch<SetStateAction<boolean>> | null>
 }
 
@@ -37,25 +38,30 @@ export const Popup = ({
   headerContent,
   onOpen,
   onClose,
+  openRef,
   setOpenRef,
 }: PopupProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
 
-  // Store setOpen in ref so parent can control it.
+  // Store open and setOpen in ref so parent can access them.
   useEffect(() => {
-    if (!setOpenRef) {
-      return
+    if (openRef) {
+      openRef.current = open
     }
-
-    // Add ref on mount.
-    setOpenRef.current = setOpen
-
-    // Remove ref on unmount.
+    if (setOpenRef) {
+      setOpenRef.current = setOpen
+    }
+    // Remove refs on unmount.
     return () => {
-      setOpenRef.current = null
+      if (openRef) {
+        openRef.current = null
+      }
+      if (setOpenRef) {
+        setOpenRef.current = null
+      }
     }
-  }, [setOpenRef])
+  }, [open, openRef, setOpenRef])
 
   // Trigger open callbacks.
   useEffect(() => {
