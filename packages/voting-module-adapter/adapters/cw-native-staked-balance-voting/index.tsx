@@ -41,6 +41,7 @@ export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
     hooks: {
       useActions,
       useDaoInfoBarItems,
+      useProfileNewProposalCardAddresses: () => [],
       useGovernanceTokenInfo,
       useStakingInfo,
     },
@@ -57,7 +58,6 @@ export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
       DaoInfoVotingConfiguration,
       ProfileMemberCardMembershipInfo,
       ProfileCardNotMemberInfo,
-      ProposalCreationAdditionalAddresses: () => null,
       VoteHeroStats,
       SdaMembershipPage,
 

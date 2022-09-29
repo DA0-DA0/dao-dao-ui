@@ -26,51 +26,50 @@ Default.args = {
   walletAddress: 'wallet',
   walletName: 'Modern-Edamame',
   profileImgUrl: '/noah.jpg',
-  lines: {
+  info: {
     loading: false,
-    data: [
-      {
-        Icon: MultilineChart,
-        label: 'Passing threshold',
-        value: 'Majority',
-      },
-      {
-        Icon: FlagOutlined,
-        label: 'Quorum',
-        value: '20%',
-      },
-      {
-        Icon: AttachMoney,
-        label: 'Proposal deposit',
-        value: '2,000 $DOG',
-      },
-      {
-        Icon: CancelOutlined,
-        label: 'Failed proposals',
-        value: 'No Refund',
-        valueClassName: '!border-component-badge-error',
-      },
-    ],
-  },
-  addresses: {
-    loading: false,
-    data: [
-      {
-        label: 'Dog Dao address',
-        address:
-          'juno1czh5dy2kxwwt5hlw6rr2q25clj96sheftsdccswg9qe34m3wzgdswmw8ju',
-      },
-      {
-        label: 'DAO Staking address',
-        address:
-          'juno1czh5dy2kxwwt5hlw6rr2q25clj96sheftsdccswg9qe34m3wzgdswmw8ju',
-      },
-      {
-        label: 'Governance token address',
-        address:
-          'juno1czh5dy2kxwwt5hlw6rr2q25clj96sheftsdccswg9qe34m3wzgdswmw8ju',
-      },
-    ],
+    data: {
+      lines: [
+        {
+          Icon: MultilineChart,
+          label: 'Passing threshold',
+          value: 'Majority',
+        },
+        {
+          Icon: FlagOutlined,
+          label: 'Quorum',
+          value: '20%',
+        },
+        {
+          Icon: AttachMoney,
+          label: 'Proposal deposit',
+          value: '2,000 $DOG',
+        },
+        {
+          Icon: CancelOutlined,
+          label: 'Failed proposals',
+          value: 'No Refund',
+          valueClassName: '!border-component-badge-error',
+        },
+      ],
+      addresses: [
+        {
+          label: 'Dog Dao address',
+          address:
+            'juno1czh5dy2kxwwt5hlw6rr2q25clj96sheftsdccswg9qe34m3wzgdswmw8ju',
+        },
+        {
+          label: 'DAO Staking address',
+          address:
+            'juno1czh5dy2kxwwt5hlw6rr2q25clj96sheftsdccswg9qe34m3wzgdswmw8ju',
+        },
+        {
+          label: 'Governance token address',
+          address:
+            'juno1czh5dy2kxwwt5hlw6rr2q25clj96sheftsdccswg9qe34m3wzgdswmw8ju',
+        },
+      ],
+    },
   },
 }
 Default.parameters = {
@@ -83,10 +82,7 @@ Default.parameters = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...Default.args,
-  lines: {
-    loading: true,
-  },
-  addresses: {
+  info: {
     loading: true,
   },
 }

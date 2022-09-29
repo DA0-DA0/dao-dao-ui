@@ -2,6 +2,7 @@ import { ProposalModule } from '@dao-dao/tstypes'
 
 import { CwProposalSingleAdapter } from './adapters'
 import {
+  IProposalModuleAdapterCommon,
   IProposalModuleAdapterInitialOptions,
   IProposalModuleAdapterOptions,
   IProposalModuleContext,
@@ -33,7 +34,7 @@ export const matchAdapter = (contractNameToMatch: string) =>
 export const matchAndLoadCommon = (
   proposalModule: ProposalModule,
   initialOptions: IProposalModuleAdapterInitialOptions
-) => {
+): IProposalModuleAdapterCommon & { id: string } => {
   const adapter = matchAdapter(proposalModule.contractName)
 
   if (!adapter) {

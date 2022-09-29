@@ -58,24 +58,25 @@ const InnerProposalCreate = () => {
   // Set once prefill has been assessed, indicating NewProposal can load now.
   const [prefillChecked, setPrefillChecked] = useState(false)
 
-  const proposalAdapterCommon = useMemo(() => {
-    const common = matchAndLoadCommon(selectedProposalModule, {
+  const proposalModuleAdapterCommon = useMemo(() => matchAndLoadCommon(selectedProposalModule, {
       coreAddress: daoInfo.coreAddress,
       Loader,
       Logo,
-    })
+  }), [daoInfo.coreAddress, selectedProposalModule])
 
-    return {
-      id: common.id,
-      NewProposal: common.components.NewProposal,
-      defaultData: common.fields.defaultNewProposalForm,
-      titleKey: common.fields.newProposalFormTitleKey,
-    }
-  }, [daoInfo.coreAddress, selectedProposalModule])
+  const {
+    fields: {
+      defaultNewProposalForm,
+      newProposalFormTitleKey,
+    },
+    components: {
+      NewProposal,
+    },
+  } = proposalModuleAdapterCommon
 
   const formMethods = useForm({
     mode: 'onChange',
-    defaultValues: proposalAdapterCommon.defaultData,
+    defaultValues: defaultNewProposalForm,
   })
 
   const loadPrefill = useCallback(
@@ -159,7 +160,7 @@ const InnerProposalCreate = () => {
   )
 
   const proposalData = formMethods.watch()
-  const proposalName = formMethods.watch(proposalAdapterCommon.titleKey)
+  const proposalName = formMethods.watch(newProposalFormTitleKey)
   const saveDraft = useCallback(() => {
     // Already saving to a selected draft.
     if (draft) {
@@ -171,7 +172,7 @@ const InnerProposalCreate = () => {
       createdAt: Date.now(),
       lastUpdatedAt: Date.now(),
       proposal: {
-        id: proposalAdapterCommon.id,
+        id: proposalModuleAdapterCommon.id,
         data: proposalData,
       },
     }
@@ -182,7 +183,7 @@ const InnerProposalCreate = () => {
     draft,
     drafts,
     proposalData,
-    proposalAdapterCommon.id,
+    proposalModuleAdapterCommon.id,
     setDrafts,
     proposalName,
   ])
@@ -211,7 +212,7 @@ const InnerProposalCreate = () => {
                 name: proposalName,
                 lastUpdatedAt: Date.now(),
                 proposal: {
-                  id: proposalAdapterCommon.id,
+                  id: proposalModuleAdapterCommon.id,
                   // Deep clone to prevent values from becoming readOnly.
                   data: cloneDeep(proposalData),
                 },
@@ -232,7 +233,7 @@ const InnerProposalCreate = () => {
     draftIndex,
     setDrafts,
     proposalName,
-    proposalAdapterCommon.id,
+    proposalModuleAdapterCommon.id,
   ])
 
   return (
@@ -243,7 +244,7 @@ const InnerProposalCreate = () => {
           isMember={isMember}
           newProposal={
             prefillChecked ? (
-              <proposalAdapterCommon.NewProposal
+              <NewProposal
                 draft={draft}
                 draftSaving={draftSaving}
                 drafts={drafts}
@@ -258,7 +259,7 @@ const InnerProposalCreate = () => {
           proposalModule={selectedProposalModule}
           rightSidebarContent={
             connected ? (
-              <ProfileNewProposalCard proposalModule={selectedProposalModule} />
+              <ProfileNewProposalCard proposalModuleAdapterCommon={proposalModuleAdapterCommon} />
             ) : (
               <ProfileDisconnectedCard />
             )

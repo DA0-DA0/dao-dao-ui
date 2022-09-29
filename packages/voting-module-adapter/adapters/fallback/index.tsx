@@ -24,7 +24,8 @@ export const FallbackVotingAdapter: VotingModuleAdapter = {
     // Hooks
     hooks: {
       useActions: () => useMemo(() => [], []),
-      useDaoInfoBarItems: () => useMemo(() => [], []),
+      useDaoInfoBarItems: () => [],
+      useProfileNewProposalCardAddresses: () => [],
     },
 
     // Components
@@ -39,7 +40,6 @@ export const FallbackVotingAdapter: VotingModuleAdapter = {
       DaoInfoVotingConfiguration: () => null,
       ProfileMemberCardMembershipInfo: () => null,
       ProfileCardNotMemberInfo: () => null,
-      ProposalCreationAdditionalAddresses: () => null,
       VoteHeroStats: () => null,
       SdaMembershipPage: () => null,
     },

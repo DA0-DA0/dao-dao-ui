@@ -2,34 +2,26 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { useWallet } from '@noahsaso/cosmodal'
-import { useRef } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
-import { ProposalModule } from '@dao-dao/tstypes'
-import {
-  Loader,
-  Logo,
-  ProfileNewProposalCardInfoLine,
-  ProfileNewProposalCard as StatelessProfileNewProposalCard,
-} from '@dao-dao/ui'
+import { ProfileNewProposalCard as StatelessProfileNewProposalCard } from '@dao-dao/ui'
+import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 export interface ProfileNewProposalCardProps {
-  proposalModule: ProposalModule
+  proposalModuleAdapterCommon: ReturnType<typeof matchAndLoadCommon>
 }
 
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
-  const { name } = useDaoInfoContext()
+  const { name: daoName } = useDaoInfoContext()
   const { name: walletName = '', address: walletAddress = '' } = useWallet()
 
   return (
     <SuspenseLoader
       fallback={
         <StatelessProfileNewProposalCard
-          addresses={{ loading: true }}
-          daoName={name}
-          lines={{ loading: true }}
+          daoName={daoName}
+          info={{ loading: true }}
           // TODO: Retrieve.
           profileImgUrl={undefined}
           walletAddress={walletAddress}
@@ -38,58 +30,33 @@ export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
         />
       }
     >
-      <InnerProfileNewProposalCard {...props} />
+      {/* Use `key` prop to fully re-instantiate this card when the proposalModule changes since we use hooks from the proposal module that may have different internal hooks. */}
+      <InnerProfileNewProposalCard
+        key={props.proposalModuleAdapterCommon.id}
+        {...props}
+      />
     </SuspenseLoader>
   )
 }
 
 export const InnerProfileNewProposalCard = ({
-  proposalModule,
+  proposalModuleAdapterCommon: {
+    hooks: { useProfileNewProposalCardInfoLines },
+  },
 }: ProfileNewProposalCardProps) => {
-  const { t } = useTranslation()
-  const { name, coreAddress, proposalModules } = useDaoInfoContext()
+  const { name: daoName } = useDaoInfoContext()
   const { name: walletName = '', address: walletAddress = '' } = useWallet()
+  const {
+    hooks: { useProfileNewProposalCardAddresses },
+  } = useVotingModuleAdapter()
 
-  const allProposalModuleCommons = useRef(
-    proposalModules.map((proposalModule) => ({
-      common: matchAndLoadCommon(proposalModule, {
-        coreAddress,
-        Loader,
-        Logo,
-      }),
-      proposalModule,
-    }))
-  ).current
-
-  let lines: ProfileNewProposalCardInfoLine[] | undefined
-  allProposalModuleCommons.forEach(
-    ({
-      proposalModule: { address },
-      common: {
-        hooks: { useProfileNewProposalCardInfoLines },
-      },
-    }) => {
-      // Safe because hooks are always called in same order.
-      // `allProposalModuleCommons` does not change.
-
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const _lines = useProfileNewProposalCardInfoLines()
-      if (address === proposalModule.address) {
-        lines = _lines
-      }
-    }
-  )
-
-  if (!lines) {
-    throw new Error(t('error.loadingData'))
-  }
+  const lines = useProfileNewProposalCardInfoLines()
+  const addresses = useProfileNewProposalCardAddresses()
 
   return (
     <StatelessProfileNewProposalCard
-      // TODO: Add to voting module adapter.
-      addresses={{ loading: true }}
-      daoName={name}
-      lines={{ loading: false, data: lines }}
+      daoName={daoName}
+      info={{ loading: false, data: { lines, addresses } }}
       // TODO: Retrieve.
       profileImgUrl={undefined}
       walletAddress={walletAddress}

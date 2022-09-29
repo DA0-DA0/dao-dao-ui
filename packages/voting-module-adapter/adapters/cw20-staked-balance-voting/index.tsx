@@ -12,7 +12,6 @@ import {
   MembershipMobileTab,
   ProfileCardNotMemberInfo,
   ProfileMemberCardMembershipInfo,
-  ProposalCreationAdditionalAddresses,
   ProposalDetailsVotingPowerWidget,
   SdaMembershipPage,
   StakingModal,
@@ -29,6 +28,7 @@ import {
   useActions,
   useDaoInfoBarItems,
   useGovernanceTokenInfo,
+  useProfileNewProposalCardAddresses,
   useStakingInfo,
 } from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
@@ -54,6 +54,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConf
       hooks: {
         useActions,
         useDaoInfoBarItems,
+        useProfileNewProposalCardAddresses,
         useGovernanceTokenInfo,
         useStakingInfo,
       },
@@ -68,7 +69,6 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConf
         DaoTreasuryFooter,
         DaoInfoAdditionalAddresses,
         DaoInfoVotingConfiguration,
-        ProposalCreationAdditionalAddresses,
         VoteHeroStats,
         SdaMembershipPage,
         ProfileMemberCardMembershipInfo,

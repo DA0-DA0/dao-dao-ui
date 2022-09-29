@@ -8,7 +8,6 @@ import {
   MembershipMobileTab,
   ProfileCardNotMemberInfo,
   ProfileMemberCardMembershipInfo,
-  ProposalCreationAdditionalAddresses,
   SdaMembershipPage,
   VoteHeroStats,
 } from './components'
@@ -18,7 +17,11 @@ import {
   GovernanceConfigurationReview,
   getInstantiateInfo,
 } from './daoCreation'
-import { useActions, useDaoInfoBarItems } from './hooks'
+import {
+  useActions,
+  useDaoInfoBarItems,
+  useProfileNewProposalCardAddresses,
+} from './hooks'
 import { DaoCreationConfig } from './types'
 
 export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
@@ -41,6 +44,7 @@ export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
     hooks: {
       useActions,
       useDaoInfoBarItems,
+      useProfileNewProposalCardAddresses,
     },
 
     // Components
@@ -56,7 +60,6 @@ export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
       DaoInfoVotingConfiguration: () => null,
       ProfileCardNotMemberInfo,
       ProfileMemberCardMembershipInfo,
-      ProposalCreationAdditionalAddresses,
       VoteHeroStats,
       SdaMembershipPage,
     },

@@ -6,7 +6,7 @@ import { ProfileCardNotMemberInfo as StatelessProfileCardNotMemberInfo } from '.
 export const ProfileCardNotMemberInfo = (
   props: BaseProfileCardNotMemberInfoProps
 ) => {
-  const { name } = useDaoInfoContext()
+  const { name: name } = useDaoInfoContext()
 
   return <StatelessProfileCardNotMemberInfo daoName={name} {...props} />
 }

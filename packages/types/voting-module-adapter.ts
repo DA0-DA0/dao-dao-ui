@@ -20,6 +20,7 @@ import {
   LogoProps,
   StakingMode,
 } from './ui'
+import { ProfileNewProposalCardAddress } from './ui/ProfileNewProposalCard'
 
 export interface MembershipPageInfo {
   renderIcon: (mobile: boolean) => ReactNode
@@ -125,6 +126,7 @@ export interface IVotingModuleAdapter {
   hooks: {
     useActions: () => Action[]
     useDaoInfoBarItems: () => DaoInfoBarItem[]
+    useProfileNewProposalCardAddresses: () => ProfileNewProposalCardAddress[]
     useGovernanceTokenInfo?: (
       options?: UseGovernanceTokenInfoOptions
     ) => UseGovernanceTokenInfoResponse
@@ -142,7 +144,6 @@ export interface IVotingModuleAdapter {
     DaoTreasuryFooter: ComponentType
     DaoInfoAdditionalAddresses: ComponentType
     DaoInfoVotingConfiguration: ComponentType
-    ProposalCreationAdditionalAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
     ProfileMemberCardMembershipInfo: ComponentType<BaseProfileMemberCardMembershipInfoProps>
