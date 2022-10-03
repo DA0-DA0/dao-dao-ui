@@ -12,8 +12,9 @@ export const client = new ApolloClient({
   link: ApolloLink.from([
     new MultiAPILink({
       endpoints: {
-        daos: 'https://daos-index.daodao.zone',
-        proposals: 'https://proposals-index.daodao.zone',
+        daos: 'https://index.daodao.zone/daos',
+        proposals: 'https://index.daodao.zone/proposals',
+        wasmswap: 'https://index.daodao.zone/wasmswap',
       },
       createHttpLink: () => createHttpLink(),
       httpSuffix: '',

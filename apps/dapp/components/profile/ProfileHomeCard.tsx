@@ -3,34 +3,50 @@
 
 import { useWallet } from '@noahsaso/cosmodal'
 
-import { useWalletBalance } from '@dao-dao/state'
+import { useWalletBalance, useWalletProposalsQuery } from '@dao-dao/state'
 import { ProfileHomeCard as StatelessProfileHomeCard } from '@dao-dao/ui'
 import { NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 import { useDAppContext } from '../DAppContext'
 
 export const ProfileHomeCard = () => {
-  const { address, name } = useWallet()
+  const { address = '', name = '' } = useWallet()
   const { walletBalance, walletStakedBalance } = useWalletBalance()
 
   const { inbox } = useDAppContext()
 
+  const query = useWalletProposalsQuery(address)
+  const data = query.data || query.previousData
+
   return (
     <StatelessProfileHomeCard
-      // TODO: Retrieve.
-      established={new Date()}
+      established={
+        // TODO: Retrieve.
+        new Date()
+      }
       inboxProposalCount={inbox.proposalCount}
-      // TODO: Retrieve.
-      numDaos={0}
-      // TODO: Retrieve.
-      numVotes={0}
-      // TODO: Retrieve.
-      profileImgUrl={undefined}
-      stakedBalance={walletStakedBalance ?? 0}
+      lazyData={
+        !data ||
+        walletBalance === undefined ||
+        walletStakedBalance === undefined
+          ? { loading: true }
+          : {
+              loading: false,
+              data: {
+                unstakedBalance: walletBalance,
+                stakedBalance: walletStakedBalance,
+                proposalsCreated: data.proposalsCreated.totalCount,
+                votesCast: data.proposalVotes.totalCount,
+              },
+            }
+      }
+      profileImgUrl={
+        // TODO: Retrieve.
+        undefined
+      }
       tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
-      unstakedBalance={walletBalance ?? 0}
-      walletAddress={address ?? ''}
-      walletName={name ?? ''}
+      walletAddress={address}
+      walletName={name}
     />
   )
 }

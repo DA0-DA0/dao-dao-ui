@@ -3,7 +3,11 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useDaoInfoContext } from '@dao-dao/common'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
-import { ProposalList, ProposalListProps } from '../../proposal'
+import {
+  ProposalLineProps,
+  ProposalList,
+  ProposalListProps,
+} from '../../proposal'
 import * as ProposalListStories from '../../proposal/ProposalList.stories'
 import { ProposalsTab } from './ProposalsTab'
 
@@ -20,15 +24,10 @@ const Template: ComponentStory<typeof ProposalsTab> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   isMember: false,
-  proposalDeposit: {
-    amount: 70,
-    tokenDecimals: 6,
-    tokenSymbol: 'DOG',
-    refundOnFailure: true,
-  },
   proposalList: (
     <ProposalList
-      {...(ProposalListStories.Default.args as ProposalListProps)}
+      {...(ProposalListStories.Default
+        .args as ProposalListProps<ProposalLineProps>)}
     />
   ),
 }
@@ -37,6 +36,9 @@ export const None = Template.bind({})
 None.args = {
   ...Default.args,
   proposalList: (
-    <ProposalList {...(ProposalListStories.None.args as ProposalListProps)} />
+    <ProposalList
+      {...(ProposalListStories.None
+        .args as ProposalListProps<ProposalLineProps>)}
+    />
   ),
 }

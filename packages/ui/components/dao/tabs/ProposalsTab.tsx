@@ -12,19 +12,12 @@ import { Tooltip } from '../../Tooltip'
 export interface ProposalsTabProps {
   daoInfo: DaoInfo
   isMember: boolean
-  proposalDeposit?: {
-    amount: number
-    tokenDecimals: number
-    tokenSymbol: string
-    refundOnFailure: boolean
-  }
   proposalList: ReactNode
 }
 
 export const ProposalsTab = ({
   daoInfo,
   isMember,
-  proposalDeposit,
   proposalList,
 }: ProposalsTabProps) => {
   const { t } = useTranslation()
@@ -55,19 +48,6 @@ export const ProposalsTab = ({
           <p className="text-text-body title-text">
             {t('title.createAProposal')}
           </p>
-          {proposalDeposit && (
-            <p className="secondary-text">
-              {t('info.createProposalDescriptionWithDeposit', {
-                context: proposalDeposit.refundOnFailure
-                  ? 'refundOnFailure'
-                  : 'noRefund',
-                amount: proposalDeposit.amount.toLocaleString(undefined, {
-                  maximumFractionDigits: proposalDeposit.tokenDecimals,
-                }),
-                tokenSymbol: proposalDeposit.tokenSymbol,
-              })}
-            </p>
-          )}
         </div>
 
         <Tooltip

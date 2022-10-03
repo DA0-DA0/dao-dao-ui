@@ -15,8 +15,6 @@ export const ProposalsTab = () => {
     <StatelessProposalsTab
       daoInfo={daoInfo}
       isMember={isMember}
-      // TODO: Display for different proposal modules? Or remove.
-      proposalDeposit={undefined}
       proposalList={<ProposalList />}
     />
   )

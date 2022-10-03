@@ -22,7 +22,7 @@ const GET_OPEN_PROPOSALS_WITH_WALLET_VOTES = gql`
   query GetOpenProposalsWithWalletVotes(
     $proposalModuleAddresses: [String!]
     $walletAddress: String = ""
-    $currentDate: Date!
+    $currentDate: Datetime
     $currentHeight: Int!
   ) @api(name: proposals) {
     proposalModules(filter: { id: { in: $proposalModuleAddresses } }) {
