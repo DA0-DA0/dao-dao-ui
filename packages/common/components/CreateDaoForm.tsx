@@ -74,7 +74,6 @@ export interface CreateDaoFormProps {
   initialPageIndex?: number
 }
 
-// TODO: Add NextSeo with title description and URL in page that uses this component.
 export const CreateDaoForm = ({
   parentDao,
   defaults,

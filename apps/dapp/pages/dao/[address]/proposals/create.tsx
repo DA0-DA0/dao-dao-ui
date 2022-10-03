@@ -58,20 +58,19 @@ const InnerProposalCreate = () => {
   // Set once prefill has been assessed, indicating NewProposal can load now.
   const [prefillChecked, setPrefillChecked] = useState(false)
 
-  const proposalModuleAdapterCommon = useMemo(() => matchAndLoadCommon(selectedProposalModule, {
-      coreAddress: daoInfo.coreAddress,
-      Loader,
-      Logo,
-  }), [daoInfo.coreAddress, selectedProposalModule])
+  const proposalModuleAdapterCommon = useMemo(
+    () =>
+      matchAndLoadCommon(selectedProposalModule, {
+        coreAddress: daoInfo.coreAddress,
+        Loader,
+        Logo,
+      }),
+    [daoInfo.coreAddress, selectedProposalModule]
+  )
 
   const {
-    fields: {
-      defaultNewProposalForm,
-      newProposalFormTitleKey,
-    },
-    components: {
-      NewProposal,
-    },
+    fields: { defaultNewProposalForm, newProposalFormTitleKey },
+    components: { NewProposal },
   } = proposalModuleAdapterCommon
 
   const formMethods = useForm({
@@ -259,7 +258,9 @@ const InnerProposalCreate = () => {
           proposalModule={selectedProposalModule}
           rightSidebarContent={
             connected ? (
-              <ProfileNewProposalCard proposalModuleAdapterCommon={proposalModuleAdapterCommon} />
+              <ProfileNewProposalCard
+                proposalModuleAdapterCommon={proposalModuleAdapterCommon}
+              />
             ) : (
               <ProfileDisconnectedCard />
             )

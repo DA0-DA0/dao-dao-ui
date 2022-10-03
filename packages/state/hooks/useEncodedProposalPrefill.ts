@@ -5,7 +5,6 @@ import {
 } from '@dao-dao/proposal-module-adapter'
 import { NewProposalForm } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/types'
 import { Action, ProposalPrefill } from '@dao-dao/tstypes'
-import { useRef } from 'react'
 
 interface ActionAndData<Data extends {} = any> {
   action: Action<Data, any>

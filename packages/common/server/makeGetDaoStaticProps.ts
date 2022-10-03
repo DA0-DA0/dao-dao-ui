@@ -269,9 +269,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       if (
         error instanceof Error &&
         (error.message.includes('contract: not found') ||
-          error.message.includes(
-            'Error parsing into type cw_core::msg::QueryMsg'
-          ) ||
+          error.message.includes('Error parsing into type') ||
           error.message.includes('decoding bech32 failed'))
       ) {
         // Excluding `info` will render DAONotFound.

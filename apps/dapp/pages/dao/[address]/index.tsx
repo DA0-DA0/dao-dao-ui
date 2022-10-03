@@ -29,7 +29,6 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 
-// TODO: Add 'this is not DAO' if Error parsing into type query failure. Probably in static props.
 const InnerDaoHome = () => {
   const {
     connected,
@@ -90,8 +89,10 @@ const InnerDaoHome = () => {
           isMember ? (
             <ProfileMemberCard
               daoName={daoInfo.name}
-              // TODO: Retrieve.
-              established={new Date()}
+              established={
+                // TODO: Retrieve.
+                new Date()
+              }
               membershipInfo={
                 <ProfileMemberCardMembershipInfo
                   deposit={
@@ -101,16 +102,20 @@ const InnerDaoHome = () => {
                   }
                 />
               }
-              // TODO: Retrieve.
-              profileImgUrl={undefined}
+              profileImgUrl={
+                // TODO: Retrieve.
+                undefined
+              }
               walletAddress={walletAddress}
-              walletName={walletName}
+              walletName={
+                // TODO: Retrieve.
+                walletName
+              }
             />
           ) : (
             <ProfileNotMemberCard
               daoName={daoInfo.name}
               established={new Date()}
-              // TODO: Retrieve.
               notMemberInfo={
                 <ProfileCardNotMemberInfo
                   deposit={
@@ -121,10 +126,15 @@ const InnerDaoHome = () => {
                   proposalContext={false}
                 />
               }
-              // TODO: Retrieve.
-              profileImgUrl={undefined}
+              profileImgUrl={
+                // TODO: Retrieve.
+                undefined
+              }
               walletAddress={walletAddress}
-              walletName={walletName}
+              walletName={
+                // TODO: Retrieve.
+                walletName
+              }
             />
           )
         ) : (

@@ -22,11 +22,15 @@ export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
         <StatelessProfileNewProposalCard
           daoName={daoName}
           info={{ loading: true }}
-          // TODO: Retrieve.
-          profileImgUrl={undefined}
+          profileImgUrl={
+            // TODO: Retrieve.
+            undefined
+          }
           walletAddress={walletAddress}
-          // TODO: Retrieve.
-          walletName={walletName}
+          walletName={
+            // TODO: Retrieve.
+            walletName
+          }
         />
       }
     >

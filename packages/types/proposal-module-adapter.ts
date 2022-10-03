@@ -24,7 +24,9 @@ import {
 import { ProcessedThresholdQuorum } from './utils'
 import { BaseProposalDetailsVotingPowerWidgetProps } from './voting-module-adapter'
 
-export interface IProposalModuleAdapterCommon<FormData extends FieldValues = any> {
+export interface IProposalModuleAdapterCommon<
+  FormData extends FieldValues = any
+> {
   // Fields
   fields: {
     defaultNewProposalForm: FormData
