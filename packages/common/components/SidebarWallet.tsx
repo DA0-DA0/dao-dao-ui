@@ -1,6 +1,6 @@
 import { useWalletManager } from '@noahsaso/cosmodal'
 
-import { useWalletBalance } from '@dao-dao/state'
+import { useWalletProfile } from '@dao-dao/state'
 import {
   SidebarWallet as OriginalSidebarWallet,
   SidebarWalletLoading,
@@ -17,7 +17,7 @@ export const SidebarWallet = () => {
     connected,
     connectedWallet,
   } = useWalletManager()
-  const { walletBalance } = useWalletBalance()
+  const { walletBalance } = useWalletProfile()
 
   return (
     <SuspenseLoader fallback={<SidebarWalletLoading />}>

@@ -16,6 +16,6 @@ export interface ProfileVoteCardProps<T> {
   daoName: string
   walletAddress: string
   walletName: string
-  profileImgUrl: string | undefined | null
+  profileImageUrl: string | undefined | null
   onCastVote: (vote: T) => void | Promise<void>
 }

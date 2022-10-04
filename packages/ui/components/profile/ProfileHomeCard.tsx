@@ -10,7 +10,7 @@ import { ProfileCardWrapper } from './ProfileCardWrapper'
 export interface ProfileHomeCardProps {
   walletName: string
   walletAddress: string
-  profileImgUrl: string | undefined | null
+  profileImageUrl: string | undefined | null
   established: Date
   tokenSymbol: string
   inboxProposalCount: number
@@ -25,7 +25,7 @@ export interface ProfileHomeCardProps {
 export const ProfileHomeCard = ({
   walletName,
   walletAddress,
-  profileImgUrl,
+  profileImageUrl,
   established,
   tokenSymbol,
   inboxProposalCount,
@@ -37,7 +37,7 @@ export const ProfileHomeCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0"
       established={established}
-      imgUrl={profileImgUrl}
+      imgUrl={profileImageUrl}
       underHeaderComponent={
         <div className="grid grid-cols-[1fr_1px_1fr] gap-2 justify-items-center items-center self-stretch mt-3">
           <div className="flex flex-col items-stretch text-center">

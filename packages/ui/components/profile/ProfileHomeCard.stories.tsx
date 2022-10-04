@@ -19,7 +19,7 @@ export const Default = Template.bind({})
 Default.args = {
   walletName: '@Modern-Edamame',
   walletAddress: 'abc',
-  profileImgUrl: '/noah.jpg',
+  profileImageUrl: '/noah.jpg',
   established: new Date(),
   tokenSymbol: 'JUNO',
   inboxProposalCount: 5,

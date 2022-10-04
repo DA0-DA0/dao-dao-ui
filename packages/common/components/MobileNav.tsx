@@ -9,7 +9,7 @@ import clsx from 'clsx'
 import { ComponentType, Dispatch, SVGProps, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useWalletBalance } from '@dao-dao/state'
+import { useWalletProfile } from '@dao-dao/state'
 import { NavItem, NavItemData } from '@dao-dao/ui'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
@@ -40,7 +40,7 @@ export const MobileNav = ({
     // eslint-disable-next-line react-hooks/rules-of-hooks
     walletManager = useWalletManager()
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { walletBalance: _walletBalance } = useWalletBalance()
+    const { walletBalance: _walletBalance } = useWalletProfile()
     walletBalance = _walletBalance ?? 0
   } catch {}
 

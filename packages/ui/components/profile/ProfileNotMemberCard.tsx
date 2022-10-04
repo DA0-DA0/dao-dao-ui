@@ -8,7 +8,7 @@ export interface ProfileNotMemberCardProps {
   daoName: string
   walletAddress: string
   walletName: string
-  profileImgUrl: string | undefined | null
+  profileImageUrl: string | undefined | null
   established: Date
   notMemberInfo: ReactNode
 }
@@ -17,7 +17,7 @@ export const ProfileNotMemberCard = ({
   daoName,
   walletAddress,
   walletName,
-  profileImgUrl,
+  profileImageUrl,
   established,
   notMemberInfo,
 }: ProfileNotMemberCardProps) => {
@@ -26,7 +26,7 @@ export const ProfileNotMemberCard = ({
   return (
     <ProfileCardWrapper
       established={established}
-      imgUrl={profileImgUrl}
+      imgUrl={profileImageUrl}
       underHeaderComponent={
         <MembershipPill daoName={daoName} isMember={false} />
       }

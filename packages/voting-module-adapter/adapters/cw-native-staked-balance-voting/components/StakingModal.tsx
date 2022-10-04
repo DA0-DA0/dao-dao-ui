@@ -9,7 +9,7 @@ import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
 import {
   CwNativeStakedBalanceVotingHooks,
   stakingLoadingAtom,
-  useWalletBalance,
+  useWalletProfile,
 } from '@dao-dao/state'
 import {
   Modal,
@@ -39,7 +39,7 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
-  const { refreshBalances } = useWalletBalance()
+  const { refreshBalances } = useWalletProfile()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)

@@ -25,7 +25,7 @@ Default.args = {
   daoName: 'Dog Dao',
   walletAddress: 'wallet',
   walletName: 'Modern-Edamame',
-  profileImgUrl: '/noah.jpg',
+  profileImageUrl: '/noah.jpg',
   info: {
     loading: false,
     data: {

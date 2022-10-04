@@ -10,7 +10,7 @@ import {
   StakeCw20Hooks,
   StakeCw20Selectors,
   stakingLoadingAtom,
-  useWalletBalance,
+  useWalletProfile,
 } from '@dao-dao/state'
 import {
   Modal,
@@ -40,7 +40,7 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
-  const { refreshBalances } = useWalletBalance()
+  const { refreshBalances } = useWalletProfile()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 

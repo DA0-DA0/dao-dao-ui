@@ -9,7 +9,7 @@ export interface ProfileCantVoteCardProps {
   daoName: string
   walletAddress: string
   walletName: string
-  profileImgUrl: string | undefined | null
+  profileImageUrl: string | undefined | null
   isMember: boolean
   notMemberInfo: ReactNode
 }
@@ -18,7 +18,7 @@ export const ProfileCantVoteCard = ({
   daoName,
   walletAddress,
   walletName,
-  profileImgUrl,
+  profileImageUrl,
   isMember,
   notMemberInfo,
 }: ProfileCantVoteCardProps) => {
@@ -28,7 +28,7 @@ export const ProfileCantVoteCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0 border-t-0"
       compact
-      imgUrl={profileImgUrl}
+      imgUrl={profileImageUrl}
       underHeaderComponent={
         <MembershipPill daoName={daoName} ghost isMember={isMember} />
       }

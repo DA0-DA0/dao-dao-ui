@@ -21,7 +21,7 @@ Default.args = {
   daoName: 'Dog Dao',
   walletAddress: 'wallet',
   walletName: '@Modern-Edamame',
-  profileImgUrl: '/noah.jpg',
+  profileImageUrl: '/noah.jpg',
   isMember: false,
   notMemberInfo: (
     <ProfileCardNotMemberInfo {...makeProfileCardNotMemberInfoProps(2.34)} />

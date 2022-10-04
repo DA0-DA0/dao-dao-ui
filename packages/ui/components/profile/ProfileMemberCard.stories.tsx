@@ -24,7 +24,7 @@ const makeProps = (
   daoName: 'Dog Dao',
   walletAddress: 'wallet',
   walletName: '@Modern-Edamame',
-  profileImgUrl: '/noah.jpg',
+  profileImageUrl: '/noah.jpg',
   openProposals: true,
   established: new Date(),
   membershipInfo: (

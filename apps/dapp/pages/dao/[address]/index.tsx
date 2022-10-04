@@ -14,7 +14,11 @@ import {
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
-import { usePinnedDaos, useVotingModule } from '@dao-dao/state'
+import {
+  usePinnedDaos,
+  useVotingModule,
+  useWalletProfile,
+} from '@dao-dao/state'
 import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   DaoHome,
@@ -30,11 +34,12 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 
 const InnerDaoHome = () => {
+  const { connected } = useWallet()
   const {
-    connected,
-    address: walletAddress = '',
-    name: walletName = '',
-  } = useWallet()
+    walletName = '',
+    walletAddress = '',
+    walletImageUrl,
+  } = useWalletProfile()
 
   const daoInfo = useDaoInfoContext()
   const {
@@ -102,15 +107,9 @@ const InnerDaoHome = () => {
                   }
                 />
               }
-              profileImgUrl={
-                // TODO: Retrieve.
-                undefined
-              }
+              profileImageUrl={walletImageUrl}
               walletAddress={walletAddress}
-              walletName={
-                // TODO: Retrieve.
-                walletName
-              }
+              walletName={walletName}
             />
           ) : (
             <ProfileNotMemberCard
@@ -126,15 +125,9 @@ const InnerDaoHome = () => {
                   proposalContext={false}
                 />
               }
-              profileImgUrl={
-                // TODO: Retrieve.
-                undefined
-              }
+              profileImageUrl={walletImageUrl}
               walletAddress={walletAddress}
-              walletName={
-                // TODO: Retrieve.
-                walletName
-              }
+              walletName={walletName}
             />
           )
         ) : (

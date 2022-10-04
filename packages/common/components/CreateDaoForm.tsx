@@ -17,7 +17,7 @@ import {
   DefaultNewDao,
   newDaoAtom,
   usePinnedDaos,
-  useWalletBalance,
+  useWalletProfile,
 } from '@dao-dao/state'
 import instantiateSchema from '@dao-dao/state/clients/cw-core/instantiate_schema_0.2.0.json'
 import {
@@ -249,7 +249,7 @@ export const CreateDaoForm = ({
 
   const [creating, setCreating] = useState(false)
   const { connected, address: walletAddress } = useWallet()
-  const { refreshBalances } = useWalletBalance()
+  const { refreshBalances } = useWalletProfile()
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({

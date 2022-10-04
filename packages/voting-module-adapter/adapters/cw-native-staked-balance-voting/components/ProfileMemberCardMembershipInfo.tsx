@@ -9,7 +9,7 @@ import {
   blockHeightSelector,
   stakingLoadingAtom,
   useCachedLoadable,
-  useWalletBalance,
+  useWalletProfile,
 } from '@dao-dao/state'
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
 import {
@@ -30,7 +30,7 @@ export const ProfileMemberCardMembershipInfo = ({
 }: BaseProfileMemberCardMembershipInfoProps) => {
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
-  const { refreshBalances } = useWalletBalance()
+  const { refreshBalances } = useWalletProfile()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const [showStakingModal, setShowStakingModal] = useState(false)

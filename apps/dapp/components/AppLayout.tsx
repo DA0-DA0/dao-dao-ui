@@ -24,12 +24,12 @@ import {
   refreshTokenUsdcPriceIdAtom,
   usdcPerMacroTokenSelector,
   useCachedLoadable,
+  useWalletProfile,
 } from '@dao-dao/state'
 import { IAppLayoutContext, AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
-  getFallbackImage,
   loadableToLoadingData,
   nativeTokenLabel,
   usePlatform,
@@ -65,11 +65,8 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   const [compact, setCompact] = useRecoilState(navigationCompactAtom)
 
   //! WALLET CONNECTION ERROR MODALS
-  const {
-    error,
-    status,
-    connectedWallet: { address: walletAddress = '' } = {},
-  } = useWalletManager()
+  const { error, status } = useWalletManager()
+  const { walletImageUrl } = useWalletProfile()
   useEffect(() => {
     setInstallWarningVisible(
       error instanceof Error &&
@@ -257,8 +254,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         }}
         profileImageUrl={
           status === WalletConnectionStatus.Connected
-            ? // TODO: Get profile image URL.
-              getFallbackImage(walletAddress)
+            ? walletImageUrl
             : undefined
         }
         rightSidebarProps={{

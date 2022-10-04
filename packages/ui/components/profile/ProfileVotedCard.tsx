@@ -10,7 +10,7 @@ export interface ProfileVotedCardProps {
   daoName: string
   walletAddress: string
   walletName: string
-  profileImgUrl: string | undefined | null
+  profileImageUrl: string | undefined | null
   vote: ReactNode
 }
 
@@ -19,7 +19,7 @@ export const ProfileVotedCard = ({
   daoName,
   walletAddress,
   walletName,
-  profileImgUrl,
+  profileImageUrl,
   vote,
 }: ProfileVotedCardProps) => {
   const { t } = useTranslation()
@@ -27,7 +27,7 @@ export const ProfileVotedCard = ({
   return (
     <ProfileCardWrapper
       compact
-      imgUrl={profileImgUrl}
+      imgUrl={profileImageUrl}
       underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
       walletAddress={walletAddress}
       walletName={walletName}

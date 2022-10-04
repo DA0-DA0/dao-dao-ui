@@ -19,7 +19,7 @@ export interface ProfileMemberCardProps {
   daoName: string
   walletAddress: string
   walletName: string
-  profileImgUrl: string | undefined | null
+  profileImageUrl: string | undefined | null
   openProposals?: boolean
   established: Date
   membershipInfo: ReactNode
@@ -31,7 +31,7 @@ export const ProfileMemberCard = ({
   daoName,
   walletAddress,
   walletName,
-  profileImgUrl,
+  profileImageUrl,
   openProposals,
   established,
   membershipInfo,
@@ -42,7 +42,7 @@ export const ProfileMemberCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0 border-t-0"
       established={established}
-      imgUrl={profileImgUrl}
+      imgUrl={profileImageUrl}
       underHeaderComponent={<MembershipPill daoName={daoName} isMember />}
       walletAddress={walletAddress}
       walletName={walletName}

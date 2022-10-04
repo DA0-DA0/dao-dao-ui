@@ -9,6 +9,7 @@ import {
 import {
   NATIVE_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
+  getFallbackImage,
 } from '@dao-dao/utils'
 
 import {
@@ -16,15 +17,19 @@ import {
   nativeDelegatedBalanceSelector,
   refreshWalletBalancesIdAtom,
 } from '../recoil'
+import { keplrProfileImageSelector } from '../recoil/selectors/keplr'
 
-export interface UseWalletBalanceReturn {
+export interface UseWalletProfileReturn {
+  walletAddress: string | undefined
+  walletName: string | undefined
+  walletImageUrl: string
   walletBalance: number | undefined
   walletStakedBalance: number | undefined
   refreshBalances: () => void
 }
 
-export const useWalletBalance = (): UseWalletBalanceReturn => {
-  const { address } = useWallet()
+export const useWalletProfile = (): UseWalletProfileReturn => {
+  const { name, address, publicKey } = useWallet()
 
   // Fetch wallet balance.
   const {
@@ -65,5 +70,26 @@ export const useWalletBalance = (): UseWalletBalanceReturn => {
     [setRefreshWalletBalancesId]
   )
 
-  return { walletBalance, walletStakedBalance, refreshBalances }
+  // Get image from Keplr.
+  const keplrProfileImage = useRecoilValueLoadable(
+    publicKey
+      ? keplrProfileImageSelector(publicKey.hex)
+      : constSelector(undefined)
+  )
+  const walletImageUrl =
+    (keplrProfileImage.state === 'hasValue' && keplrProfileImage.contents) ||
+    getFallbackImage(address)
+
+  // Get name from profile API.
+  // TODO: Change
+  const walletName = name
+
+  return {
+    walletAddress: address,
+    walletName,
+    walletImageUrl,
+    walletBalance,
+    walletStakedBalance,
+    refreshBalances,
+  }
 }

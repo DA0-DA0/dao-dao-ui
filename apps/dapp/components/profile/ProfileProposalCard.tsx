@@ -1,7 +1,6 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { useWallet } from '@noahsaso/cosmodal'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
@@ -11,7 +10,7 @@ import {
   matchAndLoadCommon,
   useProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
-import { useVotingModule } from '@dao-dao/state'
+import { useVotingModule, useWalletProfile } from '@dao-dao/state'
 import { CheckedDepositInfo } from '@dao-dao/tstypes'
 import {
   Loader,
@@ -31,7 +30,11 @@ export const ProfileProposalCard = ({
 }: ProfileProposalCardProps) => {
   const { t } = useTranslation()
   const { coreAddress, name: daoName, proposalModules } = useDaoInfoContext()
-  const { address: walletAddress = '', name: walletName = '' } = useWallet()
+  const {
+    walletName = '',
+    walletAddress = '',
+    walletImageUrl,
+  } = useWalletProfile()
 
   const {
     hooks: { useProfileVoteCardOptions, useWalletVoteInfo, useCastVote },
@@ -83,8 +86,7 @@ export const ProfileProposalCard = ({
     daoName,
     walletAddress,
     walletName,
-    // TODO: Retrieve.
-    profileImgUrl: undefined,
+    profileImageUrl: walletImageUrl,
   }
 
   const { castVote, castingVote } = useCastVote(onVoteSuccess)

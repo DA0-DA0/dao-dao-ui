@@ -1,10 +1,9 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { useWallet } from '@noahsaso/cosmodal'
-
 import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
+import { useWalletProfile } from '@dao-dao/state'
 import { ProfileNewProposalCard as StatelessProfileNewProposalCard } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
@@ -14,7 +13,11 @@ export interface ProfileNewProposalCardProps {
 
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
   const { name: daoName } = useDaoInfoContext()
-  const { name: walletName = '', address: walletAddress = '' } = useWallet()
+  const {
+    walletName = '',
+    walletAddress = '',
+    walletImageUrl,
+  } = useWalletProfile()
 
   return (
     <SuspenseLoader
@@ -22,15 +25,9 @@ export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
         <StatelessProfileNewProposalCard
           daoName={daoName}
           info={{ loading: true }}
-          profileImgUrl={
-            // TODO: Retrieve.
-            undefined
-          }
+          profileImageUrl={walletImageUrl}
           walletAddress={walletAddress}
-          walletName={
-            // TODO: Retrieve.
-            walletName
-          }
+          walletName={walletName}
         />
       }
     >
@@ -49,7 +46,11 @@ export const InnerProfileNewProposalCard = ({
   },
 }: ProfileNewProposalCardProps) => {
   const { name: daoName } = useDaoInfoContext()
-  const { name: walletName = '', address: walletAddress = '' } = useWallet()
+  const {
+    walletName = '',
+    walletAddress = '',
+    walletImageUrl,
+  } = useWalletProfile()
   const {
     hooks: { useProfileNewProposalCardAddresses },
   } = useVotingModuleAdapter()
@@ -61,10 +62,8 @@ export const InnerProfileNewProposalCard = ({
     <StatelessProfileNewProposalCard
       daoName={daoName}
       info={{ loading: false, data: { lines, addresses } }}
-      // TODO: Retrieve.
-      profileImgUrl={undefined}
+      profileImageUrl={walletImageUrl}
       walletAddress={walletAddress}
-      // TODO: Retrieve.
       walletName={walletName}
     />
   )

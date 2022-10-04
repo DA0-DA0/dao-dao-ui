@@ -17,7 +17,7 @@ export const ProfileNewProposalCard = ({
   daoName,
   walletAddress,
   walletName,
-  profileImgUrl,
+  profileImageUrl,
   info,
 }: ProfileNewProposalCardProps) => {
   const { t } = useTranslation()
@@ -34,7 +34,7 @@ export const ProfileNewProposalCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0"
       compact
-      imgUrl={profileImgUrl}
+      imgUrl={profileImageUrl}
       underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
       walletAddress={walletAddress}
       walletName={walletName}

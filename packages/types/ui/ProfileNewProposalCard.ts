@@ -18,7 +18,7 @@ export interface ProfileNewProposalCardProps {
   daoName: string
   walletAddress: string
   walletName: string
-  profileImgUrl: string | undefined | null
+  profileImageUrl: string | undefined | null
   info: LoadingData<{
     lines: ProfileNewProposalCardInfoLine[]
     addresses: ProfileNewProposalCardAddress[]
