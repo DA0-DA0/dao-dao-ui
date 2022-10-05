@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { ReactNode, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
+import { ErrorBoundary } from './ErrorBoundary'
 import { IconButton } from './IconButton'
 
 export interface ModalProps {
@@ -83,7 +84,7 @@ export const Modal = ({
           </div>
         )}
 
-        {children}
+        <ErrorBoundary>{children}</ErrorBoundary>
 
         {footerContent && (
           <div className="shrink-0 py-5 px-6 -mx-6 -mb-6 border-t border-border-secondary">

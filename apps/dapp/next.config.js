@@ -31,7 +31,7 @@ const sentryWebpackPluginOptions = {
 const { i18n } = require('./next-i18next.config')
 
 /** @type {import("next").NextConfig} */
-let config = {
+const config = {
   i18n,
   /*
     The reactStrictMode flag is set to false
@@ -88,6 +88,9 @@ let config = {
       process.env.CI !== 'true' || !process.env.SENTRY_AUTH_TOKEN,
     disableClientWebpackPlugin:
       process.env.CI !== 'true' || !process.env.SENTRY_AUTH_TOKEN,
+  },
+  images: {
+    domains: ['ipfs.stargaze.zone', 'nftstorage.link'],
   },
 }
 

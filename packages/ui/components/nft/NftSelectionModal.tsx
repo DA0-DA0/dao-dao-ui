@@ -1,7 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 import { Image } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, ReactNode } from 'react'
+import {
+  ComponentType,
+  MutableRefObject,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData, NftCardInfo } from '@dao-dao/tstypes'
@@ -11,6 +18,8 @@ import { Loader as DefaultLoader, LoaderProps } from '../Loader'
 import { Modal, ModalProps } from '../Modal'
 import { NoContent } from '../NoContent'
 import { NftCard } from './NftCard'
+import { SortFn, useDropdownSorter } from '../../hooks'
+import { Dropdown, DropdownOption } from '../Dropdown'
 
 export interface NftSelectionModalProps
   extends Omit<ModalProps, 'children' | 'header'>,
@@ -27,6 +36,9 @@ export interface NftSelectionModalProps
   Loader?: ComponentType<LoaderProps>
   allowSelectingNone?: boolean
   selectedDisplay?: ReactNode
+  getRefForNft?: (
+    nft: NftCardInfo
+  ) => MutableRefObject<HTMLDivElement | null> | undefined
 }
 
 export const NftSelectionModal = ({
@@ -43,12 +55,41 @@ export const NftSelectionModal = ({
   Loader = DefaultLoader,
   allowSelectingNone,
   selectedDisplay,
+  getRefForNft,
   ...modalProps
 }: NftSelectionModalProps) => {
   const { t } = useTranslation()
 
   const showSelectAll =
     (onSelectAll || onDeselectAll) && !nfts.loading && nfts.data.length > 2
+
+  // Scroll first selected into view as soon as possible.
+  const firstSelectedRef = useRef<HTMLDivElement | null>(null)
+  const [scrolledToFirst, setScrolledToFirst] = useState(false)
+  useEffect(() => {
+    if (
+      nfts.loading ||
+      scrolledToFirst ||
+      !firstSelectedRef.current?.parentElement
+    ) {
+      return
+    }
+
+    setScrolledToFirst(true)
+
+    firstSelectedRef.current.parentElement.scrollTo({
+      behavior: 'smooth',
+      top:
+        // Calculate y position of selected card in scrollable container.
+        firstSelectedRef.current.offsetTop -
+        firstSelectedRef.current.parentElement.offsetTop -
+        // Add some padding on top.
+        24,
+    })
+  }, [nfts, firstSelectedRef, scrolledToFirst])
+
+  const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
+    useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
 
   return (
     <Modal
@@ -82,10 +123,16 @@ export const NftSelectionModal = ({
         </div>
       }
       headerContent={
-        showSelectAll ? (
-          <div className="flex flex-row items-center pt-4 -mb-1">
+        <div
+          className={clsx(
+            'flex flex-row gap-12 items-center',
+            // Push sort dropdown to the right no matter what.
+            showSelectAll ? 'justify-between' : 'justify-end'
+          )}
+        >
+          {showSelectAll && (
             <Button
-              className="text-text-interactive-active"
+              className="text-text-interactive-active mt-4"
               disabled={nfts.loading}
               onClick={
                 nfts.loading
@@ -101,17 +148,30 @@ export const NftSelectionModal = ({
                   ? t('button.deselectAllNfts', { count: nfts.data.length })
                   : t('button.selectAllNfts', { count: nfts.data.length }))}
             </Button>
-          </div>
-        ) : undefined
+          )}
+
+          {!nfts.loading && nfts.data.length > 0 && (
+            <div className="flex flex-row gap-4 justify-between items-center">
+              <p className="text-text-body primary-text">{t('title.sortBy')}</p>
+
+              <Dropdown {...sortDropdownProps} />
+            </div>
+          )}
+        </div>
       }
     >
       {nfts.loading ? (
         <Loader className="-mt-6" />
       ) : nfts.data.length > 0 ? (
         <div className="grid overflow-y-auto grid-cols-1 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 xs:grid-cols-2 sm:grid-cols-3 no-scrollbar">
-          {nfts.data.map((nft) => (
+          {sortedNfts.map((nft) => (
             <NftCard
               key={getIdForNft(nft)}
+              ref={
+                selectedIds[0] === getIdForNft(nft)
+                  ? firstSelectedRef
+                  : undefined
+              }
               {...nft}
               checkbox={{
                 checked: selectedIds.includes(getIdForNft(nft)),
@@ -131,3 +191,16 @@ export const NftSelectionModal = ({
     </Modal>
   )
 }
+
+const sortOptions: DropdownOption<SortFn<Pick<NftCardInfo, 'name'>>>[] = [
+  {
+    label: 'A → Z',
+    value: (a, b) =>
+      a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()),
+  },
+  {
+    label: 'Z → A',
+    value: (a, b) =>
+      b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase()),
+  },
+]

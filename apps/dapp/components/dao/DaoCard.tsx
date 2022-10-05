@@ -3,9 +3,12 @@
 
 import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect } from 'react'
-import { useRecoilValueLoadable } from 'recoil'
 
-import { daoCardInfoLazyDataSelector, usePinnedDaos } from '@dao-dao/state'
+import {
+  daoCardInfoLazyDataSelector,
+  useCachedLoadable,
+  usePinnedDaos,
+} from '@dao-dao/state'
 import { DaoCardInfo } from '@dao-dao/tstypes/dao'
 import { DaoCard as StatelessDaoCard } from '@dao-dao/ui'
 import { loadableToLoadingData } from '@dao-dao/utils'
@@ -14,7 +17,7 @@ export const DaoCard = (props: DaoCardInfo) => {
   const { address: walletAddress } = useWallet()
   const { isPinned: isDaoPinned, setPinned, setUnpinned } = usePinnedDaos()
 
-  const lazyDataLoadable = useRecoilValueLoadable(
+  const lazyDataLoadable = useCachedLoadable(
     daoCardInfoLazyDataSelector({
       coreAddress: props.coreAddress,
       walletAddress,

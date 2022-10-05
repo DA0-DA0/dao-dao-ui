@@ -24,7 +24,7 @@ export const useDropdownSorter = <T extends unknown>(
 
   const sortedData = useMemo(
     // Copy data since sort mutates.
-    () => (selectedIndex ? [...data].sort(options[selectedIndex].value) : data),
+    () => [...data].sort(options[selectedIndex].value),
     [data, options, selectedIndex]
   )
 
