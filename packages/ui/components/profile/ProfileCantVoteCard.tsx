@@ -3,24 +3,30 @@ import { useTranslation } from 'react-i18next'
 
 import { TooltipIcon } from '../TooltipIcon'
 import { MembershipPill } from './MembershipPill'
-import { ProfileCardWrapper } from './ProfileCardWrapper'
+import {
+  ProfileCardWrapper,
+  ProfileCardWrapperProps,
+} from './ProfileCardWrapper'
 
-export interface ProfileCantVoteCardProps {
+export interface ProfileCantVoteCardProps
+  extends Omit<
+    ProfileCardWrapperProps,
+    | 'children'
+    | 'underHeaderComponent'
+    | 'childContainerClassName'
+    | 'established'
+    | 'compact'
+  > {
   daoName: string
-  walletAddress: string
-  walletName: string
-  profileImageUrl: string | undefined | null
   isMember: boolean
   notMemberInfo: ReactNode
 }
 
 export const ProfileCantVoteCard = ({
   daoName,
-  walletAddress,
-  walletName,
-  profileImageUrl,
   isMember,
   notMemberInfo,
+  ...wrapperProps
 }: ProfileCantVoteCardProps) => {
   const { t } = useTranslation()
 
@@ -28,12 +34,10 @@ export const ProfileCantVoteCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0 border-t-0"
       compact
-      imgUrl={profileImageUrl}
       underHeaderComponent={
         <MembershipPill daoName={daoName} ghost isMember={isMember} />
       }
-      walletAddress={walletAddress}
-      walletName={walletName}
+      {...wrapperProps}
     >
       <div className="p-6 border-t border-t-border-primary">
         <div className="flex flex-row justify-between items-center secondary-text">

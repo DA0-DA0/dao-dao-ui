@@ -2,6 +2,8 @@ import { ComponentType, ReactNode } from 'react'
 
 import { PageHeaderProps } from '@dao-dao/ui'
 
+import { WalletProfile } from '../wallet'
+import { LoadingData } from './common'
 import { NavigationProps } from './Navigation'
 import { RightSidebarProps } from './RightSidebar'
 
@@ -14,6 +16,10 @@ export interface IAppLayoutContext {
     enabled: boolean
     toggle: () => void
   }
+  updateProfile: {
+    visible: boolean
+    toggle: () => void
+  }
   RightSidebarContent: ComponentType<{ children: ReactNode }>
   PageHeader: ComponentType<PageHeaderProps>
 }
@@ -22,6 +28,6 @@ export interface AppLayoutProps {
   navigationProps: NavigationProps
   children: ReactNode
   rightSidebarProps: Omit<RightSidebarProps, 'setContentRef'>
-  profileImageUrl?: string
+  walletProfile?: LoadingData<WalletProfile>
   context: Omit<IAppLayoutContext, 'RightSidebarContent' | 'PageHeader'>
 }

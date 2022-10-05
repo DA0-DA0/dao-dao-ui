@@ -19,10 +19,8 @@ export const ProfileVoteCard = <T extends unknown>({
   loading,
   votingPower,
   daoName,
-  walletAddress,
-  walletName,
-  profileImageUrl,
   onCastVote,
+  ...wrapperProps
 }: ProfileVoteCardProps<T>) => {
   const { t } = useTranslation()
 
@@ -31,10 +29,8 @@ export const ProfileVoteCard = <T extends unknown>({
   return (
     <ProfileCardWrapper
       compact
-      imgUrl={profileImageUrl}
       underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
-      walletAddress={walletAddress}
-      walletName={walletName}
+      {...wrapperProps}
     >
       <div className="flex flex-row justify-between items-center secondary-text">
         <p>{t('title.votingPower')}</p>

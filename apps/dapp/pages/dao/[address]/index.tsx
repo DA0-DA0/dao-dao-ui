@@ -27,6 +27,7 @@ import {
   ProfileDisconnectedCard,
   ProfileMemberCard,
   ProfileNotMemberCard,
+  useAppLayoutContext,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
@@ -35,11 +36,8 @@ import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 
 const InnerDaoHome = () => {
   const { connected } = useWallet()
-  const {
-    walletName = '',
-    walletAddress = '',
-    walletImageUrl,
-  } = useWalletProfile()
+  const { walletAddress = '', walletProfile } = useWalletProfile()
+  const { updateProfile } = useAppLayoutContext()
 
   const daoInfo = useDaoInfoContext()
   const {
@@ -107,9 +105,9 @@ const InnerDaoHome = () => {
                   }
                 />
               }
-              profileImageUrl={walletImageUrl}
+              showUpdateProfile={updateProfile.toggle}
               walletAddress={walletAddress}
-              walletName={walletName}
+              walletProfile={walletProfile}
             />
           ) : (
             <ProfileNotMemberCard
@@ -125,9 +123,9 @@ const InnerDaoHome = () => {
                   proposalContext={false}
                 />
               }
-              profileImageUrl={walletImageUrl}
+              showUpdateProfile={updateProfile.toggle}
               walletAddress={walletAddress}
-              walletName={walletName}
+              walletProfile={walletProfile}
             />
           )
         ) : (

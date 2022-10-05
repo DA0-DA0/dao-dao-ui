@@ -5,12 +5,20 @@ import { Layers, Payments } from '@dao-dao/icons'
 import { LoadingData } from '@dao-dao/tstypes'
 
 import { ButtonLink } from '../Button'
-import { ProfileCardWrapper } from './ProfileCardWrapper'
+import {
+  ProfileCardWrapper,
+  ProfileCardWrapperProps,
+} from './ProfileCardWrapper'
 
-export interface ProfileHomeCardProps {
-  walletName: string
-  walletAddress: string
-  profileImageUrl: string | undefined | null
+export interface ProfileHomeCardProps
+  extends Omit<
+    ProfileCardWrapperProps,
+    | 'children'
+    | 'underHeaderComponent'
+    | 'childContainerClassName'
+    | 'established'
+    | 'compact'
+  > {
   established: Date
   tokenSymbol: string
   inboxProposalCount: number
@@ -23,13 +31,11 @@ export interface ProfileHomeCardProps {
 }
 
 export const ProfileHomeCard = ({
-  walletName,
-  walletAddress,
-  profileImageUrl,
   established,
   tokenSymbol,
   inboxProposalCount,
   lazyData,
+  ...wrapperProps
 }: ProfileHomeCardProps) => {
   const { t } = useTranslation()
 
@@ -37,7 +43,6 @@ export const ProfileHomeCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0"
       established={established}
-      imgUrl={profileImageUrl}
       underHeaderComponent={
         <div className="grid grid-cols-[1fr_1px_1fr] gap-2 justify-items-center items-center self-stretch mt-3">
           <div className="flex flex-col items-stretch text-center">
@@ -83,8 +88,7 @@ export const ProfileHomeCard = ({
           </div>
         </div>
       }
-      walletAddress={walletAddress}
-      walletName={walletName}
+      {...wrapperProps}
     >
       <div className="p-6">
         <div className="flex flex-row justify-between items-center secondary-text">

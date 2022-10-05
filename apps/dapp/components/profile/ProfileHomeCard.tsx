@@ -2,7 +2,10 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { useWalletProfile, useWalletProposalsQuery } from '@dao-dao/state'
-import { ProfileHomeCard as StatelessProfileHomeCard } from '@dao-dao/ui'
+import {
+  ProfileHomeCard as StatelessProfileHomeCard,
+  useAppLayoutContext,
+} from '@dao-dao/ui'
 import { NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 import { useDAppContext } from '../DAppContext'
@@ -10,11 +13,11 @@ import { useDAppContext } from '../DAppContext'
 export const ProfileHomeCard = () => {
   const {
     walletAddress = '',
-    walletName = '',
-    walletImageUrl,
+    walletProfile,
     walletBalance,
     walletStakedBalance,
   } = useWalletProfile()
+  const { updateProfile } = useAppLayoutContext()
 
   const { inbox } = useDAppContext()
 
@@ -43,10 +46,10 @@ export const ProfileHomeCard = () => {
               },
             }
       }
-      profileImageUrl={walletImageUrl}
+      showUpdateProfile={updateProfile.toggle}
       tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
       walletAddress={walletAddress}
-      walletName={walletName}
+      walletProfile={walletProfile}
     />
   )
 }

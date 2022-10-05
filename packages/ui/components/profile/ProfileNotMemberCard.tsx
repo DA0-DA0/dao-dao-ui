@@ -2,36 +2,40 @@ import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MembershipPill } from './MembershipPill'
-import { ProfileCardWrapper } from './ProfileCardWrapper'
+import {
+  ProfileCardWrapper,
+  ProfileCardWrapperProps,
+} from './ProfileCardWrapper'
 
-export interface ProfileNotMemberCardProps {
+export interface ProfileNotMemberCardProps
+  extends Omit<
+    ProfileCardWrapperProps,
+    | 'children'
+    | 'underHeaderComponent'
+    | 'childContainerClassName'
+    | 'established'
+    | 'compact'
+  > {
   daoName: string
-  walletAddress: string
-  walletName: string
-  profileImageUrl: string | undefined | null
   established: Date
   notMemberInfo: ReactNode
 }
 
 export const ProfileNotMemberCard = ({
   daoName,
-  walletAddress,
-  walletName,
-  profileImageUrl,
   established,
   notMemberInfo,
+  ...wrapperProps
 }: ProfileNotMemberCardProps) => {
   const { t } = useTranslation()
 
   return (
     <ProfileCardWrapper
       established={established}
-      imgUrl={profileImageUrl}
       underHeaderComponent={
         <MembershipPill daoName={daoName} isMember={false} />
       }
-      walletAddress={walletAddress}
-      walletName={walletName}
+      {...wrapperProps}
     >
       <p className="mb-1 link-text">{t('title.membership')}</p>
 

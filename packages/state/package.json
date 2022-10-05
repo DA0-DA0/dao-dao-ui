@@ -8,6 +8,7 @@
   "dependencies": {
     "@apollo/client": "^3.6.9",
     "@cosmjs/cosmwasm-stargate": "0.28.10",
+    "@cosmjs/encoding": "0.28.10",
     "@cosmjs/proto-signing": "0.28.10",
     "@dao-dao/ui": "*",
     "@habx/apollo-multi-endpoint-link": "^2.7.0",

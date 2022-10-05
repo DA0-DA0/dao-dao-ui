@@ -26,7 +26,15 @@ export const DefaultArgs: AppLayoutProps = {
     </div>
   ),
   rightSidebarProps: RightSidebarStoryArgs,
-  profileImageUrl: '/noah.jpg',
+  walletProfile: {
+    loading: false,
+    data: {
+      nonce: 0,
+      imageUrl: '/noah.jpg',
+      name: 'wallet_name',
+      nft: null,
+    },
+  },
   context: {
     responsiveNavigation: {
       enabled: true,
@@ -35,6 +43,10 @@ export const DefaultArgs: AppLayoutProps = {
     responsiveRightSidebar: {
       enabled: false,
       toggle: () => alert('toggle right'),
+    },
+    updateProfile: {
+      visible: false,
+      toggle: () => alert('toggle update'),
     },
   },
 }
@@ -45,6 +57,7 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
     useState(false)
   const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
     useState(false)
+  const [updateProfileVisible, setUpdateProfileVisible] = useState(false)
 
   const appLayoutContext: Omit<
     IAppLayoutContext,
@@ -59,8 +72,16 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
         enabled: responsiveRightSidebarEnabled,
         toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
       },
+      updateProfile: {
+        visible: updateProfileVisible,
+        toggle: () => setUpdateProfileVisible((v) => !v),
+      },
     }),
-    [responsiveNavigationEnabled, responsiveRightSidebarEnabled]
+    [
+      responsiveNavigationEnabled,
+      responsiveRightSidebarEnabled,
+      updateProfileVisible,
+    ]
   )
 
   return (

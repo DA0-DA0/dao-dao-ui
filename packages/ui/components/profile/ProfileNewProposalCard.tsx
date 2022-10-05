@@ -15,10 +15,8 @@ export * from '@dao-dao/tstypes/ui/ProfileNewProposalCard'
 
 export const ProfileNewProposalCard = ({
   daoName,
-  walletAddress,
-  walletName,
-  profileImageUrl,
   info,
+  ...wrapperProps
 }: ProfileNewProposalCardProps) => {
   const { t } = useTranslation()
 
@@ -34,10 +32,8 @@ export const ProfileNewProposalCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0"
       compact
-      imgUrl={profileImageUrl}
       underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
-      walletAddress={walletAddress}
-      walletName={walletName}
+      {...wrapperProps}
     >
       <div className="p-6 space-y-4">
         <p className="secondary-text">{t('title.proposalCreationInfo')}</p>

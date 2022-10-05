@@ -14,7 +14,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { SidebarWallet, WalletProvider } from '@dao-dao/common'
+import {
+  PfpkNftSelectionModal,
+  SidebarWallet,
+  WalletProvider,
+} from '@dao-dao/common'
 import {
   SubQueryProvider,
   mountedInBrowserAtom,
@@ -66,7 +70,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   //! WALLET CONNECTION ERROR MODALS
   const { error, status } = useWalletManager()
-  const { walletImageUrl } = useWalletProfile()
+  const { walletProfile } = useWalletProfile()
   useEffect(() => {
     setInstallWarningVisible(
       error instanceof Error &&
@@ -105,6 +109,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     useState(false)
   const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
     useState(false)
+  const [updateProfileVisible, setUpdateProfileVisible] = useState(false)
   const appLayoutContext: Omit<
     IAppLayoutContext,
     'RightSidebarContent' | 'PageHeader'
@@ -118,8 +123,16 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         enabled: responsiveRightSidebarEnabled,
         toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
       },
+      updateProfile: {
+        visible: updateProfileVisible,
+        toggle: () => setUpdateProfileVisible((v) => !v),
+      },
     }),
-    [responsiveNavigationEnabled, responsiveRightSidebarEnabled]
+    [
+      responsiveNavigationEnabled,
+      responsiveRightSidebarEnabled,
+      updateProfileVisible,
+    ]
   )
 
   //! Token prices
@@ -209,6 +222,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         <CommandModal onClose={() => setCommandModalVisible(false)} />
       )}
 
+      {updateProfileVisible && (
+        <PfpkNftSelectionModal onClose={() => setUpdateProfileVisible(false)} />
+      )}
+
       <StatelessAppLayout
         context={appLayoutContext}
         navigationProps={{
@@ -252,14 +269,14 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
           compact,
           setCompact,
         }}
-        profileImageUrl={
-          status === WalletConnectionStatus.Connected
-            ? walletImageUrl
-            : undefined
-        }
         rightSidebarProps={{
           wallet: <SidebarWallet />,
         }}
+        walletProfile={
+          status === WalletConnectionStatus.Connected
+            ? walletProfile
+            : undefined
+        }
       >
         {children}
       </StatelessAppLayout>

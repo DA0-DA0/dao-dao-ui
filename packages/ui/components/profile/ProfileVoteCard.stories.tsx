@@ -25,9 +25,16 @@ Default.args = {
   ),
   votingPower: 32.4,
   daoName: 'Dog Dao',
+  walletProfile: {
+    loading: false,
+    data: {
+      nonce: 0,
+      imageUrl: '/noah.jpg',
+      name: '@Modern-Edamame',
+      nft: null,
+    },
+  },
   walletAddress: 'wallet',
-  walletName: '@Modern-Edamame',
-  profileImageUrl: '/noah.jpg',
   loading: false,
   options: [
     { Icon: Check, label: 'Yes', value: 'yes' },

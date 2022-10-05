@@ -10,9 +10,10 @@ export const makeAppLayoutContextDecorator: (
 ) => DecoratorFn = (defaultResponsiveEnabled = false) =>
   function ResponsiveNavigationContextDecorator(Story) {
     const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
-      useState(false)
+      useState(defaultResponsiveEnabled)
     const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
       useState(false)
+    const [updateProfileVisible, setUpdateProfileVisible] = useState(false)
 
     return (
       <AppLayoutContext.Provider
@@ -26,9 +27,18 @@ export const makeAppLayoutContextDecorator: (
               enabled: responsiveRightSidebarEnabled,
               toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
             },
+            updateProfile: {
+              visible: updateProfileVisible,
+              toggle: () => setUpdateProfileVisible((v) => !v),
+            },
+            PageHeader: () => null,
             RightSidebarContent: () => null,
           }),
-          [responsiveNavigationEnabled, responsiveRightSidebarEnabled]
+          [
+            responsiveNavigationEnabled,
+            responsiveRightSidebarEnabled,
+            updateProfileVisible,
+          ]
         )}
       >
         <Story />

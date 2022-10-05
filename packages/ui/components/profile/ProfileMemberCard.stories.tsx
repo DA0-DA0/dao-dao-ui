@@ -22,9 +22,16 @@ const makeProps = (
   ...args: Parameters<typeof makeProfileMemberCardMembershipInfoProps>
 ): ProfileMemberCardProps => ({
   daoName: 'Dog Dao',
+  walletProfile: {
+    loading: false,
+    data: {
+      nonce: 0,
+      imageUrl: '/noah.jpg',
+      name: '@Modern-Edamame',
+      nft: null,
+    },
+  },
   walletAddress: 'wallet',
-  walletName: '@Modern-Edamame',
-  profileImageUrl: '/noah.jpg',
   openProposals: true,
   established: new Date(),
   membershipInfo: (

@@ -48,3 +48,9 @@ export const refreshWalletStargazeNftsAtom = atomFamily<number, string>({
   key: 'refreshWalletStargazeNfts',
   default: 0,
 })
+
+// Change this to refresh the profile for a wallet.
+export const refreshWalletProfileAtom = atomFamily<number, string>({
+  key: 'refreshWalletProfile',
+  default: 0,
+})

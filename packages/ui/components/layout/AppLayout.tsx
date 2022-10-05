@@ -18,7 +18,7 @@ export const AppLayout = ({
   navigationProps,
   children,
   rightSidebarProps,
-  profileImageUrl,
+  walletProfile,
   context,
 }: AppLayoutProps) => {
   const router = useRouter()
@@ -93,7 +93,12 @@ export const AppLayout = ({
             <ProfileImage
               className="bg-background-primary hover:bg-background-interactive-hover active:bg-background-interactive-pressed transition"
               fallbackIconClassName="!text-icon-primary !w-3/5 !h-3/5"
-              imageUrl={profileImageUrl}
+              imageUrl={
+                !walletProfile || walletProfile.loading
+                  ? undefined
+                  : walletProfile.data.imageUrl
+              }
+              loading={!!walletProfile?.loading}
               size="xs"
             />
           </div>

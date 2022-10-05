@@ -4,7 +4,10 @@
 import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { useWalletProfile } from '@dao-dao/state'
-import { ProfileNewProposalCard as StatelessProfileNewProposalCard } from '@dao-dao/ui'
+import {
+  ProfileNewProposalCard as StatelessProfileNewProposalCard,
+  useAppLayoutContext,
+} from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 export interface ProfileNewProposalCardProps {
@@ -13,11 +16,8 @@ export interface ProfileNewProposalCardProps {
 
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
   const { name: daoName } = useDaoInfoContext()
-  const {
-    walletName = '',
-    walletAddress = '',
-    walletImageUrl,
-  } = useWalletProfile()
+  const { walletAddress = '', walletProfile } = useWalletProfile()
+  const { updateProfile } = useAppLayoutContext()
 
   return (
     <SuspenseLoader
@@ -25,9 +25,9 @@ export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
         <StatelessProfileNewProposalCard
           daoName={daoName}
           info={{ loading: true }}
-          profileImageUrl={walletImageUrl}
+          showUpdateProfile={updateProfile.toggle}
           walletAddress={walletAddress}
-          walletName={walletName}
+          walletProfile={walletProfile}
         />
       }
     >
@@ -46,11 +46,8 @@ export const InnerProfileNewProposalCard = ({
   },
 }: ProfileNewProposalCardProps) => {
   const { name: daoName } = useDaoInfoContext()
-  const {
-    walletName = '',
-    walletAddress = '',
-    walletImageUrl,
-  } = useWalletProfile()
+  const { walletAddress = '', walletProfile } = useWalletProfile()
+  const { updateProfile } = useAppLayoutContext()
   const {
     hooks: { useProfileNewProposalCardAddresses },
   } = useVotingModuleAdapter()
@@ -62,9 +59,9 @@ export const InnerProfileNewProposalCard = ({
     <StatelessProfileNewProposalCard
       daoName={daoName}
       info={{ loading: false, data: { lines, addresses } }}
-      profileImageUrl={walletImageUrl}
+      showUpdateProfile={updateProfile.toggle}
       walletAddress={walletAddress}
-      walletName={walletName}
+      walletProfile={walletProfile}
     />
   )
 }

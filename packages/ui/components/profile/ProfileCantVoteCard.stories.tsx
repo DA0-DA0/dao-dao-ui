@@ -19,9 +19,16 @@ const Template: ComponentStory<typeof ProfileCantVoteCard> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   daoName: 'Dog Dao',
+  walletProfile: {
+    loading: false,
+    data: {
+      nonce: 0,
+      imageUrl: '/noah.jpg',
+      name: 'wallet_name',
+      nft: null,
+    },
+  },
   walletAddress: 'wallet',
-  walletName: '@Modern-Edamame',
-  profileImageUrl: '/noah.jpg',
   isMember: false,
   notMemberInfo: (
     <ProfileCardNotMemberInfo {...makeProfileCardNotMemberInfoProps(2.34)} />

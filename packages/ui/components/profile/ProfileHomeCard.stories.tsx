@@ -17,9 +17,16 @@ export const Default = Template.bind({})
 // Wallet details are used in other story files, like `SidebarWallet` and
 // `makeAppLayoutDecorator`.
 Default.args = {
-  walletName: '@Modern-Edamame',
-  walletAddress: 'abc',
-  profileImageUrl: '/noah.jpg',
+  walletProfile: {
+    loading: false,
+    data: {
+      nonce: 0,
+      imageUrl: '/noah.jpg',
+      name: '@Modern-Edamame',
+      nft: null,
+    },
+  },
+  walletAddress: 'wallet',
   established: new Date(),
   tokenSymbol: 'JUNO',
   inboxProposalCount: 5,
@@ -45,6 +52,9 @@ export const Loading = Template.bind({})
 // `makeAppLayoutDecorator`.
 Loading.args = {
   ...Default.args,
+  walletProfile: {
+    loading: true,
+  },
   lazyData: {
     loading: true,
   },

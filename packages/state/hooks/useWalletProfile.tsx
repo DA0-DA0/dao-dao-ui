@@ -1,5 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   constSelector,
   useRecoilValueLoadable,
@@ -7,29 +7,44 @@ import {
 } from 'recoil'
 
 import {
+  LoadingData,
+  WalletProfile,
+  WalletProfileUpdate,
+} from '@dao-dao/tstypes'
+import {
+  CHAIN_ID,
   NATIVE_DECIMALS,
+  PFPK_API_BASE,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
+  loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import {
   nativeBalanceSelector,
   nativeDelegatedBalanceSelector,
   refreshWalletBalancesIdAtom,
+  refreshWalletProfileAtom,
 } from '../recoil'
-import { keplrProfileImageSelector } from '../recoil/selectors/keplr'
+import { walletProfileSelector } from '../recoil/selectors/wallet'
+import { useCachedLoadable } from './useCachedLoadable'
 
 export interface UseWalletProfileReturn {
   walletAddress: string | undefined
-  walletName: string | undefined
-  walletImageUrl: string
   walletBalance: number | undefined
   walletStakedBalance: number | undefined
   refreshBalances: () => void
+
+  walletProfile: LoadingData<WalletProfile>
+  updateProfile: (
+    profile: Omit<WalletProfileUpdate, 'nonce'>
+  ) => Promise<number | undefined>
+  updatingProfile: boolean
 }
 
 export const useWalletProfile = (): UseWalletProfileReturn => {
-  const { name, address, publicKey } = useWallet()
+  const { signingCosmWasmClient, address, publicKey, walletClient } =
+    useWallet()
 
   // Fetch wallet balance.
   const {
@@ -70,26 +85,114 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
     [setRefreshWalletBalancesId]
   )
 
-  // Get image from Keplr.
-  const keplrProfileImage = useRecoilValueLoadable(
-    publicKey
-      ? keplrProfileImageSelector(publicKey.hex)
-      : constSelector(undefined)
+  const setRefreshWalletProfile = useSetRecoilState(
+    refreshWalletProfileAtom(publicKey?.hex ?? '')
   )
-  const walletImageUrl =
-    (keplrProfileImage.state === 'hasValue' && keplrProfileImage.contents) ||
-    getFallbackImage(address)
+  const refreshWalletProfile = useCallback(
+    () => setRefreshWalletProfile((id) => id + 1),
+    [setRefreshWalletProfile]
+  )
 
-  // Get name from profile API.
-  // TODO: Change
-  const walletName = name
+  // Get wallet profile from API.
+  const walletProfile = loadableToLoadingData(
+    useCachedLoadable(
+      publicKey ? walletProfileSelector(publicKey.hex) : undefined
+    ),
+    {
+      nonce: 0,
+      name: null,
+      imageUrl: getFallbackImage(address),
+      nft: null,
+    }
+  )
+
+  const [updatingNonce, setUpdatingNonce] = useState<number>()
+  const updateProfile = useCallback(
+    async (
+      profile: Omit<WalletProfileUpdate, 'nonce'>
+    ): Promise<number | undefined> => {
+      if (
+        !publicKey ||
+        !address ||
+        !signingCosmWasmClient ||
+        !walletClient ||
+        walletProfile.loading
+      ) {
+        return
+      }
+
+      setUpdatingNonce(walletProfile.data.nonce)
+      try {
+        const profileUpdate: WalletProfileUpdate = {
+          ...profile,
+          nonce: walletProfile.data.nonce,
+        }
+
+        // https://github.com/chainapsis/keplr-wallet/blob/54aaaf6112d41944eaf23826db823eb044b09e78/packages/provider/src/core.ts#L168-L181
+        const { signature } = await walletClient.signArbitrary(
+          CHAIN_ID,
+          address,
+          JSON.stringify(profileUpdate)
+        )
+
+        const response = await fetch(PFPK_API_BASE + `/${publicKey.hex}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            profile: profileUpdate,
+            signature,
+            signer: address,
+          }),
+        })
+
+        refreshWalletProfile()
+
+        if (!response.ok) {
+          throw new Error(await response.text())
+        }
+
+        // Return with nonce so we can wait for updated elsewhere.
+        return walletProfile.data.nonce
+      } catch (err) {
+        // If errored, clear updating state since we did not update.
+        setUpdatingNonce(undefined)
+
+        // Rethrow error.
+        throw err
+      }
+    },
+    [
+      address,
+      publicKey,
+      refreshWalletProfile,
+      signingCosmWasmClient,
+      walletClient,
+      walletProfile,
+    ]
+  )
+  // Listen for nonce to incremenent to clear updating state, since we want the
+  // new profile to be ready on the same render that we stop loading.
+  useEffect(() => {
+    if (updatingNonce === undefined || walletProfile.loading) {
+      return
+    }
+
+    // If nonce incremented, clear updating state.
+    if (walletProfile.data.nonce > updatingNonce) {
+      setUpdatingNonce(undefined)
+    }
+  }, [updatingNonce, walletProfile])
 
   return {
     walletAddress: address,
-    walletName,
-    walletImageUrl,
     walletBalance,
     walletStakedBalance,
     refreshBalances,
+
+    walletProfile,
+    updateProfile,
+    updatingProfile: updatingNonce !== undefined,
   }
 }

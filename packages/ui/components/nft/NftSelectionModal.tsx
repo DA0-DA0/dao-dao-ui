@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { Image } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,6 +9,7 @@ import { LoadingData, NftCardInfo } from '@dao-dao/tstypes'
 import { Button } from '../Button'
 import { Loader as DefaultLoader, LoaderProps } from '../Loader'
 import { Modal, ModalProps } from '../Modal'
+import { NoContent } from '../NoContent'
 import { NftCard } from './NftCard'
 
 export interface NftSelectionModalProps
@@ -17,8 +19,8 @@ export interface NftSelectionModalProps
   selectedIds: string[]
   getIdForNft: (nft: NftCardInfo) => string
   onNftClick: (nft: NftCardInfo) => void
-  onSelectAll: () => void
-  onDeselectAll: () => void
+  onSelectAll?: () => void
+  onDeselectAll?: () => void
   onAction: () => void
   actionLoading: boolean
   actionLabel: string
@@ -41,7 +43,8 @@ export const NftSelectionModal = ({
 }: NftSelectionModalProps) => {
   const { t } = useTranslation()
 
-  const showSelectAll = !nfts.loading && nfts.data.length > 2
+  const showSelectAll =
+    (onSelectAll || onDeselectAll) && !nfts.loading && nfts.data.length > 2
 
   return (
     <Modal
@@ -57,7 +60,8 @@ export const NftSelectionModal = ({
           </div>
 
           <Button
-            disabled={actionLoading || selectedIds.length === 0}
+            disabled={selectedIds.length === 0}
+            loading={actionLoading}
             onClick={onAction}
           >
             {actionLabel}
@@ -93,9 +97,9 @@ export const NftSelectionModal = ({
         </div>
       }
     >
-      {nfts.loading || !nfts.data.length ? (
-        <Loader className="mb-6" fill={false} />
-      ) : (
+      {nfts.loading ? (
+        <Loader className="-mt-6" />
+      ) : nfts.data.length > 0 ? (
         <div className="grid overflow-y-auto grid-cols-1 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 xs:grid-cols-2 sm:grid-cols-3 no-scrollbar">
           {nfts.data.map((nft) => (
             <NftCard
@@ -109,6 +113,12 @@ export const NftSelectionModal = ({
             />
           ))}
         </div>
+      ) : (
+        <NoContent
+          Icon={Image}
+          body={t('info.noNftsYet')}
+          className="justify-center mb-6 w-full h-full"
+        />
       )}
     </Modal>
   )

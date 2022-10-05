@@ -16,9 +16,16 @@ const Template: ComponentStory<typeof ProfileCardWrapper> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  imgUrl: '/noah.jpg',
+  walletProfile: {
+    loading: false,
+    data: {
+      nonce: 0,
+      imageUrl: '/noah.jpg',
+      name: 'wallet_name',
+      nft: null,
+    },
+  },
   walletAddress: 'wallet',
-  walletName: '@wallet_name',
   established: new Date(),
   underHeaderComponent: <MembershipPill daoName="DAO" isMember={false} />,
   children: <p>Content!</p>,
@@ -29,11 +36,28 @@ Default.parameters = {
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=94%3A14674',
   },
 }
+
+export const DefaultLoading = Template.bind({})
+DefaultLoading.args = {
+  ...Default.args,
+  walletProfile: {
+    loading: true,
+  },
+}
+
 export const Compact = Template.bind({})
 Compact.args = {
-  imgUrl:
-    'https://ipfs.stargaze.zone/ipfs/bafybeibnuzc52kmcu4c5pxxwkr3vyp34gsrdomlvw3e66w4ltidr2v4oxi',
-  walletName: '@wallet_name',
+  walletProfile: {
+    loading: false,
+    data: {
+      nonce: 0,
+      imageUrl:
+        'https://ipfs.stargaze.zone/ipfs/bafybeibnuzc52kmcu4c5pxxwkr3vyp34gsrdomlvw3e66w4ltidr2v4oxi',
+      name: 'wallet_name',
+      nft: null,
+    },
+  },
+  walletAddress: 'wallet',
   compact: true,
   children: <p>Content!</p>,
 }
@@ -41,5 +65,13 @@ Compact.parameters = {
   design: {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=94%3A16345',
+  },
+}
+
+export const CompactLoading = Template.bind({})
+CompactLoading.args = {
+  ...Compact.args,
+  walletProfile: {
+    loading: true,
   },
 }

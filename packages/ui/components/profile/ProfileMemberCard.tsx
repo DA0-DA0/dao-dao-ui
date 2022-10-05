@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next'
 
 import { Button } from '../Button'
 import { MembershipPill } from './MembershipPill'
-import { ProfileCardWrapper } from './ProfileCardWrapper'
+import {
+  ProfileCardWrapper,
+  ProfileCardWrapperProps,
+} from './ProfileCardWrapper'
 
 // Represents a tranch of tokens that is currently unstaking and will become
 // available at some well-known later date.
@@ -13,13 +16,18 @@ export interface UnstakingTokensTranch {
   available: Date
 }
 
-export interface ProfileMemberCardProps {
+export interface ProfileMemberCardProps
+  extends Omit<
+    ProfileCardWrapperProps,
+    | 'children'
+    | 'underHeaderComponent'
+    | 'childContainerClassName'
+    | 'established'
+    | 'compact'
+  > {
   loadingClaiming?: boolean
   loadingManaging?: boolean
   daoName: string
-  walletAddress: string
-  walletName: string
-  profileImageUrl: string | undefined | null
   openProposals?: boolean
   established: Date
   membershipInfo: ReactNode
@@ -29,12 +37,10 @@ export const ProfileMemberCard = ({
   loadingClaiming,
   loadingManaging,
   daoName,
-  walletAddress,
-  walletName,
-  profileImageUrl,
   openProposals,
   established,
   membershipInfo,
+  ...wrapperProps
 }: ProfileMemberCardProps) => {
   const { t } = useTranslation()
 
@@ -42,10 +48,8 @@ export const ProfileMemberCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0 border-t-0"
       established={established}
-      imgUrl={profileImageUrl}
       underHeaderComponent={<MembershipPill daoName={daoName} isMember />}
-      walletAddress={walletAddress}
-      walletName={walletName}
+      {...wrapperProps}
     >
       <div className="p-6 pb-4 border-t border-t-border-primary">
         <p className="mb-3 link-text">{t('title.yourMembership')}</p>

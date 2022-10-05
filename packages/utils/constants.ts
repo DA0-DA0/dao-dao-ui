@@ -147,3 +147,6 @@ export const STARGAZE_PROFILE_API_TEMPLATE = process.env
   .NEXT_PUBLIC_STARGAZE_PROFILE_API_TEMPLATE as string
 export const STARGAZE_URL_BASE = process.env
   .NEXT_PUBLIC_STARGAZE_URL_BASE as string
+
+// Wallet profiles
+export const PFPK_API_BASE = process.env.NEXT_PUBLIC_PFPK_API_BASE as string

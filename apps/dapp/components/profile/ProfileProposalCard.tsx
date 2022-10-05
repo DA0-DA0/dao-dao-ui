@@ -18,6 +18,7 @@ import {
   ProfileCantVoteCard,
   ProfileVoteCard,
   ProfileVotedCard,
+  useAppLayoutContext,
 } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
@@ -30,11 +31,8 @@ export const ProfileProposalCard = ({
 }: ProfileProposalCardProps) => {
   const { t } = useTranslation()
   const { coreAddress, name: daoName, proposalModules } = useDaoInfoContext()
-  const {
-    walletName = '',
-    walletAddress = '',
-    walletImageUrl,
-  } = useWalletProfile()
+  const { walletAddress = '', walletProfile } = useWalletProfile()
+  const { updateProfile } = useAppLayoutContext()
 
   const {
     hooks: { useProfileVoteCardOptions, useWalletVoteInfo, useCastVote },
@@ -85,8 +83,8 @@ export const ProfileProposalCard = ({
     votingPower: votingPowerPercent,
     daoName,
     walletAddress,
-    walletName,
-    profileImageUrl: walletImageUrl,
+    walletProfile,
+    showUpdateProfile: updateProfile.toggle,
   }
 
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
