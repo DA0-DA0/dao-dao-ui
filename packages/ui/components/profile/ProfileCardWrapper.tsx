@@ -110,7 +110,7 @@ export const ProfileCardWrapper = ({
                 {walletProfile.loading
                   ? '...'
                   : noNameSet
-                  ? t('info.noNameSet')
+                  ? t('info.noDisplayNameSet')
                   : walletProfile.data.name}
               </p>
               {underHeaderComponent}
@@ -144,7 +144,6 @@ export const ProfileCardWrapper = ({
                       ? doUpdateName()
                       : undefined
                   }
-                  // placeholder={t('form.displayNamePlaceholder')}
                   value={editingName}
                 />
 
@@ -182,7 +181,7 @@ export const ProfileCardWrapper = ({
                   {walletProfile.loading
                     ? '...'
                     : noNameSet
-                    ? t('info.noNameSet')
+                    ? t('info.noDisplayNameSet')
                     : walletProfile.data.name}
                 </p>
 
