@@ -31,7 +31,7 @@ export const ProfileProposalCard = ({
 }: ProfileProposalCardProps) => {
   const { t } = useTranslation()
   const { coreAddress, name: daoName, proposalModules } = useDaoInfoContext()
-  const { walletAddress = '', walletProfile } = useWalletProfile()
+  const { walletProfile, updateProfileName } = useWalletProfile()
   const { updateProfileNft } = useAppLayoutContext()
 
   const {
@@ -82,9 +82,9 @@ export const ProfileProposalCard = ({
   const commonProps = {
     votingPower: votingPowerPercent,
     daoName,
-    walletAddress,
     walletProfile,
     showUpdateProfileNft: updateProfileNft.toggle,
+    updateProfileName,
   }
 
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
