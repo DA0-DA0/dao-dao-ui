@@ -103,7 +103,7 @@ export const ProfileCardWrapper = ({
                   'title-text',
                   walletProfile.loading && 'animate-pulse',
                   noNameSet
-                    ? 'italic font-normal text-text-secondary'
+                    ? 'italic font-normal text-text-tertiary'
                     : 'text-text-body'
                 )}
               >
