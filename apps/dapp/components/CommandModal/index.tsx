@@ -187,7 +187,12 @@ export const CommandModal = ({ onClose }: CommandModalProps) => {
       const fuse = new Fuse(baseHits, FUSE_OPTIONS)
       setHits(fuse.search(input).map((o) => o.item))
     })()
-  }, [input, commandState])
+  }, [
+    input,
+    commandState,
+    queryResults.data?.daos,
+    queryResults.previousData?.daos,
+  ])
 
   const sectionData = useMemo(() => {
     // Sort sections by order of first appearance of hits
