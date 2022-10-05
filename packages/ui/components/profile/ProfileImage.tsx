@@ -35,7 +35,7 @@ export const ProfileImage = ({
       // Pulse person placeholder when loading.
       loading && 'animate-pulse',
       // Make clickable for onEdit.
-      onEdit && 'group relative cursor-pointer',
+      onEdit && 'group overflow-hidden relative cursor-pointer',
 
       className
     )}

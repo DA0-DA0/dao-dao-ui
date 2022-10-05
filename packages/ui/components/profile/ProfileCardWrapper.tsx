@@ -94,7 +94,6 @@ export const ProfileCardWrapper = ({
                 walletProfile.loading ? undefined : walletProfile.data.imageUrl
               }
               loading={walletProfile.loading}
-              onEdit={showUpdateProfileNft}
               size="sm"
             />
 
