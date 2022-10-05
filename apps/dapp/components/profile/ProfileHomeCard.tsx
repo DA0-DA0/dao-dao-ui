@@ -16,8 +16,9 @@ export const ProfileHomeCard = () => {
     walletProfile,
     walletBalance,
     walletStakedBalance,
+    updateProfileName,
   } = useWalletProfile()
-  const { updateProfile } = useAppLayoutContext()
+  const { updateProfileNft } = useAppLayoutContext()
 
   const { inbox } = useDAppContext()
 
@@ -46,9 +47,9 @@ export const ProfileHomeCard = () => {
               },
             }
       }
-      showUpdateProfile={updateProfile.toggle}
+      showUpdateProfileNft={updateProfileNft.toggle}
       tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
-      walletAddress={walletAddress}
+      updateProfileName={updateProfileName}
       walletProfile={walletProfile}
     />
   )

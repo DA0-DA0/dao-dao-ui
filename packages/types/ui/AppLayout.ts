@@ -16,7 +16,7 @@ export interface IAppLayoutContext {
     enabled: boolean
     toggle: () => void
   }
-  updateProfile: {
+  updateProfileNft: {
     visible: boolean
     toggle: () => void
   }

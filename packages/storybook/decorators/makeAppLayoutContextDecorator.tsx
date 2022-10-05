@@ -27,7 +27,7 @@ export const makeAppLayoutContextDecorator: (
               enabled: responsiveRightSidebarEnabled,
               toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
             },
-            updateProfile: {
+            updateProfileNft: {
               visible: updateProfileVisible,
               toggle: () => setUpdateProfileVisible((v) => !v),
             },

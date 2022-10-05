@@ -34,8 +34,7 @@ export const InnerPfpkNftSelectionModal = ({
   Loader = DefaultLoader,
 }: PfpkNftSelectionModalProps) => {
   const { t } = useTranslation()
-  const { signingCosmWasmClient, address: stargazeWalletAddress } =
-    useWallet(STARGAZE_CHAIN_ID)
+  const { address: stargazeWalletAddress } = useWallet(STARGAZE_CHAIN_ID)
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
 
@@ -48,7 +47,8 @@ export const InnerPfpkNftSelectionModal = ({
     []
   )
 
-  const { walletProfile, updateProfile, updatingProfile } = useWalletProfile()
+  const { walletProfile, updateProfileNft, updatingProfile } =
+    useWalletProfile()
   // Initialize to selected NFT.
   const [selected, setSelected] = useState<string | undefined>(
     !walletProfile.loading && walletProfile.data.nft
@@ -73,10 +73,6 @@ export const InnerPfpkNftSelectionModal = ({
   }, [walletProfile, lastNonce])
 
   const onAction = useCallback(async () => {
-    if (!signingCosmWasmClient || !stargazeWalletAddress) {
-      toast.error(t('error.connectWalletToContinue'))
-      return
-    }
     if (nfts.loading) {
       toast.error(t('error.noNftsSelected'))
       return
@@ -94,30 +90,22 @@ export const InnerPfpkNftSelectionModal = ({
 
     try {
       // Update NFT only.
-      await updateProfile({
-        nft: selectedNft
+      await updateProfileNft(
+        selectedNft
           ? {
               tokenId: selectedNft.tokenId,
               collectionAddress: selectedNft.collection.address,
             }
           : // Clear NFT if nothing selected.
-            null,
-      })
+            null
+      )
+      // Close on successful update.
+      onClose()
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
-    } finally {
-      onClose()
     }
-  }, [
-    nfts,
-    selected,
-    signingCosmWasmClient,
-    stargazeWalletAddress,
-    t,
-    updateProfile,
-    onClose,
-  ])
+  }, [nfts, selected, t, updateProfileNft, onClose])
 
   return (
     <NftSelectionModal

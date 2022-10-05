@@ -5,9 +5,9 @@ import { LoadingData } from './common'
 
 export type ProfileCardWrapperProps = {
   children: ReactNode | ReactNode[]
-  walletAddress: string
   walletProfile: LoadingData<WalletProfile>
-  showUpdateProfile: () => void
+  showUpdateProfileNft: () => void
+  updateProfileName: (name: string | null) => Promise<void>
   underHeaderComponent: ReactNode
   childContainerClassName?: string
 } & (

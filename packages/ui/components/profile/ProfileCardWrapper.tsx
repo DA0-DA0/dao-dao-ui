@@ -1,21 +1,25 @@
+import { Check, Close, Edit } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { ProfileCardWrapperProps } from '@dao-dao/tstypes/ui/ProfileCardWrapper'
-import { formatDate } from '@dao-dao/utils'
+import { formatDate, processError } from '@dao-dao/utils'
 
-import { CopyToClipboard } from '../CopyToClipboard'
 import { CornerGradient } from '../CornerGradient'
+import { IconButton } from '../IconButton'
+import { TextInput } from '../input'
+import { Loader } from '../Loader'
 import { ProfileImage } from './ProfileImage'
 
 export * from '@dao-dao/tstypes/ui/ProfileCardWrapper'
 
 export const ProfileCardWrapper = ({
   children,
-  walletAddress,
   walletProfile,
-  showUpdateProfile,
+  showUpdateProfileNft,
+  updateProfileName,
   established,
   compact,
   underHeaderComponent,
@@ -50,6 +54,30 @@ export const ProfileCardWrapper = ({
       })
   }, [compact, walletProfile])
 
+  // If set, will show edit input.
+  const [editingName, setEditingName] = useState<string | undefined>()
+  const [savingName, setSavingName] = useState(false)
+  const doUpdateName = useCallback(async () => {
+    if (editingName === undefined) {
+      return
+    }
+
+    setSavingName(true)
+    try {
+      // Empty names unset.
+      await updateProfileName(editingName.trim() || null)
+      // Stop editing on success.
+      setEditingName(undefined)
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setSavingName(false)
+    }
+  }, [editingName, updateProfileName])
+
+  const noNameSet = !walletProfile.loading && walletProfile.data.name === null
+
   return (
     <div className="relative rounded-lg border border-border-primary">
       {/* Absolutely positioned, against relative outer-most div (without padding). */}
@@ -65,53 +93,111 @@ export const ProfileCardWrapper = ({
                 walletProfile.loading ? undefined : walletProfile.data.imageUrl
               }
               loading={walletProfile.loading}
-              onEdit={showUpdateProfile}
+              onEdit={showUpdateProfileNft}
               size="sm"
             />
 
             <div className="flex flex-col gap-1">
-              {walletProfile.loading || walletProfile.data.name ? (
-                <div
-                  className={clsx(
-                    'text-text-body title-text',
-                    walletProfile.loading && 'animate-pulse'
-                  )}
-                >
-                  {walletProfile.loading ? '...' : walletProfile.data.name}
-                </div>
-              ) : (
-                <CopyToClipboard
-                  className="text-text-body title-text"
-                  value={walletAddress}
-                />
-              )}
+              <p
+                className={clsx(
+                  'title-text',
+                  walletProfile.loading && 'animate-pulse',
+                  noNameSet
+                    ? 'italic font-normal text-text-secondary'
+                    : 'text-text-body'
+                )}
+              >
+                {walletProfile.loading
+                  ? '...'
+                  : noNameSet
+                  ? t('info.noNameSet')
+                  : walletProfile.data.name}
+              </p>
               {underHeaderComponent}
             </div>
           </div>
         ) : (
           <div className="flex flex-col justify-center items-center pt-4">
             <ProfileImage
+              className="mb-6"
               imageUrl={
                 walletProfile.loading ? '' : walletProfile.data.imageUrl
               }
               loading={walletProfile.loading}
-              onEdit={showUpdateProfile}
+              onEdit={showUpdateProfileNft}
               size="lg"
             />
-            {walletProfile.loading || walletProfile.data.name ? (
-              <div
-                className={clsx(
-                  'mt-6 mb-5 text-text-body title-text',
-                  walletProfile.loading && 'animate-pulse'
-                )}
-              >
-                {walletProfile.loading ? '...' : walletProfile.data.name}
+
+            {editingName !== undefined ? (
+              <div className="flex relative flex-col items-center mx-16 mb-8 h-5">
+                <TextInput
+                  autoFocus
+                  className="pb-1 !w-auto text-center border-b border-border-primary !title-text"
+                  ghost
+                  onInput={(event) =>
+                    setEditingName((event.target as HTMLInputElement).value)
+                  }
+                  onKeyDown={(event) =>
+                    event.key === 'Escape'
+                      ? setEditingName(undefined)
+                      : event.key === 'Enter'
+                      ? doUpdateName()
+                      : undefined
+                  }
+                  // placeholder={t('form.displayNamePlaceholder')}
+                  value={editingName}
+                />
+
+                <div className="flex absolute top-0 -right-12 bottom-0 flex-row gap-1 items-center">
+                  {savingName ? (
+                    <Loader fill={false} size={16} />
+                  ) : (
+                    <IconButton
+                      Icon={Check}
+                      onClick={doUpdateName}
+                      size="xs"
+                      variant="ghost"
+                    />
+                  )}
+
+                  <IconButton
+                    Icon={Close}
+                    onClick={() => setEditingName(undefined)}
+                    size="xs"
+                    variant="ghost"
+                  />
+                </div>
               </div>
             ) : (
-              <CopyToClipboard
-                className="mt-6 mb-5 text-text-body title-text"
-                value={walletAddress}
-              />
+              <div className="flex relative flex-row gap-2 items-center px-8 mb-5">
+                <p
+                  className={clsx(
+                    'title-text',
+                    walletProfile.loading && 'animate-pulse',
+                    noNameSet
+                      ? 'italic font-normal text-text-secondary'
+                      : 'text-text-body'
+                  )}
+                >
+                  {walletProfile.loading
+                    ? '...'
+                    : noNameSet
+                    ? t('info.noNameSet')
+                    : walletProfile.data.name}
+                </p>
+
+                {!walletProfile.loading && (
+                  <IconButton
+                    Icon={Edit}
+                    className="aspect-square absolute top-0 right-0 bottom-0"
+                    onClick={() =>
+                      setEditingName(walletProfile.data.name ?? '')
+                    }
+                    size="xs"
+                    variant="ghost"
+                  />
+                )}
+              </div>
             )}
             {established && (
               <div className="-mt-3 mb-5 font-mono caption-text">

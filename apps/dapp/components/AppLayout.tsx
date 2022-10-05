@@ -109,7 +109,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     useState(false)
   const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
     useState(false)
-  const [updateProfileVisible, setUpdateProfileVisible] = useState(false)
+  const [updateProfileNftVisible, setUpdateProfileNftVisible] = useState(false)
   const appLayoutContext: Omit<
     IAppLayoutContext,
     'RightSidebarContent' | 'PageHeader'
@@ -123,15 +123,15 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         enabled: responsiveRightSidebarEnabled,
         toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
       },
-      updateProfile: {
-        visible: updateProfileVisible,
-        toggle: () => setUpdateProfileVisible((v) => !v),
+      updateProfileNft: {
+        visible: updateProfileNftVisible,
+        toggle: () => setUpdateProfileNftVisible((v) => !v),
       },
     }),
     [
       responsiveNavigationEnabled,
       responsiveRightSidebarEnabled,
-      updateProfileVisible,
+      updateProfileNftVisible,
     ]
   )
 
@@ -222,8 +222,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         <CommandModal onClose={() => setCommandModalVisible(false)} />
       )}
 
-      {updateProfileVisible && (
-        <PfpkNftSelectionModal onClose={() => setUpdateProfileVisible(false)} />
+      {updateProfileNftVisible && (
+        <PfpkNftSelectionModal
+          onClose={() => setUpdateProfileNftVisible(false)}
+        />
       )}
 
       <StatelessAppLayout

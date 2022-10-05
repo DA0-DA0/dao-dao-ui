@@ -1,5 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   constSelector,
   useRecoilValueLoadable,
@@ -36,9 +36,11 @@ export interface UseWalletProfileReturn {
   refreshBalances: () => void
 
   walletProfile: LoadingData<WalletProfile>
-  updateProfile: (
-    profile: Omit<WalletProfileUpdate, 'nonce'>
-  ) => Promise<number | undefined>
+  updateProfile: (profile: Omit<WalletProfileUpdate, 'nonce'>) => Promise<void>
+  updateProfileName: (
+    name: Required<WalletProfileUpdate>['name']
+  ) => Promise<void>
+  updateProfileNft: (nft: Required<WalletProfileUpdate>['nft']) => Promise<void>
   updatingProfile: boolean
 }
 
@@ -107,10 +109,12 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
   )
 
   const [updatingNonce, setUpdatingNonce] = useState<number>()
-  const updateProfile = useCallback(
+  const onUpdateRef = useRef<() => void>()
+  const _updateProfile = useCallback(
     async (
-      profile: Omit<WalletProfileUpdate, 'nonce'>
-    ): Promise<number | undefined> => {
+      profile: Omit<WalletProfileUpdate, 'nonce'>,
+      onUpdate?: () => void
+    ): Promise<void> => {
       if (
         !publicKey ||
         !address ||
@@ -121,6 +125,8 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
         return
       }
 
+      // Set onUpdate handler.
+      onUpdateRef.current = onUpdate
       setUpdatingNonce(walletProfile.data.nonce)
       try {
         const profileUpdate: WalletProfileUpdate = {
@@ -152,11 +158,9 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
         if (!response.ok) {
           throw new Error(await response.text())
         }
-
-        // Return with nonce so we can wait for updated elsewhere.
-        return walletProfile.data.nonce
       } catch (err) {
         // If errored, clear updating state since we did not update.
+        onUpdateRef.current = undefined
         setUpdatingNonce(undefined)
 
         // Rethrow error.
@@ -179,11 +183,33 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
       return
     }
 
-    // If nonce incremented, clear updating state.
+    // If nonce incremented, clear updating state and call onUpdate handler if
+    // exists.
     if (walletProfile.data.nonce > updatingNonce) {
+      onUpdateRef.current?.()
+      onUpdateRef.current = undefined
+
       setUpdatingNonce(undefined)
     }
   }, [updatingNonce, walletProfile])
+
+  // Promisified updateProfile.
+  const updateProfile = useCallback(
+    (profile: Omit<WalletProfileUpdate, 'nonce'>) =>
+      new Promise<void>((resolve, reject) =>
+        _updateProfile(profile, resolve).catch(reject)
+      ),
+    [_updateProfile]
+  )
+
+  const updateProfileName = useCallback(
+    (name: Required<WalletProfileUpdate>['name']) => updateProfile({ name }),
+    [updateProfile]
+  )
+  const updateProfileNft = useCallback(
+    (nft: Required<WalletProfileUpdate>['nft']) => updateProfile({ nft }),
+    [updateProfile]
+  )
 
   return {
     walletAddress: address,
@@ -193,6 +219,8 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
 
     walletProfile,
     updateProfile,
+    updateProfileName,
+    updateProfileNft,
     updatingProfile: updatingNonce !== undefined,
   }
 }

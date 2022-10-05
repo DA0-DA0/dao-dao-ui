@@ -16,8 +16,8 @@ export interface ProfileNewProposalCardProps {
 
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
   const { name: daoName } = useDaoInfoContext()
-  const { walletAddress = '', walletProfile } = useWalletProfile()
-  const { updateProfile } = useAppLayoutContext()
+  const { walletProfile, updateProfileName } = useWalletProfile()
+  const { updateProfileNft } = useAppLayoutContext()
 
   return (
     <SuspenseLoader
@@ -25,8 +25,8 @@ export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
         <StatelessProfileNewProposalCard
           daoName={daoName}
           info={{ loading: true }}
-          showUpdateProfile={updateProfile.toggle}
-          walletAddress={walletAddress}
+          showUpdateProfileNft={updateProfileNft.toggle}
+          updateProfileName={updateProfileName}
           walletProfile={walletProfile}
         />
       }
@@ -46,8 +46,8 @@ export const InnerProfileNewProposalCard = ({
   },
 }: ProfileNewProposalCardProps) => {
   const { name: daoName } = useDaoInfoContext()
-  const { walletAddress = '', walletProfile } = useWalletProfile()
-  const { updateProfile } = useAppLayoutContext()
+  const { walletProfile, updateProfileName } = useWalletProfile()
+  const { updateProfileNft } = useAppLayoutContext()
   const {
     hooks: { useProfileNewProposalCardAddresses },
   } = useVotingModuleAdapter()
@@ -59,8 +59,8 @@ export const InnerProfileNewProposalCard = ({
     <StatelessProfileNewProposalCard
       daoName={daoName}
       info={{ loading: false, data: { lines, addresses } }}
-      showUpdateProfile={updateProfile.toggle}
-      walletAddress={walletAddress}
+      showUpdateProfileNft={updateProfileNft.toggle}
+      updateProfileName={updateProfileName}
       walletProfile={walletProfile}
     />
   )

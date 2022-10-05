@@ -44,7 +44,7 @@ export const DefaultArgs: AppLayoutProps = {
       enabled: false,
       toggle: () => alert('toggle right'),
     },
-    updateProfile: {
+    updateProfileNft: {
       visible: false,
       toggle: () => alert('toggle update'),
     },
@@ -72,7 +72,7 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
         enabled: responsiveRightSidebarEnabled,
         toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
       },
-      updateProfile: {
+      updateProfileNft: {
         visible: updateProfileVisible,
         toggle: () => setUpdateProfileVisible((v) => !v),
       },

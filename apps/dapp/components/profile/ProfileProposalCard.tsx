@@ -32,7 +32,7 @@ export const ProfileProposalCard = ({
   const { t } = useTranslation()
   const { coreAddress, name: daoName, proposalModules } = useDaoInfoContext()
   const { walletAddress = '', walletProfile } = useWalletProfile()
-  const { updateProfile } = useAppLayoutContext()
+  const { updateProfileNft } = useAppLayoutContext()
 
   const {
     hooks: { useProfileVoteCardOptions, useWalletVoteInfo, useCastVote },
@@ -84,7 +84,7 @@ export const ProfileProposalCard = ({
     daoName,
     walletAddress,
     walletProfile,
-    showUpdateProfile: updateProfile.toggle,
+    showUpdateProfileNft: updateProfileNft.toggle,
   }
 
   const { castVote, castingVote } = useCastVote(onVoteSuccess)

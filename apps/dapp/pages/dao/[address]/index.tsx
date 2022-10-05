@@ -36,8 +36,8 @@ import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 
 const InnerDaoHome = () => {
   const { connected } = useWallet()
-  const { walletAddress = '', walletProfile } = useWalletProfile()
-  const { updateProfile } = useAppLayoutContext()
+  const { walletProfile, updateProfileName } = useWalletProfile()
+  const { updateProfileNft } = useAppLayoutContext()
 
   const daoInfo = useDaoInfoContext()
   const {
@@ -105,8 +105,8 @@ const InnerDaoHome = () => {
                   }
                 />
               }
-              showUpdateProfile={updateProfile.toggle}
-              walletAddress={walletAddress}
+              showUpdateProfileNft={updateProfileNft.toggle}
+              updateProfileName={updateProfileName}
               walletProfile={walletProfile}
             />
           ) : (
@@ -123,8 +123,8 @@ const InnerDaoHome = () => {
                   proposalContext={false}
                 />
               }
-              showUpdateProfile={updateProfile.toggle}
-              walletAddress={walletAddress}
+              showUpdateProfileNft={updateProfileNft.toggle}
+              updateProfileName={updateProfileName}
               walletProfile={walletProfile}
             />
           )
