@@ -51,7 +51,7 @@ export const walletProfileSelector = selectorFamily<WalletProfile, string>({
             profile.name = pfpkProfile.name
             profile.nft = pfpkProfile.nft
             // Set root-level `imageUrl` if NFT present.
-            if (pfpkProfile.nft) {
+            if (pfpkProfile.nft?.imageUrl) {
               profile.imageUrl = pfpkProfile.nft.imageUrl
             }
 
@@ -85,15 +85,21 @@ export const keplrProfileImageSelector = selectorFamily<
 >({
   key: 'keplrProfileImage',
   get: (publicKey) => async () => {
-    const response = await fetch(
-      `https://api.kube-uw2.keplr-prod.manythings.xyz/v1/user/${publicKey}/profile`
-    )
-    if (!response.ok) {
-      console.error(await response.text())
+    try {
+      const response = await fetch(
+        `https://api.kube-uw2.keplr-prod.manythings.xyz/v1/user/${publicKey}/profile`
+      )
+      if (!response.ok) {
+        console.error(await response.text())
+        return undefined
+      }
+
+      const { profile }: KeplrWalletProfile = await response.json()
+      return 'imageUrl' in profile ? profile.imageUrl : undefined
+    } catch (err) {
+      console.error(err)
+      // Fail silently.
       return undefined
     }
-
-    const { profile }: KeplrWalletProfile = await response.json()
-    return 'imageUrl' in profile ? profile.imageUrl : undefined
   },
 })
