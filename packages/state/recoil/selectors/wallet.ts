@@ -41,31 +41,22 @@ export const walletProfileSelector = selectorFamily<WalletProfile, string>({
 
       // Load profile from PFPK API.
       let response
-      let retries = 3
-      while (retries > 0) {
-        try {
-          response = await fetch(PFPK_API_BASE + `/${publicKey}`)
-          if (response.ok) {
-            const pfpkProfile: PfpkWalletProfile = await response.json()
-            profile.nonce = pfpkProfile.nonce
-            profile.name = pfpkProfile.name
-            profile.nft = pfpkProfile.nft
-            // Set root-level `imageUrl` if NFT present.
-            if (pfpkProfile.nft?.imageUrl) {
-              profile.imageUrl = pfpkProfile.nft.imageUrl
-            }
-
-            // Stop looping on success.
-            break
-          } else {
-            console.error(await response.json())
+      try {
+        response = await fetch(PFPK_API_BASE + `/${publicKey}`)
+        if (response.ok) {
+          const pfpkProfile: PfpkWalletProfile = await response.json()
+          profile.nonce = pfpkProfile.nonce
+          profile.name = pfpkProfile.name
+          profile.nft = pfpkProfile.nft
+          // Set root-level `imageUrl` if NFT present.
+          if (pfpkProfile.nft?.imageUrl) {
+            profile.imageUrl = pfpkProfile.nft.imageUrl
           }
-        } catch (err) {
-          console.error(processError(err))
+        } else {
+          console.error(await response.json())
         }
-
-        // Try again.
-        retries--
+      } catch (err) {
+        console.error(processError(err))
       }
 
       return profile

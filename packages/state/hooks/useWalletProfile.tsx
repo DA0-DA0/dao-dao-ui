@@ -108,7 +108,7 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
       // Disallows editing if we don't have correct nonce from server.
       nonce: -1,
       name: null,
-      imageUrl: getFallbackImage(address),
+      imageUrl: '',
       nft: null,
     }
   )
