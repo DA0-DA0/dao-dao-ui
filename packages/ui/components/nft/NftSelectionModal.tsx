@@ -1,25 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
 import { Image } from '@mui/icons-material'
 import clsx from 'clsx'
-import {
-  ComponentType,
-  MutableRefObject,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { ComponentType, ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData, NftCardInfo } from '@dao-dao/tstypes'
 
+import { SortFn, useDropdownSorter } from '../../hooks'
 import { Button } from '../Button'
+import { Dropdown, DropdownOption } from '../Dropdown'
 import { Loader as DefaultLoader, LoaderProps } from '../Loader'
 import { Modal, ModalProps } from '../Modal'
 import { NoContent } from '../NoContent'
 import { NftCard } from './NftCard'
-import { SortFn, useDropdownSorter } from '../../hooks'
-import { Dropdown, DropdownOption } from '../Dropdown'
 
 export interface NftSelectionModalProps
   extends Omit<ModalProps, 'children' | 'header'>,
@@ -36,9 +29,6 @@ export interface NftSelectionModalProps
   Loader?: ComponentType<LoaderProps>
   allowSelectingNone?: boolean
   selectedDisplay?: ReactNode
-  getRefForNft?: (
-    nft: NftCardInfo
-  ) => MutableRefObject<HTMLDivElement | null> | undefined
 }
 
 export const NftSelectionModal = ({
@@ -55,7 +45,6 @@ export const NftSelectionModal = ({
   Loader = DefaultLoader,
   allowSelectingNone,
   selectedDisplay,
-  getRefForNft,
   ...modalProps
 }: NftSelectionModalProps) => {
   const { t } = useTranslation()
@@ -132,7 +121,7 @@ export const NftSelectionModal = ({
         >
           {showSelectAll && (
             <Button
-              className="text-text-interactive-active mt-4"
+              className="mt-4 text-text-interactive-active"
               disabled={nfts.loading}
               onClick={
                 nfts.loading
@@ -164,7 +153,7 @@ export const NftSelectionModal = ({
         <Loader className="-mt-6" />
       ) : nfts.data.length > 0 ? (
         <div className="grid overflow-y-auto grid-cols-1 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 xs:grid-cols-2 sm:grid-cols-3 no-scrollbar">
-          {sortedNfts.map((nft) => (
+          {sortedNfts.map((nft: NftCardInfo) => (
             <NftCard
               key={getIdForNft(nft)}
               ref={
