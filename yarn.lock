@@ -3231,12 +3231,13 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-12.2.0.tgz#9f66664f9122ca555b96a5f2fc6e2af677bf801b"
   integrity sha512-OI14ozFLThEV3ey6jE47zrzSTV/6eIMsvbwozo+XfdWqOPwQ7X00YkRx4GVMKMC0rM44oGS2gmwMKYpe4EblnA==
 
-"@noahsaso/cosmodal@0.6.4":
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.6.4.tgz#b23da0e88409a8b1f557b70841f372d64c5401e4"
-  integrity sha512-xabOA6Id9keBcd5jNyMrTbQCQzlvFzAFuHVREeJBniXOsh0VGdkSD+AL9zoMFhPg47b2VdqpLDcglpBN0J2ERQ==
+"@noahsaso/cosmodal@0.6.5":
+  version "0.6.5"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.6.5.tgz#cfa64f27a3c561d04b7d059345785c5cd090b4a5"
+  integrity sha512-qlnFKtZawa+13YOpuwLUEE83iVcdrW0Dq3GBWMtcyFjUcLQwwzcHS4P0NErDe5f1LQX8qAic3EuyJ5ZNcjF0mw==
   dependencies:
     "@cosmjs/cosmwasm-stargate" "0.28.10"
+    "@cosmjs/encoding" "0.28.10"
     "@cosmjs/stargate" "0.28.10"
     "@keplr-wallet/common" "^0.9.10"
     "@keplr-wallet/cosmos" "^0.9.16"
