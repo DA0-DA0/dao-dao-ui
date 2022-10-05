@@ -200,7 +200,8 @@ export const ProfileCardWrapper = ({
                   <Edit
                     className={clsx(
                       'absolute -right-6 !w-4 !h-4 text-icon-secondary',
-                      !noNameSet && 'hidden group-hover:block'
+                      !noNameSet &&
+                        'opacity-0 group-hover:opacity-100 transition-opacity'
                     )}
                   />
                 )}

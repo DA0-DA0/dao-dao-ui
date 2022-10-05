@@ -5,7 +5,7 @@ import {
   PfpkWalletProfile,
   WalletProfile,
 } from '@dao-dao/tstypes'
-import { PFPK_API_BASE, getFallbackImage, processError } from '@dao-dao/utils'
+import { PFPK_API_BASE, processError } from '@dao-dao/utils'
 
 import { refreshWalletProfileAtom } from '../atoms/refresh'
 import { cosmWasmClientSelector } from './chain'
@@ -68,15 +68,10 @@ export const walletProfileSelector = selectorFamily<WalletProfile, string>({
         retries--
       }
 
-      // Use Keplr profile image API (followed by a fallback image) as backup if
-      // PFPK not set.
-      if (!profile.imageUrl) {
-        const keplrProfileImage = get(keplrProfileImageSelector(publicKey))
-        profile.imageUrl = keplrProfileImage ?? getFallbackImage(publicKey)
-      }
-
       return profile
     },
+  // Allow overriding imageUrl with Keplr fallback.
+  dangerouslyAllowMutability: true,
 })
 
 export const keplrProfileImageSelector = selectorFamily<

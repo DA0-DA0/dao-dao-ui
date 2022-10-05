@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Image } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType } from 'react'
+import { ComponentType, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData, NftCardInfo } from '@dao-dao/tstypes'
@@ -25,6 +25,8 @@ export interface NftSelectionModalProps
   actionLoading: boolean
   actionLabel: string
   Loader?: ComponentType<LoaderProps>
+  allowSelectingNone?: boolean
+  selectedDisplay?: ReactNode
 }
 
 export const NftSelectionModal = ({
@@ -39,6 +41,8 @@ export const NftSelectionModal = ({
   actionLabel,
   containerClassName,
   Loader = DefaultLoader,
+  allowSelectingNone,
+  selectedDisplay,
   ...modalProps
 }: NftSelectionModalProps) => {
   const { t } = useTranslation()
@@ -54,13 +58,22 @@ export const NftSelectionModal = ({
         containerClassName
       )}
       footerContent={
-        <div className="flex flex-row gap-6 justify-between items-center">
-          <div className="flex flex-row flex-wrap gap-4 items-center">
-            {t('info.numNftsSelected', { count: selectedIds.length })}
-          </div>
+        <div
+          className={clsx(
+            'flex flex-row gap-6 items-center',
+            // If selectedDisplay is null, it will be hidden, so align button at
+            // the end.
+            selectedDisplay === null ? 'justify-end' : 'justify-between'
+          )}
+        >
+          {selectedDisplay !== undefined ? (
+            selectedDisplay
+          ) : (
+            <p>{t('info.numNftsSelected', { count: selectedIds.length })}</p>
+          )}
 
           <Button
-            disabled={selectedIds.length === 0}
+            disabled={!allowSelectingNone && selectedIds.length === 0}
             loading={actionLoading}
             onClick={onAction}
           >
@@ -69,13 +82,8 @@ export const NftSelectionModal = ({
         </div>
       }
       headerContent={
-        <div
-          className={clsx(
-            'flex flex-row items-center pt-4 -mb-1',
-            showSelectAll ? 'justify-between' : 'justify-end'
-          )}
-        >
-          {showSelectAll && (
+        showSelectAll ? (
+          <div className="flex flex-row items-center pt-4 -mb-1">
             <Button
               className="text-text-interactive-active"
               disabled={nfts.loading}
@@ -93,8 +101,8 @@ export const NftSelectionModal = ({
                   ? t('button.deselectAllNfts', { count: nfts.data.length })
                   : t('button.selectAllNfts', { count: nfts.data.length }))}
             </Button>
-          )}
-        </div>
+          </div>
+        ) : undefined
       }
     >
       {nfts.loading ? (

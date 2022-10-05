@@ -26,7 +26,10 @@ import {
   refreshWalletBalancesIdAtom,
   refreshWalletProfileAtom,
 } from '../recoil'
-import { walletProfileSelector } from '../recoil/selectors/wallet'
+import {
+  keplrProfileImageSelector,
+  walletProfileSelector,
+} from '../recoil/selectors/wallet'
 import { useCachedLoadable } from './useCachedLoadable'
 
 export interface UseWalletProfileReturn {
@@ -42,6 +45,7 @@ export interface UseWalletProfileReturn {
   ) => Promise<void>
   updateProfileNft: (nft: Required<WalletProfileUpdate>['nft']) => Promise<void>
   updatingProfile: boolean
+  backupProfileImage: string | undefined
 }
 
 export const useWalletProfile = (): UseWalletProfileReturn => {
@@ -108,6 +112,21 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
       nft: null,
     }
   )
+  // Get Keplr wallet image from API.
+  const keplrProfileImageLoadable = useCachedLoadable(
+    publicKey ? keplrProfileImageSelector(publicKey.hex) : undefined
+  )
+  const keplrProfileImage =
+    keplrProfileImageLoadable.state === 'hasValue'
+      ? keplrProfileImageLoadable.contents
+      : undefined
+  // Use Keplr profile image API (followed by a fallback image) as backup if
+  // PFPK not set.
+  const backupProfileImage =
+    keplrProfileImage ?? getFallbackImage(publicKey?.hex)
+  if (!walletProfile.loading && !walletProfile.data.imageUrl) {
+    walletProfile.data.imageUrl = backupProfileImage
+  }
 
   const [updatingNonce, setUpdatingNonce] = useState<number>()
   const onUpdateRef = useRef<() => void>()
@@ -228,5 +247,6 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
     updateProfileName,
     updateProfileNft,
     updatingProfile: updatingNonce !== undefined,
+    backupProfileImage,
   }
 }

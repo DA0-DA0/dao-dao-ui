@@ -15,6 +15,7 @@ import {
   Modal,
   ModalProps,
   NftSelectionModal,
+  ProfileImage,
 } from '@dao-dao/ui'
 import {
   STARGAZE_CHAIN_ID,
@@ -47,14 +48,22 @@ export const InnerPfpkNftSelectionModal = ({
     []
   )
 
-  const { walletProfile, updateProfileNft, updatingProfile } =
-    useWalletProfile()
+  const {
+    walletProfile,
+    updateProfileNft,
+    updatingProfile,
+    backupProfileImage,
+  } = useWalletProfile()
   // Initialize to selected NFT.
   const [selected, setSelected] = useState<string | undefined>(
     !walletProfile.loading && walletProfile.data.nft
       ? `${walletProfile.data.nft.collectionAddress}:${walletProfile.data.nft.tokenId}`
       : undefined
   )
+  const selectedNft =
+    !nfts.loading && selected
+      ? nfts.data.find((nft) => selected === getIdForNft(nft))
+      : undefined
   // If nonce changes, set selected NFT.
   const [lastNonce, setLastNonce] = useState(
     walletProfile.loading ? 0 : walletProfile.data.nonce
@@ -78,9 +87,6 @@ export const InnerPfpkNftSelectionModal = ({
       return
     }
 
-    const selectedNft = selected
-      ? nfts.data.find((nft) => selected === getIdForNft(nft))
-      : undefined
     // Only give error about no NFTs if something should be selected. This
     // should never happen...
     if (selected && !selectedNft) {
@@ -105,13 +111,14 @@ export const InnerPfpkNftSelectionModal = ({
       console.error(err)
       toast.error(processError(err))
     }
-  }, [nfts, selected, t, updateProfileNft, onClose])
+  }, [nfts, selected, selectedNft, t, updateProfileNft, onClose])
 
   return (
     <NftSelectionModal
       Loader={Loader}
       actionLabel={t('button.save')}
       actionLoading={updatingProfile}
+      allowSelectingNone
       getIdForNft={getIdForNft}
       header={{
         title: t('title.chooseNftProfilePicture'),
@@ -124,6 +131,12 @@ export const InnerPfpkNftSelectionModal = ({
         setSelected(
           selected === getIdForNft(nft) ? undefined : getIdForNft(nft)
         )
+      }
+      selectedDisplay={
+        <ProfileImage
+          imageUrl={selectedNft ? selectedNft.imageUrl : backupProfileImage}
+          size="sm"
+        />
       }
       selectedIds={selected ? [selected] : []}
     />
