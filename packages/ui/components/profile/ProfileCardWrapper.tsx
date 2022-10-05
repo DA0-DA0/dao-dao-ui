@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { ProfileCardWrapperProps } from '@dao-dao/tstypes/ui/ProfileCardWrapper'
 import { formatDate, processError } from '@dao-dao/utils'
 
+import { Button } from '../Button'
 import { CornerGradient } from '../CornerGradient'
 import { IconButton } from '../IconButton'
 import { TextInput } from '../input'
@@ -110,7 +111,7 @@ export const ProfileCardWrapper = ({
                 {walletProfile.loading
                   ? '...'
                   : noNameSet
-                  ? t('info.noDisplayNameSet')
+                  ? t('info.noDisplayName')
                   : walletProfile.data.name}
               </p>
               {underHeaderComponent}
@@ -168,7 +169,14 @@ export const ProfileCardWrapper = ({
                 </div>
               </div>
             ) : (
-              <div className="flex relative flex-row gap-2 items-center px-8 mb-5">
+              <Button
+                className="group relative mb-5"
+                onClick={() =>
+                  !walletProfile.loading &&
+                  setEditingName(walletProfile.data.name ?? '')
+                }
+                variant="none"
+              >
                 <p
                   className={clsx(
                     'title-text',
@@ -181,22 +189,17 @@ export const ProfileCardWrapper = ({
                   {walletProfile.loading
                     ? '...'
                     : noNameSet
-                    ? t('info.noDisplayNameSet')
+                    ? t('button.setDisplayName')
                     : walletProfile.data.name}
                 </p>
 
-                {!walletProfile.loading && (
-                  <IconButton
-                    Icon={Edit}
-                    className="aspect-square absolute top-0 right-0 bottom-0"
-                    onClick={() =>
-                      setEditingName(walletProfile.data.name ?? '')
-                    }
-                    size="xs"
-                    variant="ghost"
-                  />
-                )}
-              </div>
+                <Edit
+                  className={clsx(
+                    'absolute -right-6 !w-4 !h-4 text-icon-secondary',
+                    !noNameSet && 'hidden group-hover:block'
+                  )}
+                />
+              </Button>
             )}
             {established && (
               <div className="-mt-3 mb-5 font-mono caption-text">
