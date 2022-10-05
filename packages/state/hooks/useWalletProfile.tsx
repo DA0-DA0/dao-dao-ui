@@ -101,7 +101,8 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
       publicKey ? walletProfileSelector(publicKey.hex) : undefined
     ),
     {
-      nonce: 0,
+      // Disallows editing if we don't have correct nonce from server.
+      nonce: -1,
       name: null,
       imageUrl: getFallbackImage(address),
       nft: null,
@@ -120,7 +121,9 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
         !address ||
         !signingCosmWasmClient ||
         !walletClient ||
-        walletProfile.loading
+        walletProfile.loading ||
+        // Disallow editing if we don't have correct nonce from server.
+        walletProfile.data.nonce < 0
       ) {
         return
       }
@@ -156,7 +159,10 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
         refreshWalletProfile()
 
         if (!response.ok) {
-          throw new Error(await response.text())
+          const res = await response.json()
+          throw new Error(
+            `${res.error}${res.message ? `: ${res.message}` : ''}`
+          )
         }
       } catch (err) {
         // If errored, clear updating state since we did not update.

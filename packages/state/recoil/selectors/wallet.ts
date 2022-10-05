@@ -32,7 +32,8 @@ export const walletProfileSelector = selectorFamily<WalletProfile, string>({
       get(refreshWalletProfileAtom(publicKey))
 
       let profile: WalletProfile = {
-        nonce: 0,
+        // Disallows editing if we don't have correct nonce from server.
+        nonce: -1,
         name: null,
         imageUrl: '',
         nft: null,
@@ -40,22 +41,31 @@ export const walletProfileSelector = selectorFamily<WalletProfile, string>({
 
       // Load profile from PFPK API.
       let response
-      try {
-        response = await fetch(PFPK_API_BASE + `/${publicKey}`)
-        if (response.ok) {
-          const pfpkProfile: PfpkWalletProfile = await response.json()
-          profile.nonce = pfpkProfile.nonce
-          profile.name = pfpkProfile.name
-          profile.nft = pfpkProfile.nft
-          // Set root-level `imageUrl` if NFT present.
-          if (pfpkProfile.nft) {
-            profile.imageUrl = pfpkProfile.nft.imageUrl
+      let retries = 3
+      while (retries > 0) {
+        try {
+          response = await fetch(PFPK_API_BASE + `/${publicKey}`)
+          if (response.ok) {
+            const pfpkProfile: PfpkWalletProfile = await response.json()
+            profile.nonce = pfpkProfile.nonce
+            profile.name = pfpkProfile.name
+            profile.nft = pfpkProfile.nft
+            // Set root-level `imageUrl` if NFT present.
+            if (pfpkProfile.nft) {
+              profile.imageUrl = pfpkProfile.nft.imageUrl
+            }
+
+            // Stop looping on success.
+            break
+          } else {
+            console.error(await response.json())
           }
-        } else {
-          console.error(await response.text())
+        } catch (err) {
+          console.error(processError(err))
         }
-      } catch (err) {
-        console.error(processError(err))
+
+        // Try again.
+        retries--
       }
 
       // Use Keplr profile image API (followed by a fallback image) as backup if

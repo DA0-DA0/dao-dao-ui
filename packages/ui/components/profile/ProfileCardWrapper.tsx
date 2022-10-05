@@ -55,11 +55,12 @@ export const ProfileCardWrapper = ({
       })
   }, [compact, walletProfile])
 
+  const canEdit = !walletProfile.loading && walletProfile.data.nonce >= 0
   // If set, will show edit input.
   const [editingName, setEditingName] = useState<string | undefined>()
   const [savingName, setSavingName] = useState(false)
   const doUpdateName = useCallback(async () => {
-    if (editingName === undefined) {
+    if (editingName === undefined || !canEdit) {
       return
     }
 
@@ -75,7 +76,7 @@ export const ProfileCardWrapper = ({
     } finally {
       setSavingName(false)
     }
-  }, [editingName, updateProfileName])
+  }, [canEdit, editingName, updateProfileName])
 
   const noNameSet = !walletProfile.loading && walletProfile.data.name === null
 
@@ -124,11 +125,11 @@ export const ProfileCardWrapper = ({
                 walletProfile.loading ? '' : walletProfile.data.imageUrl
               }
               loading={walletProfile.loading}
-              onEdit={showUpdateProfileNft}
+              onEdit={canEdit ? showUpdateProfileNft : undefined}
               size="lg"
             />
 
-            {editingName !== undefined ? (
+            {canEdit && editingName !== undefined ? (
               <div className="flex relative flex-col items-center mx-16 mb-8 h-5">
                 <TextInput
                   autoFocus
@@ -170,6 +171,7 @@ export const ProfileCardWrapper = ({
             ) : (
               <Button
                 className="group relative mb-5"
+                disabled={!canEdit}
                 onClick={() =>
                   !walletProfile.loading &&
                   setEditingName(walletProfile.data.name ?? '')
@@ -188,16 +190,20 @@ export const ProfileCardWrapper = ({
                   {walletProfile.loading
                     ? '...'
                     : noNameSet
-                    ? t('button.setDisplayName')
+                    ? canEdit
+                      ? t('button.setDisplayName')
+                      : t('info.noDisplayName')
                     : walletProfile.data.name}
                 </p>
 
-                <Edit
-                  className={clsx(
-                    'absolute -right-6 !w-4 !h-4 text-icon-secondary',
-                    !noNameSet && 'hidden group-hover:block'
-                  )}
-                />
+                {canEdit && (
+                  <Edit
+                    className={clsx(
+                      'absolute -right-6 !w-4 !h-4 text-icon-secondary',
+                      !noNameSet && 'hidden group-hover:block'
+                    )}
+                  />
+                )}
               </Button>
             )}
             {established && (
