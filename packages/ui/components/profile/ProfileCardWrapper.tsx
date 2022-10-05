@@ -83,7 +83,7 @@ export const ProfileCardWrapper = ({
     <div className="relative rounded-lg border border-border-primary">
       {/* Absolutely positioned, against relative outer-most div (without padding). */}
       {compact && !!averageImgColor && (
-        <CornerGradient color={averageImgColor} />
+        <CornerGradient className="h-36 opacity-50" color={averageImgColor} />
       )}
 
       <div className="p-6">
