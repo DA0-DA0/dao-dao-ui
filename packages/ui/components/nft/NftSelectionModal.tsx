@@ -152,7 +152,7 @@ export const NftSelectionModal = ({
       {nfts.loading ? (
         <Loader className="-mt-6" />
       ) : nfts.data.length > 0 ? (
-        <div className="grid overflow-y-auto grid-cols-1 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 xs:grid-cols-2 sm:grid-cols-3 no-scrollbar">
+        <div className="grid overflow-y-auto grid-cols-2 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 sm:grid-cols-3 no-scrollbar">
           {sortedNfts.map((nft: NftCardInfo) => (
             <NftCard
               key={getIdForNft(nft)}
