@@ -7,6 +7,8 @@ import { SubQueryDecorator } from '@dao-dao/storybook/decorators'
 
 import { CommandModal } from './CommandModal'
 
+// TODO: Move component and story to UI package.
+
 export default {
   title: 'DAO DAO / apps / dapp / components / CommandModal',
   component: CommandModal,

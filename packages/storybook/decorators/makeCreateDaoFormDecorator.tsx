@@ -8,11 +8,5 @@ export const makeCreateDaoFormDecorator: (
   defaults?: Partial<NewDao>
 ) => DecoratorFn = (pageIndex, defaults) =>
   function CreateDaoFormDecorator() {
-    return (
-      <CreateDaoForm
-        daoUrlPrefix="#"
-        defaults={defaults}
-        initialPageIndex={pageIndex}
-      />
-    )
+    return <CreateDaoForm defaults={defaults} initialPageIndex={pageIndex} />
   }

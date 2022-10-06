@@ -3,8 +3,8 @@
 import { DecoratorFn } from '@storybook/react'
 import { useMemo } from 'react'
 
-import { DaoInfoSerializable, DaoPageWrapper } from '@dao-dao/common'
-import { ContractVersion } from '@dao-dao/tstypes'
+import { DaoPageWrapper } from '@dao-dao/common'
+import { ContractVersion, DaoInfoSerializable } from '@dao-dao/tstypes'
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
   const serializedInfo: DaoInfoSerializable = useMemo(
@@ -27,6 +27,7 @@ export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
       created: new Date(
         Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
       ).toJSON(),
+      parentDao: null,
     }),
     []
   )
