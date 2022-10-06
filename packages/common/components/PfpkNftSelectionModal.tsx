@@ -134,7 +134,14 @@ export const InnerPfpkNftSelectionModal = ({
       }
       selectedDisplay={
         <ProfileImage
-          imageUrl={selectedNft ? selectedNft.imageUrl : backupProfileImage}
+          imageUrl={
+            !nfts.loading
+              ? selectedNft
+                ? selectedNft.imageUrl
+                : backupProfileImage
+              : undefined
+          }
+          loading={nfts.loading}
           size="sm"
         />
       }

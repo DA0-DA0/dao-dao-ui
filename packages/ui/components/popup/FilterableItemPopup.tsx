@@ -7,11 +7,11 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react'
 
+import { useSearchFilter } from '../../hooks'
 import { Button } from '../Button'
 import { SearchBar } from '../SearchBar'
 import { Popup, PopupProps } from './Popup'
@@ -46,20 +46,14 @@ export const FilterableItemPopup = <
   popupClassName,
   ...popupProps
 }: FilterableItemPopupProps<T>) => {
-  const itemsFuse = useMemo(
-    () => new Fuse(items, { keys: filterableItemKeys }),
-    [items, filterableItemKeys]
+  const { searchBarProps, filteredData, setFilter } = useSearchFilter(
+    items,
+    filterableItemKeys
   )
   const itemsListRef = useRef<HTMLDivElement>(null)
   const searchBarRef = useRef<HTMLInputElement>(null)
   const openRef = useRef<boolean | null>(null)
   const setOpenRef = useRef<Dispatch<SetStateAction<boolean>> | null>(null)
-
-  const [filter, setFilter] = useState('')
-  const filteredItems = useMemo(
-    () => (filter ? itemsFuse.search(filter).map(({ item }) => item) : items),
-    [filter, itemsFuse, items]
-  )
 
   const onSelectItem = useCallback(
     (item: T, index: number) => {
@@ -74,7 +68,7 @@ export const FilterableItemPopup = <
 
   const [selectedIndex, setSelectedIndex] = useState(0)
   // When filtered items update, reset selection to top.
-  useEffect(() => setSelectedIndex(0), [filteredItems])
+  useEffect(() => setSelectedIndex(0), [filteredData])
   // Ensure selected item is scrolled into view.
   useEffect(() => {
     const item = itemsListRef.current?.children[selectedIndex]
@@ -107,9 +101,9 @@ export const FilterableItemPopup = <
           event.preventDefault()
           setSelectedIndex((index) =>
             index - 1 < 0
-              ? filteredItems.length - 1
+              ? filteredData.length - 1
               : // Just in case for some reason the index is overflowing.
-                Math.min(index - 1, filteredItems.length - 1)
+                Math.min(index - 1, filteredData.length - 1)
           )
           break
         case 'ArrowRight':
@@ -117,18 +111,18 @@ export const FilterableItemPopup = <
           event.preventDefault()
           setSelectedIndex(
             // Just in case for some reason the index is underflowing.
-            (index) => Math.max(index + 1, 0) % filteredItems.length
+            (index) => Math.max(index + 1, 0) % filteredData.length
           )
           break
         case 'Enter':
           event.preventDefault()
-          if (selectedIndex >= 0 && selectedIndex < filteredItems.length) {
-            onSelectItem(filteredItems[selectedIndex], selectedIndex)
+          if (selectedIndex >= 0 && selectedIndex < filteredData.length) {
+            onSelectItem(filteredData[selectedIndex], selectedIndex)
           }
           break
       }
     },
-    [selectedIndex, filteredItems, onSelectItem]
+    [selectedIndex, filteredData, onSelectItem]
   )
 
   useEffect(() => {
@@ -152,16 +146,15 @@ export const FilterableItemPopup = <
 
     // Call original callback if passed in.
     onClose?.()
-  }, [onClose])
+  }, [onClose, setFilter])
 
   return (
     <Popup
       headerContent={
         <SearchBar
-          onChange={(event) => setFilter(event.target.value)}
           placeholder={searchPlaceholder}
           ref={searchBarRef}
-          value={filter}
+          {...searchBarProps}
         />
       }
       onClose={onPopupClose}
@@ -177,7 +170,7 @@ export const FilterableItemPopup = <
         )}
         ref={itemsListRef}
       >
-        {filteredItems.map((item, index) => (
+        {filteredData.map((item, index) => (
           <Button
             key={item.key}
             className={clsx(

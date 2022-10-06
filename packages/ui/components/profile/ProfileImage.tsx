@@ -44,19 +44,21 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
 
     const loadingImage = loading || loadedImage !== imageUrl
 
+    // Size and rounding of container and children.
+    const sizingRoundingClassNames = clsx({
+      'w-8 h-8 rounded-full': size === 'xs',
+      'w-10 h-10 rounded-xl': size === 'sm',
+      'w-16 h-16 rounded-2xl': size === 'lg',
+    })
+
     return (
       <div
         className={clsx(
           // Center icon.
-          'flex overflow-hidden relative justify-center items-center',
+          'flex relative justify-center items-center',
           (!imageUrl || loadingImage) &&
             'border border-border-interactive-disabled',
-          // Sizes.
-          {
-            'w-8 h-8 rounded-full': size === 'xs',
-            'w-10 h-10 rounded-xl': size === 'sm',
-            'w-16 h-16 rounded-2xl': size === 'lg',
-          },
+          sizingRoundingClassNames,
           // Pulse person placeholder when loading.
           loadingImage &&
             'border border-border-interactive-disabled animate-pulse',
@@ -74,7 +76,8 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         <div
           className={clsx(
             'absolute top-0 right-0 bottom-0 left-0 bg-center bg-cover',
-            onEdit && 'brightness-100 group-hover:brightness-[0.35] transition'
+            onEdit && 'brightness-100 group-hover:brightness-[0.35] transition',
+            sizingRoundingClassNames
           )}
           style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
         ></div>
@@ -90,7 +93,10 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         {/* Edit icon */}
         {onEdit && (
           <div
-            className="flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity"
+            className={clsx(
+              'flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity',
+              sizingRoundingClassNames
+            )}
             onClick={onEdit}
           >
             <Edit className="!w-1/2 !h-1/2 text-icon-primary" />

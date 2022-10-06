@@ -6,12 +6,13 @@ import { useTranslation } from 'react-i18next'
 
 import { LoadingData, NftCardInfo } from '@dao-dao/tstypes'
 
-import { SortFn, useDropdownSorter } from '../../hooks'
+import { SortFn, useDropdownSorter, useSearchFilter } from '../../hooks'
 import { Button } from '../Button'
 import { Dropdown, DropdownOption } from '../Dropdown'
 import { Loader as DefaultLoader, LoaderProps } from '../Loader'
 import { Modal, ModalProps } from '../Modal'
 import { NoContent } from '../NoContent'
+import { SearchBar } from '../SearchBar'
 import { NftCard } from './NftCard'
 
 export interface NftSelectionModalProps
@@ -80,6 +81,11 @@ export const NftSelectionModal = ({
   const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
     useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
 
+  const { searchBarProps, filteredData } = useSearchFilter(
+    sortedNfts,
+    FILTERABLE_KEYS
+  )
+
   return (
     <Modal
       {...modalProps}
@@ -112,48 +118,54 @@ export const NftSelectionModal = ({
         </div>
       }
       headerContent={
-        <div
-          className={clsx(
-            'flex flex-row gap-12 items-center',
-            // Push sort dropdown to the right no matter what.
-            showSelectAll ? 'justify-between' : 'justify-end'
-          )}
-        >
-          {showSelectAll && (
-            <Button
-              className="mt-4 text-text-interactive-active"
-              disabled={nfts.loading}
-              onClick={
-                nfts.loading
-                  ? undefined
-                  : nfts.data.length === selectedIds.length
-                  ? onDeselectAll
-                  : onSelectAll
-              }
-              variant="underline"
-            >
-              {!nfts.loading &&
-                (nfts.data.length === selectedIds.length
-                  ? t('button.deselectAllNfts', { count: nfts.data.length })
-                  : t('button.selectAllNfts', { count: nfts.data.length }))}
-            </Button>
-          )}
+        <div className="flex flex-col gap-2">
+          <div
+            className={clsx(
+              'flex flex-row gap-12 items-center',
+              // Push sort dropdown to the right no matter what.
+              showSelectAll ? 'justify-between' : 'justify-end'
+            )}
+          >
+            {showSelectAll && (
+              <Button
+                className="mt-4 text-text-interactive-active"
+                disabled={nfts.loading}
+                onClick={
+                  nfts.loading
+                    ? undefined
+                    : nfts.data.length === selectedIds.length
+                    ? onDeselectAll
+                    : onSelectAll
+                }
+                variant="underline"
+              >
+                {!nfts.loading &&
+                  (nfts.data.length === selectedIds.length
+                    ? t('button.deselectAllNfts', { count: nfts.data.length })
+                    : t('button.selectAllNfts', { count: nfts.data.length }))}
+              </Button>
+            )}
 
-          {!nfts.loading && nfts.data.length > 0 && (
             <div className="flex flex-row gap-4 justify-between items-center">
               <p className="text-text-body primary-text">{t('title.sortBy')}</p>
 
               <Dropdown {...sortDropdownProps} />
             </div>
-          )}
+          </div>
+
+          <SearchBar
+            autoFocus
+            placeholder={t('info.searchNftsPlaceholder')}
+            {...searchBarProps}
+          />
         </div>
       }
     >
       {nfts.loading ? (
         <Loader className="-mt-6" />
       ) : nfts.data.length > 0 ? (
-        <div className="grid overflow-y-auto grid-cols-2 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 sm:grid-cols-3 no-scrollbar">
-          {sortedNfts.map((nft: NftCardInfo) => (
+        <div className="grid overflow-y-auto grow grid-cols-2 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 sm:grid-cols-3 no-scrollbar">
+          {filteredData.map((nft: NftCardInfo) => (
             <NftCard
               key={getIdForNft(nft)}
               ref={
@@ -193,3 +205,5 @@ const sortOptions: DropdownOption<SortFn<Pick<NftCardInfo, 'name'>>>[] = [
       b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase()),
   },
 ]
+
+const FILTERABLE_KEYS = ['name', 'description']
