@@ -123,8 +123,9 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
   // Use Keplr profile image API (followed by a fallback image) as backup if
   // PFPK not set.
   const backupProfileImage =
-    keplrProfileImage ?? getFallbackImage(publicKey?.hex)
-  if (!walletProfile.loading && !walletProfile.data.imageUrl) {
+    keplrProfileImage || getFallbackImage(publicKey?.hex)
+  // If no NFT from PFPK, fallback.
+  if (!walletProfile.loading && !walletProfile.data.nft) {
     walletProfile.data.imageUrl = backupProfileImage
   }
 
