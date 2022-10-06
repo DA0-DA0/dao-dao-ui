@@ -1,6 +1,7 @@
 export * from './actions'
 export * from './Button'
 export * from './Claims'
+export * from './CommandModal'
 export * from './ContractView'
 export * from './input'
 export * from './not_found'

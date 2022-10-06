@@ -1,25 +1,14 @@
 import { XIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { ReactNode, useEffect } from 'react'
+import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
+
+import { ModalProps } from '@dao-dao/tstypes/ui/Modal'
 
 import { ErrorBoundary } from './ErrorBoundary'
 import { IconButton } from './IconButton'
 
-export interface ModalProps {
-  children: ReactNode
-  onClose: () => void
-  backdropClassName?: string
-  containerClassName?: string
-  hideCloseButton?: boolean
-  header?: {
-    title: string
-    subtitle?: string
-  }
-  headerContent?: ReactNode
-  footerContent?: ReactNode
-  headerContainerClassName?: string
-}
+export * from '@dao-dao/tstypes/ui/Modal'
 
 export const Modal = ({
   children,

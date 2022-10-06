@@ -1,7 +1,6 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-export * from './CommandModal'
 export * from './dao'
 export * from './HomepageCards'
 export * from './splash'
@@ -10,6 +9,7 @@ export * from './profile'
 export * from './AppLayout'
 export * from './BetaWarning'
 export * from './CodeIdSelect'
+export * from './CommandModal'
 export * from './ContractCard'
 export * from './ContractHeader'
 export * from './DaoInfo'

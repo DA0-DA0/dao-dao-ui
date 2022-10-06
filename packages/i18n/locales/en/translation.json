@@ -93,7 +93,12 @@
   "commandBar": {
     "home": "Home",
     "navigateDao": "Navigate to DAO",
-    "prompt": "What are you looking for?"
+    "prompt": "What are you looking for?",
+    "sectionName": {
+      "appActions": "App Actions",
+      "daos": "DAOs",
+      "daoActions": "DAO Actions"
+    }
   },
   "daoCreationAdapter": {
     "cw-proposal-single": {

@@ -12,7 +12,7 @@ const SEARCH_DAOS = gql`
       }
     ) {
       nodes {
-        id
+        coreAddress: id
         name
         imageUrl
       }
@@ -23,7 +23,7 @@ const SEARCH_DAOS = gql`
 interface SearchDaos {
   daos: {
     nodes: {
-      id: string
+      coreAddress: string
       name: string
       imageUrl?: string | null
     }[]
