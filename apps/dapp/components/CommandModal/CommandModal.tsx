@@ -348,7 +348,7 @@ export const CommandModal = ({ onClose }: CommandModalProps) => {
           ) : undefined}
 
           <SearchBar
-            className="leading-8"
+            className="leading-8 text-text-body !primary-text"
             containerClassName="grow"
             ghost
             hideIcon

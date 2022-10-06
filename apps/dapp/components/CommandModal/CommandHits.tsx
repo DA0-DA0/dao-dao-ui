@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import clsx from 'clsx'
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, forwardRef, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Loader, Logo } from '@dao-dao/ui'
@@ -32,7 +32,6 @@ export const CommandHits = ({
 }: CommandHitsProps) => {
   const { sections, sectionNames } = sectionData
   const [selection, setSelection] = useState(0)
-  const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => setSelection(0), [hits, sectionData])
 
@@ -44,11 +43,15 @@ export const CommandHits = ({
       }
 
       switch (event.key) {
+        case 'ArrowLeft':
         case 'ArrowUp':
-          setSelection((selection) => Math.max(selection - 1, 0))
+          setSelection((selection) =>
+            selection - 1 < 0 ? hits.length - 1 : Math.max(selection - 1, 0)
+          )
           break
+        case 'ArrowRight':
         case 'ArrowDown':
-          setSelection((selection) => Math.min(selection + 1, hits.length - 1))
+          setSelection((selection) => (selection + 1) % hits.length)
           break
         case 'Enter':
           onChoice(hits[selection])
@@ -69,34 +72,26 @@ export const CommandHits = ({
   }, [handleKeyPress])
 
   // Ensure selected action is scrolled into view.
-  useEffect(() => {
-    const item = listRef.current?.children[selection]
-    if (!item) {
+  const onSelectedHitRef = useCallback((ref: HTMLDivElement | null) => {
+    if (!ref || !ref.parentElement) {
       return
     }
 
     // Only scroll if not already visible.
-    const { left, right, top, bottom } = item.getBoundingClientRect()
-    const containerRect = listRef.current.getBoundingClientRect()
-    if (
-      left >= containerRect.left &&
-      right <= containerRect.right &&
-      top >= containerRect.top &&
-      bottom <= containerRect.bottom
-    ) {
+    const { top, bottom } = ref.getBoundingClientRect()
+    const containerRect = ref.parentElement.getBoundingClientRect()
+    if (top >= containerRect.top && bottom <= containerRect.bottom) {
       return
     }
 
-    item.scrollIntoView({
+    ref.parentElement.scrollTo({
       behavior: 'smooth',
+      top: ref.offsetTop - ref.parentElement.offsetTop - 24,
     })
-  }, [selection])
+  }, [])
 
   return (
-    <div
-      className="flex overflow-y-auto flex-col grow p-3 pt-4 no-scrollbar"
-      ref={listRef}
-    >
+    <div className="flex overflow-y-auto flex-col grow p-3 pt-4 no-scrollbar">
       {/* If hit we're currently navigating to is no longer part of the hits to render, just display the top with the loader. */}
       {navigatingFromHit && !hits.includes(navigatingFromHit) && (
         <HitView
@@ -115,34 +110,38 @@ export const CommandHits = ({
           {(i === 0
             ? hits.slice(0, sectionIndex)
             : hits.slice(sections[i - 1], sectionIndex)
-          ).map((hit: DaoHit, index: number) => (
-            <HitView
-              key={hit.id}
-              hit={hit}
-              loading={navigatingFromHit === hit}
-              onClick={() => onChoice(hit)}
-              selected={
-                (i === 0 ? index : sections[i - 1] + index) === selection
-              }
-            />
-          ))}
+          ).map((hit: DaoHit, index: number) => {
+            const selected =
+              (i === 0 ? index : sections[i - 1] + index) === selection
+            return (
+              <HitView
+                key={hit.id}
+                hit={hit}
+                loading={navigatingFromHit === hit}
+                onClick={() => onChoice(hit)}
+                ref={selected ? onSelectedHitRef : undefined}
+                // Scroll into view when selected.
+                selected={selected}
+              />
+            )
+          })}
         </Fragment>
       ))}
     </div>
   )
 }
 
-const HitView = ({
-  hit,
-  selected,
-  onClick,
-  loading,
-}: {
+interface HitViewProps {
   hit: Hit
   selected: boolean
   onClick: () => void
   loading: boolean
-}) => {
+}
+
+const HitView = forwardRef<HTMLDivElement, HitViewProps>(function HitView(
+  { hit, selected, onClick, loading },
+  ref
+) {
   const { t } = useTranslation()
   return (
     <div
@@ -151,6 +150,7 @@ const HitView = ({
         selected && 'text-primary bg-primary'
       )}
       onClick={onClick}
+      ref={ref}
     >
       {hit.hitType === HitType.Dao ? (
         hit.imageUrl ? (
@@ -179,4 +179,4 @@ const HitView = ({
       )}
     </div>
   )
-}
+})
