@@ -141,6 +141,9 @@ export const FilterableItemPopup = <
 
   // Clear filter on close.
   const onPopupClose = useCallback(() => {
+    // Blur search bar in case focused.
+    searchBarRef.current?.blur()
+
     // Small delay to let it fade away first.
     setTimeout(() => setFilter(''), 200)
 
@@ -159,6 +162,7 @@ export const FilterableItemPopup = <
       }
       onClose={onPopupClose}
       onOpen={onPopupOpen}
+      openRef={openRef}
       popupClassName={clsx('w-60 h-80', popupClassName)}
       setOpenRef={setOpenRef}
       {...popupProps}
