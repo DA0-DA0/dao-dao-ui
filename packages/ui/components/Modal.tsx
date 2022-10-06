@@ -62,7 +62,7 @@ export const Modal = ({
           <IconButton
             Icon={XIcon}
             circular
-            className="absolute top-2 right-2"
+            className="absolute top-2 right-2 z-50"
             iconClassName="text-icon-tertiary"
             onClick={onClose}
             variant="ghost"
