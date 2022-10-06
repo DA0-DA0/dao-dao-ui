@@ -109,6 +109,13 @@ export interface DaoActionHit {
   navigatesOnSelect?: boolean
 }
 
+export interface HitSectionData {
+  // End index of each section, exclusive. For example, if the first section has
+  // 3 items in it, sectionEndIndexes[0] === 3.
+  sectionEndIndexes: number[]
+  sectionNames: string[]
+}
+
 const APP_ACTIONS: ActionHit[] = [
   {
     icon: '➕',
@@ -226,7 +233,7 @@ export const CommandModal = ({ onClose }: CommandModalProps) => {
     queryResults.previousData?.daos,
   ])
 
-  const sectionData = useMemo(() => {
+  const sectionData: HitSectionData = useMemo(() => {
     // Sort sections by order of first appearance of hits
     // ordered list of hit types
     const hitTypes = hits.reduce(
@@ -239,7 +246,7 @@ export const CommandModal = ({ onClose }: CommandModalProps) => {
       (a, b) => hitTypes.indexOf(a.hitType) - hitTypes.indexOf(b.hitType)
     )
     // Section index array based on contiguous elements, end exclusive
-    const sections = [
+    const sectionEndIndexes = [
       ...sortedHits.reduce((arr, hit, i) => {
         return i !== 0 && hit.hitType !== sortedHits[i - 1].hitType
           ? [...arr, i]
@@ -259,7 +266,7 @@ export const CommandModal = ({ onClose }: CommandModalProps) => {
     )
 
     return {
-      sections,
+      sectionEndIndexes,
       sectionNames,
     }
   }, [hits])

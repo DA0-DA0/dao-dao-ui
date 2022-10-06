@@ -5,13 +5,14 @@ import clsx from 'clsx'
 import { Fragment, forwardRef, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Loader, Logo } from '@dao-dao/ui'
+import { Loader } from '@dao-dao/ui'
 
 import { DaoHit, Hit, HitType } from './CommandModal'
 
 interface HitSectionData {
-  // end index of each section, exclusive
-  sections: number[]
+  // End index of each section, exclusive. For example, if the first section has
+  // 3 items in it, sectionEndIndexes[0] === 3.
+  sectionEndIndexes: number[]
   sectionNames: string[]
 }
 
@@ -22,19 +23,19 @@ export interface CommandHitsProps {
   navigatingFromHit: Hit | undefined
 }
 
-// Need to use `any` here as instantsearch does't export the required
-// types.
 export const CommandHits = ({
   sectionData,
   hits,
   onChoice,
   navigatingFromHit,
 }: CommandHitsProps) => {
-  const { sections, sectionNames } = sectionData
+  const { sectionEndIndexes, sectionNames } = sectionData
   const [selection, setSelection] = useState(0)
 
+  // Reset selection to first row if data changes.
   useEffect(() => setSelection(0), [hits, sectionData])
 
+  // Navigate on keypress.
   const handleKeyPress = useCallback(
     (event) => {
       // Do nothing if no hits.
@@ -60,12 +61,10 @@ export const CommandHits = ({
     },
     [onChoice, hits, selection]
   )
-
+  // Add keypress listener.
   useEffect(() => {
-    // attach the event listener
     document.addEventListener('keydown', handleKeyPress)
-
-    // remove the event listener
+    // Clean up
     return () => {
       document.removeEventListener('keydown', handleKeyPress)
     }
@@ -91,8 +90,8 @@ export const CommandHits = ({
   }, [])
 
   return (
-    <div className="flex overflow-y-auto flex-col grow p-3 pt-4 no-scrollbar">
-      {/* If hit we're currently navigating to is no longer part of the hits to render, just display the top with the loader. */}
+    <div className="flex overflow-y-auto flex-col grow gap-1 p-3 pt-4 no-scrollbar">
+      {/* If hit we're currently navigating to is no longer part of the hits to render, just display at the top with a loader. */}
       {navigatingFromHit && !hits.includes(navigatingFromHit) && (
         <HitView
           hit={navigatingFromHit}
@@ -102,31 +101,36 @@ export const CommandHits = ({
         />
       )}
 
-      {sections.map((sectionIndex, i) => (
-        <Fragment key={`${sectionIndex}_${i}`}>
-          <div className="py-1 font-medium text-gray-400">
-            {sectionNames[i]}
-          </div>
-          {(i === 0
-            ? hits.slice(0, sectionIndex)
-            : hits.slice(sections[i - 1], sectionIndex)
-          ).map((hit: DaoHit, index: number) => {
-            const selected =
-              (i === 0 ? index : sections[i - 1] + index) === selection
-            return (
-              <HitView
-                key={hit.id}
-                hit={hit}
-                loading={navigatingFromHit === hit}
-                onClick={() => onChoice(hit)}
-                ref={selected ? onSelectedHitRef : undefined}
-                // Scroll into view when selected.
-                selected={selected}
-              />
-            )
-          })}
-        </Fragment>
-      ))}
+      {sectionEndIndexes.map((sectionEndIndex, sectionIndex) => {
+        // Section starts at end index of last section, or 0 if this is first.
+        const sectionStartIndex =
+          sectionIndex === 0 ? 0 : sectionEndIndexes[sectionIndex - 1]
+
+        return (
+          <Fragment key={sectionIndex}>
+            <div className="py-1 pl-3 text-text-tertiary link-text">
+              {sectionNames[sectionIndex]}
+            </div>
+
+            {hits
+              .slice(sectionStartIndex, sectionEndIndex)
+              .map((hit: DaoHit, hitIndex: number) => {
+                const selected = sectionStartIndex + hitIndex === selection
+                return (
+                  <HitView
+                    key={hit.id}
+                    hit={hit}
+                    loading={navigatingFromHit === hit}
+                    onClick={() => onChoice(hit)}
+                    ref={selected ? onSelectedHitRef : undefined}
+                    // Scroll into view when selected.
+                    selected={selected}
+                  />
+                )
+              })}
+          </Fragment>
+        )
+      })}
     </div>
   )
 }
@@ -143,37 +147,35 @@ const HitView = forwardRef<HTMLDivElement, HitViewProps>(function HitView(
   ref
 ) {
   const { t } = useTranslation()
+
   return (
     <div
       className={clsx(
-        'flex flex-row gap-2 items-center py-2 px-1 font-medium text-tertiary hover:text-primary align-middle hover:bg-primary rounded-md cursor-pointer',
-        selected && 'text-primary bg-primary'
+        'group flex flex-row gap-2 items-center p-3 bg-transparent hover:bg-background-interactive-hover rounded-md transition cursor-pointer',
+        selected && 'bg-background-interactive-hover'
       )}
       onClick={onClick}
       ref={ref}
     >
       {hit.hitType === HitType.Dao ? (
-        hit.imageUrl ? (
-          <div
-            aria-label={t('info.daosLogo')}
-            className="w-[24px] h-[24px] bg-center bg-cover rounded-full"
-            role="img"
-            style={{
-              backgroundImage: `url(${hit.imageUrl})`,
-            }}
-          ></div>
-        ) : (
-          <Logo size={24} />
-        )
+        <div
+          aria-label={t('info.daosLogo')}
+          className="w-[24px] h-[24px] bg-center bg-cover rounded-full"
+          role="img"
+          style={{
+            backgroundImage: `url(${hit.imageUrl})`,
+          }}
+        ></div>
       ) : (
         <div className="flex justify-center items-center w-[24px] h-[24px] text-lg">
           {hit.icon}
         </div>
       )}
-      <div>{hit.name}</div>
+
+      <p className="font-medium body-text">{hit.name}</p>
 
       {loading && (
-        <div className="flex flex-row grow justify-end items-center pr-2">
+        <div className="flex flex-row grow justify-end items-center">
           <Loader fill={false} size={20} />
         </div>
       )}
