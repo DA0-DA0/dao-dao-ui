@@ -8,11 +8,19 @@ export interface SearchBarProps
   containerClassName?: string
   hideIcon?: boolean
   variant?: 'sm' | 'lg'
+  ghost?: boolean
 }
 
 export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
   function SearchBar(
-    { containerClassName, className, hideIcon, variant = 'lg', ...props },
+    {
+      containerClassName,
+      className,
+      hideIcon,
+      variant = 'lg',
+      ghost,
+      ...props
+    },
     ref
   ) {
     const { t } = useTranslation()
@@ -20,9 +28,12 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
     return (
       <div
         className={clsx(
-          'group flex flex-row gap-1.5 items-center text-tertiary rounded-md ring-1 focus-within:ring-2 ring-border-primary focus-within:ring-border-interactive-focus transition',
+          'group flex flex-row gap-1.5 items-center rounded-md',
+          // Border.
+          !ghost &&
+            'ring-1 focus-within:ring-2 ring-border-primary focus-within:ring-border-interactive-focus transition',
           // Sizing.
-          {
+          !ghost && {
             'p-1.5': variant === 'sm',
             'p-2': variant === 'lg',
           },

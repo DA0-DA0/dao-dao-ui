@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { ComponentType } from 'react'
 
 export interface IconButtonifierProps {
-  variant: 'primary' | 'secondary' | 'ghost'
+  variant: 'primary' | 'secondary' | 'ghost' | 'none'
   size?: 'default' | 'xl' | 'lg' | 'sm' | 'xs'
   circular?: boolean
   Icon: ComponentType<{ className: string }>
@@ -34,7 +34,7 @@ export const getIconButtonifiedClassNames = ({
   className,
 }: Omit<IconButtonifierProps, 'icon'>) =>
   clsx(
-    'flex justify-center items-center focus:outline-2 focus:outline-border-interactive-focus focus:outline transition-all',
+    'flex justify-center items-center focus:outline-2 focus:outline-border-interactive-focus focus:outline transition-all shrink-0',
 
     focused && 'outline-2 outline-border-interactive-focus outline',
 
@@ -70,6 +70,15 @@ export const getIconButtonifiedClassNames = ({
     variant === 'ghost' && {
       // Default
       'text-icon-secondary bg-transparent hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
+        !disabled,
+      // Disabled
+      'text-icon-interactive-disabled': disabled,
+    },
+    // None variant
+    variant === 'none' && {
+      'p-0': true,
+      // Default
+      'text-icon-primary bg-transparent hover:opacity-80 active:opacity-70 transition-opacity':
         !disabled,
       // Disabled
       'text-icon-interactive-disabled': disabled,

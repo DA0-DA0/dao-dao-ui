@@ -7,61 +7,19 @@ import { useTranslation } from 'react-i18next'
 
 import { Loader, Logo } from '@dao-dao/ui'
 
-import { DaoHit, Hit, HitType } from '.'
+import { DaoHit, Hit, HitType } from './CommandModal'
 
-const HitView = ({
-  hit,
-  selected,
-  onClick,
-  loading,
-}: {
-  hit: Hit
-  selected: boolean
-  onClick: () => void
-  loading: boolean
-}) => {
-  const { t } = useTranslation()
-  return (
-    <div
-      className={clsx(
-        'flex flex-row gap-2 items-center py-2 px-1 font-medium text-tertiary hover:text-primary align-middle hover:bg-primary rounded-md cursor-pointer',
-        selected && 'text-primary bg-primary'
-      )}
-      onClick={onClick}
-    >
-      {hit.hitType === HitType.Dao ? (
-        hit.imageUrl ? (
-          <div
-            aria-label={t('info.daosLogo')}
-            className="w-[24px] h-[24px] bg-center bg-cover rounded-full"
-            role="img"
-            style={{
-              backgroundImage: `url(${hit.imageUrl})`,
-            }}
-          ></div>
-        ) : (
-          <Logo size={24} />
-        )
-      ) : (
-        <div className="flex justify-center items-center w-[24px] h-[24px] text-lg">
-          {hit.icon}
-        </div>
-      )}
-      <div>{hit.name}</div>
-
-      {loading && (
-        <div className="flex flex-row grow justify-end items-center pr-2">
-          <Loader fill={false} size={20} />
-        </div>
-      )}
-    </div>
-  )
-}
-
-type HitSectionData = {
+interface HitSectionData {
   // end index of each section, exclusive
   sections: number[]
   sectionNames: string[]
+}
+
+export interface CommandHitsProps {
+  sectionData: HitSectionData
+  hits: Hit[]
+  onChoice: (hit: Hit) => void
+  navigatingFromHit: Hit | undefined
 }
 
 // Need to use `any` here as instantsearch does't export the required
@@ -71,12 +29,7 @@ export const CommandHits = ({
   hits,
   onChoice,
   navigatingFromHit,
-}: {
-  sectionData: HitSectionData
-  hits: Hit[]
-  onChoice: (hit: Hit) => void
-  navigatingFromHit: Hit | undefined
-}) => {
+}: CommandHitsProps) => {
   const { sections, sectionNames } = sectionData
   const [selection, setSelection] = useState(0)
   const listRef = useRef<HTMLDivElement>(null)
@@ -141,7 +94,7 @@ export const CommandHits = ({
 
   return (
     <div
-      className="flex overflow-hidden overflow-y-auto flex-col grow justify-start py-2 px-4"
+      className="flex overflow-y-auto flex-col grow p-3 pt-4 no-scrollbar"
       ref={listRef}
     >
       {/* If hit we're currently navigating to is no longer part of the hits to render, just display the top with the loader. */}
@@ -175,6 +128,55 @@ export const CommandHits = ({
           ))}
         </Fragment>
       ))}
+    </div>
+  )
+}
+
+const HitView = ({
+  hit,
+  selected,
+  onClick,
+  loading,
+}: {
+  hit: Hit
+  selected: boolean
+  onClick: () => void
+  loading: boolean
+}) => {
+  const { t } = useTranslation()
+  return (
+    <div
+      className={clsx(
+        'flex flex-row gap-2 items-center py-2 px-1 font-medium text-tertiary hover:text-primary align-middle hover:bg-primary rounded-md cursor-pointer',
+        selected && 'text-primary bg-primary'
+      )}
+      onClick={onClick}
+    >
+      {hit.hitType === HitType.Dao ? (
+        hit.imageUrl ? (
+          <div
+            aria-label={t('info.daosLogo')}
+            className="w-[24px] h-[24px] bg-center bg-cover rounded-full"
+            role="img"
+            style={{
+              backgroundImage: `url(${hit.imageUrl})`,
+            }}
+          ></div>
+        ) : (
+          <Logo size={24} />
+        )
+      ) : (
+        <div className="flex justify-center items-center w-[24px] h-[24px] text-lg">
+          {hit.icon}
+        </div>
+      )}
+      <div>{hit.name}</div>
+
+      {loading && (
+        <div className="flex flex-row grow justify-end items-center pr-2">
+          <Loader fill={false} size={20} />
+        </div>
+      )}
     </div>
   )
 }

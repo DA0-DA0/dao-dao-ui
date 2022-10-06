@@ -18,6 +18,7 @@ export interface ModalProps {
   }
   headerContent?: ReactNode
   footerContent?: ReactNode
+  headerContainerClassName?: string
 }
 
 export const Modal = ({
@@ -29,6 +30,7 @@ export const Modal = ({
   header,
   headerContent,
   footerContent,
+  headerContainerClassName,
 }: ModalProps) => {
   // Close modal on escape.
   useEffect(() => {
@@ -70,7 +72,15 @@ export const Modal = ({
         )}
 
         {(header || headerContent) && (
-          <div className="flex flex-col shrink-0 gap-1 py-5 px-6 pt-0 -mx-6 mb-6 border-b border-border-base">
+          <div
+            className={clsx(
+              // Undo container padding with negative margin, and then re-add
+              // the padding internally, so that the bottom border spans the
+              // whole width.
+              'flex flex-col shrink-0 gap-1 px-6 pb-6 -mx-6 mb-6 border-b border-border-base',
+              headerContainerClassName
+            )}
+          >
             {header && (
               <>
                 <p className="header-text">{header.title}</p>
