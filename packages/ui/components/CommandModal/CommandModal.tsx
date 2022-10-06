@@ -58,7 +58,7 @@ export const CommandModal = ({
       ]
       // Map section names
       const sectionNames = hitTypes.map((type) =>
-        t(`commandBar.sectionName.${type}`)
+        t(`commandModal.sectionName.${type}`)
       )
 
       return {
@@ -89,7 +89,7 @@ export const CommandModal = ({
         <div className="flex flex-row gap-4 items-stretch h-8">
           {commandState.type === CommandStateType.NavigateDao ? (
             <ContextPill
-              name={t('commandBar.navigateDao')}
+              name={t('commandModal.navigateDao')}
               onClose={onEmptyBack}
             />
           ) : commandState.type === CommandStateType.DaoChosen ? (
@@ -114,7 +114,7 @@ export const CommandModal = ({
                 return onEmptyBack()
               }
             }}
-            placeholder={t('commandBar.prompt')}
+            placeholder={t('commandModal.prompt')}
             value={filter}
           />
         </div>

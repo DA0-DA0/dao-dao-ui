@@ -90,7 +90,7 @@
     "withDecodedModuleMessages": "with Decoded Module Messages",
     "yes": "Yes"
   },
-  "commandBar": {
+  "commandModal": {
     "home": "Home",
     "navigateDao": "Navigate to DAO",
     "prompt": "What are you looking for?",
