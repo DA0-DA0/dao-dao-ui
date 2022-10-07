@@ -70,6 +70,8 @@ export interface DaoCardInfoLazyData {
 
 export interface DaoCardInfo extends DaoDisplayInfo {
   lazyData: LoadingData<DaoCardInfoLazyData>
+  className?: string
+  showIsMember?: boolean
 }
 
 export enum UnstakingTaskStatus {

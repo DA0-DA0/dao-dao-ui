@@ -6,11 +6,16 @@ import type { GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { waitForAll } from 'recoil'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'
-import { usePinnedDaos } from '@dao-dao/state'
+import {
+  daoCardInfoSelector,
+  getFeaturedDaoAddresses,
+  useCachedLoadable,
+} from '@dao-dao/state'
 import { DaoCardInfo } from '@dao-dao/tstypes/dao'
 import {
   Button,
@@ -20,23 +25,41 @@ import {
   PageLoader,
   RotatableLogo,
 } from '@dao-dao/ui'
-import { FEATURED_DAOS_CACHE_SECONDS } from '@dao-dao/utils'
+import {
+  FEATURED_DAOS_CACHE_SECONDS,
+  loadableToLoadingData,
+} from '@dao-dao/utils'
 
 import {
   AnouncementCard,
+  DaoCard,
   EnterAppButton,
   HomepageCards,
   StatsCard,
 } from '@/components'
-import { getFeaturedDaos } from '@/server'
 
 interface HomePageProps {
-  featuredDaos: DaoCardInfo[]
+  featuredDaoAddresses: string[]
 }
 
-const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
+const Home: NextPage<HomePageProps> = ({ featuredDaoAddresses }) => {
   const { t } = useTranslation()
-  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
+
+  const featuredDaosLoadable = useCachedLoadable(
+    waitForAll(
+      featuredDaoAddresses.map((coreAddress) =>
+        daoCardInfoSelector({ coreAddress, daoUrlPrefix: '/dao/' })
+      )
+    )
+  )
+  const featuredDaosLoading = loadableToLoadingData(featuredDaosLoadable, [])
+
+  //! Loadable errors.
+  useEffect(() => {
+    if (featuredDaosLoadable.state === 'hasError') {
+      console.error(featuredDaosLoadable.contents)
+    }
+  }, [featuredDaosLoadable.contents, featuredDaosLoadable.state])
 
   const [tvl, setTVL] = useState<number>()
   const [daos, setDaos] = useState<number>()
@@ -101,12 +124,16 @@ const Home: NextPage<HomePageProps> = ({ featuredDaos }) => {
         </div>
 
         <FeaturedDaos
-          featuredDaos={featuredDaos}
-          isDaoPinned={isPinned}
-          onPin={(coreAddress) =>
-            isPinned(coreAddress)
-              ? setUnpinned(coreAddress)
-              : setPinned(coreAddress)
+          DaoCard={DaoCard}
+          featuredDaos={
+            featuredDaosLoading.loading
+              ? featuredDaosLoading
+              : {
+                  ...featuredDaosLoading,
+                  data: featuredDaosLoading.data.filter(
+                    Boolean
+                  ) as DaoCardInfo[],
+                }
           }
         />
 
@@ -199,7 +226,7 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
 }) => ({
   props: {
     ...(await serverSideTranslations(locale, ['translation'])),
-    featuredDaos: await getFeaturedDaos(),
+    featuredDaoAddresses: await getFeaturedDaoAddresses(),
     revalidate: FEATURED_DAOS_CACHE_SECONDS,
   },
 })

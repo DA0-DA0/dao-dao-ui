@@ -21,11 +21,11 @@ export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
   },
 })
 
-export const pinnedDaoCardInfoSelector = selectorFamily<
+export const pinnedDaoCardInfosSelector = selectorFamily<
   DaoCardInfo[],
   { daoUrlPrefix: string }
 >({
-  key: 'pinnedDaoCardInfo',
+  key: 'pinnedDaoCardInfos',
   get:
     ({ daoUrlPrefix }) =>
     ({ get }) => {

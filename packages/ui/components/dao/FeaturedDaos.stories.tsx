@@ -35,12 +35,11 @@ const makeFeaturedDao = (): DaoCardInfo => ({
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
   imageUrl: `/placeholders/${(id % 5) + 1}.svg`,
-  href: '/',
   established: new Date('May 14, 2022 00:00:00'),
 
   parentDao: {
     coreAddress: 'parent',
-    href: '/home',
+    name: 'parent',
     imageUrl: `/placeholders/${((id + 1) % 5) + 1}.svg`,
   },
 
@@ -59,24 +58,34 @@ export const Default = Template.bind({})
 // Clone object to prevent comparison issues in pages with sorting (like
 // `HomeConnected`).
 Default.args = {
-  featuredDaos: [
-    makeFeaturedDao(),
-    {
-      ...makeFeaturedDao(),
-      name: 'DAO DAO',
-      established: new Date('August 11, 2022 16:20:00'),
-    },
-    makeFeaturedDao(),
-    {
-      ...makeFeaturedDao(),
-      established: new Date(),
-    },
-    {
-      ...makeFeaturedDao(),
-      name: 'A different DAO',
-    },
-    makeFeaturedDao(),
-    makeFeaturedDao(),
-    makeFeaturedDao(),
-  ],
+  featuredDaos: {
+    loading: false,
+    data: [
+      makeFeaturedDao(),
+      {
+        ...makeFeaturedDao(),
+        name: 'DAO DAO',
+        established: new Date('August 11, 2022 16:20:00'),
+      },
+      makeFeaturedDao(),
+      {
+        ...makeFeaturedDao(),
+        established: new Date(),
+      },
+      {
+        ...makeFeaturedDao(),
+        name: 'A different DAO',
+      },
+      makeFeaturedDao(),
+      makeFeaturedDao(),
+      makeFeaturedDao(),
+    ],
+  },
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  featuredDaos: {
+    loading: true,
+  },
 }

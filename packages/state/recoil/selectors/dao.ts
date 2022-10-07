@@ -1,6 +1,7 @@
 import {
   RecoilValueReadOnly,
   constSelector,
+  selector,
   selectorFamily,
   waitForAll,
 } from 'recoil'
@@ -34,6 +35,7 @@ import {
   DumpStateResponse as CwCoreV0_2_0DumpStateResponse,
 } from '../../clients/cw-core/0.2.0'
 import { ContractInfoResponse, NftInfoResponse } from '../../clients/cw721-base'
+import { getFeaturedDaoAddresses } from '../../utils/getFeaturedDaoAddresses'
 import {
   nativeBalancesSelector,
   nativeStakingInfoSelector,
@@ -51,6 +53,20 @@ import {
 } from './contract'
 import { daoTvlSelector, usdcPerMacroTokenSelector } from './price'
 import { cwCoreProposalModulesSelector } from './proposal'
+
+export const featuredDaoCardInfosSelector = selector({
+  key: 'featuredDaoCardInfos',
+  get: async ({ get }) => {
+    const featuredAddresses = await getFeaturedDaoAddresses()
+    return get(
+      waitForAll(
+        featuredAddresses.map((coreAddress) =>
+          daoCardInfoSelector({ coreAddress, daoUrlPrefix: '/dao/' })
+        )
+      )
+    ).filter(Boolean) as DaoCardInfo[]
+  },
+})
 
 export const daoDropdownInfoSelector: (
   coreAddress: string

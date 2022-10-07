@@ -9,6 +9,7 @@
     "@dao-dao/state": "*",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
+    "@mui/icons-material": "^5.10.3",
     "clsx": "^1.1.1",
     "fuse.js": "^6.6.2",
     "react": "18.1.0",

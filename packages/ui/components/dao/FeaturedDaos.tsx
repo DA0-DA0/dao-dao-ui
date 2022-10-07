@@ -2,6 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import {
+  ComponentType,
   UIEventHandler,
   createRef,
   useCallback,
@@ -9,22 +10,17 @@ import {
   useState,
 } from 'react'
 
-import { DaoCardInfo } from '@dao-dao/tstypes'
+import { DaoCardInfo, LoadingData } from '@dao-dao/tstypes'
 import { useIsVisible } from '@dao-dao/utils'
 
-import { DaoCard } from './DaoCard'
+import { Loader } from '../Loader'
 
 export interface FeaturedDaosProps {
-  featuredDaos: DaoCardInfo[]
-  isDaoPinned: (coreAddress: string) => boolean
-  onPin: (coreAddress: string) => void
+  DaoCard: ComponentType<DaoCardInfo>
+  featuredDaos: LoadingData<DaoCardInfo[]>
 }
 
-export const FeaturedDaos = ({
-  featuredDaos,
-  isDaoPinned,
-  onPin,
-}: FeaturedDaosProps) => {
+export const FeaturedDaos = ({ DaoCard, featuredDaos }: FeaturedDaosProps) => {
   const [clonesWidth, setClonesWidth] = useState(0)
   const [autoscroll, setAutoscroll] = useState(true)
 
@@ -96,28 +92,28 @@ export const FeaturedDaos = ({
       onScroll={handleScroll}
       ref={scrollRef}
     >
-      <div className="flex flex-row gap-4 py-[2px] w-max">
-        {featuredDaos.map((props) => (
-          <DaoCard
-            key={props.coreAddress}
-            className="!w-[260px]"
-            onPin={() => onPin(props.coreAddress)}
-            pinned={isDaoPinned(props.coreAddress)}
-            showIsMember={false}
-            {...props}
-          />
-        ))}
-        {featuredDaos.map((props) => (
-          <DaoCard
-            key={props.coreAddress}
-            className="!w-[260px] is-clone"
-            onPin={() => onPin(props.coreAddress)}
-            pinned={isDaoPinned(props.coreAddress)}
-            showIsMember={false}
-            {...props}
-          />
-        ))}
-      </div>
+      {featuredDaos.loading ? (
+        <Loader />
+      ) : (
+        <div className="flex flex-row gap-4 py-[2px] w-max">
+          {featuredDaos.data.map((props) => (
+            <DaoCard
+              key={props.coreAddress}
+              className="!w-[260px]"
+              showIsMember={false}
+              {...props}
+            />
+          ))}
+          {featuredDaos.data.map((props) => (
+            <DaoCard
+              key={props.coreAddress}
+              className="!w-[260px] is-clone"
+              showIsMember={false}
+              {...props}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

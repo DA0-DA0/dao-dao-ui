@@ -1,10 +1,12 @@
 import { gql, useQuery } from '@apollo/client'
 
 const SEARCH_DAOS = gql`
-  query SearchDaos($query: String = "") @api(name: daos) {
+  query SearchDaos($query: String = "", $limit: Int!, $exclude: [String!] = [])
+  @api(name: daos) {
     daos(
-      first: 7
+      first: $limit
       filter: {
+        id: { notIn: $exclude }
         or: [
           { name: { includesInsensitive: $query } }
           { description: { includesInsensitive: $query } }
@@ -32,11 +34,11 @@ interface SearchDaos {
 
 interface SearchDaosOperationVariables {
   query: string
+  limit: number
+  exclude?: string[]
 }
 
-export const useSearchDaos = ({ query }: SearchDaosOperationVariables) =>
+export const useSearchDaos = (variables: SearchDaosOperationVariables) =>
   useQuery<SearchDaos, SearchDaosOperationVariables>(SEARCH_DAOS, {
-    variables: {
-      query,
-    },
+    variables,
   })

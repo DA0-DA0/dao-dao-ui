@@ -6,7 +6,10 @@ import clsx from 'clsx'
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { CommandModalContextSection } from '@dao-dao/tstypes/command'
+import {
+  CommandModalContextSection,
+  CommandModalContextSectionItem,
+} from '@dao-dao/tstypes/command'
 
 import { NoContent } from '../NoContent'
 import { ItemRow } from './ItemRow'
@@ -16,6 +19,11 @@ export interface CommandModalContextViewProps {
   loading: boolean
 }
 
+interface ItemWithSection {
+  item: CommandModalContextSectionItem
+  section: CommandModalContextSection
+}
+
 export const CommandModalContextView = ({
   sections,
   loading,
@@ -23,7 +31,7 @@ export const CommandModalContextView = ({
   const { t } = useTranslation()
 
   // Flatten sections so we can access both section and item at the same level.
-  const itemsWithSection = sections.flatMap((section) =>
+  const itemsWithSection: ItemWithSection[] = sections.flatMap((section) =>
     section.items.map((item) => ({
       item,
       section,
@@ -31,7 +39,8 @@ export const CommandModalContextView = ({
   )
 
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const selectedItemWithSection = itemsWithSection[selectedIndex]
+  const selectedItemWithSection: ItemWithSection | undefined =
+    itemsWithSection[selectedIndex]
 
   // Reset selection to first row if data changes.
   useEffect(() => setSelectedIndex(0), [sections])
@@ -139,7 +148,8 @@ export const CommandModalContextView = ({
             <p className="py-1 pl-3 h-7 text-text-tertiary link-text">{name}</p>
 
             {items.map((item, itemIndex) => {
-              const selected = !loading && selectedItemWithSection.item === item
+              const selected =
+                !loading && selectedItemWithSection?.item === item
 
               return (
                 <ItemRow
