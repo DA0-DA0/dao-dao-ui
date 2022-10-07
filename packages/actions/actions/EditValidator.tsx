@@ -13,7 +13,7 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
 
 interface EditValidatorData {
   type_url: string

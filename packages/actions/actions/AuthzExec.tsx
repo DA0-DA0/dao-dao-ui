@@ -14,7 +14,7 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
 
 interface AuthzExecData {
   type_url: string
