@@ -319,6 +319,7 @@ export const NewProposal = ({
                   />
                 ) : undefined
               }
+              createdAt={new Date()}
               creator={{
                 address: walletAddress,
                 name: walletProfile.loading
