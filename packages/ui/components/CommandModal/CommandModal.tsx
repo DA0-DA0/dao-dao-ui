@@ -34,7 +34,7 @@ export const CommandModal = ({
     <Modal
       backdropClassName={clsx(
         'transition-opacity duration-[120ms]',
-        visible ? 'opacity-100' : 'opacity-0'
+        visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
       containerClassName={clsx(
         'p-0 w-full max-w-[550px] h-[450px] max-h-[90vh] border transition-transform duration-[120ms]',
