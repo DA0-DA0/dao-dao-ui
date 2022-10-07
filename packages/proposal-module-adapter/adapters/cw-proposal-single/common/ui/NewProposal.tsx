@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import { Airplane } from '@dao-dao/icons'
+import { useWalletProfile } from '@dao-dao/state'
 import {
   Action,
   ActionKey,
@@ -23,14 +24,16 @@ import {
   ActionCardLoader,
   ActionSelector,
   Button,
+  CosmosMessageDisplay,
   FilterableItemPopup,
   IconButton,
   InputErrorMessage,
+  ProposalContentDisplay,
   TextAreaInput,
   TextInput,
   Tooltip,
 } from '@dao-dao/ui'
-import { validateRequired } from '@dao-dao/utils'
+import { decodedMessagesString, validateRequired } from '@dao-dao/utils'
 
 import {
   BaseNewProposalProps,
@@ -74,7 +77,6 @@ export interface NewProposalProps
   >
 }
 
-// TODO: Figure out where to put preview logic.
 export const NewProposal = ({
   options: { coreAddress, Loader, Logo },
   createProposal,
@@ -108,6 +110,10 @@ export const NewProposal = ({
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
 
+  const { walletAddress = '', walletProfile } = useWalletProfile()
+
+  const proposalDescription = watch('description')
+  const proposalTitle = watch('title')
   const proposalActionData = watch('actionData')
 
   const { append, remove } = useFieldArray({
@@ -226,76 +232,105 @@ export const NewProposal = ({
         </div>
       )}
 
-      <div className="mb-6">
-        <ActionSelector
-          actions={actions}
-          onSelectAction={({ key }) => {
-            append({
-              key,
-              data: actionsWithData[key]?.defaults ?? {},
-            })
-          }}
-        />
-      </div>
+      <ActionSelector
+        actions={actions}
+        onSelectAction={({ key }) => {
+          append({
+            key,
+            data: actionsWithData[key]?.defaults ?? {},
+          })
+        }}
+      />
 
-      <div className="flex flex-row gap-6 justify-between items-center py-6 border-y border-border-secondary">
-        <p className="text-text-body title-text">
-          {t('info.reviewYourProposal')}
-        </p>
+      <div className="flex flex-col gap-2 py-6 mt-6 border-y border-border-secondary">
+        <div className="flex flex-row gap-6 justify-between items-center">
+          <p className="text-text-body title-text">
+            {t('info.reviewYourProposal')}
+          </p>
 
-        <div className="flex flex-row gap-2 justify-end items-center">
-          <Button
-            disabled={loading}
-            type="submit"
-            value={ProposeSubmitValue.Preview}
-            variant="secondary"
-          >
-            {showPreview ? (
-              <>
-                {t('button.hidePreview')}
-                <EyeOffIcon className="w-5 h-5" />
-              </>
-            ) : (
-              <>
-                {t('button.preview')}
-                <EyeIcon className="w-5 h-5" />
-              </>
-            )}
-          </Button>
-
-          <Tooltip
-            title={
-              !connected
-                ? t('error.connectWalletToContinue')
-                : !isMember
-                ? t('error.mustBeMemberToCreateProposal')
-                : depositUnsatisfied
-                ? t('error.notEnoughForDeposit')
-                : isPaused
-                ? t('error.daoIsPaused')
-                : undefined
-            }
-          >
+          <div className="flex flex-row gap-2 justify-end items-center">
             <Button
-              disabled={
-                !connected || !isMember || depositUnsatisfied || isPaused
-              }
-              loading={loading}
+              disabled={loading}
               type="submit"
-              value={ProposeSubmitValue.Submit}
+              value={ProposeSubmitValue.Preview}
+              variant="secondary"
             >
-              <p>{t('button.publish')}</p>
-              <Airplane className="w-4 h-4" />
+              {showPreview ? (
+                <>
+                  {t('button.hidePreview')}
+                  <EyeOffIcon className="w-5 h-5" />
+                </>
+              ) : (
+                <>
+                  {t('button.preview')}
+                  <EyeIcon className="w-5 h-5" />
+                </>
+              )}
             </Button>
-          </Tooltip>
-        </div>
-      </div>
 
-      {showSubmitErrorNote && (
-        <p className="mt-2 text-right text-text-interactive-error secondary-text">
-          {t('error.createProposalSubmitInvalid')}
-        </p>
-      )}
+            <Tooltip
+              title={
+                !connected
+                  ? t('error.connectWalletToContinue')
+                  : !isMember
+                  ? t('error.mustBeMemberToCreateProposal')
+                  : depositUnsatisfied
+                  ? t('error.notEnoughForDeposit')
+                  : isPaused
+                  ? t('error.daoIsPaused')
+                  : undefined
+              }
+            >
+              <Button
+                disabled={
+                  !connected || !isMember || depositUnsatisfied || isPaused
+                }
+                loading={loading}
+                type="submit"
+                value={ProposeSubmitValue.Submit}
+              >
+                <p>{t('button.publish')}</p>
+                <Airplane className="w-4 h-4" />
+              </Button>
+            </Tooltip>
+          </div>
+        </div>
+
+        {showSubmitErrorNote && (
+          <p className="text-right text-text-interactive-error secondary-text">
+            {t('error.createProposalSubmitInvalid')}
+          </p>
+        )}
+
+        {showPreview && (
+          <div className="p-6 mt-4 rounded-md border border-border-secondary">
+            <ProposalContentDisplay
+              actionDisplay={
+                proposalActionData.length ? (
+                  <CosmosMessageDisplay
+                    value={decodedMessagesString(
+                      proposalActionData
+                        .map(({ key, data }) =>
+                          actionsWithData[key]?.transform(data)
+                        )
+                        // Filter out undefined messages.
+                        .filter(Boolean) as CosmosMsgFor_Empty[]
+                    )}
+                  />
+                ) : undefined
+              }
+              creator={{
+                address: walletAddress,
+                name: walletProfile.loading
+                  ? walletProfile
+                  : { loading: false, data: walletProfile.data.name },
+              }}
+              description={proposalDescription}
+              title={proposalTitle}
+            />
+          </div>
+        )}
+      </div>
 
       <div className="flex flex-row gap-2 justify-end items-center mt-4">
         {draft ? (
@@ -317,7 +352,7 @@ export const NewProposal = ({
               title={draftSaving ? undefined : t('info.draftStillSaved')}
             >
               <Button
-                className="caption-text -ml-1"
+                className="-ml-1 caption-text"
                 disabled={draftSaving}
                 onClick={unloadDraft}
                 variant="underline"

@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { ComponentType, Fragment, ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -8,13 +7,9 @@ import {
   DaoInfo,
   LoadingData,
 } from '@dao-dao/tstypes'
-import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
+import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
-import {
-  CopyToClipboardUnderline,
-  MarkdownPreview,
-  useAppLayoutContext,
-} from '../components'
+import { ProposalContentDisplay, useAppLayoutContext } from '../components'
 
 export interface ProposalProps {
   proposalInfo: CommonProposalInfo
@@ -85,38 +80,17 @@ export const Proposal = ({
 
         {/* Make entire pane scrollable, even space around and under status and info card on the side. */}
         <div className="overflow-y-auto absolute top-0 right-0 bottom-0 left-0 z-[1] pt-10 pb-6 h-full md:pl-[21rem] no-scrollbar">
-          <p className="mb-11 hero-text">{title}</p>
-
-          <div className="flex flex-row gap-1 items-center mb-4 font-mono caption-text">
-            <CopyToClipboardUnderline
-              className={clsx(
-                '!caption-text',
-                creator.name.loading && 'animate-pulse'
-              )}
-              // If name exists, use that. Otherwise, will fall back to
-              // truncated address display.
-              label={(!creator.name.loading && creator.name.data) || undefined}
-              tooltip={
-                // If displaying name, show tooltip to copy address.
-                !creator.name.loading && creator.name.data
-                  ? t('button.clickToCopyAddress')
-                  : undefined
+          <div className="mb-3">
+            <ProposalContentDisplay
+              actionDisplay={actionDisplay}
+              createdAt={
+                createdAtEpoch !== null ? new Date(createdAtEpoch) : undefined
               }
-              value={creator.address}
+              creator={creator}
+              description={description}
+              title={title}
             />
-
-            {!!createdAtEpoch && (
-              <>
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                <p> – </p>
-                <p>{formatDate(new Date(createdAtEpoch))}</p>
-              </>
-            )}
           </div>
-
-          <MarkdownPreview className="max-w-full" markdown={description} />
-
-          <div className="mt-9 mb-3">{actionDisplay}</div>
 
           <div className="md:hidden">
             <ProposalStatusAndInfo inline />
