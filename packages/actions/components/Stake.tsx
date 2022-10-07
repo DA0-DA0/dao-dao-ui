@@ -43,6 +43,10 @@ export const stakeActions: { type: StakeType; name: string }[] = [
     type: StakeType.WithdrawDelegatorReward,
     name: 'Claim Rewards',
   },
+  {
+    type: StakeType.WithdrawValidatorCommission,
+    name: 'Claim Validator Commission',
+  },
 ]
 
 interface StakeOptions {
@@ -172,50 +176,51 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
           ))}
         </SelectInput>
 
-        {stakeType !== StakeType.WithdrawDelegatorReward && (
-          <>
-            <NumberInput
-              containerClassName="grow"
-              disabled={!isCreating}
-              error={errors?.amount}
-              fieldName={fieldNamePrefix + 'amount'}
-              onMinus={() =>
-                setValue(
-                  fieldNamePrefix + 'amount',
-                  Math.max(amount - 1, 1 / 10 ** NATIVE_DECIMALS)
-                )
-              }
-              onPlus={() =>
-                setValue(
-                  fieldNamePrefix + 'amount',
-                  Math.max(amount + 1, 1 / 10 ** NATIVE_DECIMALS)
-                )
-              }
-              register={register}
-              step={1 / 10 ** NATIVE_DECIMALS}
-              validation={[validateRequired, validatePositive]}
-            />
+        {stakeType !== StakeType.WithdrawDelegatorReward ||
+          (stakeType !== StakeType.WithdrawValidatorCommission && (
+            <>
+              <NumberInput
+                containerClassName="grow"
+                disabled={!isCreating}
+                error={errors?.amount}
+                fieldName={fieldNamePrefix + 'amount'}
+                onMinus={() =>
+                  setValue(
+                    fieldNamePrefix + 'amount',
+                    Math.max(amount - 1, 1 / 10 ** NATIVE_DECIMALS)
+                  )
+                }
+                onPlus={() =>
+                  setValue(
+                    fieldNamePrefix + 'amount',
+                    Math.max(amount + 1, 1 / 10 ** NATIVE_DECIMALS)
+                  )
+                }
+                register={register}
+                step={1 / 10 ** NATIVE_DECIMALS}
+                validation={[validateRequired, validatePositive]}
+              />
 
-            <SelectInput
-              disabled={!isCreating}
-              error={errors?.denom}
-              fieldName={fieldNamePrefix + 'denom'}
-              register={register}
-            >
-              {nativeBalances.length !== 0 ? (
-                nativeBalances.map(({ denom }) => (
-                  <option key={denom} value={denom}>
-                    ${nativeTokenLabel(denom)}
+              <SelectInput
+                disabled={!isCreating}
+                error={errors?.denom}
+                fieldName={fieldNamePrefix + 'denom'}
+                register={register}
+              >
+                {nativeBalances.length !== 0 ? (
+                  nativeBalances.map(({ denom }) => (
+                    <option key={denom} value={denom}>
+                      ${nativeTokenLabel(denom)}
+                    </option>
+                  ))
+                ) : (
+                  <option key="native-filler" value={NATIVE_DENOM}>
+                    ${nativeTokenLabel(NATIVE_DENOM)}
                   </option>
-                ))
-              ) : (
-                <option key="native-filler" value={NATIVE_DENOM}>
-                  ${nativeTokenLabel(NATIVE_DENOM)}
-                </option>
-              )}
-            </SelectInput>
-          </>
-        )}
+                )}
+              </SelectInput>
+            </>
+          ))}
       </div>
 
       <InputErrorMessage error={errors?.denom} />

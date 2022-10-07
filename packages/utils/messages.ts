@@ -1,4 +1,16 @@
-import { toAscii, toBase64 } from '@cosmjs/encoding'
+import { fromBase64, toAscii, toBase64 } from '@cosmjs/encoding'
+import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
+import {
+  MsgExec,
+  MsgGrant,
+  MsgRevoke,
+} from 'cosmjs-types/cosmos/authz/v1beta1/tx'
+import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
+import { MsgWithdrawValidatorCommission } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
+import {
+  MsgCreateValidator,
+  MsgEditValidator,
+} from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
 import {
   BankMsg,
@@ -43,6 +55,14 @@ const BINARY_WASM_TYPES: { [key: string]: boolean } = {
   migrate: true,
 }
 
+// TODO refine types
+export function isStargateMsg(msg?: any): msg is any {
+  if (msg) {
+    return (msg as any).stargate !== undefined
+  }
+  return false
+}
+
 export function isWasmMsg(msg?: CosmosMsgFor_Empty): msg is { wasm: WasmMsg } {
   if (msg) {
     return (msg as any).wasm !== undefined
@@ -66,9 +86,12 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
   return false
 }
 
-export function decodeMessages(
-  msgs: ProposalResponse['msgs']
-): { [key: string]: any }[] {
+// Need to not use the old types package
+interface IHack extends Omit<ProposalResponse, 'msgs'> {
+  msgs: CosmosMsgFor_Empty[] | { stargate: { typeUrl: string; value?: any }[] }
+}
+
+export function decodeMessages(msgs: IHack['msgs']): { [key: string]: any }[] {
   const decodedMessageArray: any[] = []
   const proposalMsgs = Object.values(msgs)
   for (const msgObj of proposalMsgs) {
@@ -91,6 +114,57 @@ export function decodeMessages(
             })
           }
         }
+      }
+    } else if (isStargateMsg(msgObj)) {
+      let msg = {
+        stargate: {
+          type_url: msgObj.stargate.type_url as string,
+        },
+      } as {
+        stargate: { type_url: string; value?: any }
+      }
+
+      switch (msgObj.stargate.type_url) {
+        case '/cosmos.authz.v1beta1.MsgGrant':
+          msg.stargate.value = MsgGrant.decode(
+            fromBase64(msgObj.stargate.value)
+          )
+          if (msg.stargate.value.grant?.authorization) {
+            msg.stargate.value.grant.authorization.value =
+              GenericAuthorization.decode(
+                msg.stargate.value.grant.authorization.value
+              )
+          }
+          decodedMessageArray.push(msg)
+          break
+        case '/cosmos.authz.v1beta1.MsgRevoke':
+          msg.stargate.value = MsgRevoke.decode(
+            fromBase64(msgObj.stargate.value)
+          )
+          decodedMessageArray.push(msg)
+          break
+        case '/cosmos.authz.v1beta1.MsgExec':
+          msg.stargate.value = MsgExec.decode(fromBase64(msgObj.stargate.value))
+          decodedMessageArray.push(msg)
+          break
+        case '/cosmos.staking.v1beta1.MsgCreateValidator':
+          msg.stargate.value = MsgCreateValidator.decode(
+            fromBase64(msgObj.stargate.value)
+          )
+          decodedMessageArray.push(msg)
+          break
+        case '/cosmos.staking.v1beta1.MsgEditValidator':
+          msg.stargate.value = MsgEditValidator.decode(
+            fromBase64(msgObj.stargate.value)
+          )
+          decodedMessageArray.push(msg)
+          break
+        case '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission':
+          msg.stargate.value = MsgWithdrawValidatorCommission.decode(
+            fromBase64(msgObj.stargate.value)
+          )
+          decodedMessageArray.push(msg)
+          break
       }
     } else {
       decodedMessageArray.push(msgObj)
@@ -131,6 +205,88 @@ export const makeWasmMessage = (message: {
     )
   }
   // Messages such as update or clear admin pass through without modification.
+  return msg
+}
+
+export const makeStargateMessage = (message: {
+  stargate: { type_url: string; value: any }
+}): any => {
+  let msg = message
+  switch (message.stargate.type_url) {
+    case '/cosmos.authz.v1beta1.MsgExec':
+      msg.stargate.value = toBase64(
+        Uint8Array.from(
+          MsgExec.encode(
+            MsgExec.fromPartial({
+              grantee: message.stargate.value.grantee,
+              msgs: message.stargate.value.msgs,
+            })
+          ).finish()
+        )
+      )
+      break
+    case '/cosmos.authz.v1beta1.MsgGrant':
+      msg.stargate.value = toBase64(
+        Uint8Array.from(
+          MsgGrant.encode(
+            MsgGrant.fromPartial({
+              grantee: message.stargate.value.grantee,
+              granter: message.stargate.value.granter,
+              grant: {
+                authorization: {
+                  typeUrl: '/cosmos.authz.v1beta1.GenericAuthorization',
+                  value: Uint8Array.from(
+                    GenericAuthorization.encode(
+                      GenericAuthorization.fromPartial({
+                        msg: message.stargate.value.msgTypeUrl,
+                      })
+                    ).finish()
+                  ),
+                },
+              },
+            })
+          ).finish()
+        )
+      )
+      break
+    case '/cosmos.authz.v1beta1.MsgRevoke':
+      msg.stargate.value = toBase64(
+        Uint8Array.from(
+          MsgRevoke.encode(
+            MsgRevoke.fromPartial({
+              grantee: message.stargate.value.grantee,
+              granter: message.stargate.value.granter,
+              msgTypeUrl: message.stargate.value.msgTypeUrl,
+            })
+          ).finish()
+        )
+      )
+      break
+    case '/cosmos.staking.v1beta1.MsgCreateValidator':
+      let msgValue = msg.stargate.value
+      msg.stargate.value = toBase64(
+        MsgCreateValidator.encode({
+          ...msgValue,
+          pubkey: {
+            typeUrl: msgValue.pubkey.typeUrl,
+            value: PubKey.encode(
+              PubKey.fromJSON(msgValue.pubkey.value)
+            ).finish(),
+          },
+        }).finish()
+      )
+      break
+    case '/cosmos.staking.v1beta1.MsgEditValidator':
+      msg.stargate.value = toBase64(
+        MsgEditValidator.encode(
+          MsgEditValidator.fromPartial({
+            ...msg.stargate.value,
+          })
+        ).finish()
+      )
+      break
+  }
+
   return msg
 }
 
@@ -178,6 +334,7 @@ export enum StakeType {
   Undelegate = 'undelegate',
   Redelegate = 'redelegate',
   WithdrawDelegatorReward = 'withdraw_delegator_reward',
+  WithdrawValidatorCommission = 'withdraw_validator_commission',
 }
 
 export const makeStakingMessage = (
@@ -229,11 +386,31 @@ export const makeStakingMessage = (
 }
 
 export const makeDistributeMessage = (
+  type: `${StakeType}`,
   validator: string
-): CosmosMsgFor_Empty => ({
-  distribution: {
-    withdraw_delegator_reward: {
-      validator,
-    },
-  } as DistributionMsg,
-})
+): CosmosMsgFor_Empty | { stargate: any } => {
+  switch (type) {
+    case StakeType.WithdrawValidatorCommission:
+      console.log('meow')
+      return {
+        stargate: {
+          type_url:
+            '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission',
+          value: toBase64(
+            MsgWithdrawValidatorCommission.encode({
+              validatorAddress: validator,
+            }).finish()
+          ),
+        },
+      }
+      break
+    default:
+      return {
+        distribution: {
+          withdraw_delegator_reward: {
+            validator,
+          },
+        } as DistributionMsg,
+      }
+  }
+}

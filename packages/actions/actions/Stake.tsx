@@ -47,8 +47,11 @@ const useDefaults: UseDefaults<StakeData> = () => ({
 
 const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
   useCallback((data: StakeData) => {
-    if (data.stakeType === StakeType.WithdrawDelegatorReward) {
-      return makeDistributeMessage(data.validator)
+    if (
+      data.stakeType === StakeType.WithdrawDelegatorReward ||
+      data.stakeType === StakeType.WithdrawValidatorCommission
+    ) {
+      return makeDistributeMessage(data.stakeType, data.validator)
     }
 
     // NOTE: Does not support TOKEN staking at this point, however it could be implemented here!
@@ -117,6 +120,23 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
               nativeTokenDecimals(denom)!
             ),
             denom,
+          },
+        }
+      }
+    } else if ('stargate' in msg) {
+      if (
+        'stargate' in msg &&
+        msg.stargate.type_url ===
+          '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission'
+      ) {
+        return {
+          match: true,
+          data: {
+            stakeType: StakeType.WithdrawValidatorCommission,
+            validator: msg.stargate.value.validatorAddress,
+            // Default values, not needed for displaying this type of message.
+            amount: 1,
+            denom: NATIVE_DENOM,
           },
         }
       }

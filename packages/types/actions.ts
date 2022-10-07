@@ -11,7 +11,11 @@ export enum ActionKey {
   Spend = 'spend',
   Mint = 'mint',
   Stake = 'stake',
+  AuthzAuthorization = 'authzAuthorization',
+  AuthzExec = 'authzExec',
   AddCw20 = 'addCw20',
+  CreateValidator = 'createValidator',
+  EditValidator = 'editValidator',
   RemoveCw20 = 'removeCw20',
   AddCw721 = 'addCw721',
   RemoveCw721 = 'removeCw721',
@@ -68,7 +72,7 @@ export type UseDefaults<D extends {} = any> = (coreAddress: string) => D
 
 export type UseTransformToCosmos<D extends {} = any> = (
   coreAddress: string
-) => (data: D) => CosmosMsgFor_Empty | undefined
+) => (data: D) => CosmosMsgFor_Empty | { stargate: any } | undefined
 
 export interface DecodeCosmosMsgNoMatch {
   match: false
