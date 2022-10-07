@@ -10,7 +10,8 @@ import { Modal, ModalProps } from './Modal'
 import { UnstakingLine } from './UnstakingLine'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
-export interface UnstakingModalProps extends Omit<ModalProps, 'children'> {
+export interface UnstakingModalProps
+  extends Omit<ModalProps, 'children' | 'visible'> {
   unstakingDuration?: string
   tasks: UnstakingTask[]
   onClaim?: (tokenSymbol: string) => void
@@ -90,6 +91,7 @@ export const UnstakingModal = ({
     <Modal
       {...modalProps}
       containerClassName={clsx('w-full max-w-2xl', containerClassName)}
+      visible
     >
       <div className="overflow-y-auto grow pr-4 -mr-4 no-scrollbar">
         {/* Only show if something is ready to claim. */}

@@ -86,6 +86,7 @@ export const StakingModal = ({
         )
       }
       onClose={onClose}
+      visible
     >
       {mode === StakingMode.Stake && (
         <StakeUnstakeModesBody

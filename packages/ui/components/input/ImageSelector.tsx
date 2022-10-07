@@ -60,6 +60,7 @@ export const ImageSelectorModal = <
     <Modal
       containerClassName="flex flex-col gap-3 items-center"
       onClose={onClose}
+      visible
     >
       <div
         aria-label={t('info.daosLogo')}

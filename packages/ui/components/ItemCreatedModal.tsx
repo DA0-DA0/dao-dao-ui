@@ -7,7 +7,7 @@ import { CopyToClipboard } from './CopyToClipboard'
 import { Modal, ModalProps } from './Modal'
 
 export interface ItemCreatedModalProps<T> {
-  modalProps: Omit<ModalProps, 'header' | 'children'>
+  modalProps: Omit<ModalProps, 'header' | 'children' | 'visible'>
   header: Required<ModalProps>['header']
   Item: ComponentType<Omit<T, 'onMouseOver' | 'onMouseLeave'>>
   itemProps: T
@@ -44,6 +44,7 @@ export const ItemCreatedModal = <
       {...modalProps}
       containerClassName={clsx('max-w-lg', modalContainerClassName)}
       header={header}
+      visible
     >
       <div className="overflow-hidden relative p-6 pt-8 -m-6">
         {confettiVisible && (

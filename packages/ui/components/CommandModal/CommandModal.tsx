@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { CommandModalProps } from '@dao-dao/tstypes/command'
@@ -32,14 +31,7 @@ export const CommandModal = ({
 
   return (
     <Modal
-      backdropClassName={clsx(
-        'transition-opacity duration-[120ms]',
-        visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
-      )}
-      containerClassName={clsx(
-        'p-0 w-full max-w-[550px] h-[450px] max-h-[90vh] border transition-transform duration-[120ms]',
-        visible ? 'scale-100' : 'scale-90'
-      )}
+      containerClassName="p-0 w-full max-w-[550px] h-[450px] max-h-[90vh] border"
       headerContainerClassName="!m-0 px-4 py-6"
       headerContent={
         <div className="flex flex-row gap-4 items-stretch h-8">
@@ -83,6 +75,7 @@ export const CommandModal = ({
       }
       hideCloseButton
       onClose={() => setVisible(false)}
+      visible={visible}
     >
       {children}
     </Modal>

@@ -74,9 +74,7 @@ export const ProfileNewProposalCard = ({
                 <p className="secondary-text">{label}</p>
 
                 <IconButton
-                  Icon={
-                    copiedIndex === index ? CheckCircleOutline : CopyAll
-                  }
+                  Icon={copiedIndex === index ? CheckCircleOutline : CopyAll}
                   className="!text-icon-tertiary"
                   onClick={() => {
                     navigator.clipboard.writeText(address)

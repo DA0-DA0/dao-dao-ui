@@ -14,15 +14,14 @@
     "castYourVote": "Cast your vote",
     "claim": "Claim",
     "claimNumTokens": "Claim your {{amount}} ${{tokenSymbol}}",
-    "goToDaoPage": "Go to DAO page",
     "claimRewards": "Claim staking rewards",
     "claimTokens": "Claim tokens",
     "claimUnstaked": "Claim unstaked tokens",
     "close": "Close",
     "connectWallet": "Connect wallet",
     "continue": "Continue",
-    "copyDaoAddress": "Copy DAO address",
     "copy": "Copy",
+    "copyDaoAddress": "Copy DAO address",
     "copyToClipboard": "Copy to clipboard",
     "create": "Create",
     "createADAO": "Create a DAO",
@@ -39,6 +38,7 @@
     "following": "Following",
     "getTokens": "Get tokens on {{name}}",
     "goBack": "Go back",
+    "goToDaoPage": "Go to DAO page",
     "gotIt": "Got it",
     "hideInstantiateMessage": "Hide Instantiate Message",
     "hidePreview": "Hide preview",
@@ -98,8 +98,8 @@
     "prompt": "What are you looking for?",
     "sectionName": {
       "appActions": "App Actions",
-      "daos": "DAOs",
-      "daoActions": "DAO Actions"
+      "daoActions": "DAO Actions",
+      "daos": "DAOs"
     }
   },
   "daoCreationAdapter": {
@@ -550,6 +550,7 @@
     "addresses": "Addresses",
     "advancedConfiguration": "Advanced configuration",
     "allVotes": "All votes",
+    "appNavigation": "App Navigation",
     "apr": "APR",
     "aprReward": "APR reward",
     "availableTokens": "Available tokens",
@@ -568,7 +569,6 @@
     "contractVersion": "Contract Version",
     "contributions": "Contributions",
     "createADAO": "Create a DAO",
-    "appNavigation": "App Navigation",
     "createAProposal": "Create a proposal",
     "createASubDao": "Create a SubDAO",
     "createProposal": "Create proposal",

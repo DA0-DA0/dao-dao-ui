@@ -4,18 +4,16 @@
 import { ChevronRightIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Modal } from '@dao-dao/ui'
+import { Button, Modal, ModalProps } from '@dao-dao/ui'
 
-interface InstallKeplrProps {
-  onClose: () => void
-}
+export type InstallKeplrProps = Pick<ModalProps, 'visible' | 'onClose'>
 
-export const InstallKeplr = ({ onClose }: InstallKeplrProps) => {
+export const InstallKeplr = (props: InstallKeplrProps) => {
   const { t } = useTranslation()
   const grafs = t('info.keplrModalWalletExplanation').split('\n')
 
   return (
-    <Modal onClose={onClose}>
+    <Modal {...props}>
       <h1 className="header-text">{t('title.needWalletToContinue')}</h1>
       {grafs.map((graf) => (
         <p key={graf} className="mt-6 mb-6 body-text">

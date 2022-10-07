@@ -151,16 +151,16 @@ export const InnerPfpkNftSelectionModal = ({
 }
 
 export const PfpkNftSelectionModal = ({
-  onClose,
   Loader = DefaultLoader,
+  ...props
 }: PfpkNftSelectionModalProps) => (
   <SuspenseLoader
     fallback={
-      <Modal containerClassName="!p-40" onClose={onClose}>
+      <Modal containerClassName="!p-40" visible {...props}>
         <Loader />
       </Modal>
     }
   >
-    <InnerPfpkNftSelectionModal onClose={onClose} />
+    <InnerPfpkNftSelectionModal {...props} />
   </SuspenseLoader>
 )

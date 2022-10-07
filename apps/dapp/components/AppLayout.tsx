@@ -209,12 +209,14 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   return (
     <>
-      {installWarningVisible && (
-        <InstallKeplr onClose={() => setInstallWarningVisible(false)} />
-      )}
-      {noKeplrAccount && (
-        <NoKeplrAccountModal onClose={() => setNoKeplrAccount(false)} />
-      )}
+      <InstallKeplr
+        onClose={() => setInstallWarningVisible(false)}
+        visible={installWarningVisible}
+      />
+      <NoKeplrAccountModal
+        onClose={() => setNoKeplrAccount(false)}
+        visible={noKeplrAccount}
+      />
       {mountedInBrowser && !betaWarningAccepted && (
         <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
       )}

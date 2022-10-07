@@ -75,26 +75,29 @@ export const NoMobileWallet = () => {
         <p className="text-xs italic link-text">{t('info.testnet')}</p>
         <InformationCircleIcon className="w-3 h-3" />
       </button>
-      {showInfo && (
-        <Modal hideCloseButton onClose={() => setShowInfo(false)}>
-          <div className="flex gap-2 items-start">
-            <p className="primary-text">
-              {t('info.preReleaseExplanation', { chain: CHAIN_NAME })}
-            </p>
 
-            <button
-              className="hover:bg-secondary rounded-full transition"
-              onClick={() => setShowInfo(false)}
-            >
-              <XIcon className="w-4 h-4" />
-            </button>
-          </div>
-
-          <p className="mt-6 body-text">
-            {t('info.walletConnectMobileLimitations', { chain: CHAIN_NAME })}
+      <Modal
+        hideCloseButton
+        onClose={() => setShowInfo(false)}
+        visible={showInfo}
+      >
+        <div className="flex gap-2 items-start">
+          <p className="primary-text">
+            {t('info.preReleaseExplanation', { chain: CHAIN_NAME })}
           </p>
-        </Modal>
-      )}
+
+          <button
+            className="hover:bg-secondary rounded-full transition"
+            onClick={() => setShowInfo(false)}
+          >
+            <XIcon className="w-4 h-4" />
+          </button>
+        </div>
+
+        <p className="mt-6 body-text">
+          {t('info.walletConnectMobileLimitations', { chain: CHAIN_NAME })}
+        </p>
+      </Modal>
     </>
   )
 }

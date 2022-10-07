@@ -16,7 +16,7 @@ import { SearchBar } from '../SearchBar'
 import { NftCard } from './NftCard'
 
 export interface NftSelectionModalProps
-  extends Omit<ModalProps, 'children' | 'header'>,
+  extends Omit<ModalProps, 'children' | 'header' | 'visible'>,
     Required<Pick<ModalProps, 'header'>> {
   nfts: LoadingData<NftCardInfo[]>
   selectedIds: string[]
@@ -160,6 +160,7 @@ export const NftSelectionModal = ({
           />
         </div>
       }
+      visible
     >
       {nfts.loading ? (
         <Loader className="-mt-6" />

@@ -285,7 +285,7 @@ export const StakingModalWrapper = ({
   children,
   onClose,
 }: StakingModalWrapperProps) => (
-  <Modal containerClassName="!p-40" onClose={onClose}>
+  <Modal containerClassName="!p-40" onClose={onClose} visible>
     {children}
   </Modal>
 )
