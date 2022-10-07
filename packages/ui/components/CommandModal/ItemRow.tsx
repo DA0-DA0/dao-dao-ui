@@ -27,7 +27,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
           !item.disabled && selected && 'bg-background-interactive-hover',
           className
         )}
-        onClick={item.disabled ? onClick : undefined}
+        onClick={item.disabled ? undefined : onClick}
         ref={ref}
       >
         {'imageUrl' in item ? (
