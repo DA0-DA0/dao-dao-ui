@@ -16,8 +16,6 @@ import {
   NATIVE_DECIMALS,
   PFPK_API_BASE,
   convertMicroDenomToDenomWithDecimals,
-  getFallbackImage,
-  loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import {
@@ -26,11 +24,7 @@ import {
   refreshWalletBalancesIdAtom,
   refreshWalletProfileAtom,
 } from '../recoil'
-import {
-  keplrProfileImageSelector,
-  walletProfileSelector,
-} from '../recoil/selectors/wallet'
-import { useCachedLoadable } from './useCachedLoadable'
+import { useProfile } from './useProfile'
 
 export interface UseWalletProfileReturn {
   walletAddress: string | undefined
@@ -100,34 +94,9 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
   )
 
   // Get wallet profile from API.
-  const walletProfile = loadableToLoadingData(
-    useCachedLoadable(
-      publicKey ? walletProfileSelector(publicKey.hex) : undefined
-    ),
-    {
-      // Disallows editing if we don't have correct nonce from server.
-      nonce: -1,
-      name: null,
-      imageUrl: '',
-      nft: null,
-    }
-  )
-  // Get Keplr wallet image from API.
-  const keplrProfileImageLoadable = useCachedLoadable(
-    publicKey ? keplrProfileImageSelector(publicKey.hex) : undefined
-  )
-  const keplrProfileImage =
-    keplrProfileImageLoadable.state === 'hasValue'
-      ? keplrProfileImageLoadable.contents
-      : undefined
-  // Use Keplr profile image API (followed by a fallback image) as backup if
-  // PFPK not set.
-  const backupProfileImage =
-    keplrProfileImage || getFallbackImage(publicKey?.hex)
-  // If no NFT from PFPK, fallback.
-  if (!walletProfile.loading && !walletProfile.data.nft) {
-    walletProfile.data.imageUrl = backupProfileImage
-  }
+  const { profile: walletProfile, backupProfileImage } = useProfile({
+    hexPublicKey: publicKey?.hex,
+  })
 
   const [updatingNonce, setUpdatingNonce] = useState<number>()
   const onUpdateRef = useRef<() => void>()

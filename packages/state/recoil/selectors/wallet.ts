@@ -1,3 +1,4 @@
+import { fromBase64, toHex } from '@cosmjs/encoding'
 import { selectorFamily } from 'recoil'
 
 import {
@@ -10,17 +11,20 @@ import { PFPK_API_BASE, processError } from '@dao-dao/utils'
 import { refreshWalletProfileAtom } from '../atoms/refresh'
 import { cosmWasmClientSelector } from './chain'
 
-export const walletPublicKeySelector = selectorFamily<
+export const walletHexPublicKeySelector = selectorFamily<
   string | undefined,
   string
 >({
-  key: 'walletPublicKey',
+  key: 'walletHexPublicKey',
   get:
     (walletAddress) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
       const account = await client.getAccount(walletAddress)
-      return account?.pubkey?.value ?? undefined
+      if (!account?.pubkey?.value) {
+        return
+      }
+      return toHex(fromBase64(account.pubkey.value))
     },
 })
 

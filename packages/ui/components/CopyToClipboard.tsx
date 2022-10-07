@@ -24,6 +24,7 @@ export const concatAddressBoth = (address: string, takeN = 7): string =>
 
 export interface CopyToClipboardProps {
   value: string
+  label?: string
   success?: string
   takeN?: number
   takeStartEnd?: {
@@ -40,6 +41,7 @@ export interface CopyToClipboardProps {
 
 export const CopyToClipboard = ({
   value,
+  label,
   success,
   takeN,
   takeStartEnd,
@@ -81,11 +83,16 @@ export const CopyToClipboard = ({
             textClassName
           )}
         >
-          {takeStartEnd
-            ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
-            : takeAll
-            ? value
-            : concatAddressBoth(value, takeN)}
+          {label ??
+            (takeStartEnd
+              ? concatAddressStartEnd(
+                  value,
+                  takeStartEnd.start,
+                  takeStartEnd.end
+                )
+              : takeAll
+              ? value
+              : concatAddressBoth(value, takeN))}
         </span>
       </button>
     </Tooltip>
@@ -94,38 +101,44 @@ export const CopyToClipboard = ({
 
 export const CopyToClipboardUnderline = ({
   value,
+  label,
   success,
   takeN,
   takeStartEnd,
   takeAll,
   className,
   textClassName,
+  tooltip,
 }: CopyToClipboardProps) => {
   const { t } = useTranslation()
 
   return (
-    <p
-      className={clsx(
-        'font-mono text-xs text-text-body underline truncate hover:opacity-80 active:opacity-70 transition-opacity cursor-pointer',
-        className,
-        textClassName
-      )}
-      onClick={() => {
-        navigator.clipboard.writeText(value)
-        toast.success(success || t('info.copiedToClipboard'))
-      }}
-    >
-      {takeStartEnd
-        ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
-        : takeAll
-        ? value
-        : concatAddressBoth(value, takeN)}
-    </p>
+    <Tooltip title={tooltip}>
+      <p
+        className={clsx(
+          'font-mono text-xs text-text-body underline truncate hover:opacity-80 active:opacity-70 transition-opacity cursor-pointer',
+          className,
+          textClassName
+        )}
+        onClick={() => {
+          navigator.clipboard.writeText(value)
+          toast.success(success || t('info.copiedToClipboard'))
+        }}
+      >
+        {label ??
+          (takeStartEnd
+            ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
+            : takeAll
+            ? value
+            : concatAddressBoth(value, takeN))}
+      </p>
+    </Tooltip>
   )
 }
 
 export const CopyToClipboardMobile = ({
   value,
+  label,
   success,
   takeN,
   takeStartEnd,
@@ -143,11 +156,16 @@ export const CopyToClipboardMobile = ({
           <Copy height="18px" width="18px" />
         )}
         <span className="inline py-1 hover:bg-background-button-secondary-default transition">
-          {takeStartEnd
-            ? concatAddressStartEnd(value, takeStartEnd.start, takeStartEnd.end)
-            : takeAll
-            ? value
-            : concatAddressBoth(value, takeN)}
+          {label ??
+            (takeStartEnd
+              ? concatAddressStartEnd(
+                  value,
+                  takeStartEnd.start,
+                  takeStartEnd.end
+                )
+              : takeAll
+              ? value
+              : concatAddressBoth(value, takeN))}
         </span>
       </div>
       <Button

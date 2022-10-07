@@ -21,6 +21,7 @@ import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapterContext,
 } from '@dao-dao/proposal-module-adapter'
+import { useProfile } from '@dao-dao/state'
 import { ActionKey } from '@dao-dao/tstypes'
 import {
   Loader,
@@ -72,6 +73,10 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
       [proposalModuleActions, votingModuleActions]
     )
   )
+
+  const { profile: creatorProfile } = useProfile({
+    walletAddress: proposalInfo.createdByAddress,
+  })
 
   // Ensure the last two actions are execute smart contract followed by
   // custom, since a lot of actions are smart contract executions, and custom
@@ -125,8 +130,12 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
         />
       }
       creator={{
-        // TODO: Retrieve.
-        name: '',
+        name: creatorProfile.loading
+          ? creatorProfile
+          : {
+              ...creatorProfile,
+              data: creatorProfile.data.name,
+            },
         address: proposalInfo.createdByAddress,
       }}
       daoInfo={daoInfo}
