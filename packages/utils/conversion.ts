@@ -142,7 +142,10 @@ export const convertExpirationToDate = (
     : undefined
 
 export const convertBlocksToSeconds = (blocks: number) =>
-  (blocks / JUNO_BLOCKS_PER_YEAR) * 365 * 24 * 60 * 60
+  Math.round((blocks / JUNO_BLOCKS_PER_YEAR) * 365 * 24 * 60 * 60)
+
+export const convertSecondsToBlocks = (seconds: number) =>
+  Math.round((seconds * JUNO_BLOCKS_PER_YEAR) / (365 * 24 * 60 * 60))
 
 export const durationToSeconds = (duration: Duration) =>
   'height' in duration ? convertBlocksToSeconds(duration.height) : duration.time

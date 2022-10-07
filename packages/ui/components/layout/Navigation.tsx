@@ -297,7 +297,9 @@ export const Navigation = ({
                       <p className="text-text-primary">
                         {label} = {price} ${priceDenom}
                       </p>
-                      <PricePercentChange value={change} />
+                      {change !== undefined && (
+                        <PricePercentChange value={change} />
+                      )}
                     </div>
                   )
                 )

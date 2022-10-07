@@ -22,19 +22,20 @@ import {
 } from '@dao-dao/common'
 import {
   SubQueryProvider,
+  blockHeightSelector,
   mountedInBrowserAtom,
   navigationCompactAtom,
   pinnedDaoDropdownInfosSelector,
   refreshBlockHeightAtom,
-  refreshTokenUsdcPriceIdAtom,
-  usdcPerMacroTokenSelector,
   useCachedLoadable,
+  usePoolAndSnapshotAtBlockHeight,
   useWalletProfile,
 } from '@dao-dao/state'
 import { IAppLayoutContext, AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import {
-  NATIVE_DECIMALS,
   NATIVE_DENOM,
+  USDC_SWAP_ADDRESS,
+  convertSecondsToBlocks,
   loadableToLoadingData,
   nativeTokenLabel,
   usePlatform,
@@ -135,25 +136,6 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     ]
   )
 
-  //! Token prices
-  const setRefreshTokenUsdcPriceId = useSetRecoilState(
-    refreshTokenUsdcPriceIdAtom(NATIVE_DENOM)
-  )
-  const usdcPricePerMacroNativeLoadable = useCachedLoadable(
-    usdcPerMacroTokenSelector({
-      denom: NATIVE_DENOM,
-      decimals: NATIVE_DECIMALS,
-    })
-  )
-  // Refresh native token price every minute.
-  useEffect(() => {
-    const interval = setInterval(
-      () => setRefreshTokenUsdcPriceId((id) => id + 1),
-      60 * 1000
-    )
-    return () => clearInterval(interval)
-  }, [setRefreshTokenUsdcPriceId])
-
   //! Block height
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
   // Refresh block height every minute.
@@ -165,6 +147,35 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     return () => clearInterval(interval)
   }, [setRefreshBlockHeight])
 
+  //! Token prices
+  // Updates once per minute, so token price will also update once per minute.
+  const currentBlockHeight = useCachedLoadable(blockHeightSelector)
+  // Current native pool data and snapshot from ~24 hours ago.
+  const nativeUsdcPoolAndSnapshotQuery = usePoolAndSnapshotAtBlockHeight({
+    swapContractAddress: USDC_SWAP_ADDRESS,
+    blockHeight:
+      currentBlockHeight.state !== 'hasValue'
+        ? 0
+        : currentBlockHeight.contents - convertSecondsToBlocks(24 * 3600),
+  })
+  const nativeUsdcPoolAndSnapshot =
+    nativeUsdcPoolAndSnapshotQuery.data ??
+    nativeUsdcPoolAndSnapshotQuery.previousData
+
+  const currentNativePrice = nativeUsdcPoolAndSnapshot
+    ? Number(
+        Number(nativeUsdcPoolAndSnapshot.current.token2Amount) /
+          Number(nativeUsdcPoolAndSnapshot.current.token1Amount)
+      )
+    : undefined
+  const yesterdayNativePrice =
+    nativeUsdcPoolAndSnapshot?.snapshots.nodes.length === 1
+      ? Number(
+          Number(nativeUsdcPoolAndSnapshot.snapshots.nodes[0].token2Amount) /
+            Number(nativeUsdcPoolAndSnapshot.snapshots.nodes[0].token1Amount)
+        )
+      : undefined
+
   //! Pinned DAOs
   const pinnedDaoDropdownInfosLoadable = useCachedLoadable(
     pinnedDaoDropdownInfosSelector
@@ -172,15 +183,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   //! Loadable errors.
   useEffect(() => {
-    if (usdcPricePerMacroNativeLoadable.state === 'hasError') {
-      console.error(usdcPricePerMacroNativeLoadable.contents)
-    }
     if (pinnedDaoDropdownInfosLoadable.state === 'hasError') {
       console.error(pinnedDaoDropdownInfosLoadable.contents)
     }
   }, [
-    usdcPricePerMacroNativeLoadable.contents,
-    usdcPricePerMacroNativeLoadable.state,
     pinnedDaoDropdownInfosLoadable.contents,
     pinnedDaoDropdownInfosLoadable.state,
   ])
@@ -245,30 +251,27 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
               },
           setCommandModalVisible: () => setCommandModalVisible(true),
           tokenPrices:
-            usdcPricePerMacroNativeLoadable.state === 'loading'
+            currentNativePrice === undefined
               ? { loading: true }
               : {
                   loading: false,
-                  data:
-                    usdcPricePerMacroNativeLoadable.state === 'hasValue' &&
-                    usdcPricePerMacroNativeLoadable.contents
-                      ? [
-                          {
-                            label: nativeTokenLabel(NATIVE_DENOM),
-                            price: Number(
-                              usdcPricePerMacroNativeLoadable.contents.toLocaleString(
-                                undefined,
-                                {
-                                  maximumFractionDigits: 3,
-                                }
-                              )
-                            ),
-                            priceDenom: 'USDC',
-                            // TODO: Retrieve.
-                            change: 13.37,
-                          },
-                        ]
-                      : [],
+                  data: [
+                    {
+                      label: nativeTokenLabel(NATIVE_DENOM),
+                      price: Number(
+                        currentNativePrice.toLocaleString(undefined, {
+                          maximumFractionDigits: 3,
+                        })
+                      ),
+                      priceDenom: 'USDC',
+                      change:
+                        yesterdayNativePrice !== undefined
+                          ? ((currentNativePrice - yesterdayNativePrice) /
+                              yesterdayNativePrice) *
+                            100
+                          : undefined,
+                    },
+                  ],
                 },
           version: '2.0',
           pinnedDaos: loadableToLoadingData(pinnedDaoDropdownInfosLoadable, []),

@@ -5,7 +5,7 @@ export interface NavigationTokenPrice {
   label: string
   price: number
   priceDenom: string
-  change: number
+  change?: number
 }
 
 export interface NavigationProps {
