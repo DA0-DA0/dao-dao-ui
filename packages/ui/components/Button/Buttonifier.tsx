@@ -144,7 +144,10 @@ export const ButtonifiedChildren = ({
     </div>
     <div
       className={clsx(
-        'flex flex-row gap-2 items-center h-full',
+        // Add `relative` to allow children to be clickable. The absolute
+        // container of the loading element above takes over touches if this is
+        // not relative; adding relative puts them in the same stacking context.
+        'flex relative flex-row gap-2 items-center h-full',
         {
           invisible: loading,
         },

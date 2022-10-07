@@ -1,4 +1,5 @@
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
+import { Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useCallback, useState } from 'react'
 import {
@@ -23,6 +24,7 @@ import {
   ActionSelector,
   Button,
   FilterableItemPopup,
+  IconButton,
   InputErrorMessage,
   TextAreaInput,
   TextInput,
@@ -44,7 +46,13 @@ enum ProposeSubmitValue {
 export interface NewProposalProps
   extends Pick<
     BaseNewProposalProps<NewProposalForm>,
-    'draft' | 'saveDraft' | 'drafts' | 'loadDraft' | 'draftSaving'
+    | 'draft'
+    | 'saveDraft'
+    | 'drafts'
+    | 'loadDraft'
+    | 'unloadDraft'
+    | 'draftSaving'
+    | 'deleteDraft'
   > {
   options: IProposalModuleAdapterCommonOptions
   createProposal: (newProposalData: NewProposalData) => Promise<void>
@@ -81,7 +89,9 @@ export const NewProposal = ({
   saveDraft,
   drafts,
   loadDraft,
+  unloadDraft,
   draftSaving,
+  deleteDraft,
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
@@ -287,20 +297,35 @@ export const NewProposal = ({
         </p>
       )}
 
-      <div className="flex flex-row gap-2 justify-end mt-4">
+      <div className="flex flex-row gap-2 justify-end items-center mt-4">
         {draft ? (
-          <p
-            className={clsx(
-              'italic caption-text',
-              draftSaving && 'animate-pulse'
-            )}
-          >
-            {draftSaving
-              ? t('info.draftSaving')
-              : t('info.draftSavedAtTime', {
-                  time: new Date(draft.lastUpdatedAt).toLocaleTimeString(),
-                })}
-          </p>
+          <>
+            <p
+              className={clsx(
+                'italic caption-text',
+                draftSaving && 'animate-pulse'
+              )}
+            >
+              {draftSaving
+                ? t('info.draftSaving')
+                : t('info.draftSavedAtTime', {
+                    time: new Date(draft.lastUpdatedAt).toLocaleTimeString(),
+                  })}
+            </p>
+
+            <Tooltip
+              title={draftSaving ? undefined : t('info.draftStillSaved')}
+            >
+              <Button
+                className="caption-text -ml-1"
+                disabled={draftSaving}
+                onClick={unloadDraft}
+                variant="underline"
+              >
+                {t('button.resetQuestion')}
+              </Button>
+            </Tooltip>
+          </>
         ) : (
           <>
             {drafts.length > 0 && (
@@ -311,17 +336,32 @@ export const NewProposal = ({
                   </Button>
                 )}
                 filterableItemKeys={FILTERABLE_KEYS}
-                items={drafts.map(({ name, createdAt, lastUpdatedAt }) => ({
-                  key: createdAt,
-                  label: name,
-                  description: (
-                    <>
-                      Created: {new Date(createdAt).toLocaleString()}
-                      <br />
-                      Last updated: {new Date(lastUpdatedAt).toLocaleString()}
-                    </>
-                  ),
-                }))}
+                items={drafts.map(
+                  ({ name, createdAt, lastUpdatedAt }, index) => ({
+                    key: createdAt,
+                    label: name,
+                    description: (
+                      <>
+                        Created: {new Date(createdAt).toLocaleString()}
+                        <br />
+                        Last updated: {new Date(lastUpdatedAt).toLocaleString()}
+                      </>
+                    ),
+                    rightNode: (
+                      <Tooltip title={t('button.deleteDraft')}>
+                        <IconButton
+                          Icon={Close}
+                          onClick={(event) => {
+                            // Don't click on item button.
+                            event.stopPropagation()
+                            deleteDraft(index)
+                          }}
+                          variant="ghost"
+                        />
+                      </Tooltip>
+                    ),
+                  })
+                )}
                 onSelect={(_, index) => loadDraft(index)}
                 popupClassName="!w-[24rem] max-w-[96vw] max-h-[96vh]"
                 position="left"

@@ -32,6 +32,7 @@ export const FilterableItemPopup = <
     Icon?: ComponentType
     label: ReactNode
     description?: ReactNode
+    rightNode?: ReactNode
   }
 >({
   items,
@@ -169,7 +170,7 @@ export const FilterableItemPopup = <
     >
       <div
         className={clsx(
-          'overflow-y-auto grow pr-4 pl-2 space-y-1 w-full no-scrollbar',
+          'overflow-y-auto grow px-4 space-y-1 w-full no-scrollbar',
           listClassName
         )}
         ref={itemsListRef}
@@ -190,12 +191,19 @@ export const FilterableItemPopup = <
                 <item.Icon />
               </p>
             )}
+
             <div className="space-y-1 text-left">
               <p className="text-text-body link-text">{item.label}</p>
               {item.description && (
                 <p className="secondary-text">{item.description}</p>
               )}
             </div>
+
+            {item.rightNode && (
+              <div className="flex flex-row grow justify-end items-center">
+                {item.rightNode}
+              </div>
+            )}
           </Button>
         ))}
       </div>

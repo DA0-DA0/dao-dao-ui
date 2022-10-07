@@ -34,9 +34,9 @@ export const getIconButtonifiedClassNames = ({
   className,
 }: Omit<IconButtonifierProps, 'icon'>) =>
   clsx(
-    'flex shrink-0 justify-center items-center focus:outline-2 focus:outline-border-interactive-focus focus:outline transition-all',
+    'flex shrink-0 justify-center items-center transition-all',
 
-    focused && 'outline-2 outline-border-interactive-focus outline',
+    focused && 'ring-2 ring-border-interactive-focus ring-inset',
 
     // Rounding.
     circular ? 'rounded-full' : 'rounded-md',

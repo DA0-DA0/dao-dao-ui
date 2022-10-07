@@ -45,7 +45,6 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
         )}
 
         <input
-          autoFocus
           className={clsx(
             'grow pr-4 leading-4 text-text-tertiary placeholder:text-text-tertiary focus:text-text-body bg-transparent focus:outline-none transition secondary-text',
             className

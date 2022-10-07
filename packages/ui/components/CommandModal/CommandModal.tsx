@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CommandModalProps } from '@dao-dao/tstypes/command'
@@ -16,6 +17,16 @@ export const CommandModal = ({
   children,
 }: CommandModalProps) => {
   const { t } = useTranslation()
+
+  const searchBarRef = useRef<HTMLInputElement>(null)
+  // Auto focus search bar on open and blur on close.
+  useEffect(() => {
+    if (visible) {
+      searchBarRef.current?.focus()
+    } else {
+      searchBarRef.current?.blur()
+    }
+  }, [visible])
 
   // TODO: Re-implement navigation loading and preventing going back contexts.
   // Go back to home when input is empty and backspace is pressed, unless
@@ -69,6 +80,7 @@ export const CommandModal = ({
               }
             }}
             placeholder={t('commandModal.prompt')}
+            ref={searchBarRef}
             value={filter}
           />
         </div>

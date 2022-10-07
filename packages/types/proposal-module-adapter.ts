@@ -232,7 +232,9 @@ export interface BaseNewProposalProps<FormData = any> {
   saveDraft: () => void
   drafts: ProposalDraft[]
   loadDraft: (index: number) => void
+  unloadDraft: () => void
   draftSaving: boolean
+  deleteDraft: (index: number) => void
 }
 
 export interface WalletVoteInfo<T> {

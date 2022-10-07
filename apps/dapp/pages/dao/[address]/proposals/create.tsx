@@ -157,6 +157,14 @@ const InnerProposalCreate = () => {
     },
     [draftIndex, drafts, loadPrefill, t]
   )
+  const deleteDraft = useCallback(
+    (deleteIndex: number) => {
+      setDrafts((drafts) => drafts.filter((_, index) => index !== deleteIndex))
+      setDraftIndex(undefined)
+    },
+    [setDrafts]
+  )
+  const unloadDraft = () => setDraftIndex(undefined)
 
   const proposalData = formMethods.watch()
   const proposalName = formMethods.watch(newProposalFormTitleKey)
@@ -244,12 +252,14 @@ const InnerProposalCreate = () => {
           newProposal={
             prefillChecked ? (
               <NewProposal
+                deleteDraft={deleteDraft}
                 draft={draft}
                 draftSaving={draftSaving}
                 drafts={drafts}
                 loadDraft={loadDraft}
                 onCreateSuccess={setCreatedProposal}
                 saveDraft={saveDraft}
+                unloadDraft={unloadDraft}
               />
             ) : (
               <Loader />
