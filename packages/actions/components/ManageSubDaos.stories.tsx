@@ -27,4 +27,7 @@ Default.args = {
   isCreating: true,
   onRemove: () => alert('remove'),
   errors: {},
+  options: {
+    currentSubDaos: [],
+  },
 }
