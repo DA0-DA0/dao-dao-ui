@@ -1,4 +1,4 @@
-import { CheckCircleOutline, CopyAllRounded } from '@mui/icons-material'
+import { CheckCircleOutline, CopyAll } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -75,7 +75,7 @@ export const ProfileNewProposalCard = ({
 
                 <IconButton
                   Icon={
-                    copiedIndex === index ? CheckCircleOutline : CopyAllRounded
+                    copiedIndex === index ? CheckCircleOutline : CopyAll
                   }
                   className="!text-icon-tertiary"
                   onClick={() => {

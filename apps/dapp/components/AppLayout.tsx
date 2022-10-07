@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
+import { CommandModal } from '@dao-dao/command'
 import {
   PfpkNftSelectionModal,
   SidebarWallet,
@@ -47,7 +48,6 @@ import {
 } from '@/atoms'
 
 import { BetaWarningModal } from './BetaWarning'
-import { CommandModal } from './CommandModal'
 import { DAppProvider, useDAppContext } from './DAppContext'
 import { InstallKeplr } from './InstallKeplr'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
@@ -218,9 +218,11 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
       {mountedInBrowser && !betaWarningAccepted && (
         <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
       )}
-      {commandModalVisible && (
-        <CommandModal onClose={() => setCommandModalVisible(false)} />
-      )}
+
+      <CommandModal
+        setVisible={setCommandModalVisible}
+        visible={commandModalVisible}
+      />
 
       {updateProfileNftVisible && (
         <PfpkNftSelectionModal

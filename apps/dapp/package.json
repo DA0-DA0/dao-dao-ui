@@ -20,6 +20,7 @@
     "@cosmjs/proto-signing": "0.28.10",
     "@cosmjs/stargate": "0.28.10",
     "@dao-dao/actions": "*",
+    "@dao-dao/command": "*",
     "@dao-dao/common": "*",
     "@dao-dao/i18n": "*",
     "@dao-dao/icons": "*",

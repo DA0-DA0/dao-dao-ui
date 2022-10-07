@@ -5,107 +5,85 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
 import { SubQueryDecorator } from '@dao-dao/storybook/decorators'
-import {
-  ActionHitId,
-  CommandState,
-  CommandStateType,
-  Hit,
-  HitType,
-} from '@dao-dao/tstypes'
 
 import { CommandModal } from './CommandModal'
+import {
+  CommandModalContextView,
+  CommandModalContextViewProps,
+} from './CommandModalContextView'
+import { Default as CommandModalContextViewStory } from './CommandModalContextView.CommandModalContextView.stories'
+import { Default as CommandModalContextViewLoaderStory } from './CommandModalContextView.CommandModalContextViewLoader.stories'
 
 export default {
-  title: 'DAO DAO / packages / ui / components / CommandModal',
+  title: 'DAO DAO / packages / ui / components / CommandModal / CommandModal',
   component: CommandModal,
   decorators: [SubQueryDecorator],
 } as ComponentMeta<typeof CommandModal>
 
 const Template: ComponentStory<typeof CommandModal> = (args) => {
   const [filter, setFilter] = useState('')
-  const [commandState, setCommandState] = useState<CommandState>({
-    type: CommandStateType.Home,
-  })
-
-  const onChoice = (hit: Hit) => {
-    if (hit.hitType === HitType.Daos) {
-      setCommandState({
-        type: CommandStateType.DaoChosen,
-        ...hit,
-      })
-    }
-  }
 
   return (
-    <CommandModal
-      {...args}
-      baseHits={[
-        {
-          icon: '➕',
-          id: ActionHitId.CreateDao,
-          name: 'Create a DAO',
-          navigatesOnSelect: true,
-          hitType: HitType.AppActions,
-        },
-        {
-          icon: '🗺',
-          id: ActionHitId.NavigateDao,
-          name: 'Navigate to DAO',
-          hitType: HitType.AppActions,
-        },
-        {
-          id: 'coreAddress1',
-          name: 'Some DAO',
-          imageUrl: '/placeholders/1.svg',
-          hitType: HitType.Daos,
-          navigatesOnSelect: false,
-        },
-        {
-          id: 'coreAddress2',
-          name: 'Another DAO',
-          imageUrl: '/placeholders/2.svg',
-          hitType: HitType.Daos,
-          navigatesOnSelect: false,
-        },
-        {
-          id: 'coreAddress3',
-          name: 'Nothing',
-          imageUrl: '/placeholders/3.svg',
-          hitType: HitType.Daos,
-          navigatesOnSelect: false,
-        },
-        {
-          id: 'coreAddress4',
-          name: 'Yet another DAO',
-          imageUrl: '/placeholders/4.svg',
-          hitType: HitType.Daos,
-          navigatesOnSelect: false,
-        },
-        {
-          id: 'coreAddress5',
-          name: 'Seriously, another DAO',
-          imageUrl: '/placeholders/5.svg',
-          hitType: HitType.Daos,
-          navigatesOnSelect: false,
-        },
-      ]}
-      commandState={commandState}
-      filter={filter}
-      onChoice={onChoice}
-      setCommandState={setCommandState}
-      setFilter={setFilter}
-    />
+    <CommandModal {...args} filter={filter} setFilter={setFilter}>
+      <CommandModalContextView
+        {...(CommandModalContextViewStory.args as CommandModalContextViewProps)}
+      />
+    </CommandModal>
   )
 }
 
 export const Default = Template.bind({})
 Default.args = {
-  commandState: { type: CommandStateType.Home },
+  contexts: [
+    {
+      name: 'Root context',
+      useSections: () => [],
+    },
+    {
+      name: 'Previous',
+      useSections: () => [],
+    },
+    {
+      name: 'A DAO',
+      imageUrl: '/placeholders/3.svg',
+      useSections: () => [],
+    },
+  ],
+  goBack: () => alert('back'),
 }
-
 Default.parameters = {
   design: {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/Dao-2.0?node-id=774%3A55489',
   },
+}
+
+const LoadingTemplate: ComponentStory<typeof CommandModal> = (args) => {
+  const [filter, setFilter] = useState('')
+
+  return (
+    <CommandModal {...args} filter={filter} setFilter={setFilter}>
+      <CommandModalContextViewLoaderStory />
+    </CommandModal>
+  )
+}
+
+export const Loading = LoadingTemplate.bind({})
+Loading.args = {
+  contexts: [
+    {
+      name: 'Root context',
+      useSections: () => [],
+    },
+    {
+      name: 'Previous',
+      useSections: () => [],
+    },
+    {
+      name: 'A DAO',
+      imageUrl: '/placeholders/3.svg',
+      useSections: () => [],
+    },
+  ],
+  goBack: () => alert('back'),
 }

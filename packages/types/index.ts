@@ -1,5 +1,6 @@
 export * from './actions'
 export * from './chain'
+export * from './command'
 export * from './contract'
 export * from './contracts'
 export * from './dao'

@@ -1,0 +1,78 @@
+// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
+// See the "LICENSE" file in the root directory of this package for more copyright information.
+
+import { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { SuspenseLoader } from '@dao-dao/common'
+import {
+  CommandModalContext,
+  CommandModalProps,
+} from '@dao-dao/tstypes/command'
+import { CommandModal as StatelessCommandModal } from '@dao-dao/ui'
+
+import { makeRootContext } from '../contexts/root'
+import { CommandModalContextView } from './CommandModalContextView'
+
+export const CommandModal = (
+  props: Omit<
+    CommandModalProps,
+    'contexts' | 'filter' | 'setFilter' | 'goBack' | 'children'
+  >
+) => {
+  const { t } = useTranslation()
+  const [filter, setFilter] = useState('')
+
+  const [contexts, _setContexts] = useState(() => [
+    // Initialize with root context.
+    makeRootContext({
+      t,
+      addContext: (newContext: CommandModalContext) => {
+        setContexts((currentContexts) => [...currentContexts, newContext])
+        // Clear filter when adding new context.
+        setFilter('')
+      },
+    }),
+  ])
+
+  // Keep unique ID (counter) of when context changes so we can tell
+  // CommandModalContextView to refresh. Since a context has a useSections hook,
+  // and each useSections hook is different, we need to tell the component to
+  // re-render as if it's a new component.
+  const [contextChangeCount, setContextChangeCount] = useState(0)
+  const setContexts: typeof _setContexts = useCallback((...args) => {
+    setContextChangeCount((count) => count + 1)
+    _setContexts(...args)
+  }, [])
+
+  const removeContext = useCallback(
+    () =>
+      setContexts((currentContexts) =>
+        currentContexts.slice(
+          0,
+          // Never remove the root context.
+          Math.max(currentContexts.length - 1, 1)
+        )
+      ),
+    [setContexts]
+  )
+
+  return (
+    // Don't render Modal on server side, since it portals to document.body.
+    <SuspenseLoader fallback={null}>
+      <StatelessCommandModal
+        contexts={contexts}
+        filter={filter}
+        goBack={removeContext}
+        setFilter={setFilter}
+        {...props}
+      >
+        <CommandModalContextView
+          key={contextChangeCount}
+          contexts={contexts}
+          filter={filter}
+        />
+      </StatelessCommandModal>
+    </SuspenseLoader>
+  )
+}

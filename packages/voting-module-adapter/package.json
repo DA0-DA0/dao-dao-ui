@@ -29,7 +29,7 @@
   },
   "peerDependencies": {
     "@dao-dao/storybook": "*",
-    "@noahsaso/cosmodal": "0.6.1"
+    "@noahsaso/cosmodal": "0.6.5"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true
