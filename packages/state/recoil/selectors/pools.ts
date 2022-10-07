@@ -2,7 +2,7 @@ import { selector } from 'recoil'
 
 import { POOLS_LIST_URL } from '@dao-dao/utils'
 
-export type TokenInfo = {
+export interface TokenInfo {
   id: string
   chain_id: string
   token_address: string
@@ -11,30 +11,30 @@ export type TokenInfo = {
   decimals: number
   logoURI: string
   tags: string[]
-  denom: string
   native: boolean
+  denom: string
 }
 
 export type TokenInfoWithReward = TokenInfo & {
   rewards_address: string
 }
 
-export type PoolEntityType = {
+export interface PoolEntityType {
   pool_id: string
   pool_assets: [TokenInfo, TokenInfo]
   swap_address: string
   staking_address: string
-  rewards_tokens: Array<TokenInfoWithReward>
+  rewards_tokens: TokenInfoWithReward[]
 }
 
-type PoolsListQueryResponse = {
-  base_token: TokenInfo
-  pools: Array<PoolEntityType>
-  poolsById: Record<string, PoolEntityType>
+export interface PoolsListQueryResponse {
   name: string
+  base_token: TokenInfo
   logoURI: string
-  keywords: Array<string>
+  keywords: string[]
   tags: Record<string, { name: string; description: string }>
+  timestamp: string
+  pools: PoolEntityType[]
 }
 
 export const poolsListSelector = selector<PoolsListQueryResponse | undefined>({

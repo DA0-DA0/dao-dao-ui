@@ -22,12 +22,11 @@ export const makeProps = (
   unstakedTokenBalance = 0,
   stakedTokenBalance = 0
 ): ProfileCardNotMemberInfoProps => ({
-  tokenSymbol: 'DOG',
+  tokenSymbol: 'JUNOX',
   tokenDecimals: 6,
   unstakedTokenBalance,
   stakedTokenBalance,
-  junoswapHref: 'https://junoswap.com',
-  daoName: 'Dog Dao',
+  daoName: 'JUNOX Governance',
   onStake: () => alert('stake'),
   proposalContext: true,
   deposit: undefined,

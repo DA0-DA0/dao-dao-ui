@@ -13,7 +13,6 @@ export interface ProfileCardNotMemberInfoProps
   stakedTokenBalance: number
   daoName: string
   onStake: () => void
-  // TODO: Fetch this from junoswap pools list somehow instead, if possible.
   junoswapHref?: string
 }
 

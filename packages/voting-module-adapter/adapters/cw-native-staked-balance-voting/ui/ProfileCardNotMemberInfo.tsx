@@ -1,9 +1,8 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { ArrowOutward } from '@dao-dao/icons'
 import { BaseProfileCardNotMemberInfoProps } from '@dao-dao/tstypes'
-import { Button, ButtonLink } from '@dao-dao/ui'
+import { Button } from '@dao-dao/ui'
 
 export interface ProfileCardNotMemberInfoProps
   extends BaseProfileCardNotMemberInfoProps {
@@ -13,8 +12,6 @@ export interface ProfileCardNotMemberInfoProps
   stakedTokenBalance: number
   daoName: string
   onStake: () => void
-  // TODO: Fetch this from junoswap pools list somehow instead, if possible.
-  junoswapHref?: string
 }
 
 export const ProfileCardNotMemberInfo = ({
@@ -24,7 +21,6 @@ export const ProfileCardNotMemberInfo = ({
   stakedTokenBalance,
   daoName,
   onStake,
-  junoswapHref,
   proposalContext,
 }: ProfileCardNotMemberInfoProps) => {
   const { t } = useTranslation()
@@ -77,19 +73,6 @@ export const ProfileCardNotMemberInfo = ({
       >
         {t('button.stakeTokenSymbol', { tokenSymbol })}
       </Button>
-
-      {junoswapHref && (
-        <ButtonLink
-          className="w-full"
-          contentContainerClassName="justify-center"
-          href={junoswapHref}
-          size="lg"
-          variant="secondary"
-        >
-          {t('button.getTokens', { name: 'Junoswap' })}
-          <ArrowOutward height="0.625rem" width="0.625rem" />
-        </ButtonLink>
-      )}
     </>
   )
 }

@@ -198,6 +198,22 @@ export const nativeSupplySelector = selectorFamily({
     },
 })
 
+// TODO: Use this selector to replace env constant JUNO_BLOCKS_PER_YEAR
+// export const blocksPerYearSelector = selectorFamily({
+//   key: 'blocksPerYear',
+//   get:
+//     (denom: string) =>
+//     async ({ get }) => {
+//       const client = get(lcdClientSelector)
+
+//       return (
+//         await client.mint.v1beta1.params({
+//           denom,
+//         })
+//       ).params.blocksPerYear
+//     },
+// })
+
 export const validatorSelector = selectorFamily<Validator, string>({
   key: 'validator',
   get:

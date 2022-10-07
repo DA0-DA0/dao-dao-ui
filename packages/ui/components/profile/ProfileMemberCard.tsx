@@ -19,17 +19,12 @@ export interface UnstakingTokensTranch {
 export interface ProfileMemberCardProps
   extends Omit<
     ProfileCardWrapperProps,
-    | 'children'
-    | 'underHeaderComponent'
-    | 'childContainerClassName'
-    | 'established'
-    | 'compact'
+    'children' | 'underHeaderComponent' | 'childContainerClassName' | 'compact'
   > {
   loadingClaiming?: boolean
   loadingManaging?: boolean
   daoName: string
   openProposals?: boolean
-  established: Date
   membershipInfo: ReactNode
 }
 

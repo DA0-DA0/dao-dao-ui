@@ -12,7 +12,7 @@ export type ProfileCardWrapperProps = {
   childContainerClassName?: string
 } & (
   | {
-      established: Date
+      established?: Date
       compact?: false
     }
   | {

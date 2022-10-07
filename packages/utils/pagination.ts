@@ -3,7 +3,6 @@ import {
   PageResponseSDKType,
 } from 'interchain-lcd/types/codegen/cosmos/base/query/v1beta1/pagination'
 
-// TODO: Verify this works.
 export const getAllLcdResponse = async <
   P extends { pagination?: PageRequest; [key: string]: any },
   R extends { pagination?: PageResponseSDKType; [key: string]: any },

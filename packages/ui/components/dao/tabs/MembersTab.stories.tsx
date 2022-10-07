@@ -1,11 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
+import { DaoMemberCardProps } from '@dao-dao/tstypes'
 
+import { DaoMemberCard } from '../DaoMemberCard'
 import { makeProps as makeDaoMemberCardProps } from '../DaoMemberCard.stories'
 import { MembersTab } from './MembersTab'
-import { DaoMemberCard } from '../DaoMemberCard'
-import { DaoMemberCardProps } from '@dao-dao/tstypes'
 
 export default {
   title: 'DAO DAO / packages / ui / components / dao / tabs / MembersTab',
@@ -13,9 +13,9 @@ export default {
   decorators: [DaoPageWrapperDecorator],
 } as ComponentMeta<typeof MembersTab>
 
-const Template: ComponentStory<typeof MembersTab<DaoMemberCardProps>> = (args) => (
-  <MembersTab {...args} />
-)
+const Template: ComponentStory<typeof MembersTab<DaoMemberCardProps>> = (
+  args
+) => <MembersTab {...args} />
 
 export const Default = Template.bind({})
 Default.args = {

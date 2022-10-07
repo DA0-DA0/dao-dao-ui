@@ -13,13 +13,8 @@ import {
 export interface ProfileHomeCardProps
   extends Omit<
     ProfileCardWrapperProps,
-    | 'children'
-    | 'underHeaderComponent'
-    | 'childContainerClassName'
-    | 'established'
-    | 'compact'
+    'children' | 'underHeaderComponent' | 'childContainerClassName' | 'compact'
   > {
-  established: Date
   tokenSymbol: string
   inboxProposalCount: number
   lazyData: LoadingData<{

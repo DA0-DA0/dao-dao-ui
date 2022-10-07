@@ -25,6 +25,10 @@ import {
   getNftName,
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
+import {
+  CwNativeStakedBalanceVotingAdapter,
+  matchAdapter,
+} from '@dao-dao/voting-module-adapter'
 
 import {
   ConfigResponse as CwCoreV0_1_0ConfigResponse,
@@ -45,7 +49,9 @@ import {
   Cw721BaseSelectors,
   CwCoreV0_1_0Selectors,
   CwCoreV0_2_0Selectors,
+  CwNativeStakedBalanceVotingSelectors,
 } from './clients'
+import { infoSelector, votingModuleSelector } from './clients/cw-core/0.2.0'
 import {
   contractInstantiateTimeSelector,
   contractVersionSelector,
@@ -274,6 +280,31 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
         CwCoreV0_2_0Selectors.cw20BalancesInfoSelector(coreAddress)
       )
 
+      //! Check if has native governance token, and set crown accordingly.
+      const votingModuleAddress = get(
+        votingModuleSelector({ contractAddress: coreAddress, params: [] })
+      )
+      // All `info` queries are the same, so just use cw-core's info query.
+      const votingModuleInfo = get(
+        infoSelector({ contractAddress: votingModuleAddress, params: [] })
+      )
+      let nativeGovernanceTokenDenom: string | undefined
+      try {
+        if (
+          matchAdapter(votingModuleInfo.info.contract)?.id ===
+          CwNativeStakedBalanceVotingAdapter.id
+        ) {
+          nativeGovernanceTokenDenom = get(
+            CwNativeStakedBalanceVotingSelectors.getConfigSelector({
+              contractAddress: votingModuleAddress,
+              params: [],
+            })
+          ).denom
+        }
+      } catch (err) {
+        console.error(err)
+      }
+
       const infos: TokenCardInfo[] = [
         ...nativeBalances.map(
           ({ denom, amount, decimals, label, imageUrl }) => {
@@ -324,8 +355,8 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             }
 
             return {
-              // TODO: Make true if native token DAO and using this denom.
-              crown: false,
+              // True if native token DAO and using this denom.
+              crown: nativeGovernanceTokenDenom === denom,
               tokenSymbol: label,
               tokenDenom: denom,
               tokenDecimals: decimals,

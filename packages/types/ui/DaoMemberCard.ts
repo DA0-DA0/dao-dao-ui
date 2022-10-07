@@ -1,5 +1,5 @@
-import { WalletProfile } from "../wallet"
-import { LoadingData } from "./common"
+import { WalletProfile } from '../wallet'
+import { LoadingData } from './common'
 
 export interface DaoMemberCardProps {
   address: string

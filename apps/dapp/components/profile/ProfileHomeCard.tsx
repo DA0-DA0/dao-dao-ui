@@ -27,10 +27,6 @@ export const ProfileHomeCard = () => {
 
   return (
     <StatelessProfileHomeCard
-      established={
-        // TODO: Retrieve.
-        new Date()
-      }
       inboxProposalCount={inbox.proposalCount}
       lazyData={
         !data ||

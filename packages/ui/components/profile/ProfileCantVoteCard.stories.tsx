@@ -28,7 +28,6 @@ Default.args = {
       nft: null,
     },
   },
-  walletAddress: 'wallet',
   isMember: false,
   notMemberInfo: (
     <ProfileCardNotMemberInfo {...makeProfileCardNotMemberInfoProps(2.34)} />

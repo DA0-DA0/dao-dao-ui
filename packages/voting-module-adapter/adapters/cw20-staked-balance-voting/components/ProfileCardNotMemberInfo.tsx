@@ -1,8 +1,14 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue } from 'recoil'
 
 import { useDaoInfoContext } from '@dao-dao/common'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import { poolsListSelector } from '@dao-dao/state'
+import {
+  NATIVE_DENOM,
+  convertMicroDenomToDenomWithDecimals,
+  nativeTokenLabel,
+} from '@dao-dao/utils'
 
 import { BaseProfileCardNotMemberInfoProps } from '../../../types'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
@@ -17,10 +23,21 @@ export const ProfileCardNotMemberInfo = (
 
   const [showStakingModal, setShowStakingModal] = useState(false)
 
-  const { governanceTokenInfo, walletBalance: unstakedBalance } =
-    useGovernanceTokenInfo({
-      fetchWalletBalance: true,
-    })
+  const {
+    governanceTokenAddress,
+    governanceTokenInfo,
+    walletBalance: unstakedBalance,
+  } = useGovernanceTokenInfo({
+    fetchWalletBalance: true,
+  })
+
+  // Search for governance token in junoswap pools list.
+  const poolsList = useRecoilValue(poolsListSelector)
+  const governanceTokenPoolSymbol = poolsList?.pools
+    .flatMap(({ pool_assets }) => pool_assets)
+    .find(
+      ({ token_address }) => governanceTokenAddress === token_address
+    )?.symbol
 
   const { walletStakedValue } = useStakingInfo({
     fetchClaims: true,
@@ -42,6 +59,13 @@ export const ProfileCardNotMemberInfo = (
 
       <StatelessProfileCardNotMemberInfo
         daoName={daoName}
+        junoswapHref={
+          governanceTokenPoolSymbol
+            ? `https://junoswap.com/?from=${nativeTokenLabel(
+                NATIVE_DENOM
+              )}&to=${governanceTokenPoolSymbol}`
+            : undefined
+        }
         onStake={() => setShowStakingModal(true)}
         stakedTokenBalance={convertMicroDenomToDenomWithDecimals(
           walletStakedValue,

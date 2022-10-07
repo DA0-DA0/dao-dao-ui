@@ -92,10 +92,6 @@ const InnerDaoHome = () => {
           isMember ? (
             <ProfileMemberCard
               daoName={daoInfo.name}
-              established={
-                // TODO: Retrieve.
-                new Date()
-              }
               membershipInfo={
                 <ProfileMemberCardMembershipInfo
                   deposit={

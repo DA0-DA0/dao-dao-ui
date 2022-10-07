@@ -25,7 +25,6 @@ export interface SubDaosTabProps {
   Loader?: ComponentType<LoaderProps>
 }
 
-// TODO: Add upgrade info if DAO does not yet support subDAOs.
 export const SubDaosTab = ({
   DaoCard,
   subDaos: subdaos,
