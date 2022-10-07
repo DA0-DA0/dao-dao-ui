@@ -1,6 +1,7 @@
 export * from './ConnectWalletButton'
 export * from './CreateDaoForm'
 export * from './DaoInfoBar'
+export * from './DaoMemberCard'
 export * from './DaoPageWrapper'
 export * from './MobileNav'
 export * from './PfpkNftSelectionModal'

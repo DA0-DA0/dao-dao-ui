@@ -1,21 +1,23 @@
 import { PlusIcon } from '@heroicons/react/solid'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ButtonLink } from '../../Button'
 import { GridCardContainer } from '../../GridCardContainer'
-import { DaoMemberCard, DaoMemberCardProps } from '../DaoMemberCard'
 
-export interface MembersTabProps {
-  members: DaoMemberCardProps[]
+export interface MembersTabProps<D> {
+  DaoMemberCard: ComponentType<D>
+  members: D[]
   isMember: boolean
   addMemberHref?: string
 }
 
-export const MembersTab = ({
+export const MembersTab = <D extends {}>({
+  DaoMemberCard,
   members,
   isMember,
   addMemberHref,
-}: MembersTabProps) => {
+}: MembersTabProps<D>) => {
   const { t } = useTranslation()
 
   return (

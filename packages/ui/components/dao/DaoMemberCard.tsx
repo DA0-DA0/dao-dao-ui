@@ -1,22 +1,17 @@
+import { Tag } from '@mui/icons-material'
+import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
+import { DaoMemberCardProps } from '@dao-dao/tstypes/ui/DaoMemberCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { ProfileImage } from '../profile'
 
-export interface DaoMemberCardProps {
-  imageUrl?: string
-  name: string
-  address: string
-  votingPowerPercent: number
-}
-
 export const DaoMemberCard = ({
-  imageUrl,
-  name,
   address,
   votingPowerPercent,
+  profile,
 }: DaoMemberCardProps) => {
   const { t } = useTranslation()
 
@@ -24,15 +19,26 @@ export const DaoMemberCard = ({
     <div className="rounded-md border border-border-primary">
       <div className="flex flex-col items-center px-4 pt-10 pb-8 border-b border-border-interactive-disabled">
         {/* Image */}
-        <ProfileImage imageUrl={imageUrl} size="lg" />
+        <ProfileImage
+          imageUrl={profile.loading ? undefined : profile.data.imageUrl}
+          loading={profile.loading}
+          size="lg"
+        />
         {/* Name */}
-        <p className="mt-4 mb-1 text-text-body title-text">{name}</p>
+        <p
+          className={clsx(
+            'mt-4 mb-1 text-text-body title-text',
+            profile.loading && 'animate-pulse'
+          )}
+        >
+          {profile.loading ? '...' : profile.data.name}
+        </p>
         {/* Address */}
         <div className="flex flex-row gap-1 items-center">
-          <p className="font-mono text-base italic text-text-tertiary">#</p>
+          <Tag className="!w-5 !h-5 text-icon-tertiary" />
 
           <CopyToClipboardUnderline
-            className="text-text-tertiary"
+            className="text-sm !text-text-tertiary"
             takeStartEnd={{
               start: 12,
               end: 8,
