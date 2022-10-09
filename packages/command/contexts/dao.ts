@@ -23,8 +23,8 @@ export const makeDaoContext: CommandModalContextMaker<{
       { href: string } | { onChoose: () => void }
     > = {
       name: t('title.actions'),
-      onChoose: (option) =>
-        'href' in option ? router.push(option.href) : option.onChoose(),
+      onChoose: (item) =>
+        'href' in item ? router.push(item.href) : item.onChoose(),
       items: [
         {
           name: t('button.goToDaoPage'),

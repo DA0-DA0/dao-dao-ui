@@ -14,6 +14,8 @@ import { CommandModal as StatelessCommandModal } from '@dao-dao/ui'
 import { makeRootContext } from '../contexts/root'
 import { CommandModalContextView } from './CommandModalContextView'
 
+// TODO: Make this take the root context maker function so different root
+// contexts can be set based on the page we're on.
 export const CommandModal = (
   props: Omit<
     CommandModalProps,
@@ -27,9 +29,9 @@ export const CommandModal = (
     // Initialize with root context.
     makeRootContext({
       t,
-      addContext: (newContext: CommandModalContext) => {
+      openContext: (newContext: CommandModalContext) => {
         setContexts((currentContexts) => [...currentContexts, newContext])
-        // Clear filter when adding new context.
+        // Clear filter when opening new context.
         setFilter('')
       },
     }),

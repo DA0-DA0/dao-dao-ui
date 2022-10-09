@@ -11,7 +11,9 @@ export interface CommandModalProps {
   children: ReactNode
 }
 
-export type CommandModalContextSectionItem<T extends {} = {}> = T & {
+export type CommandModalContextSectionItem<
+  ExtraItemProperties extends {} = {}
+> = ExtraItemProperties & {
   name: string
   disabled?: boolean
 } & (
@@ -25,10 +27,12 @@ export type CommandModalContextSectionItem<T extends {} = {}> = T & {
       }
   )
 
-export interface CommandModalContextSection<T extends {} = {}> {
+export interface CommandModalContextSection<
+  ExtraItemProperties extends {} = {}
+> {
   name: string
-  items: CommandModalContextSectionItem<T>[]
-  onChoose: (item: CommandModalContextSectionItem<T>) => void
+  items: CommandModalContextSectionItem<ExtraItemProperties>[]
+  onChoose: (item: CommandModalContextSectionItem<ExtraItemProperties>) => void
 }
 
 export interface CommandModalContextUseSectionsOptions {
@@ -47,10 +51,8 @@ export interface CommandModalContext {
 
 export type CommandModalContextMakerOptions<MakerOptions extends {} = {}> =
   MakerOptions & {
-    // router: NextRouter
     t: TFunction
-    // daos: CommandModalDaoInfo[]
-    addContext: (context: CommandModalContext) => void
+    openContext: (context: CommandModalContext) => void
   }
 
 export type CommandModalContextMaker<MakerOptions extends {} = {}> = (

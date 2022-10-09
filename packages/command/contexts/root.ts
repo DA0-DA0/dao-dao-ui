@@ -84,7 +84,7 @@ export const makeRootContext: CommandModalContextMaker = (options) => {
     const pinnedSection: CommandModalContextSection<CommandModalDaoInfo> = {
       name: t('title.pinned'),
       onChoose: (dao) =>
-        options.addContext(
+        options.openContext(
           makeDaoContext({
             ...options,
             dao,
@@ -102,7 +102,7 @@ export const makeRootContext: CommandModalContextMaker = (options) => {
     const daosSection: CommandModalContextSection<CommandModalDaoInfo> = {
       name: t('title.daos'),
       onChoose: (dao) =>
-        options.addContext(
+        options.openContext(
           makeDaoContext({
             ...options,
             dao,
