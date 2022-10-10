@@ -19,7 +19,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes'
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/cw3-dao'
+import { CosmosMsgFor_Empty } from '@dao-dao/tstypes/contracts/common'
 import {
   ActionCardLoader,
   ActionSelector,

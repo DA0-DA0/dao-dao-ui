@@ -2,15 +2,12 @@ import { toAscii, toBase64 } from '@cosmjs/encoding'
 
 import {
   BankMsg,
+  CosmosMsgFor_Empty,
   DistributionMsg,
   StakingMsg,
-} from '@dao-dao/state/clients/cw-proposal-single'
-import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
-import {
-  CosmosMsgFor_Empty,
-  ProposalResponse,
   WasmMsg,
-} from '@dao-dao/types/contracts/cw3-dao'
+} from '@dao-dao/tstypes/contracts/common'
+import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 
 export function parseEncodedMessage(base64String?: string) {
   if (base64String) {
@@ -67,7 +64,7 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
 }
 
 export function decodeMessages(
-  msgs: ProposalResponse['msgs']
+  msgs: CosmosMsgFor_Empty[]
 ): { [key: string]: any }[] {
   const decodedMessageArray: any[] = []
   const proposalMsgs = Object.values(msgs)
@@ -104,7 +101,7 @@ export function decodeMessages(
   return decodedMessages
 }
 
-export function decodedMessagesString(msgs: ProposalResponse['msgs']): string {
+export function decodedMessagesString(msgs: CosmosMsgFor_Empty[]): string {
   const decodedMessageArray = decodeMessages(msgs)
   return JSON.stringify(decodedMessageArray, undefined, 2)
 }

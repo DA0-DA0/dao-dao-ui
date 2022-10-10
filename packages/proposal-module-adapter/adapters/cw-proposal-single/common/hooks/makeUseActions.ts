@@ -1,8 +1,29 @@
 import { useMemo } from 'react'
 
-import { ProposalModule } from '@dao-dao/tstypes'
+import {
+  ContractVersion,
+  IProposalModuleAdapterCommonOptions,
+} from '@dao-dao/tstypes'
 
-import { makeUpdateProposalConfigAction } from '../actions'
+import {
+  makeUpdatePreProposeConfigAction,
+  makeUpdateProposalConfigV1Action,
+  makeUpdateProposalConfigV2Action,
+} from '../actions'
 
-export const makeUseActions = (proposalModule: ProposalModule) => () =>
-  useMemo(() => [makeUpdateProposalConfigAction(proposalModule)], [])
+export const makeUseActions =
+  ({ proposalModule }: IProposalModuleAdapterCommonOptions) =>
+  () =>
+    useMemo(
+      () =>
+        proposalModule.version === ContractVersion.V0_1_0
+          ? [makeUpdateProposalConfigV1Action(proposalModule)]
+          : [
+              makeUpdateProposalConfigV2Action(proposalModule),
+              ...// If has pre propose module, add update config action.
+              (proposalModule.preProposeAddress
+                ? [makeUpdatePreProposeConfigAction(proposalModule)]
+                : []),
+            ],
+      []
+    )

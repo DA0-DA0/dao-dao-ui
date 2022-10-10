@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   ProcessedTQ,
   ProcessedTQType,
   ProcessedThresholdQuorum,
 } from '@dao-dao/tstypes'
+import { Threshold } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 export const useProcessTQ = () => {

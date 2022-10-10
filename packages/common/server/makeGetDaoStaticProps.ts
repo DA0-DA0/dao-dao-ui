@@ -14,6 +14,7 @@ import {
 import {
   CwCoreV0_1_0QueryClient,
   CwCoreV0_2_0QueryClient,
+  fetchProposalModules,
 } from '@dao-dao/state'
 import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
 import {
@@ -29,7 +30,6 @@ import {
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   cosmWasmClientRouter,
-  fetchProposalModules,
   parseContractVersion,
   processError,
   validateContractAddress,

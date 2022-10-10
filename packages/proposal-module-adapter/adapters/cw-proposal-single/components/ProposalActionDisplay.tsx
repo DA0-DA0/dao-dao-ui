@@ -6,13 +6,14 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { ActionsRenderer } from '@dao-dao/actions'
+import { useVotingModule } from '@dao-dao/state'
 import {
-  CwProposalSingleHooks,
-  CwProposalSingleSelectors,
-  useVotingModule,
-} from '@dao-dao/state'
-import { Status } from '@dao-dao/state/clients/cw-proposal-single'
-import { ActionAndData, BaseProposalActionDisplayProps } from '@dao-dao/tstypes'
+  ActionAndData,
+  BaseProposalActionDisplayProps,
+  ContractVersion,
+} from '@dao-dao/tstypes'
+import { DepositRefundPolicy } from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
+import { Status } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import {
   Button,
   CloseProposal,
@@ -22,7 +23,16 @@ import {
 import { decodeMessages, processError } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterContext } from '../../../react'
-import { useProposal } from '../hooks'
+import { configSelector } from '../contracts/CwProposalSingle.common.recoil'
+import {
+  useClose as useCloseV1,
+  useExecute as useExecuteV1,
+} from '../contracts/CwProposalSingle.v1.hooks'
+import {
+  useClose as useCloseV2,
+  useExecute as useExecuteV2,
+} from '../contracts/CwProposalSingle.v2.hooks'
+import { useDepositInfo, useProposal } from '../hooks'
 import { NewProposalForm } from '../types'
 
 export const ProposalActionDisplay = ({
@@ -43,11 +53,12 @@ export const ProposalActionDisplay = ({
   })
 
   const config = useRecoilValue(
-    CwProposalSingleSelectors.configSelector({
+    configSelector({
       contractAddress: proposalModule.address,
     })
   )
   const proposal = useProposal()
+  const depositInfo = useDepositInfo()
 
   const decodedMessages = useMemo(
     () => decodeMessages(proposal.msgs),
@@ -75,11 +86,17 @@ export const ProposalActionDisplay = ({
     }
   })
 
-  const executeProposal = CwProposalSingleHooks.useExecute({
+  const executeProposal = (
+    proposalModule.version === ContractVersion.V0_1_0
+      ? useExecuteV1
+      : useExecuteV2
+  )({
     contractAddress: proposalModule.address,
     sender: walletAddress,
   })
-  const closeProposal = CwProposalSingleHooks.useClose({
+  const closeProposal = (
+    proposalModule.version === ContractVersion.V0_1_0 ? useCloseV1 : useCloseV2
+  )({
     contractAddress: proposalModule.address,
     sender: walletAddress,
   })
@@ -186,7 +203,7 @@ export const ProposalActionDisplay = ({
           loading={loading}
           onClose={onClose}
           willRefundProposalDeposit={
-            proposal.deposit_info?.refund_failed_proposals ?? false
+            depositInfo?.refund_policy === DepositRefundPolicy.Always ?? false
           }
         />
       )}

@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next'
 
 import { useDaoInfoContext } from '@dao-dao/common'
 import { blockHeightSelector, useCachedLoadable } from '@dao-dao/state'
-import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 import { BaseProposalStatusAndInfoProps } from '@dao-dao/tstypes'
+import { Status } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import {
   ButtonLink,
   CopyToClipboardUnderline,

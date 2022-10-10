@@ -275,6 +275,8 @@
     "unstakingDurationDescription": "In order to vote, members must stake their tokens with the DAO. Members who would like to leave the DAO or trade their governance tokens must first unstake them. This setting configures how long members have to wait after unstaking their tokens for those tokens to become available. The longer you set this duration, the more sure you can be sure that people who register their tokens are keen to participate in your DAO's governance.",
     "unstakingDurationTitle": "Unstaking period",
     "updateAdminDescription": "This will update the admin for the selected contract. The new admin will have complete control over the contract. Take care.",
+    "updateProposalSubmissionConfigDescription": "This will update the proposal submission configuration for this DAO. A bad configuration can lock the DAO. Take care. If you have questions, please feel free to ask in the <2>DAO DAO Discord</2>.",
+    "updateProposalSubmissionConfigTitle": "Update Proposal Submission Config",
     "updateVotingConfigDescription": "This will update the voting configuration for this DAO. A bad configuration can lock the DAO or create unexpected voting outcomes. Take care. If you have questions, please feel free to ask in the <2>DAO DAO Discord</2>.",
     "updateVotingConfigTitle": "Update Voting Config",
     "validator": "Validator",

@@ -1,37 +1,43 @@
 import { selectorFamily } from 'recoil'
 
 import {
+  cosmWasmClientSelector,
+  refreshProposalIdAtom,
+  refreshProposalsIdAtom,
+  signingCosmWasmClientAtom,
+} from '@dao-dao/state'
+import {
   ConfigResponse,
-  CwProposalSingleClient as ExecuteClient,
   InfoResponse,
   ListProposalsResponse,
   ListVotesResponse,
   ProposalCountResponse,
   ProposalHooksResponse,
   ProposalResponse,
-  CwProposalSingleQueryClient as QueryClient,
   ReverseProposalsResponse,
   VoteHooksResponse,
   VoteResponse,
-} from '../../../clients/cw-proposal-single'
-import { signingCosmWasmClientAtom } from '../../atoms'
+} from '@dao-dao/tstypes/contracts/CwProposalSingle.v1'
+
 import {
-  refreshProposalIdAtom,
-  refreshProposalsIdAtom,
-} from '../../atoms/refresh'
-import { cosmWasmClientSelector } from '../chain'
+  CwProposalSingleClient,
+  CwProposalSingleQueryClient,
+} from './CwProposalSingle.v1.client'
 
 type QueryClientParams = {
   contractAddress: string
 }
 
-const queryClient = selectorFamily<QueryClient, QueryClientParams>({
-  key: 'cwProposalSingleQueryClient',
+const queryClient = selectorFamily<
+  CwProposalSingleQueryClient,
+  QueryClientParams
+>({
+  key: 'cwProposalSingleV1QueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      return new QueryClient(client, contractAddress)
+      return new CwProposalSingleQueryClient(client, contractAddress)
     },
 })
 
@@ -41,24 +47,24 @@ export type ExecuteClientParams = {
 }
 
 export const executeClient = selectorFamily<
-  ExecuteClient | undefined,
+  CwProposalSingleClient | undefined,
   ExecuteClientParams
 >({
-  key: 'cwProposalSingleExecuteClient',
+  key: 'cwProposalSingleV1ExecuteClient',
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
       const client = get(signingCosmWasmClientAtom)
       if (!client) return
 
-      return new ExecuteClient(client, sender, contractAddress)
+      return new CwProposalSingleClient(client, sender, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
 
 export const configSelector = selectorFamily<ConfigResponse, QueryClientParams>(
   {
-    key: 'cwProposalSingleConfig',
+    key: 'cwProposalSingleV1Config',
     get:
       (queryClientParams) =>
       async ({ get }) => {
@@ -71,9 +77,9 @@ export const configSelector = selectorFamily<ConfigResponse, QueryClientParams>(
 
 export const proposalSelector = selectorFamily<
   ProposalResponse,
-  QueryClientParams & { params: Parameters<QueryClient['proposal']> }
+  QueryClientParams & { params: Parameters<CwProposalSingleClient['proposal']> }
 >({
-  key: 'cwProposalSingleProposal',
+  key: 'cwProposalSingleV1Proposal',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -92,9 +98,11 @@ export const proposalSelector = selectorFamily<
 
 export const listProposalsSelector = selectorFamily<
   ListProposalsResponse,
-  QueryClientParams & { params: Parameters<QueryClient['listProposals']> }
+  QueryClientParams & {
+    params: Parameters<CwProposalSingleClient['listProposals']>
+  }
 >({
-  key: 'cwProposalSingleListProposals',
+  key: 'cwProposalSingleV1ListProposals',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -108,9 +116,11 @@ export const listProposalsSelector = selectorFamily<
 
 export const listAllProposalsSelector = selectorFamily<
   ListProposalsResponse,
-  QueryClientParams & { params: Parameters<QueryClient['listProposals']> }
+  QueryClientParams & {
+    params: Parameters<CwProposalSingleClient['listProposals']>
+  }
 >({
-  key: 'cwProposalSingleListAllProposals',
+  key: 'cwProposalSingleV1ListAllProposals',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -142,9 +152,11 @@ export const listAllProposalsSelector = selectorFamily<
 
 export const reverseProposalsSelector = selectorFamily<
   ReverseProposalsResponse,
-  QueryClientParams & { params: Parameters<QueryClient['reverseProposals']> }
+  QueryClientParams & {
+    params: Parameters<CwProposalSingleClient['reverseProposals']>
+  }
 >({
-  key: 'cwProposalSingleReverseProposals',
+  key: 'cwProposalSingleV1ReverseProposals',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -160,7 +172,7 @@ export const proposalCountSelector = selectorFamily<
   ProposalCountResponse,
   QueryClientParams
 >({
-  key: 'cwProposalSingleProposalCount',
+  key: 'cwProposalSingleV1ProposalCount',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -178,11 +190,13 @@ export const proposalCountSelector = selectorFamily<
     },
 })
 
-export const getVoteV1Selector = selectorFamily<
+export const getVoteSelector = selectorFamily<
   VoteResponse,
-  QueryClientParams & { params: Parameters<QueryClient['getVoteV1']> }
+  QueryClientParams & {
+    params: Parameters<CwProposalSingleClient['getVote']>
+  }
 >({
-  key: 'cwProposalSingleGetVoteV1',
+  key: 'cwProposalSingleV1GetVote',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -195,36 +209,17 @@ export const getVoteV1Selector = selectorFamily<
         })
       )
 
-      return await client.getVoteV1(...params)
-    },
-})
-
-export const getVoteV2Selector = selectorFamily<
-  VoteResponse,
-  QueryClientParams & { params: Parameters<QueryClient['getVoteV2']> }
->({
-  key: 'cwProposalSingleGetVoteV2',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      get(
-        refreshProposalIdAtom({
-          address: queryClientParams.contractAddress,
-          proposalId: params[0].proposalId,
-        })
-      )
-
-      return await client.getVoteV2(...params)
+      return await client.getVote(...params)
     },
 })
 
 export const listVotesSelector = selectorFamily<
   ListVotesResponse,
-  QueryClientParams & { params: Parameters<QueryClient['listVotes']> }
+  QueryClientParams & {
+    params: Parameters<CwProposalSingleClient['listVotes']>
+  }
 >({
-  key: 'cwProposalSingleListVotes',
+  key: 'cwProposalSingleV1ListVotes',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -245,7 +240,7 @@ export const proposalHooksSelector = selectorFamily<
   ProposalHooksResponse,
   QueryClientParams
 >({
-  key: 'cwProposalSingleProposalHooks',
+  key: 'cwProposalSingleV1ProposalHooks',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -259,7 +254,7 @@ export const voteHooksSelector = selectorFamily<
   VoteHooksResponse,
   QueryClientParams
 >({
-  key: 'cwProposalSingleVoteHooks',
+  key: 'cwProposalSingleV1VoteHooks',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -270,7 +265,7 @@ export const voteHooksSelector = selectorFamily<
 })
 
 export const infoSelector = selectorFamily<InfoResponse, QueryClientParams>({
-  key: 'cwProposalSingleInfo',
+  key: 'cwProposalSingleV1Info',
   get:
     (queryClientParams) =>
     async ({ get }) => {

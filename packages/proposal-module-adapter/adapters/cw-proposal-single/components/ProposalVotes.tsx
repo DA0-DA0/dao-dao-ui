@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
-import {
-  CwProposalSingleSelectors,
-  refreshProposalIdAtom,
-  useProposalVotesQuery,
-} from '@dao-dao/state'
+import { refreshProposalIdAtom, useProposalVotesQuery } from '@dao-dao/state'
 import {
   ProposalVote,
   ProposalVotes as StatelessProposalVotes,
 } from '@dao-dao/ui'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
+import { listVotesSelector } from '../contracts/CwProposalSingle.common.recoil'
 import { useProposal } from '../hooks'
 import { VoteDisplay } from './VoteDisplay'
 
@@ -43,7 +40,7 @@ export const ProposalVotes = () => {
         try {
           const newVotes = (
             await snapshot.getPromise(
-              CwProposalSingleSelectors.listVotesSelector({
+              listVotesSelector({
                 contractAddress: proposalModuleAddress,
                 params: [
                   {

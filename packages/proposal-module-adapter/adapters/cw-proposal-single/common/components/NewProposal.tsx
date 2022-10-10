@@ -19,8 +19,6 @@ import {
   Cw20BaseHooks,
   Cw20BaseSelectors,
   CwCoreV0_1_0Selectors,
-  CwProposalSingleHooks,
-  CwProposalSingleSelectors,
   blockHeightSelector,
   cosmWasmClientSelector,
   refreshWalletBalancesIdAtom,
@@ -30,6 +28,7 @@ import {
 import {
   Action,
   ActionKey,
+  ContractVersion,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes'
@@ -42,12 +41,17 @@ import {
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { BaseNewProposalProps } from '../../../../types'
+import { usePropose as useProposePrePropose } from '../../contracts/CwPreProposeSingle.hooks'
+import { proposalSelector } from '../../contracts/CwProposalSingle.common.recoil'
+import { usePropose as useProposeV1 } from '../../contracts/CwProposalSingle.v1.hooks'
+import { usePropose as useProposeV2 } from '../../contracts/CwProposalSingle.v2.hooks'
 import { makeGetProposalInfo } from '../../functions'
 import { NewProposalData, NewProposalForm } from '../../types'
 import {
   makeUseActions as makeUseProposalModuleActions,
   useProcessTQ,
 } from '../hooks'
+import { makeDepositInfo } from '../selectors'
 import {
   NewProposal as StatelessNewProposal,
   NewProposalProps as StatelessNewProposalProps,
@@ -81,9 +85,7 @@ export const NewProposal = ({
     hooks: { useActions: useVotingModuleActions },
   } = useVotingModuleAdapter()
   const votingModuleActions = useVotingModuleActions()
-  const proposalModuleActions = makeUseProposalModuleActions(
-    options.proposalModule
-  )()
+  const proposalModuleActions = makeUseProposalModuleActions(options)()
   const actions = useActions(
     coreVersion,
     useMemo(
@@ -116,11 +118,12 @@ export const NewProposal = ({
 
   const formMethods = useFormContext<NewProposalForm>()
 
-  const config = useRecoilValue(
-    CwProposalSingleSelectors.configSelector({
-      contractAddress: options.proposalModule.address,
-    })
-  )
+  const depositInfo = useRecoilValue(makeDepositInfo(options))
+  // TODO: Support native token deposits.
+  const depositInfoCw20TokenAddress =
+    depositInfo?.denom && 'cw20' in depositInfo.denom
+      ? depositInfo.denom.cw20
+      : undefined
 
   const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
   const blockHeight =
@@ -128,12 +131,12 @@ export const NewProposal = ({
       ? blockHeightLoadable.contents
       : undefined
 
-  const requiredProposalDeposit = Number(config.deposit_info?.deposit ?? '0')
+  const requiredProposalDeposit = Number(depositInfo?.amount ?? '0')
 
   const allowanceResponse = useRecoilValue(
-    config.deposit_info && requiredProposalDeposit && walletAddress
+    depositInfoCw20TokenAddress && requiredProposalDeposit && walletAddress
       ? Cw20BaseSelectors.allowanceSelector({
-          contractAddress: config.deposit_info.token,
+          contractAddress: depositInfoCw20TokenAddress,
           params: [
             { owner: walletAddress, spender: options.proposalModule.address },
           ],
@@ -142,20 +145,26 @@ export const NewProposal = ({
   )
 
   const increaseAllowance = Cw20BaseHooks.useIncreaseAllowance({
-    contractAddress: config.deposit_info?.token ?? '',
+    contractAddress: depositInfoCw20TokenAddress ?? '',
     sender: walletAddress ?? '',
   })
-  const doPropose = CwProposalSingleHooks.usePropose({
+  const doProposeV1 = useProposeV1({
     contractAddress: options.proposalModule.address,
+    sender: walletAddress ?? '',
+  })
+  const doProposeV2 = useProposeV2({
+    contractAddress: options.proposalModule.address,
+    sender: walletAddress ?? '',
+  })
+  const doProposePrePropose = useProposePrePropose({
+    contractAddress: options.proposalModule.preProposeAddress ?? '',
     sender: walletAddress ?? '',
   })
 
   const depositTokenBalance = useRecoilValue(
-    config.deposit_info?.deposit &&
-      config.deposit_info?.deposit !== '0' &&
-      walletAddress
+    requiredProposalDeposit > 0 && depositInfoCw20TokenAddress && walletAddress
       ? Cw20BaseSelectors.balanceSelector({
-          contractAddress: config.deposit_info.token,
+          contractAddress: depositInfoCw20TokenAddress,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined)
@@ -163,9 +172,8 @@ export const NewProposal = ({
 
   // Info about if deposit can be paid.
   const depositSatisfied =
-    !config.deposit_info?.deposit ||
-    config.deposit_info?.deposit === '0' ||
-    Number(depositTokenBalance?.balance) >= Number(config.deposit_info?.deposit)
+    requiredProposalDeposit === 0 ||
+    Number(depositTokenBalance?.balance ?? '0') >= requiredProposalDeposit
 
   const setRefreshWalletBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(walletAddress ?? '')
@@ -227,7 +235,20 @@ export const NewProposal = ({
         }
 
         try {
-          const response = await doPropose(newProposalData)
+          let response
+          //! V1
+          if (options.proposalModule.version === ContractVersion.V0_1_0) {
+            response = await doProposeV1(newProposalData)
+            //! V2
+          } else {
+            response = options.proposalModule.preProposeAddress
+              ? await doProposePrePropose({
+                  msg: {
+                    propose: newProposalData,
+                  },
+                })
+              : await doProposeV2(newProposalData)
+          }
 
           const proposalNumber = Number(
             findAttribute(response.logs, 'wasm', 'proposal_id').value
@@ -245,7 +266,7 @@ export const NewProposal = ({
 
           const proposal = (
             await snapshot.getPromise(
-              CwProposalSingleSelectors.proposalSelector({
+              proposalSelector({
                 contractAddress: options.proposalModule.address,
                 params: [
                   {
@@ -310,7 +331,9 @@ export const NewProposal = ({
       increaseAllowance,
       options,
       refreshBalances,
-      doPropose,
+      doProposeV1,
+      doProposeV2,
+      doProposePrePropose,
       cosmWasmClient,
       onCreateSuccess,
       formMethods,

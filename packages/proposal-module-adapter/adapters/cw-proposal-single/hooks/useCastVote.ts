@@ -2,17 +2,21 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { CwProposalSingleHooks } from '@dao-dao/state'
-import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
+import { ContractVersion } from '@dao-dao/tstypes'
+import { Vote } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import { processError } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
+import { useVote as useVoteV1 } from '../contracts/CwProposalSingle.v1.hooks'
+import { useVote as useVoteV2 } from '../contracts/CwProposalSingle.v2.hooks'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { connected, address: walletAddress = '' } = useWallet()
 
-  const castVote = CwProposalSingleHooks.useCastVote({
+  const castVote = (
+    proposalModule.version === ContractVersion.V0_1_0 ? useVoteV1 : useVoteV2
+  )({
     contractAddress: proposalModule.address,
     sender: walletAddress ?? '',
   })

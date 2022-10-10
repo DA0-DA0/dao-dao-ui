@@ -37,7 +37,6 @@ export const FallbackVotingAdapter: VotingModuleAdapter = {
       },
       DaoTreasuryFooter: () => null,
       DaoInfoAdditionalAddresses: () => null,
-      DaoInfoVotingConfiguration: () => null,
       ProfileMemberCardMembershipInfo: () => null,
       ProfileCardNotMemberInfo: () => null,
       VoteHeroStats: () => null,

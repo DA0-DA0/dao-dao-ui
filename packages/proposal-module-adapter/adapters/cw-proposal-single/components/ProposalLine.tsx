@@ -5,7 +5,7 @@ import {
   contractVersionSelector,
   useCachedLoadable,
 } from '@dao-dao/state'
-import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { Status } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import { ProposalLine as StatelessProposalLine } from '@dao-dao/ui'
 import {
   convertExpirationToDate,

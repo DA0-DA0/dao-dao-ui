@@ -7,7 +7,7 @@ import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
 
 import { Action } from './actions'
 import { Expiration } from './contracts'
-import { CheckedDepositInfo } from './contracts/cw-proposal-single'
+import { CheckedDepositInfo } from './contracts/CwPreProposeSingle'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
@@ -22,7 +22,6 @@ import {
   ProposalCardProps,
 } from './ui'
 import { ProcessedThresholdQuorum } from './utils'
-import { BaseProposalDetailsVotingPowerWidgetProps } from './voting-module-adapter'
 
 export interface IProposalModuleAdapterCommon<
   FormData extends FieldValues = any
@@ -53,9 +52,7 @@ export interface IProposalModuleAdapterCommon<
 
   // Components
   components: {
-    ProposalModuleInfo: ComponentType<BaseProposalModuleInfo>
     NewProposal: ComponentType<BaseNewProposalProps>
-    DaoInfoVotingConfiguration: ComponentType
   }
 }
 
@@ -91,7 +88,6 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
     ProposalVotes: ComponentType
     ProposalVoteTally: ComponentType
     ProposalInfoCard: ComponentType<BaseProposalInfoCardProps>
-    ProposalDetails: ComponentType<BaseProposalDetailsProps>
     ProposalLine: ComponentType<BaseProposalLineProps>
   }
 }
@@ -201,24 +197,8 @@ export interface BaseProposalInfoCardProps {
   walletAddress?: string
 }
 
-export interface BaseProposalDetailsProps {
-  actions: Action[]
-  onExecuteSuccess: () => void
-  onCloseSuccess: () => void
-  onVoteSuccess: () => void
-  connected: boolean
-  ConnectWalletButton: ComponentType
-  duplicate: (data: any) => void
-  walletAddress?: string
-  VotingPowerWidget?: ComponentType<BaseProposalDetailsVotingPowerWidgetProps>
-}
-
 export interface BaseProposalLineProps {
   href: string
-}
-
-export interface BaseProposalModuleInfo {
-  className?: string
 }
 
 export interface BaseNewProposalProps<FormData = any> {

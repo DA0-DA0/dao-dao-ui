@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Approved, Executed, Open, Rejected } from '@dao-dao/icons'
-import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { Status } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import { StatusDisplay } from '@dao-dao/ui'
 
 export interface ProposalStatusProps {

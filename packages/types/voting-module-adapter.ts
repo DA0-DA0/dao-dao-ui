@@ -4,8 +4,8 @@ import { FieldValues } from 'react-hook-form'
 
 import { Action } from './actions'
 import { Duration } from './contracts/common'
-import { CheckedDepositInfo } from './contracts/cw-proposal-single'
 import { MarketingInfoResponse, TokenInfoResponse } from './contracts/cw20-base'
+import { CheckedDepositInfoV1 } from './contracts/CwProposalSingle.v2'
 import { Claim } from './contracts/stake-cw20'
 import {
   DaoCreationGetInstantiateInfo,
@@ -28,7 +28,7 @@ export interface MembershipPageInfo {
 }
 
 export interface BaseMembershipProps {
-  proposalModuleDepositInfos: CheckedDepositInfo[]
+  proposalModuleDepositInfos: CheckedDepositInfoV1[]
 }
 
 export interface MembershipMobileTabProps {
@@ -47,7 +47,7 @@ export interface BaseSdaMembershipPageProps extends BaseMembershipProps {
 }
 
 export interface BaseProposalDetailsVotingPowerWidgetProps {
-  depositInfo?: CheckedDepositInfo
+  depositInfo?: CheckedDepositInfoV1
 }
 
 export interface BaseProfileMemberCardMembershipInfoProps {
@@ -143,7 +143,6 @@ export interface IVotingModuleAdapter {
     }
     DaoTreasuryFooter: ComponentType
     DaoInfoAdditionalAddresses: ComponentType
-    DaoInfoVotingConfiguration: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
     ProfileMemberCardMembershipInfo: ComponentType<BaseProfileMemberCardMembershipInfoProps>

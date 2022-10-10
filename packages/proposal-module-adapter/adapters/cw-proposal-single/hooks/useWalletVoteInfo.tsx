@@ -2,16 +2,15 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { CwCoreV0_2_0Selectors, useVotingModule } from '@dao-dao/state'
+import { WalletVoteInfo } from '@dao-dao/tstypes'
 import {
-  CwCoreV0_2_0Selectors,
-  CwProposalSingleSelectors,
-  contractVersionSelector,
-  useVotingModule,
-} from '@dao-dao/state'
-import { Status, Vote } from '@dao-dao/state/clients/cw-proposal-single'
-import { ContractVersion, WalletVoteInfo } from '@dao-dao/tstypes'
+  Status,
+  Vote,
+} from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
+import { getVoteSelector } from '../contracts/CwProposalSingle.common.recoil'
 import { useProposal } from './useProposal'
 
 export const useWalletVoteInfo = (): WalletVoteInfo<Vote> => {
@@ -29,17 +28,9 @@ export const useWalletVoteInfo = (): WalletVoteInfo<Vote> => {
 
   const proposal = useProposal()
 
-  const proposalModuleVersion = useRecoilValue(
-    contractVersionSelector(proposalModule.address)
-  )
-  const voteSelector =
-    proposalModuleVersion === ContractVersion.V0_1_0
-      ? CwProposalSingleSelectors.getVoteV1Selector
-      : CwProposalSingleSelectors.getVoteV2Selector
-
   const walletVote = useRecoilValue(
     walletAddress
-      ? voteSelector({
+      ? getVoteSelector({
           contractAddress: proposalModule.address,
           params: [{ proposalId: proposalNumber, voter: walletAddress }],
         })

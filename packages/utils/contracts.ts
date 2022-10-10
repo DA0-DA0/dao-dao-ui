@@ -1,11 +1,4 @@
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-
-import {
-  CwCoreV0_1_0QueryClient,
-  CwCoreV0_2_0QueryClient,
-} from '@dao-dao/state/clients'
-import { InfoResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
-import { ContractVersion, ProposalModule } from '@dao-dao/tstypes'
+import { ContractVersion } from '@dao-dao/tstypes'
 
 export const parseContractVersion = (
   version: string
@@ -27,81 +20,4 @@ export const indexToProposalModulePrefix = (index: number) => {
   }
 
   return prefix
-}
-
-export const fetchProposalModules = async (
-  cwClient: CosmWasmClient,
-  coreAddress: string,
-  coreVersion: ContractVersion
-): Promise<ProposalModule[]> => {
-  const proposalModules: ProposalModule[] = []
-  let paginationStart: string | undefined
-  const limit = 10
-
-  const getV0_1_0ProposalModules = async () =>
-    (
-      await new CwCoreV0_1_0QueryClient(cwClient, coreAddress).proposalModules({
-        startAt: paginationStart,
-        limit,
-        // Ignore first address if startAt was set.
-      })
-    )
-      .slice(paginationStart !== undefined ? 1 : 0)
-      .map(async (address, index) => {
-        // All InfoResponses are the same, so just use cw-core's.
-        const {
-          info: { contract: contractName },
-        }: InfoResponse = await cwClient.queryContractSmart(address, {
-          info: {},
-        })
-
-        return {
-          contractName,
-          address,
-          prefix: indexToProposalModulePrefix(index),
-        }
-      })
-
-  const getV0_2_0ProposalModules = async () =>
-    (
-      await new CwCoreV0_2_0QueryClient(
-        cwClient,
-        coreAddress
-      ).activeProposalModules({
-        startAfter: paginationStart,
-        limit,
-      })
-    ).map(async (data) => {
-      // All InfoResponses are the same, so just use cw-core's.
-      const {
-        info: { contract: contractName },
-      }: InfoResponse = await cwClient.queryContractSmart(data.address, {
-        info: {},
-      })
-
-      return {
-        contractName,
-        ...data,
-      }
-    })
-
-  while (true) {
-    const _proposalModules = await Promise.all(
-      coreVersion === ContractVersion.V0_1_0
-        ? await getV0_1_0ProposalModules()
-        : await getV0_2_0ProposalModules()
-    )
-    if (!_proposalModules.length) {
-      break
-    }
-
-    paginationStart = _proposalModules[_proposalModules.length - 1].address
-    proposalModules.push(..._proposalModules)
-
-    if (_proposalModules.length < limit) {
-      break
-    }
-  }
-
-  return proposalModules
 }

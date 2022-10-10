@@ -4,6 +4,7 @@ export interface Coin {
   amount: Uint128
   denom: string
 }
+export type Decimal = string
 export type Duration =
   | {
       height: number
@@ -40,8 +41,31 @@ export type CosmosMsgFor_Empty =
       distribution: DistributionMsg
     }
   | {
+      stargate: {
+        type_url: string
+        value: Binary
+        [k: string]: unknown
+      }
+    }
+  | {
+      ibc: IbcMsg
+    }
+  | {
       wasm: WasmMsg
     }
+  | {
+      gov: GovMsg
+    }
+export type CosmosMsgForEmpty = CosmosMsgFor_Empty
+
+export type VoteOption = 'yes' | 'no' | 'abstain' | 'no_with_veto'
+export type GovMsg = {
+  vote: {
+    proposal_id: number
+    vote: VoteOption
+    [k: string]: unknown
+  }
+}
 /**
  * The message types of the bank module.
  *
@@ -161,3 +185,65 @@ export type WasmMsg =
         contract_addr: string
       }
     }
+
+export interface IbcTimeout {
+  block?: IbcTimeoutBlock | null
+  timestamp?: Timestamp | null
+  [k: string]: unknown
+}
+export interface IbcTimeoutBlock {
+  height: number
+  revision: number
+  [k: string]: unknown
+}
+export type IbcMsg =
+  | {
+      transfer: {
+        amount: Coin
+        channel_id: string
+        timeout: IbcTimeout
+        to_address: string
+        [k: string]: unknown
+      }
+    }
+  | {
+      send_packet: {
+        channel_id: string
+        data: Binary
+        timeout: IbcTimeout
+        [k: string]: unknown
+      }
+    }
+  | {
+      close_channel: {
+        channel_id: string
+        [k: string]: unknown
+      }
+    }
+
+export type Admin =
+  | {
+      address: {
+        addr: string
+        [k: string]: unknown
+      }
+    }
+  | {
+      core_module: {
+        [k: string]: unknown
+      }
+    }
+
+export interface ModuleInstantiateInfo {
+  admin?: Admin | null
+  code_id: number
+  label: string
+  msg: Binary
+  [k: string]: unknown
+}
+
+export interface ContractVersion {
+  contract: string
+  version: string
+  [k: string]: unknown
+}

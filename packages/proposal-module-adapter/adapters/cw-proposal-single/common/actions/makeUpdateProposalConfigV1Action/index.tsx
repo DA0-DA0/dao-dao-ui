@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
-import { Threshold } from '@dao-dao/state/clients/cw-proposal-single'
+import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
   Action,
   ActionComponent,
@@ -12,6 +11,8 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes'
+import { Threshold } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
+import { UpdateProposalConfigIcon } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -19,10 +20,8 @@ import {
 } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import {
-  UpdateProposalConfigComponent,
-  UpdateProposalConfigIcon,
-} from './UpdateProposalConfigComponent'
+import { configSelector } from '../../../contracts/CwProposalSingle.v1.recoil'
+import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
 
 // TODO: Convert this into a more generalizable 'context' abstraction.
 type AsProposalModuleMaker<T> = (proposalModule: ProposalModule) => T
@@ -103,7 +102,7 @@ const makeUseDefaults: AsProposalModuleMaker<
   ({ address: proposalModuleAddress }) =>
   () => {
     const proposalModuleConfig = useRecoilValue(
-      CwProposalSingleSelectors.configSelector({
+      configSelector({
         contractAddress: proposalModuleAddress,
       })
     )
@@ -193,7 +192,7 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
   ({ address: proposalModuleAddress }) =>
   () => {
     const proposalModuleConfig = useRecoilValue(
-      CwProposalSingleSelectors.configSelector({
+      configSelector({
         contractAddress: proposalModuleAddress,
       })
     )
@@ -339,7 +338,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   }, [msg, voteConversionDecimals])
 }
 
-export const makeUpdateProposalConfigAction = (
+export const makeUpdateProposalConfigV1Action = (
   proposalModule: ProposalModule
 ): Action<UpdateProposalConfigData> => ({
   key: ActionKey.UpdateProposalConfig,

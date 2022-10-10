@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { useActions } from '@dao-dao/actions'
 import { useDaoInfoContext } from '@dao-dao/common'
@@ -88,18 +88,19 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
   })
 
   return (
-    <NewProposal
-      {...args}
-      actions={actions}
-      actionsWithData={actionsWithData}
-      formMethods={formMethods}
-      options={{
-        proposalModule: singleChoiceProposalModule,
-        coreAddress,
-        Loader,
-        Logo,
-      }}
-    />
+    <FormProvider {...formMethods}>
+      <NewProposal
+        {...args}
+        actions={actions}
+        actionsWithData={actionsWithData}
+        options={{
+          proposalModule: singleChoiceProposalModule,
+          coreAddress,
+          Loader,
+          Logo,
+        }}
+      />
+    </FormProvider>
   )
 }
 

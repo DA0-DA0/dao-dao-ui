@@ -5,7 +5,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 import { useDaoInfoContext } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
-import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
+import { CheckedDepositInfoV1 } from '@dao-dao/tstypes/contracts/CwProposalSingle'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { Loader, Logo, PageWrapper, PageWrapperProps } from '@/components'
@@ -31,7 +31,7 @@ const InnerMembershipPage = () => {
   )
   const proposalModuleDepositInfos = useRecoilValue(
     waitForAll(depositInfoSelectors)
-  ).filter(Boolean) as CheckedDepositInfo[]
+  ).filter(Boolean) as CheckedDepositInfoV1[]
 
   return (
     <SdaMembershipPage

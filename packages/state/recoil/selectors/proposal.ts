@@ -1,8 +1,8 @@
 import { selectorFamily } from 'recoil'
 
 import { ProposalModule } from '@dao-dao/tstypes/dao'
-import { fetchProposalModules } from '@dao-dao/utils'
 
+import { fetchProposalModules } from '../../utils'
 import { cosmWasmClientSelector } from './chain'
 import { contractVersionSelector } from './contract'
 

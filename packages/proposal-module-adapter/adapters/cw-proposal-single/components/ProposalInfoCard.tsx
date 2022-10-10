@@ -3,19 +3,19 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
-  CwCoreV0_1_0Selectors,
-  CwProposalSingleSelectors,
+  CwCoreV0_2_0Selectors,
   blockHeightTimestampSafeSelector,
 } from '@dao-dao/state'
-import { Status } from '@dao-dao/state/clients/cw-proposal-single'
 // eslint-disable-next-line regex/invalid
 import { contractVersionSelector } from '@dao-dao/state/recoil/selectors/contract'
 import { ContractVersion } from '@dao-dao/tstypes'
+import { Status } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import { CopyToClipboard, ProposalIdDisplay, Tooltip } from '@dao-dao/ui'
 import { CHAIN_TXN_URL_PREFIX } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
 import { BaseProposalInfoCardProps } from '../../../types'
+import { getVoteSelector } from '../contracts/CwProposalSingle.common.recoil'
 import { useProposal, useProposalExecutionTxHash } from '../hooks'
 import { ProposalStatus } from './ProposalStatus'
 import { VoteDisplay } from './VoteDisplay'
@@ -36,16 +36,12 @@ export const ProposalInfoCard = ({
   const proposalModuleVersion = useRecoilValue(
     contractVersionSelector(proposalModuleAddress)
   )
-  const voteSelector =
-    proposalModuleVersion === ContractVersion.V0_1_0
-      ? CwProposalSingleSelectors.getVoteV1Selector
-      : CwProposalSingleSelectors.getVoteV2Selector
 
   const executionTxHash = useProposalExecutionTxHash()
 
   const walletVotingPowerWhenProposalCreated = useRecoilValue(
     walletAddress
-      ? CwCoreV0_1_0Selectors.votingPowerAtHeightSelector({
+      ? CwCoreV0_2_0Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           params: [
             {
@@ -62,7 +58,7 @@ export const ProposalInfoCard = ({
 
   const walletVote = useRecoilValue(
     walletAddress
-      ? voteSelector({
+      ? getVoteSelector({
           contractAddress: proposalModuleAddress,
           params: [{ proposalId: proposalNumber, voter: walletAddress }],
         })
@@ -165,7 +161,7 @@ export const ProposalInfoCard = ({
           </div>
         ) : null}
       </div>
-      {proposalModuleVersion === ContractVersion.V0_2_0 && (
+      {proposalModuleVersion !== ContractVersion.V0_1_0 && (
         <div className="flex flex-row justify-evenly items-stretch py-4 border-t md:py-5 border-light">
           <div className="flex flex-col gap-2 items-center">
             <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">

@@ -1,5 +1,4 @@
 export * from './ProposalActionDisplay'
-export * from './ProposalDetails'
 export * from './ProposalInfoCard'
 export * from './ProposalLine'
 export * from './ProposalStatusAndInfo'

@@ -1,7 +1,7 @@
 import { Check, Close, Texture } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
+import { Vote } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import { ProfileVoteCardOption } from '@dao-dao/ui'
 
 export const useProfileVoteCardOptions = (): ProfileVoteCardOption<Vote>[] => {

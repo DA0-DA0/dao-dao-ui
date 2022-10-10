@@ -1,8 +1,10 @@
 import { Buffer } from 'buffer'
 
-import { InstantiateMsg } from '@dao-dao/state/clients/cw-proposal-single'
 import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
+import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
+import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwProposalSingle.v2'
 import {
+  CWPREPROPOSESINGLE_CODE_ID,
   CWPROPOSALSINGLE_CODE_ID,
   NEW_DAO_CW20_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
@@ -19,6 +21,7 @@ import { CwProposalSingleAdapter } from '../../index'
 import { DaoCreationConfig } from '../types'
 import { convertThresholdValueToPercentageThreshold } from '../utils'
 import instantiateSchema from './instantiate_schema.json'
+import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationConfig
@@ -41,7 +44,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     votingModuleAdapter.data as Cw20StakedBalanceVotingConfig
   const canSetDeposit =
     // Can only set deposit info if using governance token, which comes from
-    // this adapter.
+    // the cw20-staked-balance-voting voting module adapter.
     isCw20StakedBalanceVotingAdapter &&
     typeof proposalDeposit?.amount === 'number' &&
     proposalDeposit.amount > 0
@@ -57,11 +60,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     throw new Error(t('errors.noGovTokenAddr'))
   }
 
-  const msg: InstantiateMsg = {
-    allow_revoting: allowRevoting,
+  const preProposeSingleInstantiateMsg: CwPreProposeSingleInstantiateMsg = {
     deposit_info: canSetDeposit
       ? {
-          deposit: convertDenomToMicroDenomWithDecimals(
+          amount: convertDenomToMicroDenomWithDecimals(
             proposalDeposit.amount,
             cw20StakedBalanceVotingAdapterData.tokenType ===
               GovernanceTokenType.New
@@ -70,12 +72,45 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
                 cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo!
                   .decimals
           ).toString(),
-          refund_failed_proposals: proposalDeposit.refundFailed,
-          token: { voting_module_token: {} },
+          denom: {
+            voting_module_token: {},
+          },
+          // TODO: Allow any refund policy by changing toggle to dropdown.
+          refund_policy: proposalDeposit.refundFailed
+            ? 'always'
+            : 'only_passed',
         }
       : null,
+    extension: {},
+    // Only allow members with voting power to propose.
+    open_proposal_submission: false,
+  }
+
+  // Validate and throw error if invalid according to JSON schema.
+  makeValidateMsg<CwPreProposeSingleInstantiateMsg>(
+    preProposeInstantiateSchema,
+    t
+  )(preProposeSingleInstantiateMsg)
+
+  const msg: CwProposalSingleInstantiateMsg = {
+    allow_revoting: allowRevoting,
+    close_proposal_on_execution_failure: true,
     max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
+    min_voting_period: null,
     only_members_execute: true,
+    pre_propose_info: {
+      ModuleMayPropose: {
+        info: {
+          admin: { core_module: {} },
+          code_id: CWPREPROPOSESINGLE_CODE_ID,
+          label: `DAO_${name}_pre-propose-${CwProposalSingleAdapter.id}`,
+          msg: Buffer.from(
+            JSON.stringify(preProposeSingleInstantiateMsg),
+            'utf8'
+          ).toString('base64'),
+        },
+      },
+    },
     threshold: quorumEnabled
       ? {
           threshold_quorum: {
@@ -91,10 +126,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   }
 
   // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<InstantiateMsg>(instantiateSchema, t)(msg)
+  makeValidateMsg<CwProposalSingleInstantiateMsg>(instantiateSchema, t)(msg)
 
   return {
-    admin: { core_contract: {} },
+    admin: { core_module: {} },
     code_id: CWPROPOSALSINGLE_CODE_ID,
     label: `DAO_${name}_${CwProposalSingleAdapter.id}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),

@@ -1,9 +1,9 @@
-import { CosmosMsg_for_Empty } from '@dao-dao/state/clients/cw-proposal-single'
 import {
   ActionKeyAndData,
   DurationWithUnits,
   ProcessedTQ,
 } from '@dao-dao/tstypes'
+import { CosmosMsgFor_Empty } from '@dao-dao/tstypes/contracts/common'
 
 export interface NewProposalForm {
   title: string
@@ -13,7 +13,7 @@ export interface NewProposalForm {
 
 // Converted data from actions into Cosmos messages.
 export interface NewProposalData extends Omit<NewProposalForm, 'actionData'> {
-  msgs: CosmosMsg_for_Empty[]
+  msgs: CosmosMsgFor_Empty[]
 }
 
 export interface ThresholdValue {

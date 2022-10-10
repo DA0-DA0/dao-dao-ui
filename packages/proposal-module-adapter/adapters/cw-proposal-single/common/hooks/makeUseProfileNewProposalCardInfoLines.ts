@@ -7,40 +7,50 @@ import {
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { Cw20BaseSelectors, CwProposalSingleSelectors } from '@dao-dao/state'
-import { ProposalModule } from '@dao-dao/tstypes'
+import { Cw20BaseSelectors } from '@dao-dao/state'
+import { IProposalModuleAdapterCommonOptions } from '@dao-dao/tstypes'
+import { DepositRefundPolicy } from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
 import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
+import { configSelector } from '../../contracts/CwProposalSingle.common.recoil'
+import { makeDepositInfo } from '../selectors'
 import { useProcessTQ } from './useProcessTQ'
 
-export const makeUseProfileNewProposalCardInfoLines =
-  ({ address }: ProposalModule) =>
-  (): ProfileNewProposalCardInfoLine[] => {
+export const makeUseProfileNewProposalCardInfoLines = (
+  options: IProposalModuleAdapterCommonOptions
+) => {
+  const {
+    proposalModule: { address },
+  } = options
+  const depositInfoSelector = makeDepositInfo(options)
+
+  return (): ProfileNewProposalCardInfoLine[] => {
     const { t } = useTranslation()
 
     const config = useRecoilValue(
-      CwProposalSingleSelectors.configSelector({
+      configSelector({
         contractAddress: address,
       })
     )
+    const depositInfo = useRecoilValue(depositInfoSelector)
 
     const processTQ = useProcessTQ()
     const { threshold, quorum } = processTQ(config.threshold)
 
     const proposalDepositTokenInfo = useRecoilValue(
-      config.deposit_info?.token
+      depositInfo?.denom && 'cw20' in depositInfo.denom
         ? Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: config.deposit_info.token,
+            contractAddress: depositInfo.denom.cw20,
             params: [],
           })
         : constSelector(undefined)
     )
 
     const proposalDeposit =
-      config.deposit_info?.deposit && proposalDepositTokenInfo
+      depositInfo?.amount && proposalDepositTokenInfo
         ? convertMicroDenomToDenomWithDecimals(
-            config.deposit_info.deposit,
+            depositInfo.amount,
             proposalDepositTokenInfo.decimals
           )
         : 0
@@ -72,17 +82,19 @@ export const makeUseProfileNewProposalCardInfoLines =
               proposalDepositTokenInfo?.symbol
             : t('info.none'),
       },
-      ...(proposalDeposit > 0
+      ...(depositInfo && proposalDeposit > 0
         ? [
             {
               Icon: CancelOutlined,
               label: 'Failed proposals',
-              value: config.deposit_info?.refund_failed_proposals
-                ? t('info.refund')
-                : t('info.noRefund'),
+              value:
+                depositInfo.refund_policy === DepositRefundPolicy.Always
+                  ? t('info.refund')
+                  : t('info.noRefund'),
               valueClassName: '!border-component-badge-error',
             },
           ]
         : []),
     ]
   }
+}

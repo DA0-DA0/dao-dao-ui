@@ -83,27 +83,27 @@ export const daoDropdownInfoSelector: (
     ({ get }) => {
       const version = get(contractVersionSelector(coreAddress))
       const config =
-        version === ContractVersion.V0_2_0
+        version === ContractVersion.V0_1_0
           ? get(
+              CwCoreV0_1_0Selectors.configSelector({
+                contractAddress: coreAddress,
+              })
+            )
+          : get(
               CwCoreV0_2_0Selectors.configSelector({
                 contractAddress: coreAddress,
                 params: [],
               })
             )
-          : get(
-              CwCoreV0_1_0Selectors.configSelector({
-                contractAddress: coreAddress,
-              })
-            )
 
       const subdaoAddresses: string[] =
-        version === ContractVersion.V0_2_0
-          ? get(
+        version === ContractVersion.V0_1_0
+          ? []
+          : get(
               CwCoreV0_2_0Selectors.listAllSubDaosSelector({
                 contractAddress: coreAddress,
               })
             ).map(({ addr }) => addr)
-          : []
 
       return {
         coreAddress,

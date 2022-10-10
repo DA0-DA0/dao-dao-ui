@@ -1,20 +1,18 @@
 import { useMemo } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import {
-  CwProposalSingleSelectors,
-  blockHeightTimestampSafeSelector,
-} from '@dao-dao/state'
-import { Status } from '@dao-dao/state/clients/cw-proposal-single'
+import { blockHeightTimestampSafeSelector } from '@dao-dao/state'
 import { ProposalModule } from '@dao-dao/tstypes'
+import { Status } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 
 import { CommonProposalListInfo } from '../../../../types'
+import { listAllProposalsSelector } from '../../contracts/CwProposalSingle.common.recoil'
 
 export const makeUseListAllProposalInfos =
   ({ address, prefix }: ProposalModule) =>
   (startAfter: number | undefined): CommonProposalListInfo[] => {
     const proposalResponses = useRecoilValue(
-      CwProposalSingleSelectors.listAllProposalsSelector({
+      listAllProposalsSelector({
         contractAddress: address,
         params: [
           {

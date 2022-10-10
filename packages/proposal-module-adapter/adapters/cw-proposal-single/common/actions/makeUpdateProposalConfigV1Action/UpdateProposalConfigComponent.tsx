@@ -14,6 +14,7 @@ import {
   NumberInput,
   SelectInput,
   Tooltip,
+  UpdateProposalConfigIcon,
 } from '@dao-dao/ui'
 import {
   validatePercent,
@@ -359,9 +360,4 @@ export const UpdateProposalConfigComponent: ActionComponent<
       </div>
     </ActionCard>
   )
-}
-
-export const UpdateProposalConfigIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.gear')} symbol="⚙️" />
 }

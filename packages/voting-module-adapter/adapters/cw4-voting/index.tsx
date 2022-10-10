@@ -57,7 +57,6 @@ export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
       },
       DaoTreasuryFooter: () => null,
       DaoInfoAdditionalAddresses: () => null,
-      DaoInfoVotingConfiguration: () => null,
       ProfileCardNotMemberInfo,
       ProfileMemberCardMembershipInfo,
       VoteHeroStats,

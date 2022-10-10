@@ -19,7 +19,7 @@ import {
   useVotingModule,
   useWalletProfile,
 } from '@dao-dao/state'
-import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
+import { CheckedDepositInfoV1 } from '@dao-dao/tstypes/contracts/CwProposalSingle'
 import {
   DaoHome,
   Loader,
@@ -65,7 +65,7 @@ const InnerDaoHome = () => {
   )
   const proposalModuleDepositInfos = useRecoilValue(
     waitForAll(depositInfoSelectors)
-  ).filter(Boolean) as CheckedDepositInfo[]
+  ).filter(Boolean) as CheckedDepositInfoV1[]
 
   const maxProposalModuleDeposit = Math.max(
     ...proposalModuleDepositInfos.map(({ deposit }) => Number(deposit)),

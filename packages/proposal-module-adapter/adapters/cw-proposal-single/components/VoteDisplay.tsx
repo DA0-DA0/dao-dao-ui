@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { Abstain } from '@dao-dao/icons'
-import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
+import { Vote } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 
 interface VoteDisplayProps {
   vote: Vote

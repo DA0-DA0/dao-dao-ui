@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { VoteDisplay } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/VoteDisplay'
-import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
+import { Vote } from '@dao-dao/tstypes/contracts/CwProposalSingle'
 
 import { ProposalVotes, ProposalVotesProps } from './ProposalVotes'
 

@@ -1,13 +1,14 @@
 import { useRecoilValue } from 'recoil'
 
-import { CwProposalSingleSelectors } from '@dao-dao/state'
 import { ProposalModule } from '@dao-dao/tstypes'
+
+import { proposalCountSelector } from '../../contracts/CwProposalSingle.common.recoil'
 
 export const makeUseProposalCount =
   ({ address }: ProposalModule) =>
   (): number =>
     useRecoilValue(
-      CwProposalSingleSelectors.proposalCountSelector({
+      proposalCountSelector({
         contractAddress: address,
       })
     )

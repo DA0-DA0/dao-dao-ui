@@ -1,11 +1,9 @@
-import { Vote } from '@dao-dao/state/clients/cw-proposal-single'
 import { DurationUnits } from '@dao-dao/tstypes'
+import { Vote } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 
 import { ProposalModuleAdapter } from '../../types'
 import {
-  DaoInfoVotingConfiguration,
   NewProposal,
-  ProposalModuleInfo,
   makeDepositInfo,
   makeReverseProposalInfos,
   makeUseActions,
@@ -15,7 +13,6 @@ import {
 } from './common'
 import {
   ProposalActionDisplay,
-  ProposalDetails,
   ProposalInfoCard,
   ProposalLine,
   ProposalStatusAndInfo,
@@ -73,26 +70,14 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<
         options.proposalModule
       ),
       useProposalCount: makeUseProposalCount(options.proposalModule),
-      useActions: makeUseActions(options.proposalModule),
+      useActions: makeUseActions(options),
       useProfileNewProposalCardInfoLines:
-        makeUseProfileNewProposalCardInfoLines(options.proposalModule),
+        makeUseProfileNewProposalCardInfoLines(options),
     },
 
     // Components
     components: {
-      ProposalModuleInfo: (props) => (
-        <ProposalModuleInfo
-          proposalModuleAddress={options.proposalModule.address}
-          {...props}
-        />
-      ),
       NewProposal: (props) => <NewProposal options={options} {...props} />,
-      DaoInfoVotingConfiguration: (props) => (
-        <DaoInfoVotingConfiguration
-          proposalModule={options.proposalModule}
-          {...props}
-        />
-      ),
     },
   }),
 
@@ -123,7 +108,6 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<
       ProposalVotes,
       ProposalVoteTally,
       ProposalInfoCard,
-      ProposalDetails,
       ProposalLine,
     },
   }),

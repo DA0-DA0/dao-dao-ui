@@ -18,6 +18,7 @@ export enum ActionKey {
   ManageMembers = 'manageMembers',
   ManageSubDaos = 'manageSubDaos',
   UpdateInfo = 'updateInfo',
+  UpdatePreProposeConfig = 'updatePreProposeConfig',
   UpdateProposalConfig = 'updateProposalConfig',
   Instantiate = 'instantiate',
   Execute = 'execute',

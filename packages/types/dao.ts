@@ -14,10 +14,8 @@ import {
 
 import { Validator } from './chain'
 import { ContractVersion } from './contract'
-import {
-  CwCoreV0_2_0InstantiateMsg,
-  ModuleInstantiateInfo,
-} from './contracts/cw-core-0.2.0'
+import { ModuleInstantiateInfo } from './contracts/common'
+import { InstantiateMsg as CwCoreV0_2_0InstantiateMsg } from './contracts/CwCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { LoadingData } from './ui'
 import { VotingModuleAdapter } from './voting-module-adapter'
@@ -137,8 +135,11 @@ export interface NftCardInfo {
 
 export interface ProposalModule {
   contractName: string
+  version: ContractVersion | undefined
   address: string
   prefix: string
+  // If set, this uses a pre-propose module.
+  preProposeAddress?: string
 }
 
 export interface ProposalPrefill<FormData> {

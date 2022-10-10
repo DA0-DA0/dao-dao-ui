@@ -62,3 +62,8 @@ export const ManageSubDaosEmoji = () => {
   const { t } = useTranslation()
   return <Emoji label={t('emoji.family')} symbol="👨‍👦" />
 }
+
+export const UpdateProposalConfigIcon = () => {
+  const { t } = useTranslation()
+  return <Emoji label={t('emoji.gear')} symbol="⚙️" />
+}
