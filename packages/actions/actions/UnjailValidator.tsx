@@ -8,7 +8,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
-
 import { makeStargateMessage } from '@dao-dao/utils'
 
 import {

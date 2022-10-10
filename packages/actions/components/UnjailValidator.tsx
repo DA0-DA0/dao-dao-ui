@@ -3,10 +3,11 @@ import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import { CodeMirrorInput, InputLabel } from '@dao-dao/ui'
 import { validateJSON } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from '..'
 
 export interface UnjailValidatorOptions {}
 
