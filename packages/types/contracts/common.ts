@@ -44,7 +44,6 @@ export type CosmosMsgFor_Empty =
       stargate: {
         type_url: string
         value: Binary
-        [k: string]: unknown
       }
     }
   | {
@@ -63,7 +62,6 @@ export type GovMsg = {
   vote: {
     proposal_id: number
     vote: VoteOption
-    [k: string]: unknown
   }
 }
 /**
@@ -189,12 +187,10 @@ export type WasmMsg =
 export interface IbcTimeout {
   block?: IbcTimeoutBlock | null
   timestamp?: Timestamp | null
-  [k: string]: unknown
 }
 export interface IbcTimeoutBlock {
   height: number
   revision: number
-  [k: string]: unknown
 }
 export type IbcMsg =
   | {
@@ -203,7 +199,6 @@ export type IbcMsg =
         channel_id: string
         timeout: IbcTimeout
         to_address: string
-        [k: string]: unknown
       }
     }
   | {
@@ -211,13 +206,11 @@ export type IbcMsg =
         channel_id: string
         data: Binary
         timeout: IbcTimeout
-        [k: string]: unknown
       }
     }
   | {
       close_channel: {
         channel_id: string
-        [k: string]: unknown
       }
     }
 
@@ -225,13 +218,10 @@ export type Admin =
   | {
       address: {
         addr: string
-        [k: string]: unknown
       }
     }
   | {
-      core_module: {
-        [k: string]: unknown
-      }
+      core_module: {}
     }
 
 export interface ModuleInstantiateInfo {
@@ -239,11 +229,28 @@ export interface ModuleInstantiateInfo {
   code_id: number
   label: string
   msg: Binary
-  [k: string]: unknown
 }
 
-export interface ContractVersion {
+export interface ContractVersionInfo {
   contract: string
   version: string
-  [k: string]: unknown
+}
+
+// Pre-propose stuff.
+export type CheckedDenom =
+  | {
+      native: string
+    }
+  | {
+      cw20: Addr
+    }
+export enum DepositRefundPolicy {
+  Always = 'always',
+  OnlyPassed = 'only_passed',
+  Never = 'never',
+}
+export interface CheckedDepositInfo {
+  amount: Uint128
+  denom: CheckedDenom
+  refund_policy: DepositRefundPolicy
 }

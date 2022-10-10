@@ -89,8 +89,11 @@ const InnerMembership = ({
       Math.max(
         0,
         ...proposalModuleDepositInfos
-          .filter(({ token }) => token === governanceTokenAddress)
-          .map(({ deposit }) => Number(deposit))
+          .filter(
+            ({ denom }) =>
+              'native' in denom && denom.native === governanceTokenAddress
+          )
+          .map(({ amount }) => Number(amount))
       ),
     [proposalModuleDepositInfos, governanceTokenAddress]
   )

@@ -7,7 +7,7 @@ import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
 
 import { Action } from './actions'
 import { Expiration } from './contracts'
-import { CheckedDepositInfo } from './contracts/CwPreProposeSingle'
+import { CheckedDepositInfo } from './contracts/common'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,

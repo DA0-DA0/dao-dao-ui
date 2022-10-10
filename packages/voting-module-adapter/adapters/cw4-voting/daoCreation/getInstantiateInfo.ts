@@ -31,7 +31,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   makeValidateMsg<InstantiateMsg>(instantiateSchema, t)(msg)
 
   return {
-    admin: { core_contract: {} },
+    admin: { core_module: {} },
     code_id: CW4VOTING_CODE_ID,
     label: `DAO_${name}_${CW4VOTING_CONTRACT_NAME}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),

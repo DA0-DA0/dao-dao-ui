@@ -1,7 +1,7 @@
 import {
   Addr,
   Binary,
-  ContractVersion,
+  ContractVersionInfo,
   CosmosMsgFor_Empty,
   Duration,
   Expiration,
@@ -118,7 +118,7 @@ export interface GetVoteResponse {
 export type GovernanceModulesResponse = Addr[]
 export type ExtensionResponse = Binary
 export interface InfoResponse {
-  info: ContractVersion
+  info: ContractVersionInfo
   [k: string]: unknown
 }
 export interface InstantiateMsg {

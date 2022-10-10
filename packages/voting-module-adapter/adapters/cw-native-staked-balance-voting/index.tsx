@@ -9,7 +9,6 @@ import {
   MembershipMobileTab,
   ProfileCardNotMemberInfo,
   ProfileMemberCardMembershipInfo,
-  ProposalDetailsVotingPowerWidget,
   SdaMembershipPage,
   StakingModal,
   VoteHeroStats,
@@ -61,7 +60,6 @@ export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
       VoteHeroStats,
       SdaMembershipPage,
 
-      ProposalDetailsVotingPowerWidget,
       StakingModal,
       ClaimsPendingList,
     },

@@ -26,7 +26,7 @@ import {
   DaoParentInfo,
   NewDao,
 } from '@dao-dao/tstypes'
-import { CwCoreV0_2_0InstantiateMsg } from '@dao-dao/tstypes/contracts/cw-core-0.2.0'
+import { InstantiateMsg as CwCoreV0_2_0InstantiateMsg } from '@dao-dao/tstypes/contracts/CwCore.v2'
 import {
   Button,
   CreateDaoPages,

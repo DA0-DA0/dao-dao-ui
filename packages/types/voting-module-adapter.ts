@@ -3,9 +3,8 @@ import { ComponentType, ReactNode } from 'react'
 import { FieldValues } from 'react-hook-form'
 
 import { Action } from './actions'
-import { Duration } from './contracts/common'
+import { CheckedDepositInfo, Duration } from './contracts/common'
 import { MarketingInfoResponse, TokenInfoResponse } from './contracts/cw20-base'
-import { CheckedDepositInfoV1 } from './contracts/CwProposalSingle.v2'
 import { Claim } from './contracts/stake-cw20'
 import {
   DaoCreationGetInstantiateInfo,
@@ -28,7 +27,7 @@ export interface MembershipPageInfo {
 }
 
 export interface BaseMembershipProps {
-  proposalModuleDepositInfos: CheckedDepositInfoV1[]
+  proposalModuleDepositInfos: CheckedDepositInfo[]
 }
 
 export interface MembershipMobileTabProps {
@@ -44,10 +43,6 @@ export interface BaseVoteHeroStatsProps {
 export interface BaseSdaMembershipPageProps extends BaseMembershipProps {
   defaultImageUrl: string
   Loader: ComponentType<{ size?: number | string }>
-}
-
-export interface BaseProposalDetailsVotingPowerWidgetProps {
-  depositInfo?: CheckedDepositInfoV1
 }
 
 export interface BaseProfileMemberCardMembershipInfoProps {
@@ -148,7 +143,6 @@ export interface IVotingModuleAdapter {
     ProfileMemberCardMembershipInfo: ComponentType<BaseProfileMemberCardMembershipInfoProps>
     ProfileCardNotMemberInfo: ComponentType<BaseProfileCardNotMemberInfoProps>
 
-    ProposalDetailsVotingPowerWidget?: ComponentType<BaseProposalDetailsVotingPowerWidgetProps>
     StakingModal?: ComponentType<BaseStakingModalProps>
     ClaimsPendingList?: ComponentType<BaseClaimsPendingListProps>
   }

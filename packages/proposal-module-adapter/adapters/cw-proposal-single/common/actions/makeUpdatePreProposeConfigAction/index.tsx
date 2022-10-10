@@ -7,15 +7,13 @@ import {
   Action,
   ActionComponent,
   ActionKey,
+  DepositRefundPolicy,
   ProposalModule,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes'
-import {
-  DepositRefundPolicy,
-  ExecuteMsg,
-} from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
+import { ExecuteMsg } from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
 import { UpdateProposalConfigIcon } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,

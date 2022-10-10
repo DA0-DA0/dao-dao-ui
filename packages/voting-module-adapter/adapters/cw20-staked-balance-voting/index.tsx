@@ -12,7 +12,6 @@ import {
   MembershipMobileTab,
   ProfileCardNotMemberInfo,
   ProfileMemberCardMembershipInfo,
-  ProposalDetailsVotingPowerWidget,
   SdaMembershipPage,
   StakingModal,
   VoteHeroStats,
@@ -74,7 +73,6 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConf
         ProfileMemberCardMembershipInfo,
         ProfileCardNotMemberInfo,
 
-        ProposalDetailsVotingPowerWidget,
         StakingModal,
         ClaimsPendingList,
       },

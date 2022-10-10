@@ -1,6 +1,6 @@
 import {
   Addr,
-  ContractVersion,
+  ContractVersionInfo,
   CosmosMsgFor_Empty,
   Duration,
   Expiration,
@@ -26,7 +26,7 @@ export interface CheckedDepositInfo {
 }
 export type GovernanceModulesResponse = Addr[]
 export interface InfoResponse {
-  info: ContractVersion
+  info: ContractVersionInfo
   [k: string]: unknown
 }
 export type DepositToken =

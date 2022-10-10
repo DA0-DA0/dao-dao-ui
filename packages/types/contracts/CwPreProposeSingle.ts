@@ -1,26 +1,15 @@
-import { Addr, CosmosMsgFor_Empty, Empty, Uint128 } from './common'
+import {
+  Addr,
+  CheckedDepositInfo,
+  CosmosMsgFor_Empty,
+  DepositRefundPolicy,
+  Empty,
+  Uint128,
+} from './common'
 
-export type CheckedDenom =
-  | {
-      native: string
-    }
-  | {
-      cw20: Addr
-    }
-export enum DepositRefundPolicy {
-  Always = 'always',
-  OnlyPassed = 'only_passed',
-  Never = 'never',
-}
 export interface ConfigResponse {
   deposit_info?: CheckedDepositInfo | null
   open_proposal_submission: boolean
-  [k: string]: unknown
-}
-export interface CheckedDepositInfo {
-  amount: Uint128
-  denom: CheckedDenom
-  refund_policy: DepositRefundPolicy
   [k: string]: unknown
 }
 export type DaoResponse = string

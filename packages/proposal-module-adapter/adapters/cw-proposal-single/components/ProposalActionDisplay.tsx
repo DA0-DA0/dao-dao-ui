@@ -11,8 +11,8 @@ import {
   ActionAndData,
   BaseProposalActionDisplayProps,
   ContractVersion,
+  DepositRefundPolicy,
 } from '@dao-dao/tstypes'
-import { DepositRefundPolicy } from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
 import { Status } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import {
   Button,

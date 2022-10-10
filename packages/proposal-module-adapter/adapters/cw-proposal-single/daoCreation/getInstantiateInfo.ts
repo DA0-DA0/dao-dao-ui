@@ -1,6 +1,9 @@
 import { Buffer } from 'buffer'
 
-import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
+import {
+  DaoCreationGetInstantiateInfo,
+  DepositRefundPolicy,
+} from '@dao-dao/tstypes'
 import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwProposalSingle.v2'
 import {
@@ -77,8 +80,8 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
           },
           // TODO: Allow any refund policy by changing toggle to dropdown.
           refund_policy: proposalDeposit.refundFailed
-            ? 'always'
-            : 'only_passed',
+            ? DepositRefundPolicy.Always
+            : DepositRefundPolicy.OnlyPassed,
         }
       : null,
     extension: {},

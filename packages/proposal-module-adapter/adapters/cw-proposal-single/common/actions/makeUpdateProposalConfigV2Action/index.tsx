@@ -94,7 +94,6 @@ const makeUseDefaults: AsProposalModuleMaker<
     const proposalModuleConfig = useRecoilValue(
       configSelector({
         contractAddress: proposalModuleAddress,
-        params: [],
       })
     )
 
@@ -159,7 +158,6 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
     const proposalModuleConfig = useRecoilValue(
       configSelector({
         contractAddress: proposalModuleAddress,
-        params: [],
       })
     )
 

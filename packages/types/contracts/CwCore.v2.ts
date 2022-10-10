@@ -7,7 +7,7 @@
 import {
   Addr,
   Binary,
-  ContractVersion,
+  ContractVersionInfo,
   CosmosMsgForEmpty,
   Duration,
   Expiration,
@@ -66,7 +66,7 @@ export interface DumpStateResponse {
   pause_info: PauseInfoResponse
   proposal_modules: ProposalModule[]
   total_proposal_module_count: number
-  version: ContractVersion
+  version: ContractVersionInfo
   voting_module: Addr
   [k: string]: unknown
 }
@@ -195,7 +195,7 @@ export interface GetItemResponse {
   [k: string]: unknown
 }
 export interface InfoResponse {
-  info: ContractVersion
+  info: ContractVersionInfo
   [k: string]: unknown
 }
 export interface InstantiateMsg {

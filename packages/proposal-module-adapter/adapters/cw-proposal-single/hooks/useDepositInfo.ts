@@ -1,11 +1,11 @@
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { ContractVersion } from '@dao-dao/tstypes'
 import {
   CheckedDepositInfo,
-  DepositInfoResponse as DepositInfoV2Response,
+  ContractVersion,
   DepositRefundPolicy,
-} from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
+} from '@dao-dao/tstypes'
+import { DepositInfoResponse as DepositInfoPreProposeResponse } from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
 import { ProposalResponse as ProposalV1Response } from '@dao-dao/tstypes/contracts/CwProposalSingle.v1'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
@@ -19,7 +19,7 @@ export const useDepositInfo = (): CheckedDepositInfo | undefined => {
   } = useProposalModuleAdapterOptions()
 
   const selectorValue = useRecoilValue<
-    ProposalV1Response | DepositInfoV2Response | undefined
+    ProposalV1Response | DepositInfoPreProposeResponse | undefined
   >(
     //! V1
     version === ContractVersion.V0_1_0
@@ -46,7 +46,9 @@ export const useDepositInfo = (): CheckedDepositInfo | undefined => {
 
   // Type-checked below.
   const proposalResponse = selectorValue as ProposalV1Response | undefined
-  const depositInfoResponse = selectorValue as DepositInfoV2Response | undefined
+  const depositInfoResponse = selectorValue as
+    | DepositInfoPreProposeResponse
+    | undefined
 
   const depositInfo: CheckedDepositInfo | undefined =
     //! V1

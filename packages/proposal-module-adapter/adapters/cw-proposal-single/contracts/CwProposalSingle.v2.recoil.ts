@@ -64,20 +64,17 @@ export const executeClient = selectorFamily<
   dangerouslyAllowMutability: true,
 })
 
-export const configSelector = selectorFamily<
-  ConfigResponse,
-  QueryClientParams & {
-    params: Parameters<CwProposalSingleQueryClient['config']>
+export const configSelector = selectorFamily<ConfigResponse, QueryClientParams>(
+  {
+    key: 'cwProposalSingleV2Config',
+    get:
+      (queryClientParams) =>
+      async ({ get }) => {
+        const client = get(queryClient(queryClientParams))
+        return await client.config()
+      },
   }
->({
-  key: 'cwProposalSingleV2Config',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-      return await client.config(...params)
-    },
-})
+)
 export const proposalSelector = selectorFamily<
   ProposalResponse,
   QueryClientParams & {
@@ -168,18 +165,16 @@ export const reverseProposalsSelector = selectorFamily<
 })
 export const proposalCountSelector = selectorFamily<
   ProposalCountResponse,
-  QueryClientParams & {
-    params: Parameters<CwProposalSingleQueryClient['proposalCount']>
-  }
+  QueryClientParams
 >({
   key: 'cwProposalSingleV2ProposalCount',
   get:
-    ({ params, ...queryClientParams }) =>
+    (queryClientParams) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       get(refreshProposalsIdAtom)
       try {
-        return await client.proposalCount(...params)
+        return await client.proposalCount()
       } catch {
         // Contract throws error if no proposals have been made, so return 0 for
         // now until the contract is fixed.

@@ -16,8 +16,10 @@ export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
       proposalModules: [
         {
           contractName: 'crates.io:cw-govmod-single',
+          version: ContractVersion.V0_2_0,
           address: 'proposalModuleAddress',
           prefix: 'A',
+          preProposeAddress: 'preProposeModuleAddress',
         },
       ],
       name: 'DAO Name',

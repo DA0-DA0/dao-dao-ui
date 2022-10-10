@@ -141,12 +141,7 @@ export const configSelector = selectorFamily<
           ? configV1Selector
           : configV2Selector
 
-      return get(
-        selector({
-          ...params,
-          params: [],
-        })
-      )
+      return get(selector(params))
     },
 })
 
@@ -193,12 +188,7 @@ export const proposalCountSelector = selectorFamily<
           ? proposalCountV1Selector
           : proposalCountV2Selector
 
-      return get(
-        selector({
-          ...params,
-          params: [],
-        })
-      )
+      return get(selector(params))
     },
 })
 

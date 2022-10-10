@@ -1,11 +1,11 @@
 import { selector, selectorFamily, waitForAll } from 'recoil'
 
 import { blockHeightTimestampSafeSelector } from '@dao-dao/state'
-import { ContractVersion } from '@dao-dao/tstypes'
 import {
   CheckedDepositInfo,
+  ContractVersion,
   DepositRefundPolicy,
-} from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
+} from '@dao-dao/tstypes'
 import { Status } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import {
   CommonProposalListInfo,
