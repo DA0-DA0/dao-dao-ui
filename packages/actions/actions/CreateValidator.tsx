@@ -1,11 +1,5 @@
 import { useCallback, useMemo } from 'react'
 
-import { NATIVE_DENOM, makeStargateMessage } from '@dao-dao/utils'
-
-import {
-  CreateValidatorIcon,
-  CreateValidatorComponent as StatelessCreateValidatorComponent,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -14,6 +8,13 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+
+import { NATIVE_DENOM, makeStargateMessage } from '@dao-dao/utils'
+
+import {
+  CreateValidatorIcon,
+  CreateValidatorComponent as StatelessCreateValidatorComponent,
+} from '../components'
 
 interface CreateValidatorData {
   type_url: string

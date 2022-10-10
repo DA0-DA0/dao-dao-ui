@@ -16,6 +16,7 @@ export enum ActionKey {
   AddCw20 = 'addCw20',
   CreateValidator = 'createValidator',
   EditValidator = 'editValidator',
+  UnjailValidator = 'unjailValidator',
   RemoveCw20 = 'removeCw20',
   AddCw721 = 'addCw721',
   RemoveCw721 = 'removeCw721',

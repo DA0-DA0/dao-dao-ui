@@ -1,12 +1,6 @@
 import type { MsgGrant, MsgRevoke } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
-import { makeStargateMessage } from '@dao-dao/utils'
-
-import {
-  AuthzAuthorizationIcon,
-  AuthzAuthorizationComponent as StatelessAuthzComponent,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -15,6 +9,13 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+
+import { makeStargateMessage } from '@dao-dao/utils'
+
+import {
+  AuthzAuthorizationIcon,
+  AuthzAuthorizationComponent as StatelessAuthzComponent,
+} from '../components'
 
 interface AuthzData {
   custom?: boolean

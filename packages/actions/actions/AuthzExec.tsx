@@ -1,12 +1,6 @@
 import type { MsgExec } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
-import { makeStargateMessage } from '@dao-dao/utils'
-
-import {
-  AuthzExecIcon,
-  AuthzExecComponent as StatelessAuthzComponent,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -15,6 +9,13 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+
+import { makeStargateMessage } from '@dao-dao/utils'
+
+import {
+  AuthzExecIcon,
+  AuthzExecComponent as StatelessAuthzComponent,
+} from '../components'
 
 interface AuthzExecData {
   type_url: string

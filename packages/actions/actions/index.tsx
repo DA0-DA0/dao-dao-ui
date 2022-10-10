@@ -16,6 +16,7 @@ import { removeCw20Action } from './RemoveCw20'
 import { removeCw721Action } from './RemoveCw721'
 import { makeSpendAction } from './Spend'
 import { stakeAction } from './Stake'
+import { unjailValidatorAction } from './UnjailValidator'
 import { updateAdminAction } from './UpdateAdmin'
 import { updateInfoAction } from './UpdateInfo'
 
@@ -39,6 +40,7 @@ export const getDaoActions = (coreVersion: ContractVersion): Action[] =>
     authzExecAction,
     createValidatorAction,
     editValidatorAction,
+    unjailValidatorAction,
   ].filter(
     ({ supportedCoreVersions }) =>
       !supportedCoreVersions || supportedCoreVersions.includes(coreVersion)

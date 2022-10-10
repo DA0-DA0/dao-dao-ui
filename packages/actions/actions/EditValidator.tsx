@@ -1,11 +1,5 @@
 import { useCallback, useMemo } from 'react'
 
-import { makeStargateMessage } from '@dao-dao/utils'
-
-import {
-  EditValidatorIcon,
-  EditValidatorComponent as StatelessEditValidatorComponent,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -14,6 +8,13 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+
+import { makeStargateMessage } from '@dao-dao/utils'
+
+import {
+  EditValidatorIcon,
+  EditValidatorComponent as StatelessEditValidatorComponent,
+} from '../components'
 
 interface EditValidatorData {
   type_url: string
