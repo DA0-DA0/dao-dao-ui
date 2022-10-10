@@ -135,11 +135,11 @@ export interface NftCardInfo {
 
 export interface ProposalModule {
   contractName: string
-  version: ContractVersion | undefined
+  version: ContractVersion | null
   address: string
   prefix: string
   // If set, this uses a pre-propose module.
-  preProposeAddress?: string
+  preProposeAddress: string | null
 }
 
 export interface ProposalPrefill<FormData> {

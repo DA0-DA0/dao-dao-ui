@@ -63,7 +63,7 @@ const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
               NATIVE_DECIMALS
-            ),
+            ).toString(),
           })),
           label,
           msg,

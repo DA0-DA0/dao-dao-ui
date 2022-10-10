@@ -2,13 +2,10 @@ import { Buffer } from 'buffer'
 
 import { InstantiateMsg, Member } from '@dao-dao/state/clients/cw4-voting'
 import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
-import {
-  CW4GROUP_CODE_ID,
-  CW4VOTING_CODE_ID,
-  CW4VOTING_CONTRACT_NAME,
-} from '@dao-dao/utils'
+import { CW4GROUP_CODE_ID, CW4VOTING_CODE_ID } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
+import { Cw4VotingAdapter } from '../../../index'
 import { DaoCreationConfig } from '../types'
 import instantiateSchema from './instantiate_schema.json'
 
@@ -33,7 +30,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   return {
     admin: { core_module: {} },
     code_id: CW4VOTING_CODE_ID,
-    label: `DAO_${name}_${CW4VOTING_CONTRACT_NAME}`,
+    label: `DAO_${name}_${Cw4VotingAdapter.id}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }
 }

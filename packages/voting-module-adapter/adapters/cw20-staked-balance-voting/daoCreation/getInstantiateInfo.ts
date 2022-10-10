@@ -6,9 +6,8 @@ import {
 } from '@dao-dao/state/clients/cw20-staked-balance-voting'
 import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
 import {
-  CW20STAKEDBALANCEVOTING_CONTRACT_NAME,
+  CW20STAKEDBALANCEVOTING_CODE_ID,
   CW20_CODE_ID,
-  CW4VOTING_CODE_ID,
   NEW_DAO_CW20_DECIMALS,
   STAKECW20_CODE_ID,
   convertDenomToMicroDenomWithDecimals,
@@ -16,6 +15,7 @@ import {
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
+import { Cw20StakedBalanceVotingAdapter } from '../../../index'
 import { DaoCreationConfig, GovernanceTokenType } from '../types'
 import instantiateSchema from './instantiate_schema.json'
 
@@ -99,8 +99,8 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 
   return {
     admin: { core_module: {} },
-    code_id: CW4VOTING_CODE_ID,
-    label: `DAO_${daoName}_${CW20STAKEDBALANCEVOTING_CONTRACT_NAME}`,
+    code_id: CW20STAKEDBALANCEVOTING_CODE_ID,
+    label: `DAO_${daoName}_${Cw20StakedBalanceVotingAdapter.id}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }
 }

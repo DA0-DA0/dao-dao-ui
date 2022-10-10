@@ -36,7 +36,7 @@ export const fetchProposalModules = async (
             info: {},
           }
         )
-        const version = parseContractVersion(info.version)
+        const version = parseContractVersion(info.version) ?? null
         const preProposeAddress = await fetchPreProposeAddress(
           cwClient,
           address,
@@ -69,7 +69,7 @@ export const fetchProposalModules = async (
           info: {},
         }
       )
-      const version = parseContractVersion(info.version)
+      const version = parseContractVersion(info.version) ?? null
       const preProposeAddress = await fetchPreProposeAddress(
         cwClient,
         data.address,
@@ -108,10 +108,10 @@ export const fetchProposalModules = async (
 const fetchPreProposeAddress = async (
   cwClient: CosmWasmClient,
   proposalModuleAddress: string,
-  version: ContractVersion | undefined
-): Promise<string | undefined> => {
+  version: ContractVersion | null
+): Promise<string | null> => {
   // TODO: Move this to proposal module adapter somehow
-  let preProposeAddress: string | undefined
+  let preProposeAddress: string | null = null
   if (version !== ContractVersion.V0_1_0) {
     try {
       const response: ProposalCreationPolicyResponse =

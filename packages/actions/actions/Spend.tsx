@@ -97,7 +97,7 @@ const makeUseTransformToCosmos: WithIsWallet<UseTransformToCosmos<SpendData>> =
         const amount = convertDenomToMicroDenomWithDecimals(
           data.amount,
           cw20TokenInfo.decimals
-        )
+        ).toString()
 
         return makeWasmMessage({
           wasm: {

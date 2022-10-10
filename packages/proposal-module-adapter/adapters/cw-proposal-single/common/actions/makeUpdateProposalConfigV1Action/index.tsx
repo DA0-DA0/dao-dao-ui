@@ -246,7 +246,7 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
                         deposit: convertDenomToMicroDenomWithDecimals(
                           data.depositInfo.deposit,
                           voteConversionDecimals
-                        ),
+                        ).toString(),
                         refund_failed_proposals:
                           data.depositInfo.refundFailedProposals,
                         token: { voting_module_token: {} },

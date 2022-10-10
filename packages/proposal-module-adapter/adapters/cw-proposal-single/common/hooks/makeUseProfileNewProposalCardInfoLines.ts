@@ -80,7 +80,7 @@ export const makeUseProfileNewProposalCardInfoLines = (
             ? proposalDeposit.toLocaleString(undefined, {
                 maximumFractionDigits: proposalDepositTokenInfo?.decimals ?? 6,
               }) +
-              ' ' +
+              ' $' +
               proposalDepositTokenInfo?.symbol
             : t('info.none'),
       },
@@ -93,7 +93,10 @@ export const makeUseProfileNewProposalCardInfoLines = (
                 depositInfo.refund_policy === DepositRefundPolicy.Always
                   ? t('info.refund')
                   : t('info.noRefund'),
-              valueClassName: '!border-component-badge-error',
+              valueClassName:
+                depositInfo.refund_policy === DepositRefundPolicy.Always
+                  ? '!border-component-badge-valid'
+                  : '!border-component-badge-error',
             },
           ]
         : []),

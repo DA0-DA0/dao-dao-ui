@@ -1,6 +1,8 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
+import { useTranslation } from 'react-i18next'
+
 import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { useWalletProfile } from '@dao-dao/state'
@@ -45,7 +47,8 @@ export const InnerProfileNewProposalCard = ({
     hooks: { useProfileNewProposalCardInfoLines },
   },
 }: ProfileNewProposalCardProps) => {
-  const { name: daoName } = useDaoInfoContext()
+  const { t } = useTranslation()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
   const { walletProfile, updateProfileName } = useWalletProfile()
   const { updateProfileNft } = useAppLayoutContext()
   const {
@@ -58,7 +61,19 @@ export const InnerProfileNewProposalCard = ({
   return (
     <StatelessProfileNewProposalCard
       daoName={daoName}
-      info={{ loading: false, data: { lines, addresses } }}
+      info={{
+        loading: false,
+        data: {
+          lines,
+          addresses: [
+            {
+              label: t('title.daoTreasury'),
+              address: coreAddress,
+            },
+            ...addresses,
+          ],
+        },
+      }}
       showUpdateProfileNft={updateProfileNft.toggle}
       updateProfileName={updateProfileName}
       walletProfile={walletProfile}

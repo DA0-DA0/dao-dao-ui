@@ -34,7 +34,7 @@ import { DaoCreationConfig, GovernanceTokenType } from './types'
 
 export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConfig> =
   {
-    id: CW20STAKEDBALANCEVOTING_CONTRACT_NAME,
+    id: 'cw20-staked-balance-voting',
     matcher: (contractName: string) =>
       contractName.includes(CW20STAKEDBALANCEVOTING_CONTRACT_NAME),
 
