@@ -32,6 +32,7 @@ const HomePage: NextPage<HomePageProps> = ({ featuredDaoAddresses }) => {
 
   const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
 
+  // TODO: Load the metadata from the DAOs indexer.
   const featuredDaosLoadable = useCachedLoadable(
     waitForAll(
       featuredDaoAddresses.map((coreAddress) =>
