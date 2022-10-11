@@ -42,6 +42,7 @@ import {
   NATIVE_DENOM,
   V1_FACTORY_CONTRACT_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
+  getFallbackImage,
   getParentDaoBreadcrumbs,
   makeValidateMsg,
   nativeTokenLabel,
@@ -534,7 +535,7 @@ export const CreateDaoForm = ({
             coreAddress: createdDaoCoreAddress,
             name,
             description,
-            imageUrl,
+            imageUrl: imageUrl || getFallbackImage(createdDaoCoreAddress),
             established: new Date(),
             pinned: isPinned(createdDaoCoreAddress),
             onPin: () =>
