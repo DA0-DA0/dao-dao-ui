@@ -23,15 +23,14 @@ import {
   blockHeightSelector,
   blocksPerYearSelector,
   cosmWasmClientSelector,
+  nativeDenomBalanceSelector,
   refreshWalletBalancesIdAtom,
   useCachedLoadable,
   useVotingModule,
-  nativeDenomBalanceSelector,
 } from '@dao-dao/state'
 import {
   Action,
   ActionKey,
-  Coin,
   ContractVersion,
   UseDefaults,
   UseTransformToCosmos,
@@ -60,7 +59,6 @@ import {
   NewProposal as StatelessNewProposal,
   NewProposalProps as StatelessNewProposalProps,
 } from '../ui/NewProposal'
-import { BalanceResponse } from '@dao-dao/state/clients/cw20-base'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> &
   Pick<StatelessNewProposalProps, 'options'>

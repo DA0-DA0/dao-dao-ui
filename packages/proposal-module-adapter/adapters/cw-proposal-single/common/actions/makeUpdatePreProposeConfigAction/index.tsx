@@ -103,18 +103,29 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
       throw new Error(t('error.loadingData'))
     }
 
-    const config = useRecoilValue(
-      configSelector({
-        contractAddress: preProposeAddress,
-        params: [],
-      })
-    )
+    const { open_proposal_submission, deposit_info: depositInfoConfig } =
+      useRecoilValue(
+        configSelector({
+          contractAddress: preProposeAddress,
+          params: [],
+        })
+      )
 
-    const {
-      hooks: { useGovernanceTokenInfo },
-    } = useVotingModuleAdapter()
-    const voteConversionDecimals =
-      useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
+    const cw20DepositTokenInfo = useRecoilValue(
+      depositInfoConfig?.denom && 'cw20' in depositInfoConfig.denom
+        ? Cw20BaseSelectors.tokenInfoSelector({
+            contractAddress: depositInfoConfig.denom.cw20,
+            params: [],
+          })
+        : constSelector(undefined)
+    )
+    const depositDecimals = depositInfoConfig?.denom
+      ? 'cw20' in depositInfoConfig.denom && cw20DepositTokenInfo
+        ? cw20DepositTokenInfo.decimals
+        : 'native' in depositInfoConfig.denom
+        ? nativeTokenDecimals(depositInfoConfig.denom.native) ?? 0
+        : 0
+      : 0
 
     return useCallback(
       (data: UpdatePreProposeConfigData) => {
@@ -125,9 +136,15 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
                   deposit_info: {
                     amount: convertDenomToMicroDenomWithDecimals(
                       data.depositInfo.deposit,
-                      voteConversionDecimals
+                      depositDecimals
                     ).toString(),
-                    denom: { voting_module_token: {} },
+                    denom: depositInfoConfig?.denom
+                      ? 'voting_module_token' in depositInfoConfig.denom
+                        ? { voting_module_token: {} }
+                        : { token: { denom: depositInfoConfig.denom } }
+                      : {
+                          voting_module_token: {},
+                        },
                     refund_policy: data.depositInfo.refundFailedProposals
                       ? DepositRefundPolicy.Always
                       : DepositRefundPolicy.OnlyPassed,
@@ -137,7 +154,7 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
                   deposit_info: null,
                 }),
             // Pass through since we don't support changing this yet.
-            open_proposal_submission: config.open_proposal_submission,
+            open_proposal_submission,
           },
         }
 
@@ -151,7 +168,7 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
           },
         })
       },
-      [voteConversionDecimals, config.open_proposal_submission]
+      [depositInfoConfig, depositDecimals, open_proposal_submission]
     )
   }
 
