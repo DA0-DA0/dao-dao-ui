@@ -107,7 +107,7 @@ export const daoDropdownInfoSelector: (
 
       return {
         coreAddress,
-        imageUrl: config.image_url || undefined,
+        imageUrl: config.image_url || getFallbackImage(coreAddress),
         name: config.name,
         subdaos: get(
           waitForAll(
@@ -181,7 +181,7 @@ export const daoCardInfoSelector = selectorFamily<
         parentDao = {
           coreAddress: admin,
           name,
-          imageUrl: image_url || undefined,
+          imageUrl: image_url || getFallbackImage(admin),
         }
       }
 
@@ -189,7 +189,7 @@ export const daoCardInfoSelector = selectorFamily<
         coreAddress,
         name: config.name,
         description: config.description,
-        imageUrl: config.image_url || undefined,
+        imageUrl: config.image_url || getFallbackImage(coreAddress),
         href: daoUrlPrefix + coreAddress,
         established,
         parentDao,
@@ -393,10 +393,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               tokenDecimals: decimals,
               // TODO: Choose subtitle.
               // subtitle: '',
-              // `denom` is an address, so all would fallback to the same image
-              // if using `denom` instead of `symbol` here (since fallback image
-              // is based on the first character).
-              imageUrl: imageUrl || getFallbackImage(symbol),
+              imageUrl: imageUrl || getFallbackImage(denom),
               unstakedBalance,
               usdcUnitPrice,
               cw20Address: denom,

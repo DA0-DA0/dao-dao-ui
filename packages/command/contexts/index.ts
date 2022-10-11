@@ -1,2 +1,1 @@
-export * from './root'
-export * from './dao'
+export * from './generic'

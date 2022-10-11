@@ -16,7 +16,7 @@ import {
   getFeaturedDaoAddresses,
   useCachedLoadable,
 } from '@dao-dao/state'
-import { DaoCardInfo } from '@dao-dao/tstypes/dao'
+import { DaoCardInfo } from '@dao-dao/tstypes'
 import {
   Button,
   FeaturedDaos,

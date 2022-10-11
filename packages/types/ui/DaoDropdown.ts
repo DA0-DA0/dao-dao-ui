@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 export interface DaoDropdownInfo {
   coreAddress: string
-  imageUrl?: string
+  imageUrl: string
   name: string
   subdaos?: DaoDropdownInfo[]
   content?: ReactNode

@@ -14,7 +14,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { CommandModal } from '@dao-dao/command'
+import { CommandModal, makeGenericContext } from '@dao-dao/command'
 import {
   PfpkNftSelectionModal,
   SidebarWallet,
@@ -32,6 +32,7 @@ import {
   usePoolAndSnapshotAtBlockHeight,
   useWalletProfile,
 } from '@dao-dao/state'
+import { CommandModalContextMaker } from '@dao-dao/tstypes'
 import { IAppLayoutContext, AppLayout as StatelessAppLayout } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
@@ -84,6 +85,14 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   }, [error, setInstallWarningVisible, setNoKeplrAccount])
 
   //! COMMAND MODAL
+  const [rootCommandContextMaker, _setRootCommandContextMaker] =
+    useState<CommandModalContextMaker>(
+      // makeGenericContext is a function, and useState allows passing a
+      // function that executes immediately and returns the initial value for
+      // the state. Thus, pass a function that is called immediately, which
+      // returns the function we want to set.
+      () => makeGenericContext
+    )
   // Hide modal when we nav away.
   useEffect(() => {
     setCommandModalVisible(false)
@@ -129,6 +138,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         visible: updateProfileNftVisible,
         toggle: () => setUpdateProfileNftVisible((v) => !v),
       },
+      setRootCommandContextMaker: (maker) =>
+        // See comment in `_setRootCommandContextMaker` for an explanation on
+        // why we pass a function here.
+        _setRootCommandContextMaker(() => maker),
     }),
     [
       responsiveNavigationEnabled,
@@ -232,6 +245,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
       )}
 
       <CommandModal
+        makeRootContext={rootCommandContextMaker}
         setVisible={setCommandModalVisible}
         visible={commandModalVisible}
       />

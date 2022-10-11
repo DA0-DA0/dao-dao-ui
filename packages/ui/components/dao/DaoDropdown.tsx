@@ -5,7 +5,6 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
 import { DaoDropdownProps } from '@dao-dao/tstypes/ui/DaoDropdown'
-import { getFallbackImage } from '@dao-dao/utils'
 
 import { DropdownIconButton } from '../IconButton'
 import { Tooltip } from '../Tooltip'
@@ -43,11 +42,7 @@ export const DaoDropdown = ({
         )}
       >
         <Tooltip title={name}>
-          <img
-            alt=""
-            className="w-7 h-7 rounded-full"
-            src={imageUrl || getFallbackImage(coreAddress)}
-          />
+          <img alt="" className="w-7 h-7 rounded-full" src={imageUrl} />
         </Tooltip>
       </a>
     </Link>
@@ -85,11 +80,7 @@ export const DaoDropdown = ({
 
           <Link href={`/dao/${coreAddress}`}>
             <a className="flex flex-row grow gap-2 items-center py-2 hover:opacity-70 active:opacity-60 transition-opacity">
-              <img
-                alt=""
-                className="w-5 h-5 rounded-full"
-                src={imageUrl || getFallbackImage(coreAddress)}
-              />
+              <img alt="" className="w-5 h-5 rounded-full" src={imageUrl} />
 
               <p className="text-text-body link-text">{name}</p>
             </a>

@@ -2,6 +2,7 @@ import { ComponentType, ReactNode } from 'react'
 
 import { PageHeaderProps } from '@dao-dao/ui'
 
+import { CommandModalContextMaker } from '../command'
 import { WalletProfile } from '../wallet'
 import { LoadingData } from './common'
 import { NavigationProps } from './Navigation'
@@ -22,6 +23,9 @@ export interface IAppLayoutContext {
   }
   RightSidebarContent: ComponentType<{ children: ReactNode }>
   PageHeader: ComponentType<PageHeaderProps>
+  setRootCommandContextMaker: (
+    rootCommandContextMaker: CommandModalContextMaker
+  ) => void
 }
 
 export interface AppLayoutProps {

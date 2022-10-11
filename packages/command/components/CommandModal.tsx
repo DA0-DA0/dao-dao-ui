@@ -11,31 +11,16 @@ import {
 } from '@dao-dao/tstypes/command'
 import { CommandModal as StatelessCommandModal } from '@dao-dao/ui'
 
-import { makeRootContext } from '../contexts/root'
 import { CommandModalContextView } from './CommandModalContextView'
 
-// TODO: Make this take the root context maker function so different root
-// contexts can be set based on the page we're on.
-export const CommandModal = (
-  props: Omit<
-    CommandModalProps,
-    'contexts' | 'filter' | 'setFilter' | 'goBack' | 'children'
-  >
-) => {
+export const CommandModal = ({
+  makeRootContext,
+  ...props
+}: CommandModalProps) => {
   const { t } = useTranslation()
   const [filter, setFilter] = useState('')
 
-  const [contexts, _setContexts] = useState(() => [
-    // Initialize with root context.
-    makeRootContext({
-      t,
-      openContext: (newContext: CommandModalContext) => {
-        setContexts((currentContexts) => [...currentContexts, newContext])
-        // Clear filter when opening new context.
-        setFilter('')
-      },
-    }),
-  ])
+  const [contexts, _setContexts] = useState<CommandModalContext[]>([])
 
   // Keep unique ID (counter) of when context changes so we can tell
   // CommandModalContextView to refresh. Since a context has a useSections hook,
@@ -47,6 +32,22 @@ export const CommandModal = (
     _setContexts(...args)
   }, [])
 
+  // Reset with new root context whenever makeRootContext changes. Also
+  // initializes first time.
+  useEffect(() => {
+    setContexts([
+      // Initialize with root context.
+      makeRootContext({
+        t,
+        openContext: (newContext: CommandModalContext) => {
+          setContexts((currentContexts) => [...currentContexts, newContext])
+          // Clear filter when opening new context.
+          setFilter('')
+        },
+      }),
+    ])
+  }, [makeRootContext, setContexts, t])
+
   // Clear context and filter when modal becomes visible.
   useEffect(() => {
     if (props.visible) {
@@ -55,7 +56,9 @@ export const CommandModal = (
     }
   }, [props.visible, setContexts])
 
-  const removeContext = useCallback(
+  // Remove the last one unless there is only one remaining. Never close the
+  // root context.
+  const closeCurrentContext = useCallback(
     () =>
       setContexts((currentContexts) =>
         currentContexts.slice(
@@ -71,9 +74,9 @@ export const CommandModal = (
     // Don't render Modal on server side, since it portals to document.body.
     <SuspenseLoader fallback={null}>
       <StatelessCommandModal
+        closeCurrentContext={closeCurrentContext}
         contexts={contexts}
         filter={filter}
-        goBack={removeContext}
         setFilter={setFilter}
         {...props}
       >

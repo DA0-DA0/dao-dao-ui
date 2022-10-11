@@ -33,6 +33,7 @@ export const makeAppLayoutContextDecorator: (
             },
             PageHeader: () => null,
             RightSidebarContent: () => null,
+            setRootCommandContextMaker: () => {},
           }),
           [
             responsiveNavigationEnabled,

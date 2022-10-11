@@ -48,6 +48,7 @@ export const DefaultArgs: AppLayoutProps = {
       visible: false,
       toggle: () => alert('toggle update'),
     },
+    setRootCommandContextMaker: () => {},
   },
 }
 
@@ -76,6 +77,7 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
         visible: updateProfileVisible,
         toggle: () => setUpdateProfileVisible((v) => !v),
       },
+      setRootCommandContextMaker: () => {},
     }),
     [
       responsiveNavigationEnabled,

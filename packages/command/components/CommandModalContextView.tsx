@@ -3,18 +3,18 @@ import { useMemo } from 'react'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import {
+  CommandModalContext,
   CommandModalContextSection,
-  CommandModalProps,
 } from '@dao-dao/tstypes/command'
 import {
   CommandModalContextViewLoader,
   CommandModalContextView as StatelessCommandModalContextView,
 } from '@dao-dao/ui'
 
-export type CommandModalContextViewProps = Pick<
-  CommandModalProps,
-  'filter' | 'contexts'
->
+export interface CommandModalContextViewProps {
+  filter: string
+  contexts: CommandModalContext[]
+}
 
 export const CommandModalContextView = (
   props: CommandModalContextViewProps

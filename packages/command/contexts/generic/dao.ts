@@ -10,7 +10,7 @@ import {
   CommandModalDaoInfo,
 } from '@dao-dao/tstypes/command'
 
-export const makeDaoContext: CommandModalContextMaker<{
+export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo
 }> = ({ dao: { coreAddress, name, imageUrl } }) => {
   const useSections = () => {

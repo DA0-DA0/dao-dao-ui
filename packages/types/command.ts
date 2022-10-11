@@ -1,14 +1,11 @@
-import { ComponentType, ReactNode } from 'react'
+import { ComponentType } from 'react'
 import { TFunction } from 'react-i18next'
 
 export interface CommandModalProps {
   visible: boolean
   setVisible: (visible: boolean) => void
-  contexts: CommandModalContext[]
-  goBack: () => void
-  filter: string
-  setFilter: (filter: string) => void
-  children: ReactNode
+  // Root context maker can take no extra options.
+  makeRootContext: CommandModalContextMaker
 }
 
 export type CommandModalContextSectionItem<

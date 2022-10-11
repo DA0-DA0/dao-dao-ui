@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { CommandModalProps } from '@dao-dao/tstypes/command'
+import { CommandModalProps } from '@dao-dao/tstypes/ui/CommandModal'
 
 import { Modal } from '../Modal'
 import { SearchBar } from '../SearchBar'
@@ -13,7 +13,7 @@ export const CommandModal = ({
   filter,
   setFilter,
   contexts,
-  goBack,
+  closeCurrentContext,
   children,
 }: CommandModalProps) => {
   const { t } = useTranslation()
@@ -54,7 +54,11 @@ export const CommandModal = ({
               name={context.name}
               // Only the most recent context can go back. Sliced off the first
               // one, so add one to the current index before comparing.
-              onClose={index + 1 === contexts.length - 1 ? goBack : undefined}
+              onClose={
+                index + 1 === contexts.length - 1
+                  ? closeCurrentContext
+                  : undefined
+              }
             />
           ))}
 
@@ -76,8 +80,10 @@ export const CommandModal = ({
                 (event.key === 'Escape' && contexts.length > 1)
               ) {
                 event.stopPropagation()
-                return goBack()
+                return closeCurrentContext()
               }
+              // If hits Escape and there are no contexts, this event will
+              // propagate to the Modal, which will then close itself.
             }}
             placeholder={t('commandModal.prompt')}
             ref={searchBarRef}

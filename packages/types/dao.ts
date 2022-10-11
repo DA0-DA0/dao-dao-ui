@@ -17,12 +17,9 @@ import { ContractVersion } from './contract'
 import { ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as CwCoreV0_2_0InstantiateMsg } from './contracts/CwCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
-import { LoadingData } from './ui'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
-// TODO: Clean up/standardize all these different DaoInfo types.
-
-// Context
+// Used in DaoInfoContext in @dao-dao/common/components/DaoPageWrapper
 export interface DaoInfo {
   coreAddress: string
   coreVersion: ContractVersion
@@ -44,32 +41,12 @@ export interface DaoParentInfo {
   parentDao?: DaoParentInfo | null
 }
 
+// Used in @dao-dao/common/components/DaoPageWrapper to serialize DaoInfo loaded
+// via static props (@dao-dao/common/server/makeGetDaoStaticProps) to be fed
+// into DaoPageWrapper and available in the UI via DaoInfoContext.
 export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
   // Created needs to be serialized and de-serialized.
   created: string | null
-}
-
-export interface DaoDisplayInfo {
-  coreAddress: string
-  name: string
-  description: string
-  imageUrl?: string | null
-  established?: Date
-
-  parentDao?: DaoParentInfo
-}
-
-export interface DaoCardInfoLazyData {
-  isMember: boolean
-  tokenBalance: number
-  tokenSymbol: string
-  proposalCount: number
-}
-
-export interface DaoCardInfo extends DaoDisplayInfo {
-  lazyData: LoadingData<DaoCardInfoLazyData>
-  className?: string
-  showIsMember?: boolean
 }
 
 export enum UnstakingTaskStatus {

@@ -9,7 +9,7 @@ import {
   useCachedLoadable,
   usePinnedDaos,
 } from '@dao-dao/state'
-import { DaoCardInfo } from '@dao-dao/tstypes/dao'
+import { DaoCardInfo } from '@dao-dao/tstypes/ui/DaoCard'
 import { DaoCard as StatelessDaoCard } from '@dao-dao/ui'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
