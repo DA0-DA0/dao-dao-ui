@@ -138,6 +138,8 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
                       data.depositInfo.deposit,
                       depositDecimals
                     ).toString(),
+                    // TODO: Support any denom instead of just passing through
+                    // already-set denom.
                     denom: depositInfoConfig?.denom
                       ? 'voting_module_token' in depositInfoConfig.denom
                         ? { voting_module_token: {} }
