@@ -21,7 +21,7 @@ export const ClaimsPendingList = ({
 
   if (
     !governanceTokenInfo ||
-    !blockHeight ||
+    blockHeight === undefined ||
     !refreshClaims ||
     (connected && (!claims || sumClaimsAvailable === undefined))
   ) {

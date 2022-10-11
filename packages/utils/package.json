@@ -10,7 +10,7 @@
     "@dao-dao/tsconfig": "*",
     "@dao-dao/tstypes": "*",
     "@keplr-wallet/types": "^0.10.2",
-    "interchain-rpc": "^1.4.0",
+    "interchain-rpc": "^1.5.0",
     "recoil": "^0.7.2",
     "typescript": "^4.8.3"
   },

@@ -192,7 +192,7 @@ export const NewProposal = ({
       async (newProposalData: NewProposalData) => {
         if (
           !connected ||
-          !blockHeight ||
+          blockHeight === undefined ||
           // If required deposit, ensure the allowance and unstaked balance
           // data have loaded.
           (requiredProposalDeposit && !allowanceResponse)

@@ -11050,10 +11050,10 @@ intercept-stdout@^0.1.2:
   dependencies:
     lodash.toarray "^3.0.0"
 
-interchain-rpc@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/interchain-rpc/-/interchain-rpc-1.4.0.tgz#302019a6326ea0e7edc6ed667de698373c033961"
-  integrity sha512-zLI54/KQ3xGYNxk8q0573EWz/DyCHAoaGX72EnEHBos+bITEuCziIm7v3C0n8wXZbH1qr7uTNMgb6RXllbEQdw==
+interchain-rpc@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/interchain-rpc/-/interchain-rpc-1.5.0.tgz#e9b28bf26d4d4be3db35b4fd4b065e6ce281bba4"
+  integrity sha512-PPraOwL97IvnccplPIHjrcUfysywFdPK38yQY7rYQFfb85i8gSeenX6K5fkKdboh/ZpRRo+cpausqDyhIKlsGA==
   dependencies:
     "@babel/runtime" "^7.18.9"
     "@cosmjs/amino" "0.29.0"

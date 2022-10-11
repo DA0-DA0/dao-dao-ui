@@ -7,6 +7,7 @@ import {
   blockHeightSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
+  useCachedLoadable,
 } from '@dao-dao/state'
 import { claimAvailable } from '@dao-dao/utils'
 
@@ -48,9 +49,11 @@ export const useStakingInfo = ({
   /// Optional
 
   // Claims
-  const blockHeight = useRecoilValue(
-    fetchClaims ? blockHeightSelector : constSelector(undefined)
+  const blockHeightLoadable = useCachedLoadable(
+    fetchClaims ? blockHeightSelector : undefined
   )
+  const blockHeight =
+    blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
 
   const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
   const refreshClaims = () => _setClaimsId((id) => id + 1)

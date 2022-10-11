@@ -1,5 +1,5 @@
 import { Coin } from '@cosmjs/stargate'
-import { cosmos } from 'interchain-rpc'
+import { cosmos, juno } from 'interchain-rpc'
 import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
 import {
   DelegationResponse,
@@ -11,6 +11,7 @@ import { selector, selectorFamily } from 'recoil'
 
 import { Delegation, UnbondingDelegation, Validator } from '@dao-dao/tstypes'
 import {
+  CHAIN_BECH32_PREFIX,
   CHAIN_RPC_ENDPOINT,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
@@ -43,14 +44,24 @@ export const stargazeCosmWasmClientSelector = selector({
   get: () => cosmWasmClientRouter.connect(STARGAZE_RPC_ENDPOINT),
 })
 
-export const rpcClientSelector = selector({
-  key: 'rpcClient',
+export const cosmosRpcClientSelector = selector({
+  key: 'cosmosRpcClient',
   get: async () =>
     (
       await cosmos.ClientFactory.createRPCQueryClient({
         rpcEndpoint: CHAIN_RPC_ENDPOINT,
       })
     ).cosmos,
+})
+
+export const junoRpcClientSelector = selector({
+  key: 'junoRpcClient',
+  get: async () =>
+    (
+      await juno.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: CHAIN_RPC_ENDPOINT,
+      })
+    ).juno,
 })
 
 export const blockHeightSelector = selector({
@@ -187,7 +198,7 @@ export const nativeSupplySelector = selectorFamily({
   get:
     (denom: string) =>
     async ({ get }) => {
-      const client = get(rpcClientSelector)
+      const client = get(cosmosRpcClientSelector)
 
       return (
         await client.bank.v1beta1.supplyOf({
@@ -200,10 +211,20 @@ export const nativeSupplySelector = selectorFamily({
 export const blocksPerYearSelector = selector({
   key: 'blocksPerYear',
   get: async ({ get }) => {
-    // TODO: Replace this with a working query.
-    // const client = get(rpcClientSelector)
-    // return (await client.mint.v1beta1.params()).params.blocksPerYear.toNumber()
-    return 5048093
+    if (CHAIN_BECH32_PREFIX === 'juno') {
+      const client = get(junoRpcClientSelector)
+      return (await client.mint.params()).params.blocksPerYear.toNumber()
+    }
+
+    const client = get(cosmosRpcClientSelector)
+    try {
+      return (
+        await client.mint.v1beta1.params()
+      ).params.blocksPerYear.toNumber()
+    } catch (err) {
+      console.error(err)
+      return 0
+    }
   },
 })
 
@@ -212,7 +233,7 @@ export const validatorSelector = selectorFamily<Validator, string>({
   get:
     (validatorAddr: string) =>
     async ({ get }) => {
-      const client = get(rpcClientSelector)
+      const client = get(cosmosRpcClientSelector)
       const {
         validator: {
           description: { moniker, website, details },
@@ -233,7 +254,7 @@ export const validatorSelector = selectorFamily<Validator, string>({
 export const nativeUnstakingDurationSecondsSelector = selector({
   key: 'nativeUnstakingDurationSeconds',
   get: async ({ get }) => {
-    const client = get(rpcClientSelector)
+    const client = get(cosmosRpcClientSelector)
     const { params } = await client.staking.v1beta1.params()
     return params.unbondingTime.seconds.toNumber()
   },
@@ -251,7 +272,7 @@ export const nativeStakingInfoSelector = selectorFamily<
   get:
     (delegatorAddr: string) =>
     async ({ get }) => {
-      const client = get(rpcClientSelector)
+      const client = get(cosmosRpcClientSelector)
 
       let delegations: DelegationResponse[]
       let validators: RpcValidator[]
