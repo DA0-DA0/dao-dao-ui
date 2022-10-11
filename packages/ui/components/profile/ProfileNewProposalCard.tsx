@@ -54,7 +54,7 @@ export const ProfileNewProposalCard = ({
 
                 <p
                   className={clsx(
-                    'py-1 px-2 font-mono text-right text-text-primary rounded-full border-2 border-component-badge-primary caption-text',
+                    'py-1 px-2 font-mono text-center text-text-primary break-words rounded-full border-2 border-component-badge-primary caption-text',
                     valueClassName
                   )}
                 >

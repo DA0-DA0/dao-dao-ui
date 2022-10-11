@@ -91,7 +91,7 @@ export const makeUseProfileNewProposalCardInfoLines = (
         : []),
       {
         Icon: AttachMoney,
-        label: t('title.proposalDeposit'),
+        label: t('title.deposit'),
         value:
           proposalDeposit > 0
             ? proposalDeposit.toLocaleString(undefined, {
