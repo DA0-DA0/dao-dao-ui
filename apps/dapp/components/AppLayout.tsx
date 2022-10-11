@@ -23,6 +23,7 @@ import {
 import {
   SubQueryProvider,
   blockHeightSelector,
+  blocksPerYearSelector,
   mountedInBrowserAtom,
   navigationCompactAtom,
   pinnedDaoDropdownInfosSelector,
@@ -149,14 +150,17 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   //! Token prices
   // Updates once per minute, so token price will also update once per minute.
-  const currentBlockHeight = useCachedLoadable(blockHeightSelector)
+  const currentBlockHeightLoadable = useCachedLoadable(blockHeightSelector)
+  const blocksPerYearLoadable = useCachedLoadable(blocksPerYearSelector)
   // Current native pool data and snapshot from ~24 hours ago.
   const nativeUsdcPoolAndSnapshotQuery = usePoolAndSnapshotAtBlockHeight({
     swapContractAddress: USDC_SWAP_ADDRESS,
     blockHeight:
-      currentBlockHeight.state !== 'hasValue'
+      currentBlockHeightLoadable.state !== 'hasValue' ||
+      blocksPerYearLoadable.state !== 'hasValue'
         ? 0
-        : currentBlockHeight.contents - convertSecondsToBlocks(24 * 3600),
+        : currentBlockHeightLoadable.contents -
+          convertSecondsToBlocks(blocksPerYearLoadable.contents, 24 * 3600),
   })
   const nativeUsdcPoolAndSnapshot =
     nativeUsdcPoolAndSnapshotQuery.data ??

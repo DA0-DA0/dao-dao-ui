@@ -4,10 +4,10 @@ import {
   BankMsg,
   CosmosMsgFor_Empty,
   DistributionMsg,
+  MintMsg,
   StakingMsg,
   WasmMsg,
 } from '@dao-dao/tstypes/contracts/common'
-import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
 
 export function parseEncodedMessage(base64String?: string) {
   if (base64String) {
@@ -132,7 +132,7 @@ export const makeWasmMessage = (message: {
 }
 
 export const makeExecutableMintMessage = (
-  msg: MintExecuteMsg,
+  msg: MintMsg,
   contractAddress: string
 ): CosmosMsgFor_Empty => ({
   wasm: {
@@ -147,7 +147,7 @@ export const makeExecutableMintMessage = (
 export const makeMintMessage = (
   amount: string,
   recipient: string
-): MintExecuteMsg => ({
+): MintMsg => ({
   mint: {
     amount,
     recipient,

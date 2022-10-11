@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ActionComponent } from '@dao-dao/tstypes/actions'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/cw20-base'
 import {
   AddressInput,
   InputErrorMessage,

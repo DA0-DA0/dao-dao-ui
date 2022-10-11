@@ -254,3 +254,10 @@ export interface CheckedDepositInfo {
   denom: CheckedDenom
   refund_policy: DepositRefundPolicy
 }
+
+export interface MintMsg {
+  mint: {
+    amount: Uint128
+    recipient: string
+  }
+}

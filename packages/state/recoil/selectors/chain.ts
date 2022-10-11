@@ -1,23 +1,22 @@
 import { Coin } from '@cosmjs/stargate'
-import { cosmos } from 'interchain-lcd'
-import { DelegationDelegatorRewardSDKType } from 'interchain-lcd/types/codegen/cosmos/distribution/v1beta1/distribution'
+import { cosmos } from 'interchain-rpc'
+import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
 import {
-  DelegationResponseSDKType,
-  UnbondingDelegationSDKType,
-  ValidatorSDKType,
-} from 'interchain-lcd/types/codegen/cosmos/staking/v1beta1/staking'
+  DelegationResponse,
+  UnbondingDelegation as RpcUnbondingDelegation,
+  Validator as RpcValidator,
+} from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 
 import { Delegation, UnbondingDelegation, Validator } from '@dao-dao/tstypes'
 import {
-  CHAIN_REST_ENDPOINT,
   CHAIN_RPC_ENDPOINT,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   STARGAZE_RPC_ENDPOINT,
   cosmWasmClientRouter,
-  getAllLcdResponse,
+  getAllRpcResponse,
   nativeTokenDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
@@ -44,12 +43,12 @@ export const stargazeCosmWasmClientSelector = selector({
   get: () => cosmWasmClientRouter.connect(STARGAZE_RPC_ENDPOINT),
 })
 
-export const lcdClientSelector = selector({
-  key: 'lcdClient',
+export const rpcClientSelector = selector({
+  key: 'rpcClient',
   get: async () =>
     (
-      await cosmos.ClientFactory.createLCDClient({
-        restEndpoint: CHAIN_REST_ENDPOINT,
+      await cosmos.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: CHAIN_RPC_ENDPOINT,
       })
     ).cosmos,
 })
@@ -188,7 +187,7 @@ export const nativeSupplySelector = selectorFamily({
   get:
     (denom: string) =>
     async ({ get }) => {
-      const client = get(lcdClientSelector)
+      const client = get(rpcClientSelector)
 
       return (
         await client.bank.v1beta1.supplyOf({
@@ -198,28 +197,22 @@ export const nativeSupplySelector = selectorFamily({
     },
 })
 
-// TODO: Use this selector to replace env constant JUNO_BLOCKS_PER_YEAR
-// export const blocksPerYearSelector = selectorFamily({
-//   key: 'blocksPerYear',
-//   get:
-//     (denom: string) =>
-//     async ({ get }) => {
-//       const client = get(lcdClientSelector)
-
-//       return (
-//         await client.mint.v1beta1.params({
-//           denom,
-//         })
-//       ).params.blocksPerYear
-//     },
-// })
+export const blocksPerYearSelector = selector({
+  key: 'blocksPerYear',
+  get: async ({ get }) => {
+    // TODO: Replace this with a working query.
+    // const client = get(rpcClientSelector)
+    // return (await client.mint.v1beta1.params()).params.blocksPerYear.toNumber()
+    return 5048093
+  },
+})
 
 export const validatorSelector = selectorFamily<Validator, string>({
   key: 'validator',
   get:
     (validatorAddr: string) =>
     async ({ get }) => {
-      const client = get(lcdClientSelector)
+      const client = get(rpcClientSelector)
       const {
         validator: {
           description: { moniker, website, details },
@@ -240,14 +233,9 @@ export const validatorSelector = selectorFamily<Validator, string>({
 export const nativeUnstakingDurationSecondsSelector = selector({
   key: 'nativeUnstakingDurationSeconds',
   get: async ({ get }) => {
-    const client = get(lcdClientSelector)
+    const client = get(rpcClientSelector)
     const { params } = await client.staking.v1beta1.params()
-    // Incorrectly typed.
-    // `unbonding_time` is serialized with an `s` suffix indicating seconds.
-    return parseInt(
-      (params.unbonding_time as unknown as string).split('s')[0],
-      10
-    )
+    return params.unbondingTime.seconds.toNumber()
   },
 })
 
@@ -263,21 +251,21 @@ export const nativeStakingInfoSelector = selectorFamily<
   get:
     (delegatorAddr: string) =>
     async ({ get }) => {
-      const client = get(lcdClientSelector)
+      const client = get(rpcClientSelector)
 
-      let delegations: DelegationResponseSDKType[]
-      let validators: ValidatorSDKType[]
-      let rewards: DelegationDelegatorRewardSDKType[]
-      let unbondingDelegations: UnbondingDelegationSDKType[]
+      let delegations: DelegationResponse[]
+      let validators: RpcValidator[]
+      let rewards: DelegationDelegatorReward[]
+      let unbondingDelegations: RpcUnbondingDelegation[]
       try {
-        delegations = await getAllLcdResponse(
+        delegations = await getAllRpcResponse(
           client.staking.v1beta1.delegatorDelegations,
           {
             delegatorAddr,
           },
-          'delegation_responses'
+          'delegationResponses'
         )
-        validators = await getAllLcdResponse(
+        validators = await getAllRpcResponse(
           client.staking.v1beta1.delegatorValidators,
           {
             delegatorAddr,
@@ -289,12 +277,12 @@ export const nativeStakingInfoSelector = selectorFamily<
             delegatorAddress: delegatorAddr,
           })
         ).rewards
-        unbondingDelegations = await getAllLcdResponse(
+        unbondingDelegations = await getAllRpcResponse(
           client.staking.v1beta1.delegatorUnbondingDelegations,
           {
             delegatorAddr,
           },
-          'unbonding_responses'
+          'unbondingResponses'
         )
       } catch (error) {
         console.error(error)
@@ -305,7 +293,7 @@ export const nativeStakingInfoSelector = selectorFamily<
         delegations: delegations
           .map(
             ({
-              delegation: { validator_address: address },
+              delegation: { validatorAddress: address },
               balance: delegationBalance,
             }): Delegation | undefined => {
               // Only allow NATIVE_DENOM.
@@ -315,10 +303,10 @@ export const nativeStakingInfoSelector = selectorFamily<
 
               const { description } =
                 validators.find(
-                  ({ operator_address }) => operator_address === address
+                  ({ operatorAddress }) => operatorAddress === address
                 ) ?? {}
               const pendingReward = rewards
-                .find(({ validator_address }) => validator_address === address)
+                .find(({ validatorAddress }) => validatorAddress === address)
                 ?.reward.find(({ denom }) => denom === NATIVE_DENOM)
 
               if (!description || !pendingReward) {
@@ -343,13 +331,13 @@ export const nativeStakingInfoSelector = selectorFamily<
 
         // Only returns native token unbondings, no need to check.
         unbondingDelegations: unbondingDelegations.flatMap(
-          ({ validator_address, entries }) => {
-            const validator = get(validatorSelector(validator_address))
+          ({ validatorAddress, entries }) => {
+            const validator = get(validatorSelector(validatorAddress))
 
             return entries.map(
               ({
-                creation_height,
-                completion_time,
+                creationHeight,
+                completionTime,
                 balance,
               }): UnbondingDelegation => ({
                 validator,
@@ -357,8 +345,8 @@ export const nativeStakingInfoSelector = selectorFamily<
                   amount: balance,
                   denom: NATIVE_DENOM,
                 },
-                startedAtHeight: creation_height.toNumber(),
-                finishesAt: completion_time,
+                startedAtHeight: creationHeight.toNumber(),
+                finishesAt: completionTime,
               })
             )
           }

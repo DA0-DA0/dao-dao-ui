@@ -20,6 +20,7 @@ import {
   Cw20BaseSelectors,
   CwCoreV0_1_0Selectors,
   blockHeightSelector,
+  blocksPerYearSelector,
   cosmWasmClientSelector,
   refreshWalletBalancesIdAtom,
   useCachedLoadable,
@@ -130,7 +131,6 @@ export const NewProposal = ({
     blockHeightLoadable.state === 'hasValue'
       ? blockHeightLoadable.contents
       : undefined
-
   const requiredProposalDeposit = Number(depositInfo?.amount ?? '0')
 
   const allowanceResponse = useRecoilValue(
@@ -185,6 +185,7 @@ export const NewProposal = ({
 
   const processTQ = useProcessTQ()
 
+  const blocksPerYear = useRecoilValue(blocksPerYearSelector)
   const cosmWasmClient = useRecoilValue(cosmWasmClientSelector)
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
@@ -262,7 +263,11 @@ export const NewProposal = ({
           })(cosmWasmClient)
           const expirationDate =
             proposalInfo &&
-            convertExpirationToDate(proposalInfo.expiration, blockHeight)
+            convertExpirationToDate(
+              blocksPerYear,
+              proposalInfo.expiration,
+              blockHeight
+            )
 
           const proposal = (
             await snapshot.getPromise(
@@ -323,6 +328,7 @@ export const NewProposal = ({
         }
       },
     [
+      blocksPerYear,
       connected,
       requiredProposalDeposit,
       allowanceResponse,

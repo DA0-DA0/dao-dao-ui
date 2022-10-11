@@ -89,8 +89,11 @@ const InnerMembership = ({
       Math.max(
         0,
         ...proposalModuleDepositInfos
-        .filter(({ denom }) => 'cw20' in denom && denom.cw20 === governanceTokenAddress)
-        .map(({ amount }) => Number(amount))
+          .filter(
+            ({ denom }) =>
+              'cw20' in denom && denom.cw20 === governanceTokenAddress
+          )
+          .map(({ amount }) => Number(amount))
       ),
     [proposalModuleDepositInfos, governanceTokenAddress]
   )

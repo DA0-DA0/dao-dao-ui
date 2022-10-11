@@ -7,9 +7,14 @@ import {
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue } from 'recoil'
 
 import { useDaoInfoContext } from '@dao-dao/common'
-import { blockHeightSelector, useCachedLoadable } from '@dao-dao/state'
+import {
+  blockHeightSelector,
+  blocksPerYearSelector,
+  useCachedLoadable,
+} from '@dao-dao/state'
 import { BaseProposalStatusAndInfoProps } from '@dao-dao/tstypes'
 import { Status } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 import {
@@ -39,8 +44,10 @@ export const ProposalStatusAndInfo = ({
   const proposal = useProposal()
 
   const executionTxHash = useProposalExecutionTxHash()
+  const blocksPerYear = useRecoilValue(blocksPerYearSelector)
   const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
   const expirationDate = convertExpirationToDate(
+    blocksPerYear,
     proposal.expiration,
     blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
   )

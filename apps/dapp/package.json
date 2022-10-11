@@ -26,7 +26,6 @@
     "@dao-dao/icons": "*",
     "@dao-dao/proposal-module-adapter": "*",
     "@dao-dao/tstypes": "*",
-    "@dao-dao/types": "^0.0.8",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@dao-dao/voting-module-adapter": "*",

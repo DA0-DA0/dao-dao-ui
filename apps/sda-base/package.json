@@ -24,7 +24,6 @@
     "@dao-dao/i18n": "*",
     "@dao-dao/icons": "*",
     "@dao-dao/state": "*",
-    "@dao-dao/types": "^0.0.8",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@fontsource/inter": "^4.5.7",

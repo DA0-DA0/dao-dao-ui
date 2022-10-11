@@ -7,6 +7,7 @@ import { useRecoilValue } from 'recoil'
 import {
   StakeCw20Hooks,
   blockHeightSelector,
+  blocksPerYearSelector,
   stakingLoadingAtom,
   useCachedLoadable,
   useWalletProfile,
@@ -122,6 +123,7 @@ export const ProfileMemberCardMembershipInfo = ({
   ])
 
   const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
+  const blocksPerYear = useRecoilValue(blocksPerYearSelector)
 
   const unstakingTasks: UnstakingTask[] = [
     ...claimsAvailable.map(({ amount, release_at }) => ({
@@ -133,6 +135,7 @@ export const ProfileMemberCardMembershipInfo = ({
       tokenSymbol: governanceTokenInfo.symbol,
       tokenDecimals: governanceTokenInfo.decimals,
       date: convertExpirationToDate(
+        blocksPerYear,
         release_at,
         blockHeightLoadable.state === 'hasValue'
           ? blockHeightLoadable.contents
@@ -166,7 +169,8 @@ export const ProfileMemberCardMembershipInfo = ({
           governanceTokenInfo.decimals
         )}
         unstakingDurationSeconds={
-          (unstakingDuration && durationToSeconds(unstakingDuration)) ||
+          (unstakingDuration &&
+            durationToSeconds(blocksPerYear, unstakingDuration)) ||
           undefined
         }
         unstakingTasks={unstakingTasks}

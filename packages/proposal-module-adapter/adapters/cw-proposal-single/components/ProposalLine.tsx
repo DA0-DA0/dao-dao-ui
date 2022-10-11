@@ -2,6 +2,7 @@ import { useRecoilValue } from 'recoil'
 
 import {
   blockHeightSelector,
+  blocksPerYearSelector,
   contractVersionSelector,
   useCachedLoadable,
 } from '@dao-dao/state'
@@ -32,8 +33,10 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
 
   const { canVote, vote } = useWalletVoteInfo()
 
+  const blocksPerYear = useRecoilValue(blocksPerYearSelector)
   const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
   const expirationDate = convertExpirationToDate(
+    blocksPerYear,
     proposal.expiration,
     blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
   )

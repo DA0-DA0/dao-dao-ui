@@ -1,6 +1,6 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/cw20-base'
 import {
   Cw20StakedBalanceVotingAdapter,
   matchAdapter,

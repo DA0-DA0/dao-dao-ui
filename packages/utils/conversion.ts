@@ -8,9 +8,7 @@ import {
   DurationWithUnits,
   LoadingData,
 } from '@dao-dao/tstypes'
-import { Expiration } from '@dao-dao/types/contracts/cw3-dao'
-
-import { JUNO_BLOCKS_PER_YEAR } from './constants'
+import { Expiration } from '@dao-dao/tstypes/contracts/common'
 
 export function convertMicroDenomToDenomWithDecimals(
   amount: number | string,
@@ -126,6 +124,7 @@ export const loadableToLoadingData = <T>(
 }
 
 export const convertExpirationToDate = (
+  blocksPerYear: number,
   expiration: Expiration,
   // For converting height to rough date.
   currentBlockHeight: number
@@ -133,7 +132,10 @@ export const convertExpirationToDate = (
   'at_height' in expiration && currentBlockHeight > 0
     ? new Date(
         Date.now() +
-          convertBlocksToSeconds(expiration.at_height - currentBlockHeight) *
+          convertBlocksToSeconds(
+            blocksPerYear,
+            expiration.at_height - currentBlockHeight
+          ) *
             1000
       )
     : 'at_time' in expiration
@@ -141,14 +143,18 @@ export const convertExpirationToDate = (
       new Date(Number(expiration.at_time) / 1e6)
     : undefined
 
-export const convertBlocksToSeconds = (blocks: number) =>
-  Math.round((blocks / JUNO_BLOCKS_PER_YEAR) * 365 * 24 * 60 * 60)
+export const convertBlocksToSeconds = (blocksPerYear: number, blocks: number) =>
+  Math.round((blocks / blocksPerYear) * 365 * 24 * 60 * 60)
 
-export const convertSecondsToBlocks = (seconds: number) =>
-  Math.round((seconds * JUNO_BLOCKS_PER_YEAR) / (365 * 24 * 60 * 60))
+export const convertSecondsToBlocks = (
+  blocksPerYear: number,
+  seconds: number
+) => Math.round((seconds * blocksPerYear) / (365 * 24 * 60 * 60))
 
-export const durationToSeconds = (duration: Duration) =>
-  'height' in duration ? convertBlocksToSeconds(duration.height) : duration.time
+export const durationToSeconds = (blocksPerYear: number, duration: Duration) =>
+  'height' in duration
+    ? convertBlocksToSeconds(blocksPerYear, duration.height)
+    : duration.time
 
 // Use Stargaze's IPFS gateway.
 export const transformIpfsUrlToHttpsIfNecessary = (ipfsUrl: string) =>
