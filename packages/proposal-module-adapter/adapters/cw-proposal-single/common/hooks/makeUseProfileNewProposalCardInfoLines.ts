@@ -13,7 +13,11 @@ import {
   IProposalModuleAdapterCommonOptions,
 } from '@dao-dao/tstypes'
 import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  nativeTokenDecimals,
+  nativeTokenLabel,
+} from '@dao-dao/utils'
 
 import { configSelector } from '../../contracts/CwProposalSingle.common.recoil'
 import { makeDepositInfo } from '../selectors'
@@ -40,7 +44,7 @@ export const makeUseProfileNewProposalCardInfoLines = (
     const processTQ = useProcessTQ()
     const { threshold, quorum } = processTQ(config.threshold)
 
-    const proposalDepositTokenInfo = useRecoilValue(
+    const cw20DepositTokenInfo = useRecoilValue(
       depositInfo?.denom && 'cw20' in depositInfo.denom
         ? Cw20BaseSelectors.tokenInfoSelector({
             contractAddress: depositInfo.denom.cw20,
@@ -48,14 +52,27 @@ export const makeUseProfileNewProposalCardInfoLines = (
           })
         : constSelector(undefined)
     )
-
-    const proposalDeposit =
-      depositInfo?.amount && proposalDepositTokenInfo
-        ? convertMicroDenomToDenomWithDecimals(
-            depositInfo.amount,
-            proposalDepositTokenInfo.decimals
-          )
+    const depositDecimals = depositInfo?.denom
+      ? 'cw20' in depositInfo.denom && cw20DepositTokenInfo
+        ? cw20DepositTokenInfo.decimals
+        : 'native' in depositInfo.denom
+        ? nativeTokenDecimals(depositInfo.denom.native) ?? 0
         : 0
+      : 0
+    const depositSymbol = depositInfo?.denom
+      ? 'cw20' in depositInfo.denom && cw20DepositTokenInfo
+        ? cw20DepositTokenInfo.symbol
+        : 'native' in depositInfo.denom
+        ? nativeTokenLabel(depositInfo.denom.native)
+        : undefined
+      : undefined
+
+    const proposalDeposit = depositInfo?.amount
+      ? convertMicroDenomToDenomWithDecimals(
+          depositInfo.amount,
+          depositDecimals
+        )
+      : 0
 
     return [
       {
@@ -78,10 +95,10 @@ export const makeUseProfileNewProposalCardInfoLines = (
         value:
           proposalDeposit > 0
             ? proposalDeposit.toLocaleString(undefined, {
-                maximumFractionDigits: proposalDepositTokenInfo?.decimals ?? 6,
+                maximumFractionDigits: depositDecimals,
               }) +
               ' $' +
-              proposalDepositTokenInfo?.symbol
+              depositSymbol
             : t('info.none'),
       },
       ...(depositInfo && proposalDeposit > 0

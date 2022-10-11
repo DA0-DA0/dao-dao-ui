@@ -19,6 +19,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
+  nativeTokenDecimals,
 } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
@@ -53,7 +54,7 @@ const makeUseDefaults: AsProposalModuleMaker<
       })
     ).deposit_info
 
-    const proposalDepositTokenInfo = useRecoilValue(
+    const cw20DepositTokenInfo = useRecoilValue(
       depositInfoConfig?.denom && 'cw20' in depositInfoConfig.denom
         ? Cw20BaseSelectors.tokenInfoSelector({
             contractAddress: depositInfoConfig.denom.cw20,
@@ -61,6 +62,13 @@ const makeUseDefaults: AsProposalModuleMaker<
           })
         : constSelector(undefined)
     )
+    const depositDecimals = depositInfoConfig?.denom
+      ? 'cw20' in depositInfoConfig.denom && cw20DepositTokenInfo
+        ? cw20DepositTokenInfo.decimals
+        : 'native' in depositInfoConfig.denom
+        ? nativeTokenDecimals(depositInfoConfig.denom.native) ?? 0
+        : 0
+      : 0
 
     const depositRequired = !!depositInfoConfig
     const depositInfo = !!depositInfoConfig
@@ -68,7 +76,8 @@ const makeUseDefaults: AsProposalModuleMaker<
           deposit: convertMicroDenomToDenomWithDecimals(
             Number(depositInfoConfig.amount),
             // A deposit being configured implies that a token will be present.
-            proposalDepositTokenInfo!.decimals
+            // Type-checked above.
+            depositDecimals
           ),
           refundFailedProposals:
             depositInfoConfig.refund_policy === DepositRefundPolicy.Always,
