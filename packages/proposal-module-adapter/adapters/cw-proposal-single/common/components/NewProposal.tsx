@@ -1,3 +1,4 @@
+import { coins } from '@cosmjs/stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { BookOutlined, FlagOutlined } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
@@ -25,10 +26,12 @@ import {
   refreshWalletBalancesIdAtom,
   useCachedLoadable,
   useVotingModule,
+  nativeDenomBalanceSelector,
 } from '@dao-dao/state'
 import {
   Action,
   ActionKey,
+  Coin,
   ContractVersion,
   UseDefaults,
   UseTransformToCosmos,
@@ -57,6 +60,7 @@ import {
   NewProposal as StatelessNewProposal,
   NewProposalProps as StatelessNewProposalProps,
 } from '../ui/NewProposal'
+import { BalanceResponse } from '@dao-dao/state/clients/cw20-base'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> &
   Pick<StatelessNewProposalProps, 'options'>
@@ -120,10 +124,13 @@ export const NewProposal = ({
   const formMethods = useFormContext<NewProposalForm>()
 
   const depositInfo = useRecoilValue(makeDepositInfo(options))
-  // TODO: Support native token deposits.
   const depositInfoCw20TokenAddress =
     depositInfo?.denom && 'cw20' in depositInfo.denom
       ? depositInfo.denom.cw20
+      : undefined
+  const depositInfoNativeTokenDenom =
+    depositInfo?.denom && 'native' in depositInfo.denom
+      ? depositInfo.denom.native
       : undefined
 
   const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
@@ -131,9 +138,10 @@ export const NewProposal = ({
     blockHeightLoadable.state === 'hasValue'
       ? blockHeightLoadable.contents
       : undefined
+
   const requiredProposalDeposit = Number(depositInfo?.amount ?? '0')
 
-  const allowanceResponse = useRecoilValue(
+  const cw20DepositTokenAllowanceResponse = useRecoilValue(
     depositInfoCw20TokenAddress && requiredProposalDeposit && walletAddress
       ? Cw20BaseSelectors.allowanceSelector({
           contractAddress: depositInfoCw20TokenAddress,
@@ -144,7 +152,42 @@ export const NewProposal = ({
       : constSelector(undefined)
   )
 
-  const increaseAllowance = Cw20BaseHooks.useIncreaseAllowance({
+  const cw20DepositTokenBalance = useRecoilValue(
+    requiredProposalDeposit && walletAddress && depositInfoCw20TokenAddress
+      ? Cw20BaseSelectors.balanceSelector({
+          contractAddress: depositInfoCw20TokenAddress,
+          params: [{ address: walletAddress }],
+        })
+      : constSelector(undefined)
+  )
+  const nativeDepositTokenBalance = useRecoilValue(
+    requiredProposalDeposit && walletAddress && depositInfoNativeTokenDenom
+      ? nativeDenomBalanceSelector({
+          walletAddress,
+          denom: depositInfoNativeTokenDenom,
+        })
+      : constSelector(undefined)
+  )
+
+  // Info about if deposit can be paid.
+  const depositSatisfied =
+    requiredProposalDeposit === 0 ||
+    (cw20DepositTokenBalance &&
+      Number(cw20DepositTokenBalance.balance) >= requiredProposalDeposit) ||
+    (nativeDepositTokenBalance &&
+      Number(nativeDepositTokenBalance.amount) >= requiredProposalDeposit)
+
+  const setRefreshWalletBalancesId = useSetRecoilState(
+    refreshWalletBalancesIdAtom(walletAddress ?? '')
+  )
+  const refreshBalances = useCallback(
+    () => setRefreshWalletBalancesId((id) => id + 1),
+    [setRefreshWalletBalancesId]
+  )
+
+  const processTQ = useProcessTQ()
+
+  const increaseCw20DepositAllowance = Cw20BaseHooks.useIncreaseAllowance({
     contractAddress: depositInfoCw20TokenAddress ?? '',
     sender: walletAddress ?? '',
   })
@@ -161,30 +204,6 @@ export const NewProposal = ({
     sender: walletAddress ?? '',
   })
 
-  const depositTokenBalance = useRecoilValue(
-    requiredProposalDeposit > 0 && depositInfoCw20TokenAddress && walletAddress
-      ? Cw20BaseSelectors.balanceSelector({
-          contractAddress: depositInfoCw20TokenAddress,
-          params: [{ address: walletAddress }],
-        })
-      : constSelector(undefined)
-  )
-
-  // Info about if deposit can be paid.
-  const depositSatisfied =
-    requiredProposalDeposit === 0 ||
-    Number(depositTokenBalance?.balance ?? '0') >= requiredProposalDeposit
-
-  const setRefreshWalletBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(walletAddress ?? '')
-  )
-  const refreshBalances = useCallback(
-    () => setRefreshWalletBalancesId((id) => id + 1),
-    [setRefreshWalletBalancesId]
-  )
-
-  const processTQ = useProcessTQ()
-
   const blocksPerYear = useRecoilValue(blocksPerYearSelector)
   const cosmWasmClient = useRecoilValue(cosmWasmClientSelector)
   const createProposal = useRecoilCallback(
@@ -195,27 +214,31 @@ export const NewProposal = ({
           blockHeight === undefined ||
           // If required deposit, ensure the allowance and unstaked balance
           // data have loaded.
-          (requiredProposalDeposit && !allowanceResponse)
+          (requiredProposalDeposit && !cw20DepositTokenAllowanceResponse)
         ) {
           throw new Error(t('error.loadingData'))
         }
 
         setLoading(true)
 
+        // Increase CW20 deposit token allowance if necessary.
         // Typecheck for TS; should've already been verified above.
-        if (requiredProposalDeposit && allowanceResponse) {
+        if (requiredProposalDeposit && cw20DepositTokenAllowanceResponse) {
           const remainingAllowanceNeeded =
             requiredProposalDeposit -
             // If allowance expired, none.
-            (expirationExpired(allowanceResponse.expires, blockHeight)
+            (expirationExpired(
+              cw20DepositTokenAllowanceResponse.expires,
+              blockHeight
+            )
               ? 0
-              : Number(allowanceResponse.allowance))
+              : Number(cw20DepositTokenAllowanceResponse.allowance))
 
           // Request to increase the contract's allowance for the proposal
           // deposit if needed.
           if (remainingAllowanceNeeded) {
             try {
-              await increaseAllowance({
+              await increaseCw20DepositAllowance({
                 amount: remainingAllowanceNeeded.toString(),
                 spender: options.proposalModule.address,
               })
@@ -235,20 +258,41 @@ export const NewProposal = ({
           }
         }
 
+        // Native token deposit if exists.
+        const proposeFunds =
+          requiredProposalDeposit && depositInfoNativeTokenDenom
+            ? coins(requiredProposalDeposit, depositInfoNativeTokenDenom)
+            : undefined
+
         try {
           let response
           //! V1
           if (options.proposalModule.version === ContractVersion.V0_1_0) {
-            response = await doProposeV1(newProposalData)
+            response = await doProposeV1(
+              newProposalData,
+              'auto',
+              undefined,
+              proposeFunds
+            )
             //! V2
           } else {
             response = options.proposalModule.preProposeAddress
-              ? await doProposePrePropose({
-                  msg: {
-                    propose: newProposalData,
+              ? await doProposePrePropose(
+                  {
+                    msg: {
+                      propose: newProposalData,
+                    },
                   },
-                })
-              : await doProposeV2(newProposalData)
+                  'auto',
+                  undefined,
+                  proposeFunds
+                )
+              : await doProposeV2(
+                  newProposalData,
+                  'auto',
+                  undefined,
+                  proposeFunds
+                )
           }
 
           const proposalNumber = Number(
@@ -331,10 +375,10 @@ export const NewProposal = ({
       blocksPerYear,
       connected,
       requiredProposalDeposit,
-      allowanceResponse,
+      cw20DepositTokenAllowanceResponse,
       t,
       blockHeight,
-      increaseAllowance,
+      increaseCw20DepositAllowance,
       options,
       refreshBalances,
       doProposeV1,
