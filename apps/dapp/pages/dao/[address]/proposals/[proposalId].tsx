@@ -12,7 +12,6 @@ import { useActions } from '@dao-dao/actions'
 import {
   DaoPageWrapper,
   DaoProposalPageWrapperProps,
-  SuspenseLoader,
   useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
@@ -26,7 +25,6 @@ import { ActionKey } from '@dao-dao/tstypes'
 import {
   Loader,
   Logo,
-  PageLoader,
   ProfileDisconnectedCard,
   Proposal,
   ProposalNotFound,
@@ -162,29 +160,27 @@ const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
   ...props
 }) => (
   <DaoPageWrapper {...props}>
-    <SuspenseLoader fallback={<PageLoader />}>
-      {props.proposalInfo && props.serializedInfo ? (
-        <ProposalModuleAdapterProvider
-          initialOptions={{
-            coreAddress: props.serializedInfo.coreAddress,
-            Logo,
-            Loader,
-          }}
-          proposalId={props.proposalInfo.id}
-          proposalModules={props.serializedInfo.proposalModules}
-        >
-          <InnerProposal proposalInfo={props.proposalInfo} />
-        </ProposalModuleAdapterProvider>
-      ) : (
-        <ProposalNotFound
-          homeHref={
-            props.serializedInfo
-              ? `/dao/${props.serializedInfo.coreAddress}`
-              : '/home'
-          }
-        />
-      )}
-    </SuspenseLoader>
+    {props.proposalInfo && props.serializedInfo ? (
+      <ProposalModuleAdapterProvider
+        initialOptions={{
+          coreAddress: props.serializedInfo.coreAddress,
+          Logo,
+          Loader,
+        }}
+        proposalId={props.proposalInfo.id}
+        proposalModules={props.serializedInfo.proposalModules}
+      >
+        <InnerProposal proposalInfo={props.proposalInfo} />
+      </ProposalModuleAdapterProvider>
+    ) : (
+      <ProposalNotFound
+        homeHref={
+          props.serializedInfo
+            ? `/dao/${props.serializedInfo.coreAddress}`
+            : '/home'
+        }
+      />
+    )}
   </DaoPageWrapper>
 )
 

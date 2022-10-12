@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useState } from 'react'
 
 import { matchAndLoadAdapter } from '../core'
 import {
@@ -13,31 +13,21 @@ export interface VotingModuleAdapterProviderProps {
   options: IVotingModuleAdapterOptions
 }
 
+// Ensure this re-renders when the voting module contract name or options
+// addresses change. You can do this by setting a `key` on this component or one
+// of its ancestors. See DaoPageWrapper.tsx where this component is used.
 export const VotingModuleAdapterProvider = ({
   contractName,
   children,
   options,
 }: VotingModuleAdapterProviderProps) => {
-  const [state, setState] = useState<{
-    contractName: string
-    context: IVotingModuleAdapterContext
-  }>()
+  const [context] = useState<IVotingModuleAdapterContext>(() =>
+    matchAndLoadAdapter(contractName, options)
+  )
 
-  useEffect(() => {
-    setState({
-      contractName,
-      context: matchAndLoadAdapter(contractName, options),
-    })
-  }, [contractName, options])
-
-  // If `contractName` changes and state has not yet been updated with the newly
-  // loaded adapter, do not render the components that expect the correct voting
-  // module. Load instead.
-  return state && state.contractName === contractName ? (
-    <VotingModuleAdapterContext.Provider value={state.context}>
+  return (
+    <VotingModuleAdapterContext.Provider value={context}>
       {children}
     </VotingModuleAdapterContext.Provider>
-  ) : (
-    <options.Loader className="!fixed top-0 right-0 bottom-0 left-0" />
   )
 }

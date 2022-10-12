@@ -32,7 +32,6 @@ export const ProposalLine = ({
   ...props
 }: ProposalLineProps) => (
   <ProposalModuleAdapterProvider
-    ProviderLoader={() => <ProposalLineLoader />}
     initialOptions={{
       coreAddress,
       Logo,

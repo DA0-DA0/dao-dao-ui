@@ -22,11 +22,6 @@ export const Loader = ({
   </div>
 )
 
-export const PageLoader = ({ className, size = 64, ...props }: LoaderProps) => (
-  <Loader
-    className={clsx('fixed top-0 right-0 bottom-0 left-0 z-50', className)}
-    fill
-    size={size}
-    {...props}
-  />
+export const PageLoader = ({ size = 64, ...props }: LoaderProps) => (
+  <Loader fill size={size} {...props} />
 )

@@ -14,7 +14,6 @@ import { useRecoilState } from 'recoil'
 import {
   DaoPageWrapper,
   DaoPageWrapperProps,
-  SuspenseLoader,
   useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
@@ -30,7 +29,6 @@ import {
   CreateProposal,
   Loader,
   Logo,
-  PageLoader,
   ProfileDisconnectedCard,
   ProposalCreatedModal,
 } from '@dao-dao/ui'
@@ -302,9 +300,7 @@ const ProposalCreatePage: NextPage<DaoPageWrapperProps> = ({
   ...props
 }) => (
   <DaoPageWrapper {...props}>
-    <SuspenseLoader fallback={<PageLoader />}>
-      <InnerProposalCreate />
-    </SuspenseLoader>
+    <InnerProposalCreate />
   </DaoPageWrapper>
 )
 
