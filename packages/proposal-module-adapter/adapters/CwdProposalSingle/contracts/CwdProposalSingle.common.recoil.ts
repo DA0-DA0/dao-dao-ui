@@ -67,11 +67,7 @@ export const getVoteSelector = selectorFamily<
           ? getVoteV1Selector
           : getVoteV2Selector
 
-      return get(
-        selector(params) as
-          | RecoilValueReadOnly<GetVoteV1Response>
-          | RecoilValueReadOnly<GetVoteV2Response>
-      )
+      return get<GetVoteV1Response | GetVoteV2Response>(selector(params))
     },
 })
 
@@ -99,11 +95,7 @@ export const listVotesSelector = selectorFamily<
           ? listVotesV1Selector
           : listVotesV2Selector
 
-      return get(
-        selector(params) as
-          | RecoilValueReadOnly<ListVotesV1Response>
-          | RecoilValueReadOnly<ListVotesV2Response>
-      )
+      return get<ListVotesV1Response | ListVotesV2Response>(selector(params))
     },
 })
 
@@ -129,11 +121,7 @@ export const proposalSelector = selectorFamily<
           ? proposalV1Selector
           : proposalV2Selector
 
-      return get(
-        selector(params) as
-          | RecoilValueReadOnly<ProposalV1Response>
-          | RecoilValueReadOnly<ProposalV2Response>
-      )
+      return get<ProposalV1Response | ProposalV2Response>(selector(params))
     },
 })
 
@@ -153,11 +141,7 @@ export const configSelector = selectorFamily<
           ? configV1Selector
           : configV2Selector
 
-      return get(
-        selector(params) as
-          | RecoilValueReadOnly<ConfigV1Response>
-          | RecoilValueReadOnly<ConfigV2Response>
-      )
+      return get<ConfigV1Response | ConfigV2Response>(selector(params))
     },
 })
 
@@ -184,10 +168,8 @@ export const reverseProposalsSelector = selectorFamily<
           ? reverseProposalsV1Selector
           : reverseProposalsV2Selector
 
-      return get(
-        selector(params) as
-          | RecoilValueReadOnly<ReverseProposalsV1Response>
-          | RecoilValueReadOnly<ReverseProposalsV2Response>
+      return get<ReverseProposalsV1Response | ReverseProposalsV2Response>(
+        selector(params)
       )
     },
 })
@@ -208,10 +190,8 @@ export const proposalCountSelector = selectorFamily<
           ? proposalCountV1Selector
           : proposalCountV2Selector
 
-      return get(
-        selector(params) as
-          | RecoilValueReadOnly<ProposalCountV1Response>
-          | RecoilValueReadOnly<ProposalCountV2Response>
+      return get<ProposalCountV1Response | ProposalCountV2Response>(
+        selector(params)
       )
     },
 })
@@ -239,10 +219,8 @@ export const listAllProposalsSelector = selectorFamily<
           ? listAllProposalsV1Selector
           : listAllProposalsV2Selector
 
-      return get(
-        selector(params) as
-          | RecoilValueReadOnly<ListProposalsV1Response>
-          | RecoilValueReadOnly<ListProposalsV2Response>
+      return get<ListProposalsV1Response | ListProposalsV2Response>(
+        selector(params)
       )
     },
 })
