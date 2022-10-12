@@ -6,10 +6,11 @@ import {
   makeCreateDaoFormDecorator,
 } from '@dao-dao/storybook/decorators'
 
-import { CreateDaoStart } from './Start'
+import { CreateDaoStart } from './CreateDaoStart'
 
 export default {
-  title: 'DAO DAO / packages / ui / components / dao / create / pages / Start',
+  title:
+    'DAO DAO / packages / ui / components / dao / create / pages / CreateDaoStart',
   component: CreateDaoStart,
   decorators: [
     // Direct ancestor of rendered story.

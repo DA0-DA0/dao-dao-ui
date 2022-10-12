@@ -7,11 +7,11 @@ import {
 } from '@dao-dao/storybook/decorators'
 import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
 
-import { CreateDaoGovernance } from './Governance'
+import { CreateDaoGovernance } from './CreateDaoGovernance'
 
 export default {
   title:
-    'DAO DAO / packages / ui / components / dao / create / pages / Governance',
+    'DAO DAO / packages / ui / components / dao / create / pages / CreateDaoGovernance',
   component: CreateDaoGovernance,
   decorators: [
     // Direct ancestor of rendered story.

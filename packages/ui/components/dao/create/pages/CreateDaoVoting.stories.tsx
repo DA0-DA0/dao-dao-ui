@@ -4,10 +4,11 @@ import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLayoutDecorator'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
 
-import { CreateDaoVoting } from './Voting'
+import { CreateDaoVoting } from './CreateDaoVoting'
 
 export default {
-  title: 'DAO DAO / packages / ui / components / dao / create / pages / Voting',
+  title:
+    'DAO DAO / packages / ui / components / dao / create / pages / CreateDaoVoting',
   component: CreateDaoVoting,
   decorators: [
     // Direct ancestor of rendered story.

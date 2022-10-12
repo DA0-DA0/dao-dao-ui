@@ -6,10 +6,11 @@ import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLay
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
 import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
 
-import { CreateDaoReview } from './Review'
+import { CreateDaoReview } from './CreateDaoReview'
 
 export default {
-  title: 'DAO DAO / packages / ui / components / dao / create / pages / Review',
+  title:
+    'DAO DAO / packages / ui / components / dao / create / pages / CreateDaoReview',
   component: CreateDaoReview,
   decorators: [
     // Direct ancestor of rendered story.

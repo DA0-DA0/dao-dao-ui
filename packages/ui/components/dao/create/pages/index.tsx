@@ -1,7 +1,7 @@
-import { CreateDaoGovernance } from './Governance'
-import { CreateDaoReview } from './Review'
-import { CreateDaoStart } from './Start'
-import { CreateDaoVoting } from './Voting'
+import { CreateDaoGovernance } from './CreateDaoGovernance'
+import { CreateDaoReview } from './CreateDaoReview'
+import { CreateDaoStart } from './CreateDaoStart'
+import { CreateDaoVoting } from './CreateDaoVoting'
 
 export const CreateDaoPages = [
   CreateDaoStart,
