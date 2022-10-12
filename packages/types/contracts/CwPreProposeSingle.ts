@@ -72,8 +72,7 @@ export type DepositToken =
       }
     }
   | {
-      voting_module_token: {
-      }
+      voting_module_token: {}
     }
 export type UncheckedDenom =
   | {
