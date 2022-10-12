@@ -17,7 +17,7 @@ import {
   cosmWasmClientSelector,
 } from './chain'
 import { CwCoreV1Selectors } from './clients'
-import { infoSelector } from './clients/CwdCoreV2'
+import { infoSelector } from './clients/CwdCore.v2'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,

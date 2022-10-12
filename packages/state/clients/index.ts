@@ -1,5 +1,5 @@
 export { CwCoreV1Client, CwCoreV1QueryClient } from './CwCoreV1'
-export { CwdCoreV2Client, CwdCoreV2QueryClient } from './CwdCoreV2'
+export { CwdCoreV2Client, CwdCoreV2QueryClient } from './CwdCore.v2'
 export {
   CwProposalMultipleClient,
   CwProposalMultipleQueryClient,

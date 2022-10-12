@@ -38,11 +38,12 @@ export interface ConfigResponse {
   name: string
   [k: string]: unknown
 }
-export interface Cw20BalancesResponse {
+export interface Cw20BalanceResponse {
   addr: Addr
   balance: Uint128
   [k: string]: unknown
 }
+export type Cw20BalancesResponse = Cw20BalanceResponse[]
 export type Cw20TokenListResponse = Addr[]
 export type Cw721TokenListResponse = Addr[]
 export type DaoURIResponse = string | null

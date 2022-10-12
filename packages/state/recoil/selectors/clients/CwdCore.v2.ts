@@ -1,13 +1,6 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
 import {
-  Cw20StakedBalanceVotingAdapter,
-  matchAdapter,
-} from '@dao-dao/voting-module-adapter'
-
-import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
-import { TokenInfoResponse } from '../../../clients/cw20-base'
-import {
   ActiveProposalModulesResponse,
   AdminNominationResponse,
   AdminResponse,
@@ -15,8 +8,6 @@ import {
   Cw20BalancesResponse,
   Cw20TokenListResponse,
   Cw721TokenListResponse,
-  CwdCoreV2Client,
-  CwdCoreV2QueryClient,
   DaoURIResponse,
   DumpStateResponse,
   GetItemResponse,
@@ -28,7 +19,18 @@ import {
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '../../../clients/CwdCoreV2'
+} from '@dao-dao/tstypes/contracts/CwdCore.v2'
+import {
+  Cw20StakedBalanceVotingAdapter,
+  matchAdapter,
+} from '@dao-dao/voting-module-adapter'
+
+import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
+import { TokenInfoResponse } from '../../../clients/cw20-base'
+import {
+  CwdCoreV2Client,
+  CwdCoreV2QueryClient,
+} from '../../../clients/CwdCore.v2'
 import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
@@ -43,7 +45,7 @@ export const queryClient = selectorFamily<
   CwdCoreV2QueryClient,
   QueryClientParams
 >({
-  key: 'cwCoreV0_2_0QueryClient',
+  key: 'cwdCoreV2QueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
@@ -61,7 +63,7 @@ export const executeClient = selectorFamily<
   CwdCoreV2Client | undefined,
   ExecuteClientParams
 >({
-  key: 'cwCoreV0_2_0ExecuteClient',
+  key: 'cwdCoreV2ExecuteClient',
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
@@ -79,7 +81,7 @@ export const adminSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['admin']>
   }
 >({
-  key: 'cwCoreV0_2_0Admin',
+  key: 'cwdCoreV2Admin',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -93,7 +95,7 @@ export const adminNominationSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['adminNomination']>
   }
 >({
-  key: 'cwCoreV0_2_0AdminNomination',
+  key: 'cwdCoreV2AdminNomination',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -107,7 +109,7 @@ export const configSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['config']>
   }
 >({
-  key: 'cwCoreV0_2_0Config',
+  key: 'cwdCoreV2Config',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -121,7 +123,7 @@ export const cw20BalancesSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['cw20Balances']>
   }
 >({
-  key: 'cwCoreV0_2_0Cw20Balances',
+  key: 'cwdCoreV2Cw20Balances',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -136,7 +138,7 @@ export const cw20TokenListSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['cw20TokenList']>
   }
 >({
-  key: 'cwCoreV0_2_0Cw20TokenList',
+  key: 'cwdCoreV2Cw20TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -150,7 +152,7 @@ export const cw721TokenListSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['cw721TokenList']>
   }
 >({
-  key: 'cwCoreV0_2_0Cw721TokenList',
+  key: 'cwdCoreV2Cw721TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -164,7 +166,7 @@ export const dumpStateSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['dumpState']>
   }
 >({
-  key: 'cwCoreV0_2_0DumpState',
+  key: 'cwdCoreV2DumpState',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -182,7 +184,7 @@ export const getItemSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['getItem']>
   }
 >({
-  key: 'cwCoreV0_2_0GetItem',
+  key: 'cwdCoreV2GetItem',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -196,7 +198,7 @@ export const listItemsSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['listItems']>
   }
 >({
-  key: 'cwCoreV0_2_0ListItems',
+  key: 'cwdCoreV2ListItems',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -210,7 +212,7 @@ export const proposalModulesSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['proposalModules']>
   }
 >({
-  key: 'cwCoreV0_2_0ProposalModules',
+  key: 'cwdCoreV2ProposalModules',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -224,7 +226,7 @@ export const activeProposalModulesSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['activeProposalModules']>
   }
 >({
-  key: 'cwCoreV0_2_0ActiveProposalModules',
+  key: 'cwdCoreV2ActiveProposalModules',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -238,7 +240,7 @@ export const pauseInfoSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['pauseInfo']>
   }
 >({
-  key: 'cwCoreV0_2_0PauseInfo',
+  key: 'cwdCoreV2PauseInfo',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -252,7 +254,7 @@ export const votingModuleSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['votingModule']>
   }
 >({
-  key: 'cwCoreV0_2_0VotingModule',
+  key: 'cwdCoreV2VotingModule',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -266,7 +268,7 @@ export const listSubDaosSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['listSubDaos']>
   }
 >({
-  key: 'cwCoreV0_2_0ListSubDaos',
+  key: 'cwdCoreV2ListSubDaos',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -280,7 +282,7 @@ export const daoURISelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['daoURI']>
   }
 >({
-  key: 'cwCoreV0_2_0DaoURI',
+  key: 'cwdCoreV2DaoURI',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -294,7 +296,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['votingPowerAtHeight']>
   }
 >({
-  key: 'cwCoreV0_2_0VotingPowerAtHeight',
+  key: 'cwdCoreV2VotingPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -308,7 +310,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['totalPowerAtHeight']>
   }
 >({
-  key: 'cwCoreV0_2_0TotalPowerAtHeight',
+  key: 'cwdCoreV2TotalPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -322,7 +324,7 @@ export const infoSelector = selectorFamily<
     params: Parameters<CwdCoreV2QueryClient['info']>
   }
 >({
-  key: 'cwCoreV0_2_0Info',
+  key: 'cwdCoreV2Info',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -336,7 +338,7 @@ export const allCw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse,
   QueryClientParams
 >({
-  key: 'cwCoreV0_2_0AllCw20TokenList',
+  key: 'cwdCoreV2AllCw20TokenList',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -413,7 +415,7 @@ export const allCw20BalancesSelector = selectorFamily<
   })[],
   QueryClientParams
 >({
-  key: 'cwCoreV0_2_0AllCw20Balances',
+  key: 'cwdCoreV2AllCw20Balances',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -506,7 +508,7 @@ export const cw20BalancesInfoSelector = selectorFamily<
   }[],
   string
 >({
-  key: 'cwCoreV0_2_0Cw20BalancesInfo',
+  key: 'cwdCoreV2Cw20BalancesInfo',
   get:
     (address) =>
     async ({ get }) => {
@@ -564,7 +566,7 @@ export const allCw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse,
   QueryClientParams
 >({
-  key: 'cwCoreV0_2_0AllCw721TokenList',
+  key: 'cwdCoreV2AllCw721TokenList',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -600,7 +602,7 @@ export const listAllSubDaosSelector = selectorFamily<
   ListSubDaosResponse,
   QueryClientParams
 >({
-  key: 'cwCoreV0_2_0ListAllSubDaos',
+  key: 'cwdCoreV2ListAllSubDaos',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -635,7 +637,7 @@ export const allSubDaoConfigsSelector = selectorFamily<
   ({ address: string } & ConfigResponse)[],
   QueryClientParams
 >({
-  key: 'cwCoreV0_2_0AllSubDaoConfigs',
+  key: 'cwdCoreV2AllSubDaoConfigs',
   get:
     (queryClientParams) =>
     async ({ get }) => {

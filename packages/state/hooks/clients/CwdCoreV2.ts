@@ -5,11 +5,11 @@ import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { FunctionKeyOf } from '../../../types'
-import { CwdCoreV2Client as ExecuteClient } from '../../clients/CwdCoreV2'
+import { CwdCoreV2Client as ExecuteClient } from '../../clients/CwdCore.v2'
 import {
   ExecuteClientParams,
   executeClient,
-} from '../../recoil/selectors/clients/CwdCoreV2'
+} from '../../recoil/selectors/clients/CwdCore.v2'
 
 // This hook wrapper lets us easily make hooks out of all execution functions on
 // the contract clients, without having to fetch the `executeClient` selector as

@@ -15,6 +15,10 @@ import {
   TokenCardInfo,
   TokenCardStakingInfo,
 } from '@dao-dao/tstypes'
+import {
+  ConfigResponse as CwdCoreV2ConfigResponse,
+  DumpStateResponse as CwdCoreV2DumpStateResponse,
+} from '@dao-dao/tstypes/contracts/CwdCore.v2'
 import { DaoDropdownInfo, UnstakingTaskStatus } from '@dao-dao/ui'
 import {
   CWCOREV1_CONTRACT_NAME,
@@ -36,10 +40,6 @@ import {
   ConfigResponse as CwCoreV1ConfigResponse,
   DumpStateResponse as CwCoreV1DumpStateResponse,
 } from '../../clients/CwCoreV1'
-import {
-  ConfigResponse as CwdCoreV2ConfigResponse,
-  DumpStateResponse as CwdCoreV2DumpStateResponse,
-} from '../../clients/CwdCoreV2'
 import { getFeaturedDaoAddresses } from '../../utils/getFeaturedDaoAddresses'
 import {
   nativeBalancesSelector,
@@ -52,7 +52,7 @@ import {
   CwNativeStakedBalanceVotingSelectors,
   CwdCoreV2Selectors,
 } from './clients'
-import { infoSelector, votingModuleSelector } from './clients/CwdCoreV2'
+import { infoSelector, votingModuleSelector } from './clients/CwdCore.v2'
 import {
   contractInstantiateTimeSelector,
   contractVersionSelector,
