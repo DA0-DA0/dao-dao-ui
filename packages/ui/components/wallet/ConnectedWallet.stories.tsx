@@ -18,7 +18,10 @@ Default.args = {
     data: {
       walletName: '@Modern-Edamame',
       walletAddress: 'juno123abx789xyz',
-      tokenBalance: 2400.111111,
+      tokenBalance: {
+        loading: false,
+        data: 2400.111111,
+      },
     },
   },
   tokenSymbol: 'JUNO',

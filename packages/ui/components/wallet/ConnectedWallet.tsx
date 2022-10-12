@@ -13,7 +13,7 @@ export interface ConnectedWalletProps {
   data: LoadingData<{
     walletName: string
     walletAddress: string
-    tokenBalance?: number
+    tokenBalance: LoadingData<number>
   }>
   tokenSymbol: string
   onDisconnect?: () => void
@@ -56,14 +56,15 @@ export const ConnectedWallet = ({
           <p
             className={clsx(
               'font-mono legend-text',
-              data.loading && 'animate-pulse'
+              (data.loading || data.data.tokenBalance.loading) &&
+                'animate-pulse'
             )}
           >
-            {data.loading || data.data.tokenBalance === undefined ? (
+            {data.loading || data.data.tokenBalance.loading ? (
               '...'
             ) : (
               <>
-                {data.data.tokenBalance.toLocaleString(undefined, {
+                {data.data.tokenBalance.data.toLocaleString(undefined, {
                   maximumFractionDigits: 6,
                 })}
               </>

@@ -42,7 +42,10 @@ export const SidebarWallet = () => {
               ? {
                   loading: false,
                   data: {
-                    tokenBalance: walletBalance,
+                    tokenBalance:
+                      walletBalance === undefined
+                        ? { loading: true }
+                        : { loading: false, data: walletBalance },
                     walletAddress: connectedWallet.address,
                     walletName: connectedWallet.name,
                   },
