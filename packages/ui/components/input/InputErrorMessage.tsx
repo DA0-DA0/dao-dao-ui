@@ -13,7 +13,7 @@ export const InputErrorMessage = ({
   error?.message ? (
     <span
       className={clsx(
-        'inline-block mt-1 ml-1 max-w-prose text-xs text-error',
+        'inline-block mt-1 ml-1 max-w-prose text-xs text-error break-words',
         className
       )}
     >

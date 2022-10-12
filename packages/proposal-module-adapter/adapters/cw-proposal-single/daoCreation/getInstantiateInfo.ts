@@ -1,17 +1,16 @@
 import { Buffer } from 'buffer'
 
-import {
-  DaoCreationGetInstantiateInfo,
-  DepositRefundPolicy,
-} from '@dao-dao/tstypes'
+import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
 import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwProposalSingle.v2'
 import {
   CWPREPROPOSESINGLE_CODE_ID,
   CWPROPOSALSINGLE_CODE_ID,
+  NATIVE_DENOM,
   NEW_DAO_CW20_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
+  nativeTokenDecimals,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
@@ -42,46 +41,49 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 ) => {
   const isCw20StakedBalanceVotingAdapter =
     votingModuleAdapter.id === Cw20StakedBalanceVotingAdapter.id
-  // Only usable if the above is true.
   const cw20StakedBalanceVotingAdapterData =
     votingModuleAdapter.data as Cw20StakedBalanceVotingConfig
-  const canSetDeposit =
-    // Can only set deposit info if using governance token, which comes from
-    // the cw20-staked-balance-voting voting module adapter.
-    isCw20StakedBalanceVotingAdapter &&
-    typeof proposalDeposit?.amount === 'number' &&
-    proposalDeposit.amount > 0
 
-  // If making a deposit and an existing token is being used, ensure
-  // existingGovernanceTokenInfo is set since we need to access its decimals.
-  if (
-    canSetDeposit &&
-    cw20StakedBalanceVotingAdapterData.tokenType ===
-      GovernanceTokenType.Existing &&
-    !cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo
-  ) {
-    throw new Error(t('errors.noGovTokenAddr'))
-  }
+  const cw20GovernanceTokenDecimals = isCw20StakedBalanceVotingAdapter
+    ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
+      ? NEW_DAO_CW20_DECIMALS
+      : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.decimals
+    : undefined
+
+  const decimals =
+    proposalDeposit.type === 'native'
+      ? nativeTokenDecimals(NATIVE_DENOM) ?? 0
+      : proposalDeposit.type === 'voting_module_token'
+      ? cw20GovernanceTokenDecimals ?? 0
+      : // type === 'cw20'
+        proposalDeposit.cw20TokenInfo?.decimals ?? 0
 
   const preProposeSingleInstantiateMsg: CwPreProposeSingleInstantiateMsg = {
-    deposit_info: canSetDeposit
+    deposit_info: proposalDeposit.enabled
       ? {
           amount: convertDenomToMicroDenomWithDecimals(
             proposalDeposit.amount,
-            cw20StakedBalanceVotingAdapterData.tokenType ===
-              GovernanceTokenType.New
-              ? NEW_DAO_CW20_DECIMALS
-              : // Validated above that this is set.
-                cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo!
-                  .decimals
+            decimals
           ).toString(),
-          denom: {
-            voting_module_token: {},
-          },
-          // TODO: Allow any refund policy by changing toggle to dropdown.
-          refund_policy: proposalDeposit.refundFailed
-            ? DepositRefundPolicy.Always
-            : DepositRefundPolicy.OnlyPassed,
+          denom:
+            proposalDeposit.type === 'voting_module_token'
+              ? {
+                  voting_module_token: {},
+                }
+              : {
+                  token: {
+                    denom:
+                      proposalDeposit.type === 'native'
+                        ? {
+                            native: NATIVE_DENOM,
+                          }
+                        : // proposalDeposit.type === 'cw20'
+                          {
+                            cw20: proposalDeposit.cw20Address,
+                          },
+                  },
+                },
+          refund_policy: proposalDeposit.refundPolicy,
         }
       : null,
     extension: {},

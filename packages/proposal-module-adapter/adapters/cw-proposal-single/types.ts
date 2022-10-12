@@ -3,7 +3,11 @@ import {
   DurationWithUnits,
   ProcessedTQ,
 } from '@dao-dao/tstypes'
-import { CosmosMsgFor_Empty } from '@dao-dao/tstypes/contracts/common'
+import {
+  CosmosMsgFor_Empty,
+  DepositRefundPolicy,
+} from '@dao-dao/tstypes/contracts/common'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/cw20-base'
 
 export interface NewProposalForm {
   title: string
@@ -28,8 +32,12 @@ export interface DaoCreationConfig {
   quorum: ThresholdValue
   votingDuration: DurationWithUnits
   proposalDeposit: {
+    enabled: boolean
     amount: number
-    refundFailed: boolean
+    type: 'native' | 'cw20' | 'voting_module_token'
+    cw20Address: string
+    cw20TokenInfo?: TokenInfoResponse
+    refundPolicy: DepositRefundPolicy
   }
   allowRevoting: boolean
 }

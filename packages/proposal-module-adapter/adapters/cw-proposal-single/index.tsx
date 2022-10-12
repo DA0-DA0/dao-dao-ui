@@ -1,4 +1,4 @@
-import { DurationUnits } from '@dao-dao/tstypes'
+import { DepositRefundPolicy, DurationUnits } from '@dao-dao/tstypes'
 import { Vote } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
 
 import { ProposalModuleAdapter } from '../../types'
@@ -134,8 +134,12 @@ export const CwProposalSingleAdapter: ProposalModuleAdapter<
         units: DurationUnits.Weeks,
       },
       proposalDeposit: {
-        amount: 0,
-        refundFailed: false,
+        enabled: false,
+        amount: 10,
+        type: 'native',
+        cw20Address: '',
+        cw20TokenInfo: undefined,
+        refundPolicy: DepositRefundPolicy.OnlyPassed,
       },
       allowRevoting: false,
     },

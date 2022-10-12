@@ -19,7 +19,7 @@ export interface AddressInputProps<
   register: UseFormRegister<FV>
   onChange?: ChangeEventHandler<HTMLInputElement>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
-  error?: FieldError
+  error?: FieldError | string
   disabled?: boolean
   required?: boolean
   containerClassName?: string

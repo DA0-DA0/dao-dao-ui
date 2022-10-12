@@ -138,12 +138,7 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
       id,
       hooks: { useGovernanceTokenInfo },
     } = useVotingModuleAdapter()
-    const { governanceTokenAddress, governanceTokenInfo } =
-      useGovernanceTokenInfo?.() ?? {}
-    const cw20GovernanceTokenAddress =
-      id === Cw20StakedBalanceVotingAdapter.id
-        ? governanceTokenAddress
-        : undefined
+    const { governanceTokenInfo } = useGovernanceTokenInfo?.() ?? {}
     const cw20GovernanceTokenInfo =
       id === Cw20StakedBalanceVotingAdapter.id ? governanceTokenInfo : undefined
 
@@ -168,23 +163,24 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
                       ? cw20GovernanceTokenInfo?.decimals ?? 0
                       : depositInfo.cw20Decimals
                   ).toString(),
-                  denom: {
-                    token: {
-                      denom:
-                        depositInfo.type === 'native'
-                          ? {
-                              native: NATIVE_DENOM,
-                            }
-                          : depositInfo.type === 'voting_module_token'
-                          ? {
-                              cw20: cw20GovernanceTokenAddress ?? '',
-                            }
-                          : // depositInfo.type === 'cw20'
-                            {
-                              cw20: depositInfo.cw20Address,
-                            },
-                    },
-                  },
+                  denom:
+                    depositInfo.type === 'voting_module_token'
+                      ? {
+                          voting_module_token: {},
+                        }
+                      : {
+                          token: {
+                            denom:
+                              depositInfo.type === 'native'
+                                ? {
+                                    native: NATIVE_DENOM,
+                                  }
+                                : // depositInfo.type === 'cw20'
+                                  {
+                                    cw20: depositInfo.cw20Address,
+                                  },
+                          },
+                        },
                   refund_policy: depositInfo.refundPolicy,
                 }
               : null,
@@ -203,11 +199,7 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
           },
         })
       },
-      [
-        cw20GovernanceTokenAddress,
-        cw20GovernanceTokenInfo?.decimals,
-        open_proposal_submission,
-      ]
+      [cw20GovernanceTokenInfo?.decimals, open_proposal_submission]
     )
   }
 
