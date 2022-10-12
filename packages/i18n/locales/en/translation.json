@@ -436,6 +436,13 @@
     "proposalDepositWillBeRefunded": "Proposal deposit will be refunded once closed.",
     "proposalModuleCreationTooltip": "The voting system for this proposal. For example: single choice, multiple choice, etc.",
     "proposalQuorumTooltip": "This proportion of voting power must vote on a proposal for it to pass.",
+    "proposalStatus": {
+      "notOpen": "This proposal is no longer open for voting. {{turnoutPercent}} of all votes were cast, and {{turnoutYesPercent}} of them were 'Yes'.{{extra}}",
+      "willFail": "If the current vote stands, this proposal will fail.",
+      "willFailBadQuorum": "If the current vote stands, this proposal will fail due to a lack of voter participation.",
+      "willFailBadThreshold": "If the current vote stands, this proposal will fail because insufficient 'Yes' votes have been cast.",
+      "willPass": "If the current vote stands, this proposal will pass."
+    },
     "proposalThresholdTooltip": "A proposal must attain this proportion of 'Yes' votes to pass.",
     "proposalsCreated_one": "{{count}} proposal created",
     "proposalsCreated_other": "{{count}} proposals created",

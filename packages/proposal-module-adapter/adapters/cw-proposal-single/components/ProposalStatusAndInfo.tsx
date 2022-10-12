@@ -198,28 +198,26 @@ export const ProposalStatusAndInfo = ({
     turnoutYesPercent,
   } = useVotesInfo()
 
-  // TODO: i18n
   const status =
     proposal.status === Status.Open
       ? thresholdReached && (!quorum || quorumReached)
-        ? 'If the current vote stands, this proposal will pass.'
+        ? t('info.proposalStatus.willPass')
         : !thresholdReached && (!quorum || quorumReached)
-        ? "If the current vote stands, this proposal will fail because insufficient 'Yes' votes have been cast."
+        ? t('info.proposalStatus.willFailBadThreshold')
         : thresholdReached && quorum && !quorumReached
-        ? 'If the current vote stands, this proposal will fail due to a lack of voter participation.'
-        : 'If the current vote stands, this proposal will fail.'
-      : `This proposal is no longer open for voting. ${formatPercentOf100(
-          turnoutPercent
-        )} of all votes were cast, and ${formatPercentOf100(
-          turnoutYesPercent
-        )} of them were 'Yes'.${
-          // Add sentence about closing to receive deposit back if it needs to
-          // be closed and will refund.
-          proposal.status === Status.Rejected &&
-          depositInfo?.refund_policy === DepositRefundPolicy.Always
-            ? ` ${t('info.proposalDepositWillBeRefunded')}`
-            : ''
-        }`
+        ? t('info.proposalStatus.willFailBadQuorum')
+        : t('info.proposalStatus.willFail')
+      : t('info.proposalStatus.notOpen', {
+          turnoutPercent: formatPercentOf100(turnoutPercent),
+          turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
+          extra:
+            // Add sentence about closing to receive deposit back if it needs to
+            // be closed and will refund.
+            proposal.status === Status.Rejected &&
+            depositInfo?.refund_policy === DepositRefundPolicy.Always
+              ? ` ${t('info.proposalDepositWillBeRefunded')}`
+              : '',
+        })
 
   const executeProposal = (
     proposalModule.version === ContractVersion.V0_1_0
