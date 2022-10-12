@@ -1,6 +1,6 @@
 import { atomFamily } from 'recoil'
 
-import { CwProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single'
+import { CwdProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle'
 import { NewDao } from '@dao-dao/tstypes'
 import { Cw4VotingAdapter } from '@dao-dao/voting-module-adapter'
 
@@ -17,8 +17,8 @@ export const DefaultNewDao: NewDao = {
   // Default to single choice proposal configuration.
   proposalModuleAdapters: [
     {
-      id: CwProposalSingleAdapter.id,
-      data: CwProposalSingleAdapter.daoCreation.defaultConfig,
+      id: CwdProposalSingleAdapter.id,
+      data: CwdProposalSingleAdapter.daoCreation.defaultConfig,
     },
   ],
   advancedVotingConfigEnabled: false,

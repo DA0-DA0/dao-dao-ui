@@ -2,10 +2,10 @@ import type { NextPage } from 'next'
 import React, { useMemo } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { CheckedDepositInfo } from '@dao-dao/tstypes/contracts/common'
+import { useDaoInfoContext } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { Loader, Logo, PageWrapper, PageWrapperProps } from '@/components'

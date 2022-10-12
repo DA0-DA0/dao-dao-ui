@@ -9,7 +9,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { Abstain, Airplane } from '@dao-dao/icons'
-import { Vote as VoteChoice } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
+import { Vote as VoteChoice } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
 import { Button } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 

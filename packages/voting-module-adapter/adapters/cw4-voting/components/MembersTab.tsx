@@ -1,9 +1,15 @@
 import { ComponentPropsWithoutRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoMemberCard, useDaoInfoContext } from '@dao-dao/common'
-import { useEncodedProposalPrefill, useVotingModule } from '@dao-dao/state'
-import { MembersTab as StatelessMembersTab } from '@dao-dao/ui'
+import { DaoMemberCard } from '@dao-dao/common'
+import {
+  useEncodedCwdProposalSinglePrefill,
+  useVotingModule,
+} from '@dao-dao/state'
+import {
+  MembersTab as StatelessMembersTab,
+  useDaoInfoContext,
+} from '@dao-dao/ui'
 
 import { makeManageMembersAction } from '../actions'
 import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
@@ -26,7 +32,7 @@ export const MembersTab = () => {
 
   // Only make the action once.
   const [manageMembersAction] = useState(() => makeManageMembersAction())
-  const encodedProposalPrefill = useEncodedProposalPrefill({
+  const encodedProposalPrefill = useEncodedCwdProposalSinglePrefill({
     actions: [
       {
         action: manageMembersAction,

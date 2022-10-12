@@ -15,12 +15,11 @@ import {
   DaoPageWrapper,
   DaoPageWrapperProps,
   SuspenseLoader,
-  useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import {
   BaseNewProposalProps,
-  CwProposalSingleAdapter,
+  CwdProposalSingleAdapter,
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
@@ -33,6 +32,7 @@ import {
   PageLoader,
   ProfileDisconnectedCard,
   ProposalCreatedModal,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 
@@ -52,7 +52,7 @@ const InnerProposalCreate = () => {
     daoInfo.proposalModules.find(
       ({ contractName }) =>
         matchProposalModuleAdapter(contractName)?.id ===
-        CwProposalSingleAdapter.id
+        CwdProposalSingleAdapter.id
     ) ?? daoInfo.proposalModules[0]
   )
   // Set once prefill has been assessed, indicating NewProposal can load now.

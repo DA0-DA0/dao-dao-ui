@@ -1,11 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
+import { DaoMemberCardProps } from '@dao-dao/tstypes'
+import { useDaoInfoContext } from '@dao-dao/ui'
 
 import {
   DaoInfoBar,
@@ -68,7 +69,9 @@ Default.args = {
     <SubDaosTabStory {...(SubDaosTabStory.args as SubDaosTabProps)} />
   ),
   membersTab: (
-    <MembersTabStory {...(MembersTabStory.args as MembersTabProps)} />
+    <MembersTabStory
+      {...(MembersTabStory.args as MembersTabProps<DaoMemberCardProps>)}
+    />
   ),
   rightSidebarContent: (
     <ProfileMemberCard

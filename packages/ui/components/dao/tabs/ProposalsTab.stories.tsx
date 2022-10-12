@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
+import { useDaoInfoContext } from '@dao-dao/ui'
 
 import {
   ProposalLineProps,

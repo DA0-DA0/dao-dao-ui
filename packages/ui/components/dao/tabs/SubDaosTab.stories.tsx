@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
+import { useDaoInfoContext } from '@dao-dao/ui'
 
 import { DaoCard } from '../DaoCard'
 import { makeProps as makeDaoCardProps } from '../DaoCard.stories'

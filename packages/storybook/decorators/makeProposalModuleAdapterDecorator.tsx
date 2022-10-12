@@ -2,9 +2,8 @@
 
 import { DecoratorFn } from '@storybook/react'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import { ProposalModuleAdapterProvider } from '@dao-dao/proposal-module-adapter'
-import { Loader, Logo } from '@dao-dao/ui'
+import { Loader, Logo, useDaoInfoContext } from '@dao-dao/ui'
 
 export const makeProposalModuleAdapterDecorator: (
   proposalId: string

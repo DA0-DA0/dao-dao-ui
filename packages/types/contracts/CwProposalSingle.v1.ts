@@ -7,7 +7,7 @@ import {
   Timestamp,
   Uint128,
 } from './common'
-import { Status, Threshold, VoteInfo, Votes } from './CwProposalSingle.common'
+import { Status, Threshold, VoteInfo, Votes } from './CwdProposalSingle.common'
 
 export interface ConfigResponse {
   allow_revoting: boolean

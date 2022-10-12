@@ -3,12 +3,13 @@
 
 import { useTranslation } from 'react-i18next'
 
-import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
+import { SuspenseLoader } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { useWalletProfile } from '@dao-dao/state'
 import {
   ProfileNewProposalCard as StatelessProfileNewProposalCard,
   useAppLayoutContext,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 

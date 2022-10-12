@@ -1,12 +1,6 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import {
-  ComponentType,
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useEffect,
-} from 'react'
+import { ComponentType, PropsWithChildren, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
@@ -16,6 +10,7 @@ import {
   DaoInfoSerializable,
 } from '@dao-dao/tstypes'
 import {
+  DaoInfoContext,
   DaoNotFound,
   Loader as DefaultLoader,
   Logo as DefaultLogo,
@@ -28,19 +23,6 @@ import {
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 import { WalletProvider } from './WalletProvider'
-
-const DaoInfoContext = createContext<DaoInfo | null>(null)
-
-export const useDaoInfoContext = () => {
-  const context = useContext(DaoInfoContext)
-  if (!context) {
-    throw new Error(
-      'useDaoInfoContext can only be used in a descendant of DaoInfoContext.Provider.'
-    )
-  }
-
-  return context
-}
 
 export type DaoPageWrapperProps = PropsWithChildren<{
   url?: string | null

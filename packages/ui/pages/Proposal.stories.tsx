@@ -1,16 +1,16 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import {
   ProposalVoteTally,
   ProposalVoteTallyProps,
-} from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ui/ProposalVoteTally'
-import { Default as ProposalVoteTallyStory } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ui/ProposalVoteTally.stories'
+} from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally'
+import { Default as ProposalVoteTallyStory } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally.stories'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
   makeProposalModuleAdapterDecorator,
 } from '@dao-dao/storybook/decorators'
+import { useDaoInfoContext } from '@dao-dao/ui'
 
 import {
   ProfileVoteCard,

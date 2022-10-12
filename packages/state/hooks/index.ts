@@ -1,6 +1,6 @@
 export * from './clients'
 export * from './useCachedLoadable'
-export * from './useEncodedProposalPrefill'
+export * from './useEncodedCwdProposalSinglePrefill'
 export * from './useNotifyBrowser'
 export * from './usePinnedDaos'
 export * from './useProfile'

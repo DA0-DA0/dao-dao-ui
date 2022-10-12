@@ -10,7 +10,6 @@ import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
-  useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
@@ -28,6 +27,7 @@ import {
   ProfileMemberCard,
   ProfileNotMemberCard,
   useAppLayoutContext,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'

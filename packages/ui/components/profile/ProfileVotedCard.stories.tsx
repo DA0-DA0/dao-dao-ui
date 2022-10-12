@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalWalletVote } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ProposalWalletVote'
-import { Vote } from '@dao-dao/tstypes/contracts/CwProposalSingle.common'
+import { ProposalWalletVote } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalWalletVote'
+import { Vote } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
 
 import { ProfileVotedCard } from './ProfileVotedCard'
 

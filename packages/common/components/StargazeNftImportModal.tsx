@@ -14,6 +14,7 @@ import {
   Modal,
   ModalProps,
   NftSelectionModal,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 import {
   STARGAZE_CHAIN_ID,
@@ -21,7 +22,6 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useDaoInfoContext } from './DaoPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export interface StargazeNftImportModalProps

@@ -1,17 +1,17 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import {
-  CwProposalSingleAdapter,
+  CwdProposalSingleAdapter,
   matchAdapter as matchProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
-import { NewProposalProps } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/common/ui/NewProposal'
-import { Default as NewProposalStory } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/common/ui/NewProposal.stories'
+import { NewProposalProps } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/common/ui/NewProposal'
+import { Default as NewProposalStory } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/common/ui/NewProposal.stories'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
+import { useDaoInfoContext } from '@dao-dao/ui'
 
 import {
   ProfileNewProposalCard,
@@ -38,7 +38,7 @@ const Template: ComponentStory<typeof CreateProposal> = (args) => {
     daoInfo.proposalModules.find(
       ({ contractName }) =>
         matchProposalModuleAdapter(contractName)?.id ===
-        CwProposalSingleAdapter.id
+        CwdProposalSingleAdapter.id
     )!
   )
 

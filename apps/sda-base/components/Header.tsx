@@ -9,14 +9,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
 
-import {
-  ConnectWalletButton,
-  MobileNav,
-  useDaoInfoContext,
-} from '@dao-dao/common'
+import { ConnectWalletButton, MobileNav } from '@dao-dao/common'
 import { Governance, Hash } from '@dao-dao/icons'
-import { useWalletBalance } from '@dao-dao/state'
-import { NavItem, NavItemData } from '@dao-dao/ui'
+import { useWalletProfile } from '@dao-dao/state'
+import { NavItem, NavItemData, useDaoInfoContext } from '@dao-dao/ui'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 import { MembershipPageInfo } from '@dao-dao/voting-module-adapter/types'
@@ -34,7 +30,7 @@ export const Header = () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     walletManager = useWalletManager()
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { walletBalance: _walletBalance } = useWalletBalance()
+    const { walletBalance: _walletBalance } = useWalletProfile()
     walletBalance = _walletBalance ?? 0
   } catch {}
 

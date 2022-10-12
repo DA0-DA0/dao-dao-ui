@@ -11,14 +11,13 @@ import {
   DaoProposalPageWrapperProps,
   SuspenseLoader,
   Trans,
-  useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
 import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapterContext,
 } from '@dao-dao/proposal-module-adapter'
-import { ErrorPage, LinkText } from '@dao-dao/ui'
+import { ErrorPage, LinkText, useDaoInfoContext } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 

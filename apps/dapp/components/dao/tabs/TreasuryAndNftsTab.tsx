@@ -3,17 +3,18 @@
 import { useEffect } from 'react'
 
 import { addCw721Action } from '@dao-dao/actions/actions/AddCw721'
-import { StargazeNftImportModal, useDaoInfoContext } from '@dao-dao/common'
+import { StargazeNftImportModal } from '@dao-dao/common'
 import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
   useCachedLoadable,
-  useEncodedProposalPrefill,
+  useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/state'
 import {
   NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
@@ -47,7 +48,7 @@ export const TreasuryAndNftsTab = () => {
     treasuryTokenCardInfosLoadable.state,
   ])
 
-  const encodedProposalPrefill = useEncodedProposalPrefill({
+  const encodedProposalPrefill = useEncodedCwdProposalSinglePrefill({
     actions: [
       {
         action: addCw721Action,

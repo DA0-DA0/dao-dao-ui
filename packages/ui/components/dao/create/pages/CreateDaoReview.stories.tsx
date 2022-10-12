@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { CwProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single'
+import { CwdProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle'
 import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLayoutDecorator'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
@@ -33,9 +33,9 @@ export default {
       },
       proposalModuleAdapters: [
         {
-          id: CwProposalSingleAdapter.id,
+          id: CwdProposalSingleAdapter.id,
           data: {
-            ...CwProposalSingleAdapter.daoCreation.defaultConfig,
+            ...CwdProposalSingleAdapter.daoCreation.defaultConfig,
             proposalDeposit: {
               amount: 5.2,
               refundFailed: false,

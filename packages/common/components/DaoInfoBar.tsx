@@ -7,11 +7,11 @@ import {
   DaoInfoBarLoader,
   DaoInfoBarProps,
   DaoInfoBar as StatelessDaoInfoBar,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 import { useVotingModuleAdapterOptions } from '@dao-dao/voting-module-adapter/react/context'
 
-import { useDaoInfoContext } from './DaoPageWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const DaoInfoBar = (props: InnerDaoInfoBarProps) => {

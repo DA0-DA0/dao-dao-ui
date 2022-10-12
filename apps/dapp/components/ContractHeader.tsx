@@ -3,11 +3,12 @@
 
 import { useRecoilValueLoadable } from 'recoil'
 
-import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
+import { SuspenseLoader } from '@dao-dao/common'
 import { contractInstantiateTimeSelector } from '@dao-dao/state'
 import {
   ContractHeaderLoader,
   ContractHeader as StatelessContractHeader,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 
 const ContractHeaderInternal = () => {

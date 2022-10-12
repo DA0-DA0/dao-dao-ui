@@ -1,4 +1,4 @@
-import { useDaoInfoContext } from '@dao-dao/common'
+import { useDaoInfoContext } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { Loader } from '../Loader'

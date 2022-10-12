@@ -1,6 +1,6 @@
 import { ProposalModule } from '@dao-dao/tstypes'
 
-import { CwProposalSingleAdapter } from './adapters'
+import { CwdProposalSingleAdapter } from './adapters'
 import {
   IProposalModuleAdapterCommon,
   IProposalModuleAdapterInitialOptions,
@@ -18,7 +18,7 @@ import {
 // below, except the react provider, which we should only be used externally.
 // This is a problem to solve later.
 export const getAdapters = (): readonly ProposalModuleAdapter[] => [
-  CwProposalSingleAdapter,
+  CwdProposalSingleAdapter,
 ]
 
 export const getAdapterById = (id: string) =>

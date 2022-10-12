@@ -4,14 +4,16 @@
 import { useMemo } from 'react'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import {
   Cw20BaseSelectors,
   CwCoreV1Selectors,
   daoTvlSelector,
   nativeBalancesSelector,
 } from '@dao-dao/state'
-import { TreasuryBalances as StatelessTreasuryBalances } from '@dao-dao/ui'
+import {
+  TreasuryBalances as StatelessTreasuryBalances,
+  useDaoInfoContext,
+} from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,

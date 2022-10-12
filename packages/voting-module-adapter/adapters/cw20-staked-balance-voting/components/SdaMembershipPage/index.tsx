@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 
-import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
+import { SuspenseLoader } from '@dao-dao/common'
 import { Pie } from '@dao-dao/icons'
+import { useDaoInfoContext } from '@dao-dao/ui'
 
 import { BaseSdaMembershipPageProps } from '../../../../types'
 import { ClaimsPendingList } from '../ClaimsPendingList'

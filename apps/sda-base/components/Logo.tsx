@@ -1,5 +1,4 @@
-import { useDaoInfoContext } from '@dao-dao/common'
-import { LogoFromImage, LogoProps } from '@dao-dao/ui'
+import { LogoFromImage, LogoProps, useDaoInfoContext } from '@dao-dao/ui'
 
 import { DEFAULT_IMAGE_URL } from '@/util'
 

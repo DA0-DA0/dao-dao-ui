@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalStatusMap } from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/components/ProposalStatus'
+import { ProposalStatusMap } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalStatus'
 
 import { StatusDisplay } from './StatusDisplay'
 

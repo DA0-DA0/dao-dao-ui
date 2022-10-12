@@ -5,10 +5,9 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
 import { stakeAction } from '@dao-dao/actions/actions/Stake'
-import { useDaoInfoContext } from '@dao-dao/common'
-import { useEncodedProposalPrefill } from '@dao-dao/state'
+import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/state'
 import { TokenCardInfo } from '@dao-dao/tstypes/dao'
-import { TokenCard as StatelessTokenCard } from '@dao-dao/ui'
+import { TokenCard as StatelessTokenCard, useDaoInfoContext } from '@dao-dao/ui'
 import { StakeType, useAddToken } from '@dao-dao/utils'
 
 export const TokenCard = (props: TokenCardInfo) => {
@@ -19,7 +18,7 @@ export const TokenCard = (props: TokenCardInfo) => {
 
   const stakesWithRewards =
     props.stakingInfo?.stakes.filter(({ rewards }) => rewards > 0) ?? []
-  const encodedProposalPrefillClaim = useEncodedProposalPrefill({
+  const encodedProposalPrefillClaim = useEncodedCwdProposalSinglePrefill({
     actions: stakesWithRewards.map(({ validator: { address } }) => ({
       action: stakeAction,
       data: {
@@ -31,32 +30,34 @@ export const TokenCard = (props: TokenCardInfo) => {
       },
     })),
   })
-  const encodedProposalPrefillStakeUnstake = useEncodedProposalPrefill({
-    // If has unstaked, show stake action by default.
-    actions:
-      props.unstakedBalance > 0
-        ? [
-            {
+  const encodedProposalPrefillStakeUnstake = useEncodedCwdProposalSinglePrefill(
+    {
+      // If has unstaked, show stake action by default.
+      actions:
+        props.unstakedBalance > 0
+          ? [
+              {
+                action: stakeAction,
+                data: {
+                  stakeType: StakeType.Delegate,
+                  validator: '',
+                  amount: props.unstakedBalance,
+                  denom: props.tokenDenom,
+                },
+              },
+            ]
+          : // If has only staked, show unstake actions by default.
+            props.stakingInfo?.stakes.map(({ validator, amount }) => ({
               action: stakeAction,
               data: {
-                stakeType: StakeType.Delegate,
-                validator: '',
-                amount: props.unstakedBalance,
+                stakeType: StakeType.Undelegate,
+                validator,
+                amount,
                 denom: props.tokenDenom,
               },
-            },
-          ]
-        : // If has only staked, show unstake actions by default.
-          props.stakingInfo?.stakes.map(({ validator, amount }) => ({
-            action: stakeAction,
-            data: {
-              stakeType: StakeType.Undelegate,
-              validator,
-              amount,
-              denom: props.tokenDenom,
-            },
-          })) ?? [],
-  })
+            })) ?? [],
+    }
+  )
 
   useEffect(() => {
     router.prefetch(

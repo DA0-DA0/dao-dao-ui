@@ -4,9 +4,10 @@ import { useRouter } from 'next/router'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProposalList, useDaoInfoContext } from '@dao-dao/common'
+import { ProposalList } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
+import { useDaoInfoContext } from '@dao-dao/ui'
 
 import {
   Button,

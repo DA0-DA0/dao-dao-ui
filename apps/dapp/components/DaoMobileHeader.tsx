@@ -1,11 +1,12 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
+import { SuspenseLoader } from '@dao-dao/common'
 import { usePinnedDaos, useVotingModule } from '@dao-dao/state'
 import {
   MobileHeaderLoader,
   MobileHeader as StatelessMobileHeader,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 
 export const DaoMobileHeader = () => (

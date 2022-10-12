@@ -1,5 +1,5 @@
-import { useDaoInfoContext } from '@dao-dao/common'
 import { BaseProfileCardNotMemberInfoProps } from '@dao-dao/tstypes'
+import { useDaoInfoContext } from '@dao-dao/ui'
 
 import { ProfileCardNotMemberInfo as StatelessProfileCardNotMemberInfo } from '../ui/ProfileCardNotMemberInfo'
 

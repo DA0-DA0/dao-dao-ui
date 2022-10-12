@@ -5,7 +5,6 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import {
   matchAndLoadCommon,
   useProposalModuleAdapter,
@@ -19,6 +18,7 @@ import {
   ProfileVoteCard,
   ProfileVotedCard,
   useAppLayoutContext,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 

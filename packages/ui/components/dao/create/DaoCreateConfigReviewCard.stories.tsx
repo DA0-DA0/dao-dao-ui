@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import {
   VotingDurationIcon,
   VotingDurationReview,
-} from '@dao-dao/proposal-module-adapter/adapters/cw-proposal-single/daoCreation'
+} from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
 import { DefaultNewDao } from '@dao-dao/state'
 import { NewDao } from '@dao-dao/tstypes'
 

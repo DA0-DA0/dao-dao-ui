@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { useDaoInfoContext } from '@dao-dao/common'
 import { poolsListSelector } from '@dao-dao/state'
+import { useDaoInfoContext } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
