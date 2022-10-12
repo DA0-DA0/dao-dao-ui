@@ -105,15 +105,12 @@ export const makeUseProfileNewProposalCardInfoLines = (
         ? [
             {
               Icon: CancelOutlined,
-              label: 'Failed proposals',
-              value:
-                depositInfo.refund_policy === DepositRefundPolicy.Always
-                  ? t('info.refund')
-                  : t('info.noRefund'),
+              label: 'Deposit refunds',
+              value: t(`info.depositRefundPolicy.${depositInfo.refund_policy}`),
               valueClassName:
-                depositInfo.refund_policy === DepositRefundPolicy.Always
-                  ? '!border-component-badge-valid'
-                  : '!border-component-badge-error',
+                depositInfo.refund_policy !== DepositRefundPolicy.Always
+                  ? '!border-component-badge-error'
+                  : undefined,
             },
           ]
         : []),

@@ -210,11 +210,6 @@
     "daoName": "DAO name",
     "daoNamePlaceholder": "Give your DAO a name",
     "defaultTierName": "Core contributors",
-    "depositRefundPolicy": {
-      "always": "Always",
-      "never": "Never",
-      "only_passed": "Only passed proposals"
-    },
     "description": "Description",
     "displayNamePlaceholder": "Display name...",
     "existingTokens": "Existing Tokens",
@@ -348,6 +343,11 @@
     "daosLogo": "DAO's Logo",
     "depositFromStargazeQuestion": "Deposit NFTs from Stargaze?",
     "depositNftsModalSubtitle": "Select the NFTs you want to deposit into {{daoName}} from your Stargaze wallet.",
+    "depositRefundPolicy": {
+      "always": "Always",
+      "never": "Never",
+      "only_passed": "Only passed proposals"
+    },
     "description": "Description",
     "didNotCastVote": "You didn't cast a vote when this proposal was open.",
     "didNotVote": "You did not vote on this proposal.",
