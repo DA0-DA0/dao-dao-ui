@@ -1,6 +1,6 @@
 import {
   AttachMoney,
-  CancelOutlined,
+  ChangeCircleOutlined,
   FlagOutlined,
   MultilineChart,
 } from '@mui/icons-material'
@@ -104,8 +104,8 @@ export const makeUseProfileNewProposalCardInfoLines = (
       ...(depositInfo && proposalDeposit > 0
         ? [
             {
-              Icon: CancelOutlined,
-              label: 'Deposit refunds',
+              Icon: ChangeCircleOutlined,
+              label: t('title.depositRefunds'),
               value: t(`info.depositRefundPolicy.${depositInfo.refund_policy}`),
               valueClassName:
                 depositInfo.refund_policy !== DepositRefundPolicy.Always
