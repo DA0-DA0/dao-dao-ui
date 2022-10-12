@@ -203,7 +203,11 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
           },
         })
       },
-      [cw20GovernanceTokenAddress, open_proposal_submission]
+      [
+        cw20GovernanceTokenAddress,
+        cw20GovernanceTokenInfo?.decimals,
+        open_proposal_submission,
+      ]
     )
   }
 
