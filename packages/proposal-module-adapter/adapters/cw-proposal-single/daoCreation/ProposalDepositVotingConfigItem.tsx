@@ -229,7 +229,7 @@ export const ProposalDepositInput = ({
 export const ProposalDepositReview = ({
   newDao: { votingModuleAdapter },
   data: {
-    proposalDeposit: { enabled, amount, type, cw20TokenInfo, refundPolicy },
+    proposalDeposit: { enabled, amount, type, cw20TokenInfo },
   },
 }: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
@@ -273,10 +273,6 @@ export const ProposalDepositReview = ({
         maximumFractionDigits: decimals,
       })}{' '}
       ${symbol}
-      <br />
-      <span className="text-text-tertiary">
-        ({t('info.refund')}: {t(`info.depositRefundPolicy.${refundPolicy}`)})
-      </span>
     </>
   )
 }
