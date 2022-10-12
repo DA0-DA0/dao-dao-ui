@@ -32,6 +32,7 @@ export const ProposalStatusAndInfo = ({
   return (
     <div
       className={clsx(
+        'flex flex-col items-stretch',
         inline &&
           'bg-background-tertiary rounded-lg border border-border-secondary'
       )}
@@ -68,7 +69,7 @@ export const ProposalStatusAndInfo = ({
       {action && (
         <Button
           center
-          className={clsx('w-full', inline ? 'm-6' : 'mt-8')}
+          className={inline ? 'm-6' : 'mt-8'}
           loading={action.loading}
           onClick={action.doAction}
           size="lg"
