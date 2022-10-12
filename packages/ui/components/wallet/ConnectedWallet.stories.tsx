@@ -13,8 +13,21 @@ const Template: ComponentStory<typeof ConnectedWallet> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  walletName: '@Modern-Edamame',
-  walletAddress: 'juno123abx789xyz',
-  tokenBalance: 2400.111111,
+  data: {
+    loading: false,
+    data: {
+      walletName: '@Modern-Edamame',
+      walletAddress: 'juno123abx789xyz',
+      tokenBalance: 2400.111111,
+    },
+  },
+  tokenSymbol: 'JUNO',
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  data: {
+    loading: true,
+  },
   tokenSymbol: 'JUNO',
 }

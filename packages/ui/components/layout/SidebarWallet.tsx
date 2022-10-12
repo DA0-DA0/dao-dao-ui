@@ -1,6 +1,5 @@
 import clsx from 'clsx'
 
-import { Loader } from '../Loader'
 import {
   ConnectWallet,
   ConnectWalletProps,
@@ -11,10 +10,10 @@ import { PAGE_HEADER_HEIGHT_CLASS_NAMES } from './PageHeader'
 
 export type SidebarWalletProps =
   | ({
-      connected: true
+      connectedOrConnecting: true
     } & Omit<ConnectedWalletProps, 'className'>)
   | ({
-      connected: false
+      connectedOrConnecting: false
     } & Omit<ConnectWalletProps, 'className'>)
 
 export const SidebarWallet = (props: SidebarWalletProps) => (
@@ -24,11 +23,11 @@ export const SidebarWallet = (props: SidebarWalletProps) => (
       PAGE_HEADER_HEIGHT_CLASS_NAMES
     )}
   >
-    {props.connected ? (
+    {props.connectedOrConnecting ? (
       <ConnectedWallet
         {...{
           ...props,
-          connected: undefined,
+          connectedOrConnecting: undefined,
         }}
       />
     ) : (
@@ -36,13 +35,9 @@ export const SidebarWallet = (props: SidebarWalletProps) => (
         className="self-end"
         {...{
           ...props,
-          connected: undefined,
+          connectedOrConnecting: undefined,
         }}
       />
     )}
   </div>
-)
-
-export const SidebarWalletLoading = () => (
-  <Loader className="h-20" fill={false} />
 )

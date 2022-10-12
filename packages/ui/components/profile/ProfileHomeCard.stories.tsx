@@ -26,7 +26,6 @@ Default.args = {
       nft: null,
     },
   },
-  walletAddress: 'wallet',
   established: new Date(),
   tokenSymbol: 'JUNO',
   inboxProposalCount: 5,

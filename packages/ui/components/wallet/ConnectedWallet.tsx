@@ -4,23 +4,24 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Link, Tag, X } from '@dao-dao/icons'
+import { LoadingData } from '@dao-dao/tstypes'
 
 import { IconButton } from '../IconButton'
 import { Tooltip } from '../Tooltip'
 
 export interface ConnectedWalletProps {
-  walletName: string
-  walletAddress: string
-  tokenBalance?: number
+  data: LoadingData<{
+    walletName: string
+    walletAddress: string
+    tokenBalance?: number
+  }>
   tokenSymbol: string
   onDisconnect?: () => void
   className?: string
 }
 
 export const ConnectedWallet = ({
-  walletName,
-  walletAddress,
-  tokenBalance,
+  data,
   tokenSymbol,
   onDisconnect,
   className,
@@ -44,16 +45,28 @@ export const ConnectedWallet = ({
         </div>
 
         <div className="flex flex-col gap-1 justify-center">
-          <p className="text-text-body primary-text">{walletName}</p>
-          <p className="font-mono legend-text">
-            {tokenBalance !== undefined ? (
+          <p
+            className={clsx(
+              'text-text-body primary-text',
+              data.loading && 'animate-pulse'
+            )}
+          >
+            {data.loading ? '...' : data.data.walletName}
+          </p>
+          <p
+            className={clsx(
+              'font-mono legend-text',
+              data.loading && 'animate-pulse'
+            )}
+          >
+            {data.loading || data.data.tokenBalance === undefined ? (
+              '...'
+            ) : (
               <>
-                {tokenBalance.toLocaleString(undefined, {
+                {data.data.tokenBalance.toLocaleString(undefined, {
                   maximumFractionDigits: 6,
                 })}
               </>
-            ) : (
-              '...'
             )}{' '}
             ${tokenSymbol}
           </p>
@@ -65,9 +78,14 @@ export const ConnectedWallet = ({
           <IconButton
             Icon={copied ? CheckCircleIcon : Link}
             className="text-icon-secondary"
+            disabled={data.loading}
             iconClassName="w-5 h-5"
             onClick={() => {
-              navigator.clipboard.writeText(walletAddress)
+              if (data.loading) {
+                return
+              }
+
+              navigator.clipboard.writeText(data.data.walletAddress)
               setTimeout(() => setCopied(false), 2000)
               setCopied(true)
             }}
@@ -81,6 +99,7 @@ export const ConnectedWallet = ({
             <IconButton
               Icon={X}
               className="text-icon-secondary"
+              disabled={data.loading}
               iconClassName="w-5 h-5"
               onClick={onDisconnect}
               size="sm"

@@ -1,10 +1,7 @@
-import { useWalletManager } from '@noahsaso/cosmodal'
+import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 
 import { useWalletProfile } from '@dao-dao/state'
-import {
-  SidebarWallet as OriginalSidebarWallet,
-  SidebarWalletLoading,
-} from '@dao-dao/ui'
+import { SidebarWallet as OriginalSidebarWallet } from '@dao-dao/ui'
 import { NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 import { SuspenseLoader } from './SuspenseLoader'
@@ -16,22 +13,46 @@ export const SidebarWallet = () => {
     isEmbeddedKeplrMobileWeb,
     connected,
     connectedWallet,
+    status,
   } = useWalletManager()
   const { walletBalance } = useWalletProfile()
 
   return (
-    <SuspenseLoader fallback={<SidebarWalletLoading />}>
-      {connected && connectedWallet ? (
+    <SuspenseLoader
+      fallback={
         <OriginalSidebarWallet
-          connected
-          onDisconnect={isEmbeddedKeplrMobileWeb ? undefined : disconnect}
-          tokenBalance={walletBalance}
+          connectedOrConnecting
+          data={{ loading: true }}
           tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
-          walletAddress={connectedWallet.address}
-          walletName={connectedWallet.name}
+        />
+      }
+    >
+      {status === WalletConnectionStatus.Connecting ||
+      (connected && connectedWallet) ? (
+        <OriginalSidebarWallet
+          connectedOrConnecting
+          data={
+            connected && connectedWallet
+              ? {
+                  loading: false,
+                  data: {
+                    tokenBalance: walletBalance,
+                    walletAddress: connectedWallet.address,
+                    walletName: connectedWallet.name,
+                  },
+                }
+              : {
+                  loading: true,
+                }
+          }
+          onDisconnect={isEmbeddedKeplrMobileWeb ? undefined : disconnect}
+          tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
         />
       ) : (
-        <OriginalSidebarWallet connected={false} onConnect={connect} />
+        <OriginalSidebarWallet
+          connectedOrConnecting={false}
+          onConnect={connect}
+        />
       )}
     </SuspenseLoader>
   )

@@ -14,14 +14,28 @@ const Template: ComponentStory<typeof SidebarWallet> = (args) => (
 
 export const Connected = Template.bind({})
 Connected.args = {
-  connected: true,
-  tokenBalance: ProfileHomeCardStory.args!.unstakedBalance!,
+  connectedOrConnecting: true,
+  data: {
+    loading: false,
+    data: {
+      tokenBalance: 2400.111111,
+      walletAddress: 'juno123abc987zyx',
+      walletName: 'my_wallet',
+    },
+  },
   tokenSymbol: ProfileHomeCardStory.args!.tokenSymbol!,
-  walletAddress: 'juno123abc987zyx',
-  walletName: ProfileHomeCardStory.args!.walletName!,
+}
+
+export const Connecting = Template.bind({})
+Connecting.args = {
+  connectedOrConnecting: true,
+  data: {
+    loading: true,
+  },
+  tokenSymbol: ProfileHomeCardStory.args!.tokenSymbol!,
 }
 
 export const Disconnected = Template.bind({})
 Disconnected.args = {
-  connected: false,
+  connectedOrConnecting: false,
 }
