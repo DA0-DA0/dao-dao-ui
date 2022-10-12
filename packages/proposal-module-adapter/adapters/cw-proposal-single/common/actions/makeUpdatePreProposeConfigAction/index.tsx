@@ -16,7 +16,6 @@ import {
 } from '@dao-dao/tstypes'
 import {
   ExecuteMsg,
-  UncheckedDenom,
   UncheckedDepositInfo,
 } from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
 import { UpdateProposalConfigIcon } from '@dao-dao/ui'
@@ -29,7 +28,10 @@ import {
   isValidContractAddress,
   makeWasmMessage,
 } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
+import {
+  Cw20StakedBalanceVotingAdapter,
+  useVotingModuleAdapter,
+} from '@dao-dao/voting-module-adapter'
 
 import { configSelector } from '../../../contracts/CwPreProposeSingle.recoil'
 import {
@@ -45,16 +47,23 @@ const makeUseDefaults: AsProposalModuleMaker<
 > =
   ({ preProposeAddress }) =>
   () => {
-    const {
-      hooks: { useGovernanceTokenInfo },
-    } = useVotingModuleAdapter()
-    const { governanceTokenAddress = '', governanceTokenInfo } =
-      useGovernanceTokenInfo?.() ?? {}
-
     const { t } = useTranslation()
     if (!preProposeAddress) {
       throw new Error(t('error.loadingData'))
     }
+
+    const {
+      id,
+      hooks: { useGovernanceTokenInfo },
+    } = useVotingModuleAdapter()
+    const { governanceTokenAddress, governanceTokenInfo } =
+      useGovernanceTokenInfo?.() ?? {}
+    const cw20GovernanceTokenAddress =
+      id === Cw20StakedBalanceVotingAdapter.id
+        ? governanceTokenAddress
+        : undefined
+    const cw20GovernanceTokenInfo =
+      id === Cw20StakedBalanceVotingAdapter.id ? governanceTokenInfo : undefined
 
     const configDepositInfo = useRecoilValue(
       configSelector({
@@ -63,6 +72,10 @@ const makeUseDefaults: AsProposalModuleMaker<
       })
     ).deposit_info
 
+    // This is the token info for both the cw20 and voting_module_token deposit
+    // type. The config response only contains `native` or `cw20`, as
+    // `voting_module_token` is only passed in an execution. The contract
+    // converts it to `cw20`.
     const cw20TokenInfo = useRecoilValue(
       configDepositInfo?.denom && 'cw20' in configDepositInfo.denom
         ? Cw20BaseSelectors.tokenInfoSelector({
@@ -79,29 +92,29 @@ const makeUseDefaults: AsProposalModuleMaker<
         ? {
             amount: convertMicroDenomToDenomWithDecimals(
               configDepositInfo.amount,
-              'cw20' in configDepositInfo.denom ? cw20Decimals : NATIVE_DECIMALS
+              'native' in configDepositInfo.denom
+                ? NATIVE_DECIMALS
+                : cw20Decimals
             ),
-            type: 'native' in configDepositInfo.denom ? 'native' : 'cw20',
+            type:
+              'native' in configDepositInfo.denom
+                ? 'native'
+                : cw20GovernanceTokenAddress &&
+                  configDepositInfo.denom.cw20 === cw20GovernanceTokenAddress
+                ? 'voting_module_token'
+                : 'cw20',
             cw20Address:
               'cw20' in configDepositInfo.denom
                 ? configDepositInfo.denom.cw20
-                : governanceTokenAddress,
+                : cw20GovernanceTokenAddress ?? '',
             cw20Decimals,
             refundPolicy: configDepositInfo.refund_policy,
           }
         : {
             amount: Math.pow(10, NATIVE_DECIMALS),
             type: 'native',
-            cw20Address:
-              governanceTokenAddress &&
-              // If native governance token, don't fill in here.
-              isValidContractAddress(
-                governanceTokenAddress,
-                CHAIN_BECH32_PREFIX
-              )
-                ? governanceTokenAddress
-                : '',
-            cw20Decimals: governanceTokenInfo?.decimals ?? 0,
+            cw20Address: cw20GovernanceTokenAddress ?? '',
+            cw20Decimals: cw20GovernanceTokenInfo?.decimals ?? 0,
             refundPolicy: DepositRefundPolicy.OnlyPassed,
           }
 
@@ -121,6 +134,19 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
       throw new Error(t('error.loadingData'))
     }
 
+    const {
+      id,
+      hooks: { useGovernanceTokenInfo },
+    } = useVotingModuleAdapter()
+    const { governanceTokenAddress, governanceTokenInfo } =
+      useGovernanceTokenInfo?.() ?? {}
+    const cw20GovernanceTokenAddress =
+      id === Cw20StakedBalanceVotingAdapter.id
+        ? governanceTokenAddress
+        : undefined
+    const cw20GovernanceTokenInfo =
+      id === Cw20StakedBalanceVotingAdapter.id ? governanceTokenInfo : undefined
+
     const { open_proposal_submission } = useRecoilValue(
       configSelector({
         contractAddress: preProposeAddress,
@@ -129,34 +155,39 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
     )
 
     return useCallback(
-      (data: UpdatePreProposeConfigData) => {
+      ({ depositRequired, depositInfo }: UpdatePreProposeConfigData) => {
         const updateConfigMessage: ExecuteMsg = {
           update_config: {
-            ...(data.depositInfo && data.depositRequired
+            deposit_info: depositRequired
               ? {
-                  deposit_info: {
-                    amount: convertDenomToMicroDenomWithDecimals(
-                      data.depositInfo.amount,
-                      data.depositInfo.type === 'cw20'
-                        ? data.depositInfo.cw20Decimals
-                        : NATIVE_DECIMALS
-                    ).toString(),
-                    denom: {
-                      token: {
-                        denom: {
-                          [data.depositInfo.type]:
-                            data.depositInfo.type === 'cw20'
-                              ? data.depositInfo.cw20Address
-                              : NATIVE_DENOM,
-                        } as UncheckedDenom,
-                      },
+                  amount: convertDenomToMicroDenomWithDecimals(
+                    depositInfo.amount,
+                    depositInfo.type === 'native'
+                      ? NATIVE_DECIMALS
+                      : depositInfo.type === 'voting_module_token'
+                      ? cw20GovernanceTokenInfo?.decimals ?? 0
+                      : depositInfo.cw20Decimals
+                  ).toString(),
+                  denom: {
+                    token: {
+                      denom:
+                        depositInfo.type === 'native'
+                          ? {
+                              native: NATIVE_DENOM,
+                            }
+                          : depositInfo.type === 'voting_module_token'
+                          ? {
+                              cw20: cw20GovernanceTokenAddress ?? '',
+                            }
+                          : // depositInfo.type === 'cw20'
+                            {
+                              cw20: depositInfo.cw20Address,
+                            },
                     },
-                    refund_policy: data.depositInfo.refundPolicy,
                   },
+                  refund_policy: depositInfo.refundPolicy,
                 }
-              : {
-                  deposit_info: null,
-                }),
+              : null,
             // Pass through since we don't support changing this yet.
             open_proposal_submission,
           },
@@ -172,7 +203,7 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
           },
         })
       },
-      [open_proposal_submission]
+      [cw20GovernanceTokenAddress, open_proposal_submission]
     )
   }
 
@@ -182,17 +213,23 @@ const makeUseDecodedCosmosMsg: AsProposalModuleMaker<
   ({ preProposeAddress }) =>
   (msg: Record<string, any>) => {
     const {
+      id,
       hooks: { useGovernanceTokenInfo },
     } = useVotingModuleAdapter()
     const { governanceTokenAddress, governanceTokenInfo } =
       useGovernanceTokenInfo?.() ?? {}
+    const cw20GovernanceTokenAddress =
+      id === Cw20StakedBalanceVotingAdapter.id
+        ? governanceTokenAddress
+        : undefined
+    const cw20GovernanceTokenInfo =
+      id === Cw20StakedBalanceVotingAdapter.id ? governanceTokenInfo : undefined
 
     const configDepositInfo = msg.wasm?.execute?.msg?.update_config
       ?.deposit_info as UncheckedDepositInfo | null | undefined
 
-    // Get CW20 token address either explicitly specified or by retrieving
-    // address from voting module when using voting module token.
-    let cw20Address: string | undefined
+    // Get explicitly-set CW20 token address.
+    let cw20TokenAddress: string | undefined
     if (
       'wasm' in msg &&
       'execute' in msg.wasm &&
@@ -201,19 +238,17 @@ const makeUseDecodedCosmosMsg: AsProposalModuleMaker<
       'update_config' in msg.wasm.execute.msg &&
       configDepositInfo
     ) {
-      cw20Address =
+      cw20TokenAddress =
         'token' in configDepositInfo.denom &&
         'cw20' in configDepositInfo.denom.token.denom
           ? configDepositInfo.denom.token.denom.cw20
-          : 'voting_module_token' in configDepositInfo.denom
-          ? governanceTokenAddress
           : undefined
     }
 
-    const cw20DepositTokenInfo = useRecoilValue(
-      cw20Address
+    const cw20TokenInfo = useRecoilValue(
+      cw20TokenAddress
         ? Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: cw20Address,
+            contractAddress: cw20TokenAddress,
             params: [],
           })
         : constSelector(undefined)
@@ -233,16 +268,8 @@ const makeUseDecodedCosmosMsg: AsProposalModuleMaker<
             depositInfo: {
               amount: Math.pow(10, NATIVE_DECIMALS),
               type: 'native',
-              cw20Address:
-                governanceTokenAddress &&
-                // If native governance token, don't fill in here.
-                isValidContractAddress(
-                  governanceTokenAddress,
-                  CHAIN_BECH32_PREFIX
-                )
-                  ? governanceTokenAddress
-                  : '',
-              cw20Decimals: governanceTokenInfo?.decimals ?? 0,
+              cw20Address: cw20GovernanceTokenAddress ?? '',
+              cw20Decimals: cw20GovernanceTokenInfo?.decimals ?? 0,
               refundPolicy: DepositRefundPolicy.OnlyPassed,
             },
           },
@@ -250,16 +277,29 @@ const makeUseDecodedCosmosMsg: AsProposalModuleMaker<
         }
       }
 
-      const type = cw20Address !== undefined ? 'cw20' : 'native'
-      const cw20Decimals = cw20DepositTokenInfo?.decimals ?? 0
+      const type: UpdatePreProposeConfigData['depositInfo']['type'] =
+        'voting_module_token' in configDepositInfo.denom
+          ? 'voting_module_token'
+          : cw20TokenAddress
+          ? 'cw20'
+          : 'native'
+
+      const cw20Address =
+        type === 'voting_module_token'
+          ? cw20GovernanceTokenAddress ?? ''
+          : cw20TokenAddress ?? ''
+      const cw20Decimals =
+        type === 'voting_module_token'
+          ? cw20GovernanceTokenInfo?.decimals ?? 0
+          : cw20TokenInfo?.decimals ?? 0
 
       const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
         amount: convertMicroDenomToDenomWithDecimals(
           configDepositInfo.amount,
-          type === 'cw20' ? cw20Decimals : NATIVE_DECIMALS
+          type === 'native' ? NATIVE_DECIMALS : cw20Decimals
         ),
         type,
-        cw20Address: cw20Address ?? '',
+        cw20Address,
         cw20Decimals,
         refundPolicy: configDepositInfo.refund_policy,
       }
@@ -277,6 +317,14 @@ const makeUseDecodedCosmosMsg: AsProposalModuleMaker<
 
 export const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
+  const {
+    id,
+    hooks: { useGovernanceTokenInfo },
+  } = useVotingModuleAdapter()
+  const { governanceTokenInfo } = useGovernanceTokenInfo?.() ?? {}
+  const cw20GovernanceTokenInfo =
+    id === Cw20StakedBalanceVotingAdapter.id ? governanceTokenInfo : undefined
+
   const { fieldNamePrefix, Loader } = props
 
   const { setValue, watch } = useFormContext()
@@ -324,6 +372,7 @@ export const Component: ActionComponent = (props) => {
       {...props}
       options={{
         cw20: {
+          governanceTokenSymbol: cw20GovernanceTokenInfo?.symbol,
           additionalAddressError,
           formattedJsonDisplayProps: {
             jsonLoadable: tokenInfoLoadable,

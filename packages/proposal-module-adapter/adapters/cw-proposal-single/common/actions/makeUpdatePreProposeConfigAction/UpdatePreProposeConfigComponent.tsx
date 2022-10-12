@@ -32,7 +32,7 @@ export interface UpdatePreProposeConfigData {
   depositRequired: boolean
   depositInfo: {
     amount: number
-    type: 'native' | 'cw20'
+    type: 'native' | 'cw20' | 'voting_module_token'
     cw20Address: string
     cw20Decimals: number
     refundPolicy: DepositRefundPolicy
@@ -41,7 +41,7 @@ export interface UpdatePreProposeConfigData {
 
 export interface UpdatePreProposeConfigOptions {
   cw20: {
-    governanceTokenAddress?: string
+    governanceTokenSymbol?: string
     additionalAddressError?: string
     formattedJsonDisplayProps: FormattedJSONDisplayProps
   }
@@ -139,6 +139,11 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                 <option value="native">
                   ${nativeTokenLabel(NATIVE_DENOM)}
                 </option>
+                {cw20.governanceTokenSymbol && (
+                  <option value="voting_module_token">
+                    ${cw20.governanceTokenSymbol}
+                  </option>
+                )}
                 <option value="cw20">{t('form.cw20Token')}</option>
               </SelectInput>
             </div>
