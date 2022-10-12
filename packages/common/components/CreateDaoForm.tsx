@@ -38,6 +38,7 @@ import {
   useThemeContext,
 } from '@dao-dao/ui'
 import {
+  CODE_ID_CONFIG,
   NATIVE_DENOM,
   V1_FACTORY_CONTRACT_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
@@ -47,7 +48,6 @@ import {
   nativeTokenLabel,
   processError,
   validateUrl,
-  CODE_ID_CONFIG,
 } from '@dao-dao/utils'
 import {
   CwdVotingCw20StakedAdapter,

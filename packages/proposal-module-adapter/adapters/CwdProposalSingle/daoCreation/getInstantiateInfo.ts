@@ -4,12 +4,12 @@ import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
 import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwdPreProposeSingle'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwdProposalSingle.v2'
 import {
+  CODE_ID_CONFIG,
   NATIVE_DENOM,
   NEW_DAO_CW20_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
   nativeTokenDecimals,
-  CODE_ID_CONFIG,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked'

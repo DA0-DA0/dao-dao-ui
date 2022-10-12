@@ -1,6 +1,11 @@
 # @dao-dao/command
 
-This package provides a convenient interface for customizing the command modal.
+This package provides a convenient interface for customizing the command modal
+(command-K/control-K), the component that lets you quickly navigate the site and
+perform actions with your keyboard.
+
+This helps a user rely more on their keyboard than mouse and improves site
+accessibility.
 
 ## Architecture
 

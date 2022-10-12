@@ -1,4 +1,4 @@
-import { CodeIdConfig } from "@dao-dao/tstypes"
+import { CodeIdConfig } from '@dao-dao/tstypes'
 
 // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.0-beta
 const junoTestnet: CodeIdConfig = {
@@ -35,6 +35,6 @@ const junoMainnet: CodeIdConfig = {
 }
 
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {
-  "uni-5": junoTestnet,
-  "juno-1": junoMainnet,
+  'uni-5': junoTestnet,
+  'juno-1': junoMainnet,
 }

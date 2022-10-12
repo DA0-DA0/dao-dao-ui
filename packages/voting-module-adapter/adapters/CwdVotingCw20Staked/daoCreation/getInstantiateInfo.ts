@@ -6,10 +6,10 @@ import {
   InstantiateMsg,
 } from '@dao-dao/tstypes/contracts/CwdVotingCw20Staked'
 import {
+  CODE_ID_CONFIG,
   NEW_DAO_CW20_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
-  CODE_ID_CONFIG,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 

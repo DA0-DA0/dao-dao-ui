@@ -1,4 +1,4 @@
-import { RecoilValueReadOnly, selectorFamily } from 'recoil'
+import { selectorFamily } from 'recoil'
 
 import { contractVersionSelector } from '@dao-dao/state'
 import { ContractVersion } from '@dao-dao/tstypes'
