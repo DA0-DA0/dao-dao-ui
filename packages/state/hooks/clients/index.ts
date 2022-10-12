@@ -1,6 +1,6 @@
 export * as CwAdminFactoryHooks from './cw-admin-factory'
-export * as CwCoreV1Hooks from './CwCoreV1'
-export * as CwdCoreV2Hooks from './CwdCoreV2'
+export * as CwCoreV1Hooks from './CwCore.v1'
+export * as CwdCoreV2Hooks from './CwdCore.v2'
 export * as CwNativeStakedBalanceVotingHooks from './cw-native-staked-balance-voting'
 export * as Cw4VotingHooks from './cw4-voting'
 export * as Cw20BaseHooks from './cw20-base'

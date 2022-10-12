@@ -11,17 +11,14 @@ import {
   ProposalModuleAdapterError,
   matchAndLoadAdapter,
 } from '@dao-dao/proposal-module-adapter'
-import {
-  CwCoreV1QueryClient,
-  CwdCoreV2QueryClient,
-  fetchProposalModules,
-} from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/CwCoreV1'
+import { CwdCoreV2QueryClient, fetchProposalModules } from '@dao-dao/state'
 import {
   ContractVersion,
   DaoParentInfo,
   ProposalModule,
 } from '@dao-dao/tstypes'
+import { ConfigResponse as ConfigV1Response } from '@dao-dao/tstypes/contracts/CwCore.v1'
+import { ConfigResponse as ConfigV2Response } from '@dao-dao/tstypes/contracts/CwdCore.v2'
 import { Loader, Logo } from '@dao-dao/ui'
 import {
   CHAIN_RPC_ENDPOINT,
@@ -53,9 +50,10 @@ interface GetDaoStaticPropsMakerOptions {
     context: Parameters<GetStaticProps>[0]
     t: TFunction
     cwClient: CosmWasmClient
-    coreClient: CwCoreV1QueryClient
-    config: ConfigResponse
+    coreClient: CwdCoreV2QueryClient
+    config: ConfigV1Response | ConfigV2Response
     coreAddress: string
+    coreVersion: ContractVersion
     proposalModules: ProposalModule[]
   }) =>
     | GetDaoStaticPropsMakerProps
@@ -104,7 +102,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     let coreVersion: ContractVersion | undefined
     try {
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-      const coreClient = new CwCoreV1QueryClient(cwClient, coreAddress)
+      const coreClient = new CwdCoreV2QueryClient(cwClient, coreAddress)
 
       const {
         admin,
@@ -190,7 +188,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           cwClient,
           coreClient,
           config,
-          coreAddress: coreAddress,
+          coreAddress,
+          coreVersion,
           proposalModules,
         })) ?? {}
 

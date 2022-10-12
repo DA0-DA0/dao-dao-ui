@@ -16,6 +16,10 @@ import {
   TokenCardStakingInfo,
 } from '@dao-dao/tstypes'
 import {
+  ConfigResponse as CwCoreV1ConfigResponse,
+  DumpStateResponse as CwCoreV1DumpStateResponse,
+} from '@dao-dao/tstypes/contracts/CwCore.v1'
+import {
   ConfigResponse as CwdCoreV2ConfigResponse,
   DumpStateResponse as CwdCoreV2DumpStateResponse,
 } from '@dao-dao/tstypes/contracts/CwdCore.v2'
@@ -36,10 +40,6 @@ import {
 } from '@dao-dao/voting-module-adapter'
 
 import { ContractInfoResponse, NftInfoResponse } from '../../clients/cw721-base'
-import {
-  ConfigResponse as CwCoreV1ConfigResponse,
-  DumpStateResponse as CwCoreV1DumpStateResponse,
-} from '../../clients/CwCoreV1'
 import { getFeaturedDaoAddresses } from '../../utils/getFeaturedDaoAddresses'
 import {
   nativeBalancesSelector,

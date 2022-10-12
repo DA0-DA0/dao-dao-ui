@@ -4,12 +4,12 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { FunctionKeyOf } from '../../../types'
-import { CwdCoreV2Client as ExecuteClient } from '../../clients/CwdCore.v2'
+import { CwCoreV1Client as ExecuteClient } from '../../clients/CwCore.v1'
 import {
   ExecuteClientParams,
   executeClient,
-} from '../../recoil/selectors/clients/CwdCore.v2'
+} from '../../recoil/selectors/clients/CwCore.v1'
+import { FunctionKeyOf } from '../../types'
 
 // This hook wrapper lets us easily make hooks out of all execution functions on
 // the contract clients, without having to fetch the `executeClient` selector as
@@ -38,6 +38,7 @@ const wrapExecuteHook =
 export const useExecuteAdminMsgs = wrapExecuteHook('executeAdminMsgs')
 export const useExecuteProposalHook = wrapExecuteHook('executeProposalHook')
 export const usePause = wrapExecuteHook('pause')
+export const useUpdateAdmin = wrapExecuteHook('updateAdmin')
 export const useUpdateConfig = wrapExecuteHook('updateConfig')
 export const useUpdateVotingModule = wrapExecuteHook('updateVotingModule')
 export const useUpdateProposalModules = wrapExecuteHook('updateProposalModules')

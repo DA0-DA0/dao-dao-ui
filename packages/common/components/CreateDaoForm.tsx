@@ -19,7 +19,6 @@ import {
   usePinnedDaos,
   useWalletProfile,
 } from '@dao-dao/state'
-import instantiateSchema from '@dao-dao/state/clients/CwdCoreV2_instantiate_schema.json'
 import {
   CreateDaoContext,
   CreateDaoCustomValidator,
@@ -27,6 +26,7 @@ import {
   NewDao,
 } from '@dao-dao/tstypes'
 import { InstantiateMsg as CwdCoreV2InstantiateMsg } from '@dao-dao/tstypes/contracts/CwdCore.v2'
+import instantiateSchema from '@dao-dao/tstypes/contracts/CwdCore.v2.instantiate_schema.json'
 import {
   Button,
   CreateDaoPages,

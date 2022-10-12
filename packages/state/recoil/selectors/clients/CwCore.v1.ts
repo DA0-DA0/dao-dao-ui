@@ -2,29 +2,31 @@ import { selectorFamily, waitForAll } from 'recoil'
 
 import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/cw20-base'
 import {
-  Cw20StakedBalanceVotingAdapter,
-  matchAdapter,
-} from '@dao-dao/voting-module-adapter'
-
-import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
-import {
   AdminResponse,
   ConfigResponse,
   Cw20BalancesResponse,
   Cw20TokenListResponse,
   Cw721TokenListResponse,
   DumpStateResponse,
-  CwCoreV1Client as ExecuteClient,
   GetItemResponse,
   InfoResponse,
   ListItemsResponse,
   PauseInfoResponse,
   ProposalModulesResponse,
-  CwCoreV1QueryClient as QueryClient,
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '../../../clients/CwCoreV1'
+} from '@dao-dao/tstypes/contracts/CwCore.v1'
+import {
+  Cw20StakedBalanceVotingAdapter,
+  matchAdapter,
+} from '@dao-dao/voting-module-adapter'
+
+import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
+import {
+  CwCoreV1Client as ExecuteClient,
+  CwCoreV1QueryClient as QueryClient,
+} from '../../../clients/CwCore.v1'
 import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,

@@ -1,4 +1,4 @@
-export * as CwCoreV1Selectors from './CwCoreV1'
+export * as CwCoreV1Selectors from './CwCore.v1'
 export * as CwdCoreV2Selectors from './CwdCore.v2'
 export * as CwProposalMultipleSelectors from './cw-proposal-multiple'
 export * as CwRewardsSelectors from './cw-rewards'

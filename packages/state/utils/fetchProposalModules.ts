@@ -1,6 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
 import { ContractVersion, ProposalModule } from '@dao-dao/tstypes'
+import { InfoResponse } from '@dao-dao/tstypes/contracts/common'
 import { ProposalCreationPolicyResponse } from '@dao-dao/tstypes/contracts/CwProposalSingle.v2'
 import {
   indexToProposalModulePrefix,
@@ -8,7 +9,6 @@ import {
 } from '@dao-dao/utils'
 
 import { CwCoreV1QueryClient, CwdCoreV2QueryClient } from '../clients'
-import { InfoResponse } from '../clients/CwCoreV1'
 
 export const fetchProposalModules = async (
   cwClient: CosmWasmClient,

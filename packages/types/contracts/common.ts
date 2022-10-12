@@ -214,6 +214,7 @@ export type IbcMsg =
       }
     }
 
+// V2
 export type Admin =
   | {
       address: {
@@ -224,6 +225,7 @@ export type Admin =
       core_module: {}
     }
 
+// V2
 export interface ModuleInstantiateInfo {
   admin?: Admin | null
   code_id: number
@@ -234,6 +236,9 @@ export interface ModuleInstantiateInfo {
 export interface ContractVersionInfo {
   contract: string
   version: string
+}
+export interface InfoResponse {
+  info: ContractVersionInfo
 }
 
 // Pre-propose stuff.
