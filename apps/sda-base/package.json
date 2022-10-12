@@ -30,7 +30,7 @@
     "@fontsource/jetbrains-mono": "^4.5.5",
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
-    "@noahsaso/cosmodal": "0.6.5",
+    "@noahsaso/cosmodal": "0.6.6",
     "@tailwindcss/line-clamp": "^0.3.1",
     "@tailwindcss/typography": "^0.5.1",
     "@types/react-json-editor-ajrm": "^2.5.2",
