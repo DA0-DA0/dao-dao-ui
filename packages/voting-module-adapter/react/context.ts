@@ -11,7 +11,9 @@ import {
 export const VotingModuleAdapterContext =
   createContext<IVotingModuleAdapterContext | null>(null)
 
-export const useVotingModuleAdapter = (): IVotingModuleAdapter => {
+export const useVotingModuleAdapter = (): IVotingModuleAdapter & {
+  id: string
+} => {
   const context = useContext(VotingModuleAdapterContext)
 
   if (!context) {
@@ -20,7 +22,10 @@ export const useVotingModuleAdapter = (): IVotingModuleAdapter => {
     )
   }
 
-  return context.adapter
+  return {
+    id: context.id,
+    ...context.adapter,
+  }
 }
 
 // For internal use to pass around options.

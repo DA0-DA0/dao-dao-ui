@@ -1,6 +1,7 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
@@ -13,79 +14,96 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes'
-import { ExecuteMsg } from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
+import {
+  ExecuteMsg,
+  UncheckedDenom,
+  UncheckedDepositInfo,
+} from '@dao-dao/tstypes/contracts/CwPreProposeSingle'
 import { UpdateProposalConfigIcon } from '@dao-dao/ui'
 import {
+  CHAIN_BECH32_PREFIX,
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  isValidContractAddress,
   makeWasmMessage,
-  nativeTokenDecimals,
 } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { configSelector } from '../../../contracts/CwPreProposeSingle.recoil'
-import { UpdatePreProposeConfigComponent } from './UpdatePreProposeConfigComponent'
+import {
+  UpdatePreProposeConfigComponent,
+  UpdatePreProposeConfigData,
+} from './UpdatePreProposeConfigComponent'
 
 // TODO: Convert this into a more generalizable 'context' abstraction.
 type AsProposalModuleMaker<T> = (proposalModule: ProposalModule) => T
-
-export interface UpdatePreProposeConfigData {
-  depositRequired: boolean
-  depositInfo?: {
-    deposit: number
-    refundFailedProposals: boolean
-  }
-}
 
 const makeUseDefaults: AsProposalModuleMaker<
   UseDefaults<UpdatePreProposeConfigData>
 > =
   ({ preProposeAddress }) =>
   () => {
+    const {
+      hooks: { useGovernanceTokenInfo },
+    } = useVotingModuleAdapter()
+    const { governanceTokenAddress = '', governanceTokenInfo } =
+      useGovernanceTokenInfo?.() ?? {}
+
     const { t } = useTranslation()
     if (!preProposeAddress) {
       throw new Error(t('error.loadingData'))
     }
 
-    const depositInfoConfig = useRecoilValue(
+    const configDepositInfo = useRecoilValue(
       configSelector({
         contractAddress: preProposeAddress,
         params: [],
       })
     ).deposit_info
 
-    const cw20DepositTokenInfo = useRecoilValue(
-      depositInfoConfig?.denom && 'cw20' in depositInfoConfig.denom
+    const cw20TokenInfo = useRecoilValue(
+      configDepositInfo?.denom && 'cw20' in configDepositInfo.denom
         ? Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: depositInfoConfig.denom.cw20,
+            contractAddress: configDepositInfo.denom.cw20,
             params: [],
           })
         : constSelector(undefined)
     )
-    const depositDecimals = depositInfoConfig?.denom
-      ? 'cw20' in depositInfoConfig.denom && cw20DepositTokenInfo
-        ? cw20DepositTokenInfo.decimals
-        : 'native' in depositInfoConfig.denom
-        ? nativeTokenDecimals(depositInfoConfig.denom.native) ?? 0
-        : 0
-      : 0
+    const cw20Decimals = cw20TokenInfo?.decimals ?? 0
 
-    const depositRequired = !!depositInfoConfig
-    const depositInfo = !!depositInfoConfig
-      ? {
-          deposit: convertMicroDenomToDenomWithDecimals(
-            Number(depositInfoConfig.amount),
-            // A deposit being configured implies that a token will be present.
-            // Type-checked above.
-            depositDecimals
-          ),
-          refundFailedProposals:
-            depositInfoConfig.refund_policy === DepositRefundPolicy.Always,
-        }
-      : {
-          deposit: 0,
-          refundFailedProposals: false,
-        }
+    const depositRequired = !!configDepositInfo
+    const depositInfo: UpdatePreProposeConfigData['depositInfo'] =
+      configDepositInfo
+        ? {
+            amount: convertMicroDenomToDenomWithDecimals(
+              configDepositInfo.amount,
+              'cw20' in configDepositInfo.denom ? cw20Decimals : NATIVE_DECIMALS
+            ),
+            type: 'native' in configDepositInfo.denom ? 'native' : 'cw20',
+            cw20Address:
+              'cw20' in configDepositInfo.denom
+                ? configDepositInfo.denom.cw20
+                : governanceTokenAddress,
+            cw20Decimals,
+            refundPolicy: configDepositInfo.refund_policy,
+          }
+        : {
+            amount: 1,
+            type: 'native',
+            cw20Address:
+              governanceTokenAddress &&
+              // If native governance token, don't fill in here.
+              isValidContractAddress(
+                governanceTokenAddress,
+                CHAIN_BECH32_PREFIX
+              )
+                ? governanceTokenAddress
+                : '',
+            cw20Decimals: governanceTokenInfo?.decimals ?? 0,
+            refundPolicy: DepositRefundPolicy.OnlyPassed,
+          }
 
     return {
       depositRequired,
@@ -103,29 +121,12 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
       throw new Error(t('error.loadingData'))
     }
 
-    const { open_proposal_submission, deposit_info: depositInfoConfig } =
-      useRecoilValue(
-        configSelector({
-          contractAddress: preProposeAddress,
-          params: [],
-        })
-      )
-
-    const cw20DepositTokenInfo = useRecoilValue(
-      depositInfoConfig?.denom && 'cw20' in depositInfoConfig.denom
-        ? Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: depositInfoConfig.denom.cw20,
-            params: [],
-          })
-        : constSelector(undefined)
+    const { open_proposal_submission } = useRecoilValue(
+      configSelector({
+        contractAddress: preProposeAddress,
+        params: [],
+      })
     )
-    const depositDecimals = depositInfoConfig?.denom
-      ? 'cw20' in depositInfoConfig.denom && cw20DepositTokenInfo
-        ? cw20DepositTokenInfo.decimals
-        : 'native' in depositInfoConfig.denom
-        ? nativeTokenDecimals(depositInfoConfig.denom.native) ?? 0
-        : 0
-      : 0
 
     return useCallback(
       (data: UpdatePreProposeConfigData) => {
@@ -135,21 +136,22 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
               ? {
                   deposit_info: {
                     amount: convertDenomToMicroDenomWithDecimals(
-                      data.depositInfo.deposit,
-                      depositDecimals
+                      data.depositInfo.amount,
+                      data.depositInfo.type === 'cw20'
+                        ? data.depositInfo.cw20Decimals
+                        : NATIVE_DECIMALS
                     ).toString(),
-                    // TODO: Support any denom instead of just passing through
-                    // already-set denom.
-                    denom: depositInfoConfig?.denom
-                      ? 'voting_module_token' in depositInfoConfig.denom
-                        ? { voting_module_token: {} }
-                        : { token: { denom: depositInfoConfig.denom } }
-                      : {
-                          voting_module_token: {},
-                        },
-                    refund_policy: data.depositInfo.refundFailedProposals
-                      ? DepositRefundPolicy.Always
-                      : DepositRefundPolicy.OnlyPassed,
+                    denom: {
+                      token: {
+                        denom: {
+                          [data.depositInfo.type]:
+                            data.depositInfo.type === 'cw20'
+                              ? data.depositInfo.cw20Address
+                              : NATIVE_DENOM,
+                        } as UncheckedDenom,
+                      },
+                    },
+                    refund_policy: data.depositInfo.refundPolicy,
                   },
                 }
               : {
@@ -170,63 +172,167 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
           },
         })
       },
-      [depositInfoConfig, depositDecimals, open_proposal_submission]
+      [open_proposal_submission]
     )
   }
 
-const Component: ActionComponent = (props) => {
-  const {
-    hooks: { useGovernanceTokenInfo },
-  } = useVotingModuleAdapter()
-  const governanceTokenSymbol =
-    useGovernanceTokenInfo?.().governanceTokenInfo.symbol
+const makeUseDecodedCosmosMsg: AsProposalModuleMaker<
+  UseDecodedCosmosMsg<UpdatePreProposeConfigData>
+> =
+  ({ preProposeAddress }) =>
+  (msg: Record<string, any>) => {
+    const {
+      hooks: { useGovernanceTokenInfo },
+    } = useVotingModuleAdapter()
+    const { governanceTokenAddress, governanceTokenInfo } =
+      useGovernanceTokenInfo?.() ?? {}
 
-  return (
-    <UpdatePreProposeConfigComponent
-      {...props}
-      options={{ governanceTokenSymbol }}
-    />
-  )
-}
+    const configDepositInfo = msg.wasm?.execute?.msg?.update_config
+      ?.deposit_info as UncheckedDepositInfo | null | undefined
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdatePreProposeConfigData> = (
-  msg: Record<string, any>
-) => {
-  const {
-    hooks: { useGovernanceTokenInfo },
-  } = useVotingModuleAdapter()
-  const voteConversionDecimals =
-    useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
-
-  return useMemo(() => {
+    // Get CW20 token address either explicitly specified or by retrieving
+    // address from voting module when using voting module token.
+    let cw20Address: string | undefined
     if (
       'wasm' in msg &&
       'execute' in msg.wasm &&
+      'contract_addr' in msg.wasm.execute &&
+      msg.wasm.execute.contract_addr === preProposeAddress &&
       'update_config' in msg.wasm.execute.msg &&
-      'open_proposal_submission' in msg.wasm.execute.msg.update_config
+      configDepositInfo
     ) {
-      const config = msg.wasm.execute.msg.update_config
-      const depositRequired = !!config.deposit_info
-      const depositInfo = !!config.deposit_info
-        ? {
-            deposit: convertMicroDenomToDenomWithDecimals(
-              Number(config.deposit_info.deposit),
-              voteConversionDecimals
-            ),
-            refundFailedProposals: config.deposit_info.refund_failed_proposals,
-          }
-        : undefined
+      cw20Address =
+        'token' in configDepositInfo.denom &&
+        'cw20' in configDepositInfo.denom.token.denom
+          ? configDepositInfo.denom.token.denom.cw20
+          : 'voting_module_token' in configDepositInfo.denom
+          ? governanceTokenAddress
+          : undefined
+    }
+
+    const cw20DepositTokenInfo = useRecoilValue(
+      cw20Address
+        ? Cw20BaseSelectors.tokenInfoSelector({
+            contractAddress: cw20Address,
+            params: [],
+          })
+        : constSelector(undefined)
+    )
+
+    if (
+      'wasm' in msg &&
+      'execute' in msg.wasm &&
+      'contract_addr' in msg.wasm.execute &&
+      msg.wasm.execute.contract_addr === preProposeAddress &&
+      'update_config' in msg.wasm.execute.msg
+    ) {
+      if (!configDepositInfo) {
+        return {
+          data: {
+            depositRequired: false,
+            depositInfo: {
+              amount: 1,
+              type: 'native',
+              cw20Address:
+                governanceTokenAddress &&
+                // If native governance token, don't fill in here.
+                isValidContractAddress(
+                  governanceTokenAddress,
+                  CHAIN_BECH32_PREFIX
+                )
+                  ? governanceTokenAddress
+                  : '',
+              cw20Decimals: governanceTokenInfo?.decimals ?? 0,
+              refundPolicy: DepositRefundPolicy.OnlyPassed,
+            },
+          },
+          match: true,
+        }
+      }
+
+      const type = cw20Address !== undefined ? 'cw20' : 'native'
+      const cw20Decimals = cw20DepositTokenInfo?.decimals ?? 0
+
+      const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
+        amount: convertMicroDenomToDenomWithDecimals(
+          configDepositInfo.amount,
+          type === 'cw20' ? cw20Decimals : NATIVE_DECIMALS
+        ),
+        type,
+        cw20Address: cw20Address ?? '',
+        cw20Decimals,
+        refundPolicy: configDepositInfo.refund_policy,
+      }
 
       return {
         data: {
-          depositRequired,
+          depositRequired: true,
           depositInfo,
         },
         match: true,
       }
     }
     return { match: false }
-  }, [msg, voteConversionDecimals])
+  }
+
+export const Component: ActionComponent = (props) => {
+  const { t } = useTranslation()
+  const { fieldNamePrefix, Loader } = props
+
+  const { setValue, watch } = useFormContext()
+
+  const depositInfo: UpdatePreProposeConfigData['depositInfo'] = watch(
+    fieldNamePrefix + 'depositInfo'
+  )
+
+  const tokenInfoLoadable = useRecoilValueLoadable(
+    depositInfo.type === 'cw20' &&
+      depositInfo.cw20Address &&
+      isValidContractAddress(depositInfo.cw20Address, CHAIN_BECH32_PREFIX)
+      ? Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: depositInfo.cw20Address,
+          params: [],
+        })
+      : constSelector(undefined)
+  )
+
+  // Update cw20 decimals and address error.
+  const [additionalAddressError, setAdditionalAddressError] = useState<string>()
+  useEffect(() => {
+    // Update decimals in data for transforming to cosmos message.
+    if (tokenInfoLoadable.state === 'hasValue') {
+      setValue(
+        fieldNamePrefix + 'depositInfo.cw20Decimals',
+        tokenInfoLoadable.contents
+      )
+    }
+
+    if (tokenInfoLoadable.state !== 'hasError') {
+      if (additionalAddressError) {
+        setAdditionalAddressError(undefined)
+      }
+      return
+    }
+
+    if (!additionalAddressError) {
+      setAdditionalAddressError(t('error.notCw20Address'))
+    }
+  }, [fieldNamePrefix, setValue, tokenInfoLoadable, t, additionalAddressError])
+
+  return (
+    <UpdatePreProposeConfigComponent
+      {...props}
+      options={{
+        cw20: {
+          additionalAddressError,
+          formattedJsonDisplayProps: {
+            jsonLoadable: tokenInfoLoadable,
+            Loader,
+          },
+        },
+      }}
+    />
+  )
 }
 
 export const makeUpdatePreProposeConfigAction = (
@@ -239,5 +345,5 @@ export const makeUpdatePreProposeConfigAction = (
   Component,
   useDefaults: makeUseDefaults(proposalModule),
   useTransformToCosmos: makeUseTransformToCosmos(proposalModule),
-  useDecodedCosmosMsg,
+  useDecodedCosmosMsg: makeUseDecodedCosmosMsg(proposalModule),
 })

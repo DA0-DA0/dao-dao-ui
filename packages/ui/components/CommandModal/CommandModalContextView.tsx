@@ -17,6 +17,7 @@ import { ItemRow } from './ItemRow'
 export interface CommandModalContextViewProps {
   sections: CommandModalContextSection[]
   loading: boolean
+  visible: boolean
 }
 
 interface ItemWithSection {
@@ -27,6 +28,7 @@ interface ItemWithSection {
 export const CommandModalContextView = ({
   sections,
   loading,
+  visible,
 }: CommandModalContextViewProps) => {
   const { t } = useTranslation()
 
@@ -104,8 +106,8 @@ export const CommandModalContextView = ({
   )
   // Add keypress listener.
   useEffect(() => {
-    // Don't add if loading.
-    if (loading) {
+    // Don't add if loading or not visible.
+    if (loading || !visible) {
       return
     }
 
@@ -114,7 +116,7 @@ export const CommandModalContextView = ({
     return () => {
       document.removeEventListener('keydown', handleKeyPress)
     }
-  }, [handleKeyPress, loading])
+  }, [handleKeyPress, loading, visible])
 
   // Ensure selected action is scrolled into view.
   const onSelectedRef = useCallback((ref: HTMLDivElement | null) => {
@@ -235,5 +237,6 @@ export const CommandModalContextViewLoader = () => (
         ],
       },
     ]}
+    visible
   />
 )

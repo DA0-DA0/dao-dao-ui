@@ -38,7 +38,7 @@ export interface ActionKeyAndData {
 }
 
 // A component which will render an action's input form.
-export type ActionComponentProps<T = undefined, D = any> = {
+export type ActionComponentProps<O = undefined, D = any> = {
   coreAddress: string
   fieldNamePrefix: string
   allActionsWithData: ActionKeyAndData[]
@@ -58,11 +58,11 @@ export type ActionComponentProps<T = undefined, D = any> = {
       errors?: undefined
     }
 ) &
-  (T extends undefined ? {} : { options: T })
+  (O extends undefined ? {} : { options: O })
 
 // eslint-disable-next-line regex/invalid
-export type ActionComponent<T = undefined, D = any> = FunctionComponent<
-  ActionComponentProps<T, D>
+export type ActionComponent<O = undefined, D = any> = FunctionComponent<
+  ActionComponentProps<O, D>
 >
 
 export type UseDefaults<D extends {} = any> = (coreAddress: string) => D

@@ -14,6 +14,7 @@ import {
 export interface CommandModalContextViewProps {
   filter: string
   contexts: CommandModalContext[]
+  visible: boolean
 }
 
 export const CommandModalContextView = (
@@ -27,6 +28,7 @@ export const CommandModalContextView = (
 export const InnerCommandModalContextView = ({
   filter,
   contexts,
+  visible,
 }: CommandModalContextViewProps) => {
   const currentContext = contexts[contexts.length - 1]
   const sections = currentContext?.useSections?.({ filter })
@@ -77,6 +79,7 @@ export const InnerCommandModalContextView = ({
     <StatelessCommandModalContextView
       loading={false}
       sections={sortedSections}
+      visible={visible}
     />
   )
 }

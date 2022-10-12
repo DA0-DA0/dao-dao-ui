@@ -1,23 +1,50 @@
-import { InformationCircleIcon } from '@heroicons/react/outline'
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ActionCard } from '@dao-dao/actions'
 import { Trans } from '@dao-dao/common'
-import { ActionComponent } from '@dao-dao/tstypes'
+import { ActionComponent, DepositRefundPolicy } from '@dao-dao/tstypes'
 import {
-  FormSwitch,
+  AddressInput,
+  FormSwitchCard,
+  FormattedJSONDisplay,
+  FormattedJSONDisplayProps,
   InputErrorMessage,
   InputLabel,
   NumberInput,
-  Tooltip,
+  SegmentedControls,
+  SelectInput,
+  SpendEmoji,
   UpdateProposalConfigIcon,
 } from '@dao-dao/ui'
-import { validatePositive, validateRequired } from '@dao-dao/utils'
+import {
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
+  nativeTokenLabel,
+  validateContractAddress,
+  validatePositive,
+  validateRequired,
+} from '@dao-dao/utils'
+
+const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
+
+export interface UpdatePreProposeConfigData {
+  depositRequired: boolean
+  depositInfo: {
+    amount: number
+    type: 'native' | 'cw20'
+    cw20Address: string
+    cw20Decimals: number
+    refundPolicy: DepositRefundPolicy
+  }
+}
 
 export interface UpdatePreProposeConfigOptions {
-  governanceTokenSymbol?: string
+  cw20: {
+    governanceTokenAddress?: string
+    additionalAddressError?: string
+    formattedJsonDisplayProps: FormattedJSONDisplayProps
+  }
 }
 
 export const UpdatePreProposeConfigComponent: ActionComponent<
@@ -27,13 +54,18 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
   errors,
   onRemove,
   isCreating,
-  options: { governanceTokenSymbol },
   Loader,
+  options: { cw20 },
 }) => {
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
-  const depositRequired = watch(fieldNamePrefix + 'depositRequired')
+  const depositRequired: UpdatePreProposeConfigData['depositRequired'] = watch(
+    fieldNamePrefix + 'depositRequired'
+  )
+  const depositInfo: UpdatePreProposeConfigData['depositInfo'] = watch(
+    fieldNamePrefix + 'depositInfo'
+  )
 
   return (
     <ActionCard
@@ -60,19 +92,15 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
           .
         </Trans>
       </p>
-      <div className="flex flex-row flex-wrap gap-2">
-        {governanceTokenSymbol !== undefined && (
-          <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 rounded-md md:w-min bg-card">
-            <div className="flex flex-row gap-2">
-              <Tooltip title={t('form.requireProposalDepositTooltip')}>
-                <InformationCircleIcon className="w-4 h-4 secondary-text" />
-              </Tooltip>
 
-              <p className="w-max secondary-text">
-                {t('form.requireProposalDepositTitle')}
-              </p>
-            </div>
-            <FormSwitch
+      <div className="flex flex-col gap-4 p-3 rounded-lg border border-default">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row gap-2 justify-between items-start">
+            <h3 className="primary-text">
+              <SpendEmoji /> {t('form.proposalDepositTitle')}
+            </h3>
+
+            <FormSwitchCard
               fieldName={fieldNamePrefix + 'depositRequired'}
               readOnly={!isCreating}
               setValue={setValue}
@@ -80,62 +108,94 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
               value={watch(fieldNamePrefix + 'depositRequired')}
             />
           </div>
-        )}
-      </div>
+          <p className="max-w-prose secondary-text">
+            {t('form.proposalDepositDescription')}
+          </p>
+        </div>
 
-      {depositRequired && (
-        <div className="flex flex-row flex-wrap gap-4 justify-between p-3 rounded-lg border md:gap-1 border-default">
-          <div className="flex flex-col gap-2 max-w-prose lg:basis-1/2">
-            <h3 className="primary-text">
-              <Emoji label={t('emoji.money')} symbol="💵" />{' '}
-              {t('form.proposalDepositTitle')}
-            </h3>
-            <p className="secondary-text">
-              {t('form.proposalDepositDescription')}
-            </p>
-          </div>
+        {depositRequired && (
           <div className="flex flex-col grow gap-1">
-            <div className="flex flex-col gap-1">
-              <InputLabel
-                name={`${t('form.proposalDepositTitle')}${
-                  governanceTokenSymbol ? ` ($${governanceTokenSymbol})` : ''
-                }`}
-              />
+            <div className="flex flex-row grow gap-1 items-stretch">
               <NumberInput
+                containerClassName="grow"
                 disabled={!isCreating}
-                error={errors?.depositInfo?.deposit}
-                fieldName={fieldNamePrefix + 'depositInfo.deposit'}
+                error={errors?.depositInfo?.amount}
+                fieldName={fieldNamePrefix + 'depositInfo.amount'}
                 register={register}
-                step={0.000001}
+                step={Math.pow(
+                  10,
+                  depositInfo.type === 'cw20'
+                    ? -depositInfo.cw20Decimals
+                    : -NATIVE_DECIMALS
+                )}
                 validation={[validateRequired, validatePositive]}
               />
-              <InputErrorMessage error={errors?.depositInfo?.deposit} />
+              <SelectInput
+                disabled={!isCreating}
+                error={errors?.depositInfo?.type}
+                fieldName={fieldNamePrefix + 'depositInfo.type'}
+                register={register}
+              >
+                <option value="native">
+                  ${nativeTokenLabel(NATIVE_DENOM)}
+                </option>
+                <option value="cw20">{t('form.cw20Token')}</option>
+              </SelectInput>
             </div>
-            <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 rounded-md bg-card">
-              <div className="flex flex-row gap-2">
-                <Tooltip title={t('form.refundFailedProposalsTooltip')}>
-                  <InformationCircleIcon className="w-4 h-4 secondary-text" />
-                </Tooltip>
+            <InputErrorMessage error={errors?.depositInfo?.amount} />
 
-                <p className="w-max secondary-text">
-                  {t('form.refundFailedProposalsTitle')}
-                </p>
+            {depositInfo.type === 'cw20' && (
+              <div className="flex flex-col gap-1 mt-1">
+                <InputLabel name={t('form.tokenAddress')} />
+
+                <AddressInput
+                  disabled={!isCreating}
+                  error={errors?.depositInfo?.cw20Address}
+                  fieldName={fieldNamePrefix + 'depositInfo.cw20Address'}
+                  iconType="contract"
+                  register={register}
+                  validation={[
+                    validateRequired,
+                    validateContractAddress,
+                    // Invalidate field if additional error is present.
+                    () => cw20.additionalAddressError || true,
+                  ]}
+                />
+
+                <InputErrorMessage
+                  error={
+                    errors?.depositInfo?.cw20Address ||
+                    (cw20.additionalAddressError && {
+                      message: cw20.additionalAddressError,
+                    })
+                  }
+                />
+
+                <div className="mt-1">
+                  <FormattedJSONDisplay {...cw20.formattedJsonDisplayProps} />
+                </div>
               </div>
-              <FormSwitch
-                fieldName={
-                  fieldNamePrefix + 'depositInfo.refundFailedProposals'
-                }
-                readOnly={!isCreating}
-                setValue={setValue}
-                sizing="sm"
-                value={watch(
-                  fieldNamePrefix + 'depositInfo.refundFailedProposals'
-                )}
-              />
-            </div>
+            )}
+
+            <p className="mt-2 mb-1 secondary-text">
+              {t('form.refundPolicyTitle')}
+            </p>
+            <SegmentedControls<DepositRefundPolicy>
+              onSelect={(refundPolicy) =>
+                setValue(
+                  fieldNamePrefix + 'depositInfo.refundPolicy',
+                  refundPolicy
+                )
+              }
+              selected={watch(fieldNamePrefix + 'depositInfo.refundPolicy')}
+              tabs={DepositRefundPolicyValues.map((depositRefundPolicy) => ({
+                label: t(`form.depositRefundPolicy.${depositRefundPolicy}`),
+                value: depositRefundPolicy,
+              }))}
+            />
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </ActionCard>
   )
 }

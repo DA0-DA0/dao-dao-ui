@@ -69,12 +69,10 @@ export type DepositToken =
   | {
       token: {
         denom: UncheckedDenom
-        [k: string]: unknown
       }
     }
   | {
       voting_module_token: {
-        [k: string]: unknown
       }
     }
 export type UncheckedDenom =

@@ -84,6 +84,7 @@ export const CommandModal = ({
           key={contextChangeCount}
           contexts={contexts}
           filter={filter}
+          visible={props.visible}
         />
       </StatelessCommandModal>
     </SuspenseLoader>

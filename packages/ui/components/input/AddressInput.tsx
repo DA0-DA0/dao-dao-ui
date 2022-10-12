@@ -1,3 +1,4 @@
+import { Code, Wallet } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ChangeEventHandler, ComponentPropsWithoutRef } from 'react'
 import {
@@ -9,8 +10,6 @@ import {
   Validate,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-
-import { Wallet } from '@dao-dao/icons'
 
 export interface AddressInputProps<
   FV extends FieldValues,
@@ -24,6 +23,7 @@ export interface AddressInputProps<
   disabled?: boolean
   required?: boolean
   containerClassName?: string
+  iconType?: 'wallet' | 'contract'
 }
 
 export const AddressInput = <
@@ -39,6 +39,7 @@ export const AddressInput = <
   required,
   className,
   containerClassName,
+  iconType = 'wallet',
   ...rest
 }: AddressInputProps<FV, FieldName>) => {
   const { t } = useTranslation()
@@ -46,6 +47,8 @@ export const AddressInput = <
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
   )
+
+  const Icon = iconType === 'wallet' ? Wallet : Code
 
   return (
     <div
@@ -57,14 +60,14 @@ export const AddressInput = <
         containerClassName
       )}
     >
-      <Wallet className="w-5 h-5" />
+      <Icon className="!w-5 !h-5" />
       <input
         className={clsx(
           'w-full bg-transparent border-none outline-none ring-none body-text',
           className
         )}
         disabled={disabled}
-        placeholder={t('form.junoAddress')}
+        placeholder={t('form.address')}
         type="text"
         {...rest}
         {...register(fieldName, {
