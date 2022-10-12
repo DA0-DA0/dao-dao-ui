@@ -1,5 +1,4 @@
 import { Pie } from '@dao-dao/icons'
-import { CWNATIVESTAKEDBALANCEVOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
@@ -21,9 +20,9 @@ import {
 } from './hooks'
 
 export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
-  id: CWNATIVESTAKEDBALANCEVOTING_CONTRACT_NAME,
+  id: 'cw-native-staked-balance-voting',
   matcher: (contractName: string) =>
-    contractName.includes(CWNATIVESTAKEDBALANCEVOTING_CONTRACT_NAME),
+    contractName.includes('cw-native-staked-balance-voting'),
 
   load: ({ t }) => ({
     // Fields

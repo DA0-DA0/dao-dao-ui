@@ -1,6 +1,5 @@
 import { Pie } from '@dao-dao/icons'
 import { DurationUnits } from '@dao-dao/tstypes'
-import { CW20STAKEDBALANCEVOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
@@ -36,7 +35,7 @@ export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConf
   {
     id: 'cw20-staked-balance-voting',
     matcher: (contractName: string) =>
-      contractName.includes(CW20STAKEDBALANCEVOTING_CONTRACT_NAME),
+      contractName.includes('cw20-staked-balance-voting'),
 
     load: ({ t }) => ({
       // Fields

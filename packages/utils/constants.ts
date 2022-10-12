@@ -89,12 +89,6 @@ export const STAKECW20_CODE_ID = parseInt(
 // Contract Names
 export const CWCORE_CONTRACT_NAME = process.env
   .NEXT_PUBLIC_CWCORE_CONTRACT_NAME as string
-export const CW4VOTING_CONTRACT_NAME = process.env
-  .NEXT_PUBLIC_CW4VOTING_CONTRACT_NAME as string
-export const CW20STAKEDBALANCEVOTING_CONTRACT_NAME = process.env
-  .NEXT_PUBLIC_CW20STAKEDBALANCEVOTING_CONTRACT_NAME as string
-export const CWNATIVESTAKEDBALANCEVOTING_CONTRACT_NAME = process.env
-  .NEXT_PUBLIC_CWNATIVESTAKEDBALANCEVOTING_CONTRACT_NAME as string
 
 // DAO name min/max and description max defined in cw-core.
 export const MIN_DAO_NAME_LENGTH = parseInt(

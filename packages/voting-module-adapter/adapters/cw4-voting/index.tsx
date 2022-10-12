@@ -1,5 +1,4 @@
 import { Wallet } from '@dao-dao/icons'
-import { CW4VOTING_CONTRACT_NAME } from '@dao-dao/utils'
 
 import { VotingModuleAdapter } from '../../types'
 import {
@@ -26,8 +25,7 @@ import { DaoCreationConfig } from './types'
 
 export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
   id: 'cw4-voting',
-  matcher: (contractName: string) =>
-    contractName.includes(CW4VOTING_CONTRACT_NAME),
+  matcher: (contractName: string) => contractName.includes('cw4-voting'),
 
   load: ({ t }) => ({
     // Fields
