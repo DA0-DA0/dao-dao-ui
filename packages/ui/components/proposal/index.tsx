@@ -1,5 +1,3 @@
-export * from './CloseProposal'
-export * from './ExecuteProposal'
 export * from './ProposalCard'
 export * from './ProposalContainer'
 export * from './ProposalContentDisplay'

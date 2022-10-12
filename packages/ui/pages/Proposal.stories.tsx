@@ -75,7 +75,7 @@ Default.args = {
   ),
   votesCast: <ProposalVotes {...makeProposalVotesProps()} />,
   creator: {
-    name: 'Ben2x4',
+    name: { loading: false, data: 'Ben2x4' },
     address: 'juno789def000ghi',
   },
   actionDisplay: (

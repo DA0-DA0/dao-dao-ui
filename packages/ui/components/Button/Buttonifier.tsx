@@ -18,6 +18,7 @@ export interface ButtonifierProps {
   Logo?: ComponentType<LogoProps>
   className?: string
   children?: ReactNode | ReactNode[]
+  center?: boolean
 }
 
 // Get props that should pass through the Buttonifier. None of the Buttonifier
@@ -33,6 +34,7 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   Logo: _Logo,
   className: _className,
   children: _children,
+  center: _center,
   ...props
 }: P) => props
 
@@ -116,6 +118,7 @@ export const ButtonifiedChildren = ({
   Logo = DefaultLogo,
   showBadge,
   children,
+  center,
 }: ButtonifierProps) => (
   <>
     <div
@@ -148,6 +151,7 @@ export const ButtonifiedChildren = ({
         // container of the loading element above takes over touches if this is
         // not relative; adding relative puts them in the same stacking context.
         'flex relative flex-row gap-2 items-center h-full',
+        center && 'justify-center',
         {
           invisible: loading,
         },

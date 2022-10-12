@@ -1,6 +1,8 @@
 import {
   AccountCircleOutlined,
+  CancelOutlined,
   HourglassTopRounded,
+  Key,
   RotateRightOutlined,
 } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
@@ -72,5 +74,28 @@ Default.parameters = {
   design: {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/Dao-2.0?node-id=313%3A43541',
+  },
+}
+
+export const Execute = Template.bind({})
+Execute.args = {
+  ...Default.args,
+  action: {
+    label: 'Execute',
+    Icon: Key,
+    loading: false,
+    doAction: () => alert('execute'),
+  },
+}
+
+export const Close = Template.bind({})
+Close.args = {
+  ...Default.args,
+  action: {
+    label: 'Close',
+    Icon: CancelOutlined,
+    description: 'Proposal deposit will be refunded once closed.',
+    loading: false,
+    doAction: () => alert('close'),
   },
 }

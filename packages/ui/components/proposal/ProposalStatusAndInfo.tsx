@@ -3,6 +3,8 @@ import clsx from 'clsx'
 import { ComponentType, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { Button } from '../Button'
+
 export interface ProposalStatusAndInfoProps {
   status: string
   info: {
@@ -11,12 +13,20 @@ export interface ProposalStatusAndInfoProps {
     Value: ComponentType<{ className: string }>
   }[]
   inline?: boolean
+  action?: {
+    label: string
+    Icon: ComponentType<{ className: string }>
+    description?: string
+    loading: boolean
+    doAction: () => void
+  }
 }
 
 export const ProposalStatusAndInfo = ({
   status,
   info,
   inline = false,
+  action,
 }: ProposalStatusAndInfoProps) => {
   const { t } = useTranslation()
 
@@ -39,7 +49,9 @@ export const ProposalStatusAndInfo = ({
       <div
         className={clsx(
           'grid grid-cols-2 gap-3 items-center border-t border-border-secondary',
-          inline ? 'p-6' : 'py-8 border-b'
+          inline ? 'p-6' : 'py-8',
+          // If not inline, or an action button is present, add bottom border.
+          (!inline || action) && 'border-b'
         )}
       >
         {info.map(({ Icon, label, Value }, index) => (
@@ -53,6 +65,24 @@ export const ProposalStatusAndInfo = ({
           </Fragment>
         ))}
       </div>
+
+      {action && (
+        <div className={clsx('space-y-2', inline ? 'p-6' : 'pt-8')}>
+          {action.description && (
+            <p className="secondary-text">{action.description}</p>
+          )}
+
+          <Button
+            center
+            className="w-full"
+            loading={action.loading}
+            onClick={action.doAction}
+            size="lg"
+          >
+            <action.Icon className="!w-5 !h-5" /> {action.label}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

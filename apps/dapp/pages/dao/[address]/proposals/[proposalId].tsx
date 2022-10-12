@@ -114,11 +114,16 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
 
   return (
     <Proposal
-      ProposalStatusAndInfo={ProposalStatusAndInfo}
+      ProposalStatusAndInfo={(props) => (
+        <ProposalStatusAndInfo
+          {...props}
+          onCloseSuccess={onCloseSuccess}
+          onExecuteSuccess={onExecuteSuccess}
+        />
+      )}
       actionDisplay={
         <ProposalActionDisplay
           availableActions={orderedActions}
-          onCloseSuccess={onCloseSuccess}
           onDuplicate={(data) =>
             router.push(
               `/dao/${coreAddress}/proposals/create?prefill=${encodeURIComponent(
@@ -126,7 +131,6 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
               )}`
             )
           }
-          onExecuteSuccess={onExecuteSuccess}
         />
       }
       creator={{

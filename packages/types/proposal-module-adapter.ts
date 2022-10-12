@@ -178,13 +178,13 @@ export interface CommonProposalInfo {
 
 export interface BaseProposalStatusAndInfoProps {
   inline?: boolean
+  onExecuteSuccess: () => void | Promise<void>
+  onCloseSuccess: () => void | Promise<void>
 }
 
 export interface BaseProposalActionDisplayProps<D extends any = any> {
   onDuplicate: (data: ProposalPrefill<D>) => void
   availableActions: Action[]
-  onCloseSuccess: () => void | Promise<void>
-  onExecuteSuccess: () => void | Promise<void>
 }
 
 export interface BaseProposalWalletVoteProps<T> {

@@ -15,7 +15,9 @@ export interface ProposalProps {
   proposalInfo: CommonProposalInfo
   voteTally: ReactNode
   votesCast: ReactNode
-  ProposalStatusAndInfo: ComponentType<BaseProposalStatusAndInfoProps>
+  ProposalStatusAndInfo: ComponentType<
+    Pick<BaseProposalStatusAndInfoProps, 'inline'>
+  >
   actionDisplay: ReactNode
   daoInfo: DaoInfo
   creator: {
