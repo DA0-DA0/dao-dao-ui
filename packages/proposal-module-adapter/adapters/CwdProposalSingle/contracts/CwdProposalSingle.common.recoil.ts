@@ -55,7 +55,7 @@ export const getVoteSelector = selectorFamily<
     ]
   }
 >({
-  key: 'cwProposalSingleCommonGetVote',
+  key: 'cwdProposalSingleCommonGetVote',
   get:
     (params) =>
     async ({ get }) => {
@@ -83,7 +83,7 @@ export const listVotesSelector = selectorFamily<
     ]
   }
 >({
-  key: 'cwProposalSingleCommonListVotes',
+  key: 'cwdProposalSingleCommonListVotes',
   get:
     (params) =>
     async ({ get }) => {
@@ -109,7 +109,7 @@ export const proposalSelector = selectorFamily<
     ]
   }
 >({
-  key: 'cwProposalSingleCommonProposal',
+  key: 'cwdProposalSingleCommonProposal',
   get:
     (params) =>
     async ({ get }) => {
@@ -129,7 +129,7 @@ export const configSelector = selectorFamily<
   ConfigV1Response | ConfigV2Response,
   QueryClientParams
 >({
-  key: 'cwProposalSingleCommonConfig',
+  key: 'cwdProposalSingleCommonConfig',
   get:
     (params) =>
     async ({ get }) => {
@@ -156,7 +156,7 @@ export const reverseProposalsSelector = selectorFamily<
     ]
   }
 >({
-  key: 'cwProposalSingleCommonReverseProposals',
+  key: 'cwdProposalSingleCommonReverseProposals',
   get:
     (params) =>
     async ({ get }) => {
@@ -176,7 +176,7 @@ export const proposalCountSelector = selectorFamily<
   ProposalCountV1Response | ProposalCountV2Response,
   QueryClientParams
 >({
-  key: 'cwProposalSingleCommonProposalCount',
+  key: 'cwdProposalSingleCommonProposalCount',
   get:
     (params) =>
     async ({ get }) => {
@@ -203,7 +203,7 @@ export const listAllProposalsSelector = selectorFamily<
     ]
   }
 >({
-  key: 'cwProposalSingleCommonListAllProposals',
+  key: 'cwdProposalSingleCommonListAllProposals',
   get:
     (params) =>
     async ({ get }) => {

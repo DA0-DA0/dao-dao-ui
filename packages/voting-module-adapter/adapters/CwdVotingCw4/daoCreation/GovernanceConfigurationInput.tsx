@@ -17,7 +17,7 @@ import {
   VOTING_POWER_DISTRIBUTION_COLORS,
 } from '@dao-dao/ui'
 
-import { Cw4VotingAdapter } from '../index'
+import { CwdVotingCw4Adapter } from '../index'
 import { DaoCreationConfig } from '../types'
 import { TierCard } from './TierCard'
 
@@ -49,7 +49,9 @@ export const GovernanceConfigurationInput = ({
 
   const addTierRef = useRef<HTMLButtonElement>(null)
   const addTier = useCallback(() => {
-    appendTier(cloneDeep(Cw4VotingAdapter.daoCreation!.defaultConfig.tiers[0]))
+    appendTier(
+      cloneDeep(CwdVotingCw4Adapter.daoCreation!.defaultConfig.tiers[0])
+    )
     // Scroll button to bottom of screen.
     addTierRef.current?.scrollIntoView({
       behavior: 'smooth',

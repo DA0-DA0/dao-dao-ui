@@ -6,9 +6,11 @@ import { VotingModuleAdapter } from '../../types'
 import { MembershipMobileTab } from './MembershipMobileTab'
 import { MembershipPlaceholder } from './MembershipPlaceholder'
 
-export const FallbackVotingAdapter: VotingModuleAdapter = {
-  id: 'fallback',
-  matcher: () => true,
+// Used in case no voting module adapter applies so that it still loads.
+export const FallbackAdapter: VotingModuleAdapter = {
+  id: 'Fallback',
+  // Match all contracts.
+  contractNames: [''],
 
   load: ({ t }) => ({
     // Fields

@@ -15,7 +15,7 @@ import {
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
-import { Cw20StakedBalanceVotingAdapter } from '../../../index'
+import { CwdVotingCw20StakedAdapter } from '../../../index'
 import { DaoCreationConfig, GovernanceTokenType } from '../types'
 import instantiateSchema from './instantiate_schema.json'
 
@@ -100,7 +100,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   return {
     admin: { core_module: {} },
     code_id: CW20STAKEDBALANCEVOTING_CODE_ID,
-    label: `DAO_${daoName}_${Cw20StakedBalanceVotingAdapter.id}`,
+    label: `DAO_${daoName}_${CwdVotingCw20StakedAdapter.id}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }
 }

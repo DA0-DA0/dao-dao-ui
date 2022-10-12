@@ -37,7 +37,7 @@ import {
   validateTokenSymbol,
 } from '@dao-dao/utils'
 
-import { Cw20StakedBalanceVotingAdapter } from '../index'
+import { CwdVotingCw20StakedAdapter } from '../index'
 import { DaoCreationConfig, GovernanceTokenType } from '../types'
 import { TierCard } from './TierCard'
 
@@ -71,9 +71,7 @@ export const GovernanceConfigurationInput = ({
   const addTierRef = useRef<HTMLButtonElement>(null)
   const addTier = useCallback(() => {
     appendTier(
-      cloneDeep(
-        Cw20StakedBalanceVotingAdapter.daoCreation!.defaultConfig.tiers[0]
-      )
+      cloneDeep(CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig.tiers[0])
     )
     // Scroll button to bottom of screen.
     addTierRef.current?.scrollIntoView({

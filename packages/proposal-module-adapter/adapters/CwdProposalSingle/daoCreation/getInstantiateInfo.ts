@@ -13,11 +13,11 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
-import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked'
 import {
-  DaoCreationConfig as Cw20StakedBalanceVotingConfig,
+  DaoCreationConfig as CwdVotingCw20StakedConfig,
   GovernanceTokenType,
-} from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/types'
+} from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/types'
 
 import { CwdProposalSingleAdapter } from '../../index'
 import { DaoCreationConfig } from '../types'
@@ -39,12 +39,12 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   },
   t
 ) => {
-  const isCw20StakedBalanceVotingAdapter =
-    votingModuleAdapter.id === Cw20StakedBalanceVotingAdapter.id
+  const isCwdVotingCw20StakedAdapter =
+    votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id
   const cw20StakedBalanceVotingAdapterData =
-    votingModuleAdapter.data as Cw20StakedBalanceVotingConfig
+    votingModuleAdapter.data as CwdVotingCw20StakedConfig
 
-  const cw20GovernanceTokenDecimals = isCw20StakedBalanceVotingAdapter
+  const cw20GovernanceTokenDecimals = isCwdVotingCw20StakedAdapter
     ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
       ? NEW_DAO_CW20_DECIMALS
       : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.decimals

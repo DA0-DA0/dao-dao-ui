@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ProfileNewProposalCardAddress } from '@dao-dao/tstypes'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { useVotingModule } from '../hooks/useVotingModule'
+import { useVotingModule } from './useVotingModule'
 
 export const useProfileNewProposalCardAddresses =
   (): ProfileNewProposalCardAddress[] => {

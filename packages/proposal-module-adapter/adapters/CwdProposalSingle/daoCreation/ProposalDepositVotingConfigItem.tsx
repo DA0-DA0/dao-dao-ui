@@ -29,11 +29,11 @@ import {
   validateContractAddress,
   validatePositive,
 } from '@dao-dao/utils'
-import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter'
 import {
-  DaoCreationConfig as Cw20StakedBalanceVotingConfig,
+  DaoCreationConfig as CwdVotingCw20StakedConfig,
   GovernanceTokenType,
-} from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/types'
+} from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/types'
 
 import { DaoCreationConfig } from '../types'
 
@@ -55,17 +55,17 @@ export const ProposalDepositInput = ({
 }: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
 
-  const isCw20StakedBalanceVotingAdapter =
-    votingModuleAdapter.id === Cw20StakedBalanceVotingAdapter.id
+  const isCwdVotingCw20StakedAdapter =
+    votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id
   const cw20StakedBalanceVotingAdapterData =
-    votingModuleAdapter.data as Cw20StakedBalanceVotingConfig
+    votingModuleAdapter.data as CwdVotingCw20StakedConfig
 
-  const cw20GovernanceTokenSymbol = isCw20StakedBalanceVotingAdapter
+  const cw20GovernanceTokenSymbol = isCwdVotingCw20StakedAdapter
     ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
       ? cw20StakedBalanceVotingAdapterData.newInfo.symbol
       : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.symbol
     : undefined
-  const cw20GovernanceTokenDecimals = isCw20StakedBalanceVotingAdapter
+  const cw20GovernanceTokenDecimals = isCwdVotingCw20StakedAdapter
     ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
       ? NEW_DAO_CW20_DECIMALS
       : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.decimals
@@ -234,17 +234,17 @@ export const ProposalDepositReview = ({
 }: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
 
-  const isCw20StakedBalanceVotingAdapter =
-    votingModuleAdapter.id === Cw20StakedBalanceVotingAdapter.id
+  const isCwdVotingCw20StakedAdapter =
+    votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id
   const cw20StakedBalanceVotingAdapterData =
-    votingModuleAdapter.data as Cw20StakedBalanceVotingConfig
+    votingModuleAdapter.data as CwdVotingCw20StakedConfig
 
-  const cw20GovernanceTokenSymbol = isCw20StakedBalanceVotingAdapter
+  const cw20GovernanceTokenSymbol = isCwdVotingCw20StakedAdapter
     ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
       ? cw20StakedBalanceVotingAdapterData.newInfo.symbol
       : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.symbol
     : undefined
-  const cw20GovernanceTokenDecimals = isCw20StakedBalanceVotingAdapter
+  const cw20GovernanceTokenDecimals = isCwdVotingCw20StakedAdapter
     ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
       ? NEW_DAO_CW20_DECIMALS
       : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.decimals

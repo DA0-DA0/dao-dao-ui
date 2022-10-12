@@ -34,7 +34,7 @@ export const queryClient = selectorFamily<
   CwdProposalSingleV2QueryClient,
   QueryClientParams
 >({
-  key: 'cwProposalSingleV2QueryClient',
+  key: 'cwdProposalSingleV2QueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
@@ -52,7 +52,7 @@ export const executeClient = selectorFamily<
   CwdProposalSingleV2Client | undefined,
   ExecuteClientParams
 >({
-  key: 'cwProposalSingleV2ExecuteClient',
+  key: 'cwdProposalSingleV2ExecuteClient',
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
@@ -66,7 +66,7 @@ export const executeClient = selectorFamily<
 
 export const configSelector = selectorFamily<ConfigResponse, QueryClientParams>(
   {
-    key: 'cwProposalSingleV2Config',
+    key: 'cwdProposalSingleV2Config',
     get:
       (queryClientParams) =>
       async ({ get }) => {
@@ -81,7 +81,7 @@ export const proposalSelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['proposal']>
   }
 >({
-  key: 'cwProposalSingleV2Proposal',
+  key: 'cwdProposalSingleV2Proposal',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -101,7 +101,7 @@ export const listProposalsSelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['listProposals']>
   }
 >({
-  key: 'cwProposalSingleV2ListProposals',
+  key: 'cwdProposalSingleV2ListProposals',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -118,7 +118,7 @@ export const listAllProposalsSelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['listProposals']>
   }
 >({
-  key: 'cwProposalSingleV2ListAllProposals',
+  key: 'cwdProposalSingleV2ListAllProposals',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -154,7 +154,7 @@ export const reverseProposalsSelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['reverseProposals']>
   }
 >({
-  key: 'cwProposalSingleV2ReverseProposals',
+  key: 'cwdProposalSingleV2ReverseProposals',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -167,7 +167,7 @@ export const proposalCountSelector = selectorFamily<
   ProposalCountResponse,
   QueryClientParams
 >({
-  key: 'cwProposalSingleV2ProposalCount',
+  key: 'cwdProposalSingleV2ProposalCount',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -188,7 +188,7 @@ export const getVoteSelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['getVote']>
   }
 >({
-  key: 'cwProposalSingleV2GetVote',
+  key: 'cwdProposalSingleV2GetVote',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -208,7 +208,7 @@ export const listVotesSelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['listVotes']>
   }
 >({
-  key: 'cwProposalSingleV2ListVotes',
+  key: 'cwdProposalSingleV2ListVotes',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -228,7 +228,7 @@ export const proposalCreationPolicySelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['proposalCreationPolicy']>
   }
 >({
-  key: 'cwProposalSingleV2ProposalCreationPolicy',
+  key: 'cwdProposalSingleV2ProposalCreationPolicy',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -242,7 +242,7 @@ export const proposalHooksSelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['proposalHooks']>
   }
 >({
-  key: 'cwProposalSingleV2ProposalHooks',
+  key: 'cwdProposalSingleV2ProposalHooks',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -256,7 +256,7 @@ export const voteHooksSelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['voteHooks']>
   }
 >({
-  key: 'cwProposalSingleV2VoteHooks',
+  key: 'cwdProposalSingleV2VoteHooks',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -270,7 +270,7 @@ export const daoSelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['dao']>
   }
 >({
-  key: 'cwProposalSingleV2Dao',
+  key: 'cwdProposalSingleV2Dao',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -284,7 +284,7 @@ export const infoSelector = selectorFamily<
     params: Parameters<CwdProposalSingleV2QueryClient['info']>
   }
 >({
-  key: 'cwProposalSingleV2Info',
+  key: 'cwdProposalSingleV2Info',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {

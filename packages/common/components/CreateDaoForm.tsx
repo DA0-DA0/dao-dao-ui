@@ -50,14 +50,14 @@ import {
   validateUrl,
 } from '@dao-dao/utils'
 import {
-  Cw20StakedBalanceVotingAdapter,
+  CwdVotingCw20StakedAdapter,
   getAdapterById as getVotingModuleAdapterById,
   getAdapters as getVotingModuleAdapters,
 } from '@dao-dao/voting-module-adapter'
 import {
-  DaoCreationConfig as Cw20StakedBalalanceVotingCreationConfig,
+  DaoCreationConfig as CwdVotingCw20StakedCreationConfig,
   GovernanceTokenType,
-} from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/types'
+} from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/types'
 
 // i18n keys
 export enum CreateDaoSubmitLabel {
@@ -300,8 +300,8 @@ export const CreateDaoForm = ({
     useState<CreateDaoCustomValidator>()
 
   const cw20StakedBalanceVotingData =
-    votingModuleAdapter.id === Cw20StakedBalanceVotingAdapter.id
-      ? (votingModuleAdapter.data as Cw20StakedBalalanceVotingCreationConfig)
+    votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id
+      ? (votingModuleAdapter.data as CwdVotingCw20StakedCreationConfig)
       : undefined
 
   const onSubmit: SubmitHandler<NewDao> = useCallback(
@@ -551,8 +551,7 @@ export const CreateDaoForm = ({
                 isMember: false,
                 proposalCount: 0,
                 // Display governance token supply if using governance tokens.
-                ...(votingModuleAdapter.id ===
-                  Cw20StakedBalanceVotingAdapter.id &&
+                ...(votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
                 cw20StakedBalanceVotingData
                   ? {
                       tokenBalance:

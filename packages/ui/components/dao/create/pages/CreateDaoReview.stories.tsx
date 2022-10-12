@@ -4,7 +4,7 @@ import { CwdProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapt
 import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLayoutDecorator'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
-import { Cw20StakedBalanceVotingAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
 
 import { CreateDaoReview } from './CreateDaoReview'
 
@@ -20,12 +20,11 @@ export default {
       imageUrl:
         'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
       votingModuleAdapter: {
-        id: Cw20StakedBalanceVotingAdapter.id,
+        id: CwdVotingCw20StakedAdapter.id,
         data: {
-          ...Cw20StakedBalanceVotingAdapter.daoCreation!.defaultConfig,
+          ...CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig,
           newInfo: {
-            ...Cw20StakedBalanceVotingAdapter.daoCreation!.defaultConfig
-              .newInfo,
+            ...CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig.newInfo,
             symbol: 'TST',
             name: 'Test Token',
           },

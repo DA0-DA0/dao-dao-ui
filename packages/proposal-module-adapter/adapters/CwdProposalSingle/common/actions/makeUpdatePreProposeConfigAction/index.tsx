@@ -29,7 +29,7 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 import {
-  Cw20StakedBalanceVotingAdapter,
+  CwdVotingCw20StakedAdapter,
   useVotingModuleAdapter,
 } from '@dao-dao/voting-module-adapter'
 
@@ -59,11 +59,9 @@ const makeUseDefaults: AsProposalModuleMaker<
     const { governanceTokenAddress, governanceTokenInfo } =
       useGovernanceTokenInfo?.() ?? {}
     const cw20GovernanceTokenAddress =
-      id === Cw20StakedBalanceVotingAdapter.id
-        ? governanceTokenAddress
-        : undefined
+      id === CwdVotingCw20StakedAdapter.id ? governanceTokenAddress : undefined
     const cw20GovernanceTokenInfo =
-      id === Cw20StakedBalanceVotingAdapter.id ? governanceTokenInfo : undefined
+      id === CwdVotingCw20StakedAdapter.id ? governanceTokenInfo : undefined
 
     const configDepositInfo = useRecoilValue(
       configSelector({
@@ -140,7 +138,7 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
     } = useVotingModuleAdapter()
     const { governanceTokenInfo } = useGovernanceTokenInfo?.() ?? {}
     const cw20GovernanceTokenInfo =
-      id === Cw20StakedBalanceVotingAdapter.id ? governanceTokenInfo : undefined
+      id === CwdVotingCw20StakedAdapter.id ? governanceTokenInfo : undefined
 
     const { open_proposal_submission } = useRecoilValue(
       configSelector({
@@ -215,11 +213,9 @@ const makeUseDecodedCosmosMsg: AsProposalModuleMaker<
     const { governanceTokenAddress, governanceTokenInfo } =
       useGovernanceTokenInfo?.() ?? {}
     const cw20GovernanceTokenAddress =
-      id === Cw20StakedBalanceVotingAdapter.id
-        ? governanceTokenAddress
-        : undefined
+      id === CwdVotingCw20StakedAdapter.id ? governanceTokenAddress : undefined
     const cw20GovernanceTokenInfo =
-      id === Cw20StakedBalanceVotingAdapter.id ? governanceTokenInfo : undefined
+      id === CwdVotingCw20StakedAdapter.id ? governanceTokenInfo : undefined
 
     const configDepositInfo = msg.wasm?.execute?.msg?.update_config
       ?.deposit_info as UncheckedDepositInfo | null | undefined
@@ -319,7 +315,7 @@ export const Component: ActionComponent = (props) => {
   } = useVotingModuleAdapter()
   const { governanceTokenInfo } = useGovernanceTokenInfo?.() ?? {}
   const cw20GovernanceTokenInfo =
-    id === Cw20StakedBalanceVotingAdapter.id ? governanceTokenInfo : undefined
+    id === CwdVotingCw20StakedAdapter.id ? governanceTokenInfo : undefined
 
   const { fieldNamePrefix, Loader } = props
 

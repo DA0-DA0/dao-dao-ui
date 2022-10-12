@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { DefaultNewDao } from '@dao-dao/state'
 import { NewDao } from '@dao-dao/tstypes'
 
-import { Cw4VotingAdapter } from '../../../index'
+import { CwdVotingCw4Adapter } from '../../../index'
 import { DaoCreationConfig } from '../types'
 import { TierCard } from './TierCard'
 
@@ -25,8 +25,8 @@ const Template: ComponentStory<typeof TierCard> = (args) => {
     defaultValues: {
       ...DefaultNewDao,
       votingModuleAdapter: {
-        id: Cw4VotingAdapter.id,
-        data: Cw4VotingAdapter.daoCreation!.defaultConfig,
+        id: CwdVotingCw4Adapter.id,
+        data: CwdVotingCw4Adapter.daoCreation!.defaultConfig,
       },
     },
   })

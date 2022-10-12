@@ -35,7 +35,7 @@ import {
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 import {
-  CwNativeStakedBalanceVotingAdapter,
+  CwdVotingNativeStakedAdapter,
   matchAdapter,
 } from '@dao-dao/voting-module-adapter'
 
@@ -299,7 +299,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
       try {
         if (
           matchAdapter(votingModuleInfo.info.contract)?.id ===
-          CwNativeStakedBalanceVotingAdapter.id
+          CwdVotingNativeStakedAdapter.id
         ) {
           nativeGovernanceTokenDenom = get(
             CwNativeStakedBalanceVotingSelectors.getConfigSelector({

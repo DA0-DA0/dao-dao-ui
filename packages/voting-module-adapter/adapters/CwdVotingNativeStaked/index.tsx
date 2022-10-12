@@ -19,10 +19,14 @@ import {
   useStakingInfo,
 } from './hooks'
 
-export const CwNativeStakedBalanceVotingAdapter: VotingModuleAdapter = {
-  id: 'cw-native-staked-balance-voting',
-  matcher: (contractName: string) =>
-    contractName.includes('cw-native-staked-balance-voting'),
+export const CwdVotingNativeStakedAdapter: VotingModuleAdapter = {
+  id: 'CwdVotingNativeStaked',
+  contractNames: [
+    // V1
+    'cw-native-staked-balance-voting',
+    // V2
+    'cwd-voting-native-staked',
+  ],
 
   load: ({ t }) => ({
     // Fields

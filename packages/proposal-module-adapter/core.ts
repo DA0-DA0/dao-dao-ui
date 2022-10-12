@@ -1,4 +1,5 @@
 import { ProposalModule } from '@dao-dao/tstypes'
+import { normalizeContractName } from '@dao-dao/utils'
 
 import { CwdProposalSingleAdapter } from './adapters'
 import {
@@ -27,7 +28,7 @@ export const getAdapterById = (id: string) =>
 export const matchAdapter = (contractNameToMatch: string) =>
   getAdapters().find((adapter) =>
     adapter.contractNames.some((contractName) =>
-      standardizeContractName(contractNameToMatch).includes(contractName)
+      normalizeContractName(contractNameToMatch).includes(contractName)
     )
   )
 
@@ -128,7 +129,3 @@ export class ProposalModuleAdapterError extends Error {
     this.name = 'ProposalModuleAdapterError'
   }
 }
-
-// Standardize for comparisons.
-const standardizeContractName = (contractName: string) =>
-  contractName.replace('crates.io:', '').trim()

@@ -31,11 +31,15 @@ import {
 } from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
 
-export const Cw20StakedBalanceVotingAdapter: VotingModuleAdapter<DaoCreationConfig> =
+export const CwdVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> =
   {
-    id: 'cw20-staked-balance-voting',
-    matcher: (contractName: string) =>
-      contractName.includes('cw20-staked-balance-voting'),
+    id: 'CwdVotingCw20Staked',
+    contractNames: [
+      // V1
+      'cw20-staked-balance-voting',
+      // V2
+      'cwd-voting-cw20-staked',
+    ],
 
     load: ({ t }) => ({
       // Fields

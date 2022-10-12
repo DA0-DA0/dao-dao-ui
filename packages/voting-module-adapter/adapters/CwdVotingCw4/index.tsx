@@ -23,9 +23,14 @@ import {
 } from './hooks'
 import { DaoCreationConfig } from './types'
 
-export const Cw4VotingAdapter: VotingModuleAdapter<DaoCreationConfig> = {
-  id: 'cw4-voting',
-  matcher: (contractName: string) => contractName.includes('cw4-voting'),
+export const CwdVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
+  id: 'CwdVotingCw4',
+  contractNames: [
+    // V1
+    'cw4-voting',
+    // V2
+    'cwd-voting-cw4',
+  ],
 
   load: ({ t }) => ({
     // Fields

@@ -18,7 +18,7 @@ import {
   VotingPowerAtHeightResponse,
 } from '@dao-dao/tstypes/contracts/CwCore.v1'
 import {
-  Cw20StakedBalanceVotingAdapter,
+  CwdVotingCw20StakedAdapter,
   matchAdapter,
 } from '@dao-dao/voting-module-adapter'
 
@@ -211,7 +211,7 @@ export const allCw20TokenListSelector = selectorFamily<
         hasGovernanceToken =
           !!votingModuleInfo &&
           matchAdapter(votingModuleInfo.info.contract)?.id ===
-            Cw20StakedBalanceVotingAdapter.id
+            CwdVotingCw20StakedAdapter.id
       } catch {
         hasGovernanceToken = false
       }
@@ -351,7 +351,7 @@ export const allCw20BalancesSelector = selectorFamily<
       try {
         hasGovernanceToken =
           matchAdapter(votingModuleInfo.info.contract)?.id ===
-          Cw20StakedBalanceVotingAdapter.id
+          CwdVotingCw20StakedAdapter.id
       } catch {
         hasGovernanceToken = false
       }

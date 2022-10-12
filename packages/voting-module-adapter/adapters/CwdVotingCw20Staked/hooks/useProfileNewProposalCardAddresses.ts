@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ProfileNewProposalCardAddress } from '@dao-dao/tstypes'
 
-import { useGovernanceTokenInfo } from '../hooks/useGovernanceTokenInfo'
+import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
 
 export const useProfileNewProposalCardAddresses =
   (): ProfileNewProposalCardAddress[] => {

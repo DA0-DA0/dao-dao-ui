@@ -21,3 +21,7 @@ export const indexToProposalModulePrefix = (index: number) => {
 
   return prefix
 }
+
+// Normalize for comparisons.
+export const normalizeContractName = (contractName: string) =>
+  contractName.replace('crates.io:', '').trim()

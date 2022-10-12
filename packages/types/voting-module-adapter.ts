@@ -150,7 +150,8 @@ export interface IVotingModuleAdapter {
 
 export type VotingModuleAdapter<DaoCreationConfig extends FieldValues = any> = {
   id: string
-  matcher: (contractName: string) => boolean
+  contractNames: string[]
+
   load: (options: IVotingModuleAdapterOptions) => IVotingModuleAdapter
 
   // Filling out these fields will add a structure preset to the DAO creation

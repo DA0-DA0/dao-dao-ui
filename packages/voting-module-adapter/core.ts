@@ -1,8 +1,10 @@
+import { normalizeContractName } from '@dao-dao/utils'
+
 import {
-  Cw20StakedBalanceVotingAdapter,
-  Cw4VotingAdapter,
-  CwNativeStakedBalanceVotingAdapter,
-  FallbackVotingAdapter,
+  CwdVotingCw20StakedAdapter,
+  CwdVotingCw4Adapter,
+  CwdVotingNativeStakedAdapter,
+  FallbackAdapter,
 } from './adapters'
 import {
   IVotingModuleAdapterContext,
@@ -19,18 +21,22 @@ import {
 // below, except the react provider, which we should only be used externally.
 // This is a problem to solve later.
 export const getAdapters = (): readonly VotingModuleAdapter[] => [
-  Cw4VotingAdapter,
-  Cw20StakedBalanceVotingAdapter,
-  CwNativeStakedBalanceVotingAdapter,
+  CwdVotingCw4Adapter,
+  CwdVotingCw20StakedAdapter,
+  CwdVotingNativeStakedAdapter,
 
-  FallbackVotingAdapter,
+  FallbackAdapter,
 ]
 
 export const getAdapterById = (id: string) =>
   getAdapters().find((adapter) => adapter.id === id)
 
-export const matchAdapter = (contractName: string) =>
-  getAdapters().find(({ matcher }) => matcher(contractName))
+export const matchAdapter = (contractNameToMatch: string) =>
+  getAdapters().find((adapter) =>
+    adapter.contractNames.some((contractName) =>
+      normalizeContractName(contractNameToMatch).includes(contractName)
+    )
+  )
 
 export const matchAndLoadAdapter = (
   contractName: string,
