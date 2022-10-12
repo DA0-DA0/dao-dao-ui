@@ -20,7 +20,7 @@ export const GovernanceConfigurationReview = ({
   data: {
     tiers,
     tokenType,
-    newInfo: { initialTreasuryPercent },
+    newInfo: { symbol: newSymbol, initialTreasuryPercent },
     existingGovernanceTokenAddress,
   },
 }: DaoCreationGovernanceConfigReviewProps<DaoCreationConfig>) => {
@@ -115,8 +115,16 @@ export const GovernanceConfigurationReview = ({
     color: treasuryColor,
   })
 
+  const symbol =
+    (tokenType === GovernanceTokenType.New
+      ? newSymbol
+      : existingGovernanceTokenInfoLoadable.state === 'hasValue' &&
+        existingGovernanceTokenInfoLoadable.contents?.symbol) ||
+    t('info.tokens').toLocaleUpperCase()
+
   return (
     <DaoCreateVotingPowerDistributionReviewCard
+      distributionPrefix={'$' + symbol + ' '}
       pieData={pieData}
       tierData={tierData}
     />

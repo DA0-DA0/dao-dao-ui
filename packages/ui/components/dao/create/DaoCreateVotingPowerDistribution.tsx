@@ -54,11 +54,13 @@ export interface TierDataEntry {
 export interface DaoCreateVotingPowerDistributionReviewCardProps {
   pieData: ChartDataEntry[]
   tierData: TierDataEntry[]
+  distributionPrefix?: string
 }
 
 export const DaoCreateVotingPowerDistributionReviewCard = ({
   pieData,
   tierData,
+  distributionPrefix,
 }: DaoCreateVotingPowerDistributionReviewCardProps) => {
   const { t } = useTranslation()
 
@@ -74,6 +76,7 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
 
       <div className="flex overflow-hidden flex-col grow gap-6 p-6">
         <p className="mb-2 text-text-body primary-text">
+          {distributionPrefix}
           {t('title.distribution')}
         </p>
 
