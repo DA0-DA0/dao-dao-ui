@@ -7,7 +7,7 @@ import { useRecoilState } from 'recoil'
 
 import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
 import {
-  CwNativeStakedBalanceVotingHooks,
+  CwdVotingNativeStakedHooks,
   stakingLoadingAtom,
   useWalletProfile,
 } from '@dao-dao/state'
@@ -89,15 +89,15 @@ const InnerStakingModal = ({
       : 0
   )
 
-  const doStake = CwNativeStakedBalanceVotingHooks.useStake({
+  const doStake = CwdVotingNativeStakedHooks.useStake({
     contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
-  const doUnstake = CwNativeStakedBalanceVotingHooks.useUnstake({
+  const doUnstake = CwdVotingNativeStakedHooks.useUnstake({
     contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
-  const doClaim = CwNativeStakedBalanceVotingHooks.useClaim({
+  const doClaim = CwdVotingNativeStakedHooks.useClaim({
     contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })

@@ -1,19 +1,16 @@
+export { Cw4GroupClient, Cw4GroupQueryClient } from './Cw4Group'
+export { Cw20BaseClient, Cw20BaseQueryClient } from './Cw20Base'
+export { Cw20StakeClient, Cw20StakeQueryClient } from './Cw20Stake'
+export { Cw721BaseClient, Cw721BaseQueryClient } from './Cw721Base'
+export { CwAdminFactoryClient } from './CwAdminFactory'
 export { CwCoreV1Client, CwCoreV1QueryClient } from './CwCore.v1'
 export { CwdCoreV2Client, CwdCoreV2QueryClient } from './CwdCore.v2'
+export { CwdVotingCw4Client, CwdVotingCw4QueryClient } from './CwdVotingCw4'
 export {
-  CwProposalMultipleClient,
-  CwProposalMultipleQueryClient,
-} from './cw-proposal-multiple'
-export { Cw4GroupClient, Cw4GroupQueryClient } from './cw4-group'
-export { Cw4VotingClient, Cw4VotingQueryClient } from './cw4-voting'
-export { Cw20Client, Cw20QueryClient } from './cw20-base'
-export { Cw721BaseClient, Cw721BaseQueryClient } from './cw721-base'
+  CwdVotingCw20StakedClient,
+  CwdVotingCw20StakedQueryClient,
+} from './CwdVotingCw20Staked'
 export {
-  Cw20StakedBalanceVotingClient,
-  Cw20StakedBalanceVotingQueryClient,
-} from './cw20-staked-balance-voting'
-export {
-  CwNativeStakedBalanceVotingClient,
-  CwNativeStakedBalanceVotingQueryClient,
-} from './cw-native-staked-balance-voting'
-export { StakeCw20Client, StakeCw20QueryClient } from './stake-cw20'
+  CwdVotingNativeStakedClient,
+  CwdVotingNativeStakedQueryClient,
+} from './CwdVotingNativeStaked'

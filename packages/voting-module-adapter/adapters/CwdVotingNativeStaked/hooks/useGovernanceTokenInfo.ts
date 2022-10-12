@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
-  CwNativeStakedBalanceVotingSelectors,
+  CwdVotingNativeStakedSelectors,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
   usdcPerMacroTokenSelector,
@@ -34,7 +34,7 @@ export const useGovernanceTokenInfo = ({
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { denom } = useRecoilValue(
-    CwNativeStakedBalanceVotingSelectors.getConfigSelector({
+    CwdVotingNativeStakedSelectors.getConfigSelector({
       contractAddress: votingModuleAddress,
       params: [],
     })

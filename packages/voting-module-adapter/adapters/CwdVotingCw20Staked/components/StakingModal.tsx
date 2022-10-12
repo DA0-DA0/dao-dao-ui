@@ -7,8 +7,8 @@ import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
 import {
   Cw20BaseHooks,
-  StakeCw20Hooks,
-  StakeCw20Selectors,
+  Cw20StakeHooks,
+  Cw20StakeSelectors,
   stakingLoadingAtom,
   useWalletProfile,
 } from '@dao-dao/state'
@@ -65,7 +65,7 @@ const InnerStakingModal = ({
   })
 
   const totalStakedBalance = useRecoilValue(
-    StakeCw20Selectors.totalStakedAtHeightSelector({
+    Cw20StakeSelectors.totalStakedAtHeightSelector({
       contractAddress: stakingContractAddress,
       params: [{}],
     })
@@ -73,7 +73,7 @@ const InnerStakingModal = ({
 
   const walletStakedBalance = useRecoilValue(
     walletAddress
-      ? StakeCw20Selectors.stakedBalanceAtHeightSelector({
+      ? Cw20StakeSelectors.stakedBalanceAtHeightSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -81,7 +81,7 @@ const InnerStakingModal = ({
   )
 
   const totalValue = useRecoilValue(
-    StakeCw20Selectors.totalValueSelector({
+    Cw20StakeSelectors.totalValueSelector({
       contractAddress: stakingContractAddress,
     })
   )
@@ -114,11 +114,11 @@ const InnerStakingModal = ({
     contractAddress: governanceTokenAddress,
     sender: walletAddress ?? '',
   })
-  const doUnstake = StakeCw20Hooks.useUnstake({
+  const doUnstake = Cw20StakeHooks.useUnstake({
     contractAddress: stakingContractAddress,
     sender: walletAddress ?? '',
   })
-  const doClaim = StakeCw20Hooks.useClaim({
+  const doClaim = Cw20StakeHooks.useClaim({
     contractAddress: stakingContractAddress,
     sender: walletAddress ?? '',
   })

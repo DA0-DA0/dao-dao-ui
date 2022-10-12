@@ -39,7 +39,7 @@ import {
   matchAdapter,
 } from '@dao-dao/voting-module-adapter'
 
-import { ContractInfoResponse, NftInfoResponse } from '../../clients/cw721-base'
+import { ContractInfoResponse, NftInfoResponse } from '../../clients/Cw721Base'
 import { getFeaturedDaoAddresses } from '../../utils/getFeaturedDaoAddresses'
 import {
   nativeBalancesSelector,
@@ -49,8 +49,8 @@ import {
 import {
   Cw721BaseSelectors,
   CwCoreV1Selectors,
-  CwNativeStakedBalanceVotingSelectors,
   CwdCoreV2Selectors,
+  CwdVotingNativeStakedSelectors,
 } from './clients'
 import { infoSelector, votingModuleSelector } from './clients/CwdCore.v2'
 import {
@@ -302,7 +302,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
           CwdVotingNativeStakedAdapter.id
         ) {
           nativeGovernanceTokenDenom = get(
-            CwNativeStakedBalanceVotingSelectors.getConfigSelector({
+            CwdVotingNativeStakedSelectors.getConfigSelector({
               contractAddress: votingModuleAddress,
               params: [],
             })

@@ -5,12 +5,13 @@ import {
   DaoResponse,
   InfoResponse,
   IsActiveResponse,
-  Cw20StakedBalanceVotingQueryClient as QueryClient,
   StakingContractResponse,
   TokenContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '../../../clients/cw20-staked-balance-voting'
+} from '@dao-dao/tstypes/contracts/CwdVotingCw20Staked'
+
+import { CwdVotingCw20StakedQueryClient } from '../../../clients/CwdVotingCw20Staked'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientSelector } from '../chain'
 
@@ -18,126 +19,130 @@ type QueryClientParams = {
   contractAddress: string
 }
 
-const queryClient = selectorFamily<QueryClient, QueryClientParams>({
-  key: 'cw20StakedBalanceVotingQueryClient',
+const queryClient = selectorFamily<
+  CwdVotingCw20StakedQueryClient,
+  QueryClientParams
+>({
+  key: 'cwdVotingCw20StakedQueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      return new QueryClient(client, contractAddress)
+      return new CwdVotingCw20StakedQueryClient(client, contractAddress)
     },
 })
 
 export const stakingContractSelector = selectorFamily<
   StakingContractResponse,
-  QueryClientParams
+  QueryClientParams & {
+    params: Parameters<CwdVotingCw20StakedQueryClient['stakingContract']>
+  }
 >({
-  key: 'cw20StakedBalanceVotingStakingContract',
+  key: 'cwdVotingCw20StakedStakingContract',
   get:
-    (queryClientParams) =>
+    ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
-      return await client.stakingContract()
+      return await client.stakingContract(...params)
     },
 })
-
-export const daoSelector = selectorFamily<DaoResponse, QueryClientParams>({
-  key: 'cw20StakedBalanceVotingDao',
+export const daoSelector = selectorFamily<
+  DaoResponse,
+  QueryClientParams & {
+    params: Parameters<CwdVotingCw20StakedQueryClient['dao']>
+  }
+>({
+  key: 'cwdVotingCw20StakedDao',
   get:
-    (queryClientParams) =>
+    ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
-      return await client.dao()
+      return await client.dao(...params)
     },
 })
-
 export const activeThresholdSelector = selectorFamily<
   ActiveThresholdResponse,
   QueryClientParams & {
-    params: Parameters<QueryClient['activeThreshold']>
+    params: Parameters<CwdVotingCw20StakedQueryClient['activeThreshold']>
   }
 >({
-  key: 'cw20StakedBalanceVotingActiveThreshold',
+  key: 'cwdVotingCw20StakedActiveThreshold',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
       return await client.activeThreshold(...params)
     },
 })
-
 export const votingPowerAtHeightSelector = selectorFamily<
   VotingPowerAtHeightResponse,
-  QueryClientParams & { params: Parameters<QueryClient['votingPowerAtHeight']> }
+  QueryClientParams & {
+    params: Parameters<CwdVotingCw20StakedQueryClient['votingPowerAtHeight']>
+  }
 >({
-  key: 'cw20StakedBalanceVotingVotingPowerAtHeight',
+  key: 'cwdVotingCw20StakedVotingPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
       get(refreshWalletBalancesIdAtom(params[0].address))
-
       return await client.votingPowerAtHeight(...params)
     },
 })
-
 export const totalPowerAtHeightSelector = selectorFamily<
   TotalPowerAtHeightResponse,
-  QueryClientParams & { params: Parameters<QueryClient['totalPowerAtHeight']> }
+  QueryClientParams & {
+    params: Parameters<CwdVotingCw20StakedQueryClient['totalPowerAtHeight']>
+  }
 >({
-  key: 'cw20StakedBalanceVotingTotalPowerAtHeight',
+  key: 'cwdVotingCw20StakedTotalPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
       get(refreshWalletBalancesIdAtom(undefined))
-
       return await client.totalPowerAtHeight(...params)
     },
 })
-
-export const infoSelector = selectorFamily<InfoResponse, QueryClientParams>({
-  key: 'cw20StakedBalanceVotingInfo',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      return await client.info()
-    },
-})
-
-export const tokenContractSelector = selectorFamily<
-  TokenContractResponse,
-  QueryClientParams
->({
-  key: 'cw20StakedBalanceVotingTokenContract',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      return await client.tokenContract()
-    },
-})
-
-export const isActiveSelector = selectorFamily<
-  IsActiveResponse,
+export const infoSelector = selectorFamily<
+  InfoResponse,
   QueryClientParams & {
-    params: Parameters<QueryClient['isActive']>
+    params: Parameters<CwdVotingCw20StakedQueryClient['info']>
   }
 >({
-  key: 'cw20StakedBalanceVotingIsActive',
+  key: 'cwdVotingCw20StakedInfo',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
+      return await client.info(...params)
+    },
+})
+export const tokenContractSelector = selectorFamily<
+  TokenContractResponse,
+  QueryClientParams & {
+    params: Parameters<CwdVotingCw20StakedQueryClient['tokenContract']>
+  }
+>({
+  key: 'cwdVotingCw20StakedTokenContract',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.tokenContract(...params)
+    },
+})
+export const isActiveSelector = selectorFamily<
+  IsActiveResponse,
+  QueryClientParams & {
+    params: Parameters<CwdVotingCw20StakedQueryClient['isActive']>
+  }
+>({
+  key: 'cwdVotingCw20StakedIsActive',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
       return await client.isActive(...params)
     },
 })

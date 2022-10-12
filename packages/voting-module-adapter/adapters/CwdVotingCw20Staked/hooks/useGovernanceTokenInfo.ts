@@ -3,7 +3,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  Cw20StakedBalanceVotingSelectors,
+  CwdVotingCw20StakedSelectors,
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
 
@@ -22,13 +22,13 @@ export const useGovernanceTokenInfo = ({
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const stakingContractAddress = useRecoilValue(
-    Cw20StakedBalanceVotingSelectors.stakingContractSelector({
+    CwdVotingCw20StakedSelectors.stakingContractSelector({
       contractAddress: votingModuleAddress,
     })
   )
 
   const governanceTokenAddress = useRecoilValue(
-    Cw20StakedBalanceVotingSelectors.tokenContractSelector({
+    CwdVotingCw20StakedSelectors.tokenContractSelector({
       contractAddress: votingModuleAddress,
     })
   )

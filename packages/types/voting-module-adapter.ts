@@ -4,7 +4,7 @@ import { FieldValues } from 'react-hook-form'
 
 import { Action } from './actions'
 import { CheckedDepositInfo, Duration } from './contracts/common'
-import { MarketingInfoResponse, TokenInfoResponse } from './contracts/cw20-base'
+import { MarketingInfoResponse, TokenInfoResponse } from './contracts/Cw20Base'
 import { Claim } from './contracts/stake-cw20'
 import {
   DaoCreationGetInstantiateInfo,

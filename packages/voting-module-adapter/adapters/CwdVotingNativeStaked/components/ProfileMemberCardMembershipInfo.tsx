@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import {
-  CwNativeStakedBalanceVotingHooks,
+  CwdVotingNativeStakedHooks,
   blockHeightSelector,
   blocksPerYearSelector,
   stakingLoadingAtom,
@@ -70,7 +70,7 @@ export const ProfileMemberCardMembershipInfo = ({
     throw new Error(t('error.loadingData'))
   }
 
-  const doClaim = CwNativeStakedBalanceVotingHooks.useClaim({
+  const doClaim = CwdVotingNativeStakedHooks.useClaim({
     contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })

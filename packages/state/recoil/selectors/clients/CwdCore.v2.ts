@@ -25,8 +25,8 @@ import {
   matchAdapter,
 } from '@dao-dao/voting-module-adapter'
 
-import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
-import { TokenInfoResponse } from '../../../clients/cw20-base'
+import { Cw20BaseSelectors, CwdVotingCw20StakedSelectors } from '.'
+import { TokenInfoResponse } from '../../../clients/Cw20Base'
 import {
   CwdCoreV2Client,
   CwdCoreV2QueryClient,
@@ -365,7 +365,7 @@ export const allCw20TokenListSelector = selectorFamily<
       const governanceTokenAddress =
         votingModuleAddress && hasGovernanceToken
           ? get(
-              Cw20StakedBalanceVotingSelectors.tokenContractSelector({
+              CwdVotingCw20StakedSelectors.tokenContractSelector({
                 contractAddress: votingModuleAddress,
               })
             )
@@ -438,7 +438,7 @@ export const allCw20BalancesSelector = selectorFamily<
       }
       const governanceTokenAddress = hasGovernanceToken
         ? get(
-            Cw20StakedBalanceVotingSelectors.tokenContractSelector({
+            CwdVotingCw20StakedSelectors.tokenContractSelector({
               contractAddress: votingModuleAddress,
             })
           )

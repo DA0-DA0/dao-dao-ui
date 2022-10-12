@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import {
-  StakeCw20Hooks,
+  Cw20StakeHooks,
   blockHeightSelector,
   blocksPerYearSelector,
   stakingLoadingAtom,
@@ -69,7 +69,7 @@ export const ProfileMemberCardMembershipInfo = ({
     throw new Error(t('error.loadingData'))
   }
 
-  const doClaim = StakeCw20Hooks.useClaim({
+  const doClaim = Cw20StakeHooks.useClaim({
     contractAddress: stakingContractAddress,
     sender: walletAddress ?? '',
   })

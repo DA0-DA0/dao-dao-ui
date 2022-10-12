@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
-  CwNativeStakedBalanceVotingSelectors,
+  CwdVotingNativeStakedSelectors,
   blockHeightSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
@@ -23,7 +23,7 @@ export const useStakingInfo = ({
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const config = useRecoilValue(
-    CwNativeStakedBalanceVotingSelectors.getConfigSelector({
+    CwdVotingNativeStakedSelectors.getConfigSelector({
       contractAddress: votingModuleAddress,
       params: [],
     })
@@ -60,7 +60,7 @@ export const useStakingInfo = ({
 
   const claims = useRecoilValue(
     fetchClaims && walletAddress
-      ? CwNativeStakedBalanceVotingSelectors.claimsSelector({
+      ? CwdVotingNativeStakedSelectors.claimsSelector({
           contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
         })
@@ -81,7 +81,7 @@ export const useStakingInfo = ({
   // Total staked value
   const totalStakedValue = useRecoilValue(
     fetchTotalStakedValue
-      ? CwNativeStakedBalanceVotingSelectors.totalPowerAtHeightSelector({
+      ? CwdVotingNativeStakedSelectors.totalPowerAtHeightSelector({
           contractAddress: votingModuleAddress,
           params: [{}],
         })
@@ -91,7 +91,7 @@ export const useStakingInfo = ({
   // Wallet staked value
   const walletStakedValue = useRecoilValue(
     fetchWalletStakedValue && walletAddress
-      ? CwNativeStakedBalanceVotingSelectors.votingPowerAtHeightSelector({
+      ? CwdVotingNativeStakedSelectors.votingPowerAtHeightSelector({
           contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
         })

@@ -3,8 +3,8 @@ import { useCallback } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
-  Cw20StakedBalanceVotingSelectors,
-  StakeCw20Selectors,
+  Cw20StakeSelectors,
+  CwdVotingCw20StakedSelectors,
   blockHeightSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
@@ -24,14 +24,14 @@ export const useStakingInfo = ({
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const stakingContractAddress = useRecoilValue(
-    Cw20StakedBalanceVotingSelectors.stakingContractSelector({
+    CwdVotingCw20StakedSelectors.stakingContractSelector({
       contractAddress: votingModuleAddress,
     })
   )
 
   const unstakingDuration =
     useRecoilValue(
-      StakeCw20Selectors.getConfigSelector({
+      Cw20StakeSelectors.getConfigSelector({
         contractAddress: stakingContractAddress,
       })
     ).unstaking_duration ?? undefined
@@ -70,7 +70,7 @@ export const useStakingInfo = ({
 
   const claims = useRecoilValue(
     fetchClaims && walletAddress
-      ? StakeCw20Selectors.claimsSelector({
+      ? Cw20StakeSelectors.claimsSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -91,7 +91,7 @@ export const useStakingInfo = ({
   // Total staked value
   const totalStakedValue = useRecoilValue(
     fetchTotalStakedValue
-      ? StakeCw20Selectors.totalValueSelector({
+      ? Cw20StakeSelectors.totalValueSelector({
           contractAddress: stakingContractAddress,
         })
       : constSelector(undefined)
@@ -100,7 +100,7 @@ export const useStakingInfo = ({
   // Wallet staked value
   const walletStakedValue = useRecoilValue(
     fetchWalletStakedValue && walletAddress
-      ? StakeCw20Selectors.stakedValueSelector({
+      ? Cw20StakeSelectors.stakedValueSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })

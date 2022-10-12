@@ -4,11 +4,11 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { CwNativeStakedBalanceVotingClient as ExecuteClient } from '../../clients/cw-native-staked-balance-voting'
+import { Cw20StakeClient as ExecuteClient } from '../../clients/Cw20Stake'
 import {
   ExecuteClientParams,
   executeClient,
-} from '../../recoil/selectors/clients/cw-native-staked-balance-voting'
+} from '../../recoil/selectors/clients/Cw20Stake'
 import { FunctionKeyOf } from '../../types'
 
 // This hook wrapper lets us easily make hooks out of all execution functions on
@@ -35,7 +35,9 @@ const wrapExecuteHook =
     )
   }
 
-export const useStake = wrapExecuteHook('stake')
+export const useReceive = wrapExecuteHook('receive')
 export const useUnstake = wrapExecuteHook('unstake')
-export const useUpdateConfig = wrapExecuteHook('updateConfig')
 export const useClaim = wrapExecuteHook('claim')
+export const useUpdateConfig = wrapExecuteHook('updateConfig')
+export const useAddHook = wrapExecuteHook('addHook')
+export const useRemoveHook = wrapExecuteHook('removeHook')

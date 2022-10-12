@@ -2,8 +2,8 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   Cw4GroupSelectors,
-  Cw4VotingSelectors,
   CwCoreV1Selectors,
+  CwdVotingCw4Selectors,
 } from '@dao-dao/state'
 import { Member } from '@dao-dao/state/clients/cw4-voting'
 
@@ -26,7 +26,7 @@ export const useVotingModule = (
   )
 
   const cw4GroupAddress = useRecoilValue(
-    Cw4VotingSelectors.groupContractSelector({
+    CwdVotingCw4Selectors.groupContractSelector({
       contractAddress: votingModuleAddress,
       params: [],
     })

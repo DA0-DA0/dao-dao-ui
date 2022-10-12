@@ -4,11 +4,11 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { StakeCw20Client as ExecuteClient } from '../../clients/stake-cw20'
+import { CwAdminFactoryClient as ExecuteClient } from '../../clients/CwAdminFactory'
 import {
   ExecuteClientParams,
   executeClient,
-} from '../../recoil/selectors/clients/stake-cw20'
+} from '../../recoil/selectors/clients/CwAdminFactory'
 import { FunctionKeyOf } from '../../types'
 
 // This hook wrapper lets us easily make hooks out of all execution functions on
@@ -35,9 +35,6 @@ const wrapExecuteHook =
     )
   }
 
-export const useReceive = wrapExecuteHook('receive')
-export const useUnstake = wrapExecuteHook('unstake')
-export const useClaim = wrapExecuteHook('claim')
-export const useUpdateConfig = wrapExecuteHook('updateConfig')
-export const useAddHook = wrapExecuteHook('addHook')
-export const useRemoveHook = wrapExecuteHook('removeHook')
+export const useInstantiateWithAdminFactory = wrapExecuteHook(
+  'instantiateContractWithSelfAdmin'
+)

@@ -6,12 +6,12 @@ import {
   AllowanceResponse,
   BalanceResponse,
   DownloadLogoResponse,
-  Cw20Client as ExecuteClient,
   MarketingInfoResponse,
   MinterResponse,
-  Cw20QueryClient as QueryClient,
   TokenInfoResponse,
-} from '../../../clients/cw20-base'
+} from '@dao-dao/tstypes/contracts/Cw20Base'
+
+import { Cw20BaseClient, Cw20BaseQueryClient } from '../../../clients/Cw20Base'
 import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
@@ -22,13 +22,13 @@ type QueryClientParams = {
   contractAddress: string
 }
 
-const queryClient = selectorFamily<QueryClient, QueryClientParams>({
+const queryClient = selectorFamily<Cw20BaseQueryClient, QueryClientParams>({
   key: 'cw20BaseQueryClient',
   get:
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      return new QueryClient(client, contractAddress)
+      return new Cw20BaseQueryClient(client, contractAddress)
     },
 })
 
@@ -38,16 +38,16 @@ export type ExecuteClientParams = {
 }
 
 export const executeClient = selectorFamily<
-  ExecuteClient | undefined,
+  Cw20BaseClient | undefined,
   ExecuteClientParams
 >({
-  key: 'stakeCw20ExecuteClient',
+  key: 'cw20BaseExecuteClient',
   get:
     ({ contractAddress, sender }) =>
     ({ get }) => {
       const client = get(signingCosmWasmClientAtom)
       if (!client) return
-      return new ExecuteClient(client, sender, contractAddress)
+      return new Cw20BaseClient(client, sender, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
@@ -55,7 +55,7 @@ export const executeClient = selectorFamily<
 export const balanceSelector = selectorFamily<
   BalanceResponse,
   QueryClientParams & {
-    params: Parameters<QueryClient['balance']>
+    params: Parameters<Cw20BaseQueryClient['balance']>
   }
 >({
   key: 'cw20BaseBalance',
@@ -63,17 +63,14 @@ export const balanceSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
       get(refreshWalletBalancesIdAtom(params[0].address))
-
       return await client.balance(...params)
     },
 })
-
 export const tokenInfoSelector = selectorFamily<
   TokenInfoResponse,
   QueryClientParams & {
-    params: Parameters<QueryClient['tokenInfo']>
+    params: Parameters<Cw20BaseQueryClient['tokenInfo']>
   }
 >({
   key: 'cw20BaseTokenInfo',
@@ -84,11 +81,10 @@ export const tokenInfoSelector = selectorFamily<
       return await client.tokenInfo(...params)
     },
 })
-
 export const minterSelector = selectorFamily<
   MinterResponse,
   QueryClientParams & {
-    params: Parameters<QueryClient['minter']>
+    params: Parameters<Cw20BaseQueryClient['minter']>
   }
 >({
   key: 'cw20BaseMinter',
@@ -99,11 +95,10 @@ export const minterSelector = selectorFamily<
       return await client.minter(...params)
     },
 })
-
 export const allowanceSelector = selectorFamily<
   AllowanceResponse,
   QueryClientParams & {
-    params: Parameters<QueryClient['allowance']>
+    params: Parameters<Cw20BaseQueryClient['allowance']>
   }
 >({
   key: 'cw20BaseAllowance',
@@ -117,11 +112,10 @@ export const allowanceSelector = selectorFamily<
       return await client.allowance(...params)
     },
 })
-
 export const allAllowancesSelector = selectorFamily<
   AllAllowancesResponse,
   QueryClientParams & {
-    params: Parameters<QueryClient['allAllowances']>
+    params: Parameters<Cw20BaseQueryClient['allAllowances']>
   }
 >({
   key: 'cw20BaseAllAllowances',
@@ -135,11 +129,10 @@ export const allAllowancesSelector = selectorFamily<
       return await client.allAllowances(...params)
     },
 })
-
 export const allAccountsSelector = selectorFamily<
   AllAccountsResponse,
   QueryClientParams & {
-    params: Parameters<QueryClient['allAccounts']>
+    params: Parameters<Cw20BaseQueryClient['allAccounts']>
   }
 >({
   key: 'cw20BaseAllAccounts',
@@ -150,11 +143,10 @@ export const allAccountsSelector = selectorFamily<
       return await client.allAccounts(...params)
     },
 })
-
 export const marketingInfoSelector = selectorFamily<
   MarketingInfoResponse,
   QueryClientParams & {
-    params: Parameters<QueryClient['marketingInfo']>
+    params: Parameters<Cw20BaseQueryClient['marketingInfo']>
   }
 >({
   key: 'cw20BaseMarketingInfo',
@@ -165,11 +157,10 @@ export const marketingInfoSelector = selectorFamily<
       return await client.marketingInfo(...params)
     },
 })
-
 export const downloadLogoSelector = selectorFamily<
   DownloadLogoResponse,
   QueryClientParams & {
-    params: Parameters<QueryClient['downloadLogo']>
+    params: Parameters<Cw20BaseQueryClient['downloadLogo']>
   }
 >({
   key: 'cw20BaseDownloadLogo',
