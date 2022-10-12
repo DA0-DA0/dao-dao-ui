@@ -139,12 +139,22 @@ export const NewProposal = ({
 
   const requiredProposalDeposit = Number(depositInfo?.amount ?? '0')
 
+  // TODO: Cache these balance selectors after first suspense, like
+  // useCachedLoadable but not a loadable. It makes the whole page reload for a
+  // second when wallet balances are refreshed, which is not ideal.
   const cw20DepositTokenAllowanceResponse = useRecoilValue(
     depositInfoCw20TokenAddress && requiredProposalDeposit && walletAddress
       ? Cw20BaseSelectors.allowanceSelector({
           contractAddress: depositInfoCw20TokenAddress,
           params: [
-            { owner: walletAddress, spender: options.proposalModule.address },
+            {
+              owner: walletAddress,
+              // If pre-propose address set, give that one deposit allowance
+              // instead of proposal module.
+              spender:
+                options.proposalModule.preProposeAddress ||
+                options.proposalModule.address,
+            },
           ],
         })
       : constSelector(undefined)
@@ -231,7 +241,11 @@ export const NewProposal = ({
             try {
               await increaseCw20DepositAllowance({
                 amount: remainingAllowanceNeeded.toString(),
-                spender: options.proposalModule.address,
+                spender:
+                  // If pre-propose address set, give that one deposit allowance
+                  // instead of proposal module.
+                  options.proposalModule.preProposeAddress ||
+                  options.proposalModule.address,
               })
 
               // Allowances will not update until the next block has been added.
