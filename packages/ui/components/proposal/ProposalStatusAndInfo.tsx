@@ -51,7 +51,7 @@ export const ProposalStatusAndInfo = ({
           'grid grid-cols-2 gap-3 items-center border-t border-border-secondary',
           inline ? 'p-6' : 'py-8',
           // If not inline, or an action button is present, add bottom border.
-          (!inline || action) && 'border-b'
+          (!inline || (inline && action)) && 'border-b'
         )}
       >
         {info.map(({ Icon, label, Value }, index) => (
