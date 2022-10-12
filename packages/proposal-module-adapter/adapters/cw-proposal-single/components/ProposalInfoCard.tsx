@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
-  CwCoreV0_2_0Selectors,
+  CwdCoreV2Selectors,
   blockHeightTimestampSafeSelector,
 } from '@dao-dao/state'
 // eslint-disable-next-line regex/invalid
@@ -41,7 +41,7 @@ export const ProposalInfoCard = ({
 
   const walletVotingPowerWhenProposalCreated = useRecoilValue(
     walletAddress
-      ? CwCoreV0_2_0Selectors.votingPowerAtHeightSelector({
+      ? CwdCoreV2Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           params: [
             {

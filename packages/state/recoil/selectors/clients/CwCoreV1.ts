@@ -6,7 +6,7 @@ import {
   matchAdapter,
 } from '@dao-dao/voting-module-adapter'
 
-import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '..'
+import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
 import {
   AdminResponse,
   ConfigResponse,
@@ -14,22 +14,22 @@ import {
   Cw20TokenListResponse,
   Cw721TokenListResponse,
   DumpStateResponse,
-  CwCoreV0_1_0Client as ExecuteClient,
+  CwCoreV1Client as ExecuteClient,
   GetItemResponse,
   InfoResponse,
   ListItemsResponse,
   PauseInfoResponse,
   ProposalModulesResponse,
-  CwCoreV0_1_0QueryClient as QueryClient,
+  CwCoreV1QueryClient as QueryClient,
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '../../../../clients/cw-core/0.1.0'
+} from '../../../clients/CwCoreV1'
 import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
-} from '../../../atoms'
-import { cosmWasmClientSelector } from '../../chain'
+} from '../../atoms'
+import { cosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
@@ -199,7 +199,7 @@ export const allCw20TokenListSelector = selectorFamily<
     async ({ get }) => {
       //! Check if has governance token, and add to list if necessary.
       const votingModuleAddress = get(votingModuleSelector(queryClientParams))
-      // All `info` queries are the same, so just use cw-core's info query.
+      // All `info` queries are the same, so just use core's info query.
       const votingModuleInfo = votingModuleAddress
         ? get(infoSelector({ contractAddress: votingModuleAddress }))
         : undefined
@@ -340,7 +340,7 @@ export const allCw20BalancesSelector = selectorFamily<
     async ({ get }) => {
       //! Check if has governance token, and add to list if necessary.
       const votingModuleAddress = get(votingModuleSelector(queryClientParams))
-      // All `info` queries are the same, so just use cw-core's info query.
+      // All `info` queries are the same, so just use core's info query.
       const votingModuleInfo = get(
         infoSelector({ contractAddress: votingModuleAddress })
       )

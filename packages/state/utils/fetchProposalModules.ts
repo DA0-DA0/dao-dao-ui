@@ -7,8 +7,8 @@ import {
   parseContractVersion,
 } from '@dao-dao/utils'
 
-import { CwCoreV0_1_0QueryClient, CwCoreV0_2_0QueryClient } from '../clients'
-import { InfoResponse } from '../clients/cw-core/0.1.0'
+import { CwCoreV1QueryClient, CwdCoreV2QueryClient } from '../clients'
+import { InfoResponse } from '../clients/CwCoreV1'
 
 export const fetchProposalModules = async (
   cwClient: CosmWasmClient,
@@ -21,7 +21,7 @@ export const fetchProposalModules = async (
 
   const getV0_1_0ProposalModules = async () =>
     (
-      await new CwCoreV0_1_0QueryClient(cwClient, coreAddress).proposalModules({
+      await new CwCoreV1QueryClient(cwClient, coreAddress).proposalModules({
         startAt: paginationStart,
         limit,
         // Ignore first address if startAt was set.
@@ -29,7 +29,7 @@ export const fetchProposalModules = async (
     )
       .slice(paginationStart !== undefined ? 1 : 0)
       .map(async (address, index) => {
-        // All InfoResponses are the same, so just use cw-core's.
+        // All InfoResponses are the same, so just use core's.
         const { info }: InfoResponse = await cwClient.queryContractSmart(
           address,
           {
@@ -54,7 +54,7 @@ export const fetchProposalModules = async (
 
   const getV0_2_0ProposalModules = async () =>
     (
-      await new CwCoreV0_2_0QueryClient(
+      await new CwdCoreV2QueryClient(
         cwClient,
         coreAddress
       ).activeProposalModules({
@@ -62,7 +62,7 @@ export const fetchProposalModules = async (
         limit,
       })
     ).map(async (data) => {
-      // All InfoResponses are the same, so just use cw-core's.
+      // All InfoResponses are the same, so just use core's.
       const { info }: InfoResponse = await cwClient.queryContractSmart(
         data.address,
         {

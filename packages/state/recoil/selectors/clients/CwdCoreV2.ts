@@ -5,7 +5,8 @@ import {
   matchAdapter,
 } from '@dao-dao/voting-module-adapter'
 
-import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '..'
+import { Cw20BaseSelectors, Cw20StakedBalanceVotingSelectors } from '.'
+import { TokenInfoResponse } from '../../../clients/cw20-base'
 import {
   ActiveProposalModulesResponse,
   AdminNominationResponse,
@@ -14,8 +15,8 @@ import {
   Cw20BalancesResponse,
   Cw20TokenListResponse,
   Cw721TokenListResponse,
-  CwCoreV0_2_0Client,
-  CwCoreV0_2_0QueryClient,
+  CwdCoreV2Client,
+  CwdCoreV2QueryClient,
   DaoURIResponse,
   DumpStateResponse,
   GetItemResponse,
@@ -27,20 +28,19 @@ import {
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '../../../../clients/cw-core/0.2.0'
-import { TokenInfoResponse } from '../../../../clients/cw20-base'
+} from '../../../clients/CwdCoreV2'
 import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
-} from '../../../atoms'
-import { cosmWasmClientSelector } from '../../chain'
+} from '../../atoms'
+import { cosmWasmClientSelector } from '../chain'
 
 type QueryClientParams = {
   contractAddress: string
 }
 
 export const queryClient = selectorFamily<
-  CwCoreV0_2_0QueryClient,
+  CwdCoreV2QueryClient,
   QueryClientParams
 >({
   key: 'cwCoreV0_2_0QueryClient',
@@ -48,7 +48,7 @@ export const queryClient = selectorFamily<
     ({ contractAddress }) =>
     ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      return new CwCoreV0_2_0QueryClient(client, contractAddress)
+      return new CwdCoreV2QueryClient(client, contractAddress)
     },
 })
 
@@ -58,7 +58,7 @@ export type ExecuteClientParams = {
 }
 
 export const executeClient = selectorFamily<
-  CwCoreV0_2_0Client | undefined,
+  CwdCoreV2Client | undefined,
   ExecuteClientParams
 >({
   key: 'cwCoreV0_2_0ExecuteClient',
@@ -68,7 +68,7 @@ export const executeClient = selectorFamily<
       const client = get(signingCosmWasmClientAtom)
       if (!client) return
 
-      return new CwCoreV0_2_0Client(client, sender, contractAddress)
+      return new CwdCoreV2Client(client, sender, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
@@ -76,7 +76,7 @@ export const executeClient = selectorFamily<
 export const adminSelector = selectorFamily<
   AdminResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['admin']>
+    params: Parameters<CwdCoreV2QueryClient['admin']>
   }
 >({
   key: 'cwCoreV0_2_0Admin',
@@ -90,7 +90,7 @@ export const adminSelector = selectorFamily<
 export const adminNominationSelector = selectorFamily<
   AdminNominationResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['adminNomination']>
+    params: Parameters<CwdCoreV2QueryClient['adminNomination']>
   }
 >({
   key: 'cwCoreV0_2_0AdminNomination',
@@ -104,7 +104,7 @@ export const adminNominationSelector = selectorFamily<
 export const configSelector = selectorFamily<
   ConfigResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['config']>
+    params: Parameters<CwdCoreV2QueryClient['config']>
   }
 >({
   key: 'cwCoreV0_2_0Config',
@@ -118,7 +118,7 @@ export const configSelector = selectorFamily<
 export const cw20BalancesSelector = selectorFamily<
   Cw20BalancesResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['cw20Balances']>
+    params: Parameters<CwdCoreV2QueryClient['cw20Balances']>
   }
 >({
   key: 'cwCoreV0_2_0Cw20Balances',
@@ -133,7 +133,7 @@ export const cw20BalancesSelector = selectorFamily<
 export const cw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['cw20TokenList']>
+    params: Parameters<CwdCoreV2QueryClient['cw20TokenList']>
   }
 >({
   key: 'cwCoreV0_2_0Cw20TokenList',
@@ -147,7 +147,7 @@ export const cw20TokenListSelector = selectorFamily<
 export const cw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['cw721TokenList']>
+    params: Parameters<CwdCoreV2QueryClient['cw721TokenList']>
   }
 >({
   key: 'cwCoreV0_2_0Cw721TokenList',
@@ -161,7 +161,7 @@ export const cw721TokenListSelector = selectorFamily<
 export const dumpStateSelector = selectorFamily<
   DumpStateResponse | undefined,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['dumpState']>
+    params: Parameters<CwdCoreV2QueryClient['dumpState']>
   }
 >({
   key: 'cwCoreV0_2_0DumpState',
@@ -179,7 +179,7 @@ export const dumpStateSelector = selectorFamily<
 export const getItemSelector = selectorFamily<
   GetItemResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['getItem']>
+    params: Parameters<CwdCoreV2QueryClient['getItem']>
   }
 >({
   key: 'cwCoreV0_2_0GetItem',
@@ -193,7 +193,7 @@ export const getItemSelector = selectorFamily<
 export const listItemsSelector = selectorFamily<
   ListItemsResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['listItems']>
+    params: Parameters<CwdCoreV2QueryClient['listItems']>
   }
 >({
   key: 'cwCoreV0_2_0ListItems',
@@ -207,7 +207,7 @@ export const listItemsSelector = selectorFamily<
 export const proposalModulesSelector = selectorFamily<
   ProposalModulesResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['proposalModules']>
+    params: Parameters<CwdCoreV2QueryClient['proposalModules']>
   }
 >({
   key: 'cwCoreV0_2_0ProposalModules',
@@ -221,7 +221,7 @@ export const proposalModulesSelector = selectorFamily<
 export const activeProposalModulesSelector = selectorFamily<
   ActiveProposalModulesResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['activeProposalModules']>
+    params: Parameters<CwdCoreV2QueryClient['activeProposalModules']>
   }
 >({
   key: 'cwCoreV0_2_0ActiveProposalModules',
@@ -235,7 +235,7 @@ export const activeProposalModulesSelector = selectorFamily<
 export const pauseInfoSelector = selectorFamily<
   PauseInfoResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['pauseInfo']>
+    params: Parameters<CwdCoreV2QueryClient['pauseInfo']>
   }
 >({
   key: 'cwCoreV0_2_0PauseInfo',
@@ -249,7 +249,7 @@ export const pauseInfoSelector = selectorFamily<
 export const votingModuleSelector = selectorFamily<
   VotingModuleResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['votingModule']>
+    params: Parameters<CwdCoreV2QueryClient['votingModule']>
   }
 >({
   key: 'cwCoreV0_2_0VotingModule',
@@ -263,7 +263,7 @@ export const votingModuleSelector = selectorFamily<
 export const listSubDaosSelector = selectorFamily<
   ListSubDaosResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['listSubDaos']>
+    params: Parameters<CwdCoreV2QueryClient['listSubDaos']>
   }
 >({
   key: 'cwCoreV0_2_0ListSubDaos',
@@ -277,7 +277,7 @@ export const listSubDaosSelector = selectorFamily<
 export const daoURISelector = selectorFamily<
   DaoURIResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['daoURI']>
+    params: Parameters<CwdCoreV2QueryClient['daoURI']>
   }
 >({
   key: 'cwCoreV0_2_0DaoURI',
@@ -291,7 +291,7 @@ export const daoURISelector = selectorFamily<
 export const votingPowerAtHeightSelector = selectorFamily<
   VotingPowerAtHeightResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['votingPowerAtHeight']>
+    params: Parameters<CwdCoreV2QueryClient['votingPowerAtHeight']>
   }
 >({
   key: 'cwCoreV0_2_0VotingPowerAtHeight',
@@ -305,7 +305,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
 export const totalPowerAtHeightSelector = selectorFamily<
   TotalPowerAtHeightResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['totalPowerAtHeight']>
+    params: Parameters<CwdCoreV2QueryClient['totalPowerAtHeight']>
   }
 >({
   key: 'cwCoreV0_2_0TotalPowerAtHeight',
@@ -319,7 +319,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
 export const infoSelector = selectorFamily<
   InfoResponse,
   QueryClientParams & {
-    params: Parameters<CwCoreV0_2_0QueryClient['info']>
+    params: Parameters<CwdCoreV2QueryClient['info']>
   }
 >({
   key: 'cwCoreV0_2_0Info',
@@ -344,7 +344,7 @@ export const allCw20TokenListSelector = selectorFamily<
       const votingModuleAddress = get(
         votingModuleSelector({ ...queryClientParams, params: [] })
       )
-      // All `info` queries are the same, so just use cw-core's info query.
+      // All `info` queries are the same, so just use core's info query.
       const votingModuleInfo = votingModuleAddress
         ? get(
             infoSelector({ contractAddress: votingModuleAddress, params: [] })
@@ -421,7 +421,7 @@ export const allCw20BalancesSelector = selectorFamily<
       const votingModuleAddress = get(
         votingModuleSelector({ ...queryClientParams, params: [] })
       )
-      // All `info` queries are the same, so just use cw-core's info query.
+      // All `info` queries are the same, so just use core's info query.
       const votingModuleInfo = get(
         infoSelector({ contractAddress: votingModuleAddress, params: [] })
       )

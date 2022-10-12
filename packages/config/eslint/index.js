@@ -100,7 +100,7 @@ const eslintConfig = {
             {
               regex: '\\@dao\\-dao\\/state\\/recoil\\/selectors[^\'"]*',
               message:
-                'Import from root @dao-dao/state instead of a direct path. If using contract client selectors, use a grouped export, such as CwCoreV0_1_0Selectors.',
+                'Import from root @dao-dao/state instead of a direct path. If using contract client selectors, use a grouped export, such as CwCoreV1Selectors.',
             },
             {
               regex: '(?:\\.\\.\\/)+(atoms|components|hooks|util)',

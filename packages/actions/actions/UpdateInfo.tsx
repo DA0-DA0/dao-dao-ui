@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
+import { CwCoreV1Selectors } from '@dao-dao/state'
 import {
   Action,
   ActionKey,
@@ -19,7 +19,7 @@ import {
 
 const useDefaults: UseDefaults<UpdateInfoData> = (coreAddress: string) => {
   const config = useRecoilValue(
-    CwCoreV0_1_0Selectors.configSelector({ contractAddress: coreAddress })
+    CwCoreV1Selectors.configSelector({ contractAddress: coreAddress })
   )
 
   // Need to deep copy as, for reasons beyond me, the object returned

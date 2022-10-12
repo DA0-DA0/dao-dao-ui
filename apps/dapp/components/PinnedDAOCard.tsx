@@ -8,7 +8,7 @@ import { useRecoilValue } from 'recoil'
 import { SuspenseLoader } from '@dao-dao/common'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import {
-  CwCoreV0_1_0Selectors,
+  CwCoreV1Selectors,
   cwCoreProposalModulesSelector,
   nativeBalanceSelector,
   usePinnedDaos,
@@ -26,7 +26,7 @@ interface PinnedDAOCardProps {
 const InnerPinnedDAOCard = ({ address }: PinnedDAOCardProps) => {
   const { t } = useTranslation()
   const config = useRecoilValue(
-    CwCoreV0_1_0Selectors.configSelector({ contractAddress: address })
+    CwCoreV1Selectors.configSelector({ contractAddress: address })
   )
   const nativeBalance = useRecoilValue(nativeBalanceSelector(address)).amount
   const { walletVotingWeight, totalVotingWeight } = useVotingModule(address, {

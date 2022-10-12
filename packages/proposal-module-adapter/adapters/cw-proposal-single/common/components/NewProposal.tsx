@@ -19,7 +19,7 @@ import { Open } from '@dao-dao/icons'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,
-  CwCoreV0_1_0Selectors,
+  CwCoreV1Selectors,
   blockHeightSelector,
   blocksPerYearSelector,
   cosmWasmClientSelector,
@@ -78,7 +78,7 @@ export const NewProposal = ({
 
   // Info about if the DAO is paused.
   const pauseInfo = useRecoilValue(
-    CwCoreV0_1_0Selectors.pauseInfoSelector({
+    CwCoreV1Selectors.pauseInfoSelector({
       contractAddress: options.coreAddress,
     })
   )

@@ -2,7 +2,7 @@ import { InformationCircleIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
+import { ConfigResponse } from '@dao-dao/state/clients/CwCoreV1'
 import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   FormSwitch,

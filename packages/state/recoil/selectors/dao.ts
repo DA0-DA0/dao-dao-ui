@@ -17,7 +17,8 @@ import {
 } from '@dao-dao/tstypes'
 import { DaoDropdownInfo, UnstakingTaskStatus } from '@dao-dao/ui'
 import {
-  CWCORE_CONTRACT_NAME,
+  CWCOREV1_CONTRACT_NAME,
+  CWCOREV2_CONTRACT_NAME,
   NATIVE_DENOM,
   STARGAZE_URL_BASE,
   convertMicroDenomToDenomWithDecimals,
@@ -30,15 +31,15 @@ import {
   matchAdapter,
 } from '@dao-dao/voting-module-adapter'
 
-import {
-  ConfigResponse as CwCoreV0_1_0ConfigResponse,
-  DumpStateResponse as CwCoreV0_1_0DumpStateResponse,
-} from '../../clients/cw-core/0.1.0'
-import {
-  ConfigResponse as CwCoreV0_2_0ConfigResponse,
-  DumpStateResponse as CwCoreV0_2_0DumpStateResponse,
-} from '../../clients/cw-core/0.2.0'
 import { ContractInfoResponse, NftInfoResponse } from '../../clients/cw721-base'
+import {
+  ConfigResponse as CwCoreV1ConfigResponse,
+  DumpStateResponse as CwCoreV1DumpStateResponse,
+} from '../../clients/CwCoreV1'
+import {
+  ConfigResponse as CwdCoreV2ConfigResponse,
+  DumpStateResponse as CwdCoreV2DumpStateResponse,
+} from '../../clients/CwdCoreV2'
 import { getFeaturedDaoAddresses } from '../../utils/getFeaturedDaoAddresses'
 import {
   nativeBalancesSelector,
@@ -47,11 +48,11 @@ import {
 } from './chain'
 import {
   Cw721BaseSelectors,
-  CwCoreV0_1_0Selectors,
-  CwCoreV0_2_0Selectors,
+  CwCoreV1Selectors,
   CwNativeStakedBalanceVotingSelectors,
+  CwdCoreV2Selectors,
 } from './clients'
-import { infoSelector, votingModuleSelector } from './clients/cw-core/0.2.0'
+import { infoSelector, votingModuleSelector } from './clients/CwdCoreV2'
 import {
   contractInstantiateTimeSelector,
   contractVersionSelector,
@@ -85,12 +86,12 @@ export const daoDropdownInfoSelector: (
       const config =
         version === ContractVersion.V0_1_0
           ? get(
-              CwCoreV0_1_0Selectors.configSelector({
+              CwCoreV1Selectors.configSelector({
                 contractAddress: coreAddress,
               })
             )
           : get(
-              CwCoreV0_2_0Selectors.configSelector({
+              CwdCoreV2Selectors.configSelector({
                 contractAddress: coreAddress,
                 params: [],
               })
@@ -100,7 +101,7 @@ export const daoDropdownInfoSelector: (
         version === ContractVersion.V0_1_0
           ? []
           : get(
-              CwCoreV0_2_0Selectors.listAllSubDaosSelector({
+              CwdCoreV2Selectors.listAllSubDaosSelector({
                 contractAddress: coreAddress,
               })
             ).map(({ addr }) => addr)
@@ -129,11 +130,11 @@ export const daoCardInfoSelector = selectorFamily<
     ({ coreAddress, daoUrlPrefix }) =>
     ({ get }) => {
       const dumpedState:
-        | CwCoreV0_1_0DumpStateResponse
-        | CwCoreV0_2_0DumpStateResponse
+        | CwCoreV1DumpStateResponse
+        | CwdCoreV2DumpStateResponse
         | undefined = get(
         // Both v1 and v2 have a dump_state query.
-        CwCoreV0_2_0Selectors.dumpStateSelector({
+        CwdCoreV2Selectors.dumpStateSelector({
           contractAddress: coreAddress,
           params: [],
         })
@@ -160,19 +161,25 @@ export const daoCardInfoSelector = selectorFamily<
         admin &&
         // A DAO without a parent DAO may be its own admin.
         admin !== coreAddress &&
-        get(
+        (get(
           isContractSelector({
             contractAddress: admin,
-            name: CWCORE_CONTRACT_NAME,
+            name: CWCOREV1_CONTRACT_NAME,
           })
-        )
+        ) ||
+          get(
+            isContractSelector({
+              contractAddress: admin,
+              name: CWCOREV2_CONTRACT_NAME,
+            })
+          ))
       ) {
         const {
           name,
           image_url,
-        }: CwCoreV0_1_0ConfigResponse | CwCoreV0_2_0ConfigResponse = get(
+        }: CwCoreV1ConfigResponse | CwdCoreV2ConfigResponse = get(
           // Both v1 and v2 have a config query.
-          CwCoreV0_2_0Selectors.configSelector({
+          CwdCoreV2Selectors.configSelector({
             contractAddress: admin,
             params: [],
           })
@@ -211,7 +218,7 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
       const walletVotingWeight = walletAddress
         ? Number(
             get(
-              CwCoreV0_2_0Selectors.votingPowerAtHeightSelector({
+              CwdCoreV2Selectors.votingPowerAtHeightSelector({
                 contractAddress: coreAddress,
                 params: [{ address: walletAddress }],
               })
@@ -249,7 +256,7 @@ export const subDaoCardInfosSelector = selectorFamily<
     ({ coreAddress, daoUrlPrefix }) =>
     ({ get }) => {
       const subdaos = get(
-        CwCoreV0_2_0Selectors.listAllSubDaosSelector({
+        CwdCoreV2Selectors.listAllSubDaosSelector({
           contractAddress: coreAddress,
         })
       )
@@ -277,14 +284,14 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
     ({ get }) => {
       const nativeBalances = get(nativeBalancesSelector(coreAddress))
       const cw20s = get(
-        CwCoreV0_2_0Selectors.cw20BalancesInfoSelector(coreAddress)
+        CwdCoreV2Selectors.cw20BalancesInfoSelector(coreAddress)
       )
 
       //! Check if has native governance token, and set crown accordingly.
       const votingModuleAddress = get(
         votingModuleSelector({ contractAddress: coreAddress, params: [] })
       )
-      // All `info` queries are the same, so just use cw-core's info query.
+      // All `info` queries are the same, so just use core's info query.
       const votingModuleInfo = get(
         infoSelector({ contractAddress: votingModuleAddress, params: [] })
       )
@@ -483,7 +490,7 @@ export const nftCardInfosSelector = selectorFamily<NftCardInfo[], string>({
     (coreAddress) =>
     async ({ get }) => {
       const nftCollectionAddresses = get(
-        CwCoreV0_2_0Selectors.allCw721TokenListSelector({
+        CwdCoreV2Selectors.allCw721TokenListSelector({
           contractAddress: coreAddress,
         })
       )

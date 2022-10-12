@@ -12,11 +12,11 @@ import {
   matchAndLoadAdapter,
 } from '@dao-dao/proposal-module-adapter'
 import {
-  CwCoreV0_1_0QueryClient,
-  CwCoreV0_2_0QueryClient,
+  CwCoreV1QueryClient,
+  CwdCoreV2QueryClient,
   fetchProposalModules,
 } from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
+import { ConfigResponse } from '@dao-dao/state/clients/CwCoreV1'
 import {
   ContractVersion,
   DaoParentInfo,
@@ -53,7 +53,7 @@ interface GetDaoStaticPropsMakerOptions {
     context: Parameters<GetStaticProps>[0]
     t: TFunction
     cwClient: CosmWasmClient
-    coreClient: CwCoreV0_1_0QueryClient
+    coreClient: CwCoreV1QueryClient
     config: ConfigResponse
     coreAddress: string
     proposalModules: ProposalModule[]
@@ -104,7 +104,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     let coreVersion: ContractVersion | undefined
     try {
       const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-      const coreClient = new CwCoreV0_1_0QueryClient(cwClient, coreAddress)
+      const coreClient = new CwCoreV1QueryClient(cwClient, coreAddress)
 
       const {
         admin,
@@ -413,7 +413,7 @@ const loadParentDaoInfo = async (
   }
 
   try {
-    const parentClient = new CwCoreV0_2_0QueryClient(cwClient, subDaoAdmin)
+    const parentClient = new CwdCoreV2QueryClient(cwClient, subDaoAdmin)
     const {
       admin,
       config: { name, image_url },

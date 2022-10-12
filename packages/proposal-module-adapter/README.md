@@ -30,7 +30,7 @@ level to encompass entire pages. At this point, you must already know the
 available proposal modules and proposal ID of the relevant proposal so that the
 correct adapter can be chosen and its interface passed down to descendant
 components. You will also need to pass some options, like the contract address
-of the DAO's `cw-core` contract, as well as some commonly used components, like
+of the DAO's core contract, as well as some commonly used components, like
 `Logo` and `Loader`.
 
 ```tsx

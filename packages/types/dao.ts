@@ -15,7 +15,7 @@ import {
 import { Validator } from './chain'
 import { ContractVersion } from './contract'
 import { ModuleInstantiateInfo } from './contracts/common'
-import { InstantiateMsg as CwCoreV0_2_0InstantiateMsg } from './contracts/CwCore.v2'
+import { InstantiateMsg as CwdCoreV2InstantiateMsg } from './contracts/CwdCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
@@ -147,7 +147,7 @@ export interface CreateDaoContext<
   >[]
   votingModuleDaoCreationAdapter: Required<VotingModuleAdapter>['daoCreation']
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
-  generateInstantiateMsg: () => CwCoreV0_2_0InstantiateMsg
+  generateInstantiateMsg: () => CwdCoreV2InstantiateMsg
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
 }
 

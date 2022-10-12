@@ -19,14 +19,14 @@ import {
   usePinnedDaos,
   useWalletProfile,
 } from '@dao-dao/state'
-import instantiateSchema from '@dao-dao/state/clients/cw-core/instantiate_schema_0.2.0.json'
+import instantiateSchema from '@dao-dao/state/clients/CwdCoreV2_instantiate_schema.json'
 import {
   CreateDaoContext,
   CreateDaoCustomValidator,
   DaoParentInfo,
   NewDao,
 } from '@dao-dao/tstypes'
-import { InstantiateMsg as CwCoreV0_2_0InstantiateMsg } from '@dao-dao/tstypes/contracts/CwCore.v2'
+import { InstantiateMsg as CwdCoreV2InstantiateMsg } from '@dao-dao/tstypes/contracts/CwdCore.v2'
 import {
   Button,
   CreateDaoPages,
@@ -196,7 +196,7 @@ export const CreateDaoForm = ({
   )
 
   const validateInstantiateMsg = useMemo(
-    () => makeValidateMsg<CwCoreV0_2_0InstantiateMsg>(instantiateSchema, t),
+    () => makeValidateMsg<CwdCoreV2InstantiateMsg>(instantiateSchema, t),
     [t]
   )
 
@@ -216,7 +216,7 @@ export const CreateDaoForm = ({
         getInstantiateInfo(newDao, proposalModuleAdapters[index].data, t)
       )
 
-    const instantiateMsg: CwCoreV0_2_0InstantiateMsg = {
+    const instantiateMsg: CwdCoreV2InstantiateMsg = {
       // If parentDao exists, let's make a subDAO :D
       admin: parentDao?.coreAddress ?? null,
       automatically_add_cw20s: true,

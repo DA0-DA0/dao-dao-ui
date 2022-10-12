@@ -9,7 +9,7 @@ import {
 
 import { refreshTokenUsdcPriceIdAtom } from '../atoms/refresh'
 import { cosmWasmClientSelector, nativeBalanceSelector } from './chain'
-import { CwCoreV0_1_0Selectors } from './clients'
+import { CwCoreV1Selectors } from './clients'
 import { poolsListSelector } from './pools'
 
 // Gets the price of a token in USDC / TOKEN. DENOM may either be a native
@@ -107,7 +107,7 @@ export const daoTvlSelector = selectorFamily<number, string>({
     async ({ get }) => {
       const nativeBalance = get(nativeBalanceSelector(coreAddress))
       const cw20Balances = get(
-        CwCoreV0_1_0Selectors.cw20BalancesInfoSelector(coreAddress)
+        CwCoreV1Selectors.cw20BalancesInfoSelector(coreAddress)
       )
 
       let balances = cw20Balances

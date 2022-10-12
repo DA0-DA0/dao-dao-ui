@@ -1,7 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { CwCoreV0_2_0Selectors } from '@dao-dao/state'
+import { CwdCoreV2Selectors } from '@dao-dao/state'
 import { WalletVoteInfo } from '@dao-dao/tstypes'
 import {
   Status,
@@ -31,7 +31,7 @@ export const useWalletVoteInfo = (): WalletVoteInfo<Vote> => {
   const walletVotingPowerWhenProposalCreated = Number(
     useRecoilValue(
       walletAddress
-        ? CwCoreV0_2_0Selectors.votingPowerAtHeightSelector({
+        ? CwdCoreV2Selectors.votingPowerAtHeightSelector({
             contractAddress: coreAddress,
             params: [
               {
@@ -46,7 +46,7 @@ export const useWalletVoteInfo = (): WalletVoteInfo<Vote> => {
 
   const totalVotingPowerWhenProposalCreated = Number(
     useRecoilValue(
-      CwCoreV0_2_0Selectors.totalPowerAtHeightSelector({
+      CwdCoreV2Selectors.totalPowerAtHeightSelector({
         contractAddress: coreAddress,
         params: [
           {

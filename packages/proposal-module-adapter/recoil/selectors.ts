@@ -51,8 +51,8 @@ export const proposalModuleAdapterProposalCountSelector = selectorFamily<
           adapter.queries.proposalCount
         )
       } catch (err) {
-        // v1 cw-core throws error if no proposals have been made, so return 0
-        // for backwards compatibility.
+        // v1 core throws error if no proposals have been made, so return 0 for
+        // backwards compatibility.
         if (err instanceof Error && err.message.includes('u64 not found')) {
           return 0
         }

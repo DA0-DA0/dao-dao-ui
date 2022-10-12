@@ -77,7 +77,9 @@ Disconnected.decorators = [
       hideInbox: true,
     },
     rightSidebarProps: {
-      wallet: <SidebarWallet connectedOrConnecting={false} onConnect={() => {}} />,
+      wallet: (
+        <SidebarWallet connectedOrConnecting={false} onConnect={() => {}} />
+      ),
     },
   }),
 ]

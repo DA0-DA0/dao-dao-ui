@@ -305,7 +305,7 @@ to encompass the entire app or entire pages. At this point, you must already
 know the contract name of the voting module (from the `info` query) so that the
 correct adapter can be chosen and its interface passed down to descendant
 components. You will also need to pass some options, like the contract address
-of the DAO's `cw-core` contract, as well as some commonly used components, like
+of the DAO's core contract, as well as some commonly used components, like
 `Logo` and `Loader`.
 
 ```tsx
@@ -337,7 +337,7 @@ and passed to a common page wrapper component, on each page.
 const coreAddress = context.params.address as string
 
 const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-const coreClient = new CwCoreV0_1_0QueryClient(cwClient, coreAddress)
+const coreClient = new CwCoreV1QueryClient(cwClient, coreAddress)
 
 const votingModuleAddress = await coreClient.votingModule()
 const votingModuleContractName = (

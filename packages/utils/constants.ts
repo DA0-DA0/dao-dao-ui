@@ -87,10 +87,12 @@ export const STAKECW20_CODE_ID = parseInt(
   10
 )
 // Contract Names
-export const CWCORE_CONTRACT_NAME = process.env
-  .NEXT_PUBLIC_CWCORE_CONTRACT_NAME as string
+export const CWCOREV1_CONTRACT_NAME = process.env
+  .NEXT_PUBLIC_CWCOREV1_CONTRACT_NAME as string
+export const CWCOREV2_CONTRACT_NAME = process.env
+  .NEXT_PUBLIC_CWCOREV2_CONTRACT_NAME as string
 
-// DAO name min/max and description max defined in cw-core.
+// DAO name min/max and description max defined in core.
 export const MIN_DAO_NAME_LENGTH = parseInt(
   process.env.NEXT_PUBLIC_MIN_DAO_NAME_LENGTH || '3',
   10

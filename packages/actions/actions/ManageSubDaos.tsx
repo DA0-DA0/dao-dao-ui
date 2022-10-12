@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { CwCoreV0_2_0Selectors } from '@dao-dao/state'
+import { CwdCoreV2Selectors } from '@dao-dao/state'
 import {
   Action,
   ActionComponent,
@@ -82,7 +82,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageSubDaosData> = (
 
 const Component: ActionComponent = (props) => {
   const subDaos = useRecoilValue(
-    CwCoreV0_2_0Selectors.allSubDaoConfigsSelector({
+    CwdCoreV2Selectors.allSubDaoConfigsSelector({
       contractAddress: props.coreAddress,
     })
   )

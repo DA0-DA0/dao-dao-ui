@@ -16,8 +16,8 @@ import {
   blockHeightTimestampSafeSelector,
   cosmWasmClientSelector,
 } from './chain'
-import { CwCoreV0_1_0Selectors } from './clients'
-import { infoSelector } from './clients/cw-core/0.2.0'
+import { CwCoreV1Selectors } from './clients'
+import { infoSelector } from './clients/CwdCoreV2'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
@@ -214,7 +214,7 @@ export const contractVersionSelector = selectorFamily<ContractVersion, string>({
     (contractAddress) =>
     async ({ get }) => {
       const info = get(
-        CwCoreV0_1_0Selectors.infoSelector({ contractAddress: contractAddress })
+        CwCoreV1Selectors.infoSelector({ contractAddress: contractAddress })
       ).info
 
       const version = parseContractVersion(info.version)
@@ -241,7 +241,7 @@ export const isContractSelector = selectorFamily<
       }
 
       try {
-        // All InfoResponses are the same, so just use cw-core's.
+        // All InfoResponses are the same, so just use core's.
         const {
           info: { contract },
         } = get(infoSelector({ contractAddress, params: [] }))
