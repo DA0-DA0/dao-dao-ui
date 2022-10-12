@@ -8,7 +8,7 @@ import { Dropdown, useAppLayoutContext } from '../components'
 
 export interface CreateProposalProps {
   daoInfo: DaoInfo
-  isMember: boolean
+  notMember: boolean
   proposalModule: ProposalModule
   setProposalModule: (proposalModule: ProposalModule) => void
   newProposal: ReactNode
@@ -17,7 +17,7 @@ export interface CreateProposalProps {
 
 export const CreateProposal = ({
   daoInfo,
-  isMember,
+  notMember,
   proposalModule,
   setProposalModule,
   newProposal,
@@ -63,7 +63,7 @@ export const CreateProposal = ({
       />
 
       <div className="flex flex-col gap-6 items-stretch mx-auto max-w-5xl">
-        {!isMember && (
+        {notMember && (
           <p className="text-text-interactive-error caption-text">
             {t('error.mustBeMemberToCreateProposal')}
           </p>

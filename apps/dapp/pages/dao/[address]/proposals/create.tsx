@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { useWallet } from '@noahsaso/cosmodal'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -14,6 +14,7 @@ import { useRecoilState } from 'recoil'
 import {
   DaoPageWrapper,
   DaoPageWrapperProps,
+  SuspenseLoader,
   useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
@@ -29,6 +30,7 @@ import {
   CreateProposal,
   Loader,
   Logo,
+  PageLoader,
   ProfileDisconnectedCard,
   ProposalCreatedModal,
 } from '@dao-dao/ui'
@@ -43,7 +45,7 @@ const InnerProposalCreate = () => {
   const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
     fetchMembership: true,
   })
-  const { connected } = useWallet()
+  const { connected, status } = useWallet()
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(
     // Default to single choice proposal module or first otherwise.
@@ -246,9 +248,11 @@ const InnerProposalCreate = () => {
       <FormProvider {...formMethods}>
         <CreateProposal
           daoInfo={daoInfo}
-          isMember={isMember}
           newProposal={
-            prefillChecked ? (
+            <SuspenseLoader
+              fallback={<PageLoader />}
+              forceFallback={!prefillChecked}
+            >
               <NewProposal
                 deleteDraft={deleteDraft}
                 draft={draft}
@@ -259,9 +263,14 @@ const InnerProposalCreate = () => {
                 saveDraft={saveDraft}
                 unloadDraft={unloadDraft}
               />
-            ) : (
-              <Loader />
-            )
+            </SuspenseLoader>
+          }
+          notMember={
+            isMember === false &&
+            // Only confirm not a member once wallet status has stopped trying
+            // to connect. If autoconnecting, we don't want to flash "you're not
+            // a member" text yet.
+            status === WalletConnectionStatus.ReadyForConnection
           }
           proposalModule={selectedProposalModule}
           rightSidebarContent={

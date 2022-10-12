@@ -57,7 +57,7 @@ const Template: ComponentStory<typeof CreateProposal> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  isMember: true,
+  notMember: false,
   rightSidebarContent: (
     <ProfileNewProposalCard
       {...(ProfileNewProposalCardStory.args as ProfileNewProposalCardProps)}
