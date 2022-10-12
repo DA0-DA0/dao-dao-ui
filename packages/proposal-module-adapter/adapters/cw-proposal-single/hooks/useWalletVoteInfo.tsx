@@ -1,8 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { CwCoreV0_2_0Selectors, useVotingModule } from '@dao-dao/state'
+import { CwCoreV0_2_0Selectors } from '@dao-dao/state'
 import { WalletVoteInfo } from '@dao-dao/tstypes'
 import {
   Status,
@@ -14,17 +13,9 @@ import { getVoteSelector } from '../contracts/CwProposalSingle.common.recoil'
 import { useProposal } from './useProposal'
 
 export const useWalletVoteInfo = (): WalletVoteInfo<Vote> => {
-  const { t } = useTranslation()
   const { coreAddress, proposalModule, proposalNumber } =
     useProposalModuleAdapterOptions()
   const { address: walletAddress = '' } = useWallet()
-
-  const { totalVotingWeight } = useVotingModule(coreAddress, {
-    fetchMembership: true,
-  })
-  if (totalVotingWeight === undefined) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const proposal = useProposal()
 
@@ -53,6 +44,19 @@ export const useWalletVoteInfo = (): WalletVoteInfo<Vote> => {
     )?.power ?? '0'
   )
 
+  const totalVotingPowerWhenProposalCreated = Number(
+    useRecoilValue(
+      CwCoreV0_2_0Selectors.totalPowerAtHeightSelector({
+        contractAddress: coreAddress,
+        params: [
+          {
+            height: proposal.start_height,
+          },
+        ],
+      })
+    ).power
+  )
+
   return {
     vote: walletVote,
     // If wallet could vote when this was open.
@@ -64,6 +68,9 @@ export const useWalletVoteInfo = (): WalletVoteInfo<Vote> => {
       (proposal.allow_revoting || !walletVote) &&
       walletVotingPowerWhenProposalCreated > 0,
     votingPowerPercent:
-      (walletVotingPowerWhenProposalCreated / totalVotingWeight) * 100,
+      (totalVotingPowerWhenProposalCreated === 0
+        ? 0
+        : walletVotingPowerWhenProposalCreated /
+          totalVotingPowerWhenProposalCreated) * 100,
   }
 }
