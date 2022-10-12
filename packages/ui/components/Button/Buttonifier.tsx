@@ -7,7 +7,13 @@ const defaultVariant = 'primary'
 const defaultSize = 'default'
 
 export interface ButtonifierProps {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'underline' | 'none'
+  variant?:
+    | 'primary'
+    | 'primary_outline'
+    | 'secondary'
+    | 'ghost'
+    | 'underline'
+    | 'none'
   size?: 'sm' | 'lg' | 'default' | 'none'
   loading?: boolean
   contentContainerClassName?: string
@@ -66,6 +72,16 @@ export const getButtonifiedClassNames = ({
         !disabledOrLoading,
       // Disabled
       'text-text-button-disabled bg-background-button-disabled':
+        disabledOrLoading,
+    },
+    // Primary outline variant
+    variant === 'primary_outline' && {
+      'ring-2 ring-inset': true,
+      // Default
+      'text-background-button hover:text-text-button-primary active:text-text-button-primary hover:bg-background-button-hover active:bg-background-button-pressed hover:ring-0 active:ring-0 ring-background-button':
+        !disabledOrLoading,
+      // Disabled
+      'text-background-button-disabled ring-background-button-disabled':
         disabledOrLoading,
     },
     // Secondary variant

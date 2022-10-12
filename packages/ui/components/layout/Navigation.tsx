@@ -274,6 +274,7 @@ export const Navigation = ({
               contentContainerClassName="justify-center"
               href="/dao/create"
               size="lg"
+              variant="primary_outline"
             >
               {t('button.createADAO')}
             </ButtonLink>

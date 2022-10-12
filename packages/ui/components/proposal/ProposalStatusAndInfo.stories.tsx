@@ -1,6 +1,6 @@
 import {
   AccountCircleOutlined,
-  CancelOutlined,
+  Cancel,
   HourglassTopRounded,
   Key,
   RotateRightOutlined,
@@ -93,8 +93,7 @@ Close.args = {
   ...Default.args,
   action: {
     label: 'Close',
-    Icon: CancelOutlined,
-    description: 'Proposal deposit will be refunded once closed.',
+    Icon: Cancel,
     loading: false,
     doAction: () => alert('close'),
   },

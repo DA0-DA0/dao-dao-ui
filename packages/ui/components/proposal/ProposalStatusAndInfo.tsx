@@ -16,7 +16,6 @@ export interface ProposalStatusAndInfoProps {
   action?: {
     label: string
     Icon: ComponentType<{ className: string }>
-    description?: string
     loading: boolean
     doAction: () => void
   }
@@ -67,21 +66,15 @@ export const ProposalStatusAndInfo = ({
       </div>
 
       {action && (
-        <div className={clsx('space-y-2', inline ? 'p-6' : 'pt-8')}>
-          {action.description && (
-            <p className="secondary-text">{action.description}</p>
-          )}
-
-          <Button
-            center
-            className="w-full"
-            loading={action.loading}
-            onClick={action.doAction}
-            size="lg"
-          >
-            <action.Icon className="!w-5 !h-5" /> {action.label}
-          </Button>
-        </div>
+        <Button
+          center
+          className={clsx('w-full', inline ? 'm-6' : 'mt-8')}
+          loading={action.loading}
+          onClick={action.doAction}
+          size="lg"
+        >
+          <action.Icon className="!w-5 !h-5" /> {action.label}
+        </Button>
       )}
     </div>
   )

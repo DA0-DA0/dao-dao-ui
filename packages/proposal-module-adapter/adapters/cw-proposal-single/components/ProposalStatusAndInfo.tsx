@@ -198,6 +198,7 @@ export const ProposalStatusAndInfo = ({
     turnoutYesPercent,
   } = useVotesInfo()
 
+  // TODO: i18n
   const status =
     proposal.status === Status.Open
       ? thresholdReached && (!quorum || quorumReached)
@@ -211,7 +212,14 @@ export const ProposalStatusAndInfo = ({
           turnoutPercent
         )} of all votes were cast, and ${formatPercentOf100(
           turnoutYesPercent
-        )} of them were 'Yes'.`
+        )} of them were 'Yes'.${
+          // Add sentence about closing to receive deposit back if it needs to
+          // be closed and will refund.
+          proposal.status === Status.Rejected &&
+          depositInfo?.refund_policy === DepositRefundPolicy.Always
+            ? ` ${t('info.proposalDepositWillBeRefunded')}`
+            : ''
+        }`
 
   const executeProposal = (
     proposalModule.version === ContractVersion.V0_1_0
@@ -287,10 +295,6 @@ export const ProposalStatusAndInfo = ({
               Icon: CancelOutlined,
               loading: actionLoading,
               doAction: onClose,
-              description:
-                depositInfo?.refund_policy === DepositRefundPolicy.Always
-                  ? t('info.proposalDepositWillBeRefunded')
-                  : undefined,
             }
           : undefined
       }
