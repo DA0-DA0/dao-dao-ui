@@ -16,8 +16,8 @@ export const DaoMemberCard = ({
   const { t } = useTranslation()
 
   return (
-    <div className="rounded-md border border-border-primary">
-      <div className="flex flex-col items-center px-4 pt-10 pb-8 border-b border-border-interactive-disabled">
+    <div className="flex flex-col justify-between rounded-md border border-border-primary">
+      <div className="flex flex-col items-center px-4 pt-10 pb-8">
         {/* Image */}
         <ProfileImage
           imageUrl={profile.loading ? undefined : profile.data.imageUrl}
@@ -48,7 +48,7 @@ export const DaoMemberCard = ({
         </div>
       </div>
 
-      <div className="flex flex-row gap-4 justify-between items-center p-4">
+      <div className="flex flex-row gap-4 justify-between items-center p-4 border-t border-border-interactive-disabled">
         {/* Voting power */}
         <p className="secondary-text">{t('title.votingPower')}</p>
         <p className="font-mono symbol-small-body-text">
