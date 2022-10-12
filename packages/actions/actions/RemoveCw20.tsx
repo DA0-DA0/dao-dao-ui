@@ -9,7 +9,6 @@ import {
 } from 'recoil'
 
 import { Cw20BaseSelectors, CwCoreV1Selectors } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
 import {
   Action,
   ActionComponent,
@@ -18,6 +17,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
 import { RemoveCw20Emoji } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 

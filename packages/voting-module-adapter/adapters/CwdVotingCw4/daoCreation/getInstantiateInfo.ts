@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer'
 
-import { InstantiateMsg, Member } from '@dao-dao/state/clients/cw4-voting'
 import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
+import { InstantiateMsg, Member } from '@dao-dao/tstypes/contracts/CwdVotingCw4'
 import { CW4GROUP_CODE_ID, CW4VOTING_CODE_ID } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 

@@ -26,6 +26,7 @@ export const useStakingInfo = ({
   const stakingContractAddress = useRecoilValue(
     CwdVotingCw20StakedSelectors.stakingContractSelector({
       contractAddress: votingModuleAddress,
+      params: [],
     })
   )
 
@@ -33,6 +34,7 @@ export const useStakingInfo = ({
     useRecoilValue(
       Cw20StakeSelectors.getConfigSelector({
         contractAddress: stakingContractAddress,
+        params: [],
       })
     ).unstaking_duration ?? undefined
 
@@ -93,6 +95,7 @@ export const useStakingInfo = ({
     fetchTotalStakedValue
       ? Cw20StakeSelectors.totalValueSelector({
           contractAddress: stakingContractAddress,
+          params: [],
         })
       : constSelector(undefined)
   )?.total

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/cw20-base'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { LogoNoBorder } from '../Logo'

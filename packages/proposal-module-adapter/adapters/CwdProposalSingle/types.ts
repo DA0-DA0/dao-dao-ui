@@ -7,7 +7,7 @@ import {
   CosmosMsgFor_Empty,
   DepositRefundPolicy,
 } from '@dao-dao/tstypes/contracts/common'
-import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/cw20-base'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
 
 export interface NewProposalForm {
   title: string

@@ -1,4 +1,4 @@
-import { selectorFamily } from 'recoil'
+import { RecoilValueReadOnly, selectorFamily } from 'recoil'
 
 import { contractVersionSelector } from '@dao-dao/state'
 import { ContractVersion } from '@dao-dao/tstypes'
@@ -67,7 +67,11 @@ export const getVoteSelector = selectorFamily<
           ? getVoteV1Selector
           : getVoteV2Selector
 
-      return get(selector(params))
+      return get(
+        selector(params) as
+          | RecoilValueReadOnly<GetVoteV1Response>
+          | RecoilValueReadOnly<GetVoteV2Response>
+      )
     },
 })
 
@@ -95,7 +99,11 @@ export const listVotesSelector = selectorFamily<
           ? listVotesV1Selector
           : listVotesV2Selector
 
-      return get(selector(params))
+      return get(
+        selector(params) as
+          | RecoilValueReadOnly<ListVotesV1Response>
+          | RecoilValueReadOnly<ListVotesV2Response>
+      )
     },
 })
 
@@ -121,7 +129,11 @@ export const proposalSelector = selectorFamily<
           ? proposalV1Selector
           : proposalV2Selector
 
-      return get(selector(params))
+      return get(
+        selector(params) as
+          | RecoilValueReadOnly<ProposalV1Response>
+          | RecoilValueReadOnly<ProposalV2Response>
+      )
     },
 })
 
@@ -141,7 +153,11 @@ export const configSelector = selectorFamily<
           ? configV1Selector
           : configV2Selector
 
-      return get(selector(params))
+      return get(
+        selector(params) as
+          | RecoilValueReadOnly<ConfigV1Response>
+          | RecoilValueReadOnly<ConfigV2Response>
+      )
     },
 })
 
@@ -168,7 +184,11 @@ export const reverseProposalsSelector = selectorFamily<
           ? reverseProposalsV1Selector
           : reverseProposalsV2Selector
 
-      return get(selector(params))
+      return get(
+        selector(params) as
+          | RecoilValueReadOnly<ReverseProposalsV1Response>
+          | RecoilValueReadOnly<ReverseProposalsV2Response>
+      )
     },
 })
 
@@ -188,7 +208,11 @@ export const proposalCountSelector = selectorFamily<
           ? proposalCountV1Selector
           : proposalCountV2Selector
 
-      return get(selector(params))
+      return get(
+        selector(params) as
+          | RecoilValueReadOnly<ProposalCountV1Response>
+          | RecoilValueReadOnly<ProposalCountV2Response>
+      )
     },
 })
 
@@ -215,6 +239,10 @@ export const listAllProposalsSelector = selectorFamily<
           ? listAllProposalsV1Selector
           : listAllProposalsV2Selector
 
-      return get(selector(params))
+      return get(
+        selector(params) as
+          | RecoilValueReadOnly<ListProposalsV1Response>
+          | RecoilValueReadOnly<ListProposalsV2Response>
+      )
     },
 })

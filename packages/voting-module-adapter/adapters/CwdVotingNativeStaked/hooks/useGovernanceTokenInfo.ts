@@ -11,7 +11,7 @@ import {
 import {
   MarketingInfoResponse,
   TokenInfoResponse,
-} from '@dao-dao/state/clients/cw20-base'
+} from '@dao-dao/tstypes/contracts/Cw20Base'
 import {
   nativeTokenDecimals,
   nativeTokenLabel,

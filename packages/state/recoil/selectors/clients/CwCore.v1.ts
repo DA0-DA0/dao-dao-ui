@@ -1,6 +1,6 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/cw20-base'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
 import {
   AdminResponse,
   ConfigResponse,
@@ -220,6 +220,7 @@ export const allCw20TokenListSelector = selectorFamily<
           ? get(
               CwdVotingCw20StakedSelectors.tokenContractSelector({
                 contractAddress: votingModuleAddress,
+                params: [],
               })
             )
           : undefined
@@ -359,6 +360,7 @@ export const allCw20BalancesSelector = selectorFamily<
         ? get(
             CwdVotingCw20StakedSelectors.tokenContractSelector({
               contractAddress: votingModuleAddress,
+              params: [],
             })
           )
         : undefined

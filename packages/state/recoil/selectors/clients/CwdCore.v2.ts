@@ -1,5 +1,6 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
 import {
   ActiveProposalModulesResponse,
   AdminNominationResponse,
@@ -26,7 +27,6 @@ import {
 } from '@dao-dao/voting-module-adapter'
 
 import { Cw20BaseSelectors, CwdVotingCw20StakedSelectors } from '.'
-import { TokenInfoResponse } from '../../../clients/Cw20Base'
 import {
   CwdCoreV2Client,
   CwdCoreV2QueryClient,
@@ -367,6 +367,7 @@ export const allCw20TokenListSelector = selectorFamily<
           ? get(
               CwdVotingCw20StakedSelectors.tokenContractSelector({
                 contractAddress: votingModuleAddress,
+                params: [],
               })
             )
           : undefined
@@ -440,6 +441,7 @@ export const allCw20BalancesSelector = selectorFamily<
         ? get(
             CwdVotingCw20StakedSelectors.tokenContractSelector({
               contractAddress: votingModuleAddress,
+              params: [],
             })
           )
         : undefined

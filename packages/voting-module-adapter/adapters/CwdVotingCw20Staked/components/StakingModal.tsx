@@ -83,6 +83,7 @@ const InnerStakingModal = ({
   const totalValue = useRecoilValue(
     Cw20StakeSelectors.totalValueSelector({
       contractAddress: stakingContractAddress,
+      params: [],
     })
   )
 

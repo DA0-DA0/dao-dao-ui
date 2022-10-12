@@ -9,7 +9,6 @@ import {
 } from 'recoil'
 
 import { Cw721BaseSelectors, CwCoreV1Selectors } from '@dao-dao/state'
-import { ContractInfoResponse } from '@dao-dao/state/clients/cw721-base'
 import {
   Action,
   ActionComponent,
@@ -18,6 +17,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+import { ContractInfoResponse } from '@dao-dao/tstypes/contracts/Cw721Base'
 import { RemoveCw721Emoji } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 

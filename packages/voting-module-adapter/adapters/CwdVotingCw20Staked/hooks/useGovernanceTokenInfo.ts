@@ -24,12 +24,14 @@ export const useGovernanceTokenInfo = ({
   const stakingContractAddress = useRecoilValue(
     CwdVotingCw20StakedSelectors.stakingContractSelector({
       contractAddress: votingModuleAddress,
+      params: [],
     })
   )
 
   const governanceTokenAddress = useRecoilValue(
     CwdVotingCw20StakedSelectors.tokenContractSelector({
       contractAddress: votingModuleAddress,
+      params: [],
     })
   )
   const governanceTokenInfo = useRecoilValue(

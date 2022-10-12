@@ -11,7 +11,6 @@ import {
   AllowanceResponse,
   BalanceResponse,
   DownloadLogoResponse,
-  Expiration,
   MarketingInfoResponse,
   MinterResponse,
   TokenInfoResponse,

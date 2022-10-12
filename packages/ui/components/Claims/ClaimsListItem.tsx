@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Duration } from '@dao-dao/tstypes/contracts/common'
-import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/cw20-base'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
 import { Claim } from '@dao-dao/tstypes/contracts/stake-cw20'
 import {
   claimAvailable,
