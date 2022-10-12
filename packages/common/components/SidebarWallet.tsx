@@ -26,6 +26,12 @@ export const SidebarWallet = () => {
           tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
         />
       }
+      forceFallback={
+        // Prevent flickering to connect wallet button when no longer suspended
+        // but cosmodal hasn't started its first autoconnection attempt yet.
+        status === WalletConnectionStatus.Initializing ||
+        status === WalletConnectionStatus.AttemptingAutoConnection
+      }
     >
       {status === WalletConnectionStatus.Connecting ||
       (connected && connectedWallet) ? (
