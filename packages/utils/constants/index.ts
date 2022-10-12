@@ -1,3 +1,5 @@
+import { CodeIdConfigs } from './codeIdConfigs'
+
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
 
 export const SITE_URL =
@@ -49,43 +51,15 @@ export const FEATURED_DAOS_URL = process.env
 
 export const CI = process.env.CI === 'true'
 
-// Contract Code IDs
-export const CW20_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_CW20_CODE_ID as string,
-  10
-)
-export const CW4GROUP_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_CW4GROUP_CODE_ID as string,
-  10
-)
-export const CWCORE_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_CWCORE_CODE_ID as string,
-  10
-)
+// Code IDs
+if (!(CHAIN_ID in CodeIdConfigs)) {
+  console.error(`Chain ID '${CHAIN_ID}' not found in Code ID Configs`)
+}
+export const CODE_ID_CONFIG = CodeIdConfigs[CHAIN_ID]!
 
 export const V1_FACTORY_CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_V1_FACTORY_CONTRACT_ADDRESS as string
 
-export const CWPREPROPOSESINGLE_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_CWPREPROPOSESINGLE_CODE_ID as string,
-  10
-)
-export const CWPROPOSALSINGLE_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_CWPROPOSALSINGLE_CODE_ID as string,
-  10
-)
-export const CW4VOTING_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_CW4VOTING_CODE_ID as string,
-  10
-)
-export const CW20STAKEDBALANCEVOTING_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_CW20STAKEDBALANCEVOTING_CODE_ID as string,
-  10
-)
-export const STAKECW20_CODE_ID = parseInt(
-  process.env.NEXT_PUBLIC_STAKECW20_CODE_ID as string,
-  10
-)
 // Contract Names
 export const CWCOREV1_CONTRACT_NAME = process.env
   .NEXT_PUBLIC_CWCOREV1_CONTRACT_NAME as string

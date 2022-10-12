@@ -6,12 +6,10 @@ import {
   InstantiateMsg,
 } from '@dao-dao/tstypes/contracts/CwdVotingCw20Staked'
 import {
-  CW20STAKEDBALANCEVOTING_CODE_ID,
-  CW20_CODE_ID,
   NEW_DAO_CW20_DECIMALS,
-  STAKECW20_CODE_ID,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
+  CODE_ID_CONFIG,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
@@ -58,14 +56,14 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 
     tokenInfo = {
       new: {
-        code_id: CW20_CODE_ID,
+        code_id: CODE_ID_CONFIG.Cw20Base,
         decimals: NEW_DAO_CW20_DECIMALS,
         initial_balances: microInitialBalances,
         initial_dao_balance: microInitialTreasuryBalance,
         label: name,
         marketing: imageUrl ? { logo: { url: imageUrl } } : null,
         name,
-        staking_code_id: STAKECW20_CODE_ID,
+        staking_code_id: CODE_ID_CONFIG.Cw20Stake,
         symbol,
         unstaking_duration:
           convertDurationWithUnitsToDuration(unstakingDuration),
@@ -81,7 +79,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         address: existingGovernanceTokenAddress,
         staking_contract: {
           new: {
-            staking_code_id: STAKECW20_CODE_ID,
+            staking_code_id: CODE_ID_CONFIG.Cw20Stake,
             unstaking_duration:
               convertDurationWithUnitsToDuration(unstakingDuration),
           },
@@ -99,7 +97,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 
   return {
     admin: { core_module: {} },
-    code_id: CW20STAKEDBALANCEVOTING_CODE_ID,
+    code_id: CODE_ID_CONFIG.CwdVotingCw20Staked,
     label: `DAO_${daoName}_${CwdVotingCw20StakedAdapter.id}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }

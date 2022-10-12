@@ -38,7 +38,6 @@ import {
   useThemeContext,
 } from '@dao-dao/ui'
 import {
-  CWCORE_CODE_ID,
   NATIVE_DENOM,
   V1_FACTORY_CONTRACT_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
@@ -48,6 +47,7 @@ import {
   nativeTokenLabel,
   processError,
   validateUrl,
+  CODE_ID_CONFIG,
 } from '@dao-dao/utils'
 import {
   CwdVotingCw20StakedAdapter,
@@ -262,7 +262,7 @@ export const CreateDaoForm = ({
     const cwCoreInstantiateMsg = generateInstantiateMsg()
 
     const { logs } = await instantiateWithFactory({
-      codeId: CWCORE_CODE_ID,
+      codeId: CODE_ID_CONFIG.CwdCore,
       instantiateMsg: Buffer.from(
         JSON.stringify(cwCoreInstantiateMsg),
         'utf8'

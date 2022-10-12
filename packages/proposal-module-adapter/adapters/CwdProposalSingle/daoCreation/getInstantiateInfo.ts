@@ -4,13 +4,12 @@ import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
 import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwdPreProposeSingle'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwdProposalSingle.v2'
 import {
-  CWPREPROPOSESINGLE_CODE_ID,
-  CWPROPOSALSINGLE_CODE_ID,
   NATIVE_DENOM,
   NEW_DAO_CW20_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
   nativeTokenDecimals,
+  CODE_ID_CONFIG,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked'
@@ -107,7 +106,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       ModuleMayPropose: {
         info: {
           admin: { core_module: {} },
-          code_id: CWPREPROPOSESINGLE_CODE_ID,
+          code_id: CODE_ID_CONFIG.CwdPreProposeSingle,
           label: `DAO_${name}_pre-propose-${CwdProposalSingleAdapter.id}`,
           msg: Buffer.from(
             JSON.stringify(preProposeSingleInstantiateMsg),
@@ -135,7 +134,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 
   return {
     admin: { core_module: {} },
-    code_id: CWPROPOSALSINGLE_CODE_ID,
+    code_id: CODE_ID_CONFIG.CwdProposalSingle,
     label: `DAO_${name}_${CwdProposalSingleAdapter.id}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }
