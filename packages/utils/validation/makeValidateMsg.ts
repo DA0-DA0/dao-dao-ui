@@ -1,14 +1,24 @@
 import Ajv, { ErrorObject } from 'ajv'
 import { TFunction } from 'next-i18next'
 
-export class InvalidMessageError extends Error {
+export class AjvInvalidMessageError extends Error {
   public errors: ErrorObject<string, Record<string, any>, unknown>[]
 
   constructor(
     errors: ErrorObject<string, Record<string, any>, unknown>[],
     t?: TFunction
   ) {
-    super(t?.('error.invalidMessage') ?? 'Invalid message.')
+    super(
+      (t?.('error.invalidMessage') ?? 'Invalid message') +
+        ': ' +
+        errors
+          .map(
+            ({ instancePath, message }) =>
+              instancePath && message && `${instancePath} ${message}`
+          )
+          .filter(Boolean)
+          .join(', ')
+    )
     this.name = 'InvalidMessageError'
     this.errors = errors
   }
@@ -23,7 +33,7 @@ export const makeValidateMsg = <T>(
 
   return (msg: T) => {
     if (!validate(msg)) {
-      throw new InvalidMessageError(validate.errors ?? [], t)
+      throw new AjvInvalidMessageError(validate.errors ?? [], t)
     }
   }
 }

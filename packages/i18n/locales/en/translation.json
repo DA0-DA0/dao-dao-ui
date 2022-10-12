@@ -171,7 +171,7 @@
     "invalidCosmosMessage": "Invalid <2>Cosmos message</2>",
     "invalidDuplicateFound": "Invalid. Duplicate found in other list.",
     "invalidExecuteMessage": "Invalid execute message",
-    "invalidMessage": "Invalid message.",
+    "invalidMessage": "Invalid message",
     "loadingData": "Failed to load data.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
     "nameCannotBeEmpty": "Name cannot be empty.",
