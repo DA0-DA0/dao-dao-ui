@@ -16,7 +16,7 @@ export default {
       data: {
         depositRequired: true,
         depositInfo: {
-          amount: 1,
+          amount: Math.pow(10, 6),
           type: 'native',
           cw20Address: '',
           cw20Decimals: 6,

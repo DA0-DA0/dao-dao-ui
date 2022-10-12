@@ -14,6 +14,7 @@ export interface SegmentedControlsProps<T extends unknown> {
   onSelect: (value: T) => void
   loading?: T
   className?: string
+  disabled?: boolean
 }
 
 export const SegmentedControls = <T extends unknown>({
@@ -22,6 +23,7 @@ export const SegmentedControls = <T extends unknown>({
   onSelect,
   loading,
   className,
+  disabled,
 }: SegmentedControlsProps<T>) => {
   const [hovering, setHovering] = useState<number>()
 
@@ -29,6 +31,7 @@ export const SegmentedControls = <T extends unknown>({
     <div
       className={clsx(
         'group grid grid-flow-col auto-cols-fr bg-background-tertiary rounded-md',
+        disabled && 'pointer-events-none',
         className
       )}
       onMouseLeave={() => setHovering(undefined)}

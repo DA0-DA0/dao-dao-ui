@@ -181,6 +181,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
               {t('form.refundPolicyTitle')}
             </p>
             <SegmentedControls<DepositRefundPolicy>
+              disabled={!isCreating}
               onSelect={(refundPolicy) =>
                 setValue(
                   fieldNamePrefix + 'depositInfo.refundPolicy',

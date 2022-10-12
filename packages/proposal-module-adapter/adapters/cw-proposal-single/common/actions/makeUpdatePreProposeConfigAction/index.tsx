@@ -90,7 +90,7 @@ const makeUseDefaults: AsProposalModuleMaker<
             refundPolicy: configDepositInfo.refund_policy,
           }
         : {
-            amount: 1,
+            amount: Math.pow(10, NATIVE_DECIMALS),
             type: 'native',
             cw20Address:
               governanceTokenAddress &&
@@ -231,7 +231,7 @@ const makeUseDecodedCosmosMsg: AsProposalModuleMaker<
           data: {
             depositRequired: false,
             depositInfo: {
-              amount: 1,
+              amount: Math.pow(10, NATIVE_DECIMALS),
               type: 'native',
               cw20Address:
                 governanceTokenAddress &&
@@ -303,7 +303,7 @@ export const Component: ActionComponent = (props) => {
     if (tokenInfoLoadable.state === 'hasValue') {
       setValue(
         fieldNamePrefix + 'depositInfo.cw20Decimals',
-        tokenInfoLoadable.contents
+        tokenInfoLoadable.contents?.decimals ?? 0
       )
     }
 

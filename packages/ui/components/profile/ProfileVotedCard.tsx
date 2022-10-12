@@ -1,6 +1,8 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { formatPercentOf100 } from '@dao-dao/utils'
+
 import { TooltipIcon } from '../TooltipIcon'
 import { MembershipPill } from './MembershipPill'
 import {
@@ -45,7 +47,9 @@ export const ProfileVotedCard = ({
           />
         </div>
 
-        <p className="font-mono text-text-primary">{votingPower}%</p>
+        <p className="font-mono text-text-primary">
+          {formatPercentOf100(votingPower)}
+        </p>
       </div>
 
       <div className="flex flex-row justify-between items-center mt-3 secondary-text">

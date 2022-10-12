@@ -207,20 +207,13 @@ export const NewProposal = ({
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
       async (newProposalData: NewProposalData) => {
-        if (
-          !connected ||
-          blockHeight === undefined ||
-          // If required deposit, ensure the allowance and unstaked balance
-          // data have loaded.
-          (requiredProposalDeposit && !cw20DepositTokenAllowanceResponse)
-        ) {
+        if (!connected || blockHeight === undefined) {
           throw new Error(t('error.loadingData'))
         }
 
         setLoading(true)
 
         // Increase CW20 deposit token allowance if necessary.
-        // Typecheck for TS; should've already been verified above.
         if (requiredProposalDeposit && cw20DepositTokenAllowanceResponse) {
           const remainingAllowanceNeeded =
             requiredProposalDeposit -
