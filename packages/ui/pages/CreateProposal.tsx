@@ -51,7 +51,7 @@ export const CreateProposal = ({
           ],
           current: t('title.createProposal'),
         }}
-        className="mx-auto max-w-6xl"
+        className="mx-auto max-w-5xl"
         rightNode={
           <Dropdown
             containerClassName="hidden lg:block"
@@ -62,7 +62,7 @@ export const CreateProposal = ({
         }
       />
 
-      <div className="flex flex-col gap-6 items-stretch mx-auto max-w-6xl">
+      <div className="flex flex-col gap-6 items-stretch mx-auto max-w-5xl">
         {!isMember && (
           <p className="text-text-interactive-error caption-text">
             {t('error.mustBeMemberToCreateProposal')}

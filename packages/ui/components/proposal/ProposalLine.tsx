@@ -34,15 +34,11 @@ export const ProposalLine = ({
   href,
   className,
 }: ProposalLineProps) => {
-  const msSinceUpdated = new Date().getTime() - lastUpdated.getTime()
-
   const contents = (
     <Link href={href}>
       <a
         className={clsx(
           'block bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md transition cursor-pointer',
-          // If updated in the last day, highlight.
-          msSinceUpdated < 24 * 60 * 60 * 1000 && 'bg-purple-300/20',
           className
         )}
       >
@@ -102,6 +98,7 @@ export const ProposalLine = ({
     </Link>
   )
 
+  // TODO: Figure out if we want this
   return proposalModuleVersion === ContractVersion.V0_1_0 ? (
     contents
   ) : (

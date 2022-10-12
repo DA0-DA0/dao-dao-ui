@@ -462,13 +462,13 @@ export const CreateDaoForm = ({
             name.trim() ||
             (parentDao ? t('title.newSubDao') : t('title.newDao')),
         }}
-        className="mx-auto max-w-6xl"
+        className="mx-auto max-w-4xl"
         gradient
       />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
       <form
-        className="flex relative z-[1] flex-col items-stretch mx-auto max-w-6xl"
+        className="flex relative z-[1] flex-col items-stretch mx-auto max-w-4xl"
         onSubmit={formOnSubmit}
       >
         {/* Show image selector or DAO header depending on page. */}

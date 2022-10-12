@@ -81,12 +81,12 @@ export const DaoHome = ({
           ],
           current: daoInfo.name,
         }}
-        className="mx-auto max-w-6xl"
+        className="mx-auto max-w-5xl"
         gradient
         rightNode={<PinToggle onPin={onPin} pinned={pinned} />}
       />
 
-      <div className="flex relative z-[1] flex-col items-stretch mx-auto max-w-6xl">
+      <div className="flex relative z-[1] flex-col items-stretch mx-auto max-w-5xl">
         <DaoHeader
           coreAddress={daoInfo.coreAddress}
           description={daoInfo.description}

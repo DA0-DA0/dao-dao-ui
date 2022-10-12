@@ -18,9 +18,8 @@ import { useTranslation } from 'react-i18next'
 import { NavigationProps } from '@dao-dao/tstypes/ui/Navigation'
 import { usePlatform } from '@dao-dao/utils'
 
-import { ButtonLink } from '../Button'
 import { DaoDropdown } from '../dao'
-import { IconButton, IconButtonLink } from '../IconButton'
+import { IconButton } from '../IconButton'
 import { Loader } from '../Loader'
 import { Logo } from '../Logo'
 import { PricePercentChange } from '../PricePercentChange'
@@ -215,6 +214,13 @@ export const Navigation = ({
           )}
 
           <Row
+            Icon={Add}
+            compact={compact}
+            label={t('button.create')}
+            localHref="/dao/create"
+          />
+
+          <Row
             Icon={PushPinOutlined}
             compact={compact}
             defaultExpanded
@@ -258,27 +264,6 @@ export const Navigation = ({
               </div>
             )}
           </Row>
-
-          {compact ? (
-            <Tooltip title={t('button.createADAO')}>
-              <IconButtonLink
-                Icon={Add}
-                className="mx-6 mt-3"
-                href="/dao/create"
-                variant="primary"
-              />
-            </Tooltip>
-          ) : (
-            <ButtonLink
-              className="mt-8 w-full"
-              contentContainerClassName="justify-center"
-              href="/dao/create"
-              size="lg"
-              variant="primary_outline"
-            >
-              {t('button.createADAO')}
-            </ButtonLink>
-          )}
         </div>
 
         <div className={clsx('flex flex-col grow gap-2 justify-end mt-8')}>

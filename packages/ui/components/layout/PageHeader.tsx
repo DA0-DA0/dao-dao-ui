@@ -63,9 +63,7 @@ export const PageHeader = ({
   }, [gradient])
 
   return (
-    <div
-      className={clsx('relative', PAGE_HEADER_HEIGHT_CLASS_NAMES, className)}
-    >
+    <div className="relative">
       {gradient && (
         <TopGradient
           style={{
@@ -75,38 +73,42 @@ export const PageHeader = ({
       )}
 
       <div
-        className={clsx(
-          'flex relative flex-row justify-center items-center w-full h-full',
-          !forceCenter && 'sm:justify-start'
-        )}
+        className={clsx('relative', PAGE_HEADER_HEIGHT_CLASS_NAMES, className)}
       >
-        {title ? (
-          <p className="leading-[5rem] header-text">{title}</p>
-        ) : breadcrumbs ? (
-          <Breadcrumbs {...breadcrumbs} />
-        ) : (
-          centerNode
+        <div
+          className={clsx(
+            'flex relative flex-row justify-center items-center w-full h-full',
+            !forceCenter && 'sm:justify-start'
+          )}
+        >
+          {title ? (
+            <p className="leading-[5rem] header-text">{title}</p>
+          ) : breadcrumbs ? (
+            <Breadcrumbs {...breadcrumbs} />
+          ) : (
+            centerNode
+          )}
+        </div>
+
+        {/* Place left and right components here below the center component so they take higher touch precedence over the Breadcrumbs container. */}
+        <div className="flex absolute top-0 bottom-0 -left-2 flex-col justify-center">
+          <IconButton
+            Icon={Menu}
+            className="!outline-none sm:hidden"
+            onClick={toggle}
+            variant="ghost"
+          />
+        </div>
+
+        <div className="flex absolute top-0 right-0 bottom-0 flex-col justify-center">
+          {rightNode}
+        </div>
+
+        {/* Use div for border so we can set absolute positioning and padding. */}
+        {!noBorder && (
+          <div className="absolute right-0 bottom-0 left-0 h-[1px] bg-border-secondary"></div>
         )}
       </div>
-
-      {/* Place left and right components here below the center component so they take higher touch precedence over the Breadcrumbs container. */}
-      <div className="flex absolute top-0 bottom-0 -left-2 flex-col justify-center">
-        <IconButton
-          Icon={Menu}
-          className="!outline-none sm:hidden"
-          onClick={toggle}
-          variant="ghost"
-        />
-      </div>
-
-      <div className="flex absolute top-0 right-0 bottom-0 flex-col justify-center">
-        {rightNode}
-      </div>
-
-      {/* Use div for border so we can set absolute positioning and padding. */}
-      {!noBorder && (
-        <div className="absolute right-0 bottom-0 left-0 h-[1px] bg-border-secondary"></div>
-      )}
     </div>
   )
 }

@@ -150,16 +150,11 @@ export const ButtonifiedChildren = ({
         }
       )}
     >
-      <div
-        className={clsx(
-          'aspect-square inline-block mx-auto h-full animate-spin-medium',
-          {
-            invisible: !loading,
-          }
-        )}
-      >
-        <Logo invert={variant === 'primary'} size="100%" />
-      </div>
+      {loading && (
+        <div className="aspect-square inline-block mx-auto h-full animate-spin-medium">
+          <Logo invert={variant === 'primary'} size="100%" />
+        </div>
+      )}
     </div>
     <div
       className={clsx(
