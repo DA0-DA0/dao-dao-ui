@@ -27,10 +27,7 @@ export const SubDaosTab = () => {
   const subDaoCardInfosLoadable = useRecoilValueLoadable(
     daoInfo.coreVersion === ContractVersion.V0_1_0
       ? constSelector([])
-      : subDaoCardInfosSelector({
-          coreAddress: daoInfo.coreAddress,
-          daoUrlPrefix: `/dao/`,
-        })
+      : subDaoCardInfosSelector(daoInfo.coreAddress)
   )
 
   //! Loadable errors.
