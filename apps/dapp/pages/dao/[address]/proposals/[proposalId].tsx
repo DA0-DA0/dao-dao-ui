@@ -98,8 +98,13 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
   const onExecuteSuccess = useCallback(async () => {
     refreshProposalAndAll()
     toast.success(t('success.proposalExecuted'))
-    // Manually revalidate DAO static props.
-    await fetch(`/api/revalidate?d=${coreAddress}&p=${proposalInfo.id}`)
+
+    // Manually revalidate DAO static props. Don't await this promise since we
+    // just want to tell the server to do it, and we're about to reload anyway.
+    fetch(`/api/revalidate?d=${coreAddress}&p=${proposalInfo.id}`)
+
+    // Refresh entire app since any DAO config may have changed.
+    window.location.reload()
   }, [coreAddress, proposalInfo.id, refreshProposalAndAll, t])
 
   const onCloseSuccess = useCallback(() => {

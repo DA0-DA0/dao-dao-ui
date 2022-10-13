@@ -248,6 +248,7 @@ export const NewProposal = ({
                   options.proposalModule.address,
               })
 
+              // TODO: Make this not flicker load by turning balances into cached loadables?
               // Allowances will not update until the next block has been added.
               setTimeout(refreshBalances, 6500)
             } catch (err) {
