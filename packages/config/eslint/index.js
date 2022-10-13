@@ -178,6 +178,12 @@ const eslintConfig = {
                 'emoji',
               ],
             },
+            'object-properties': {
+              exclude: [
+                // inline Number.toLocaleString, notation: 'compact'
+                'notation',
+              ],
+            },
             words: {
               exclude: [
                 // Defaults wrapped in whitespace.

@@ -7,6 +7,7 @@ import {
   DaoInfoBarLoader,
   DaoInfoBarProps,
   DaoInfoBar as StatelessDaoInfoBar,
+  Tooltip,
   useDaoInfoContext,
 } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
@@ -61,12 +62,34 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
           Icon: AccountBalance,
           label: t('title.daoTreasury'),
           value:
-            treasuryUsdcValueLoadable.state !== 'hasValue'
-              ? `... $USDC`
-              : t('format.token', {
-                  val: treasuryUsdcValueLoadable.contents,
-                  tokenSymbol: 'USDC',
-                }),
+            treasuryUsdcValueLoadable.state !== 'hasValue' ? (
+              `... $USDC`
+            ) : (
+              <Tooltip
+                title={t('format.token', {
+                  amount: treasuryUsdcValueLoadable.contents.toLocaleString(
+                    undefined,
+                    {
+                      maximumFractionDigits: 3,
+                    }
+                  ),
+                  symbol: 'USDC',
+                })}
+              >
+                <p>
+                  {t('format.token', {
+                    amount: treasuryUsdcValueLoadable.contents.toLocaleString(
+                      undefined,
+                      {
+                        notation: 'compact',
+                        maximumFractionDigits: 3,
+                      }
+                    ),
+                    symbol: 'USDC',
+                  })}
+                </p>
+              </Tooltip>
+            ),
         },
         // Voting module-specific items.
         ...votingModuleItems,

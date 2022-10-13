@@ -290,7 +290,7 @@
     "votingWeightPlaceholder": "Voting weight"
   },
   "format": {
-    "token": "{{val, number}} ${{tokenSymbol}}"
+    "token": "{{amount}} ${{symbol}}"
   },
   "info": {
     "aboutToUnstake": "You are about to unstake governance tokens.",

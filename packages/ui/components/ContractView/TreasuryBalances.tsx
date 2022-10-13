@@ -38,8 +38,10 @@ export const TreasuryBalances = ({
         <BalanceListItem>
           <span className="pb-4 header-text">
             {t('format.token', {
-              val: usdcValue,
-              tokenSymbol: 'USDC',
+              amount: usdcValue.toLocaleString(undefined, {
+                maximumFractionDigits: 3,
+              }),
+              symbol: 'USDC',
             })}
           </span>
         </BalanceListItem>

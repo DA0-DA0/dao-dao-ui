@@ -114,14 +114,25 @@ export const DaoCard = ({
           )}
         >
           <Governance className="w-3 h-4" />
-          <p>
-            {lazyData.loading
-              ? '...'
-              : t('format.token', {
-                  val: lazyData.data.tokenBalance,
-                  tokenSymbol: lazyData.data.tokenSymbol,
-                })}
-          </p>
+
+          <Tooltip
+            title={
+              lazyData.loading
+                ? undefined
+                : `${lazyData.data.tokenBalance.toLocaleString(undefined, {
+                    maximumFractionDigits: 3,
+                  })} $${lazyData.data.tokenSymbol}`
+            }
+          >
+            <p>
+              {lazyData.loading
+                ? '...'
+                : `${lazyData.data.tokenBalance.toLocaleString(undefined, {
+                    notation: 'compact',
+                    maximumFractionDigits: 3,
+                  })} $${lazyData.data.tokenSymbol}`}
+            </p>
+          </Tooltip>
         </div>
 
         <div

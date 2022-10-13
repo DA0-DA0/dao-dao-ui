@@ -41,23 +41,25 @@ export const ProfileCardNotMemberInfo = ({
         <p>{t('info.yourBalance')}</p>
         <div className="flex flex-col gap-1 items-end">
           <p
-            className={clsx('font-mono', {
+            className={clsx('font-mono text-right', {
               'text-text-interactive-disabled': unstakedTokenBalance === 0,
             })}
           >
             {unstakedTokenBalance.toLocaleString(undefined, {
+              notation: 'compact',
               maximumFractionDigits: tokenDecimals,
             })}{' '}
             ${tokenSymbol}
           </p>
 
           <p
-            className={clsx('font-mono', {
+            className={clsx('font-mono text-right', {
               'text-text-interactive-disabled': stakedTokenBalance === 0,
             })}
           >
             {t('info.tokensStaked', {
               amount: stakedTokenBalance.toLocaleString(undefined, {
+                notation: 'compact',
                 maximumFractionDigits: tokenDecimals,
               }),
               tokenSymbol,

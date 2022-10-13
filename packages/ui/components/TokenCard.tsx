@@ -193,8 +193,13 @@ export const TokenCard = ({
               </p>
               <p>
                 {t('format.token', {
-                  val: totalBalance * usdcUnitPrice,
-                  tokenSymbol: 'USDC',
+                  amount: (totalBalance * usdcUnitPrice).toLocaleString(
+                    undefined,
+                    {
+                      maximumFractionDigits: 3,
+                    }
+                  ),
+                  symbol: 'USDC',
                 })}
               </p>
             </div>
@@ -214,7 +219,12 @@ export const TokenCard = ({
                 </p>
                 <p>
                   {t('format.token', {
-                    val: unstakedBalance * usdcUnitPrice,
+                    amount: (unstakedBalance * usdcUnitPrice).toLocaleString(
+                      undefined,
+                      {
+                        maximumFractionDigits: 3,
+                      }
+                    ),
                     tokenSymbol: 'USDC',
                   })}
                 </p>
