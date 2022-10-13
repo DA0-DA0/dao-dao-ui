@@ -161,37 +161,38 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     return () => clearInterval(interval)
   }, [setRefreshBlockHeight])
 
-  //! Token prices
-  // Updates once per minute, so token price will also update once per minute.
-  const currentBlockHeightLoadable = useCachedLoadable(blockHeightSelector)
-  const blocksPerYearLoadable = useCachedLoadable(blocksPerYearSelector)
-  // Current native pool data and snapshot from ~24 hours ago.
-  const nativeUsdcPoolAndSnapshotQuery = usePoolAndSnapshotAtBlockHeight({
-    swapContractAddress: USDC_SWAP_ADDRESS,
-    blockHeight:
-      currentBlockHeightLoadable.state !== 'hasValue' ||
-      blocksPerYearLoadable.state !== 'hasValue'
-        ? 0
-        : currentBlockHeightLoadable.contents -
-          convertSecondsToBlocks(blocksPerYearLoadable.contents, 24 * 3600),
-  })
-  const nativeUsdcPoolAndSnapshot =
-    nativeUsdcPoolAndSnapshotQuery.data ??
-    nativeUsdcPoolAndSnapshotQuery.previousData
+  // TODO: Add real data back in when pools indexer works.
+  // //! Token prices
+  // // Updates once per minute, so token price will also update once per minute.
+  // const currentBlockHeightLoadable = useCachedLoadable(blockHeightSelector)
+  // const blocksPerYearLoadable = useCachedLoadable(blocksPerYearSelector)
+  // // Current native pool data and snapshot from ~24 hours ago.
+  // const nativeUsdcPoolAndSnapshotQuery = usePoolAndSnapshotAtBlockHeight({
+  //   swapContractAddress: USDC_SWAP_ADDRESS,
+  //   blockHeight:
+  //     currentBlockHeightLoadable.state !== 'hasValue' ||
+  //     blocksPerYearLoadable.state !== 'hasValue'
+  //       ? 0
+  //       : currentBlockHeightLoadable.contents -
+  //         convertSecondsToBlocks(blocksPerYearLoadable.contents, 24 * 3600),
+  // })
+  // const nativeUsdcPoolAndSnapshot =
+  //   nativeUsdcPoolAndSnapshotQuery.data ??
+  //   nativeUsdcPoolAndSnapshotQuery.previousData
 
-  const currentNativePrice = nativeUsdcPoolAndSnapshot
-    ? Number(
-        Number(nativeUsdcPoolAndSnapshot.current.token2Amount) /
-          Number(nativeUsdcPoolAndSnapshot.current.token1Amount)
-      )
-    : undefined
-  const yesterdayNativePrice =
-    nativeUsdcPoolAndSnapshot?.snapshots.nodes.length === 1
-      ? Number(
-          Number(nativeUsdcPoolAndSnapshot.snapshots.nodes[0].token2Amount) /
-            Number(nativeUsdcPoolAndSnapshot.snapshots.nodes[0].token1Amount)
-        )
-      : undefined
+  // const currentNativePrice = nativeUsdcPoolAndSnapshot
+  //   ? Number(
+  //       Number(nativeUsdcPoolAndSnapshot.current.token2Amount) /
+  //         Number(nativeUsdcPoolAndSnapshot.current.token1Amount)
+  //     )
+  //   : undefined
+  // const yesterdayNativePrice =
+  //   nativeUsdcPoolAndSnapshot?.snapshots.nodes.length === 1
+  //     ? Number(
+  //         Number(nativeUsdcPoolAndSnapshot.snapshots.nodes[0].token2Amount) /
+  //           Number(nativeUsdcPoolAndSnapshot.snapshots.nodes[0].token1Amount)
+  //       )
+  //     : undefined
 
   //! Pinned DAOs
   const pinnedDaoDropdownInfosLoadable = useCachedLoadable(
@@ -268,29 +269,33 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
                 data: inbox.proposalCount,
               },
           setCommandModalVisible: () => setCommandModalVisible(true),
-          tokenPrices:
-            currentNativePrice === undefined
-              ? { loading: true }
-              : {
-                  loading: false,
-                  data: [
-                    {
-                      label: nativeTokenLabel(NATIVE_DENOM),
-                      price: Number(
-                        currentNativePrice.toLocaleString(undefined, {
-                          maximumFractionDigits: 3,
-                        })
-                      ),
-                      priceDenom: 'USDC',
-                      change:
-                        yesterdayNativePrice !== undefined
-                          ? ((currentNativePrice - yesterdayNativePrice) /
-                              yesterdayNativePrice) *
-                            100
-                          : undefined,
-                    },
-                  ],
-                },
+          // TODO: Add real data back in when pools indexer works.
+          tokenPrices: {
+            loading: false,
+            data: [],
+          },
+          // currentNativePrice === undefined
+          //   ? { loading: true }
+          //   : {
+          //       loading: false,
+          //       data: [
+          //         {
+          //           label: nativeTokenLabel(NATIVE_DENOM),
+          //           price: Number(
+          //             currentNativePrice.toLocaleString(undefined, {
+          //               maximumFractionDigits: 3,
+          //             })
+          //           ),
+          //           priceDenom: 'USDC',
+          //           change:
+          //             yesterdayNativePrice !== undefined
+          //               ? ((currentNativePrice - yesterdayNativePrice) /
+          //                   yesterdayNativePrice) *
+          //                 100
+          //               : undefined,
+          //         },
+          //       ],
+          //     },
           version: '2.0',
           pinnedDaos: loadableToLoadingData(pinnedDaoDropdownInfosLoadable, []),
           compact,
