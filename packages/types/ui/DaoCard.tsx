@@ -17,7 +17,6 @@ export interface DaoCardInfo {
   className?: string
   showIsMember?: boolean
   parentDao?: DaoParentInfo
-  tokenDecimals: number
   tokenSymbol: string
 
   lazyData: LoadingData<DaoCardInfoLazyData>

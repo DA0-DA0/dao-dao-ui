@@ -544,48 +544,48 @@ export const CreateDaoForm = ({
                 : setPinned(createdDaoCoreAddress),
             showIsMember: false,
             parentDao,
+            tokenSymbol:
+              votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
+              cw20StakedBalanceVotingData
+                ? //! Display governance token supply if using governance tokens.
+                  cw20StakedBalanceVotingData.tokenType ===
+                  GovernanceTokenType.New
+                  ? cw20StakedBalanceVotingData.newInfo.symbol
+                  : // If using existing token but no token info loaded (should
+                  // be impossible), the tokenBalance below (in lazyData) will be set to
+                  // 0, so use NATIVE_DENOM here so this value is accurate.
+                  !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                  ? nativeTokenLabel(NATIVE_DENOM)
+                  : cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                      ?.symbol || t('info.token').toLocaleUpperCase()
+                : //! Otherwise display native token.
+                  nativeTokenLabel(NATIVE_DENOM),
             lazyData: {
               loading: false,
               data: {
                 // Does not matter, will not show.
                 isMember: false,
                 proposalCount: 0,
-                // Display governance token supply if using governance tokens.
-                ...(votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
-                cw20StakedBalanceVotingData
-                  ? {
-                      tokenBalance:
-                        cw20StakedBalanceVotingData.tokenType ===
-                        GovernanceTokenType.New
-                          ? cw20StakedBalanceVotingData.newInfo.initialSupply
-                          : // If using existing token but no token info loaded (should
-                          // be impossible), just display 0.
-                          !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                          ? 0
-                          : // If using existing token, convert supply from query using decimals.
-                            convertMicroDenomToDenomWithDecimals(
-                              cw20StakedBalanceVotingData
-                                .existingGovernanceTokenInfo.total_supply,
-                              cw20StakedBalanceVotingData
-                                .existingGovernanceTokenInfo.decimals
-                            ),
-                      tokenSymbol:
-                        cw20StakedBalanceVotingData.tokenType ===
-                        GovernanceTokenType.New
-                          ? cw20StakedBalanceVotingData.newInfo.symbol
-                          : // If using existing token but no token info loaded (should
-                          // be impossible), the tokenBalance above will be set to
-                          // 0, so use NATIVE_DENOM here so this value is accurate.
-                          !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                          ? nativeTokenLabel(NATIVE_DENOM)
-                          : cw20StakedBalanceVotingData
-                              .existingGovernanceTokenInfo?.symbol ||
-                            t('info.token').toLocaleUpperCase(),
-                    }
-                  : {
-                      tokenBalance: 0,
-                      tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
-                    }),
+                tokenBalance:
+                  votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
+                  cw20StakedBalanceVotingData
+                    ? //! Display governance token supply if using governance tokens.
+                      cw20StakedBalanceVotingData.tokenType ===
+                      GovernanceTokenType.New
+                      ? cw20StakedBalanceVotingData.newInfo.initialSupply
+                      : // If using existing token but no token info loaded (should
+                      // be impossible), just display 0.
+                      !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                      ? 0
+                      : // If using existing token, convert supply from query using decimals.
+                        convertMicroDenomToDenomWithDecimals(
+                          cw20StakedBalanceVotingData
+                            .existingGovernanceTokenInfo.total_supply,
+                          cw20StakedBalanceVotingData
+                            .existingGovernanceTokenInfo.decimals
+                        )
+                    : //! Otherwise display native token, which has a balance of 0 initially.
+                      0,
               },
             },
           }}
