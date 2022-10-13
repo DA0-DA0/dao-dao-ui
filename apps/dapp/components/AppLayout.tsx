@@ -22,26 +22,16 @@ import {
 } from '@dao-dao/common'
 import {
   SubQueryProvider,
-  blockHeightSelector,
-  blocksPerYearSelector,
   mountedInBrowserAtom,
   navigationCompactAtom,
   pinnedDaoDropdownInfosSelector,
   refreshBlockHeightAtom,
   useCachedLoadable,
-  usePoolAndSnapshotAtBlockHeight,
   useWalletProfile,
 } from '@dao-dao/state'
 import { CommandModalContextMaker } from '@dao-dao/tstypes'
 import { IAppLayoutContext, AppLayout as StatelessAppLayout } from '@dao-dao/ui'
-import {
-  NATIVE_DENOM,
-  USDC_SWAP_ADDRESS,
-  convertSecondsToBlocks,
-  loadableToLoadingData,
-  nativeTokenLabel,
-  usePlatform,
-} from '@dao-dao/utils'
+import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import {
   betaWarningAcceptedAtom,
