@@ -1,13 +1,13 @@
 // @ts-check
 
-const fs = require('fs')
-const path = require('path')
-
-const tsConfig = fs.existsSync('tsconfig.json')
-  ? path.resolve('tsconfig.json')
-  : fs.existsSync('types/tsconfig.json')
-  ? path.resolve('types/tsconfig.json')
-  : undefined
+// FIXME: Switch back to using typescript to improve linting once ciruclar
+// dependencies are resolved.
+// const fs = require('fs')
+// const path = require('path')
+// const tsConfig = fs.existsSync('tsconfig.json')
+//   ? path.resolve('tsconfig.json')
+//   : undefined
+const tsConfig = undefined
 
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {
@@ -19,16 +19,23 @@ const eslintConfig = {
     '**/storybook-static/**',
   ],
   extends: ['next/core-web-vitals', 'plugin:prettier/recommended'],
+  plugins: ['tailwindcss'],
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
     'no-unused-vars': ['off'],
     'react/jsx-sort-props': ['warn', { reservedFirst: ['key'] }],
+    'tailwindcss/classnames-order': ['warn'],
     eqeqeq: ['error'],
   },
   overrides: [
     {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
-      excludedFiles: ['**/node_modules/**', '**/.next/**'],
+      excludedFiles: [
+        '**/node_modules/**',
+        '**/.next/**',
+        '**/dist/**',
+        '**/storybook-static/**',
+      ],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: tsConfig,
@@ -157,7 +164,12 @@ const eslintConfig = {
     {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
       // Don't care about i18n in storybook files.
-      excludedFiles: ['**/*.stories.tsx', '**/node_modules/**', '**/.next/**'],
+      excludedFiles: [
+        '**/node_modules/**',
+        '**/.next/**',
+        '**/dist/**',
+        '**/storybook-static/**',
+      ],
       extends: ['plugin:react-i18n/recommended', 'plugin:i18next/recommended'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
