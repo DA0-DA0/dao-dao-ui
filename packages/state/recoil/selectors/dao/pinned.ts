@@ -5,7 +5,7 @@ import { DaoDropdownInfo } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom } from '../../atoms'
 import { cwCoreProposalModulesSelector } from '../proposal'
-import { daoCardInfoSelector, daoDropdownInfoSelector } from './dao'
+import { daoCardInfoSelector, daoDropdownInfoSelector } from './info'
 
 export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
   key: 'pinnedDaoDropdownInfo',
