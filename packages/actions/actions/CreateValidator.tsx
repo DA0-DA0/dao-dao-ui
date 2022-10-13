@@ -38,7 +38,7 @@ const useDefaults: UseDefaults<CreateValidatorData> = () => ({
     },
     "minSelfDelegation": "1",
     "delegatorAddress": "<your DAO address>",
-    "validatorAddress": "<your DAO valoper address>",
+    "validatorAddress": "<your DAO validator address>",
     "pubkey": {
       "typeUrl": "/cosmos.crypto.ed25519.PubKey",
       "value": {

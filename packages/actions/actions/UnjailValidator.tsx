@@ -67,7 +67,7 @@ export const unjailValidatorAction: Action<UnjailValidatorData> = {
   Icon: UnjailValidatorIcon,
   label: 'Unjail Validator',
   description:
-    'A transaction to allow a DAO controlled validator to rejoin the validation process',
+    'A transaction to allow a DAO controlled validator to rejoin the validation process.',
   Component,
   useDefaults,
   useTransformToCosmos,
