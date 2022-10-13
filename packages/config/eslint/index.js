@@ -163,12 +163,13 @@ const eslintConfig = {
     // i18n linting
     {
       files: ['**/*.d.ts', '**/*.ts', '**/*.tsx'],
-      // Don't care about i18n in storybook files.
       excludedFiles: [
         '**/node_modules/**',
         '**/.next/**',
         '**/dist/**',
         '**/storybook-static/**',
+        // Don't care about i18n in storybook files.
+        '**/*.stories.tsx',
       ],
       extends: ['plugin:react-i18n/recommended', 'plugin:i18next/recommended'],
       parser: '@typescript-eslint/parser',
