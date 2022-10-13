@@ -87,7 +87,8 @@ export const CreateDaoForm = ({
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   // When set, show DAO created modal with these props for the DaoCard shown.
-  const [createdDaoCardProps, setCreatedDaoCardProps] = useState<DaoCardProps>()
+  const [createdDaoCardProps, setCreatedDaoCardProps] =
+    useState<Omit<DaoCardProps, 'pinned' | 'onPin'>>()
 
   const [_newDaoAtom, setNewDaoAtom] = useRecoilState(
     newDaoAtom(parentDao?.coreAddress ?? '')
@@ -390,11 +391,6 @@ export const CreateDaoForm = ({
                 description,
                 imageUrl: imageUrl || getFallbackImage(coreAddress),
                 established: new Date(),
-                pinned: isPinned(coreAddress),
-                onPin: () =>
-                  isPinned(coreAddress)
-                    ? setUnpinned(coreAddress)
-                    : setPinned(coreAddress),
                 showIsMember: false,
                 parentDao,
                 tokenSymbol,
@@ -454,9 +450,7 @@ export const CreateDaoForm = ({
       name,
       description,
       imageUrl,
-      isPinned,
       parentDao,
-      setUnpinned,
     ]
   )
 
@@ -606,7 +600,15 @@ export const CreateDaoForm = ({
 
       {createdDaoCardProps && (
         <DaoCreatedModal
-          itemProps={createdDaoCardProps}
+          itemProps={{
+            ...createdDaoCardProps,
+
+            pinned: isPinned(createdDaoCardProps.coreAddress),
+            onPin: () =>
+              isPinned(createdDaoCardProps.coreAddress)
+                ? setUnpinned(createdDaoCardProps.coreAddress)
+                : setPinned(createdDaoCardProps.coreAddress),
+          }}
           modalProps={{
             onClose: () => setCreatedDaoCardProps(undefined),
           }}
