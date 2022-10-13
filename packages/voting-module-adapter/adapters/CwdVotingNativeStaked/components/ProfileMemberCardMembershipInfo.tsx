@@ -127,6 +127,22 @@ export const ProfileMemberCardMembershipInfo = ({
   const blocksPerYear = useRecoilValue(blocksPerYearSelector)
 
   const unstakingTasks: UnstakingTask[] = [
+    ...claimsPending.map(({ amount, release_at }) => ({
+      status: UnstakingTaskStatus.Unstaking,
+      amount: convertMicroDenomToDenomWithDecimals(
+        amount,
+        governanceTokenInfo.decimals
+      ),
+      tokenSymbol: governanceTokenInfo.symbol,
+      tokenDecimals: governanceTokenInfo.decimals,
+      date: convertExpirationToDate(
+        blocksPerYear,
+        release_at,
+        blockHeightLoadable.state === 'hasValue'
+          ? blockHeightLoadable.contents
+          : 0
+      ),
+    })),
     ...claimsAvailable.map(({ amount, release_at }) => ({
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: convertMicroDenomToDenomWithDecimals(
