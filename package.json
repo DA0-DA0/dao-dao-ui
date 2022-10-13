@@ -8,8 +8,8 @@
   "scripts": {
     "build": "turbo run build --continue --filter=\"!@dao-dao/storybook\"",
     "dev": "yarn dapp dev",
-    "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue",
-    "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue",
+    "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue --parallel",
+    "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
     "test": "turbo run test",
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda-base": "yarn workspace @dao-dao/sda-base",

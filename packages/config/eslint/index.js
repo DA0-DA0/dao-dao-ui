@@ -11,14 +11,18 @@ const tsConfig = fs.existsSync('tsconfig.json')
 
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {
-  ignorePatterns: ['**/node_modules/**', '**/.next/**'],
+  ignorePatterns: [
+    '**/node_modules/**',
+    '**/.next/**',
+    '**/dist/**',
+    '**/.next/**',
+    '**/storybook-static/**',
+  ],
   extends: ['next/core-web-vitals', 'plugin:prettier/recommended'],
-  plugins: ['tailwindcss'],
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
     'no-unused-vars': ['off'],
     'react/jsx-sort-props': ['warn', { reservedFirst: ['key'] }],
-    'tailwindcss/classnames-order': ['warn'],
     eqeqeq: ['error'],
   },
   overrides: [
