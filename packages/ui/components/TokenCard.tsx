@@ -119,6 +119,8 @@ export const TokenCard = ({
   const isIbc = tokenSymbol.toLowerCase().startsWith('ibc')
   tokenSymbol = isIbc ? concatAddressStartEnd(tokenSymbol, 3, 2) : tokenSymbol
 
+  const waitingForStakingInfo = hasStakingInfo && lazyStakingInfo.loading
+
   return (
     <>
       <div className="bg-background-tertiary rounded-lg">
@@ -162,13 +164,18 @@ export const TokenCard = ({
             </div>
           </div>
 
-          {buttonPopupSections.length > 0 && (
+          {(waitingForStakingInfo || buttonPopupSections.length > 0) && (
             <div className="absolute top-3 right-3">
               <ButtonPopup
                 Trigger={({ open, ...props }) => (
                   <IconButton
                     Icon={ExpandCircleDownOutlined}
-                    className="!text-icon-secondary"
+                    className={
+                      !waitingForStakingInfo
+                        ? '!text-icon-secondary'
+                        : undefined
+                    }
+                    disabled={waitingForStakingInfo}
                     focused={open}
                     variant="ghost"
                     {...props}
@@ -192,9 +199,7 @@ export const TokenCard = ({
                 amount={
                   // If staking info has not finished loading, don't show until
                   // it is loaded so this is accurate.
-                  hasStakingInfo && lazyStakingInfo.loading
-                    ? { loading: true }
-                    : totalBalance
+                  waitingForStakingInfo ? { loading: true } : totalBalance
                 }
                 className="leading-5 text-text-body"
                 maxDecimals={tokenDecimals}
@@ -205,7 +210,7 @@ export const TokenCard = ({
                 amount={
                   // If staking info has not finished loading, don't show until
                   // it is loaded so this is accurate.
-                  hasStakingInfo && lazyStakingInfo.loading
+                  waitingForStakingInfo
                     ? { loading: true }
                     : totalBalance * usdcUnitPrice
                 }
