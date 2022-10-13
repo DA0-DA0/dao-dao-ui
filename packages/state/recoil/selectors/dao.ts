@@ -13,7 +13,7 @@ import {
   DaoCardInfoLazyData,
   NftCardInfo,
   TokenCardInfo,
-  TokenCardStakingInfo,
+  TokenCardLazyStakingInfo,
 } from '@dao-dao/tstypes'
 import {
   ContractInfoResponse,
@@ -46,6 +46,7 @@ import {
 import { getFeaturedDaoAddresses } from '../../utils/getFeaturedDaoAddresses'
 import {
   nativeBalancesSelector,
+  nativeDelegatedBalanceSelector,
   nativeStakingInfoSelector,
   nativeUnstakingDurationSecondsSelector,
 } from './chain'
@@ -325,46 +326,14 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             const usdcUnitPrice =
               get(usdcPerMacroTokenSelector({ denom, decimals })) ?? 0
 
-            let stakingInfo: TokenCardStakingInfo | undefined
             // For now, stakingInfo only exists for native token, until ICA.
-            if (denom === NATIVE_DENOM) {
-              const nativeStakingInfo = get(
-                nativeStakingInfoSelector(coreAddress)
-              )
+            const hasStakingInfo =
+              denom === NATIVE_DENOM &&
+              // Check if anything staked.
+              Number(get(nativeDelegatedBalanceSelector(coreAddress)).amount) >
+                0
 
-              stakingInfo = nativeStakingInfo && {
-                unstakingTasks: nativeStakingInfo.unbondingDelegations.map(
-                  ({ balance, finishesAt }) => ({
-                    status: UnstakingTaskStatus.Unstaking,
-                    amount: convertMicroDenomToDenomWithDecimals(
-                      balance.amount,
-                      decimals
-                    ),
-                    tokenSymbol: label,
-                    tokenDecimals: decimals,
-                    date: finishesAt,
-                  })
-                ),
-                unstakingDurationSeconds: get(
-                  nativeUnstakingDurationSecondsSelector
-                ),
-                stakes: nativeStakingInfo.delegations.map(
-                  ({ validator, delegated, pendingReward }) => ({
-                    validator,
-                    amount: convertMicroDenomToDenomWithDecimals(
-                      delegated.amount,
-                      decimals
-                    ),
-                    rewards: convertMicroDenomToDenomWithDecimals(
-                      pendingReward.amount,
-                      decimals
-                    ),
-                  })
-                ),
-              }
-            }
-
-            return {
+            const info: TokenCardInfo = {
               // True if native token DAO and using this denom.
               crown: nativeGovernanceTokenDenom === denom,
               tokenSymbol: label,
@@ -376,8 +345,13 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               unstakedBalance,
               usdcUnitPrice,
 
-              stakingInfo,
+              hasStakingInfo,
+              lazyStakingInfo: hasStakingInfo
+                ? { loading: true }
+                : { loading: false, data: undefined },
             }
+
+            return info
           }
         ),
         ...cw20s.map(
@@ -396,7 +370,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             const usdcUnitPrice =
               get(usdcPerMacroTokenSelector({ denom, decimals })) ?? 0
 
-            return {
+            const info: TokenCardInfo = {
               crown: isGovernanceToken,
               tokenSymbol: symbol,
               tokenDenom: denom,
@@ -408,12 +382,74 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               usdcUnitPrice,
               cw20Address: denom,
               // No unstaking info for CW20.
+              hasStakingInfo: false,
+              lazyStakingInfo: { loading: false, data: undefined },
             }
+
+            return info
           }
         ),
       ]
 
       return infos
+    },
+})
+
+export const tokenCardLazyStakingInfoSelector = selectorFamily<
+  TokenCardLazyStakingInfo | undefined,
+  {
+    walletAddress: string
+    denom: string
+    tokenDecimals: number
+    tokenSymbol: string
+  }
+>({
+  key: 'tokenCardLazyStakingInfo',
+  get:
+    ({ walletAddress, denom, tokenDecimals, tokenSymbol }) =>
+    ({ get }) => {
+      // For now, stakingInfo only exists for native token, until ICA.
+      if (denom !== NATIVE_DENOM) {
+        return
+      }
+
+      const nativeStakingInfo = get(nativeStakingInfoSelector(walletAddress))
+      if (!nativeStakingInfo) {
+        return
+      }
+
+      const unstakingDurationSeconds = get(
+        nativeUnstakingDurationSecondsSelector
+      )
+
+      return {
+        unstakingTasks: nativeStakingInfo.unbondingDelegations.map(
+          ({ balance, finishesAt }) => ({
+            status: UnstakingTaskStatus.Unstaking,
+            amount: convertMicroDenomToDenomWithDecimals(
+              balance.amount,
+              tokenDecimals
+            ),
+            tokenSymbol,
+            tokenDecimals: tokenDecimals,
+            date: finishesAt,
+          })
+        ),
+        unstakingDurationSeconds,
+        stakes: nativeStakingInfo.delegations.map(
+          ({ validator, delegated, pendingReward }) => ({
+            validator,
+            amount: convertMicroDenomToDenomWithDecimals(
+              delegated.amount,
+              tokenDecimals
+            ),
+            rewards: convertMicroDenomToDenomWithDecimals(
+              pendingReward.amount,
+              tokenDecimals
+            ),
+          })
+        ),
+      }
     },
 })
 

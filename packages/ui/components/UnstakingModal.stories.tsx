@@ -29,6 +29,7 @@ export const makeProps = (
     makeUnstakingLineProps(UnstakingTaskStatus.Claimed, tokenSymbol).task,
   ],
   onClaim: () => alert('claim'),
+  visible: true,
 })
 
 export const Default = Template.bind({})

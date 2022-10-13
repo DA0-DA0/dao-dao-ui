@@ -77,10 +77,14 @@ export const makeProps = (crown = false): TokenCardProps => {
     unstakedBalance,
     tokenDecimals: 6,
     usdcUnitPrice: 5.38,
-    stakingInfo: {
-      unstakingTasks: makeUnstakingModalProps('JUNO').tasks,
-      unstakingDurationSeconds: 28 * 24 * 3600,
-      stakes,
+    hasStakingInfo: true,
+    lazyStakingInfo: {
+      loading: false,
+      data: {
+        unstakingTasks: makeUnstakingModalProps('JUNO').tasks,
+        unstakingDurationSeconds: 28 * 24 * 3600,
+        stakes,
+      },
     },
     onAddToken: () => toast.success('added'),
     onProposeClaim: () => alert('claim'),
@@ -90,10 +94,15 @@ export const makeProps = (crown = false): TokenCardProps => {
 
 export const Default = Template.bind({})
 Default.args = makeProps()
-
 Default.parameters = {
   design: {
     type: 'figma',
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=94%3A15313',
   },
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  ...makeProps(),
+  lazyStakingInfo: { loading: true },
 }

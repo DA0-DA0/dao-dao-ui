@@ -18,6 +18,7 @@ export interface ProfileMemberCardMembershipInfoProps {
   unstakingDurationSeconds: number | undefined
   onClaim: () => void
   onStake: () => void
+  refreshUnstakingTasks: () => void
 }
 
 export const ProfileMemberCardMembershipInfo = ({
@@ -32,6 +33,7 @@ export const ProfileMemberCardMembershipInfo = ({
   unstakingDurationSeconds,
   onClaim,
   onStake,
+  refreshUnstakingTasks,
 }: ProfileMemberCardMembershipInfoProps) => {
   const { t } = useTranslation()
 
@@ -146,18 +148,18 @@ export const ProfileMemberCardMembershipInfo = ({
         {t('button.manageStake', { tokenSymbol })}
       </Button>
 
-      {showUnstakingTokens && (
-        <UnstakingModal
-          onClaim={onClaim}
-          onClose={() => setShowUnstakingTokens(false)}
-          tasks={unstakingTasks}
-          unstakingDuration={
-            unstakingDurationSeconds
-              ? secondsToWdhms(unstakingDurationSeconds)
-              : undefined
-          }
-        />
-      )}
+      <UnstakingModal
+        onClaim={onClaim}
+        onClose={() => setShowUnstakingTokens(false)}
+        refresh={refreshUnstakingTasks}
+        tasks={unstakingTasks}
+        unstakingDuration={
+          unstakingDurationSeconds
+            ? secondsToWdhms(unstakingDurationSeconds)
+            : undefined
+        }
+        visible={showUnstakingTokens}
+      />
     </>
   )
 }

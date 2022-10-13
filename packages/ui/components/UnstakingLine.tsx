@@ -1,10 +1,11 @@
 import clsx from 'clsx'
 import { ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
-import { dateToWdhms, formatDate } from '@dao-dao/utils'
+import { formatDate } from '@dao-dao/utils'
 
+import { useTranslatedTimeDeltaFormatter } from '../hooks'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 import { UnstakingStatus } from './UnstakingStatus'
 
@@ -21,15 +22,15 @@ export const UnstakingLine = ({
   task: { status, amount, tokenSymbol, tokenDecimals, date },
   dateReplacement,
 }: UnstakingLineProps) => {
-  const { t } = useTranslation()
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter()
 
-  const dateString = date
-    ? status === UnstakingTaskStatus.Unstaking
-      ? t('info.timeLeft', {
-          time: dateToWdhms(date, 1),
-        })
-      : formatDate(date)
-    : undefined
+  const dateDisplay = date ? (
+    status === UnstakingTaskStatus.Unstaking ? (
+      <TimeAgo date={date} formatter={timeAgoFormatter} />
+    ) : (
+      formatDate(date)
+    )
+  ) : undefined
 
   return (
     <>
@@ -51,7 +52,7 @@ export const UnstakingLine = ({
 
         {dateReplacement || (
           <p className="pr-2 font-mono text-right break-words caption-text">
-            {dateString}
+            {dateDisplay}
           </p>
         )}
       </div>
@@ -74,9 +75,9 @@ export const UnstakingLine = ({
           />
 
           {dateReplacement ||
-            (dateString && (
+            (dateDisplay && (
               <p className="font-mono text-right break-words caption-text">
-                {dateString}
+                {dateDisplay}
               </p>
             ))}
         </div>

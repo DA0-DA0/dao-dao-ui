@@ -2,13 +2,19 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
+import { useSetRecoilState } from 'recoil'
 
 import { stakeAction } from '@dao-dao/actions/actions/Stake'
-import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/state'
+import {
+  refreshNativeTokenStakingInfoAtom,
+  tokenCardLazyStakingInfoSelector,
+  useCachedLoadable,
+  useEncodedCwdProposalSinglePrefill,
+} from '@dao-dao/state'
 import { TokenCardInfo } from '@dao-dao/tstypes/dao'
 import { TokenCard as StatelessTokenCard, useDaoInfoContext } from '@dao-dao/ui'
-import { StakeType, useAddToken } from '@dao-dao/utils'
+import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
 
 export const TokenCard = (props: TokenCardInfo) => {
   const router = useRouter()
@@ -16,8 +22,39 @@ export const TokenCard = (props: TokenCardInfo) => {
 
   const addToken = useAddToken()
 
-  const stakesWithRewards =
-    props.stakingInfo?.stakes.filter(({ rewards }) => rewards > 0) ?? []
+  const lazyStakingInfoLoadable = useCachedLoadable(
+    props.hasStakingInfo
+      ? tokenCardLazyStakingInfoSelector({
+          walletAddress: coreAddress,
+          denom: props.tokenDenom,
+          tokenDecimals: props.tokenDecimals,
+          tokenSymbol: props.tokenSymbol,
+        })
+      : undefined
+  )
+
+  //! Loadable errors.
+  useEffect(() => {
+    if (lazyStakingInfoLoadable.state === 'hasError') {
+      console.error(lazyStakingInfoLoadable.contents)
+    }
+  }, [lazyStakingInfoLoadable.contents, lazyStakingInfoLoadable.state])
+
+  // Refresh staking info.
+  const setRefreshNativeTokenStakingInfo = useSetRecoilState(
+    refreshNativeTokenStakingInfoAtom(coreAddress)
+  )
+  const refreshNativeTokenStakingInfo = useCallback(
+    () => setRefreshNativeTokenStakingInfo((id) => id + 1),
+    [setRefreshNativeTokenStakingInfo]
+  )
+
+  const lazyStakes =
+    lazyStakingInfoLoadable.state !== 'hasValue'
+      ? []
+      : lazyStakingInfoLoadable.contents?.stakes ?? []
+
+  const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
   const encodedProposalPrefillClaim = useEncodedCwdProposalSinglePrefill({
     actions: stakesWithRewards.map(({ validator: { address } }) => ({
       action: stakeAction,
@@ -30,6 +67,7 @@ export const TokenCard = (props: TokenCardInfo) => {
       },
     })),
   })
+
   const encodedProposalPrefillStakeUnstake = useEncodedCwdProposalSinglePrefill(
     {
       // If has unstaked, show stake action by default.
@@ -47,7 +85,7 @@ export const TokenCard = (props: TokenCardInfo) => {
               },
             ]
           : // If has only staked, show unstake actions by default.
-            props.stakingInfo?.stakes.map(({ validator, amount }) => ({
+            lazyStakes.map(({ validator, amount }) => ({
               action: stakeAction,
               data: {
                 stakeType: StakeType.Undelegate,
@@ -55,7 +93,7 @@ export const TokenCard = (props: TokenCardInfo) => {
                 amount,
                 denom: props.tokenDenom,
               },
-            })) ?? [],
+            })),
     }
   )
 
@@ -76,6 +114,11 @@ export const TokenCard = (props: TokenCardInfo) => {
   return (
     <StatelessTokenCard
       {...props}
+      lazyStakingInfo={
+        props.hasStakingInfo
+          ? loadableToLoadingData(lazyStakingInfoLoadable, undefined)
+          : { loading: false, data: undefined }
+      }
       onAddToken={
         addToken && props.cw20Address
           ? () => props.cw20Address && addToken(props.cw20Address)
@@ -90,7 +133,7 @@ export const TokenCard = (props: TokenCardInfo) => {
           : undefined
       }
       onProposeStakeUnstake={
-        (props.unstakedBalance > 0 || !!props.stakingInfo?.stakes.length) &&
+        (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
         encodedProposalPrefillStakeUnstake
           ? () =>
               router.push(
@@ -98,6 +141,7 @@ export const TokenCard = (props: TokenCardInfo) => {
               )
           : undefined
       }
+      refreshUnstakingTasks={refreshNativeTokenStakingInfo}
     />
   )
 }

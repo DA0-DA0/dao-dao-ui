@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ArrowDropdown } from '@dao-dao/icons'
@@ -10,11 +10,11 @@ import { Modal, ModalProps } from './Modal'
 import { UnstakingLine } from './UnstakingLine'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
-export interface UnstakingModalProps
-  extends Omit<ModalProps, 'children' | 'visible'> {
+export interface UnstakingModalProps extends Omit<ModalProps, 'children'> {
   unstakingDuration?: string
   tasks: UnstakingTask[]
   onClaim?: (tokenSymbol: string) => void
+  refresh?: () => void
 }
 
 export const UnstakingModal = ({
@@ -22,6 +22,7 @@ export const UnstakingModal = ({
   tasks,
   containerClassName,
   onClaim,
+  refresh,
   ...modalProps
 }: UnstakingModalProps) => {
   const { t } = useTranslation()
@@ -64,6 +65,7 @@ export const UnstakingModal = ({
         }, [] as UnstakingTask[]),
     [tasks]
   )
+  // Sorted ascending so that the next one to finish is first.
   const unstaking = useMemo(
     () =>
       tasks
@@ -87,11 +89,26 @@ export const UnstakingModal = ({
     [tasks]
   )
 
+  // Refresh when the soonest task completes if refresh provided.
+  useEffect(() => {
+    if (!refresh || unstaking.length === 0) {
+      return
+    }
+
+    // unstaking is sorted so that the first one is next to finish.
+    const msUntilNextTaskCompletion = unstaking[0].date
+      ? unstaking[0].date.getTime() - Date.now()
+      : 1000
+
+    const timeout = setTimeout(refresh, msUntilNextTaskCompletion)
+    // Clean up on unmount.
+    return () => clearTimeout(timeout)
+  }, [unstaking, refresh])
+
   return (
     <Modal
       {...modalProps}
       containerClassName={clsx('w-full max-w-2xl', containerClassName)}
-      visible
     >
       <div className="overflow-y-auto grow pr-4 -mr-4 no-scrollbar">
         {/* Only show if something is ready to claim. */}

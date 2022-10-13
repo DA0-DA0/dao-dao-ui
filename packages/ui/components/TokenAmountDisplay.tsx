@@ -71,6 +71,8 @@ export const TokenAmountDisplay = ({
   const compact = amount.toLocaleString(undefined, {
     notation: 'compact',
     ...options,
+    // In compact notation, too many decimals looks bad.
+    maximumFractionDigits: 2,
   })
 
   // Show full in tooltip if different from compact.

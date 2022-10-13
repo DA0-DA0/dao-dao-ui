@@ -17,6 +17,7 @@ import { ContractVersion } from './contract'
 import { ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as CwdCoreV2InstantiateMsg } from './contracts/CwdCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
+import { LoadingData } from './ui'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/common/components/DaoPageWrapper
@@ -71,7 +72,7 @@ export interface TokenStake {
   rewards: number
 }
 
-export interface TokenCardStakingInfo {
+export interface TokenCardLazyStakingInfo {
   unstakingTasks: UnstakingTask[]
   unstakingDurationSeconds: number | undefined
   stakes: TokenStake[]
@@ -89,7 +90,9 @@ export interface TokenCardInfo {
   // Defined if this is a Cw20 token.
   cw20Address?: string
 
-  stakingInfo?: TokenCardStakingInfo
+  // Only native tokens load staking info for now, so let's show a nice loader.
+  hasStakingInfo: boolean
+  lazyStakingInfo: LoadingData<TokenCardLazyStakingInfo | undefined>
 }
 
 export interface NftCardInfo {

@@ -1,10 +1,11 @@
 import clsx from 'clsx'
 import { Fragment, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import TimeAgo, { Formatter } from 'react-timeago'
+import TimeAgo from 'react-timeago'
 
 import { formatPercentOf100 } from '@dao-dao/utils'
 
+import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { Button } from '../Button'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Loader } from '../Loader'
@@ -33,11 +34,7 @@ export const ProposalVotes = ({
 }: ProposalVotesProps) => {
   const { t } = useTranslation()
 
-  const timeAgoFormatter: Formatter = (value, unit) =>
-    t('info.timeAgo', {
-      value,
-      unit: t(`unit.${unit}s`, { count: value }).toLocaleLowerCase(),
-    })
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter()
 
   const votesWithDate = votes
     .map((vote) => ({

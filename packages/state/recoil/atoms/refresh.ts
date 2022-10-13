@@ -54,3 +54,12 @@ export const refreshWalletProfileAtom = atomFamily<number, string>({
   key: 'refreshWalletProfile',
   default: 0,
 })
+
+// Change this to refresh native token staking info for the given address.
+export const refreshNativeTokenStakingInfoAtom = atomFamily<
+  number,
+  string | undefined
+>({
+  key: 'refreshNativeTokenStakingInfo',
+  default: 0,
+})

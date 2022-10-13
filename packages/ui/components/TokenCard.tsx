@@ -22,6 +22,7 @@ export interface TokenCardProps extends TokenCardInfo {
   onAddToken?: () => void
   onProposeStakeUnstake?: () => void
   onProposeClaim?: () => void
+  refreshUnstakingTasks?: () => void
 }
 
 export const TokenCard = ({
@@ -32,37 +33,37 @@ export const TokenCard = ({
   imageUrl,
   unstakedBalance,
   usdcUnitPrice,
-  stakingInfo: { unstakingTasks, unstakingDurationSeconds, stakes } = {
-    unstakingTasks: [],
-    unstakingDurationSeconds: undefined,
-    stakes: [],
-  },
+  hasStakingInfo,
+  lazyStakingInfo,
   onAddToken,
   onProposeStakeUnstake,
   onProposeClaim,
+  refreshUnstakingTasks,
 }: TokenCardProps) => {
   const { t } = useTranslation()
 
-  const totalStaked = useMemo(
-    () => stakes?.reduce((acc, stake) => acc + stake.amount, 0) ?? 0,
-    [stakes]
-  )
+  const lazyStakes =
+    lazyStakingInfo.loading || !lazyStakingInfo.data
+      ? []
+      : lazyStakingInfo.data.stakes
+  const lazyUnstakingTasks =
+    lazyStakingInfo.loading || !lazyStakingInfo.data
+      ? []
+      : lazyStakingInfo.data.unstakingTasks
+
+  const totalStaked =
+    lazyStakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
   const totalBalance = unstakedBalance + totalStaked
-  const pendingRewards = useMemo(
-    () => stakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0,
-    [stakes]
-  )
-  const unstakingBalance = useMemo(
-    () =>
-      unstakingTasks.reduce(
-        (acc, task) =>
-          acc +
-          // Only include balance of unstaking tasks.
-          (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
-        0
-      ) ?? 0,
-    [unstakingTasks]
-  )
+  const pendingRewards =
+    lazyStakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0
+  const unstakingBalance =
+    lazyUnstakingTasks.reduce(
+      (acc, task) =>
+        acc +
+        // Only include balance of unstaking tasks.
+        (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
+      0
+    ) ?? 0
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
 
@@ -188,18 +189,33 @@ export const TokenCard = ({
             <div className="flex flex-col gap-1 items-end font-mono text-right caption-text">
               {/* leading-5 to match link-text's line-height. */}
               <TokenAmountDisplay
-                amount={totalBalance}
+                amount={
+                  // If staking info has not finished loading, don't show until
+                  // it is loaded so this is accurate.
+                  hasStakingInfo && lazyStakingInfo.loading
+                    ? { loading: true }
+                    : totalBalance
+                }
                 className="leading-5 text-text-body"
                 maxDecimals={tokenDecimals}
                 symbol={tokenSymbol}
               />
 
-              <TokenAmountDisplay amount={totalBalance * usdcUnitPrice} usdc />
+              <TokenAmountDisplay
+                amount={
+                  // If staking info has not finished loading, don't show until
+                  // it is loaded so this is accurate.
+                  hasStakingInfo && lazyStakingInfo.loading
+                    ? { loading: true }
+                    : totalBalance * usdcUnitPrice
+                }
+                usdc
+              />
             </div>
           </div>
 
-          {/* Only display `unstakedBalance` if different from `totalBalance` (i.e. there is nothing staked.) */}
-          {unstakedBalance !== totalBalance && (
+          {/* Only display `unstakedBalance` if something is staked, because that means this will differ from `totalBalance` above. */}
+          {hasStakingInfo && (
             <div className="flex flex-row gap-8 justify-between items-start">
               <p className="link-text">{t('info.availableBalance')}</p>
               <div className="flex flex-col gap-1 items-end font-mono text-right caption-text">
@@ -220,7 +236,7 @@ export const TokenCard = ({
           )}
         </div>
 
-        {!!stakes?.length && (
+        {hasStakingInfo && (lazyStakingInfo.loading || lazyStakingInfo.data) && (
           <div className="flex flex-col gap-2 px-6 pt-4 pb-6 border-t border-inactive">
             <p className="mb-1 link-text">{t('info.stakes')}</p>
 
@@ -228,7 +244,9 @@ export const TokenCard = ({
               <p className="secondary-text">{t('title.staked')}</p>
 
               <TokenAmountDisplay
-                amount={totalStaked}
+                amount={
+                  lazyStakingInfo.loading ? { loading: true } : totalStaked
+                }
                 className="font-mono text-right text-text-body caption-text"
                 maxDecimals={tokenDecimals}
                 symbol={tokenSymbol}
@@ -238,26 +256,41 @@ export const TokenCard = ({
             <div className="flex flex-row gap-8 justify-between items-center">
               <p className="secondary-text">{t('title.stakedTo')}</p>
 
-              <p className="font-mono text-right text-text-body caption-text">
-                {stakes[0].validator.moniker}
-                {stakes.length > 1 && (
-                  <>
-                    ,{' '}
-                    <Tooltip
-                      title={
-                        <>
-                          {stakes.slice(1).map(({ validator }, index) => (
-                            <p key={index}>{validator.moniker}</p>
-                          ))}
-                        </>
-                      }
-                    >
-                      <span className="underline underline-offset-2 cursor-pointer">
-                        {t('info.andNumMore', { count: stakes.length - 1 })}
-                      </span>
-                    </Tooltip>
-                  </>
+              <p
+                className={clsx(
+                  'font-mono text-right text-text-body caption-text',
+                  lazyStakingInfo.loading && 'animate-pulse'
                 )}
+              >
+                {lazyStakingInfo.loading
+                  ? '...'
+                  : lazyStakes.length > 0 && (
+                      <>
+                        {lazyStakes[0].validator.moniker}
+                        {lazyStakes.length > 1 && (
+                          <>
+                            ,{' '}
+                            <Tooltip
+                              title={
+                                <>
+                                  {lazyStakes
+                                    .slice(1)
+                                    .map(({ validator }, index) => (
+                                      <p key={index}>{validator.moniker}</p>
+                                    ))}
+                                </>
+                              }
+                            >
+                              <span className="underline underline-offset-2 cursor-pointer">
+                                {t('info.andNumMore', {
+                                  count: lazyStakes.length - 1,
+                                })}
+                              </span>
+                            </Tooltip>
+                          </>
+                        )}
+                      </>
+                    )}
               </p>
             </div>
 
@@ -267,18 +300,22 @@ export const TokenCard = ({
               <Button
                 className={clsx(
                   'font-mono text-right underline-offset-2 caption-text',
-                  unstakingBalance > 0 && 'text-text-body'
+                  unstakingBalance > 0 && 'text-text-body',
+                  lazyStakingInfo.loading && '!text-text-body animate-pulse'
                 )}
+                disabled={lazyStakingInfo.loading}
                 onClick={() => setShowUnstakingTokens(true)}
-                variant="underline"
+                variant={lazyStakingInfo.loading ? 'none' : 'underline'}
               >
-                {t('format.token', {
-                  amount: unstakingBalance.toLocaleString(undefined, {
-                    notation: 'compact',
-                    maximumFractionDigits: tokenDecimals,
-                  }),
-                  symbol: tokenSymbol,
-                })}
+                {lazyStakingInfo.loading
+                  ? '...'
+                  : t('format.token', {
+                      amount: unstakingBalance.toLocaleString(undefined, {
+                        notation: 'compact',
+                        maximumFractionDigits: tokenDecimals,
+                      }),
+                      symbol: tokenSymbol,
+                    })}
               </Button>
             </div>
 
@@ -286,7 +323,9 @@ export const TokenCard = ({
               <p className="secondary-text">{t('info.pendingRewards')}</p>
 
               <TokenAmountDisplay
-                amount={pendingRewards}
+                amount={
+                  lazyStakingInfo.loading ? { loading: true } : pendingRewards
+                }
                 className="font-mono text-right text-text-body caption-text"
                 maxDecimals={tokenDecimals}
                 symbol={tokenSymbol}
@@ -296,16 +335,18 @@ export const TokenCard = ({
         )}
       </div>
 
-      {showUnstakingTokens && (
+      {!lazyStakingInfo.loading && lazyStakingInfo.data && (
         <UnstakingModal
           onClaim={onProposeClaim}
           onClose={() => setShowUnstakingTokens(false)}
-          tasks={unstakingTasks}
+          refresh={refreshUnstakingTasks}
+          tasks={lazyStakingInfo.data.unstakingTasks}
           unstakingDuration={
-            unstakingDurationSeconds
-              ? secondsToWdhms(unstakingDurationSeconds)
+            lazyStakingInfo.data.unstakingDurationSeconds
+              ? secondsToWdhms(lazyStakingInfo.data.unstakingDurationSeconds)
               : undefined
           }
+          visible={showUnstakingTokens}
         />
       )}
     </>

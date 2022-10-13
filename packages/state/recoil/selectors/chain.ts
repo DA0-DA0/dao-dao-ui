@@ -26,6 +26,7 @@ import {
 
 import {
   refreshBlockHeightAtom,
+  refreshNativeTokenStakingInfoAtom,
   refreshWalletBalancesIdAtom,
 } from '../atoms/refresh'
 
@@ -273,6 +274,8 @@ export const nativeStakingInfoSelector = selectorFamily<
     (delegatorAddr: string) =>
     async ({ get }) => {
       const client = get(cosmosRpcClientSelector)
+
+      get(refreshNativeTokenStakingInfoAtom(delegatorAddr))
 
       let delegations: DelegationResponse[]
       let validators: RpcValidator[]

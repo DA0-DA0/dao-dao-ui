@@ -173,6 +173,7 @@ export const ProfileMemberCardMembershipInfo = ({
         claimingLoading={claimingLoading}
         onClaim={onClaim}
         onStake={() => setShowStakingModal(true)}
+        refreshUnstakingTasks={() => refreshClaims?.()}
         stakedTokens={convertMicroDenomToDenomWithDecimals(
           walletStakedValue,
           governanceTokenInfo.decimals
