@@ -256,6 +256,12 @@ export const isContractSelector = selectorFamily<
           return false
         }
 
+        // If contract does not exist, not the desired contract.
+        if (err instanceof Error && err.message.includes('contract: not found: invalid request')) {
+          console.error(err)
+          return false
+        }
+
         // Rethrow other errors because it should not have failed.
         throw err
       }
