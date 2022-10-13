@@ -68,12 +68,22 @@ export const TokenAmountDisplay = ({
 
   const full = amount.toLocaleString(undefined, options)
   // Abbreviated number. Example: 1,000,000 => 1M
-  const compact = amount.toLocaleString(undefined, {
+  let compact = amount.toLocaleString(undefined, {
     notation: 'compact',
     ...options,
-    // In compact notation, too many decimals looks bad.
-    maximumFractionDigits: 2,
   })
+
+  // If compacted, use fewer decimals because compact looks bad with too many
+  // decimals. We first needed to use the same decimals to compare and see if
+  // compact had any effect. If compact changed nothing, we want to keep the
+  // original decimals.
+  if (full !== compact) {
+    compact = amount.toLocaleString(undefined, {
+      notation: 'compact',
+      ...options,
+      maximumFractionDigits: 2,
+    })
+  }
 
   // Show full in tooltip if different from compact.
   const tooltip =
