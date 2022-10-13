@@ -7,9 +7,10 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 This is a proposal module adapter package. It creates a common interface for
 various components and pieces of data that apps (namely `@dao-dao/dapp` and
 `@dao-dao/sda-base`) need to access which change based on the proposal module
-used by a given proposal. For example, a proposal that uses `cw-proposal-single`
-will need to display two voting choices, whereas `cw-proposal-multiple` will
-need to be able to display a variable number of choices.
+used by a given proposal. For example, a proposal that uses
+`cwd-proposal-single` will need to display two voting choices, whereas
+`cwd-proposal-multiple` will need to be able to display a variable number of
+choices.
 
 ## Why is this necessary?
 

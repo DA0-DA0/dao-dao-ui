@@ -82,8 +82,8 @@ export const matchAndLoadAdapter = (
     ? proposalModules.find(({ prefix }) => prefix === proposalPrefix)
     : // If no proposalPrefix (i.e. proposalId is just a number), and there is
     // only one proposal module, return it. This should handle backwards
-    // compatibility when there were no prefixes and every DAO used
-    // cw-proposal-single.
+    // compatibility when there were no prefixes and every DAO used a single
+    // choice proposal module.
     proposalModules.length === 1
     ? proposalModules[0]
     : undefined

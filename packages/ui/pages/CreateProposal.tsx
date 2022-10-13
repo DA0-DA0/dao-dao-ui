@@ -2,7 +2,7 @@ import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoInfo, ProposalModule } from '@dao-dao/tstypes'
-import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
+import { getParentDaoBreadcrumbs, normalizeContractName } from '@dao-dao/utils'
 
 import { Dropdown, useAppLayoutContext } from '../components'
 
@@ -30,9 +30,9 @@ export const CreateProposal = ({
     () =>
       daoInfo.proposalModules.map((proposalModule) => ({
         label: t(
-          `proposalModuleLabel.${
-            proposalModule.contractName.split(':').slice(-1)[0]
-          }`
+          `proposalModuleLabel.${normalizeContractName(
+            proposalModule.contractName
+          )}`
         ),
         value: proposalModule,
       })),

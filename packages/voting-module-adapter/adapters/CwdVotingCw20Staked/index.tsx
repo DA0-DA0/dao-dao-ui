@@ -84,13 +84,11 @@ export const CwdVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> 
     daoCreation: {
       displayInfo: {
         Icon: DisplayInfoIcon,
-        nameI18nKey: 'daoCreationAdapter.cw20-staked-balance-voting.name',
+        nameI18nKey: 'daoCreationAdapter.CwdVotingCw20Staked.name',
         descriptionI18nKey:
-          'daoCreationAdapter.cw20-staked-balance-voting.description',
-        suppliesI18nKey:
-          'daoCreationAdapter.cw20-staked-balance-voting.supplies',
-        membershipI18nKey:
-          'daoCreationAdapter.cw20-staked-balance-voting.membership',
+          'daoCreationAdapter.CwdVotingCw20Staked.description',
+        suppliesI18nKey: 'daoCreationAdapter.CwdVotingCw20Staked.supplies',
+        membershipI18nKey: 'daoCreationAdapter.CwdVotingCw20Staked.membership',
       },
       defaultConfig: {
         tiers: [

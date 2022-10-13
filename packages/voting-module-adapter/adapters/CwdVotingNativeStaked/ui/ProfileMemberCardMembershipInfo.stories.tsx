@@ -10,7 +10,7 @@ import {
 
 export default {
   title:
-    'DAO DAO / packages / voting-module-adapter / adapters / cw20-staked-balance-voting / ui / ProfileMemberCardMembershipInfo',
+    'DAO DAO / packages / voting-module-adapter / adapters / CwdVotingCw20Staked / ui / ProfileMemberCardMembershipInfo',
   component: ProfileMemberCardMembershipInfo,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof ProfileMemberCardMembershipInfo>

@@ -7,8 +7,8 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 This is a voting module adapter package. It creates a common interface for
 various components and pieces of data that apps (namely `@dao-dao/dapp` and
 `@dao-dao/sda-base`) need to access which change based on the voting module used
-by the DAO. For example, a DAO that uses `cw20-staked-balance-voting` will need
-to display staking interfaces and wallet token balances, whereas `cw4-voting`
+by the DAO. For example, a DAO that uses `cwd-voting-cw20-staked` will need
+to display staking interfaces and wallet token balances, whereas `cwd-voting-cw4`
 will just need to display member voting weights.
 
 ## Why is this necessary?
@@ -129,7 +129,7 @@ const DaoThinInfoDisplay = () => {
 <br/>
 
 <details>
-<summary>`cw4-voting/components/DaoThinInfoContent.tsx`</summary>
+<summary>`CwdVotingCw4/components/DaoThinInfoContent.tsx`</summary>
 
 ```tsx
 const DaoThinInfoContent = () => {
@@ -168,7 +168,7 @@ const DaoThinInfoContent = () => {
 </details>
 
 <details>
-<summary>`cw20-staked-balance-voting/components/DaoThinInfoContent.tsx`</summary>
+<summary>`CwdVotingCw20Staked/components/DaoThinInfoContent.tsx`</summary>
 
 ```tsx
 const DaoThinInfoContent = () => {
@@ -265,7 +265,7 @@ const voteConversionDecimals = useVoteConversionDecimals()
 <br/>
 
 <details>
-<summary>`cw4-voting/hooks/useVoteConversionDecimals.ts`</summary>
+<summary>`CwdVotingCw4/hooks/useVoteConversionDecimals.ts`</summary>
 
 ```ts
 const useVoteConversionDecimals = () => 0
@@ -274,7 +274,7 @@ const useVoteConversionDecimals = () => 0
 </details>
 
 <details>
-<summary>`cw20-staked-balance-voting/hooks/useVoteConversionDecimals.ts`</summary>
+<summary>`CwdVotingCw20Staked/hooks/useVoteConversionDecimals.ts`</summary>
 
 ```ts
 const useVoteConversionDecimals = () => {
@@ -417,7 +417,7 @@ them into everything.
 Example:
 
 <details>
-<summary>`cw20-staked-balance-voting/components/DaoTreasuryFooter.tsx`</summary>
+<summary>`CwdVotingCw20Staked/components/DaoTreasuryFooter.tsx`</summary>
 
 ```tsx
 import { useVotingModuleAdapterOptions } from '@dao-dao/voting-module-adapter/react/context'

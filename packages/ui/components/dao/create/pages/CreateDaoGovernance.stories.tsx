@@ -5,7 +5,7 @@ import {
   makeAppLayoutDecorator,
   makeCreateDaoFormDecorator,
 } from '@dao-dao/storybook/decorators'
-import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked'
 
 import { CreateDaoGovernance } from './CreateDaoGovernance'
 

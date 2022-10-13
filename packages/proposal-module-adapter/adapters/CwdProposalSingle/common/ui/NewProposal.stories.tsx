@@ -21,7 +21,7 @@ import { NewProposal } from './NewProposal'
 
 export default {
   title:
-    'DAO DAO / packages / proposal-module-adapter / adapters / cw-proposal-single / common / ui / NewProposal',
+    'DAO DAO / packages / proposal-module-adapter / adapters / CwdProposalSingle / common / ui / NewProposal',
   component: NewProposal,
   decorators: [DaoPageWrapperDecorator],
 } as ComponentMeta<typeof NewProposal>

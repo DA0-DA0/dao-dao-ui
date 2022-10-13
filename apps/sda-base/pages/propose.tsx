@@ -16,6 +16,7 @@ import {
   Tooltip,
   useDaoInfoContext,
 } from '@dao-dao/ui'
+import { normalizeContractName } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { Loader, Logo, PageWrapper, PageWrapperProps } from '@/components'
@@ -84,7 +85,7 @@ const InnerProposalCreate = () => {
             {proposalModules.map(({ address, contractName }, index) => (
               <option key={address} value={index}>
                 {t(
-                  `proposalModuleLabel.${contractName.split(':').slice(-1)[0]}`
+                  `proposalModuleLabel.${normalizeContractName(contractName)}`
                 )}{' '}
                 {t('title.proposals', { count: 1 })}
               </option>
@@ -95,9 +96,9 @@ const InnerProposalCreate = () => {
             <InputThemedText className="inline-flex flex-row gap-2 items-center px-3 mb-2">
               <span>
                 {t(
-                  `proposalModuleLabel.${
-                    selectedProposalModule.contractName.split(':').slice(-1)[0]
-                  }`
+                  `proposalModuleLabel.${normalizeContractName(
+                    selectedProposalModule.contractName
+                  )}`
                 )}{' '}
                 {t('title.proposals', { count: 1 })}
               </span>

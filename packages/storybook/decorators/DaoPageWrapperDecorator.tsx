@@ -12,10 +12,10 @@ export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
       coreAddress: 'daoCoreAddress',
       coreVersion: ContractVersion.V0_2_0,
       votingModuleAddress: 'votingModuleAddress',
-      votingModuleContractName: 'crates.io:cw20-staked-balance-voting',
+      votingModuleContractName: 'crates.io:cwd-voting-cw20-staked',
       proposalModules: [
         {
-          contractName: 'crates.io:cw-govmod-single',
+          contractName: 'crates.io:cwd-proposal-single',
           version: ContractVersion.V0_2_0,
           address: 'proposalModuleAddress',
           prefix: 'A',

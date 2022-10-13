@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileMemberCardMembershipInfo } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui'
-import { makeProps as makeProfileMemberCardMembershipInfoProps } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting/ui/ProfileMemberCardMembershipInfo.stories'
+import { ProfileMemberCardMembershipInfo } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui'
+import { makeProps as makeProfileMemberCardMembershipInfoProps } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui/ProfileMemberCardMembershipInfo.stories'
 
 import { makeProps as makeUnstakingLineProps } from '../UnstakingLine.stories'
 import { UnstakingTaskStatus } from '../UnstakingStatus'

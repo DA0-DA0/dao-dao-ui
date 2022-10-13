@@ -4,7 +4,7 @@ import { CwdProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapt
 import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLayoutDecorator'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
-import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter/adapters/cw20-staked-balance-voting'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked'
 
 import { CreateDaoReview } from './CreateDaoReview'
 

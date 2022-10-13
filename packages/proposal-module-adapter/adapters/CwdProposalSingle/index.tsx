@@ -157,7 +157,7 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
         QuorumVotingConfigItem,
       ],
       advancedWarningI18nKeys: [
-        'daoCreationAdapter.cw-proposal-single.advancedWarning',
+        'daoCreationAdapter.CwdProposalSingle.advancedWarning',
       ],
     },
 

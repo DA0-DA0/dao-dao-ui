@@ -9,7 +9,7 @@ import { UpdatePreProposeConfigData } from './UpdatePreProposeConfigComponent'
 
 export default {
   title:
-    'DAO DAO / packages / proposal-module-adapter / adapters / cw-proposal-single / common / actions / makeUpdatePreProposeConfigAction / UpdatePreProposeConfigComponent',
+    'DAO DAO / packages / proposal-module-adapter / adapters / CwdProposalSingle / common / actions / makeUpdatePreProposeConfigAction / UpdatePreProposeConfigComponent',
   component: UpdatePreProposeConfigComponent,
   decorators: [
     makeReactHookFormDecorator({

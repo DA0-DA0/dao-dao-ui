@@ -7,7 +7,7 @@ import {
 
 export default {
   title:
-    'DAO DAO / packages / voting-module-adapter / adapters / cw20-staked-balance-voting / ui / ProfileCardNotMemberInfo',
+    'DAO DAO / packages / voting-module-adapter / adapters / CwdVotingCw20Staked / ui / ProfileCardNotMemberInfo',
   component: ProfileCardNotMemberInfo,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof ProfileCardNotMemberInfo>
