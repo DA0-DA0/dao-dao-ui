@@ -4,7 +4,7 @@ import { useEffect, useMemo } from 'react'
 
 import { useCachedLoadable } from '../hooks/useCachedLoadable'
 import { blockHeightSelector } from '../recoil/selectors/chain'
-import { pinnedDaosWithProposalModulesSelector } from '../recoil/selectors/pinned'
+import { pinnedDaosWithProposalModulesSelector } from '../recoil/selectors/dao/pinned'
 
 // A proposal is open if all of the following cases are true:
 //   - `open` is true

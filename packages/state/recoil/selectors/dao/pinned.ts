@@ -3,9 +3,9 @@ import { selector, selectorFamily, waitForAll } from 'recoil'
 import { DaoCardInfo } from '@dao-dao/tstypes'
 import { DaoDropdownInfo } from '@dao-dao/ui'
 
-import { pinnedAddressesAtom } from '../atoms'
+import { pinnedAddressesAtom } from '../../atoms'
+import { cwCoreProposalModulesSelector } from '../proposal'
 import { daoCardInfoSelector, daoDropdownInfoSelector } from './dao'
-import { cwCoreProposalModulesSelector } from './proposal'
 
 export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
   key: 'pinnedDaoDropdownInfo',
