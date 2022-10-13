@@ -9,10 +9,10 @@ import { validateJSON } from '@dao-dao/utils'
 
 import { ActionCard } from '..'
 
-export interface CreateValidatorOptions {}
+export interface UnjailValidatorOptions {}
 
-export const CreateValidatorComponent: ActionComponent<
-  CreateValidatorOptions
+export const UnjailValidatorComponent: ActionComponent<
+  UnjailValidatorOptions
 > = (props) => {
   const { t } = useTranslation()
   const { fieldNamePrefix, onRemove, errors, isCreating } = props
@@ -20,14 +20,14 @@ export const CreateValidatorComponent: ActionComponent<
 
   return (
     <ActionCard
-      Icon={CreateValidatorIcon}
+      Icon={UnjailValidatorIcon}
       onRemove={onRemove}
-      title={t('title.createValidator')}
+      title={t('title.unjailValidator')}
     >
       <div className="flex flex-col gap-1 items-stretch">
         <InputLabel
-          name={t('form.createValidatorMessage')}
-          tooltip={t('form.createValidatorMessageTooltip')}
+          name={t('form.unjailValidatorMessage')}
+          tooltip={t('form.unjailValidatorMessageTooltip')}
         />
         <CodeMirrorInput
           control={control}
@@ -51,7 +51,7 @@ export const CreateValidatorComponent: ActionComponent<
   )
 }
 
-export const CreateValidatorIcon = () => {
+export const UnjailValidatorIcon = () => {
   const { t } = useTranslation()
-  return <Emoji label={t('emoji.pick')} symbol="⛏" />
+  return <Emoji label={t('emoji.unlock')} symbol="🔓" />
 }

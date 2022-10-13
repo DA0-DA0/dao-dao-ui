@@ -34,7 +34,7 @@ export const getIconButtonifiedClassNames = ({
   className,
 }: Omit<IconButtonifierProps, 'icon'>) =>
   clsx(
-    'flex justify-center items-center focus:outline-2 focus:outline-border-interactive-focus focus:outline transition-all shrink-0',
+    'flex shrink-0 justify-center items-center focus:outline-2 focus:outline-border-interactive-focus focus:outline transition-all',
 
     focused && 'outline-2 outline-border-interactive-focus outline',
 

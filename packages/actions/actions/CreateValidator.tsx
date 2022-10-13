@@ -1,11 +1,5 @@
 import { useCallback, useMemo } from 'react'
 
-import { NATIVE_DENOM, makeStargateMessage } from '@dao-dao/utils'
-
-import {
-  CreateValidatorIcon,
-  CreateValidatorComponent as StatelessCreateValidatorComponent,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -14,6 +8,13 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
+
+import { NATIVE_DENOM, makeStargateMessage } from '@dao-dao/utils'
+
+import {
+  CreateValidatorIcon,
+  CreateValidatorComponent as StatelessCreateValidatorComponent,
+} from '../components'
 
 interface CreateValidatorData {
   type_url: string
@@ -37,7 +38,7 @@ const useDefaults: UseDefaults<CreateValidatorData> = () => ({
     },
     "minSelfDelegation": "1",
     "delegatorAddress": "<your DAO address>",
-    "validatorAddress": "<your DAO valoper address>",
+    "validatorAddress": "<your DAO validator address>",
     "pubkey": {
       "typeUrl": "/cosmos.crypto.ed25519.PubKey",
       "value": {
