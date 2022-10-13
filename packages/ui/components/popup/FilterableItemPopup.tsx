@@ -164,13 +164,13 @@ export const FilterableItemPopup = <
       onClose={onPopupClose}
       onOpen={onPopupOpen}
       openRef={openRef}
-      popupClassName={clsx('w-60 h-80', popupClassName)}
+      popupClassName={clsx('h-80 w-60', popupClassName)}
       setOpenRef={setOpenRef}
       {...popupProps}
     >
       <div
         className={clsx(
-          'overflow-y-auto grow px-4 space-y-1 w-full no-scrollbar',
+          'no-scrollbar w-full grow space-y-1 overflow-y-auto px-4',
           listClassName
         )}
         ref={itemsListRef}
@@ -193,14 +193,14 @@ export const FilterableItemPopup = <
             )}
 
             <div className="space-y-1 text-left">
-              <p className="text-text-body link-text">{item.label}</p>
+              <p className="link-text text-text-body">{item.label}</p>
               {item.description && (
                 <p className="secondary-text">{item.description}</p>
               )}
             </div>
 
             {item.rightNode && (
-              <div className="flex flex-row grow justify-end items-center">
+              <div className="flex grow flex-row items-center justify-end">
                 {item.rightNode}
               </div>
             )}

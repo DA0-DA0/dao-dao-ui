@@ -182,7 +182,7 @@ export const SdaDaoPageWrapper = ({
         // Make room at top for Header.
         fallback={<PageLoader className="!min-h-[calc(100vh-5rem)]" />}
       >
-        <div className="p-4 mx-auto sm:p-8 max-w-page">{children}</div>
+        <div className="max-w-page mx-auto p-4 sm:p-8">{children}</div>
       </SuspenseLoader>
     </WalletProvider>
   </DaoPageWrapper>

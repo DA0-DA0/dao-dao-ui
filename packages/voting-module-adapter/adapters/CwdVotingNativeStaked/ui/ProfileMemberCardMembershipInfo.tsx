@@ -64,30 +64,30 @@ export const ProfileMemberCardMembershipInfo = ({
 
   return (
     <>
-      <div className="flex flex-row justify-between items-center pb-3 secondary-text">
+      <div className="secondary-text flex flex-row items-center justify-between pb-3">
         <p>{t('title.stakedTokens')}</p>
 
         <TokenAmountDisplay
           amount={stakedTokens}
-          className="font-mono text-right text-text-primary"
+          className="text-text-primary text-right font-mono"
           maxDecimals={tokenDecimals}
           symbol={tokenSymbol}
         />
       </div>
 
-      <div className="flex flex-row justify-between items-center pb-3 secondary-text">
+      <div className="secondary-text flex flex-row items-center justify-between pb-3">
         <p>{t('title.votingPower')}</p>
-        <p className="font-mono text-right text-text-primary">
+        <p className="text-text-primary text-right font-mono">
           {formatPercentOf100(votingPower)}
         </p>
       </div>
 
-      <div className="flex flex-row justify-between items-center pb-3 secondary-text">
+      <div className="secondary-text flex flex-row items-center justify-between pb-3">
         <p>{t('title.unstakingTokens')}</p>
 
         <Button
           className={clsx(
-            'font-mono text-right underline-offset-2',
+            'text-right font-mono underline-offset-2',
             unstakingBalance > 0 && 'text-text-primary'
           )}
           onClick={() => setShowUnstakingTokens(true)}
@@ -103,12 +103,12 @@ export const ProfileMemberCardMembershipInfo = ({
         </Button>
       </div>
 
-      <div className="flex flex-row justify-between items-center pb-6 secondary-text">
+      <div className="secondary-text flex flex-row items-center justify-between pb-6">
         <p>{t('title.availableTokens')}</p>
 
         <TokenAmountDisplay
           amount={unstakedTokens}
-          className={clsx('font-mono text-right', {
+          className={clsx('text-right font-mono', {
             'text-text-tertiary': unstakedTokens === 0,
             'text-icon-interactive-valid': unstakedTokens > 0,
           })}

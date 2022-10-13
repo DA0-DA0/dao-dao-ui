@@ -53,17 +53,17 @@ export const AddressInput = <
   return (
     <div
       className={clsx(
-        'flex gap-2 items-center py-3 px-4 font-mono text-sm bg-transparent rounded-md focus-within:outline-none ring-1 focus-within:ring-2 transition secondary-text',
+        'secondary-text flex items-center gap-2 rounded-md bg-transparent py-3 px-4 font-mono text-sm ring-1 transition focus-within:outline-none focus-within:ring-2',
         error
           ? 'ring-border-interactive-error'
           : 'ring-border-primary focus:ring-border-interactive-focus',
         containerClassName
       )}
     >
-      <Icon className="!w-5 !h-5" />
+      <Icon className="!h-5 !w-5" />
       <input
         className={clsx(
-          'w-full bg-transparent border-none outline-none ring-none body-text',
+          'ring-none body-text w-full border-none bg-transparent outline-none',
           className
         )}
         disabled={disabled}

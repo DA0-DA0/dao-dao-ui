@@ -20,8 +20,8 @@ export const HomepageCardVote = () => {
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
   return (
-    <div className="flex flex-col gap-3 p-4 max-w-3xl bg-primary rounded-lg border border-default backdrop-blur-lg">
-      <div className="flex gap-2 items-center">
+    <div className="flex max-w-3xl flex-col gap-3 rounded-lg border border-default bg-primary p-4 backdrop-blur-lg">
+      <div className="flex items-center gap-2">
         <p className="mr-1 text-2xl">
           <Emoji label={t('emoji.ballotBox')} symbol="🗳" />
         </p>
@@ -32,7 +32,7 @@ export const HomepageCardVote = () => {
           })}
         </p>
       </div>
-      <div className="flex flex-wrap grid-cols-3 gap-2 md:grid">
+      <div className="flex grid-cols-3 flex-wrap gap-2 md:grid">
         <Button
           className={clsx('group transition', {
             'bg-valid hover:bg-valid': selected === VoteChoice.Yes,
@@ -47,7 +47,7 @@ export const HomepageCardVote = () => {
           <CheckIcon
             className={clsx('w-4', {
               'text-base': selected === VoteChoice.Yes,
-              'group-hover:text-base text-valid': selected !== VoteChoice.Yes,
+              'text-valid group-hover:text-base': selected !== VoteChoice.Yes,
             })}
           />
           {t('info.yesVote')}
@@ -66,7 +66,7 @@ export const HomepageCardVote = () => {
           <XIcon
             className={clsx('w-4', {
               'text-base': selected === VoteChoice.No,
-              'group-hover:text-base text-error': selected !== VoteChoice.No,
+              'text-error group-hover:text-base': selected !== VoteChoice.No,
             })}
           />
           {t('info.noVote')}
@@ -93,7 +93,7 @@ export const HomepageCardVote = () => {
           setSelected(undefined)
         }}
       >
-        <div className="flex gap-2 justify-center items-center w-full">
+        <div className="flex w-full items-center justify-center gap-2">
           <p>{t('button.castYourVote')}</p> <Airplane />
         </div>
       </Button>

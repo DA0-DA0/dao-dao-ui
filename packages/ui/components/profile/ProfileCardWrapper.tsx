@@ -66,7 +66,7 @@ export const ProfileCardWrapper = ({
 
       <div className="p-6">
         {compact ? (
-          <div className="flex flex-row gap-3 items-stretch">
+          <div className="flex flex-row items-stretch gap-3">
             <ProfileImage
               imageUrl={
                 walletProfile.loading ? undefined : walletProfile.data.imageUrl
@@ -87,7 +87,7 @@ export const ProfileCardWrapper = ({
             </div>
           </div>
         ) : (
-          <div className="flex flex-col justify-center items-center pt-4">
+          <div className="flex flex-col items-center justify-center pt-4">
             <ProfileImage
               className="mb-6"
               imageUrl={
@@ -105,7 +105,7 @@ export const ProfileCardWrapper = ({
               walletProfile={walletProfile}
             />
             {established && (
-              <div className="-mt-3 mb-5 font-mono caption-text">
+              <div className="caption-text -mt-3 mb-5 font-mono">
                 {t('info.establishedAbbr')} {formatDate(established)}
               </div>
             )}
@@ -116,7 +116,7 @@ export const ProfileCardWrapper = ({
 
       <div
         className={clsx(
-          'flex flex-col items-stretch p-6 border-t border-t-border-primary',
+          'flex flex-col items-stretch border-t border-t-border-primary p-6',
           childContainerClassName
         )}
       >
@@ -175,13 +175,13 @@ const ProfileNameDisplayAndEditor = ({
         <div
           className={clsx(
             'relative mb-2 h-5',
-            compact ? '' : 'flex flex-col items-center mx-16'
+            compact ? '' : 'mx-16 flex flex-col items-center'
           )}
         >
           <TextInput
             autoFocus
             className={clsx(
-              'pb-1 border-b border-border-primary !title-text',
+              '!title-text border-b border-border-primary pb-1',
               !compact && 'text-center'
             )}
             ghost
@@ -198,7 +198,7 @@ const ProfileNameDisplayAndEditor = ({
             value={editingName}
           />
 
-          <div className="flex absolute top-0 -right-12 bottom-0 flex-row gap-1 items-center">
+          <div className="absolute top-0 -right-12 bottom-0 flex flex-row items-center gap-1">
             {savingName ? (
               <Loader fill={false} size={16} />
             ) : (
@@ -233,7 +233,7 @@ const ProfileNameDisplayAndEditor = ({
               'title-text',
               walletProfile.loading && 'animate-pulse',
               noNameSet
-                ? 'italic font-normal text-text-secondary'
+                ? 'font-normal italic text-text-secondary'
                 : 'text-text-body'
             )}
           >
@@ -249,9 +249,9 @@ const ProfileNameDisplayAndEditor = ({
           {canEdit && (
             <Edit
               className={clsx(
-                'absolute -right-6 pl-2 !w-6 !h-4 text-icon-secondary',
+                'absolute -right-6 !h-4 !w-6 pl-2 text-icon-secondary',
                 !noNameSet &&
-                  'opacity-0 group-hover:opacity-100 transition-opacity'
+                  'opacity-0 transition-opacity group-hover:opacity-100'
               )}
             />
           )}

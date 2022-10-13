@@ -53,12 +53,12 @@ export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
       {existingTokens.length > 0 && (
         <>
           <InputLabel name={t('form.existingTokens')} />
-          <div className="grid grid-cols-5 gap-1 mb-2">
+          <div className="mb-2 grid grid-cols-5 gap-1">
             {existingTokens.map(({ address, info }) => (
               <Button
                 key={address}
                 className={clsx('text-center', {
-                  'text-secondary bg-transparent': address !== tokenAddress,
+                  'bg-transparent text-secondary': address !== tokenAddress,
                 })}
                 disabled={!isCreating}
                 onClick={() => setValue(fieldNamePrefix + 'address', address)}

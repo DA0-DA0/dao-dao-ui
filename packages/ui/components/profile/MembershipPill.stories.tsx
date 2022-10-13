@@ -8,7 +8,7 @@ export default {
 } as ComponentMeta<typeof MembershipPill>
 
 const Template: ComponentStory<typeof MembershipPill> = (args) => (
-  <div className="flex flex-row gap-4 items-center">
+  <div className="flex flex-row items-center gap-4">
     <MembershipPill {...args} isMember />
     <MembershipPill {...args} isMember={false} />
   </div>

@@ -63,7 +63,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
       title={t('title.manageMembers')}
     >
       <InputLabel className="mt-2" name={t('form.membersToAddOrUpdate')} />
-      <div className="flex flex-col gap-2 items-stretch">
+      <div className="flex flex-col items-stretch gap-2">
         {toAddFields.map(({ id }, index) => {
           const addrFieldName = (fieldNamePrefix +
             `toAdd.${index}.addr`) as `toAdd.${number}.addr`
@@ -71,8 +71,8 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
             `toAdd.${index}.weight`) as `toAdd.${number}.weight`
 
           return (
-            <div key={id} className="flex flex-row gap-4 items-center">
-              <div className="flex flex-row gap-2 items-center">
+            <div key={id} className="flex flex-row items-center gap-4">
+              <div className="flex flex-row items-center gap-2">
                 <div>
                   <NumberInput
                     disabled={!isCreating}
@@ -96,7 +96,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
                 </div>
               </div>
               {/* eslint-disable-next-line i18next/no-literal-string */}
-              <p className="font-mono text-2xl secondary-text">&#10142;</p>
+              <p className="secondary-text font-mono text-2xl">&#10142;</p>
               <div className="grow">
                 <AddressInput
                   disabled={!isCreating}
@@ -116,14 +116,14 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
 
               {isCreating && (
                 <button onClick={() => toAddRemove(index)} type="button">
-                  <XIcon className="w-4 text-error" />
+                  <XIcon className="text-error w-4" />
                 </button>
               )}
             </div>
           )
         })}
         {!isCreating && toAddFields.length === 0 && (
-          <p className="text-xs italic text-tertiary">{t('info.none')}</p>
+          <p className="text-tertiary text-xs italic">{t('info.none')}</p>
         )}
         {isCreating && (
           <Button
@@ -139,9 +139,9 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
       </div>
 
       <InputLabel className="mt-4" name={t('form.membersToRemove')} />
-      <div className="flex flex-col gap-2 items-stretch">
+      <div className="flex flex-col items-stretch gap-2">
         {toRemoveFields.map(({ id }, index) => (
-          <div key={id} className="flex flex-row gap-4 items-center">
+          <div key={id} className="flex flex-row items-center gap-4">
             <div className="grow">
               <AddressInput
                 disabled={!isCreating}
@@ -167,13 +167,13 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
 
             {isCreating && (
               <button onClick={() => toRemoveRemove(index)} type="button">
-                <XIcon className="w-4 text-error" />
+                <XIcon className="text-error w-4" />
               </button>
             )}
           </div>
         ))}
         {!isCreating && toRemoveFields.length === 0 && (
-          <p className="text-xs italic text-tertiary">{t('info.none')}</p>
+          <p className="text-tertiary text-xs italic">{t('info.none')}</p>
         )}
         {isCreating && (
           <Button

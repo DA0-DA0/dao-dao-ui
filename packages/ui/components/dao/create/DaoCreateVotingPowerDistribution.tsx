@@ -65,17 +65,17 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col items-stretch bg-background-tertiary rounded-lg sm:flex-row">
-      <div className="flex flex-col shrink-0 gap-8 items-center p-6 border-b border-border-secondary sm:border-r sm:border-b-0">
-        <p className="self-stretch text-text-body primary-text">
+    <div className="flex flex-col items-stretch rounded-lg bg-background-tertiary sm:flex-row">
+      <div className="flex shrink-0 flex-col items-center gap-8 border-b border-border-secondary p-6 sm:border-r sm:border-b-0">
+        <p className="primary-text self-stretch text-text-body">
           {t('title.votingPower')}
         </p>
 
         <PieChart className="mx-10" data={pieData} />
       </div>
 
-      <div className="flex overflow-hidden flex-col grow gap-6 p-6">
-        <p className="mb-2 text-text-body primary-text">
+      <div className="flex grow flex-col gap-6 overflow-hidden p-6">
+        <p className="primary-text mb-2 text-text-body">
           {distributionPrefix}
           {t('title.distribution')}
         </p>
@@ -85,18 +85,18 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
             key={index}
             className={clsx('flex flex-col gap-1', !members?.length && '-mb-2')}
           >
-            <div className="flex flex-row gap-2 justify-between items-center mb-2">
-              <div className="flex flex-row gap-3 items-center">
+            <div className="mb-2 flex flex-row items-center justify-between gap-2">
+              <div className="flex flex-row items-center gap-3">
                 {color && (
                   <div
-                    className="w-3 h-3 rounded-full"
+                    className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: color }}
                   ></div>
                 )}
-                <p className="text-text-secondary link-text">{name}</p>
+                <p className="link-text text-text-secondary">{name}</p>
               </div>
 
-              <p className="font-mono text-right text-text-tertiary caption-text">
+              <p className="caption-text text-right font-mono text-text-tertiary">
                 {readableValue}
               </p>
             </div>
@@ -104,12 +104,12 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
             {members?.map(({ address, readableValue, color }, index) => (
               <div
                 key={index}
-                className="flex flex-row gap-6 justify-between items-center ml-1"
+                className="ml-1 flex flex-row items-center justify-between gap-6"
               >
-                <div className="flex overflow-hidden flex-row gap-3 items-center">
+                <div className="flex flex-row items-center gap-3 overflow-hidden">
                   {color && (
                     <div
-                      className="w-3 h-3 rounded-full"
+                      className="h-3 w-3 rounded-full"
                       style={{ backgroundColor: color }}
                     ></div>
                   )}
@@ -119,7 +119,7 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
                   />
                 </div>
 
-                <p className="font-mono text-right text-text-tertiary caption-text">
+                <p className="caption-text text-right font-mono text-text-tertiary">
                   {readableValue}
                 </p>
               </div>
@@ -139,7 +139,7 @@ export interface ChartProps {
 const PieChart = ({ data, className }: ChartProps) => (
   <Pie
     className={clsx(
-      'justify-self-center !w-32 !h-32 md:!w-40 md:!h-40',
+      '!h-32 !w-32 justify-self-center md:!h-40 md:!w-40',
       className
     )}
     data={{

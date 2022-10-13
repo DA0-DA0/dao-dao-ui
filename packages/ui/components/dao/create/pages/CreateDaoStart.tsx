@@ -25,11 +25,11 @@ export const CreateDaoStart = ({
 
   return (
     <>
-      <div className="bg-background-tertiary rounded-lg">
-        <div className="flex flex-row gap-6 justify-between items-center py-4 px-6 border-b border-border-secondary">
-          <p className="text-text-body primary-text">{t('form.daoName')}</p>
+      <div className="rounded-lg bg-background-tertiary">
+        <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
+          <p className="primary-text text-text-body">{t('form.daoName')}</p>
 
-          <div className="flex flex-col grow">
+          <div className="flex grow flex-col">
             <TextInput
               error={errors.name}
               fieldName="name"
@@ -51,7 +51,7 @@ export const CreateDaoStart = ({
           </div>
         </div>
         <div className="flex flex-col gap-4 p-6 pt-5">
-          <p className="text-text-body primary-text">
+          <p className="primary-text text-text-body">
             {t('form.description')}
             <span className="text-text-tertiary">
               {/* eslint-disable-next-line i18next/no-literal-string */}
@@ -81,7 +81,7 @@ export const CreateDaoStart = ({
         </div>
       </div>
 
-      <p className="my-6 text-text-body title-text">
+      <p className="title-text my-6 text-text-body">
         {t('title.chooseAStructure')}
       </p>
 

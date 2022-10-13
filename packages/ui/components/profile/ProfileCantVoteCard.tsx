@@ -39,9 +39,9 @@ export const ProfileCantVoteCard = ({
       }
       {...wrapperProps}
     >
-      <div className="p-6 border-t border-t-border-primary">
-        <div className="flex flex-row justify-between items-center secondary-text">
-          <div className="flex flex-row gap-2 items-center">
+      <div className="border-t border-t-border-primary p-6">
+        <div className="secondary-text flex flex-row items-center justify-between">
+          <div className="flex flex-row items-center gap-2">
             <p>{t('title.votingPower')}</p>
             <TooltipIcon
               className="text-icon-secondary"
@@ -52,14 +52,14 @@ export const ProfileCantVoteCard = ({
           <p className="font-mono text-text-interactive-disabled">0%</p>
         </div>
 
-        <div className="flex flex-row justify-between items-center mt-3 secondary-text">
+        <div className="secondary-text mt-3 flex flex-row items-center justify-between">
           <p>{t('title.vote')}</p>
           <p className="text-text-tertiary">{t('info.none')}</p>
         </div>
       </div>
 
-      <div className="p-6 border-t border-t-border-primary">
-        <p className="mb-1 link-text">{t('title.membership')}</p>
+      <div className="border-t border-t-border-primary p-6">
+        <p className="link-text mb-1">{t('title.membership')}</p>
 
         {notMemberInfo}
       </div>

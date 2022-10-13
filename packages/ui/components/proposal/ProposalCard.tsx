@@ -20,7 +20,7 @@ export const ProposalCard = ({
 }: ProposalCardProps) => (
   <LinkWrapper
     className={clsx(
-      'flex relative flex-col w-full bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md ring-1 ring-inset ring-transparent hover:ring-border-interactive-hover active:ring-border-interactive-focus transition-all',
+      'relative flex w-full flex-col rounded-md bg-background-secondary ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus',
       className
     )}
     href={`/dao/${coreAddress}/proposals/${id}`}
@@ -45,17 +45,17 @@ export const ProposalCard = ({
           {id}
         </p>
       </DaoImage>
-      <p className="text-center text-text-body primary-text">{title}</p>
-      <p className="break-words line-clamp-4 secondary-text">
+      <p className="primary-text text-center text-text-body">{title}</p>
+      <p className="secondary-text break-words line-clamp-4">
         {removeMarkdown(description)}
       </p>
     </div>
 
-    <div className="flex flex-col gap-2 self-stretch py-5 px-6 border-t border-border-secondary">
+    <div className="flex flex-col gap-2 self-stretch border-t border-border-secondary py-5 px-6">
       {info.map(({ Icon, label }, index) => (
-        <div key={index} className="flex flex-row gap-5 items-center">
-          <Icon className="!w-5 !h-5 !text-icon-secondary" />
-          <p className="font-mono text-text-secondary caption-text">{label}</p>
+        <div key={index} className="flex flex-row items-center gap-5">
+          <Icon className="!h-5 !w-5 !text-icon-secondary" />
+          <p className="caption-text font-mono text-text-secondary">{label}</p>
         </div>
       ))}
     </div>

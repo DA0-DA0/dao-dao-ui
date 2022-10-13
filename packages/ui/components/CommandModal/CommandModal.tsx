@@ -45,7 +45,7 @@ export const CommandModal = ({
       containerClassName="p-0 w-full max-w-[550px] h-[450px] max-h-[90vh] border"
       headerContainerClassName="!m-0 px-4 py-6"
       headerContent={
-        <div className="flex flex-row gap-4 items-stretch h-8">
+        <div className="flex h-8 flex-row items-stretch gap-4">
           {/* Don't show the root context. */}
           {contexts.slice(1).map((context, index) => (
             <ContextPill
@@ -63,7 +63,7 @@ export const CommandModal = ({
           ))}
 
           <SearchBar
-            className="leading-8 text-text-body !primary-text"
+            className="!primary-text leading-8 text-text-body"
             containerClassName="grow"
             ghost
             hideIcon

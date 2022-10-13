@@ -37,12 +37,12 @@ export const DaoDropdown = ({
     <Link href={`/dao/${coreAddress}`}>
       <a
         className={clsx(
-          'box-content flex flex-row justify-center items-center py-1.5 px-6 w-8 h-8 hover:opacity-70 active:opacity-60 transition-opacity',
+          'box-content flex h-8 w-8 flex-row items-center justify-center py-1.5 px-6 transition-opacity hover:opacity-70 active:opacity-60',
           asPath.includes(coreAddress) && 'bg-background-interactive-selected'
         )}
       >
         <Tooltip title={name}>
-          <img alt="" className="w-7 h-7 rounded-full" src={imageUrl} />
+          <img alt="" className="h-7 w-7 rounded-full" src={imageUrl} />
         </Tooltip>
       </a>
     </Link>
@@ -61,12 +61,12 @@ export const DaoDropdown = ({
             // ml-2, so to center this border beneath the arrow, we need to
             // include the full offset (ml-2) and half the width (w-3), getting
             // w-5.
-            className="shrink-0 w-5 border-r border-border-secondary"
+            className="w-5 shrink-0 border-r border-border-secondary"
           ></div>
         ))}
 
-        <div className="flex flex-row grow gap-2 items-center ml-2">
-          <div className="flex shrink-0 justify-center items-center w-6 h-6">
+        <div className="ml-2 flex grow flex-row items-center gap-2">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center">
             {subdaos?.length || content ? (
               <DropdownIconButton
                 className="text-icon-primary"
@@ -74,15 +74,15 @@ export const DaoDropdown = ({
                 toggle={() => setExpanded((e) => !e)}
               />
             ) : (
-              <div className="w-1 h-1 bg-icon-interactive-disabled rounded-full"></div>
+              <div className="h-1 w-1 rounded-full bg-icon-interactive-disabled"></div>
             )}
           </div>
 
           <Link href={`/dao/${coreAddress}`}>
-            <a className="flex flex-row grow gap-2 items-center py-2 hover:opacity-70 active:opacity-60 transition-opacity">
-              <img alt="" className="w-5 h-5 rounded-full" src={imageUrl} />
+            <a className="flex grow flex-row items-center gap-2 py-2 transition-opacity hover:opacity-70 active:opacity-60">
+              <img alt="" className="h-5 w-5 rounded-full" src={imageUrl} />
 
-              <p className="text-text-body link-text">{name}</p>
+              <p className="link-text text-text-body">{name}</p>
             </a>
           </Link>
         </div>

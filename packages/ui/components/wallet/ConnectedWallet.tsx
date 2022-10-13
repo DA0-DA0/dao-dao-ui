@@ -40,17 +40,17 @@ export const ConnectedWallet = ({
 
   return (
     <div
-      className={clsx('flex flex-row justify-between items-center', className)}
+      className={clsx('flex flex-row items-center justify-between', className)}
     >
-      <div className="flex flex-row gap-4 items-stretch">
-        <div className="flex justify-center items-center w-12 h-12 rounded-full border-[2px] border-border-primary">
-          <Tag className="w-4 h-4 text-icon-primary" />
+      <div className="flex flex-row items-stretch gap-4">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full border-[2px] border-border-primary">
+          <Tag className="h-4 w-4 text-icon-primary" />
         </div>
 
-        <div className="flex flex-col gap-1 justify-center">
+        <div className="flex flex-col justify-center gap-1">
           <p
             className={clsx(
-              'text-text-body primary-text',
+              'primary-text text-text-body',
               data.loading && 'animate-pulse'
             )}
           >
@@ -59,14 +59,14 @@ export const ConnectedWallet = ({
 
           <TokenAmountDisplay
             amount={data.loading ? { loading: true } : data.data.tokenBalance}
-            className="font-mono legend-text"
+            className="legend-text font-mono"
             maxDecimals={tokenDecimals}
             symbol={tokenSymbol}
           />
         </div>
       </div>
 
-      <div className="flex flex-row gap-2 items-center">
+      <div className="flex flex-row items-center gap-2">
         <Tooltip title={t('info.copyWalletAddressTooltip')}>
           <IconButton
             Icon={copied ? CheckCircleIcon : Link}

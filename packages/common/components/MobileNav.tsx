@@ -53,7 +53,7 @@ export const MobileNav = ({
   return (
     <>
       <div
-        className="flex flex-row gap-2 justify-self-end items-center py-2 px-4 text-sm text-body bg-primary rounded-md cursor-pointer sm:hidden"
+        className="flex cursor-pointer flex-row items-center gap-2 justify-self-end rounded-md bg-primary py-2 px-4 text-sm text-body sm:hidden"
         onClick={() => setVisible((v) => !v)}
       >
         {visible ? (
@@ -71,7 +71,7 @@ export const MobileNav = ({
 
       <div
         className={clsx(
-          'overflow-y-auto fixed inset-0 top-20 z-10 p-4 bg-white styled-scrollbar',
+          'styled-scrollbar fixed inset-0 top-20 z-10 overflow-y-auto bg-white p-4',
           {
             hidden: !visible,
             'flex flex-col sm:hidden': visible,
@@ -79,10 +79,10 @@ export const MobileNav = ({
         )}
       >
         {status === WalletConnectionStatus.Connected ? (
-          <div className="flex flex-row gap-3 justify-between items-center py-2 px-4 w-full rounded-md border border-default">
-            <div className="flex flex-col link-text">
+          <div className="flex w-full flex-row items-center justify-between gap-3 rounded-md border border-default py-2 px-4">
+            <div className="link-text flex flex-col">
               <span>{walletName}</span>
-              <span className="font-mono text-secondary capitalize gradient-text">
+              <span className="gradient-text font-mono capitalize text-secondary">
                 {walletBalance.toLocaleString(undefined, {
                   maximumFractionDigits: NATIVE_DECIMALS,
                 })}{' '}
@@ -98,7 +98,7 @@ export const MobileNav = ({
           <ConnectWalletButton contentContainerClassName="justify-center" />
         ) : null}
 
-        <div className="flex flex-col gap-1 items-stretch px-1 mt-4 mb-10">
+        <div className="mt-4 mb-10 flex flex-col items-stretch gap-1 px-1">
           {items.map((item) => (
             <NavItem key={item.href} item={item} mobile />
           ))}

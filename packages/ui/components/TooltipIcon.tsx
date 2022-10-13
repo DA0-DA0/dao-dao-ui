@@ -14,7 +14,7 @@ export const TooltipIcon = ({ className, ...props }: TooltipIconProps) => (
       {/* Make 20% larger than size of text. */}
       <Info
         className={clsx(
-          'shrink-0 text-[1.2em] hover:opacity-80 active:opacity-70 transition-opacity cursor-help',
+          'shrink-0 cursor-help text-[1.2em] transition-opacity hover:opacity-80 active:opacity-70',
           className
         )}
       />

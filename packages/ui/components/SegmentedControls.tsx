@@ -30,7 +30,7 @@ export const SegmentedControls = <T extends unknown>({
   return (
     <div
       className={clsx(
-        'group grid grid-flow-col auto-cols-fr bg-background-tertiary rounded-md',
+        'group grid auto-cols-fr grid-flow-col rounded-md bg-background-tertiary',
         disabled && 'pointer-events-none',
         className
       )}
@@ -42,7 +42,7 @@ export const SegmentedControls = <T extends unknown>({
           {index > 0 && (
             <div
               className={clsx(
-                'self-center w-[1px] h-4 bg-border-primary opacity-100 transition-opacity',
+                'h-4 w-[1px] self-center bg-border-primary opacity-100 transition-opacity',
                 {
                   // Do not show left border if...
                   '!opacity-0':
@@ -61,7 +61,7 @@ export const SegmentedControls = <T extends unknown>({
 
           <Button
             className={clsx(
-              'flex justify-center items-center !px-4 w-full',
+              'flex w-full items-center justify-center !px-4',
               selected === value || hovering === index
                 ? // Brighten text when selected or hovering over this tab.
                   'body-text'

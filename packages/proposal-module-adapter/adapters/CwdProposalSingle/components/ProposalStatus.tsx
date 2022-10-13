@@ -26,7 +26,7 @@ export const ProposalStatus = ({
       icon={
         <Icon
           className={clsx(
-            '!w-5 !h-5',
+            '!h-5 !w-5',
             dimmed ? 'text-icon-tertiary' : iconClassName
           )}
         />

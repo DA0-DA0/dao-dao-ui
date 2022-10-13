@@ -80,12 +80,12 @@ export const TierCard = ({
   const tierVotingWeight = data.tiers?.[tierIndex]?.weight ?? 0
 
   return (
-    <div className="rounded-lg bg-background-tertiary">
-      <div className="flex flex-row justify-between items-center p-4 h-14 border-b border-border-base">
-        <div className="flex flex-row gap-3 items-center">
+    <div className="bg-background-tertiary rounded-lg">
+      <div className="border-border-base flex h-14 flex-row items-center justify-between border-b p-4">
+        <div className="flex flex-row items-center gap-3">
           {!showColorDotOnMember && (
             <div
-              className="shrink-0 w-3 h-3 rounded-full"
+              className="h-3 w-3 shrink-0 rounded-full"
               style={{
                 backgroundColor: tierColor,
               }}
@@ -108,8 +108,8 @@ export const TierCard = ({
         )}
       </div>
 
-      <div className="flex flex-col items-stretch sm:flex-row sm:justify-between sm:items-center">
-        <div className="flex flex-col grow p-6 border-b sm:border-r sm:border-b-0 border-border-secondary">
+      <div className="flex flex-col items-stretch sm:flex-row sm:items-center sm:justify-between">
+        <div className="border-border-secondary flex grow flex-col border-b p-6 sm:border-r sm:border-b-0">
           <InputLabel
             containerProps={{ className: 'mb-2' }}
             name={t('form.tierNameTitle')}
@@ -129,7 +129,7 @@ export const TierCard = ({
           />
         </div>
 
-        <div className="flex flex-col grow p-6">
+        <div className="flex grow flex-col p-6">
           <InputLabel
             containerProps={{ className: 'mb-2' }}
             name={t('form.percentOfTotalSupply')}
@@ -138,7 +138,7 @@ export const TierCard = ({
             })}
           />
 
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-row items-center gap-2">
             <NumberInput
               containerClassName="grow"
               error={
@@ -176,23 +176,23 @@ export const TierCard = ({
         </div>
       </div>
 
-      <div className="flex flex-col p-6 border-t border-border-secondary">
+      <div className="border-border-secondary flex flex-col border-t p-6">
         <InputLabel
           containerProps={{ className: 'mb-2' }}
           name={t('title.members')}
         />
 
-        <div className="flex flex-col gap-1 items-stretch">
+        <div className="flex flex-col items-stretch gap-1">
           {members.map(({ id }, memberIndex) => (
             <div
               key={id}
-              className="flex flex-row gap-4 items-center p-4 rounded-lg bg-background-secondary"
+              className="bg-background-secondary flex flex-row items-center gap-4 rounded-lg p-4"
             >
               <div className="grow">
-                <div className="flex flex-row gap-4 items-center">
+                <div className="flex flex-row items-center gap-4">
                   {showColorDotOnMember && (
                     <div
-                      className="shrink-0 w-2 h-2 rounded-full"
+                      className="h-2 w-2 shrink-0 rounded-full"
                       style={{
                         backgroundColor:
                           VOTING_POWER_DISTRIBUTION_COLORS[
@@ -247,11 +247,11 @@ export const TierCard = ({
           ))}
 
           <Button
-            className="self-start mt-1"
+            className="mt-1 self-start"
             onClick={() => appendMember({ address: '' })}
             variant="ghost"
           >
-            <Add className="!w-6 !h-6 text-icon-secondary" />
+            <Add className="text-icon-secondary !h-6 !w-6" />
             <p>{t('button.addMember')}</p>
           </Button>
 

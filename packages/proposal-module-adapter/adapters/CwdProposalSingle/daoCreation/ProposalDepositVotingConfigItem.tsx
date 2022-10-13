@@ -137,7 +137,7 @@ export const ProposalDepositInput = ({
       {enabled && (
         <>
           <div className="space-y-1">
-            <div className="flex flex-row gap-2 items-stretch">
+            <div className="flex flex-row items-stretch gap-2">
               <NumberInput
                 containerClassName="grow"
                 error={errors?.proposalDeposit?.amount}

@@ -37,7 +37,7 @@ export const ProfileNotMemberCard = ({
       }
       {...wrapperProps}
     >
-      <p className="mb-1 link-text">{t('title.membership')}</p>
+      <p className="link-text mb-1">{t('title.membership')}</p>
 
       {notMemberInfo}
     </ProfileCardWrapper>

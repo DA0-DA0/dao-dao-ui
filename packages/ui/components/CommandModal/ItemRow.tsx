@@ -21,9 +21,9 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
     return (
       <div
         className={clsx(
-          'group flex flex-row gap-2 items-center p-3 h-9 bg-transparent rounded-md transition',
+          'group flex h-9 flex-row items-center gap-2 rounded-md bg-transparent p-3 transition',
           !item.disabled &&
-            'hover:bg-background-interactive-hover cursor-pointer',
+            'cursor-pointer hover:bg-background-interactive-hover',
           !item.disabled && selected && 'bg-background-interactive-hover',
           className
         )}
@@ -34,7 +34,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
           <div
             aria-label={t('info.daosLogo')}
             className={clsx(
-              'w-6 h-6 bg-center bg-cover rounded-full',
+              'h-6 w-6 rounded-full bg-cover bg-center',
               item.disabled && 'opacity-50'
             )}
             role="img"
@@ -45,7 +45,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
         ) : (
           <item.Icon
             className={clsx(
-              '!w-6 !h-6',
+              '!h-6 !w-6',
               item.disabled
                 ? 'text-icon-interactive-disabled'
                 : 'text-icon-primary'
@@ -55,7 +55,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
 
         <p
           className={clsx(
-            'font-medium link-text',
+            'link-text font-medium',
             item.disabled ? 'text-text-interactive-disabled' : 'text-text-body'
           )}
         >
@@ -63,7 +63,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
         </p>
 
         {loading && (
-          <div className="flex flex-row grow justify-end items-center">
+          <div className="flex grow flex-row items-center justify-end">
             <Loader fill={false} size={20} />
           </div>
         )}

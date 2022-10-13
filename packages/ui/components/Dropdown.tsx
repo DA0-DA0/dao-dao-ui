@@ -77,21 +77,21 @@ export const Dropdown = <T extends unknown>({
 
   return (
     <div
-      className={clsx('inline-block relative', containerClassName)}
+      className={clsx('relative inline-block', containerClassName)}
       ref={containerRef}
     >
       <div
         className={clsx(
           'overflow-hidden rounded-md border border-b-0 transition-all',
           open
-            ? 'bg-component-dropdown rounded-b-none border-border-primary'
+            ? 'rounded-b-none border-border-primary bg-component-dropdown'
             : 'border-transparent '
         )}
       >
         <Button
           className="rounded-none"
           contentContainerClassName={clsx(
-            'gap-4 justify-between',
+            'justify-between gap-4',
             labelContainerClassName
           )}
           onClick={() => setOpen((o) => !o)}
@@ -99,7 +99,7 @@ export const Dropdown = <T extends unknown>({
         >
           <p
             className={clsx(
-              'text-left link-text',
+              'link-text text-left',
               {
                 // Darken if nothing selected and showing placeholder.
                 'text-text-secondary': selectedOptions.length === 0,
@@ -117,21 +117,21 @@ export const Dropdown = <T extends unknown>({
               : t('info.numSelected', { count: selectedOptions.length })}
           </p>
 
-          <ArrowDropdown className={clsx('w-2 h-2', iconClassName)} />
+          <ArrowDropdown className={clsx('h-2 w-2', iconClassName)} />
         </Button>
       </div>
 
       {/* Dropdown */}
       <div
         className={clsx(
-          'overflow-hidden absolute right-0 left-0 z-10 bg-component-dropdown rounded-b-md border border-t-0 border-border-primary transition-all',
+          'absolute right-0 left-0 z-10 overflow-hidden rounded-b-md border border-t-0 border-border-primary bg-component-dropdown transition-all',
           {
-            'opacity-0 pointer-events-none': !open,
+            'pointer-events-none opacity-0': !open,
             'opacity-100': open,
           }
         )}
       >
-        <div className="flex overflow-y-auto flex-col gap-[1px] h-full max-h-80 border-t border-t-border-base no-scrollbar">
+        <div className="no-scrollbar flex h-full max-h-80 flex-col gap-[1px] overflow-y-auto border-t border-t-border-base">
           {options.map((option, index) => (
             <Button
               key={index}

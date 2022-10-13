@@ -14,17 +14,17 @@ export const Footer = () => {
       <div className="flex flex-col gap-1">
         <FooterItem
           href="https://docs.daodao.zone"
-          icon={<Code className="w-4 h-4" />}
+          icon={<Code className="h-4 w-4" />}
           name={t('title.documentation')}
         />
         <FooterItem
           href="https://twitter.com/DA0_DA0"
-          icon={<Bubble className="w-4 h-4" />}
+          icon={<Bubble className="h-4 w-4" />}
           name={t('title.twitter')}
         />
         <FooterItem
           href="https://discord.gg/sAaGuyW3D2"
-          icon={<Bubble className="w-4 h-4" />}
+          icon={<Bubble className="h-4 w-4" />}
           name={t('title.discord')}
         />
       </div>
@@ -44,11 +44,11 @@ const FooterItem = ({ href, icon, name }: FooterItemProps) => (
     href={href}
     variant="ghost"
   >
-    <div className="flex flex-row gap-2 items-center">
+    <div className="flex flex-row items-center gap-2">
       {icon}
       <p>{name}</p>
     </div>
 
-    <ArrowUpRight className="w-3 h-3" />
+    <ArrowUpRight className="h-3 w-3" />
   </ButtonLink>
 )

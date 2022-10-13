@@ -18,18 +18,18 @@ export const DaoCreateConfigReviewCard = ({
   reviewClassName,
   review,
 }: DaoCreateConfigReviewCardProps) => (
-  <div className="flex flex-row gap-6 justify-between items-center py-8 px-6 bg-background-tertiary rounded-lg">
-    <div className="flex flex-row gap-3 items-center">
+  <div className="flex flex-row items-center justify-between gap-6 rounded-lg bg-background-tertiary py-8 px-6">
+    <div className="flex flex-row items-center gap-3">
       <p className="text-xl">
         <Icon />
       </p>
-      <p className="text-text-body primary-text">{name}</p>
+      <p className="primary-text text-text-body">{name}</p>
       {tooltip && <TooltipInfoIcon title={tooltip} />}
     </div>
 
     <p
       className={clsx(
-        'py-1 px-2 font-mono text-center text-text-primary bg-component-badge-primary rounded-full link-text',
+        'link-text rounded-full bg-component-badge-primary py-1 px-2 text-center font-mono text-text-primary',
         reviewClassName
       )}
     >

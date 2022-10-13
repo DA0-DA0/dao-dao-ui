@@ -58,7 +58,7 @@ export const CopyToClipboard = ({
     <Tooltip title={tooltip}>
       <button
         className={clsx(
-          'flex overflow-hidden flex-row gap-1 items-center',
+          'flex flex-row items-center gap-1 overflow-hidden',
           className
         )}
         onClick={() => {
@@ -79,7 +79,7 @@ export const CopyToClipboard = ({
 
         <span
           className={clsx(
-            'inline flex-1 p-1 truncate hover:bg-background-button-secondary-default rounded-md transition',
+            'inline flex-1 truncate rounded-md p-1 transition hover:bg-background-button-secondary-default',
             textClassName
           )}
         >
@@ -116,7 +116,7 @@ export const CopyToClipboardUnderline = ({
     <Tooltip title={tooltip}>
       <p
         className={clsx(
-          'font-mono text-xs text-text-body underline truncate hover:opacity-80 active:opacity-70 transition-opacity cursor-pointer',
+          'cursor-pointer truncate font-mono text-xs text-text-body underline transition-opacity hover:opacity-80 active:opacity-70',
           className,
           textClassName
         )}
@@ -148,14 +148,14 @@ export const CopyToClipboardMobile = ({
   const [copied, setCopied] = useState(false)
 
   return (
-    <div className="flex justify-between p-1 rounded-md border border-inactive">
-      <div className="flex gap-2 items-center px-2 text-tertiary secondary-text">
+    <div className="flex justify-between rounded-md border border-inactive p-1">
+      <div className="secondary-text flex items-center gap-2 px-2 text-tertiary">
         {copied ? (
           <CheckCircleIcon className="w-[18px]" />
         ) : (
           <Copy height="18px" width="18px" />
         )}
-        <span className="inline py-1 hover:bg-background-button-secondary-default transition">
+        <span className="inline py-1 transition hover:bg-background-button-secondary-default">
           {label ??
             (takeStartEnd
               ? concatAddressStartEnd(
@@ -178,7 +178,7 @@ export const CopyToClipboardMobile = ({
         size="sm"
         variant="secondary"
       >
-        <p className="text-body caption-text">{t('button.copy')}</p>
+        <p className="caption-text text-body">{t('button.copy')}</p>
       </Button>
     </div>
   )

@@ -15,7 +15,7 @@ export const MobileMenuTab = ({
 }: MobileMenuTabProps) => (
   <button
     className={clsx(
-      'flex flex-col flex-1 gap-3 items-center p-5 min-w-[100px] rounded transition',
+      'flex min-w-[100px] flex-1 flex-col items-center gap-3 rounded p-5 transition',
       selected ? 'bg-tab-hover' : 'bg-tab hover:bg-tab-hover'
     )}
     onClick={onClick}
@@ -26,6 +26,6 @@ export const MobileMenuTab = ({
     }}
   >
     <span className="text-[32px]">{icon}</span>
-    <h2 className="text-dark button-text">{text}</h2>
+    <h2 className="button-text text-dark">{text}</h2>
   </button>
 )

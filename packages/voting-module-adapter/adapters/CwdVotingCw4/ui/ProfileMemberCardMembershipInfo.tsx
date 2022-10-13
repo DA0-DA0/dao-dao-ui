@@ -13,9 +13,9 @@ export const ProfileMemberCardMembershipInfo = ({
 
   return (
     <>
-      <div className="flex flex-row justify-between items-center pb-3 secondary-text">
+      <div className="secondary-text flex flex-row items-center justify-between pb-3">
         <p>{t('title.votingPower')}</p>
-        <p className="font-mono text-text-primary">
+        <p className="text-text-primary font-mono">
           {formatPercentOf100(votingPower)}
         </p>
       </div>

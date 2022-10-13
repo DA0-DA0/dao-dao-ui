@@ -46,14 +46,14 @@ export const ProfileMemberCard = ({
       underHeaderComponent={<MembershipPill daoName={daoName} isMember />}
       {...wrapperProps}
     >
-      <div className="p-6 pb-4 border-t border-t-border-primary">
-        <p className="mb-3 link-text">{t('title.yourMembership')}</p>
+      <div className="border-t border-t-border-primary p-6 pb-4">
+        <p className="link-text mb-3">{t('title.yourMembership')}</p>
 
         {membershipInfo}
       </div>
 
       {openProposals && (
-        <div className="py-4 px-6 border-t border-t-border-primary">
+        <div className="border-t border-t-border-primary py-4 px-6">
           <Button
             className="w-full"
             contentContainerClassName="justify-center"

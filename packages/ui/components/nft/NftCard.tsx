@@ -41,7 +41,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
     return (
       <div
         className={clsx(
-          'group flex overflow-hidden relative flex-col items-stretch bg-primary rounded-lg outline-2 outline ring-2 ring-inset ring-[transparent] transition-all',
+          'group relative flex flex-col items-stretch overflow-hidden rounded-lg bg-primary outline outline-2 ring-2 ring-inset ring-[transparent] transition-all',
           {
             'hover:bg-card hover:ring-focus': externalLink || checkbox,
             'outline-[transparent]': !checkbox?.checked,
@@ -54,7 +54,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       >
         <div
           className={clsx(
-            'flex relative flex-col items-stretch',
+            'relative flex flex-col items-stretch',
             // Make entire image clickable checkbox if present.
             checkbox && 'cursor-pointer'
           )}
@@ -70,8 +70,8 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               width={500}
             />
           ) : (
-            <div className="aspect-square flex justify-center items-center">
-              <ImageNotSupported className="!w-14 !h-14 text-icon-tertiary" />
+            <div className="flex aspect-square items-center justify-center">
+              <ImageNotSupported className="!h-14 !w-14 text-icon-tertiary" />
             </div>
           )}
 
@@ -84,7 +84,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               target="_blank"
             >
               <TooltipLikeDisplay
-                className="absolute bottom-4 left-4 shadow-dp4 opacity-0 group-hover:opacity-100 hover:!opacity-90 transition-opacity"
+                className="absolute bottom-4 left-4 opacity-0 shadow-dp4 transition-opacity hover:!opacity-90 group-hover:opacity-100"
                 icon={<ArrowOutward color="currentColor" />}
                 label={t('button.openInDestination', {
                   destination: externalLink.name,
@@ -103,7 +103,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
 
         <div
           className={clsx(
-            'grid gap-x-4 items-center py-4 px-6 border-b border-inactive',
+            'grid items-center gap-x-4 border-b border-inactive py-4 px-6',
             {
               'grid-cols-1': !floorPrice,
               'grid-cols-[1fr_1px_1fr]': floorPrice,
@@ -111,7 +111,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           )}
         >
           {/* Created by */}
-          <div className="flex flex-col gap-1 items-start">
+          <div className="flex flex-col items-start gap-1">
             <p className="secondary-text">{t('title.collection')}</p>
             <CopyToClipboardUnderline
               takeStartEnd={{ start: 7, end: 5 }}
@@ -122,14 +122,14 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           {floorPrice && (
             <>
               {/* Separator */}
-              <div className="w-[1px] h-6 bg-primary"></div>
+              <div className="h-6 w-[1px] bg-primary"></div>
 
               {/* Floor price */}
-              <div className="flex flex-col gap-1 items-end">
-                <p className="text-right secondary-text">
+              <div className="flex flex-col items-end gap-1">
+                <p className="secondary-text text-right">
                   {t('title.floorPrice')}
                 </p>
-                <p className="font-mono text-right body-text">
+                <p className="body-text text-right font-mono">
                   {floorPrice.amount.toLocaleString(undefined, {
                     maximumSignificantDigits: 3,
                   })}{' '}
@@ -140,7 +140,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           )}
         </div>
 
-        <p className="py-4 px-6 min-h-[5.5rem] primary-text">{name}</p>
+        <p className="primary-text min-h-[5.5rem] py-4 px-6">{name}</p>
       </div>
     )
   }

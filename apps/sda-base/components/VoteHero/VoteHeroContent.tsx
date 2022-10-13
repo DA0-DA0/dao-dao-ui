@@ -29,7 +29,7 @@ export const VoteHeroContent = () => {
     <>
       <VoteHeroHeader
         description={description}
-        image={<Logo className="w-full h-full" />}
+        image={<Logo className="h-full w-full" />}
         title={name}
       />
       <VoteHeroStats />

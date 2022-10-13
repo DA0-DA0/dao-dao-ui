@@ -62,15 +62,15 @@ export const CreateProposal = ({
         }
       />
 
-      <div className="flex flex-col gap-6 items-stretch mx-auto max-w-5xl">
+      <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
         {notMember && (
-          <p className="text-text-interactive-error caption-text">
+          <p className="caption-text text-text-interactive-error">
             {t('error.mustBeMemberToCreateProposal')}
           </p>
         )}
 
-        <div className="flex flex-row justify-between items-center">
-          <p className="text-text-body title-text">{t('title.newProposal')}</p>
+        <div className="flex flex-row items-center justify-between">
+          <p className="title-text text-text-body">{t('title.newProposal')}</p>
 
           {/* Show in PageHeader on large screens. */}
           <Dropdown

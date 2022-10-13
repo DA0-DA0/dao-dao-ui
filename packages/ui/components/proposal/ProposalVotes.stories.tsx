@@ -24,7 +24,7 @@ export const makeProps = (): ProposalVotesProps => ({
     // 25% chance of No, 75% chance of Yes
     vote: (
       <VoteDisplay
-        className="flex-row-reverse gap-3 justify-between w-full font-sans text-xs link-text"
+        className="link-text w-full flex-row-reverse justify-between gap-3 font-sans text-xs"
         vote={Math.random() < 0.25 ? Vote.No : Vote.Yes}
       />
     ),

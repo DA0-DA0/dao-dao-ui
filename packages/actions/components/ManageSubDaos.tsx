@@ -61,9 +61,9 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
       title={t('title.manageSubDaos')}
     >
       <InputLabel className="mt-2" name={t('form.subDaosToAdd')} />
-      <div className="flex flex-col gap-2 items-stretch">
+      <div className="flex flex-col items-stretch gap-2">
         {toAddFields.map(({ id }, index) => (
-          <div key={id} className="flex flex-row gap-4 items-center">
+          <div key={id} className="flex flex-row items-center gap-4">
             <div className="grow">
               <AddressInput
                 disabled={!isCreating}
@@ -108,7 +108,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
       </div>
 
       <InputLabel className="mt-4" name={t('form.subDaosToRemove')} />
-      <div className="flex flex-col gap-2 items-stretch">
+      <div className="flex flex-col items-stretch gap-2">
         {isCreating &&
           currentSubDaos.map(({ name, address }) => {
             const index = watch(
@@ -117,7 +117,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
             ).findIndex(({ address: a }) => a === address)
 
             return (
-              <div key={address} className="flex flex-row gap-1 items-center">
+              <div key={address} className="flex flex-row items-center gap-1">
                 <Checkbox
                   checked={index > -1}
                   onClick={
@@ -132,7 +132,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
                 />
 
                 <p
-                  className="cursor-pointer body-text"
+                  className="body-text cursor-pointer"
                   onClick={
                     isCreating
                       ? () =>

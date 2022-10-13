@@ -34,7 +34,7 @@ export const getIconButtonifiedClassNames = ({
   className,
 }: Omit<IconButtonifierProps, 'icon'>) =>
   clsx(
-    'flex shrink-0 justify-center items-center transition-all',
+    'flex shrink-0 items-center justify-center transition-all',
 
     focused && 'ring-2 ring-inset ring-border-interactive-focus',
 
@@ -43,33 +43,33 @@ export const getIconButtonifiedClassNames = ({
 
     // Sizes.
     {
-      'p-1 w-5 h-5': size === 'xs',
-      'p-1.5 w-6 h-6': size === 'sm',
-      'p-2 w-8 h-8': size === 'default',
-      'p-3 w-10 h-10': size === 'lg',
-      'p-[0.625rem] w-10 h-10': size === 'xl',
+      'h-5 w-5 p-1': size === 'xs',
+      'h-6 w-6 p-1.5': size === 'sm',
+      'h-8 w-8 p-2': size === 'default',
+      'h-10 w-10 p-3': size === 'lg',
+      'h-10 w-10 p-[0.625rem]': size === 'xl',
     },
 
     // Primary variant
     variant === 'primary' && {
       // Default
-      'text-icon-button-primary bg-background-button hover:bg-background-button-hover active:bg-background-button-pressed':
+      'bg-background-button text-icon-button-primary hover:bg-background-button-hover active:bg-background-button-pressed':
         !disabled,
       // Disabled
-      'text-icon-button-disabled bg-background-button-disabled': disabled,
+      'bg-background-button-disabled text-icon-button-disabled': disabled,
     },
     // Secondary variant
     variant === 'secondary' && {
       // Default
-      'text-icon-primary bg-background-primary hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
+      'bg-background-primary text-icon-primary hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
         !disabled,
       // Disabled
-      'text-icon-interactive-disabled bg-background-button-disabled': disabled,
+      'bg-background-button-disabled text-icon-interactive-disabled': disabled,
     },
     // Ghost variant
     variant === 'ghost' && {
       // Default
-      'text-icon-secondary bg-transparent hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
+      'bg-transparent text-icon-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
         !disabled,
       // Disabled
       'text-icon-interactive-disabled': disabled,
@@ -78,7 +78,7 @@ export const getIconButtonifiedClassNames = ({
     variant === 'none' && {
       'p-0': true,
       // Default
-      'text-icon-primary bg-transparent hover:opacity-80 active:opacity-70 transition-opacity':
+      'bg-transparent text-icon-primary transition-opacity hover:opacity-80 active:opacity-70':
         !disabled,
       // Disabled
       'text-icon-interactive-disabled': disabled,
@@ -95,11 +95,11 @@ export const IconButtonifiedChildren = ({
     className={clsx(
       // Sizes.
       {
-        '!w-4 !h-4': size === 'xs',
-        '!w-[1.125rem] !h-[1.125rem]': size === 'sm',
-        '!w-6 !h-6': size === 'default',
-        '!w-7 !h-7': size === 'lg',
-        '!w-[1.875rem] !h-[1.875rem]': size === 'xl',
+        '!h-4 !w-4': size === 'xs',
+        '!h-[1.125rem] !w-[1.125rem]': size === 'sm',
+        '!h-6 !w-6': size === 'default',
+        '!h-7 !w-7': size === 'lg',
+        '!h-[1.875rem] !w-[1.875rem]': size === 'xl',
       },
       iconClassName
     )}

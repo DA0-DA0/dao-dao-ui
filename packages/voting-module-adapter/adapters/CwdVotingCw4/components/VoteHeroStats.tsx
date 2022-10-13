@@ -30,7 +30,7 @@ export const InnerVoteHeroStats = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-wrap gap-x-8 gap-y-4 justify-center items-center py-8 px-6 w-full">
+    <div className="flex w-full flex-wrap items-center justify-center gap-x-8 gap-y-4 py-8 px-6">
       <HeroStat
         Icon={Wallet}
         title={t('title.members') + ':'}

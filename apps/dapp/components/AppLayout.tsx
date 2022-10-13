@@ -307,7 +307,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 }
 
 const AppLayoutLoadingInner = ({ children }: PropsWithChildren<{}>) => (
-  <main className="overflow-hidden w-full h-full min-h-screen">{children}</main>
+  <main className="h-full min-h-screen w-full overflow-hidden">{children}</main>
 )
 
 export const AppLayout = ({ children }: PropsWithChildren<{}>) => {

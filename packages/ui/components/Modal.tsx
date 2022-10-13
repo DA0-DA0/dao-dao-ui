@@ -40,8 +40,8 @@ export const Modal = ({
     ? createPortal(
         <div
           className={clsx(
-            'flex fixed top-0 left-0 z-40 justify-center items-center p-4 w-screen h-full backdrop-brightness-50 transition-all duration-[120ms] cursor-pointer backdrop-filter',
-            visible ? 'opacity-100' : 'opacity-0 pointer-events-none',
+            'fixed top-0 left-0 z-40 flex h-full w-screen cursor-pointer items-center justify-center p-4 backdrop-brightness-50 backdrop-filter transition-all duration-[120ms]',
+            visible ? 'opacity-100' : 'pointer-events-none opacity-0',
             backdropClassName
           )}
           onClick={
@@ -51,7 +51,7 @@ export const Modal = ({
         >
           <div
             className={clsx(
-              'flex overflow-y-auto relative flex-col p-6 max-w-md h-min max-h-full bg-background-base rounded-lg border border-border-secondary shadow-dp8 transition-transform duration-[120ms] cursor-auto no-scrollbar',
+              'no-scrollbar relative flex h-min max-h-full max-w-md cursor-auto flex-col overflow-y-auto rounded-lg border border-border-secondary bg-background-base p-6 shadow-dp8 transition-transform duration-[120ms]',
               visible ? 'scale-100' : 'scale-90',
               containerClassName
             )}
@@ -73,7 +73,7 @@ export const Modal = ({
                   // Undo container padding with negative margin, and then re-add
                   // the padding internally, so that the bottom border spans the
                   // whole width.
-                  'flex flex-col shrink-0 gap-1 px-6 pb-6 -mx-6 mb-6 border-b border-border-base',
+                  '-mx-6 mb-6 flex shrink-0 flex-col gap-1 border-b border-border-base px-6 pb-6',
                   headerContainerClassName
                 )}
               >
@@ -93,7 +93,7 @@ export const Modal = ({
             <ErrorBoundary>{children}</ErrorBoundary>
 
             {footerContent && (
-              <div className="shrink-0 py-5 px-6 -mx-6 -mb-6 border-t border-border-secondary">
+              <div className="-mx-6 -mb-6 shrink-0 border-t border-border-secondary py-5 px-6">
                 {footerContent}
               </div>
             )}

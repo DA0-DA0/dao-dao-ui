@@ -29,26 +29,26 @@ export const StakeHeader = ({ defaultImageUrl }: StakeHeaderProps) => {
 
   return (
     <>
-      <div className="absolute top-[0.1rem] w-full h-[1px] bg-primary"></div>
-      <div className="absolute top-[0.4rem] w-full h-[1px] bg-primary"></div>
+      <div className="bg-primary absolute top-[0.1rem] h-[1px] w-full"></div>
+      <div className="bg-primary absolute top-[0.4rem] h-[1px] w-full"></div>
 
-      <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
-        <div className="overflow-hidden w-24 h-24 rounded-full border bg-light border-default">
+      <div className="border-inactive absolute -top-16 flex w-full items-center justify-center border-b">
+        <div className="bg-light border-default h-24 w-24 overflow-hidden rounded-full border">
           <img
             alt={t('info.logo')}
-            className="w-full h-full"
+            className="h-full w-full"
             src={imageUrl ?? defaultImageUrl}
           />
         </div>
       </div>
 
-      <div className="flex flex-row justify-around items-center p-5 mt-8 w-full text-center md:gap-12 md:justify-center">
-        <div className="flex flex-col gap-2 items-center p-2">
-          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+      <div className="mt-8 flex w-full flex-row items-center justify-around p-5 text-center md:justify-center md:gap-12">
+        <div className="flex flex-col items-center gap-2 p-2">
+          <p className="text-tertiary overflow-hidden text-ellipsis font-mono text-sm">
             {t('title.daoTreasury')}
           </p>
 
-          <p className="text-base lg:text-xl header-text">
+          <p className="header-text text-base lg:text-xl">
             {convertMicroDenomToDenomWithDecimals(
               treasuryBalance,
               governanceTokenInfo.decimals
@@ -59,14 +59,14 @@ export const StakeHeader = ({ defaultImageUrl }: StakeHeaderProps) => {
           </p>
         </div>
 
-        <div className="w-[1px] h-6 opacity-10 bg-dark"></div>
+        <div className="bg-dark h-6 w-[1px] opacity-10"></div>
 
-        <div className="flex flex-col gap-2 items-center p-2">
-          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+        <div className="flex flex-col items-center gap-2 p-2">
+          <p className="text-tertiary overflow-hidden text-ellipsis font-mono text-sm">
             {t('title.totalStaked')}
           </p>
 
-          <p className="text-base lg:text-xl header-text">
+          <p className="header-text text-base lg:text-xl">
             {convertMicroDenomToDenomWithDecimals(
               totalStakedValue,
               governanceTokenInfo.decimals
@@ -88,28 +88,28 @@ export const StakeHeaderLoader = ({ Loader }: StakeHeaderLoaderProps) => {
 
   return (
     <>
-      <div className="absolute top-[0.1rem] w-full h-[1px] bg-primary"></div>
-      <div className="absolute top-[0.4rem] w-full h-[1px] bg-primary"></div>
+      <div className="bg-primary absolute top-[0.1rem] h-[1px] w-full"></div>
+      <div className="bg-primary absolute top-[0.4rem] h-[1px] w-full"></div>
 
-      <div className="flex absolute -top-16 justify-center items-center w-full border-b border-inactive">
-        <div className="w-24 h-24 rounded-full border bg-light border-default">
+      <div className="border-inactive absolute -top-16 flex w-full items-center justify-center border-b">
+        <div className="bg-light border-default h-24 w-24 rounded-full border">
           <Loader size="100%" />
         </div>
       </div>
 
-      <div className="flex flex-row justify-around items-center p-5 mt-8 w-full text-center md:gap-12 md:justify-center">
-        <div className="flex flex-col gap-2 items-center p-2">
-          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+      <div className="mt-8 flex w-full flex-row items-center justify-around p-5 text-center md:justify-center md:gap-12">
+        <div className="flex flex-col items-center gap-2 p-2">
+          <p className="text-tertiary overflow-hidden text-ellipsis font-mono text-sm">
             {t('title.daoTreasury')}
           </p>
 
           <div className="h-6 lg:h-7"></div>
         </div>
 
-        <div className="w-[1px] h-6 opacity-10 bg-dark"></div>
+        <div className="bg-dark h-6 w-[1px] opacity-10"></div>
 
-        <div className="flex flex-col gap-2 items-center p-2">
-          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+        <div className="flex flex-col items-center gap-2 p-2">
+          <p className="text-tertiary overflow-hidden text-ellipsis font-mono text-sm">
             {t('title.totalStaked')}
           </p>
 

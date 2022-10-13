@@ -52,7 +52,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       onRemove={onRemove}
       title={t('title.executeSmartContract')}
     >
-      <div className="flex flex-col gap-1 items-stretch">
+      <div className="flex flex-col items-stretch gap-1">
         <InputLabel name={t('form.smartContractAddress')} />
         <TextInput
           disabled={!isCreating}
@@ -96,17 +96,17 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       />
 
       {errors?.message ? (
-        <p className="flex gap-1 items-center text-sm text-error">
+        <p className="flex items-center gap-1 text-sm text-error">
           <XIcon className="inline w-5" /> <span>{errors.message.message}</span>
         </p>
       ) : (
-        <p className="flex gap-1 items-center text-sm text-success">
+        <p className="text-success flex items-center gap-1 text-sm">
           <CheckIcon className="inline w-5" /> {t('info.jsonIsValid')}
         </p>
       )}
 
       <InputLabel className="mt-1 -mb-1" name={t('form.funds')} />
-      <div className="flex flex-col gap-2 items-stretch">
+      <div className="flex flex-col items-stretch gap-2">
         {coins.map(({ id }, index) => (
           <NativeCoinSelector
             key={id}

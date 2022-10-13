@@ -13,11 +13,11 @@ export const DaoCreateSidebarCard = ({
 
   return (
     <div className="relative rounded-lg border border-border-primary">
-      <div className="p-6 space-y-1 border-b border-border-secondary">
-        <p className="text-text-body title-text">
+      <div className="space-y-1 border-b border-border-secondary p-6">
+        <p className="title-text text-text-body">
           {t('title.daoCreationProcess')}
         </p>
-        <p className="text-text-body secondary-text">
+        <p className="secondary-text text-text-body">
           {t('info.daoCreationProcessExplanation')}
         </p>
       </div>
@@ -41,31 +41,31 @@ export const DaoCreateSidebarCard = ({
                 // Offset by half width of circle and half width of border, so
                 // the orb is centered on the line (w-6 is 1.5rem, so half is
                 // 0.75rem).
-                className="flex relative left-[calc(-0.75rem-2px)] flex-row gap-3 items-center py-2"
+                className="relative left-[calc(-0.75rem-2px)] flex flex-row items-center gap-3 py-2"
               >
                 <div
                   className={clsx(
-                    'flex justify-center items-center w-6 h-6 rounded-full',
+                    'flex h-6 w-6 items-center justify-center rounded-full',
                     ((current && pageIndex > 1) || future) &&
                       'bg-background-base'
                   )}
                 >
                   <div
                     className={clsx('rounded-full', {
-                      'w-3 h-3': current || future,
+                      'h-3 w-3': current || future,
                       'bg-icon-brand': current,
                       'bg-icon-interactive-disabled': future,
-                      'flex justify-center items-center w-4 h-4 bg-background-button':
+                      'flex h-4 w-4 items-center justify-center bg-background-button':
                         done,
                     })}
                   >
                     {done && (
-                      <Check className="!w-3 !h-3 text-background-base" />
+                      <Check className="!h-3 !w-3 text-background-base" />
                     )}
                   </div>
                 </div>
                 <p
-                  className={clsx('font-mono link-text', {
+                  className={clsx('link-text font-mono', {
                     'text-icon-primary': done,
                     'text-text-interactive-active': current,
                     'text-text-interactive-disabled': future,

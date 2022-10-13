@@ -77,9 +77,9 @@ export const NumberInput = <
   return (
     <div
       className={clsx(
-        'flex flex-row gap-2 items-center bg-transparent transition',
+        'flex flex-row items-center gap-2 bg-transparent transition',
         // Padding and outline
-        !ghost && 'py-3 px-4 rounded-md ring-1 focus-within:ring-2',
+        !ghost && 'rounded-md py-3 px-4 ring-1 focus-within:ring-2',
         // Outline color
         error
           ? 'ring-border-interactive-error'
@@ -120,7 +120,7 @@ export const NumberInput = <
 
       <input
         className={clsx(
-          'grow w-full text-right text-text-body bg-transparent border-none outline-none ring-none secondary-text',
+          'ring-none secondary-text w-full grow border-none bg-transparent text-right text-text-body outline-none',
           className,
           textClassName
         )}
@@ -139,7 +139,7 @@ export const NumberInput = <
       {unit && (
         <p
           className={clsx(
-            'shrink-0 text-right text-text-tertiary secondary-text',
+            'secondary-text shrink-0 text-right text-text-tertiary',
             textClassName,
             unitClassName
           )}

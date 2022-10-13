@@ -19,7 +19,7 @@ export type SidebarWalletProps =
 export const SidebarWallet = (props: SidebarWalletProps) => (
   <div
     className={clsx(
-      'flex flex-col shrink-0 justify-center',
+      'flex shrink-0 flex-col justify-center',
       PAGE_HEADER_HEIGHT_CLASS_NAMES
     )}
   >

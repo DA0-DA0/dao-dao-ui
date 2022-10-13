@@ -26,19 +26,19 @@ export const DaoCreateConfigInputCard = ({
   Loader = DefaultLoader,
   error,
 }: DaoCreateConfigInputCardProps) => (
-  <div className="flex relative flex-col bg-background-tertiary rounded-lg">
+  <div className="relative flex flex-col rounded-lg bg-background-tertiary">
     {tooltip && (
       <TooltipInfoIcon className="absolute top-3 right-3" title={tooltip} />
     )}
 
-    <div className="flex justify-center items-center h-32 text-6xl border-b border-border-secondary">
+    <div className="flex h-32 items-center justify-center border-b border-border-secondary text-6xl">
       <Icon />
     </div>
 
-    <div className="flex flex-col grow gap-12 justify-between p-6">
+    <div className="flex grow flex-col justify-between gap-12 p-6">
       <div className="space-y-3">
-        <p className="text-text-body primary-text">{name}</p>
-        <p className="text-text-secondary body-text">{description}</p>
+        <p className="primary-text text-text-body">{name}</p>
+        <p className="body-text text-text-secondary">{description}</p>
       </div>
 
       <div className="flex flex-col">

@@ -110,7 +110,7 @@ export const UnstakingModal = ({
       {...modalProps}
       containerClassName={clsx('w-full max-w-2xl', containerClassName)}
     >
-      <div className="overflow-y-auto grow pr-4 -mr-4 no-scrollbar">
+      <div className="no-scrollbar -mr-4 grow overflow-y-auto pr-4">
         {/* Only show if something is ready to claim. */}
         {readyToClaim.length > 0 && (
           <>
@@ -132,9 +132,9 @@ export const UnstakingModal = ({
           </>
         )}
 
-        <div className="flex flex-row gap-3 items-center ml-2 text-text-secondary link-text">
+        <div className="link-text ml-2 flex flex-row items-center gap-3 text-text-secondary">
           <ArrowDropdown
-            className={clsx('w-2 h-2', {
+            className={clsx('h-2 w-2', {
               '-rotate-90': unstaking.length === 0,
             })}
           />
@@ -150,9 +150,9 @@ export const UnstakingModal = ({
           </div>
         )}
 
-        <div className="flex flex-row gap-3 items-center mt-6 ml-2 text-text-secondary link-text">
+        <div className="link-text mt-6 ml-2 flex flex-row items-center gap-3 text-text-secondary">
           <ArrowDropdown
-            className={clsx('w-2 h-2', {
+            className={clsx('h-2 w-2', {
               '-rotate-90': claimed.length === 0,
             })}
           />

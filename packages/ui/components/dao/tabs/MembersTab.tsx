@@ -23,9 +23,9 @@ export const MembersTab = <D extends {}>({
   return (
     <>
       {addMemberHref && (
-        <div className="flex flex-row gap-8 justify-between items-center pb-6 mb-6 border-b border-b-border-secondary">
-          <div className="flex flex-row flex-wrap gap-x-4 gap-y-1 items-center">
-            <p className="text-text-body title-text">{t('title.newMember')}</p>
+        <div className="mb-6 flex flex-row items-center justify-between gap-8 border-b border-b-border-secondary pb-6">
+          <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1">
+            <p className="title-text text-text-body">{t('title.newMember')}</p>
             <p className="secondary-text">{t('info.newMemberExplanation')}</p>
           </div>
 
@@ -34,13 +34,13 @@ export const MembersTab = <D extends {}>({
             disabled={!isMember}
             href={addMemberHref}
           >
-            <PlusIcon className="w-4 h-4" />
+            <PlusIcon className="h-4 w-4" />
             {t('button.addMembers')}
           </ButtonLink>
         </div>
       )}
 
-      <p className="mb-6 text-text-body title-text">
+      <p className="title-text mb-6 text-text-body">
         {t('title.numMembers', { count: members.length })}
       </p>
 

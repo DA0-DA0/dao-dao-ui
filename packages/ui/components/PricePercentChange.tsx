@@ -17,7 +17,7 @@ export const PricePercentChange = ({
   return (
     <div
       className={clsx(
-        'flex flex-row gap-1 items-end caption-text',
+        'caption-text flex flex-row items-end gap-1',
         {
           'text-icon-interactive-error': negative,
           'text-icon-interactive-valid': !negative,
@@ -26,7 +26,7 @@ export const PricePercentChange = ({
       )}
     >
       <ArrowUpward
-        className={clsx('w-3 h-4', {
+        className={clsx('h-4 w-3', {
           'rotate-180': negative,
         })}
       />

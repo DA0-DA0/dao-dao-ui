@@ -53,8 +53,8 @@ export const Row = ({
   return compact ? (
     <RowWrapper localHref={localHref}>
       <div
-        className={clsx('flex flex-row items-center py-2.5 px-6 body-text', {
-          'hover:opacity-70 active:opacity-60 transition-opacity cursor-pointer':
+        className={clsx('body-text flex flex-row items-center py-2.5 px-6', {
+          'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
             onClick || localHref,
           'bg-background-interactive-selected':
             localHref && localHref === asPath,
@@ -64,13 +64,13 @@ export const Row = ({
         <Tooltip title={label}>
           <div
             className={clsx(
-              'flex relative justify-center items-center w-8 h-8',
+              'relative flex h-8 w-8 items-center justify-center',
               loading && 'animate-pulse'
             )}
           >
-            <Icon className="!w-8 !h-8" />
+            <Icon className="!h-8 !w-8" />
             {showBadge && (
-              <div className="absolute -top-[0.1875rem] -right-[0.1875rem] w-1.5 h-1.5 bg-icon-interactive-active rounded-full"></div>
+              <div className="absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 rounded-full bg-icon-interactive-active"></div>
             )}
           </div>
         </Tooltip>
@@ -81,18 +81,18 @@ export const Row = ({
   ) : (
     <RowWrapper localHref={localHref}>
       <div
-        className={clsx('flex flex-row gap-4 items-center p-2 body-text', {
-          'hover:opacity-70 active:opacity-60 transition-opacity cursor-pointer':
+        className={clsx('body-text flex flex-row items-center gap-4 p-2', {
+          'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
             onClick || localHref,
-          'bg-background-interactive-selected rounded-md':
+          'rounded-md bg-background-interactive-selected':
             localHref && localHref === asPath,
         })}
         onClick={onClick}
       >
-        <div className="flex relative justify-center items-center w-6 h-6">
-          <Icon className="!w-6 !h-6" />
+        <div className="relative flex h-6 w-6 items-center justify-center">
+          <Icon className="!h-6 !w-6" />
           {showBadge && (
-            <div className="absolute -top-[0.1875rem] -right-[0.1875rem] w-1.5 h-1.5 bg-icon-interactive-active rounded-full"></div>
+            <div className="absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 rounded-full bg-icon-interactive-active"></div>
           )}
         </div>
 

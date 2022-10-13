@@ -77,12 +77,12 @@ export const PageHeader = ({
       >
         <div
           className={clsx(
-            'flex relative flex-row justify-center items-center w-full h-full',
+            'relative flex h-full w-full flex-row items-center justify-center',
             !forceCenter && 'sm:justify-start'
           )}
         >
           {title ? (
-            <p className="leading-[5rem] header-text">{title}</p>
+            <p className="header-text leading-[5rem]">{title}</p>
           ) : breadcrumbs ? (
             <Breadcrumbs {...breadcrumbs} />
           ) : (
@@ -91,7 +91,7 @@ export const PageHeader = ({
         </div>
 
         {/* Place left and right components here below the center component so they take higher touch precedence over the Breadcrumbs container. */}
-        <div className="flex absolute top-0 bottom-0 -left-2 flex-col justify-center">
+        <div className="absolute top-0 bottom-0 -left-2 flex flex-col justify-center">
           <IconButton
             Icon={Menu}
             className="!outline-none sm:hidden"
@@ -100,7 +100,7 @@ export const PageHeader = ({
           />
         </div>
 
-        <div className="flex absolute top-0 right-0 bottom-0 flex-col justify-center">
+        <div className="absolute top-0 right-0 bottom-0 flex flex-col justify-center">
           {rightNode}
         </div>
 

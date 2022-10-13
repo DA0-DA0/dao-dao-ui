@@ -62,21 +62,21 @@ const InnerProposalCreate = () => {
   )
 
   return (
-    <div className="flex flex-col gap-14 justify-center md:flex-row md:gap-8">
+    <div className="flex flex-col justify-center gap-14 md:flex-row md:gap-8">
       <div className="md:w-2/3">
-        <h2 className="mb-4 font-medium text-medium">
+        <h2 className="text-medium mb-4 font-medium">
           {t('title.createAProposal')}
         </h2>
 
         {!isMember && (
-          <p className="-mt-4 mb-6 text-error caption-text">
+          <p className="caption-text -mt-4 mb-6 text-error">
             {t('error.mustBeMemberToCreateProposal')}
           </p>
         )}
 
         {proposalModules.length > 1 ? (
           <select
-            className="py-2 px-3 mb-2 text-body bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition"
+            className="mb-2 rounded-lg border border-default bg-transparent py-2 px-3 text-body ring-brand ring-offset-0 transition focus:outline-none focus:ring-1"
             onChange={({ target: { value } }) =>
               setSelectedProposalModuleIndex(Number(value))
             }
@@ -93,7 +93,7 @@ const InnerProposalCreate = () => {
           </select>
         ) : (
           <Tooltip label={t('info.proposalModuleCreationTooltip')}>
-            <InputThemedText className="inline-flex flex-row gap-2 items-center px-3 mb-2">
+            <InputThemedText className="mb-2 inline-flex flex-row items-center gap-2 px-3">
               <span>
                 {t(
                   `proposalModuleLabel.${normalizeContractName(
@@ -103,7 +103,7 @@ const InnerProposalCreate = () => {
                 {t('title.proposals', { count: 1 })}
               </span>
 
-              <InformationCircleIcon className="shrink-0 w-4 h-4 text-disabled cursor-help" />
+              <InformationCircleIcon className="h-4 w-4 shrink-0 cursor-help text-disabled" />
             </InputThemedText>
           </Tooltip>
         )}
@@ -121,9 +121,9 @@ const InnerProposalCreate = () => {
       </div>
 
       <div className="flex-1">
-        <h2 className="mb-4 font-medium text-medium">{t('title.addresses')}</h2>
+        <h2 className="text-medium mb-4 font-medium">{t('title.addresses')}</h2>
 
-        <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
+        <div className="mb-8 grid grid-cols-3 items-center gap-x-1 gap-y-2">
           <p className="font-mono text-sm text-tertiary">
             {t('title.daoTreasury')}
           </p>
@@ -136,10 +136,10 @@ const InnerProposalCreate = () => {
 
         {selectedProposalModuleCommon && (
           <>
-            <h2 className="mb-4 font-medium text-medium">
+            <h2 className="text-medium mb-4 font-medium">
               {t('title.proposalInfo')}
             </h2>
-            <selectedProposalModuleCommon.components.ProposalModuleInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
+            <selectedProposalModuleCommon.components.ProposalModuleInfo className="md:flex-col md:items-stretch md:border-0 md:p-0" />
           </>
         )}
       </div>

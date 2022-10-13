@@ -90,13 +90,13 @@ export const NftSelectionModal = ({
     <Modal
       {...modalProps}
       containerClassName={clsx(
-        'flex flex-col w-full !max-w-3xl h-[48rem]',
+        'flex h-[48rem] w-full !max-w-3xl flex-col',
         containerClassName
       )}
       footerContent={
         <div
           className={clsx(
-            'flex flex-row gap-6 items-center',
+            'flex flex-row items-center gap-6',
             // If selectedDisplay is null, it will be hidden, so align button at
             // the end.
             selectedDisplay === null ? 'justify-end' : 'justify-between'
@@ -121,7 +121,7 @@ export const NftSelectionModal = ({
         <div className="flex flex-col gap-2">
           <div
             className={clsx(
-              'flex flex-row gap-12 items-center',
+              'flex flex-row items-center gap-12',
               // Push sort dropdown to the right no matter what.
               showSelectAll ? 'justify-between' : 'justify-end'
             )}
@@ -146,8 +146,8 @@ export const NftSelectionModal = ({
               </Button>
             )}
 
-            <div className="flex flex-row gap-4 justify-between items-center">
-              <p className="text-text-body primary-text">{t('title.sortBy')}</p>
+            <div className="flex flex-row items-center justify-between gap-4">
+              <p className="primary-text text-text-body">{t('title.sortBy')}</p>
 
               <Dropdown {...sortDropdownProps} />
             </div>
@@ -165,7 +165,7 @@ export const NftSelectionModal = ({
       {nfts.loading ? (
         <Loader className="-mt-6" />
       ) : nfts.data.length > 0 ? (
-        <div className="grid overflow-y-auto grow grid-cols-2 grid-flow-row auto-rows-max gap-4 py-4 px-6 -mx-6 -mt-6 sm:grid-cols-3 no-scrollbar">
+        <div className="no-scrollbar -mx-6 -mt-6 grid grow grid-flow-row auto-rows-max grid-cols-2 gap-4 overflow-y-auto py-4 px-6 sm:grid-cols-3">
           {filteredData.map((nft: NftCardInfo) => (
             <NftCard
               key={getIdForNft(nft)}
@@ -187,7 +187,7 @@ export const NftSelectionModal = ({
         <NoContent
           Icon={Image}
           body={t('info.noNftsYet')}
-          className="justify-center mb-6 w-full h-full"
+          className="mb-6 h-full w-full justify-center"
         />
       )}
     </Modal>

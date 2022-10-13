@@ -30,9 +30,9 @@ export const ProposalContentDisplay = ({
 
   return (
     <>
-      <p className="mb-11 hero-text">{title}</p>
+      <p className="hero-text mb-11">{title}</p>
 
-      <div className="flex flex-row gap-1 items-center mb-4 font-mono caption-text">
+      <div className="caption-text mb-4 flex flex-row items-center gap-1 font-mono">
         <CopyToClipboardUnderline
           className={clsx(
             '!caption-text',

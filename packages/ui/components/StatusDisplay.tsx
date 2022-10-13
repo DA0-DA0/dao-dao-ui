@@ -13,7 +13,7 @@ export const StatusDisplay = ({
   className,
 }: StatusDisplayProps) => (
   <div
-    className={clsx('flex flex-row gap-2 items-center link-text', className)}
+    className={clsx('link-text flex flex-row items-center gap-2', className)}
   >
     {icon}
     {label}

@@ -38,8 +38,8 @@ export const ProfileVotedCard = ({
       underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
       {...wrapperProps}
     >
-      <div className="flex flex-row justify-between items-center secondary-text">
-        <div className="flex flex-row gap-2 items-center">
+      <div className="secondary-text flex flex-row items-center justify-between">
+        <div className="flex flex-row items-center gap-2">
           <p>{t('title.votingPower')}</p>
           <TooltipIcon
             className="text-icon-secondary"
@@ -52,7 +52,7 @@ export const ProfileVotedCard = ({
         </p>
       </div>
 
-      <div className="flex flex-row justify-between items-center mt-3 secondary-text">
+      <div className="secondary-text mt-3 flex flex-row items-center justify-between">
         <p>{t('title.vote')}</p>
         {vote}
       </div>

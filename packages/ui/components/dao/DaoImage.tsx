@@ -28,10 +28,10 @@ export const DaoImage = ({
   blur,
 }: DaoImageProps) => {
   const parentDaoClassNames = clsx(
-    'absolute right-0 bottom-0 bg-center bg-cover rounded-full drop-shadow',
+    'absolute right-0 bottom-0 rounded-full bg-cover bg-center drop-shadow',
     {
-      'w-8 h-8': size === 'sm',
-      'w-10 h-10': size === 'lg',
+      'h-8 w-8': size === 'sm',
+      'h-10 w-10': size === 'lg',
     }
   )
   const parentDaoStyle = {
@@ -42,25 +42,25 @@ export const DaoImage = ({
 
   const sizeClassNames = clsx('overflow-hidden rounded-full', {
     // DaoCard
-    'w-[4.5rem] h-[4.5rem]': size === 'sm',
+    'h-[4.5rem] w-[4.5rem]': size === 'sm',
     // DAO home page
-    'w-24 h-24': size === 'lg',
+    'h-24 w-24': size === 'lg',
   })
 
   return (
     <div
       className={clsx(
-        'inline-block relative rounded-full',
+        'relative inline-block rounded-full',
         blur
           ? `border border-border-secondary ${sizeClassNames}`
-          : 'p-1 border-2 border-border-primary',
+          : 'border-2 border-border-primary p-1',
         className
       )}
     >
       <div
         className={clsx(
-          'overflow-hidden bg-center bg-cover rounded-full',
-          blur ? 'w-full h-full blur brightness-50' : sizeClassNames,
+          'overflow-hidden rounded-full bg-cover bg-center',
+          blur ? 'h-full w-full blur brightness-50' : sizeClassNames,
           imageClassName
         )}
         style={{
@@ -71,7 +71,7 @@ export const DaoImage = ({
       ></div>
 
       {children && (
-        <div className="flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center">
+        <div className="absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center">
           {children}
         </div>
       )}

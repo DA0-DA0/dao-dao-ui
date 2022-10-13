@@ -31,7 +31,7 @@ Default.args = {
   info: [
     {
       Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !w-5 !h-5', className)} />
+        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
       ),
       label: 'DAO',
       Value: (props) => (

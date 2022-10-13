@@ -40,35 +40,35 @@ export const ProfileHomeCard = ({
       childContainerClassName="p-0"
       established={established}
       underHeaderComponent={
-        <div className="grid grid-cols-[1fr_1px_1fr] gap-2 justify-items-center items-center self-stretch mt-3">
+        <div className="mt-3 grid grid-cols-[1fr_1px_1fr] items-center justify-items-center gap-2 self-stretch">
           <div className="flex flex-col items-stretch text-center">
-            <Payments className="self-center mb-4 w-5 h-4 text-center text-icon-secondary" />
-            <p className="mb-1 secondary-text">{t('title.holdings')}</p>
+            <Payments className="mb-4 h-4 w-5 self-center text-center text-icon-secondary" />
+            <p className="secondary-text mb-1">{t('title.holdings')}</p>
 
             {lazyData.loading ? (
-              <p className="font-mono animate-pulse title-text">...</p>
+              <p className="title-text animate-pulse font-mono">...</p>
             ) : (
               <TokenAmountDisplay
                 amount={lazyData.data.unstakedBalance}
-                className="font-mono break-words title-text"
+                className="title-text break-words font-mono"
                 maxDecimals={2}
                 symbol={tokenSymbol}
               />
             )}
           </div>
 
-          <div className="w-[1px] h-10 bg-border-secondary"></div>
+          <div className="h-10 w-[1px] bg-border-secondary"></div>
 
           <div className="flex flex-col items-center text-center">
-            <Layers className="self-center mb-4 w-5 h-4 text-icon-secondary" />
-            <p className="mb-1 secondary-text">{t('title.staked')}</p>
+            <Layers className="mb-4 h-4 w-5 self-center text-icon-secondary" />
+            <p className="secondary-text mb-1">{t('title.staked')}</p>
 
             {lazyData.loading ? (
-              <p className="font-mono animate-pulse title-text">...</p>
+              <p className="title-text animate-pulse font-mono">...</p>
             ) : (
               <TokenAmountDisplay
                 amount={lazyData.data.stakedBalance}
-                className="font-mono break-words title-text"
+                className="title-text break-words font-mono"
                 maxDecimals={2}
                 symbol={tokenSymbol}
               />
@@ -79,7 +79,7 @@ export const ProfileHomeCard = ({
       {...wrapperProps}
     >
       <div className="p-6">
-        <div className="flex flex-row justify-between items-center secondary-text">
+        <div className="secondary-text flex flex-row items-center justify-between">
           <p>{t('title.proposalsCreated')}</p>
 
           <p
@@ -92,7 +92,7 @@ export const ProfileHomeCard = ({
           </p>
         </div>
 
-        <div className="flex flex-row justify-between items-center mt-3 secondary-text">
+        <div className="secondary-text mt-3 flex flex-row items-center justify-between">
           <p>{t('title.votesCast')}</p>
 
           <p
@@ -106,7 +106,7 @@ export const ProfileHomeCard = ({
         </div>
       </div>
 
-      <div className="p-6 border-t border-t-border-primary">
+      <div className="border-t border-t-border-primary p-6">
         <ButtonLink
           className="w-full"
           contentContainerClassName="justify-center"

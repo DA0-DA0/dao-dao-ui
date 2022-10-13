@@ -16,11 +16,11 @@ export const TooltipLikeDisplay = ({
 }: TooltipLikeDisplayProps) => (
   <div
     className={clsx(
-      'inline-flex flex-row gap-x-3 items-start py-2 px-3 text-text-body bg-component-tooltip rounded-md border border-border-primary caption-text',
+      'caption-text inline-flex flex-row items-start gap-x-3 rounded-md border border-border-primary bg-component-tooltip py-2 px-3 text-text-body',
       className
     )}
   >
-    <div className="flex flex-col justify-center h-4">{icon}</div>
+    <div className="flex h-4 flex-col justify-center">{icon}</div>
     <div>
       <p>{label}</p>
       {!!caption && <p className="text-text-tertiary">{caption}</p>}

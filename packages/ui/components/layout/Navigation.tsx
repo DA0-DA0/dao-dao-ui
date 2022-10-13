@@ -143,7 +143,7 @@ export const Navigation = ({
       <nav
         className={clsx(
           // General
-          'flex overflow-y-auto flex-col shrink-0 py-6 pt-0 h-full text-lg bg-background-base transition-all no-scrollbar',
+          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base py-6 pt-0 text-lg transition-all',
           // If compact, items will manager their own padding so that
           // highlighted rows fill the whole width.
           !compact && 'px-6',
@@ -163,7 +163,7 @@ export const Navigation = ({
         <PageHeader
           centerNode={
             <Link href="/home">
-              <a className="flex flex-row gap-2 items-center">
+              <a className="flex flex-row items-center gap-2">
                 <Logo size={32} />
                 {!compact && <p className="header-text">{t('meta.title')}</p>}
               </a>
@@ -187,11 +187,11 @@ export const Navigation = ({
             label={t('title.search')}
             onClick={setCommandModalVisible}
             rightNode={
-              <div className="flex flex-row gap-1 items-center text-icon-primary legend-text">
-                <div className="flex justify-center items-center w-6 h-6 bg-background-interactive-disabled rounded-md">
+              <div className="legend-text flex flex-row items-center gap-1 text-icon-primary">
+                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
                   <p>{isMac ? '⌘' : '⌃'}</p>
                 </div>
-                <div className="flex justify-center items-center w-6 h-6 bg-background-interactive-disabled rounded-md">
+                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
                   <p>k</p>
                 </div>
               </div>
@@ -231,7 +231,7 @@ export const Navigation = ({
               <div
                 className={clsx(
                   'relative sm:max-h-[33vh]',
-                  !pinnedDaos.loading && 'overflow-y-auto no-scrollbar',
+                  !pinnedDaos.loading && 'no-scrollbar overflow-y-auto',
                   compact && 'mt-1 w-min'
                 )}
                 ref={scrollablePinnedContainerRef}
@@ -266,9 +266,9 @@ export const Navigation = ({
           </Row>
         </div>
 
-        <div className={clsx('flex flex-col grow gap-2 justify-end mt-8')}>
+        <div className={clsx('mt-8 flex grow flex-col justify-end gap-2')}>
           {!compact && (
-            <div className="space-y-3 font-mono caption-text">
+            <div className="caption-text space-y-3 font-mono">
               <p>{t('info.daodaoWithVersion', { version })}</p>
 
               {tokenPrices.loading ? (
@@ -278,7 +278,7 @@ export const Navigation = ({
                   ({ label, price, priceDenom, change }, index) => (
                     <div
                       key={index}
-                      className="flex flex-row gap-2 justify-between items-end"
+                      className="flex flex-row items-end justify-between gap-2"
                     >
                       <p className="text-text-primary">
                         {label} = {price} ${priceDenom}
@@ -295,8 +295,8 @@ export const Navigation = ({
 
           <div
             className={clsx(
-              'flex gap-2 mt-8',
-              compact ? 'flex-col mx-6' : 'flex-row items-center'
+              'mt-8 flex gap-2',
+              compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >
             {compact ? (

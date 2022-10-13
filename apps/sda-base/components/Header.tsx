@@ -134,12 +134,12 @@ export const Header = () => {
   return (
     <header
       className={clsx(
-        'grid grid-cols-2 items-center py-4 px-6 h-20 sm:grid-cols-3 md:grid-cols-[2fr_3fr_2fr]',
+        'grid h-20 grid-cols-2 items-center py-4 px-6 sm:grid-cols-3 md:grid-cols-[2fr_3fr_2fr]',
         { 'border-b border-inactive': !mobileNavVisible }
       )}
     >
       <Link href="/">
-        <a className="flex flex-row gap-4 items-center w-full">
+        <a className="flex w-full flex-row items-center gap-4">
           <Logo className="rounded-full border border-default" size={36} />
 
           <p className="font-studiofeixen text-[18px]">{daoName}</p>
@@ -156,7 +156,7 @@ export const Header = () => {
       />
 
       {/* Desktop */}
-      <div className="hidden flex-row gap-2 justify-self-center items-center sm:flex">
+      <div className="hidden flex-row items-center gap-2 justify-self-center sm:flex">
         {navItems.map((item) => (
           <NavItem key={item.href} item={item} />
         ))}
@@ -169,10 +169,10 @@ export const Header = () => {
         })}
       >
         {status === WalletConnectionStatus.Connected ? (
-          <div className="flex flex-row flex-1 gap-3 justify-end items-center h-full">
-            <div className="flex flex-col items-end text-right link-text">
+          <div className="flex h-full flex-1 flex-row items-center justify-end gap-3">
+            <div className="link-text flex flex-col items-end text-right">
               <span>{walletName}</span>
-              <span className="font-mono text-secondary capitalize gradient-text">
+              <span className="gradient-text font-mono capitalize text-secondary">
                 {walletBalance.toLocaleString(undefined, {
                   maximumFractionDigits: NATIVE_DECIMALS,
                 })}{' '}

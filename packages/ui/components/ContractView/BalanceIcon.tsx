@@ -9,7 +9,7 @@ export const BalanceIcon = ({ iconURI }: BalanceIconProps) => {
 
   return (
     <div
-      className="w-4 h-4 bg-brand bg-center bg-cover rounded-full"
+      className="h-4 w-4 rounded-full bg-brand bg-cover bg-center"
       style={{
         ...(!!accentColor && { backgroundColor: accentColor }),
         backgroundImage: iconURI ? `url(${iconURI})` : '',
@@ -19,7 +19,7 @@ export const BalanceIcon = ({ iconURI }: BalanceIconProps) => {
 }
 
 export const UnknownAssetBalanceIcon = () => (
-  <div className="flex justify-center items-center w-4 h-4 text-black bg-disabled rounded-full">
+  <div className="flex h-4 w-4 items-center justify-center rounded-full bg-disabled text-black">
     ?
   </div>
 )

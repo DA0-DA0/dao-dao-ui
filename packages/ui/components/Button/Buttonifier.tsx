@@ -55,30 +55,30 @@ export const getButtonifiedClassNames = ({
   const disabledOrLoading = disabled || loading
 
   return clsx(
-    'relative rounded-md focus:outline-2 focus:outline-background-button-disabled transition-all',
+    'relative rounded-md transition-all focus:outline-2 focus:outline-background-button-disabled',
     // Let variants take color precedence over the text classes used here since
     // the variants are more specific, so just use the font text styling here.
     {
       // Sizes.
-      'py-[10px] px-[14px] button-text': size === 'lg',
-      'py-1 px-2 button-text-sm': size === 'sm',
-      'py-[6px] px-[10px] link-text': size === 'default',
+      'button-text py-[10px] px-[14px]': size === 'lg',
+      'button-text-sm py-1 px-2': size === 'sm',
+      'link-text py-[6px] px-[10px]': size === 'default',
     },
 
     // Primary variant
     variant === 'primary' && {
       // Default
-      'text-text-button-primary bg-background-button hover:bg-background-button-hover active:bg-background-button-pressed':
+      'bg-background-button text-text-button-primary hover:bg-background-button-hover active:bg-background-button-pressed':
         !disabledOrLoading,
       // Disabled
-      'text-text-button-disabled bg-background-button-disabled':
+      'bg-background-button-disabled text-text-button-disabled':
         disabledOrLoading,
     },
     // Primary outline variant
     variant === 'primary_outline' && {
       'ring-2 ring-inset': true,
       // Default
-      'text-background-button hover:text-text-button-primary active:text-text-button-primary hover:bg-background-button-hover active:bg-background-button-pressed hover:ring-0 active:ring-0 ring-background-button':
+      'text-background-button ring-background-button hover:bg-background-button-hover hover:text-text-button-primary hover:ring-0 active:bg-background-button-pressed active:text-text-button-primary active:ring-0':
         !disabledOrLoading,
       // Disabled
       'text-background-button-disabled ring-background-button-disabled':
@@ -90,13 +90,13 @@ export const getButtonifiedClassNames = ({
       'hover:bg-background-button-secondary-hover active:bg-background-button-secondary-pressed':
         !disabledOrLoading,
       // Default, not pressed
-      'text-icon-primary bg-background-button-secondary-default':
+      'bg-background-button-secondary-default text-icon-primary':
         !disabledOrLoading && !pressed,
       // Default, pressed
-      'text-text-interactive-active bg-background-interactive-active':
+      'bg-background-interactive-active text-text-interactive-active':
         !disabledOrLoading && pressed,
       // Disabled
-      'text-text-interactive-disabled bg-background-button-secondary-disabled':
+      'bg-background-button-secondary-disabled text-text-interactive-disabled':
         disabledOrLoading,
     },
     // Ghost variant
@@ -105,11 +105,11 @@ export const getButtonifiedClassNames = ({
       'hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
         !disabledOrLoading,
       // Default, not pressed
-      'text-text-secondary bg-transparent': !disabledOrLoading && !pressed,
+      'bg-transparent text-text-secondary': !disabledOrLoading && !pressed,
       // Default, pressed
-      'text-text-brand bg-transparent': !disabledOrLoading && pressed,
+      'bg-transparent text-text-brand': !disabledOrLoading && pressed,
       // Disabled
-      'text-text-interactive-disabled bg-transparent': disabledOrLoading,
+      'bg-transparent text-text-interactive-disabled': disabledOrLoading,
     },
     // Underline variant
     (variant === 'underline' || variant === 'none') && {
@@ -117,7 +117,7 @@ export const getButtonifiedClassNames = ({
       '!p-0': true,
       underline: variant === 'underline',
       // Default
-      'hover:opacity-80 active:opacity-70 transition-opacity':
+      'transition-opacity hover:opacity-80 active:opacity-70':
         !disabledOrLoading,
       // Disabled
       'text-text-button-disabled': disabledOrLoading,
@@ -139,7 +139,7 @@ export const ButtonifiedChildren = ({
   <>
     <div
       className={clsx(
-        'flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center',
+        'absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center',
         {
           // Match padding of container (by inheriting it) so the logo is the
           // same height as the text.
@@ -151,7 +151,7 @@ export const ButtonifiedChildren = ({
       )}
     >
       {loading && (
-        <div className="aspect-square inline-block mx-auto h-full animate-spin-medium">
+        <div className="mx-auto inline-block aspect-square h-full animate-spin-medium">
           <Logo invert={variant === 'primary'} size="100%" />
         </div>
       )}
@@ -161,7 +161,7 @@ export const ButtonifiedChildren = ({
         // Add `relative` to allow children to be clickable. The absolute
         // container of the loading element above takes over touches if this is
         // not relative; adding relative puts them in the same stacking context.
-        'flex relative flex-row gap-2 items-center h-full',
+        'relative flex h-full flex-row items-center gap-2',
         center && 'justify-center',
         {
           invisible: loading,
@@ -173,7 +173,7 @@ export const ButtonifiedChildren = ({
     </div>
 
     {showBadge && (
-      <div className="box-content absolute top-[3px] right-[3px] w-[6px] h-[6px] bg-icon-interactive-active rounded-full border-[3px] border-background-base"></div>
+      <div className="absolute top-[3px] right-[3px] box-content h-[6px] w-[6px] rounded-full border-[3px] border-background-base bg-icon-interactive-active"></div>
     )}
   </>
 )

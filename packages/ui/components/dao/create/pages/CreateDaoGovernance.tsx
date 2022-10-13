@@ -12,7 +12,7 @@ export const CreateDaoGovernance = (context: CreateDaoContext) => {
 
   return (
     <>
-      <p className="my-7 text-text-body title-text">
+      <p className="title-text my-7 text-text-body">
         {t('title.governanceConfiguration')}
       </p>
 

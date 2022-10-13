@@ -38,55 +38,55 @@ export const ProposalLine = ({
     <Link href={href}>
       <a
         className={clsx(
-          'block bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md transition cursor-pointer',
+          'block cursor-pointer rounded-md bg-background-secondary transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
           className
         )}
       >
         {/* Desktop */}
-        <div className="hidden flex-row gap-6 items-center p-3 h-12 md:flex">
-          <p className="shrink-0 font-mono caption-text">
+        <div className="hidden h-12 flex-row items-center gap-6 p-3 md:flex">
+          <p className="caption-text shrink-0 font-mono">
             <ProposalIdDisplay
               proposalNumber={proposalNumber}
               proposalPrefix={proposalPrefix}
             />
           </p>
-          <div className="shrink-0 w-20">
+          <div className="w-20 shrink-0">
             <Status />
           </div>
-          <p className="grow truncate body-text">{title}</p>
-          <p className="shrink-0 font-mono text-right break-words caption-text">
+          <p className="body-text grow truncate">{title}</p>
+          <p className="caption-text shrink-0 break-words text-right font-mono">
             {expiration}
           </p>
           {vote}
         </div>
 
         {/* Mobile */}
-        <div className="flex flex-col gap-2 justify-between p-4 min-h-[9.5rem] text-sm rounded-md md:hidden">
+        <div className="flex min-h-[9.5rem] flex-col justify-between gap-2 rounded-md p-4 text-sm md:hidden">
           <div className="flex flex-col gap-2">
-            <p className="font-mono caption-text">
+            <p className="caption-text font-mono">
               <ProposalIdDisplay
                 proposalNumber={proposalNumber}
                 proposalPrefix={proposalPrefix}
               />
             </p>
 
-            <p className="col-span-3 break-words line-clamp-2 body-text">
+            <p className="body-text col-span-3 break-words line-clamp-2">
               {title}
             </p>
           </div>
 
-          <div className="flex flex-row gap-6 justify-between items-center">
-            <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-row items-center justify-between gap-6">
+            <div className="flex flex-row items-center gap-2">
               <Status dimmed />
 
               <p
                 className={clsx(
-                  'font-mono leading-5 text-center text-text-tertiary break-words link-text',
+                  'link-text break-words text-center font-mono leading-5 text-text-tertiary',
                   !votingOpen && 'hidden xs:inline-block'
                 )}
               >
                 {/* eslint-disable-next-line i18next/no-literal-string */}
-                <span className="inline-block mr-2">–</span>
+                <span className="mr-2 inline-block">–</span>
                 {expiration}
               </p>
             </div>
@@ -116,9 +116,9 @@ export const ProposalLineLoader = () => (
 )
 
 const ProposalLineLoaderDesktop = () => (
-  <div className="hidden h-12 bg-primary rounded-md animate-pulse md:block"></div>
+  <div className="hidden h-12 animate-pulse rounded-md bg-primary md:block"></div>
 )
 
 const ProposalLineLoaderMobile = () => (
-  <div className="h-[9.5rem] bg-primary rounded-md animate-pulse md:hidden"></div>
+  <div className="h-[9.5rem] animate-pulse rounded-md bg-primary md:hidden"></div>
 )

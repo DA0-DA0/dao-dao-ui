@@ -57,7 +57,7 @@ const CustomErrorComponent = ({
       </p>
 
       {error && (
-        <pre className="mt-6 text-xs text-error whitespace-pre-wrap">
+        <pre className="mt-6 whitespace-pre-wrap text-xs text-error">
           {error}
         </pre>
       )}

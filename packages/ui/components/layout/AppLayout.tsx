@@ -68,14 +68,14 @@ export const AppLayout = ({
         PageHeader,
       }}
     >
-      <div className="flex overflow-hidden relative z-[1] flex-row items-stretch w-full h-full">
+      <div className="relative z-[1] flex h-full w-full flex-row items-stretch overflow-hidden">
         <ErrorBoundary>
           <Navigation {...navigationProps} />
         </ErrorBoundary>
 
         <main
           className={clsx(
-            'flex overflow-hidden flex-col grow border-x border-border-base transition-opacity',
+            'flex grow flex-col overflow-hidden border-x border-border-base transition-opacity',
             // Navigation bar can be responsive up to sm size. After that, it
             // automatically displays.
             context.responsiveNavigation.enabled
@@ -87,11 +87,11 @@ export const AppLayout = ({
           )}
         >
           <div
-            className="fixed right-4 bottom-4 z-10 bg-background-base rounded-full shadow-dp8 cursor-pointer sm:right-6 sm:bottom-6 xl:hidden"
+            className="fixed right-4 bottom-4 z-10 cursor-pointer rounded-full bg-background-base shadow-dp8 sm:right-6 sm:bottom-6 xl:hidden"
             onClick={context.responsiveRightSidebar.toggle}
           >
             <ProfileImage
-              className="bg-background-primary hover:bg-background-interactive-hover active:bg-background-interactive-pressed transition"
+              className="bg-background-primary transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed"
               fallbackIconClassName="!text-icon-primary !w-3/5 !h-3/5"
               imageUrl={
                 !walletProfile || walletProfile.loading
@@ -107,7 +107,7 @@ export const AppLayout = ({
 
           {/* Make horizontal padding 1 unit more than page header so that the body is not touching the sides of the page header's bottom border when it scrolls. */}
           <div
-            className="overflow-y-auto relative grow px-7 pt-10 pb-6 no-scrollbar"
+            className="no-scrollbar relative grow overflow-y-auto px-7 pt-10 pb-6"
             // PageHeader uses this ID to obtain this element and track its
             // scroll position so that it can move the top gradient accordingly
             // to match the underlying gradient on the page.

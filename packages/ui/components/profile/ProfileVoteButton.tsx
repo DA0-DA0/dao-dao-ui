@@ -15,7 +15,7 @@ export const ProfileVoteButton = ({
   pressed = false,
 }: ProfileVoteButtonProps) => (
   <Button
-    className={clsx('pl-4 mb-2 w-full border-2 border-transparent', {
+    className={clsx('mb-2 w-full border-2 border-transparent pl-4', {
       'border-border-primary': pressed,
     })}
     contentContainerClassName={clsx('justify-between text-sm', {
@@ -27,6 +27,6 @@ export const ProfileVoteButton = ({
     variant="secondary"
   >
     <p>{label}</p>
-    <Icon className="w-6 h-6" />
+    <Icon className="h-6 w-6" />
   </Button>
 )

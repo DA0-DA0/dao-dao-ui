@@ -70,10 +70,10 @@ export const ProposalInfoCard = ({
   )?.toLocaleString()
 
   return (
-    <div className="rounded-md border border-light">
-      <div className="flex flex-row justify-evenly items-stretch py-4 md:py-5">
-        <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+    <div className="border-light rounded-md border">
+      <div className="flex flex-row items-stretch justify-evenly py-4 md:py-5">
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-tertiary overflow-hidden text-ellipsis font-mono text-sm">
             {t('title.proposal')}
           </p>
 
@@ -85,10 +85,10 @@ export const ProposalInfoCard = ({
           </p>
         </div>
 
-        <div className="w-[1px] bg-light"></div>
+        <div className="bg-light w-[1px]"></div>
 
-        <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-tertiary overflow-hidden text-ellipsis font-mono text-sm">
             {t('title.status')}
           </p>
 
@@ -97,10 +97,10 @@ export const ProposalInfoCard = ({
           </div>
         </div>
 
-        <div className="w-[1px] bg-light"></div>
+        <div className="bg-light w-[1px]"></div>
 
-        <div className="flex flex-col gap-2 items-center">
-          <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-tertiary overflow-hidden text-ellipsis font-mono text-sm">
             {t('title.you')}
           </p>
 
@@ -123,26 +123,26 @@ export const ProposalInfoCard = ({
           )}
         </div>
       </div>
-      <div className="flex flex-col gap-3 p-5 border-t md:p-7 border-light">
-        <div className="flex flex-col gap-2 items-start">
-          <p className="font-mono text-sm text-tertiary">
+      <div className="border-light flex flex-col gap-3 border-t p-5 md:p-7">
+        <div className="flex flex-col items-start gap-2">
+          <p className="text-tertiary font-mono text-sm">
             {t('title.proposer')}
           </p>
           <CopyToClipboard takeN={9} value={proposal.proposer} />
         </div>
 
         {proposal.status === Status.Executed && !executionTxHash ? (
-          <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
-            <p className="col-span-3 font-mono text-sm text-tertiary">
+          <div className="grid grid-cols-10 items-center gap-2 md:flex md:flex-col md:items-start">
+            <p className="text-tertiary col-span-3 font-mono text-sm">
               {t('info.txAbbr')}
             </p>
             <p className="col-span-7">{t('info.loading')}</p>
           </div>
         ) : !!executionTxHash ? (
-          <div className="grid grid-cols-10 gap-2 items-center md:flex md:flex-col md:items-start">
+          <div className="grid grid-cols-10 items-center gap-2 md:flex md:flex-col md:items-start">
             {CHAIN_TXN_URL_PREFIX ? (
               <a
-                className="flex flex-row col-span-3 gap-1 items-center font-mono text-sm text-tertiary"
+                className="text-tertiary col-span-3 flex flex-row items-center gap-1 font-mono text-sm"
                 href={CHAIN_TXN_URL_PREFIX + executionTxHash}
                 rel="noopener noreferrer"
                 target="_blank"
@@ -151,7 +151,7 @@ export const ProposalInfoCard = ({
                 <ExternalLinkIcon width={16} />
               </a>
             ) : (
-              <p className="col-span-3 font-mono text-sm text-tertiary">
+              <p className="text-tertiary col-span-3 font-mono text-sm">
                 {t('info.txAbbr')}
               </p>
             )}
@@ -162,24 +162,24 @@ export const ProposalInfoCard = ({
         ) : null}
       </div>
       {proposalModuleVersion !== ContractVersion.V0_1_0 && (
-        <div className="flex flex-row justify-evenly items-stretch py-4 border-t md:py-5 border-light">
-          <div className="flex flex-col gap-2 items-center">
-            <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+        <div className="border-light flex flex-row items-stretch justify-evenly border-t py-4 md:py-5">
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-tertiary overflow-hidden text-ellipsis font-mono text-sm">
               {t('title.created')}
             </p>
 
-            <p className="flex flex-row gap-4 items-center font-mono text-xs leading-6 text-right">
+            <p className="flex flex-row items-center gap-4 text-right font-mono text-xs leading-6">
               {proposal.created === '0' ? createdHeight : proposal.created}
             </p>
           </div>
 
-          <div className="w-[1px] bg-light"></div>
+          <div className="bg-light w-[1px]"></div>
 
-          <div className="flex flex-col gap-2 items-center">
-            <p className="overflow-hidden font-mono text-sm text-ellipsis text-tertiary">
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-tertiary overflow-hidden text-ellipsis font-mono text-sm">
               {t('title.lastUpdated')}
             </p>
-            <p className="flex flex-row gap-4 items-center font-mono text-xs leading-6 text-right">
+            <p className="flex flex-row items-center gap-4 text-right font-mono text-xs leading-6">
               {new Date(
                 Number(proposal.last_updated) / 1000000
               ).toLocaleString()}
@@ -197,7 +197,7 @@ interface YouTooltipProps {
 
 const YouTooltip = ({ label }: YouTooltipProps) => (
   <Tooltip title={label}>
-    <p className="flex justify-center items-center p-1 w-4 h-4 font-mono text-xs rounded-full border cursor-pointer text-tertiary border-tertiary">
+    <p className="text-tertiary border-tertiary flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border p-1 font-mono text-xs">
       ?
     </p>
   </Tooltip>

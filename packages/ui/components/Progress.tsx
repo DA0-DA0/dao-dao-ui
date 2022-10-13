@@ -50,7 +50,7 @@ export const Progress = ({
 
     <Tooltip title={caretTooltip}>
       <ArrowDropUp
-        className="absolute bottom-[-0.825rem] z-10 !w-6 !h-6 text-icon-primary"
+        className="absolute bottom-[-0.825rem] z-10 !h-6 !w-6 text-icon-primary"
         style={{
           left: `${caretPosition}%`,
         }}

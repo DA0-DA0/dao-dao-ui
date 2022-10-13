@@ -1,7 +1,7 @@
 import { ActionCardLoaderProps } from '@dao-dao/tstypes/ui/ActionCardLoader'
 
 export const ActionCardLoader = ({ Loader }: ActionCardLoaderProps) => (
-  <div className="p-3 my-2 bg-primary rounded-lg">
+  <div className="my-2 rounded-lg bg-primary p-3">
     <Loader />
   </div>
 )

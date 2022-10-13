@@ -42,7 +42,7 @@ const InnerVote = () => {
     <div className="space-y-8">
       <VoteHero />
 
-      <div className="flex flex-row justify-between items-center">
+      <div className="flex flex-row items-center justify-between">
         <h3 className="title-text">{t('title.proposals')}</h3>
 
         <Button

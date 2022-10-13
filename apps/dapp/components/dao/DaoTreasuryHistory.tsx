@@ -194,9 +194,9 @@ export const InnerDaoTreasuryHistory = ({
         <p className="text-secondary">{t('info.nothingFound')}</p>
       )}
 
-      <div className="flex flex-row gap-4 justify-between items-center">
+      <div className="flex flex-row items-center justify-between gap-4">
         {lowestHeightLoadedTimestamp && (
-          <p className="italic caption-text">
+          <p className="caption-text italic">
             {t('info.historySinceDate', {
               date: lowestHeightLoadedTimestamp.toLocaleString(),
             })}
@@ -235,21 +235,21 @@ const TransactionRenderer = ({
     outgoing,
   },
 }: TransactionRendererProps) => (
-  <div className="flex flex-row gap-4 justify-between items-start xs:gap-12">
-    <div className="flex flex-row flex-wrap gap-x-4 items-center text-sm leading-6">
+  <div className="flex flex-row items-start justify-between gap-4 xs:gap-12">
+    <div className="flex flex-row flex-wrap items-center gap-x-4 text-sm leading-6">
       <CopyToClipboard value={outgoing ? recipient : sender} />
       {/* Outgoing transactions are received by the address above, so point to the left. */}
       {outgoing ? (
-        <ArrowNarrowLeftIcon className="w-4 h-4" />
+        <ArrowNarrowLeftIcon className="h-4 w-4" />
       ) : (
-        <ArrowNarrowRightIcon className="w-4 h-4" />
+        <ArrowNarrowRightIcon className="h-4 w-4" />
       )}
       <p>
         {amount} ${denomLabel}
       </p>
     </div>
 
-    <p className="flex flex-row gap-4 items-center font-mono text-xs leading-6 text-right">
+    <p className="flex flex-row items-center gap-4 text-right font-mono text-xs leading-6">
       {timestamp?.toLocaleString() ?? `${height} block`}
 
       <a

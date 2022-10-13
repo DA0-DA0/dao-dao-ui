@@ -154,13 +154,13 @@ export const NewProposal = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
-      <div className="rounded-lg bg-background-tertiary">
-        <div className="flex flex-row gap-6 justify-between items-center py-4 px-6 border-b border-border-secondary">
+      <div className="bg-background-tertiary rounded-lg">
+        <div className="border-border-secondary flex flex-row items-center justify-between gap-6 border-b py-4 px-6">
           <p className="primary-text text-text-body">
             {t('form.proposalsName')}
           </p>
 
-          <div className="flex flex-col grow">
+          <div className="flex grow flex-col">
             <TextInput
               error={errors.title}
               fieldName="title"
@@ -195,12 +195,12 @@ export const NewProposal = ({
         </div>
       </div>
 
-      <p className="my-6 title-text text-text-body">
+      <p className="title-text text-text-body my-6">
         {t('title.actions', { count: proposalActionData.length })}
       </p>
 
       {proposalActionData.length > 0 && (
-        <div className="flex flex-col gap-1 mb-4">
+        <div className="mb-4 flex flex-col gap-1">
           {proposalActionData.map((actionData, index) => {
             const Component = actionsWithData[actionData.key]?.action?.Component
             if (!Component) {
@@ -242,13 +242,13 @@ export const NewProposal = ({
         }}
       />
 
-      <div className="flex flex-col gap-2 py-6 mt-6 border-y border-border-secondary">
-        <div className="flex flex-row gap-6 justify-between items-center">
+      <div className="border-border-secondary mt-6 flex flex-col gap-2 border-y py-6">
+        <div className="flex flex-row items-center justify-between gap-6">
           <p className="text-text-body title-text">
             {t('info.reviewYourProposal')}
           </p>
 
-          <div className="flex flex-row gap-2 justify-end items-center">
+          <div className="flex flex-row items-center justify-end gap-2">
             <Button
               disabled={loading}
               type="submit"
@@ -258,12 +258,12 @@ export const NewProposal = ({
               {showPreview ? (
                 <>
                   {t('button.hidePreview')}
-                  <EyeOffIcon className="w-5 h-5" />
+                  <EyeOffIcon className="h-5 w-5" />
                 </>
               ) : (
                 <>
                   {t('button.preview')}
-                  <EyeIcon className="w-5 h-5" />
+                  <EyeIcon className="h-5 w-5" />
                 </>
               )}
             </Button>
@@ -290,20 +290,20 @@ export const NewProposal = ({
                 value={ProposeSubmitValue.Submit}
               >
                 <p>{t('button.publish')}</p>
-                <Airplane className="w-4 h-4" />
+                <Airplane className="h-4 w-4" />
               </Button>
             </Tooltip>
           </div>
         </div>
 
         {showSubmitErrorNote && (
-          <p className="text-right text-text-interactive-error secondary-text">
+          <p className="text-text-interactive-error secondary-text text-right">
             {t('error.createProposalSubmitInvalid')}
           </p>
         )}
 
         {showPreview && (
-          <div className="p-6 mt-4 rounded-md border border-border-secondary">
+          <div className="border-border-secondary mt-4 rounded-md border p-6">
             <ProposalContentDisplay
               actionDisplay={
                 proposalActionData.length ? (
@@ -333,12 +333,12 @@ export const NewProposal = ({
         )}
       </div>
 
-      <div className="flex flex-row gap-2 justify-end items-center mt-4">
+      <div className="mt-4 flex flex-row items-center justify-end gap-2">
         {draft ? (
           <>
             <p
               className={clsx(
-                'italic caption-text',
+                'caption-text italic',
                 draftSaving && 'animate-pulse'
               )}
             >
@@ -353,7 +353,7 @@ export const NewProposal = ({
               title={draftSaving ? undefined : t('info.draftStillSaved')}
             >
               <Button
-                className="-ml-1 caption-text"
+                className="caption-text -ml-1"
                 disabled={draftSaving}
                 onClick={unloadDraft}
                 variant="underline"

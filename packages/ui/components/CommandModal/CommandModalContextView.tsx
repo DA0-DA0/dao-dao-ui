@@ -140,14 +140,14 @@ export const CommandModalContextView = ({
   return (
     <div
       className={clsx(
-        'flex overflow-y-auto flex-col grow gap-1 p-3 pt-4 no-scrollbar',
+        'no-scrollbar flex grow flex-col gap-1 overflow-y-auto p-3 pt-4',
         loading && 'animate-pulse'
       )}
     >
       {sections.length > 0 ? (
         sections.map(({ name, items, onChoose }, sectionIndex) => (
           <Fragment key={sectionIndex}>
-            <p className="py-1 pl-3 h-7 text-text-tertiary link-text">{name}</p>
+            <p className="link-text h-7 py-1 pl-3 text-text-tertiary">{name}</p>
 
             {items.map((item, itemIndex) => {
               const selected =
@@ -158,7 +158,7 @@ export const CommandModalContextView = ({
                   key={itemIndex}
                   className={
                     loading
-                      ? '!bg-background-interactive-disabled pointer-events-none'
+                      ? 'pointer-events-none !bg-background-interactive-disabled'
                       : undefined
                   }
                   // loading={navigatingFromHit === hit}
@@ -179,7 +179,7 @@ export const CommandModalContextView = ({
         <NoContent
           Icon={Warning}
           body={t('info.nothingFound')}
-          className="justify-center w-full h-full border-0"
+          className="h-full w-full justify-center border-0"
         />
       )}
     </div>

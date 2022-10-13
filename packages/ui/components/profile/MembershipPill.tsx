@@ -28,8 +28,8 @@ export const MembershipPill = ({
       className={clsx(
         'link-text',
         ghost
-          ? 'text-text-secondary caption-text'
-          : 'flex flex-row gap-2 items-center py-1 px-[10px] rounded-full border-2 border-border-primary',
+          ? 'caption-text text-text-secondary'
+          : 'flex flex-row items-center gap-2 rounded-full border-2 border-border-primary py-1 px-[10px]',
         !isMember && 'text-text-interactive-disabled'
       )}
     >

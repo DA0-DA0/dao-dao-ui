@@ -41,7 +41,7 @@ export const DaoCard = ({
   return (
     <LinkWrapper
       className={clsx(
-        'flex relative flex-col justify-between items-center py-7 px-6 w-full h-[328px] bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed rounded-md ring-1 ring-inset ring-transparent hover:ring-border-interactive-hover active:ring-border-interactive-focus transition-all',
+        'relative flex h-[328px] w-full flex-col items-center justify-between rounded-md bg-background-secondary py-7 px-6 ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus',
         className
       )}
       href={`/dao/${coreAddress}`}
@@ -50,7 +50,7 @@ export const DaoCard = ({
     >
       <div
         className={clsx(
-          'flex absolute top-0 left-0 flex-row items-center p-3 w-full',
+          'absolute top-0 left-0 flex w-full flex-row items-center p-3',
           {
             'justify-between': !!parentDao,
             'justify-end': !parentDao, // Keep the pin and member check at the end if no parent DAO.
@@ -68,7 +68,7 @@ export const DaoCard = ({
             variant="ghost"
           />
         )}
-        <div className="flex flex-row gap-3 items-center">
+        <div className="flex flex-row items-center gap-3">
           <IconButton
             Icon={DaoCardPin}
             className={clsx({
@@ -85,7 +85,7 @@ export const DaoCard = ({
 
           {showIsMember && !lazyData.loading && lazyData.data.isMember && (
             <Tooltip title={t('info.youAreMember')}>
-              <Check className="w-4 h-4 text-icon-secondary" />
+              <Check className="h-4 w-4 text-icon-secondary" />
             </Tooltip>
           )}
         </div>
@@ -98,24 +98,24 @@ export const DaoCard = ({
           parentDao={parentDao}
           size="sm"
         />
-        <p className="mt-2 primary-text">{name}</p>
+        <p className="primary-text mt-2">{name}</p>
         {established && (
-          <p className="mt-1 caption-text">{formatDate(established)}</p>
+          <p className="caption-text mt-1">{formatDate(established)}</p>
         )}
       </div>
 
       <div className="self-stretch">
-        <p className="mb-5 w-full break-words line-clamp-3 secondary-text">
+        <p className="secondary-text mb-5 w-full break-words line-clamp-3">
           {removeMarkdown(description)}
         </p>
 
         <div
           className={clsx(
-            'flex flex-row gap-3 items-center mb-2 font-mono caption-text',
+            'caption-text mb-2 flex flex-row items-center gap-3 font-mono',
             lazyData.loading && 'animate-pulse'
           )}
         >
-          <Governance className="w-3 h-4" />
+          <Governance className="h-4 w-3" />
 
           <TokenAmountDisplay
             amount={
@@ -130,11 +130,11 @@ export const DaoCard = ({
 
         <div
           className={clsx(
-            'flex flex-row gap-3 items-center font-mono caption-text',
+            'caption-text flex flex-row items-center gap-3 font-mono',
             lazyData.loading && 'animate-pulse'
           )}
         >
-          <DaoCardProposals className="w-3 h-4" />
+          <DaoCardProposals className="h-4 w-3" />
           <p>
             {lazyData.loading
               ? '...'

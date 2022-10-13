@@ -67,7 +67,7 @@ export const Inbox = <T extends {}>({
             className={clsx(
               'transition-opacity',
               daosWithProposals.loading
-                ? 'opacity-0 pointer-events-none'
+                ? 'pointer-events-none opacity-0'
                 : 'opacity-100',
               refreshSpinning && 'animate-spin-medium'
             )}
@@ -89,7 +89,7 @@ export const Inbox = <T extends {}>({
         title={t('title.inbox')}
       />
 
-      <div className="flex flex-col items-stretch mx-auto max-w-5xl">
+      <div className="mx-auto flex max-w-5xl flex-col items-stretch">
         {daosWithProposals.loading ? (
           <Loader fill={false} />
         ) : (
@@ -98,14 +98,14 @@ export const Inbox = <T extends {}>({
               {t('title.numOpenProposals', { count: numOpenProposals })}
             </p>
 
-            <div className="grow mt-6 space-y-4">
+            <div className="mt-6 grow space-y-4">
               {daosWithProposals.data.map(({ dao, proposals }, index) => (
                 <DaoDropdown
                   key={index}
                   dao={{
                     ...dao,
                     content: proposals.length ? (
-                      <ProposalContainer className="px-2 mt-4">
+                      <ProposalContainer className="mt-4 px-2">
                         {proposals.map((props, index) => (
                           <ProposalLine key={index} {...props} />
                         ))}

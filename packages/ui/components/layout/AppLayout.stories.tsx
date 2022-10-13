@@ -17,10 +17,10 @@ export default {
 export const DefaultArgs: AppLayoutProps = {
   navigationProps: NavigatonStory.args as NavigationProps,
   children: (
-    <div className="flex flex-col px-6 h-full">
+    <div className="flex h-full flex-col px-6">
       <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />
 
-      <div className="flex grow justify-center items-center">
+      <div className="flex grow items-center justify-center">
         <p>App content</p>
       </div>
     </div>

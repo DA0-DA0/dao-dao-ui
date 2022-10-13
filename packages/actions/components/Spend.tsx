@@ -138,8 +138,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   return (
     <ActionCard Icon={SpendEmoji} onRemove={onRemove} title={t('title.spend')}>
-      <div className="flex flex-row gap-4 items-center">
-        <div className="flex flex-row gap-2 items-center">
+      <div className="flex flex-row items-center gap-4">
+        <div className="flex flex-row items-center gap-2">
           <NumberInput
             disabled={!isCreating}
             error={errors?.amount}
@@ -190,7 +190,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         </div>
 
         {/* eslint-disable-next-line i18next/no-literal-string */}
-        <p className="font-mono text-2xl secondary-text">&#10142;</p>
+        <p className="secondary-text font-mono text-2xl">&#10142;</p>
 
         <div className="grow">
           <AddressInput

@@ -36,8 +36,8 @@ export const ClaimsPendingList = ({
 
   return (
     <>
-      <div className="flex flex-row justify-between items-center">
-        <p className="text-lg title-text">
+      <div className="flex flex-row items-center justify-between">
+        <p className="title-text text-lg">
           {t('title.unstakingNamedTokens', {
             name: '$' + governanceTokenInfo.symbol,
           })}
@@ -51,7 +51,7 @@ export const ClaimsPendingList = ({
       </div>
 
       {claims?.length ? (
-        <div className="flex flex-col gap-1 items-stretch !mt-4">
+        <div className="!mt-4 flex flex-col items-stretch gap-1">
           {claims.map((claim, idx) => (
             <ClaimsListItem
               key={idx}

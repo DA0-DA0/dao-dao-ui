@@ -55,8 +55,8 @@ export const CreateDaoVoting = ({
 
   return (
     <>
-      <div className="pb-6 border-b border-b-border-secondary">
-        <p className="my-9 text-text-body title-text">
+      <div className="border-b border-b-border-secondary pb-6">
+        <p className="title-text my-9 text-text-body">
           {t('title.votingConfiguration')}
         </p>
 
@@ -189,14 +189,14 @@ export const CreateDaoVoting = ({
           ({ votingConfig: { advancedItems } }) => !!advancedItems?.length
         )) && (
         <div ref={advancedConfigurationContainerRef}>
-          <div className="flex flex-row justify-between items-end mt-7 -mb-7">
-            <p className="text-text-body title-text">
+          <div className="mt-7 -mb-7 flex flex-row items-end justify-between">
+            <p className="title-text text-text-body">
               {t('title.advancedConfiguration')}
             </p>
 
-            <div className="flex flex-row gap-4 items-center">
+            <div className="flex flex-row items-center gap-4">
               <p
-                className="cursor-pointer body-text"
+                className="body-text cursor-pointer"
                 onClick={() =>
                   setValue(
                     'advancedVotingConfigEnabled',
@@ -217,7 +217,7 @@ export const CreateDaoVoting = ({
 
           <div
             className={clsx(
-              'flex flex-col gap-4 mt-14',
+              'mt-14 flex flex-col gap-4',
               !advancedVotingConfigEnabled && 'hidden'
             )}
           >
@@ -227,16 +227,16 @@ export const CreateDaoVoting = ({
                   (advancedWarningI18nKey, index) => (
                     <div
                       key={index}
-                      className="flex flex-col gap-2 py-5 px-6 bg-background-interactive-warning rounded-lg"
+                      className="flex flex-col gap-2 rounded-lg bg-background-interactive-warning py-5 px-6"
                     >
-                      <div className="flex flex-row gap-3 items-center">
-                        <WarningAmber className="!w-6 !h-6 text-icon-interactive-warning" />
-                        <p className="text-text-interactive-warning-title primary-text">
+                      <div className="flex flex-row items-center gap-3">
+                        <WarningAmber className="!h-6 !w-6 text-icon-interactive-warning" />
+                        <p className="primary-text text-text-interactive-warning-title">
                           {t('title.watchOut')}
                         </p>
                       </div>
 
-                      <p className="text-text-interactive-warning-body body-text">
+                      <p className="body-text text-text-interactive-warning-body">
                         {t(advancedWarningI18nKey)}
                       </p>
                     </div>

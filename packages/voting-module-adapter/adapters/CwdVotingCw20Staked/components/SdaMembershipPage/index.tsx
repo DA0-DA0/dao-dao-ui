@@ -19,13 +19,13 @@ export const SdaMembershipPage = ({
 
   return (
     <div className="space-y-8">
-      <div className="flex relative flex-col items-center mt-16 rounded-b-lg border-t lg:mt-32 bg-primary border-inactive">
+      <div className="bg-primary border-inactive relative mt-16 flex flex-col items-center rounded-b-lg border-t lg:mt-32">
         <SuspenseLoader fallback={<StakeHeaderLoader Loader={Loader} />}>
           <StakeHeader defaultImageUrl={defaultImageUrl} />
         </SuspenseLoader>
       </div>
 
-      <div className="flex flex-row gap-2 items-center text-lg title-text">
+      <div className="title-text flex flex-row items-center gap-2 text-lg">
         <Pie height={22} width={22} />
         <p>{t('title.yourTokens')}</p>
       </div>

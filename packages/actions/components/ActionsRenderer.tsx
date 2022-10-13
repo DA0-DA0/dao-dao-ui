@@ -62,7 +62,7 @@ export const ActionsRenderer = ({
             </SuspenseLoader>
 
             <button
-              className="absolute top-1 -right-5 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute top-1 -right-5 opacity-0 transition-opacity group-hover:opacity-100"
               onClick={() => {
                 const url = new URL(window.location.href)
                 url.hash = '#' + `A${index + 1}`

@@ -12,7 +12,7 @@ export const ProfileDisconnectedCard = () => {
   return (
     <div className="relative rounded-lg border border-border-primary">
       <div className="p-6">
-        <div className="flex flex-col justify-center items-center pt-4">
+        <div className="flex flex-col items-center justify-center pt-4">
           {cyclopsMode ? (
             <ProfileImage
               imageUrl="/odysseus.jpg"
@@ -21,44 +21,44 @@ export const ProfileDisconnectedCard = () => {
             />
           ) : (
             <div
-              className="flex justify-center items-center w-16 h-16 bg-component-widget rounded-2xl border border-border-primary"
+              className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border-primary bg-component-widget"
               onClick={() => setCyclopsMode(true)}
             >
-              <Disconnected className="w-5 h-5 text-icon-interactive-disabled" />
+              <Disconnected className="h-5 w-5 text-icon-interactive-disabled" />
             </div>
           )}
-          <div className="mt-6 text-text-body title-text">
+          <div className="title-text mt-6 text-text-body">
             {/* eslint-disable-next-line i18next/no-literal-string */}
             {cyclopsMode ? 'Odysseus' : t('title.nobody')}
           </div>
-          <div className="mt-2 mb-5 font-mono caption-text">
+          <div className="caption-text mt-2 mb-5 font-mono">
             {t('info.connectYourWallet')}
           </div>
-          <div className="grid grid-cols-[1fr_1px_1fr] gap-2 justify-items-center items-center self-stretch mt-3">
+          <div className="mt-3 grid grid-cols-[1fr_1px_1fr] items-center justify-items-center gap-2 self-stretch">
             <div className="flex flex-col items-stretch text-center">
-              <Payments className="self-center mb-4 w-5 h-4 text-center text-icon-secondary" />
-              <p className="mb-1 secondary-text">{t('title.holdings')}</p>
-              <p className="font-mono title-text">--</p>
+              <Payments className="mb-4 h-4 w-5 self-center text-center text-icon-secondary" />
+              <p className="secondary-text mb-1">{t('title.holdings')}</p>
+              <p className="title-text font-mono">--</p>
             </div>
 
-            <div className="w-[1px] h-10 bg-border-secondary"></div>
+            <div className="h-10 w-[1px] bg-border-secondary"></div>
 
             <div className="flex flex-col items-center text-center">
-              <Layers className="self-center mb-4 w-5 h-4 text-icon-secondary" />
-              <p className="mb-1 secondary-text">{t('title.staked')}</p>
-              <p className="font-mono title-text">--</p>
+              <Layers className="mb-4 h-4 w-5 self-center text-icon-secondary" />
+              <p className="secondary-text mb-1">{t('title.staked')}</p>
+              <p className="title-text font-mono">--</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col items-stretch p-6 border-t border-t-border-primary">
-        <div className="flex flex-row justify-between items-center secondary-text">
+      <div className="flex flex-col items-stretch border-t border-t-border-primary p-6">
+        <div className="secondary-text flex flex-row items-center justify-between">
           <p>{t('title.membership')}</p>
           <p className="font-mono text-text-primary">--</p>
         </div>
 
-        <div className="flex flex-row justify-between items-center mt-3 secondary-text">
+        <div className="secondary-text mt-3 flex flex-row items-center justify-between">
           <p>{t('title.contributions')}</p>
           <p className="font-mono text-text-primary">--</p>
         </div>

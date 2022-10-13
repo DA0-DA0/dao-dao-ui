@@ -24,11 +24,11 @@ export const ContractHeader = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col items-center mt-2">
+    <div className="mt-2 flex flex-col items-center">
       {imgUrl ? (
         <div
           aria-label={t('info.daosLogo')}
-          className="w-[95px] h-[95px] bg-center bg-cover rounded-full"
+          className="h-[95px] w-[95px] rounded-full bg-cover bg-center"
           role="img"
           style={{
             backgroundImage: `url(${imgUrl})`,
@@ -38,12 +38,12 @@ export const ContractHeader = ({
         <Logo size={85} />
       )}
       <div className="flex flex-col items-center">
-        <h1 className="inline mt-5 header-text">{name}</h1>
+        <h1 className="header-text mt-5 inline">{name}</h1>
         {established && <EstablishedDate date={established} />}
       </div>
       <div className="mt-2 mb-4">
         <MarkdownPreview
-          className="whitespace-pre-wrap body-text"
+          className="body-text whitespace-pre-wrap"
           markdown={description}
         />
       </div>
@@ -61,11 +61,11 @@ export const ContractHeaderLoader = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col items-center mt-2">
+    <div className="mt-2 flex flex-col items-center">
       <Loader fill={false} size={85} />
 
       <div className="flex flex-col items-center">
-        <h1 className="inline invisible mt-5 header-text">{t('info.name')}</h1>
+        <h1 className="header-text invisible mt-5 inline">{t('info.name')}</h1>
         <EstablishedDateLoader />
       </div>
       <div className="mt-2 mb-4">

@@ -32,11 +32,11 @@ export const PinnedDaos = ({
 
   return (
     <>
-      <div className="flex flex-col gap-4 mt-2 xs:flex-row xs:justify-between xs:items-center">
+      <div className="mt-2 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
         <p className="title-text">{t('title.pinned')}</p>
 
-        <div className="flex flex-row gap-6 justify-between items-center">
-          <p className="text-text-body primary-text">{t('title.sortBy')}</p>
+        <div className="flex flex-row items-center justify-between gap-6">
+          <p className="primary-text text-text-body">{t('title.sortBy')}</p>
 
           <Dropdown {...sortDropdownProps} />
         </div>

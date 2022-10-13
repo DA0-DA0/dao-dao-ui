@@ -165,7 +165,7 @@ const StakeUnstakeModesBody = ({
   return (
     <>
       <div className="flex flex-col">
-        <h2 className="mb-6 primary-text">{t('title.chooseTokenAmount')}</h2>
+        <h2 className="primary-text mb-6">{t('title.chooseTokenAmount')}</h2>
         <NumberInput
           containerClassName="py-7 w-full h-20 pl-6 pr-8 bg-background-secondary rounded-md gap-4"
           ghost
@@ -181,11 +181,11 @@ const StakeUnstakeModesBody = ({
           value={amount}
         />
         {amount > max && (
-          <span className="mt-1 ml-1 text-error caption-text">
+          <span className="caption-text mt-1 ml-1 text-error">
             {t('error.cannotStakeMoreThanYouHave')}
           </span>
         )}
-        <span className="mt-4 font-mono caption-text">
+        <span className="caption-text mt-4 font-mono">
           {t('info.yourBalance')}
           {': '}
           {t('format.token', {
@@ -234,12 +234,12 @@ const StakeUnstakeModesBody = ({
       {(mode === StakingMode.Stake || mode === StakingMode.Unstake) &&
         unstakingDuration &&
         durationIsNonZero(unstakingDuration) && (
-          <div className="px-6 pt-7 -mx-6 mt-7 space-y-5 border-t border-border-secondary">
-            <p className="text-text-secondary primary-text">
+          <div className="-mx-6 mt-7 space-y-5 border-t border-border-secondary px-6 pt-7">
+            <p className="primary-text text-text-secondary">
               {t('title.unstakingPeriod') +
                 `: ${humanReadableDuration(unstakingDuration)}`}
             </p>
-            <p className="text-text-secondary body-text">
+            <p className="body-text text-text-secondary">
               {t('info.unstakingMechanics', {
                 humanReadableTime: humanReadableDuration(unstakingDuration),
               })}

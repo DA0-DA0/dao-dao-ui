@@ -35,7 +35,7 @@ export const ProfileNewProposalCard = ({
       underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
       {...wrapperProps}
     >
-      <div className="p-6 space-y-4">
+      <div className="space-y-4 p-6">
         <p className="secondary-text">{t('title.proposalCreationInfo')}</p>
 
         {info.loading ? (
@@ -45,16 +45,16 @@ export const ProfileNewProposalCard = ({
             ({ Icon, label, value, valueClassName }, index) => (
               <div
                 key={index}
-                className="flex flex-row gap-2 justify-between items-center ml-1"
+                className="ml-1 flex flex-row items-center justify-between gap-2"
               >
-                <div className="flex flex-row gap-2 items-center">
-                  <Icon className="w-5 h-5 text-icon-primary" />
-                  <p className="text-text-body primary-text">{label}</p>
+                <div className="flex flex-row items-center gap-2">
+                  <Icon className="h-5 w-5 text-icon-primary" />
+                  <p className="primary-text text-text-body">{label}</p>
                 </div>
 
                 <p
                   className={clsx(
-                    'py-1 px-2 font-mono text-center text-text-primary break-words rounded-full border-2 border-component-badge-primary caption-text',
+                    'caption-text break-words rounded-full border-2 border-component-badge-primary py-1 px-2 text-center font-mono text-text-primary',
                     valueClassName
                   )}
                 >
@@ -67,10 +67,10 @@ export const ProfileNewProposalCard = ({
       </div>
 
       {!info.loading && info.data.addresses.length > 0 && (
-        <div className="flex flex-col gap-5 p-6 border-t border-border-primary">
+        <div className="flex flex-col gap-5 border-t border-border-primary p-6">
           {info.data.addresses.map(({ label, address }, index) => (
             <div key={index} className="space-y-2">
-              <div className="flex flex-row gap-6 justify-between items-center">
+              <div className="flex flex-row items-center justify-between gap-6">
                 <p className="secondary-text">{label}</p>
 
                 <IconButton
@@ -84,7 +84,7 @@ export const ProfileNewProposalCard = ({
                 />
               </div>
 
-              <p className="pr-8 font-mono text-text-primary truncate legend-text">
+              <p className="legend-text truncate pr-8 font-mono text-text-primary">
                 {concatAddressStartEnd(address, 16, 16)}
               </p>
             </div>

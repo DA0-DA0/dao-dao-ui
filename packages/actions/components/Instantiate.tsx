@@ -64,7 +64,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       title={t('title.instantiateSmartContract')}
     >
       {instantiatedAddress && (
-        <div className="flex flex-row gap-3 items-center mb-2 text-primary">
+        <div className="mb-2 flex flex-row items-center gap-3 text-primary">
           <InputLabel name={t('form.instantiatedAddress') + ':'} />
           <CopyToClipboard
             takeStartEnd={{ start: instantiatedAddress.length, end: 0 }}
@@ -73,8 +73,8 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         </div>
       )}
 
-      <div className="flex flex-row gap-2 items-center">
-        <div className="flex flex-col gap-1 items-stretch">
+      <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-col items-stretch gap-1">
           <InputLabel name={t('form.codeID')} />
           <NumberInput
             disabled={!isCreating}
@@ -88,7 +88,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           <InputErrorMessage error={errors?.codeId} />
         </div>
 
-        <div className="flex flex-col grow gap-1 items-stretch">
+        <div className="flex grow flex-col items-stretch gap-1">
           <InputLabel name={t('form.contractLabel')} />
           <TextInput
             disabled={!isCreating}
@@ -132,17 +132,17 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       />
 
       {errors?.message ? (
-        <p className="flex gap-1 items-center text-sm text-error">
+        <p className="flex items-center gap-1 text-sm text-error">
           <XIcon className="inline w-5" /> <span>{errors.message.message}</span>
         </p>
       ) : (
-        <p className="flex gap-1 items-center text-sm text-success">
+        <p className="text-success flex items-center gap-1 text-sm">
           <CheckIcon className="inline w-5" /> {t('info.jsonIsValid')}
         </p>
       )}
 
       <InputLabel className="mt-1 -mb-1" name={t('form.funds')} />
-      <div className="flex flex-col gap-2 items-stretch">
+      <div className="flex flex-col items-stretch gap-2">
         {coins.map(({ id }, index) => (
           <NativeCoinSelector
             key={id}
@@ -163,7 +163,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         )}
         {isCreating && (
           <Button
-            className="self-start mb-2"
+            className="mb-2 self-start"
             onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
             variant="secondary"
           >
@@ -172,7 +172,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         )}
       </div>
 
-      <div className="flex flex-col gap-1 items-stretch">
+      <div className="flex flex-col items-stretch gap-1">
         <InputLabel name={`${t('form.admin')} (${t('form.optional')})`} />
         <TextInput
           disabled={!isCreating}

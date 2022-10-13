@@ -50,18 +50,18 @@ export const ProposalVotes = ({
   return (
     <>
       {votes.length > 0 && (
-        <div className="grid grid-cols-[1fr_auto_auto] gap-x-8 gap-y-6 xs:grid-cols-[auto_1fr_auto_auto] grid-rows-auto">
+        <div className="grid-rows-auto grid grid-cols-[1fr_auto_auto] gap-x-8 gap-y-6 xs:grid-cols-[auto_1fr_auto_auto]">
           {/* Titles */}
-          <p className="hidden font-mono font-normal text-text-secondary xs:block caption-text">
+          <p className="caption-text hidden font-mono font-normal text-text-secondary xs:block">
             {t('title.when')}
           </p>
-          <p className="font-mono font-normal text-text-secondary caption-text">
+          <p className="caption-text font-mono font-normal text-text-secondary">
             {t('title.votersAddress')}
           </p>
-          <p className="font-mono font-normal text-text-secondary caption-text">
+          <p className="caption-text font-mono font-normal text-text-secondary">
             {t('title.vote')}
           </p>
-          <p className="font-mono font-normal text-text-secondary caption-text">
+          <p className="caption-text font-mono font-normal text-text-secondary">
             {t('title.votingPower')}
           </p>
 
@@ -71,7 +71,7 @@ export const ProposalVotes = ({
               <Fragment key={index}>
                 <p
                   className={clsx(
-                    'hidden xs:block caption-text',
+                    'caption-text hidden xs:block',
                     when ? 'text-text-body' : 'text-text-tertiary'
                   )}
                 >
@@ -82,7 +82,7 @@ export const ProposalVotes = ({
                   )}
                 </p>
                 <CopyToClipboardUnderline
-                  className="font-mono text-text-body caption-text"
+                  className="caption-text font-mono text-text-body"
                   takeAll
                   value={voterAddress}
                 />
@@ -95,7 +95,7 @@ export const ProposalVotes = ({
                 >
                   <div>{vote}</div>
                 </Tooltip>
-                <p className="font-mono text-right text-text-body caption-text justify-self-right">
+                <p className="caption-text justify-self-right text-right font-mono text-text-body">
                   {formatPercentOf100(votingPowerPercent)}
                 </p>
               </Fragment>
@@ -109,7 +109,7 @@ export const ProposalVotes = ({
         <Loader fill={false} />
       ) : (
         (canLoadMore || loadingMore) && (
-          <div className="flex flex-row justify-end mt-4">
+          <div className="mt-4 flex flex-row justify-end">
             <Button
               className="secondary"
               loading={loadingMore}

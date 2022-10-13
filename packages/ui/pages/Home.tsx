@@ -34,14 +34,14 @@ export const Home = ({
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeader className={maxWidth} title={t('title.home')} />
 
-      <div className="flex flex-col gap-8 items-center">
+      <div className="flex flex-col items-center gap-8">
         <p className={clsx('title-text', maxWidth)}>
           {t('title.featuredDaos')}
         </p>
 
         {/* Featured DAOs container */}
         {/* Margin offsets container padding. */}
-        <div className="relative self-stretch px-[1px] -mx-6">
+        <div className="relative -mx-6 self-stretch px-[1px]">
           {/* Left shadow */}
           <div
             className={clsx(

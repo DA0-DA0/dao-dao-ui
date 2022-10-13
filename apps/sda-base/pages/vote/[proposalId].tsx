@@ -88,7 +88,7 @@ const InnerProposal = () => {
     )
 
   return (
-    <div className="grid grid-cols-2 gap-4 mx-auto max-w-screen-md lg:grid-cols-3 lg:max-w-page">
+    <div className="mx-auto grid max-w-screen-md grid-cols-2 gap-4 lg:max-w-page lg:grid-cols-3">
       <div className="col-span-2">
         <div className="mb-6 lg:hidden">
           <ProposalInfoCard
@@ -109,7 +109,7 @@ const InnerProposal = () => {
           walletAddress={walletAddress}
         />
 
-        <div className="pb-6 mt-6 lg:hidden">
+        <div className="mt-6 pb-6 lg:hidden">
           <h3 className="mb-6 text-base font-medium">
             {t('title.voteStatus')}
           </h3>
@@ -122,7 +122,7 @@ const InnerProposal = () => {
         <ProposalVotes className="mt-8 max-w-3xl" />
       </div>
 
-      <div className="hidden min-h-screen lg:block bg-base-200">
+      <div className="bg-base-200 hidden min-h-screen lg:block">
         <h2 className="mb-6 text-base font-medium">{t('title.details')}</h2>
         <ProposalInfoCard connected={connected} walletAddress={walletAddress} />
 

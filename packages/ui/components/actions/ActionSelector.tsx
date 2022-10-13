@@ -57,7 +57,7 @@ export const ActionSelector = ({
         <Button pressed={open} variant="secondary" {...props}>
           <Add
             className={clsx(
-              'w-4 h-4',
+              'h-4 w-4',
               open ? 'text-icon-brand' : 'text-icon-primary'
             )}
           />{' '}

@@ -22,7 +22,7 @@ export const CornerGradient = ({
 }: CornerGradientProps) => (
   <div
     className={clsx(
-      'absolute top-0 left-0 w-full h-full rounded-lg -scale-y-100 pointer-events-none',
+      'pointer-events-none absolute top-0 left-0 h-full w-full -scale-y-100 rounded-lg',
       className
     )}
     style={{

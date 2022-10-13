@@ -6,7 +6,7 @@ export interface ErrorPageProps {
 }
 
 export const ErrorPage = ({ title, children }: ErrorPageProps) => (
-  <div className="p-6 mx-auto space-y-3 max-w-prose text-center break-words">
+  <div className="mx-auto max-w-prose space-y-3 break-words p-6 text-center">
     {title && <h1 className="header-text">{title}</h1>}
 
     {children}

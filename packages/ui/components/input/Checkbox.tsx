@@ -24,12 +24,12 @@ export const Checkbox = ({
 }: CheckboxProps) => (
   <div
     className={clsx(
-      'group inline-flex justify-center items-center rounded outline-1 outline-border-primary outline transition-all',
+      'group inline-flex items-center justify-center rounded outline outline-1 outline-border-primary transition-all',
       checked ? 'bg-component-pill' : 'bg-background-button',
       readOnly
         ? 'pointer-events-none'
         : {
-            'hover:bg-background-button-hover active:bg-background-button-pressed  active:outline-2 cursor-pointer':
+            'cursor-pointer hover:bg-background-button-hover  active:bg-background-button-pressed active:outline-2':
               true,
             // Respond to parent group as well.
             'group-hover:bg-background-button-hover group-active:bg-background-button-pressed group-active:outline-2':
@@ -41,7 +41,7 @@ export const Checkbox = ({
   >
     <Check
       className={clsx(
-        '!w-5 !h-5 text-icon-primary group-hover:text-icon-button-primary transition-all',
+        '!h-5 !w-5 text-icon-primary transition-all group-hover:text-icon-button-primary',
         checked ? 'opacity-100' : 'opacity-0'
       )}
     />

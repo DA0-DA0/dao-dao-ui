@@ -13,17 +13,17 @@ interface VoteDisplayProps {
 export const VoteDisplay = ({ vote, className }: VoteDisplayProps) => {
   const { t } = useTranslation()
   const commonClassNames = clsx(
-    'inline-flex gap-1 items-center font-mono text-sm',
+    'inline-flex items-center gap-1 font-mono text-sm',
     className
   )
 
   return vote === Vote.Yes ? (
     <p className={clsx(commonClassNames, 'text-valid')}>
-      <Check className="!w-4 !h-4" /> {t('info.yesVote')}
+      <Check className="!h-4 !w-4" /> {t('info.yesVote')}
     </p>
   ) : vote === Vote.No ? (
     <p className={clsx(commonClassNames, 'text-error')}>
-      <Close className="!w-4 !h-4" /> {t('info.noVote')}
+      <Close className="!h-4 !w-4" /> {t('info.noVote')}
     </p>
   ) : vote === Vote.Abstain ? (
     <p className={clsx(commonClassNames, 'text-secondary')}>
@@ -31,7 +31,7 @@ export const VoteDisplay = ({ vote, className }: VoteDisplayProps) => {
     </p>
   ) : (
     // Should never happen.
-    <p className={clsx(commonClassNames, 'inline break-words text-secondary')}>
+    <p className={clsx(commonClassNames, 'text-secondary inline break-words')}>
       {vote}
     </p>
   )

@@ -7,7 +7,7 @@ const Document = () => (
   // Initialize with dark theme active (determined by class on html).
   <Html className="dark">
     <Head />
-    <body className="antialiased bg-background-base body-text">
+    <body className="body-text bg-background-base antialiased">
       <Main />
       <NextScript />
     </body>

@@ -32,14 +32,14 @@ export const ProfileVoteCard = <T extends unknown>({
       underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
       {...wrapperProps}
     >
-      <div className="flex flex-row justify-between items-center secondary-text">
+      <div className="secondary-text flex flex-row items-center justify-between">
         <p>{t('title.votingPower')}</p>
         <p className="font-mono text-text-primary">
           {formatPercentOf100(votingPower)}
         </p>
       </div>
 
-      <div className="flex flex-row justify-between items-center mt-3 mb-4 secondary-text">
+      <div className="secondary-text mt-3 mb-4 flex flex-row items-center justify-between">
         <p>{t('title.vote')}</p>
         {currentVoteDisplay}
       </div>

@@ -11,7 +11,7 @@ export const GradientWrapper = ({
   Logo = LogoNoBorder,
   children,
 }: GradientWrapperProps) => (
-  <div className="flex overflow-x-hidden relative flex-col items-center">
+  <div className="relative flex flex-col items-center overflow-x-hidden">
     {typeof CSS.supports !== 'undefined' &&
       // eslint-disable-next-line i18next/no-literal-string
       CSS.supports('backdrop-filter', 'blur(5px)') && (
@@ -23,12 +23,12 @@ export const GradientWrapper = ({
         </div>
       )}
     <div
-      className="absolute -z-30 w-screen h-full bg-no-repeat bg-contain"
+      className="absolute -z-30 h-full w-screen bg-contain bg-no-repeat"
       style={{
         backgroundImage: 'url(/gradients/BG-Gradient-Dark@2x.png)',
       }}
     ></div>
-    <div className="fixed -z-10 w-screen h-screen bg-clip-padding backdrop-blur-3xl backdrop-filter"></div>
+    <div className="fixed -z-10 h-screen w-screen bg-clip-padding backdrop-blur-3xl backdrop-filter"></div>
     {children}
   </div>
 )

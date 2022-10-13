@@ -23,17 +23,17 @@ export const Breadcrumbs = ({
     <>
       <div
         className={clsx(
-          'flex flex-row gap-2 items-center text-text-secondary header-text',
+          'header-text flex flex-row items-center gap-2 text-text-secondary',
           className
         )}
       >
         {crumbs.map(({ href, label }, idx) => (
-          <div key={idx} className="hidden flex-row gap-2 items-center sm:flex">
+          <div key={idx} className="hidden flex-row items-center gap-2 sm:flex">
             <Link href={href}>
-              <a className="hover:opacity-80 transition-opacity">{label}</a>
+              <a className="transition-opacity hover:opacity-80">{label}</a>
             </Link>
 
-            <ArrowForward className="w-5 h-5 text-icon-tertiary" />
+            <ArrowForward className="h-5 w-5 text-icon-tertiary" />
           </div>
         ))}
 
@@ -46,16 +46,16 @@ export const Breadcrumbs = ({
         >
           <p>{current}</p>
 
-          <ArrowDropDown className="!w-6 !h-6 text-icon-primary sm:!hidden" />
+          <ArrowDropDown className="!h-6 !w-6 text-icon-primary sm:!hidden" />
         </Button>
       </div>
 
       <div
         className={clsx(
-          'flex fixed top-0 right-0 bottom-0 left-0 z-20 flex-col bg-background-base transition-opacity header-text',
+          'header-text fixed top-0 right-0 bottom-0 left-0 z-20 flex flex-col bg-background-base transition-opacity',
           responsive
-            ? 'opacity-100 sm:opacity-0 sm:pointer-events-none'
-            : 'opacity-0 pointer-events-none'
+            ? 'opacity-100 sm:pointer-events-none sm:opacity-0'
+            : 'pointer-events-none opacity-0'
         )}
         // Close after any click inside this container.
         onClick={() => setResponsive(false)}
@@ -74,7 +74,7 @@ export const Breadcrumbs = ({
             <div
               key={idx}
               className={clsx(
-                'flex absolute right-0 left-0 flex-row gap-3 justify-center items-center h-20 text-text-secondary transition-all',
+                'absolute right-0 left-0 flex h-20 flex-row items-center justify-center gap-3 text-text-secondary transition-all',
                 responsive ? 'opacity-100' : 'opacity-0'
               )}
               style={{
@@ -84,7 +84,7 @@ export const Breadcrumbs = ({
               }}
             >
               <Link href={href}>
-                <a className="hover:opacity-80 transition-opacity">{label}</a>
+                <a className="transition-opacity hover:opacity-80">{label}</a>
               </Link>
 
               <p>/</p>
@@ -93,7 +93,7 @@ export const Breadcrumbs = ({
 
           <div
             className={clsx(
-              'flex absolute right-0 left-0 flex-row justify-center items-center h-20 transition-all',
+              'absolute right-0 left-0 flex h-20 flex-row items-center justify-center transition-all',
               responsive ? 'opacity-100' : 'opacity-0'
             )}
             style={{
@@ -113,7 +113,7 @@ export const Breadcrumbs = ({
           </div>
         </div>
 
-        <div className="flex grow justify-center items-center">
+        <div className="flex grow items-center justify-center">
           <IconButton
             Icon={Close}
             circular

@@ -46,22 +46,22 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
 
     // Size and rounding of container and children.
     const sizingRoundingClassNames = clsx({
-      'w-8 h-8 rounded-full': size === 'xs',
-      'w-10 h-10 rounded-xl': size === 'sm',
-      'w-16 h-16 rounded-2xl': size === 'lg',
+      'h-8 w-8 rounded-full': size === 'xs',
+      'h-10 w-10 rounded-xl': size === 'sm',
+      'h-16 w-16 rounded-2xl': size === 'lg',
     })
 
     return (
       <div
         className={clsx(
           // Center icon.
-          'flex relative justify-center items-center',
+          'relative flex items-center justify-center',
           (!imageUrl || loadingImage) &&
             'border border-border-interactive-disabled',
           sizingRoundingClassNames,
           // Pulse person placeholder when loading.
           loadingImage &&
-            'border border-border-interactive-disabled animate-pulse',
+            'animate-pulse border border-border-interactive-disabled',
           // Make clickable for onClick and onEdit.
           (onClick || onEdit) && 'cursor-pointer',
           // Enable group events for onEdit.
@@ -75,8 +75,8 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         {/* Image */}
         <div
           className={clsx(
-            'absolute top-0 right-0 bottom-0 left-0 bg-center bg-cover',
-            onEdit && 'brightness-100 group-hover:brightness-[0.35] transition',
+            'absolute top-0 right-0 bottom-0 left-0 bg-cover bg-center',
+            onEdit && 'brightness-100 transition group-hover:brightness-[0.35]',
             sizingRoundingClassNames
           )}
           style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
@@ -85,7 +85,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         {/* No image (hides underneath image always) */}
         <PersonOutline
           className={clsx(
-            '!w-1/2 !h-1/2 text-icon-interactive-disabled',
+            '!h-1/2 !w-1/2 text-icon-interactive-disabled',
             fallbackIconClassName
           )}
         />
@@ -94,12 +94,12 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         {onEdit && (
           <div
             className={clsx(
-              'flex absolute top-0 right-0 bottom-0 left-0 justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity',
+              'absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100',
               sizingRoundingClassNames
             )}
             onClick={onEdit}
           >
-            <Edit className="!w-1/2 !h-1/2 text-icon-primary" />
+            <Edit className="!h-1/2 !w-1/2 text-icon-primary" />
           </div>
         )}
       </div>

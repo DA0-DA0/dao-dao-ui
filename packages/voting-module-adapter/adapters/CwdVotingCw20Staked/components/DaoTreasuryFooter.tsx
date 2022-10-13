@@ -18,7 +18,7 @@ export const DaoTreasuryFooter = () => {
       onClick={() => addToken(governanceTokenAddress)}
       variant="secondary"
     >
-      <PlusSmIcon className="w-4 h-4" /> {t('button.addToKeplr')}
+      <PlusSmIcon className="h-4 w-4" /> {t('button.addToKeplr')}
     </Button>
   ) : null
 }

@@ -35,8 +35,8 @@ export const ProposalList = <T extends {}>({
   const [historyExpanded, setHistoryExpanded] = useState(true)
 
   return openProposals.length > 0 || historyProposals.length > 0 ? (
-    <div className="pt-6 border-t border-border-secondary">
-      <p className="mb-6 text-text-body title-text">{t('title.proposals')}</p>
+    <div className="border-t border-border-secondary pt-6">
+      <p className="title-text mb-6 text-text-body">{t('title.proposals')}</p>
 
       {!!openProposals.length && (
         <div className="mb-9 space-y-1">
@@ -46,7 +46,7 @@ export const ProposalList = <T extends {}>({
         </div>
       )}
 
-      <div className="flex flex-row gap-3 items-center mt-3 ml-2 text-text-secondary link-text">
+      <div className="link-text mt-3 ml-2 flex flex-row items-center gap-3 text-text-secondary">
         <DropdownIconButton
           className="text-icon-primary"
           open={historyExpanded}
@@ -68,7 +68,7 @@ export const ProposalList = <T extends {}>({
         </div>
 
         {(canLoadMore || loadingMore) && (
-          <div className="flex flex-row justify-end mt-4">
+          <div className="mt-4 flex flex-row justify-end">
             <Button
               className="secondary"
               loading={loadingMore}
@@ -82,7 +82,7 @@ export const ProposalList = <T extends {}>({
     </div>
   ) : // If loading but no proposals are loaded yet, just show loader.
   loadingMore ? (
-    <div className="pt-6 border-t border-border-secondary">
+    <div className="border-t border-border-secondary pt-6">
       <Loader fill={false} />
     </div>
   ) : (

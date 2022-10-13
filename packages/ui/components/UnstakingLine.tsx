@@ -38,20 +38,20 @@ export const UnstakingLine = ({
       <div
         className={clsx(
           sharedClassNames,
-          'box-content hidden grid-cols-[auto_1fr_auto] gap-8 items-center py-3 px-4 h-8 md:grid'
+          'box-content hidden h-8 grid-cols-[auto_1fr_auto] items-center gap-8 py-3 px-4 md:grid'
         )}
       >
         <UnstakingStatus status={status} />
 
         <TokenAmountDisplay
           amount={amount}
-          className="truncate body-text"
+          className="body-text truncate"
           maxDecimals={tokenDecimals}
           symbol={tokenSymbol}
         />
 
         {dateReplacement || (
-          <p className="pr-2 font-mono text-right break-words caption-text">
+          <p className="caption-text break-words pr-2 text-right font-mono">
             {dateDisplay}
           </p>
         )}
@@ -66,17 +66,17 @@ export const UnstakingLine = ({
       >
         <UnstakingStatus status={status} />
 
-        <div className="flex flex-row gap-4 justify-between items-end">
+        <div className="flex flex-row items-end justify-between gap-4">
           <TokenAmountDisplay
             amount={amount}
-            className="break-words body-text"
+            className="body-text break-words"
             maxDecimals={tokenDecimals}
             symbol={tokenSymbol}
           />
 
           {dateReplacement ||
             (dateDisplay && (
-              <p className="font-mono text-right break-words caption-text">
+              <p className="caption-text break-words text-right font-mono">
                 {dateDisplay}
               </p>
             ))}

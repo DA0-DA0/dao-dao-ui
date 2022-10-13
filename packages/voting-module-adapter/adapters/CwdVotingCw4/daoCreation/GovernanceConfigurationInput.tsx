@@ -169,7 +169,7 @@ export const GovernanceConfigurationInput = ({
         <DaoCreateVotingPowerDistributionBarChart data={barData} />
       </div>
 
-      <div className="flex flex-col gap-4 items-stretch mt-16">
+      <div className="mt-16 flex flex-col items-stretch gap-4">
         {tierFields.map(({ id }, idx) => (
           <TierCard
             key={id}
@@ -191,7 +191,7 @@ export const GovernanceConfigurationInput = ({
             ref={addTierRef}
             variant="secondary"
           >
-            <Add className="!w-6 !h-6 text-icon-primary" />
+            <Add className="text-icon-primary !h-6 !w-6" />
             <p>{t('button.addTier')}</p>
           </Button>
 

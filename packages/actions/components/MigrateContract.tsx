@@ -44,7 +44,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
       onRemove={onRemove}
       title={t('title.migrateSmartContract')}
     >
-      <p className="mb-4 max-w-prose secondary-text">
+      <p className="secondary-text mb-4 max-w-prose">
         <Trans key={'form.migrateDescription'} Loader={Loader}>
           This will{' '}
           <a
@@ -59,7 +59,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         </Trans>
       </p>
       <div className="flex flex-row flex-wrap gap-2">
-        <div className="flex flex-col grow gap-1">
+        <div className="flex grow flex-col gap-1">
           <InputLabel name={t('form.smartContractAddress')} />
           <AddressInput
             disabled={!isCreating}

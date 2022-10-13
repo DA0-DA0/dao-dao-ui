@@ -28,10 +28,10 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
     return (
       <div
         className={clsx(
-          'group flex flex-row gap-1.5 items-center rounded-md',
+          'group flex flex-row items-center gap-1.5 rounded-md',
           // Border.
           !ghost &&
-            'ring-1 focus-within:ring-2 ring-border-primary focus-within:ring-border-interactive-focus transition',
+            'ring-1 ring-border-primary transition focus-within:ring-2 focus-within:ring-border-interactive-focus',
           // Sizing.
           !ghost && {
             'p-1.5': variant === 'sm',
@@ -41,12 +41,12 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
         )}
       >
         {!hideIcon && (
-          <Search className="!w-5 !h-5 text-icon-tertiary group-focus-within:text-icon-primary transition" />
+          <Search className="!h-5 !w-5 text-icon-tertiary transition group-focus-within:text-icon-primary" />
         )}
 
         <input
           className={clsx(
-            'grow pr-4 leading-4 text-text-tertiary placeholder:text-text-tertiary focus:text-text-body bg-transparent focus:outline-none transition secondary-text',
+            'secondary-text grow bg-transparent pr-4 leading-4 text-text-tertiary transition placeholder:text-text-tertiary focus:text-text-body focus:outline-none',
             className
           )}
           placeholder={t('title.search')}

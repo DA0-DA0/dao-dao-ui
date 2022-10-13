@@ -38,9 +38,9 @@ export const SubDaosTab = ({
 
   return (
     <>
-      <div className="flex flex-row gap-8 justify-between items-center pb-6">
-        <div className="flex flex-row flex-wrap gap-x-4 gap-y-1 items-center">
-          <p className="text-text-body title-text">
+      <div className="flex flex-row items-center justify-between gap-8 pb-6">
+        <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1">
+          <p className="title-text text-text-body">
             {t('title.createASubDao')}
           </p>
           <p className="secondary-text">{t('info.subDaoExplanation')}</p>
@@ -52,7 +52,7 @@ export const SubDaosTab = ({
           disabled={!isMember || daoInfo.coreVersion === ContractVersion.V0_1_0}
           href={`/dao/${daoInfo.coreAddress}/create`}
         >
-          <PlusIcon className="w-4 h-4" />
+          <PlusIcon className="h-4 w-4" />
           {t('button.newSubDao')}
         </ButtonLink>
       </div>
@@ -69,12 +69,12 @@ export const SubDaosTab = ({
           href={isMember ? upgradeToV2Href : undefined}
         />
       ) : subdaos.loading ? (
-        <div className="pt-6 border-t border-border-secondary">
+        <div className="border-t border-border-secondary pt-6">
           <Loader fill={false} />
         </div>
       ) : subdaos.data.length > 0 ? (
         <>
-          <p className="pt-6 mb-6 text-text-body border-t border-border-secondary title-text">
+          <p className="title-text mb-6 border-t border-border-secondary pt-6 text-text-body">
             {t('title.numSubDaos', { count: subdaos.data.length })}
           </p>
 

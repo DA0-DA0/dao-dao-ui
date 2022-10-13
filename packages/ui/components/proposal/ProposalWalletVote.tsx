@@ -13,13 +13,13 @@ export const ProposalWalletVote = ({
 }: ProposalWalletVoteProps) => (
   <div
     className={clsx(
-      'flex relative shrink-0 justify-center items-center py-1 px-4 w-16 rounded-full button-text-sm',
+      'button-text-sm relative flex w-16 shrink-0 items-center justify-center rounded-full py-1 px-4',
       className
     )}
   >
     <p>{label}</p>
     {showBadge && (
-      <div className="absolute top-[1.5px] right-[1.5px] w-[0.375rem] h-[0.375rem] bg-icon-interactive-active rounded-full"></div>
+      <div className="absolute top-[1.5px] right-[1.5px] h-[0.375rem] w-[0.375rem] rounded-full bg-icon-interactive-active"></div>
     )}
   </div>
 )

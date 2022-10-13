@@ -29,12 +29,12 @@ export const MobileHeader = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
+    <div className="flex w-full flex-row flex-wrap justify-around gap-6 p-6">
       <div className="relative">
         {imageUrl ? (
           <div
             aria-label={t('info.daosLogo')}
-            className="w-[72px] h-[72px] bg-center bg-cover rounded-full"
+            className="h-[72px] w-[72px] rounded-full bg-cover bg-center"
             role="img"
             style={{
               backgroundImage: `url(${imageUrl})`,
@@ -44,7 +44,7 @@ export const MobileHeader = ({
           <Logo size={72} />
         )}
         <div
-          className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
+          className="absolute -right-[10px] -bottom-1 rounded-full border border-light bg-center"
           style={{
             width: '32px',
             height: '32px',
@@ -52,12 +52,12 @@ export const MobileHeader = ({
           }}
         ></div>
       </div>
-      <div className="flex flex-col flex-1 gap-3">
+      <div className="flex flex-1 flex-col gap-3">
         <div className="flex flex-row justify-between">
           <h1 className="header-text">{name}</h1>
           <div className="flex gap-5">
             {member && (
-              <div className="flex flex-row gap-2 items-center">
+              <div className="flex flex-row items-center gap-2">
                 <MemberCheck width="16px" />
               </div>
             )}
@@ -79,12 +79,12 @@ export const MobileHeaderLoader = ({
   contractAddress,
   Loader = DefaultLoader,
 }: MobileHeaderLoaderProps) => (
-  <div className="flex flex-row flex-wrap gap-6 justify-around p-6 w-full">
+  <div className="flex w-full flex-row flex-wrap justify-around gap-6 p-6">
     <div className="relative">
       <Loader size={72} />
 
       <div
-        className="absolute -right-[10px] -bottom-1 bg-center rounded-full border border-light"
+        className="absolute -right-[10px] -bottom-1 rounded-full border border-light bg-center"
         style={{
           width: '32px',
           height: '32px',
@@ -92,9 +92,9 @@ export const MobileHeaderLoader = ({
         }}
       ></div>
     </div>
-    <div className="flex flex-col flex-1 gap-3">
+    <div className="flex flex-1 flex-col gap-3">
       <div className="flex flex-row justify-between">
-        <h1 className="mr-3 w-full bg-dark rounded-sm animate-pulse header-text"></h1>
+        <h1 className="header-text mr-3 w-full animate-pulse rounded-sm bg-dark"></h1>
         <div className="flex gap-5">
           <PinToggle onPin={() => null} pinned={false} />
         </div>

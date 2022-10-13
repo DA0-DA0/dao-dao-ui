@@ -86,7 +86,7 @@ export const FeaturedDaos = ({ DaoCard, featuredDaos }: FeaturedDaosProps) => {
 
   return (
     <div
-      className="overflow-scroll w-full no-scrollbar"
+      className="no-scrollbar w-full overflow-scroll"
       onMouseEnter={() => setAutoscroll(false)}
       onMouseLeave={() => setAutoscroll(true)}
       onScroll={handleScroll}
@@ -95,7 +95,7 @@ export const FeaturedDaos = ({ DaoCard, featuredDaos }: FeaturedDaosProps) => {
       {featuredDaos.loading ? (
         <Loader />
       ) : (
-        <div className="flex flex-row gap-4 py-[2px] w-max">
+        <div className="flex w-max flex-row gap-4 py-[2px]">
           {featuredDaos.data.map((props) => (
             <DaoCard
               key={props.coreAddress}
@@ -107,7 +107,7 @@ export const FeaturedDaos = ({ DaoCard, featuredDaos }: FeaturedDaosProps) => {
           {featuredDaos.data.map((props) => (
             <DaoCard
               key={props.coreAddress}
-              className="!w-[260px] is-clone"
+              className="is-clone !w-[260px]"
               showIsMember={false}
               {...props}
             />

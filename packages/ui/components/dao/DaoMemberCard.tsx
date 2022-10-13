@@ -27,15 +27,15 @@ export const DaoMemberCard = ({
         {/* Name */}
         <p
           className={clsx(
-            'mt-4 mb-1 text-text-body title-text',
+            'title-text mt-4 mb-1 text-text-body',
             profile.loading && 'animate-pulse'
           )}
         >
           {profile.loading ? '...' : profile.data.name}
         </p>
         {/* Address */}
-        <div className="flex flex-row gap-1 items-center">
-          <Tag className="!w-5 !h-5 text-icon-tertiary" />
+        <div className="flex flex-row items-center gap-1">
+          <Tag className="!h-5 !w-5 text-icon-tertiary" />
 
           <CopyToClipboardUnderline
             className="text-sm !text-text-tertiary"
@@ -48,10 +48,10 @@ export const DaoMemberCard = ({
         </div>
       </div>
 
-      <div className="flex flex-row gap-4 justify-between items-center p-4 border-t border-border-interactive-disabled">
+      <div className="flex flex-row items-center justify-between gap-4 border-t border-border-interactive-disabled p-4">
         {/* Voting power */}
         <p className="secondary-text">{t('title.votingPower')}</p>
-        <p className="font-mono symbol-small-body-text">
+        <p className="symbol-small-body-text font-mono">
           {formatPercentOf100(votingPowerPercent)}
         </p>
       </div>

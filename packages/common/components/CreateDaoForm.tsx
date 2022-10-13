@@ -537,7 +537,7 @@ export const CreateDaoForm = ({
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
       <form
-        className="flex relative z-[1] flex-col items-stretch mx-auto max-w-4xl"
+        className="relative z-[1] mx-auto flex max-w-4xl flex-col items-stretch"
         onSubmit={formOnSubmit}
       >
         {/* Show image selector or DAO header depending on page. */}
@@ -551,7 +551,7 @@ export const CreateDaoForm = ({
               watch={form.watch}
             />
 
-            <p className="mt-6 text-text-tertiary primary-text">
+            <p className="primary-text mt-6 text-text-tertiary">
               {t('form.addAnImage')}
             </p>
           </div>
@@ -567,7 +567,7 @@ export const CreateDaoForm = ({
 
         {/* Divider line shown after first page. */}
         {pageIndex > 0 && (
-          <div className="mb-7 w-full h-[1px] bg-border-base"></div>
+          <div className="mb-7 h-[1px] w-full bg-border-base"></div>
         )}
 
         <div className="mb-14">
@@ -575,7 +575,7 @@ export const CreateDaoForm = ({
         </div>
 
         <div
-          className="flex flex-row items-center py-7 border-y border-border-secondary"
+          className="flex flex-row items-center border-y border-border-secondary py-7"
           // justify-end doesn't work in tailwind for some reason
           style={{
             justifyContent: showBack ? 'space-between' : 'flex-end',
@@ -588,7 +588,7 @@ export const CreateDaoForm = ({
               value={t(CreateDaoSubmitLabel.Back)}
               variant="secondary"
             >
-              <ArrowBack className="!w-4 !h-4 text-icon-primary" />
+              <ArrowBack className="!h-4 !w-4 text-icon-primary" />
               <p>{t(CreateDaoSubmitLabel.Back)}</p>
             </Button>
           )}

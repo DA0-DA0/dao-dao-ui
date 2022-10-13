@@ -17,7 +17,7 @@ export const Open = Template.bind({})
 Open.args = {
   icon: (
     <ProposalStatusMap.open.Icon
-      className={`w-5 h-5 ${ProposalStatusMap.open.iconClassName}`}
+      className={`h-5 w-5 ${ProposalStatusMap.open.iconClassName}`}
     />
   ),
   label: <p className={ProposalStatusMap.open.textClassName}>Open</p>,
@@ -33,7 +33,7 @@ export const Passed = Template.bind({})
 Passed.args = {
   icon: (
     <ProposalStatusMap.passed.Icon
-      className={`w-5 h-5 ${ProposalStatusMap.passed.iconClassName}`}
+      className={`h-5 w-5 ${ProposalStatusMap.passed.iconClassName}`}
     />
   ),
   label: <p className={ProposalStatusMap.passed.textClassName}>Passed</p>,
@@ -44,7 +44,7 @@ export const Rejected = Template.bind({})
 Rejected.args = {
   icon: (
     <ProposalStatusMap.rejected.Icon
-      className={`w-5 h-5 ${ProposalStatusMap.rejected.iconClassName}`}
+      className={`h-5 w-5 ${ProposalStatusMap.rejected.iconClassName}`}
     />
   ),
   label: <p className={ProposalStatusMap.rejected.textClassName}>Rejected</p>,

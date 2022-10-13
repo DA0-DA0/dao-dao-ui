@@ -26,7 +26,7 @@ export const TopGradient = ({
     <div
       {...props}
       className={clsx(
-        'absolute top-0 right-0 left-0 z-0 opacity-60 pointer-events-none',
+        'pointer-events-none absolute top-0 right-0 left-0 z-0 opacity-60',
         className
       )}
       style={{

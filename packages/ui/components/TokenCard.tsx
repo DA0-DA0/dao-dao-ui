@@ -123,13 +123,13 @@ export const TokenCard = ({
 
   return (
     <>
-      <div className="bg-background-tertiary rounded-lg">
+      <div className="rounded-lg bg-background-tertiary">
         <div className="relative p-5">
           <div className="flex flex-row gap-4 pr-5">
             <div className="relative">
               {/* Image */}
               <div
-                className="w-10 h-10 bg-center bg-cover rounded-full"
+                className="h-10 w-10 rounded-full bg-cover bg-center"
                 style={{
                   backgroundImage: `url(${imageUrl})`,
                 }}
@@ -138,7 +138,7 @@ export const TokenCard = ({
               {/* Crown */}
               {!!crown && (
                 <EdamameCrown
-                  className="absolute -top-4 -left-6 text-secondary stroke-2"
+                  className="absolute -top-4 -left-6 stroke-2 text-secondary"
                   height="32px"
                   width="32px"
                 />
@@ -189,11 +189,11 @@ export const TokenCard = ({
           )}
         </div>
 
-        <div className="flex flex-col gap-3 py-4 px-6 border-t border-inactive">
-          <div className="flex flex-row gap-8 justify-between items-start">
+        <div className="flex flex-col gap-3 border-t border-inactive py-4 px-6">
+          <div className="flex flex-row items-start justify-between gap-8">
             <p className="link-text">{t('info.totalHoldings')}</p>
             {/* leading-5 to match link-text's line-height. */}
-            <div className="flex flex-col gap-1 items-end font-mono text-right caption-text">
+            <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
               {/* leading-5 to match link-text's line-height. */}
               <TokenAmountDisplay
                 amount={
@@ -221,9 +221,9 @@ export const TokenCard = ({
 
           {/* Only display `unstakedBalance` if something is staked, because that means this will differ from `totalBalance` above. */}
           {hasStakingInfo && (
-            <div className="flex flex-row gap-8 justify-between items-start">
+            <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.availableBalance')}</p>
-              <div className="flex flex-col gap-1 items-end font-mono text-right caption-text">
+              <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
                   amount={unstakedBalance}
@@ -242,28 +242,28 @@ export const TokenCard = ({
         </div>
 
         {hasStakingInfo && (lazyStakingInfo.loading || lazyStakingInfo.data) && (
-          <div className="flex flex-col gap-2 px-6 pt-4 pb-6 border-t border-inactive">
-            <p className="mb-1 link-text">{t('info.stakes')}</p>
+          <div className="flex flex-col gap-2 border-t border-inactive px-6 pt-4 pb-6">
+            <p className="link-text mb-1">{t('info.stakes')}</p>
 
-            <div className="flex flex-row gap-8 justify-between items-center">
+            <div className="flex flex-row items-center justify-between gap-8">
               <p className="secondary-text">{t('title.staked')}</p>
 
               <TokenAmountDisplay
                 amount={
                   lazyStakingInfo.loading ? { loading: true } : totalStaked
                 }
-                className="font-mono text-right text-text-body caption-text"
+                className="caption-text text-right font-mono text-text-body"
                 maxDecimals={tokenDecimals}
                 symbol={tokenSymbol}
               />
             </div>
 
-            <div className="flex flex-row gap-8 justify-between items-center">
+            <div className="flex flex-row items-center justify-between gap-8">
               <p className="secondary-text">{t('title.stakedTo')}</p>
 
               <p
                 className={clsx(
-                  'font-mono text-right text-text-body caption-text',
+                  'caption-text text-right font-mono text-text-body',
                   lazyStakingInfo.loading && 'animate-pulse'
                 )}
               >
@@ -286,7 +286,7 @@ export const TokenCard = ({
                                 </>
                               }
                             >
-                              <span className="underline underline-offset-2 cursor-pointer">
+                              <span className="cursor-pointer underline underline-offset-2">
                                 {t('info.andNumMore', {
                                   count: lazyStakes.length - 1,
                                 })}
@@ -299,14 +299,14 @@ export const TokenCard = ({
               </p>
             </div>
 
-            <div className="flex flex-row gap-8 justify-between items-center">
+            <div className="flex flex-row items-center justify-between gap-8">
               <p className="secondary-text">{t('title.unstakingTokens')}</p>
 
               <Button
                 className={clsx(
-                  'font-mono text-right underline-offset-2 caption-text',
+                  'caption-text text-right font-mono underline-offset-2',
                   unstakingBalance > 0 && 'text-text-body',
-                  lazyStakingInfo.loading && '!text-text-body animate-pulse'
+                  lazyStakingInfo.loading && 'animate-pulse !text-text-body'
                 )}
                 disabled={lazyStakingInfo.loading}
                 onClick={() => setShowUnstakingTokens(true)}
@@ -324,14 +324,14 @@ export const TokenCard = ({
               </Button>
             </div>
 
-            <div className="flex flex-row gap-8 justify-between items-center">
+            <div className="flex flex-row items-center justify-between gap-8">
               <p className="secondary-text">{t('info.pendingRewards')}</p>
 
               <TokenAmountDisplay
                 amount={
                   lazyStakingInfo.loading ? { loading: true } : pendingRewards
                 }
-                className="font-mono text-right text-text-body caption-text"
+                className="caption-text text-right font-mono text-text-body"
                 maxDecimals={tokenDecimals}
                 symbol={tokenSymbol}
               />

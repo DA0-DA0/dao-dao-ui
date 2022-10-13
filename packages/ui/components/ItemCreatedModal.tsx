@@ -46,7 +46,7 @@ export const ItemCreatedModal = <
       header={header}
       visible
     >
-      <div className="overflow-hidden relative p-6 pt-8 -m-6">
+      <div className="relative -m-6 overflow-hidden p-6 pt-8">
         {confettiVisible && (
           <Confetti
             className="!z-10"
@@ -57,8 +57,8 @@ export const ItemCreatedModal = <
           />
         )}
 
-        <div className="flex overflow-y-auto relative z-20 flex-col gap-10 w-full h-full">
-          <div className="shrink-0 self-center w-[18rem] max-w-[90%] bg-background-base rounded-md shadow-dp8">
+        <div className="relative z-20 flex h-full w-full flex-col gap-10 overflow-y-auto">
+          <div className="w-[18rem] max-w-[90%] shrink-0 self-center rounded-md bg-background-base shadow-dp8">
             <props.Item
               {...props.itemProps}
               className={clsx(
@@ -74,9 +74,9 @@ export const ItemCreatedModal = <
             />
           </div>
 
-          <div className="shrink-0 bg-background-base rounded-md shadow-dp4">
+          <div className="shrink-0 rounded-md bg-background-base shadow-dp4">
             <CopyToClipboard
-              className="gap-4 p-4 w-full font-mono text-left bg-background-secondary hover:bg-background-button-secondary-default rounded-md transition symbol-small-body-text"
+              className="symbol-small-body-text w-full gap-4 rounded-md bg-background-secondary p-4 text-left font-mono transition hover:bg-background-button-secondary-default"
               onCopy={() => {
                 setResetConfetti(true)
                 setConfettiVisible(false)

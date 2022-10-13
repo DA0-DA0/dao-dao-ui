@@ -58,7 +58,7 @@ export const TreasuryAndNftsTab = <
 
   return (
     <>
-      <p className="mb-6 text-text-body title-text">{t('title.treasury')}</p>
+      <p className="title-text mb-6 text-text-body">{t('title.treasury')}</p>
 
       <div className="mb-9">
         {tokens.loading || !tokens.data ? (
@@ -76,7 +76,7 @@ export const TreasuryAndNftsTab = <
 
       {nfts.loading || nfts.data.length > 0 ? (
         <>
-          <div className="flex flex-col gap-4 mb-6 xs:flex-row xs:justify-between xs:items-center">
+          <div className="mb-6 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
             <p className="title-text">
               {nfts.loading
                 ? t('title.nfts')
@@ -84,8 +84,8 @@ export const TreasuryAndNftsTab = <
             </p>
 
             {!nfts.loading && nfts.data.length > 0 && (
-              <div className="flex flex-row gap-4 justify-between items-center">
-                <p className="text-text-body primary-text">
+              <div className="flex flex-row items-center justify-between gap-4">
+                <p className="primary-text text-text-body">
                   {t('title.sortBy')}
                 </p>
 

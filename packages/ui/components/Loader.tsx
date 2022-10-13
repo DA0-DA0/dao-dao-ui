@@ -13,8 +13,8 @@ export const Loader = ({
 }: LoaderProps) => (
   <div
     className={clsx(
-      'flex flex-row justify-center items-center',
-      { 'grow w-full h-full': fill },
+      'flex flex-row items-center justify-center',
+      { 'h-full w-full grow': fill },
       className
     )}
   >

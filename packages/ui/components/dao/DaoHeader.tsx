@@ -31,15 +31,15 @@ export const DaoHeader = ({
         size="lg"
       />
 
-      <p className="mt-6 text-center hero-text">{name}</p>
+      <p className="hero-text mt-6 text-center">{name}</p>
       {established && (
-        <p className="mt-2 text-text-tertiary primary-text">
+        <p className="primary-text mt-2 text-text-tertiary">
           {t('info.establishedAbbr')} {established}
         </p>
       )}
 
       <MarkdownPreview
-        className="mt-3 whitespace-pre-wrap body-text"
+        className="body-text mt-3 whitespace-pre-wrap"
         markdown={description}
       />
     </div>

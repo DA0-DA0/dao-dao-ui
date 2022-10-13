@@ -38,7 +38,7 @@ export const UpdateInfoComponent: ActionComponent<
       onRemove={onRemove}
       title={t('title.updateInfo')}
     >
-      <div className="flex flex-row flex-wrap gap-6 justify-center items-center">
+      <div className="flex flex-row flex-wrap items-center justify-center gap-6">
         <div className="flex flex-col gap-4 pl-2">
           {isCreating ? (
             <>
@@ -55,7 +55,7 @@ export const UpdateInfoComponent: ActionComponent<
             // eslint-disable-next-line @next/next/no-img-element
             <img
               alt={t('info.daosLogo')}
-              className="object-cover w-24 h-24 rounded-full"
+              className="h-24 w-24 rounded-full object-cover"
               src={data.image_url}
             />
           ) : (
@@ -63,7 +63,7 @@ export const UpdateInfoComponent: ActionComponent<
           )}
         </div>
 
-        <div className="flex flex-col grow gap-3">
+        <div className="flex grow flex-col gap-3">
           <div>
             <TextInput
               disabled={!isCreating}
@@ -87,13 +87,13 @@ export const UpdateInfoComponent: ActionComponent<
             <InputErrorMessage error={errors?.description} />
           </div>
           <div className="flex flex-row flex-wrap gap-2">
-            <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
+            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3">
               <div className="flex flex-row gap-1">
                 <Tooltip title={t('form.automaticallyAddTokensTooltip')}>
-                  <InformationCircleIcon className="w-4 h-4 secondary-text" />
+                  <InformationCircleIcon className="secondary-text h-4 w-4" />
                 </Tooltip>
 
-                <p className="w-max secondary-text">
+                <p className="secondary-text w-max">
                   {t('form.automaticallyAddTokensTitle')}
                 </p>
               </div>
@@ -105,13 +105,13 @@ export const UpdateInfoComponent: ActionComponent<
                 value={watch(fieldNamePrefix + 'automatically_add_cw20s')}
               />
             </div>
-            <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
+            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3">
               <div className="flex flex-row gap-1">
                 <Tooltip title={t('form.automaticallyAddNFTsTooltip')}>
-                  <InformationCircleIcon className="w-4 h-4 secondary-text" />
+                  <InformationCircleIcon className="secondary-text h-4 w-4" />
                 </Tooltip>
 
-                <p className="w-max secondary-text">
+                <p className="secondary-text w-max">
                   {t('form.automaticallyAddNFTsTitle')}
                 </p>
               </div>

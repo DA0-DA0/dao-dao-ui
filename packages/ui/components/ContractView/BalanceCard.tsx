@@ -24,7 +24,7 @@ export const BalanceCard = ({
   children,
 }: BalanceCardProps) => (
   <div
-    className={clsx('p-5 w-full rounded-lg', {
+    className={clsx('w-full rounded-lg p-5', {
       'border border-default': !opaque,
       'bg-primary': opaque,
     })}
@@ -32,7 +32,7 @@ export const BalanceCard = ({
     {typeof title === 'string' ? (
       <h2
         className={clsx({
-          'font-mono caption-text': !opaque,
+          'caption-text font-mono': !opaque,
           'link-text': opaque,
         })}
       >
@@ -43,7 +43,7 @@ export const BalanceCard = ({
     )}
     <div className="my-4">
       {loading ? (
-        <div className="inline-block mt-2 animate-spin-medium">
+        <div className="mt-2 inline-block animate-spin-medium">
           <LogoNoBorder />
         </div>
       ) : (

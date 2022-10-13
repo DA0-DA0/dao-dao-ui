@@ -40,14 +40,14 @@ export const GovernanceConfigurationReview = ({
   // tier distributions to display.
   if (tokenType === GovernanceTokenType.Existing) {
     return (
-      <div className="rounded-lg bg-background-tertiary">
-        <div className="flex flex-row p-4 h-14 border-b border-border-base">
+      <div className="bg-background-tertiary rounded-lg">
+        <div className="border-border-base flex h-14 flex-row border-b p-4">
           <p className="primary-text text-text-body">
             {t('title.existingToken')}
           </p>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="space-y-4 p-4">
           <CopyToClipboard takeAll value={existingGovernanceTokenAddress} />
 
           <FormattedJSONDisplay

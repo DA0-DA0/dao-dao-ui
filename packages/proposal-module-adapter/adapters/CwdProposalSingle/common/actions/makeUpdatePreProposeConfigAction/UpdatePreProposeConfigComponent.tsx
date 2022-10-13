@@ -73,7 +73,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
       onRemove={onRemove}
       title={t('form.updateProposalSubmissionConfigTitle')}
     >
-      <p className="mb-3 max-w-prose secondary-text">
+      <p className="secondary-text mb-3 max-w-prose">
         <Trans
           Loader={Loader}
           i18nKey="form.updateProposalSubmissionConfigDescription"
@@ -93,9 +93,9 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         </Trans>
       </p>
 
-      <div className="flex flex-col gap-4 p-3 rounded-lg border border-default">
+      <div className="border-default flex flex-col gap-4 rounded-lg border p-3">
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row gap-2 justify-between items-start">
+          <div className="flex flex-row items-start justify-between gap-2">
             <h3 className="primary-text">
               <SpendEmoji /> {t('form.proposalDepositTitle')}
             </h3>
@@ -108,14 +108,14 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
               value={watch(fieldNamePrefix + 'depositRequired')}
             />
           </div>
-          <p className="max-w-prose secondary-text">
+          <p className="secondary-text max-w-prose">
             {t('form.proposalDepositDescription')}
           </p>
         </div>
 
         {depositRequired && (
-          <div className="flex flex-col grow gap-1">
-            <div className="flex flex-row grow gap-1 items-stretch">
+          <div className="flex grow flex-col gap-1">
+            <div className="flex grow flex-row items-stretch gap-1">
               <NumberInput
                 containerClassName="grow"
                 disabled={!isCreating}
@@ -150,7 +150,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
             <InputErrorMessage error={errors?.depositInfo?.amount} />
 
             {depositInfo.type === 'cw20' && (
-              <div className="flex flex-col gap-1 mt-1">
+              <div className="mt-1 flex flex-col gap-1">
                 <InputLabel name={t('form.tokenAddress')} />
 
                 <AddressInput
@@ -182,7 +182,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
               </div>
             )}
 
-            <p className="mt-2 mb-1 secondary-text">
+            <p className="secondary-text mt-2 mb-1">
               {t('form.refundPolicyTitle')}
             </p>
             <SegmentedControls<DepositRefundPolicy>

@@ -12,21 +12,21 @@ export interface ContextPillProps {
 export const ContextPill = ({ imageUrl, name, onClose }: ContextPillProps) => (
   <div
     className={clsx(
-      'flex flex-row gap-1.5 items-center p-1 bg-component-badge-primary rounded-full animate-fadein',
+      'animate-fadein flex flex-row items-center gap-1.5 rounded-full bg-component-badge-primary p-1',
       !imageUrl && 'pl-2',
       !onClose && 'pr-2'
     )}
   >
     {imageUrl && (
       <div
-        className="overflow-hidden shrink-0 w-6 h-6 bg-center bg-cover rounded-full"
+        className="h-6 w-6 shrink-0 overflow-hidden rounded-full bg-cover bg-center"
         style={{
           backgroundImage: `url(${imageUrl})`,
         }}
       ></div>
     )}
 
-    <p className="shrink-0 text-text-primary link-text">{name}</p>
+    <p className="link-text shrink-0 text-text-primary">{name}</p>
 
     {onClose && (
       <IconButton Icon={Close} onClick={onClose} size="sm" variant="none" />

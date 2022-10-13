@@ -28,8 +28,8 @@ export const MintComponent: ActionComponent<MintOptions> = ({
 
   return (
     <ActionCard Icon={MintIcon} onRemove={onRemove} title={t('title.mint')}>
-      <div className="flex flex-row gap-4 items-center">
-        <div className="flex flex-row gap-2 items-center">
+      <div className="flex flex-row items-center gap-4">
+        <div className="flex flex-row items-center gap-2">
           <div>
             <NumberInput
               disabled={!isCreating}
@@ -54,13 +54,13 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             <InputErrorMessage error={errors?.amount} />
           </div>
           {govTokenSymbol && (
-            <p className="font-mono text-sm uppercase text-secondary">
+            <p className="text-secondary font-mono text-sm uppercase">
               ${govTokenSymbol}
             </p>
           )}
         </div>
         {/* eslint-disable-next-line i18next/no-literal-string */}
-        <p className="font-mono text-2xl secondary-text">&#10142;</p>
+        <p className="secondary-text font-mono text-2xl">&#10142;</p>
         <div className="grow">
           <AddressInput
             containerClassName="grow"

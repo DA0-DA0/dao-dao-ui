@@ -99,7 +99,7 @@ export const ProposalStatusAndInfo = ({
   const info: ProposalStatusAndInfoProps['info'] = [
     {
       Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !w-5 !h-5', className)} />
+        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
       ),
       label: t('title.dao'),
       Value: (props) => (
@@ -169,7 +169,7 @@ export const ProposalStatusAndInfo = ({
             Icon: Tag,
             label: t('info.txAbbr'),
             Value: (props) => (
-              <div className="flex flex-row gap-1 items-center">
+              <div className="flex flex-row items-center gap-1">
                 <CopyToClipboardUnderline
                   // Will truncate automatically.
                   takeAll

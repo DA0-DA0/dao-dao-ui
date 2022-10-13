@@ -20,7 +20,7 @@ export const ToastCard = ({
     {({ message }) => (
       <div
         className={clsx(
-          'flex flex-row gap-4 items-start p-4 text-sm text-text-body bg-component-toast rounded-lg shadow-dp2 caption-text',
+          'caption-text flex flex-row items-start gap-4 rounded-lg bg-component-toast p-4 text-sm text-text-body shadow-dp2',
           containerClassName
         )}
       >

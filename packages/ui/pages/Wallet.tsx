@@ -132,7 +132,7 @@ export const Wallet = ({
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeader className="mx-auto max-w-5xl" title={t('title.wallet')} />
 
-      <div className="flex flex-col items-stretch mx-auto max-w-5xl">
+      <div className="mx-auto flex max-w-5xl flex-col items-stretch">
         <FormProvider {...formMethods}>
           <form
             className="flex flex-col gap-4"
@@ -178,7 +178,7 @@ export const Wallet = ({
             </div>
           </div> */}
 
-            <p className="mt-6 mb-2 text-text-body title-text">
+            <p className="title-text mt-6 mb-2 text-text-body">
               {t('title.actions', { count: proposalActionData.length })}
             </p>
 
@@ -228,12 +228,12 @@ export const Wallet = ({
               />
             </div>
 
-            <div className="flex flex-row gap-6 justify-between items-center py-6 border-y border-border-secondary">
-              <p className="text-text-body title-text">
+            <div className="flex flex-row items-center justify-between gap-6 border-y border-border-secondary py-6">
+              <p className="title-text text-text-body">
                 {t('info.reviewYourTransaction')}
               </p>
 
-              <div className="flex flex-row gap-2 justify-end items-center">
+              <div className="flex flex-row items-center justify-end gap-2">
                 <Button
                   disabled={loading}
                   type="submit"
@@ -243,12 +243,12 @@ export const Wallet = ({
                   {showPreview ? (
                     <>
                       {t('button.hidePreview')}
-                      <EyeOffIcon className="w-5 h-5" />
+                      <EyeOffIcon className="h-5 w-5" />
                     </>
                   ) : (
                     <>
                       {t('button.preview')}
-                      <EyeIcon className="w-5 h-5" />
+                      <EyeIcon className="h-5 w-5" />
                     </>
                   )}
                 </Button>
@@ -265,20 +265,20 @@ export const Wallet = ({
                     value={SubmitValue.Submit}
                   >
                     {t('button.execute') + ' '}
-                    <Airplane className="w-4 h-4" />
+                    <Airplane className="h-4 w-4" />
                   </Button>
                 </Tooltip>
               </div>
             </div>
 
             {showSubmitErrorNote && (
-              <p className="self-end max-w-prose text-base text-right text-text-interactive-error secondary-text">
+              <p className="secondary-text max-w-prose self-end text-right text-base text-text-interactive-error">
                 {t('error.createProposalSubmitInvalid')}
               </p>
             )}
 
             {error && (
-              <p className="self-end max-w-prose text-sm text-right text-text-interactive-error secondary-text">
+              <p className="secondary-text max-w-prose self-end text-right text-sm text-text-interactive-error">
                 {error}
               </p>
             )}

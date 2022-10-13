@@ -127,7 +127,7 @@ export const Popup = ({
 
   return (
     <div
-      className={clsx('inline-block relative', wrapperClassName)}
+      className={clsx('relative inline-block', wrapperClassName)}
       ref={wrapperRef}
     >
       <Trigger onClick={() => setOpen((o) => !o)} open={open} />
@@ -135,7 +135,7 @@ export const Popup = ({
       {/* Popup */}
       <div
         className={clsx(
-          'flex absolute top-full z-10 flex-col mt-1 bg-component-dropdown rounded-lg border border-border-primary shadow-dp8 transition-all',
+          'absolute top-full z-10 mt-1 flex flex-col rounded-lg border border-border-primary bg-component-dropdown shadow-dp8 transition-all',
           // Position.
           {
             // Offset for outline of Trigger.
@@ -144,7 +144,7 @@ export const Popup = ({
           },
           // Open.
           {
-            'opacity-0 pointer-events-none': !open,
+            'pointer-events-none opacity-0': !open,
             'opacity-100': open,
           },
           popupClassName

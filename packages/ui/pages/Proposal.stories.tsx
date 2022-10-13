@@ -79,7 +79,7 @@ Default.args = {
     address: 'juno789def000ghi',
   },
   actionDisplay: (
-    <p className="p-4 text-center rounded-md border border-border-primary">
+    <p className="rounded-md border border-border-primary p-4 text-center">
       Action display placeholder
     </p>
   ),

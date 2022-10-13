@@ -30,7 +30,7 @@ export const UnstakingStatus = ({ status }: UnstakingStatusProps) => {
 
   return (
     <StatusDisplay
-      icon={<Icon className={clsx(iconClassName, 'w-[19px] h-[19px]')} />}
+      icon={<Icon className={clsx(iconClassName, 'h-[19px] w-[19px]')} />}
       label={
         // Width of longest status label so columns line up when different
         // statuses are stacked vertically.

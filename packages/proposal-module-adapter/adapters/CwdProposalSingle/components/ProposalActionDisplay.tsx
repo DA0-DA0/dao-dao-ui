@@ -59,7 +59,7 @@ export const ProposalActionDisplay = ({
         coreAddress={coreAddress}
       />
 
-      <div className="flex flex-row gap-7 items-center">
+      <div className="flex flex-row items-center gap-7">
         <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
           <AnalyticsOutlined className="text-icon-secondary" />
           <p className="secondary-text">

@@ -24,7 +24,7 @@ export const PercentButton = ({
   absoluteOffset,
 }: PercentButtonProps) => (
   <Button
-    className={clsx('flex flex-row justify-center w-full', className)}
+    className={clsx('flex w-full flex-row justify-center', className)}
     onClick={() =>
       setAmount(
         Math.min(

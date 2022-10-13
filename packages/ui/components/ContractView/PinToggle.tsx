@@ -18,7 +18,7 @@ export const PinToggle = ({ pinned, onPin }: PinToggleProps) => {
       <p className="hidden text-text-body sm:block">
         {pinned ? t('button.following') : t('button.follow')}
       </p>
-      <Icon className="!w-4 !h-4 !text-icon-primary" />
+      <Icon className="!h-4 !w-4 !text-icon-primary" />
     </Button>
   )
 }

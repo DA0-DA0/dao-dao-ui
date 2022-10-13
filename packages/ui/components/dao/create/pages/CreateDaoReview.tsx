@@ -94,7 +94,7 @@ export const CreateDaoReview = ({
 
   return (
     <>
-      <p className="mt-9 mb-7 text-text-body title-text">
+      <p className="title-text mt-9 mb-7 text-text-body">
         {t('title.governanceConfiguration')}
       </p>
 
@@ -103,7 +103,7 @@ export const CreateDaoReview = ({
         newDao={newDao}
       />
 
-      <p className="mt-9 mb-7 text-text-body title-text">
+      <p className="title-text mt-9 mb-7 text-text-body">
         {t('title.votingConfiguration')}
       </p>
 
@@ -177,26 +177,26 @@ export const CreateDaoReview = ({
       </div>
 
       <div
-        className="flex flex-row flex-wrap gap-6 items-center mt-8"
+        className="mt-8 flex flex-row flex-wrap items-center gap-6"
         ref={togglePreviewRef}
       >
-        <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row items-center gap-2">
           <Checkbox checked={!!previewJson} onClick={togglePreview} />
 
-          <p className="cursor-pointer body-text" onClick={togglePreview}>
+          <p className="body-text cursor-pointer" onClick={togglePreview}>
             {t('button.showInstantiateMessage')}
           </p>
         </div>
 
         {!!previewJson && (
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-row items-center gap-2">
             <Checkbox
               checked={decodeModuleMessages}
               onClick={() => setDecodeModuleMessages((d) => !d)}
             />
 
             <p
-              className="cursor-pointer body-text"
+              className="body-text cursor-pointer"
               onClick={() => setDecodeModuleMessages((d) => !d)}
             >
               {t('button.withDecodedModuleMessages')}

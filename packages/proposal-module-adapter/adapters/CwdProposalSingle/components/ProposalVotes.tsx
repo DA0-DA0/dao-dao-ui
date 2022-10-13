@@ -64,7 +64,7 @@ export const ProposalVotes = () => {
                 voterAddress: voter,
                 vote: (
                   <VoteDisplay
-                    className="flex-row-reverse gap-3 justify-between w-full font-sans text-xs link-text"
+                    className="link-text w-full flex-row-reverse justify-between gap-3 font-sans text-xs"
                     vote={vote}
                   />
                 ),

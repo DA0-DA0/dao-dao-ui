@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 export const StatsCard = ({ children }) => (
-  <div className="flex flex-col gap-1 items-center px-6 md:px-6">
+  <div className="flex flex-col items-center gap-1 px-6 md:px-6">
     {children}
   </div>
 )

@@ -16,7 +16,7 @@ export const InstallKeplr = (props: InstallKeplrProps) => {
     <Modal {...props}>
       <h1 className="header-text">{t('title.needWalletToContinue')}</h1>
       {grafs.map((graf) => (
-        <p key={graf} className="mt-6 mb-6 body-text">
+        <p key={graf} className="body-text mt-6 mb-6">
           {graf}
         </p>
       ))}

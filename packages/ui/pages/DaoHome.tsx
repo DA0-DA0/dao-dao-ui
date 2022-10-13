@@ -86,7 +86,7 @@ export const DaoHome = ({
         rightNode={<PinToggle onPin={onPin} pinned={pinned} />}
       />
 
-      <div className="flex relative z-[1] flex-col items-stretch mx-auto max-w-5xl">
+      <div className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch">
         <DaoHeader
           coreAddress={daoInfo.coreAddress}
           description={daoInfo.description}
@@ -98,9 +98,9 @@ export const DaoHome = ({
 
         {daoInfoBar}
 
-        <div className="flex flex-col items-center py-6 border-y border-t-border-base border-b-border-secondary">
+        <div className="flex flex-col items-center border-y border-t-border-base border-b-border-secondary py-6">
           <SegmentedControls
-            className="shrink w-full max-w-2xl"
+            className="w-full max-w-2xl shrink"
             onSelect={setSelectedTab}
             selected={selectedTab}
             tabs={tabs}
