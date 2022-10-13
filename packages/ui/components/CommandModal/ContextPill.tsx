@@ -12,7 +12,7 @@ export interface ContextPillProps {
 export const ContextPill = ({ imageUrl, name, onClose }: ContextPillProps) => (
   <div
     className={clsx(
-      'animate-fadein flex flex-row items-center gap-1.5 rounded-full bg-component-badge-primary p-1',
+      'animate-fadein flex shrink-0 flex-row items-center gap-1.5 rounded-full bg-component-badge-primary p-1',
       !imageUrl && 'pl-2',
       !onClose && 'pr-2'
     )}
@@ -26,7 +26,9 @@ export const ContextPill = ({ imageUrl, name, onClose }: ContextPillProps) => (
       ></div>
     )}
 
-    <p className="link-text shrink-0 text-text-primary">{name}</p>
+    <p className="link-text max-w-[16ch] shrink-0 truncate text-text-primary">
+      {name}
+    </p>
 
     {onClose && (
       <IconButton Icon={Close} onClick={onClose} size="sm" variant="none" />
