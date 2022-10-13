@@ -5,6 +5,7 @@ import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import {
   PropsWithChildren,
+  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -15,11 +16,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { CommandModal, makeGenericContext } from '@dao-dao/command'
-import {
-  PfpkNftSelectionModal,
-  SidebarWallet,
-  WalletProvider,
-} from '@dao-dao/common'
+import { PfpkNftSelectionModal, SidebarWallet } from '@dao-dao/common'
 import {
   mountedInBrowserAtom,
   navigationCompactAtom,
@@ -43,6 +40,12 @@ import { BetaWarningModal } from './BetaWarning'
 import { DAppProvider, useDAppContext } from './DAppContext'
 import { InstallKeplr } from './InstallKeplr'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
+
+export const AppLayout = ({ children }: { children: ReactNode }) => (
+  <DAppProvider>
+    <AppLayoutInner>{children}</AppLayoutInner>
+  </DAppProvider>
+)
 
 const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   const { t } = useTranslation()
@@ -302,27 +305,5 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         {children}
       </StatelessAppLayout>
     </>
-  )
-}
-
-const AppLayoutLoadingInner = ({ children }: PropsWithChildren<{}>) => (
-  <main className="h-full min-h-screen w-full overflow-hidden">{children}</main>
-)
-
-export const AppLayout = ({ children }: PropsWithChildren<{}>) => {
-  const { isFallback } = useRouter()
-
-  // Don't mount wallet or modals while static page data is still loading.
-  // Things look weird and broken, and the wallet connects twice. Nav in
-  // AppLayoutInner above uses wallet hook, which depends on WalletProvider, so
-  // use placeholder Layout during fallback.
-  return isFallback ? (
-    <AppLayoutLoadingInner>{children}</AppLayoutLoadingInner>
-  ) : (
-    <WalletProvider>
-      <DAppProvider>
-        <AppLayoutInner>{children}</AppLayoutInner>
-      </DAppProvider>
-    </WalletProvider>
   )
 }

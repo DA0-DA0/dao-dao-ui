@@ -9,10 +9,11 @@ import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
+import { WalletProvider } from '@dao-dao/common'
 import {
   SubQueryProvider,
   activeThemeAtom,
@@ -54,16 +55,30 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <SubQueryProvider>
-        <Layout>
+      {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
+      {router.isFallback ? (
+        <LayoutLoading>
           <Component {...pageProps} />
-        </Layout>
-      </SubQueryProvider>
+        </LayoutLoading>
+      ) : (
+        <WalletProvider>
+          <SubQueryProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </SubQueryProvider>
+        </WalletProvider>
+      )}
 
       <Notifications />
     </ThemeProvider>
   )
 }
+
+// Plain layout while layout is loading (fallback page).
+const LayoutLoading = ({ children }: { children: ReactNode }) => (
+  <main className="h-full min-h-screen w-full overflow-hidden">{children}</main>
+)
 
 const DApp = (props: AppProps) => {
   const { t } = useTranslation()
