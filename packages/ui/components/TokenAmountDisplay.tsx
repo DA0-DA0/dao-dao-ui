@@ -30,7 +30,7 @@ export type TokenAmountDisplayProps = Omit<
   )
 
 export const TokenAmountDisplay = ({
-  amount,
+  amount: _amount,
   prefix,
   suffix,
   minDecimals,
@@ -43,7 +43,7 @@ export const TokenAmountDisplay = ({
   const symbol = props.usdc ? 'USDC' : props.symbol
 
   // If loading, display pulsing ellipses.
-  if (typeof amount !== 'number' && 'loading' in amount && amount.loading) {
+  if (typeof _amount !== 'number' && 'loading' in _amount && _amount.loading) {
     return (
       <p {...props} className={clsx('animate-pulse', props.className)}>
         {t('format.token', {
@@ -53,6 +53,9 @@ export const TokenAmountDisplay = ({
       </p>
     )
   }
+
+  // Extract amount from loaded value.
+  const amount = typeof _amount === 'number' ? _amount : _amount.data
 
   // If USDC, default maxDecimals to 3.
   const maxDecimals = props.usdc ? props.maxDecimals ?? 3 : props.maxDecimals
