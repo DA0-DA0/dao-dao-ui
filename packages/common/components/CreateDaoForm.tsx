@@ -30,6 +30,7 @@ import instantiateSchema from '@dao-dao/tstypes/contracts/CwdCore.v2.instantiate
 import {
   Button,
   CreateDaoPages,
+  DaoCardProps,
   DaoCreateSidebarCard,
   DaoCreatedModal,
   DaoHeader,
@@ -85,7 +86,8 @@ export const CreateDaoForm = ({
 
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
-  const [createdDaoCoreAddress, setCreatedDaoCoreAddress] = useState<string>()
+  // When set, show DAO created modal with these props for the DaoCard shown.
+  const [createdDaoCardProps, setCreatedDaoCardProps] = useState<DaoCardProps>()
 
   const [_newDaoAtom, setNewDaoAtom] = useRecoilState(
     newDaoAtom(parentDao?.coreAddress ?? '')
@@ -114,7 +116,7 @@ export const CreateDaoForm = ({
   // Debounce saving latest data to atom and thus localStorage every 10 seconds.
   useEffect(() => {
     // If created DAO, clear saved data and don't update.
-    if (createdDaoCoreAddress) {
+    if (createdDaoCardProps) {
       // Clear saved form data.
       setNewDaoAtom(DefaultNewDao)
       return
@@ -123,7 +125,7 @@ export const CreateDaoForm = ({
     // Deep clone to prevent values from becoming readOnly.
     const timeout = setTimeout(() => setNewDaoAtom(cloneDeep(newDao)), 10000)
     return () => clearTimeout(timeout)
-  }, [newDao, setNewDaoAtom, createdDaoCoreAddress])
+  }, [newDao, setNewDaoAtom, createdDaoCardProps])
 
   // Set accent color based on image provided.
   const { setAccentColor } = useThemeContext()
@@ -338,8 +340,74 @@ export const CreateDaoForm = ({
 
               await refreshBalances()
 
-              // Show DAO created modal
-              setCreatedDaoCoreAddress(coreAddress)
+              //! Show DAO created modal.
+
+              // Get tokenSymbol and tokenBalance for DAO card.
+              const { tokenSymbol, tokenBalance } =
+                votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
+                cw20StakedBalanceVotingData
+                  ? //! Display governance token supply if using governance tokens.
+                    {
+                      tokenBalance:
+                        cw20StakedBalanceVotingData.tokenType ===
+                        GovernanceTokenType.New
+                          ? cw20StakedBalanceVotingData.newInfo.initialSupply
+                          : // If using existing token but no token info loaded (should
+                          // be impossible), just display 0.
+                          !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                          ? 0
+                          : // If using existing token, convert supply from query using decimals.
+                            convertMicroDenomToDenomWithDecimals(
+                              cw20StakedBalanceVotingData
+                                .existingGovernanceTokenInfo.total_supply,
+                              cw20StakedBalanceVotingData
+                                .existingGovernanceTokenInfo.decimals
+                            ),
+                      tokenSymbol:
+                        cw20StakedBalanceVotingData.tokenType ===
+                        GovernanceTokenType.New
+                          ? cw20StakedBalanceVotingData.newInfo.symbol
+                          : // If using existing token but no token info loaded (should
+                          // be impossible), the tokenBalance above will be set
+                          // to 0, so use NATIVE_DENOM here so this value is
+                          // accurate.
+                          !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                          ? nativeTokenLabel(NATIVE_DENOM)
+                          : cw20StakedBalanceVotingData
+                              .existingGovernanceTokenInfo?.symbol ||
+                            t('info.token').toLocaleUpperCase(),
+                    }
+                  : //! Otherwise display native token, which has a balance of 0 initially.
+                    {
+                      tokenBalance: 0,
+                      tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+                    }
+
+              // Set card props to show modal.
+              setCreatedDaoCardProps({
+                coreAddress: coreAddress,
+                name,
+                description,
+                imageUrl: imageUrl || getFallbackImage(coreAddress),
+                established: new Date(),
+                pinned: isPinned(coreAddress),
+                onPin: () =>
+                  isPinned(coreAddress)
+                    ? setUnpinned(coreAddress)
+                    : setPinned(coreAddress),
+                showIsMember: false,
+                parentDao,
+                tokenSymbol,
+                lazyData: {
+                  loading: false,
+                  data: {
+                    tokenBalance,
+                    // Does not matter, will not show.
+                    isMember: false,
+                    proposalCount: 0,
+                  },
+                },
+              })
             }
           } catch (err) {
             // toast.promise above will handle displaying the error
@@ -376,12 +444,19 @@ export const CreateDaoForm = ({
       t,
       setNewDaoAtom,
       parseSubmitterValueDelta,
-      setPageIndex,
       pageIndex,
       connected,
       createDaoWithFactory,
       setPinned,
       refreshBalances,
+      votingModuleAdapter.id,
+      cw20StakedBalanceVotingData,
+      name,
+      description,
+      imageUrl,
+      isPinned,
+      parentDao,
+      setUnpinned,
     ]
   )
 
@@ -449,7 +524,7 @@ export const CreateDaoForm = ({
       <RightSidebarContent>
         <DaoCreateSidebarCard
           // Once created, set pageIndex to 4 to show all checkboxes.
-          pageIndex={createdDaoCoreAddress ? 4 : pageIndex}
+          pageIndex={createdDaoCardProps ? 4 : pageIndex}
         />
       </RightSidebarContent>
       <PageHeader
@@ -529,68 +604,11 @@ export const CreateDaoForm = ({
         </div>
       </form>
 
-      {createdDaoCoreAddress && (
+      {createdDaoCardProps && (
         <DaoCreatedModal
-          itemProps={{
-            coreAddress: createdDaoCoreAddress,
-            name,
-            description,
-            imageUrl: imageUrl || getFallbackImage(createdDaoCoreAddress),
-            established: new Date(),
-            pinned: isPinned(createdDaoCoreAddress),
-            onPin: () =>
-              isPinned(createdDaoCoreAddress)
-                ? setUnpinned(createdDaoCoreAddress)
-                : setPinned(createdDaoCoreAddress),
-            showIsMember: false,
-            parentDao,
-            tokenSymbol:
-              votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
-              cw20StakedBalanceVotingData
-                ? //! Display governance token supply if using governance tokens.
-                  cw20StakedBalanceVotingData.tokenType ===
-                  GovernanceTokenType.New
-                  ? cw20StakedBalanceVotingData.newInfo.symbol
-                  : // If using existing token but no token info loaded (should
-                  // be impossible), the tokenBalance below (in lazyData) will be set to
-                  // 0, so use NATIVE_DENOM here so this value is accurate.
-                  !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                  ? nativeTokenLabel(NATIVE_DENOM)
-                  : cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                      ?.symbol || t('info.token').toLocaleUpperCase()
-                : //! Otherwise display native token.
-                  nativeTokenLabel(NATIVE_DENOM),
-            lazyData: {
-              loading: false,
-              data: {
-                // Does not matter, will not show.
-                isMember: false,
-                proposalCount: 0,
-                tokenBalance:
-                  votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
-                  cw20StakedBalanceVotingData
-                    ? //! Display governance token supply if using governance tokens.
-                      cw20StakedBalanceVotingData.tokenType ===
-                      GovernanceTokenType.New
-                      ? cw20StakedBalanceVotingData.newInfo.initialSupply
-                      : // If using existing token but no token info loaded (should
-                      // be impossible), just display 0.
-                      !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                      ? 0
-                      : // If using existing token, convert supply from query using decimals.
-                        convertMicroDenomToDenomWithDecimals(
-                          cw20StakedBalanceVotingData
-                            .existingGovernanceTokenInfo.total_supply,
-                          cw20StakedBalanceVotingData
-                            .existingGovernanceTokenInfo.decimals
-                        )
-                    : //! Otherwise display native token, which has a balance of 0 initially.
-                      0,
-              },
-            },
-          }}
+          itemProps={createdDaoCardProps}
           modalProps={{
-            onClose: () => setCreatedDaoCoreAddress(undefined),
+            onClose: () => setCreatedDaoCardProps(undefined),
           }}
         />
       )}
