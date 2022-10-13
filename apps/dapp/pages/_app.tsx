@@ -13,7 +13,11 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
+import {
+  SubQueryProvider,
+  activeThemeAtom,
+  mountedInBrowserAtom,
+} from '@dao-dao/state'
 import { Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
@@ -50,9 +54,11 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <SubQueryProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </SubQueryProvider>
 
       <Notifications />
     </ThemeProvider>

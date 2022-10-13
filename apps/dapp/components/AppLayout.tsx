@@ -21,7 +21,6 @@ import {
   WalletProvider,
 } from '@dao-dao/common'
 import {
-  SubQueryProvider,
   mountedInBrowserAtom,
   navigationCompactAtom,
   pinnedDaoDropdownInfosSelector,
@@ -321,11 +320,9 @@ export const AppLayout = ({ children }: PropsWithChildren<{}>) => {
     <AppLayoutLoadingInner>{children}</AppLayoutLoadingInner>
   ) : (
     <WalletProvider>
-      <SubQueryProvider>
-        <DAppProvider>
-          <AppLayoutInner>{children}</AppLayoutInner>
-        </DAppProvider>
-      </SubQueryProvider>
+      <DAppProvider>
+        <AppLayoutInner>{children}</AppLayoutInner>
+      </DAppProvider>
     </WalletProvider>
   )
 }
