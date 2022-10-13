@@ -50,7 +50,7 @@ export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
   return useLoadingDaoCardInfos(
     featuredAddresses,
     // Featured DAOs only exist on mainnet, so use mainnet indexer.
-    'daos'
+    'mainnetDaos'
   )
 }
 

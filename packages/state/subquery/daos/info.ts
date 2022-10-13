@@ -1,7 +1,4 @@
 import { gql, useQuery } from '@apollo/client'
-import { ChainInfoID } from '@noahsaso/cosmodal'
-
-import { CHAIN_ID } from '@dao-dao/utils'
 
 const GET_DAOS = gql`
   query GetDaos($coreAddresses: [String!]!) @api(contextKey: "apiName") {
@@ -44,18 +41,15 @@ interface GetDaosOperationVariables {
   coreAddresses: string[]
 }
 
-export type GetDaosApiName = 'daos' | 'testnetDaos'
+export type GetDaosApiName = 'mainnetDaos' | 'daos'
 
 export const useGetDaos = (
   variables: GetDaosOperationVariables,
-  apiName?: GetDaosApiName
+  apiName: GetDaosApiName = 'daos'
 ) =>
   useQuery<GetDaos, GetDaosOperationVariables>(GET_DAOS, {
     variables,
     context: {
-      apiName:
-        apiName ||
-        // Set default based on chain ID.
-        (CHAIN_ID === ChainInfoID.Juno1 ? 'daos' : 'testnetDaos'),
+      apiName,
     },
   })
