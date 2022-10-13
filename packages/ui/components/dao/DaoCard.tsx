@@ -14,6 +14,7 @@ import { formatDate } from '@dao-dao/utils'
 
 import { IconButton, IconButtonLink } from '../IconButton'
 import { LinkWrapper } from '../LinkWrapper'
+import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Tooltip } from '../Tooltip'
 import { DaoImage } from './DaoImage'
 
@@ -28,6 +29,7 @@ export const DaoCard = ({
   pinned,
   onPin,
   parentDao,
+  tokenSymbol,
   lazyData,
   showIsMember = true,
   className,
@@ -115,24 +117,15 @@ export const DaoCard = ({
         >
           <Governance className="w-3 h-4" />
 
-          <Tooltip
-            title={
+          <TokenAmountDisplay
+            amount={
               lazyData.loading
-                ? undefined
-                : `${lazyData.data.tokenBalance.toLocaleString(undefined, {
-                    maximumFractionDigits: 3,
-                  })} $${lazyData.data.tokenSymbol}`
+                ? { loading: true }
+                : { loading: false, data: lazyData.data.tokenBalance }
             }
-          >
-            <p>
-              {lazyData.loading
-                ? '...'
-                : `${lazyData.data.tokenBalance.toLocaleString(undefined, {
-                    notation: 'compact',
-                    maximumFractionDigits: 3,
-                  })} $${lazyData.data.tokenSymbol}`}
-            </p>
-          </Tooltip>
+            maxDecimals={3}
+            symbol={tokenSymbol}
+          />
         </div>
 
         <div

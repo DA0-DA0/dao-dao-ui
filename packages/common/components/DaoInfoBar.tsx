@@ -7,9 +7,10 @@ import {
   DaoInfoBarLoader,
   DaoInfoBarProps,
   DaoInfoBar as StatelessDaoInfoBar,
-  Tooltip,
+  TokenAmountDisplay,
   useDaoInfoContext,
 } from '@dao-dao/ui'
+import { loadableToLoadingData } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 import { useVotingModuleAdapterOptions } from '@dao-dao/voting-module-adapter/react/context'
 
@@ -35,8 +36,9 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
   const votingModuleItems = useDaoInfoBarItems()
   const { coreAddress } = useDaoInfoContext()
 
-  const treasuryUsdcValueLoadable = useCachedLoadable(
-    daoTvlSelector(coreAddress)
+  const treasuryUsdcValueLoading = loadableToLoadingData(
+    useCachedLoadable(daoTvlSelector(coreAddress)),
+    -1
   )
 
   return (
@@ -61,35 +63,7 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
         {
           Icon: AccountBalance,
           label: t('title.daoTreasury'),
-          value:
-            treasuryUsdcValueLoadable.state !== 'hasValue' ? (
-              `... $USDC`
-            ) : (
-              <Tooltip
-                title={t('format.token', {
-                  amount: treasuryUsdcValueLoadable.contents.toLocaleString(
-                    undefined,
-                    {
-                      maximumFractionDigits: 3,
-                    }
-                  ),
-                  symbol: 'USDC',
-                })}
-              >
-                <p>
-                  {t('format.token', {
-                    amount: treasuryUsdcValueLoadable.contents.toLocaleString(
-                      undefined,
-                      {
-                        notation: 'compact',
-                        maximumFractionDigits: 3,
-                      }
-                    ),
-                    symbol: 'USDC',
-                  })}
-                </p>
-              </Tooltip>
-            ),
+          value: <TokenAmountDisplay amount={treasuryUsdcValueLoading} usdc />,
         },
         // Voting module-specific items.
         ...votingModuleItems,

@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
-import { Button, Tooltip, UnstakingModal } from '@dao-dao/ui'
+import { Button, TokenAmountDisplay, UnstakingModal } from '@dao-dao/ui'
 import { formatPercentOf100, secondsToWdhms } from '@dao-dao/utils'
 
 export interface ProfileMemberCardMembershipInfoProps {
@@ -65,19 +65,12 @@ export const ProfileMemberCardMembershipInfo = ({
       <div className="flex flex-row justify-between items-center pb-3 secondary-text">
         <p>{t('title.stakedTokens')}</p>
 
-        <Tooltip
-          title={`${stakedTokens.toLocaleString(undefined, {
-            maximumFractionDigits: tokenDecimals,
-          })} $${tokenSymbol}`}
-        >
-          <p className="font-mono text-right text-text-primary">
-            {stakedTokens.toLocaleString(undefined, {
-              notation: 'compact',
-              maximumFractionDigits: tokenDecimals,
-            })}{' '}
-            ${tokenSymbol}
-          </p>
-        </Tooltip>
+        <TokenAmountDisplay
+          amount={stakedTokens}
+          className="font-mono text-right text-text-primary"
+          maxDecimals={tokenDecimals}
+          symbol={tokenSymbol}
+        />
       </div>
 
       <div className="flex flex-row justify-between items-center pb-3 secondary-text">
@@ -98,35 +91,28 @@ export const ProfileMemberCardMembershipInfo = ({
           onClick={() => setShowUnstakingTokens(true)}
           variant="underline"
         >
-          {unstakingBalance.toLocaleString(undefined, {
-            notation: 'compact',
-            maximumFractionDigits: tokenDecimals,
-          })}{' '}
-          ${tokenSymbol}
+          {t('format.token', {
+            amount: unstakingBalance.toLocaleString(undefined, {
+              notation: 'compact',
+              maximumFractionDigits: tokenDecimals,
+            }),
+            symbol: tokenSymbol,
+          })}
         </Button>
       </div>
 
       <div className="flex flex-row justify-between items-center pb-6 secondary-text">
         <p>{t('title.availableTokens')}</p>
 
-        <Tooltip
-          title={`${unstakedTokens.toLocaleString(undefined, {
-            maximumFractionDigits: tokenDecimals,
-          })} $${tokenSymbol}`}
-        >
-          <p
-            className={clsx('font-mono text-right', {
-              'text-text-tertiary': unstakedTokens === 0,
-              'text-icon-interactive-valid': unstakedTokens > 0,
-            })}
-          >
-            {unstakedTokens.toLocaleString(undefined, {
-              notation: 'compact',
-              maximumFractionDigits: tokenDecimals,
-            })}{' '}
-            ${tokenSymbol}
-          </p>
-        </Tooltip>
+        <TokenAmountDisplay
+          amount={unstakedTokens}
+          className={clsx('font-mono text-right', {
+            'text-text-tertiary': unstakedTokens === 0,
+            'text-icon-interactive-valid': unstakedTokens > 0,
+          })}
+          maxDecimals={tokenDecimals}
+          symbol={tokenSymbol}
+        />
       </div>
 
       {claimableBalance > 0 && (

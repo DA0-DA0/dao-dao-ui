@@ -21,6 +21,7 @@ export const makeProps = (): DaoCardProps => ({
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
   imageUrl: '/placeholders/1.svg',
   established: new Date('May 14, 2022 00:00:00'),
+  tokenSymbol: 'USDC',
 
   pinned: false,
   onPin: () => {},
@@ -35,7 +36,6 @@ export const makeProps = (): DaoCardProps => ({
     loading: false,
     data: {
       tokenBalance: 120,
-      tokenSymbol: 'JUNO',
       proposalCount: 25,
       isMember: Math.random() < 0.5,
     },

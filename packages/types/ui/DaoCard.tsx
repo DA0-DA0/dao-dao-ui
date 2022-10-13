@@ -5,7 +5,6 @@ import { LoadingData } from './common'
 export interface DaoCardInfoLazyData {
   isMember: boolean
   tokenBalance: number
-  tokenSymbol: string
   proposalCount: number
 }
 
@@ -18,6 +17,8 @@ export interface DaoCardInfo {
   className?: string
   showIsMember?: boolean
   parentDao?: DaoParentInfo
+  tokenDecimals: number
+  tokenSymbol: string
 
   lazyData: LoadingData<DaoCardInfoLazyData>
 }

@@ -203,6 +203,7 @@ export const daoCardInfoSelector = selectorFamily<
         href: daoUrlPrefix + coreAddress,
         established,
         parentDao,
+        tokenSymbol: 'USDC',
         lazyData: { loading: true },
       }
     },
@@ -241,7 +242,6 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
       return {
         isMember: walletVotingWeight > 0,
         tokenBalance: tvl,
-        tokenSymbol: 'USDC',
         proposalCount: proposalModuleCounts.reduce(
           (acc, curr) => acc + curr,
           0

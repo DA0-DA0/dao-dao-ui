@@ -1,35 +1,61 @@
-import { ComponentPropsWithoutRef, forwardRef } from 'react'
+import clsx from 'clsx'
+import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { LoadingData } from '@dao-dao/tstypes'
 
 import { Tooltip } from './Tooltip'
 
-export interface TokenAmountDisplayProps
-  extends Omit<ComponentPropsWithoutRef<'p'>, 'children'> {
-  amount: number
-  symbol: string
+export type TokenAmountDisplayProps = Omit<
+  ComponentPropsWithoutRef<'p'>,
+  'children'
+> & {
+  amount: number | LoadingData<number>
+  prefix?: string
+  suffix?: string
   minDecimals?: number
-  maxDecimals: number
+  maxDecimals?: number
   minSignificant?: number
   maxSignificant?: number
-}
+} & ( // If not USDC, require symbol.
+    | {
+        symbol: string
+        usdc?: false
+      }
+    // If USDC, disallow symbol.
+    | {
+        symbol?: never
+        usdc: true
+      }
+  )
 
-export const TokenAmountDisplay = forwardRef<
-  HTMLParagraphElement,
-  TokenAmountDisplayProps
->(function TokenAmountDisplay(
-  {
-    amount,
-    symbol,
-    minDecimals,
-    maxDecimals,
-    minSignificant,
-    maxSignificant,
-    ...props
-  },
-  ref
-) {
+export const TokenAmountDisplay = ({
+  amount,
+  prefix,
+  suffix,
+  minDecimals,
+  minSignificant,
+  maxSignificant,
+  ...props
+}: TokenAmountDisplayProps) => {
   const { t } = useTranslation()
 
+  const symbol = props.usdc ? 'USDC' : props.symbol
+
+  // If loading, display pulsing ellipses.
+  if (typeof amount !== 'number' && 'loading' in amount && amount.loading) {
+    return (
+      <p {...props} className={clsx('animate-pulse', props.className)}>
+        {t('format.token', {
+          amount: '...',
+          symbol,
+        })}
+      </p>
+    )
+  }
+
+  // If USDC, default maxDecimals to 3.
+  const maxDecimals = props.usdc ? props.maxDecimals ?? 3 : props.maxDecimals
   const options: Intl.NumberFormatOptions = {
     minimumFractionDigits: minDecimals,
     maximumFractionDigits: maxDecimals,
@@ -56,9 +82,11 @@ export const TokenAmountDisplay = forwardRef<
 
   return (
     <Tooltip title={tooltip}>
-      <p {...props} ref={ref}>
+      <p {...props}>
+        {prefix}
         {display}
+        {suffix}
       </p>
     </Tooltip>
   )
-})
+}

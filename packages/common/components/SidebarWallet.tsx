@@ -2,7 +2,7 @@ import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 
 import { useWalletProfile } from '@dao-dao/state'
 import { SidebarWallet as OriginalSidebarWallet } from '@dao-dao/ui'
-import { NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
+import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 import { SuspenseLoader } from './SuspenseLoader'
 
@@ -23,6 +23,7 @@ export const SidebarWallet = () => {
         <OriginalSidebarWallet
           connectedOrConnecting
           data={{ loading: true }}
+          tokenDecimals={NATIVE_DECIMALS}
           tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
         />
       }
@@ -55,6 +56,7 @@ export const SidebarWallet = () => {
                 }
           }
           onDisconnect={isEmbeddedKeplrMobileWeb ? undefined : disconnect}
+          tokenDecimals={NATIVE_DECIMALS}
           tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
         />
       ) : (

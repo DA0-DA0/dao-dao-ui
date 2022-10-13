@@ -13,6 +13,7 @@ import { CopyToClipboard, concatAddressStartEnd } from './CopyToClipboard'
 import { SpendEmoji, StakeEmoji } from './emoji'
 import { IconButton } from './IconButton'
 import { ButtonPopup, ButtonPopupSection } from './popup'
+import { TokenAmountDisplay } from './TokenAmountDisplay'
 import { Tooltip } from './Tooltip'
 import { UnstakingModal } from './UnstakingModal'
 import { UnstakingTaskStatus } from './UnstakingStatus'
@@ -185,23 +186,15 @@ export const TokenCard = ({
             <p className="link-text">{t('info.totalHoldings')}</p>
             {/* leading-5 to match link-text's line-height. */}
             <div className="flex flex-col gap-1 items-end font-mono text-right caption-text">
-              <p className="leading-5 text-text-body">
-                {totalBalance.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
-                })}{' '}
-                ${tokenSymbol}
-              </p>
-              <p>
-                {t('format.token', {
-                  amount: (totalBalance * usdcUnitPrice).toLocaleString(
-                    undefined,
-                    {
-                      maximumFractionDigits: 3,
-                    }
-                  ),
-                  symbol: 'USDC',
-                })}
-              </p>
+              {/* leading-5 to match link-text's line-height. */}
+              <TokenAmountDisplay
+                amount={totalBalance}
+                className="leading-5 text-text-body"
+                maxDecimals={tokenDecimals}
+                symbol={tokenSymbol}
+              />
+
+              <TokenAmountDisplay amount={totalBalance * usdcUnitPrice} usdc />
             </div>
           </div>
 
@@ -209,25 +202,19 @@ export const TokenCard = ({
           {unstakedBalance !== totalBalance && (
             <div className="flex flex-row gap-8 justify-between items-start">
               <p className="link-text">{t('info.availableBalance')}</p>
-              {/* leading-5 to match link-text's line-height. */}
               <div className="flex flex-col gap-1 items-end font-mono text-right caption-text">
-                <p className="leading-5 text-text-body">
-                  {unstakedBalance.toLocaleString(undefined, {
-                    maximumFractionDigits: tokenDecimals,
-                  })}{' '}
-                  ${tokenSymbol}
-                </p>
-                <p>
-                  {t('format.token', {
-                    amount: (unstakedBalance * usdcUnitPrice).toLocaleString(
-                      undefined,
-                      {
-                        maximumFractionDigits: 3,
-                      }
-                    ),
-                    tokenSymbol: 'USDC',
-                  })}
-                </p>
+                {/* leading-5 to match link-text's line-height. */}
+                <TokenAmountDisplay
+                  amount={unstakedBalance}
+                  className="leading-5 text-text-body"
+                  maxDecimals={tokenDecimals}
+                  symbol={tokenSymbol}
+                />
+
+                <TokenAmountDisplay
+                  amount={unstakedBalance * usdcUnitPrice}
+                  usdc
+                />
               </div>
             </div>
           )}
@@ -238,18 +225,18 @@ export const TokenCard = ({
             <p className="mb-1 link-text">{t('info.stakes')}</p>
 
             <div className="flex flex-row gap-8 justify-between items-center">
-              <p className="secondary-text">{t('info.staked')}</p>
+              <p className="secondary-text">{t('title.staked')}</p>
 
-              <p className="font-mono text-right text-text-body caption-text">
-                {totalStaked.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
-                })}{' '}
-                ${tokenSymbol}
-              </p>
+              <TokenAmountDisplay
+                amount={totalStaked}
+                className="font-mono text-right text-text-body caption-text"
+                maxDecimals={tokenDecimals}
+                symbol={tokenSymbol}
+              />
             </div>
 
             <div className="flex flex-row gap-8 justify-between items-center">
-              <p className="secondary-text">{t('info.stakedTo')}</p>
+              <p className="secondary-text">{t('title.stakedTo')}</p>
 
               <p className="font-mono text-right text-text-body caption-text">
                 {stakes[0].validator.moniker}
@@ -285,22 +272,25 @@ export const TokenCard = ({
                 onClick={() => setShowUnstakingTokens(true)}
                 variant="underline"
               >
-                {unstakingBalance.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
-                })}{' '}
-                ${tokenSymbol}
+                {t('format.token', {
+                  amount: unstakingBalance.toLocaleString(undefined, {
+                    notation: 'compact',
+                    maximumFractionDigits: tokenDecimals,
+                  }),
+                  symbol: tokenSymbol,
+                })}
               </Button>
             </div>
 
             <div className="flex flex-row gap-8 justify-between items-center">
               <p className="secondary-text">{t('info.pendingRewards')}</p>
 
-              <p className="font-mono text-right text-text-body caption-text">
-                {pendingRewards.toLocaleString(undefined, {
-                  maximumFractionDigits: tokenDecimals,
-                })}{' '}
-                ${tokenSymbol}
-              </p>
+              <TokenAmountDisplay
+                amount={pendingRewards}
+                className="font-mono text-right text-text-body caption-text"
+                maxDecimals={tokenDecimals}
+                symbol={tokenSymbol}
+              />
             </div>
           </div>
         )}

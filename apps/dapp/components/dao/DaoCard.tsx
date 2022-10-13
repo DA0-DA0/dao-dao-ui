@@ -37,7 +37,6 @@ export const DaoCard = (props: DaoCardInfo) => {
       lazyData={loadableToLoadingData(lazyDataLoadable, {
         isMember: false,
         tokenBalance: NaN,
-        tokenSymbol: '<error>',
         proposalCount: NaN,
       })}
       onPin={() =>

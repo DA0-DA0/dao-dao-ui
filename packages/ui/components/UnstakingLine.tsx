@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
 import { dateToWdhms, formatDate } from '@dao-dao/utils'
 
+import { TokenAmountDisplay } from './TokenAmountDisplay'
 import { UnstakingStatus } from './UnstakingStatus'
 
 export interface UnstakingLineProps {
@@ -41,12 +42,12 @@ export const UnstakingLine = ({
       >
         <UnstakingStatus status={status} />
 
-        <p className="truncate body-text">
-          {amount.toLocaleString(undefined, {
-            maximumFractionDigits: tokenDecimals,
-          })}{' '}
-          ${tokenSymbol}
-        </p>
+        <TokenAmountDisplay
+          amount={amount}
+          className="truncate body-text"
+          maxDecimals={tokenDecimals}
+          symbol={tokenSymbol}
+        />
 
         {dateReplacement || (
           <p className="pr-2 font-mono text-right break-words caption-text">
@@ -65,12 +66,12 @@ export const UnstakingLine = ({
         <UnstakingStatus status={status} />
 
         <div className="flex flex-row gap-4 justify-between items-end">
-          <p className="break-words body-text">
-            {amount.toLocaleString(undefined, {
-              maximumFractionDigits: tokenDecimals,
-            })}{' '}
-            ${tokenSymbol}
-          </p>
+          <TokenAmountDisplay
+            amount={amount}
+            className="break-words body-text"
+            maxDecimals={tokenDecimals}
+            symbol={tokenSymbol}
+          />
 
           {dateReplacement ||
             (dateString && (

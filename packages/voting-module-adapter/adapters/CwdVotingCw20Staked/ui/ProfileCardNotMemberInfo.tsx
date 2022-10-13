@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ArrowOutward } from '@dao-dao/icons'
 import { BaseProfileCardNotMemberInfoProps } from '@dao-dao/tstypes'
-import { Button, ButtonLink } from '@dao-dao/ui'
+import { Button, ButtonLink, TokenAmountDisplay } from '@dao-dao/ui'
 
 export interface ProfileCardNotMemberInfoProps
   extends BaseProfileCardNotMemberInfoProps {
@@ -40,31 +40,24 @@ export const ProfileCardNotMemberInfo = ({
       <div className="flex flex-row justify-between items-start mb-7 secondary-text">
         <p>{t('info.yourBalance')}</p>
         <div className="flex flex-col gap-1 items-end">
-          <p
+          <TokenAmountDisplay
+            amount={unstakedTokenBalance}
             className={clsx('font-mono text-right', {
               'text-text-interactive-disabled': unstakedTokenBalance === 0,
             })}
-          >
-            {unstakedTokenBalance.toLocaleString(undefined, {
-              notation: 'compact',
-              maximumFractionDigits: tokenDecimals,
-            })}{' '}
-            ${tokenSymbol}
-          </p>
+            maxDecimals={tokenDecimals}
+            symbol={tokenSymbol}
+          />
 
-          <p
+          <TokenAmountDisplay
+            amount={stakedTokenBalance}
             className={clsx('font-mono text-right', {
               'text-text-interactive-disabled': stakedTokenBalance === 0,
             })}
-          >
-            {t('info.tokensStaked', {
-              amount: stakedTokenBalance.toLocaleString(undefined, {
-                notation: 'compact',
-                maximumFractionDigits: tokenDecimals,
-              }),
-              tokenSymbol,
-            })}
-          </p>
+            maxDecimals={tokenDecimals}
+            suffix={` ${t('info.staked')}`}
+            symbol={tokenSymbol}
+          />
         </div>
       </div>
 

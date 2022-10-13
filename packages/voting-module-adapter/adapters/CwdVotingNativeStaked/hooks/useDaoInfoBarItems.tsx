@@ -2,7 +2,7 @@ import { LayersOutlined, PeopleAltOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import { useVotingModule } from '@dao-dao/state'
-import { DaoInfoBarItem, Tooltip } from '@dao-dao/ui'
+import { DaoInfoBarItem, TokenAmountDisplay } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
@@ -26,29 +26,16 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
     governanceTokenInfo: { decimals, symbol, total_supply },
   } = useGovernanceTokenInfo()
 
-  const macroTotalSupply = convertMicroDenomToDenomWithDecimals(
-    total_supply,
-    decimals
-  )
-
   return [
     {
       Icon: PeopleAltOutlined,
       label: t('title.totalSupply'),
       value: (
-        <Tooltip
-          title={`${macroTotalSupply.toLocaleString(undefined, {
-            maximumFractionDigits: decimals,
-          })} $${symbol}`}
-        >
-          <p>
-            {macroTotalSupply.toLocaleString(undefined, {
-              notation: 'compact',
-              maximumFractionDigits: decimals,
-            })}{' '}
-            ${symbol}
-          </p>
-        </Tooltip>
+        <TokenAmountDisplay
+          amount={convertMicroDenomToDenomWithDecimals(total_supply, decimals)}
+          maxDecimals={decimals}
+          symbol={symbol}
+        />
       ),
     },
     // TODO: Verify this stat makes sense in the context of native tokens.

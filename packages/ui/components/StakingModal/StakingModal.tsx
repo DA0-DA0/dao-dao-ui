@@ -186,11 +186,14 @@ const StakeUnstakeModesBody = ({
           </span>
         )}
         <span className="mt-4 font-mono caption-text">
-          {t('info.yourBalance') + ': '}
-          {max.toLocaleString(undefined, {
-            maximumFractionDigits: tokenDecimals,
-          })}{' '}
-          ${tokenSymbol}
+          {t('info.yourBalance')}
+          {': '}
+          {t('format.token', {
+            amount: max.toLocaleString(undefined, {
+              maximumFractionDigits: tokenDecimals,
+            }),
+            symbol: tokenSymbol,
+          })}
         </span>
         <div className="mt-6">
           <div className="grid grid-cols-5 gap-2">
@@ -263,13 +266,16 @@ const ClaimModeBody = ({
   return (
     <div className="flex flex-col">
       <h2 className="font-medium">
-        {convertMicroDenomToDenomWithDecimals(
-          amount,
-          tokenDecimals
-        ).toLocaleString(undefined, {
-          maximumFractionDigits: tokenDecimals,
+        {t('format.token', {
+          amount: convertMicroDenomToDenomWithDecimals(
+            amount,
+            tokenDecimals
+          ).toLocaleString(undefined, {
+            maximumFractionDigits: tokenDecimals,
+          }),
+          symbol: tokenSymbol,
         })}{' '}
-        ${tokenSymbol} {t('info.available')}
+        {t('info.available')}
       </h2>
       <p className="mt-3 mb-3 text-sm">{t('info.claimToReceiveUnstaked')}</p>
     </div>

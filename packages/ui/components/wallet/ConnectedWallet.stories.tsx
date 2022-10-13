@@ -24,6 +24,7 @@ Default.args = {
       },
     },
   },
+  tokenDecimals: 6,
   tokenSymbol: 'JUNO',
 }
 
@@ -32,5 +33,6 @@ Loading.args = {
   data: {
     loading: true,
   },
+  tokenDecimals: 6,
   tokenSymbol: 'JUNO',
 }

@@ -7,6 +7,7 @@ import { Link, Tag, X } from '@dao-dao/icons'
 import { LoadingData } from '@dao-dao/tstypes'
 
 import { IconButton } from '../IconButton'
+import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Tooltip } from '../Tooltip'
 
 export interface ConnectedWalletProps {
@@ -15,6 +16,7 @@ export interface ConnectedWalletProps {
     walletAddress: string
     tokenBalance: LoadingData<number>
   }>
+  tokenDecimals: number
   tokenSymbol: string
   onDisconnect?: () => void
   className?: string
@@ -22,6 +24,7 @@ export interface ConnectedWalletProps {
 
 export const ConnectedWallet = ({
   data,
+  tokenDecimals,
   tokenSymbol,
   onDisconnect,
   className,
@@ -53,24 +56,13 @@ export const ConnectedWallet = ({
           >
             {data.loading ? '...' : data.data.walletName}
           </p>
-          <p
-            className={clsx(
-              'font-mono legend-text',
-              (data.loading || data.data.tokenBalance.loading) &&
-                'animate-pulse'
-            )}
-          >
-            {data.loading || data.data.tokenBalance.loading ? (
-              '...'
-            ) : (
-              <>
-                {data.data.tokenBalance.data.toLocaleString(undefined, {
-                  maximumFractionDigits: 6,
-                })}
-              </>
-            )}{' '}
-            ${tokenSymbol}
-          </p>
+
+          <TokenAmountDisplay
+            amount={data.loading ? { loading: true } : data.data.tokenBalance}
+            className="font-mono legend-text"
+            maxDecimals={tokenDecimals}
+            symbol={tokenSymbol}
+          />
         </div>
       </div>
 

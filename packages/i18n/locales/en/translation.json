@@ -461,8 +461,7 @@
     "setAnImage": "Set an image",
     "stakeToIncreaseVotingPower": "Stake these to increase your voting power.",
     "stakeYourTokensToJoin": "Stake your ${{tokenSymbol}} tokens to become a member of {{daoName}}.",
-    "staked": "Staked",
-    "stakedTo": "Staked to...",
+    "staked": "staked",
     "stakes": "Stakes",
     "stakingAddress": "Staking",
     "subDaoExplanation": "SubDAOs are children DAOs that help manage groups within your DAO.",
@@ -689,6 +688,7 @@
     "stakeNfts": "Stake NFTs",
     "stakeTokens": "Stake Tokens",
     "staked": "Staked",
+    "stakedTo": "Staked to...",
     "stakedTokens": "Staked tokens",
     "staking": "Staking",
     "stakingMode": {

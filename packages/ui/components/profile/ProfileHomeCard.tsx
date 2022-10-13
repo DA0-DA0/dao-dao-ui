@@ -5,6 +5,7 @@ import { Layers, Payments } from '@dao-dao/icons'
 import { LoadingData } from '@dao-dao/tstypes'
 
 import { ButtonLink } from '../Button'
+import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import {
   ProfileCardWrapper,
   ProfileCardWrapperProps,
@@ -43,21 +44,17 @@ export const ProfileHomeCard = ({
           <div className="flex flex-col items-stretch text-center">
             <Payments className="self-center mb-4 w-5 h-4 text-center text-icon-secondary" />
             <p className="mb-1 secondary-text">{t('title.holdings')}</p>
-            <p
-              className={clsx(
-                'font-mono break-words title-text',
-                lazyData.loading && 'animate-pulse'
-              )}
-            >
-              {lazyData.loading
-                ? '...'
-                : lazyData.data.unstakedBalance.toLocaleString(undefined, {
-                    // eslint-disable-next-line i18next/no-literal-string
-                    notation: 'compact',
-                    maximumFractionDigits: 2,
-                  })}{' '}
-              ${tokenSymbol}
-            </p>
+
+            {lazyData.loading ? (
+              <p className="font-mono animate-pulse title-text">...</p>
+            ) : (
+              <TokenAmountDisplay
+                amount={lazyData.data.unstakedBalance}
+                className="font-mono break-words title-text"
+                maxDecimals={2}
+                symbol={tokenSymbol}
+              />
+            )}
           </div>
 
           <div className="w-[1px] h-10 bg-border-secondary"></div>
@@ -65,21 +62,17 @@ export const ProfileHomeCard = ({
           <div className="flex flex-col items-center text-center">
             <Layers className="self-center mb-4 w-5 h-4 text-icon-secondary" />
             <p className="mb-1 secondary-text">{t('title.staked')}</p>
-            <p
-              className={clsx(
-                'font-mono break-words title-text',
-                lazyData.loading && 'animate-pulse'
-              )}
-            >
-              {lazyData.loading
-                ? '...'
-                : lazyData.data.stakedBalance.toLocaleString(undefined, {
-                    // eslint-disable-next-line i18next/no-literal-string
-                    notation: 'compact',
-                    maximumFractionDigits: 2,
-                  })}{' '}
-              ${tokenSymbol}
-            </p>
+
+            {lazyData.loading ? (
+              <p className="font-mono animate-pulse title-text">...</p>
+            ) : (
+              <TokenAmountDisplay
+                amount={lazyData.data.stakedBalance}
+                className="font-mono break-words title-text"
+                maxDecimals={2}
+                symbol={tokenSymbol}
+              />
+            )}
           </div>
         </div>
       }
