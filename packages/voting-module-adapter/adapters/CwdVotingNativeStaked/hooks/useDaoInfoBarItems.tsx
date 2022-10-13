@@ -1,24 +1,17 @@
 import { LayersOutlined, PeopleAltOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { useVotingModule } from '@dao-dao/state'
 import { DaoInfoBarItem, TokenAmountDisplay } from '@dao-dao/ui'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  formatPercentOf100,
-} from '@dao-dao/utils'
+import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
+import { useStakingInfo } from './useStakingInfo'
 
 export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
   const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
-  const { totalVotingWeight } = useVotingModule(coreAddress, {
-    fetchMembership: true,
-  })
+  const { totalStakedValue } = useStakingInfo({ fetchTotalStakedValue: true })
 
-  if (totalVotingWeight === undefined) {
+  if (totalStakedValue === undefined) {
     throw new Error(t('error.loadingData'))
   }
 
@@ -38,12 +31,18 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
         />
       ),
     },
-    // TODO: Verify this stat makes sense in the context of native tokens.
     {
       Icon: LayersOutlined,
       label: t('title.totalStaked'),
-      value: formatPercentOf100(
-        (totalVotingWeight / Number(total_supply)) * 100
+      value: (
+        <TokenAmountDisplay
+          amount={convertMicroDenomToDenomWithDecimals(
+            totalStakedValue,
+            decimals
+          )}
+          maxDecimals={decimals}
+          symbol={symbol}
+        />
       ),
     },
   ]
