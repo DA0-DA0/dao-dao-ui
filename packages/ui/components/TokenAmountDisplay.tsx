@@ -34,13 +34,16 @@ export const TokenAmountDisplay = ({
   prefix,
   suffix,
   minDecimals,
+  maxDecimals: _maxDecimals,
   minSignificant,
   maxSignificant,
+  symbol: _symbol,
+  usdc,
   ...props
 }: TokenAmountDisplayProps) => {
   const { t } = useTranslation()
 
-  const symbol = props.usdc ? 'USDC' : props.symbol
+  const symbol = usdc ? 'USDC' : _symbol
 
   // If loading, display pulsing ellipses.
   if (typeof _amount !== 'number' && 'loading' in _amount && _amount.loading) {
@@ -58,7 +61,7 @@ export const TokenAmountDisplay = ({
   const amount = typeof _amount === 'number' ? _amount : _amount.data
 
   // If USDC, default maxDecimals to 3.
-  const maxDecimals = props.usdc ? props.maxDecimals ?? 3 : props.maxDecimals
+  const maxDecimals = usdc ? _maxDecimals ?? 3 : _maxDecimals
   const options: Intl.NumberFormatOptions = {
     minimumFractionDigits: minDecimals,
     maximumFractionDigits: maxDecimals,
