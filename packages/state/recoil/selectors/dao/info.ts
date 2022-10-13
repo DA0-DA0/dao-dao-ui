@@ -1,9 +1,4 @@
-import {
-  RecoilValueReadOnly,
-  selector,
-  selectorFamily,
-  waitForAll,
-} from 'recoil'
+import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
 import { proposalModuleAdapterProposalCountSelector } from '@dao-dao/proposal-module-adapter'
 import {
@@ -26,7 +21,6 @@ import {
   getFallbackImage,
 } from '@dao-dao/utils'
 
-import { getFeaturedDaoAddresses } from '../../../utils/getFeaturedDaoAddresses'
 import { CwCoreV1Selectors, CwdCoreV2Selectors } from '../clients'
 import {
   contractInstantiateTimeSelector,
@@ -35,20 +29,6 @@ import {
 } from '../contract'
 import { daoTvlSelector } from '../price'
 import { cwCoreProposalModulesSelector } from '../proposal'
-
-export const featuredDaoCardInfosSelector = selector({
-  key: 'featuredDaoCardInfos',
-  get: async ({ get }) => {
-    const featuredAddresses = await getFeaturedDaoAddresses()
-    return get(
-      waitForAll(
-        featuredAddresses.map((coreAddress) =>
-          daoCardInfoSelector({ coreAddress, daoUrlPrefix: '/dao/' })
-        )
-      )
-    ).filter(Boolean) as DaoCardInfo[]
-  },
-})
 
 export const daoDropdownInfoSelector: (
   coreAddress: string
@@ -98,11 +78,11 @@ export const daoDropdownInfoSelector: (
 
 export const daoCardInfoSelector = selectorFamily<
   DaoCardInfo | undefined,
-  { coreAddress: string; daoUrlPrefix: string }
+  string
 >({
   key: 'daoCardInfo',
   get:
-    ({ coreAddress, daoUrlPrefix }) =>
+    (coreAddress) =>
     ({ get }) => {
       const dumpedState:
         | CwCoreV1DumpStateResponse
@@ -172,7 +152,6 @@ export const daoCardInfoSelector = selectorFamily<
         name: config.name,
         description: config.description,
         imageUrl: config.image_url || getFallbackImage(coreAddress),
-        href: daoUrlPrefix + coreAddress,
         established,
         parentDao,
         tokenSymbol: 'USDC',
@@ -222,29 +201,19 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
     },
 })
 
-export const subDaoCardInfosSelector = selectorFamily<
-  DaoCardInfo[],
-  { coreAddress: string; daoUrlPrefix: string }
->({
+export const subDaoCardInfosSelector = selectorFamily<DaoCardInfo[], string>({
   key: 'subDaoCardInfos',
   get:
-    ({ coreAddress, daoUrlPrefix }) =>
+    (contractAddress) =>
     ({ get }) => {
       const subdaos = get(
         CwdCoreV2Selectors.listAllSubDaosSelector({
-          contractAddress: coreAddress,
+          contractAddress,
         })
       )
 
       return get(
-        waitForAll(
-          subdaos.map(({ addr }) =>
-            daoCardInfoSelector({
-              coreAddress: addr,
-              daoUrlPrefix,
-            })
-          )
-        )
+        waitForAll(subdaos.map(({ addr }) => daoCardInfoSelector(addr)))
       ).filter(Boolean) as DaoCardInfo[]
     },
 })

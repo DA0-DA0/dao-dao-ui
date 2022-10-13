@@ -1,8 +1,11 @@
 import { gql, useQuery } from '@apollo/client'
+import { ChainInfoID } from '@noahsaso/cosmodal'
+
+import { CHAIN_ID } from '@dao-dao/utils'
 
 const SEARCH_DAOS = gql`
   query SearchDaos($query: String = "", $limit: Int!, $exclude: [String!] = [])
-  @api(name: daos) {
+  @api(contextKey: "apiName") {
     daos(
       first: $limit
       filter: {
@@ -38,7 +41,18 @@ interface SearchDaosOperationVariables {
   exclude?: string[]
 }
 
-export const useSearchDaos = (variables: SearchDaosOperationVariables) =>
+type SearchDaosApiName = 'daos' | 'testnetDaos'
+
+export const useSearchDaos = (
+  variables: SearchDaosOperationVariables,
+  apiName?: SearchDaosApiName
+) =>
   useQuery<SearchDaos, SearchDaosOperationVariables>(SEARCH_DAOS, {
     variables,
+    context: {
+      apiName:
+        apiName ||
+        // Set default based on chain ID.
+        (CHAIN_ID === ChainInfoID.Juno1 ? 'daos' : 'testnetDaos'),
+    },
   })

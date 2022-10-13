@@ -6,17 +6,11 @@ import type { GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { waitForAll } from 'recoil'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { ArrowUpRight } from '@dao-dao/icons'
-import {
-  daoCardInfoSelector,
-  getFeaturedDaoAddresses,
-  useCachedLoadable,
-} from '@dao-dao/state'
-import { DaoCardInfo } from '@dao-dao/tstypes'
+import { useLoadingFeaturedDaoCardInfos } from '@dao-dao/state'
 import {
   Button,
   FeaturedDaos,
@@ -25,10 +19,6 @@ import {
   PageLoader,
   RotatableLogo,
 } from '@dao-dao/ui'
-import {
-  FEATURED_DAOS_CACHE_SECONDS,
-  loadableToLoadingData,
-} from '@dao-dao/utils'
 
 import {
   AnouncementCard,
@@ -38,28 +28,10 @@ import {
   StatsCard,
 } from '@/components'
 
-interface HomePageProps {
-  featuredDaoAddresses: string[]
-}
-
-const Home: NextPage<HomePageProps> = ({ featuredDaoAddresses }) => {
+const Home: NextPage = () => {
   const { t } = useTranslation()
 
-  const featuredDaosLoadable = useCachedLoadable(
-    waitForAll(
-      featuredDaoAddresses.map((coreAddress) =>
-        daoCardInfoSelector({ coreAddress, daoUrlPrefix: '/dao/' })
-      )
-    )
-  )
-  const featuredDaosLoading = loadableToLoadingData(featuredDaosLoadable, [])
-
-  //! Loadable errors.
-  useEffect(() => {
-    if (featuredDaosLoadable.state === 'hasError') {
-      console.error(featuredDaosLoadable.contents)
-    }
-  }, [featuredDaosLoadable.contents, featuredDaosLoadable.state])
+  const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
 
   const [tvl, setTVL] = useState<number>()
   const [daos, setDaos] = useState<number>()
@@ -123,19 +95,7 @@ const Home: NextPage<HomePageProps> = ({ featuredDaoAddresses }) => {
           <AnouncementCard />
         </div>
 
-        <FeaturedDaos
-          DaoCard={DaoCard}
-          featuredDaos={
-            featuredDaosLoading.loading
-              ? featuredDaosLoading
-              : {
-                  ...featuredDaosLoading,
-                  data: featuredDaosLoading.data.filter(
-                    Boolean
-                  ) as DaoCardInfo[],
-                }
-          }
-        />
+        <FeaturedDaos DaoCard={DaoCard} featuredDaos={featuredDaosLoading} />
 
         <div className="flex grid-cols-3 flex-col justify-around gap-6 divide-focus py-6 md:grid md:gap-3 md:divide-x md:py-8">
           <StatsCard>
@@ -221,12 +181,8 @@ const Home: NextPage<HomePageProps> = ({ featuredDaoAddresses }) => {
 
 export default Home
 
-export const getStaticProps: GetStaticProps<HomePageProps> = async ({
-  locale,
-}) => ({
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
     ...(await serverSideTranslations(locale, ['translation'])),
-    featuredDaoAddresses: await getFeaturedDaoAddresses(),
-    revalidate: FEATURED_DAOS_CACHE_SECONDS,
   },
 })

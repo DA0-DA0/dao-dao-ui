@@ -1,5 +1,6 @@
 export * from './clients'
 export * from './useCachedLoadable'
+export * from './useLoadingDaoCardInfos'
 export * from './useEncodedCwdProposalSinglePrefill'
 export * from './useNotifyBrowser'
 export * from './usePinnedDaos'

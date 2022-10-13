@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
 
 import {
-  featuredDaoCardInfosSelector,
-  pinnedDaoCardInfosSelector,
+  useLoadingFeaturedDaoCardInfos,
+  useLoadingPinnedDaoCardInfos,
 } from '@dao-dao/state'
 import { useSearchDaos } from '@dao-dao/state/subquery/daos'
 import {
@@ -28,16 +27,16 @@ export const usePinnedAndFilteredDaosSections = ({
 }: UseFilteredDaosSectionOptions): CommandModalContextSection[] => {
   const { t } = useTranslation()
 
-  const featuredDaos = useRecoilValue(featuredDaoCardInfosSelector)
-  const pinnedDaos = useRecoilValue(
-    pinnedDaoCardInfosSelector({ daoUrlPrefix: `/dao/` })
-  )
+  const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
+  const pinnedDaosLoading = useLoadingPinnedDaoCardInfos()
 
   const queryResults = useSearchDaos({
     query: options.filter,
     limit,
     // Exclude pinned DAOs from search since they show in a separate section.
-    exclude: pinnedDaos.map(({ coreAddress }) => coreAddress),
+    exclude: pinnedDaosLoading.loading
+      ? undefined
+      : pinnedDaosLoading.data.map(({ coreAddress }) => coreAddress),
   })
 
   // Use query results if filter is present.
@@ -54,12 +53,14 @@ export const usePinnedAndFilteredDaosSections = ({
         })
       )
     : // Otherwise when filter is empty, display featured DAOs.
-      featuredDaos
+    featuredDaosLoading.loading
+    ? []
+    : featuredDaosLoading.data
 
   const pinnedSection: CommandModalContextSection<CommandModalDaoInfo> = {
     name: t('title.pinned'),
     onChoose,
-    items: pinnedDaos,
+    items: pinnedDaosLoading.loading ? [] : pinnedDaosLoading.data,
   }
 
   const daosSection: CommandModalContextSection<CommandModalDaoInfo> = {

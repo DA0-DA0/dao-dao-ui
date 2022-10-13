@@ -1,11 +1,10 @@
-import { selector, selectorFamily, waitForAll } from 'recoil'
+import { selector, waitForAll } from 'recoil'
 
-import { DaoCardInfo } from '@dao-dao/tstypes'
 import { DaoDropdownInfo } from '@dao-dao/ui'
 
 import { pinnedAddressesAtom } from '../../atoms'
 import { cwCoreProposalModulesSelector } from '../proposal'
-import { daoCardInfoSelector, daoDropdownInfoSelector } from './info'
+import { daoDropdownInfoSelector } from './info'
 
 export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
   key: 'pinnedDaoDropdownInfo',
@@ -19,25 +18,6 @@ export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
       )
     ).filter(Boolean) as DaoDropdownInfo[]
   },
-})
-
-export const pinnedDaoCardInfosSelector = selectorFamily<
-  DaoCardInfo[],
-  { daoUrlPrefix: string }
->({
-  key: 'pinnedDaoCardInfos',
-  get:
-    ({ daoUrlPrefix }) =>
-    ({ get }) => {
-      const pinnedAddresses = get(pinnedAddressesAtom)
-      return get(
-        waitForAll(
-          pinnedAddresses.map((coreAddress) =>
-            daoCardInfoSelector({ coreAddress, daoUrlPrefix })
-          )
-        )
-      ).filter(Boolean) as DaoCardInfo[]
-    },
 })
 
 export const pinnedDaosWithProposalModulesSelector = selector({
