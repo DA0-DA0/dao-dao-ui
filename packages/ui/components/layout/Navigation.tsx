@@ -143,15 +143,15 @@ export const Navigation = ({
       <nav
         className={clsx(
           // General
-          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base py-6 pt-0 text-lg transition-all',
+          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base py-6 pt-0 text-lg',
           // If compact, items will manager their own padding so that
           // highlighted rows fill the whole width.
           !compact && 'px-6',
           // Responsive
-          'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8',
+          'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
-          'sm:relative sm:left-0 sm:shadow-none',
+          'sm:relative sm:left-0 sm:shadow-none sm:transition-[padding-left]',
           compact ? 'sm:w-min' : 'sm:w-[264px]',
 
           // Dim if responsive right sidebar is open. Right sidebar can be responsive up to xl size. After that, it automatically displays.
