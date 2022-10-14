@@ -6,6 +6,7 @@ import { pinnedAddressesAtom } from '../../atoms'
 import { cwCoreProposalModulesSelector } from '../proposal'
 import { daoDropdownInfoSelector } from './info'
 
+// TODO(multichain): Store pinned addresses with their chain ID in one list.
 export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
   key: 'pinnedDaoDropdownInfo',
   get: ({ get }) => {
@@ -13,13 +14,14 @@ export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
     return get(
       waitForAll(
         pinnedAddresses.map((coreAddress) =>
-          daoDropdownInfoSelector(coreAddress)
+          daoDropdownInfoSelector({ coreAddress })
         )
       )
     ).filter(Boolean) as DaoDropdownInfo[]
   },
 })
 
+// TODO(multichain): Store pinned addresses with their chain ID in one list.
 export const pinnedDaosWithProposalModulesSelector = selector({
   key: 'pinnedDaosWithProposalModules',
   get: ({ get }) => {
@@ -27,7 +29,7 @@ export const pinnedDaosWithProposalModulesSelector = selector({
     const proposalModules = get(
       waitForAll(
         daoAddresses.map((coreAddress) =>
-          cwCoreProposalModulesSelector(coreAddress)
+          cwCoreProposalModulesSelector({ coreAddress })
         )
       )
     )

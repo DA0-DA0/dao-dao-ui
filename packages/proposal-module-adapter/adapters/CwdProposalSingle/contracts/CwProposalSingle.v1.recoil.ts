@@ -1,11 +1,12 @@
 import { selectorFamily } from 'recoil'
 
 import {
-  cosmWasmClientSelector,
+  cosmWasmClientForChainSelector,
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
+import { WithChainId } from '@dao-dao/tstypes'
 import {
   ConfigResponse,
   InfoResponse,
@@ -24,9 +25,9 @@ import {
   CwProposalSingleV1QueryClient,
 } from './CwProposalSingle.v1.client'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-}
+}>
 
 const queryClient = selectorFamily<
   CwProposalSingleV1QueryClient,
@@ -34,9 +35,9 @@ const queryClient = selectorFamily<
 >({
   key: 'cwProposalSingleV1QueryClient',
   get:
-    ({ contractAddress }) =>
+    ({ contractAddress, chainId }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       return new CwProposalSingleV1QueryClient(client, contractAddress)
     },
 })
@@ -69,12 +70,10 @@ export const configSelector = selectorFamily<ConfigResponse, QueryClientParams>(
       (queryClientParams) =>
       async ({ get }) => {
         const client = get(queryClient(queryClientParams))
-
         return await client.config()
       },
   }
 )
-
 export const proposalSelector = selectorFamily<
   ProposalResponse,
   QueryClientParams & {
@@ -86,18 +85,15 @@ export const proposalSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
       get(
         refreshProposalIdAtom({
           address: queryClientParams.contractAddress,
           proposalId: params[0].proposalId,
         })
       )
-
       return await client.proposal(...params)
     },
 })
-
 export const listProposalsSelector = selectorFamily<
   ListProposalsResponse,
   QueryClientParams & {
@@ -109,12 +105,124 @@ export const listProposalsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-
       get(refreshProposalsIdAtom)
-
       return await client.listProposals(...params)
     },
 })
+export const reverseProposalsSelector = selectorFamily<
+  ReverseProposalsResponse,
+  QueryClientParams & {
+    params: Parameters<CwProposalSingleV1Client['reverseProposals']>
+  }
+>({
+  key: 'cwProposalSingleV1ReverseProposals',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      get(refreshProposalsIdAtom)
+      return await client.reverseProposals(...params)
+    },
+})
+export const getVoteSelector = selectorFamily<
+  VoteResponse,
+  QueryClientParams & {
+    params: Parameters<CwProposalSingleV1Client['getVote']>
+  }
+>({
+  key: 'cwProposalSingleV1GetVote',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      get(
+        refreshProposalIdAtom({
+          address: queryClientParams.contractAddress,
+          proposalId: params[0].proposalId,
+        })
+      )
+      return await client.getVote(...params)
+    },
+})
+export const listVotesSelector = selectorFamily<
+  ListVotesResponse,
+  QueryClientParams & {
+    params: Parameters<CwProposalSingleV1Client['listVotes']>
+  }
+>({
+  key: 'cwProposalSingleV1ListVotes',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      get(
+        refreshProposalIdAtom({
+          address: queryClientParams.contractAddress,
+          proposalId: params[0].proposalId,
+        })
+      )
+      return await client.listVotes(...params)
+    },
+})
+export const proposalHooksSelector = selectorFamily<
+  ProposalHooksResponse,
+  QueryClientParams
+>({
+  key: 'cwProposalSingleV1ProposalHooks',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.proposalHooks()
+    },
+})
+export const voteHooksSelector = selectorFamily<
+  VoteHooksResponse,
+  QueryClientParams
+>({
+  key: 'cwProposalSingleV1VoteHooks',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.voteHooks()
+    },
+})
+export const infoSelector = selectorFamily<InfoResponse, QueryClientParams>({
+  key: 'cwProposalSingleV1Info',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.info()
+    },
+})
+
+///! Fixed selectors
+
+export const proposalCountSelector = selectorFamily<
+  ProposalCountResponse,
+  QueryClientParams
+>({
+  key: 'cwProposalSingleV1ProposalCount',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+
+      get(refreshProposalsIdAtom)
+
+      try {
+        return await client.proposalCount()
+      } catch {
+        // Contract throws error if no proposals have been made, so return
+        // 0 for now until the contract is fixed.
+        return 0
+      }
+    },
+})
+
+///! Custom selectors
 
 export const listAllProposalsSelector = selectorFamily<
   ListProposalsResponse,
@@ -149,130 +257,5 @@ export const listAllProposalsSelector = selectorFamily<
       }
 
       return { proposals: allProposals }
-    },
-})
-
-export const reverseProposalsSelector = selectorFamily<
-  ReverseProposalsResponse,
-  QueryClientParams & {
-    params: Parameters<CwProposalSingleV1Client['reverseProposals']>
-  }
->({
-  key: 'cwProposalSingleV1ReverseProposals',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      get(refreshProposalsIdAtom)
-
-      return await client.reverseProposals(...params)
-    },
-})
-
-export const proposalCountSelector = selectorFamily<
-  ProposalCountResponse,
-  QueryClientParams
->({
-  key: 'cwProposalSingleV1ProposalCount',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      get(refreshProposalsIdAtom)
-
-      try {
-        return await client.proposalCount()
-      } catch {
-        // Contract throws error if no proposals have been made, so return
-        // 0 for now until the contract is fixed.
-        return 0
-      }
-    },
-})
-
-export const getVoteSelector = selectorFamily<
-  VoteResponse,
-  QueryClientParams & {
-    params: Parameters<CwProposalSingleV1Client['getVote']>
-  }
->({
-  key: 'cwProposalSingleV1GetVote',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      get(
-        refreshProposalIdAtom({
-          address: queryClientParams.contractAddress,
-          proposalId: params[0].proposalId,
-        })
-      )
-
-      return await client.getVote(...params)
-    },
-})
-
-export const listVotesSelector = selectorFamily<
-  ListVotesResponse,
-  QueryClientParams & {
-    params: Parameters<CwProposalSingleV1Client['listVotes']>
-  }
->({
-  key: 'cwProposalSingleV1ListVotes',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      get(
-        refreshProposalIdAtom({
-          address: queryClientParams.contractAddress,
-          proposalId: params[0].proposalId,
-        })
-      )
-
-      return await client.listVotes(...params)
-    },
-})
-
-export const proposalHooksSelector = selectorFamily<
-  ProposalHooksResponse,
-  QueryClientParams
->({
-  key: 'cwProposalSingleV1ProposalHooks',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      return await client.proposalHooks()
-    },
-})
-
-export const voteHooksSelector = selectorFamily<
-  VoteHooksResponse,
-  QueryClientParams
->({
-  key: 'cwProposalSingleV1VoteHooks',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      return await client.voteHooks()
-    },
-})
-
-export const infoSelector = selectorFamily<InfoResponse, QueryClientParams>({
-  key: 'cwProposalSingleV1Info',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-
-      return await client.info()
     },
 })

@@ -1,15 +1,24 @@
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import { useEffect, useState } from 'react'
 
 import { DaoCardInfo, LoadingData } from '@dao-dao/tstypes'
-import { getFallbackImage } from '@dao-dao/utils'
+import { CHAIN_ID, getFallbackImage } from '@dao-dao/utils'
 
 import { usePinnedDaos } from '.'
 import { GetDaosApiName, useGetDaos } from '../subquery/daos/info'
 import { getFeaturedDaoAddresses } from '../utils'
 
+export interface UseLoadingDaoCardInfosOptions {
+  apiName?: GetDaosApiName
+  chainId?: string
+}
+
 export const useLoadingDaoCardInfos = (
   coreAddresses: string[],
-  apiName?: GetDaosApiName
+  { apiName, chainId = CHAIN_ID }: UseLoadingDaoCardInfosOptions = {
+    apiName: undefined,
+    chainId: undefined,
+  }
 ): LoadingData<DaoCardInfo[]> => {
   const daosQuery = useGetDaos({ coreAddresses }, apiName)
   const daoQueryInfos =
@@ -34,6 +43,7 @@ export const useLoadingDaoCardInfos = (
               : undefined,
             tokenSymbol: 'USDC',
             lazyData: { loading: true },
+            chainId,
           })
         ),
       }
@@ -49,8 +59,11 @@ export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
 
   return useLoadingDaoCardInfos(
     featuredAddresses,
-    // Featured DAOs only exist on mainnet, so use mainnet indexer.
-    'mainnetDaos'
+    // Featured DAOs only exist on mainnet, so use mainnet indexer and chain ID.
+    {
+      apiName: 'mainnetDaos',
+      chainId: ChainInfoID.Juno1,
+    }
   )
 }
 

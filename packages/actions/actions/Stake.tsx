@@ -127,10 +127,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
 
 const InnerStakeComponent: ActionComponent = (props) => {
   const nativeBalances = useRecoilValue(
-    nativeBalancesSelector(props.coreAddress)
+    nativeBalancesSelector({ address: props.coreAddress })
   )
   const nativeDelegatedBalance = useRecoilValue(
-    nativeDelegatedBalanceSelector(props.coreAddress)
+    nativeDelegatedBalanceSelector({ address: props.coreAddress })
   )
 
   return (

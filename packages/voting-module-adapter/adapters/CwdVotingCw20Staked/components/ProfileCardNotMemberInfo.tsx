@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { poolsListSelector } from '@dao-dao/state'
+import { junoswapPoolsListSelector } from '@dao-dao/state'
 import { useDaoInfoContext } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
@@ -32,7 +32,7 @@ export const ProfileCardNotMemberInfo = (
   })
 
   // Search for governance token in junoswap pools list.
-  const poolsList = useRecoilValue(poolsListSelector)
+  const poolsList = useRecoilValue(junoswapPoolsListSelector)
   const governanceTokenPoolSymbol = poolsList?.pools
     .flatMap(({ pool_assets }) => pool_assets)
     .find(

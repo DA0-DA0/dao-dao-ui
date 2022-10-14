@@ -1,5 +1,6 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
+import { WithChainId } from '@dao-dao/tstypes'
 import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
 import {
   ActiveProposalModulesResponse,
@@ -35,11 +36,11 @@ import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
-import { cosmWasmClientSelector } from '../chain'
+import { cosmWasmClientForChainSelector } from '../chain'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-}
+}>
 
 export const queryClient = selectorFamily<
   CwdCoreV2QueryClient,
@@ -47,9 +48,9 @@ export const queryClient = selectorFamily<
 >({
   key: 'cwdCoreV2QueryClient',
   get:
-    ({ contractAddress }) =>
+    ({ contractAddress, chainId }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       return new CwdCoreV2QueryClient(client, contractAddress)
     },
 })
@@ -333,6 +334,8 @@ export const infoSelector = selectorFamily<
     },
 })
 
+///! Custom selectors
+
 const CW20_TOKEN_LIST_LIMIT = 30
 export const allCw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse,
@@ -349,7 +352,13 @@ export const allCw20TokenListSelector = selectorFamily<
       // All `info` queries are the same, so just use core's info query.
       const votingModuleInfo = votingModuleAddress
         ? get(
-            infoSelector({ contractAddress: votingModuleAddress, params: [] })
+            infoSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
+              contractAddress: votingModuleAddress,
+              params: [],
+            })
           )
         : undefined
 
@@ -366,6 +375,10 @@ export const allCw20TokenListSelector = selectorFamily<
         votingModuleAddress && hasGovernanceToken
           ? get(
               CwdVotingCw20StakedSelectors.tokenContractSelector({
+                // Copies over chainId and any future additions to client
+                // params.
+                ...queryClientParams,
+
                 contractAddress: votingModuleAddress,
                 params: [],
               })
@@ -426,7 +439,13 @@ export const allCw20BalancesSelector = selectorFamily<
       )
       // All `info` queries are the same, so just use core's info query.
       const votingModuleInfo = get(
-        infoSelector({ contractAddress: votingModuleAddress, params: [] })
+        infoSelector({
+          // Copies over chainId and any future additions to client params.
+          ...queryClientParams,
+
+          contractAddress: votingModuleAddress,
+          params: [],
+        })
       )
 
       let hasGovernanceToken
@@ -440,6 +459,9 @@ export const allCw20BalancesSelector = selectorFamily<
       const governanceTokenAddress = hasGovernanceToken
         ? get(
             CwdVotingCw20StakedSelectors.tokenContractSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
               contractAddress: votingModuleAddress,
               params: [],
             })
@@ -448,6 +470,9 @@ export const allCw20BalancesSelector = selectorFamily<
       const governanceTokenBalance = governanceTokenAddress
         ? get(
             Cw20BaseSelectors.balanceSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
               contractAddress: governanceTokenAddress,
               params: [{ address: queryClientParams.contractAddress }],
             })
@@ -508,20 +533,21 @@ export const cw20BalancesInfoSelector = selectorFamily<
     imageUrl: string | undefined
     isGovernanceToken: boolean
   }[],
-  string
+  QueryClientParams
 >({
   key: 'cwdCoreV2Cw20BalancesInfo',
   get:
-    (address) =>
+    (queryClientParams) =>
     async ({ get }) => {
-      const cw20List = get(
-        allCw20BalancesSelector({ contractAddress: address })
-      )
+      const cw20List = get(allCw20BalancesSelector(queryClientParams))
 
       const cw20Info = get(
         waitForAll(
           cw20List.map(({ addr }) =>
             Cw20BaseSelectors.tokenInfoSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
               contractAddress: addr,
               params: [],
             })
@@ -533,6 +559,9 @@ export const cw20BalancesInfoSelector = selectorFamily<
         waitForAll(
           cw20List.map(({ addr }) =>
             Cw20BaseSelectors.marketingInfoSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
               contractAddress: addr,
               params: [],
             })
@@ -648,6 +677,9 @@ export const allSubDaoConfigsSelector = selectorFamily<
         waitForAll(
           subDaos.map(({ addr }) =>
             configSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
               contractAddress: addr,
               params: [],
             })

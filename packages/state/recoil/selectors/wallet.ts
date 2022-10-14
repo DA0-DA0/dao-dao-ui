@@ -5,21 +5,22 @@ import {
   KeplrWalletProfile,
   PfpkWalletProfile,
   WalletProfile,
+  WithChainId,
 } from '@dao-dao/tstypes'
 import { PFPK_API_BASE, processError } from '@dao-dao/utils'
 
 import { refreshWalletProfileAtom } from '../atoms/refresh'
-import { cosmWasmClientSelector } from './chain'
+import { cosmWasmClientForChainSelector } from './chain'
 
 export const walletHexPublicKeySelector = selectorFamily<
   string | undefined,
-  string
+  WithChainId<{ walletAddress: string }>
 >({
   key: 'walletHexPublicKey',
   get:
-    (walletAddress) =>
+    ({ walletAddress, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       const account = await client.getAccount(walletAddress)
       if (!account?.pubkey?.value) {
         return

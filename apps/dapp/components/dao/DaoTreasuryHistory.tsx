@@ -70,10 +70,10 @@ export const InnerDaoTreasuryHistory = ({
   const { coreAddress } = useDaoInfoContext()
 
   // Initialization.
-  const latestBlockHeight = useRecoilValue(blockHeightSelector)
+  const latestBlockHeight = useRecoilValue(blockHeightSelector({}))
   const initialMinHeight = latestBlockHeight - BLOCK_HEIGHT_INTERVAL
   const initialLowestHeightLoadedTimestamp = useRecoilValue(
-    blockHeightTimestampSafeSelector(initialMinHeight)
+    blockHeightTimestampSafeSelector({ blockHeight: initialMinHeight })
   )
   const initialTransactions = useRecoilValue(
     transformedTreasuryTransactionsSelector({
@@ -108,7 +108,7 @@ export const InnerDaoTreasuryHistory = ({
           )
 
           const newLowestHeightLoadedTimestamp = await snapshot.getPromise(
-            blockHeightTimestampSelector(minHeight)
+            blockHeightTimestampSelector({ blockHeight: minHeight })
           )
 
           setLowestHeightLoaded(minHeight)
@@ -142,7 +142,9 @@ export const InnerDaoTreasuryHistory = ({
     ]
   )
 
-  const nativeBalance = useRecoilValue(nativeBalanceSelector(coreAddress))
+  const nativeBalance = useRecoilValue(
+    nativeBalanceSelector({ address: coreAddress })
+  )
   const lineGraphValues = useMemo(() => {
     let runningTotal = convertMicroDenomToDenomWithDecimals(
       nativeBalance.amount,

@@ -45,12 +45,12 @@ export const useGovernanceTokenInfo = ({
     throw new Error(t('error.loadingData'))
   }
 
-  const supply = useRecoilValue(nativeSupplySelector(denom))
+  const supply = useRecoilValue(nativeSupplySelector({ denom }))
   const governanceTokenInfo: TokenInfoResponse = {
     decimals,
     name: nativeTokenLabel(denom),
     symbol: nativeTokenLabel(denom),
-    total_supply: supply,
+    total_supply: supply.toString(),
   }
 
   const tokenUri = nativeTokenLogoURI(denom)

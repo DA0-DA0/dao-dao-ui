@@ -1,5 +1,6 @@
 import { selectorFamily } from 'recoil'
 
+import { WithChainId } from '@dao-dao/tstypes'
 import {
   ClaimsResponse,
   GetConfigResponse,
@@ -20,18 +21,18 @@ import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
-import { cosmWasmClientSelector } from '../chain'
+import { cosmWasmClientForChainSelector } from '../chain'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-}
+}>
 
 const queryClient = selectorFamily<Cw20StakeQueryClient, QueryClientParams>({
   key: 'cw20StakeQueryClient',
   get:
-    ({ contractAddress }) =>
+    ({ contractAddress, chainId }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       return new Cw20StakeQueryClient(client, contractAddress)
     },
 })

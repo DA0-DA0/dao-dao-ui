@@ -4,7 +4,7 @@ import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  CwCoreV1Selectors,
+  CwdCoreV2Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
 import {
@@ -54,7 +54,7 @@ const makeUseTransformToCosmos: WithIsWallet<UseTransformToCosmos<SpendData>> =
         ? // Cannot yet query for wallet's cw20 addresses.
           constSelector([])
         : // Get DAO's cw20 addresses.
-          CwCoreV1Selectors.allCw20TokenListSelector({
+          CwdCoreV2Selectors.allCw20TokenListSelector({
             contractAddress: coreAddress,
           })
     )
@@ -188,14 +188,14 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
 const makeComponent: WithIsWallet<ActionComponent> = (isWallet) =>
   function Component(props) {
     const nativeBalances = useRecoilValue(
-      nativeBalancesSelector(props.coreAddress)
+      nativeBalancesSelector({ address: props.coreAddress })
     )
     const cw20AddressesAndBalances = useRecoilValue(
       isWallet
         ? // Cannot yet query for wallet's cw20 addresses.
           constSelector([])
         : // Get DAO's cw20 addresses and ballances.
-          CwCoreV1Selectors.allCw20BalancesSelector({
+          CwdCoreV2Selectors.allCw20BalancesSelector({
             contractAddress: props.coreAddress,
           })
     )

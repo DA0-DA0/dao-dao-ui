@@ -1,5 +1,6 @@
 import { selectorFamily } from 'recoil'
 
+import { WithChainId } from '@dao-dao/tstypes'
 import {
   ClaimsResponse,
   DaoResponse,
@@ -16,11 +17,11 @@ import {
 } from '../../../clients/CwdVotingNativeStaked'
 import { signingCosmWasmClientAtom } from '../../atoms'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
-import { cosmWasmClientSelector } from '../chain'
+import { cosmWasmClientForChainSelector } from '../chain'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-}
+}>
 
 export const queryClient = selectorFamily<
   CwdVotingNativeStakedQueryClient,
@@ -28,9 +29,9 @@ export const queryClient = selectorFamily<
 >({
   key: 'cwdVotingNativeStakedQueryClient',
   get:
-    ({ contractAddress }) =>
+    ({ contractAddress, chainId }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       return new CwdVotingNativeStakedQueryClient(client, contractAddress)
     },
 })

@@ -1,5 +1,6 @@
 import { CHAIN_BECH32_PREFIX, CI, FEATURED_DAOS_URL } from '@dao-dao/utils'
 
+// TODO: Store these locally in the repo.
 export const getFeaturedDaoAddresses = async (): Promise<string[]> => {
   const featuredDaos: {
     href: string

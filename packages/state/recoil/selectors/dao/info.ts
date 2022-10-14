@@ -5,6 +5,7 @@ import {
   ContractVersion,
   DaoCardInfo,
   DaoCardInfoLazyData,
+  WithChainId,
 } from '@dao-dao/tstypes'
 import {
   ConfigResponse as CwCoreV1ConfigResponse,
@@ -16,6 +17,7 @@ import {
 } from '@dao-dao/tstypes/contracts/CwdCore.v2'
 import { DaoDropdownInfo } from '@dao-dao/ui'
 import {
+  CHAIN_ID,
   CWCOREV1_CONTRACT_NAME,
   CWCOREV2_CONTRACT_NAME,
   getFallbackImage,
@@ -31,33 +33,41 @@ import { daoTvlSelector } from '../price'
 import { cwCoreProposalModulesSelector } from '../proposal'
 
 export const daoDropdownInfoSelector: (
-  coreAddress: string
+  params: WithChainId<{ coreAddress: string }>
 ) => RecoilValueReadOnly<DaoDropdownInfo> = selectorFamily({
   key: 'daoDropdownInfo',
   get:
-    (coreAddress) =>
+    ({ coreAddress, chainId }) =>
     ({ get }) => {
-      const version = get(contractVersionSelector(coreAddress))
+      const version = get(
+        contractVersionSelector({
+          contractAddress: coreAddress,
+          chainId,
+        })
+      )
       const config =
         version === ContractVersion.V0_1_0
           ? get(
               CwCoreV1Selectors.configSelector({
                 contractAddress: coreAddress,
+                chainId,
               })
             )
           : get(
               CwdCoreV2Selectors.configSelector({
                 contractAddress: coreAddress,
+                chainId,
                 params: [],
               })
             )
 
-      const subdaoAddresses: string[] =
+      const subDaoAddresses: string[] =
         version === ContractVersion.V0_1_0
           ? []
           : get(
               CwdCoreV2Selectors.listAllSubDaosSelector({
                 contractAddress: coreAddress,
+                chainId,
               })
             ).map(({ addr }) => addr)
 
@@ -67,8 +77,11 @@ export const daoDropdownInfoSelector: (
         name: config.name,
         subdaos: get(
           waitForAll(
-            subdaoAddresses.map((subdaoAddress) =>
-              daoDropdownInfoSelector(subdaoAddress)
+            subDaoAddresses.map((subDaoAddress) =>
+              daoDropdownInfoSelector({
+                coreAddress: subDaoAddress,
+                chainId,
+              })
             )
           )
         ),
@@ -78,11 +91,11 @@ export const daoDropdownInfoSelector: (
 
 export const daoCardInfoSelector = selectorFamily<
   DaoCardInfo | undefined,
-  string
+  WithChainId<{ coreAddress: string }>
 >({
   key: 'daoCardInfo',
   get:
-    (coreAddress) =>
+    ({ coreAddress, chainId = CHAIN_ID }) =>
     ({ get }) => {
       const dumpedState:
         | CwCoreV1DumpStateResponse
@@ -90,6 +103,7 @@ export const daoCardInfoSelector = selectorFamily<
         | undefined = get(
         // Both v1 and v2 have a dump_state query.
         CwdCoreV2Selectors.dumpStateSelector({
+          chainId,
           contractAddress: coreAddress,
           params: [],
         })
@@ -108,7 +122,9 @@ export const daoCardInfoSelector = selectorFamily<
       const established =
         typeof created_timestamp === 'number'
           ? new Date(created_timestamp)
-          : get(contractInstantiateTimeSelector(coreAddress))
+          : get(
+              contractInstantiateTimeSelector({ address: coreAddress, chainId })
+            )
 
       // Get parent DAO if exists.
       let parentDao: DaoCardInfo['parentDao']
@@ -119,12 +135,14 @@ export const daoCardInfoSelector = selectorFamily<
         (get(
           isContractSelector({
             contractAddress: admin,
+            chainId,
             name: CWCOREV1_CONTRACT_NAME,
           })
         ) ||
           get(
             isContractSelector({
               contractAddress: admin,
+              chainId,
               name: CWCOREV2_CONTRACT_NAME,
             })
           ))
@@ -136,6 +154,7 @@ export const daoCardInfoSelector = selectorFamily<
           // Both v1 and v2 have a config query.
           CwdCoreV2Selectors.configSelector({
             contractAddress: admin,
+            chainId,
             params: [],
           })
         )
@@ -148,6 +167,7 @@ export const daoCardInfoSelector = selectorFamily<
       }
 
       return {
+        chainId,
         coreAddress,
         name: config.name,
         description: config.description,
@@ -162,30 +182,39 @@ export const daoCardInfoSelector = selectorFamily<
 
 export const daoCardInfoLazyDataSelector = selectorFamily<
   DaoCardInfoLazyData,
-  { coreAddress: string; walletAddress?: string }
+  WithChainId<{ coreAddress: string; walletAddress?: string }>
 >({
   key: 'daoCardInfoLazyData',
   get:
-    ({ coreAddress, walletAddress }) =>
+    ({ coreAddress, chainId, walletAddress }) =>
     ({ get }) => {
-      const tvl = get(daoTvlSelector(coreAddress))
+      const tvl = get(daoTvlSelector({ coreAddress, chainId }))
 
       const walletVotingWeight = walletAddress
         ? Number(
             get(
               CwdCoreV2Selectors.votingPowerAtHeightSelector({
                 contractAddress: coreAddress,
+                chainId,
                 params: [{ address: walletAddress }],
               })
             ).power
           )
         : 0
 
-      const proposalModules = get(cwCoreProposalModulesSelector(coreAddress))
+      const proposalModules = get(
+        cwCoreProposalModulesSelector({
+          coreAddress,
+          chainId,
+        })
+      )
       const proposalModuleCounts = get(
         waitForAll(
           proposalModules.map(({ address }) =>
-            proposalModuleAdapterProposalCountSelector(address)
+            proposalModuleAdapterProposalCountSelector({
+              proposalModuleAddress: address,
+              chainId,
+            })
           )
         )
       ).filter(Boolean) as number[]
@@ -201,19 +230,27 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
     },
 })
 
-export const subDaoCardInfosSelector = selectorFamily<DaoCardInfo[], string>({
+export const subDaoCardInfosSelector = selectorFamily<
+  DaoCardInfo[],
+  WithChainId<{ coreAddress: string }>
+>({
   key: 'subDaoCardInfos',
   get:
-    (contractAddress) =>
+    ({ coreAddress: contractAddress, chainId }) =>
     ({ get }) => {
       const subdaos = get(
         CwdCoreV2Selectors.listAllSubDaosSelector({
           contractAddress,
+          chainId,
         })
       )
 
       return get(
-        waitForAll(subdaos.map(({ addr }) => daoCardInfoSelector(addr)))
+        waitForAll(
+          subdaos.map(({ addr }) =>
+            daoCardInfoSelector({ coreAddress: addr, chainId })
+          )
+        )
       ).filter(Boolean) as DaoCardInfo[]
     },
 })

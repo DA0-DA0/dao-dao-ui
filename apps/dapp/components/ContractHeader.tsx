@@ -14,7 +14,7 @@ import {
 const ContractHeaderInternal = () => {
   const { coreAddress, name, description, imageUrl } = useDaoInfoContext()
   const establishedDate = useRecoilValueLoadable(
-    contractInstantiateTimeSelector(coreAddress)
+    contractInstantiateTimeSelector({ address: coreAddress })
   )
 
   return (

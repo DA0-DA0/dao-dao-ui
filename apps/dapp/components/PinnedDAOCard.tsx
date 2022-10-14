@@ -28,11 +28,15 @@ const InnerPinnedDAOCard = ({ address }: PinnedDAOCardProps) => {
   const config = useRecoilValue(
     CwCoreV1Selectors.configSelector({ contractAddress: address })
   )
-  const nativeBalance = useRecoilValue(nativeBalanceSelector(address)).amount
+  const nativeBalance = useRecoilValue(
+    nativeBalanceSelector({ address })
+  ).amount
   const { walletVotingWeight, totalVotingWeight } = useVotingModule(address, {
     fetchMembership: true,
   })
-  const proposalModules = useRecoilValue(cwCoreProposalModulesSelector(address))
+  const proposalModules = useRecoilValue(
+    cwCoreProposalModulesSelector({ coreAddress: address })
+  )
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
   const pinned = isPinned(address)

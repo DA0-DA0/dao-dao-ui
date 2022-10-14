@@ -91,7 +91,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
 
 const Component: ActionComponent = (props) => {
   const nativeBalances = useRecoilValue(
-    nativeBalancesSelector(props.coreAddress)
+    nativeBalancesSelector({ address: props.coreAddress })
   )
 
   return (

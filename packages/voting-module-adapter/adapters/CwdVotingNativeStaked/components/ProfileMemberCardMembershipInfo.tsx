@@ -123,8 +123,8 @@ export const ProfileMemberCardMembershipInfo = ({
     t,
   ])
 
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
-  const blocksPerYear = useRecoilValue(blocksPerYearSelector)
+  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
+  const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
 
   const unstakingTasks: UnstakingTask[] = [
     ...claimsPending.map(({ amount, release_at }) => ({

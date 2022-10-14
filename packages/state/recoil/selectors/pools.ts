@@ -19,7 +19,7 @@ export type TokenInfoWithReward = TokenInfo & {
   rewards_address: string
 }
 
-export interface PoolEntityType {
+export interface JunoswapPoolEntityType {
   pool_id: string
   pool_assets: [TokenInfo, TokenInfo]
   swap_address: string
@@ -27,22 +27,24 @@ export interface PoolEntityType {
   rewards_tokens: TokenInfoWithReward[]
 }
 
-export interface PoolsListQueryResponse {
+export interface JunoswapPoolsListQueryResponse {
   name: string
   base_token: TokenInfo
   logoURI: string
   keywords: string[]
   tags: Record<string, { name: string; description: string }>
   timestamp: string
-  pools: PoolEntityType[]
+  pools: JunoswapPoolEntityType[]
 }
 
-export const poolsListSelector = selector<PoolsListQueryResponse | undefined>({
-  key: 'poolsList',
+export const junoswapPoolsListSelector = selector<
+  JunoswapPoolsListQueryResponse | undefined
+>({
+  key: 'junoswapPoolsList',
   get: async () => {
     try {
-      const poolsList = await fetch(POOLS_LIST_URL)
-      return (await poolsList.json()) as PoolsListQueryResponse
+      const junoswapPoolsList = await fetch(POOLS_LIST_URL)
+      return (await junoswapPoolsList.json()) as JunoswapPoolsListQueryResponse
     } catch {
       return undefined
     }

@@ -42,16 +42,18 @@ export interface UseWalletProfileReturn {
   backupProfileImage: string | undefined
 }
 
-export const useWalletProfile = (): UseWalletProfileReturn => {
+export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
   const { signingCosmWasmClient, address, publicKey, walletClient } =
-    useWallet()
+    useWallet(chainId)
 
   // Fetch wallet balance.
   const {
     state: walletNativeBalanceState,
     contents: walletNativeBalanceContents,
   } = useRecoilValueLoadable(
-    address ? nativeBalanceSelector(address) : constSelector(undefined)
+    address
+      ? nativeBalanceSelector({ address, chainId })
+      : constSelector(undefined)
   )
   const walletBalance =
     walletNativeBalanceState === 'hasValue' && walletNativeBalanceContents
@@ -66,7 +68,9 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
     state: walletStakedNativeBalanceState,
     contents: walletStakedNativeBalanceContents,
   } = useRecoilValueLoadable(
-    address ? nativeDelegatedBalanceSelector(address) : constSelector(undefined)
+    address
+      ? nativeDelegatedBalanceSelector({ address, chainId })
+      : constSelector(undefined)
   )
   const walletStakedBalance =
     walletStakedNativeBalanceState === 'hasValue' &&
@@ -96,6 +100,7 @@ export const useWalletProfile = (): UseWalletProfileReturn => {
   // Get wallet profile from API.
   const { profile: walletProfile, backupProfileImage } = useProfile({
     hexPublicKey: publicKey?.hex,
+    chainId,
   })
 
   const [updatingNonce, setUpdatingNonce] = useState<number>()

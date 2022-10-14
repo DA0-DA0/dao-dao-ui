@@ -1,6 +1,6 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily } from 'recoil'
 
-import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
+import { WithChainId } from '@dao-dao/tstypes'
 import {
   AdminResponse,
   ConfigResponse,
@@ -17,12 +17,7 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/tstypes/contracts/CwCore.v1'
-import {
-  CwdVotingCw20StakedAdapter,
-  matchAdapter,
-} from '@dao-dao/voting-module-adapter'
 
-import { Cw20BaseSelectors, CwdVotingCw20StakedSelectors } from '.'
 import {
   CwCoreV1Client as ExecuteClient,
   CwCoreV1QueryClient as QueryClient,
@@ -31,18 +26,18 @@ import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
-import { cosmWasmClientSelector } from '../chain'
+import { cosmWasmClientForChainSelector } from '../chain'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-}
+}>
 
 const queryClient = selectorFamily<QueryClient, QueryClientParams>({
   key: 'cwCoreV0_1_0QueryClient',
   get:
-    ({ contractAddress }) =>
+    ({ contractAddress, chainId }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       return new QueryClient(client, contractAddress)
     },
 })
@@ -190,80 +185,6 @@ export const cw20TokenListSelector = selectorFamily<
     },
 })
 
-const CW20_TOKEN_LIST_LIMIT = 30
-export const allCw20TokenListSelector = selectorFamily<
-  Cw20TokenListResponse,
-  QueryClientParams
->({
-  key: 'cwCoreV0_1_0AllCw20TokenList',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      //! Check if has governance token, and add to list if necessary.
-      const votingModuleAddress = get(votingModuleSelector(queryClientParams))
-      // All `info` queries are the same, so just use core's info query.
-      const votingModuleInfo = votingModuleAddress
-        ? get(infoSelector({ contractAddress: votingModuleAddress }))
-        : undefined
-
-      let hasGovernanceToken
-      try {
-        hasGovernanceToken =
-          !!votingModuleInfo &&
-          matchAdapter(votingModuleInfo.info.contract)?.id ===
-            CwdVotingCw20StakedAdapter.id
-      } catch {
-        hasGovernanceToken = false
-      }
-      const governanceTokenAddress =
-        votingModuleAddress && hasGovernanceToken
-          ? get(
-              CwdVotingCw20StakedSelectors.tokenContractSelector({
-                contractAddress: votingModuleAddress,
-                params: [],
-              })
-            )
-          : undefined
-
-      //! Get all tokens.
-      let startAt: string | undefined
-
-      const tokenList: Cw20TokenListResponse = []
-      while (true) {
-        const response = await get(
-          cw20TokenListSelector({
-            ...queryClientParams,
-            params: [{ startAt, limit: CW20_TOKEN_LIST_LIMIT }],
-          })
-        )
-        if (!response.length) break
-
-        // Don't double-add last token since we set startAt to it for
-        // the next query.
-        tokenList.push(...response.slice(0, -1))
-        startAt = response[response.length - 1]
-
-        // If we have less than the limit of items, we've exhausted them.
-        if (response.length < CW20_TOKEN_LIST_LIMIT) {
-          // Add last token to the list since we ignored it.
-          tokenList.push(response[response.length - 1])
-          break
-        }
-      }
-
-      //! Add governance token if exists but missing from list.
-      if (
-        governanceTokenAddress &&
-        !tokenList.includes(governanceTokenAddress)
-      ) {
-        // Add to beginning of list.
-        tokenList.splice(0, 0, governanceTokenAddress)
-      }
-
-      return tokenList
-    },
-})
-
 export const cw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse,
   QueryClientParams & { params: Parameters<QueryClient['cw721TokenList']> }
@@ -275,44 +196,6 @@ export const cw721TokenListSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
 
       return await client.cw721TokenList(...params)
-    },
-})
-
-const CW721_TOKEN_LIST_LIMIT = 30
-export const allCw721TokenListSelector = selectorFamily<
-  Cw721TokenListResponse | undefined,
-  QueryClientParams
->({
-  key: 'cwCoreV0_1_0AllCw721TokenList',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      let startAt: string | undefined
-
-      const tokenList: Cw721TokenListResponse = []
-      while (true) {
-        const response = await get(
-          cw721TokenListSelector({
-            ...queryClientParams,
-            params: [{ startAt, limit: CW721_TOKEN_LIST_LIMIT }],
-          })
-        )
-        if (!response?.length) break
-
-        // Don't double-add last token since we set startAt to it for
-        // the next query.
-        tokenList.push(...response.slice(0, -1))
-        startAt = response[response.length - 1]
-
-        // If we have less than the limit of items, we've exhausted them.
-        if (response.length < CW721_TOKEN_LIST_LIMIT) {
-          // Add last token to the list since we ignored it.
-          tokenList.push(response[response.length - 1])
-          break
-        }
-      }
-
-      return tokenList
     },
 })
 
@@ -329,125 +212,6 @@ export const cw20BalancesSelector = selectorFamily<
       get(refreshWalletBalancesIdAtom(queryClientParams.contractAddress))
 
       return await client.cw20Balances(...params)
-    },
-})
-
-const CW20_BALANCES_LIMIT = 10
-export const allCw20BalancesSelector = selectorFamily<
-  Cw20BalancesResponse,
-  QueryClientParams
->({
-  key: 'cwCoreV0_1_0AllCw20Balances',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      //! Check if has governance token, and add to list if necessary.
-      const votingModuleAddress = get(votingModuleSelector(queryClientParams))
-      // All `info` queries are the same, so just use core's info query.
-      const votingModuleInfo = get(
-        infoSelector({ contractAddress: votingModuleAddress })
-      )
-
-      let hasGovernanceToken
-      try {
-        hasGovernanceToken =
-          matchAdapter(votingModuleInfo.info.contract)?.id ===
-          CwdVotingCw20StakedAdapter.id
-      } catch {
-        hasGovernanceToken = false
-      }
-      const governanceTokenAddress = hasGovernanceToken
-        ? get(
-            CwdVotingCw20StakedSelectors.tokenContractSelector({
-              contractAddress: votingModuleAddress,
-              params: [],
-            })
-          )
-        : undefined
-      const governanceTokenBalance = governanceTokenAddress
-        ? get(
-            Cw20BaseSelectors.balanceSelector({
-              contractAddress: governanceTokenAddress,
-              params: [{ address: queryClientParams.contractAddress }],
-            })
-          ).balance
-        : undefined
-
-      //! Get all balances.
-      let startAt: string | undefined
-
-      const balances: Cw20BalancesResponse = []
-      while (true) {
-        const response = await get(
-          cw20BalancesSelector({
-            ...queryClientParams,
-            params: [{ startAt, limit: CW20_BALANCES_LIMIT }],
-          })
-        )
-        if (!response.length) break
-
-        // Don't double-add last balance since we set startAt to it for
-        // the next query.
-        balances.push(...response.slice(0, -1))
-        startAt = response[response.length - 1].addr
-
-        // If we have less than the limit of items, we've exhausted them.
-        if (response.length < CW20_BALANCES_LIMIT) {
-          // Add last balance to the list since we ignored it.
-          balances.push(response[response.length - 1])
-          break
-        }
-      }
-
-      //! Add governance token balance if exists but missing from list.
-      if (
-        governanceTokenAddress &&
-        governanceTokenBalance &&
-        !balances.some(({ addr }) => addr === governanceTokenAddress)
-      ) {
-        // Add to beginning of list.
-        balances.splice(0, 0, {
-          addr: governanceTokenAddress,
-          balance: governanceTokenBalance,
-        })
-      }
-
-      return balances
-    },
-})
-
-export const cw20BalancesInfoSelector = selectorFamily<
-  { symbol: string; denom: string; amount: string; decimals: number }[],
-  string
->({
-  key: 'cwCoreV0_1_0Cw20BalancesInfo',
-  get:
-    (address) =>
-    async ({ get }) => {
-      const cw20List = get(
-        allCw20BalancesSelector({ contractAddress: address })
-      )
-
-      const cw20Info = get(
-        waitForAll(
-          cw20List.map(({ addr }) =>
-            Cw20BaseSelectors.tokenInfoSelector({
-              contractAddress: addr,
-              params: [],
-            })
-          )
-        )
-      ).filter(Boolean) as TokenInfoResponse[]
-
-      const cw20Tokens = cw20Info.map((info, idx) => {
-        return {
-          symbol: info.symbol,
-          denom: cw20List[idx].addr,
-          amount: cw20List[idx].balance,
-          decimals: info.decimals,
-        }
-      })
-      return cw20Tokens
     },
 })
 

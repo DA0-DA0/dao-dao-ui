@@ -50,7 +50,7 @@ export const useStakingInfo = ({
 
   // Claims
   const blockHeightLoadable = useCachedLoadable(
-    fetchClaims ? blockHeightSelector : undefined
+    fetchClaims ? blockHeightSelector({}) : undefined
   )
   const blockHeight =
     blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0

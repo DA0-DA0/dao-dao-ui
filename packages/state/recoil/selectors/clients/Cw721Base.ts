@@ -1,5 +1,6 @@
 import { selectorFamily } from 'recoil'
 
+import { WithChainId } from '@dao-dao/tstypes'
 import {
   AllNftInfoResponse,
   AllOperatorsResponse,
@@ -15,16 +16,11 @@ import {
 } from '@dao-dao/tstypes/contracts/Cw721Base'
 
 import { Cw721BaseQueryClient } from '../../../clients/Cw721Base'
-import {
-  cosmWasmClientSelector,
-  stargazeCosmWasmClientSelector,
-} from '../chain'
+import { cosmWasmClientForChainSelector } from '../chain'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-  // TODO: Generalize.
-  stargaze?: boolean
-}
+}>
 
 export const queryClient = selectorFamily<
   Cw721BaseQueryClient,
@@ -32,11 +28,9 @@ export const queryClient = selectorFamily<
 >({
   key: 'cw721BaseQueryClient',
   get:
-    ({ contractAddress, stargaze }) =>
+    ({ contractAddress, chainId }) =>
     ({ get }) => {
-      const client = stargaze
-        ? get(stargazeCosmWasmClientSelector)
-        : get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       return new Cw721BaseQueryClient(client, contractAddress)
     },
 })

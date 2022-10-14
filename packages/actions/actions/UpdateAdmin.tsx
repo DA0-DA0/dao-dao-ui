@@ -57,7 +57,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
 const Component: ActionComponent = (props) => {
   const [contract, setContract] = useState('')
 
-  const admin = useRecoilValueLoadable(contractAdminSelector(contract))
+  const admin = useRecoilValueLoadable(
+    contractAdminSelector({ contractAddress: contract })
+  )
 
   return (
     <StatelessUpdateAdminComponent

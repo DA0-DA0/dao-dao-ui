@@ -21,12 +21,13 @@ import { ConfigResponse as ConfigV1Response } from '@dao-dao/tstypes/contracts/C
 import { ConfigResponse as ConfigV2Response } from '@dao-dao/tstypes/contracts/CwdCore.v2'
 import { Loader, Logo } from '@dao-dao/ui'
 import {
-  CHAIN_RPC_ENDPOINT,
+  CHAIN_ID,
   CI,
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   cosmWasmClientRouter,
+  getRpcForChainId,
   parseContractVersion,
   processError,
   validateContractAddress,
@@ -101,7 +102,12 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     // Add to Sentry error tags if error occurs.
     let coreVersion: ContractVersion | undefined
     try {
-      const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
+      // TODO(multichain): Get this dynamically somehow.
+      const chainId = CHAIN_ID
+
+      const cwClient = await cosmWasmClientRouter.connect(
+        getRpcForChainId(chainId)
+      )
       const coreClient = new CwdCoreV2QueryClient(cwClient, coreAddress)
 
       const {
@@ -222,6 +228,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           description: overrideDescription ?? config.description,
           accentColor,
           serializedInfo: {
+            chainId,
             coreAddress,
             coreVersion,
             votingModuleAddress,

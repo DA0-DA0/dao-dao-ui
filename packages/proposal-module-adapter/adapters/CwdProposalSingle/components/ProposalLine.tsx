@@ -27,14 +27,14 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
   } = useProposalModuleAdapterOptions()
 
   const proposalModuleVersion = useRecoilValue(
-    contractVersionSelector(proposalModuleAddress)
+    contractVersionSelector({ contractAddress: proposalModuleAddress })
   )
   const proposal = useProposal()
 
   const { canVote, vote } = useWalletVoteInfo()
 
-  const blocksPerYear = useRecoilValue(blocksPerYearSelector)
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
+  const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
+  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
   const expirationDate = convertExpirationToDate(
     blocksPerYear,
     proposal.expiration,

@@ -1,5 +1,6 @@
 import { selectorFamily } from 'recoil'
 
+import { WithChainId } from '@dao-dao/tstypes'
 import {
   AdminResponse,
   HooksResponse,
@@ -9,11 +10,11 @@ import {
 } from '@dao-dao/tstypes/contracts/Cw4Group'
 
 import { Cw4GroupQueryClient } from '../../../clients/Cw4Group'
-import { cosmWasmClientSelector } from '../chain'
+import { cosmWasmClientForChainSelector } from '../chain'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-}
+}>
 
 export const queryClient = selectorFamily<
   Cw4GroupQueryClient,
@@ -21,9 +22,9 @@ export const queryClient = selectorFamily<
 >({
   key: 'cw4GroupQueryClient',
   get:
-    ({ contractAddress }) =>
+    ({ contractAddress, chainId }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       return new Cw4GroupQueryClient(client, contractAddress)
     },
 })
@@ -98,6 +99,8 @@ export const hooksSelector = selectorFamily<
       return await client.hooks(...params)
     },
 })
+
+///! Custom selectors
 
 const LIST_MEMBERS_LIMIT = 10
 export const listAllMembersSelector = selectorFamily<

@@ -22,6 +22,7 @@ import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/common/components/DaoPageWrapper
 export interface DaoInfo {
+  chainId: string
   coreAddress: string
   coreVersion: ContractVersion
   votingModuleAddress: string

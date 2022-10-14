@@ -39,6 +39,7 @@ import {
   useThemeContext,
 } from '@dao-dao/ui'
 import {
+  CHAIN_ID,
   CODE_ID_CONFIG,
   NATIVE_DENOM,
   V1_FACTORY_CONTRACT_ADDRESS,
@@ -386,7 +387,8 @@ export const CreateDaoForm = ({
 
               // Set card props to show modal.
               setCreatedDaoCardProps({
-                coreAddress: coreAddress,
+                chainId: CHAIN_ID,
+                coreAddress,
                 name,
                 description,
                 imageUrl: imageUrl || getFallbackImage(coreAddress),

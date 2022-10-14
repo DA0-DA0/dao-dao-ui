@@ -2,7 +2,11 @@ import { parseCoins } from '@cosmjs/proto-signing'
 import { IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { TokenCardInfo, TokenCardLazyStakingInfo } from '@dao-dao/tstypes'
+import {
+  TokenCardInfo,
+  TokenCardLazyStakingInfo,
+  WithChainId,
+} from '@dao-dao/tstypes'
 import { UnstakingTaskStatus } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
@@ -18,7 +22,7 @@ import {
 
 import {
   blockHeightTimestampSafeSelector,
-  cosmWasmClientSelector,
+  cosmWasmClientForChainSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
   nativeStakingInfoSelector,
@@ -29,21 +33,27 @@ import { usdcPerMacroTokenSelector } from '../price'
 
 export const treasuryTokenCardInfosSelector = selectorFamily<
   TokenCardInfo[],
-  string
+  WithChainId<{ coreAddress: string }>
 >({
   key: 'treasuryTokenCardInfos',
   get:
-    (coreAddress) =>
+    ({ coreAddress, chainId }) =>
     ({ get }) => {
-      const nativeBalances = get(nativeBalancesSelector(coreAddress))
+      const nativeBalances = get(
+        nativeBalancesSelector({ address: coreAddress, chainId })
+      )
       const cw20s = get(
-        CwdCoreV2Selectors.cw20BalancesInfoSelector(coreAddress)
+        CwdCoreV2Selectors.cw20BalancesInfoSelector({
+          contractAddress: coreAddress,
+          chainId,
+        })
       )
 
       //! Check if has native governance token, and set crown accordingly.
       const votingModuleAddress = get(
         CwdCoreV2Selectors.votingModuleSelector({
           contractAddress: coreAddress,
+          chainId,
           params: [],
         })
       )
@@ -51,6 +61,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
       const votingModuleInfo = get(
         CwdCoreV2Selectors.infoSelector({
           contractAddress: votingModuleAddress,
+          chainId,
           params: [],
         })
       )
@@ -63,6 +74,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
           nativeGovernanceTokenDenom = get(
             CwdVotingNativeStakedSelectors.getConfigSelector({
               contractAddress: votingModuleAddress,
+              chainId,
               params: [],
             })
           ).denom
@@ -85,8 +97,14 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             const hasStakingInfo =
               denom === NATIVE_DENOM &&
               // Check if anything staked.
-              Number(get(nativeDelegatedBalanceSelector(coreAddress)).amount) >
-                0
+              Number(
+                get(
+                  nativeDelegatedBalanceSelector({
+                    address: coreAddress,
+                    chainId,
+                  })
+                ).amount
+              ) > 0
 
             const info: TokenCardInfo = {
               // True if native token DAO and using this denom.
@@ -152,29 +170,31 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
 
 export const tokenCardLazyStakingInfoSelector = selectorFamily<
   TokenCardLazyStakingInfo | undefined,
-  {
+  WithChainId<{
     walletAddress: string
     denom: string
     tokenDecimals: number
     tokenSymbol: string
-  }
+  }>
 >({
   key: 'tokenCardLazyStakingInfo',
   get:
-    ({ walletAddress, denom, tokenDecimals, tokenSymbol }) =>
+    ({ walletAddress, denom, tokenDecimals, tokenSymbol, chainId }) =>
     ({ get }) => {
       // For now, stakingInfo only exists for native token, until ICA.
       if (denom !== NATIVE_DENOM) {
         return
       }
 
-      const nativeStakingInfo = get(nativeStakingInfoSelector(walletAddress))
+      const nativeStakingInfo = get(
+        nativeStakingInfoSelector({ address: walletAddress, chainId })
+      )
       if (!nativeStakingInfo) {
         return
       }
 
       const unstakingDurationSeconds = get(
-        nativeUnstakingDurationSecondsSelector
+        nativeUnstakingDurationSecondsSelector({})
       )
 
       return {
@@ -208,11 +228,11 @@ export const tokenCardLazyStakingInfoSelector = selectorFamily<
     },
 })
 
-type TreasuryTransactionsParams = {
+type TreasuryTransactionsParams = WithChainId<{
   address: string
   minHeight?: number
   maxHeight?: number
-}
+}>
 
 interface TreasuryTransaction {
   tx: IndexedTx
@@ -232,9 +252,9 @@ export const treasuryTransactionsSelector = selectorFamily<
 >({
   key: 'treasuryTransactions',
   get:
-    ({ address, minHeight, maxHeight }) =>
+    ({ address, minHeight, maxHeight, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
 
       const txs = await client.searchTx(
         {
@@ -248,7 +268,12 @@ export const treasuryTransactionsSelector = selectorFamily<
 
       const txDates = get(
         waitForAll(
-          txs.map(({ height }) => blockHeightTimestampSafeSelector(height))
+          txs.map(({ height }) =>
+            blockHeightTimestampSafeSelector({
+              blockHeight: height,
+              chainId,
+            })
+          )
         )
       )
 

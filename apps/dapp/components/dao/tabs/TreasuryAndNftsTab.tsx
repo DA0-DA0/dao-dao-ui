@@ -27,10 +27,10 @@ export const TreasuryAndNftsTab = () => {
   })
 
   const treasuryTokenCardInfosLoadable = useCachedLoadable(
-    treasuryTokenCardInfosSelector(daoInfo.coreAddress)
+    treasuryTokenCardInfosSelector({ coreAddress: daoInfo.coreAddress })
   )
   const nftCardInfosLoadable = useCachedLoadable(
-    nftCardInfosSelector(daoInfo.coreAddress)
+    nftCardInfosSelector({ coreAddress: daoInfo.coreAddress })
   )
 
   //! Loadable errors.

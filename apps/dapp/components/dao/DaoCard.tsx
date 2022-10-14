@@ -20,6 +20,7 @@ export const DaoCard = (props: DaoCardInfo) => {
   const lazyDataLoadable = useCachedLoadable(
     daoCardInfoLazyDataSelector({
       coreAddress: props.coreAddress,
+      chainId: props.chainId,
       walletAddress,
     })
   )

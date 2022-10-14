@@ -37,7 +37,7 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
   const { coreAddress } = useDaoInfoContext()
 
   const treasuryUsdcValueLoading = loadableToLoadingData(
-    useCachedLoadable(daoTvlSelector(coreAddress)),
+    useCachedLoadable(daoTvlSelector({ coreAddress })),
     -1
   )
 

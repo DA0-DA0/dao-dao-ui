@@ -21,7 +21,7 @@ import {
   CwCoreV1Selectors,
   blockHeightSelector,
   blocksPerYearSelector,
-  cosmWasmClientSelector,
+  cosmWasmClientForChainSelector,
   nativeDenomBalanceSelector,
   refreshWalletBalancesIdAtom,
   useCachedLoadable,
@@ -131,7 +131,7 @@ export const NewProposal = ({
       ? depositInfo.denom.native
       : undefined
 
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
+  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
   const blockHeight =
     blockHeightLoadable.state === 'hasValue'
       ? blockHeightLoadable.contents
@@ -212,8 +212,10 @@ export const NewProposal = ({
     sender: walletAddress ?? '',
   })
 
-  const blocksPerYear = useRecoilValue(blocksPerYearSelector)
-  const cosmWasmClient = useRecoilValue(cosmWasmClientSelector)
+  const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
+  const cosmWasmClient = useRecoilValue(
+    cosmWasmClientForChainSelector(undefined)
+  )
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
       async (newProposalData: NewProposalData) => {

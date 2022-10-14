@@ -15,6 +15,7 @@ const Template: ComponentStory<typeof DaoCard> = (args) => (
 )
 
 export const makeProps = (): DaoCardProps => ({
+  chainId: 'uni-5',
   coreAddress: 'daoCoreAddress',
   name: 'Modern DAO',
   description:

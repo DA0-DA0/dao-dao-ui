@@ -1,11 +1,12 @@
 import { selectorFamily } from 'recoil'
 
 import {
-  cosmWasmClientSelector,
+  cosmWasmClientForChainSelector,
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
+import { WithChainId } from '@dao-dao/tstypes'
 import {
   ConfigResponse,
   DaoResponse,
@@ -26,9 +27,9 @@ import {
   CwdProposalSingleV2QueryClient,
 } from './CwdProposalSingle.v2.client'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-}
+}>
 
 export const queryClient = selectorFamily<
   CwdProposalSingleV2QueryClient,
@@ -36,9 +37,9 @@ export const queryClient = selectorFamily<
 >({
   key: 'cwdProposalSingleV2QueryClient',
   get:
-    ({ contractAddress }) =>
+    ({ contractAddress, chainId }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       return new CwdProposalSingleV2QueryClient(client, contractAddress)
     },
 })
@@ -110,44 +111,6 @@ export const listProposalsSelector = selectorFamily<
       return await client.listProposals(...params)
     },
 })
-
-// Custom
-export const listAllProposalsSelector = selectorFamily<
-  ListProposalsResponse,
-  QueryClientParams & {
-    params: Parameters<CwdProposalSingleV2QueryClient['listProposals']>
-  }
->({
-  key: 'cwdProposalSingleV2ListAllProposals',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      get(refreshProposalsIdAtom)
-
-      const allProposals: ListProposalsResponse['proposals'] = []
-      const limit = params[0].limit ?? 30
-      let { startAfter } = params[0]
-
-      while (true) {
-        const { proposals } = get(
-          listProposalsSelector({
-            ...queryClientParams,
-            params: [{ startAfter, limit }],
-          })
-        )
-
-        allProposals.push(...proposals)
-
-        // If we did not get all proposals we asked for, we're at the end.
-        if (proposals.length < limit) break
-        // Start after last proposal we got.
-        startAfter = proposals[proposals.length - 1].id
-      }
-
-      return { proposals: allProposals }
-    },
-})
-
 export const reverseProposalsSelector = selectorFamily<
   ReverseProposalsResponse,
   QueryClientParams & {
@@ -290,5 +253,43 @@ export const infoSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       return await client.info(...params)
+    },
+})
+
+///! Custom selectors
+
+export const listAllProposalsSelector = selectorFamily<
+  ListProposalsResponse,
+  QueryClientParams & {
+    params: Parameters<CwdProposalSingleV2QueryClient['listProposals']>
+  }
+>({
+  key: 'cwdProposalSingleV2ListAllProposals',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      get(refreshProposalsIdAtom)
+
+      const allProposals: ListProposalsResponse['proposals'] = []
+      const limit = params[0].limit ?? 30
+      let { startAfter } = params[0]
+
+      while (true) {
+        const { proposals } = get(
+          listProposalsSelector({
+            ...queryClientParams,
+            params: [{ startAfter, limit }],
+          })
+        )
+
+        allProposals.push(...proposals)
+
+        // If we did not get all proposals we asked for, we're at the end.
+        if (proposals.length < limit) break
+        // Start after last proposal we got.
+        startAfter = proposals[proposals.length - 1].id
+      }
+
+      return { proposals: allProposals }
     },
 })

@@ -61,7 +61,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
 const Component: ActionComponent = (props) => {
   const [contract, setContract] = useState('')
 
-  const admin = useRecoilValueLoadable(contractAdminSelector(contract))
+  const admin = useRecoilValueLoadable(
+    contractAdminSelector({ contractAddress: contract })
+  )
 
   return (
     <StatelessMigrateContractComponent

@@ -1,7 +1,10 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { cosmWasmClientSelector, isContractSelector } from '@dao-dao/state'
-import { ProposalModuleAdapter } from '@dao-dao/tstypes'
+import {
+  cosmWasmClientForChainSelector,
+  isContractSelector,
+} from '@dao-dao/state'
+import { ProposalModuleAdapter, WithChainId } from '@dao-dao/tstypes'
 
 import { getAdapters } from '../core'
 
@@ -9,18 +12,19 @@ import { getAdapters } from '../core'
 // proposal module adapters.
 export const proposalModuleAdapterSelector = selectorFamily<
   ProposalModuleAdapter | undefined,
-  string
+  WithChainId<{ proposalModuleAddress: string }>
 >({
   key: 'proposalModuleAdapter',
   get:
-    (contractAddress) =>
+    ({ proposalModuleAddress, chainId }) =>
     ({ get }) =>
       getAdapters().find(({ contractNames }) =>
         get(
           waitForAll(
             contractNames.map((contractName) =>
               isContractSelector({
-                contractAddress,
+                contractAddress: proposalModuleAddress,
+                chainId,
                 name: contractName,
               })
             )
@@ -33,21 +37,21 @@ export const proposalModuleAdapterSelector = selectorFamily<
 // proposal module adapters.
 export const proposalModuleAdapterProposalCountSelector = selectorFamily<
   number | undefined,
-  string
+  WithChainId<{ proposalModuleAddress: string }>
 >({
   key: 'proposalModuleAdapterProposalCount',
   get:
-    (contractAddress) =>
+    (params) =>
     async ({ get }) => {
-      const adapter = get(proposalModuleAdapterSelector(contractAddress))
+      const adapter = get(proposalModuleAdapterSelector(params))
       if (!adapter) {
         return
       }
 
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(params.chainId))
       try {
         return await client.queryContractSmart(
-          contractAddress,
+          params.proposalModuleAddress,
           adapter.queries.proposalCount
         )
       } catch (err) {

@@ -88,8 +88,8 @@ export const ProposalStatusAndInfo = ({
   })
 
   const executionTxHash = useProposalExecutionTxHash()
-  const blocksPerYear = useRecoilValue(blocksPerYearSelector)
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
+  const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
+  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
   const expirationDate = convertExpirationToDate(
     blocksPerYear,
     proposal.expiration,

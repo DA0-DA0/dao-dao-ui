@@ -1,9 +1,10 @@
 import { selectorFamily } from 'recoil'
 
 import {
-  cosmWasmClientSelector,
+  cosmWasmClientForChainSelector,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
+import { WithChainId } from '@dao-dao/tstypes'
 import {
   ConfigResponse,
   DaoResponse,
@@ -16,9 +17,9 @@ import {
   CwPreProposeSingleQueryClient,
 } from './CwdPreProposeSingle.client'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-}
+}>
 
 export const queryClient = selectorFamily<
   CwPreProposeSingleQueryClient,
@@ -26,9 +27,9 @@ export const queryClient = selectorFamily<
 >({
   key: 'cwPreProposeSingleQueryClient',
   get:
-    ({ contractAddress }) =>
+    ({ contractAddress, chainId }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       return new CwPreProposeSingleQueryClient(client, contractAddress)
     },
 })

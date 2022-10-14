@@ -1,6 +1,7 @@
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import { constSelector, selectorFamily, waitForAll } from 'recoil'
 
-import { NftCardInfo } from '@dao-dao/tstypes'
+import { NftCardInfo, WithChainId } from '@dao-dao/tstypes'
 import {
   ContractInfoResponse,
   NftInfoResponse,
@@ -86,18 +87,20 @@ interface NativeStargazeCollectionInfo {
 
 export const nativeAndStargazeCollectionInfoSelector = selectorFamily<
   NativeStargazeCollectionInfo,
-  string
+  WithChainId<{ nativeCollectionAddress: string }>
 >({
   key: 'nativeAndStargazeCollectionInfo',
   get:
-    (nativeCollectionAddress: string) =>
+    ({ nativeCollectionAddress, chainId }) =>
     ({ get }) => {
       const nativeCollectionInfo = get(
         Cw721BaseSelectors.contractInfoSelector({
           contractAddress: nativeCollectionAddress,
+          chainId,
           params: [],
         })
       )
+
       // TODO: Identify IBC'd Stargaze NFT collections better.
       const stargazeCollectionAddress = nativeCollectionInfo.name.startsWith(
         'wasm.'
@@ -108,7 +111,7 @@ export const nativeAndStargazeCollectionInfoSelector = selectorFamily<
         ? get(
             Cw721BaseSelectors.contractInfoSelector({
               contractAddress: stargazeCollectionAddress,
-              stargaze: true,
+              chainId: ChainInfoID.Stargaze1,
               params: [],
             })
           )
@@ -130,21 +133,28 @@ export const nativeAndStargazeCollectionInfoSelector = selectorFamily<
     },
 })
 
-export const nftCardInfosSelector = selectorFamily<NftCardInfo[], string>({
+export const nftCardInfosSelector = selectorFamily<
+  NftCardInfo[],
+  WithChainId<{ coreAddress: string }>
+>({
   key: 'nftCardInfos',
   get:
-    (coreAddress) =>
+    ({ coreAddress, chainId }) =>
     async ({ get }) => {
       const nftCollectionAddresses = get(
         CwdCoreV2Selectors.allCw721TokenListSelector({
           contractAddress: coreAddress,
+          chainId,
         })
       )
 
       const nftCollectionInfos = get(
         waitForAll(
           nftCollectionAddresses.map((collectionAddress) =>
-            nativeAndStargazeCollectionInfoSelector(collectionAddress)
+            nativeAndStargazeCollectionInfoSelector({
+              nativeCollectionAddress: collectionAddress,
+              chainId,
+            })
           )
         )
       )
@@ -154,6 +164,7 @@ export const nftCardInfosSelector = selectorFamily<NftCardInfo[], string>({
           nftCollectionAddresses.map((collectionAddress) =>
             Cw721BaseSelectors.cw721BaseAllTokensForOwnerSelector({
               contractAddress: collectionAddress,
+              chainId,
               owner: coreAddress,
             })
           )
@@ -175,6 +186,7 @@ export const nftCardInfosSelector = selectorFamily<NftCardInfo[], string>({
               tokenIds.map((tokenId) =>
                 Cw721BaseSelectors.nftInfoSelector({
                   contractAddress: collectionInfo.native.address,
+                  chainId,
                   params: [{ tokenId }],
                 })
               )

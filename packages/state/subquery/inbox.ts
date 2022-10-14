@@ -94,7 +94,7 @@ interface GetOpenProposalsWithWalletVotesVariables {
 export const useInbox = () => {
   const { address: walletAddress } = useWallet()
 
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector)
+  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
   const blockHeight =
     blockHeightLoadable.state === 'hasValue'
       ? blockHeightLoadable.contents

@@ -8,7 +8,7 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { Cw721BaseSelectors, CwCoreV1Selectors } from '@dao-dao/state'
+import { Cw721BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
 import {
   Action,
   ActionComponent,
@@ -48,7 +48,7 @@ const Component: ActionComponent = (props) => {
   )
 
   const existingTokenAddresses = useRecoilValue(
-    CwCoreV1Selectors.allCw721TokenListSelector({
+    CwdCoreV2Selectors.allCw721TokenListSelector({
       contractAddress: props.coreAddress,
     })
   )

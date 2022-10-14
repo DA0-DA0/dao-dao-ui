@@ -1,69 +1,77 @@
 import { selectorFamily } from 'recoil'
 
-import { ContractVersion } from '@dao-dao/tstypes'
-import {
-  CHAIN_BECH32_PREFIX,
-  isValidContractAddress,
-  parseContractVersion,
-} from '@dao-dao/utils'
+import { ContractVersion, WithChainId } from '@dao-dao/tstypes'
+import { parseContractVersion } from '@dao-dao/utils'
 
 import {
   blockHeightTimestampSafeSelector,
-  cosmWasmClientSelector,
+  cosmWasmClientForChainSelector,
 } from './chain'
-import { CwCoreV1Selectors } from './clients'
-import { infoSelector } from './clients/CwdCore.v2'
+import { CwdCoreV2Selectors } from './clients'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
-  string
+  WithChainId<{ address: string }>
 >({
   key: 'contractInstantiateTime',
   get:
-    (address: string) =>
+    ({ address, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
 
       const events = await client.searchTx({
         tags: [{ key: 'instantiate._contract_address', value: address }],
       })
       if (events.length === 0) return
 
-      return get(blockHeightTimestampSafeSelector(events[0].height))
+      return get(
+        blockHeightTimestampSafeSelector({
+          blockHeight: events[0].height,
+          chainId,
+        })
+      )
     },
 })
 
-export const contractAdminSelector = selectorFamily<string | undefined, string>(
-  {
-    key: 'contractAdmin',
-    get:
-      (address: string) =>
-      async ({ get }) => {
-        const client = get(cosmWasmClientSelector)
+export const contractAdminSelector = selectorFamily<
+  string | undefined,
+  WithChainId<{ contractAddress: string }>
+>({
+  key: 'contractAdmin',
+  get:
+    ({ contractAddress, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientForChainSelector(chainId))
 
-        try {
-          const contract = await client.getContract(address)
-          return contract.admin
-        } catch (_) {
-          return undefined
-        }
-      },
-  }
-)
+      try {
+        const contract = await client.getContract(contractAddress)
+        return contract.admin
+      } catch (_) {
+        return undefined
+      }
+    },
+})
 
-export const contractVersionSelector = selectorFamily<ContractVersion, string>({
+export const contractVersionSelector = selectorFamily<
+  ContractVersion,
+  WithChainId<{ contractAddress: string }>
+>({
   key: 'contractVersion',
   get:
-    (contractAddress) =>
+    ({ contractAddress, chainId }) =>
     async ({ get }) => {
       const info = get(
-        CwCoreV1Selectors.infoSelector({ contractAddress: contractAddress })
+        CwdCoreV2Selectors.infoSelector({
+          contractAddress,
+          chainId,
+          params: [],
+        })
       ).info
 
       const version = parseContractVersion(info.version)
       if (!version) {
         throw new Error(
-          `Failed parsing contract (${contractAddress}) version "${info.version}".`
+          `Failed parsing contract (${contractAddress}, chain: ${chainId}) version "${info.version}".`
         )
       }
 
@@ -73,21 +81,23 @@ export const contractVersionSelector = selectorFamily<ContractVersion, string>({
 
 export const isContractSelector = selectorFamily<
   boolean,
-  { contractAddress: string; name: string }
+  WithChainId<{ contractAddress: string; name: string }>
 >({
   key: 'isContract',
   get:
-    ({ contractAddress, name }) =>
+    ({ contractAddress, name, chainId }) =>
     async ({ get }) => {
-      if (!isValidContractAddress(contractAddress, CHAIN_BECH32_PREFIX)) {
-        return false
-      }
-
       try {
         // All InfoResponses are the same, so just use core's.
         const {
           info: { contract },
-        } = get(infoSelector({ contractAddress, params: [] }))
+        } = get(
+          CwdCoreV2Selectors.infoSelector({
+            contractAddress,
+            chainId,
+            params: [],
+          })
+        )
 
         return contract.includes(name)
       } catch (err) {

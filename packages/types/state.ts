@@ -12,3 +12,7 @@ export type CachedLoadable<T> =
       state: 'hasError'
       contents: any
     }
+
+export type WithChainId<T> = T & {
+  chainId?: string
+}

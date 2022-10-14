@@ -34,7 +34,7 @@ export const ProposalInfoCard = ({
   const proposal = useProposal()
 
   const proposalModuleVersion = useRecoilValue(
-    contractVersionSelector(proposalModuleAddress)
+    contractVersionSelector({ contractAddress: proposalModuleAddress })
   )
 
   const executionTxHash = useProposalExecutionTxHash()
@@ -66,7 +66,7 @@ export const ProposalInfoCard = ({
   )?.vote?.vote
 
   const createdHeight = useRecoilValue(
-    blockHeightTimestampSafeSelector(proposal.start_height)
+    blockHeightTimestampSafeSelector({ blockHeight: proposal.start_height })
   )?.toLocaleString()
 
   return (

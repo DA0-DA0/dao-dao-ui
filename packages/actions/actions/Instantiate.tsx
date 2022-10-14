@@ -104,7 +104,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
 
 const Component: ActionComponent = (props) => {
   const nativeBalances = useRecoilValue(
-    nativeBalancesSelector(props.coreAddress)
+    nativeBalancesSelector({ address: props.coreAddress })
   )
 
   const {
@@ -114,7 +114,7 @@ const Component: ActionComponent = (props) => {
 
   const txEvents = useRecoilValue(
     executionTxHash
-      ? transactionEventsSelector(executionTxHash)
+      ? transactionEventsSelector({ txHash: executionTxHash })
       : constSelector(undefined)
   )
 

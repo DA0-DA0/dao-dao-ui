@@ -1,5 +1,6 @@
 import { selectorFamily } from 'recoil'
 
+import { WithChainId } from '@dao-dao/tstypes'
 import {
   DaoResponse,
   GroupContractResponse,
@@ -13,11 +14,11 @@ import {
   CwdVotingCw4QueryClient,
 } from '../../../clients/CwdVotingCw4'
 import { signingCosmWasmClientAtom } from '../../atoms'
-import { cosmWasmClientSelector } from '../chain'
+import { cosmWasmClientForChainSelector } from '../chain'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-}
+}>
 
 export const queryClient = selectorFamily<
   CwdVotingCw4QueryClient,
@@ -25,9 +26,9 @@ export const queryClient = selectorFamily<
 >({
   key: 'cwdVotingCw4QueryClient',
   get:
-    ({ contractAddress }) =>
+    ({ contractAddress, chainId }) =>
     ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       return new CwdVotingCw4QueryClient(client, contractAddress)
     },
 })

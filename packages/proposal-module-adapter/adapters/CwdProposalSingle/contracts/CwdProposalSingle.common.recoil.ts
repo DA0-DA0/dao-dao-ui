@@ -1,7 +1,7 @@
 import { selectorFamily } from 'recoil'
 
 import { contractVersionSelector } from '@dao-dao/state'
-import { ContractVersion } from '@dao-dao/tstypes'
+import { ContractVersion, WithChainId } from '@dao-dao/tstypes'
 import {
   ConfigResponse as ConfigV2Response,
   GetVoteResponse as GetVoteV2Response,
@@ -40,9 +40,9 @@ import {
   reverseProposalsSelector as reverseProposalsV1Selector,
 } from './CwProposalSingle.v1.recoil'
 
-type QueryClientParams = {
+type QueryClientParams = WithChainId<{
   contractAddress: string
-}
+}>
 
 export const getVoteSelector = selectorFamily<
   GetVoteV1Response | GetVoteV2Response,
@@ -60,7 +60,10 @@ export const getVoteSelector = selectorFamily<
     (params) =>
     async ({ get }) => {
       const proposalModuleVersion = get(
-        contractVersionSelector(params.contractAddress)
+        contractVersionSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+        })
       )
       const selector =
         proposalModuleVersion === ContractVersion.V0_1_0
@@ -88,7 +91,10 @@ export const listVotesSelector = selectorFamily<
     (params) =>
     async ({ get }) => {
       const proposalModuleVersion = get(
-        contractVersionSelector(params.contractAddress)
+        contractVersionSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+        })
       )
       const selector =
         proposalModuleVersion === ContractVersion.V0_1_0
@@ -114,7 +120,10 @@ export const proposalSelector = selectorFamily<
     (params) =>
     async ({ get }) => {
       const proposalModuleVersion = get(
-        contractVersionSelector(params.contractAddress)
+        contractVersionSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+        })
       )
       const selector =
         proposalModuleVersion === ContractVersion.V0_1_0
@@ -134,7 +143,10 @@ export const configSelector = selectorFamily<
     (params) =>
     async ({ get }) => {
       const proposalModuleVersion = get(
-        contractVersionSelector(params.contractAddress)
+        contractVersionSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+        })
       )
       const selector =
         proposalModuleVersion === ContractVersion.V0_1_0
@@ -161,7 +173,10 @@ export const reverseProposalsSelector = selectorFamily<
     (params) =>
     async ({ get }) => {
       const proposalModuleVersion = get(
-        contractVersionSelector(params.contractAddress)
+        contractVersionSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+        })
       )
       const selector =
         proposalModuleVersion === ContractVersion.V0_1_0
@@ -183,7 +198,10 @@ export const proposalCountSelector = selectorFamily<
     (params) =>
     async ({ get }) => {
       const proposalModuleVersion = get(
-        contractVersionSelector(params.contractAddress)
+        contractVersionSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+        })
       )
       const selector =
         proposalModuleVersion === ContractVersion.V0_1_0
@@ -212,7 +230,10 @@ export const listAllProposalsSelector = selectorFamily<
     (params) =>
     async ({ get }) => {
       const proposalModuleVersion = get(
-        contractVersionSelector(params.contractAddress)
+        contractVersionSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+        })
       )
       const selector =
         proposalModuleVersion === ContractVersion.V0_1_0
