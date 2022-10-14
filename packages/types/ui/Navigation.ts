@@ -17,4 +17,5 @@ export interface NavigationProps {
   hideInbox?: boolean
   compact: boolean
   setCompact: (compact: boolean) => void
+  mountedInBrowser: boolean
 }

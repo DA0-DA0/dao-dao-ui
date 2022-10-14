@@ -292,6 +292,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
           pinnedDaos: loadableToLoadingData(pinnedDaoDropdownInfosLoadable, []),
           compact,
           setCompact,
+          mountedInBrowser,
         }}
         rightSidebarProps={{
           wallet: <SidebarWallet />,

@@ -60,6 +60,7 @@ export const Navigation = ({
   hideInbox = false,
   compact,
   setCompact,
+  mountedInBrowser,
 }: NavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
@@ -73,13 +74,13 @@ export const Navigation = ({
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
-    // Initialize compact to prevent hydration errors and let navigation animate
-    // opening on load.
-    true
+    // Initialize not compact to prevent hydration errors (since it takes at
+    // least 1 render to update this).
+    false
   )
   useEffect(() => {
     // Only run in browser.
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !mountedInBrowser) {
       return
     }
 
@@ -91,10 +92,9 @@ export const Navigation = ({
     window.addEventListener('resize', updateForceCompact)
     // Clean up on umount
     return () => window.removeEventListener('resize', updateForceCompact)
-  }, [])
+  }, [mountedInBrowser])
 
-  // Automatically force compact on small screens and force non-compact when
-  // mobile since the nav will be full width.
+  // If forceCompact is set to a boolean, override compact.
   if (forceCompact !== undefined) {
     compact = forceCompact
   }
