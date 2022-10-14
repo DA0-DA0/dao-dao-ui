@@ -252,14 +252,17 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
       <StatelessAppLayout
         context={appLayoutContext}
         navigationProps={{
-          inboxCount: inbox.loading
-            ? {
-                loading: true,
-              }
-            : {
-                loading: false,
-                data: inbox.proposalCount,
-              },
+          inboxCount:
+            inbox.loading ||
+            // Prevent hydration errors by loading until mounted.
+            !mountedInBrowser
+              ? {
+                  loading: true,
+                }
+              : {
+                  loading: false,
+                  data: inbox.proposalCount,
+                },
           setCommandModalVisible: () => setCommandModalVisible(true),
           // TODO: Add real data back in when pools indexer works.
           tokenPrices: {
@@ -289,7 +292,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
           //       ],
           //     },
           version: '2.0',
-          pinnedDaos: loadableToLoadingData(pinnedDaoDropdownInfosLoadable, []),
+          pinnedDaos: mountedInBrowser
+            ? loadableToLoadingData(pinnedDaoDropdownInfosLoadable, [])
+            : // Prevent hydration errors by loading until mounted.
+              { loading: true },
           compact,
           setCompact,
           mountedInBrowser,
