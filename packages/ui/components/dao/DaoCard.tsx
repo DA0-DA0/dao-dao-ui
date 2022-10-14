@@ -10,7 +10,7 @@ import {
   ParentDaoArrow,
 } from '@dao-dao/icons'
 import { DaoCardProps } from '@dao-dao/tstypes/ui/DaoCard'
-import { formatDate } from '@dao-dao/utils'
+import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
 import { IconButton, IconButtonLink } from '../IconButton'
 import { LinkWrapper } from '../LinkWrapper'
@@ -21,6 +21,7 @@ import { DaoImage } from './DaoImage'
 export * from '@dao-dao/tstypes/ui/DaoCard'
 
 export const DaoCard = ({
+  chainId,
   coreAddress,
   name,
   description,
@@ -35,6 +36,7 @@ export const DaoCard = ({
   className,
   onMouseOver,
   onMouseLeave,
+  hidePin,
 }: DaoCardProps) => {
   const { t } = useTranslation()
 
@@ -44,7 +46,7 @@ export const DaoCard = ({
         'relative flex h-[328px] w-full flex-col items-center justify-between rounded-md bg-background-secondary py-7 px-6 ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus',
         className
       )}
-      href={`/dao/${coreAddress}`}
+      href={`${getUrlBaseForChainId(chainId)}/dao/${coreAddress}`}
       onMouseLeave={onMouseLeave}
       onMouseOver={onMouseOver}
     >
@@ -69,19 +71,21 @@ export const DaoCard = ({
           />
         )}
         <div className="flex flex-row items-center gap-3">
-          <IconButton
-            Icon={DaoCardPin}
-            className={clsx({
-              'text-icon-secondary': !pinned,
-              'text-icon-interactive-active': pinned,
-            })}
-            onClick={(event) => {
-              // Don't click on DAO card.
-              event.preventDefault()
-              onPin()
-            }}
-            variant="ghost"
-          />
+          {!hidePin && (
+            <IconButton
+              Icon={DaoCardPin}
+              className={clsx({
+                'text-icon-secondary': !pinned,
+                'text-icon-interactive-active': pinned,
+              })}
+              onClick={(event) => {
+                // Don't click on DAO card.
+                event.preventDefault()
+                onPin()
+              }}
+              variant="ghost"
+            />
+          )}
 
           {showIsMember && !lazyData.loading && lazyData.data.isMember && (
             <Tooltip title={t('info.youAreMember')}>

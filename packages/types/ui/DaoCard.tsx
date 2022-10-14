@@ -27,6 +27,7 @@ export interface DaoCardInfo {
 export interface DaoCardProps extends DaoCardInfo {
   pinned: boolean
   onPin: () => void
+  hidePin?: boolean
   onMouseOver?: () => void
   onMouseLeave?: () => void
 }

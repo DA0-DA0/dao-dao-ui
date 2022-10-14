@@ -1,6 +1,5 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { StargateClient } from '@cosmjs/stargate'
-import { ChainInfoMap } from '@noahsaso/cosmodal'
 
 type ChainClientRoutes<T> = {
   [rpcEndpoint: string]: T
@@ -63,10 +62,3 @@ export const cosmWasmClientRouter = new ChainClientRouter({
 export const stargateClientRouter = new ChainClientRouter({
   handleConnect: (rpcEndpoint: string) => StargateClient.connect(rpcEndpoint),
 })
-
-export const getRpcForChainId = (chainId: string): string => {
-  if (!(chainId in ChainInfoMap)) {
-    throw new Error(`Unknown chain ID "${chainId}"`)
-  }
-  return ChainInfoMap[chainId as keyof typeof ChainInfoMap].rpc
-}

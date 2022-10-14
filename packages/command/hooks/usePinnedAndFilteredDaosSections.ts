@@ -47,6 +47,8 @@ export const usePinnedAndFilteredDaosSections = ({
         []
       ).map(
         ({ coreAddress, name, imageUrl }): CommandModalDaoInfo => ({
+          // Nothing specific to set here yet, just uses default.
+          chainId: undefined,
           coreAddress,
           name,
           imageUrl: imageUrl || getFallbackImage(coreAddress),

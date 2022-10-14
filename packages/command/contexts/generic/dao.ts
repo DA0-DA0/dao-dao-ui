@@ -1,6 +1,12 @@
-import { CopyAll, HomeOutlined, InboxOutlined } from '@mui/icons-material'
+import {
+  Check,
+  CopyAll,
+  HomeOutlined,
+  InboxOutlined,
+} from '@mui/icons-material'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
-import toast from 'react-hot-toast'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useVotingModule } from '@dao-dao/state'
@@ -9,40 +15,65 @@ import {
   CommandModalContextSection,
   CommandModalDaoInfo,
 } from '@dao-dao/tstypes/command'
+import { CHAIN_ID, getUrlBaseForChainId } from '@dao-dao/utils'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo
-}> = ({ dao: { coreAddress, name, imageUrl } }) => {
+}> = ({ dao: { chainId = CHAIN_ID, coreAddress, name, imageUrl } }) => {
   const useSections = () => {
     const { t } = useTranslation()
     const router = useRouter()
 
-    const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
+    const { status } = useWallet(chainId)
+    const { isMember } = useVotingModule(coreAddress, {
+      chainId,
+      fetchMembership: true,
+    })
+
+    const [copied, setCopied] = useState(false)
+    // Debounce clearing copied.
+    useEffect(() => {
+      const timeout = setTimeout(() => setCopied(false), 2000)
+      return () => clearTimeout(timeout)
+    }, [copied])
 
     const actionsSection: CommandModalContextSection<
       { href: string } | { onChoose: () => void }
     > = {
       name: t('title.actions'),
       onChoose: (item) =>
-        'href' in item ? router.push(item.href) : item.onChoose(),
+        'href' in item
+          ? // Open remote links in new tab.
+            item.href.startsWith('https://')
+            ? window.open(item.href, '_blank')
+            : // Navigate to local links.
+              router.push(item.href)
+          : item.onChoose(),
       items: [
         {
           name: t('button.goToDaoPage'),
           Icon: HomeOutlined,
-          href: `/dao/${coreAddress}`,
+          href: `${getUrlBaseForChainId(chainId)}/dao/${coreAddress}`,
         },
         {
           name: t('button.createAProposal'),
           Icon: InboxOutlined,
-          href: `/dao/${coreAddress}/proposals/create`,
+          href: `${getUrlBaseForChainId(
+            chainId
+          )}/dao/${coreAddress}/proposals/create`,
           disabled: !isMember,
+          loading:
+            status === WalletConnectionStatus.Initializing ||
+            status === WalletConnectionStatus.Connecting,
         },
         {
-          name: t('button.copyDaoAddress'),
-          Icon: CopyAll,
+          name: copied
+            ? t('button.copiedDaoAddress')
+            : t('button.copyDaoAddress'),
+          Icon: copied ? Check : CopyAll,
           onChoose: () => {
             navigator.clipboard.writeText(coreAddress)
-            toast.success(t('info.copiedToClipboard'))
+            setCopied(true)
           },
         },
       ],

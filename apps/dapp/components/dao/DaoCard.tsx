@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/state'
 import { DaoCardInfo } from '@dao-dao/tstypes/ui/DaoCard'
 import { DaoCard as StatelessDaoCard } from '@dao-dao/ui'
-import { loadableToLoadingData } from '@dao-dao/utils'
+import { CHAIN_ID, loadableToLoadingData } from '@dao-dao/utils'
 
 export const DaoCard = (props: DaoCardInfo) => {
   const { address: walletAddress } = useWallet()
@@ -35,6 +35,11 @@ export const DaoCard = (props: DaoCardInfo) => {
   return (
     <StatelessDaoCard
       {...props}
+      hidePin={
+        // Don't allow pinning if on different chain. This prevents pinning
+        // featured mainnet DAOs on testnet.
+        props.chainId !== CHAIN_ID
+      }
       lazyData={loadableToLoadingData(lazyDataLoadable, {
         isMember: false,
         tokenBalance: NaN,

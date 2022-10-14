@@ -1,6 +1,7 @@
 export * from './hooks'
 export * from './validation'
 
+export * from './chain'
 export * from './claims'
 export * from './error'
 export * from './client'

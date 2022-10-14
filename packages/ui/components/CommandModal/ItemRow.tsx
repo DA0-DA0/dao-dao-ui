@@ -4,18 +4,15 @@ import { useTranslation } from 'react-i18next'
 
 import { CommandModalContextSectionItem } from '@dao-dao/tstypes/command'
 
-import { Loader } from '../Loader'
-
 export interface ItemRowProps {
   item: CommandModalContextSectionItem
   selected: boolean
   onClick: () => void
-  loading: boolean
   className?: string
 }
 
 export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
-  function ItemRow({ item, selected, onClick, loading, className }, ref) {
+  function ItemRow({ item, selected, onClick, className }, ref) {
     const { t } = useTranslation()
 
     return (
@@ -25,6 +22,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
           !item.disabled &&
             'cursor-pointer hover:bg-background-interactive-hover',
           !item.disabled && selected && 'bg-background-interactive-hover',
+          item.loading && 'animate-pulse',
           className
         )}
         onClick={item.disabled ? undefined : onClick}
@@ -34,8 +32,8 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
           <div
             aria-label={t('info.daosLogo')}
             className={clsx(
-              'h-6 w-6 rounded-full bg-cover bg-center',
-              item.disabled && 'opacity-50'
+              'h-6 w-6 rounded-full bg-cover bg-center transition',
+              item.disabled ? 'opacity-50' : 'opacity-100'
             )}
             role="img"
             style={{
@@ -45,7 +43,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
         ) : (
           <item.Icon
             className={clsx(
-              '!h-6 !w-6',
+              '!h-6 !w-6 transition',
               item.disabled
                 ? 'text-icon-interactive-disabled'
                 : 'text-icon-primary'
@@ -55,18 +53,12 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
 
         <p
           className={clsx(
-            'link-text font-medium',
+            'link-text font-medium transition',
             item.disabled ? 'text-text-interactive-disabled' : 'text-text-body'
           )}
         >
           {item.name}
         </p>
-
-        {loading && (
-          <div className="flex grow flex-row items-center justify-end">
-            <Loader fill={false} size={20} />
-          </div>
-        )}
       </div>
     )
   }

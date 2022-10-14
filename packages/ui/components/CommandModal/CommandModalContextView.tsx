@@ -40,12 +40,19 @@ export const CommandModalContextView = ({
     }))
   )
 
+  // Flat index in list of all items above.
   const [selectedIndex, setSelectedIndex] = useState(0)
   const selectedItemWithSection: ItemWithSection | undefined =
     itemsWithSection[selectedIndex]
 
-  // Reset selection to first row if data changes.
-  useEffect(() => setSelectedIndex(0), [sections])
+  // Cap selection at last item if items length changes.
+  useEffect(
+    () =>
+      setSelectedIndex((selected) =>
+        Math.min(selected, itemsWithSection.length - 1)
+      ),
+    [itemsWithSection.length]
+  )
 
   // Navigate on keypress.
   const handleKeyPress = useCallback(
@@ -163,7 +170,6 @@ export const CommandModalContextView = ({
                   }
                   // loading={navigatingFromHit === hit}
                   item={item}
-                  loading={false}
                   onClick={() => onChoose(item)}
                   ref={
                     // Scroll into view when selected.

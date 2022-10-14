@@ -13,6 +13,7 @@ export type CommandModalContextSectionItem<
 > = ExtraItemProperties & {
   name: string
   disabled?: boolean
+  loading?: boolean
 } & (
     | {
         imageUrl: string
@@ -57,6 +58,7 @@ export type CommandModalContextMaker<MakerOptions extends {} = {}> = (
 ) => CommandModalContext
 
 export interface CommandModalDaoInfo {
+  chainId: string | undefined
   coreAddress: string
   name: string
   imageUrl: string

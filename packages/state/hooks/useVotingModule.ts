@@ -1,9 +1,10 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { CwCoreV1Selectors } from '../recoil/selectors'
+import { CwdCoreV2Selectors } from '../recoil/selectors'
 
 interface UseVotingModuleOptions {
+  chainId?: string
   fetchMembership?: boolean
 }
 
@@ -16,25 +17,31 @@ interface UseVotingModuleResponse {
 
 export const useVotingModule = (
   coreAddress: string,
-  { fetchMembership }: UseVotingModuleOptions = {}
+  { chainId, fetchMembership }: UseVotingModuleOptions = {}
 ): UseVotingModuleResponse => {
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress } = useWallet(chainId)
 
   const votingModuleAddress = useRecoilValue(
-    CwCoreV1Selectors.votingModuleSelector({ contractAddress: coreAddress })
+    CwdCoreV2Selectors.votingModuleSelector({
+      contractAddress: coreAddress,
+      chainId,
+      params: [],
+    })
   )
   const _walletVotingWeight = useRecoilValue(
     fetchMembership && walletAddress
-      ? CwCoreV1Selectors.votingPowerAtHeightSelector({
+      ? CwdCoreV2Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
+          chainId,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined)
   )?.power
   const _totalVotingWeight = useRecoilValue(
     fetchMembership
-      ? CwCoreV1Selectors.totalPowerAtHeightSelector({
+      ? CwdCoreV2Selectors.totalPowerAtHeightSelector({
           contractAddress: coreAddress,
+          chainId,
           params: [{}],
         })
       : constSelector(undefined)
