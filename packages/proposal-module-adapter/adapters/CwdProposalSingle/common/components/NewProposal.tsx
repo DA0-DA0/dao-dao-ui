@@ -303,6 +303,11 @@ export const NewProposal = ({
                 )
           }
 
+          if (proposeFunds?.length) {
+            // TODO: Make this not flicker load by turning balances into cached loadables?
+            refreshBalances()
+          }
+
           const proposalNumber = Number(
             findAttribute(response.logs, 'wasm', 'proposal_id').value
           )
