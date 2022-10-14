@@ -207,7 +207,7 @@
     "contractLabel": "Contract Label",
     "cw20Token": "CW20 Token",
     "daoDescriptionPlaceholder": "Give your DAO a description...",
-    "daoName": "DAO name",
+    "daoName": "Name",
     "daoNamePlaceholder": "Give your DAO a name",
     "defaultTierName": "Core contributors",
     "description": "Description",
