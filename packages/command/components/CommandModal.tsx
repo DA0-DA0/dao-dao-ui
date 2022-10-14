@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
@@ -19,6 +19,7 @@ export const CommandModal = ({
 }: CommandModalProps) => {
   const { t } = useTranslation()
   const [filter, setFilter] = useState('')
+  const searchBarRef = useRef<HTMLInputElement>(null)
 
   const [contexts, _setContexts] = useState<CommandModalContext[]>([])
 
@@ -30,6 +31,8 @@ export const CommandModal = ({
   const setContexts: typeof _setContexts = useCallback((...args) => {
     setContextChangeCount((count) => count + 1)
     _setContexts(...args)
+    // Focus input when adding new context.
+    searchBarRef.current?.focus()
   }, [])
 
   // Reset with new root context whenever makeRootContext changes. Also
@@ -77,6 +80,7 @@ export const CommandModal = ({
         closeCurrentContext={closeCurrentContext}
         contexts={contexts}
         filter={filter}
+        searchBarRef={searchBarRef}
         setFilter={setFilter}
         {...props}
       >

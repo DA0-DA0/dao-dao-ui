@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, RefObject } from 'react'
 
 import { CommandModalContext } from '../command'
 
@@ -10,4 +10,5 @@ export interface CommandModalProps {
   closeCurrentContext: () => void
   filter: string
   setFilter: (filter: string) => void
+  searchBarRef: RefObject<HTMLInputElement>
 }

@@ -49,7 +49,6 @@ Default.args = {
       useSections: () => [],
     },
   ],
-  goBack: () => alert('back'),
 }
 Default.parameters = {
   design: {
@@ -85,5 +84,4 @@ Loading.args = {
       useSections: () => [],
     },
   ],
-  goBack: () => alert('back'),
 }
