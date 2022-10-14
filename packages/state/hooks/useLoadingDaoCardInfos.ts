@@ -1,12 +1,11 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
-import { useEffect, useState } from 'react'
 
 import { DaoCardInfo, LoadingData } from '@dao-dao/tstypes'
 import { CHAIN_ID, getFallbackImage } from '@dao-dao/utils'
 
-import { usePinnedDaos } from '.'
+import featuredDaos from '../featured_daos.json'
 import { GetDaosApiName, useGetDaos } from '../subquery/daos/info'
-import { getFeaturedDaoAddresses } from '../utils'
+import { usePinnedDaos } from './usePinnedDaos'
 
 export interface UseLoadingDaoCardInfosOptions {
   apiName?: GetDaosApiName
@@ -49,26 +48,17 @@ export const useLoadingDaoCardInfos = (
       }
 }
 
-export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
-  DaoCardInfo[]
-> => {
-  const [featuredAddresses, setFeaturedAddresses] = useState([] as string[])
-  useEffect(() => {
-    getFeaturedDaoAddresses().then(setFeaturedAddresses).catch(console.error)
-  }, [])
-
-  return useLoadingDaoCardInfos(
-    featuredAddresses,
+export const useLoadingFeaturedDaoCardInfos = (): LoadingData<DaoCardInfo[]> =>
+  useLoadingDaoCardInfos(
+    featuredDaos.map(({ coreAddress }) => coreAddress),
     // Featured DAOs only exist on mainnet, so use mainnet indexer and chain ID.
     {
       apiName: 'mainnetDaos',
       chainId: ChainInfoID.Juno1,
     }
   )
-}
 
 export const useLoadingPinnedDaoCardInfos = (): LoadingData<DaoCardInfo[]> => {
   const { pinnedAddresses } = usePinnedDaos()
-
   return useLoadingDaoCardInfos(pinnedAddresses)
 }
