@@ -168,7 +168,6 @@ export const CommandModalContextView = ({
                       ? 'pointer-events-none !bg-background-interactive-disabled'
                       : undefined
                   }
-                  // loading={navigatingFromHit === hit}
                   item={item}
                   onClick={() => onChoose(item)}
                   ref={

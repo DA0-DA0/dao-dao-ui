@@ -28,18 +28,6 @@ export const CommandModal = ({
     }
   }, [searchBarRef, visible])
 
-  // TODO: Re-implement navigation loading and preventing going back contexts.
-  // Go back to home when input is empty and backspace is pressed, unless
-  // currently navigating as a result of choosing a hit, in which case we don't
-  // want the user to get confused since the loader will disappear.
-  // const onEmptyBack = useCallback(() => {
-  //   if (navigatingFromHit) {
-  //     return
-  //   }
-
-  //   setCommandState({ type: CommandStateType.Home })
-  // }, [navigatingFromHit, setCommandState])
-
   return (
     <Modal
       containerClassName="p-0 w-full max-w-[550px] h-[450px] max-h-[90vh] border"

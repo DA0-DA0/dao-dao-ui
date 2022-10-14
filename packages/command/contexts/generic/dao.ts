@@ -37,32 +37,45 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
       return () => clearTimeout(timeout)
     }, [copied])
 
+    const [navigatingHref, setNavigatingHref] = useState<string>()
+    const daoPageHref = `${getUrlBaseForChainId(chainId)}/dao/${coreAddress}`
+    const createProposalHref = `${getUrlBaseForChainId(
+      chainId
+    )}/dao/${coreAddress}/proposals/create`
+
     const actionsSection: CommandModalContextSection<
       { href: string } | { onChoose: () => void }
     > = {
       name: t('title.actions'),
-      onChoose: (item) =>
-        'href' in item
-          ? // Open remote links in new tab.
-            item.href.startsWith('https://')
-            ? window.open(item.href, '_blank')
-            : // Navigate to local links.
-              router.push(item.href)
-          : item.onChoose(),
+      onChoose: (item) => {
+        if ('onChoose' in item) {
+          return item.onChoose()
+        }
+
+        //! 'href' in item
+        // Open remote links in new tab.
+        if (item.href.startsWith('https://')) {
+          window.open(item.href, '_blank')
+        } else {
+          // Navigate to local links.
+          router.push(item.href)
+          setNavigatingHref(item.href)
+        }
+      },
       items: [
         {
           name: t('button.goToDaoPage'),
           Icon: HomeOutlined,
-          href: `${getUrlBaseForChainId(chainId)}/dao/${coreAddress}`,
+          href: daoPageHref,
+          loading: navigatingHref === daoPageHref,
         },
         {
           name: t('button.createAProposal'),
           Icon: InboxOutlined,
-          href: `${getUrlBaseForChainId(
-            chainId
-          )}/dao/${coreAddress}/proposals/create`,
+          href: createProposalHref,
           disabled: !isMember,
           loading:
+            navigatingHref === createProposalHref ||
             status === WalletConnectionStatus.Initializing ||
             status === WalletConnectionStatus.Connecting,
         },
