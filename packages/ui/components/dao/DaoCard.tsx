@@ -71,6 +71,12 @@ export const DaoCard = ({
           />
         )}
         <div className="flex flex-row items-center gap-3">
+          {showIsMember && !lazyData.loading && lazyData.data.isMember && (
+            <Tooltip title={t('info.youAreMember')}>
+              <Check className="!h-4 !w-4 text-icon-secondary" />
+            </Tooltip>
+          )}
+
           {!hidePin && (
             <IconButton
               Icon={DaoCardPin}
@@ -85,12 +91,6 @@ export const DaoCard = ({
               }}
               variant="ghost"
             />
-          )}
-
-          {showIsMember && !lazyData.loading && lazyData.data.isMember && (
-            <Tooltip title={t('info.youAreMember')}>
-              <Check className="h-4 w-4 text-icon-secondary" />
-            </Tooltip>
           )}
         </div>
       </div>
