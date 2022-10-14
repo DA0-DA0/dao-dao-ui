@@ -137,7 +137,15 @@ export const CreateDaoForm = ({
       return
     }
 
-    const absoluteUrl = new URL(imageUrl, document.baseURI).href
+    let absoluteUrl
+    try {
+      absoluteUrl = new URL(imageUrl, document.baseURI).href
+    } catch (err) {
+      // If errored on URL creation, invalid URL, not ready yet.
+      setAccentColor(undefined)
+      return
+    }
+
     fetch(`https://fac.withoutdoing.com/${absoluteUrl}`)
       .then((response) => response.text())
       // Only set color if appears to be valid color string.

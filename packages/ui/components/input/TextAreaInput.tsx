@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ComponentProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -12,7 +12,7 @@ import {
 export interface TextAreaInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
-> extends Omit<ComponentProps<'textarea'>, 'required'> {
+> extends Omit<ComponentPropsWithoutRef<'textarea'>, 'required'> {
   fieldName: FieldName
   register: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
@@ -40,7 +40,7 @@ export const TextAreaInput = <
   return (
     <textarea
       className={clsx(
-        'secondary-text w-full rounded-md bg-transparent py-3 px-4 text-text-body ring-1 transition placeholder:text-text-tertiary focus:outline-none focus:ring-2',
+        'secondary-text w-full appearance-none rounded-md bg-transparent py-3 px-4 text-text-body ring-1 transition placeholder:text-text-tertiary focus:outline-none focus:ring-2',
         error
           ? 'ring-border-interactive-error'
           : 'ring-border-primary focus:ring-border-interactive-focus',

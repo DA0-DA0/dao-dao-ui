@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ComponentProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -12,7 +12,7 @@ import {
 export interface SelectInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
-> extends Omit<ComponentProps<'select'>, 'required'> {
+> extends Omit<ComponentPropsWithoutRef<'select'>, 'required'> {
   fieldName?: FieldName
   register?: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]

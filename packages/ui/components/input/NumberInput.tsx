@@ -1,6 +1,6 @@
 import { Add, Remove } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -15,7 +15,7 @@ import { IconButton, IconButtonProps } from '../IconButton'
 export interface NumberInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
-> extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
+> extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'required'> {
   fieldName?: FieldName
   register?: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
@@ -120,7 +120,7 @@ export const NumberInput = <
 
       <input
         className={clsx(
-          'ring-none secondary-text w-full grow border-none bg-transparent text-right text-text-body outline-none',
+          'ring-none secondary-text w-full grow appearance-none border-none bg-transparent text-right text-text-body outline-none',
           className,
           textClassName
         )}

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ComponentProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -12,7 +12,7 @@ import {
 export interface TextInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
-> extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
+> extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'required'> {
   fieldName?: FieldName
   register?: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
@@ -48,7 +48,7 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   return (
     <input
       className={clsx(
-        'secondary-text w-full bg-transparent text-text-body transition placeholder:text-text-tertiary focus:outline-none',
+        'secondary-text w-full appearance-none bg-transparent text-text-body transition placeholder:text-text-tertiary focus:outline-none',
         // Padding and outline
         !ghost && 'rounded-md py-3 px-4 ring-1 focus:ring-2',
         // Outline color
