@@ -3,13 +3,15 @@ import {
   CopyAll,
   HomeOutlined,
   InboxOutlined,
+  PushPin,
+  PushPinOutlined,
 } from '@mui/icons-material'
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useVotingModule } from '@dao-dao/state'
+import { usePinnedDaos, useVotingModule } from '@dao-dao/state'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,
@@ -29,6 +31,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
       chainId,
       fetchMembership: true,
     })
+
+    const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
+    const pinned = isPinned(coreAddress)
 
     const [copied, setCopied] = useState(false)
     // Debounce clearing copied.
@@ -89,6 +94,18 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             setCopied(true)
           },
         },
+        // Only allow pinning if on same chain. This prevents pinning featured
+        // mainnet DAOs on testnet.
+        ...(chainId === CHAIN_ID
+          ? [
+              {
+                name: pinned ? t('button.unfollow') : t('button.follow'),
+                Icon: pinned ? PushPin : PushPinOutlined,
+                onChoose: () =>
+                  pinned ? setUnpinned(coreAddress) : setPinned(coreAddress),
+              },
+            ]
+          : []),
       ],
     }
 
