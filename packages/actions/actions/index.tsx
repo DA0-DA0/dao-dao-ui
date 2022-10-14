@@ -15,6 +15,7 @@ import { stakeAction } from './Stake'
 import { updateAdminAction } from './UpdateAdmin'
 import { updateInfoAction } from './UpdateInfo'
 
+// TODO: Add SubDAO management actions.
 export const getDaoActions = (coreVersion: ContractVersion): Action[] =>
   [
     // TODO: Convert this into a more generalizable 'context' abstraction.
