@@ -46,9 +46,6 @@ export const USDC_SWAP_ADDRESS = process.env
   .NEXT_PUBLIC_USDC_SWAP_ADDRESS as string
 export const POOLS_LIST_URL = process.env.NEXT_PUBLIC_POOLS_LIST_URL as string
 
-export const FEATURED_DAOS_URL = process.env
-  .NEXT_PUBLIC_FEATURED_DAOS_URL as string
-
 export const CI = process.env.CI === 'true'
 
 // Code IDs
