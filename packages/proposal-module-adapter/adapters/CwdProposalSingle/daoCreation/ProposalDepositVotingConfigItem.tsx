@@ -47,7 +47,7 @@ export const ProposalDepositIcon = () => {
 export const ProposalDepositInput = ({
   newDao: { votingModuleAdapter },
   data: {
-    proposalDeposit: { enabled, amount, type, cw20Address, cw20TokenInfo },
+    proposalDeposit: { enabled, type, cw20Address, cw20TokenInfo },
   },
   register,
   setValue,
@@ -142,18 +142,6 @@ export const ProposalDepositInput = ({
                 containerClassName="grow"
                 error={errors?.proposalDeposit?.amount}
                 fieldName="proposalDeposit.amount"
-                onMinus={() =>
-                  setValue(
-                    'proposalDeposit.amount',
-                    Math.max(amount - 1, minimum)
-                  )
-                }
-                onPlus={() =>
-                  setValue(
-                    'proposalDeposit.amount',
-                    Math.max(amount + 1, minimum)
-                  )
-                }
                 register={register}
                 sizing="sm"
                 step={minimum}
