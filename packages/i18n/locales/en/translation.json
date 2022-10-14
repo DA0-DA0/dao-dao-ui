@@ -290,6 +290,9 @@
     "votingWeightPlaceholder": "Voting weight"
   },
   "format": {
+    "time": "{{value}} {{unit}}",
+    "timeAgo": "{{value}} {{unit}} ago",
+    "timeLeft": "{{value}} {{unit}} left",
     "token": "{{amount}} ${{symbol}}"
   },
   "info": {
@@ -469,8 +472,6 @@
     "supportsMarkdownFormat": "Supports Markdown format",
     "testnet": "Testnet",
     "tierMemberGovTokenAllocationTooltip": "This member will receive {{tokens}} ${{tokenSymbol}} when the DAO is created.",
-    "timeAgo": "{{value}} {{unit}} ago",
-    "timeLeft": "{{value}} {{unit}} left",
     "today": "today",
     "token": "token",
     "tokenDaoNotMemberInfoProposal": "You were not a member of {{daoName}} when this proposal was created, so you cannot vote on it. You will be able to vote on future proposals as long as you have ${{tokenSymbol}} staked at the time those proposals are created.",

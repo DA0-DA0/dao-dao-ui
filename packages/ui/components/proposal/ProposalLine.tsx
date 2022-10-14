@@ -12,7 +12,7 @@ export interface ProposalLineProps {
   proposalNumber: number
   proposalModuleVersion: ContractVersion
   title: string
-  expiration: string
+  expiration: ReactNode
   Status: ComponentType<{ dimmed?: boolean }>
   vote: ReactNode
   votingOpen: boolean

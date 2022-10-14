@@ -22,7 +22,7 @@ export const UnstakingLine = ({
   task: { status, amount, tokenSymbol, tokenDecimals, date },
   dateReplacement,
 }: UnstakingLineProps) => {
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter()
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
 
   const dateDisplay = date ? (
     status === UnstakingTaskStatus.Unstaking ? (

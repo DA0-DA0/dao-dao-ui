@@ -34,7 +34,7 @@ export const ProposalVotes = ({
 }: ProposalVotesProps) => {
   const { t } = useTranslation()
 
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter()
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
 
   const votesWithDate = votes
     .map((vote) => ({

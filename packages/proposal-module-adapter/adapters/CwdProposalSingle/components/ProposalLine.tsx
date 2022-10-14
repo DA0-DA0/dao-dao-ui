@@ -1,3 +1,4 @@
+import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
 
 import {
@@ -8,11 +9,8 @@ import {
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
 import { ProposalLine as StatelessProposalLine } from '@dao-dao/ui'
-import {
-  convertExpirationToDate,
-  dateToWdhms,
-  formatDate,
-} from '@dao-dao/utils'
+import { useTranslatedTimeDeltaFormatter } from '@dao-dao/ui/hooks'
+import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { BaseProposalLineProps } from '../../../types'
@@ -42,6 +40,8 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
   )
   const lastUpdated = new Date(Number(proposal.last_updated) / 1000000)
 
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
+
   return (
     <StatelessProposalLine
       Status={({ dimmed }) => (
@@ -49,7 +49,9 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
       )}
       expiration={
         (proposal.status === Status.Open
-          ? expirationDate && dateToWdhms(expirationDate)
+          ? expirationDate && (
+              <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
+            )
           : expirationDate && formatDate(expirationDate)) || ''
       }
       href={href}

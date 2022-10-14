@@ -12,6 +12,7 @@ import clsx from 'clsx'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
 
 import {
@@ -36,10 +37,10 @@ import {
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   useDaoInfoContext,
 } from '@dao-dao/ui'
+import { useTranslatedTimeDeltaFormatter } from '@dao-dao/ui/hooks'
 import {
   CHAIN_TXN_URL_PREFIX,
   convertExpirationToDate,
-  dateToWdhms,
   formatDate,
   formatPercentOf100,
   processError,
@@ -96,6 +97,8 @@ export const ProposalStatusAndInfo = ({
     blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
   )
 
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: false })
+
   const info: ProposalStatusAndInfoProps['info'] = [
     {
       Icon: ({ className }) => (
@@ -150,14 +153,18 @@ export const ProposalStatusAndInfo = ({
           {
             Icon: HourglassTopRounded,
             label:
+              proposal.status === Status.Open &&
               expirationDate.getTime() > Date.now()
                 ? t('title.timeLeft')
                 : t('info.completed'),
             Value: (props) => (
               <p {...props}>
-                {expirationDate.getTime() > Date.now()
-                  ? dateToWdhms(expirationDate)
-                  : formatDate(expirationDate)}
+                {proposal.status === Status.Open &&
+                expirationDate.getTime() > Date.now() ? (
+                  <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
+                ) : (
+                  formatDate(expirationDate)
+                )}
               </p>
             ),
           },

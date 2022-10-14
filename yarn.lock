@@ -3099,7 +3099,7 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-12.2.0.tgz#9f66664f9122ca555b96a5f2fc6e2af677bf801b"
   integrity sha512-OI14ozFLThEV3ey6jE47zrzSTV/6eIMsvbwozo+XfdWqOPwQ7X00YkRx4GVMKMC0rM44oGS2gmwMKYpe4EblnA==
 
-"@noahsaso/cosmodal@0.6.6":
+"@noahsaso/cosmodal@0.6.6", "@noahsaso/cosmodal@^0.6.6":
   version "0.6.6"
   resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.6.6.tgz#bac3e5e3cb98e022e83a01d3e4756b853ebb3e2a"
   integrity sha512-73P0nYwZs8xUa2aIrN0lD+ab4XHgedbDkUKn1inHMNEAgAEv5dAo6t8R1GDLTCl/4PdC0lWtQjxDVe6TO+0cIg==
