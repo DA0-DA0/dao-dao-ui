@@ -5,13 +5,12 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
 import { useSetRecoilState } from 'recoil'
 
-import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   useLoadingFeaturedDaoCardInfos,
   useLoadingPinnedDaoCardInfos,
 } from '@dao-dao/state'
-import { Home, PageLoader, ProfileDisconnectedCard } from '@dao-dao/ui'
+import { Home, ProfileDisconnectedCard } from '@dao-dao/ui'
 
 import { commandModalVisibleAtom } from '@/atoms'
 import { DaoCard, ProfileHomeCard } from '@/components'
@@ -26,24 +25,21 @@ const HomePage: NextPage = () => {
   const pinnedDaosLoading = useLoadingPinnedDaoCardInfos()
 
   return (
-    // Wait until we're mounted in the browser to display anything.
-    <SuspenseLoader fallback={<PageLoader />}>
-      <Home
-        connected={connected}
-        featuredDaosProps={{
-          DaoCard,
-          featuredDaos: featuredDaosLoading,
-        }}
-        pinnedDaosProps={{
-          DaoCard,
-          openSearch: () => setCommandModalVisible(true),
-          pinnedDaos: pinnedDaosLoading,
-        }}
-        rightSidebarContent={
-          connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
-        }
-      />
-    </SuspenseLoader>
+    <Home
+      connected={connected}
+      featuredDaosProps={{
+        DaoCard,
+        featuredDaos: featuredDaosLoading,
+      }}
+      pinnedDaosProps={{
+        DaoCard,
+        openSearch: () => setCommandModalVisible(true),
+        pinnedDaos: pinnedDaosLoading,
+      }}
+      rightSidebarContent={
+        connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
+      }
+    />
   )
 }
 
