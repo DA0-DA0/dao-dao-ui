@@ -15,11 +15,11 @@ import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
 
+import { ProfileDisplay } from '@dao-dao/common'
 import {
   blockHeightSelector,
   blocksPerYearSelector,
   useCachedLoadable,
-  useProfile,
   useVotingModule,
 } from '@dao-dao/state'
 import {
@@ -84,10 +84,6 @@ export const ProposalStatusAndInfo = ({
   const proposal = useProposal()
   const depositInfo = useDepositInfo()
 
-  const { profile: proposerProfile } = useProfile({
-    walletAddress: proposal.proposer,
-  })
-
   const executionTxHash = useProposalExecutionTxHash()
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
   const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
@@ -114,30 +110,10 @@ export const ProposalStatusAndInfo = ({
     {
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
-      Value: ({ className, ...props }) => (
-        <CopyToClipboardUnderline
-          {...props}
-          className={clsx(
-            proposerProfile.loading && 'animate-pulse',
-            className
-          )}
-          // If name exists, use that. Otherwise, will fall back to
-          // truncated address display.
-          label={
-            (!proposerProfile.loading && proposerProfile.data.name) || undefined
-          }
-          takeStartEnd={{
-            start: 6,
-            end: 4,
-          }}
-          tooltip={
-            // If displaying name, show tooltip to copy address.
-            !proposerProfile.loading && proposerProfile.data.name
-              ? t('button.clickToCopyAddress')
-              : undefined
-          }
-          value={proposal.proposer}
-          {...props}
+      Value: (props) => (
+        <ProfileDisplay
+          address={proposal.proposer}
+          copyToClipboardProps={props}
         />
       ),
     },

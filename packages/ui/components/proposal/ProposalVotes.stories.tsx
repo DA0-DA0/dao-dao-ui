@@ -2,7 +2,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { VoteDisplay } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/VoteDisplay'
 import { Vote } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+import { getFallbackImage } from '@dao-dao/utils'
 
+import { ProfileDisplay } from '../ProfileDisplay'
 import { ProposalVotes, ProposalVotesProps } from './ProposalVotes'
 
 export default {
@@ -36,6 +38,20 @@ export const makeProps = (): ProposalVotesProps => ({
   canLoadMore: true,
   loadingMore: false,
   loadMore: () => alert('load'),
+  ProfileDisplay: (props) => (
+    <ProfileDisplay
+      loadingProfile={{
+        loading: false,
+        data: {
+          imageUrl: getFallbackImage(props.address),
+          nonce: 0,
+          name: null,
+          nft: null,
+        },
+      }}
+      {...props}
+    />
+  ),
 })
 
 export const Default = Template.bind({})

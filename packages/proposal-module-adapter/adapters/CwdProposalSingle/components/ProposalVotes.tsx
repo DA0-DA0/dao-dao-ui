@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
+import { ProfileDisplay } from '@dao-dao/common'
 import { refreshProposalIdAtom, useProposalVotesQuery } from '@dao-dao/state'
 import {
   ProposalVote,
@@ -104,6 +105,7 @@ export const ProposalVotes = () => {
 
   return (
     <StatelessProposalVotes
+      ProfileDisplay={ProfileDisplay}
       canLoadMore={canLoadMore}
       getDateVoted={
         proposalVotesSubquery.loading || !proposalVotesSubquery.data?.proposal
@@ -117,8 +119,8 @@ export const ProposalVotes = () => {
             }
       }
       loadMore={loadMore}
-      loadingMore={loading}
       // Only return dates once subquery data has loaded.
+      loadingMore={loading}
       votes={votes}
     />
   )

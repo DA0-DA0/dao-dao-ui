@@ -726,7 +726,7 @@
     "updateInfo": "Update Info",
     "vote": "Vote",
     "voteStatus": "Vote status",
-    "votersAddress": "Voter's address",
+    "voter": "Voter",
     "votesCast": "Votes cast",
     "votingConfiguration": "Voting configuration",
     "votingPower": "Voting power",

@@ -1,13 +1,13 @@
 import clsx from 'clsx'
-import { Fragment, ReactNode } from 'react'
+import { ComponentType, Fragment, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
+import { ProfileDisplayProps } from '@dao-dao/tstypes'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { Button } from '../Button'
-import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Loader } from '../Loader'
 import { Tooltip } from '../Tooltip'
 
@@ -23,6 +23,7 @@ export interface ProposalVotesProps {
   canLoadMore: boolean
   loadMore: () => void
   loadingMore: boolean
+  ProfileDisplay: ComponentType<Omit<ProfileDisplayProps, 'loadingProfile'>>
 }
 
 export const ProposalVotes = ({
@@ -31,6 +32,7 @@ export const ProposalVotes = ({
   canLoadMore,
   loadMore,
   loadingMore,
+  ProfileDisplay,
 }: ProposalVotesProps) => {
   const { t } = useTranslation()
 
@@ -50,13 +52,13 @@ export const ProposalVotes = ({
   return (
     <>
       {votes.length > 0 && (
-        <div className="grid-rows-auto grid grid-cols-[1fr_auto_auto] gap-x-8 gap-y-6 xs:grid-cols-[auto_1fr_auto_auto]">
+        <div className="grid-rows-auto grid grid-cols-[1fr_auto_auto] items-center gap-x-8 gap-y-6 xs:grid-cols-[auto_1fr_auto_auto]">
           {/* Titles */}
           <p className="caption-text hidden font-mono font-normal text-text-secondary xs:block">
             {t('title.when')}
           </p>
           <p className="caption-text font-mono font-normal text-text-secondary">
-            {t('title.votersAddress')}
+            {t('title.voter')}
           </p>
           <p className="caption-text font-mono font-normal text-text-secondary">
             {t('title.vote')}
@@ -81,10 +83,13 @@ export const ProposalVotes = ({
                     '?'
                   )}
                 </p>
-                <CopyToClipboardUnderline
-                  className="caption-text font-mono text-text-body"
-                  takeAll
-                  value={voterAddress}
+                <ProfileDisplay
+                  address={voterAddress}
+                  copyToClipboardProps={{
+                    className: 'caption-text font-mono text-text-body',
+                    takeAll: true,
+                    takeStartEnd: undefined,
+                  }}
                 />
                 <Tooltip
                   title={
