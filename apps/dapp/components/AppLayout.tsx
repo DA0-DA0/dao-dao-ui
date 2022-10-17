@@ -18,15 +18,21 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { CommandModal, makeGenericContext } from '@dao-dao/command'
 import { PfpkNftSelectionModal, SidebarWallet } from '@dao-dao/common'
 import {
+  createdDaoCardPropsAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
   pinnedDaoDropdownInfosSelector,
   refreshBlockHeightAtom,
   useCachedLoadable,
+  usePinnedDaos,
   useWalletProfile,
 } from '@dao-dao/state'
 import { CommandModalContextMaker } from '@dao-dao/tstypes'
-import { IAppLayoutContext, AppLayout as StatelessAppLayout } from '@dao-dao/ui'
+import {
+  DaoCreatedModal,
+  IAppLayoutContext,
+  AppLayout as StatelessAppLayout,
+} from '@dao-dao/ui'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import {
@@ -62,6 +68,12 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     commandModalVisibleAtom
   )
   const [compact, setCompact] = useRecoilState(navigationCompactAtom)
+  // DAO creation modal that persists when navigating from create page to DAO
+  // page.
+  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
+  const [createdDaoCardProps, setCreatedDaoCardProps] = useRecoilState(
+    createdDaoCardPropsAtom
+  )
 
   //! WALLET CONNECTION ERROR MODALS
   const { error, status } = useWalletManager()
@@ -246,6 +258,24 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
       {updateProfileNftVisible && (
         <PfpkNftSelectionModal
           onClose={() => setUpdateProfileNftVisible(false)}
+        />
+      )}
+
+      {createdDaoCardProps && (
+        <DaoCreatedModal
+          itemProps={{
+            ...createdDaoCardProps,
+
+            pinned: isPinned(createdDaoCardProps.coreAddress),
+            onPin: () =>
+              isPinned(createdDaoCardProps.coreAddress)
+                ? setUnpinned(createdDaoCardProps.coreAddress)
+                : setPinned(createdDaoCardProps.coreAddress),
+          }}
+          modalProps={{
+            onClose: () => setCreatedDaoCardProps(undefined),
+          }}
+          subDao={!!createdDaoCardProps.parentDao}
         />
       )}
 

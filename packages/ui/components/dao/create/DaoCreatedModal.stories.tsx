@@ -26,3 +26,9 @@ Default.parameters = {
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/Dao-2.0?node-id=983%3A47531',
   },
 }
+
+export const SubDao = Template.bind({})
+SubDao.args = {
+  ...Default.args,
+  subDao: true,
+}

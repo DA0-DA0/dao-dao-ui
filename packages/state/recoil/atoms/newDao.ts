@@ -1,7 +1,7 @@
-import { atomFamily } from 'recoil'
+import { atom, atomFamily } from 'recoil'
 
 import { CwdProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle'
-import { NewDao } from '@dao-dao/tstypes'
+import { DaoCardProps, NewDao } from '@dao-dao/tstypes'
 import { CwdVotingCw4Adapter } from '@dao-dao/voting-module-adapter'
 
 import { localStorageEffectJSON } from '../effects'
@@ -30,4 +30,12 @@ export const newDaoAtom = atomFamily<NewDao, string>({
   key: 'newDao',
   default: DefaultNewDao,
   effects: [localStorageEffectJSON],
+})
+
+// When set, shows DAO created modal with these props for the DaoCard shown.
+export const createdDaoCardPropsAtom = atom<
+  Omit<DaoCardProps, 'pinned' | 'onPin'> | undefined
+>({
+  key: 'createdDaoCardProps',
+  default: undefined,
 })

@@ -8,9 +8,11 @@ import { DaoCard, DaoCardProps } from '../DaoCard'
 export type DaoCreatedModalProps = Omit<
   ItemCreatedModalProps<DaoCardProps>,
   'Item' | 'header' | 'url'
->
+> & {
+  subDao: boolean
+}
 
-export const DaoCreatedModal = (props: DaoCreatedModalProps) => {
+export const DaoCreatedModal = ({ subDao, ...props }: DaoCreatedModalProps) => {
   const { t } = useTranslation()
 
   return (
@@ -18,7 +20,7 @@ export const DaoCreatedModal = (props: DaoCreatedModalProps) => {
       {...props}
       Item={DaoCard}
       header={{
-        title: t('title.congratsOnDao'),
+        title: subDao ? t('title.congratsOnSubDao') : t('title.congratsOnDao'),
         subtitle: t('info.easilyShareLink'),
       }}
       url={SITE_URL + `/dao/${props.itemProps.coreAddress}`}

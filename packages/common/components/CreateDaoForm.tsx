@@ -2,6 +2,7 @@ import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { ArrowBack } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
+import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -15,6 +16,7 @@ import {
 import {
   CwAdminFactoryHooks,
   DefaultNewDao,
+  createdDaoCardPropsAtom,
   newDaoAtom,
   usePinnedDaos,
   useWalletProfile,
@@ -30,9 +32,7 @@ import instantiateSchema from '@dao-dao/tstypes/contracts/CwdCore.v2.instantiate
 import {
   Button,
   CreateDaoPages,
-  DaoCardProps,
   DaoCreateSidebarCard,
-  DaoCreatedModal,
   DaoHeader,
   ImageSelector,
   useAppLayoutContext,
@@ -62,11 +62,11 @@ import {
 } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/types'
 
 // i18n keys
-export enum CreateDaoSubmitLabel {
+export enum CreateDaoSubmitValue {
   Back = 'button.goBack',
   Continue = 'button.continue',
   Review = 'button.review',
-  CreateDao = 'button.createDAO',
+  Create = 'button.createDAO',
 }
 
 export interface CreateDaoFormProps {
@@ -83,13 +83,14 @@ export const CreateDaoForm = ({
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
-  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
+  const router = useRouter()
+  const { setPinned } = usePinnedDaos()
 
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
-  // When set, show DAO created modal with these props for the DaoCard shown.
-  const [createdDaoCardProps, setCreatedDaoCardProps] =
-    useState<Omit<DaoCardProps, 'pinned' | 'onPin'>>()
+  const [createdDaoCardProps, setCreatedDaoCardProps] = useRecoilState(
+    createdDaoCardPropsAtom
+  )
 
   const [_newDaoAtom, setNewDaoAtom] = useRecoilState(
     newDaoAtom(parentDao?.coreAddress ?? '')
@@ -114,6 +115,8 @@ export const CreateDaoForm = ({
     votingModuleAdapter,
     proposalModuleAdapters,
   } = newDao
+
+  const makingSubDao = !!parentDao
 
   // Debounce saving latest data to atom and thus localStorage every 10 seconds.
   useEffect(() => {
@@ -166,12 +169,17 @@ export const CreateDaoForm = ({
   const showBack = pageIndex > 0
   const submitValue =
     pageIndex < CreateDaoPages.length - 2
-      ? t(CreateDaoSubmitLabel.Continue)
+      ? CreateDaoSubmitValue.Continue
       : // Second to last links to the Review page.
       pageIndex === CreateDaoPages.length - 2
-      ? t(CreateDaoSubmitLabel.Review)
+      ? CreateDaoSubmitValue.Review
       : // Last page creates the DAO.
-        t(CreateDaoSubmitLabel.CreateDao)
+        CreateDaoSubmitValue.Create
+  const submitLabel =
+    // Override with SubDAO button if necessary.
+    submitValue === CreateDaoSubmitValue.Create && makingSubDao
+      ? t('button.createSubDao')
+      : t(submitValue)
 
   //! Adapters and message generators
 
@@ -289,24 +297,21 @@ export const CreateDaoForm = ({
     return contractAddress
   }, [generateInstantiateMsg, instantiateWithFactory])
 
-  const parseSubmitterValueDelta = useCallback(
-    (value: string): number => {
-      switch (value) {
-        case t(CreateDaoSubmitLabel.Back):
-          return -1
-        case t(CreateDaoSubmitLabel.Continue):
-        case t(CreateDaoSubmitLabel.Review):
-          return 1
-        default:
-          // Pass a number to step that many pages in either direction.
-          const valueNumber = parseInt(value || '1', 10)
-          if (!isNaN(valueNumber) && valueNumber !== 0) return valueNumber
+  const parseSubmitterValueDelta = useCallback((value: string): number => {
+    switch (value) {
+      case CreateDaoSubmitValue.Back:
+        return -1
+      case CreateDaoSubmitValue.Continue:
+      case CreateDaoSubmitValue.Review:
+        return 1
+      default:
+        // Pass a number to step that many pages in either direction.
+        const valueNumber = parseInt(value || '1', 10)
+        if (!isNaN(valueNumber) && valueNumber !== 0) return valueNumber
 
-          return 0
-      }
-    },
-    [t]
-  )
+        return 0
+    }
+  }, [])
 
   const [customValidator, setCustomValidator] =
     useState<CreateDaoCustomValidator>()
@@ -325,7 +330,7 @@ export const CreateDaoForm = ({
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
       // Create the DAO.
-      if (submitterValue === t(CreateDaoSubmitLabel.CreateDao)) {
+      if (submitterValue === CreateDaoSubmitValue.Create) {
         if (connected) {
           setCreating(true)
           try {
@@ -345,82 +350,83 @@ export const CreateDaoForm = ({
               }
             )
 
-            if (coreAddress) {
-              setPinned(coreAddress)
+            setPinned(coreAddress)
+            refreshBalances()
 
-              await refreshBalances()
+            //! Show DAO created modal.
 
-              //! Show DAO created modal.
+            // Get tokenSymbol and tokenBalance for DAO card.
+            const { tokenSymbol, tokenBalance } =
+              votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
+              cw20StakedBalanceVotingData
+                ? //! Display governance token supply if using governance tokens.
+                  {
+                    tokenBalance:
+                      cw20StakedBalanceVotingData.tokenType ===
+                      GovernanceTokenType.New
+                        ? cw20StakedBalanceVotingData.newInfo.initialSupply
+                        : // If using existing token but no token info loaded (should
+                        // be impossible), just display 0.
+                        !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                        ? 0
+                        : // If using existing token, convert supply from query using decimals.
+                          convertMicroDenomToDenomWithDecimals(
+                            cw20StakedBalanceVotingData
+                              .existingGovernanceTokenInfo.total_supply,
+                            cw20StakedBalanceVotingData
+                              .existingGovernanceTokenInfo.decimals
+                          ),
+                    tokenSymbol:
+                      cw20StakedBalanceVotingData.tokenType ===
+                      GovernanceTokenType.New
+                        ? cw20StakedBalanceVotingData.newInfo.symbol
+                        : // If using existing token but no token info loaded (should
+                        // be impossible), the tokenBalance above will be set
+                        // to 0, so use NATIVE_DENOM here so this value is
+                        // accurate.
+                        !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                        ? nativeTokenLabel(NATIVE_DENOM)
+                        : cw20StakedBalanceVotingData
+                            .existingGovernanceTokenInfo?.symbol ||
+                          t('info.token').toLocaleUpperCase(),
+                  }
+                : //! Otherwise display native token, which has a balance of 0 initially.
+                  {
+                    tokenBalance: 0,
+                    tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+                  }
 
-              // Get tokenSymbol and tokenBalance for DAO card.
-              const { tokenSymbol, tokenBalance } =
-                votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
-                cw20StakedBalanceVotingData
-                  ? //! Display governance token supply if using governance tokens.
-                    {
-                      tokenBalance:
-                        cw20StakedBalanceVotingData.tokenType ===
-                        GovernanceTokenType.New
-                          ? cw20StakedBalanceVotingData.newInfo.initialSupply
-                          : // If using existing token but no token info loaded (should
-                          // be impossible), just display 0.
-                          !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                          ? 0
-                          : // If using existing token, convert supply from query using decimals.
-                            convertMicroDenomToDenomWithDecimals(
-                              cw20StakedBalanceVotingData
-                                .existingGovernanceTokenInfo.total_supply,
-                              cw20StakedBalanceVotingData
-                                .existingGovernanceTokenInfo.decimals
-                            ),
-                      tokenSymbol:
-                        cw20StakedBalanceVotingData.tokenType ===
-                        GovernanceTokenType.New
-                          ? cw20StakedBalanceVotingData.newInfo.symbol
-                          : // If using existing token but no token info loaded (should
-                          // be impossible), the tokenBalance above will be set
-                          // to 0, so use NATIVE_DENOM here so this value is
-                          // accurate.
-                          !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                          ? nativeTokenLabel(NATIVE_DENOM)
-                          : cw20StakedBalanceVotingData
-                              .existingGovernanceTokenInfo?.symbol ||
-                            t('info.token').toLocaleUpperCase(),
-                    }
-                  : //! Otherwise display native token, which has a balance of 0 initially.
-                    {
-                      tokenBalance: 0,
-                      tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
-                    }
-
-              // Set card props to show modal.
-              setCreatedDaoCardProps({
-                chainId: CHAIN_ID,
-                coreAddress,
-                name,
-                description,
-                imageUrl: imageUrl || getFallbackImage(coreAddress),
-                established: new Date(),
-                showIsMember: false,
-                parentDao,
-                tokenSymbol,
-                lazyData: {
-                  loading: false,
-                  data: {
-                    tokenBalance,
-                    // Does not matter, will not show.
-                    isMember: false,
-                    proposalCount: 0,
-                  },
+            // Set card props to show modal.
+            setCreatedDaoCardProps({
+              chainId: CHAIN_ID,
+              coreAddress,
+              name,
+              description,
+              imageUrl: imageUrl || getFallbackImage(coreAddress),
+              established: new Date(),
+              showIsMember: false,
+              parentDao,
+              tokenSymbol,
+              lazyData: {
+                loading: false,
+                data: {
+                  tokenBalance,
+                  // Does not matter, will not show.
+                  isMember: false,
+                  proposalCount: 0,
                 },
-              })
-            }
+              },
+            })
+
+            // Navigate to DAO page (underneath the creation modal).
+            router.push(`/dao/${coreAddress}`)
           } catch (err) {
             // toast.promise above will handle displaying the error
             console.error(err)
-          } finally {
             setCreating(false)
           }
+          // Don't stop creating on success, since we are navigating to a new
+          // page and want to prevent creating duplicate DAOs.
         } else {
           toast.error(t('error.connectWalletToCreate'))
         }
@@ -447,20 +453,22 @@ export const CreateDaoForm = ({
     },
     [
       form,
-      t,
       setNewDaoAtom,
       parseSubmitterValueDelta,
       pageIndex,
       connected,
       createDaoWithFactory,
+      t,
       setPinned,
       refreshBalances,
       votingModuleAdapter.id,
       cw20StakedBalanceVotingData,
+      setCreatedDaoCardProps,
       name,
       description,
       imageUrl,
       parentDao,
+      router,
     ]
   )
 
@@ -539,7 +547,7 @@ export const CreateDaoForm = ({
           ],
           current:
             name.trim() ||
-            (parentDao ? t('title.newSubDao') : t('title.newDao')),
+            (makingSubDao ? t('title.newSubDao') : t('title.newDao')),
         }}
         className="mx-auto max-w-4xl"
         gradient
@@ -595,35 +603,18 @@ export const CreateDaoForm = ({
             <Button
               disabled={creating}
               type="submit"
-              value={t(CreateDaoSubmitLabel.Back)}
+              value={CreateDaoSubmitValue.Back}
               variant="secondary"
             >
               <ArrowBack className="!h-4 !w-4 text-icon-primary" />
-              <p>{t(CreateDaoSubmitLabel.Back)}</p>
+              <p>{t(CreateDaoSubmitValue.Back)}</p>
             </Button>
           )}
           <Button loading={creating} type="submit" value={submitValue}>
-            {submitValue}
+            {submitLabel}
           </Button>
         </div>
       </form>
-
-      {createdDaoCardProps && (
-        <DaoCreatedModal
-          itemProps={{
-            ...createdDaoCardProps,
-
-            pinned: isPinned(createdDaoCardProps.coreAddress),
-            onPin: () =>
-              isPinned(createdDaoCardProps.coreAddress)
-                ? setUnpinned(createdDaoCardProps.coreAddress)
-                : setPinned(createdDaoCardProps.coreAddress),
-          }}
-          modalProps={{
-            onClose: () => setCreatedDaoCardProps(undefined),
-          }}
-        />
-      )}
     </>
   )
 }
