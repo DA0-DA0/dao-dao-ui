@@ -22,6 +22,7 @@ export interface WalletProfileUpdate {
   nonce: number
   name?: WalletProfile['name']
   nft?: {
+    chainId: string
     tokenId: string
     collectionAddress: string
   } | null

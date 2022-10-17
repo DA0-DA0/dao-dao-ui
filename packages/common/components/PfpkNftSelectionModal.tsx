@@ -99,8 +99,9 @@ export const InnerPfpkNftSelectionModal = ({
       await updateProfileNft(
         selectedNft
           ? {
-              tokenId: selectedNft.tokenId,
+              chainId: STARGAZE_CHAIN_ID,
               collectionAddress: selectedNft.collection.address,
+              tokenId: selectedNft.tokenId,
             }
           : // Clear NFT if nothing selected.
             null
