@@ -3,9 +3,18 @@
 
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
-import React, { useMemo } from 'react'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { useRouter } from 'next/router'
+import React, { useEffect, useMemo } from 'react'
+import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
+import {
+  constSelector,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  waitForAll,
+} from 'recoil'
 
+import { manageSubDaosAction } from '@dao-dao/actions/actions/ManageSubDaos'
 import {
   DaoInfoBar,
   DaoPageWrapper,
@@ -14,6 +23,8 @@ import {
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import {
+  CwdCoreV2Selectors,
+  useEncodedCwdProposalSinglePrefill,
   usePinnedDaos,
   useVotingModule,
   useWalletProfile,
@@ -35,6 +46,8 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 
 const InnerDaoHome = () => {
+  const { t } = useTranslation()
+  const router = useRouter()
   const { connected } = useWallet()
   const { walletProfile, updateProfileName } = useWalletProfile()
   const { updateProfileNft } = useAppLayoutContext()
@@ -50,6 +63,94 @@ const InnerDaoHome = () => {
   const { isMember } = useVotingModule(daoInfo.coreAddress, {
     fetchMembership: true,
   })
+
+  // If no parent, fallback to current address since it's already loaded from
+  // the above hook. We won't use this value unless there's a parent. It's
+  // redundant but has no effect.
+  const { isMember: isMemberOfParent } = useVotingModule(
+    daoInfo.parentDao?.coreAddress ?? daoInfo.coreAddress,
+    {
+      fetchMembership: true,
+    }
+  )
+  const parentDaosSubDaosLoadable = useRecoilValueLoadable(
+    daoInfo.parentDao
+      ? CwdCoreV2Selectors.listAllSubDaosSelector({
+          contractAddress: daoInfo.coreAddress,
+        })
+      : constSelector(undefined)
+  )
+  const encodedAddSubDaoProposalPrefill = useEncodedCwdProposalSinglePrefill({
+    title: t('title.recognizeSubDao', {
+      name: daoInfo.name,
+    }),
+    description: t('info.recognizeSubDaoDescription', {
+      name: daoInfo.name,
+    }),
+    actions: [
+      {
+        action: manageSubDaosAction,
+        data: {
+          toAdd: [
+            {
+              addr: daoInfo.coreAddress,
+            },
+          ],
+          toRemove: [],
+        },
+      },
+    ],
+  })
+  const addSubDaoProposalPrefillHref = `/dao/${daoInfo.parentDao?.coreAddress}/proposals/create?prefill=${encodedAddSubDaoProposalPrefill}`
+  useEffect(() => {
+    router.prefetch(addSubDaoProposalPrefillHref)
+  }, [addSubDaoProposalPrefillHref, router])
+  // Notify if parent has not yet added subDAO.
+  useEffect(() => {
+    if (
+      daoInfo.parentDao &&
+      parentDaosSubDaosLoadable.state === 'hasValue' &&
+      parentDaosSubDaosLoadable.contents &&
+      !parentDaosSubDaosLoadable.contents.some(
+        ({ addr }) => addr === daoInfo.coreAddress
+      )
+    ) {
+      if (isMemberOfParent) {
+        toast(
+          <p
+            className="cursor-pointer transition-opacity hover:opacity-80 active:opacity-70"
+            onClick={() => router.push(addSubDaoProposalPrefillHref)}
+          >
+            {t('info.subDaoNeedsAdding', {
+              parent: daoInfo.parentDao.name,
+              child: daoInfo.name,
+            })}{' '}
+            <span className="underline">
+              {t('button.clickHereToProposeAdding')}
+            </span>
+          </p>
+        )
+      } else {
+        toast.success(
+          t('info.subDaoNeedsAdding', {
+            parent: daoInfo.parentDao.name,
+            child: daoInfo.name,
+          })
+        )
+      }
+    }
+  }, [
+    addSubDaoProposalPrefillHref,
+    daoInfo.coreAddress,
+    daoInfo.name,
+    daoInfo.parentDao,
+    encodedAddSubDaoProposalPrefill,
+    isMemberOfParent,
+    parentDaosSubDaosLoadable.contents,
+    parentDaosSubDaosLoadable.state,
+    router,
+    t,
+  ])
 
   const depositInfoSelectors = useMemo(
     () =>

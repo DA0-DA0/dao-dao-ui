@@ -60,7 +60,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
       onRemove={onRemove}
       title={t('title.manageSubDaos')}
     >
-      <InputLabel className="mt-2" name={t('form.subDaosToAdd')} />
+      <InputLabel className="mt-2" name={t('form.subDaosToRecognize')} />
       <div className="flex flex-col items-stretch gap-2">
         {toAddFields.map(({ id }, index) => (
           <div key={id} className="flex flex-row items-center gap-4">
