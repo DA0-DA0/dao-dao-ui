@@ -32,13 +32,15 @@ export const DaoDropdown = ({
     }
   }, [expanded, expandedLocalStorageKey])
 
+  const selected = asPath.startsWith(`/dao/${coreAddress}`)
+
   // If compact, just show image.
   return compact ? (
     <Link href={`/dao/${coreAddress}`}>
       <a
         className={clsx(
           'box-content flex h-8 w-8 flex-row items-center justify-center py-1.5 px-6 transition-opacity hover:opacity-70 active:opacity-60',
-          asPath.includes(coreAddress) && 'bg-background-interactive-selected'
+          selected && 'bg-background-interactive-selected'
         )}
       >
         <Tooltip title={name}>
@@ -51,7 +53,7 @@ export const DaoDropdown = ({
       <div
         className={clsx(
           'flex flex-row items-stretch rounded-md',
-          asPath.includes(coreAddress) && 'bg-background-interactive-selected'
+          selected && 'bg-background-interactive-selected'
         )}
       >
         {[...Array(indent)].map((_, index) => (
