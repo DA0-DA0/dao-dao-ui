@@ -76,7 +76,7 @@ const InnerDaoHome = () => {
   const parentDaosSubDaosLoadable = useRecoilValueLoadable(
     daoInfo.parentDao
       ? CwdCoreV2Selectors.listAllSubDaosSelector({
-          contractAddress: daoInfo.coreAddress,
+          contractAddress: daoInfo.parentDao.coreAddress,
         })
       : constSelector(undefined)
   )
