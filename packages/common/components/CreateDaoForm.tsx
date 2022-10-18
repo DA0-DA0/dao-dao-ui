@@ -41,7 +41,9 @@ import {
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,
+  NATIVE_DECIMALS,
   NATIVE_DENOM,
+  NEW_DAO_CW20_DECIMALS,
   V1_FACTORY_CONTRACT_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
@@ -356,7 +358,7 @@ export const CreateDaoForm = ({
             //! Show DAO created modal.
 
             // Get tokenSymbol and tokenBalance for DAO card.
-            const { tokenSymbol, tokenBalance } =
+            const { tokenSymbol, tokenBalance, tokenDecimals } =
               votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
               cw20StakedBalanceVotingData
                 ? //! Display governance token supply if using governance tokens.
@@ -381,19 +383,30 @@ export const CreateDaoForm = ({
                       GovernanceTokenType.New
                         ? cw20StakedBalanceVotingData.newInfo.symbol
                         : // If using existing token but no token info loaded (should
-                        // be impossible), the tokenBalance above will be set
-                        // to 0, so use NATIVE_DENOM here so this value is
+                        // be impossible), the tokenBalance above will be set to
+                        // 0, so use NATIVE_DENOM here so this value is
                         // accurate.
                         !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
                         ? nativeTokenLabel(NATIVE_DENOM)
                         : cw20StakedBalanceVotingData
                             .existingGovernanceTokenInfo?.symbol ||
                           t('info.token').toLocaleUpperCase(),
+                    tokenDecimals:
+                      cw20StakedBalanceVotingData.tokenType ===
+                        GovernanceTokenType.Existing &&
+                      cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                        ? cw20StakedBalanceVotingData
+                            .existingGovernanceTokenInfo.decimals
+                        : // If using existing token but no token info loaded
+                          // (should be impossible), the tokenBalance above will be
+                          // set to 0, so this doesn't matter.
+                          NEW_DAO_CW20_DECIMALS,
                   }
                 : //! Otherwise display native token, which has a balance of 0 initially.
                   {
                     tokenBalance: 0,
                     tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+                    tokenDecimals: NATIVE_DECIMALS,
                   }
 
             // Set card props to show modal.
@@ -406,6 +419,7 @@ export const CreateDaoForm = ({
               established: new Date(),
               showIsMember: false,
               parentDao,
+              tokenDecimals,
               tokenSymbol,
               lazyData: {
                 loading: false,
