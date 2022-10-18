@@ -40,6 +40,7 @@ export const useLoadingDaoCardInfos = (
                     getFallbackImage(parentDao.coreAddress),
                 }
               : undefined,
+            tokenDecimals: 6,
             tokenSymbol: 'USDC',
             lazyData: { loading: true },
             chainId,

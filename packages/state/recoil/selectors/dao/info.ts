@@ -174,6 +174,7 @@ export const daoCardInfoSelector = selectorFamily<
         imageUrl: config.image_url || getFallbackImage(coreAddress),
         established,
         parentDao,
+        tokenDecimals: 6,
         tokenSymbol: 'USDC',
         lazyData: { loading: true },
       }

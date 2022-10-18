@@ -15,12 +15,12 @@ export const Default = Template.bind({})
 Default.args = {
   amount: 951284124,
   symbol: 'USDC',
-  maxDecimals: 3,
+  decimals: 3,
 }
 
 export const Small = Template.bind({})
 Small.args = {
   amount: 156,
   symbol: 'USDC',
-  maxDecimals: 3,
+  decimals: 3,
 }

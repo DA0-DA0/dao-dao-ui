@@ -26,7 +26,7 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
       value: (
         <TokenAmountDisplay
           amount={convertMicroDenomToDenomWithDecimals(total_supply, decimals)}
-          maxDecimals={decimals}
+          decimals={decimals}
           symbol={symbol}
         />
       ),
@@ -40,7 +40,7 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
             totalStakedValue,
             decimals
           )}
-          maxDecimals={decimals}
+          decimals={decimals}
           symbol={symbol}
         />
       ),

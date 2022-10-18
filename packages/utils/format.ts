@@ -28,3 +28,10 @@ export const formatDate = (date: Date) =>
   date.getFullYear() === new Date().getFullYear()
     ? dateFormatterNoYear.format(date)
     : dateFormatterNoDay.format(date)
+
+// Select number of decimal digits, rounding down / truncating.
+export const toFixedDown = (value: Number, digits: Number) => {
+  const re = new RegExp('(\\d+\\.\\d{' + digits + '})(\\d)')
+  const matches = value.toString().match(re)
+  return matches ? parseFloat(matches[1]) : value.valueOf()
+}

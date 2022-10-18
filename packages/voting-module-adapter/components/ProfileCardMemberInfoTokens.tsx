@@ -127,7 +127,7 @@ export const ProfileCardMemberInfoTokens = ({
               className={clsx('text-right font-mono', {
                 'text-text-tertiary': stakedTokens === 0,
               })}
-              maxDecimals={tokenDecimals}
+              decimals={tokenDecimals}
               suffix={` ${t('info.staked')}`}
               symbol={tokenSymbol}
             />
@@ -138,7 +138,7 @@ export const ProfileCardMemberInfoTokens = ({
                 'text-text-tertiary': unstakedTokens === 0,
                 'text-icon-interactive-valid': unstakedTokens > 0,
               })}
-              maxDecimals={tokenDecimals}
+              decimals={tokenDecimals}
               symbol={tokenSymbol}
             />
           </div>
@@ -169,7 +169,7 @@ export const ProfileCardMemberInfoTokens = ({
             >
               <TokenAmountDisplay
                 amount={unstakingBalance}
-                maxDecimals={tokenDecimals}
+                decimals={tokenDecimals}
                 symbol={tokenSymbol}
               />
             </Button>

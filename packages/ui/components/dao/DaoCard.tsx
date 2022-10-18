@@ -31,6 +31,7 @@ export const DaoCard = ({
   onPin,
   parentDao,
   tokenSymbol,
+  tokenDecimals,
   lazyData,
   showIsMember = true,
   className,
@@ -127,6 +128,7 @@ export const DaoCard = ({
                 ? { loading: true }
                 : { loading: false, data: lazyData.data.tokenBalance }
             }
+            decimals={tokenDecimals}
             maxDecimals={3}
             symbol={tokenSymbol}
           />

@@ -3,6 +3,7 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/tstypes'
+import { NATIVE_DECIMALS, toFixedDown } from '@dao-dao/utils'
 
 import { Tooltip } from './Tooltip'
 
@@ -11,12 +12,11 @@ export type TokenAmountDisplayProps = Omit<
   'children'
 > & {
   amount: number | LoadingData<number>
+  decimals?: number
   prefix?: string
   suffix?: string
-  minDecimals?: number
+  // Max to show.
   maxDecimals?: number
-  minSignificant?: number
-  maxSignificant?: number
 } & ( // If not USDC, require symbol.
     | {
         symbol: string
@@ -31,12 +31,10 @@ export type TokenAmountDisplayProps = Omit<
 
 export const TokenAmountDisplay = ({
   amount: _amount,
+  decimals = NATIVE_DECIMALS,
   prefix,
   suffix,
-  minDecimals,
-  maxDecimals: _maxDecimals,
-  minSignificant,
-  maxSignificant,
+  maxDecimals,
   symbol: _symbol,
   usdc,
   ...props
@@ -60,31 +58,33 @@ export const TokenAmountDisplay = ({
   // Extract amount from loaded value.
   const amount = typeof _amount === 'number' ? _amount : _amount.data
 
-  // If USDC, default maxDecimals to 3.
-  const maxDecimals = usdc ? _maxDecimals ?? 3 : _maxDecimals
   const options: Intl.NumberFormatOptions = {
-    minimumFractionDigits: minDecimals,
-    maximumFractionDigits: maxDecimals,
-    minimumSignificantDigits: minSignificant,
-    maximumSignificantDigits: maxSignificant,
+    maximumFractionDigits: decimals,
   }
 
-  const full = amount.toLocaleString(undefined, options)
+  const full = toFixedDown(amount, decimals).toLocaleString(undefined, options)
+  // If USDC, default maxCompactDecimals to 3.
+  const maxCompactDecimals = usdc ? maxDecimals ?? 3 : maxDecimals ?? decimals
   // Abbreviated number. Example: 1,000,000 => 1M
-  let compact = amount.toLocaleString(undefined, {
-    notation: 'compact',
-    ...options,
-  })
+  let compact = toFixedDown(amount, maxCompactDecimals).toLocaleString(
+    undefined,
+    {
+      ...options,
+      notation: 'compact',
+      maximumFractionDigits: maxCompactDecimals,
+    }
+  )
 
   // If compacted, use fewer decimals because compact looks bad with too many
   // decimals. We first needed to use the same decimals to compare and see if
   // compact had any effect. If compact changed nothing, we want to keep the
   // original decimals.
   if (full !== compact) {
-    compact = amount.toLocaleString(undefined, {
-      notation: 'compact',
+    const compactedDecimals = maxDecimals ?? 2
+    compact = toFixedDown(amount, compactedDecimals).toLocaleString(undefined, {
       ...options,
-      maximumFractionDigits: 2,
+      notation: 'compact',
+      maximumFractionDigits: compactedDecimals,
     })
   }
 

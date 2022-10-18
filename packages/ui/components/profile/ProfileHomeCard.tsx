@@ -17,6 +17,7 @@ export interface ProfileHomeCardProps
     'children' | 'underHeaderComponent' | 'childContainerClassName' | 'compact'
   > {
   tokenSymbol: string
+  tokenDecimals: number
   inboxProposalCount: number
   lazyData: LoadingData<{
     unstakedBalance: number
@@ -29,6 +30,7 @@ export interface ProfileHomeCardProps
 export const ProfileHomeCard = ({
   established,
   tokenSymbol,
+  tokenDecimals,
   inboxProposalCount,
   lazyData,
   ...wrapperProps
@@ -51,6 +53,7 @@ export const ProfileHomeCard = ({
               <TokenAmountDisplay
                 amount={lazyData.data.unstakedBalance}
                 className="title-text break-words font-mono"
+                decimals={tokenDecimals}
                 maxDecimals={2}
                 symbol={tokenSymbol}
               />
@@ -69,6 +72,7 @@ export const ProfileHomeCard = ({
               <TokenAmountDisplay
                 amount={lazyData.data.stakedBalance}
                 className="title-text break-words font-mono"
+                decimals={tokenDecimals}
                 maxDecimals={2}
                 symbol={tokenSymbol}
               />

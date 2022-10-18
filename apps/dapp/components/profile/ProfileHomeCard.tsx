@@ -6,7 +6,7 @@ import {
   ProfileHomeCard as StatelessProfileHomeCard,
   useAppLayoutContext,
 } from '@dao-dao/ui'
-import { NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
+import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 import { useDAppContext } from '../DAppContext'
 
@@ -44,6 +44,7 @@ export const ProfileHomeCard = () => {
             }
       }
       showUpdateProfileNft={updateProfileNft.toggle}
+      tokenDecimals={NATIVE_DECIMALS}
       tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
       updateProfileName={updateProfileName}
       walletProfile={walletProfile}

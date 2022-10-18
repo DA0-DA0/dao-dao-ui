@@ -60,7 +60,7 @@ export const ConnectedWallet = ({
           <TokenAmountDisplay
             amount={data.loading ? { loading: true } : data.data.tokenBalance}
             className="legend-text font-mono"
-            maxDecimals={tokenDecimals}
+            decimals={tokenDecimals}
             symbol={tokenSymbol}
           />
         </div>

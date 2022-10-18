@@ -202,7 +202,7 @@ export const TokenCard = ({
                   waitingForStakingInfo ? { loading: true } : totalBalance
                 }
                 className="leading-5 text-text-body"
-                maxDecimals={tokenDecimals}
+                decimals={tokenDecimals}
                 symbol={tokenSymbol}
               />
 
@@ -228,7 +228,7 @@ export const TokenCard = ({
                 <TokenAmountDisplay
                   amount={unstakedBalance}
                   className="leading-5 text-text-body"
-                  maxDecimals={tokenDecimals}
+                  decimals={tokenDecimals}
                   symbol={tokenSymbol}
                 />
 
@@ -253,7 +253,7 @@ export const TokenCard = ({
                   lazyStakingInfo.loading ? { loading: true } : totalStaked
                 }
                 className="caption-text text-right font-mono text-text-body"
-                maxDecimals={tokenDecimals}
+                decimals={tokenDecimals}
                 symbol={tokenSymbol}
               />
             </div>
@@ -332,7 +332,7 @@ export const TokenCard = ({
                   lazyStakingInfo.loading ? { loading: true } : pendingRewards
                 }
                 className="caption-text text-right font-mono text-text-body"
-                maxDecimals={tokenDecimals}
+                decimals={tokenDecimals}
                 symbol={tokenSymbol}
               />
             </div>

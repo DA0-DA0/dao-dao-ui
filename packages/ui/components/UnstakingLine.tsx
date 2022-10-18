@@ -46,7 +46,7 @@ export const UnstakingLine = ({
         <TokenAmountDisplay
           amount={amount}
           className="body-text truncate"
-          maxDecimals={tokenDecimals}
+          decimals={tokenDecimals}
           symbol={tokenSymbol}
         />
 
@@ -70,7 +70,7 @@ export const UnstakingLine = ({
           <TokenAmountDisplay
             amount={amount}
             className="body-text break-words"
-            maxDecimals={tokenDecimals}
+            decimals={tokenDecimals}
             symbol={tokenSymbol}
           />
 
