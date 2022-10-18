@@ -95,7 +95,7 @@ export const FeaturedDaos = ({ DaoCard, featuredDaos }: FeaturedDaosProps) => {
       {featuredDaos.loading ? (
         <Loader />
       ) : (
-        <div className="flex w-max flex-row gap-4 py-[2px]">
+        <div className="flex w-max flex-row gap-4 py-1">
           {featuredDaos.data.map((props) => (
             <DaoCard
               key={props.coreAddress}
