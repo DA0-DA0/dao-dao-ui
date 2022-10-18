@@ -125,7 +125,7 @@ export const ProposalStatusAndInfo = ({
         <p {...props}>{t(`proposalStatusTitle.${proposal.status}`)}</p>
       ),
     },
-    ...(config.allow_revoting
+    ...(proposal.allow_revoting
       ? ([
           {
             Icon: Redo,
