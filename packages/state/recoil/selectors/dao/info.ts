@@ -19,7 +19,7 @@ import { DaoDropdownInfo } from '@dao-dao/ui'
 import {
   CHAIN_ID,
   CWCOREV1_CONTRACT_NAME,
-  CWCOREV2_CONTRACT_NAME,
+  CWDCOREV2_CONTRACT_NAME,
   getFallbackImage,
 } from '@dao-dao/utils'
 
@@ -143,7 +143,7 @@ export const daoCardInfoSelector = selectorFamily<
             isContractSelector({
               contractAddress: admin,
               chainId,
-              name: CWCOREV2_CONTRACT_NAME,
+              name: CWDCOREV2_CONTRACT_NAME,
             })
           ))
       ) {

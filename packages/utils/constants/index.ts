@@ -60,8 +60,8 @@ export const V1_FACTORY_CONTRACT_ADDRESS = process.env
 // Contract Names
 export const CWCOREV1_CONTRACT_NAME = process.env
   .NEXT_PUBLIC_CWCOREV1_CONTRACT_NAME as string
-export const CWCOREV2_CONTRACT_NAME = process.env
-  .NEXT_PUBLIC_CWCOREV2_CONTRACT_NAME as string
+export const CWDCOREV2_CONTRACT_NAME = process.env
+  .NEXT_PUBLIC_CWDCOREV2_CONTRACT_NAME as string
 
 // DAO name min/max and description max defined in core.
 export const MIN_DAO_NAME_LENGTH = parseInt(
