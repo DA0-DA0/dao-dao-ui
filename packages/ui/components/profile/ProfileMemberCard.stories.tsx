@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileCardMemberInfo } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui'
-import { makeProps as makeProfileCardMemberInfoProps } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui/ProfileCardMemberInfo.stories'
+import { ProfileCardMemberInfoTokens } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens'
+import { makeProps as makeProfileCardMemberInfoTokensProps } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens.stories'
 
 import { makeProps as makeUnstakingLineProps } from '../UnstakingLine.stories'
 import { UnstakingTaskStatus } from '../UnstakingStatus'
@@ -19,7 +19,7 @@ const Template: ComponentStory<typeof ProfileMemberCard> = (args) => (
 )
 
 const makeProps = (
-  ...args: Parameters<typeof makeProfileCardMemberInfoProps>
+  ...args: Parameters<typeof makeProfileCardMemberInfoTokensProps>
 ): ProfileMemberCardProps => ({
   daoName: 'Dog Dao',
   walletProfile: {
@@ -34,7 +34,7 @@ const makeProps = (
   openProposals: true,
   established: new Date(),
   membershipInfo: (
-    <ProfileCardMemberInfo {...makeProfileCardMemberInfoProps(...args)} />
+    <ProfileCardMemberInfoTokens {...makeProfileCardMemberInfoTokensProps(...args)} />
   ),
   showUpdateProfileNft: () => {},
   updateProfileName: async () => {},

@@ -5,10 +5,12 @@ import { useMemo } from 'react'
 
 import { DaoPageWrapper } from '@dao-dao/common'
 import { ContractVersion, DaoInfoSerializable } from '@dao-dao/tstypes'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
   const serializedInfo: DaoInfoSerializable = useMemo(
     () => ({
+      chainId: CHAIN_ID,
       coreAddress: 'daoCoreAddress',
       coreVersion: ContractVersion.V0_2_0,
       votingModuleAddress: 'votingModuleAddress',

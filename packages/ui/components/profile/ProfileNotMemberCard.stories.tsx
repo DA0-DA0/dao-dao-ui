@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileCardMemberInfo } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui'
-import { makeProps as makeProfileCardMemberInfoProps } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui/ProfileCardMemberInfo.stories'
+import { ProfileCardMemberInfoTokens } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens'
+import { makeProps as makeProfileCardMemberInfoTokensProps } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens.stories'
 
 import { ProfileNotMemberCard } from './ProfileNotMemberCard'
 
@@ -31,7 +31,7 @@ Default.args = {
   },
   established: new Date(),
   membershipInfo: (
-    <ProfileCardMemberInfo {...makeProfileCardMemberInfoProps()} />
+    <ProfileCardMemberInfoTokens {...makeProfileCardMemberInfoTokensProps()} />
   ),
 }
 
@@ -46,7 +46,7 @@ export const HaveTokensToStake = Template.bind({})
 HaveTokensToStake.args = {
   ...Default.args,
   membershipInfo: (
-    <ProfileCardMemberInfo {...makeProfileCardMemberInfoProps([], 1600.5432)} />
+    <ProfileCardMemberInfoTokens {...makeProfileCardMemberInfoTokensProps([], 1600.5432)} />
   ),
 }
 HaveTokensToStake.parameters = Default.parameters

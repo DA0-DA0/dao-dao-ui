@@ -18,7 +18,7 @@ Connected.args = {
   data: {
     loading: false,
     data: {
-      tokenBalance: 2400.111111,
+      tokenBalance: { loading: false, data: 2400.111111 },
       walletAddress: 'juno123abc987zyx',
       walletName: 'my_wallet',
     },

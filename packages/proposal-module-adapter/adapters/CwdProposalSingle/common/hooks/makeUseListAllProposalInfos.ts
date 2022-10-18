@@ -25,7 +25,7 @@ export const makeUseListAllProposalInfos =
     const timestamps = useRecoilValue(
       waitForAll(
         proposalResponses.map(({ proposal: { start_height } }) =>
-          blockHeightTimestampSafeSelector(start_height)
+          blockHeightTimestampSafeSelector({ blockHeight: start_height })
         )
       )
     )

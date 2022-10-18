@@ -13,7 +13,7 @@ export const getAllRpcResponse = async <
   key: K
 ): Promise<R[K]> => {
   let pagination: PageRequest | undefined
-  const data = [] as R[K]
+  const data = []
 
   do {
     const response = await queryFn({
@@ -25,8 +25,8 @@ export const getAllRpcResponse = async <
       ? { key: response.pagination.next_key }
       : undefined
 
-    data.push(...response[key])
+    data.push(...(response[key]))
   } while (pagination !== undefined)
 
-  return data
+  return data as R[K]
 }
