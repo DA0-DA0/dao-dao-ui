@@ -15,12 +15,8 @@ import {
   ProposalModule,
   ProposalPrefill,
 } from './dao'
-import {
-  LoaderProps,
-  LogoProps,
-  ProfileVoteCardOption,
-  ProposalCardProps,
-} from './ui'
+import { ProposalCreatedCardProps } from './proposal'
+import { LoaderProps, LogoProps, ProfileVoteCardOption } from './ui'
 import { ProcessedThresholdQuorum } from './utils'
 
 export interface IProposalModuleAdapterCommon<
@@ -202,12 +198,7 @@ export interface BaseProposalLineProps {
 }
 
 export interface BaseNewProposalProps<FormData = any> {
-  onCreateSuccess: (
-    newProposalProps: Pick<
-      ProposalCardProps,
-      'id' | 'title' | 'description' | 'info'
-    >
-  ) => void
+  onCreateSuccess: (props: ProposalCreatedCardProps) => void
   draft?: ProposalDraft<FormData>
   saveDraft: () => void
   drafts: ProposalDraft[]

@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   DaoPageWrapper,
@@ -23,7 +23,11 @@ import {
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
-import { proposalDraftsAtom, useVotingModule } from '@dao-dao/state'
+import {
+  proposalCreatedCardPropsAtom,
+  proposalDraftsAtom,
+  useVotingModule,
+} from '@dao-dao/state'
 import { ProposalDraft, ProposalPrefill } from '@dao-dao/tstypes'
 import {
   CreateProposal,
@@ -31,7 +35,6 @@ import {
   Logo,
   PageLoader,
   ProfileDisconnectedCard,
-  ProposalCreatedModal,
   useDaoInfoContext,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
@@ -129,8 +132,9 @@ const InnerProposalCreate = () => {
     loadPrefill,
   ])
 
-  const [createdProposal, setCreatedProposal] =
-    useState<Parameters<BaseNewProposalProps['onCreateSuccess']>[0]>()
+  const setProposalCreatedCardProps = useSetRecoilState(
+    proposalCreatedCardPropsAtom
+  )
 
   const [drafts, setDrafts] = useRecoilState(
     proposalDraftsAtom(daoInfo.coreAddress)
@@ -202,12 +206,6 @@ const InnerProposalCreate = () => {
       return
     }
 
-    // If created proposal, clear draft and don't update.
-    if (createdProposal) {
-      setDrafts((drafts) => drafts.filter((_, index) => index !== draftIndex))
-      return
-    }
-
     // Save after 3 seconds.
     setDraftSaving(true)
     const timeout = setTimeout(() => {
@@ -236,71 +234,69 @@ const InnerProposalCreate = () => {
     // Instance changes every time, so compare stringified verison.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     JSON.stringify(proposalData),
-    createdProposal,
     draftIndex,
     setDrafts,
     proposalName,
     proposalModuleAdapterCommon.id,
   ])
 
-  return (
-    <>
-      <FormProvider {...formMethods}>
-        <CreateProposal
-          daoInfo={daoInfo}
-          newProposal={
-            <SuspenseLoader
-              fallback={<PageLoader />}
-              forceFallback={!prefillChecked}
-            >
-              <NewProposal
-                deleteDraft={deleteDraft}
-                draft={draft}
-                draftSaving={draftSaving}
-                drafts={drafts}
-                loadDraft={loadDraft}
-                onCreateSuccess={setCreatedProposal}
-                saveDraft={saveDraft}
-                unloadDraft={unloadDraft}
-              />
-            </SuspenseLoader>
-          }
-          notMember={
-            isMember === false &&
-            // Only confirm not a member once wallet status has stopped trying
-            // to connect. If autoconnecting, we don't want to flash "you're not
-            // a member" text yet.
-            status === WalletConnectionStatus.ReadyForConnection
-          }
-          proposalModule={selectedProposalModule}
-          rightSidebarContent={
-            connected ? (
-              <ProfileNewProposalCard
-                proposalModuleAdapterCommon={proposalModuleAdapterCommon}
-              />
-            ) : (
-              <ProfileDisconnectedCard />
-            )
-          }
-          setProposalModule={setSelectedProposalModule}
-        />
-      </FormProvider>
+  const onCreateSuccess: BaseNewProposalProps['onCreateSuccess'] = useCallback(
+    (info) => {
+      // Show modal.
+      setProposalCreatedCardProps(info)
 
-      {createdProposal && (
-        <ProposalCreatedModal
-          itemProps={{
-            dao: {
-              coreAddress: daoInfo.coreAddress,
-              imageUrl: daoInfo.imageUrl,
-            },
-            ...createdProposal,
-          }}
-          modalProps={{
-            onClose: () => setCreatedProposal(undefined),
-          }}
-        />
-      )}
-    </>
+      // Delete draft.
+      if (draftIndex !== undefined) {
+        deleteDraft(draftIndex)
+      }
+
+      // Navigate to proposal (underneath the creation modal).
+      router.push(`/dao/${info.dao.coreAddress}/proposals/${info.id}`)
+    },
+    [deleteDraft, draftIndex, router, setProposalCreatedCardProps]
+  )
+
+  return (
+    <FormProvider {...formMethods}>
+      <CreateProposal
+        daoInfo={daoInfo}
+        newProposal={
+          <SuspenseLoader
+            fallback={<PageLoader />}
+            forceFallback={!prefillChecked}
+          >
+            <NewProposal
+              deleteDraft={deleteDraft}
+              draft={draft}
+              draftSaving={draftSaving}
+              drafts={drafts}
+              loadDraft={loadDraft}
+              onCreateSuccess={onCreateSuccess}
+              saveDraft={saveDraft}
+              unloadDraft={unloadDraft}
+            />
+          </SuspenseLoader>
+        }
+        notMember={
+          isMember === false &&
+          // Only confirm not a member once wallet status has stopped trying
+          // to connect. If autoconnecting, we don't want to flash "you're not
+          // a member" text yet.
+          status === WalletConnectionStatus.ReadyForConnection
+        }
+        proposalModule={selectedProposalModule}
+        rightSidebarContent={
+          connected ? (
+            <ProfileNewProposalCard
+              proposalModuleAdapterCommon={proposalModuleAdapterCommon}
+            />
+          ) : (
+            <ProfileDisconnectedCard />
+          )
+        }
+        setProposalModule={setSelectedProposalModule}
+      />
+    </FormProvider>
   )
 }
 

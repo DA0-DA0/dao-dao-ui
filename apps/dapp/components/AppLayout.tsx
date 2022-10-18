@@ -18,10 +18,11 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { CommandModal, makeGenericContext } from '@dao-dao/command'
 import { PfpkNftSelectionModal, SidebarWallet } from '@dao-dao/common'
 import {
-  createdDaoCardPropsAtom,
+  daoCreatedCardPropsAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
   pinnedDaoDropdownInfosSelector,
+  proposalCreatedCardPropsAtom,
   refreshBlockHeightAtom,
   useCachedLoadable,
   usePinnedDaos,
@@ -31,6 +32,7 @@ import { CommandModalContextMaker } from '@dao-dao/tstypes'
 import {
   DaoCreatedModal,
   IAppLayoutContext,
+  ProposalCreatedModal,
   AppLayout as StatelessAppLayout,
 } from '@dao-dao/ui'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
@@ -71,9 +73,11 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
   // DAO creation modal that persists when navigating from create page to DAO
   // page.
   const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
-  const [createdDaoCardProps, setCreatedDaoCardProps] = useRecoilState(
-    createdDaoCardPropsAtom
+  const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
+    daoCreatedCardPropsAtom
   )
+  const [proposalCreatedCardProps, setProposalCreatedCardProps] =
+    useRecoilState(proposalCreatedCardPropsAtom)
 
   //! WALLET CONNECTION ERROR MODALS
   const { error, status } = useWalletManager()
@@ -261,21 +265,30 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         />
       )}
 
-      {createdDaoCardProps && (
+      {daoCreatedCardProps && (
         <DaoCreatedModal
           itemProps={{
-            ...createdDaoCardProps,
+            ...daoCreatedCardProps,
 
-            pinned: isPinned(createdDaoCardProps.coreAddress),
+            pinned: isPinned(daoCreatedCardProps.coreAddress),
             onPin: () =>
-              isPinned(createdDaoCardProps.coreAddress)
-                ? setUnpinned(createdDaoCardProps.coreAddress)
-                : setPinned(createdDaoCardProps.coreAddress),
+              isPinned(daoCreatedCardProps.coreAddress)
+                ? setUnpinned(daoCreatedCardProps.coreAddress)
+                : setPinned(daoCreatedCardProps.coreAddress),
           }}
           modalProps={{
-            onClose: () => setCreatedDaoCardProps(undefined),
+            onClose: () => setDaoCreatedCardProps(undefined),
           }}
-          subDao={!!createdDaoCardProps.parentDao}
+          subDao={!!daoCreatedCardProps.parentDao}
+        />
+      )}
+
+      {proposalCreatedCardProps && (
+        <ProposalCreatedModal
+          itemProps={proposalCreatedCardProps}
+          modalProps={{
+            onClose: () => setProposalCreatedCardProps(undefined),
+          }}
         />
       )}
 

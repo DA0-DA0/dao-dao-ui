@@ -17,7 +17,7 @@ import { ContractVersion } from './contract'
 import { ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as CwdCoreV2InstantiateMsg } from './contracts/CwdCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
-import { LoadingData } from './ui'
+import { DaoCardProps, LoadingData } from './ui'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/common/components/DaoPageWrapper
@@ -250,3 +250,5 @@ export type DaoCreationGetInstantiateInfo<
   data: ModuleData,
   t: TFunction
 ) => ModuleInstantiateInfo
+
+export type DaoCreatedCardProps = Omit<DaoCardProps, 'pinned' | 'onPin'>

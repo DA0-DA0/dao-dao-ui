@@ -69,7 +69,7 @@ export const NewProposal = ({
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
-  const { coreVersion } = useDaoInfoContext()
+  const daoInfo = useDaoInfoContext()
   const { connected, address: walletAddress } = useWallet()
   const { isMember = false } = useVotingModule(options.coreAddress, {
     fetchMembership: true,
@@ -90,7 +90,7 @@ export const NewProposal = ({
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = makeUseProposalModuleActions(options)()
   const actions = useActions(
-    coreVersion,
+    daoInfo.coreVersion,
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]
@@ -369,15 +369,23 @@ export const NewProposal = ({
                         ]
                       : []),
                   ],
+                  dao: {
+                    coreAddress: daoInfo.coreAddress,
+                    imageUrl: daoInfo.imageUrl,
+                  },
                 }
               : {
                   id: proposalId,
                   title: formMethods.getValues('title'),
                   description: formMethods.getValues('description'),
                   info: [],
+                  dao: {
+                    coreAddress: daoInfo.coreAddress,
+                    imageUrl: daoInfo.imageUrl,
+                  },
                 }
           )
-          // Don't stop loading indicator since we are navigating.
+          // Don't stop loading indicator on success since we are navigating.
         } catch (err) {
           console.error(err)
           toast.error(processError(err))
@@ -385,21 +393,25 @@ export const NewProposal = ({
         }
       },
     [
-      blocksPerYear,
       connected,
+      blockHeight,
       requiredProposalDeposit,
       cw20DepositTokenAllowanceResponse,
+      depositInfoNativeTokenDenom,
       t,
-      blockHeight,
       increaseCw20DepositAllowance,
       options,
       refreshBalances,
-      doProposeV1,
-      doProposeV2,
-      doProposePrePropose,
       cosmWasmClient,
+      blocksPerYear,
+      processTQ,
       onCreateSuccess,
       formMethods,
+      daoInfo.coreAddress,
+      daoInfo.imageUrl,
+      doProposeV1,
+      doProposePrePropose,
+      doProposeV2,
     ]
   )
 

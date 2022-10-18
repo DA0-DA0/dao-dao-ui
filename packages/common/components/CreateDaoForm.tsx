@@ -16,7 +16,7 @@ import {
 import {
   CwAdminFactoryHooks,
   DefaultNewDao,
-  createdDaoCardPropsAtom,
+  daoCreatedCardPropsAtom,
   newDaoAtom,
   usePinnedDaos,
   useWalletProfile,
@@ -88,8 +88,8 @@ export const CreateDaoForm = ({
 
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
-  const [createdDaoCardProps, setCreatedDaoCardProps] = useRecoilState(
-    createdDaoCardPropsAtom
+  const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
+    daoCreatedCardPropsAtom
   )
 
   const [_newDaoAtom, setNewDaoAtom] = useRecoilState(
@@ -121,7 +121,7 @@ export const CreateDaoForm = ({
   // Debounce saving latest data to atom and thus localStorage every 10 seconds.
   useEffect(() => {
     // If created DAO, clear saved data and don't update.
-    if (createdDaoCardProps) {
+    if (daoCreatedCardProps) {
       // Clear saved form data.
       setNewDaoAtom(DefaultNewDao)
       return
@@ -130,7 +130,7 @@ export const CreateDaoForm = ({
     // Deep clone to prevent values from becoming readOnly.
     const timeout = setTimeout(() => setNewDaoAtom(cloneDeep(newDao)), 10000)
     return () => clearTimeout(timeout)
-  }, [newDao, setNewDaoAtom, createdDaoCardProps])
+  }, [newDao, setNewDaoAtom, daoCreatedCardProps])
 
   // Set accent color based on image provided.
   const { setAccentColor } = useThemeContext()
@@ -397,7 +397,7 @@ export const CreateDaoForm = ({
                   }
 
             // Set card props to show modal.
-            setCreatedDaoCardProps({
+            setDaoCreatedCardProps({
               chainId: CHAIN_ID,
               coreAddress,
               name,
@@ -466,7 +466,7 @@ export const CreateDaoForm = ({
       refreshBalances,
       votingModuleAdapter.id,
       cw20StakedBalanceVotingData,
-      setCreatedDaoCardProps,
+      setDaoCreatedCardProps,
       name,
       description,
       imageUrl,
@@ -539,7 +539,7 @@ export const CreateDaoForm = ({
       <RightSidebarContent>
         <DaoCreateSidebarCard
           // Once created, set pageIndex to 4 to show all checkboxes.
-          pageIndex={createdDaoCardProps ? 4 : pageIndex}
+          pageIndex={daoCreatedCardProps ? 4 : pageIndex}
         />
       </RightSidebarContent>
       <PageHeader
