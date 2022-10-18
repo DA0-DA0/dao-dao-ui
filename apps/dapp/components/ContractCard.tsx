@@ -54,11 +54,11 @@ export const ContractCard = ({
         <a onClick={() => setLoading(true)}>
           <div
             className={clsx(
-              'flex relative flex-col justify-between items-center p-6 w-full h-[320px] bg-card from-transparent rounded-lg hover:outline-1 hover:outline-brand hover:outline',
-              selected && 'outline-1 outline-brand outline'
+              'relative flex h-[320px] w-full flex-col items-center justify-between rounded-lg bg-card from-transparent p-6 hover:outline hover:outline-1 hover:outline-brand',
+              selected && 'outline outline-1 outline-brand'
             )}
           >
-            <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%]"></div>
+            <div className="absolute top-0 left-0 h-[110px] w-full rounded-lg bg-gradient-to-t from-transparent to-dark opacity-[8%]"></div>
             <div className="flex flex-col items-center self-stretch">
               <div
                 className={clsx({ 'animate-spin-medium': _loading || loading })}
@@ -66,7 +66,7 @@ export const ContractCard = ({
                 {imgUrl ? (
                   <div
                     aria-label={t('info.daosLogo')}
-                    className="w-[80px] h-[80px] bg-center bg-cover rounded-full"
+                    className="h-[80px] w-[80px] rounded-full bg-cover bg-center"
                     role="img"
                     style={{
                       backgroundImage: `url(${imgUrl})`,
@@ -77,17 +77,17 @@ export const ContractCard = ({
                 )}
               </div>
 
-              <h3 className="mt-3 max-w-full font-semibold truncate text-md">
+              <h3 className="text-md mt-3 max-w-full truncate font-semibold">
                 {name}
               </h3>
-              <p className="mt-2 font-mono text-xs text-center text-secondary break-words line-clamp-3">
+              <p className="mt-2 break-words text-center font-mono text-xs text-secondary line-clamp-3">
                 {description}
               </p>
             </div>
-            <div className="flex flex-col gap-1 items-left">
+            <div className="items-left flex flex-col gap-1">
               {balance && (
                 <p className="text-sm">
-                  <Dao className="inline mr-2 mb-1 w-4" fill="currentColor" />
+                  <Dao className="mr-2 mb-1 inline w-4" />
                   {convertMicroDenomToDenomWithDecimals(
                     balance,
                     NATIVE_DECIMALS
@@ -97,16 +97,13 @@ export const ContractCard = ({
               )}
               {proposals !== undefined && (
                 <p className="text-sm">
-                  <Pencil
-                    className="inline mr-2 mb-1 w-4"
-                    fill="currentColor"
-                  />
+                  <Pencil className="mr-2 mb-1 inline w-4" />
                   {t('info.numProposals', { count: proposals })}
                 </p>
               )}
               {votingPowerPercent && (
-                <div className="flex flex-row gap-2 text-sm text-valid text-success">
-                  <Votes className="w-4 h-5" fill="currentColor" />
+                <div className="text-success flex flex-row gap-2 text-sm text-valid">
+                  <Votes className="h-5 w-4" />
                   {votingPowerPercent === '0%' ? (
                     t('info.noVotingPower')
                   ) : (
@@ -127,9 +124,9 @@ export const ContractCard = ({
           onClick={() => onPin()}
         >
           {pinned ? (
-            <PinSolid className="w-4 h-4" />
+            <PinSolid className="h-4 w-4" />
           ) : (
-            <PinOutline className="w-4 h-4" />
+            <PinOutline className="h-4 w-4" />
           )}
         </button>
       )}
@@ -138,9 +135,9 @@ export const ContractCard = ({
 }
 
 export const LoadingContractCard = () => (
-  <div className="flex relative flex-col justify-center items-center p-6 w-full h-[320px] bg-card from-transparent rounded-lg shadow transition-shadow">
-    <div className="absolute top-0 left-0 w-full h-[110px] bg-gradient-to-t from-transparent to-dark rounded-lg opacity-[8%] "></div>
-    <div className="flex justify-center items-center w-[70px] h-[70px]">
+  <div className="relative flex h-[320px] w-full flex-col items-center justify-center rounded-lg bg-card from-transparent p-6 shadow transition-shadow">
+    <div className="absolute top-0 left-0 h-[110px] w-full rounded-lg bg-gradient-to-t from-transparent to-dark opacity-[8%] "></div>
+    <div className="flex h-[70px] w-[70px] items-center justify-center">
       <Loader size={72} />
     </div>
   </div>

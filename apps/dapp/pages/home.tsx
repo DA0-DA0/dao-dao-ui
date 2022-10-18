@@ -1,57 +1,52 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
+import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
+import { useSetRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
-  CI,
-  FEATURED_DAOS_CACHE_SECONDS,
-  FEATURED_DAOS_URL,
-} from '@dao-dao/utils'
+  useLoadingFeaturedDaoCardInfos,
+  useLoadingPinnedDaoCardInfos,
+} from '@dao-dao/state'
+import { Home, ProfileDisconnectedCard } from '@dao-dao/ui'
 
-import {
-  FeaturedDAOsList,
-  FeaturedDao,
-  PinnedDAOsList,
-  PinnedProposalsList,
-  SmallScreenNav,
-} from '@/components'
+import { commandModalVisibleAtom } from '@/atoms'
+import { DaoCard, ProfileHomeCard } from '@/components'
 
-interface HomePageProps {
-  featuredDaos: FeaturedDao[]
+const HomePage: NextPage = () => {
+  const { connected } = useWallet()
+
+  const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
+
+  // Load from indexer.
+  const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
+  const pinnedDaosLoading = useLoadingPinnedDaoCardInfos()
+
+  return (
+    <Home
+      connected={connected}
+      featuredDaosProps={{
+        DaoCard,
+        featuredDaos: featuredDaosLoading,
+      }}
+      pinnedDaosProps={{
+        DaoCard,
+        openSearch: () => setCommandModalVisible(true),
+        pinnedDaos: pinnedDaosLoading,
+      }}
+      rightSidebarContent={
+        connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
+      }
+    />
+  )
 }
-
-const HomePage: NextPage<HomePageProps> = ({ featuredDaos }) => (
-  <>
-    <SmallScreenNav />
-
-    <div className="p-4 space-y-6 max-w-6xl md:p-6">
-      <PinnedProposalsList />
-      <PinnedDAOsList />
-      <FeaturedDAOsList featuredDaos={featuredDaos} />
-    </div>
-  </>
-)
 
 export default HomePage
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const featuredDaos: FeaturedDao[] = []
-  if (!CI) {
-    const resp = await fetch(FEATURED_DAOS_URL)
-    // These are returned as a timeseries in the form [{time, value}, ...].
-    const featuredDaosOverTime = await resp.json()
-    featuredDaos.push(
-      ...featuredDaosOverTime[featuredDaosOverTime.length - 1].value
-    )
-  }
-
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['translation'])),
-      featuredDaos,
-    },
-    revalidate: FEATURED_DAOS_CACHE_SECONDS,
-  }
-}
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['translation'])),
+  },
+})

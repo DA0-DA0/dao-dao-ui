@@ -29,7 +29,7 @@ export const RadioInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   setValue,
   className,
 }: RadioInputProps<FV, FieldName>) => (
-  <div className={clsx('flex flex-row gap-2 items-stretch', className)}>
+  <div className={clsx('flex flex-row items-stretch gap-2', className)}>
     {options.map(({ label: optionLabel, value }, index) => {
       const selected = value === watch(fieldName)
 
@@ -63,9 +63,9 @@ export const RadioButton = ({
 }: RadioButtonProps) => (
   <div
     className={clsx(
-      'flex flex-row gap-3 items-center transition',
+      'flex flex-row items-center gap-3 transition',
       {
-        'py-3 px-4 hover:bg-tab-hover rounded-md': background,
+        'rounded-md py-3 px-4 hover:bg-tab-hover': background,
         'bg-card': background && selected,
         'cursor-pointer': onClick,
       },
@@ -73,9 +73,9 @@ export const RadioButton = ({
     )}
     onClick={onClick}
   >
-    <div className="aspect-square flex justify-center items-center w-5 h-5 rounded-full border border-default">
+    <div className="flex aspect-square h-5 w-5 items-center justify-center rounded-full border border-default">
       <div
-        className={clsx('w-3 h-3 bg-brand rounded-full transition', {
+        className={clsx('h-3 w-3 rounded-full bg-brand transition', {
           'opacity-0': !selected,
           'opacity-100': selected,
         })}

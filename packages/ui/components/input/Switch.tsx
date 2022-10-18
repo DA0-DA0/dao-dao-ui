@@ -1,6 +1,10 @@
 import clsx from 'clsx'
-import { Path, PathValue, UseFormSetValue, UseFormWatch } from 'react-hook-form'
+import { FieldValues, UseFormSetValue } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+
+import { BooleanFieldNames } from '@dao-dao/tstypes'
+
+import { TooltipInfoIcon } from '../TooltipInfoIcon'
 
 export interface SwitchProps {
   enabled: boolean
@@ -19,14 +23,14 @@ export const Switch = ({
 }: SwitchProps) => (
   <div
     className={clsx(
-      'flex relative flex-none items-center rounded-full',
+      'relative flex flex-none items-center rounded-full',
       {
-        'hover:opacity-90 cursor-pointer': !readOnly,
+        'cursor-pointer hover:opacity-90': !readOnly,
         'bg-valid': enabled,
-        'bg-transparent border border-dark': !enabled,
+        'border border-dark bg-transparent': !enabled,
         // Sizing.
-        'w-[28px] h-[16px]': sizing === 'sm',
-        'w-[67px] h-[38px]': sizing === 'lg',
+        'h-[16px] w-[28px]': sizing === 'sm',
+        'h-[38px] w-[67px]': sizing === 'lg',
       },
       className
     )}
@@ -34,15 +38,15 @@ export const Switch = ({
   >
     <div
       className={clsx(
-        'absolute bg-toast rounded-full transition-all',
+        'absolute rounded-full bg-toast transition-all',
         // Sizing.
         {
           // Small
-          'w-[10px] h-[10px]': sizing === 'sm',
+          'h-[10px] w-[10px]': sizing === 'sm',
           'left-[15px]': sizing === 'sm' && enabled,
           'left-[2px]': sizing === 'sm' && !enabled,
           // Large
-          'w-[28px] h-[28px]': sizing === 'lg',
+          'h-[28px] w-[28px]': sizing === 'lg',
           'left-[33px]': sizing === 'lg' && enabled,
           'left-[4.5px]': sizing === 'lg' && !enabled,
         }
@@ -55,12 +59,14 @@ export interface SwitchCardProps extends SwitchProps {
   containerClassName?: string
   onLabel?: string
   offLabel?: string
+  tooltip?: string
 }
 
 export const SwitchCard = ({
   containerClassName,
   onLabel: _onLabel,
   offLabel: _offLabel,
+  tooltip,
   ...props
 }: SwitchCardProps) => {
   const { t } = useTranslation()
@@ -71,54 +77,48 @@ export const SwitchCard = ({
   return (
     <div
       className={clsx(
-        'flex flex-row gap-4 items-center py-2 px-3 bg-card rounded-md',
+        'flex flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3',
         containerClassName
       )}
     >
-      <p className="min-w-[5rem] secondary-text">
-        {props.enabled ? onLabel : offLabel}
-      </p>
+      <div className="flex flex-row items-center gap-1">
+        <p className="secondary-text min-w-[5rem]">
+          {props.enabled ? onLabel : offLabel}
+        </p>
+        {tooltip && <TooltipInfoIcon title={tooltip} />}
+      </div>
 
       <Switch {...props} />
     </div>
   )
 }
 
-// Return the field name paths that have type boolean.
-export type BooleanFieldNames<FieldValues> = {
-  [Property in Path<FieldValues>]: PathValue<FieldValues, Property> extends
-    | boolean
-    | undefined
-    ? Property
-    : never
-}[Path<FieldValues>]
-
 export type FormSwitchWrapperProps<
   Props,
-  FieldValues,
-  BooleanFieldName extends BooleanFieldNames<FieldValues>
+  FV extends FieldValues,
+  BooleanFieldName extends BooleanFieldNames<FV>
 > = Omit<Props, 'enabled' | 'onClick'> & {
   fieldName: BooleanFieldName
-  watch: UseFormWatch<FieldValues>
-  setValue: UseFormSetValue<FieldValues>
+  value: boolean | undefined
+  setValue: UseFormSetValue<FV>
   onToggle?: (newValue: boolean) => void
 }
 
 export const FormSwitch = <
-  FieldValues,
-  BooleanFieldName extends BooleanFieldNames<FieldValues>
+  FV extends FieldValues,
+  BooleanFieldName extends BooleanFieldNames<FV>
 >({
   fieldName,
-  watch,
+  value,
   setValue,
   onToggle,
   ...props
-}: FormSwitchWrapperProps<SwitchProps, FieldValues, BooleanFieldName>) => (
+}: FormSwitchWrapperProps<SwitchProps, FV, BooleanFieldName>) => (
   <Switch
-    enabled={!!watch(fieldName)}
+    enabled={!!value}
     onClick={() => {
-      const newValue = !watch(fieldName) as any
-      setValue(fieldName, newValue)
+      const newValue = !value
+      setValue(fieldName, newValue as any)
       onToggle?.(newValue)
     }}
     {...props}
@@ -126,20 +126,20 @@ export const FormSwitch = <
 )
 
 export const FormSwitchCard = <
-  FieldValues,
-  BooleanFieldName extends BooleanFieldNames<FieldValues>
+  FV extends FieldValues,
+  BooleanFieldName extends BooleanFieldNames<FV>
 >({
   fieldName,
-  watch,
+  value,
   setValue,
   onToggle,
   ...props
-}: FormSwitchWrapperProps<SwitchCardProps, FieldValues, BooleanFieldName>) => (
+}: FormSwitchWrapperProps<SwitchCardProps, FV, BooleanFieldName>) => (
   <SwitchCard
-    enabled={!!watch(fieldName)}
+    enabled={!!value}
     onClick={() => {
-      const newValue = !watch(fieldName) as any
-      setValue(fieldName, newValue)
+      const newValue = !value
+      setValue(fieldName, newValue as any)
       onToggle?.(newValue)
     }}
     {...props}

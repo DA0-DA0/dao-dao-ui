@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ComponentProps, ReactNode } from 'react'
 
-import { TooltipIcon } from '../TooltipIcon'
+import { TooltipInfoIcon } from '../TooltipInfoIcon'
 
 export interface InputLabelProps
   extends Omit<ComponentProps<'span'>, 'children'> {
@@ -20,16 +20,16 @@ export const InputLabel = ({
   ...rest
 }: InputLabelProps) => (
   <label
-    className={clsx('flex items-center space-x-1', labelClassName)}
+    className={clsx('flex flex-row items-center space-x-1', labelClassName)}
     {...containerProps}
   >
     <span
-      className={clsx('caption-text', { 'font-mono': mono }, className)}
+      className={clsx('secondary-text', { 'font-mono': mono }, className)}
       {...rest}
     >
       {name}
     </span>
 
-    {tooltip && <TooltipIcon label={tooltip} />}
+    {tooltip && <TooltipInfoIcon size="sm" title={tooltip} />}
   </label>
 )

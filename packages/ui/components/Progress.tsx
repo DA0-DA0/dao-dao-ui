@@ -1,11 +1,8 @@
-// The height in pixels a vertical bar extends beyond the progress bar on top and bottom.
-const VERTICAL_BAR_PADDING = 5
+import { ArrowDropUp } from '@mui/icons-material'
 
-export const Progress = ({
-  rows,
-  verticalBars = [],
-  alignEnd,
-}: {
+import { Tooltip } from './Tooltip'
+
+export interface ProgressProps {
   rows: {
     backgroundColor?: string
     thickness: number
@@ -14,12 +11,17 @@ export const Progress = ({
       color: string
     }[]
   }[]
-  verticalBars?: {
-    value: number
-    color: string
-  }[]
+  caretPosition?: number
+  caretTooltip?: string
   alignEnd?: boolean
-}) => (
+}
+
+export const Progress = ({
+  rows,
+  caretPosition,
+  caretTooltip,
+  alignEnd,
+}: ProgressProps) => (
   <div className="relative w-full">
     <div
       className={`flex w-full flex-col items-stretch overflow-hidden rounded-full`}
@@ -38,9 +40,7 @@ export const Progress = ({
           {data.map(({ value, color }, index) => (
             <div
               key={index}
-              className={`h-full ${
-                index === data.length - 1 && !alignEnd ? 'rounded-r-full' : ''
-              } ${index === 0 && alignEnd ? 'rounded-l-full' : ''}`}
+              className="h-full"
               style={{ width: `${value}%`, backgroundColor: color }}
             ></div>
           ))}
@@ -48,18 +48,13 @@ export const Progress = ({
       ))}
     </div>
 
-    {verticalBars.map(({ value, color }, index) => (
-      <div
-        key={index}
-        className="absolute w-[2px] rounded-full"
+    <Tooltip title={caretTooltip}>
+      <ArrowDropUp
+        className="absolute bottom-[-0.825rem] z-10 !h-6 !w-6 text-icon-primary"
         style={{
-          left: `${value}%`,
-          backgroundColor: color,
-          // Extend above and below bar.
-          top: -VERTICAL_BAR_PADDING,
-          bottom: -VERTICAL_BAR_PADDING,
+          left: `${caretPosition}%`,
         }}
-      ></div>
-    ))}
+      />
+    </Tooltip>
   </div>
 )

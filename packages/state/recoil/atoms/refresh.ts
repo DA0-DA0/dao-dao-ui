@@ -30,3 +30,42 @@ export const refreshProposalsIdAtom = atom<number>({
   key: 'refreshProposalsId',
   default: 0,
 })
+
+// Change this to refresh the token USDC price for a denom.
+export const refreshTokenUsdcPriceIdAtom = atomFamily<number, string>({
+  key: 'refreshTokenUsdcPriceId',
+  default: 0,
+})
+
+// Change this to refresh the current block height.
+export const refreshBlockHeightAtom = atom<number>({
+  key: 'refreshBlockHeight',
+  default: 0,
+})
+
+// Change this to refresh the list of stargaze NFTs for a wallet.
+export const refreshWalletStargazeNftsAtom = atomFamily<number, string>({
+  key: 'refreshWalletStargazeNfts',
+  default: 0,
+})
+
+// Change this to refresh the profile for a wallet.
+export const refreshWalletProfileAtom = atomFamily<number, string>({
+  key: 'refreshWalletProfile',
+  default: 0,
+})
+
+// Change this to refresh native token staking info for the given address.
+export const refreshNativeTokenStakingInfoAtom = atomFamily<
+  number,
+  string | undefined
+>({
+  key: 'refreshNativeTokenStakingInfo',
+  default: 0,
+})
+
+// Change this to refresh voting power info for a DAO given its core address.
+export const refreshDaoVotingPowerAtom = atomFamily<number, string>({
+  key: 'refreshDaoVotingPower',
+  default: 0,
+})

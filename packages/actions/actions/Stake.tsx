@@ -7,6 +7,15 @@ import {
   nativeDelegatedBalanceSelector,
 } from '@dao-dao/state'
 import {
+  Action,
+  ActionComponent,
+  ActionKey,
+  UseDecodedCosmosMsg,
+  UseDefaults,
+  UseTransformToCosmos,
+} from '@dao-dao/tstypes/actions'
+import { ActionCardLoader, StakeEmoji } from '@dao-dao/ui'
+import {
   NATIVE_DENOM,
   StakeType,
   convertDenomToMicroDenomWithDecimals,
@@ -17,19 +26,9 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  ActionCardLoader,
-  StakeIcon,
   StakeComponent as StatelessStakeComponent,
   stakeActions,
-} from '../components'
-import {
-  Action,
-  ActionComponent,
-  ActionKey,
-  UseDecodedCosmosMsg,
-  UseDefaults,
-  UseTransformToCosmos,
-} from '../types'
+} from '../components/Stake'
 
 interface StakeData {
   stakeType: StakeType
@@ -57,7 +56,7 @@ const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
     const amount = convertDenomToMicroDenomWithDecimals(data.amount, decimals)
     return makeStakingMessage(
       data.stakeType,
-      amount,
+      amount.toString(),
       data.denom,
       data.validator,
       data.fromValidator
@@ -128,10 +127,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
 
 const InnerStakeComponent: ActionComponent = (props) => {
   const nativeBalances = useRecoilValue(
-    nativeBalancesSelector(props.coreAddress)
+    nativeBalancesSelector({ address: props.coreAddress })
   )
   const nativeDelegatedBalance = useRecoilValue(
-    nativeDelegatedBalanceSelector(props.coreAddress)
+    nativeDelegatedBalanceSelector({ address: props.coreAddress })
   )
 
   return (
@@ -153,7 +152,7 @@ const Component: ActionComponent = (props) => (
 
 export const stakeAction: Action<StakeData> = {
   key: ActionKey.Stake,
-  Icon: StakeIcon,
+  Icon: StakeEmoji,
   label: 'Stake',
   description: 'Manage native token staking.',
   Component,

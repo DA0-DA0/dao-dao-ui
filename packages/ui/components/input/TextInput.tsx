@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ComponentProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -12,12 +12,13 @@ import {
 export interface TextInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
-> extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
-  fieldName: FieldName
-  register: UseFormRegister<FV>
+> extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'required'> {
+  fieldName?: FieldName
+  register?: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   required?: boolean
+  ghost?: boolean
 }
 
 /**
@@ -36,6 +37,7 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   validation,
   className,
   required,
+  ghost,
   ...rest
 }: TextInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
@@ -46,13 +48,20 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   return (
     <input
       className={clsx(
-        'py-2 px-3 w-full bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition body-text',
-        { 'ring-1 ring-error': error },
+        'secondary-text w-full appearance-none bg-transparent text-text-body transition placeholder:text-text-tertiary focus:outline-none',
+        // Padding and outline
+        !ghost && 'rounded-md py-3 px-4 ring-1 focus:ring-2',
+        // Outline color
+        error
+          ? 'ring-border-interactive-error'
+          : 'ring-border-primary focus:ring-border-interactive-focus',
         className
       )}
       type="text"
       {...rest}
-      {...register(fieldName, { required: required && 'Required', validate })}
+      {...(register &&
+        fieldName &&
+        register(fieldName, { required: required && 'Required', validate }))}
     />
   )
 }

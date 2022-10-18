@@ -1,7 +1,9 @@
-import { XIcon } from '@heroicons/react/outline'
+import { Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ReactNode, cloneElement } from 'react'
 import { Toast, ToastBar, toast as hotToast } from 'react-hot-toast'
+
+import { IconButton } from '../IconButton'
 
 export interface ToastCardProps {
   toast: Toast
@@ -18,7 +20,7 @@ export const ToastCard = ({
     {({ message }) => (
       <div
         className={clsx(
-          'flex flex-row gap-3 items-start p-4 font-mono text-sm rounded',
+          'caption-text flex flex-row items-start gap-4 rounded-lg bg-component-toast p-4 text-sm text-text-body shadow-dp2',
           containerClassName
         )}
       >
@@ -31,13 +33,14 @@ export const ToastCard = ({
               cloneElement(message, { className: '!m-0' })}
         </p>
 
-        <button
-          className="rounded-full opacity-50 hover:opacity-20 transition"
+        <IconButton
+          Icon={Close}
+          className="!text-icon-secondary"
+          iconClassName="!w-5 !h-5"
           onClick={() => hotToast.dismiss(toast.id)}
-        >
-          {/* Height equal to line height of message above (text-sm). */}
-          <XIcon className="w-4 h-5" />
-        </button>
+          size="xs"
+          variant="ghost"
+        />
       </div>
     )}
   </ToastBar>

@@ -2,9 +2,10 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material-ocean.css'
 import 'codemirror/theme/material.css'
 
+import clsx from 'clsx'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 
-import { useThemeContext } from '../theme'
+import { Theme, useThemeContext } from '../theme'
 
 // This check is to prevent this import to be server side rendered.
 if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
@@ -13,13 +14,18 @@ if (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') {
 
 export interface CosmosMessageDisplayProps {
   value: string
+  className?: string
 }
 
-export const CosmosMessageDisplay = ({ value }: CosmosMessageDisplayProps) => {
+export const CosmosMessageDisplay = ({
+  value,
+  className,
+}: CosmosMessageDisplayProps) => {
   const themeCtx = useThemeContext()
-  const editorTheme = themeCtx.theme !== 'dark' ? 'default' : 'material-ocean'
+  const editorTheme =
+    themeCtx.theme !== Theme.Dark ? 'default' : 'material-ocean'
   return (
-    <div className="flex flex-col">
+    <div className={clsx('flex flex-col', className)}>
       <CodeMirror
         className="text-sm"
         options={{

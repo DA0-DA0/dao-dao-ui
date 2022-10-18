@@ -1,9 +1,9 @@
-import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ContractInfoResponse } from '@dao-dao/state/clients/cw721-base'
+import { ActionComponent } from '@dao-dao/tstypes/actions'
+import { ContractInfoResponse } from '@dao-dao/tstypes/contracts/Cw721Base'
 import {
   AddressInput,
   Button,
@@ -11,10 +11,11 @@ import {
   FormattedJSONDisplayProps,
   InputErrorMessage,
   InputLabel,
+  RemoveCw721Emoji,
 } from '@dao-dao/ui'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 
 interface Token {
   address: string
@@ -45,19 +46,19 @@ export const RemoveCw721Component: ActionComponent<RemoveCw721Options> = ({
 
   return (
     <ActionCard
-      Icon={RemoveCw721Icon}
+      Icon={RemoveCw721Emoji}
       onRemove={onRemove}
       title={t('title.removeCw721FromTreasury')}
     >
       {existingTokens.length > 0 && (
         <>
           <InputLabel name={t('form.existingTokens')} />
-          <div className="grid grid-cols-5 gap-1 mb-2">
+          <div className="mb-2 grid grid-cols-5 gap-1">
             {existingTokens.map(({ address, info }) => (
               <Button
                 key={address}
                 className={clsx('text-center', {
-                  'text-secondary bg-transparent': address !== tokenAddress,
+                  'bg-transparent text-secondary': address !== tokenAddress,
                 })}
                 disabled={!isCreating}
                 onClick={() => setValue(fieldNamePrefix + 'address', address)}
@@ -97,9 +98,4 @@ export const RemoveCw721Component: ActionComponent<RemoveCw721Options> = ({
       <FormattedJSONDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
   )
-}
-
-export const RemoveCw721Icon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.x')} symbol="❌" />
 }

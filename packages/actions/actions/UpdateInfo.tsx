@@ -1,30 +1,43 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { CwCoreV0_1_0Selectors } from '@dao-dao/state'
-import { makeWasmMessage } from '@dao-dao/utils'
-
 import {
-  UpdateInfoComponent as Component,
-  UpdateInfoData,
-  UpdateInfoIcon,
-} from '../components'
+  CwCoreV1Selectors,
+  CwdCoreV2Selectors,
+  contractVersionSelector,
+} from '@dao-dao/state'
+import { ContractVersion } from '@dao-dao/tstypes'
 import {
   Action,
   ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { UpdateInfoEmoji } from '@dao-dao/ui'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import {
+  UpdateInfoComponent as Component,
+  UpdateInfoData,
+} from '../components/UpdateInfo'
 
 const useDefaults: UseDefaults<UpdateInfoData> = (coreAddress: string) => {
+  const coreVersion = useRecoilValue(
+    contractVersionSelector({
+      contractAddress: coreAddress,
+    })
+  )
   const config = useRecoilValue(
-    CwCoreV0_1_0Selectors.configSelector({ contractAddress: coreAddress })
+    coreVersion === ContractVersion.V0_1_0
+      ? CwCoreV1Selectors.configSelector({ contractAddress: coreAddress })
+      : CwdCoreV2Selectors.configSelector({
+          contractAddress: coreAddress,
+          params: [],
+        })
   )
 
-  // Need to deep copy as, for reasons beyond me, the object returned
-  // from the selector is immutable which causes all sorts of trouble.
-  return JSON.parse(JSON.stringify(config))
+  return { ...config }
 }
 
 const useTransformToCosmos: UseTransformToCosmos<UpdateInfoData> = (
@@ -72,17 +85,24 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateInfoData> = (
               description:
                 msg.wasm.execute.msg.update_config.config.description,
 
-              // Only add image url if it is in the message.
+              // Only add image url if in the message.
               ...(!!msg.wasm.execute.msg.update_config.config.image_url && {
                 image_url: msg.wasm.execute.msg.update_config.config.image_url,
               }),
 
+              // V1 and V2 passthrough
               automatically_add_cw20s:
                 msg.wasm.execute.msg.update_config.config
                   .automatically_add_cw20s,
               automatically_add_cw721s:
                 msg.wasm.execute.msg.update_config.config
                   .automatically_add_cw721s,
+
+              // V2 passthrough
+              // Only add dao URI if in the message.
+              ...('dao_uri' in msg.wasm.execute.msg.update_config.config && {
+                dao_uri: msg.wasm.execute.msg.update_config.config.dao_uri,
+              }),
             },
           }
         : { match: false },
@@ -91,7 +111,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateInfoData> = (
 
 export const updateInfoAction: Action<UpdateInfoData> = {
   key: ActionKey.UpdateInfo,
-  Icon: UpdateInfoIcon,
+  Icon: UpdateInfoEmoji,
   label: 'Update Info',
   description: "Update your DAO's name, image, and description.",
   Component,

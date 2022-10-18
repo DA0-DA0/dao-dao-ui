@@ -4,12 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw721BaseSelectors } from '@dao-dao/state'
-import { makeWasmMessage } from '@dao-dao/utils'
-
-import {
-  AddCw721Icon,
-  AddCw721Component as StatelessAddCw721Component,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -17,7 +11,11 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { AddCw721Emoji } from '@dao-dao/ui'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import { AddCw721Component as StatelessAddCw721Component } from '../components/AddCw721'
 
 interface AddCw721Data {
   address: string
@@ -117,7 +115,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw721Data> = (
 
 export const addCw721Action: Action<AddCw721Data> = {
   key: ActionKey.AddCw721,
-  Icon: AddCw721Icon,
+  Icon: AddCw721Emoji,
   label: 'Display NFT Collection in Treasury',
   description:
     'Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.',

@@ -1,1 +1,1 @@
-export * from './cw-proposal-single'
+export * from './CwdProposalSingle'

@@ -1,4 +1,9 @@
-import { atomFamily } from 'recoil'
+import { atom, atomFamily } from 'recoil'
+
+import { ProposalDraft } from '@dao-dao/tstypes'
+import { ProposalCreatedCardProps } from '@dao-dao/tstypes/proposal'
+
+import { localStorageEffectJSON } from '../effects'
 
 // Store proposal ID list endings for proposal pagination for the given
 // coreAddress. Map list index to its ending for each proposal module address.
@@ -18,4 +23,20 @@ export const proposalStartBeforesAtom = atomFamily<
 export const proposalListCountAtom = atomFamily<number, string>({
   key: 'proposalListCount',
   default: 1,
+})
+
+// Store proposal drafts per DAO.
+export const proposalDraftsAtom = atomFamily<ProposalDraft[], string>({
+  key: 'proposalDrafts',
+  default: [],
+  effects: [localStorageEffectJSON],
+})
+
+// When set, shows proposal created modal with these props for the ProposalCard
+// shown.
+export const proposalCreatedCardPropsAtom = atom<
+  ProposalCreatedCardProps | undefined
+>({
+  key: 'proposalCreatedCardProps',
+  default: undefined,
 })

@@ -3,15 +3,12 @@ import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { LoaderProps, LogoProps } from '@dao-dao/ui'
-import { ProposalModule } from '@dao-dao/utils'
-
-import { ActionAndData, ActionCardLoader } from '..'
+import { ActionAndData } from '@dao-dao/tstypes/actions'
+import { ActionCardLoader, LoaderProps, LogoProps } from '@dao-dao/ui'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
   coreAddress: string
-  proposalModule: ProposalModule
   actionData: ActionAndData[]
   Loader: ComponentType<LoaderProps>
   Logo: ComponentType<LogoProps>
@@ -19,7 +16,6 @@ export interface ActionsRendererProps {
 
 export const ActionsRenderer = ({
   coreAddress,
-  proposalModule,
   actionData,
   Loader,
   Logo,
@@ -62,12 +58,11 @@ export const ActionsRenderer = ({
                 fieldNamePrefix={`${index}.`}
                 index={index}
                 isCreating={false}
-                proposalModule={proposalModule}
               />
             </SuspenseLoader>
 
             <button
-              className="absolute top-1 -right-5 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute top-1 -right-5 opacity-0 transition-opacity group-hover:opacity-100"
               onClick={() => {
                 const url = new URL(window.location.href)
                 url.hash = '#' + `A${index + 1}`

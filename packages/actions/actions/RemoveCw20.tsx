@@ -8,14 +8,7 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { Cw20BaseSelectors, CwCoreV0_1_0Selectors } from '@dao-dao/state'
-import { TokenInfoResponse } from '@dao-dao/state/clients/cw20-base'
-import { makeWasmMessage } from '@dao-dao/utils'
-
-import {
-  RemoveCw20Icon,
-  RemoveCw20Component as StatelessRemoveCw20Component,
-} from '../components'
+import { Cw20BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
 import {
   Action,
   ActionComponent,
@@ -23,7 +16,12 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
+import { RemoveCw20Emoji } from '@dao-dao/ui'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import { RemoveCw20Component as StatelessRemoveCw20Component } from '../components/RemoveCw20'
 
 interface RemoveCw20Data {
   address: string
@@ -50,7 +48,7 @@ const Component: ActionComponent = (props) => {
   )
 
   const existingTokenAddresses = useRecoilValue(
-    CwCoreV0_1_0Selectors.allCw20TokenListSelector({
+    CwdCoreV2Selectors.allCw20TokenListSelector({
       contractAddress: props.coreAddress,
     })
   )
@@ -166,7 +164,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw20Data> = (
 
 export const removeCw20Action: Action<RemoveCw20Data> = {
   key: ActionKey.RemoveCw20,
-  Icon: RemoveCw20Icon,
+  Icon: RemoveCw20Emoji,
   label: 'Remove Token Balance from Treasury',
   description:
     "Stop displaying the DAO's balance of a CW20 token in the treasury view.",

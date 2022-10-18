@@ -2,7 +2,7 @@ import { useWalletManager } from '@noahsaso/cosmodal'
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
 
-import { useWalletBalance } from '@dao-dao/state'
+import { useWalletProfile } from '@dao-dao/state'
 import {
   MobileWalletConnect,
   NoMobileWallet,
@@ -27,7 +27,7 @@ export const ConnectWalletButton = ({
     connected,
     connectedWallet: { name, address } = {},
   } = useWalletManager()
-  const { walletBalance } = useWalletBalance()
+  const { walletBalance } = useWalletProfile()
 
   if (mobile && isMobile() && CHAIN_ID !== 'juno-1') {
     return <NoMobileWallet />

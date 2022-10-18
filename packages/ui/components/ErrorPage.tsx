@@ -1,14 +1,13 @@
-import clsx from 'clsx'
 import { ReactNode } from 'react'
 
 export interface ErrorPageProps {
-  title: string
+  title?: string
   children: ReactNode
 }
 
 export const ErrorPage = ({ title, children }: ErrorPageProps) => (
-  <div className="p-6 mx-auto max-w-prose text-center break-words">
-    <h1 className={clsx('header-text', { 'mb-3': !!children })}>{title}</h1>
+  <div className="mx-auto max-w-prose space-y-3 break-words p-6 text-center">
+    {title && <h1 className="header-text">{title}</h1>}
 
     {children}
   </div>

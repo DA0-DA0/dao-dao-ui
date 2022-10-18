@@ -2,11 +2,6 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
-
-import {
-  UpdateAdminComponent as StatelessUpdateAdminComponent,
-  UpdateAdminIcon,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -14,7 +9,10 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { UpdateAdminEmoji } from '@dao-dao/ui'
+
+import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components/UpdateAdmin'
 
 interface UpdateAdminData {
   contract: string
@@ -59,7 +57,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
 const Component: ActionComponent = (props) => {
   const [contract, setContract] = useState('')
 
-  const admin = useRecoilValueLoadable(contractAdminSelector(contract))
+  const admin = useRecoilValueLoadable(
+    contractAdminSelector({ contractAddress: contract })
+  )
 
   return (
     <StatelessUpdateAdminComponent
@@ -75,7 +75,7 @@ const Component: ActionComponent = (props) => {
 
 export const updateAdminAction: Action<UpdateAdminData> = {
   key: ActionKey.UpdateAdmin,
-  Icon: UpdateAdminIcon,
+  Icon: UpdateAdminEmoji,
   label: 'Update Contract Admin',
   description: 'Update the CosmWasm level admin of a smart contract.',
   Component,

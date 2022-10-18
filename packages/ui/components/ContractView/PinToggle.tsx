@@ -1,8 +1,7 @@
+import { PushPin, PushPinOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { PinOutline, PinSolid } from '@dao-dao/icons'
-
-import { useThemeContext } from '../../theme'
+import { Button } from '../Button'
 
 export interface PinToggleProps {
   pinned: boolean
@@ -11,25 +10,15 @@ export interface PinToggleProps {
 
 export const PinToggle = ({ pinned, onPin }: PinToggleProps) => {
   const { t } = useTranslation()
-  const { accentColor } = useThemeContext()
+  const Icon = pinned ? PushPin : PushPinOutlined
 
   return (
-    <button
-      className="flex flex-row items-center text-left text-brand link-text"
-      onClick={(_e) => onPin()}
-      style={accentColor ? { color: accentColor } : {}}
-    >
-      {pinned ? (
-        <PinSolid
-          className="inline mr-1 w-4 h-4 text-brand"
-          style={accentColor ? { color: accentColor } : {}}
-        />
-      ) : (
-        <PinOutline className="inline mr-1 w-4 h-4" />
-      )}
-      <span className="hidden md:block">
-        {pinned ? t('info.pinned') : t('info.pin')}
-      </span>
-    </button>
+    <Button onClick={(_e) => onPin()} variant="secondary">
+      {/* Don't show text on mobile, header too small. */}
+      <p className="hidden text-text-body sm:block">
+        {pinned ? t('button.following') : t('button.follow')}
+      </p>
+      <Icon className="!h-4 !w-4 !text-icon-primary" />
+    </Button>
   )
 }

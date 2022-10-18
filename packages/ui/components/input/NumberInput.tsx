@@ -1,6 +1,6 @@
-import { MinusIcon, PlusIcon } from '@heroicons/react/outline'
+import { Add, Remove } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -10,12 +10,14 @@ import {
   Validate,
 } from 'react-hook-form'
 
+import { IconButton, IconButtonProps } from '../IconButton'
+
 export interface NumberInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
-> extends Omit<ComponentProps<'input'>, 'type' | 'required'> {
-  fieldName: FieldName
-  register: UseFormRegister<FV>
+> extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'required'> {
+  fieldName?: FieldName
+  register?: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   onMinus?: () => void
@@ -24,6 +26,13 @@ export interface NumberInputProps<
   sizing?: 'sm' | 'md' | 'auto'
   required?: boolean
   setValueAs?: (value: any) => any
+  ghost?: boolean
+  unit?: string
+  textClassName?: string
+  unitClassName?: string
+  iconClassName?: string
+  iconContainerClassName?: string
+  iconSize?: IconButtonProps['size']
 }
 
 /**
@@ -51,6 +60,13 @@ export const NumberInput = <
   containerClassName,
   required,
   setValueAs,
+  ghost,
+  unit,
+  textClassName,
+  unitClassName,
+  iconClassName,
+  iconContainerClassName,
+  iconSize = 'sm',
   ...props
 }: NumberInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
@@ -61,10 +77,15 @@ export const NumberInput = <
   return (
     <div
       className={clsx(
-        'flex flex-row gap-1 items-center text-sm',
-        'py-2 px-3 bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
+        'flex flex-row items-center gap-2 bg-transparent transition',
+        // Padding and outline
+        !ghost && 'rounded-md py-3 px-4 ring-1 focus-within:ring-2',
+        // Outline color
+        error
+          ? 'ring-border-interactive-error'
+          : 'ring-border-primary focus-within:ring-border-interactive-focus',
+        // Sizing
         {
-          'ring-1 ring-error': error,
           'w-28': sizing === 'sm',
           'w-40': sizing === 'md',
           'w-28 md:w-32 lg:w-40': sizing === 'auto',
@@ -72,45 +93,60 @@ export const NumberInput = <
         containerClassName
       )}
     >
-      {onPlus && (
-        <button
-          className={clsx('transition secondary-text', {
-            'hover:body-text': !disabled,
-          })}
-          disabled={disabled}
-          onClick={onPlus}
-          type="button"
-        >
-          <PlusIcon className="w-4" />
-        </button>
-      )}
-      {onMinus && (
-        <button
-          className={clsx('transition secondary-text', {
-            'hover:body-text': !disabled,
-          })}
-          disabled={disabled}
-          onClick={onMinus}
-          type="button"
-        >
-          <MinusIcon className="w-4" />
-        </button>
-      )}
+      <div
+        className={clsx('flex flex-row items-center', iconContainerClassName)}
+      >
+        {onMinus && !disabled && (
+          <IconButton
+            Icon={Remove}
+            disabled={disabled}
+            iconClassName={clsx('text-icon-secondary', iconClassName)}
+            onClick={onMinus}
+            size={iconSize}
+            variant="ghost"
+          />
+        )}
+        {onPlus && !disabled && (
+          <IconButton
+            Icon={Add}
+            disabled={disabled}
+            iconClassName={clsx('text-icon-secondary', iconClassName)}
+            onClick={onPlus}
+            size={iconSize}
+            variant="ghost"
+          />
+        )}
+      </div>
 
       <input
         className={clsx(
-          'w-full text-right bg-transparent border-none outline-none ring-none body-text',
-          className
+          'ring-none secondary-text w-full grow appearance-none border-none bg-transparent text-right text-text-body outline-none',
+          className,
+          textClassName
         )}
         disabled={disabled}
         type="number"
         {...props}
-        {...register(fieldName, {
-          required: required && 'Required',
-          validate,
-          ...(setValueAs ? { setValueAs } : { valueAsNumber: true }),
-        })}
+        {...(register &&
+          fieldName &&
+          register(fieldName, {
+            required: required && 'Required',
+            validate,
+            ...(setValueAs ? { setValueAs } : { valueAsNumber: true }),
+          }))}
       />
+
+      {unit && (
+        <p
+          className={clsx(
+            'secondary-text shrink-0 text-right text-text-tertiary',
+            textClassName,
+            unitClassName
+          )}
+        >
+          {unit}
+        </p>
+      )}
     </div>
   )
 }

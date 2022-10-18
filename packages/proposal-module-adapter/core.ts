@@ -1,48 +1,60 @@
-import { ProposalModule } from '@dao-dao/utils'
+import { ProposalModule } from '@dao-dao/tstypes'
+import { normalizeContractName } from '@dao-dao/utils'
 
+import { CwdProposalSingleAdapter } from './adapters'
 import {
+  IProposalModuleAdapterCommon,
   IProposalModuleAdapterInitialOptions,
   IProposalModuleAdapterOptions,
   IProposalModuleContext,
   ProposalModuleAdapter,
 } from './types'
 
-const registeredAdapters: ProposalModuleAdapter[] = []
+// Adapters need to be loaded lazily like this, as opposed to just defining a
+// global array, due to cyclic dependencies. The adapter defintion files include
+// components, which include the react folder index, which includes the provider
+// file, which includes the core because it uses the matching helpers below,
+// which depend on this adapter list. The fix is that no internal components
+// should have a dependency chain that leads back to the matching functions
+// below, except the react provider, which we should only be used externally.
+// This is a problem to solve later.
+export const getAdapters = (): readonly ProposalModuleAdapter[] => [
+  CwdProposalSingleAdapter,
+]
 
-// Lazy loading adapters instead of defining objects reduces memory usage
-// and avoids cyclic dependencies when enums or other objects are stored in
-// the adapter object.
-export const registerAdapters = (adapters: ProposalModuleAdapter[]) =>
-  registeredAdapters.push(
-    // Avoid duplicates.
-    ...adapters.filter(
-      ({ id }) => !registeredAdapters.some((registered) => registered.id === id)
+export const getAdapterById = (id: string) =>
+  getAdapters().find((adapter) => adapter.id === id)
+
+export const matchAdapter = (contractNameToMatch: string) =>
+  getAdapters().find((adapter) =>
+    adapter.contractNames.some((contractName) =>
+      normalizeContractName(contractNameToMatch).includes(contractName)
     )
   )
-
-export const matchAdapter = (contractName: string) =>
-  registeredAdapters.find(({ matcher }) => matcher(contractName))
 
 export const matchAndLoadCommon = (
   proposalModule: ProposalModule,
   initialOptions: IProposalModuleAdapterInitialOptions
-) => {
+): IProposalModuleAdapterCommon & { id: string } => {
   const adapter = matchAdapter(proposalModule.contractName)
 
   if (!adapter) {
     throw new ProposalModuleAdapterError(
       `Failed to find proposal module adapter matching contract "${
         proposalModule.contractName
-      }". Registered adapters: ${registeredAdapters
-        .map(({ id }) => id)
+      }". Available adapters: ${getAdapters()
+        .map(({ id: contractName }) => contractName)
         .join(', ')}`
     )
   }
 
-  return adapter.loadCommon({
-    ...initialOptions,
-    proposalModule,
-  })
+  return {
+    id: adapter.id,
+    ...adapter.loadCommon({
+      ...initialOptions,
+      proposalModule,
+    }),
+  }
 }
 
 export const matchAndLoadAdapter = (
@@ -70,8 +82,8 @@ export const matchAndLoadAdapter = (
     ? proposalModules.find(({ prefix }) => prefix === proposalPrefix)
     : // If no proposalPrefix (i.e. proposalId is just a number), and there is
     // only one proposal module, return it. This should handle backwards
-    // compatibility when there were no prefixes and every DAO used
-    // cw-proposal-single.
+    // compatibility when there were no prefixes and every DAO used a single
+    // choice proposal module.
     proposalModules.length === 1
     ? proposalModules[0]
     : undefined
@@ -87,8 +99,8 @@ export const matchAndLoadAdapter = (
     throw new ProposalModuleAdapterError(
       `Failed to find proposal module adapter matching contract "${
         proposalModule.contractName
-      }". Registered adapters: ${registeredAdapters
-        .map(({ id }) => id)
+      }". Available adapters: ${getAdapters()
+        .map(({ id: contractName }) => contractName)
         .join(', ')}`
     )
   }
@@ -104,7 +116,10 @@ export const matchAndLoadAdapter = (
     id: adapter.id,
     options: adapterOptions,
     adapter: adapter.load(adapterOptions),
-    common: matchAndLoadCommon(proposalModule, initialOptions),
+    common: adapter.loadCommon({
+      ...initialOptions,
+      proposalModule,
+    }),
   }
 }
 

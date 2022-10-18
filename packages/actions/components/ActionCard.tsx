@@ -1,9 +1,7 @@
 import { XIcon } from '@heroicons/react/solid'
 import { ComponentType, ReactNode } from 'react'
 
-import { LoaderProps } from '@dao-dao/ui'
-
-import { ActionComponentProps } from '..'
+import { ActionComponentProps } from '@dao-dao/tstypes/actions'
 
 interface ActionCardProps extends Pick<ActionComponentProps, 'onRemove'> {
   children: ReactNode | ReactNode[]
@@ -17,9 +15,9 @@ export const ActionCard = ({
   onRemove,
   children,
 }: ActionCardProps) => (
-  <div className="flex flex-col gap-2 p-3 my-2 bg-primary rounded-lg">
-    <div className="flex flex-row gap-2 justify-between items-start">
-      <div className="flex flex-row gap-2 items-center">
+  <div className="my-2 flex flex-col gap-2 rounded-lg bg-primary p-3">
+    <div className="flex flex-row items-start justify-between gap-2">
+      <div className="flex flex-row items-center gap-2">
         <h2 className="text-3xl">
           <Icon />
         </h2>
@@ -34,15 +32,5 @@ export const ActionCard = ({
     </div>
 
     {children}
-  </div>
-)
-
-export interface ActionCardLoaderProps {
-  Loader: ComponentType<LoaderProps>
-}
-
-export const ActionCardLoader = ({ Loader }: ActionCardLoaderProps) => (
-  <div className="p-3 my-2 bg-primary rounded-lg">
-    <Loader />
   </div>
 )

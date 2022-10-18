@@ -10,7 +10,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
-import { SuspenseLoader, useDaoInfoContext } from '@dao-dao/common'
+import { SuspenseLoader } from '@dao-dao/common'
 import {
   TransformedTreasuryTransaction,
   blockHeightSelector,
@@ -19,7 +19,13 @@ import {
   nativeBalanceSelector,
   transformedTreasuryTransactionsSelector,
 } from '@dao-dao/state'
-import { Button, CopyToClipboard, LineGraph, Loader } from '@dao-dao/ui'
+import {
+  Button,
+  CopyToClipboard,
+  LineGraph,
+  Loader,
+  useDaoInfoContext,
+} from '@dao-dao/ui'
 import {
   CHAIN_TXN_URL_PREFIX,
   NATIVE_DECIMALS,
@@ -64,10 +70,10 @@ export const InnerDaoTreasuryHistory = ({
   const { coreAddress } = useDaoInfoContext()
 
   // Initialization.
-  const latestBlockHeight = useRecoilValue(blockHeightSelector)
+  const latestBlockHeight = useRecoilValue(blockHeightSelector({}))
   const initialMinHeight = latestBlockHeight - BLOCK_HEIGHT_INTERVAL
   const initialLowestHeightLoadedTimestamp = useRecoilValue(
-    blockHeightTimestampSafeSelector(initialMinHeight)
+    blockHeightTimestampSafeSelector({ blockHeight: initialMinHeight })
   )
   const initialTransactions = useRecoilValue(
     transformedTreasuryTransactionsSelector({
@@ -102,7 +108,7 @@ export const InnerDaoTreasuryHistory = ({
           )
 
           const newLowestHeightLoadedTimestamp = await snapshot.getPromise(
-            blockHeightTimestampSelector(minHeight)
+            blockHeightTimestampSelector({ blockHeight: minHeight })
           )
 
           setLowestHeightLoaded(minHeight)
@@ -136,7 +142,9 @@ export const InnerDaoTreasuryHistory = ({
     ]
   )
 
-  const nativeBalance = useRecoilValue(nativeBalanceSelector(coreAddress))
+  const nativeBalance = useRecoilValue(
+    nativeBalanceSelector({ address: coreAddress })
+  )
   const lineGraphValues = useMemo(() => {
     let runningTotal = convertMicroDenomToDenomWithDecimals(
       nativeBalance.amount,
@@ -188,9 +196,9 @@ export const InnerDaoTreasuryHistory = ({
         <p className="text-secondary">{t('info.nothingFound')}</p>
       )}
 
-      <div className="flex flex-row gap-4 justify-between items-center">
+      <div className="flex flex-row items-center justify-between gap-4">
         {lowestHeightLoadedTimestamp && (
-          <p className="italic caption-text">
+          <p className="caption-text italic">
             {t('info.historySinceDate', {
               date: lowestHeightLoadedTimestamp.toLocaleString(),
             })}
@@ -229,21 +237,21 @@ const TransactionRenderer = ({
     outgoing,
   },
 }: TransactionRendererProps) => (
-  <div className="flex flex-row gap-4 justify-between items-start xs:gap-12">
-    <div className="flex flex-row flex-wrap gap-x-4 items-center text-sm leading-6">
+  <div className="flex flex-row items-start justify-between gap-4 xs:gap-12">
+    <div className="flex flex-row flex-wrap items-center gap-x-4 text-sm leading-6">
       <CopyToClipboard value={outgoing ? recipient : sender} />
       {/* Outgoing transactions are received by the address above, so point to the left. */}
       {outgoing ? (
-        <ArrowNarrowLeftIcon className="w-4 h-4" />
+        <ArrowNarrowLeftIcon className="h-4 w-4" />
       ) : (
-        <ArrowNarrowRightIcon className="w-4 h-4" />
+        <ArrowNarrowRightIcon className="h-4 w-4" />
       )}
       <p>
         {amount} ${denomLabel}
       </p>
     </div>
 
-    <p className="flex flex-row gap-4 items-center font-mono text-xs leading-6 text-right">
+    <p className="flex flex-row items-center gap-4 text-right font-mono text-xs leading-6">
       {timestamp?.toLocaleString() ?? `${height} block`}
 
       <a

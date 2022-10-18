@@ -4,6 +4,7 @@ import { ComponentProps, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import { InputErrorMessage, NumberInput, SelectInput } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
@@ -14,8 +15,6 @@ import {
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
-
-import { ActionComponent } from '..'
 
 export type NativeCoinSelectorProps = ComponentProps<
   ActionComponent<{ nativeBalances: readonly Coin[] }>
@@ -46,7 +45,7 @@ export const NativeCoinSelector = ({
           NATIVE_DECIMALS
         )
         return (
-          Number(microAmount) <= Number(native.amount) ||
+          microAmount <= Number(native.amount) ||
           t('error.cantSpendMoreThanTreasury', {
             amount: convertMicroDenomToDenomWithDecimals(
               native.amount,
@@ -102,7 +101,7 @@ export const NativeCoinSelector = ({
 
   return (
     <div className={className}>
-      <div className="flex flex-row gap-2 items-stretch">
+      <div className="flex flex-row items-stretch gap-2">
         <NumberInput
           disabled={!isCreating}
           error={errors?.amount}
@@ -141,7 +140,7 @@ export const NativeCoinSelector = ({
 
         {isCreating && (
           <button onClick={onRemove} type="button">
-            <XIcon className="w-4 h-4 text-error" />
+            <XIcon className="h-4 w-4 text-error" />
           </button>
         )}
       </div>

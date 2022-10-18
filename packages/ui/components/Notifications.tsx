@@ -1,11 +1,13 @@
 import { Toaster } from 'react-hot-toast'
 
-import { ErrorToast, LoadingToast, SuccessToast } from '@dao-dao/ui'
+import { ErrorToast, LoadingToast, SuccessToast } from './toasts'
 
 export const Notifications = () => (
   <Toaster
-    position="top-center"
-    reverseOrder={false}
+    position="bottom-right"
+    // Looks better when positoned against the bottom of the screen. This makes
+    // new toasts stack on top of existing toasts, like cards.
+    reverseOrder
     toastOptions={{
       duration: 6000,
       // Show for entire duration of promise.

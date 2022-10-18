@@ -1,4 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import axios from 'axios'
+import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticProps, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
@@ -6,25 +8,27 @@ import removeMarkdown from 'remove-markdown'
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import {
   CommonProposalInfo,
-  CwProposalSingleAdapter,
   ProposalModuleAdapterError,
   matchAndLoadAdapter,
-  registerAdapters as registerProposalModuleAdapters,
 } from '@dao-dao/proposal-module-adapter'
-import { CwCoreV0_1_0QueryClient } from '@dao-dao/state'
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
+import { CwdCoreV2QueryClient, fetchProposalModules } from '@dao-dao/state'
+import {
+  ContractVersion,
+  DaoParentInfo,
+  ProposalModule,
+} from '@dao-dao/tstypes'
+import { ConfigResponse as ConfigV1Response } from '@dao-dao/tstypes/contracts/CwCore.v1'
+import { ConfigResponse as ConfigV2Response } from '@dao-dao/tstypes/contracts/CwdCore.v2'
 import { Loader, Logo } from '@dao-dao/ui'
 import {
-  CHAIN_RPC_ENDPOINT,
+  CHAIN_ID,
   CI,
-  CwCoreVersion,
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
-  ProposalModule,
   cosmWasmClientRouter,
-  fetchProposalModules,
-  parseCoreVersion,
+  getRpcForChainId,
+  parseContractVersion,
   processError,
   validateContractAddress,
 } from '@dao-dao/utils'
@@ -47,9 +51,10 @@ interface GetDaoStaticPropsMakerOptions {
     context: Parameters<GetStaticProps>[0]
     t: TFunction
     cwClient: CosmWasmClient
-    coreClient: CwCoreV0_1_0QueryClient
-    config: ConfigResponse
+    coreClient: CwdCoreV2QueryClient
+    config: ConfigV1Response | ConfigV2Response
     coreAddress: string
+    coreVersion: ContractVersion
     proposalModules: ProposalModule[]
   }) =>
     | GetDaoStaticPropsMakerProps
@@ -88,27 +93,34 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       return {
         props: {
           ...i18nProps,
-          title: serverT('error.daoNotFound'),
+          title: serverT('title.daoNotFound'),
           description: '',
         },
       }
     }
 
     // Add to Sentry error tags if error occurs.
-    let coreVersion: CwCoreVersion | undefined
+    let coreVersion: ContractVersion | undefined
     try {
-      const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-      const coreClient = new CwCoreV0_1_0QueryClient(cwClient, coreAddress)
+      // TODO(multichain): Get this dynamically somehow.
+      const chainId = CHAIN_ID
 
-      const config = await coreClient.config()
+      const cwClient = await cosmWasmClientRouter.connect(
+        getRpcForChainId(chainId)
+      )
+      const coreClient = new CwdCoreV2QueryClient(cwClient, coreAddress)
 
-      const coreInfo = (await coreClient.info()).info
-      coreVersion = parseCoreVersion(coreInfo.version)
+      const {
+        admin,
+        config,
+        version: { version },
+        voting_module: votingModuleAddress,
+      } = await coreClient.dumpState()
+
+      coreVersion = parseContractVersion(version)
       if (!coreVersion) {
         throw new Error(serverT('error.failedParsingCoreVersion'))
       }
-
-      const votingModuleAddress = await coreClient.votingModule()
 
       // If no contract name, will display fallback voting module adapter.
       let votingModuleContractName = 'fallback'
@@ -141,6 +153,23 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         )
       }
 
+      // Get date DAO created.
+      let created: Date | undefined
+      const instantiateEvents = await cwClient.searchTx({
+        tags: [{ key: 'instantiate._contract_address', value: coreAddress }],
+      })
+      if (instantiateEvents.length > 0) {
+        // Should only fail if RPC node doesn't have this block height
+        // information.
+        try {
+          const block = await cwClient.getBlock(instantiateEvents[0].height)
+          created = new Date(Date.parse(block.header.time))
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      // Get DAO proposal modules.
       const proposalModules = await fetchProposalModules(
         cwClient,
         coreAddress,
@@ -165,9 +194,27 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           cwClient,
           coreClient,
           config,
-          coreAddress: coreAddress,
+          coreAddress,
+          coreVersion,
           proposalModules,
         })) ?? {}
+
+      // Get DAO accent color.
+      let accentColor: string | null = null
+      if (config.image_url) {
+        try {
+          const response = await axios.get(config.image_url, {
+            responseType: 'arraybuffer',
+          })
+          const buffer = Buffer.from(response.data, 'binary')
+          const result = await getAverageColor(buffer)
+
+          accentColor = result.rgb
+        } catch (error) {
+          // If fail to load image or get color, don't prevent page render.
+          console.error(error)
+        }
+      }
 
       return {
         props: {
@@ -179,14 +226,19 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
               .filter(Boolean)
               .join(' | '),
           description: overrideDescription ?? config.description,
-          info: {
+          accentColor,
+          serializedInfo: {
+            chainId,
             coreAddress,
+            coreVersion,
             votingModuleAddress,
             votingModuleContractName,
             proposalModules,
             name: config.name,
             description: config.description,
             imageUrl: overrideImageUrl ?? config.image_url ?? null,
+            created: created?.toJSON() ?? null,
+            parentDao: await loadParentDaoInfo(cwClient, coreAddress, admin),
           },
           ...additionalProps,
         },
@@ -223,9 +275,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       if (
         error instanceof Error &&
         (error.message.includes('contract: not found') ||
-          error.message.includes(
-            'Error parsing into type cw_core::msg::QueryMsg'
-          ) ||
+          error.message.includes('Error parsing into type') ||
           error.message.includes('decoding bech32 failed'))
       ) {
         // Excluding `info` will render DAONotFound.
@@ -288,22 +338,15 @@ export const makeGetDaoProposalStaticProps = ({
       // If invalid proposal ID, not found.
       if (typeof proposalId !== 'string') {
         return {
-          followingTitle: t('error.proposalNotFound'),
+          followingTitle: t('title.proposalNotFound'),
           additionalProps: {
-            proposalId: undefined,
+            proposalInfo: undefined,
           },
         }
       }
 
-      let proposalInfo: CommonProposalInfo | undefined
+      let proposalInfo: CommonProposalInfo | null = null
       try {
-        // Register proposal module adapters.
-        registerProposalModuleAdapters([
-          CwProposalSingleAdapter,
-          // When adding new proposal module adapters here, don't forget to
-          // register in `DaoPageWrapper` as well.
-        ])
-
         const {
           options: {
             proposalModule: { prefix },
@@ -326,7 +369,7 @@ export const makeGetDaoProposalStaticProps = ({
         }
 
         // undefined if proposal does not exist.
-        proposalInfo = await getProposalInfo(cwClient)
+        proposalInfo = (await getProposalInfo(cwClient)) ?? null
       } catch (error) {
         // Rethrow.
         if (error instanceof RedirectError) {
@@ -349,13 +392,13 @@ export const makeGetDaoProposalStaticProps = ({
         url: getProposalUrlPrefix(params) + proposalId,
         followingTitle: proposalInfo
           ? proposalInfo.title
-          : t('error.proposalNotFound'),
+          : t('title.proposalNotFound'),
         overrideDescription: removeMarkdown(
           proposalInfo?.description ?? ''
         ).slice(0, MAX_META_CHARS_PROPOSAL_DESCRIPTION),
         additionalProps: {
-          // If proposal does not exist, pass undefined to indicate 404.
-          proposalId: proposalInfo ? proposalId : undefined,
+          // If proposal does not exist, undefined indicates 404.
+          proposalInfo,
         },
       }
     },
@@ -363,4 +406,34 @@ export const makeGetDaoProposalStaticProps = ({
 
 export class RedirectError {
   constructor(public redirect: Redirect) {}
+}
+
+const loadParentDaoInfo = async (
+  cwClient: CosmWasmClient,
+  subDaoAddress: string,
+  subDaoAdmin: string | null | undefined
+): Promise<DaoParentInfo | null> => {
+  // If no admin or admin is set to itself, does not have parent DAO.
+  if (!subDaoAdmin || subDaoAdmin === subDaoAddress) {
+    return null
+  }
+
+  try {
+    const parentClient = new CwdCoreV2QueryClient(cwClient, subDaoAdmin)
+    const {
+      admin,
+      config: { name, image_url },
+    } = await parentClient.dumpState()
+
+    return {
+      coreAddress: subDaoAdmin,
+      name: name,
+      imageUrl: image_url ?? null,
+      parentDao: await loadParentDaoInfo(cwClient, subDaoAdmin, admin),
+    }
+  } catch (err) {
+    // Don't prevent page render if failed to load parent DAO info.
+    console.error(err)
+    return null
+  }
 }

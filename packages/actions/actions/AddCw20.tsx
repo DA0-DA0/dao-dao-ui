@@ -4,12 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
-import { makeWasmMessage } from '@dao-dao/utils'
-
-import {
-  AddCw20Icon,
-  AddCw20Component as StatelessAddCw20Component,
-} from '../components'
 import {
   Action,
   ActionComponent,
@@ -17,7 +11,11 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { AddCw20Emoji } from '@dao-dao/ui'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import { AddCw20Component as StatelessAddCw20Component } from '../components/AddCw20'
 
 interface AddCw20Data {
   address: string
@@ -117,7 +115,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw20Data> = (
 
 export const addCw20Action: Action<AddCw20Data> = {
   key: ActionKey.AddCw20,
-  Icon: AddCw20Icon,
+  Icon: AddCw20Emoji,
   label: 'Display Token Balance in Treasury',
   description:
     "Display the DAO's balance of a CW20 token in the treasury view.",

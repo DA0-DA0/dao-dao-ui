@@ -1,13 +1,14 @@
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { Trans } from '@dao-dao/common'
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   AddressInput,
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
+  MigrateContractEmoji,
   NumberInput,
 } from '@dao-dao/ui'
 import {
@@ -17,7 +18,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'
 
 export interface MigrateOptions {
@@ -39,11 +40,11 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
 
   return (
     <ActionCard
-      Icon={MigrateContractIcon}
+      Icon={MigrateContractEmoji}
       onRemove={onRemove}
       title={t('title.migrateSmartContract')}
     >
-      <p className="mb-4 max-w-prose secondary-text">
+      <p className="secondary-text mb-4 max-w-prose">
         <Trans key={'form.migrateDescription'} Loader={Loader}>
           This will{' '}
           <a
@@ -58,7 +59,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         </Trans>
       </p>
       <div className="flex flex-row flex-wrap gap-2">
-        <div className="flex flex-col grow gap-1">
+        <div className="flex grow flex-col gap-1">
           <InputLabel name={t('form.smartContractAddress')} />
           <AddressInput
             disabled={!isCreating}
@@ -98,9 +99,4 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const MigrateContractIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.whale')} symbol="🐋" />
 }

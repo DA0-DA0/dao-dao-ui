@@ -1,4 +1,4 @@
-import { PlusIcon } from '@heroicons/react/outline'
+import { Add } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useState } from 'react'
 import {
@@ -60,10 +60,11 @@ export const ImageSelectorModal = <
     <Modal
       containerClassName="flex flex-col gap-3 items-center"
       onClose={onClose}
+      visible
     >
       <div
         aria-label={t('info.daosLogo')}
-        className="w-[95px] h-[95px] bg-center bg-cover rounded-full border border-inactive"
+        className="h-[95px] w-[95px] rounded-full border border-inactive bg-cover bg-center"
         role="img"
         style={{ backgroundImage: `url(${imageUrl})` }}
       />
@@ -74,6 +75,8 @@ export const ImageSelectorModal = <
           tooltip={t('form.imageURLTooltip')}
         />
         <TextInput
+          // Auto focus does not work on mobile Safari by design
+          // (https://bugs.webkit.org/show_bug.cgi?id=195884#c4).
           autoFocus
           error={error}
           fieldName={fieldName}
@@ -91,7 +94,7 @@ export const ImageSelectorModal = <
       </div>
       <div className="w-full text-right">
         <Button onClick={onClose} size="sm" type="button">
-          {t('button.done')} <Airplane color="currentColor" />
+          {t('button.done')} <Airplane />
         </Button>
       </div>
     </Modal>
@@ -132,11 +135,11 @@ export const ImageSelector = <
     <>
       <button
         className={clsx(
-          'flex shrink-0 justify-center items-center bg-center bg-cover rounded-full border border-inactive transition',
+          'flex shrink-0 items-center justify-center rounded-full border border-border-secondary bg-background-secondary bg-cover bg-center transition',
           {
             'hover:ring': !disabled,
             'ring ring-error': error,
-            'w-24 h-24': size === undefined,
+            'h-24 w-24': size === undefined,
           },
           className
         )}
@@ -149,7 +152,7 @@ export const ImageSelector = <
         type="button"
       >
         {(typeof imageUrl !== 'string' || !imageUrl?.trim()) && (
-          <PlusIcon className="w-4" />
+          <Add className="h-6 w-6 text-icon-primary" />
         )}
       </button>
 

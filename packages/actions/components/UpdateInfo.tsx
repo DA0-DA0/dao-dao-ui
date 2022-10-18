@@ -1,10 +1,12 @@
 import { InformationCircleIcon } from '@heroicons/react/outline'
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ConfigResponse } from '@dao-dao/state/clients/cw-core/0.1.0'
+import { ActionComponent } from '@dao-dao/tstypes/actions'
+import { ConfigResponse as ConfigV1Response } from '@dao-dao/tstypes/contracts/CwCore.v1'
+import { ConfigResponse as ConfigV2Response } from '@dao-dao/tstypes/contracts/CwdCore.v2'
 import {
+  DaoImage,
   FormSwitch,
   ImageSelector,
   InputErrorMessage,
@@ -12,6 +14,7 @@ import {
   TextAreaInput,
   TextInput,
   Tooltip,
+  UpdateInfoEmoji,
 } from '@dao-dao/ui'
 import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
@@ -19,49 +22,45 @@ import {
   validateUrl,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 
-export type UpdateInfoData = ConfigResponse
+export type UpdateInfoData = ConfigV1Response | ConfigV2Response
 
 export const UpdateInfoComponent: ActionComponent<
   undefined,
   UpdateInfoData
-> = ({ fieldNamePrefix, errors, onRemove, isCreating, data, Logo }) => {
+> = ({ fieldNamePrefix, errors, onRemove, isCreating, data, coreAddress }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
   return (
     <ActionCard
-      Icon={UpdateInfoIcon}
+      Icon={UpdateInfoEmoji}
       onRemove={onRemove}
       title={t('title.updateInfo')}
     >
-      <div className="flex flex-row flex-wrap gap-6 justify-center items-center">
-        <div className="flex flex-col gap-4 pl-2">
-          {isCreating ? (
-            <>
-              <ImageSelector
-                error={errors?.name}
-                fieldName={fieldNamePrefix + 'image_url'}
-                register={register}
-                validation={[validateUrl]}
-                watch={watch}
-              />
-              <InputLabel name={t('form.selectAnImage')} />
-            </>
-          ) : data.image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              alt={t('info.daosLogo')}
-              className="object-cover w-24 h-24 rounded-full"
-              src={data.image_url}
+      <div className="flex flex-row flex-wrap items-center justify-center gap-4">
+        {isCreating ? (
+          <div className="flex flex-col gap-4 pl-2">
+            <ImageSelector
+              error={errors?.name}
+              fieldName={fieldNamePrefix + 'image_url'}
+              register={register}
+              validation={[validateUrl]}
+              watch={watch}
             />
-          ) : (
-            <Logo size={96} />
-          )}
-        </div>
+            <InputLabel name={t('form.selectAnImage')} />
+          </div>
+        ) : (
+          <DaoImage
+            className="ml-2"
+            coreAddress={coreAddress}
+            imageUrl={data.image_url}
+            size="lg"
+          />
+        )}
 
-        <div className="flex flex-col grow gap-3">
+        <div className="flex grow flex-col gap-3">
           <div>
             <TextInput
               disabled={!isCreating}
@@ -85,13 +84,13 @@ export const UpdateInfoComponent: ActionComponent<
             <InputErrorMessage error={errors?.description} />
           </div>
           <div className="flex flex-row flex-wrap gap-2">
-            <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
+            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3">
               <div className="flex flex-row gap-1">
-                <Tooltip label={t('form.automaticallyAddTokensTooltip')}>
-                  <InformationCircleIcon className="w-4 h-4 secondary-text" />
+                <Tooltip title={t('form.automaticallyAddTokensTooltip')}>
+                  <InformationCircleIcon className="secondary-text h-4 w-4" />
                 </Tooltip>
 
-                <p className="w-max secondary-text">
+                <p className="secondary-text w-max">
                   {t('form.automaticallyAddTokensTitle')}
                 </p>
               </div>
@@ -100,16 +99,16 @@ export const UpdateInfoComponent: ActionComponent<
                 readOnly={!isCreating}
                 setValue={setValue}
                 sizing="sm"
-                watch={watch}
+                value={watch(fieldNamePrefix + 'automatically_add_cw20s')}
               />
             </div>
-            <div className="flex flex-row grow gap-4 justify-between items-center py-2 px-3 bg-card rounded-md">
+            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3">
               <div className="flex flex-row gap-1">
-                <Tooltip label={t('form.automaticallyAddNFTsTooltip')}>
-                  <InformationCircleIcon className="w-4 h-4 secondary-text" />
+                <Tooltip title={t('form.automaticallyAddNFTsTooltip')}>
+                  <InformationCircleIcon className="secondary-text h-4 w-4" />
                 </Tooltip>
 
-                <p className="w-max secondary-text">
+                <p className="secondary-text w-max">
                   {t('form.automaticallyAddNFTsTitle')}
                 </p>
               </div>
@@ -118,7 +117,7 @@ export const UpdateInfoComponent: ActionComponent<
                 readOnly={!isCreating}
                 setValue={setValue}
                 sizing="sm"
-                watch={watch}
+                value={watch(fieldNamePrefix + 'automatically_add_cw721s')}
               />
             </div>
           </div>
@@ -133,9 +132,4 @@ export const UpdateInfoComponent: ActionComponent<
       </div>
     </ActionCard>
   )
-}
-
-export const UpdateInfoIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.info')} symbol="ℹ️" />
 }

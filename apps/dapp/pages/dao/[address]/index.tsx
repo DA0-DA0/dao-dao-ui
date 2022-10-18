@@ -1,279 +1,243 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import axios from 'axios'
-import { getAverageColor } from 'fast-average-color-node'
-import type { GetStaticPaths, GetStaticProps, NextPage } from 'next'
+import { useWallet } from '@noahsaso/cosmodal'
+import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-
 import {
+  constSelector,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  waitForAll,
+} from 'recoil'
+
+import { manageSubDaosAction } from '@dao-dao/actions/actions/ManageSubDaos'
+import {
+  DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
-  SuspenseLoader,
-  useDaoInfoContext,
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
-import { MemberCheck } from '@dao-dao/icons'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
-import { useVotingModule } from '@dao-dao/state'
-import { CheckedDepositInfo } from '@dao-dao/state/clients/cw-proposal-single'
 import {
-  Breadcrumbs,
-  GradientHero,
+  CwdCoreV2Selectors,
+  useEncodedCwdProposalSinglePrefill,
+  usePinnedDaos,
+  useVotingModule,
+  useWalletProfile,
+} from '@dao-dao/state'
+import { CheckedDepositInfo } from '@dao-dao/tstypes/contracts/common'
+import {
+  DaoHome,
   Loader,
   Logo,
-  MobileMenuTab,
-  PageLoader,
-  PinToggle,
-  useNamedThemeColor,
-  useThemeContext,
+  ProfileDisconnectedCard,
+  ProfileMemberCard,
+  ProfileNotMemberCard,
+  useAppLayoutContext,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
-import {
-  ContractHeader,
-  DaoInfo,
-  DaoMobileHeader,
-  DaoProposals,
-  DaoThinInfo,
-  DaoTreasury,
-  DaoTreasuryHistory,
-  SmallScreenNav,
-} from '@/components'
-import { usePinnedDAOs } from '@/hooks'
+import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 
-enum MobileMenuTabSelection {
-  Proposal,
-  Membership,
-  Treasury,
-  Info,
-}
-
-const InnerMobileDaoHome = () => {
-  const { t } = useTranslation()
-  const { coreAddress, proposalModules } = useDaoInfoContext()
-  const {
-    components: { Membership },
-  } = useVotingModuleAdapter()
-  const [tab, setTab] = useState(MobileMenuTabSelection.Proposal)
-  const makeTabSetter = (tab: MobileMenuTabSelection) => () => setTab(tab)
-
-  const useDepositInfoHooks = useMemo(
-    () =>
-      proposalModules.map(
-        (proposalModule) =>
-          matchAndLoadCommon(proposalModule, {
-            coreAddress,
-            Loader,
-            Logo,
-          }).hooks.useDepositInfo
-      ),
-    [coreAddress, proposalModules]
-  )
-  const proposalModuleDepositInfos = useDepositInfoHooks
-    .map((useDepositInfo) =>
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      useDepositInfo?.()
-    )
-    // Filter undefined (falsey) deposit infos
-    .filter(Boolean) as CheckedDepositInfo[]
-
-  return (
-    <div className="flex flex-col gap-2">
-      <GradientHero>
-        <SmallScreenNav />
-        <DaoMobileHeader />
-      </GradientHero>
-      <div className="flex overflow-auto gap-1 px-6 pb-4 border-b border-inactive no-scrollbar">
-        <MobileMenuTab
-          icon="🗳"
-          onClick={makeTabSetter(MobileMenuTabSelection.Proposal)}
-          selected={tab === MobileMenuTabSelection.Proposal}
-          text={t('title.proposals')}
-        />
-        <Membership.MobileTab
-          onClick={makeTabSetter(MobileMenuTabSelection.Membership)}
-          selected={tab === MobileMenuTabSelection.Membership}
-        />
-        <MobileMenuTab
-          icon="🏛"
-          onClick={makeTabSetter(MobileMenuTabSelection.Treasury)}
-          selected={tab === MobileMenuTabSelection.Treasury}
-          text={t('title.treasury')}
-        />
-        <MobileMenuTab
-          icon="⚙️"
-          onClick={makeTabSetter(MobileMenuTabSelection.Info)}
-          selected={tab === MobileMenuTabSelection.Info}
-          text={t('title.info')}
-        />
-      </div>
-      <div className="py-5 px-6">
-        {tab === MobileMenuTabSelection.Proposal && <DaoProposals />}
-        {tab === MobileMenuTabSelection.Membership && (
-          <Membership.Mobile
-            proposalModuleDepositInfos={proposalModuleDepositInfos}
-          />
-        )}
-        {tab === MobileMenuTabSelection.Treasury && (
-          <div className="space-y-8">
-            <DaoTreasury />
-            <DaoTreasuryHistory shortTitle />
-          </div>
-        )}
-        {tab === MobileMenuTabSelection.Info && <DaoInfo hideTreasury />}
-      </div>
-    </div>
-  )
-}
-
-const InnerDAOHome = () => {
+const InnerDaoHome = () => {
   const { t } = useTranslation()
   const router = useRouter()
+  const { connected } = useWallet()
+  const { walletProfile, updateProfileName } = useWalletProfile()
+  const { updateProfileNft } = useAppLayoutContext()
 
-  const { coreAddress, name, proposalModules } = useDaoInfoContext()
+  const daoInfo = useDaoInfoContext()
   const {
-    components: { Membership },
+    components: { MembersTab, ProfileCardMemberInfo },
   } = useVotingModuleAdapter()
-  const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
+  const { isMember } = useVotingModule(daoInfo.coreAddress, {
+    fetchMembership: true,
+  })
 
-  const useDepositInfoHooks = useMemo(
+  // If no parent, fallback to current address since it's already loaded from
+  // the above hook. We won't use this value unless there's a parent. It's
+  // redundant but has no effect.
+  const { isMember: isMemberOfParent } = useVotingModule(
+    daoInfo.parentDao?.coreAddress ?? daoInfo.coreAddress,
+    {
+      fetchMembership: true,
+    }
+  )
+  const parentDaosSubDaosLoadable = useRecoilValueLoadable(
+    daoInfo.parentDao
+      ? CwdCoreV2Selectors.listAllSubDaosSelector({
+          contractAddress: daoInfo.parentDao.coreAddress,
+        })
+      : constSelector(undefined)
+  )
+  const encodedAddSubDaoProposalPrefill = useEncodedCwdProposalSinglePrefill({
+    title: t('title.recognizeSubDao', {
+      name: daoInfo.name,
+    }),
+    description: t('info.recognizeSubDaoDescription', {
+      name: daoInfo.name,
+    }),
+    actions: [
+      {
+        action: manageSubDaosAction,
+        data: {
+          toAdd: [
+            {
+              addr: daoInfo.coreAddress,
+            },
+          ],
+          toRemove: [],
+        },
+      },
+    ],
+  })
+  const addSubDaoProposalPrefillHref = `/dao/${daoInfo.parentDao?.coreAddress}/proposals/create?prefill=${encodedAddSubDaoProposalPrefill}`
+  useEffect(() => {
+    router.prefetch(addSubDaoProposalPrefillHref)
+  }, [addSubDaoProposalPrefillHref, router])
+  // Notify if parent has not yet added subDAO.
+  useEffect(() => {
+    if (
+      daoInfo.parentDao &&
+      parentDaosSubDaosLoadable.state === 'hasValue' &&
+      parentDaosSubDaosLoadable.contents &&
+      !parentDaosSubDaosLoadable.contents.some(
+        ({ addr }) => addr === daoInfo.coreAddress
+      )
+    ) {
+      if (isMemberOfParent) {
+        toast(
+          <p
+            className="cursor-pointer transition-opacity hover:opacity-80 active:opacity-70"
+            onClick={() => router.push(addSubDaoProposalPrefillHref)}
+          >
+            {t('info.subDaoNeedsAdding', {
+              parent: daoInfo.parentDao.name,
+              child: daoInfo.name,
+            })}{' '}
+            <span className="underline">
+              {t('button.clickHereToProposeAdding')}
+            </span>
+          </p>
+        )
+      } else {
+        toast.success(
+          t('info.subDaoNeedsAdding', {
+            parent: daoInfo.parentDao.name,
+            child: daoInfo.name,
+          })
+        )
+      }
+    }
+  }, [
+    addSubDaoProposalPrefillHref,
+    daoInfo.coreAddress,
+    daoInfo.name,
+    daoInfo.parentDao,
+    encodedAddSubDaoProposalPrefill,
+    isMemberOfParent,
+    parentDaosSubDaosLoadable.contents,
+    parentDaosSubDaosLoadable.state,
+    router,
+    t,
+  ])
+
+  const depositInfoSelectors = useMemo(
     () =>
-      proposalModules.map(
+      daoInfo.proposalModules.map(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
-            coreAddress,
+            coreAddress: daoInfo.coreAddress,
             Loader,
             Logo,
-          }).hooks.useDepositInfo
+          }).selectors.depositInfo
       ),
-    [coreAddress, proposalModules]
+    [daoInfo.coreAddress, daoInfo.proposalModules]
   )
-  const proposalModuleDepositInfos = useDepositInfoHooks
-    .map((useDepositInfo) =>
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      useDepositInfo?.()
-    )
-    .filter(Boolean) as CheckedDepositInfo[]
+  const proposalModuleDepositInfos = useRecoilValue(
+    waitForAll(depositInfoSelectors)
+  ).filter(Boolean) as CheckedDepositInfo[]
 
-  const { isPinned, setPinned, setUnpinned } = usePinnedDAOs()
-  const pinned = isPinned(coreAddress)
+  const maxProposalModuleDeposit = Math.max(
+    ...proposalModuleDepositInfos.map(({ amount }) => Number(amount)),
+    0
+  )
+
+  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
+  const pinned = isPinned(daoInfo.coreAddress)
 
   return (
-    <div className="flex flex-col items-stretch lg:grid lg:grid-cols-6">
-      <div className="col-span-4 min-h-screen">
-        <GradientHero>
-          <SmallScreenNav />
-          <div className="p-6">
-            <div className="flex justify-between items-center">
-              <Breadcrumbs
-                crumbs={[
-                  ['/home', t('title.home')],
-                  [router.asPath, name],
-                ]}
-              />
-              <div className="flex flex-row gap-4 items-center">
-                {isMember && (
-                  <div className="flex flex-row gap-2 items-center">
-                    <MemberCheck fill="currentColor" width="16px" />
-                    <p className="text-sm text-primary">
-                      {t('info.youAreMember')}
-                    </p>
-                  </div>
-                )}
-                <PinToggle
-                  onPin={() => {
-                    if (pinned) {
-                      setUnpinned(coreAddress)
-                    } else {
-                      setPinned(coreAddress)
-                    }
-                  }}
-                  pinned={pinned}
+    <DaoHome
+      daoInfo={daoInfo}
+      daoInfoBar={<DaoInfoBar />}
+      membersTab={MembersTab && <MembersTab />}
+      onPin={() =>
+        pinned
+          ? setUnpinned(daoInfo.coreAddress)
+          : setPinned(daoInfo.coreAddress)
+      }
+      pinned={pinned}
+      proposalsTab={<ProposalsTab />}
+      rightSidebarContent={
+        connected ? (
+          isMember ? (
+            <ProfileMemberCard
+              daoName={daoInfo.name}
+              membershipInfo={
+                <ProfileCardMemberInfo
+                  deposit={
+                    maxProposalModuleDeposit > 0
+                      ? maxProposalModuleDeposit.toString()
+                      : undefined
+                  }
                 />
-              </div>
-            </div>
-
-            <ContractHeader />
-
-            <div className="mt-2">
-              <DaoThinInfo />
-            </div>
-            <div className="block mt-4 lg:hidden">
-              <Membership.Desktop
-                proposalModuleDepositInfos={proposalModuleDepositInfos}
-              />
-            </div>
-            <div className="pt-[22px] pb-[28px] border-b border-inactive">
-              <DaoInfo />
-            </div>
-          </div>
-        </GradientHero>
-        <div className="px-6 mb-8 space-y-10">
-          <DaoProposals />
-          <DaoTreasuryHistory />
-        </div>
-      </div>
-      <div className="hidden col-span-2 p-6 w-full h-full min-h-screen lg:block">
-        <Membership.Desktop
-          proposalModuleDepositInfos={proposalModuleDepositInfos}
-        />
-      </div>
-    </div>
+              }
+              showUpdateProfileNft={updateProfileNft.toggle}
+              updateProfileName={updateProfileName}
+              walletProfile={walletProfile}
+            />
+          ) : (
+            <ProfileNotMemberCard
+              daoName={daoInfo.name}
+              established={new Date()}
+              membershipInfo={
+                <ProfileCardMemberInfo
+                  deposit={
+                    maxProposalModuleDeposit > 0
+                      ? maxProposalModuleDeposit.toString()
+                      : undefined
+                  }
+                />
+              }
+              showUpdateProfileNft={updateProfileNft.toggle}
+              updateProfileName={updateProfileName}
+              walletProfile={walletProfile}
+            />
+          )
+        ) : (
+          <ProfileDisconnectedCard />
+        )
+      }
+      subDaosTab={<SubDaosTab />}
+      treasuryAndNftsTab={<TreasuryAndNftsTab />}
+    />
   )
 }
 
-interface DaoHomePageProps extends DaoPageWrapperProps {
-  accentColor?: string
-}
-
-const DaoHomePage: NextPage<DaoHomePageProps> = ({
-  accentColor,
+const DaoHomePage: NextPage<DaoPageWrapperProps> = ({
   children: _,
   ...props
-}) => {
-  const { isReady, isFallback } = useRouter()
-
-  const { setAccentColor, theme } = useThemeContext()
-  const brand = `rgb(${useNamedThemeColor('brand')})`
-
-  // Only set the accent color if we have enough contrast.
-  if (accentColor) {
-    const rgb = accentColor
-      .replace(/^rgba?\(|\s+|\)$/g, '')
-      .split(',')
-      .map(Number)
-    const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
-    if (
-      (theme === 'dark' && brightness < 100) ||
-      (theme === 'light' && brightness > 255 - 100)
-    ) {
-      accentColor = brand
-    }
-  }
-
-  useEffect(() => {
-    if (!isReady || isFallback) return
-
-    setAccentColor(accentColor)
-  }, [accentColor, setAccentColor, isReady, isFallback])
-
-  return (
-    <DaoPageWrapper {...props}>
-      <SuspenseLoader fallback={<PageLoader />}>
-        <div className="block md:hidden">
-          <InnerMobileDaoHome />
-        </div>
-        <div className="hidden md:block">
-          <InnerDAOHome />
-        </div>
-      </SuspenseLoader>
-    </DaoPageWrapper>
-  )
-}
+}) => (
+  <DaoPageWrapper {...props}>
+    <InnerDaoHome />
+  </DaoPageWrapper>
+)
 
 export default DaoHomePage
 
@@ -283,29 +247,8 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: true,
 })
 
-export const getStaticProps: GetStaticProps<DaoHomePageProps> =
-  makeGetDaoStaticProps({
-    getProps: async ({ coreAddress, config: { image_url } }) => {
-      const url = `${SITE_URL}/dao/${coreAddress}`
-
-      if (!image_url) {
-        return { url }
-      }
-
-      try {
-        const response = await axios.get(image_url, {
-          responseType: 'arraybuffer',
-        })
-        const buffer = Buffer.from(response.data, 'binary')
-        const result = await getAverageColor(buffer)
-
-        return {
-          url,
-          additionalProps: { accentColor: result.rgb },
-        }
-      } catch (error) {
-        // If fail to load image or get color, don't prevent page render.
-        console.error(error)
-      }
-    },
-  })
+export const getStaticProps = makeGetDaoStaticProps({
+  getProps: async ({ coreAddress }) => ({
+    url: `${SITE_URL}/dao/${coreAddress}`,
+  }),
+})

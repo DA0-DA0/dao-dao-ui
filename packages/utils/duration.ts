@@ -1,4 +1,4 @@
-import { Duration } from '@dao-dao/types/contracts/cw3-dao'
+import { Duration } from '@dao-dao/tstypes/contracts/common'
 
 import { secondsToWdhms } from './time'
 

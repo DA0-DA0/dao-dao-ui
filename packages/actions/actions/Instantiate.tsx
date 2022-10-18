@@ -10,24 +10,22 @@ import {
   transactionEventsSelector,
 } from '@dao-dao/state'
 import {
-  NATIVE_DECIMALS,
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-  makeWasmMessage,
-} from '@dao-dao/utils'
-
-import {
-  InstantiateIcon,
-  InstantiateComponent as StatelessInstantiateComponent,
-} from '../components'
-import {
   Action,
   ActionComponent,
   ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { InstantiateEmoji } from '@dao-dao/ui'
+import {
+  NATIVE_DECIMALS,
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+  makeWasmMessage,
+} from '@dao-dao/utils'
+
+import { InstantiateComponent as StatelessInstantiateComponent } from '../components/Instantiate'
 
 interface InstantiateData {
   admin: string
@@ -65,7 +63,7 @@ const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
               NATIVE_DECIMALS
-            ),
+            ).toString(),
           })),
           label,
           msg,
@@ -106,7 +104,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
 
 const Component: ActionComponent = (props) => {
   const nativeBalances = useRecoilValue(
-    nativeBalancesSelector(props.coreAddress)
+    nativeBalancesSelector({ address: props.coreAddress })
   )
 
   const {
@@ -116,7 +114,7 @@ const Component: ActionComponent = (props) => {
 
   const txEvents = useRecoilValue(
     executionTxHash
-      ? transactionEventsSelector(executionTxHash)
+      ? transactionEventsSelector({ txHash: executionTxHash })
       : constSelector(undefined)
   )
 
@@ -196,7 +194,7 @@ const Component: ActionComponent = (props) => {
 
 export const instantiateAction: Action<InstantiateData> = {
   key: ActionKey.Instantiate,
-  Icon: InstantiateIcon,
+  Icon: InstantiateEmoji,
   label: 'Instantiate Smart Contract',
   description: 'Instantiate a smart contract.',
   Component,

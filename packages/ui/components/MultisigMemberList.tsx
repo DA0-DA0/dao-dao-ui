@@ -1,7 +1,7 @@
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Member } from '@dao-dao/state/clients/cw4-voting'
+import { Member } from '@dao-dao/tstypes/contracts/CwdVotingCw4'
 import {
   Loader as DefaultLoader,
   LoaderProps,

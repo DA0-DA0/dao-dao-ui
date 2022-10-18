@@ -1,8 +1,9 @@
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
+  AddCw721Emoji,
   AddressInput,
   FormattedJSONDisplay,
   FormattedJSONDisplayProps,
@@ -14,7 +15,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils/validation'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 
 interface AddCw721Options {
   additionalAddressError?: string
@@ -33,7 +34,7 @@ export const AddCw721Component: ActionComponent<AddCw721Options> = ({
 
   return (
     <ActionCard
-      Icon={AddCw721Icon}
+      Icon={AddCw721Emoji}
       onRemove={onRemove}
       title={t('title.addCw721ToTreasury')}
     >
@@ -62,9 +63,4 @@ export const AddCw721Component: ActionComponent<AddCw721Options> = ({
       <FormattedJSONDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
   )
-}
-
-export const AddCw721Icon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.image')} symbol="🖼" />
 }

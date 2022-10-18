@@ -1,15 +1,16 @@
 import { Coin } from '@cosmjs/stargate'
 import { InformationCircleIcon } from '@heroicons/react/outline'
-import Emoji from 'a11y-react-emoji'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   AddressInput,
   InputErrorMessage,
   NumberInput,
   SelectInput,
+  StakeEmoji,
 } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
@@ -23,7 +24,7 @@ import {
   validateValidatorAddress,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 
 export const stakeActions: { type: StakeType; name: string }[] = [
   {
@@ -79,7 +80,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
           NATIVE_DECIMALS
         )
         return (
-          Number(microAmount) <= Number(nativeDelegatedBalance.amount) ||
+          microAmount <= Number(nativeDelegatedBalance.amount) ||
           `${
             Number(nativeDelegatedBalance.amount) === 0
               ? 'No native token delegations for'
@@ -102,7 +103,7 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
           NATIVE_DECIMALS
         )
         return (
-          Number(microAmount) <= Number(native.amount) ||
+          microAmount <= Number(native.amount) ||
           `The treasury ${
             Number(native.amount) === 0
               ? 'has no'
@@ -155,8 +156,8 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   ])
 
   return (
-    <ActionCard Icon={StakeIcon} onRemove={onRemove} title={t('title.stake')}>
-      <div className="flex flex-row gap-4 mt-2">
+    <ActionCard Icon={StakeEmoji} onRemove={onRemove} title={t('title.stake')}>
+      <div className="mt-2 flex flex-row gap-4">
         <SelectInput
           defaultValue={stakeActions[0].type}
           disabled={!isCreating}
@@ -257,15 +258,10 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
 
       <InputErrorMessage error={errors?.validator} />
 
-      <div className="flex gap-2 items-center p-2 mt-3 bg-disabled rounded-lg">
+      <div className="mt-3 flex items-center gap-2 rounded-lg bg-disabled p-2">
         <InformationCircleIcon className="h-4" />
         <p className="body-text">{t('info.actionInBeta')}</p>
       </div>
     </ActionCard>
   )
-}
-
-export const StakeIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.box')} symbol="📤" />
 }

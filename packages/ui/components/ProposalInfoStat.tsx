@@ -11,9 +11,9 @@ export const ProposalInfoStat = ({
   value,
   title,
 }: ProposalInfoStatProps) => (
-  <div className="flex gap-3 items-center">
-    <Icon className="h-3 fill-current secondary-text" />
-    <div className="flex gap-2 items-center">
+  <div className="flex items-center gap-3">
+    <Icon className="secondary-text h-3" />
+    <div className="flex items-center gap-2">
       <span className="secondary-text">{title}</span>
       <span className="link-text">{value ?? '...'}</span>
     </div>

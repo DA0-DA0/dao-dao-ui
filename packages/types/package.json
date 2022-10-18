@@ -1,0 +1,22 @@
+{
+  "name": "@dao-dao/tstypes",
+  "version": "0.1.0",
+  "scripts": {
+    "format": "eslint . --fix",
+    "lint": "eslint ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@noahsaso/cosmodal": "0.6.6",
+    "next-i18next": "^11.0.0",
+    "react": "18.1.0",
+    "react-hook-form": "7.20.4",
+    "recoil": "^0.7.2",
+    "typescript": "^4.8.3"
+  },
+  "peerDependencies": {
+    "next": "^12.2.0"
+  },
+  "prettier": "@dao-dao/config/prettier",
+  "private": true
+}

@@ -1,14 +1,9 @@
 import clsx from 'clsx'
-import { ComponentType } from 'react'
 
-import { Logo as DefaultLogo, LogoProps } from './Logo'
+import { LoaderProps } from '@dao-dao/tstypes/ui/Loader'
+export * from '@dao-dao/tstypes/ui/Loader'
 
-export interface LoaderProps {
-  fill?: boolean
-  size?: number | string
-  className?: string
-  Logo?: ComponentType<LogoProps>
-}
+import { Logo as DefaultLogo } from './Logo'
 
 export const Loader = ({
   fill = true,
@@ -18,22 +13,15 @@ export const Loader = ({
 }: LoaderProps) => (
   <div
     className={clsx(
-      'flex flex-row justify-center items-center',
-      { 'grow w-full h-full': fill },
+      'flex flex-row items-center justify-center',
+      { 'h-full w-full grow': fill },
       className
     )}
   >
-    <div className="animate-spin-medium">
-      <Logo size={size} />
-    </div>
+    <Logo className="animate-spin-medium" size={size} />
   </div>
 )
 
-export const PageLoader = ({ className, size = 64, ...props }: LoaderProps) => (
-  <Loader
-    className={clsx('min-h-screen', className)}
-    fill
-    size={size}
-    {...props}
-  />
+export const PageLoader = ({ size = 64, ...props }: LoaderProps) => (
+  <Loader fill size={size} {...props} />
 )

@@ -8,14 +8,7 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { Cw721BaseSelectors, CwCoreV0_1_0Selectors } from '@dao-dao/state'
-import { ContractInfoResponse } from '@dao-dao/state/clients/cw721-base'
-import { makeWasmMessage } from '@dao-dao/utils'
-
-import {
-  RemoveCw721Icon,
-  RemoveCw721Component as StatelessRemoveCw721Component,
-} from '../components'
+import { Cw721BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
 import {
   Action,
   ActionComponent,
@@ -23,7 +16,12 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { ContractInfoResponse } from '@dao-dao/tstypes/contracts/Cw721Base'
+import { RemoveCw721Emoji } from '@dao-dao/ui'
+import { makeWasmMessage } from '@dao-dao/utils'
+
+import { RemoveCw721Component as StatelessRemoveCw721Component } from '../components/RemoveCw721'
 
 interface RemoveCw721Data {
   address: string
@@ -50,7 +48,7 @@ const Component: ActionComponent = (props) => {
   )
 
   const existingTokenAddresses = useRecoilValue(
-    CwCoreV0_1_0Selectors.allCw721TokenListSelector({
+    CwdCoreV2Selectors.allCw721TokenListSelector({
       contractAddress: props.coreAddress,
     })
   )
@@ -167,7 +165,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw721Data> = (
 
 export const removeCw721Action: Action<RemoveCw721Data> = {
   key: ActionKey.RemoveCw721,
-  Icon: RemoveCw721Icon,
+  Icon: RemoveCw721Emoji,
   label: 'Remove NFT Collection from Treasury',
   description:
     'Stop displaying the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.',

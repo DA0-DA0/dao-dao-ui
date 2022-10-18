@@ -1,15 +1,16 @@
 import { Coin } from '@cosmjs/stargate'
-import Emoji from 'a11y-react-emoji'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { TokenInfoResponse } from '@dao-dao/types/contracts/cw20-gov'
+import { ActionComponent } from '@dao-dao/tstypes/actions'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
 import {
   AddressInput,
   InputErrorMessage,
   NumberInput,
   SelectInput,
+  SpendEmoji,
 } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
@@ -22,7 +23,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 
 interface SpendOptions {
   nativeBalances: readonly Coin[]
@@ -55,7 +56,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           NATIVE_DECIMALS
         )
         return (
-          Number(microAmount) <= Number(native.amount) ||
+          microAmount <= Number(native.amount) ||
           t('error.cantSpendMoreThanTreasury', {
             amount: convertMicroDenomToDenomWithDecimals(
               native.amount,
@@ -74,7 +75,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           cw20.info.decimals
         )
         return (
-          Number(microAmount) <= Number(cw20.balance) ||
+          microAmount <= Number(cw20.balance) ||
           t('error.cantSpendMoreThanTreasury', {
             amount: convertMicroDenomToDenomWithDecimals(
               cw20.balance,
@@ -136,9 +137,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   )
 
   return (
-    <ActionCard Icon={SpendIcon} onRemove={onRemove} title={t('title.spend')}>
-      <div className="flex flex-row gap-4 items-center">
-        <div className="flex flex-row gap-2 items-center">
+    <ActionCard Icon={SpendEmoji} onRemove={onRemove} title={t('title.spend')}>
+      <div className="flex flex-row items-center gap-4">
+        <div className="flex flex-row items-center gap-2">
           <NumberInput
             disabled={!isCreating}
             error={errors?.amount}
@@ -189,7 +190,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         </div>
 
         {/* eslint-disable-next-line i18next/no-literal-string */}
-        <p className="font-mono text-2xl secondary-text">&#10142;</p>
+        <p className="secondary-text font-mono text-2xl">&#10142;</p>
 
         <div className="grow">
           <AddressInput
@@ -211,9 +212,4 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const SpendIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.money')} symbol="💵" />
 }

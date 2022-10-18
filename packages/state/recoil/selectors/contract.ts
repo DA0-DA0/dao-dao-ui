@@ -1,226 +1,125 @@
-import { parseCoins } from '@cosmjs/proto-signing'
-import { IndexedTx } from '@cosmjs/stargate'
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily } from 'recoil'
 
-import {
-  CwCoreVersion,
-  convertMicroDenomToDenomWithDecimals,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-  parseCoreVersion,
-} from '@dao-dao/utils'
+import { ContractVersion, WithChainId } from '@dao-dao/tstypes'
+import { parseContractVersion } from '@dao-dao/utils'
 
 import {
   blockHeightTimestampSafeSelector,
-  cosmWasmClientSelector,
+  cosmWasmClientForChainSelector,
 } from './chain'
-import { CwCoreV0_1_0Selectors } from './clients'
+import { CwdCoreV2Selectors } from './clients'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
-  string
+  WithChainId<{ address: string }>
 >({
   key: 'contractInstantiateTime',
   get:
-    (address: string) =>
+    ({ address, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
 
       const events = await client.searchTx({
         tags: [{ key: 'instantiate._contract_address', value: address }],
       })
       if (events.length === 0) return
 
-      return get(blockHeightTimestampSafeSelector(events[0].height))
-    },
-})
-
-export const contractAdminSelector = selectorFamily<string | undefined, string>(
-  {
-    key: 'contractAdmin',
-    get:
-      (address: string) =>
-      async ({ get }) => {
-        const client = get(cosmWasmClientSelector)
-
-        try {
-          const contract = await client.getContract(address)
-          return contract.admin
-        } catch (_) {
-          return undefined
-        }
-      },
-  }
-)
-
-type TreasuryTransactionsParams = {
-  address: string
-  minHeight?: number
-  maxHeight?: number
-}
-
-interface TreasuryTransaction {
-  tx: IndexedTx
-  timestamp: Date | undefined
-  events: {
-    type: string
-    attributes: {
-      key: string
-      value: string
-    }[]
-  }[]
-}
-
-export const treasuryTransactionsSelector = selectorFamily<
-  TreasuryTransaction[],
-  TreasuryTransactionsParams
->({
-  key: 'treasuryTransactions',
-  get:
-    ({ address, minHeight, maxHeight }) =>
-    async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
-
-      const txs = await client.searchTx(
-        {
-          sentFromOrTo: address,
-        },
-        {
-          minHeight,
-          maxHeight,
-        }
-      )
-
-      const txDates = get(
-        waitForAll(
-          txs.map(({ height }) => blockHeightTimestampSafeSelector(height))
-        )
-      )
-
-      return (
-        txs
-          .map((tx, index) => {
-            let events
-            try {
-              events = JSON.parse(tx.rawLog)[0].events
-            } catch {
-              return
-            }
-
-            return {
-              tx,
-              timestamp: txDates[index],
-              events,
-            }
-          })
-          .filter(Boolean) as TreasuryTransaction[]
-      ).sort((a, b) =>
-        // Sort descending by timestamp, putting undefined timestamps last.
-        b.timestamp && a.timestamp
-          ? b.timestamp.getTime() - a.timestamp.getTime()
-          : !a.timestamp
-          ? 1
-          : !b.timestamp
-          ? -1
-          : b.tx.height - a.tx.height
-      )
-    },
-})
-
-export interface TransformedTreasuryTransaction {
-  hash: string
-  height: number
-  timestamp: Date | undefined
-  sender: string
-  recipient: string
-  amount: number
-  denomLabel: string
-  outgoing: boolean
-}
-
-export const transformedTreasuryTransactionsSelector = selectorFamily<
-  TransformedTreasuryTransaction[],
-  TreasuryTransactionsParams
->({
-  key: 'transformedTreasuryTransactions',
-  get:
-    (params) =>
-    async ({ get }) => {
-      const txs = get(treasuryTransactionsSelector(params))
-
-      return txs
-        .map(({ tx: { hash, height }, timestamp, events }) => {
-          const transferEvent = events.find(({ type }) => type === 'transfer')
-          if (!transferEvent) {
-            return
-          }
-
-          let sender = transferEvent.attributes.find(
-            ({ key }) => key === 'sender'
-          )?.value
-          let recipient = transferEvent.attributes.find(
-            ({ key }) => key === 'recipient'
-          )?.value
-          const amount = transferEvent.attributes.find(
-            ({ key }) => key === 'amount'
-          )?.value
-
-          if (!sender || !recipient || !amount) {
-            return
-          }
-
-          const coin = parseCoins(amount)[0]
-          if (!coin) {
-            return
-          }
-
-          const tokenDecimals = nativeTokenDecimals(coin.denom)
-          const tokenLabel = nativeTokenLabel(coin.denom)
-
-          // Only convert value and denom at the same time. If decimals are
-          // found but label is not for some reason (which should never happen)
-          // or vice versa, display value in non-converted decimals with
-          // non-converted denom.
-          const amountValue =
-            tokenDecimals !== undefined && tokenLabel !== undefined
-              ? convertMicroDenomToDenomWithDecimals(coin.amount, tokenDecimals)
-              : Number(coin.amount)
-          const denomLabel =
-            tokenDecimals !== undefined && tokenLabel !== undefined
-              ? tokenLabel
-              : coin.denom
-
-          return {
-            hash,
-            height,
-            timestamp,
-            sender,
-            recipient,
-            amount: amountValue,
-            denomLabel,
-            outgoing: sender === params.address,
-          }
+      return get(
+        blockHeightTimestampSafeSelector({
+          blockHeight: events[0].height,
+          chainId,
         })
-        .filter(Boolean) as TransformedTreasuryTransaction[]
+      )
     },
 })
 
-export const cwCoreVersionSelector = selectorFamily<CwCoreVersion, string>({
-  key: 'cwCoreVersion',
+export const contractAdminSelector = selectorFamily<
+  string | undefined,
+  WithChainId<{ contractAddress: string }>
+>({
+  key: 'contractAdmin',
   get:
-    (coreAddress) =>
+    ({ contractAddress, chainId }) =>
     async ({ get }) => {
-      const coreInfo = get(
-        CwCoreV0_1_0Selectors.infoSelector({ contractAddress: coreAddress })
+      const client = get(cosmWasmClientForChainSelector(chainId))
+
+      try {
+        const contract = await client.getContract(contractAddress)
+        return contract.admin
+      } catch (_) {
+        return undefined
+      }
+    },
+})
+
+export const contractVersionSelector = selectorFamily<
+  ContractVersion,
+  WithChainId<{ contractAddress: string }>
+>({
+  key: 'contractVersion',
+  get:
+    ({ contractAddress, chainId }) =>
+    async ({ get }) => {
+      const info = get(
+        CwdCoreV2Selectors.infoSelector({
+          contractAddress,
+          chainId,
+          params: [],
+        })
       ).info
 
-      const coreVersion = parseCoreVersion(coreInfo.version)
-      if (!coreVersion) {
+      const version = parseContractVersion(info.version)
+      if (!version) {
         throw new Error(
-          `Failed parsing cw-core (${coreAddress}) version "${coreInfo.version}".`
+          `Failed parsing contract (${contractAddress}, chain: ${chainId}) version "${info.version}".`
         )
       }
 
-      return coreVersion
+      return version
+    },
+})
+
+export const isContractSelector = selectorFamily<
+  boolean,
+  WithChainId<{ contractAddress: string; name: string }>
+>({
+  key: 'isContract',
+  get:
+    ({ contractAddress, name, chainId }) =>
+    async ({ get }) => {
+      try {
+        // All InfoResponses are the same, so just use core's.
+        const {
+          info: { contract },
+        } = get(
+          CwdCoreV2Selectors.infoSelector({
+            contractAddress,
+            chainId,
+            params: [],
+          })
+        )
+
+        return contract.includes(name)
+      } catch (err) {
+        // Invalid query enum info variant, different contract.
+        if (
+          err instanceof Error &&
+          err.message.includes('Error parsing into type')
+        ) {
+          return false
+        }
+
+        // If contract does not exist, not the desired contract.
+        if (
+          err instanceof Error &&
+          err.message.includes('contract: not found: invalid request')
+        ) {
+          console.error(err)
+          return false
+        }
+
+        // Rethrow other errors because it should not have failed.
+        throw err
+      }
     },
 })

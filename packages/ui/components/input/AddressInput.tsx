@@ -1,3 +1,4 @@
+import { Code, Wallet } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ChangeEventHandler, ComponentPropsWithoutRef } from 'react'
 import {
@@ -10,8 +11,6 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { Wallet } from '@dao-dao/icons'
-
 export interface AddressInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
@@ -20,10 +19,11 @@ export interface AddressInputProps<
   register: UseFormRegister<FV>
   onChange?: ChangeEventHandler<HTMLInputElement>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
-  error?: FieldError
+  error?: FieldError | string
   disabled?: boolean
   required?: boolean
   containerClassName?: string
+  iconType?: 'wallet' | 'contract'
 }
 
 export const AddressInput = <
@@ -39,6 +39,7 @@ export const AddressInput = <
   required,
   className,
   containerClassName,
+  iconType = 'wallet',
   ...rest
 }: AddressInputProps<FV, FieldName>) => {
   const { t } = useTranslation()
@@ -47,22 +48,26 @@ export const AddressInput = <
     {}
   )
 
+  const Icon = iconType === 'wallet' ? Wallet : Code
+
   return (
     <div
       className={clsx(
-        'flex gap-1 items-center py-2 px-3 font-mono text-sm bg-transparent rounded-lg border border-default focus-within:outline-none focus-within:ring-1 ring-brand ring-offset-0 transition',
-        { 'ring-1 ring-error': error },
+        'secondary-text flex items-center gap-2 rounded-md bg-transparent py-3 px-4 font-mono text-sm ring-1 transition focus-within:outline-none focus-within:ring-2',
+        error
+          ? 'ring-border-interactive-error'
+          : 'ring-border-primary focus:ring-border-interactive-focus',
         containerClassName
       )}
     >
-      <Wallet color="currentColor" width="24px" />
+      <Icon className="!h-5 !w-5" />
       <input
         className={clsx(
-          'w-full bg-transparent border-none outline-none ring-none body-text',
+          'ring-none body-text w-full border-none bg-transparent outline-none',
           className
         )}
         disabled={disabled}
-        placeholder={t('form.junoAddress')}
+        placeholder={t('form.address')}
         type="text"
         {...rest}
         {...register(fieldName, {

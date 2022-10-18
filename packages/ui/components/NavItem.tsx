@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ReactNode } from 'react'
 
 export interface NavItemData {
-  renderIcon: (color: string, mobile: boolean) => ReactNode
+  renderIcon: (mobile: boolean) => ReactNode
   label: string
   href: string
   active: boolean
@@ -20,19 +20,16 @@ export const NavItem = ({
   mobile = false,
 }: NavItemProps) => {
   const aClassName = clsx(
-    'flex flex-row gap-2 items-center p-3 rounded-lg link-text',
+    'link-text flex flex-row items-center gap-2 rounded-lg p-3',
     {
-      'text-accent bg-accent-transparent': active,
+      'bg-accent-transparent text-accent': active,
       'text-body hover:bg-card': !active,
       'gap-4 text-base': mobile,
     }
   )
   const contents = (
     <>
-      {renderIcon(
-        active ? 'rgb(var(--accent))' : 'rgba(var(--dark), 0.95)',
-        mobile
-      )}
+      {renderIcon(mobile)}
       <p className="sm:hidden lg:block">{label}</p>
     </>
   )

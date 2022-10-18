@@ -10,7 +10,7 @@ import {
 } from '../isValidAddress'
 import { isValidUrl } from '../isValidUrl'
 
-export * from './instantiate'
+export * from './makeValidateMsg'
 
 export const validateRequired = (
   v: string | number | boolean | null | undefined
@@ -38,13 +38,15 @@ export const validateAddress = (v: string) =>
 export const validateValidatorAddress = (v: string) =>
   isValidValidatorAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid address'
 
-export const validateUrl = (v: string) =>
-  isValidUrl(v) ||
-  'Invalid URL link, must start with https and end with png/jpeg/gif.'
+export const validateUrl = (v: string | undefined) =>
+  (v && isValidUrl(v)) || 'Invalid image URL: must start with https.'
 
-export const validateContractAddress = (v: string, required = true) =>
+export const validateContractAddress = (
+  v: string | undefined,
+  required = true
+) =>
   (!required && !v) ||
-  isValidContractAddress(v, CHAIN_BECH32_PREFIX) ||
+  (v && isValidContractAddress(v, CHAIN_BECH32_PREFIX)) ||
   'Invalid contract address'
 
 export const validateJSON = (v: string) => {

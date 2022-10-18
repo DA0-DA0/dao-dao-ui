@@ -1,47 +1,106 @@
-import { LcdClient } from '@cosmjs/launchpad'
-import { Coin } from '@cosmjs/stargate'
+import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { Coin, StargateClient } from '@cosmjs/stargate'
+import { ChainInfoID } from '@noahsaso/cosmodal'
+import { cosmos, juno } from 'interchain-rpc'
+import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
+import {
+  DelegationResponse,
+  UnbondingDelegation as RpcUnbondingDelegation,
+  Validator as RpcValidator,
+} from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 
 import {
-  CHAIN_REST_ENDPOINT,
-  CHAIN_RPC_ENDPOINT,
+  Delegation,
+  UnbondingDelegation,
+  Validator,
+  WithChainId,
+} from '@dao-dao/tstypes'
+import {
+  CHAIN_BECH32_PREFIX,
+  CHAIN_ID,
+  NATIVE_DECIMALS,
   NATIVE_DENOM,
   cosmWasmClientRouter,
+  getAllRpcResponse,
+  getRpcForChainId,
+  nativeTokenDecimals,
+  nativeTokenLabel,
+  nativeTokenLogoURI,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
-import { refreshWalletBalancesIdAtom } from '../atoms/refresh'
+import {
+  refreshBlockHeightAtom,
+  refreshNativeTokenStakingInfoAtom,
+  refreshWalletBalancesIdAtom,
+} from '../atoms/refresh'
 
-export const stargateClientSelector = selector({
-  key: 'stargateClient',
-  get: () => stargateClientRouter.connect(CHAIN_RPC_ENDPOINT),
+export const stargateClientForChainSelector = selectorFamily<
+  StargateClient,
+  string | undefined
+>({
+  key: 'stargateClientForChain',
+  get: (chainId) => async () =>
+    await stargateClientRouter.connect(
+      chainId ? getRpcForChainId(chainId) : getRpcForChainId(CHAIN_ID)
+    ),
 })
 
-export const cosmWasmClientSelector = selector({
-  key: 'cosmWasmClient',
-  get: () => cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT),
+export const cosmWasmClientForChainSelector = selectorFamily<
+  CosmWasmClient,
+  string | undefined
+>({
+  key: 'cosmWasmClientForChain',
+  get: (chainId) => async () =>
+    await cosmWasmClientRouter.connect(
+      chainId ? getRpcForChainId(chainId) : getRpcForChainId(CHAIN_ID)
+    ),
 })
 
-export const lcdClientSelector = selector({
-  key: 'lcdClient',
-  get: () => new LcdClient(CHAIN_REST_ENDPOINT),
+export const cosmosRpcClientForChainSelector = selectorFamily({
+  key: 'cosmosRpcClientForChain',
+  get: (chainId?: string) => async () =>
+    (
+      await cosmos.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: chainId
+          ? getRpcForChainId(chainId)
+          : getRpcForChainId(CHAIN_ID),
+      })
+    ).cosmos,
 })
 
-export const blockHeightSelector = selector({
+export const junoRpcClientSelector = selector({
+  key: 'junoRpcClient',
+  get: async () =>
+    (
+      await juno.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: getRpcForChainId(ChainInfoID.Juno1),
+      })
+    ).juno,
+})
+
+export const blockHeightSelector = selectorFamily<number, WithChainId<{}>>({
   key: 'blockHeight',
-  get: async ({ get }) => {
-    const client = get(cosmWasmClientSelector)
-    return await client.getHeight()
-  },
+  get:
+    ({ chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientForChainSelector(chainId))
+      get(refreshBlockHeightAtom)
+      return await client.getHeight()
+    },
 })
 
-export const blockHeightTimestampSelector = selectorFamily<Date, number>({
+export const blockHeightTimestampSelector = selectorFamily<
+  Date,
+  WithChainId<{ blockHeight: number }>
+>({
   key: 'blockHeightTimestamp',
   get:
-    (blockHeight) =>
+    ({ blockHeight, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       const block = await client.getBlock(blockHeight)
       return new Date(Date.parse(block.header.time))
     },
@@ -49,13 +108,13 @@ export const blockHeightTimestampSelector = selectorFamily<Date, number>({
 
 export const blockHeightTimestampSafeSelector = selectorFamily<
   Date | undefined,
-  number
+  WithChainId<{ blockHeight: number }>
 >({
   key: 'blockHeightTimestamp',
   get:
-    (blockHeight) =>
+    ({ blockHeight, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
       try {
         const block = await client.getBlock(blockHeight)
         return new Date(Date.parse(block.header.time))
@@ -65,12 +124,21 @@ export const blockHeightTimestampSafeSelector = selectorFamily<
     },
 })
 
-export const nativeBalancesSelector = selectorFamily({
+export const nativeBalancesSelector = selectorFamily<
+  {
+    denom: string
+    amount: string
+    decimals: number
+    label: string
+    imageUrl: string | undefined
+  }[],
+  WithChainId<{ address: string }>
+>({
   key: 'nativeBalances',
   get:
-    (address: string) =>
+    ({ address, chainId }) =>
     async ({ get }) => {
-      const client = get(stargateClientSelector)
+      const client = get(stargateClientForChainSelector(chainId))
 
       get(refreshWalletBalancesIdAtom(address))
 
@@ -83,16 +151,25 @@ export const nativeBalancesSelector = selectorFamily({
         })
       }
 
-      return balances
+      return balances.map(({ amount, denom }) => ({
+        amount,
+        denom,
+        decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
+        label: nativeTokenLabel(denom),
+        imageUrl: nativeTokenLogoURI(denom),
+      }))
     },
 })
 
-export const nativeBalanceSelector = selectorFamily({
+export const nativeBalanceSelector = selectorFamily<
+  Coin,
+  WithChainId<{ address: string }>
+>({
   key: 'nativeBalance',
   get:
-    (address: string) =>
+    ({ address, chainId }) =>
     async ({ get }) => {
-      const client = get(stargateClientSelector)
+      const client = get(stargateClientForChainSelector(chainId))
 
       get(refreshWalletBalancesIdAtom(address))
 
@@ -101,15 +178,14 @@ export const nativeBalanceSelector = selectorFamily({
 })
 
 export const nativeDenomBalanceSelector = selectorFamily<
-  Coin | undefined,
-  { walletAddress: string; denom: string }
+  Coin,
+  WithChainId<{ walletAddress: string; denom: string }>
 >({
   key: 'nativeDenomBalance',
   get:
-    ({ walletAddress, denom }) =>
+    ({ walletAddress, denom, chainId }) =>
     async ({ get }) => {
-      const client = get(stargateClientSelector)
-      if (!client) return
+      const client = get(stargateClientForChainSelector(chainId))
 
       get(refreshWalletBalancesIdAtom(walletAddress))
 
@@ -118,12 +194,15 @@ export const nativeDenomBalanceSelector = selectorFamily<
 })
 
 // Get the SUM of native tokens delegated across all validators
-export const nativeDelegatedBalanceSelector = selectorFamily({
+export const nativeDelegatedBalanceSelector = selectorFamily<
+  Coin,
+  WithChainId<{ address: string }>
+>({
   key: 'nativeDelegatedBalance',
   get:
-    (address: string) =>
+    ({ address, chainId }) =>
     async ({ get }) => {
-      const client = get(stargateClientSelector)
+      const client = get(stargateClientForChainSelector(chainId))
 
       get(refreshWalletBalancesIdAtom(address))
 
@@ -141,34 +220,224 @@ export const nativeDelegatedBalanceSelector = selectorFamily({
     },
 })
 
-export const nativeSupplySelector = selectorFamily({
+export const nativeSupplySelector = selectorFamily<
+  number,
+  WithChainId<{ denom: string }>
+>({
   key: 'nativeSupply',
   get:
-    (denom: string) =>
+    ({ denom, chainId }) =>
     async ({ get }) => {
-      const client = get(lcdClientSelector)
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      return Number(
+        (
+          await client.bank.v1beta1.supplyOf({
+            denom,
+          })
+        ).amount.amount
+      )
+    },
+})
+
+export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
+  key: 'blocksPerYear',
+  get:
+    ({ chainId }) =>
+    async ({ get }) => {
+      // If on juno mainnet or testnet, use juno RPC.
+      if (CHAIN_BECH32_PREFIX === 'juno') {
+        const client = get(junoRpcClientSelector)
+        return (await client.mint.params()).params.blocksPerYear.toNumber()
+      }
+
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+      try {
+        return (
+          await client.mint.v1beta1.params()
+        ).params.blocksPerYear.toNumber()
+      } catch (err) {
+        console.error(err)
+        return 0
+      }
+    },
+})
+
+export const validatorSelector = selectorFamily<
+  Validator,
+  WithChainId<{ address: string }>
+>({
+  key: 'validator',
+  get:
+    ({ address: validatorAddr, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
 
       const {
-        amount: { amount },
-      }: {
-        amount: Coin
-      } = await client.get('/cosmos/bank/v1beta1/supply/' + denom)
+        validator: {
+          description: { moniker, website, details },
+        },
+      } = await client.staking.v1beta1.validator({
+        validatorAddr,
+      })
 
-      return amount
+      return {
+        address: validatorAddr,
+        moniker,
+        website,
+        details,
+      }
+    },
+})
+
+export const nativeUnstakingDurationSecondsSelector = selectorFamily<
+  number,
+  WithChainId<{}>
+>({
+  key: 'nativeUnstakingDurationSeconds',
+  get:
+    ({ chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+      const { params } = await client.staking.v1beta1.params()
+      return params.unbondingTime.seconds.toNumber()
+    },
+})
+
+export const nativeStakingInfoSelector = selectorFamily<
+  | {
+      delegations: Delegation[]
+      unbondingDelegations: UnbondingDelegation[]
+    }
+  | undefined,
+  WithChainId<{ address: string }>
+>({
+  key: 'nativeStakingInfo',
+  get:
+    ({ address: delegatorAddr, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      get(refreshNativeTokenStakingInfoAtom(delegatorAddr))
+
+      let delegations: DelegationResponse[]
+      let validators: RpcValidator[]
+      let rewards: DelegationDelegatorReward[]
+      let unbondingDelegations: RpcUnbondingDelegation[]
+      try {
+        delegations = await getAllRpcResponse(
+          client.staking.v1beta1.delegatorDelegations,
+          {
+            delegatorAddr,
+          },
+          'delegationResponses'
+        )
+        validators = await getAllRpcResponse(
+          client.staking.v1beta1.delegatorValidators,
+          {
+            delegatorAddr,
+          },
+          'validators'
+        )
+        rewards = (
+          await client.distribution.v1beta1.delegationTotalRewards({
+            delegatorAddress: delegatorAddr,
+          })
+        ).rewards
+        unbondingDelegations = await getAllRpcResponse(
+          client.staking.v1beta1.delegatorUnbondingDelegations,
+          {
+            delegatorAddr,
+          },
+          'unbondingResponses'
+        )
+      } catch (error) {
+        console.error(error)
+        return undefined
+      }
+
+      return {
+        delegations: delegations
+          .map(
+            ({
+              delegation: { validatorAddress: address },
+              balance: delegationBalance,
+            }): Delegation | undefined => {
+              // Only allow NATIVE_DENOM.
+              if (delegationBalance.denom !== NATIVE_DENOM) {
+                return
+              }
+
+              const { description } =
+                validators.find(
+                  ({ operatorAddress }) => operatorAddress === address
+                ) ?? {}
+              const pendingReward = rewards
+                .find(({ validatorAddress }) => validatorAddress === address)
+                ?.reward.find(({ denom }) => denom === NATIVE_DENOM)
+
+              if (!description || !pendingReward) {
+                return
+              }
+
+              const { moniker, website, details } = description
+
+              return {
+                validator: {
+                  address,
+                  moniker,
+                  website,
+                  details,
+                },
+                delegated: delegationBalance,
+                pendingReward,
+              }
+            }
+          )
+          .filter(Boolean) as Delegation[],
+
+        // Only returns native token unbondings, no need to check.
+        unbondingDelegations: unbondingDelegations.flatMap(
+          ({ validatorAddress, entries }) => {
+            const validator = get(
+              validatorSelector({
+                address: validatorAddress,
+                chainId,
+              })
+            )
+
+            return entries.map(
+              ({
+                creationHeight,
+                completionTime,
+                balance,
+              }): UnbondingDelegation => ({
+                validator,
+                balance: {
+                  amount: balance,
+                  denom: NATIVE_DENOM,
+                },
+                startedAtHeight: creationHeight.toNumber(),
+                finishesAt: completionTime,
+              })
+            )
+          }
+        ),
+      }
     },
 })
 
 export const transactionEventsSelector = selectorFamily<
   Record<string, any>[],
-  string
+  WithChainId<{ txHash: string }>
 >({
   key: 'transactionEvents',
   get:
-    (hash: string) =>
+    ({ txHash, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
 
-      const tx = await client.getTx(hash)
+      const tx = await client.getTx(txHash)
       return tx?.rawLog ? JSON5.parse(tx.rawLog)[0].events : undefined
     },
 })

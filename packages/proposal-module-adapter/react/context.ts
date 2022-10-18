@@ -12,48 +12,28 @@ import {
 export const ProposalModuleAdapterContext =
   createContext<IProposalModuleContext | null>(null)
 
-export const useProposalModuleAdapter = (): IProposalModuleAdapter => {
+export const useProposalModuleAdapterContext = (): IProposalModuleContext => {
   const context = useContext(ProposalModuleAdapterContext)
 
   if (!context) {
     throw new Error(
-      'useProposalModuleAdapter can only be used in a descendant of ProposalModuleAdapterProvider.'
+      'Proposal module adapter hooks can only be used in a descendant of ProposalModuleAdapterProvider.'
     )
   }
 
-  return context.adapter
+  return context
 }
+
+export const useProposalModuleAdapter = (): IProposalModuleAdapter =>
+  useProposalModuleAdapterContext().adapter
 
 export const useProposalModuleAdapterIfAvailable = ():
   | IProposalModuleAdapter
-  | undefined => {
-  const context = useContext(ProposalModuleAdapterContext)
-  return context?.adapter
-}
+  | undefined => useContext(ProposalModuleAdapterContext)?.adapter
 
 // For internal use to pass around options.
 export const useProposalModuleAdapterOptions =
-  (): IProposalModuleAdapterOptions => {
-    const context = useContext(ProposalModuleAdapterContext)
-
-    if (!context) {
-      throw new Error(
-        'useProposalModuleAdapterOptions can only be used in a descendant of ProposalModuleAdapterProvider.'
-      )
-    }
-
-    return context.options
-  }
+  (): IProposalModuleAdapterOptions => useProposalModuleAdapterContext().options
 
 export const useProposalModuleAdapterCommon =
-  (): IProposalModuleAdapterCommon => {
-    const context = useContext(ProposalModuleAdapterContext)
-
-    if (!context) {
-      throw new Error(
-        'useProposalModuleAdapterCommon can only be used in a descendant of ProposalModuleAdapterProvider.'
-      )
-    }
-
-    return context.common
-  }
+  (): IProposalModuleAdapterCommon => useProposalModuleAdapterContext().common

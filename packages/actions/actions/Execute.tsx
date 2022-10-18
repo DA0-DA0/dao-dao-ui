@@ -5,24 +5,22 @@ import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
 import {
-  NATIVE_DECIMALS,
-  convertDenomToMicroDenomWithDecimals,
-  convertMicroDenomToDenomWithDecimals,
-  makeWasmMessage,
-} from '@dao-dao/utils'
-
-import {
-  ExecuteIcon,
-  ExecuteComponent as StatelessExecuteComponent,
-} from '../components'
-import {
   Action,
   ActionComponent,
   ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '../types'
+} from '@dao-dao/tstypes/actions'
+import { ExecuteEmoji } from '@dao-dao/ui'
+import {
+  NATIVE_DECIMALS,
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+  makeWasmMessage,
+} from '@dao-dao/utils'
+
+import { ExecuteComponent as StatelessExecuteComponent } from '../components/Execute'
 
 interface ExecuteData {
   address: string
@@ -55,7 +53,7 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () =>
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
               NATIVE_DECIMALS
-            ),
+            ).toString(),
           })),
           msg,
         },
@@ -93,7 +91,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
 
 const Component: ActionComponent = (props) => {
   const nativeBalances = useRecoilValue(
-    nativeBalancesSelector(props.coreAddress)
+    nativeBalancesSelector({ address: props.coreAddress })
   )
 
   return (
@@ -108,7 +106,7 @@ const Component: ActionComponent = (props) => {
 
 export const executeAction: Action<ExecuteData> = {
   key: ActionKey.Execute,
-  Icon: ExecuteIcon,
+  Icon: ExecuteEmoji,
   label: 'Execute Smart Contract',
   description: 'Execute a message on a smart contract.',
   Component,

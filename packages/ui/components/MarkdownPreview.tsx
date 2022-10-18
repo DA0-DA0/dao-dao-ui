@@ -15,7 +15,7 @@ export const MarkdownPreview = ({
   className,
 }: MarkdownPreviewProps) => (
   <ReactMarkdown
-    className={clsx('break-words prose prose-sm dark:prose-invert', className)}
+    className={clsx('prose prose-sm break-words dark:prose-invert', className)}
     components={{
       h1: HeadingRenderer,
       h2: HeadingRenderer,
@@ -62,7 +62,7 @@ const HeadingRenderer: HeadingComponent = ({
       <span key="children">{children}</span>,
       <button
         key="copy"
-        className="leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+        className="leading-none opacity-0 transition-opacity group-hover:opacity-100"
       >
         {copied ? (
           <CheckCircleIcon className="w-4" />

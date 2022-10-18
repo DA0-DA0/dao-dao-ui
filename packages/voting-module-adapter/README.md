@@ -5,11 +5,11 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 ## What is it?
 
 This is a voting module adapter package. It creates a common interface for
-various components and pieces of data that apps (namely `@dao-dao/dapp` and
-`@dao-dao/sda-base`) need to access which change based on the voting module used
-by the DAO. For example, a DAO that uses `cw20-staked-balance-voting` will need
-to display staking interfaces and wallet token balances, whereas `cw4-voting`
-will just need to display member voting weights.
+various components and pieces of data that apps need to access which change
+based on the voting module used by the DAO. For example, a DAO that uses
+`cwd-voting-cw20-staked` will need to display staking interfaces and wallet
+token balances, whereas `cwd-voting-cw4` will just need to display member voting
+weights.
 
 ## Why is this necessary?
 
@@ -98,7 +98,7 @@ const DaoThinInfoContent: FC = () => {
           </HorizontalInfoSection>
         )}
       <HorizontalInfoSection>
-        <Pencil className="inline" fill="currentColor" />
+        <Pencil className="inline" />
         {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
@@ -129,7 +129,7 @@ const DaoThinInfoDisplay = () => {
 <br/>
 
 <details>
-<summary>`cw4-voting/components/DaoThinInfoContent.tsx`</summary>
+<summary>`CwdVotingCw4/components/DaoThinInfoContent.tsx`</summary>
 
 ```tsx
 const DaoThinInfoContent = () => {
@@ -157,7 +157,7 @@ const DaoThinInfoContent = () => {
         {t('info.numMembers', { count: cw4VotingMembers.length })}
       </HorizontalInfoSection>
       <HorizontalInfoSection>
-        <Pencil className="inline" fill="currentColor" />
+        <Pencil className="inline" />
         {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
@@ -168,7 +168,7 @@ const DaoThinInfoContent = () => {
 </details>
 
 <details>
-<summary>`cw20-staked-balance-voting/components/DaoThinInfoContent.tsx`</summary>
+<summary>`CwdVotingCw20Staked/components/DaoThinInfoContent.tsx`</summary>
 
 ```tsx
 const DaoThinInfoContent = () => {
@@ -216,7 +216,7 @@ const DaoThinInfoContent = () => {
         </HorizontalInfoSection>
       )}
       <HorizontalInfoSection>
-        <Pencil className="inline" fill="currentColor" />
+        <Pencil className="inline" />
         {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
@@ -265,7 +265,7 @@ const voteConversionDecimals = useVoteConversionDecimals()
 <br/>
 
 <details>
-<summary>`cw4-voting/hooks/useVoteConversionDecimals.ts`</summary>
+<summary>`CwdVotingCw4/hooks/useVoteConversionDecimals.ts`</summary>
 
 ```ts
 const useVoteConversionDecimals = () => 0
@@ -274,7 +274,7 @@ const useVoteConversionDecimals = () => 0
 </details>
 
 <details>
-<summary>`cw20-staked-balance-voting/hooks/useVoteConversionDecimals.ts`</summary>
+<summary>`CwdVotingCw20Staked/hooks/useVoteConversionDecimals.ts`</summary>
 
 ```ts
 const useVoteConversionDecimals = () => {
@@ -298,35 +298,14 @@ voting module code together.
 
 ## React Setup
 
-### **1. Register the desired voting module adapters**
-
-Registration should occur once, before any rendering. In a Next.js app, sticking
-this code in a `useEffect` in `_app.tsx` should work just fine.
-
-```tsx
-import {
-  Cw20StakedBalanceVotingAdapter,
-  Cw4VotingAdapter,
-  registerAdapters,
-} from '@dao-dao/voting-module-adapter'
-
-const App = () => {
-  useEffect(() => {
-    registerAdapters([Cw4VotingAdapter, Cw20StakedBalanceVotingAdapter])
-  }, [])
-
-  ...
-}
-```
-
-### **2. Wrap the app**
+### **1. Wrap the app**
 
 Add the `VotingModuleAdapterProvider` to your app, likely at a high enough level
 to encompass the entire app or entire pages. At this point, you must already
 know the contract name of the voting module (from the `info` query) so that the
 correct adapter can be chosen and its interface passed down to descendant
 components. You will also need to pass some options, like the contract address
-of the DAO's `cw-core` contract, as well as some commonly used components, like
+of the DAO's core contract, as well as some commonly used components, like
 `Logo` and `Loader`.
 
 ```tsx
@@ -358,7 +337,7 @@ and passed to a common page wrapper component, on each page.
 const coreAddress = context.params.address as string
 
 const cwClient = await cosmWasmClientRouter.connect(CHAIN_RPC_ENDPOINT)
-const coreClient = new CwCoreV0_1_0QueryClient(cwClient, coreAddress)
+const coreClient = new CwCoreV1QueryClient(cwClient, coreAddress)
 
 const votingModuleAddress = await coreClient.votingModule()
 const votingModuleContractName = (
@@ -370,7 +349,7 @@ const votingModuleContractName = (
 
 </details>
 
-### **3. Use the hook**
+### **2. Use the hook**
 
 Now that the library has been setup, we can use the hook anywhere as a
 descendant of the Provider to access the voting module adapter interface.
@@ -438,7 +417,7 @@ them into everything.
 Example:
 
 <details>
-<summary>`cw20-staked-balance-voting/components/DaoTreasuryFooter.tsx`</summary>
+<summary>`CwdVotingCw20Staked/components/DaoTreasuryFooter.tsx`</summary>
 
 ```tsx
 import { useVotingModuleAdapterOptions } from '@dao-dao/voting-module-adapter/react/context'

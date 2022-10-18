@@ -2,8 +2,9 @@ import { CheckIcon } from '@heroicons/react/outline'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Duration } from '@dao-dao/types/contracts/cw3-dao'
-import { Claim, TokenInfoResponse } from '@dao-dao/types/contracts/stake-cw20'
+import { Duration } from '@dao-dao/tstypes/contracts/common'
+import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
+import { Claim } from '@dao-dao/tstypes/contracts/stake-cw20'
 import {
   claimAvailable,
   convertMicroDenomToDenomWithDecimals,
@@ -87,8 +88,8 @@ export const ClaimsListItem = ({
   }, [initialDurationRemainingTime, onClaimAvailable])
 
   return (
-    <div className="flex gap-2 justify-between items-center p-4 bg-primary rounded-lg">
-      <div className="flex flex-row gap-2 items-center">
+    <div className="flex items-center justify-between gap-2 rounded-lg bg-primary p-4">
+      <div className="flex flex-row items-center gap-2">
         <BalanceIcon iconURI={iconURI} />
 
         <p>
@@ -105,7 +106,7 @@ export const ClaimsListItem = ({
       {available ? (
         <p className="font-mono text-sm text-secondary">
           {t('info.available')}
-          <CheckIcon className="inline ml-1 h-4" />
+          <CheckIcon className="ml-1 inline h-4" />
         </p>
       ) : (
         <p className="text-caption">

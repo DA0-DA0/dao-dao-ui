@@ -1,67 +1,105 @@
 import { XIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { ReactNode, useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
-export interface ModalProps {
-  children: ReactNode
-  onClose: () => void
-  backdropClassName?: string
-  containerClassName?: string
-  hideCloseButton?: boolean
-}
+import { ModalProps } from '@dao-dao/tstypes/ui/Modal'
+
+import { useMountedInBrowser } from '../hooks'
+import { ErrorBoundary } from './ErrorBoundary'
+import { IconButton } from './IconButton'
+
+export * from '@dao-dao/tstypes/ui/Modal'
 
 export const Modal = ({
   children,
+  visible,
   onClose,
   backdropClassName,
   containerClassName,
   hideCloseButton,
+  header,
+  headerContent,
+  footerContent,
+  headerContainerClassName,
 }: ModalProps) => {
-  const handleKeyPress = useCallback(
-    (event) => {
-      if (event.key === 'Escape') {
-        onClose()
-      }
-    },
-    [onClose]
-  )
-
+  // Close modal on escape.
   useEffect(() => {
-    // attach the event listener
+    const handleKeyPress = (event: KeyboardEvent) =>
+      event.key === 'Escape' && onClose()
+
+    // Attach event listener.
     document.addEventListener('keydown', handleKeyPress)
-
-    // remove the event listener
+    // Clean up event listener.
     return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [handleKeyPress])
+  }, [onClose])
 
-  return (
-    <div
-      className={clsx(
-        'flex fixed top-0 left-0 z-10 justify-center items-center px-4 w-screen h-full backdrop-brightness-50 transition cursor-pointer backdrop-filter',
-        backdropClassName
-      )}
-      onClick={
-        // Only close if click specifically on backdrop.
-        ({ target, currentTarget }) => target === currentTarget && onClose()
-      }
-    >
-      <div
-        className={clsx(
-          'relative p-6 max-w-md h-min bg-white rounded-lg border border-focus cursor-auto',
-          containerClassName
-        )}
-      >
-        {!hideCloseButton && (
-          <button
-            className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition"
-            onClick={onClose}
+  const mountedInBrowser = useMountedInBrowser()
+
+  return mountedInBrowser
+    ? createPortal(
+        <div
+          className={clsx(
+            'fixed top-0 left-0 z-40 flex h-full w-screen cursor-pointer items-center justify-center p-4 backdrop-brightness-50 backdrop-filter transition-all duration-[120ms]',
+            visible ? 'opacity-100' : 'pointer-events-none opacity-0',
+            backdropClassName
+          )}
+          onClick={
+            // Only close if click specifically on backdrop.
+            ({ target, currentTarget }) => target === currentTarget && onClose()
+          }
+        >
+          <div
+            className={clsx(
+              'no-scrollbar relative flex h-min max-h-full max-w-md cursor-auto flex-col overflow-y-auto rounded-lg border border-border-secondary bg-background-base p-6 shadow-dp8 transition-transform duration-[120ms]',
+              visible ? 'scale-100' : 'scale-90',
+              containerClassName
+            )}
           >
-            <XIcon className="w-4 h-4" />
-          </button>
-        )}
+            {!hideCloseButton && (
+              <IconButton
+                Icon={XIcon}
+                circular
+                className="absolute top-2 right-2 z-50"
+                iconClassName="text-icon-tertiary"
+                onClick={onClose}
+                variant="ghost"
+              />
+            )}
 
-        {children}
-      </div>
-    </div>
-  )
+            {(header || headerContent) && (
+              <div
+                className={clsx(
+                  // Undo container padding with negative margin, and then re-add
+                  // the padding internally, so that the bottom border spans the
+                  // whole width.
+                  '-mx-6 mb-6 flex shrink-0 flex-col gap-1 border-b border-border-base px-6 pb-6',
+                  headerContainerClassName
+                )}
+              >
+                {header && (
+                  <>
+                    <p className="header-text">{header.title}</p>
+                    {!!header.subtitle && (
+                      <p className="body-text">{header.subtitle}</p>
+                    )}
+                  </>
+                )}
+
+                {headerContent}
+              </div>
+            )}
+
+            <ErrorBoundary>{children}</ErrorBoundary>
+
+            {footerContent && (
+              <div className="-mx-6 -mb-6 shrink-0 border-t border-border-secondary py-5 px-6">
+                {footerContent}
+              </div>
+            )}
+          </div>
+        </div>,
+        document.body
+      )
+    : null
 }

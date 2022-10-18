@@ -1,6 +1,6 @@
-import { ComponentType, ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useState } from 'react'
 
-import { ProposalModule } from '@dao-dao/utils'
+import { ProposalModule } from '@dao-dao/tstypes'
 
 import { matchAndLoadAdapter } from '../core'
 import {
@@ -14,44 +14,24 @@ export interface ProposalModuleAdapterProviderProps {
   proposalId: string
   children: ReactNode | ReactNode[]
   initialOptions: IProposalModuleAdapterInitialOptions
-  // If passed, will replace the Loader passed to initialOptions while this
-  // provider is matching and loading the correct adapter.
-  ProviderLoader?: ComponentType
 }
 
+// Ensure this re-renders when the voting module contract name or options
+// addresses change. You can do this by setting a `key` on this component or one
+// of its ancestors. See DaoPageWrapper.tsx where this component is used.
 export const ProposalModuleAdapterProvider = ({
   proposalModules,
   proposalId,
   children,
   initialOptions,
-  ProviderLoader,
 }: ProposalModuleAdapterProviderProps) => {
-  const [state, setState] = useState<{
-    proposalId: string
-    proposalModules: ProposalModule[]
-    context: IProposalModuleContext
-  }>()
+  const [context] = useState<IProposalModuleContext>(() =>
+    matchAndLoadAdapter(proposalModules, proposalId, initialOptions)
+  )
 
-  useEffect(() => {
-    setState({
-      proposalId,
-      proposalModules,
-      context: matchAndLoadAdapter(proposalModules, proposalId, initialOptions),
-    })
-  }, [initialOptions, proposalId, proposalModules])
-
-  // If `proposalId` or `proposalModules` changes and state has not yet been
-  // updated with the newly loaded adapter, do not render the components that
-  // expect the correct proposal module. Load instead.
-  return state &&
-    state.proposalId === proposalId &&
-    state.proposalModules === proposalModules ? (
-    <ProposalModuleAdapterContext.Provider value={state.context}>
+  return (
+    <ProposalModuleAdapterContext.Provider value={context}>
       {children}
     </ProposalModuleAdapterContext.Provider>
-  ) : ProviderLoader ? (
-    <ProviderLoader />
-  ) : (
-    <initialOptions.Loader className="!fixed top-0 right-0 bottom-0 left-0" />
   )
 }

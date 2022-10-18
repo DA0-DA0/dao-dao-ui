@@ -1,15 +1,20 @@
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/ui'
+import { ActionComponent } from '@dao-dao/tstypes/actions'
+import {
+  AddressInput,
+  InputErrorMessage,
+  InputLabel,
+  UpdateAdminEmoji,
+} from '@dao-dao/ui'
 import {
   validateAddress,
   validateContractAddress,
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard, ActionComponent } from '..'
+import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'
 
 export interface UpdateAdminOptions {
@@ -30,15 +35,15 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
 
   return (
     <ActionCard
-      Icon={UpdateAdminIcon}
+      Icon={UpdateAdminEmoji}
       onRemove={onRemove}
       title={t('title.updateContractAdmin')}
     >
-      <p className="mb-4 max-w-prose secondary-text">
+      <p className="secondary-text mb-4 max-w-prose">
         {t('form.updateAdminDescription')}
       </p>
       <div className="flex flex-row flex-wrap gap-2">
-        <div className="flex flex-col grow gap-1">
+        <div className="flex grow flex-col gap-1">
           <InputLabel name={t('form.smartContractAddress')} />
           <AddressInput
             disabled={!isCreating}
@@ -50,7 +55,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
           />
           <InputErrorMessage error={errors?.tokenAddress} />
         </div>
-        <div className="flex flex-col grow gap-1">
+        <div className="flex grow flex-col gap-1">
           <InputLabel name={t('form.admin')} />
           <AddressInput
             disabled={!isCreating}
@@ -67,9 +72,4 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const UpdateAdminIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.mushroom')} symbol="🍄" />
 }

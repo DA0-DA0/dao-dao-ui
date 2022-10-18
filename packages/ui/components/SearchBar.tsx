@@ -1,40 +1,60 @@
-import { SearchIcon } from '@heroicons/react/solid'
+import { Search } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentProps } from 'react'
+import { ComponentPropsWithoutRef, forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-export interface SearchBarProps extends Omit<ComponentProps<'input'>, 'type'> {
+export interface SearchBarProps
+  extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'variant'> {
   containerClassName?: string
   hideIcon?: boolean
+  variant?: 'sm' | 'lg'
+  ghost?: boolean
 }
 
-export const SearchBar = ({
-  containerClassName,
-  className,
-  hideIcon,
-  ...props
-}: SearchBarProps) => {
-  const { t } = useTranslation()
+export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
+  function SearchBar(
+    {
+      containerClassName,
+      className,
+      hideIcon,
+      variant = 'lg',
+      ghost,
+      ...props
+    },
+    ref
+  ) {
+    const { t } = useTranslation()
 
-  return (
-    <div
-      className={clsx(
-        'flex items-center px-3 text-tertiary border-b border-default',
-        containerClassName
-      )}
-    >
-      {!hideIcon && <SearchIcon className="w-5" />}
-
-      <input
-        autoFocus
+    return (
+      <div
         className={clsx(
-          'p-4 w-full bg-transparent focus:outline-none primary-text focus:ring-none',
-          className
+          'group flex flex-row items-center gap-1.5 rounded-md',
+          // Border.
+          !ghost &&
+            'ring-1 ring-border-primary transition focus-within:ring-2 focus-within:ring-border-interactive-focus',
+          // Sizing.
+          !ghost && {
+            'p-1.5': variant === 'sm',
+            'p-2': variant === 'lg',
+          },
+          containerClassName
         )}
-        placeholder={t('title.search')}
-        type="text"
-        {...props}
-      />
-    </div>
-  )
-}
+      >
+        {!hideIcon && (
+          <Search className="!h-5 !w-5 text-icon-tertiary transition group-focus-within:text-icon-primary" />
+        )}
+
+        <input
+          className={clsx(
+            'secondary-text grow bg-transparent pr-4 leading-4 text-text-tertiary transition placeholder:text-text-tertiary focus:text-text-body focus:outline-none',
+            className
+          )}
+          placeholder={t('title.search')}
+          ref={ref}
+          type="text"
+          {...props}
+        />
+      </div>
+    )
+  }
+)

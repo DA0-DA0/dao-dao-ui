@@ -5,9 +5,31 @@
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
-  "dependencies": {},
+  "dependencies": {
+    "@dao-dao/state": "*",
+    "@dao-dao/ui": "*",
+    "@dao-dao/utils": "*",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/icons-material": "^5.10.3",
+    "@mui/material": "^5.10.3",
+    "a11y-react-emoji": "^1.2.0",
+    "buffer": "^6.0.3",
+    "lodash.clonedeep": "^4.5.0",
+    "react-hook-form": "7.20.4",
+    "react-hot-toast": "^2.1.1",
+    "recoil": "^0.7.2"
+  },
   "devDependencies": {
-    "typescript": "^4.5.3"
+    "@types/lodash.clonedeep": "^4.5.0",
+    "clsx": "^1.1.1",
+    "react": "18.1.0",
+    "react-i18next": "^11.0.0",
+    "typescript": "^4.8.3"
+  },
+  "peerDependencies": {
+    "@dao-dao/storybook": "*",
+    "@noahsaso/cosmodal": "^0.6.6"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true
