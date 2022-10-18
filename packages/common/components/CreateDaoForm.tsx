@@ -418,6 +418,9 @@ export const CreateDaoForm = ({
               },
             })
 
+            // Clear saved form data.
+            setNewDaoAtom(DefaultNewDao)
+
             // Navigate to DAO page (underneath the creation modal).
             router.push(`/dao/${coreAddress}`)
           } catch (err) {
