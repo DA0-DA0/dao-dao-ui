@@ -12,11 +12,11 @@ import { ProposalLine as StatelessProposalLine } from '@dao-dao/ui'
 import { useTranslatedTimeDeltaFormatter } from '@dao-dao/ui/hooks'
 import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
 
-import { useProposalModuleAdapterOptions } from '../../../react'
-import { BaseProposalLineProps } from '../../../types'
-import { useProposal, useWalletVoteInfo } from '../hooks'
+import { useProposalModuleAdapterOptions } from '../../../../react'
+import { BaseProposalLineProps } from '../../../../types'
+import { useProposal, useWalletVoteInfo } from '../../hooks'
+import { ProposalWalletVote } from '../ProposalWalletVote'
 import { ProposalStatus } from './ProposalStatus'
-import { ProposalWalletVote } from './ProposalWalletVote'
 
 export const ProposalLine = ({ href }: BaseProposalLineProps) => {
   const {

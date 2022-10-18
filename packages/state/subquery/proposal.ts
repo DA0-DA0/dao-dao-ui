@@ -19,12 +19,12 @@ export const GET_PROPOSAL = gql`
 
 export interface GetProposal {
   proposal: {
-    createdAt: string // Serialized Date
-    executedAt: string // Serialized Date
-    closedAt: string // Serialized Date
+    createdAt: string // Serialized UTC Date
+    executedAt: string // Serialized UTC Date
+    closedAt: string // Serialized UTC Date
     votes: {
       nodes: {
-        votedAt: string // Serialized Date
+        votedAt: string // Serialized UTC Date
         walletId: string
       }[]
     }

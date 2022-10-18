@@ -14,22 +14,17 @@ export default {
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof ProposalVotes>
 
-const Template: ComponentStory<typeof ProposalVotes> = (args) => (
+const Template: ComponentStory<typeof ProposalVotes<Vote>> = (args) => (
   <div className="max-w-2xl">
     <ProposalVotes {...args} />
   </div>
 )
 
-export const makeProps = (): ProposalVotesProps => ({
+export const makeProps = (): ProposalVotesProps<Vote> => ({
   votes: [...Array(10)].map(() => ({
     voterAddress: 'juno123ihuprfiuosdjfiu98349fi0ewjgui',
     // 25% chance of No, 75% chance of Yes
-    vote: (
-      <VoteDisplay
-        className="link-text w-full flex-row-reverse justify-between gap-3 font-sans text-xs"
-        vote={Math.random() < 0.25 ? Vote.No : Vote.Yes}
-      />
-    ),
+    vote: Math.random() < 0.25 ? Vote.No : Vote.Yes,
     votingPowerPercent: 0.0432,
   })),
   // Within the past 5 days.
@@ -52,6 +47,7 @@ export const makeProps = (): ProposalVotesProps => ({
       {...props}
     />
   ),
+  VoteDisplay,
 })
 
 export const Default = Template.bind({})

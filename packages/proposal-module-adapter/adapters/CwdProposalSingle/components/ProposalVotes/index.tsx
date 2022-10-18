@@ -8,9 +8,9 @@ import {
   ProposalVotes as StatelessProposalVotes,
 } from '@dao-dao/ui'
 
-import { useProposalModuleAdapterOptions } from '../../../react/context'
-import { listVotesSelector } from '../contracts/CwdProposalSingle.common.recoil'
-import { useProposal } from '../hooks'
+import { useProposalModuleAdapterOptions } from '../../../../react/context'
+import { listVotesSelector } from '../../contracts/CwdProposalSingle.common.recoil'
+import { useProposal } from '../../hooks'
 import { VoteDisplay } from './VoteDisplay'
 
 const VOTE_LIMIT = 30
@@ -63,12 +63,7 @@ export const ProposalVotes = () => {
             ...newVotes.map(
               ({ vote, voter, power }): ProposalVote => ({
                 voterAddress: voter,
-                vote: (
-                  <VoteDisplay
-                    className="link-text w-full flex-row-reverse justify-between gap-3 font-sans text-xs"
-                    vote={vote}
-                  />
-                ),
+                vote,
                 votingPowerPercent: (Number(power) / totalPower) * 100,
               })
             ),
@@ -106,6 +101,7 @@ export const ProposalVotes = () => {
   return (
     <StatelessProposalVotes
       ProfileDisplay={ProfileDisplay}
+      VoteDisplay={VoteDisplay}
       canLoadMore={canLoadMore}
       getDateVoted={
         proposalVotesSubquery.loading || !proposalVotesSubquery.data?.proposal
@@ -115,11 +111,14 @@ export const ProposalVotes = () => {
                 proposalVotesSubquery.data?.proposal?.votes.nodes.find(
                   ({ walletId }) => walletId === voterAddress
                 )?.votedAt
-              return votedAt ? new Date(votedAt) : undefined
+              return votedAt
+                ? // Interpret as UTC.
+                  new Date(votedAt + 'Z')
+                : undefined
             }
       }
-      loadMore={loadMore}
       // Only return dates once subquery data has loaded.
+      loadMore={loadMore}
       loadingMore={loading}
       votes={votes}
     />

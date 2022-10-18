@@ -50,9 +50,6 @@ const GET_OPEN_PROPOSALS_WITH_WALLET_VOTES = gql`
           nodes {
             id
             num
-            open
-            expiresAtDate
-            expiresAtHeight
             votes(filter: { walletId: { equalTo: $walletAddress } }) {
               nodes {
                 id

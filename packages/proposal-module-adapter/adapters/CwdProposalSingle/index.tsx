@@ -11,7 +11,6 @@ import {
 } from './common'
 import {
   ProposalActionDisplay,
-  ProposalInfoCard,
   ProposalLine,
   ProposalStatusAndInfo,
   ProposalVoteTally,
@@ -104,7 +103,6 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
       ProposalWalletVote,
       ProposalVotes,
       ProposalVoteTally,
-      ProposalInfoCard,
       ProposalLine,
     },
   }),
