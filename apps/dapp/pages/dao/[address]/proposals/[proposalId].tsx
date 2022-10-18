@@ -97,7 +97,7 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
 
   const onExecuteSuccess = useCallback(async () => {
     refreshProposalAndAll()
-    toast.success(t('success.proposalExecuted'))
+    toast.loading(t('success.proposalExecuted'))
 
     // Manually revalidate DAO static props. Don't await this promise since we
     // just want to tell the server to do it, and we're about to reload anyway.

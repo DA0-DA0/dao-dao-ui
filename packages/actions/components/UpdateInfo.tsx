@@ -3,7 +3,8 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ActionComponent } from '@dao-dao/tstypes/actions'
-import { ConfigResponse } from '@dao-dao/tstypes/contracts/CwCore.v1'
+import { ConfigResponse as ConfigV1Response } from '@dao-dao/tstypes/contracts/CwCore.v1'
+import { ConfigResponse as ConfigV2Response } from '@dao-dao/tstypes/contracts/CwdCore.v2'
 import {
   FormSwitch,
   ImageSelector,
@@ -22,9 +23,8 @@ import {
 
 import { ActionCard } from './ActionCard'
 
-export type UpdateInfoData = ConfigResponse
+export type UpdateInfoData = ConfigV1Response | ConfigV2Response
 
-// TODO: Make a v1 and v2 of this action.
 export const UpdateInfoComponent: ActionComponent<
   undefined,
   UpdateInfoData

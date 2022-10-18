@@ -564,7 +564,7 @@
     "addedToken": "Added token to Keplr.",
     "daoCreatedPleaseWait": "DAO created. You will be redirected once the DAO page is ready...",
     "proposalClosed": "Closed successfully.",
-    "proposalExecuted": "Executed successfully.",
+    "proposalExecuted": "Executed successfully. Refreshing page...",
     "voteCast": "Vote successfully cast."
   },
   "title": {
