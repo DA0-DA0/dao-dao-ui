@@ -150,24 +150,28 @@ export const UnstakingModal = ({
           </div>
         )}
 
-        <div className="link-text mt-6 ml-2 flex flex-row items-center gap-3 text-text-secondary">
-          <ArrowDropdown
-            className={clsx('h-2 w-2', {
-              '-rotate-90': claimed.length === 0,
-            })}
-          />
-
-          <p>
-            {claimed.length === 0 ? t('title.noHistory') : t('title.history')}
-          </p>
-        </div>
-
         {claimed.length > 0 && (
-          <div className="mt-5 space-y-1">
-            {claimed.map((task, index) => (
-              <UnstakingLine key={index} task={task} />
-            ))}
-          </div>
+          <>
+            <div className="link-text mt-6 ml-2 mb-5 flex flex-row items-center gap-3 text-text-secondary">
+              <ArrowDropdown
+                className={clsx('h-2 w-2', {
+                  '-rotate-90': claimed.length === 0,
+                })}
+              />
+
+              <p>
+                {claimed.length === 0
+                  ? t('title.noHistory')
+                  : t('title.history')}
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              {claimed.map((task, index) => (
+                <UnstakingLine key={index} task={task} />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </Modal>

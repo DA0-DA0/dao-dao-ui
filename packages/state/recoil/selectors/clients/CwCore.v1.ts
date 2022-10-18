@@ -23,6 +23,7 @@ import {
   CwCoreV1QueryClient as QueryClient,
 } from '../../../clients/CwCore.v1'
 import {
+  refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
@@ -209,7 +210,7 @@ export const cw20BalancesSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
 
-      get(refreshWalletBalancesIdAtom(queryClientParams.contractAddress))
+      get(refreshWalletBalancesIdAtom(undefined))
 
       return await client.cw20Balances(...params)
     },
@@ -225,6 +226,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
 
+      get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
       get(refreshWalletBalancesIdAtom(params[0].address))
 
       return await client.votingPowerAtHeight(...params)
@@ -241,6 +243,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
 
+      get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
       get(refreshWalletBalancesIdAtom(undefined))
 
       return await client.totalPowerAtHeight(...params)

@@ -38,14 +38,6 @@ export const useStakingInfo = ({
       })
     ).unstaking_duration ?? undefined
 
-  const setRefreshStakingContractBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(stakingContractAddress)
-  )
-  const refreshStakingContractBalances = useCallback(
-    () => setRefreshStakingContractBalancesId((id) => id + 1),
-    [setRefreshStakingContractBalancesId]
-  )
-
   const setRefreshTotalBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(undefined)
   )
@@ -113,7 +105,6 @@ export const useStakingInfo = ({
   return {
     stakingContractAddress,
     unstakingDuration,
-    refreshStakingContractBalances,
     refreshTotals,
     /// Optional
     // Claims

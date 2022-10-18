@@ -2,13 +2,19 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { PropsWithChildren, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
+import {
+  constSelector,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil'
 
 import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
 import {
   Cw20BaseHooks,
   Cw20StakeHooks,
   Cw20StakeSelectors,
+  refreshDaoVotingPowerAtom,
   stakingLoadingAtom,
   useWalletProfile,
 } from '@dao-dao/state'
@@ -41,6 +47,7 @@ const InnerStakingModal = ({
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletProfile()
+  const { coreAddress } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
@@ -54,7 +61,6 @@ const InnerStakingModal = ({
   const {
     stakingContractAddress,
     unstakingDuration,
-    refreshStakingContractBalances,
     refreshTotals,
     sumClaimsAvailable,
     walletStakedValue,
@@ -124,6 +130,11 @@ const InnerStakingModal = ({
     sender: walletAddress ?? '',
   })
 
+  const setRefreshDaoVotingPower = useSetRecoilState(
+    refreshDaoVotingPowerAtom(coreAddress)
+  )
+  const refreshDaoVotingPower = () => setRefreshDaoVotingPower((id) => id + 1)
+
   const onAction = async (mode: StakingMode, amount: number) => {
     if (!connected) {
       toast.error(t('error.connectWalletToContinue'))
@@ -151,7 +162,7 @@ const InnerStakingModal = ({
 
           refreshBalances()
           refreshTotals()
-          refreshStakingContractBalances()
+          refreshDaoVotingPower()
 
           setAmount(0)
           toast.success(
@@ -220,7 +231,7 @@ const InnerStakingModal = ({
           refreshBalances()
           refreshTotals()
           refreshClaims?.()
-          refreshStakingContractBalances()
+          refreshDaoVotingPower()
 
           setAmount(0)
           toast.success(
@@ -256,7 +267,6 @@ const InnerStakingModal = ({
           refreshBalances()
           refreshTotals()
           refreshClaims?.()
-          refreshStakingContractBalances()
 
           setAmount(0)
 

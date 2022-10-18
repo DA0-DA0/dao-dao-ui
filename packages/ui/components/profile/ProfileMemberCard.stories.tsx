@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileMemberCardMembershipInfo } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui'
-import { makeProps as makeProfileMemberCardMembershipInfoProps } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui/ProfileMemberCardMembershipInfo.stories'
+import { ProfileCardMemberInfo } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui'
+import { makeProps as makeProfileCardMemberInfoProps } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui/ProfileCardMemberInfo.stories'
 
 import { makeProps as makeUnstakingLineProps } from '../UnstakingLine.stories'
 import { UnstakingTaskStatus } from '../UnstakingStatus'
@@ -19,7 +19,7 @@ const Template: ComponentStory<typeof ProfileMemberCard> = (args) => (
 )
 
 const makeProps = (
-  ...args: Parameters<typeof makeProfileMemberCardMembershipInfoProps>
+  ...args: Parameters<typeof makeProfileCardMemberInfoProps>
 ): ProfileMemberCardProps => ({
   daoName: 'Dog Dao',
   walletProfile: {
@@ -31,14 +31,13 @@ const makeProps = (
       nft: null,
     },
   },
-  walletAddress: 'wallet',
   openProposals: true,
   established: new Date(),
   membershipInfo: (
-    <ProfileMemberCardMembershipInfo
-      {...makeProfileMemberCardMembershipInfoProps(...args)}
-    />
+    <ProfileCardMemberInfo {...makeProfileCardMemberInfoProps(...args)} />
   ),
+  showUpdateProfileNft: () => {},
+  updateProfileName: async () => {},
 })
 
 export const Default = Template.bind({})

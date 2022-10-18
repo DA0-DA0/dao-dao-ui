@@ -3,11 +3,12 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { PropsWithChildren, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
 import {
   CwdVotingNativeStakedHooks,
+  refreshDaoVotingPowerAtom,
   stakingLoadingAtom,
   useWalletProfile,
 } from '@dao-dao/state'
@@ -40,7 +41,7 @@ const InnerStakingModal = ({
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletProfile()
-  const { votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
@@ -53,7 +54,6 @@ const InnerStakingModal = ({
   })
   const {
     unstakingDuration,
-    refreshStakingContractBalances,
     refreshTotals,
     sumClaimsAvailable,
     walletStakedValue,
@@ -101,6 +101,10 @@ const InnerStakingModal = ({
     contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
+  const setRefreshDaoVotingPower = useSetRecoilState(
+    refreshDaoVotingPowerAtom(coreAddress)
+  )
+  const refreshDaoVotingPower = () => setRefreshDaoVotingPower((id) => id + 1)
 
   const onAction = async (mode: StakingMode, amount: number) => {
     if (!connected) {
@@ -132,7 +136,7 @@ const InnerStakingModal = ({
 
           refreshBalances()
           refreshTotals()
-          refreshStakingContractBalances()
+          refreshDaoVotingPower()
 
           setAmount(0)
           toast.success(
@@ -170,7 +174,7 @@ const InnerStakingModal = ({
           refreshBalances()
           refreshTotals()
           refreshClaims?.()
-          refreshStakingContractBalances()
+          refreshDaoVotingPower()
 
           setAmount(0)
           toast.success(
@@ -206,7 +210,6 @@ const InnerStakingModal = ({
           refreshBalances()
           refreshTotals()
           refreshClaims?.()
-          refreshStakingContractBalances()
 
           setAmount(0)
 

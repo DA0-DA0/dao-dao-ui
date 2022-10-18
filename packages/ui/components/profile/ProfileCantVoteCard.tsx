@@ -19,13 +19,13 @@ export interface ProfileCantVoteCardProps
   > {
   daoName: string
   isMember: boolean
-  notMemberInfo: ReactNode
+  membershipInfo: ReactNode
 }
 
 export const ProfileCantVoteCard = ({
   daoName,
   isMember,
-  notMemberInfo,
+  membershipInfo,
   ...wrapperProps
 }: ProfileCantVoteCardProps) => {
   const { t } = useTranslation()
@@ -61,7 +61,7 @@ export const ProfileCantVoteCard = ({
       <div className="border-t border-t-border-primary p-6">
         <p className="link-text mb-1">{t('title.membership')}</p>
 
-        {notMemberInfo}
+        {membershipInfo}
       </div>
     </ProfileCardWrapper>
   )

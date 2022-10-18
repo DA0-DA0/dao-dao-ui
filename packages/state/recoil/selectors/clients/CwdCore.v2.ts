@@ -33,6 +33,7 @@ import {
   CwdCoreV2QueryClient,
 } from '../../../clients/CwdCore.v2'
 import {
+  refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
@@ -129,7 +130,7 @@ export const cw20BalancesSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
-      get(refreshWalletBalancesIdAtom(queryClientParams.contractAddress))
+      get(refreshWalletBalancesIdAtom(undefined))
       return await client.cw20Balances(...params)
     },
 })
@@ -302,6 +303,8 @@ export const votingPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
+      get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
+      get(refreshWalletBalancesIdAtom(params[0].address))
       return await client.votingPowerAtHeight(...params)
     },
 })
@@ -316,6 +319,8 @@ export const totalPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
+      get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
+      get(refreshWalletBalancesIdAtom(undefined))
       return await client.totalPowerAtHeight(...params)
     },
 })

@@ -18,7 +18,7 @@ export interface ProfileNewProposalCardProps {
 }
 
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
-  const { name: daoName } = useDaoInfoContext()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
   const { walletProfile, updateProfileName } = useWalletProfile()
   const { updateProfileNft } = useAppLayoutContext()
 
@@ -34,9 +34,9 @@ export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
         />
       }
     >
-      {/* Use `key` prop to fully re-instantiate this card when the proposalModule changes since we use hooks from the proposal module that may have different internal hooks. */}
+      {/* Use `key` prop to fully re-instantiate this card when the proposalModule changes since we use hooks from the proposal module, and different proposal modules have different internal hooks. */}
       <InnerProfileNewProposalCard
-        key={props.proposalModuleAdapterCommon.id}
+        key={`${coreAddress}:${props.proposalModuleAdapterCommon.id}`}
         {...props}
       />
     </SuspenseLoader>

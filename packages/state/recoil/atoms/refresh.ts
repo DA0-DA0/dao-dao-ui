@@ -63,3 +63,9 @@ export const refreshNativeTokenStakingInfoAtom = atomFamily<
   key: 'refreshNativeTokenStakingInfo',
   default: 0,
 })
+
+// Change this to refresh voting power info for a DAO given its core address.
+export const refreshDaoVotingPowerAtom = atomFamily<number, string>({
+  key: 'refreshDaoVotingPower',
+  default: 0,
+})

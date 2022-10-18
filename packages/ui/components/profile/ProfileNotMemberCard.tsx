@@ -18,13 +18,13 @@ export interface ProfileNotMemberCardProps
   > {
   daoName: string
   established: Date
-  notMemberInfo: ReactNode
+  membershipInfo: ReactNode
 }
 
 export const ProfileNotMemberCard = ({
   daoName,
   established,
-  notMemberInfo,
+  membershipInfo,
   ...wrapperProps
 }: ProfileNotMemberCardProps) => {
   const { t } = useTranslation()
@@ -39,7 +39,7 @@ export const ProfileNotMemberCard = ({
     >
       <p className="link-text mb-1">{t('title.membership')}</p>
 
-      {notMemberInfo}
+      {membershipInfo}
     </ProfileCardWrapper>
   )
 }

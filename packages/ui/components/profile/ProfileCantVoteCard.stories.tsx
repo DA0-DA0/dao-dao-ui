@@ -1,7 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileCardNotMemberInfo } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui'
-import { makeProps as makeProfileCardNotMemberInfoProps } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/ui/ProfileCardNotMemberInfo.stories'
+import { ProfileCardMemberInfo } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfo'
+import {
+  makeCantVoteOnProposalProps as makeProfileCardMemberInfoCantVoteOnProposalProps,
+  makeProps as makeProfileCardMemberInfoProps,
+} from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfo.stories'
 
 import { ProfileCantVoteCard } from './ProfileCantVoteCard'
 
@@ -29,11 +32,10 @@ Default.args = {
     },
   },
   isMember: false,
-  notMemberInfo: (
-    <ProfileCardNotMemberInfo {...makeProfileCardNotMemberInfoProps(2.34)} />
+  membershipInfo: (
+    <ProfileCardMemberInfo {...makeProfileCardMemberInfoProps([], 0)} />
   ),
 }
-
 Default.parameters = {
   design: {
     type: 'figma',
@@ -45,10 +47,9 @@ export const CurrentMember = Template.bind({})
 CurrentMember.args = {
   ...Default.args,
   isMember: true,
-  notMemberInfo: (
-    <ProfileCardNotMemberInfo
-      {...makeProfileCardNotMemberInfoProps(34, 791.386)}
+  membershipInfo: (
+    <ProfileCardMemberInfo
+      {...makeProfileCardMemberInfoCantVoteOnProposalProps()}
     />
   ),
 }
-CurrentMember.parameters = Default.parameters

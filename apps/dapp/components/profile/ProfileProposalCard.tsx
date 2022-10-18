@@ -39,7 +39,7 @@ export const ProfileProposalCard = ({
     components: { ProposalWalletVote },
   } = useProposalModuleAdapter()
   const {
-    components: { ProfileCardNotMemberInfo },
+    components: { ProfileCardMemberInfo },
   } = useVotingModuleAdapter()
 
   const depositInfoSelectors = useMemo(
@@ -113,14 +113,14 @@ export const ProfileProposalCard = ({
     <ProfileCantVoteCard
       {...commonProps}
       isMember={isMember}
-      notMemberInfo={
-        <ProfileCardNotMemberInfo
+      membershipInfo={
+        <ProfileCardMemberInfo
+          cantVoteOnProposal
           deposit={
             maxProposalModuleDeposit > 0
               ? maxProposalModuleDeposit.toString()
               : undefined
           }
-          proposalContext={true}
         />
       }
     />

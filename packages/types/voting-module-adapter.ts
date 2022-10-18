@@ -45,14 +45,10 @@ export interface BaseSdaMembershipPageProps extends BaseMembershipProps {
   Loader: ComponentType<{ size?: number | string }>
 }
 
-export interface BaseProfileMemberCardMembershipInfoProps {
+export interface BaseProfileCardMemberInfoProps {
   deposit: string | undefined
-}
-
-export interface BaseProfileCardNotMemberInfoProps {
-  deposit: string | undefined
-  // If this is being displayed in the context of a proposal.
-  proposalContext: boolean
+  // True if wallet cannot vote on a proposal being shown.
+  cantVoteOnProposal?: boolean
 }
 
 export interface BaseStakingModalProps {
@@ -95,7 +91,6 @@ export interface UseStakingInfoOptions {
 export interface UseStakingInfoResponse {
   stakingContractAddress: string
   unstakingDuration?: Duration
-  refreshStakingContractBalances: () => void
   refreshTotals: () => void
   /// Optional
   // Claims
@@ -140,8 +135,7 @@ export interface IVotingModuleAdapter {
     DaoInfoAdditionalAddresses: ComponentType
     VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
     SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
-    ProfileMemberCardMembershipInfo: ComponentType<BaseProfileMemberCardMembershipInfoProps>
-    ProfileCardNotMemberInfo: ComponentType<BaseProfileCardNotMemberInfoProps>
+    ProfileCardMemberInfo: ComponentType<BaseProfileCardMemberInfoProps>
 
     StakingModal?: ComponentType<BaseStakingModalProps>
     ClaimsPendingList?: ComponentType<BaseClaimsPendingListProps>
@@ -182,6 +176,7 @@ export type VotingModuleAdapter<DaoCreationConfig extends FieldValues = any> = {
 
 export interface IVotingModuleAdapterOptions {
   votingModuleAddress: string
+  // TODO: Do we need coreAddress here? useDaoInfoContext works everywhere.
   coreAddress: string
   Logo: ComponentType<LogoProps>
   Loader: ComponentType<LoaderProps>

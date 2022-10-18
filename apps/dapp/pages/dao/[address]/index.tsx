@@ -54,11 +54,7 @@ const InnerDaoHome = () => {
 
   const daoInfo = useDaoInfoContext()
   const {
-    components: {
-      MembersTab,
-      ProfileCardNotMemberInfo,
-      ProfileMemberCardMembershipInfo,
-    },
+    components: { MembersTab, ProfileCardMemberInfo },
   } = useVotingModuleAdapter()
   const { isMember } = useVotingModule(daoInfo.coreAddress, {
     fetchMembership: true,
@@ -194,7 +190,7 @@ const InnerDaoHome = () => {
             <ProfileMemberCard
               daoName={daoInfo.name}
               membershipInfo={
-                <ProfileMemberCardMembershipInfo
+                <ProfileCardMemberInfo
                   deposit={
                     maxProposalModuleDeposit > 0
                       ? maxProposalModuleDeposit.toString()
@@ -210,14 +206,13 @@ const InnerDaoHome = () => {
             <ProfileNotMemberCard
               daoName={daoInfo.name}
               established={new Date()}
-              notMemberInfo={
-                <ProfileCardNotMemberInfo
+              membershipInfo={
+                <ProfileCardMemberInfo
                   deposit={
                     maxProposalModuleDeposit > 0
                       ? maxProposalModuleDeposit.toString()
                       : undefined
                   }
-                  proposalContext={false}
                 />
               }
               showUpdateProfileNft={updateProfileNft.toggle}

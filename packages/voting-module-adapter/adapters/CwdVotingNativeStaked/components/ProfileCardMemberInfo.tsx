@@ -5,46 +5,55 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import {
-  Cw20StakeHooks,
+  CwdVotingNativeStakedHooks,
   blockHeightSelector,
   blocksPerYearSelector,
+  junoswapPoolsListSelector,
   stakingLoadingAtom,
   useCachedLoadable,
   useWalletProfile,
 } from '@dao-dao/state'
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
+import { useDaoInfoContext } from '@dao-dao/ui'
 import {
+  NATIVE_DENOM,
   convertExpirationToDate,
   convertMicroDenomToDenomWithDecimals,
   durationToSeconds,
+  nativeTokenLabel,
   processError,
 } from '@dao-dao/utils'
 
-import { BaseProfileMemberCardMembershipInfoProps } from '../../../types'
+import { ProfileCardMemberInfoTokens } from '../../../components'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { BaseProfileCardMemberInfoProps } from '../../../types'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
-import { ProfileMemberCardMembershipInfo as StatelessProfileMemberCardMembershipInfo } from '../ui'
 import { StakingModal } from './StakingModal'
 
-export const ProfileMemberCardMembershipInfo = ({
+export const ProfileCardMemberInfo = ({
   deposit,
-}: BaseProfileMemberCardMembershipInfoProps) => {
+  ...props
+}: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
+  const { name: daoName } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletProfile()
+  const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [claimingLoading, setClaimingLoading] = useState(false)
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
-  const { governanceTokenInfo, walletBalance: unstakedBalance } =
-    useGovernanceTokenInfo({
-      fetchWalletBalance: true,
-    })
+  const {
+    governanceTokenAddress,
+    governanceTokenInfo,
+    walletBalance: unstakedBalance,
+  } = useGovernanceTokenInfo({
+    fetchWalletBalance: true,
+  })
 
   const {
-    stakingContractAddress,
     unstakingDuration,
-    refreshStakingContractBalances,
     refreshTotals,
     claimsPending,
     claimsAvailable,
@@ -69,8 +78,21 @@ export const ProfileMemberCardMembershipInfo = ({
     throw new Error(t('error.loadingData'))
   }
 
-  const doClaim = Cw20StakeHooks.useClaim({
-    contractAddress: stakingContractAddress,
+  // Search for native governance token in junoswap pools list.
+  const poolsList = useRecoilValue(junoswapPoolsListSelector)
+  const governanceTokenPoolSymbol = poolsList?.pools
+    .flatMap(({ pool_assets }) => pool_assets)
+    .find(
+      ({ native, symbol, denom }) =>
+        native &&
+        denom.startsWith('ibc/') &&
+        // governanceTokenAddress is denom of native token, so its label should
+        // be its symbol.
+        symbol === nativeTokenLabel(governanceTokenAddress)
+    )?.symbol
+
+  const doClaim = CwdVotingNativeStakedHooks.useClaim({
+    contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
 
@@ -93,7 +115,6 @@ export const ProfileMemberCardMembershipInfo = ({
       refreshBalances()
       refreshTotals()
       refreshClaims?.()
-      refreshStakingContractBalances()
 
       toast.success(
         `Claimed ${convertMicroDenomToDenomWithDecimals(
@@ -116,7 +137,6 @@ export const ProfileMemberCardMembershipInfo = ({
     governanceTokenInfo.symbol,
     refreshBalances,
     refreshClaims,
-    refreshStakingContractBalances,
     refreshTotals,
     sumClaimsAvailable,
     t,
@@ -169,8 +189,16 @@ export const ProfileMemberCardMembershipInfo = ({
         />
       )}
 
-      <StatelessProfileMemberCardMembershipInfo
+      <ProfileCardMemberInfoTokens
         claimingLoading={claimingLoading}
+        daoName={daoName}
+        junoswapHref={
+          governanceTokenPoolSymbol
+            ? `https://junoswap.com/?from=${nativeTokenLabel(
+                NATIVE_DENOM
+              )}&to=${governanceTokenPoolSymbol}`
+            : undefined
+        }
         onClaim={onClaim}
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => refreshClaims?.()}
@@ -192,6 +220,7 @@ export const ProfileMemberCardMembershipInfo = ({
         }
         unstakingTasks={unstakingTasks}
         votingPower={(walletStakedValue / totalStakedValue) * 100}
+        {...props}
       />
     </>
   )

@@ -22,7 +22,8 @@ export const makeReverseProposalInfos = ({
   proposalModule: { address, prefix },
 }: IProposalModuleAdapterCommonOptions): ReverseProposalInfosSelector =>
   selectorFamily({
-    key: 'cwProposalSingleReverseProposalInfos',
+    // Unique for inputs.
+    key: `cwdProposalSingleReverseProposalInfos_${address}_${prefix}`,
     get:
       ({ startBefore, limit }) =>
       async ({ get }) => {
@@ -41,7 +42,7 @@ export const makeReverseProposalInfos = ({
         const timestamps = get(
           waitForAll(
             proposalResponses.map(({ proposal: { start_height } }) =>
-              blockHeightTimestampSafeSelector(start_height)
+              blockHeightTimestampSafeSelector({ blockHeight: start_height })
             )
           )
         )
@@ -63,7 +64,8 @@ export const makeDepositInfo = ({
   proposalModule: { address, version, preProposeAddress },
 }: IProposalModuleAdapterCommonOptions): DepositInfoSelector =>
   selector({
-    key: 'cwProposalSingleDepositInfo',
+    // Unique for inputs.
+    key: `cwdProposalSingleDepositInfo_${address}_${version}_${preProposeAddress}`,
     get: ({ get }) => {
       let depositInfo: CheckedDepositInfo | undefined
       //! V1
