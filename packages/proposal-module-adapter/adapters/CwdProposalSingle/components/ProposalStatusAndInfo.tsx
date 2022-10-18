@@ -4,6 +4,7 @@ import {
   HourglassTopRounded,
   Key,
   OpenInNew,
+  Redo,
   RotateRightOutlined,
   Tag,
 } from '@mui/icons-material'
@@ -124,6 +125,15 @@ export const ProposalStatusAndInfo = ({
         <p {...props}>{t(`proposalStatusTitle.${proposal.status}`)}</p>
       ),
     },
+    ...(config.allow_revoting
+      ? ([
+          {
+            Icon: Redo,
+            label: t('title.revoting'),
+            Value: (props) => <p {...props}>{t('info.enabled')}</p>,
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : []),
     ...(expirationDate
       ? ([
           {

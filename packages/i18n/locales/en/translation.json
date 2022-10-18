@@ -691,6 +691,7 @@
     "removeCw20FromTreasury": "Remove Token Balance from Treasury",
     "removeCw721FromTreasury": "Remove NFT Collection from Treasury",
     "reviewAndSubmit": "Review and submit",
+    "revoting": "Revoting",
     "search": "Search",
     "sortBy": "Sort by",
     "spend": "Spend",
