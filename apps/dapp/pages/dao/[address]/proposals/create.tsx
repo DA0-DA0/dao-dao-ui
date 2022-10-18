@@ -26,6 +26,7 @@ import {
 import {
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
+  refreshProposalsIdAtom,
   useVotingModule,
 } from '@dao-dao/state'
 import { ProposalDraft, ProposalPrefill } from '@dao-dao/tstypes'
@@ -240,6 +241,12 @@ const InnerProposalCreate = () => {
     proposalModuleAdapterCommon.id,
   ])
 
+  const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
+  const refreshProposals = useCallback(
+    () => setRefreshProposalsId((id) => id + 1),
+    [setRefreshProposalsId]
+  )
+
   const onCreateSuccess: BaseNewProposalProps['onCreateSuccess'] = useCallback(
     (info) => {
       // Show modal.
@@ -250,10 +257,19 @@ const InnerProposalCreate = () => {
         deleteDraft(draftIndex)
       }
 
+      // Refresh proposals state.
+      refreshProposals()
+
       // Navigate to proposal (underneath the creation modal).
       router.push(`/dao/${info.dao.coreAddress}/proposals/${info.id}`)
     },
-    [deleteDraft, draftIndex, router, setProposalCreatedCardProps]
+    [
+      deleteDraft,
+      draftIndex,
+      refreshProposals,
+      router,
+      setProposalCreatedCardProps,
+    ]
   )
 
   return (

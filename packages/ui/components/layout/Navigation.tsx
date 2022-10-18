@@ -224,7 +224,7 @@ export const Navigation = ({
             Icon={PushPinOutlined}
             compact={compact}
             defaultExpanded
-            label={t('info.pinned')}
+            label={t('title.following')}
             loading={pinnedDaos.loading}
           >
             {!pinnedDaos.loading && (

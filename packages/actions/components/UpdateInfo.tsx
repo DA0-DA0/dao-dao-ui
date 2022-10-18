@@ -6,6 +6,7 @@ import { ActionComponent } from '@dao-dao/tstypes/actions'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/tstypes/contracts/CwCore.v1'
 import { ConfigResponse as ConfigV2Response } from '@dao-dao/tstypes/contracts/CwdCore.v2'
 import {
+  DaoImage,
   FormSwitch,
   ImageSelector,
   InputErrorMessage,
@@ -28,7 +29,7 @@ export type UpdateInfoData = ConfigV1Response | ConfigV2Response
 export const UpdateInfoComponent: ActionComponent<
   undefined,
   UpdateInfoData
-> = ({ fieldNamePrefix, errors, onRemove, isCreating, data, Logo }) => {
+> = ({ fieldNamePrefix, errors, onRemove, isCreating, data, coreAddress }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
@@ -38,30 +39,26 @@ export const UpdateInfoComponent: ActionComponent<
       onRemove={onRemove}
       title={t('title.updateInfo')}
     >
-      <div className="flex flex-row flex-wrap items-center justify-center gap-6">
-        <div className="flex flex-col gap-4 pl-2">
-          {isCreating ? (
-            <>
-              <ImageSelector
-                error={errors?.name}
-                fieldName={fieldNamePrefix + 'image_url'}
-                register={register}
-                validation={[validateUrl]}
-                watch={watch}
-              />
-              <InputLabel name={t('form.selectAnImage')} />
-            </>
-          ) : data.image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              alt={t('info.daosLogo')}
-              className="h-24 w-24 rounded-full object-cover"
-              src={data.image_url}
+      <div className="flex flex-row flex-wrap items-center justify-center gap-4">
+        {isCreating ? (
+          <div className="flex flex-col gap-4 pl-2">
+            <ImageSelector
+              error={errors?.name}
+              fieldName={fieldNamePrefix + 'image_url'}
+              register={register}
+              validation={[validateUrl]}
+              watch={watch}
             />
-          ) : (
-            <Logo size={96} />
-          )}
-        </div>
+            <InputLabel name={t('form.selectAnImage')} />
+          </div>
+        ) : (
+          <DaoImage
+            className="ml-2"
+            coreAddress={coreAddress}
+            imageUrl={data.image_url}
+            size="lg"
+          />
+        )}
 
         <div className="flex grow flex-col gap-3">
           <div>
