@@ -24,9 +24,9 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { ProfileCardMemberInfoTokens } from '../../../components'
-import { BaseProfileCardMemberInfoProps } from '../../../types'
-import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
+import { ProfileCardMemberInfoTokens } from '../../../../components'
+import { BaseProfileCardMemberInfoProps } from '../../../../types'
+import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 import { StakingModal } from './StakingModal'
 
 export const ProfileCardMemberInfo = ({

@@ -17,7 +17,6 @@ import {
 } from './dao'
 import { ProposalCreatedCardProps } from './proposal'
 import { LoaderProps, LogoProps, ProfileVoteCardOption } from './ui'
-import { ProcessedThresholdQuorum } from './utils'
 
 export interface IProposalModuleAdapterCommon<
   FormData extends FieldValues = any
@@ -36,14 +35,8 @@ export interface IProposalModuleAdapterCommon<
 
   // Hooks
   hooks: {
-    useListAllProposalInfos: (
-      startAfter: number | undefined
-    ) => CommonProposalListInfo[]
-    useProposalCount: () => number
     useActions: () => Action[]
     useProfileNewProposalCardInfoLines: () => ProfileNewProposalCardInfoLine[]
-    // Returns `proposalNumber` (ID of this proposal for this module)
-    // useCreateProposal: (data: unknown) => number
   }
 
   // Components
@@ -67,7 +60,6 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
       refreshProposalAndAll: () => void
     }
     useProposalExecutionTxHash: () => string | undefined
-    useProposalProcessedTQ: () => ProcessedThresholdQuorum
     useProfileVoteCardOptions: () => ProfileVoteCardOption<Vote>[]
     useWalletVoteInfo: () => WalletVoteInfo<Vote>
     useCastVote: (onSuccess?: () => void | Promise<void>) => {

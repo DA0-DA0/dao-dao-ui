@@ -5,11 +5,11 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 ## What is it?
 
 This is a voting module adapter package. It creates a common interface for
-various components and pieces of data that apps (namely `@dao-dao/dapp` and
-`@dao-dao/sda-base`) need to access which change based on the voting module used
-by the DAO. For example, a DAO that uses `cwd-voting-cw20-staked` will need
-to display staking interfaces and wallet token balances, whereas `cwd-voting-cw4`
-will just need to display member voting weights.
+various components and pieces of data that apps need to access which change
+based on the voting module used by the DAO. For example, a DAO that uses
+`cwd-voting-cw20-staked` will need to display staking interfaces and wallet
+token balances, whereas `cwd-voting-cw4` will just need to display member voting
+weights.
 
 ## Why is this necessary?
 

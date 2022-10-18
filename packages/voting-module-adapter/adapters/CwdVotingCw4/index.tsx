@@ -1,14 +1,5 @@
-import { Wallet } from '@dao-dao/icons'
-
 import { VotingModuleAdapter } from '../../types'
-import {
-  MembersTab,
-  Membership,
-  MembershipMobileTab,
-  ProfileCardMemberInfo,
-  SdaMembershipPage,
-  VoteHeroStats,
-} from './components'
+import { MembersTab, ProfileCardMemberInfo } from './components'
 import {
   DisplayInfoIcon,
   GovernanceConfigurationInput,
@@ -31,17 +22,7 @@ export const CwdVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
     'cwd-voting-cw4',
   ],
 
-  load: ({ t }) => ({
-    // Fields
-    fields: {
-      membershipPageInfo: {
-        renderIcon: (mobile) => (
-          <Wallet height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
-        ),
-        label: t('title.members'),
-      },
-    },
-
+  load: () => ({
     // Hooks
     hooks: {
       useActions,
@@ -52,16 +33,7 @@ export const CwdVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
     // Components
     components: {
       MembersTab,
-      Membership: {
-        Desktop: () => <Membership />,
-        MobileTab: MembershipMobileTab,
-        Mobile: () => <Membership primaryText />,
-      },
-      DaoTreasuryFooter: () => null,
-      DaoInfoAdditionalAddresses: () => null,
       ProfileCardMemberInfo,
-      VoteHeroStats,
-      SdaMembershipPage,
     },
   }),
 

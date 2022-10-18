@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Trans } from '@dao-dao/common'
 import { Discord } from '@dao-dao/icons'
 
-export const MembershipPlaceholder = () => {
+export const Placeholder = () => {
   const { t } = useTranslation()
 
   return (

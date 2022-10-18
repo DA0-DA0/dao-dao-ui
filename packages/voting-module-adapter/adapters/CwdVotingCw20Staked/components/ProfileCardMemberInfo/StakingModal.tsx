@@ -29,9 +29,9 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { BaseStakingModalProps } from '../../../types'
-import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
+import { BaseStakingModalProps } from '../../../../types'
+import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
   <SuspenseLoader fallback={<StakingModalLoader {...props} />}>

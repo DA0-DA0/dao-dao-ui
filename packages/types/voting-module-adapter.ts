@@ -1,9 +1,9 @@
 import { TFunction } from 'next-i18next'
-import { ComponentType, ReactNode } from 'react'
+import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 
 import { Action } from './actions'
-import { CheckedDepositInfo, Duration } from './contracts/common'
+import { Duration } from './contracts/common'
 import { MarketingInfoResponse, TokenInfoResponse } from './contracts/Cw20Base'
 import { Claim } from './contracts/stake-cw20'
 import {
@@ -14,36 +14,11 @@ import {
 } from './dao'
 import {
   DaoInfoBarItem,
-  HeroStatProps,
   LoaderProps,
   LogoProps,
   StakingMode,
 } from './ui'
 import { ProfileNewProposalCardAddress } from './ui/ProfileNewProposalCard'
-
-export interface MembershipPageInfo {
-  renderIcon: (mobile: boolean) => ReactNode
-  label: string
-}
-
-export interface BaseMembershipProps {
-  proposalModuleDepositInfos: CheckedDepositInfo[]
-}
-
-export interface MembershipMobileTabProps {
-  onClick: () => void
-  selected: boolean
-}
-
-export interface BaseVoteHeroStatsProps {
-  loader?: boolean
-  additionalStats?: (HeroStatProps & { link?: boolean })[]
-}
-
-export interface BaseSdaMembershipPageProps extends BaseMembershipProps {
-  defaultImageUrl: string
-  Loader: ComponentType<{ size?: number | string }>
-}
 
 export interface BaseProfileCardMemberInfoProps {
   deposit: string | undefined
@@ -55,11 +30,6 @@ export interface BaseStakingModalProps {
   initialMode?: StakingMode
   onClose: () => void
   maxDeposit?: string
-}
-
-export interface BaseClaimsPendingListProps {
-  fallbackImageUrl: string
-  showClaim: () => void
 }
 
 export interface UseGovernanceTokenInfoOptions {
@@ -107,11 +77,6 @@ export interface UseStakingInfoResponse {
 }
 
 export interface IVotingModuleAdapter {
-  // Fields
-  fields: {
-    membershipPageInfo: MembershipPageInfo
-  }
-
   // Hooks
   hooks: {
     useActions: () => Action[]
@@ -126,19 +91,7 @@ export interface IVotingModuleAdapter {
   // Components
   components: {
     MembersTab?: ComponentType
-    Membership: {
-      Desktop: ComponentType<BaseMembershipProps>
-      MobileTab: ComponentType<MembershipMobileTabProps>
-      Mobile: ComponentType<BaseMembershipProps>
-    }
-    DaoTreasuryFooter: ComponentType
-    DaoInfoAdditionalAddresses: ComponentType
-    VoteHeroStats: ComponentType<BaseVoteHeroStatsProps>
-    SdaMembershipPage: ComponentType<BaseSdaMembershipPageProps>
     ProfileCardMemberInfo: ComponentType<BaseProfileCardMemberInfoProps>
-
-    StakingModal?: ComponentType<BaseStakingModalProps>
-    ClaimsPendingList?: ComponentType<BaseClaimsPendingListProps>
   }
 }
 

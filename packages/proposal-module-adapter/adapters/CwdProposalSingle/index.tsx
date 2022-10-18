@@ -7,9 +7,7 @@ import {
   makeDepositInfo,
   makeReverseProposalInfos,
   makeUseActions,
-  makeUseListAllProposalInfos,
   makeUseProfileNewProposalCardInfoLines,
-  makeUseProposalCount,
 } from './common'
 import {
   ProposalActionDisplay,
@@ -33,7 +31,6 @@ import {
   useCastVote,
   useProfileVoteCardOptions,
   useProposalExecutionTxHash,
-  useProposalProcessedTQ,
   useProposalRefreshers,
   useWalletVoteInfo,
 } from './hooks'
@@ -71,10 +68,6 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
 
     // Hooks
     hooks: {
-      useListAllProposalInfos: makeUseListAllProposalInfos(
-        options.proposalModule
-      ),
-      useProposalCount: makeUseProposalCount(options.proposalModule),
       useActions: makeUseActions(options),
       useProfileNewProposalCardInfoLines:
         makeUseProfileNewProposalCardInfoLines(options),
@@ -100,7 +93,6 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
       useCastVote,
       useProposalRefreshers,
       useProposalExecutionTxHash,
-      useProposalProcessedTQ,
       useProfileVoteCardOptions,
       useWalletVoteInfo,
     },

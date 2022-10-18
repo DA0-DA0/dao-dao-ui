@@ -1,19 +1,7 @@
-import { Pie } from '@dao-dao/icons'
 import { DurationUnits } from '@dao-dao/tstypes'
 
 import { VotingModuleAdapter } from '../../types'
-import {
-  ClaimsPendingList,
-  DaoInfoAdditionalAddresses,
-  DaoInfoVotingConfiguration,
-  DaoTreasuryFooter,
-  Membership,
-  MembershipMobileTab,
-  ProfileCardMemberInfo,
-  SdaMembershipPage,
-  StakingModal,
-  VoteHeroStats,
-} from './components'
+import { ProfileCardMemberInfo } from './components'
 import {
   DisplayInfoIcon,
   GovernanceConfigurationInput,
@@ -40,17 +28,7 @@ export const CwdVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> 
       'cwd-voting-cw20-staked',
     ],
 
-    load: ({ t }) => ({
-      // Fields
-      fields: {
-        membershipPageInfo: {
-          renderIcon: (mobile) => (
-            <Pie height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
-          ),
-          label: t('title.stake'),
-        },
-      },
-
+    load: () => ({
       // Hooks
       hooks: {
         useActions,
@@ -62,20 +40,7 @@ export const CwdVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> 
 
       // Components
       components: {
-        Membership: {
-          Desktop: (props) => <Membership {...props} />,
-          MobileTab: MembershipMobileTab,
-          Mobile: (props) => <Membership {...props} primaryText />,
-        },
-        DaoTreasuryFooter,
-        DaoInfoAdditionalAddresses,
-        DaoInfoVotingConfiguration,
-        VoteHeroStats,
-        SdaMembershipPage,
         ProfileCardMemberInfo,
-
-        StakingModal,
-        ClaimsPendingList,
       },
     }),
 

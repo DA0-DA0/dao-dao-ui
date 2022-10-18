@@ -1,10 +1,7 @@
 import { useMemo } from 'react'
 
-import { Wallet } from '@dao-dao/icons'
-
 import { VotingModuleAdapter } from '../../types'
-import { MembershipMobileTab } from './MembershipMobileTab'
-import { MembershipPlaceholder } from './MembershipPlaceholder'
+import { Placeholder } from './Placeholder'
 
 // Used in case no voting module adapter applies so that it still loads.
 export const FallbackAdapter: VotingModuleAdapter = {
@@ -12,17 +9,7 @@ export const FallbackAdapter: VotingModuleAdapter = {
   // Match all contracts.
   contractNames: [''],
 
-  load: ({ t }) => ({
-    // Fields
-    fields: {
-      membershipPageInfo: {
-        renderIcon: (mobile) => (
-          <Wallet height={mobile ? 16 : 14} width={mobile ? 16 : 14} />
-        ),
-        label: t('title.members'),
-      },
-    },
-
+  load: () => ({
     // Hooks
     hooks: {
       useActions: () => useMemo(() => [], []),
@@ -32,16 +19,7 @@ export const FallbackAdapter: VotingModuleAdapter = {
 
     // Components
     components: {
-      Membership: {
-        Desktop: MembershipPlaceholder,
-        MobileTab: MembershipMobileTab,
-        Mobile: MembershipPlaceholder,
-      },
-      DaoTreasuryFooter: () => null,
-      DaoInfoAdditionalAddresses: () => null,
-      ProfileCardMemberInfo: () => null,
-      VoteHeroStats: () => null,
-      SdaMembershipPage: () => null,
+      ProfileCardMemberInfo: Placeholder,
     },
   }),
 }

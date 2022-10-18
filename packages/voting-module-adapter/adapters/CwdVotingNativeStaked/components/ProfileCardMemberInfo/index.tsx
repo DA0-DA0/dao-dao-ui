@@ -24,10 +24,10 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { ProfileCardMemberInfoTokens } from '../../../components'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { BaseProfileCardMemberInfoProps } from '../../../types'
-import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
+import { ProfileCardMemberInfoTokens } from '../../../../components'
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
+import { BaseProfileCardMemberInfoProps } from '../../../../types'
+import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 import { StakingModal } from './StakingModal'
 
 export const ProfileCardMemberInfo = ({

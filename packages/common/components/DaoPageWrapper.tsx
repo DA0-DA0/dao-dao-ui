@@ -153,37 +153,3 @@ const InnerDaoPageWrapper = ({
     </DaoInfoContext.Provider>
   )
 }
-
-export interface SdaDaoPageWrapperProps extends DaoPageWrapperProps {
-  Header: ComponentType
-  Loader: ComponentType<LoaderProps>
-  PageLoader: ComponentType<LoaderProps>
-  Logo: ComponentType<LogoProps>
-}
-
-export const SdaDaoPageWrapper = ({
-  Header,
-  Loader,
-  PageLoader,
-  Logo,
-  children,
-  ...props
-}: SdaDaoPageWrapperProps) => (
-  <DaoPageWrapper
-    {...props}
-    Loader={Loader}
-    Logo={Logo}
-    PageLoader={PageLoader}
-  >
-    <WalletProvider Loader={Loader}>
-      <Header />
-
-      <SuspenseLoader
-        // Make room at top for Header.
-        fallback={<PageLoader className="!min-h-[calc(100vh-5rem)]" />}
-      >
-        <div className="max-w-page mx-auto p-4 sm:p-8">{children}</div>
-      </SuspenseLoader>
-    </WalletProvider>
-  </DaoPageWrapper>
-)
