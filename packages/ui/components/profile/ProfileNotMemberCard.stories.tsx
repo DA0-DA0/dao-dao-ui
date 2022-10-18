@@ -46,7 +46,9 @@ export const HaveTokensToStake = Template.bind({})
 HaveTokensToStake.args = {
   ...Default.args,
   membershipInfo: (
-    <ProfileCardMemberInfoTokens {...makeProfileCardMemberInfoTokensProps([], 1600.5432)} />
+    <ProfileCardMemberInfoTokens
+      {...makeProfileCardMemberInfoTokensProps([], 1600.5432)}
+    />
   ),
 }
 HaveTokensToStake.parameters = Default.parameters

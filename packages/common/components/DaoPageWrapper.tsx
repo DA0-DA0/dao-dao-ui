@@ -22,8 +22,6 @@ import {
 } from '@dao-dao/ui'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
-import { WalletProvider } from './WalletProvider'
-
 export type DaoPageWrapperProps = PropsWithChildren<{
   url?: string | null
   title: string

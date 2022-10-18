@@ -1,9 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import {  ProfileCardMemberInfoTokens } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens'
+import { ProfileCardMemberInfoTokens } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens'
 import {
-  makeCantVoteOnProposalProps as makeProfileCardMemberInfoTokensCantVoteOnProposalProps,
   makeProps as makeProfileCardMemberInfoTokenProps,
+  makeCantVoteOnProposalProps as makeProfileCardMemberInfoTokensCantVoteOnProposalProps,
 } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens.stories'
 
 import { ProfileCantVoteCard } from './ProfileCantVoteCard'
@@ -33,7 +33,9 @@ Default.args = {
   },
   isMember: false,
   membershipInfo: (
-    <ProfileCardMemberInfoTokens {...makeProfileCardMemberInfoTokenProps([], 0)} />
+    <ProfileCardMemberInfoTokens
+      {...makeProfileCardMemberInfoTokenProps([], 0)}
+    />
   ),
 }
 Default.parameters = {

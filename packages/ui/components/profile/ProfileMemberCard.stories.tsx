@@ -34,7 +34,9 @@ const makeProps = (
   openProposals: true,
   established: new Date(),
   membershipInfo: (
-    <ProfileCardMemberInfoTokens {...makeProfileCardMemberInfoTokensProps(...args)} />
+    <ProfileCardMemberInfoTokens
+      {...makeProfileCardMemberInfoTokensProps(...args)}
+    />
   ),
   showUpdateProfileNft: () => {},
   updateProfileName: async () => {},

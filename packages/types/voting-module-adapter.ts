@@ -12,12 +12,7 @@ import {
   DaoCreationGovernanceConfigReviewProps,
   DaoCreationVotingConfigItem,
 } from './dao'
-import {
-  DaoInfoBarItem,
-  LoaderProps,
-  LogoProps,
-  StakingMode,
-} from './ui'
+import { DaoInfoBarItem, LoaderProps, LogoProps, StakingMode } from './ui'
 import { ProfileNewProposalCardAddress } from './ui/ProfileNewProposalCard'
 
 export interface BaseProfileCardMemberInfoProps {
