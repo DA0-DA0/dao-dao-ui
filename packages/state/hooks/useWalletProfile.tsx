@@ -1,4 +1,5 @@
-import { useWallet } from '@noahsaso/cosmodal'
+import { makeSignDoc } from '@cosmjs/amino'
+import { ChainInfoID, useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   constSelector,
@@ -12,7 +13,6 @@ import {
   WalletProfileUpdate,
 } from '@dao-dao/tstypes'
 import {
-  CHAIN_ID,
   NATIVE_DECIMALS,
   PFPK_API_BASE,
   convertMicroDenomToDenomWithDecimals,
@@ -43,8 +43,11 @@ export interface UseWalletProfileReturn {
 }
 
 export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
-  const { signingCosmWasmClient, address, publicKey, walletClient } =
-    useWallet(chainId)
+  const { address, publicKey } = useWallet(chainId)
+  // Use a consistent chain for the signer since the chain ID is part of the
+  // signature and PFPK needs to know what to expect.
+  const { address: signingAddress, walletClient: signingWalletClient } =
+    useWallet(ChainInfoID.Juno1)
 
   // Fetch wallet balance.
   const {
@@ -112,9 +115,8 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
     ): Promise<void> => {
       if (
         !publicKey ||
-        !address ||
-        !signingCosmWasmClient ||
-        !walletClient ||
+        !signingAddress ||
+        !signingWalletClient ||
         walletProfile.loading ||
         // Disallow editing if we don't have correct nonce from server.
         walletProfile.data.nonce < 0
@@ -131,12 +133,35 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
           nonce: walletProfile.data.nonce,
         }
 
-        // https://github.com/chainapsis/keplr-wallet/blob/54aaaf6112d41944eaf23826db823eb044b09e78/packages/provider/src/core.ts#L168-L181
-        const { signature } = await walletClient.signArbitrary(
-          CHAIN_ID,
-          address,
-          JSON.stringify(profileUpdate)
+        const offlineSignerAmino =
+          await signingWalletClient.getOfflineSignerOnlyAmino(ChainInfoID.Juno1)
+        const signDocAmino = makeSignDoc(
+          [
+            {
+              type: 'PFPK Verification',
+              value: {
+                signer: signingAddress,
+                data: JSON.stringify(profileUpdate, undefined, 2),
+              },
+            },
+          ],
+          {
+            gas: '0',
+            amount: [
+              {
+                denom: 'ujuno',
+                amount: '0',
+              },
+            ],
+          },
+          ChainInfoID.Juno1,
+          '',
+          0,
+          0
         )
+        const {
+          signature: { signature },
+        } = await offlineSignerAmino.signAmino(signingAddress, signDocAmino)
 
         const response = await fetch(PFPK_API_BASE + `/${publicKey.hex}`, {
           method: 'POST',
@@ -146,7 +171,6 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
           body: JSON.stringify({
             profile: profileUpdate,
             signature,
-            signer: address,
           }),
         })
 
@@ -168,11 +192,10 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
       }
     },
     [
-      address,
       publicKey,
       refreshWalletProfile,
-      signingCosmWasmClient,
-      walletClient,
+      signingAddress,
+      signingWalletClient,
       walletProfile,
     ]
   )

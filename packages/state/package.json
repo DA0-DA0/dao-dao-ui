@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
+    "@cosmjs/amino": "0.28.10",
     "@cosmjs/cosmwasm-stargate": "0.28.10",
     "@cosmjs/encoding": "0.28.10",
     "@cosmjs/proto-signing": "0.28.10",
