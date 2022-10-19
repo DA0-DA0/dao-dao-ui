@@ -97,28 +97,35 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   useDecodedCosmosMsg: UseDecodedCosmosMsg<Data>
 }
 
-export enum ActionContextType {
+export enum ActionOptionsContextType {
   Dao = 'dao',
   Wallet = 'wallet',
 }
 
-export type ActionContext =
+export type ActionOptionsContext =
   | {
-      type: ActionContextType.Dao
+      type: ActionOptionsContextType.Dao
       coreVersion: ContractVersion
     }
   | {
-      type: ActionContextType.Wallet
+      type: ActionOptionsContextType.Wallet
     }
 
-export type ActionOptions = {
+export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   t: TFunction
   // coreAddress if context.type === Dao
   // walletAddress if context.type === Wallet
   address: string
-  context: ActionContext
+  context: ActionOptionsContext
 }
 
-export type ActionMaker<Data extends {} = any> = (
-  options: ActionOptions
+export type ActionMaker<Data extends {} = any, ExtraOptions extends {} = {}> = (
+  options: ActionOptions<ExtraOptions>
 ) => Action<Data> | null
+
+// React context/provider system for actions.
+
+export interface IActionsContext {
+  options: ActionOptions
+  actions: Action[]
+}

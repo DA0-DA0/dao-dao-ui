@@ -3,8 +3,8 @@ import { useRecoilValue } from 'recoil'
 
 import { CwCoreV1Selectors, CwdCoreV2Selectors } from '@dao-dao/state'
 import {
-  ActionContextType,
   ActionMaker,
+  ActionOptionsContextType,
   ContractVersion,
 } from '@dao-dao/tstypes'
 import {
@@ -71,7 +71,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
   context,
 }) => {
   // Only DAOs.
-  if (context.type !== ActionContextType.Dao) {
+  if (context.type !== ActionOptionsContextType.Dao) {
     return null
   }
 

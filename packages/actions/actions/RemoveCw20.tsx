@@ -11,9 +11,9 @@ import {
 import { Cw20BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
 import {
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
+  ActionOptionsContextType,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -60,7 +60,7 @@ export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
   context,
 }) => {
   // Only DAOs.
-  if (context.type !== ActionContextType.Dao) {
+  if (context.type !== ActionOptionsContextType.Dao) {
     return null
   }
 

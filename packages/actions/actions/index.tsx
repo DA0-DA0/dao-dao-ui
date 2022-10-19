@@ -35,7 +35,7 @@ export const getActions = (options: ActionOptions): Action[] => {
   return (
     actionMakers
       .map((makeAction) => makeAction(options))
-      // Remove null values, since maker functions may return null if they don't
+      // Remove null values, since maker functions return null if they don't
       // make sense in the context (like a DAO-only action in a wallet context).
       .filter(Boolean) as Action[]
   )

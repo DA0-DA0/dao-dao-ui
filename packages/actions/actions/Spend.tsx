@@ -8,9 +8,9 @@ import {
 } from '@dao-dao/state'
 import {
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
+  ActionOptionsContextType,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -41,7 +41,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
   // Reused selectors in Component and useTransformToCosmos.
   const useCw20AddressesBalancesAndInfos = () => {
     const cw20AddressesAndBalances = useRecoilValue(
-      context.type === ActionContextType.Wallet
+      context.type === ActionOptionsContextType.Wallet
         ? // Cannot query for wallet's cw20 addresses.
           constSelector([])
         : // Get DAO's cw20 addresses and balances.

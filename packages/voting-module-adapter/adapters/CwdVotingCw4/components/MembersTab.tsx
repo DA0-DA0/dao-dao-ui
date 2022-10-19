@@ -1,23 +1,23 @@
-import { ComponentPropsWithoutRef, useState } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useActionForKey } from '@dao-dao/actions'
 import { DaoMemberCard } from '@dao-dao/common'
 import {
   useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/state'
-import { ActionContextType } from '@dao-dao/tstypes'
+import { ActionKey } from '@dao-dao/tstypes'
 import {
   MembersTab as StatelessMembersTab,
   useDaoInfoContext,
 } from '@dao-dao/ui'
 
-import { makeManageMembersAction } from '../actions'
 import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { coreAddress, coreVersion } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfoContext()
 
   const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,
@@ -31,29 +31,21 @@ export const MembersTab = () => {
     throw new Error(t('error.loadingData'))
   }
 
-  // Only make the action once.
-  // TODO: Get from Actions provider once made.
-  const [manageMembersAction] = useState(
-    () =>
-      makeManageMembersAction({
-        t,
-        address: coreAddress,
-        context: {
-          type: ActionContextType.Dao,
-          coreVersion,
-        },
-      })!
-  )
+  const manageMembersAction = useActionForKey(ActionKey.ManageMembers)
+  // Prefill URL only valid if action exists.
+  const prefillValid = !!manageMembersAction
   const encodedProposalPrefill = useEncodedCwdProposalSinglePrefill({
-    actions: [
-      {
-        action: manageMembersAction,
-        data: {
-          toAdd: [{ addr: '', weight: NaN }],
-          toRemove: [],
-        },
-      },
-    ],
+    actions: manageMembersAction
+      ? [
+          {
+            action: manageMembersAction,
+            data: {
+              toAdd: [{ addr: '', weight: NaN }],
+              toRemove: [],
+            },
+          },
+        ]
+      : [],
   })
 
   const memberCards: ComponentPropsWithoutRef<typeof DaoMemberCard>[] =
@@ -66,8 +58,9 @@ export const MembersTab = () => {
     <StatelessMembersTab
       DaoMemberCard={DaoMemberCard}
       addMemberHref={
-        encodedProposalPrefill &&
-        `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefill}`
+        prefillValid && encodedProposalPrefill
+          ? `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefill}`
+          : undefined
       }
       isMember={isMember}
       members={memberCards}

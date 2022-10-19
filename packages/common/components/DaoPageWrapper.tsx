@@ -3,8 +3,10 @@ import { useRouter } from 'next/router'
 import { ComponentType, PropsWithChildren, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ActionsProvider } from '@dao-dao/actions'
 import { SuspenseLoader } from '@dao-dao/common'
 import {
+  ActionOptionsContextType,
   CommonProposalInfo,
   DaoInfo,
   DaoInfoSerializable,
@@ -146,7 +148,17 @@ const InnerDaoPageWrapper = ({
           t,
         }}
       >
-        {children}
+        <ActionsProvider
+          options={{
+            address: info.coreAddress,
+            context: {
+              type: ActionOptionsContextType.Dao,
+              coreVersion: info.coreVersion,
+            },
+          }}
+        >
+          {children}
+        </ActionsProvider>
       </VotingModuleAdapterProvider>
     </DaoInfoContext.Provider>
   )

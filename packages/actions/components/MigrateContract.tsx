@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { Trans } from '@dao-dao/common'
-import { ActionComponent, ActionOptions } from '@dao-dao/tstypes/actions'
+import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   AddressInput,
   CodeMirrorInput,
@@ -18,11 +18,11 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../react/context'
 import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'
 
 export interface MigrateOptions {
-  actionOptions: ActionOptions
   onContractChange: (s: string) => void
   contractAdmin: string | undefined
 }
@@ -32,11 +32,12 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { actionOptions, onContractChange, contractAdmin },
+  options: { onContractChange, contractAdmin },
   Loader,
 }) => {
   const { register, control } = useFormContext()
   const { t } = useTranslation()
+  const { address } = useActionOptions()
 
   return (
     <ActionCard
@@ -84,10 +85,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         </div>
       </div>
       <div className="my-2">
-        <IsAdminWarning
-          admin={contractAdmin}
-          maybeAdmin={actionOptions.address}
-        />
+        <IsAdminWarning admin={contractAdmin} maybeAdmin={address} />
       </div>
       <div className="flex flex-col gap-1">
         <InputLabel name={t('form.migrateMessage')} />

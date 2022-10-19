@@ -55,11 +55,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
     [msg]
   )
 
-export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = (
-  actionOptions
-) => {
-  const { t } = actionOptions
-
+export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = ({ t }) => {
   const Component: ActionComponent = (props) => {
     const [contract, setContract] = useState('')
 
@@ -73,7 +69,6 @@ export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = (
       <StatelessUpdateAdminComponent
         {...props}
         options={{
-          actionOptions,
           contractAdmin:
             admin.state === 'hasValue' ? admin.contents : undefined,
           onContractChange: (contract: string) => setContract(contract),

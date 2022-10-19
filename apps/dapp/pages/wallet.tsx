@@ -7,11 +7,12 @@ import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { useWalletActions } from '@dao-dao/actions'
+import { ActionsProvider, useActions } from '@dao-dao/actions'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   Action,
   ActionKey,
+  ActionOptionsContextType,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
@@ -25,7 +26,8 @@ import { processError } from '@dao-dao/utils'
 
 import { ProfileHomeCard } from '@/components'
 
-const WalletPage: NextPage = () => {
+// TODO: Autosave to localStorage
+const InnerWallet = () => {
   const { t } = useTranslation()
 
   const {
@@ -34,7 +36,7 @@ const WalletPage: NextPage = () => {
     signingCosmWasmClient,
   } = useWallet()
 
-  const walletActions = useWalletActions()
+  const actions = useActions()
 
   // Call relevant action hooks in the same order every time.
   const actionsWithData: Partial<
@@ -46,7 +48,7 @@ const WalletPage: NextPage = () => {
         defaults: ReturnType<UseDefaults>
       }
     >
-  > = walletActions.reduce(
+  > = actions.reduce(
     (acc, action) => ({
       ...acc,
       [action.key]: {
@@ -99,7 +101,7 @@ const WalletPage: NextPage = () => {
 
   return (
     <Wallet
-      actions={walletActions}
+      actions={actions}
       actionsWithData={actionsWithData}
       connected={connected}
       error={error}
@@ -110,6 +112,25 @@ const WalletPage: NextPage = () => {
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }
     />
+  )
+}
+
+const WalletPage: NextPage = () => {
+  const { address: walletAddress = '' } = useWallet()
+
+  return (
+    <ActionsProvider
+      // If walletAddress changes, refresh actions.
+      key={walletAddress}
+      options={{
+        address: walletAddress,
+        context: {
+          type: ActionOptionsContextType.Wallet,
+        },
+      }}
+    >
+      <InnerWallet />
+    </ActionsProvider>
   )
 }
 

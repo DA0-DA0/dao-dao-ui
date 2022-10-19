@@ -58,9 +58,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
     [msg]
   )
 
-export const makeMigrateAction: ActionMaker<MigrateData> = (actionOptions) => {
-  const { t } = actionOptions
-
+export const makeMigrateAction: ActionMaker<MigrateData> = ({ t }) => {
   const Component: ActionComponent = (props) => {
     const [contract, setContract] = useState('')
 
@@ -72,7 +70,6 @@ export const makeMigrateAction: ActionMaker<MigrateData> = (actionOptions) => {
       <StatelessMigrateContractComponent
         {...props}
         options={{
-          actionOptions,
           contractAdmin:
             admin.state === 'hasValue' ? admin.getValue() : undefined,
           onContractChange: (contract: string) => setContract(contract),

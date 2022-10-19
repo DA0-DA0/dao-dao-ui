@@ -4,9 +4,9 @@ import { useRecoilValue } from 'recoil'
 import { CwdCoreV2Selectors } from '@dao-dao/state'
 import {
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
+  ActionOptionsContextType,
   ContractVersion,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -36,7 +36,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
 }) => {
   // v1 DAOS don't support SubDAOs.
   if (
-    context.type !== ActionContextType.Dao ||
+    context.type !== ActionOptionsContextType.Dao ||
     context.coreVersion === ContractVersion.V0_1_0
   ) {
     return null

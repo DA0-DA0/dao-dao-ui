@@ -2,9 +2,10 @@ import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
+  ContractVersion,
   ProposalModule,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -18,9 +19,6 @@ import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { configSelector } from '../../../contracts/CwdProposalSingle.v2.recoil'
 import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
-
-// TODO: Convert this into a more generalizable 'context' abstraction.
-type AsProposalModuleMaker<T> = (proposalModule: ProposalModule) => T
 
 export interface UpdateProposalConfigData {
   onlyMembersExecute: boolean
@@ -86,35 +84,6 @@ const thresholdToTQData = (
   }
 }
 
-const makeUseDefaults: AsProposalModuleMaker<
-  UseDefaults<UpdateProposalConfigData>
-> =
-  ({ address: proposalModuleAddress }) =>
-  () => {
-    const proposalModuleConfig = useRecoilValue(
-      configSelector({
-        contractAddress: proposalModuleAddress,
-      })
-    )
-
-    const onlyMembersExecute = proposalModuleConfig.only_members_execute
-    const proposalDuration =
-      'time' in proposalModuleConfig.max_voting_period
-        ? proposalModuleConfig.max_voting_period.time
-        : 604800
-    const proposalDurationUnits = 'seconds'
-
-    const allowRevoting = proposalModuleConfig.allow_revoting
-
-    return {
-      onlyMembersExecute,
-      proposalDuration,
-      proposalDurationUnits,
-      allowRevoting,
-      ...thresholdToTQData(proposalModuleConfig.threshold),
-    }
-  }
-
 const typePercentageToPercentageThreshold = (
   t: 'majority' | '%',
   p: number | undefined
@@ -150,11 +119,101 @@ const maxVotingInfoToCosmos = (
   }
 }
 
-const makeUseTransformToCosmos: AsProposalModuleMaker<
-  UseTransformToCosmos<UpdateProposalConfigData>
-> =
-  ({ address: proposalModuleAddress }) =>
-  () => {
+const Component: ActionComponent = (props) => {
+  const {
+    hooks: { useGovernanceTokenInfo },
+  } = useVotingModuleAdapter()
+  const governanceTokenSymbol =
+    useGovernanceTokenInfo?.().governanceTokenInfo.symbol
+
+  return (
+    <UpdateProposalConfigComponent
+      {...props}
+      options={{ governanceTokenSymbol }}
+    />
+  )
+}
+
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
+  msg: Record<string, any>
+) =>
+  useMemo(() => {
+    if (
+      'wasm' in msg &&
+      'execute' in msg.wasm &&
+      'update_config' in msg.wasm.execute.msg &&
+      'threshold' in msg.wasm.execute.msg.update_config &&
+      ('threshold_quorum' in msg.wasm.execute.msg.update_config.threshold ||
+        'absolute_percentage' in
+          msg.wasm.execute.msg.update_config.threshold) &&
+      'max_voting_period' in msg.wasm.execute.msg.update_config &&
+      'only_members_execute' in msg.wasm.execute.msg.update_config &&
+      'allow_revoting' in msg.wasm.execute.msg.update_config &&
+      'dao' in msg.wasm.execute.msg.update_config
+    ) {
+      const config = msg.wasm.execute.msg.update_config
+      const onlyMembersExecute = config.only_members_execute
+
+      if (!('time' in config.max_voting_period)) {
+        return { match: false }
+      }
+
+      const proposalDuration = config.max_voting_period.time
+      const proposalDurationUnits = 'seconds'
+
+      const allowRevoting = !!config.allow_revoting
+
+      return {
+        data: {
+          onlyMembersExecute,
+          proposalDuration,
+          proposalDurationUnits,
+          allowRevoting,
+          ...thresholdToTQData(config.threshold),
+        },
+        match: true,
+      }
+    }
+    return { match: false }
+  }, [msg])
+
+export const makeUpdateProposalConfigV2Action: ActionMaker<
+  UpdateProposalConfigData,
+  { proposalModule: ProposalModule }
+> = ({ t, proposalModule: { version, address: proposalModuleAddress } }) => {
+  // Only v2.
+  if (version === ContractVersion.V0_1_0) {
+    return null
+  }
+
+  const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
+    const proposalModuleConfig = useRecoilValue(
+      configSelector({
+        contractAddress: proposalModuleAddress,
+      })
+    )
+
+    const onlyMembersExecute = proposalModuleConfig.only_members_execute
+    const proposalDuration =
+      'time' in proposalModuleConfig.max_voting_period
+        ? proposalModuleConfig.max_voting_period.time
+        : 604800
+    const proposalDurationUnits = 'seconds'
+
+    const allowRevoting = proposalModuleConfig.allow_revoting
+
+    return {
+      onlyMembersExecute,
+      proposalDuration,
+      proposalDurationUnits,
+      allowRevoting,
+      ...thresholdToTQData(proposalModuleConfig.threshold),
+    }
+  }
+
+  const useTransformToCosmos: UseTransformToCosmos<
+    UpdateProposalConfigData
+  > = () => {
     const proposalModuleConfig = useRecoilValue(
       configSelector({
         contractAddress: proposalModuleAddress,
@@ -218,73 +277,14 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
     )
   }
 
-const Component: ActionComponent = (props) => {
-  const {
-    hooks: { useGovernanceTokenInfo },
-  } = useVotingModuleAdapter()
-  const governanceTokenSymbol =
-    useGovernanceTokenInfo?.().governanceTokenInfo.symbol
-
-  return (
-    <UpdateProposalConfigComponent
-      {...props}
-      options={{ governanceTokenSymbol }}
-    />
-  )
+  return {
+    key: ActionKey.UpdateProposalConfig,
+    Icon: UpdateProposalConfigIcon,
+    label: t('form.updateVotingConfigTitle'),
+    description: t('form.updateVotingConfigActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }
-
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
-  msg: Record<string, any>
-) =>
-  useMemo(() => {
-    if (
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'update_config' in msg.wasm.execute.msg &&
-      'threshold' in msg.wasm.execute.msg.update_config &&
-      ('threshold_quorum' in msg.wasm.execute.msg.update_config.threshold ||
-        'absolute_percentage' in
-          msg.wasm.execute.msg.update_config.threshold) &&
-      'max_voting_period' in msg.wasm.execute.msg.update_config &&
-      'only_members_execute' in msg.wasm.execute.msg.update_config &&
-      'allow_revoting' in msg.wasm.execute.msg.update_config &&
-      'dao' in msg.wasm.execute.msg.update_config
-    ) {
-      const config = msg.wasm.execute.msg.update_config
-      const onlyMembersExecute = config.only_members_execute
-
-      if (!('time' in config.max_voting_period)) {
-        return { match: false }
-      }
-
-      const proposalDuration = config.max_voting_period.time
-      const proposalDurationUnits = 'seconds'
-
-      const allowRevoting = !!config.allow_revoting
-
-      return {
-        data: {
-          onlyMembersExecute,
-          proposalDuration,
-          proposalDurationUnits,
-          allowRevoting,
-          ...thresholdToTQData(config.threshold),
-        },
-        match: true,
-      }
-    }
-    return { match: false }
-  }, [msg])
-
-export const makeUpdateProposalConfigV2Action = (
-  proposalModule: ProposalModule
-): Action<UpdateProposalConfigData> => ({
-  key: ActionKey.UpdateProposalConfig,
-  Icon: UpdateProposalConfigIcon,
-  label: 'Update Voting Config',
-  description: 'Update the voting paramaters for your DAO.',
-  Component,
-  useDefaults: makeUseDefaults(proposalModule),
-  useTransformToCosmos: makeUseTransformToCosmos(proposalModule),
-  useDecodedCosmosMsg,
-})

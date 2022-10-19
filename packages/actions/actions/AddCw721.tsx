@@ -6,9 +6,9 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import { Cw721BaseSelectors } from '@dao-dao/state'
 import {
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
+  ActionOptionsContextType,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -98,7 +98,7 @@ export const makeAddCw721Action: ActionMaker<AddCw721Data> = ({
   context,
 }) => {
   // Only DAOs.
-  if (context.type !== ActionContextType.Dao) {
+  if (context.type !== ActionOptionsContextType.Dao) {
     return null
   }
 

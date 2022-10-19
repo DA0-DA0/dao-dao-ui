@@ -1,25 +1,15 @@
 import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 
-import { Action, ActionContextType, ActionOptions } from '@dao-dao/tstypes'
-import { useDaoInfoContext } from '@dao-dao/ui'
+import { useActionOptions } from '@dao-dao/actions/react/context'
+import { Action } from '@dao-dao/tstypes'
 
 import { makeMintAction } from '../actions'
 
 export const useActions = (): Action[] => {
-  const { t } = useTranslation()
-  const { coreAddress, coreVersion } = useDaoInfoContext()
+  const options = useActionOptions()
 
-  return useMemo(() => {
-    const options: ActionOptions = {
-      t,
-      address: coreAddress,
-      context: {
-        type: ActionContextType.Dao,
-        coreVersion,
-      },
-    }
-
-    return [makeMintAction(options)].filter(Boolean) as Action[]
-  }, [coreAddress, coreVersion, t])
+  return useMemo(
+    () => [makeMintAction(options)].filter(Boolean) as Action[],
+    [options]
+  )
 }
