@@ -1,10 +1,15 @@
-import { StopIcon } from '@heroicons/react/outline'
-import { Block } from '@mui/icons-material'
+import {
+  Block,
+  CheckCircle,
+  CheckCircleOutline,
+  RemoveCircle,
+  StopCircleOutlined,
+  Timelapse,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Approved, Executed, Open, Rejected } from '@dao-dao/icons'
 import { Status } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
 import { StatusDisplay } from '@dao-dao/ui'
 
@@ -34,7 +39,7 @@ export const ProposalStatus = ({
       label={
         <p
           className={clsx(
-            'leading-5 truncate shrink-0',
+            'shrink-0 truncate leading-5',
             dimmed ? 'text-text-tertiary' : textClassName
           )}
         >
@@ -54,22 +59,22 @@ export const ProposalStatusMap: Record<
   }
 > = {
   [Status.Open]: {
-    Icon: Open,
+    Icon: Timelapse,
     iconClassName: 'text-icon-primary',
     textClassName: 'text-text-body',
   },
   [Status.Rejected]: {
-    Icon: Rejected,
+    Icon: RemoveCircle,
     iconClassName: 'text-icon-interactive-error',
     textClassName: 'text-text-interactive-error',
   },
   [Status.Passed]: {
-    Icon: Approved,
+    Icon: CheckCircle,
     iconClassName: 'text-icon-interactive-valid',
     textClassName: 'text-text-interactive-valid',
   },
   [Status.Executed]: {
-    Icon: Executed,
+    Icon: CheckCircleOutline,
     iconClassName: 'text-icon-secondary',
     textClassName: 'text-text-secondary',
   },
@@ -79,7 +84,7 @@ export const ProposalStatusMap: Record<
     textClassName: '!text-text-interactive-error',
   },
   [Status.Closed]: {
-    Icon: StopIcon,
+    Icon: StopCircleOutlined,
     iconClassName: 'text-icon-tertiary',
     textClassName: 'text-text-tertiary',
   },
