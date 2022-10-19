@@ -51,7 +51,6 @@ Rejected.args = {
 }
 Rejected.parameters = Open.parameters
 
-
 export const Executed = Template.bind({})
 Executed.args = {
   icon: (
