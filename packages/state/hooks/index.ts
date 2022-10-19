@@ -1,4 +1,6 @@
 export * from './clients'
+
+export * from './useAwaitNextBlock'
 export * from './useCachedLoadable'
 export * from './useLoadingDaoCardInfos'
 export * from './useEncodedCwdProposalSinglePrefill'
