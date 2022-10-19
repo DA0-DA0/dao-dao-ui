@@ -138,10 +138,8 @@ export const NewProposal = ({
 
   const requiredProposalDeposit = Number(depositInfo?.amount ?? '0')
 
-  // TODO: Cache these balance selectors after first suspense, like
-  // useCachedLoadable but not a loadable. It makes the whole page reload for a
-  // second when wallet balances are refreshed, which is not ideal.
-  const cw20DepositTokenAllowanceResponse = useRecoilValue(
+  // For checking allowance and increasing if necessary.
+  const cw20DepositTokenAllowanceResponseLoadable = useCachedLoadable(
     depositInfoCw20TokenAddress && requiredProposalDeposit && walletAddress
       ? Cw20BaseSelectors.allowanceSelector({
           contractAddress: depositInfoCw20TokenAddress,
@@ -158,8 +156,12 @@ export const NewProposal = ({
         })
       : constSelector(undefined)
   )
+  const cw20DepositTokenAllowanceResponse =
+    cw20DepositTokenAllowanceResponseLoadable.state === 'hasValue'
+      ? cw20DepositTokenAllowanceResponseLoadable.contents
+      : undefined
 
-  const cw20DepositTokenBalance = useRecoilValue(
+  const cw20DepositTokenBalanceLoadable = useCachedLoadable(
     requiredProposalDeposit && walletAddress && depositInfoCw20TokenAddress
       ? Cw20BaseSelectors.balanceSelector({
           contractAddress: depositInfoCw20TokenAddress,
@@ -167,7 +169,12 @@ export const NewProposal = ({
         })
       : constSelector(undefined)
   )
-  const nativeDepositTokenBalance = useRecoilValue(
+  const cw20DepositTokenBalance =
+    cw20DepositTokenBalanceLoadable.state === 'hasValue'
+      ? cw20DepositTokenBalanceLoadable.contents
+      : undefined
+
+  const nativeDepositTokenBalanceLoadable = useCachedLoadable(
     requiredProposalDeposit && walletAddress && depositInfoNativeTokenDenom
       ? nativeDenomBalanceSelector({
           walletAddress,
@@ -175,8 +182,12 @@ export const NewProposal = ({
         })
       : constSelector(undefined)
   )
+  const nativeDepositTokenBalance =
+    nativeDepositTokenBalanceLoadable.state === 'hasValue'
+      ? nativeDepositTokenBalanceLoadable.contents
+      : undefined
 
-  // Info about if deposit can be paid.
+  // Whether or not deposit is can be paid or does not have to be.
   const depositSatisfied =
     requiredProposalDeposit === 0 ||
     (cw20DepositTokenBalance &&
@@ -225,7 +236,12 @@ export const NewProposal = ({
         setLoading(true)
 
         // Increase CW20 deposit token allowance if necessary.
-        if (requiredProposalDeposit && cw20DepositTokenAllowanceResponse) {
+        if (requiredProposalDeposit && depositInfoCw20TokenAddress) {
+          // CW20 allowance response must be checked.
+          if (!cw20DepositTokenAllowanceResponse) {
+            throw new Error(t('error.loadingData'))
+          }
+
           const remainingAllowanceNeeded =
             requiredProposalDeposit -
             // If allowance expired, none.
@@ -249,7 +265,6 @@ export const NewProposal = ({
                   options.proposalModule.address,
               })
 
-              // TODO: Make this not flicker load by turning balances into cached loadables?
               // Allowances will not update until the next block has been added.
               setTimeout(refreshBalances, 6500)
             } catch (err) {
@@ -303,7 +318,6 @@ export const NewProposal = ({
           }
 
           if (proposeFunds?.length) {
-            // TODO: Make this not flicker load by turning balances into cached loadables?
             refreshBalances()
           }
 
