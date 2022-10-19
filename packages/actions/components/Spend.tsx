@@ -107,7 +107,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       }
       return 'Unrecognized denom.'
     },
-    [cw20Balances, nativeBalances, t]
+    [context.type, cw20Balances, nativeBalances, t]
   )
 
   // Update amount+denom combo error each time either field is updated
