@@ -1,4 +1,3 @@
-import { TFunction } from 'next-i18next'
 import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 
@@ -123,12 +122,10 @@ export type VotingModuleAdapter<DaoCreationConfig extends FieldValues = any> = {
 }
 
 export interface IVotingModuleAdapterOptions {
-  votingModuleAddress: string
-  // TODO: Do we need coreAddress here? useDaoInfoContext works everywhere.
   coreAddress: string
+  votingModuleAddress: string
   Logo: ComponentType<LogoProps>
   Loader: ComponentType<LoaderProps>
-  t: TFunction
 }
 
 export interface IVotingModuleAdapterContext {

@@ -8,16 +8,14 @@ import {
   useVotingModule,
 } from '@dao-dao/state'
 import { ActionKey } from '@dao-dao/tstypes'
-import {
-  MembersTab as StatelessMembersTab,
-  useDaoInfoContext,
-} from '@dao-dao/ui'
+import { MembersTab as StatelessMembersTab } from '@dao-dao/ui'
 
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useVotingModuleAdapterOptions()
 
   const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,

@@ -101,7 +101,7 @@ export const nativeAndStargazeCollectionInfoSelector = selectorFamily<
         })
       )
 
-      // TODO: Identify IBC'd Stargaze NFT collections better.
+      // TODO(ICS721): Identify IBC'd Stargaze NFT collections better.
       const stargazeCollectionAddress = nativeCollectionInfo.name.startsWith(
         'wasm.'
       )
