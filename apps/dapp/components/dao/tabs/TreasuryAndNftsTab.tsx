@@ -1,8 +1,9 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { addCw721Action } from '@dao-dao/actions/actions/AddCw721'
+import { makeAddCw721Action } from '@dao-dao/actions/actions/AddCw721'
 import { StargazeNftImportModal } from '@dao-dao/common'
 import {
   nftCardInfosSelector,
@@ -11,6 +12,7 @@ import {
   useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/state'
+import { ActionContextType } from '@dao-dao/tstypes'
 import {
   NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
@@ -21,6 +23,7 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 import { TokenCard } from '@/components'
 
 export const TreasuryAndNftsTab = () => {
+  const { t } = useTranslation()
   const daoInfo = useDaoInfoContext()
   const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
     fetchMembership: true,
@@ -48,11 +51,24 @@ export const TreasuryAndNftsTab = () => {
     treasuryTokenCardInfosLoadable.state,
   ])
 
+  // Only make the action once.
+  // TODO: Get from Actions provider once made.
+  const [addCw721Action] = useState(
+    () =>
+      makeAddCw721Action({
+        t,
+        address: daoInfo.coreAddress,
+        context: {
+          type: ActionContextType.Dao,
+          coreVersion: daoInfo.coreVersion,
+        },
+      })!
+  )
   const encodedProposalPrefill = useEncodedCwdProposalSinglePrefill({
     actions: [
       {
         action: addCw721Action,
-        data: addCw721Action.useDefaults(daoInfo.coreAddress),
+        data: addCw721Action.useDefaults(),
       },
     ],
   })

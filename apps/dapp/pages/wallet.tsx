@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { walletActions } from '@dao-dao/actions'
+import { useWalletActions } from '@dao-dao/actions'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   Action,
@@ -34,6 +34,8 @@ const WalletPage: NextPage = () => {
     signingCosmWasmClient,
   } = useWallet()
 
+  const walletActions = useWalletActions()
+
   // Call relevant action hooks in the same order every time.
   const actionsWithData: Partial<
     Record<
@@ -49,8 +51,8 @@ const WalletPage: NextPage = () => {
       ...acc,
       [action.key]: {
         action,
-        transform: action.useTransformToCosmos(walletAddress ?? ''),
-        defaults: action.useDefaults(walletAddress ?? ''),
+        transform: action.useTransformToCosmos(),
+        defaults: action.useDefaults(),
       },
     }),
     {}
@@ -107,7 +109,6 @@ const WalletPage: NextPage = () => {
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }
-      walletAddress={walletAddress ?? ''}
     />
   )
 }

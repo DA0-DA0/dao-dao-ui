@@ -10,9 +10,10 @@ import {
 
 import { Cw20BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
+  ActionContextType,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -30,115 +31,6 @@ interface RemoveCw20Data {
 const useDefaults: UseDefaults<RemoveCw20Data> = () => ({
   address: '',
 })
-
-const Component: ActionComponent = (props) => {
-  const { t } = useTranslation()
-  const { fieldNamePrefix, Loader } = props
-
-  const { watch } = useFormContext()
-
-  const tokenAddress = watch(fieldNamePrefix + 'address')
-  const tokenInfoLoadable = useRecoilValueLoadable(
-    tokenAddress
-      ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: tokenAddress,
-          params: [],
-        })
-      : constSelector(undefined)
-  )
-
-  const existingTokenAddresses = useRecoilValue(
-    CwdCoreV2Selectors.allCw20TokenListSelector({
-      contractAddress: props.coreAddress,
-    })
-  )
-  const existingTokenInfos = useRecoilValue(
-    waitForAll(
-      existingTokenAddresses?.map((token) =>
-        Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: token,
-          params: [],
-        })
-      ) ?? []
-    )
-  )
-  const existingTokens = useMemo(
-    () =>
-      (existingTokenAddresses
-        ?.map((address, idx) => ({
-          address,
-          info: existingTokenInfos[idx],
-        }))
-        // If undefined token info response, ignore the token.
-        .filter(({ info }) => !!info) ?? []) as {
-        address: string
-        info: TokenInfoResponse
-      }[],
-    [existingTokenAddresses, existingTokenInfos]
-  )
-
-  const [additionalAddressError, setAdditionalAddressError] = useState<string>()
-  useEffect(() => {
-    if (tokenInfoLoadable.state !== 'hasError' && existingTokens.length > 0) {
-      if (additionalAddressError) {
-        setAdditionalAddressError(undefined)
-      }
-      return
-    }
-
-    if (!additionalAddressError) {
-      setAdditionalAddressError(
-        tokenInfoLoadable.state === 'hasError'
-          ? t('error.notCw20Address')
-          : existingTokens.length === 0
-          ? t('error.noCw20Tokens')
-          : // Should never happen.
-            t('error.unexpectedError')
-      )
-    }
-  }, [
-    tokenInfoLoadable.state,
-    existingTokens.length,
-    t,
-    additionalAddressError,
-  ])
-
-  return (
-    <StatelessRemoveCw20Component
-      {...props}
-      options={{
-        additionalAddressError,
-        existingTokens,
-        formattedJsonDisplayProps: {
-          jsonLoadable: tokenInfoLoadable,
-          Loader,
-        },
-      }}
-    />
-  )
-}
-
-const useTransformToCosmos: UseTransformToCosmos<RemoveCw20Data> = (
-  coreAddress: string
-) =>
-  useCallback(
-    (data: RemoveCw20Data) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: coreAddress,
-            funds: [],
-            msg: {
-              update_cw20_token_list: {
-                to_add: [],
-                to_remove: [data.address],
-              },
-            },
-          },
-        },
-      }),
-    [coreAddress]
-  )
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw20Data> = (
   msg: Record<string, any>
@@ -162,14 +54,132 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw20Data> = (
     [msg]
   )
 
-export const removeCw20Action: Action<RemoveCw20Data> = {
-  key: ActionKey.RemoveCw20,
-  Icon: RemoveCw20Emoji,
-  label: 'Remove Token Balance from Treasury',
-  description:
-    "Stop displaying the DAO's balance of a CW20 token in the treasury view.",
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
+  t,
+  address,
+  context,
+}) => {
+  // Only DAOs.
+  if (context.type !== ActionContextType.Dao) {
+    return null
+  }
+
+  const Component: ActionComponent = (props) => {
+    const { t } = useTranslation()
+    const { fieldNamePrefix, Loader } = props
+
+    const { watch } = useFormContext()
+
+    const tokenAddress = watch(fieldNamePrefix + 'address')
+    const tokenInfoLoadable = useRecoilValueLoadable(
+      tokenAddress
+        ? Cw20BaseSelectors.tokenInfoSelector({
+            contractAddress: tokenAddress,
+            params: [],
+          })
+        : constSelector(undefined)
+    )
+
+    const existingTokenAddresses = useRecoilValue(
+      CwdCoreV2Selectors.allCw20TokenListSelector({
+        contractAddress: address,
+      })
+    )
+    const existingTokenInfos = useRecoilValue(
+      waitForAll(
+        existingTokenAddresses?.map((token) =>
+          Cw20BaseSelectors.tokenInfoSelector({
+            contractAddress: token,
+            params: [],
+          })
+        ) ?? []
+      )
+    )
+    const existingTokens = useMemo(
+      () =>
+        (existingTokenAddresses
+          ?.map((address, idx) => ({
+            address,
+            info: existingTokenInfos[idx],
+          }))
+          // If undefined token info response, ignore the token.
+          .filter(({ info }) => !!info) ?? []) as {
+          address: string
+          info: TokenInfoResponse
+        }[],
+      [existingTokenAddresses, existingTokenInfos]
+    )
+
+    const [additionalAddressError, setAdditionalAddressError] =
+      useState<string>()
+    useEffect(() => {
+      if (tokenInfoLoadable.state !== 'hasError' && existingTokens.length > 0) {
+        if (additionalAddressError) {
+          setAdditionalAddressError(undefined)
+        }
+        return
+      }
+
+      if (!additionalAddressError) {
+        setAdditionalAddressError(
+          tokenInfoLoadable.state === 'hasError'
+            ? t('error.notCw20Address')
+            : existingTokens.length === 0
+            ? t('error.noCw20Tokens')
+            : // Should never happen.
+              t('error.unexpectedError')
+        )
+      }
+    }, [
+      tokenInfoLoadable.state,
+      existingTokens.length,
+      t,
+      additionalAddressError,
+    ])
+
+    return (
+      <StatelessRemoveCw20Component
+        {...props}
+        options={{
+          additionalAddressError,
+          existingTokens,
+          formattedJsonDisplayProps: {
+            jsonLoadable: tokenInfoLoadable,
+            Loader,
+          },
+        }}
+      />
+    )
+  }
+
+  const useTransformToCosmos: UseTransformToCosmos<RemoveCw20Data> = () =>
+    useCallback(
+      (data: RemoveCw20Data) =>
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: address,
+              funds: [],
+              msg: {
+                update_cw20_token_list: {
+                  to_add: [],
+                  to_remove: [data.address],
+                },
+              },
+            },
+          },
+        }),
+      []
+    )
+
+  return {
+    key: ActionKey.RemoveCw20,
+    Icon: RemoveCw20Emoji,
+    label: t('title.removeCw20FromTreasury'),
+    description: t('info.removeCw20FromTreasuryActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

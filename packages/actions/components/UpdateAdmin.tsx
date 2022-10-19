@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionComponent } from '@dao-dao/tstypes/actions'
+import { ActionComponent, ActionOptions } from '@dao-dao/tstypes/actions'
 import {
   AddressInput,
   InputErrorMessage,
@@ -18,6 +18,7 @@ import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'
 
 export interface UpdateAdminOptions {
+  actionOptions: ActionOptions
   onContractChange: (s: string) => void
   contractAdmin: string | undefined
 }
@@ -27,8 +28,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
   onRemove,
   errors,
   isCreating,
-  coreAddress,
-  options: { onContractChange, contractAdmin },
+  options: { actionOptions, onContractChange, contractAdmin },
 }) => {
   const { register } = useFormContext()
   const { t } = useTranslation()
@@ -68,7 +68,10 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
         </div>
       </div>
       <div className="my-2">
-        <IsAdminWarning admin={contractAdmin} maybeAdmin={coreAddress} />
+        <IsAdminWarning
+          admin={contractAdmin}
+          maybeAdmin={actionOptions.address}
+        />
       </div>
     </ActionCard>
   )

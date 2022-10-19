@@ -53,7 +53,6 @@ export interface WalletProps {
   >
   formMethods: UseFormReturn<WalletForm, object>
   execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
-  walletAddress: string
   loading: boolean
   rightSidebarContent: ReactNode
   error?: string
@@ -70,7 +69,6 @@ export const Wallet = ({
   actionsWithData,
   formMethods,
   execute,
-  walletAddress,
   loading,
   rightSidebarContent,
   error,
@@ -202,7 +200,6 @@ export const Wallet = ({
                         Loader={Loader}
                         Logo={Logo}
                         allActionsWithData={proposalActionData}
-                        coreAddress={walletAddress}
                         data={actionData.data}
                         errors={errors.actionData?.[index]?.data || {}}
                         fieldNamePrefix={`actionData.${index}.data.`}

@@ -15,6 +15,7 @@ import {
   TextInput,
   Tooltip,
   UpdateInfoEmoji,
+  useDaoInfoContext,
 } from '@dao-dao/ui'
 import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
@@ -29,7 +30,8 @@ export type UpdateInfoData = ConfigV1Response | ConfigV2Response
 export const UpdateInfoComponent: ActionComponent<
   undefined,
   UpdateInfoData
-> = ({ fieldNamePrefix, errors, onRemove, isCreating, data, coreAddress }) => {
+> = ({ fieldNamePrefix, errors, onRemove, isCreating, data }) => {
+  const { coreAddress } = useDaoInfoContext()
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 

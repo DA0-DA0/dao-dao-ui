@@ -2,23 +2,26 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { useRouter } from 'next/router'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { stakeAction } from '@dao-dao/actions/actions/Stake'
+import { makeStakeAction } from '@dao-dao/actions/actions/Stake'
 import {
   refreshNativeTokenStakingInfoAtom,
   tokenCardLazyStakingInfoSelector,
   useCachedLoadable,
   useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/state'
+import { ActionContextType } from '@dao-dao/tstypes'
 import { TokenCardInfo } from '@dao-dao/tstypes/dao'
 import { TokenCard as StatelessTokenCard, useDaoInfoContext } from '@dao-dao/ui'
 import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
 
 export const TokenCard = (props: TokenCardInfo) => {
+  const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress, coreVersion } = useDaoInfoContext()
 
   const addToken = useAddToken()
 
@@ -55,6 +58,19 @@ export const TokenCard = (props: TokenCardInfo) => {
       : lazyStakingInfoLoadable.contents?.stakes ?? []
 
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
+  // Only make the action once.
+  // TODO: Get from Actions provider once made.
+  const [stakeAction] = useState(
+    () =>
+      makeStakeAction({
+        t,
+        address: coreAddress,
+        context: {
+          type: ActionContextType.Dao,
+          coreVersion,
+        },
+      })!
+  )
   const encodedProposalPrefillClaim = useEncodedCwdProposalSinglePrefill({
     actions: stakesWithRewards.map(({ validator: { address } }) => ({
       action: stakeAction,

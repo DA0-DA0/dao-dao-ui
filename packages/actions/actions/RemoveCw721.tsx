@@ -10,9 +10,10 @@ import {
 
 import { Cw721BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
+  ActionContextType,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -30,115 +31,6 @@ interface RemoveCw721Data {
 const useDefaults: UseDefaults<RemoveCw721Data> = () => ({
   address: '',
 })
-
-const Component: ActionComponent = (props) => {
-  const { t } = useTranslation()
-  const { fieldNamePrefix, Loader } = props
-
-  const { watch } = useFormContext()
-
-  const tokenAddress = watch(fieldNamePrefix + 'address')
-  const tokenInfoLoadable = useRecoilValueLoadable(
-    tokenAddress
-      ? Cw721BaseSelectors.contractInfoSelector({
-          contractAddress: tokenAddress,
-          params: [],
-        })
-      : constSelector(undefined)
-  )
-
-  const existingTokenAddresses = useRecoilValue(
-    CwdCoreV2Selectors.allCw721TokenListSelector({
-      contractAddress: props.coreAddress,
-    })
-  )
-  const existingTokenInfos = useRecoilValue(
-    waitForAll(
-      existingTokenAddresses?.map((token) =>
-        Cw721BaseSelectors.contractInfoSelector({
-          contractAddress: token,
-          params: [],
-        })
-      ) ?? []
-    )
-  )
-  const existingTokens = useMemo(
-    () =>
-      (existingTokenAddresses
-        ?.map((address, idx) => ({
-          address,
-          info: existingTokenInfos[idx],
-        }))
-        // If undefined token info response, ignore the token.
-        .filter(({ info }) => !!info) ?? []) as {
-        address: string
-        info: ContractInfoResponse
-      }[],
-    [existingTokenAddresses, existingTokenInfos]
-  )
-
-  const [additionalAddressError, setAdditionalAddressError] = useState<string>()
-  useEffect(() => {
-    if (tokenInfoLoadable.state !== 'hasError' && existingTokens.length > 0) {
-      if (additionalAddressError) {
-        setAdditionalAddressError(undefined)
-      }
-      return
-    }
-
-    if (!additionalAddressError) {
-      setAdditionalAddressError(
-        tokenInfoLoadable.state === 'hasError'
-          ? t('error.notCw721Address')
-          : existingTokens.length === 0
-          ? t('error.noCw721Tokens')
-          : // Should never happen.
-            t('error.unexpectedError')
-      )
-    }
-  }, [
-    tokenInfoLoadable.state,
-    existingTokens.length,
-    t,
-    additionalAddressError,
-  ])
-
-  return (
-    <StatelessRemoveCw721Component
-      {...props}
-      options={{
-        additionalAddressError,
-        existingTokens,
-        formattedJsonDisplayProps: {
-          jsonLoadable: tokenInfoLoadable,
-          Loader,
-        },
-      }}
-    />
-  )
-}
-
-const useTransformToCosmos: UseTransformToCosmos<RemoveCw721Data> = (
-  coreAddress: string
-) =>
-  useCallback(
-    (data: RemoveCw721Data) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: coreAddress,
-            funds: [],
-            msg: {
-              update_cw721_token_list: {
-                to_add: [],
-                to_remove: [data.address],
-              },
-            },
-          },
-        },
-      }),
-    [coreAddress]
-  )
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw721Data> = (
   msg: Record<string, any>
@@ -163,14 +55,132 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw721Data> = (
     [msg]
   )
 
-export const removeCw721Action: Action<RemoveCw721Data> = {
-  key: ActionKey.RemoveCw721,
-  Icon: RemoveCw721Emoji,
-  label: 'Remove NFT Collection from Treasury',
-  description:
-    'Stop displaying the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+export const makeRemoveCw721Action: ActionMaker<RemoveCw721Data> = ({
+  t,
+  address,
+  context,
+}) => {
+  // Only DAOs.
+  if (context.type !== ActionContextType.Dao) {
+    return null
+  }
+
+  const Component: ActionComponent = (props) => {
+    const { t } = useTranslation()
+    const { fieldNamePrefix, Loader } = props
+
+    const { watch } = useFormContext()
+
+    const tokenAddress = watch(fieldNamePrefix + 'address')
+    const tokenInfoLoadable = useRecoilValueLoadable(
+      tokenAddress
+        ? Cw721BaseSelectors.contractInfoSelector({
+            contractAddress: tokenAddress,
+            params: [],
+          })
+        : constSelector(undefined)
+    )
+
+    const existingTokenAddresses = useRecoilValue(
+      CwdCoreV2Selectors.allCw721TokenListSelector({
+        contractAddress: address,
+      })
+    )
+    const existingTokenInfos = useRecoilValue(
+      waitForAll(
+        existingTokenAddresses?.map((token) =>
+          Cw721BaseSelectors.contractInfoSelector({
+            contractAddress: token,
+            params: [],
+          })
+        ) ?? []
+      )
+    )
+    const existingTokens = useMemo(
+      () =>
+        (existingTokenAddresses
+          ?.map((address, idx) => ({
+            address,
+            info: existingTokenInfos[idx],
+          }))
+          // If undefined token info response, ignore the token.
+          .filter(({ info }) => !!info) ?? []) as {
+          address: string
+          info: ContractInfoResponse
+        }[],
+      [existingTokenAddresses, existingTokenInfos]
+    )
+
+    const [additionalAddressError, setAdditionalAddressError] =
+      useState<string>()
+    useEffect(() => {
+      if (tokenInfoLoadable.state !== 'hasError' && existingTokens.length > 0) {
+        if (additionalAddressError) {
+          setAdditionalAddressError(undefined)
+        }
+        return
+      }
+
+      if (!additionalAddressError) {
+        setAdditionalAddressError(
+          tokenInfoLoadable.state === 'hasError'
+            ? t('error.notCw721Address')
+            : existingTokens.length === 0
+            ? t('error.noCw721Tokens')
+            : // Should never happen.
+              t('error.unexpectedError')
+        )
+      }
+    }, [
+      tokenInfoLoadable.state,
+      existingTokens.length,
+      t,
+      additionalAddressError,
+    ])
+
+    return (
+      <StatelessRemoveCw721Component
+        {...props}
+        options={{
+          additionalAddressError,
+          existingTokens,
+          formattedJsonDisplayProps: {
+            jsonLoadable: tokenInfoLoadable,
+            Loader,
+          },
+        }}
+      />
+    )
+  }
+
+  const useTransformToCosmos: UseTransformToCosmos<RemoveCw721Data> = () =>
+    useCallback(
+      (data: RemoveCw721Data) =>
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: address,
+              funds: [],
+              msg: {
+                update_cw721_token_list: {
+                  to_add: [],
+                  to_remove: [data.address],
+                },
+              },
+            },
+          },
+        }),
+      []
+    )
+
+  return {
+    key: ActionKey.RemoveCw721,
+    Icon: RemoveCw721Emoji,
+    label: t('title.removeCw721FromTreasury'),
+    description: t('info.removeCw721FromTreasuryActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

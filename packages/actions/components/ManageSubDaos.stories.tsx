@@ -17,7 +17,6 @@ const Template: ComponentStory<typeof ManageSubDaosComponent> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  coreAddress: 'juno123abc456',
   fieldNamePrefix: '',
   allActionsWithData: [],
   index: 0,

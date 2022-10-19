@@ -6,6 +6,7 @@ import {
   useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/state'
+import { ActionContextType } from '@dao-dao/tstypes'
 import {
   MembersTab as StatelessMembersTab,
   useDaoInfoContext,
@@ -16,7 +17,7 @@ import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
 
 export const MembersTab = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress, coreVersion } = useDaoInfoContext()
 
   const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,
@@ -31,7 +32,18 @@ export const MembersTab = () => {
   }
 
   // Only make the action once.
-  const [manageMembersAction] = useState(() => makeManageMembersAction())
+  // TODO: Get from Actions provider once made.
+  const [manageMembersAction] = useState(
+    () =>
+      makeManageMembersAction({
+        t,
+        address: coreAddress,
+        context: {
+          type: ActionContextType.Dao,
+          coreVersion,
+        },
+      })!
+  )
   const encodedProposalPrefill = useEncodedCwdProposalSinglePrefill({
     actions: [
       {

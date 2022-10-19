@@ -1,6 +1,7 @@
 // eslint-disable-next-line regex/invalid
 import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
+import { TFunction } from 'react-i18next'
 
 import { LoaderProps, LogoProps } from '@dao-dao/ui'
 
@@ -39,7 +40,6 @@ export interface ActionKeyAndData {
 
 // A component which will render an action's input form.
 export type ActionComponentProps<O = undefined, D = any> = {
-  coreAddress: string
   fieldNamePrefix: string
   allActionsWithData: ActionKeyAndData[]
   index: number
@@ -65,11 +65,11 @@ export type ActionComponent<O = undefined, D = any> = FunctionComponent<
   ActionComponentProps<O, D>
 >
 
-export type UseDefaults<D extends {} = any> = (coreAddress: string) => D
+export type UseDefaults<D extends {} = any> = () => D
 
-export type UseTransformToCosmos<D extends {} = any> = (
-  coreAddress: string
-) => (data: D) => CosmosMsgFor_Empty | undefined
+export type UseTransformToCosmos<D extends {} = any> = () => (
+  data: D
+) => CosmosMsgFor_Empty | undefined
 
 export interface DecodeCosmosMsgNoMatch {
   match: false
@@ -80,23 +80,45 @@ export interface DecodeCosmosMsgMatch<D extends {} = any> {
   data: D
 }
 export type UseDecodedCosmosMsg<D extends {} = any> = (
-  msg: Record<string, any>,
-  coreAddress: string
+  msg: Record<string, any>
 ) => DecodeCosmosMsgNoMatch | DecodeCosmosMsgMatch<D>
 
-// Defines a new action.
 export interface Action<Data extends {} = any, Options extends {} = any> {
   key: ActionKey
   Icon: ComponentType
   label: string
   description: string
-  Component: ActionComponent<Options>
+  Component: ActionComponent<Options, Data>
   // Hook to get default fields for form display.
   useDefaults: UseDefaults<Data>
   // Hook to make function to convert action data to CosmosMsgFor_Empty.
   useTransformToCosmos: UseTransformToCosmos<Data>
   // Hook to make function to convert decoded msg to form display fields.
   useDecodedCosmosMsg: UseDecodedCosmosMsg<Data>
-  // Optionally support only these coreVersions.
-  supportedCoreVersions?: ContractVersion[]
 }
+
+export enum ActionContextType {
+  Dao = 'dao',
+  Wallet = 'wallet',
+}
+
+export type ActionContext =
+  | {
+      type: ActionContextType.Dao
+      coreVersion: ContractVersion
+    }
+  | {
+      type: ActionContextType.Wallet
+    }
+
+export type ActionOptions = {
+  t: TFunction
+  // coreAddress if context.type === Dao
+  // walletAddress if context.type === Wallet
+  address: string
+  context: ActionContext
+}
+
+export type ActionMaker<Data extends {} = any> = (
+  options: ActionOptions
+) => Action<Data> | null

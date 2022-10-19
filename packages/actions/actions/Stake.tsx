@@ -7,9 +7,9 @@ import {
   nativeDelegatedBalanceSelector,
 } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -125,38 +125,38 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
     return { match: false }
   }, [msg])
 
-const InnerStakeComponent: ActionComponent = (props) => {
-  const nativeBalances = useRecoilValue(
-    nativeBalancesSelector({ address: props.coreAddress })
-  )
-  const nativeDelegatedBalance = useRecoilValue(
-    nativeDelegatedBalanceSelector({ address: props.coreAddress })
+export const makeStakeAction: ActionMaker<StakeData> = ({ t, address }) => {
+  const InnerStakeComponent: ActionComponent = (props) => {
+    const nativeBalances = useRecoilValue(nativeBalancesSelector({ address }))
+    const nativeDelegatedBalance = useRecoilValue(
+      nativeDelegatedBalanceSelector({ address })
+    )
+
+    return (
+      <StatelessStakeComponent
+        {...props}
+        options={{
+          nativeBalances,
+          nativeDelegatedBalance,
+        }}
+      />
+    )
+  }
+
+  const Component: ActionComponent = (props) => (
+    <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
+      <InnerStakeComponent {...props} />
+    </SuspenseLoader>
   )
 
-  return (
-    <StatelessStakeComponent
-      {...props}
-      options={{
-        nativeBalances,
-        nativeDelegatedBalance,
-      }}
-    />
-  )
-}
-
-const Component: ActionComponent = (props) => (
-  <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
-    <InnerStakeComponent {...props} />
-  </SuspenseLoader>
-)
-
-export const stakeAction: Action<StakeData> = {
-  key: ActionKey.Stake,
-  Icon: StakeEmoji,
-  label: 'Stake',
-  description: 'Manage native token staking.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+  return {
+    key: ActionKey.Stake,
+    Icon: StakeEmoji,
+    label: t('title.stake'),
+    description: t('info.stakeActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

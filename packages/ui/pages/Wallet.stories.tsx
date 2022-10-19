@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
-import { walletActions } from '@dao-dao/actions'
+import { useWalletActions } from '@dao-dao/actions'
 import {
   WalletProviderDecorator,
   makeAppLayoutDecorator,
@@ -24,6 +24,7 @@ export default {
 } as ComponentMeta<typeof Wallet>
 
 const Template: ComponentStory<typeof Wallet> = (args) => {
+  const walletActions = useWalletActions()
   // Call relevant action hooks in the same order every time.
   const actionsWithData: Partial<
     Record<
@@ -39,8 +40,8 @@ const Template: ComponentStory<typeof Wallet> = (args) => {
       ...acc,
       [action.key]: {
         action,
-        transform: action.useTransformToCosmos(args.walletAddress),
-        defaults: action.useDefaults(args.walletAddress),
+        transform: action.useTransformToCosmos(),
+        defaults: action.useDefaults(),
       },
     }),
     {}
@@ -72,7 +73,6 @@ Default.args = {
     console.log('execute!', data)
     alert('executed')
   },
-  walletAddress: 'juno16mrjtqffn3awme2eczhlpwzj7mnatkeluvhj6c',
   loading: false,
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />

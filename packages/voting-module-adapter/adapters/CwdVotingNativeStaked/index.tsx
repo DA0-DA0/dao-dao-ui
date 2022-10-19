@@ -1,7 +1,8 @@
+import { useMemo } from 'react'
+
 import { VotingModuleAdapter } from '../../types'
 import { ProfileCardMemberInfo } from './components'
 import {
-  useActions,
   useDaoInfoBarItems,
   useGovernanceTokenInfo,
   useStakingInfo,
@@ -19,7 +20,7 @@ export const CwdVotingNativeStakedAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useActions,
+      useActions: () => useMemo(() => [], []),
       useDaoInfoBarItems,
       useProfileNewProposalCardAddresses: () => [],
       useGovernanceTokenInfo,

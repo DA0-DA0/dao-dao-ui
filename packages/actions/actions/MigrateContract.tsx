@@ -3,9 +3,9 @@ import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -58,32 +58,37 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
     [msg]
   )
 
-const Component: ActionComponent = (props) => {
-  const [contract, setContract] = useState('')
+export const makeMigrateAction: ActionMaker<MigrateData> = (actionOptions) => {
+  const { t } = actionOptions
 
-  const admin = useRecoilValueLoadable(
-    contractAdminSelector({ contractAddress: contract })
-  )
+  const Component: ActionComponent = (props) => {
+    const [contract, setContract] = useState('')
 
-  return (
-    <StatelessMigrateContractComponent
-      {...props}
-      options={{
-        contractAdmin:
-          admin.state === 'hasValue' ? admin.getValue() : undefined,
-        onContractChange: (contract: string) => setContract(contract),
-      }}
-    />
-  )
-}
+    const admin = useRecoilValueLoadable(
+      contractAdminSelector({ contractAddress: contract })
+    )
 
-export const migrateAction: Action<MigrateData> = {
-  key: ActionKey.Migrate,
-  Icon: MigrateContractEmoji,
-  label: 'Migrate Smart Contract',
-  description: 'Migrate a CosmWasm contract to a new code ID.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+    return (
+      <StatelessMigrateContractComponent
+        {...props}
+        options={{
+          actionOptions,
+          contractAdmin:
+            admin.state === 'hasValue' ? admin.getValue() : undefined,
+          onContractChange: (contract: string) => setContract(contract),
+        }}
+      />
+    )
+  }
+
+  return {
+    key: ActionKey.Migrate,
+    Icon: MigrateContractEmoji,
+    label: t('title.migrateSmartContract'),
+    description: t('info.migrateSmartContractActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

@@ -19,7 +19,7 @@ export const ProposalActionDisplay = ({
   const [showRaw, setShowRaw] = useState(false)
   const {
     id: proposalModuleAdapterId,
-    options: { coreAddress, Logo, Loader },
+    options: { Logo, Loader },
   } = useProposalModuleAdapterContext()
 
   const proposal = useProposal()
@@ -34,7 +34,7 @@ export const ProposalActionDisplay = ({
     const actionMatch = availableActions
       .map((action) => ({
         action,
-        ...action.useDecodedCosmosMsg(message, coreAddress),
+        ...action.useDecodedCosmosMsg(message),
       }))
       .find(({ match }) => match)
 
@@ -52,12 +52,7 @@ export const ProposalActionDisplay = ({
 
   return decodedMessages?.length ? (
     <div className="space-y-3">
-      <ActionsRenderer
-        Loader={Loader}
-        Logo={Logo}
-        actionData={actionData}
-        coreAddress={coreAddress}
-      />
+      <ActionsRenderer Loader={Loader} Logo={Logo} actionData={actionData} />
 
       <div className="flex flex-row items-center gap-7">
         <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">

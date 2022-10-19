@@ -4,7 +4,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import {
@@ -14,7 +14,7 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { manageSubDaosAction } from '@dao-dao/actions/actions/ManageSubDaos'
+import { makeManageSubDaosAction } from '@dao-dao/actions/actions/ManageSubDaos'
 import {
   DaoInfoBar,
   DaoPageWrapper,
@@ -29,6 +29,7 @@ import {
   useVotingModule,
   useWalletProfile,
 } from '@dao-dao/state'
+import { ActionContextType } from '@dao-dao/tstypes'
 import { CheckedDepositInfo } from '@dao-dao/tstypes/contracts/common'
 import {
   DaoHome,
@@ -75,6 +76,19 @@ const InnerDaoHome = () => {
           contractAddress: daoInfo.parentDao.coreAddress,
         })
       : constSelector(undefined)
+  )
+  // Only make the action once.
+  // TODO: Get from Actions provider once made.
+  const [manageSubDaosAction] = useState(
+    () =>
+      makeManageSubDaosAction({
+        t,
+        address: daoInfo.coreAddress,
+        context: {
+          type: ActionContextType.Dao,
+          coreVersion: daoInfo.coreVersion,
+        },
+      })!
   )
   const encodedAddSubDaoProposalPrefill = useEncodedCwdProposalSinglePrefill({
     title: t('title.recognizeSubDao', {

@@ -90,7 +90,6 @@ export const NewProposal = ({
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = makeUseProposalModuleActions(options)()
   const actions = useActions(
-    daoInfo.coreVersion,
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]
@@ -112,8 +111,8 @@ export const NewProposal = ({
       ...acc,
       [action.key]: {
         action,
-        transform: action.useTransformToCosmos(options.coreAddress),
-        defaults: action.useDefaults(options.coreAddress),
+        transform: action.useTransformToCosmos(),
+        defaults: action.useDefaults(),
       },
     }),
     {}

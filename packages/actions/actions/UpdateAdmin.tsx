@@ -1,16 +1,17 @@
 import { useCallback, useMemo, useState } from 'react'
-import { useRecoilValueLoadable } from 'recoil'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
 import { UpdateAdminEmoji } from '@dao-dao/ui'
+import { CHAIN_BECH32_PREFIX, isValidContractAddress } from '@dao-dao/utils'
 
 import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components/UpdateAdmin'
 
@@ -54,32 +55,41 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
     [msg]
   )
 
-const Component: ActionComponent = (props) => {
-  const [contract, setContract] = useState('')
+export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = (
+  actionOptions
+) => {
+  const { t } = actionOptions
 
-  const admin = useRecoilValueLoadable(
-    contractAdminSelector({ contractAddress: contract })
-  )
+  const Component: ActionComponent = (props) => {
+    const [contract, setContract] = useState('')
 
-  return (
-    <StatelessUpdateAdminComponent
-      {...props}
-      options={{
-        contractAdmin:
-          admin.state === 'hasValue' ? admin.getValue() : undefined,
-        onContractChange: (contract: string) => setContract(contract),
-      }}
-    />
-  )
-}
+    const admin = useRecoilValueLoadable(
+      contract && isValidContractAddress(contract, CHAIN_BECH32_PREFIX)
+        ? contractAdminSelector({ contractAddress: contract })
+        : constSelector(undefined)
+    )
 
-export const updateAdminAction: Action<UpdateAdminData> = {
-  key: ActionKey.UpdateAdmin,
-  Icon: UpdateAdminEmoji,
-  label: 'Update Contract Admin',
-  description: 'Update the CosmWasm level admin of a smart contract.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+    return (
+      <StatelessUpdateAdminComponent
+        {...props}
+        options={{
+          actionOptions,
+          contractAdmin:
+            admin.state === 'hasValue' ? admin.contents : undefined,
+          onContractChange: (contract: string) => setContract(contract),
+        }}
+      />
+    )
+  }
+
+  return {
+    key: ActionKey.UpdateAdmin,
+    Icon: UpdateAdminEmoji,
+    label: t('title.updateContractAdmin'),
+    description: t('info.updateContractAdminActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }
