@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { VoteDisplay } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/VoteDisplay'
+import { VoteDisplay } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalVotes/VoteDisplay'
 import { Vote } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
 import { getFallbackImage } from '@dao-dao/utils'
 

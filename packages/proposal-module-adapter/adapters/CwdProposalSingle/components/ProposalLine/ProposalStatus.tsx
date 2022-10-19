@@ -26,7 +26,7 @@ export const ProposalStatus = ({
       icon={
         <Icon
           className={clsx(
-            '!h-5 !w-5',
+            '!h-5 !w-5 shrink-0',
             dimmed ? 'text-icon-tertiary' : iconClassName
           )}
         />
@@ -34,7 +34,7 @@ export const ProposalStatus = ({
       label={
         <p
           className={clsx(
-            'leading-5',
+            'leading-5 truncate shrink-0',
             dimmed ? 'text-text-tertiary' : textClassName
           )}
         >

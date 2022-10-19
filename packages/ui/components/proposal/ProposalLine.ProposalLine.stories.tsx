@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import {
   ProposalStatus,
   ProposalStatusMap,
-} from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalStatus'
+} from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalLine/ProposalStatus'
 import { ContractVersion } from '@dao-dao/tstypes'
 import { formatDate, secondsToWdhms } from '@dao-dao/utils'
 
