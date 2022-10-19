@@ -2,13 +2,18 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { useWallet } from '@noahsaso/cosmodal'
+import cloneDeep from 'lodash.clonedeep'
 import { GetStaticProps, NextPage } from 'next'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { useRecoilState } from 'recoil'
 
 import { ActionsProvider, useActions } from '@dao-dao/actions'
+import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+import { walletTransactionAtom } from '@dao-dao/state'
+import { WalletTransactionForm } from '@dao-dao/tstypes'
 import {
   Action,
   ActionKey,
@@ -17,16 +22,15 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
 import {
+  Loader,
   ProfileDisconnectedCard,
   Wallet,
-  WalletForm,
   WalletProps,
 } from '@dao-dao/ui'
 import { processError } from '@dao-dao/utils'
 
 import { ProfileHomeCard } from '@/components'
 
-// TODO: Autosave to localStorage
 const InnerWallet = () => {
   const { t } = useTranslation()
 
@@ -60,14 +64,33 @@ const InnerWallet = () => {
     {}
   )
 
-  const formMethods = useForm<WalletForm>({
+  const [_walletTransactionAtom, setWalletTransactionAtom] = useRecoilState(
+    walletTransactionAtom
+  )
+
+  const formMethods = useForm<WalletTransactionForm>({
     mode: 'onChange',
-    defaultValues: {
-      title: '',
-      description: '',
-      actionData: [],
-    },
+    // Don't clone every render.
+    defaultValues: useMemo(
+      () => cloneDeep(_walletTransactionAtom),
+      [_walletTransactionAtom]
+    ),
   })
+  // Trigger validation on first render, in case loaded from localStorage.
+  useEffect(() => {
+    formMethods.trigger()
+  }, [formMethods])
+
+  const walletTransaction = formMethods.watch()
+  // Debounce saving latest data to atom and thus localStorage every 10 seconds.
+  useEffect(() => {
+    // Deep clone to prevent values from becoming readOnly.
+    const timeout = setTimeout(
+      () => setWalletTransactionAtom(cloneDeep(walletTransaction)),
+      10000
+    )
+    return () => clearTimeout(timeout)
+  }, [setWalletTransactionAtom, walletTransaction])
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -129,7 +152,10 @@ const WalletPage: NextPage = () => {
         },
       }}
     >
-      <InnerWallet />
+      {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
+      <SuspenseLoader fallback={<Loader />}>
+        <InnerWallet />
+      </SuspenseLoader>
     </ActionsProvider>
   )
 }

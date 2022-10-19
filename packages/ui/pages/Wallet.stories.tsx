@@ -1,30 +1,42 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
-import { useWalletActions } from '@dao-dao/actions'
+import { useActions } from '@dao-dao/actions'
 import {
   WalletProviderDecorator,
+  makeActionsProviderDecorator,
   makeAppLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 import {
   Action,
   ActionKey,
+  ActionOptionsContextType,
   UseDefaults,
   UseTransformToCosmos,
+  WalletTransactionForm,
 } from '@dao-dao/tstypes'
 
 import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
-import { Wallet, WalletForm } from './Wallet'
+import { Wallet } from './Wallet'
 
 export default {
   title: 'DAO DAO / packages / ui / pages / Wallet',
   component: Wallet,
-  decorators: [WalletProviderDecorator, makeAppLayoutDecorator()],
+  decorators: [
+    WalletProviderDecorator,
+    makeAppLayoutDecorator(),
+    makeActionsProviderDecorator({
+      address: 'walletAddress',
+      context: {
+        type: ActionOptionsContextType.Wallet,
+      },
+    }),
+  ],
 } as ComponentMeta<typeof Wallet>
 
 const Template: ComponentStory<typeof Wallet> = (args) => {
-  const walletActions = useWalletActions()
+  const actions = useActions()
   // Call relevant action hooks in the same order every time.
   const actionsWithData: Partial<
     Record<
@@ -35,7 +47,7 @@ const Template: ComponentStory<typeof Wallet> = (args) => {
         defaults: ReturnType<UseDefaults>
       }
     >
-  > = walletActions.reduce(
+  > = actions.reduce(
     (acc, action) => ({
       ...acc,
       [action.key]: {
@@ -47,7 +59,7 @@ const Template: ComponentStory<typeof Wallet> = (args) => {
     {}
   )
 
-  const formMethods = useForm<WalletForm>({
+  const formMethods = useForm<WalletTransactionForm>({
     mode: 'onChange',
     defaultValues: {
       title: '',
@@ -59,7 +71,7 @@ const Template: ComponentStory<typeof Wallet> = (args) => {
   return (
     <Wallet
       {...args}
-      actions={walletActions}
+      actions={actions}
       actionsWithData={actionsWithData}
       formMethods={formMethods}
     />

@@ -1,3 +1,5 @@
+import { ActionKeyAndData } from './actions'
+
 export interface PfpkWalletProfile {
   nonce: number
   name: string | null
@@ -35,4 +37,10 @@ export interface KeplrWalletProfile {
         imageUrl: string
         version: number
       }
+}
+
+export interface WalletTransactionForm {
+  title: string
+  description: string
+  actionData: ActionKeyAndData[]
 }
