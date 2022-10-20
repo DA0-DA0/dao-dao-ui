@@ -12,7 +12,7 @@ export const AnouncementCard = () => {
       className="mx-2 flex max-w-[780px] flex-row flex-wrap justify-between gap-2 rounded py-7 px-8"
       style={{
         backgroundImage:
-          'linear-gradient(rgba(var(--v2-brand), 0.1), rgba(var(--v2-brand), 0.1)), linear-gradient(rgba(var(--v2-dark), 0.7), rgba(var(--v2-dark), 0.7))',
+          'linear-gradient(rgba(var(--brand), 0.1), rgba(var(--brand), 0.1)), linear-gradient(rgba(var(--dark), 0.7), rgba(var(--dark), 0.7))',
       }}
     >
       <div className="flex flex-col gap-1">
