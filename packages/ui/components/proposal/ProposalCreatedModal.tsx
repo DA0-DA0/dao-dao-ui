@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { ProposalCardProps } from '@dao-dao/tstypes'
 import { SITE_URL } from '@dao-dao/utils'
 
-import { ItemCreatedModal, ItemCreatedModalProps } from '../modals/ItemCreatedModal'
+import {
+  ItemCreatedModal,
+  ItemCreatedModalProps,
+} from '../modals/ItemCreatedModal'
 import { ProposalCard } from './ProposalCard'
 
 export type ProposalCreatedModalProps = Omit<
