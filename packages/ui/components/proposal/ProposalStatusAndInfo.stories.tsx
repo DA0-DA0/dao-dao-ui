@@ -8,7 +8,7 @@ import {
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import clsx from 'clsx'
 
-import { ButtonLink } from '../Button'
+import { ButtonLink } from '../buttons'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Logo } from '../Logo'
 import { ProposalStatusAndInfo } from './ProposalStatusAndInfo'

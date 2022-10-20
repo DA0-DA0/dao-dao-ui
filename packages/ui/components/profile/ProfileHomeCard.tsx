@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Layers, Payments } from '@dao-dao/icons'
 import { LoadingData } from '@dao-dao/tstypes'
 
-import { ButtonLink } from '../Button'
+import { ButtonLink } from '../buttons'
 import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import {
   ProfileCardWrapper,

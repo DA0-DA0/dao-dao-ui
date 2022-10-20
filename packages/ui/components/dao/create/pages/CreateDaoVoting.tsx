@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { CreateDaoContext } from '@dao-dao/tstypes'
 
-import { FormCheckbox } from '../../../input/Checkbox'
+import { FormCheckbox } from '../../../inputs/Checkbox'
 import { DaoCreateConfigInputCard } from '../DaoCreateConfigInputCard'
 
 export const CreateDaoVoting = ({

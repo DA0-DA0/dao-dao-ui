@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Action } from '@dao-dao/tstypes/actions'
 import { usePlatform } from '@dao-dao/utils'
 
-import { Button } from '../Button'
+import { Button } from '../buttons'
 import { FilterableItemPopup, FilterableItemPopupProps } from '../popup'
 
 export interface ActionSelectorProps {

@@ -34,7 +34,6 @@ Default.args = {
       nft: null,
     },
   },
-  walletAddress: 'wallet',
   loading: false,
   options: [
     { Icon: Check, label: 'Yes', value: 'yes' },

@@ -3,7 +3,7 @@ import { FieldError } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/common'
 
-import { InputErrorMessage } from '../../input'
+import { InputErrorMessage } from '../../inputs'
 import { Loader as DefaultLoader, LoaderProps } from '../../Loader'
 import { TooltipInfoIcon } from '../../TooltipInfoIcon'
 

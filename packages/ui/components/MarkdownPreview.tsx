@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
 import { HeadingComponent } from 'react-markdown/lib/ast-to-react'
 
-import { IconButton } from './IconButton'
+import { IconButton } from './icon_buttons/IconButton'
 
 export interface MarkdownPreviewProps {
   markdown: string

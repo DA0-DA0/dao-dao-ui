@@ -9,7 +9,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { InputErrorMessage, TextAreaInput, TextInput } from '../../../input'
+import { InputErrorMessage, TextAreaInput, TextInput } from '../../../inputs'
 import { DaoStructureCard } from '../DaoStructureCard'
 
 export const CreateDaoStart = ({

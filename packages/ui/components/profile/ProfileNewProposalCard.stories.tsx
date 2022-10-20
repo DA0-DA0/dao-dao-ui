@@ -32,7 +32,6 @@ Default.args = {
       nft: null,
     },
   },
-  walletAddress: 'wallet',
   info: {
     loading: false,
     data: {

@@ -35,5 +35,5 @@ const Template: ComponentStory<typeof PinnedDaos> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  pinnedDaos: { loading: false, data: FeaturedDaosStory.args!.featuredDaos! },
+  pinnedDaos: FeaturedDaosStory.args!.featuredDaos!,
 }

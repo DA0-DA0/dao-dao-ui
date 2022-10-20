@@ -2,7 +2,7 @@ import { PlusIcon } from '@heroicons/react/solid'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ButtonLink } from '../../Button'
+import { ButtonLink } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
 
 export interface MembersTabProps<D> {

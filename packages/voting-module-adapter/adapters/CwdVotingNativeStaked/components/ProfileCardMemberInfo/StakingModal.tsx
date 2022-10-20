@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
-import { ConnectWalletButton, SuspenseLoader } from '@dao-dao/common'
+import { SuspenseLoader } from '@dao-dao/common'
 import {
   CwdVotingNativeStakedHooks,
   refreshDaoVotingPowerAtom,
@@ -235,15 +235,6 @@ const InnerStakingModal = ({
       default:
         toast.error('Internal error while staking. Unrecognized mode.')
     }
-  }
-
-  // If not connected, show connect button.
-  if (!connected) {
-    return (
-      <StakingModalWrapper onClose={onClose}>
-        <ConnectWalletButton />
-      </StakingModalWrapper>
-    )
   }
 
   return (

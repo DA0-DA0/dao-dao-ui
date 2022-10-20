@@ -1,11 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
+import { DefaultNewDao } from '@dao-dao/common'
 import {
   VotingDurationIcon,
   VotingDurationInput,
 } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
-import { DefaultNewDao } from '@dao-dao/state'
 import { NewDao } from '@dao-dao/tstypes'
 
 import { DaoCreateConfigInputCard } from './DaoCreateConfigInputCard'

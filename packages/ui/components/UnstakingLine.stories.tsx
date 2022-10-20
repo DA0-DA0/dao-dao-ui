@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Button } from './Button'
+import { Button } from './buttons/Button'
 import { UnstakingLine, UnstakingLineProps } from './UnstakingLine'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 

@@ -25,7 +25,7 @@ export const getAllRpcResponse = async <
       ? { key: response.pagination.next_key }
       : undefined
 
-    data.push(...response[key])
+    data.push(...(response[key] as any[]))
   } while (pagination !== undefined)
 
   return data as R[K]

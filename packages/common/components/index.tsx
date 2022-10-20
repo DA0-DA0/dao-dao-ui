@@ -1,4 +1,3 @@
-export * from './ConnectWalletButton'
 export * from './CreateDaoForm'
 export * from './DaoInfoBar'
 export * from './DaoMemberCard'

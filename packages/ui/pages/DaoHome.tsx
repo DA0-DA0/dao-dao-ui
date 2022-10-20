@@ -6,7 +6,7 @@ import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {
   DaoHeader,
-  PinToggle,
+  FollowingToggle,
   SegmentedControls,
   useAppLayoutContext,
 } from '../components'
@@ -83,7 +83,7 @@ export const DaoHome = ({
         }}
         className="mx-auto max-w-5xl"
         gradient
-        rightNode={<PinToggle onPin={onPin} pinned={pinned} />}
+        rightNode={<FollowingToggle following={pinned} onToggle={onPin} />}
       />
 
       <div className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch">

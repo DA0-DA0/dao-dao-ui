@@ -2,6 +2,7 @@
   "name": "@dao-dao/ui",
   "version": "0.0.0",
   "scripts": {
+    "build": "tsc",
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
@@ -16,6 +17,7 @@
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.3",
     "@types/remove-markdown": "^0.3.1",
+    "@walletconnect/browser-utils": "^1.8.0",
     "a11y-react-emoji": "^1.2.0",
     "chart.js": "^3.9.1",
     "clsx": "^1.1.1",

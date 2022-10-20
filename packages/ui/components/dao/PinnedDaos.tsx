@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { DaoCardInfo, LoadingData } from '@dao-dao/tstypes'
 
 import { SortFn, useDropdownSorter } from '../../hooks/useDropdownSorter'
-import { Dropdown, DropdownOption } from '../Dropdown'
 import { GridCardContainer } from '../GridCardContainer'
+import { Dropdown, DropdownOption } from '../inputs/Dropdown'
 import { Loader } from '../Loader'
 import { NoContent } from '../NoContent'
 

@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { ComponentType, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '../Button'
+import { Button } from '../buttons'
 
 export interface ProposalStatusAndInfoProps {
   status: string

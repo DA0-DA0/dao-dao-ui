@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 
 import { ProfileVoteCardOption } from '..'
-import { Button } from '../Button'
+import { Button } from '../buttons'
 
 export interface ProfileVoteButtonProps {
   option: ProfileVoteCardOption<unknown>

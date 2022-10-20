@@ -12,10 +12,9 @@ import {
   humanReadableDuration,
 } from '@dao-dao/utils'
 
-import { Button } from '../Button'
-import { NumberInput } from '../input/NumberInput'
-import { Modal } from '../Modal'
-import { SegmentedControls } from '../SegmentedControls'
+import { Button } from '../buttons/Button'
+import { NumberInput, SegmentedControls } from '../inputs'
+import { Modal } from '../modals/Modal'
 import { Tooltip } from '../Tooltip'
 import { PercentButton } from './PercentButton'
 

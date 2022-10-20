@@ -12,8 +12,8 @@ import {
 } from 'react'
 
 import { useSearchFilter } from '../../hooks'
-import { Button } from '../Button'
-import { SearchBar } from '../SearchBar'
+import { Button } from '../buttons/Button'
+import { SearchBar } from '../inputs/SearchBar'
 import { Popup, PopupProps } from './Popup'
 
 export interface FilterableItemPopupProps<T>

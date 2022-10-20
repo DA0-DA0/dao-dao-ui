@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { DaoInfo } from '@dao-dao/tstypes'
 import { usePlatform } from '@dao-dao/utils'
 
-import { ButtonLink } from '../../Button'
+import { ButtonLink } from '../../buttons'
 import { Tooltip } from '../../Tooltip'
 
 export interface ProposalsTabProps {

@@ -19,10 +19,10 @@ import { CommandModal, makeGenericContext } from '@dao-dao/command'
 import {
   PfpkNftSelectionModal,
   SidebarWallet,
+  daoCreatedCardPropsAtom,
   pinnedDaoDropdownInfosSelector,
 } from '@dao-dao/common'
 import {
-  daoCreatedCardPropsAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,

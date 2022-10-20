@@ -13,7 +13,7 @@ import {
 import {
   AddressInput,
   FormSwitchCard,
-  FormattedJSONDisplay,
+  FormattedJsonDisplay,
   InputErrorMessage,
   InputLabel,
   NumberInput,
@@ -192,7 +192,7 @@ export const ProposalDepositInput = ({
                 />
               </div>
 
-              <FormattedJSONDisplay jsonLoadable={cw20TokenInfoLoadable} />
+              <FormattedJsonDisplay jsonLoadable={cw20TokenInfoLoadable} />
             </>
           )}
 

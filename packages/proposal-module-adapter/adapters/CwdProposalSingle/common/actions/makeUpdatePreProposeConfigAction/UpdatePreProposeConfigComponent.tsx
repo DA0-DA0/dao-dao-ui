@@ -7,8 +7,8 @@ import { ActionComponent, DepositRefundPolicy } from '@dao-dao/tstypes'
 import {
   AddressInput,
   FormSwitchCard,
-  FormattedJSONDisplay,
-  FormattedJSONDisplayProps,
+  FormattedJsonDisplay,
+  FormattedJsonDisplayProps,
   InputErrorMessage,
   InputLabel,
   NumberInput,
@@ -43,7 +43,7 @@ export interface UpdatePreProposeConfigOptions {
   cw20: {
     governanceTokenSymbol?: string
     additionalAddressError?: string
-    formattedJsonDisplayProps: FormattedJSONDisplayProps
+    formattedJsonDisplayProps: FormattedJsonDisplayProps
   }
 }
 
@@ -177,7 +177,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                 />
 
                 <div className="mt-1">
-                  <FormattedJSONDisplay {...cw20.formattedJsonDisplayProps} />
+                  <FormattedJsonDisplay {...cw20.formattedJsonDisplayProps} />
                 </div>
               </div>
             )}

@@ -16,7 +16,7 @@ import {
   Button,
   ChartDataEntry,
   DaoCreateVotingPowerDistributionBarChart,
-  FormattedJSONDisplay,
+  FormattedJsonDisplay,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
@@ -502,7 +502,7 @@ export const GovernanceConfigurationInput = ({
               />
             </div>
 
-            <FormattedJSONDisplay
+            <FormattedJsonDisplay
               jsonLoadable={existingGovernanceTokenInfoLoadable}
             />
           </div>

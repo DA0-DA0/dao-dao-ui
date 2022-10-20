@@ -7,7 +7,7 @@ import {
   ChartDataEntry,
   CopyToClipboard,
   DaoCreateVotingPowerDistributionReviewCard,
-  FormattedJSONDisplay,
+  FormattedJsonDisplay,
   TierDataEntry,
   VOTING_POWER_DISTRIBUTION_COLORS,
   useNamedThemeColor,
@@ -40,8 +40,8 @@ export const GovernanceConfigurationReview = ({
   // tier distributions to display.
   if (tokenType === GovernanceTokenType.Existing) {
     return (
-      <div className="bg-background-tertiary rounded-lg">
-        <div className="border-border-base flex h-14 flex-row border-b p-4">
+      <div className="rounded-lg bg-background-tertiary">
+        <div className="flex h-14 flex-row border-b border-border-base p-4">
           <p className="primary-text text-text-body">
             {t('title.existingToken')}
           </p>
@@ -50,7 +50,7 @@ export const GovernanceConfigurationReview = ({
         <div className="space-y-4 p-4">
           <CopyToClipboard takeAll value={existingGovernanceTokenAddress} />
 
-          <FormattedJSONDisplay
+          <FormattedJsonDisplay
             jsonLoadable={existingGovernanceTokenInfoLoadable}
           />
         </div>

@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { ProfileVoteCardProps } from '@dao-dao/tstypes/ui/ProfileVoteCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { Button } from '../Button'
+import { Button } from '../buttons'
+import { TooltipInfoIcon } from '../TooltipInfoIcon'
 import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 import { ProfileVoteButton } from './ProfileVoteButton'
@@ -33,7 +34,14 @@ export const ProfileVoteCard = <T extends unknown>({
       {...wrapperProps}
     >
       <div className="secondary-text flex flex-row items-center justify-between">
-        <p>{t('title.votingPower')}</p>
+        <div className="flex flex-row items-center gap-2">
+          <p>{t('title.votingPower')}</p>
+          <TooltipInfoIcon
+            className="text-icon-secondary"
+            size="sm"
+            title={t('info.votingPowerAtCreationTooltip')}
+          />
+        </div>
         <p className="font-mono text-text-primary">
           {formatPercentOf100(votingPower)}
         </p>

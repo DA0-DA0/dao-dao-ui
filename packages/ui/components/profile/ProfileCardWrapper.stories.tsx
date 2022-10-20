@@ -25,8 +25,6 @@ Default.args = {
       nft: null,
     },
   },
-  walletAddress: 'wallet',
-  established: new Date(),
   underHeaderComponent: <MembershipPill daoName="DAO" isMember={false} />,
   children: <p>Content!</p>,
 }
@@ -57,7 +55,6 @@ Compact.args = {
       nft: null,
     },
   },
-  walletAddress: 'wallet',
   compact: true,
   children: <p>Content!</p>,
 }

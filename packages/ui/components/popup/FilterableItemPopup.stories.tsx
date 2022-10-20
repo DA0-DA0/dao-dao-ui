@@ -7,7 +7,7 @@ import {
 } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Button } from '../Button'
+import { Button } from '../buttons'
 import { FilterableItemPopup } from './FilterableItemPopup'
 
 export default {

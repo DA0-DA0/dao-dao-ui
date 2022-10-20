@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType, forwardRef } from 'react'
 
-import { ButtonLink } from './Button'
+import { ButtonLink } from './buttons/ButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 
 export interface NoContentProps {

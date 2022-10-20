@@ -9,17 +9,18 @@ export const makeProposalModuleAdapterDecorator: (
   proposalId: string
   // eslint-disable-next-line react/display-name
 ) => DecoratorFn = (proposalId) => (Story) => {
-  const info = useDaoInfoContext()
+  const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
 
   return (
     <ProposalModuleAdapterProvider
       initialOptions={{
-        coreAddress: info.coreAddress,
+        chainId,
+        coreAddress,
         Logo,
         Loader,
       }}
       proposalId={proposalId}
-      proposalModules={info.proposalModules}
+      proposalModules={proposalModules}
     >
       <Story />
     </ProposalModuleAdapterProvider>

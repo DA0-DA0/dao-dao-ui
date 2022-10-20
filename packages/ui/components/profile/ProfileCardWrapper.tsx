@@ -7,10 +7,10 @@ import { useTranslation } from 'react-i18next'
 import { ProfileCardWrapperProps } from '@dao-dao/tstypes/ui/ProfileCardWrapper'
 import { formatDate, processError } from '@dao-dao/utils'
 
-import { Button } from '../Button'
+import { Button } from '../buttons'
 import { CornerGradient } from '../CornerGradient'
-import { IconButton } from '../IconButton'
-import { TextInput } from '../input'
+import { IconButton } from '../icon_buttons'
+import { TextInput } from '../inputs'
 import { Loader } from '../Loader'
 import { ProfileImage } from './ProfileImage'
 

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, Tag, X } from '@dao-dao/icons'
 import { LoadingData } from '@dao-dao/tstypes'
 
-import { IconButton } from '../IconButton'
+import { IconButton } from '../icon_buttons'
 import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Tooltip } from '../Tooltip'
 

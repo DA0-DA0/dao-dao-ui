@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { Breadcrumbs, BreadcrumbsProps } from '../Breadcrumbs'
-import { IconButton } from '../IconButton'
+import { IconButton } from '../icon_buttons'
 import { TopGradient } from '../TopGradient'
 import { useAppLayoutContext } from './AppLayoutContext'
 

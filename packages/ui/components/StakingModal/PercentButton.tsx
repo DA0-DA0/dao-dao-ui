@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { Button } from '../Button'
+import { Button } from '../buttons'
 
 export interface PercentButtonProps {
   label: string

@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType } from 'react'
 
-import { Button } from '../Button'
+import { Button } from '../buttons'
 import { Popup, PopupProps } from './Popup'
 
 export interface ButtonPopupSection {

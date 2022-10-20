@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { DropdownOption, DropdownProps } from '../components/Dropdown'
+import { DropdownOption, DropdownProps } from '../components/inputs/Dropdown'
 
 export type SortFn<T> = (a: T, b: T) => number
 

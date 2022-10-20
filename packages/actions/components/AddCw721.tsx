@@ -5,8 +5,8 @@ import { ActionComponent } from '@dao-dao/tstypes/actions'
 import {
   AddCw721Emoji,
   AddressInput,
-  FormattedJSONDisplay,
-  FormattedJSONDisplayProps,
+  FormattedJsonDisplay,
+  FormattedJsonDisplayProps,
   InputErrorMessage,
   InputLabel,
 } from '@dao-dao/ui'
@@ -19,7 +19,7 @@ import { ActionCard } from './ActionCard'
 
 interface AddCw721Options {
   additionalAddressError?: string
-  formattedJsonDisplayProps: FormattedJSONDisplayProps
+  formattedJsonDisplayProps: FormattedJsonDisplayProps
 }
 
 export const AddCw721Component: ActionComponent<AddCw721Options> = ({
@@ -60,7 +60,7 @@ export const AddCw721Component: ActionComponent<AddCw721Options> = ({
         />
       </div>
 
-      <FormattedJSONDisplay {...formattedJsonDisplayProps} />
+      <FormattedJsonDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
   )
 }

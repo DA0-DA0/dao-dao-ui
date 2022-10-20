@@ -1,7 +1,7 @@
 import { ExpandCircleDownOutlined } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { IconButton } from '../IconButton'
+import { IconButton } from '../icon_buttons'
 import { Popup } from './Popup'
 
 export default {

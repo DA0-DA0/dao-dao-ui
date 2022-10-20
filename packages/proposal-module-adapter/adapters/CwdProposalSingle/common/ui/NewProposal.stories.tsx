@@ -27,7 +27,7 @@ export default {
 } as ComponentMeta<typeof NewProposal>
 
 const Template: ComponentStory<typeof NewProposal> = (args) => {
-  const { coreAddress, proposalModules } = useDaoInfoContext()
+  const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
 
   const singleChoiceProposalModule = proposalModules.find(
     ({ contractName }) =>
@@ -40,6 +40,7 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
   } = useVotingModuleAdapter()
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = makeUseProposalModuleActions({
+    chainId,
     proposalModule: singleChoiceProposalModule,
     coreAddress,
     Loader,
@@ -95,6 +96,7 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
         actions={actions}
         actionsWithData={actionsWithData}
         options={{
+          chainId,
           proposalModule: singleChoiceProposalModule,
           coreAddress,
           Loader,

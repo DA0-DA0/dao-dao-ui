@@ -15,9 +15,6 @@ import {
 } from '@dao-dao/proposal-module-adapter'
 import {
   CwAdminFactoryHooks,
-  DefaultNewDao,
-  daoCreatedCardPropsAtom,
-  newDaoAtom,
   useAwaitNextBlock,
   usePinnedDaos,
   useWalletProfile,
@@ -63,6 +60,12 @@ import {
   DaoCreationConfig as CwdVotingCw20StakedCreationConfig,
   GovernanceTokenType,
 } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/types'
+
+import {
+  DefaultNewDao,
+  daoCreatedCardPropsAtom,
+  newDaoAtom,
+} from '../atoms/newDao'
 
 // i18n keys
 export enum CreateDaoSubmitValue {

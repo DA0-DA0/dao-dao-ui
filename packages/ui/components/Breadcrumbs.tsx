@@ -6,8 +6,8 @@ import { useState } from 'react'
 import { ArrowForward } from '@dao-dao/icons'
 import { BreadcrumbsProps } from '@dao-dao/tstypes/ui/Breadcrumbs'
 
-import { Button } from './Button'
-import { IconButton } from './IconButton'
+import { Button } from './buttons/Button'
+import { IconButton } from './icon_buttons/IconButton'
 import { TopGradient } from './TopGradient'
 
 export * from '@dao-dao/tstypes/ui/Breadcrumbs'

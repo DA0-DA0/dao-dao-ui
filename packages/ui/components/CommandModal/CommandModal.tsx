@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 
 import { CommandModalProps } from '@dao-dao/tstypes/ui/CommandModal'
 
-import { Modal } from '../Modal'
-import { SearchBar } from '../SearchBar'
+import { SearchBar } from '../inputs/SearchBar'
+import { Modal } from '../modals/Modal'
 import { ContextPill } from './ContextPill'
 
 export const CommandModal = ({

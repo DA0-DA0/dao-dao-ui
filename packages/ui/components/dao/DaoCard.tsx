@@ -12,7 +12,7 @@ import {
 import { DaoCardProps } from '@dao-dao/tstypes/ui/DaoCard'
 import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
-import { IconButton, IconButtonLink } from '../IconButton'
+import { IconButton, IconButtonLink } from '../icon_buttons'
 import { LinkWrapper } from '../LinkWrapper'
 import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Tooltip } from '../Tooltip'

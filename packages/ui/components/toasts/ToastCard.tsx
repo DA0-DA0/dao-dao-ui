@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { ReactNode, cloneElement } from 'react'
 import { Toast, ToastBar, toast as hotToast } from 'react-hot-toast'
 
-import { IconButton } from '../IconButton'
+import { IconButton } from '../icon_buttons'
 
 export interface ToastCardProps {
   toast: Toast

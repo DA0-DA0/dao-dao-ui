@@ -4,15 +4,14 @@ import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData, NftCardInfo } from '@dao-dao/tstypes'
+import { LoadingData, ModalProps, NftCardInfo } from '@dao-dao/tstypes'
 
 import { SortFn, useDropdownSorter, useSearchFilter } from '../../hooks'
-import { Button } from '../Button'
-import { Dropdown, DropdownOption } from '../Dropdown'
+import { Button } from '../buttons/Button'
+import { Dropdown, DropdownOption, SearchBar } from '../inputs'
 import { Loader as DefaultLoader, LoaderProps } from '../Loader'
-import { Modal, ModalProps } from '../Modal'
+import { Modal } from '../modals/Modal'
 import { NoContent } from '../NoContent'
-import { SearchBar } from '../SearchBar'
 import { NftCard } from './NftCard'
 
 export interface NftSelectionModalProps

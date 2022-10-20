@@ -7,7 +7,7 @@ import {
   RightSidebarProps,
 } from '@dao-dao/tstypes/ui/RightSidebar'
 
-import { IconButton } from '../IconButton'
+import { IconButton } from '../icon_buttons'
 import { useAppLayoutContext } from './AppLayoutContext'
 import { Footer } from './Footer'
 

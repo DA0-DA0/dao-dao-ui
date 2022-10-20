@@ -45,12 +45,8 @@ Default.args = {
       makeNftCardProps(),
     ],
   },
-  collection: {
-    name: 'BadDog',
-    total: 99,
-  },
   onAction: () => alert('action'),
-  getIdForNft: (nft) => `${nft.collectionAddress}:${nft.tokenId}`,
+  getIdForNft: (nft) => `${nft.collection.address}:${nft.tokenId}`,
   header: {
     title: 'Stake NFTs',
     subtitle: 'Select the NFTs you want to stake from the {{name}} collection.',

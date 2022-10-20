@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next'
 import { LoadingData, NftCardInfo, TokenCardInfo } from '@dao-dao/tstypes'
 
 import { SortFn, useDropdownSorter } from '../../../hooks'
-import { Dropdown, DropdownOption } from '../../Dropdown'
 import { GridCardContainer } from '../../GridCardContainer'
+import { Dropdown, DropdownOption } from '../../inputs/Dropdown'
 import { Loader } from '../../Loader'
-import { ModalProps } from '../../Modal'
+import { ModalProps } from '../../modals/Modal'
 import { NoContent } from '../../NoContent'
 
 export interface TreasuryAndNftsTabProps<

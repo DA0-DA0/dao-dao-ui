@@ -12,7 +12,7 @@ import {
 } from '@dao-dao/tstypes'
 import { Loader as DefaultLoader, NoContent } from '@dao-dao/ui'
 
-import { ButtonLink } from '../../Button'
+import { ButtonLink } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
 
 export interface SubDaosTabProps {

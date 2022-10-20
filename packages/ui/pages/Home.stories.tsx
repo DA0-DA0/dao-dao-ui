@@ -24,12 +24,6 @@ export const Connected = Template.bind({})
 Connected.args = {
   featuredDaosProps: {
     featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
-    isDaoPinned: () => false,
-    onPin: (address) => alert('pin ' + address),
-  },
-  connected: true,
-  pinnedDaosProps: {
-    pinnedDaos: { loading: false, data: FeaturedDaosStory.args!.featuredDaos! },
     DaoCard: (props) => (
       <DaoCard
         {...props}
@@ -37,6 +31,18 @@ Connected.args = {
         pinned={false}
       />
     ),
+  },
+  connected: true,
+  pinnedDaosProps: {
+    pinnedDaos: FeaturedDaosStory.args!.featuredDaos!,
+    DaoCard: (props) => (
+      <DaoCard
+        {...props}
+        onPin={() => alert('pin ' + props.coreAddress)}
+        pinned={false}
+      />
+    ),
+    openSearch: () => alert('search'),
   },
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
@@ -58,8 +64,13 @@ Disconnected.args = {
   ...Connected.args,
   featuredDaosProps: {
     featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
-    isDaoPinned: () => false,
-    onPin: (address) => alert('pin ' + address),
+    DaoCard: (props) => (
+      <DaoCard
+        {...props}
+        onPin={() => alert('pin ' + props.coreAddress)}
+        pinned={false}
+      />
+    ),
   },
   connected: false,
   rightSidebarContent: <ProfileDisconnectedCard />,

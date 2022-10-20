@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 
 import { DaoDropdownProps } from '@dao-dao/tstypes/ui/DaoDropdown'
 
-import { DropdownIconButton } from '../IconButton'
+import { DropdownIconButton } from '../icon_buttons'
 import { Tooltip } from '../Tooltip'
 
 export * from '@dao-dao/tstypes/ui/DaoDropdown'

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ArrowUpRight, Bubble, Code } from '@dao-dao/icons'
 
-import { ButtonLink } from '../Button'
+import { ButtonLink } from '../buttons'
 
 export const Footer = () => {
   const { t } = useTranslation()

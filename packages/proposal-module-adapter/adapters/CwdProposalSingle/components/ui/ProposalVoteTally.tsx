@@ -2,7 +2,7 @@ import { Check, Close } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import { ProcessedTQType } from '@dao-dao/tstypes'
-import { Progress, Tooltip, TooltipInfoIcon } from '@dao-dao/ui'
+import { ProgressBar, Tooltip, TooltipInfoIcon } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { VotesInfo } from '../../types'
@@ -108,7 +108,7 @@ export const ProposalVoteTally = ({
 
         {/* Threshold progress bar */}
         <div className="my-2">
-          <Progress
+          <ProgressBar
             // If using an absolute threshold (i.e. no quorum) and there are
             // only abstain votes cast so far, align to the right.
             alignEnd={!quorum && onlyAbstain}
@@ -179,7 +179,7 @@ export const ProposalVoteTally = ({
 
           {/* Quorum progress bar */}
           <div className="my-2">
-            <Progress
+            <ProgressBar
               caretPosition={effectiveQuorum.value}
               rows={[
                 {

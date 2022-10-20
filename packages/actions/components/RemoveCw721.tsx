@@ -7,8 +7,8 @@ import { ContractInfoResponse } from '@dao-dao/tstypes/contracts/Cw721Base'
 import {
   AddressInput,
   Button,
-  FormattedJSONDisplay,
-  FormattedJSONDisplayProps,
+  FormattedJsonDisplay,
+  FormattedJsonDisplayProps,
   InputErrorMessage,
   InputLabel,
   RemoveCw721Emoji,
@@ -25,7 +25,7 @@ interface Token {
 interface RemoveCw721Options {
   additionalAddressError?: string
   existingTokens: Token[]
-  formattedJsonDisplayProps: FormattedJSONDisplayProps
+  formattedJsonDisplayProps: FormattedJsonDisplayProps
 }
 
 export const RemoveCw721Component: ActionComponent<RemoveCw721Options> = ({
@@ -96,7 +96,7 @@ export const RemoveCw721Component: ActionComponent<RemoveCw721Options> = ({
         />
       </div>
 
-      <FormattedJSONDisplay {...formattedJsonDisplayProps} />
+      <FormattedJsonDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
   )
 }

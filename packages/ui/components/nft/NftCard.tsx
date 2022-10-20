@@ -9,7 +9,7 @@ import { NftCardInfo } from '@dao-dao/tstypes'
 import { normalizeNftImageUrl } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
-import { Checkbox } from '../input'
+import { Checkbox } from '../inputs'
 import { TooltipLikeDisplay } from '../TooltipLikeDisplay'
 
 export interface NftCardProps extends NftCardInfo {

@@ -7,8 +7,8 @@ import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
 import {
   AddressInput,
   Button,
-  FormattedJSONDisplay,
-  FormattedJSONDisplayProps,
+  FormattedJsonDisplay,
+  FormattedJsonDisplayProps,
   InputErrorMessage,
   InputLabel,
   RemoveCw20Emoji,
@@ -25,7 +25,7 @@ interface Token {
 interface RemoveCw20Options {
   additionalAddressError?: string
   existingTokens: Token[]
-  formattedJsonDisplayProps: FormattedJSONDisplayProps
+  formattedJsonDisplayProps: FormattedJsonDisplayProps
 }
 
 export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
@@ -96,7 +96,7 @@ export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
         />
       </div>
 
-      <FormattedJSONDisplay {...formattedJsonDisplayProps} />
+      <FormattedJsonDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
   )
 }

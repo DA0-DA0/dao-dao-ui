@@ -19,7 +19,7 @@ import {
   activeThemeAtom,
   mountedInBrowserAtom,
 } from '@dao-dao/state'
-import { Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
+import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/ui'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 import { AppLayout, HomepageLayout } from '@/components'
@@ -70,7 +70,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
         </WalletProvider>
       )}
 
-      <Notifications />
+      <ToastNotifications />
     </ThemeProvider>
   )
 }

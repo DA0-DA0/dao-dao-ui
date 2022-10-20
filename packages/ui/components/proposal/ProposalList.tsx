@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 
 import { NoProposals } from '@dao-dao/icons'
 
-import { Button } from '../Button'
-import { DropdownIconButton } from '../IconButton'
+import { Button } from '../buttons'
+import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../Loader'
 import { NoContent } from '../NoContent'
 

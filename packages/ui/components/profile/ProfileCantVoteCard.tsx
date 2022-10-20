@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { TooltipIcon } from '../TooltipIcon'
+import { TooltipInfoIcon } from '../TooltipInfoIcon'
 import { MembershipPill } from './MembershipPill'
 import {
   ProfileCardWrapper,
@@ -43,8 +43,9 @@ export const ProfileCantVoteCard = ({
         <div className="secondary-text flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-2">
             <p>{t('title.votingPower')}</p>
-            <TooltipIcon
+            <TooltipInfoIcon
               className="text-icon-secondary"
+              size="sm"
               title={t('info.votingPowerAtCreationTooltip')}
             />
           </div>

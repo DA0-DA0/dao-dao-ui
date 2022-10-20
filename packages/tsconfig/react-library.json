@@ -7,6 +7,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
     "target": "es6",
-    "allowJs": true
+    "allowJs": true,
+    "noEmit": true
   }
 }

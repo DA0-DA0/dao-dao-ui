@@ -5,7 +5,7 @@ import { ComponentType, ReactNode, useEffect, useState } from 'react'
 
 import { UnfoldLess, UnfoldMore } from '@dao-dao/icons'
 
-import { IconButton } from '../IconButton'
+import { IconButton } from '../icon_buttons'
 import { Loader } from '../Loader'
 import { Tooltip } from '../Tooltip'
 

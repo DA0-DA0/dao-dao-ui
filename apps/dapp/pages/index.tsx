@@ -14,21 +14,21 @@ import { useLoadingFeaturedDaoCardInfos } from '@dao-dao/state'
 import {
   Button,
   FeaturedDaos,
-  GradientWrapper,
   Logo,
   PageLoader,
   RotatableLogo,
+  SplashGradientWrapper,
 } from '@dao-dao/ui'
 
 import {
-  AnouncementCard,
   DaoCard,
-  EnterAppButton,
-  HomepageCards,
-  StatsCard,
+  SplashAnnouncementCard,
+  SplashCards,
+  SplashEnterAppButton,
+  SplashStatsCard,
 } from '@/components'
 
-const Home: NextPage = () => {
+const SplashPage: NextPage = () => {
   const { t } = useTranslation()
 
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
@@ -51,7 +51,7 @@ const Home: NextPage = () => {
 
   return (
     <SuspenseLoader fallback={<PageLoader className="h-screen w-screen" />}>
-      <GradientWrapper>
+      <SplashGradientWrapper>
         <nav className="w-full border-b border-border-secondary bg-opacity-40 bg-clip-padding py-4 px-6 backdrop-blur-xl backdrop-filter">
           <div className="mx-auto flex max-w-screen-lg items-center justify-between">
             <Link href="/" passHref>
@@ -77,7 +77,7 @@ const Home: NextPage = () => {
                 <ArrowUpRight height="10px" width="10px" />
               </a>
               <div className="hidden md:block">
-                <EnterAppButton small />
+                <SplashEnterAppButton small />
               </div>
             </div>
           </div>
@@ -89,16 +89,16 @@ const Home: NextPage = () => {
           {t('splash.longTagline')}
         </p>
         <div className="mx-auto">
-          <EnterAppButton />
+          <SplashEnterAppButton />
         </div>
         <div className="my-12 mx-auto md:my-20">
-          <AnouncementCard />
+          <SplashAnnouncementCard />
         </div>
 
         <FeaturedDaos DaoCard={DaoCard} featuredDaos={featuredDaosLoading} />
 
         <div className="divide-focus flex grid-cols-3 flex-col justify-around gap-6 py-6 md:grid md:gap-3 md:divide-x md:py-8">
-          <StatsCard>
+          <SplashStatsCard>
             <h3 className="header-text">
               {tvl
                 ? '$' +
@@ -109,19 +109,19 @@ const Home: NextPage = () => {
                 : t('info.loading')}
             </h3>
             <p className="caption-text">{t('splash.usdcTotalValue')}</p>
-          </StatsCard>
-          <StatsCard>
+          </SplashStatsCard>
+          <SplashStatsCard>
             <h3 className="header-text">
               {daos ? daos.toLocaleString() : t('info.loading')}
             </h3>
             <p className="caption-text">{t('splash.daosCreated')}</p>
-          </StatsCard>
-          <StatsCard>
+          </SplashStatsCard>
+          <SplashStatsCard>
             <h3 className="header-text">
               {proposals ? proposals.toLocaleString() : t('info.loading')}
             </h3>
             <p className="caption-text">{t('splash.proposalsCreated')}</p>
-          </StatsCard>
+          </SplashStatsCard>
         </div>
 
         <div className="-mt-8 px-3">
@@ -137,7 +137,7 @@ const Home: NextPage = () => {
             {t('splash.transparencyExplanation')}
           </p>
           <div className="mt-12">
-            <HomepageCards />
+            <SplashCards />
           </div>
           <div className="my-12 flex flex-col items-center gap-4">
             <h2 className="header-text mx-4 max-w-xl text-center">
@@ -174,12 +174,12 @@ const Home: NextPage = () => {
             </div>
           </div>
         </div>
-      </GradientWrapper>
+      </SplashGradientWrapper>
     </SuspenseLoader>
   )
 }
 
-export default Home
+export default SplashPage
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {

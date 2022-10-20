@@ -5,13 +5,14 @@ import { useMemo } from 'react'
 
 import { DaoPageWrapper } from '@dao-dao/common'
 import { ContractVersion, DaoInfoSerializable } from '@dao-dao/tstypes'
-import { CHAIN_ID } from '@dao-dao/utils'
+import { CHAIN_BECH32_PREFIX, CHAIN_ID } from '@dao-dao/utils'
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
   const serializedInfo: DaoInfoSerializable = useMemo(
     () => ({
       chainId: CHAIN_ID,
-      coreAddress: 'daoCoreAddress',
+      bech32Prefix: CHAIN_BECH32_PREFIX,
+      coreAddress: CHAIN_BECH32_PREFIX + 'DaoCoreAddress',
       coreVersion: ContractVersion.V0_2_0,
       votingModuleAddress: 'votingModuleAddress',
       votingModuleContractName: 'crates.io:cwd-voting-cw20-staked',

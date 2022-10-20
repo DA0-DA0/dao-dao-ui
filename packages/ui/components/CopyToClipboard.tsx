@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Copy } from '@dao-dao/icons'
 
-import { Button } from './Button'
+import { Button } from './buttons/Button'
 import { Tooltip } from './Tooltip'
 
 export const concatAddressStartEnd = (

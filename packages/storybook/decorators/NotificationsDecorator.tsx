@@ -1,10 +1,10 @@
 import { DecoratorFn } from '@storybook/react'
 
-import { Notifications } from '@dao-dao/ui'
+import { ToastNotifications } from '@dao-dao/ui'
 
 export const NotificationsDecorator: DecoratorFn = (Story) => (
   <>
-    <Notifications />
+    <ToastNotifications />
     <Story />
   </>
 )

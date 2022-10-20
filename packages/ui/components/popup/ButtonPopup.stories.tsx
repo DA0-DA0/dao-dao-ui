@@ -4,7 +4,7 @@ import { ExpandCircleDownOutlined } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { StakeEmoji } from '../emoji'
-import { IconButton } from '../IconButton'
+import { IconButton } from '../icon_buttons'
 import { ButtonPopup } from './ButtonPopup'
 
 export default {

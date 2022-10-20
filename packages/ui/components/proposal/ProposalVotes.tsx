@@ -7,7 +7,7 @@ import { ProfileDisplayProps } from '@dao-dao/tstypes'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
-import { Button } from '../Button'
+import { Button } from '../buttons'
 import { Loader } from '../Loader'
 import { Tooltip } from '../Tooltip'
 

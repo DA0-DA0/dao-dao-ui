@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { useState } from 'react'
 
 import { DaoCardInfo } from '@dao-dao/tstypes'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { FeaturedDaos } from './FeaturedDaos'
 
@@ -10,32 +10,21 @@ export default {
   component: FeaturedDaos,
 } as ComponentMeta<typeof FeaturedDaos>
 
-const Template: ComponentStory<typeof FeaturedDaos> = (args) => {
-  const [pinned, setPinned] = useState<string[]>([])
-
-  return (
-    <FeaturedDaos
-      {...args}
-      isDaoPinned={(coreAddress) => pinned.includes(coreAddress)}
-      onPin={(coreAddress) =>
-        setPinned((current) =>
-          current.includes(coreAddress)
-            ? current.filter((a) => a !== coreAddress)
-            : [...current, coreAddress]
-        )
-      }
-    />
-  )
-}
+const Template: ComponentStory<typeof FeaturedDaos> = (args) => (
+  <FeaturedDaos {...args} />
+)
 
 let id = 0
 const makeFeaturedDao = (): DaoCardInfo => ({
+  chainId: CHAIN_ID,
   coreAddress: 'coreAddress' + ++id,
   name: 'Modern DAO ' + id,
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
   imageUrl: `/placeholders/${(id % 5) + 1}.svg`,
   established: new Date('May 14, 2022 00:00:00'),
+  tokenSymbol: 'JUNO',
+  tokenDecimals: 6,
 
   parentDao: {
     coreAddress: 'parent',
@@ -48,7 +37,6 @@ const makeFeaturedDao = (): DaoCardInfo => ({
     data: {
       isMember: Math.random() < 0.5,
       tokenBalance: 120,
-      tokenSymbol: 'JUNO',
       proposalCount: 25,
     },
   },
