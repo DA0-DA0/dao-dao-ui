@@ -29,6 +29,7 @@ import {
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   cosmWasmClientRouter,
   getRpcForChainId,
+  isValidWalletAddress,
   parseContractVersion,
   processError,
   validateContractAddress,
@@ -241,7 +242,12 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             description: config.description,
             imageUrl: overrideImageUrl ?? config.image_url ?? null,
             created: created?.toJSON() ?? null,
-            parentDao: await loadParentDaoInfo(cwClient, coreAddress, admin),
+            parentDao: await loadParentDaoInfo(
+              cwClient,
+              bech32Prefix,
+              coreAddress,
+              admin
+            ),
           },
           ...additionalProps,
         },
@@ -420,11 +426,17 @@ export class RedirectError {
 
 const loadParentDaoInfo = async (
   cwClient: CosmWasmClient,
+  bech32Prefix: string,
   subDaoAddress: string,
   subDaoAdmin: string | null | undefined
 ): Promise<DaoParentInfo | null> => {
-  // If no admin or admin is set to itself, does not have parent DAO.
-  if (!subDaoAdmin || subDaoAdmin === subDaoAddress) {
+  // If no admin, or admin is set to itself, or admin is a wallet, no parent
+  // DAO.
+  if (
+    !subDaoAdmin ||
+    subDaoAdmin === subDaoAddress ||
+    isValidWalletAddress(subDaoAddress, bech32Prefix)
+  ) {
     return null
   }
 
@@ -439,11 +451,26 @@ const loadParentDaoInfo = async (
       coreAddress: subDaoAdmin,
       name: name,
       imageUrl: image_url ?? null,
-      parentDao: await loadParentDaoInfo(cwClient, subDaoAdmin, admin),
+      parentDao: await loadParentDaoInfo(
+        cwClient,
+        bech32Prefix,
+        subDaoAdmin,
+        admin
+      ),
     }
   } catch (err) {
+    // If contract not found, ignore error.
+    if (
+      !(err instanceof Error) ||
+      !err.message.includes('contract: not found')
+    ) {
+      console.error(
+        `Error loading parent DAO (${subDaoAdmin}) of ${subDaoAddress}`,
+        processError(err)
+      )
+    }
+
     // Don't prevent page render if failed to load parent DAO info.
-    console.error(err)
     return null
   }
 }
