@@ -281,7 +281,7 @@ export const makeUpdateProposalConfigV2Action: ActionMaker<
     key: ActionKey.UpdateProposalConfig,
     Icon: UpdateProposalConfigIcon,
     label: t('form.updateVotingConfigTitle'),
-    description: t('form.updateVotingConfigActionDescription'),
+    description: t('info.updateVotingConfigActionDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

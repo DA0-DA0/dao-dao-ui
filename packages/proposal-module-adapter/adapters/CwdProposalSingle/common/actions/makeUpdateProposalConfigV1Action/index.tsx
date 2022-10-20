@@ -343,7 +343,7 @@ export const makeUpdateProposalConfigV1Action: ActionMaker<
     key: ActionKey.UpdateProposalConfig,
     Icon: UpdateProposalConfigIcon,
     label: t('form.updateVotingConfigTitle'),
-    description: t('form.updateVotingConfigActionDescription'),
+    description: t('info.updateVotingConfigActionDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,
