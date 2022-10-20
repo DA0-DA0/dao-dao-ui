@@ -4,7 +4,6 @@ import { useRecoilValue } from 'recoil'
 import {
   blockHeightSelector,
   blocksPerYearSelector,
-  contractVersionSelector,
   useCachedLoadable,
 } from '@dao-dao/state'
 import { Status } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
@@ -20,13 +19,10 @@ import { ProposalStatus } from './ProposalStatus'
 
 export const ProposalLine = ({ href }: BaseProposalLineProps) => {
   const {
-    proposalModule: { address: proposalModuleAddress, prefix: proposalPrefix },
+    proposalModule: { prefix: proposalPrefix },
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const proposalModuleVersion = useRecoilValue(
-    contractVersionSelector({ contractAddress: proposalModuleAddress })
-  )
   const proposal = useProposal()
 
   const { canVote, vote } = useWalletVoteInfo()
@@ -38,7 +34,6 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
     proposal.expiration,
     blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
   )
-  const lastUpdated = new Date(Number(proposal.last_updated) / 1000000)
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
 
@@ -55,8 +50,6 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
           : expirationDate && formatDate(expirationDate)) || ''
       }
       href={href}
-      lastUpdated={lastUpdated}
-      proposalModuleVersion={proposalModuleVersion}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
       title={proposal.title}
