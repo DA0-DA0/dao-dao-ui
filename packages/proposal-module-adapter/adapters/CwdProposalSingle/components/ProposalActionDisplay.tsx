@@ -1,5 +1,6 @@
 import { AnalyticsOutlined, CopyAllOutlined } from '@mui/icons-material'
 import { useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { ActionsRenderer } from '@dao-dao/actions'
@@ -52,7 +53,12 @@ export const ProposalActionDisplay = ({
 
   return decodedMessages?.length ? (
     <div className="space-y-3">
-      <ActionsRenderer Loader={Loader} Logo={Logo} actionData={actionData} />
+      <ActionsRenderer
+        Loader={Loader}
+        Logo={Logo}
+        actionData={actionData}
+        onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
+      />
 
       <div className="flex flex-row items-center gap-7">
         <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">

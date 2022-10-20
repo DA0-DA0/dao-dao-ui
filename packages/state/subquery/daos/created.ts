@@ -14,7 +14,7 @@ interface GetDaoCreated {
   dao: {
     // Serialized Date
     created: string
-  }
+  } | null
 }
 
 interface GetDaoCreatedOperationVariables {
@@ -32,8 +32,10 @@ export const getDaoCreated = async (coreAddress: string) => {
         coreAddress,
       },
     })
-    // Interpret as UTC.
-    return new Date(result.data.dao.created + 'Z')
+    return result.data.dao
+      ? // Interpret as UTC.
+        new Date(result.data.dao.created + 'Z')
+      : undefined
   } catch (err) {
     console.error(`getDaoCreated: ${coreAddress}`, err)
     return undefined

@@ -1,9 +1,12 @@
-import { CheckCircleIcon } from '@heroicons/react/outline'
-import { LinkIcon } from '@heroicons/react/solid'
+import { Check, Link } from '@mui/icons-material'
 import clsx from 'clsx'
 import { createElement, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
 import { HeadingComponent } from 'react-markdown/lib/ast-to-react'
+
+import { IconButton } from './IconButton'
 
 export interface MarkdownPreviewProps {
   markdown: string
@@ -36,6 +39,7 @@ const HeadingRenderer: HeadingComponent = ({
   level,
   sourcePosition,
 }) => {
+  const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
   // Unset copied after 2 seconds.
   useEffect(() => {
@@ -55,21 +59,19 @@ const HeadingRenderer: HeadingComponent = ({
         url.hash = '#' + id
         navigator.clipboard.writeText(url.href)
         setCopied(true)
+        toast.success(t('info.copiedLinkToClipboard'))
       },
       className: 'group flex flex-row gap-4 items-center cursor-pointer',
     },
     [
       <span key="children">{children}</span>,
-      <button
+      <IconButton
         key="copy"
+        Icon={copied ? Check : Link}
         className="leading-none opacity-0 transition-opacity group-hover:opacity-100"
-      >
-        {copied ? (
-          <CheckCircleIcon className="w-4" />
-        ) : (
-          <LinkIcon className="w-4" />
-        )}
-      </button>,
+        size="sm"
+        variant="none"
+      />,
     ]
   )
 }

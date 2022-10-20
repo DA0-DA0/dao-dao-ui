@@ -1,22 +1,29 @@
-import { CheckCircleIcon, LinkIcon } from '@heroicons/react/outline'
+import { Check, Link } from '@mui/icons-material'
 import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import { ActionAndData } from '@dao-dao/tstypes/actions'
-import { ActionCardLoader, LoaderProps, LogoProps } from '@dao-dao/ui'
+import {
+  ActionCardLoader,
+  IconButton,
+  LoaderProps,
+  LogoProps,
+} from '@dao-dao/ui'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
   actionData: ActionAndData[]
   Loader: ComponentType<LoaderProps>
   Logo: ComponentType<LogoProps>
+  onCopyLink: () => void
 }
 
 export const ActionsRenderer = ({
   actionData,
   Loader,
   Logo,
+  onCopyLink,
 }: ActionsRendererProps) => {
   const formMethods = useForm({
     defaultValues: actionData.reduce(
@@ -58,22 +65,19 @@ export const ActionsRenderer = ({
               />
             </SuspenseLoader>
 
-            <button
-              className="absolute top-1 -right-5 opacity-0 transition-opacity group-hover:opacity-100"
+            <IconButton
+              Icon={copied === index ? Check : Link}
+              className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100"
               onClick={() => {
                 const url = new URL(window.location.href)
                 url.hash = '#' + `A${index + 1}`
                 navigator.clipboard.writeText(url.href)
                 setCopied(index)
+                onCopyLink()
               }}
-              type="button"
-            >
-              {copied === index ? (
-                <CheckCircleIcon className="w-4" />
-              ) : (
-                <LinkIcon className="w-4" />
-              )}
-            </button>
+              size="sm"
+              variant="none"
+            />
           </div>
         ))}
       </form>
