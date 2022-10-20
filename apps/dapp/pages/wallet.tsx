@@ -27,7 +27,7 @@ import {
   Wallet,
   WalletProps,
 } from '@dao-dao/ui'
-import { processError } from '@dao-dao/utils'
+import { CHAIN_BECH32_PREFIX, CHAIN_ID, processError } from '@dao-dao/utils'
 
 import { ProfileHomeCard } from '@/components'
 
@@ -146,6 +146,8 @@ const WalletPage: NextPage = () => {
       // If walletAddress changes, refresh actions.
       key={walletAddress}
       options={{
+        chainId: CHAIN_ID,
+        bech32Prefix: CHAIN_BECH32_PREFIX,
         address: walletAddress,
         context: {
           type: ActionOptionsContextType.Wallet,

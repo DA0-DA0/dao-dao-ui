@@ -1,3 +1,4 @@
+import { ChainPrefixIdMaps } from './chainPrefixIdMaps'
 import { CodeIdConfigs } from './codeIdConfigs'
 
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
@@ -20,13 +21,8 @@ export const NATIVE_DECIMALS = parseInt(
 )
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
 
-export const STATUS_COLORS: { [key: string]: string } = {
-  open: '#00BAFF',
-  draft: '#00F',
-  executed: '#53D0C9',
-  passed: '#6A78FF',
-  rejected: '#ED5276',
-}
+// True if on mainnet, false if on testnet.
+export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
 
 export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
 export const CHAIN_NAME = process.env.NEXT_PUBLIC_CHAIN_NAME as string
@@ -53,6 +49,10 @@ if (!(CHAIN_ID in CodeIdConfigs)) {
   console.error(`Chain ID '${CHAIN_ID}' not found in Code ID Configs`)
 }
 export const CODE_ID_CONFIG = CodeIdConfigs[CHAIN_ID]!
+
+// Chain Prefix -> ID Map for determining chain from DAO core address.
+export const CHAIN_PREFIX_ID_MAP =
+  ChainPrefixIdMaps[MAINNET ? 'mainnet' : 'testnet']
 
 export const V1_FACTORY_CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_V1_FACTORY_CONTRACT_ADDRESS as string

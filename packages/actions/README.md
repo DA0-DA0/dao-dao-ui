@@ -22,10 +22,12 @@ import { ActionOptionsContextType } from '@dao-dao/tstypes'
 const App = () => (
   <ActionsProvider
     options={{
-      address: info.coreAddress,
+      chainId: 'juno-1',
+      bech32Prefix: 'juno',
+      address: 'cwdCoreAddressGoesHere',
       context: {
         type: ActionOptionsContextType.Dao,
-        coreVersion: info.coreVersion,
+        coreVersion: '0.2.0',
       },
     }}
   >

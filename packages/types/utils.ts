@@ -29,3 +29,7 @@ export interface CodeIdConfig {
   CwdVotingCw721Staked: number
   CwdVotingNativeStaked: number
 }
+
+export interface ChainPrefixIdMap {
+  juno: string
+}

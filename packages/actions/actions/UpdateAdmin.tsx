@@ -11,7 +11,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
 import { UpdateAdminEmoji } from '@dao-dao/ui'
-import { CHAIN_BECH32_PREFIX, isValidContractAddress } from '@dao-dao/utils'
+import { isValidContractAddress } from '@dao-dao/utils'
 
 import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components/UpdateAdmin'
 
@@ -55,13 +55,20 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
     [msg]
   )
 
-export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = ({ t }) => {
+export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = ({
+  t,
+  chainId,
+  bech32Prefix,
+}) => {
   const Component: ActionComponent = (props) => {
     const [contract, setContract] = useState('')
 
     const admin = useRecoilValueLoadable(
-      contract && isValidContractAddress(contract, CHAIN_BECH32_PREFIX)
-        ? contractAdminSelector({ contractAddress: contract })
+      contract && isValidContractAddress(contract, bech32Prefix)
+        ? contractAdminSelector({
+            contractAddress: contract,
+            chainId,
+          })
         : constSelector(undefined)
     )
 

@@ -145,6 +145,8 @@ const InnerDaoPageWrapper = ({
     >
       <ActionsProvider
         options={{
+          chainId: info.chainId,
+          bech32Prefix: info.bech32Prefix,
           address: info.coreAddress,
           context: {
             type: ActionOptionsContextType.Dao,

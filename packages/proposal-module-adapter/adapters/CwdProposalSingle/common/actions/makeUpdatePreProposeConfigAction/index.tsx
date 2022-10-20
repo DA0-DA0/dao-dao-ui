@@ -18,9 +18,8 @@ import {
   ExecuteMsg,
   UncheckedDepositInfo,
 } from '@dao-dao/tstypes/contracts/CwdPreProposeSingle'
-import { UpdateProposalConfigIcon } from '@dao-dao/ui'
+import { UpdateProposalConfigIcon, useDaoInfoContext } from '@dao-dao/ui'
 import {
-  CHAIN_BECH32_PREFIX,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
@@ -41,6 +40,7 @@ import {
 
 export const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
+  const { bech32Prefix } = useDaoInfoContext()
   const {
     id,
     hooks: { useGovernanceTokenInfo },
@@ -60,7 +60,7 @@ export const Component: ActionComponent = (props) => {
   const tokenInfoLoadable = useRecoilValueLoadable(
     depositInfo.type === 'cw20' &&
       depositInfo.cw20Address &&
-      isValidContractAddress(depositInfo.cw20Address, CHAIN_BECH32_PREFIX)
+      isValidContractAddress(depositInfo.cw20Address, bech32Prefix)
       ? Cw20BaseSelectors.tokenInfoSelector({
           contractAddress: depositInfo.cw20Address,
           params: [],

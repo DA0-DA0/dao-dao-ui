@@ -113,6 +113,8 @@ export type ActionOptionsContext =
 
 export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   t: TFunction
+  chainId: string
+  bech32Prefix: string
   // coreAddress if context.type === Dao
   // walletAddress if context.type === Wallet
   address: string
