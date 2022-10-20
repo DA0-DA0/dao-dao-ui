@@ -1,4 +1,4 @@
-import { CheckCircleIcon } from '@heroicons/react/outline'
+import { Check } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 
 import { Copy } from '@dao-dao/icons'
 
-import { Button } from './buttons/Button'
 import { Tooltip } from './Tooltip'
 
 export const concatAddressStartEnd = (
@@ -54,6 +53,8 @@ export const CopyToClipboard = ({
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
 
+  const Icon = copied ? Check : Copy
+
   return (
     <Tooltip title={tooltip}>
       <button
@@ -71,11 +72,7 @@ export const CopyToClipboard = ({
         title={value}
         type="button"
       >
-        {copied ? (
-          <CheckCircleIcon className="w-[18px]" />
-        ) : (
-          <Copy height="18px" width="18px" />
-        )}
+        <Icon className="!h-[18px] !w-[18px]" />
 
         <span
           className={clsx(
@@ -133,53 +130,5 @@ export const CopyToClipboardUnderline = ({
             : concatAddressBoth(value, takeN))}
       </p>
     </Tooltip>
-  )
-}
-
-export const CopyToClipboardMobile = ({
-  value,
-  label,
-  success,
-  takeN,
-  takeStartEnd,
-  takeAll,
-}: CopyToClipboardProps) => {
-  const { t } = useTranslation()
-  const [copied, setCopied] = useState(false)
-
-  return (
-    <div className="flex justify-between rounded-md border border-border-secondary p-1">
-      <div className="secondary-text flex items-center gap-2 px-2 text-text-tertiary">
-        {copied ? (
-          <CheckCircleIcon className="w-[18px]" />
-        ) : (
-          <Copy height="18px" width="18px" />
-        )}
-        <span className="inline py-1 transition hover:bg-background-button-secondary-default">
-          {label ??
-            (takeStartEnd
-              ? concatAddressStartEnd(
-                  value,
-                  takeStartEnd.start,
-                  takeStartEnd.end
-                )
-              : takeAll
-              ? value
-              : concatAddressBoth(value, takeN))}
-        </span>
-      </div>
-      <Button
-        onClick={() => {
-          navigator.clipboard.writeText(value)
-          setTimeout(() => setCopied(false), 2000)
-          setCopied(true)
-          toast.success(success || t('info.copiedToClipboard'))
-        }}
-        size="sm"
-        variant="secondary"
-      >
-        <p className="caption-text text-text-body">{t('button.copy')}</p>
-      </Button>
-    </div>
   )
 }

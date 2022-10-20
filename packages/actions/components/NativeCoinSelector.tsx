@@ -1,11 +1,16 @@
 import { Coin } from '@cosmjs/stargate'
-import { XIcon } from '@heroicons/react/solid'
+import { Close } from '@mui/icons-material'
 import { ComponentProps, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ActionComponent } from '@dao-dao/tstypes/actions'
-import { InputErrorMessage, NumberInput, SelectInput } from '@dao-dao/ui'
+import {
+  IconButton,
+  InputErrorMessage,
+  NumberInput,
+  SelectInput,
+} from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
@@ -139,9 +144,12 @@ export const NativeCoinSelector = ({
         </SelectInput>
 
         {isCreating && (
-          <button onClick={onRemove} type="button">
-            <XIcon className="h-4 w-4 text-text-interactive-error" />
-          </button>
+          <IconButton
+            Icon={Close}
+            onClick={onRemove}
+            size="sm"
+            variant="ghost"
+          />
         )}
       </div>
 

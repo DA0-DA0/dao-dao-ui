@@ -1,4 +1,4 @@
-import { ExclamationIcon } from '@heroicons/react/outline'
+import { WarningRounded } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 export const IsAdminWarning = ({
@@ -12,7 +12,7 @@ export const IsAdminWarning = ({
 
   return admin !== undefined && admin !== maybeAdmin ? (
     <div className="flex items-center gap-3 rounded-lg border border-border-interactive-error py-2 px-4">
-      <ExclamationIcon className="h-6 w-6 text-text-interactive-error" />
+      <WarningRounded className="!h-6 !w-6 text-text-interactive-error" />
       <p>{t('info.notAdmin')}</p>
     </div>
   ) : null

@@ -1,4 +1,4 @@
-import { PlusIcon } from '@heroicons/react/outline'
+import { Add } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { IconButtonLink } from './IconButtonLink'
@@ -15,7 +15,7 @@ const Template: ComponentStory<typeof IconButtonLink> = (args) => (
 export const Primary = Template.bind({})
 Primary.args = {
   variant: 'primary',
-  Icon: PlusIcon,
+  Icon: Add,
   href: '#',
 }
 Primary.parameters = {
@@ -27,16 +27,14 @@ Primary.parameters = {
 
 export const Secondary = Template.bind({})
 Secondary.args = {
+  ...Primary.args,
   variant: 'secondary',
-  Icon: PlusIcon,
-  href: '#',
 }
 Secondary.parameters = Primary.parameters
 
 export const Ghost = Template.bind({})
 Ghost.args = {
+  ...Primary.args,
   variant: 'ghost',
-  Icon: PlusIcon,
-  href: '#',
 }
 Ghost.parameters = Primary.parameters

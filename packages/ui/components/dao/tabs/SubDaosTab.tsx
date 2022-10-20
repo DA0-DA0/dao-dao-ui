@@ -1,5 +1,4 @@
-import { PlusIcon } from '@heroicons/react/solid'
-import { EscalatorWarning, Upgrade } from '@mui/icons-material'
+import { Add, EscalatorWarning, Upgrade } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -52,7 +51,7 @@ export const SubDaosTab = ({
           disabled={!isMember || daoInfo.coreVersion === ContractVersion.V0_1_0}
           href={`/dao/${daoInfo.coreAddress}/create`}
         >
-          <PlusIcon className="h-4 w-4" />
+          <Add className="!h-4 !w-4" />
           {t('button.newSubDao')}
         </ButtonLink>
       </div>

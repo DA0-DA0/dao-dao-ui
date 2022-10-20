@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { SubQueryDecorator } from '@dao-dao/storybook/decorators'
 
@@ -11,7 +11,10 @@ import {
   CommandModalContextView,
   CommandModalContextViewProps,
 } from './CommandModalContextView'
-import { Default as CommandModalContextViewStory } from './CommandModalContextView.CommandModalContextView.stories'
+import {
+  Empty as CommandModalContextViewEmptyStory,
+  Default as CommandModalContextViewStory,
+} from './CommandModalContextView.CommandModalContextView.stories'
 import { Default as CommandModalContextViewLoaderStory } from './CommandModalContextView.CommandModalContextViewLoader.stories'
 
 export default {
@@ -22,9 +25,15 @@ export default {
 
 const Template: ComponentStory<typeof CommandModal> = (args) => {
   const [filter, setFilter] = useState('')
+  const searchBarRef = useRef<HTMLInputElement>(null)
 
   return (
-    <CommandModal {...args} filter={filter} setFilter={setFilter}>
+    <CommandModal
+      {...args}
+      filter={filter}
+      searchBarRef={searchBarRef}
+      setFilter={setFilter}
+    >
       <CommandModalContextView
         {...(CommandModalContextViewStory.args as CommandModalContextViewProps)}
       />
@@ -34,6 +43,7 @@ const Template: ComponentStory<typeof CommandModal> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
+  visible: true,
   contexts: [
     {
       name: 'Root context',
@@ -57,11 +67,38 @@ Default.parameters = {
   },
 }
 
-const LoadingTemplate: ComponentStory<typeof CommandModal> = (args) => {
-  const [filter, setFilter] = useState('')
+const EmptyTemplate: ComponentStory<typeof CommandModal> = (args) => {
+  const [filter, setFilter] = useState('nothing')
+  const searchBarRef = useRef<HTMLInputElement>(null)
 
   return (
-    <CommandModal {...args} filter={filter} setFilter={setFilter}>
+    <CommandModal
+      {...args}
+      filter={filter}
+      searchBarRef={searchBarRef}
+      setFilter={setFilter}
+    >
+      <CommandModalContextView
+        {...(CommandModalContextViewEmptyStory.args as CommandModalContextViewProps)}
+      />
+    </CommandModal>
+  )
+}
+
+export const Empty = EmptyTemplate.bind({})
+Empty.args = Default.args
+
+const LoadingTemplate: ComponentStory<typeof CommandModal> = (args) => {
+  const [filter, setFilter] = useState('')
+  const searchBarRef = useRef<HTMLInputElement>(null)
+
+  return (
+    <CommandModal
+      {...args}
+      filter={filter}
+      searchBarRef={searchBarRef}
+      setFilter={setFilter}
+    >
       <CommandModalContextViewLoaderStory />
     </CommandModal>
   )
@@ -69,6 +106,7 @@ const LoadingTemplate: ComponentStory<typeof CommandModal> = (args) => {
 
 export const Loading = LoadingTemplate.bind({})
 Loading.args = {
+  ...Default.args,
   contexts: [
     {
       name: 'Root context',

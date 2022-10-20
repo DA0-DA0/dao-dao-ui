@@ -1,5 +1,4 @@
-import { PlusIcon } from '@heroicons/react/outline'
-import { ExpandCircleDownOutlined } from '@mui/icons-material'
+import { Add, ExpandCircleDownOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -75,7 +74,7 @@ export const TokenCard = ({
               label: t('title.token'),
               buttons: [
                 {
-                  Icon: PlusIcon,
+                  Icon: Add,
                   label: t('button.addToKeplr'),
                   onClick: onAddToken,
                 },

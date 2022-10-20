@@ -1,4 +1,4 @@
-import { PlusIcon, XIcon } from '@heroicons/react/outline'
+import { Add, Close } from '@mui/icons-material'
 import Emoji from 'a11y-react-emoji'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -9,6 +9,7 @@ import { Member } from '@dao-dao/tstypes/contracts/Cw4Group'
 import {
   AddressInput,
   Button,
+  IconButton,
   InputErrorMessage,
   InputLabel,
   NumberInput,
@@ -115,9 +116,12 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
               </div>
 
               {isCreating && (
-                <button onClick={() => toAddRemove(index)} type="button">
-                  <XIcon className="text-text-interactive-error w-4" />
-                </button>
+                <IconButton
+                  Icon={Close}
+                  onClick={() => toAddRemove(index)}
+                  size="sm"
+                  variant="ghost"
+                />
               )}
             </div>
           )
@@ -132,7 +136,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
             size="sm"
             variant="secondary"
           >
-            <PlusIcon className="w-4" />
+            <Add className="!h-4 !w-4" />
             {t('button.add')}
           </Button>
         )}
@@ -166,9 +170,12 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
             </div>
 
             {isCreating && (
-              <button onClick={() => toRemoveRemove(index)} type="button">
-                <XIcon className="text-text-interactive-error w-4" />
-              </button>
+              <IconButton
+                Icon={Close}
+                onClick={() => toRemoveRemove(index)}
+                size="sm"
+                variant="ghost"
+              />
             )}
           </div>
         ))}
@@ -182,7 +189,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
             size="sm"
             variant="secondary"
           >
-            <PlusIcon className="w-4" />
+            <Add className="!h-4 !w-4" />
             {t('button.add')}
           </Button>
         )}

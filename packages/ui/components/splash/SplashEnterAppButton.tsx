@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowUpRight } from '@dao-dao/icons'
 import { Button } from '@dao-dao/ui'
 
-interface SplashEnterAppButtonProps {
+export interface SplashEnterAppButtonProps {
   small?: boolean
 }
 

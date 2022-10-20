@@ -1,8 +1,6 @@
-import { CheckIcon } from '@heroicons/react/outline'
+import { Check, Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
-
-import { X } from '@dao-dao/icons'
 
 export interface MembershipPillProps {
   isMember: boolean
@@ -21,7 +19,7 @@ export const MembershipPill = ({
   const text = isMember
     ? t('title.memberOfDao', { daoName })
     : t('title.notAMember')
-  const Icon = isMember ? CheckIcon : X
+  const Icon = isMember ? Check : Close
 
   return (
     <div
@@ -34,7 +32,7 @@ export const MembershipPill = ({
       )}
     >
       <div className="shrink-0">{text}</div>
-      {!ghost && <Icon className="w-[16px]" />}
+      {!ghost && <Icon className="!h-4 !w-4" />}
     </div>
   )
 }

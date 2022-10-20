@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { ArrowRightIcon } from '@heroicons/react/outline'
+import { ArrowOutward } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 export const SplashAnnouncementCard = () => {
@@ -9,7 +9,7 @@ export const SplashAnnouncementCard = () => {
 
   return (
     <div
-      className="mx-2 flex max-w-[780px] flex-row flex-wrap justify-between gap-2 rounded py-7 px-8"
+      className="mx-2 flex max-w-3xl flex-row flex-wrap justify-between gap-x-8 gap-y-4 rounded py-7 px-8"
       style={{
         backgroundImage:
           'linear-gradient(rgba(var(--brand), 0.1), rgba(var(--brand), 0.1)), linear-gradient(rgba(var(--dark), 0.7), rgba(var(--dark), 0.7))',
@@ -26,7 +26,7 @@ export const SplashAnnouncementCard = () => {
         target="_blank"
       >
         <p>{t('splash.readMore')}</p>
-        <ArrowRightIcon className="h-3 w-4" />
+        <ArrowOutward className="!h-4 !w-4" />
       </a>
     </div>
   )

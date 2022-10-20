@@ -1,5 +1,5 @@
 import { Coin } from '@cosmjs/stargate'
-import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import { Check, Close } from '@mui/icons-material'
 import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -133,11 +133,11 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
       {errors?.message ? (
         <p className="flex items-center gap-1 text-sm text-text-interactive-error">
-          <XIcon className="inline w-5" /> <span>{errors.message.message}</span>
+          <Close className="!h-5 !w-5" /> <span>{errors.message.message}</span>
         </p>
       ) : (
         <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
-          <CheckIcon className="inline w-5" /> {t('info.jsonIsValid')}
+          <Check className="!h-5 w-5" /> {t('info.jsonIsValid')}
         </p>
       )}
 

@@ -1,11 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import {
-  ArrowNarrowLeftIcon,
-  ArrowNarrowRightIcon,
-  ExternalLinkIcon,
-} from '@heroicons/react/outline'
+import { East, OpenInNew, West } from '@mui/icons-material'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
@@ -242,9 +238,9 @@ const TransactionRenderer = ({
       <CopyToClipboard value={outgoing ? recipient : sender} />
       {/* Outgoing transactions are received by the address above, so point to the left. */}
       {outgoing ? (
-        <ArrowNarrowLeftIcon className="h-4 w-4" />
+        <West className="!h-4 !w-4" />
       ) : (
-        <ArrowNarrowRightIcon className="h-4 w-4" />
+        <East className="!h-4 !w-4" />
       )}
       <p>
         {amount} ${denomLabel}
@@ -260,7 +256,7 @@ const TransactionRenderer = ({
         rel="noopener noreferrer"
         target="_blank"
       >
-        <ExternalLinkIcon className="w-4" />
+        <OpenInNew className="!h-4 !w-4" />
       </a>
     </p>
   </div>

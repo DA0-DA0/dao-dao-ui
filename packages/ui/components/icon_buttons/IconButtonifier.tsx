@@ -3,7 +3,8 @@ import { ComponentType } from 'react'
 
 export interface IconButtonifierProps {
   variant: 'primary' | 'secondary' | 'ghost' | 'none'
-  size?: 'default' | 'xl' | 'lg' | 'sm' | 'xs'
+  // Custom size requires manual setting of sizes.
+  size?: 'default' | 'xl' | 'lg' | 'sm' | 'xs' | 'custom'
   circular?: boolean
   Icon: ComponentType<{ className: string }>
   disabled?: boolean
@@ -43,11 +44,11 @@ export const getIconButtonifiedClassNames = ({
 
     // Sizes.
     {
-      'h-5 w-5 p-1': size === 'xs',
-      'h-6 w-6 p-1.5': size === 'sm',
-      'h-8 w-8 p-2': size === 'default',
-      'h-10 w-10 p-3': size === 'lg',
-      'h-10 w-10 p-[0.625rem]': size === 'xl',
+      'h-5 w-5': size === 'xs',
+      'h-6 w-6': size === 'sm',
+      'h-8 w-8': size === 'default',
+      // Icon size changes.
+      'h-10 w-10': size === 'lg' || size === 'xl',
     },
 
     // Primary variant

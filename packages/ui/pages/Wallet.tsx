@@ -1,4 +1,4 @@
-import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { ReactNode, useCallback, useState } from 'react'
 import {
   FormProvider,
@@ -234,12 +234,12 @@ export const Wallet = ({
                   {showPreview ? (
                     <>
                       {t('button.hidePreview')}
-                      <EyeOffIcon className="h-5 w-5" />
+                      <VisibilityOff className="!h-5 !w-5" />
                     </>
                   ) : (
                     <>
                       {t('button.preview')}
-                      <EyeIcon className="h-5 w-5" />
+                      <Visibility className="!h-5 !w-5" />
                     </>
                   )}
                 </Button>

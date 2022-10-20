@@ -1,4 +1,4 @@
-import { PlusIcon, XIcon } from '@heroicons/react/outline'
+import { Add, Close } from '@mui/icons-material'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -9,6 +9,7 @@ import {
   AddressInput,
   Button,
   Checkbox,
+  IconButton,
   InputErrorMessage,
   InputLabel,
   ManageSubDaosEmoji,
@@ -63,7 +64,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
       <InputLabel className="mt-2" name={t('form.subDaosToRecognize')} />
       <div className="flex flex-col items-stretch gap-2">
         {toAddFields.map(({ id }, index) => (
-          <div key={id} className="flex flex-row items-center gap-4">
+          <div key={id} className="flex flex-row items-center gap-2">
             <div className="grow">
               <AddressInput
                 disabled={!isCreating}
@@ -85,9 +86,12 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
             </div>
 
             {isCreating && (
-              <button onClick={() => toAddRemove(index)} type="button">
-                <XIcon className="w-4 text-text-interactive-error" />
-              </button>
+              <IconButton
+                Icon={Close}
+                onClick={() => toAddRemove(index)}
+                size="sm"
+                variant="ghost"
+              />
             )}
           </div>
         ))}
@@ -101,7 +105,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
             size="sm"
             variant="secondary"
           >
-            <PlusIcon className="w-4" />
+            <Add className="!h-4 !w-4" />
             {t('button.add')}
           </Button>
         )}

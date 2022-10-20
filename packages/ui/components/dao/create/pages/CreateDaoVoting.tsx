@@ -1,4 +1,4 @@
-import { WarningAmber } from '@mui/icons-material'
+import { WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -230,7 +230,7 @@ export const CreateDaoVoting = ({
                       className="flex flex-col gap-2 rounded-lg bg-background-interactive-warning py-5 px-6"
                     >
                       <div className="flex flex-row items-center gap-3">
-                        <WarningAmber className="!h-6 !w-6 text-icon-interactive-warning" />
+                        <WarningRounded className="!h-6 !w-6 text-icon-interactive-warning" />
                         <p className="primary-text text-text-interactive-warning-title">
                           {t('title.watchOut')}
                         </p>

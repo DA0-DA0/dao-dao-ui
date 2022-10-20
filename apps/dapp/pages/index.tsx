@@ -1,32 +1,28 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { ArrowNarrowRightIcon } from '@heroicons/react/solid'
+import { ArrowOutward } from '@mui/icons-material'
 import type { GetStaticProps, NextPage } from 'next'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { ArrowUpRight } from '@dao-dao/icons'
 import { useLoadingFeaturedDaoCardInfos } from '@dao-dao/state'
 import {
-  Button,
+  ButtonLink,
   FeaturedDaos,
   Logo,
   PageLoader,
   RotatableLogo,
-  SplashGradientWrapper,
-} from '@dao-dao/ui'
-
-import {
-  DaoCard,
   SplashAnnouncementCard,
   SplashCards,
   SplashEnterAppButton,
+  SplashGradientWrapper,
   SplashStatsCard,
-} from '@/components'
+} from '@dao-dao/ui'
+
+import { DaoCard } from '@/components'
 
 const SplashPage: NextPage = () => {
   const { t } = useTranslation()
@@ -54,27 +50,25 @@ const SplashPage: NextPage = () => {
       <SplashGradientWrapper>
         <nav className="w-full border-b border-border-secondary bg-opacity-40 bg-clip-padding py-4 px-6 backdrop-blur-xl backdrop-filter">
           <div className="mx-auto flex max-w-screen-lg items-center justify-between">
-            <Link href="/" passHref>
-              <a className="flex items-center">
-                <div className="mr-3">
-                  <Logo size={32} />
-                </div>
-                <p className="mr-1 font-medium">DAO</p>
-                <p
-                  className="font-semibold text-text-secondary"
-                  style={{ transform: 'scaleY(-1) scaleX(-1)' }}
-                >
-                  DAO
-                </p>
-              </a>
-            </Link>
+            <ButtonLink contentContainerClassName="gap-0" href="/">
+              <div className="mr-3">
+                <Logo size={32} />
+              </div>
+              <p className="mr-1 font-medium">DAO</p>
+              <p
+                className="font-semibold text-text-secondary"
+                style={{ transform: 'scaleY(-1) scaleX(-1)' }}
+              >
+                DAO
+              </p>
+            </ButtonLink>
             <div className="flex items-center gap-4">
               <a
                 className="flex items-center gap-2"
                 href="https://docs.daodao.zone"
               >
                 {t('splash.documentation')}
-                <ArrowUpRight height="10px" width="10px" />
+                <ArrowOutward height="10px" width="10px" />
               </a>
               <div className="hidden md:block">
                 <SplashEnterAppButton small />
@@ -143,14 +137,10 @@ const SplashPage: NextPage = () => {
             <h2 className="header-text mx-4 max-w-xl text-center">
               {t('splash.createExploreJoin')}
             </h2>
-            <Link href="/home">
-              <a>
-                <Button size="lg">
-                  {t('splash.cta')}
-                  <ArrowUpRight height="10px" width="10px" />
-                </Button>
-              </a>
-            </Link>
+            <ButtonLink href="/home" size="lg">
+              {t('splash.cta')}
+              <ArrowOutward className="!h-3 !w-3" />
+            </ButtonLink>
           </div>
           <div className="caption-text my-10 grid grid-cols-1 gap-2 font-mono md:grid-cols-3">
             <div className="mx-2 flex flex-wrap items-center gap-6 text-xs">
@@ -160,16 +150,13 @@ const SplashPage: NextPage = () => {
                 })}
               </p>
               <a
-                className="transition hover:text-text-primary"
+                className="inline-flex flex-row items-center gap-2 transition hover:text-text-primary"
                 href="https://www.junonetwork.io/"
                 rel="noreferrer"
                 target="_blank"
               >
                 {t('splash.poweredByJuno')}
-                <ArrowNarrowRightIcon
-                  className="mb-0.5 inline h-4 w-6 font-light"
-                  style={{ transform: 'rotateY(0deg) rotate(-45deg)' }}
-                />
+                <ArrowOutward className="!h-4 !w-4 font-light" />
               </a>
             </div>
           </div>

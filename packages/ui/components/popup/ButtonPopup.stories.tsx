@@ -1,6 +1,4 @@
-import { MinusIcon } from '@heroicons/react/outline'
-import { PlusIcon } from '@heroicons/react/solid'
-import { ExpandCircleDownOutlined } from '@mui/icons-material'
+import { Add, ExpandCircleDownOutlined, Remove } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { StakeEmoji } from '../emoji'
@@ -33,7 +31,7 @@ Default.args = {
       label: 'Section 1',
       buttons: [
         {
-          Icon: PlusIcon,
+          Icon: Add,
           label: 'Button 1',
           onClick: () => alert('button1'),
         },
@@ -48,7 +46,7 @@ Default.args = {
       label: 'Section 2',
       buttons: [
         {
-          Icon: MinusIcon,
+          Icon: Remove,
           label: 'Button 3',
           onClick: () => alert('button3'),
         },

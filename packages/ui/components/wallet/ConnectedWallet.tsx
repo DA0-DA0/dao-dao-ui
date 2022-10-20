@@ -1,4 +1,4 @@
-import { CheckCircleIcon } from '@heroicons/react/outline'
+import { Check } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -69,7 +69,7 @@ export const ConnectedWallet = ({
       <div className="flex flex-row items-center gap-2">
         <Tooltip title={t('info.copyWalletAddressTooltip')}>
           <IconButton
-            Icon={copied ? CheckCircleIcon : Link}
+            Icon={copied ? Check : Link}
             className="text-icon-secondary"
             disabled={data.loading}
             iconClassName="w-5 h-5"

@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { ChevronRightIcon } from '@heroicons/react/outline'
+import { ArrowForward } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Modal, ModalProps } from '@dao-dao/ui'
@@ -22,7 +22,7 @@ export const InstallKeplr = (props: InstallKeplrProps) => {
       ))}
       <a href="https://www.keplr.app/" rel="noreferrer" target="_blank">
         <Button>
-          {t('button.installKeplr')} <ChevronRightIcon className="w-4" />
+          {t('button.installKeplr')} <ArrowForward className="!h-4 !w-4" />
         </Button>
       </a>
     </Modal>

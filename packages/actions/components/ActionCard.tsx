@@ -1,4 +1,4 @@
-import { XIcon } from '@heroicons/react/solid'
+import { Close } from '@mui/icons-material'
 import { ComponentType, ReactNode } from 'react'
 
 import { ActionComponentProps } from '@dao-dao/tstypes/actions'
@@ -26,7 +26,7 @@ export const ActionCard = ({
 
       {onRemove && (
         <button onClick={onRemove} type="button">
-          <XIcon className="h-4" />
+          <Close className="!h-4 !w-4" />
         </button>
       )}
     </div>

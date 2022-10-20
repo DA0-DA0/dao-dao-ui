@@ -1,10 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { CwdProposalSingleAdapter } from '@dao-dao/proposal-module-adapter'
 import {
   WalletProviderDecorator,
   makeAppLayoutDecorator,
   makeCreateDaoFormDecorator,
 } from '@dao-dao/storybook/decorators'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter'
 
 import { CreateDaoStart } from './CreateDaoStart'
 
@@ -14,7 +16,31 @@ export default {
   component: CreateDaoStart,
   decorators: [
     // Direct ancestor of rendered story.
-    makeCreateDaoFormDecorator(0),
+    makeCreateDaoFormDecorator(0, {
+      votingModuleAdapter: {
+        id: CwdVotingCw20StakedAdapter.id,
+        data: {
+          ...CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig,
+          newInfo: {
+            ...CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig.newInfo,
+            symbol: 'TST',
+            name: 'Test Token',
+          },
+        },
+      },
+      proposalModuleAdapters: [
+        {
+          id: CwdProposalSingleAdapter.id,
+          data: {
+            ...CwdProposalSingleAdapter.daoCreation.defaultConfig,
+            proposalDeposit: {
+              amount: 5.2,
+              refundFailed: false,
+            },
+          },
+        },
+      ],
+    }),
     makeAppLayoutDecorator(),
     WalletProviderDecorator,
   ],

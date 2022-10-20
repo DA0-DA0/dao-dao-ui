@@ -526,7 +526,7 @@
     "votingModuleAdapterCreationDiscord": "Want to help us support this voting module? Join the <2><0>DAO DAO Discord</0><1/></2> and post in #dao-help.",
     "votingModuleNotYetSupported": "This DAO uses a voting module that our UI does not yet support. Functionality may be limited.",
     "votingPowerAtCreationTooltip": "This was your voting power at the time of proposal creation.",
-    "walletConnectMobileLimitations": "Please feel free to explore the UI. Due to current limitations in WalletConnect, you will not be able to connect your mobile wallet to the {{chain}} chain.",
+    "walletConnectMobileLimitations": "Feel free to explore the UI. Due to current limitations in WalletConnect, you will not be able to connect your mobile wallet to the {{chain}} chain.",
     "wouldYouLikeToSearchQuestion": "Would you like to search for a DAO?",
     "yes": "Yes",
     "yesVote": "Yes",

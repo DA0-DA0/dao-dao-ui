@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 export interface ModalProps {
-  children: ReactNode
+  children?: ReactNode
   visible: boolean
   onClose?: () => void
   backdropClassName?: string
@@ -14,4 +14,5 @@ export interface ModalProps {
   headerContent?: ReactNode
   footerContent?: ReactNode
   headerContainerClassName?: string
+  titleClassName?: string
 }

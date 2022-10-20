@@ -1,4 +1,3 @@
-import { InformationCircleIcon } from '@heroicons/react/outline'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -13,7 +12,7 @@ import {
   InputLabel,
   TextAreaInput,
   TextInput,
-  Tooltip,
+  TooltipInfoIcon,
   UpdateInfoEmoji,
   useDaoInfoContext,
 } from '@dao-dao/ui'
@@ -87,10 +86,11 @@ export const UpdateInfoComponent: ActionComponent<
           </div>
           <div className="flex flex-row flex-wrap gap-2">
             <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3">
-              <div className="flex flex-row gap-1">
-                <Tooltip title={t('form.automaticallyAddTokensTooltip')}>
-                  <InformationCircleIcon className="secondary-text h-4 w-4" />
-                </Tooltip>
+              <div className="flex flex-row items-center gap-1">
+                <TooltipInfoIcon
+                  size="sm"
+                  title={t('form.automaticallyAddTokensTooltip')}
+                />
 
                 <p className="secondary-text w-max">
                   {t('form.automaticallyAddTokensTitle')}
@@ -105,10 +105,11 @@ export const UpdateInfoComponent: ActionComponent<
               />
             </div>
             <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3">
-              <div className="flex flex-row gap-1">
-                <Tooltip title={t('form.automaticallyAddNFTsTooltip')}>
-                  <InformationCircleIcon className="secondary-text h-4 w-4" />
-                </Tooltip>
+              <div className="flex flex-row items-center gap-1">
+                <TooltipInfoIcon
+                  size="sm"
+                  title={t('form.automaticallyAddNFTsTooltip')}
+                />
 
                 <p className="secondary-text w-max">
                   {t('form.automaticallyAddNFTsTitle')}

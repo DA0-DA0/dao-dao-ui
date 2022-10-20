@@ -1,4 +1,4 @@
-import { XIcon } from '@heroicons/react/solid'
+import { Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -22,6 +22,7 @@ export const Modal = ({
   headerContent,
   footerContent,
   headerContainerClassName,
+  titleClassName,
 }: ModalProps) => {
   // Close modal on escape.
   useEffect(() => {
@@ -60,12 +61,15 @@ export const Modal = ({
             className={clsx(
               'no-scrollbar relative flex h-min max-h-full max-w-md cursor-auto flex-col overflow-y-auto rounded-lg border border-border-secondary bg-background-base p-6 shadow-dp8 transition-transform duration-[120ms]',
               visible ? 'scale-100' : 'scale-90',
+              // If no children, remove bottom padding since header has its own
+              // padding.
+              !children && '!pb-0',
               containerClassName
             )}
           >
             {!hideCloseButton && (
               <IconButton
-                Icon={XIcon}
+                Icon={Close}
                 circular
                 className="absolute top-2 right-2 z-50"
                 iconClassName="text-icon-tertiary"
@@ -80,13 +84,17 @@ export const Modal = ({
                   // Undo container padding with negative margin, and then re-add
                   // the padding internally, so that the bottom border spans the
                   // whole width.
-                  '-mx-6 mb-6 flex shrink-0 flex-col gap-1 border-b border-border-base px-6 pb-6',
+                  '-mx-6 flex shrink-0 flex-col gap-1 px-6 pb-6',
+                  // If children, add bottom border and margin.
+                  children && 'mb-6 border-b border-border-base',
                   headerContainerClassName
                 )}
               >
                 {header && (
                   <>
-                    <p className="header-text">{header.title}</p>
+                    <p className={clsx('header-text', titleClassName)}>
+                      {header.title}
+                    </p>
                     {!!header.subtitle && (
                       <p className="body-text">{header.subtitle}</p>
                     )}

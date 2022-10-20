@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { EmojiHappyIcon, HandIcon } from '@heroicons/react/outline'
+import { EmojiEmotions, PanTool } from '@mui/icons-material'
 import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
 
@@ -16,7 +16,7 @@ export const SplashCards = () => {
       <div className="flex flex-wrap justify-center gap-6">
         <div className="flex flex-col gap-8 rounded bg-background-secondary p-6 md:py-14 md:px-12">
           <div className="flex h-fit w-fit items-center justify-center rounded bg-background-primary p-2">
-            <HandIcon className="w-3" />
+            <PanTool className="!h-4 !w-4" />
           </div>
           <h3 className="header-text">{t('splash.proposeAndVote')}</h3>
           <div className="xl:-ml-24">
@@ -45,7 +45,7 @@ export const SplashCards = () => {
 
           <div className="flex max-w-sm flex-col gap-8 py-14 px-12 backdrop-blur-[1.4px] xl:max-w-full">
             <div className="flex h-fit w-fit items-center justify-center rounded bg-background-primary p-2">
-              <EmojiHappyIcon className="w-3" />
+              <EmojiEmotions className="!h-4 !w-4" />
             </div>
 
             <h3 className="header-text">{t('splash.easyToUse')}</h3>

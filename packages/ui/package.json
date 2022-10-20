@@ -13,7 +13,6 @@
     "@dao-dao/utils": "*",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
-    "@heroicons/react": "^1.0.5",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.3",
     "@types/remove-markdown": "^0.3.1",

@@ -1,4 +1,4 @@
-import { PlusIcon } from '@heroicons/react/solid'
+import { Add } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -63,7 +63,7 @@ export const ProposalsTab = ({
             disabled={!isMember}
             href={`/dao/${daoInfo.coreAddress}/proposals/create`}
           >
-            <PlusIcon className="h-4 w-4" />
+            <Add className="!h-4 !w-4" />
             {t('button.newProposal')}
           </ButtonLink>
         </Tooltip>

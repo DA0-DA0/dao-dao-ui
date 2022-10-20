@@ -1,4 +1,4 @@
-import { PlusIcon } from '@heroicons/react/solid'
+import { Add } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -34,7 +34,7 @@ export const MembersTab = <D extends {}>({
             disabled={!isMember}
             href={addMemberHref}
           >
-            <PlusIcon className="h-4 w-4" />
+            <Add className="!h-4 !w-4" />
             {t('button.addMembers')}
           </ButtonLink>
         </div>

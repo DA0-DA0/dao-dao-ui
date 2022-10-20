@@ -1,4 +1,3 @@
-import { XIcon } from '@heroicons/react/outline'
 import { InfoOutlined } from '@mui/icons-material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,27 +26,16 @@ export const NoMobileWallet = (
       </Button>
 
       <Modal
-        hideCloseButton
+        header={{
+          title: t('info.preReleaseExplanation', { chain: CHAIN_NAME }),
+          subtitle: t('info.walletConnectMobileLimitations', {
+            chain: CHAIN_NAME,
+          }),
+        }}
         onClose={() => setShowInfo(false)}
+        titleClassName="mb-2"
         visible={showInfo}
-      >
-        <div className="flex items-start gap-2">
-          <p className="primary-text">
-            {t('info.preReleaseExplanation', { chain: CHAIN_NAME })}
-          </p>
-
-          <button
-            className="rounded-full transition hover:bg-background-secondary"
-            onClick={() => setShowInfo(false)}
-          >
-            <XIcon className="h-4 w-4" />
-          </button>
-        </div>
-
-        <p className="body-text mt-6">
-          {t('info.walletConnectMobileLimitations', { chain: CHAIN_NAME })}
-        </p>
-      </Modal>
+      />
     </>
   )
 }

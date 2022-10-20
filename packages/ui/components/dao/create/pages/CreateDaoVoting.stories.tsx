@@ -1,8 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { CwdProposalSingleAdapter } from '@dao-dao/proposal-module-adapter'
 import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLayoutDecorator'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter'
 
 import { CreateDaoVoting } from './CreateDaoVoting'
 
@@ -17,6 +19,29 @@ export default {
       description: "There are evil cows all over the place. Let's milk 'em!",
       imageUrl:
         'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
+      votingModuleAdapter: {
+        id: CwdVotingCw20StakedAdapter.id,
+        data: {
+          ...CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig,
+          newInfo: {
+            ...CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig.newInfo,
+            symbol: 'TST',
+            name: 'Test Token',
+          },
+        },
+      },
+      proposalModuleAdapters: [
+        {
+          id: CwdProposalSingleAdapter.id,
+          data: {
+            ...CwdProposalSingleAdapter.daoCreation.defaultConfig,
+            proposalDeposit: {
+              amount: 5.2,
+              refundFailed: false,
+            },
+          },
+        },
+      ],
     }),
     makeAppLayoutDecorator(),
     WalletProviderDecorator,

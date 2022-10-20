@@ -1,4 +1,3 @@
-import { InformationCircleIcon } from '@heroicons/react/outline'
 import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -13,7 +12,7 @@ import {
   InputLabel,
   NumberInput,
   SelectInput,
-  Tooltip,
+  TooltipInfoIcon,
   UpdateProposalConfigIcon,
 } from '@dao-dao/ui'
 import {
@@ -76,10 +75,11 @@ export const UpdateProposalConfigComponent: ActionComponent<
       <div className="flex flex-row flex-wrap gap-2">
         {governanceTokenSymbol !== undefined && (
           <div className="bg-background-secondary flex grow flex-row items-center justify-between gap-4 rounded-md py-2 px-3 md:w-min">
-            <div className="flex flex-row gap-2">
-              <Tooltip title={t('form.requireProposalDepositTooltip')}>
-                <InformationCircleIcon className="secondary-text h-4 w-4" />
-              </Tooltip>
+            <div className="flex flex-row items-center gap-2">
+              <TooltipInfoIcon
+                size="sm"
+                title={t('form.requireProposalDepositTooltip')}
+              />
 
               <p className="secondary-text w-max">
                 {t('form.requireProposalDepositTitle')}
@@ -95,10 +95,11 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
         )}
         <div className="bg-background-secondary flex grow flex-row items-center justify-between gap-4 rounded-md py-2 px-3 md:w-min">
-          <div className="flex flex-row gap-2">
-            <Tooltip title={t('form.onlyMembersExecuteTooltip')}>
-              <InformationCircleIcon className="secondary-text h-4 w-4" />
-            </Tooltip>
+          <div className="flex flex-row items-center gap-2">
+            <TooltipInfoIcon
+              size="sm"
+              title={t('form.onlyMembersExecuteTooltip')}
+            />
 
             <p className="secondary-text w-max">
               {t('form.onlyMembersExecuteTitle')}
@@ -143,10 +144,11 @@ export const UpdateProposalConfigComponent: ActionComponent<
               <InputErrorMessage error={errors?.depositInfo?.deposit} />
             </div>
             <div className="bg-background-secondary flex grow flex-row items-center justify-between gap-4 rounded-md py-2 px-3">
-              <div className="flex flex-row gap-2">
-                <Tooltip title={t('form.refundFailedProposalsTooltip')}>
-                  <InformationCircleIcon className="secondary-text h-4 w-4" />
-                </Tooltip>
+              <div className="flex flex-row items-center gap-2">
+                <TooltipInfoIcon
+                  size="sm"
+                  title={t('form.refundFailedProposalsTooltip')}
+                />
 
                 <p className="secondary-text w-max">
                   {t('form.refundFailedProposalsTitle')}

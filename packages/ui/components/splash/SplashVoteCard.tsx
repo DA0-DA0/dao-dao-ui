@@ -29,7 +29,7 @@ export const SplashVoteCard = () => {
           })}
         </p>
       </div>
-      <div className="flex grid-cols-3 flex-wrap gap-2 md:grid">
+      <div className="grid grid-cols-3 gap-2">
         <Button
           className={clsx(selected === VoteChoice.Yes && '!bg-color-valid')}
           onClick={() =>
