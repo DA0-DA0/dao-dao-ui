@@ -1,7 +1,8 @@
+import { ArrowOutward } from '@mui/icons-material'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ArrowUpRight, Bubble, Code } from '@dao-dao/icons'
+import { Bubble, Code } from '@dao-dao/icons'
 
 import { ButtonLink } from '../buttons'
 
@@ -49,6 +50,6 @@ const FooterItem = ({ href, icon, name }: FooterItemProps) => (
       <p>{name}</p>
     </div>
 
-    <ArrowUpRight className="h-3 w-3" />
+    <ArrowOutward className="!h-4 !w-4" />
   </ButtonLink>
 )

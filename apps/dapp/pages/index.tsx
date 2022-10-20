@@ -10,7 +10,6 @@ import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { useLoadingFeaturedDaoCardInfos } from '@dao-dao/state'
 import {
-  ButtonLink,
   FeaturedDaos,
   Logo,
   PageLoader,
@@ -50,10 +49,8 @@ const SplashPage: NextPage = () => {
       <SplashGradientWrapper>
         <nav className="w-full border-b border-border-secondary bg-opacity-40 bg-clip-padding py-4 px-6 backdrop-blur-xl backdrop-filter">
           <div className="mx-auto flex max-w-screen-lg items-center justify-between">
-            <ButtonLink contentContainerClassName="gap-0" href="/">
-              <div className="mr-3">
-                <Logo size={32} />
-              </div>
+            <div className="flex flex-row items-center">
+              <Logo className="mr-3" size={32} />
               <p className="mr-1 font-medium">DAO</p>
               <p
                 className="font-semibold text-text-secondary"
@@ -61,14 +58,14 @@ const SplashPage: NextPage = () => {
               >
                 DAO
               </p>
-            </ButtonLink>
+            </div>
             <div className="flex items-center gap-4">
               <a
                 className="flex items-center gap-2"
                 href="https://docs.daodao.zone"
               >
                 {t('splash.documentation')}
-                <ArrowOutward height="10px" width="10px" />
+                <ArrowOutward className="!h-4 !w-4" />
               </a>
               <div className="hidden md:block">
                 <SplashEnterAppButton small />
@@ -137,10 +134,7 @@ const SplashPage: NextPage = () => {
             <h2 className="header-text mx-4 max-w-xl text-center">
               {t('splash.createExploreJoin')}
             </h2>
-            <ButtonLink href="/home" size="lg">
-              {t('splash.cta')}
-              <ArrowOutward className="!h-3 !w-3" />
-            </ButtonLink>
+            <SplashEnterAppButton />
           </div>
           <div className="caption-text my-10 grid grid-cols-1 gap-2 font-mono md:grid-cols-3">
             <div className="mx-2 flex flex-wrap items-center gap-6 text-xs">

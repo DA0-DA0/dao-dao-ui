@@ -136,11 +136,7 @@ export const TokenCard = ({
 
               {/* Crown */}
               {!!crown && (
-                <EdamameCrown
-                  className="absolute -top-4 -left-6 stroke-2 text-text-secondary"
-                  height="32px"
-                  width="32px"
-                />
+                <EdamameCrown className="absolute -top-4 -left-6 !h-8 !w-8 stroke-2 text-text-secondary" />
               )}
             </div>
 

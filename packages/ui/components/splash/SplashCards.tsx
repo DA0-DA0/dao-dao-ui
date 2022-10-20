@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
 
 import { Discord, Github, Twitter } from '@dao-dao/icons'
-import { SplashVoteCard } from '@dao-dao/ui'
+import { IconButtonLink, SplashVoteCard } from '@dao-dao/ui'
 
 export const SplashCards = () => {
   const { t } = useTranslation()
@@ -63,31 +63,25 @@ export const SplashCards = () => {
             'linear-gradient(270deg, #8F74FA -18.38%, #413B6B 9.63%, #333051 20.61%, #262738 33.92%, #191D20 60.34%)',
         }}
       >
-        <div className="flex items-center gap-1">
-          <a
-            className="z-10 rounded bg-background-primary p-1 transition hover:text-text-primary"
+        <div className="relative z-10 flex items-center gap-1">
+          <IconButtonLink
+            Icon={Github}
             href="https://github.com/DA0-DA0"
-            rel="noreferrer"
-            target="_blank"
-          >
-            <Github height="20px" width="20px" />
-          </a>
-          <a
-            className="z-10 rounded bg-background-primary p-1 transition hover:text-text-primary"
+            size="lg"
+            variant="secondary"
+          />
+          <IconButtonLink
+            Icon={Twitter}
             href="https://twitter.com/da0_da0"
-            rel="noreferrer"
-            target="_blank"
-          >
-            <Twitter height="20px" width="20px" />
-          </a>
-          <a
-            className="z-10 rounded bg-background-primary p-1 transition hover:text-text-primary"
+            size="lg"
+            variant="secondary"
+          />
+          <IconButtonLink
+            Icon={Discord}
             href="https://discord.gg/sAaGuyW3D2"
-            rel="noreferrer"
-            target="_blank"
-          >
-            <Discord height="20px" width="20px" />
-          </a>
+            size="lg"
+            variant="secondary"
+          />
         </div>
         <h3 className="header-text mt-8">{t('splash.joinTheCommunity')}</h3>
         <div className="absolute top-0 right-0 bottom-0 w-full">
