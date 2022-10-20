@@ -30,6 +30,7 @@ import {
 } from '@dao-dao/state'
 import { CommandModalContextMaker } from '@dao-dao/tstypes'
 import {
+  BetaWarningModal,
   DaoCreatedModal,
   IAppLayoutContext,
   ProposalCreatedModal,
@@ -44,7 +45,6 @@ import {
   noKeplrAccountAtom,
 } from '@/atoms'
 
-import { BetaWarningModal } from './BetaWarning'
 import { DAppProvider, useDAppContext } from './DAppContext'
 import { InstallKeplr } from './InstallKeplr'
 import { NoKeplrAccountModal } from './NoKeplrAccountModal'
@@ -249,9 +249,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         onClose={() => setNoKeplrAccount(false)}
         visible={noKeplrAccount}
       />
-      {mountedInBrowser && !betaWarningAccepted && (
-        <BetaWarningModal onAccept={() => setBetaWarningAccepted(true)} />
-      )}
+      <BetaWarningModal
+        onClose={() => setBetaWarningAccepted(true)}
+        visible={mountedInBrowser && !betaWarningAccepted}
+      />
 
       <CommandModal
         makeRootContext={rootCommandContextMaker}

@@ -15,7 +15,7 @@ export const ActionCard = ({
   onRemove,
   children,
 }: ActionCardProps) => (
-  <div className="my-2 flex flex-col gap-2 rounded-lg bg-primary p-3">
+  <div className="my-2 flex flex-col gap-2 rounded-lg bg-background-primary p-3">
     <div className="flex flex-row items-start justify-between gap-2">
       <div className="flex flex-row items-center gap-2">
         <h2 className="text-3xl">

@@ -140,7 +140,7 @@ export const NativeCoinSelector = ({
 
         {isCreating && (
           <button onClick={onRemove} type="button">
-            <XIcon className="h-4 w-4 text-error" />
+            <XIcon className="h-4 w-4 text-text-interactive-error" />
           </button>
         )}
       </div>

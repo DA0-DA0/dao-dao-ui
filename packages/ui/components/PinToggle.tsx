@@ -1,7 +1,7 @@
 import { PushPin, PushPinOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '../Button'
+import { Button } from './Button'
 
 export interface PinToggleProps {
   pinned: boolean

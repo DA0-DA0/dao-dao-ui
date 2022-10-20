@@ -25,6 +25,10 @@ export const Modal = ({
 }: ModalProps) => {
   // Close modal on escape.
   useEffect(() => {
+    if (!onClose) {
+      return
+    }
+
     const handleKeyPress = (event: KeyboardEvent) =>
       event.key === 'Escape' && onClose()
 
@@ -40,13 +44,16 @@ export const Modal = ({
     ? createPortal(
         <div
           className={clsx(
-            'fixed top-0 left-0 z-40 flex h-full w-screen cursor-pointer items-center justify-center p-4 backdrop-brightness-50 backdrop-filter transition-all duration-[120ms]',
+            'fixed top-0 left-0 z-40 flex h-full w-screen items-center justify-center p-4 backdrop-brightness-50 backdrop-filter transition-all duration-[120ms]',
             visible ? 'opacity-100' : 'pointer-events-none opacity-0',
+            onClose && 'cursor-pointer',
             backdropClassName
           )}
           onClick={
+            onClose &&
             // Only close if click specifically on backdrop.
-            ({ target, currentTarget }) => target === currentTarget && onClose()
+            (({ target, currentTarget }) =>
+              target === currentTarget && onClose())
           }
         >
           <div

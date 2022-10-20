@@ -93,7 +93,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         </Trans>
       </p>
 
-      <div className="border-default flex flex-col gap-4 rounded-lg border p-3">
+      <div className="border-border-primary flex flex-col gap-4 rounded-lg border p-3">
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-start justify-between gap-2">
             <h3 className="primary-text">

@@ -58,7 +58,8 @@ export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
               <Button
                 key={address}
                 className={clsx('text-center', {
-                  'bg-transparent text-secondary': address !== tokenAddress,
+                  'bg-transparent text-text-secondary':
+                    address !== tokenAddress,
                 })}
                 disabled={!isCreating}
                 onClick={() => setValue(fieldNamePrefix + 'address', address)}

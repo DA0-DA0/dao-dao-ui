@@ -30,7 +30,7 @@ export const Progress = ({
         <div
           key={rowIndex}
           className={`flex flex-row items-stretch ${
-            !backgroundColor ? 'bg-secondary' : ''
+            !backgroundColor ? 'bg-background-secondary' : ''
           } ${alignEnd ? 'justify-end' : ''}`}
           style={{
             backgroundColor,

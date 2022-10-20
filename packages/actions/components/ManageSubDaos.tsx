@@ -86,13 +86,13 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
 
             {isCreating && (
               <button onClick={() => toAddRemove(index)} type="button">
-                <XIcon className="w-4 text-error" />
+                <XIcon className="w-4 text-text-interactive-error" />
               </button>
             )}
           </div>
         ))}
         {!isCreating && toAddFields.length === 0 && (
-          <p className="text-xs italic text-tertiary">{t('info.none')}</p>
+          <p className="text-xs italic text-text-tertiary">{t('info.none')}</p>
         )}
         {isCreating && (
           <Button
@@ -150,7 +150,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
         {(isCreating
           ? currentSubDaos.length === 0
           : toRemoveFields.length === 0) && (
-          <p className="text-xs italic text-tertiary">{t('info.none')}</p>
+          <p className="text-xs italic text-text-tertiary">{t('info.none')}</p>
         )}
       </div>
     </ActionCard>

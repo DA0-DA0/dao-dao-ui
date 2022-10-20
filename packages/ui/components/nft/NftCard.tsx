@@ -41,9 +41,10 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
     return (
       <div
         className={clsx(
-          'group relative flex flex-col items-stretch overflow-hidden rounded-lg bg-primary outline outline-2 ring-2 ring-inset ring-[transparent] transition-all',
+          'group relative flex flex-col items-stretch overflow-hidden rounded-lg bg-background-primary outline outline-2 ring-2 ring-inset ring-[transparent] transition-all',
           {
-            'hover:bg-card hover:ring-focus': externalLink || checkbox,
+            'hover:bg-background-secondary hover:ring-border-interactive-focus':
+              externalLink || checkbox,
             'outline-[transparent]': !checkbox?.checked,
             'outline-border-interactive-active': checkbox?.checked,
           },
@@ -103,7 +104,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
 
         <div
           className={clsx(
-            'grid items-center gap-x-4 border-b border-inactive py-4 px-6',
+            'grid items-center gap-x-4 border-b border-border-secondary py-4 px-6',
             {
               'grid-cols-1': !floorPrice,
               'grid-cols-[1fr_1px_1fr]': floorPrice,
@@ -122,7 +123,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           {floorPrice && (
             <>
               {/* Separator */}
-              <div className="h-6 w-[1px] bg-primary"></div>
+              <div className="h-6 w-[1px] bg-background-primary"></div>
 
               {/* Floor price */}
               <div className="flex flex-col items-end gap-1">

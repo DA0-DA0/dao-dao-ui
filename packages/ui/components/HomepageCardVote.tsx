@@ -1,14 +1,11 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
-import { CheckIcon, XIcon } from '@heroicons/react/outline'
+import { Check, Close, Texture } from '@mui/icons-material'
 import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { Abstain, Airplane } from '@dao-dao/icons'
+import { Airplane } from '@dao-dao/icons'
 import { Vote as VoteChoice } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
 import { Button } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
@@ -20,7 +17,7 @@ export const HomepageCardVote = () => {
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
   return (
-    <div className="flex max-w-3xl flex-col gap-3 rounded-lg border border-default bg-primary p-4 backdrop-blur-lg">
+    <div className="flex max-w-3xl flex-col gap-3 rounded-lg border border-border-primary bg-background-primary p-4 backdrop-blur-lg">
       <div className="flex items-center gap-2">
         <p className="mr-1 text-2xl">
           <Emoji label={t('emoji.ballotBox')} symbol="🗳" />
@@ -34,9 +31,7 @@ export const HomepageCardVote = () => {
       </div>
       <div className="flex grid-cols-3 flex-wrap gap-2 md:grid">
         <Button
-          className={clsx('group transition', {
-            'bg-valid hover:bg-valid': selected === VoteChoice.Yes,
-          })}
+          className={clsx(selected === VoteChoice.Yes && '!bg-color-valid')}
           onClick={() =>
             setSelected((s) =>
               s === VoteChoice.Yes ? undefined : VoteChoice.Yes
@@ -44,18 +39,18 @@ export const HomepageCardVote = () => {
           }
           variant="secondary"
         >
-          <CheckIcon
-            className={clsx('w-4', {
-              'text-base': selected === VoteChoice.Yes,
-              'text-valid group-hover:text-base': selected !== VoteChoice.Yes,
-            })}
+          <Check
+            className={clsx(
+              '!h-4 !w-4',
+              selected === VoteChoice.Yes
+                ? 'text-icon-primary'
+                : 'text-icon-interactive-valid'
+            )}
           />
           {t('info.yesVote')}
         </Button>
         <Button
-          className={clsx('group transition', {
-            'bg-error hover:bg-error': selected === VoteChoice.No,
-          })}
+          className={clsx(selected === VoteChoice.No && '!bg-color-error')}
           onClick={() =>
             setSelected((s) =>
               s === VoteChoice.No ? undefined : VoteChoice.No
@@ -63,18 +58,21 @@ export const HomepageCardVote = () => {
           }
           variant="secondary"
         >
-          <XIcon
-            className={clsx('w-4', {
-              'text-base': selected === VoteChoice.No,
-              'text-error group-hover:text-base': selected !== VoteChoice.No,
-            })}
+          <Close
+            className={clsx(
+              '!h-4 !w-4',
+              selected === VoteChoice.No
+                ? 'text-icon-primary'
+                : 'text-icon-interactive-error'
+            )}
           />
           {t('info.noVote')}
         </Button>
         <Button
-          className={clsx('group transition', {
-            'bg-tertiary hover:bg-tertiary': selected === VoteChoice.Abstain,
-          })}
+          className={clsx(
+            selected === VoteChoice.Abstain &&
+              '!bg-background-interactive-active'
+          )}
           onClick={() =>
             setSelected((s) =>
               s === VoteChoice.Abstain ? undefined : VoteChoice.Abstain
@@ -82,7 +80,7 @@ export const HomepageCardVote = () => {
           }
           variant="secondary"
         >
-          <Abstain />
+          <Texture className="!h-4 !w-4 text-icon-primary" />
           {t('info.abstainVote')}
         </Button>
       </div>

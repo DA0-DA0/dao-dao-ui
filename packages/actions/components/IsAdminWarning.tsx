@@ -11,8 +11,8 @@ export const IsAdminWarning = ({
   const { t } = useTranslation()
 
   return admin !== undefined && admin !== maybeAdmin ? (
-    <div className="flex items-center gap-3 rounded-lg border border-error py-2 px-4">
-      <ExclamationIcon className="h-6 w-6 text-error" />
+    <div className="flex items-center gap-3 rounded-lg border border-border-interactive-error py-2 px-4">
+      <ExclamationIcon className="h-6 w-6 text-text-interactive-error" />
       <p>{t('info.notAdmin')}</p>
     </div>
   ) : null
