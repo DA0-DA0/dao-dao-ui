@@ -378,6 +378,7 @@
     "featured": "Featured",
     "firstProposalPrompt": "This DAO has no proposals. Why not create one?",
     "getTokensOn": "Get tokens on {{name}}.",
+    "goToParent": "Go to parent DAO",
     "govTokenAddress": "Gov Token",
     "groupAddress": "CW4 Group",
     "haveNotCastVote": "You have not yet cast a vote.",

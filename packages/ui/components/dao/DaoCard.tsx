@@ -61,15 +61,16 @@ export const DaoCard = ({
         )}
       >
         {parentDao && (
-          <IconButtonLink
-            Icon={ParentDaoArrow}
-            className="text-icon-interactive-disabled"
-            href={`/dao/${parentDao.coreAddress}`}
-            // Don't click on DAO card.
-            onClick={(event) => event.preventDefault()}
-            title={t('info.gotoParent')}
-            variant="ghost"
-          />
+          <Tooltip title={t('info.goToParent')}>
+            <IconButtonLink
+              Icon={ParentDaoArrow}
+              className="text-icon-interactive-disabled"
+              href={`/dao/${parentDao.coreAddress}`}
+              // Don't click on DAO card.
+              onClick={(event) => event.preventDefault()}
+              variant="ghost"
+            />
+          </Tooltip>
         )}
         <div className="flex flex-row items-center gap-3">
           {showIsMember && !lazyData.loading && lazyData.data.isMember && (
