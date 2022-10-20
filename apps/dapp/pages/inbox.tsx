@@ -21,11 +21,14 @@ import {
   ProfileDisconnectedCard,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
+import { NoContent } from '@dao-dao/ui'
+import { WhereToVoteOutlined } from '@mui/icons-material'
 
 import { ProfileHomeCard, useDAppContext } from '@/components'
 
 const InnerInbox = () => {
   const { connected } = useWallet()
+  const { t } = useTranslation()
   const pinnedDaoDropdownInfos = useRecoilValue(pinnedDaoDropdownInfosSelector)
 
   const {
@@ -62,22 +65,30 @@ const InnerInbox = () => {
     .filter(Boolean) as DaoWithProposals<ProposalLineProps>[]
 
   return (
-    <Inbox
-      ProposalLine={ProposalLine}
-      daosWithProposals={
-        loading
-          ? { loading: true }
-          : {
-              loading: false,
-              data: daosWithProposals,
-            }
+    <>
+      <Inbox
+        ProposalLine={ProposalLine}
+        daosWithProposals={
+          loading
+            ? { loading: true }
+            : {
+                loading: false,
+                data: daosWithProposals,
+              }
+        }
+        onRefresh={refetch}
+        refreshing={loading || refetching}
+        rightSidebarContent={
+          connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
+        }
+      />
+      {
+        daosWithProposals.length === 0 && <NoContent
+          Icon={WhereToVoteOutlined}
+          body={t('info.noProposalsYet')}
+        />
       }
-      onRefresh={refetch}
-      refreshing={loading || refetching}
-      rightSidebarContent={
-        connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
-      }
-    />
+    </>
   )
 }
 
