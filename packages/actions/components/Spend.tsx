@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionComponent } from '@dao-dao/tstypes/actions'
+import {
+  ActionComponent,
+  ActionOptionsContextType,
+} from '@dao-dao/tstypes/actions'
 import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
 import {
   AddressInput,
@@ -23,6 +26,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../react'
 import { ActionCard } from './ActionCard'
 
 interface SpendOptions {
@@ -43,12 +47,18 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue, setError, clearErrors } = useFormContext()
+  const { context } = useActionOptions()
 
   const spendAmount = watch(fieldNamePrefix + 'amount')
   const spendDenom = watch(fieldNamePrefix + 'denom')
 
   const validatePossibleSpend = useCallback(
     (id: string, amount: string): string | boolean => {
+      const insufficientBalanceI18nKey =
+        context.type === ActionOptionsContextType.Dao
+          ? 'error.cantSpendMoreThanTreasury'
+          : 'error.insufficientWalletBalance'
+
       const native = nativeBalances.find(({ denom }) => denom === id)
       if (native) {
         const microAmount = convertDenomToMicroDenomWithDecimals(
@@ -57,7 +67,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         )
         return (
           microAmount <= Number(native.amount) ||
-          t('error.cantSpendMoreThanTreasury', {
+          t(insufficientBalanceI18nKey, {
             amount: convertMicroDenomToDenomWithDecimals(
               native.amount,
               NATIVE_DECIMALS
@@ -76,7 +86,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         )
         return (
           microAmount <= Number(cw20.balance) ||
-          t('error.cantSpendMoreThanTreasury', {
+          t(insufficientBalanceI18nKey, {
             amount: convertMicroDenomToDenomWithDecimals(
               cw20.balance,
               cw20.info.decimals
@@ -90,14 +100,14 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       // If there are no native tokens in the treasury the native balances
       // query will return an empty list.
       if (id === NATIVE_DENOM) {
-        return t('error.cantSpendMoreThanTreasury', {
+        return t(insufficientBalanceI18nKey, {
           amount: 0,
           tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
         })
       }
       return 'Unrecognized denom.'
     },
-    [cw20Balances, nativeBalances, t]
+    [context.type, cw20Balances, nativeBalances, t]
   )
 
   // Update amount+denom combo error each time either field is updated

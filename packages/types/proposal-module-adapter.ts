@@ -6,6 +6,7 @@ import { RecoilValueReadOnly } from 'recoil'
 import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
 
 import { Action } from './actions'
+import { ContractVersion } from './contract'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo } from './contracts/common'
 import {
@@ -75,7 +76,6 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
     ProposalWalletVote: ComponentType<BaseProposalWalletVoteProps<Vote>>
     ProposalVotes: ComponentType
     ProposalVoteTally: ComponentType
-    ProposalInfoCard: ComponentType<BaseProposalInfoCardProps>
     ProposalLine: ComponentType<BaseProposalLineProps>
   }
 }
@@ -98,6 +98,10 @@ export type ProposalModuleAdapter<
     proposalCount: Record<string, unknown>
   }
 
+  functions: {
+    fetchPreProposeAddress?: FetchPreProposeAddressFunction
+  }
+
   daoCreation: {
     defaultConfig: DaoCreationConfig
 
@@ -112,6 +116,7 @@ export type ProposalModuleAdapter<
 }
 
 export interface IProposalModuleAdapterInitialOptions {
+  chainId: string
   coreAddress: string
   Logo: ComponentType<LogoProps>
   Loader: ComponentType<LoaderProps>
@@ -137,6 +142,12 @@ export interface IProposalModuleContext {
 }
 
 // Internal Adapter Types
+
+export type FetchPreProposeAddressFunction = (
+  cosmWasmClient: CosmWasmClient,
+  proposalModuleAddress: string,
+  version: ContractVersion | null
+) => Promise<string | null>
 
 export type ReverseProposalInfosSelector = (data: {
   startBefore: number | undefined
@@ -178,11 +189,6 @@ export interface BaseProposalActionDisplayProps<D extends any = any> {
 export interface BaseProposalWalletVoteProps<T> {
   vote: T | undefined
   fallback: 'pending' | 'none'
-}
-
-export interface BaseProposalInfoCardProps {
-  connected: boolean
-  walletAddress?: string
 }
 
 export interface BaseProposalLineProps {

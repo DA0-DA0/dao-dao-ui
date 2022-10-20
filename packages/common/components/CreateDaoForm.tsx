@@ -18,6 +18,7 @@ import {
   DefaultNewDao,
   daoCreatedCardPropsAtom,
   newDaoAtom,
+  useAwaitNextBlock,
   usePinnedDaos,
   useWalletProfile,
 } from '@dao-dao/state'
@@ -323,6 +324,7 @@ export const CreateDaoForm = ({
       ? (votingModuleAdapter.data as CwdVotingCw20StakedCreationConfig)
       : undefined
 
+  const awaitNextBlock = useAwaitNextBlock()
   const onSubmit: SubmitHandler<NewDao> = useCallback(
     async (values, event) => {
       // If navigating, no need to display errors.
@@ -338,12 +340,8 @@ export const CreateDaoForm = ({
           try {
             const coreAddress = await toast.promise(
               createDaoWithFactory().then(
-                // TODO: Figure out better solution for detecting block.
-                (address) =>
-                  // New wallet balances will not appear until the next block.
-                  new Promise<string>((resolve) =>
-                    setTimeout(() => resolve(address), 6500)
-                  )
+                // New wallet balances will not appear until the next block.
+                (address) => awaitNextBlock().then(() => address)
               ),
               {
                 loading: t('info.creatingDao'),
@@ -486,6 +484,7 @@ export const CreateDaoForm = ({
       imageUrl,
       parentDao,
       router,
+      awaitNextBlock,
     ]
   )
 

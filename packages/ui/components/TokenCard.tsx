@@ -138,7 +138,7 @@ export const TokenCard = ({
               {/* Crown */}
               {!!crown && (
                 <EdamameCrown
-                  className="absolute -top-4 -left-6 stroke-2 text-secondary"
+                  className="absolute -top-4 -left-6 stroke-2 text-text-secondary"
                   height="32px"
                   width="32px"
                 />
@@ -189,7 +189,7 @@ export const TokenCard = ({
           )}
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-inactive py-4 px-6">
+        <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
           <div className="flex flex-row items-start justify-between gap-8">
             <p className="link-text">{t('info.totalHoldings')}</p>
             {/* leading-5 to match link-text's line-height. */}
@@ -242,7 +242,7 @@ export const TokenCard = ({
         </div>
 
         {hasStakingInfo && (lazyStakingInfo.loading || lazyStakingInfo.data) && (
-          <div className="flex flex-col gap-2 border-t border-inactive px-6 pt-4 pb-6">
+          <div className="flex flex-col gap-2 border-t border-border-secondary px-6 pt-4 pb-6">
             <p className="link-text mb-1">{t('info.stakes')}</p>
 
             <div className="flex flex-row items-center justify-between gap-8">

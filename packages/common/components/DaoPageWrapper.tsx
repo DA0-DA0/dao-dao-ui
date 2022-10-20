@@ -1,10 +1,11 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ComponentType, PropsWithChildren, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
+import { ActionsProvider } from '@dao-dao/actions'
 import { SuspenseLoader } from '@dao-dao/common'
 import {
+  ActionOptionsContextType,
   CommonProposalInfo,
   DaoInfo,
   DaoInfoSerializable,
@@ -125,29 +126,36 @@ const InnerDaoPageWrapper = ({
   children,
   Logo = DefaultLogo,
   Loader = DefaultLoader,
-}: InnerDaoPageWrapperProps) => {
-  const { t } = useTranslation()
-
-  return (
-    // Add a unique key here to tell React to re-render everything when the
-    // `coreAddress` is changed, since for some insane reason, Next.js does not
-    // reset state when navigating between dynamic rotues. Even though the
-    // `info` value passed below changes, somehow no re-render occurs... unless
-    // the `key` prop is unique. See the issue below for more people compaining
-    // about this to no avail. https://github.com/vercel/next.js/issues/9992
-    <DaoInfoContext.Provider key={info.coreAddress} value={info}>
-      <VotingModuleAdapterProvider
-        contractName={info.votingModuleContractName}
+}: InnerDaoPageWrapperProps) => (
+  // Add a unique key here to tell React to re-render everything when the
+  // `coreAddress` is changed, since for some insane reason, Next.js does not
+  // reset state when navigating between dynamic rotues. Even though the
+  // `info` value passed below changes, somehow no re-render occurs... unless
+  // the `key` prop is unique. See the issue below for more people compaining
+  // about this to no avail. https://github.com/vercel/next.js/issues/9992
+  <DaoInfoContext.Provider key={info.coreAddress} value={info}>
+    <VotingModuleAdapterProvider
+      contractName={info.votingModuleContractName}
+      options={{
+        votingModuleAddress: info.votingModuleAddress,
+        coreAddress: info.coreAddress,
+        Logo,
+        Loader,
+      }}
+    >
+      <ActionsProvider
         options={{
-          votingModuleAddress: info.votingModuleAddress,
-          coreAddress: info.coreAddress,
-          Logo,
-          Loader,
-          t,
+          chainId: info.chainId,
+          bech32Prefix: info.bech32Prefix,
+          address: info.coreAddress,
+          context: {
+            type: ActionOptionsContextType.Dao,
+            coreVersion: info.coreVersion,
+          },
         }}
       >
         {children}
-      </VotingModuleAdapterProvider>
-    </DaoInfoContext.Provider>
-  )
-}
+      </ActionsProvider>
+    </VotingModuleAdapterProvider>
+  </DaoInfoContext.Provider>
+)

@@ -3,7 +3,7 @@
 
 import { ReactNode, createContext, useContext } from 'react'
 
-import { useInbox } from '@dao-dao/state'
+import { useInbox } from '@dao-dao/common'
 
 export interface IDAppContext {
   inbox: ReturnType<typeof useInbox>

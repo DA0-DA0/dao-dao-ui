@@ -5,9 +5,10 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw721BaseSelectors } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
+  ActionOptionsContextType,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -69,28 +70,6 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-const useTransformToCosmos: UseTransformToCosmos<AddCw721Data> = (
-  coreAddress: string
-) =>
-  useCallback(
-    (data: AddCw721Data) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: coreAddress,
-            funds: [],
-            msg: {
-              update_cw721_list: {
-                to_add: [data.address],
-                to_remove: [],
-              },
-            },
-          },
-        },
-      }),
-    [coreAddress]
-  )
-
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw721Data> = (
   msg: Record<string, any>
 ) =>
@@ -113,14 +92,44 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw721Data> = (
     [msg]
   )
 
-export const addCw721Action: Action<AddCw721Data> = {
-  key: ActionKey.AddCw721,
-  Icon: AddCw721Emoji,
-  label: 'Display NFT Collection in Treasury',
-  description:
-    'Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+export const makeAddCw721Action: ActionMaker<AddCw721Data> = ({
+  t,
+  address,
+  context,
+}) => {
+  // Only DAOs.
+  if (context.type !== ActionOptionsContextType.Dao) {
+    return null
+  }
+
+  const useTransformToCosmos: UseTransformToCosmos<AddCw721Data> = () =>
+    useCallback(
+      (data: AddCw721Data) =>
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: address,
+              funds: [],
+              msg: {
+                update_cw721_list: {
+                  to_add: [data.address],
+                  to_remove: [],
+                },
+              },
+            },
+          },
+        }),
+      []
+    )
+
+  return {
+    key: ActionKey.AddCw721,
+    Icon: AddCw721Emoji,
+    label: t('title.addCw721ToTreasury'),
+    description: t('info.addCw721ToTreasuryActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

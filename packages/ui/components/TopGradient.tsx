@@ -20,7 +20,7 @@ export const TopGradient = ({
         accentColor.startsWith('#')
         ? `${accentColor.slice(0, 7)}66`
         : undefined)) ||
-    'rgba(var(--v2-brand), 0.4)'
+    'rgba(var(--brand), 0.4)'
 
   return (
     <div

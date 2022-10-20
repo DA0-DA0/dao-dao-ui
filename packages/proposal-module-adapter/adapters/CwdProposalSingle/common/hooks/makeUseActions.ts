@@ -1,9 +1,7 @@
 import { useMemo } from 'react'
 
-import {
-  ContractVersion,
-  IProposalModuleAdapterCommonOptions,
-} from '@dao-dao/tstypes'
+import { useActionOptions } from '@dao-dao/actions/react/context'
+import { Action, IProposalModuleAdapterCommonOptions } from '@dao-dao/tstypes'
 
 import {
   makeUpdatePreProposeConfigAction,
@@ -13,17 +11,25 @@ import {
 
 export const makeUseActions =
   ({ proposalModule }: IProposalModuleAdapterCommonOptions) =>
-  () =>
-    useMemo(
-      () =>
-        proposalModule.version === ContractVersion.V0_1_0
-          ? [makeUpdateProposalConfigV1Action(proposalModule)]
-          : [
-              makeUpdateProposalConfigV2Action(proposalModule),
-              ...// If has pre propose module, add update config action.
-              (proposalModule.preProposeAddress
-                ? [makeUpdatePreProposeConfigAction(proposalModule)]
-                : []),
-            ],
-      []
-    )
+  (): Action[] => {
+    const _options = useActionOptions()
+
+    return useMemo(() => {
+      const options = {
+        ..._options,
+        proposalModule,
+      }
+
+      return (
+        [
+          makeUpdateProposalConfigV1Action(options),
+          makeUpdateProposalConfigV2Action(options),
+          makeUpdatePreProposeConfigAction(options),
+        ]
+          // Remove null values, since maker functions return null if they don't
+          // make sense in the context (such as the v2 config action for a v1
+          // proposal module).
+          .filter(Boolean) as Action[]
+      )
+    }, [_options])
+  }

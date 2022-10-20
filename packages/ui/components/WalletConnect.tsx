@@ -36,7 +36,7 @@ export const WalletConnect = ({
   return connected ? (
     <div
       className={clsx(
-        'group relative rounded-lg bg-primary py-2 px-4 hover:outline hover:outline-brand',
+        'group relative rounded-lg bg-background-primary py-2 px-4 hover:outline hover:outline-border-interactive-active',
         className
       )}
     >
@@ -57,14 +57,17 @@ export const WalletConnect = ({
     </div>
   ) : (
     <Button
-      className={clsx('py-4 hover:outline hover:outline-brand', className)}
+      className={clsx(
+        'py-4 hover:outline hover:outline-border-interactive-active',
+        className
+      )}
       onClick={onConnect}
       size="lg"
       type="button"
       {...buttonProps}
     >
       <Wallet height="20px" width="20px" />
-      <p className="link-text text-light">{t('button.connectWallet')}</p>
+      <p className="link-text">{t('button.connectWallet')}</p>
     </Button>
   )
 }

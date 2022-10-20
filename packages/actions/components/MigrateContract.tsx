@@ -18,6 +18,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../react/context'
 import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'
 
@@ -31,12 +32,12 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
   onRemove,
   errors,
   isCreating,
-  coreAddress,
   options: { onContractChange, contractAdmin },
   Loader,
 }) => {
   const { register, control } = useFormContext()
   const { t } = useTranslation()
+  const { address } = useActionOptions()
 
   return (
     <ActionCard
@@ -84,7 +85,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         </div>
       </div>
       <div className="my-2">
-        <IsAdminWarning admin={contractAdmin} maybeAdmin={coreAddress} />
+        <IsAdminWarning admin={contractAdmin} maybeAdmin={address} />
       </div>
       <div className="flex flex-col gap-1">
         <InputLabel name={t('form.migrateMessage')} />

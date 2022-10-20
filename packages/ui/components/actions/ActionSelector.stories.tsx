@@ -1,7 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { useActions } from '@dao-dao/actions'
-import { ContractVersion } from '@dao-dao/tstypes'
 
 import { ActionSelector } from './ActionSelector'
 
@@ -11,7 +10,7 @@ export default {
 } as ComponentMeta<typeof ActionSelector>
 
 const Template: ComponentStory<typeof ActionSelector> = (args) => {
-  const actions = useActions(ContractVersion.V0_2_0)
+  const actions = useActions()
 
   return <ActionSelector {...args} actions={actions} />
 }

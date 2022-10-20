@@ -26,8 +26,8 @@ export const Switch = ({
       'relative flex flex-none items-center rounded-full',
       {
         'cursor-pointer hover:opacity-90': !readOnly,
-        'bg-valid': enabled,
-        'border border-dark bg-transparent': !enabled,
+        'bg-background-button-active': enabled,
+        'border border-color-dark bg-transparent': !enabled,
         // Sizing.
         'h-[16px] w-[28px]': sizing === 'sm',
         'h-[38px] w-[67px]': sizing === 'lg',
@@ -38,7 +38,7 @@ export const Switch = ({
   >
     <div
       className={clsx(
-        'absolute rounded-full bg-toast transition-all',
+        'absolute rounded-full bg-background-button transition-all',
         // Sizing.
         {
           // Small
@@ -77,7 +77,7 @@ export const SwitchCard = ({
   return (
     <div
       className={clsx(
-        'flex flex-row items-center justify-between gap-4 rounded-md bg-card py-2 px-3',
+        'flex flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3',
         containerClassName
       )}
     >

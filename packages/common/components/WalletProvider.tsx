@@ -60,12 +60,12 @@ export const WalletProvider = ({
       classNames={{
         modalOverlay: '!backdrop-brightness-50 !backdrop-filter',
         modalContent:
-          '!p-6 !max-w-md !bg-white !rounded-lg !border !border-focus',
+          '!p-6 !max-w-md !bg-background-base !rounded-lg !border !border-border-interactive-focus',
         modalCloseButton:
-          '!p-1 hover:!bg-secondary !rounded-full !transition !absolute !top-2 !right-2 ',
+          '!p-1 hover:!bg-background-secondary !rounded-full !transition !absolute !top-2 !right-2 ',
         modalHeader: '!header-text',
         modalSubheader: '!title-text',
-        wallet: '!rounded-lg !bg-card !p-4 !shadow-none',
+        wallet: '!rounded-lg !bg-background-secondary !p-4 !shadow-none',
         walletImage: '!rounded-full',
         walletName: '!primary-text',
         walletDescription: '!caption-text',

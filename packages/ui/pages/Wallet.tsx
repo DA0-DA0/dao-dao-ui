@@ -14,9 +14,9 @@ import { Airplane } from '@dao-dao/icons'
 import {
   Action,
   ActionKey,
-  ActionKeyAndData,
   UseDefaults,
   UseTransformToCosmos,
+  WalletTransactionForm,
 } from '@dao-dao/tstypes'
 import { CosmosMsgFor_Empty } from '@dao-dao/tstypes/contracts/common'
 import { decodedMessagesString } from '@dao-dao/utils'
@@ -32,12 +32,6 @@ import {
   useAppLayoutContext,
 } from '../components'
 
-export interface WalletForm {
-  title: string
-  description: string
-  actionData: ActionKeyAndData[]
-}
-
 export interface WalletProps {
   connected: boolean
   actions: Action[]
@@ -51,9 +45,8 @@ export interface WalletProps {
       }
     >
   >
-  formMethods: UseFormReturn<WalletForm, object>
+  formMethods: UseFormReturn<WalletTransactionForm, object>
   execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
-  walletAddress: string
   loading: boolean
   rightSidebarContent: ReactNode
   error?: string
@@ -70,7 +63,6 @@ export const Wallet = ({
   actionsWithData,
   formMethods,
   execute,
-  walletAddress,
   loading,
   rightSidebarContent,
   error,
@@ -96,7 +88,7 @@ export const Wallet = ({
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
 
-  const onSubmitForm: SubmitHandler<WalletForm> = useCallback(
+  const onSubmitForm: SubmitHandler<WalletTransactionForm> = useCallback(
     ({ actionData }, event) => {
       setShowSubmitErrorNote(false)
 
@@ -118,7 +110,7 @@ export const Wallet = ({
     [execute, actionsWithData]
   )
 
-  const onSubmitError: SubmitErrorHandler<WalletForm> = useCallback(
+  const onSubmitError: SubmitErrorHandler<WalletTransactionForm> = useCallback(
     (errors) => {
       console.error('Form errors', errors)
 
@@ -202,7 +194,6 @@ export const Wallet = ({
                         Loader={Loader}
                         Logo={Logo}
                         allActionsWithData={proposalActionData}
-                        coreAddress={walletAddress}
                         data={actionData.data}
                         errors={errors.actionData?.[index]?.data || {}}
                         fieldNamePrefix={`actionData.${index}.data.`}

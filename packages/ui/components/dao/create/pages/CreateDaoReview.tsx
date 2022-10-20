@@ -209,7 +209,9 @@ export const CreateDaoReview = ({
           <CosmosMessageDisplay value={previewJson} />
         </div>
       )}
-      {previewError && <p className="mt-4 text-error">{previewError}</p>}
+      {previewError && (
+        <p className="mt-4 text-text-interactive-error">{previewError}</p>
+      )}
     </>
   )
 }

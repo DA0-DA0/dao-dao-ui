@@ -102,7 +102,7 @@ export const TreasuryAndNftsTab = <
                 <NftCard {...(props as N)} key={index} />
               ))}
 
-              {/* TODO: Uncomment when ICS721 is ready. */}
+              {/* TODO(ICS721): Uncomment when ICS721 is ready. */}
               {/* <NoContent
                 Icon={Image}
                 body={t('info.depositFromStargazeQuestion')}

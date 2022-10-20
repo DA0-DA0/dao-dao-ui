@@ -16,6 +16,7 @@ import {
   Cw20StakeSelectors,
   refreshDaoVotingPowerAtom,
   stakingLoadingAtom,
+  useAwaitNextBlock,
   useWalletProfile,
 } from '@dao-dao/state'
 import {
@@ -135,6 +136,7 @@ const InnerStakingModal = ({
   )
   const refreshDaoVotingPower = () => setRefreshDaoVotingPower((id) => id + 1)
 
+  const awaitNextBlock = useAwaitNextBlock()
   const onAction = async (mode: StakingMode, amount: number) => {
     if (!connected) {
       toast.error(t('error.connectWalletToContinue'))
@@ -156,9 +158,8 @@ const InnerStakingModal = ({
             msg: btoa('{"stake": {}}'),
           })
 
-          // TODO: Figure out better solution for detecting block.
           // New balances will not appear until the next block.
-          await new Promise((resolve) => setTimeout(resolve, 6500))
+          await awaitNextBlock()
 
           refreshBalances()
           refreshTotals()
@@ -224,9 +225,8 @@ const InnerStakingModal = ({
             ).toString(),
           })
 
-          // TODO: Figure out better solution for detecting block.
           // New balances will not appear until the next block.
-          await new Promise((resolve) => setTimeout(resolve, 6500))
+          await awaitNextBlock()
 
           refreshBalances()
           refreshTotals()
@@ -260,9 +260,8 @@ const InnerStakingModal = ({
         try {
           await doClaim()
 
-          // TODO: Figure out better solution for detecting block.
           // New balances will not appear until the next block.
-          await new Promise((resolve) => setTimeout(resolve, 6500))
+          await awaitNextBlock()
 
           refreshBalances()
           refreshTotals()

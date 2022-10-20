@@ -181,7 +181,7 @@ const StakeUnstakeModesBody = ({
           value={amount}
         />
         {amount > max && (
-          <span className="caption-text mt-1 ml-1 text-error">
+          <span className="caption-text mt-1 ml-1 text-text-interactive-error">
             {t('error.cannotStakeMoreThanYouHave')}
           </span>
         )}

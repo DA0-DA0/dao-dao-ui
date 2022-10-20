@@ -3,8 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import {
   ProposalStatus,
   ProposalStatusMap,
-} from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalStatus'
-import { ContractVersion } from '@dao-dao/tstypes'
+} from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalLine/ProposalStatus'
 import { formatDate, secondsToWdhms } from '@dao-dao/utils'
 
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
@@ -34,7 +33,6 @@ export const makeProps = (
   href: '#',
   proposalPrefix: 'A',
   proposalNumber: Math.floor(Math.random() * 100),
-  proposalModuleVersion: ContractVersion.V0_2_0,
   title:
     "Give everyone 1 million dollars, which is a lot of money, but how much though? Let's find out.",
   expiration:
@@ -55,10 +53,6 @@ export const makeProps = (
     />
   ),
   votingOpen: status === 'open',
-  lastUpdated: new Date(
-    // Last updated 2 days ago.
-    new Date().getTime() - 48 * 60 * 60 * 1000
-  ),
 })
 
 export const Default = Template.bind({})

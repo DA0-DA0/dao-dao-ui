@@ -64,7 +64,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       title={t('title.instantiateSmartContract')}
     >
       {instantiatedAddress && (
-        <div className="mb-2 flex flex-row items-center gap-3 text-primary">
+        <div className="mb-2 flex flex-row items-center gap-3 text-text-primary">
           <InputLabel name={t('form.instantiatedAddress') + ':'} />
           <CopyToClipboard
             takeStartEnd={{ start: instantiatedAddress.length, end: 0 }}
@@ -132,11 +132,11 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
       />
 
       {errors?.message ? (
-        <p className="flex items-center gap-1 text-sm text-error">
+        <p className="flex items-center gap-1 text-sm text-text-interactive-error">
           <XIcon className="inline w-5" /> <span>{errors.message.message}</span>
         </p>
       ) : (
-        <p className="text-success flex items-center gap-1 text-sm">
+        <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
           <CheckIcon className="inline w-5" /> {t('info.jsonIsValid')}
         </p>
       )}
@@ -157,7 +157,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           />
         ))}
         {!isCreating && coins.length === 0 && (
-          <p className="mt-1 mb-2 text-xs italic text-tertiary">
+          <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
             {t('info.none')}
           </p>
         )}

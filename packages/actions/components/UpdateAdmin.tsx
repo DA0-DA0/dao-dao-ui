@@ -14,6 +14,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../react/context'
 import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'
 
@@ -27,11 +28,11 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
   onRemove,
   errors,
   isCreating,
-  coreAddress,
   options: { onContractChange, contractAdmin },
 }) => {
   const { register } = useFormContext()
   const { t } = useTranslation()
+  const { address } = useActionOptions()
 
   return (
     <ActionCard
@@ -68,7 +69,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
         </div>
       </div>
       <div className="my-2">
-        <IsAdminWarning admin={contractAdmin} maybeAdmin={coreAddress} />
+        <IsAdminWarning admin={contractAdmin} maybeAdmin={address} />
       </div>
     </ActionCard>
   )

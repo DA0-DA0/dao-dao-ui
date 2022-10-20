@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 import { useEffect } from 'react'
 
-import { addCw721Action } from '@dao-dao/actions/actions/AddCw721'
+import { useActionForKey } from '@dao-dao/actions'
 import { StargazeNftImportModal } from '@dao-dao/common'
 import {
   nftCardInfosSelector,
@@ -11,6 +11,7 @@ import {
   useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/state'
+import { ActionKey } from '@dao-dao/tstypes'
 import {
   NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
@@ -48,13 +49,18 @@ export const TreasuryAndNftsTab = () => {
     treasuryTokenCardInfosLoadable.state,
   ])
 
+  const addCw721Action = useActionForKey(ActionKey.AddCw721)
+  // Prefill URL only valid if action exists.
+  const prefillValid = !!addCw721Action
   const encodedProposalPrefill = useEncodedCwdProposalSinglePrefill({
-    actions: [
-      {
-        action: addCw721Action,
-        data: addCw721Action.useDefaults(daoInfo.coreAddress),
-      },
-    ],
+    actions: addCw721Action
+      ? [
+          {
+            action: addCw721Action,
+            data: addCw721Action.useDefaults(),
+          },
+        ]
+      : [],
   })
 
   return (
@@ -63,8 +69,9 @@ export const TreasuryAndNftsTab = () => {
       StargazeNftImportModal={StargazeNftImportModal}
       TokenCard={TokenCard}
       addCollectionHref={
-        encodedProposalPrefill &&
-        `/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefill}`
+        prefillValid && encodedProposalPrefill
+          ? `/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefill}`
+          : undefined
       }
       isMember={isMember}
       nfts={loadableToLoadingData(nftCardInfosLoadable, [])}

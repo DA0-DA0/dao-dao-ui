@@ -10,6 +10,7 @@ import {
   blocksPerYearSelector,
   junoswapPoolsListSelector,
   stakingLoadingAtom,
+  useAwaitNextBlock,
   useCachedLoadable,
   useWalletProfile,
 } from '@dao-dao/state'
@@ -96,6 +97,7 @@ export const ProfileCardMemberInfo = ({
     sender: walletAddress ?? '',
   })
 
+  const awaitNextBlock = useAwaitNextBlock()
   const onClaim = useCallback(async () => {
     if (!connected) {
       return toast.error(t('error.connectWalletToContinue'))
@@ -108,9 +110,8 @@ export const ProfileCardMemberInfo = ({
     try {
       await doClaim()
 
-      // TODO: Figure out better solution for detecting block.
       // New balances will not appear until the next block.
-      await new Promise((resolve) => setTimeout(resolve, 6500))
+      await awaitNextBlock()
 
       refreshBalances()
       refreshTotals()
@@ -131,6 +132,7 @@ export const ProfileCardMemberInfo = ({
       setClaimingLoading(false)
     }
   }, [
+    awaitNextBlock,
     connected,
     doClaim,
     governanceTokenInfo.decimals,

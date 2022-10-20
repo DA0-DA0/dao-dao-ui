@@ -3,9 +3,9 @@ import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -58,32 +58,34 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
     [msg]
   )
 
-const Component: ActionComponent = (props) => {
-  const [contract, setContract] = useState('')
+export const makeMigrateAction: ActionMaker<MigrateData> = ({ t }) => {
+  const Component: ActionComponent = (props) => {
+    const [contract, setContract] = useState('')
 
-  const admin = useRecoilValueLoadable(
-    contractAdminSelector({ contractAddress: contract })
-  )
+    const admin = useRecoilValueLoadable(
+      contractAdminSelector({ contractAddress: contract })
+    )
 
-  return (
-    <StatelessMigrateContractComponent
-      {...props}
-      options={{
-        contractAdmin:
-          admin.state === 'hasValue' ? admin.getValue() : undefined,
-        onContractChange: (contract: string) => setContract(contract),
-      }}
-    />
-  )
-}
+    return (
+      <StatelessMigrateContractComponent
+        {...props}
+        options={{
+          contractAdmin:
+            admin.state === 'hasValue' ? admin.getValue() : undefined,
+          onContractChange: (contract: string) => setContract(contract),
+        }}
+      />
+    )
+  }
 
-export const migrateAction: Action<MigrateData> = {
-  key: ActionKey.Migrate,
-  Icon: MigrateContractEmoji,
-  label: 'Migrate Smart Contract',
-  description: 'Migrate a CosmWasm contract to a new code ID.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+  return {
+    key: ActionKey.Migrate,
+    Icon: MigrateContractEmoji,
+    label: t('title.migrateSmartContract'),
+    description: t('info.migrateSmartContractActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

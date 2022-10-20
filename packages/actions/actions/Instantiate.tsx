@@ -10,9 +10,9 @@ import {
   transactionEventsSelector,
 } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -34,14 +34,6 @@ interface InstantiateData {
   message: string
   funds: { denom: string; amount: number }[]
 }
-
-const useDefaults: UseDefaults<InstantiateData> = (coreAddress) => ({
-  admin: coreAddress,
-  codeId: 0,
-  label: '',
-  message: '{}',
-  funds: [],
-})
 
 const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
   useCallback(({ admin, codeId, label, message, funds }: InstantiateData) => {
@@ -102,103 +94,117 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
     [msg]
   )
 
-const Component: ActionComponent = (props) => {
-  const nativeBalances = useRecoilValue(
-    nativeBalancesSelector({ address: props.coreAddress })
-  )
+export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
+  t,
+  address,
+}) => {
+  const useDefaults: UseDefaults<InstantiateData> = () => ({
+    admin: address,
+    codeId: 0,
+    label: '',
+    message: '{}',
+    funds: [],
+  })
 
-  const {
-    hooks: { useProposalExecutionTxHash },
-  } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
-  const executionTxHash = useProposalExecutionTxHash?.()
+  const Component: ActionComponent = (props) => {
+    const nativeBalances = useRecoilValue(nativeBalancesSelector({ address }))
 
-  const txEvents = useRecoilValue(
-    executionTxHash
-      ? transactionEventsSelector({ txHash: executionTxHash })
-      : constSelector(undefined)
-  )
+    // If in DAO context, use proposal execution hash to find instantiated
+    // address if already instantiated. If in wallet context, proposal module
+    // adapter will not be available.
+    const {
+      hooks: { useProposalExecutionTxHash },
+    } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
+    const executionTxHash = useProposalExecutionTxHash?.()
 
-  const { watch } = useFormContext()
-  const codeId: number = watch(props.fieldNamePrefix + 'codeId')
-  // This gets all instantiation actions that instantiate the same codeId
-  // and all addresses actually instantiated in the transaction on-chain.
-  // If these two lists are not the same length, then another instantiation
-  // occurred in this transaction (likely via a custom message or a
-  // contract execution) for the same code ID, and we cannot detect the
-  // correct address. If the lists are the same length, there is a 1:1
-  // mapping of instantiation actions to instantiated addresses, so we
-  // can use the index of this action in all instantiation actions to
-  // select the correct address.
-  const instantiatedAddress = useMemo(() => {
-    if (!txEvents) {
-      return
-    }
-
-    // All instantiate actions' data that instantiate the same code ID.
-    const instantiateActionsData = props.allActionsWithData
-      .filter(
-        ({ key, data }) =>
-          key === ActionKey.Instantiate &&
-          'codeId' in data &&
-          data.codeId === codeId
-      )
-      .map(({ data }) => data) as InstantiateData[]
-    // Index of this action in the list of all instantiation actions.
-    const innerIndex = instantiateActionsData.indexOf(
-      props.allActionsWithData[props.index].data
-    )
-    // Should never happen since this action is part of all actions.
-    if (innerIndex === -1) {
-      throw new Error(
-        'internal error: could not find inner instantiation action index'
-      )
-    }
-
-    // Instantiation events from the transaction data.
-    const instantiationAttributes: { key: string; value: string }[] =
-      txEvents.find(({ type }) => type === 'instantiate')?.attributes ?? []
-    // Instantiated addresses for the code ID this action instantiated.
-    const codeIdInstantiations = instantiationAttributes.reduce(
-      (acc, { key, value }, index) => [
-        ...acc,
-        ...(key === '_contract_address' &&
-        instantiationAttributes[index + 1].key === 'code_id' &&
-        Number(instantiationAttributes[index + 1].value) === codeId
-          ? [value]
-          : []),
-      ],
-      [] as string[]
+    const txEvents = useRecoilValue(
+      executionTxHash
+        ? transactionEventsSelector({ txHash: executionTxHash })
+        : constSelector(undefined)
     )
 
-    // If the instantiation action length does not match the actual
-    // instantiation events from the chain, then another message must've
-    // instantiated the contract, so we cannot definitively locate the
-    // address.
-    if (instantiateActionsData.length !== codeIdInstantiations.length) {
-      return
-    }
+    const { watch } = useFormContext()
+    const codeId: number = watch(props.fieldNamePrefix + 'codeId')
+    // This gets all instantiation actions that instantiate the same codeId
+    // and all addresses actually instantiated in the transaction on-chain.
+    // If these two lists are not the same length, then another instantiation
+    // occurred in this transaction (likely via a custom message or a
+    // contract execution) for the same code ID, and we cannot detect the
+    // correct address. If the lists are the same length, there is a 1:1
+    // mapping of instantiation actions to instantiated addresses, so we
+    // can use the index of this action in all instantiation actions to
+    // select the correct address.
+    const instantiatedAddress = useMemo(() => {
+      if (!txEvents) {
+        return
+      }
 
-    return codeIdInstantiations[innerIndex]
-  }, [txEvents, props, codeId])
+      // All instantiate actions' data that instantiate the same code ID.
+      const instantiateActionsData = props.allActionsWithData
+        .filter(
+          ({ key, data }) =>
+            key === ActionKey.Instantiate &&
+            'codeId' in data &&
+            data.codeId === codeId
+        )
+        .map(({ data }) => data) as InstantiateData[]
+      // Index of this action in the list of all instantiation actions.
+      const innerIndex = instantiateActionsData.indexOf(
+        props.allActionsWithData[props.index].data
+      )
+      // Should never happen since this action is part of all actions.
+      if (innerIndex === -1) {
+        throw new Error(
+          'internal error: could not find inner instantiation action index'
+        )
+      }
 
-  return (
-    <StatelessInstantiateComponent
-      {...props}
-      options={{
-        nativeBalances,
-        instantiatedAddress,
-      }}
-    />
-  )
-}
+      // Instantiation events from the transaction data.
+      const instantiationAttributes: { key: string; value: string }[] =
+        txEvents.find(({ type }) => type === 'instantiate')?.attributes ?? []
+      // Instantiated addresses for the code ID this action instantiated.
+      const codeIdInstantiations = instantiationAttributes.reduce(
+        (acc, { key, value }, index) => [
+          ...acc,
+          ...(key === '_contract_address' &&
+          instantiationAttributes[index + 1].key === 'code_id' &&
+          Number(instantiationAttributes[index + 1].value) === codeId
+            ? [value]
+            : []),
+        ],
+        [] as string[]
+      )
 
-export const instantiateAction: Action<InstantiateData> = {
-  key: ActionKey.Instantiate,
-  Icon: InstantiateEmoji,
-  label: 'Instantiate Smart Contract',
-  description: 'Instantiate a smart contract.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+      // If the instantiation action length does not match the actual
+      // instantiation events from the chain, then another message must've
+      // instantiated the contract, so we cannot definitively locate the
+      // address.
+      if (instantiateActionsData.length !== codeIdInstantiations.length) {
+        return
+      }
+
+      return codeIdInstantiations[innerIndex]
+    }, [txEvents, props, codeId])
+
+    return (
+      <StatelessInstantiateComponent
+        {...props}
+        options={{
+          nativeBalances,
+          instantiatedAddress,
+        }}
+      />
+    )
+  }
+
+  return {
+    key: ActionKey.Instantiate,
+    Icon: InstantiateEmoji,
+    label: t('title.instantiateSmartContract'),
+    description: t('info.instantiateSmartContractActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

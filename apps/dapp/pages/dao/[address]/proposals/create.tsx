@@ -65,11 +65,12 @@ const InnerProposalCreate = () => {
   const proposalModuleAdapterCommon = useMemo(
     () =>
       matchAndLoadCommon(selectedProposalModule, {
+        chainId: daoInfo.chainId,
         coreAddress: daoInfo.coreAddress,
         Loader,
         Logo,
       }),
-    [daoInfo.coreAddress, selectedProposalModule]
+    [daoInfo.chainId, daoInfo.coreAddress, selectedProposalModule]
   )
 
   const {

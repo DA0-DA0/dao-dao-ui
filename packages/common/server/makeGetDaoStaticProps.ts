@@ -1,4 +1,5 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { fromBech32 } from '@cosmjs/encoding'
 import axios from 'axios'
 import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticProps, Redirect } from 'next'
@@ -11,7 +12,7 @@ import {
   ProposalModuleAdapterError,
   matchAndLoadAdapter,
 } from '@dao-dao/proposal-module-adapter'
-import { CwdCoreV2QueryClient, fetchProposalModules } from '@dao-dao/state'
+import { CwdCoreV2QueryClient } from '@dao-dao/state'
 import {
   ContractVersion,
   DaoParentInfo,
@@ -21,7 +22,7 @@ import { ConfigResponse as ConfigV1Response } from '@dao-dao/tstypes/contracts/C
 import { ConfigResponse as ConfigV2Response } from '@dao-dao/tstypes/contracts/CwdCore.v2'
 import { Loader, Logo } from '@dao-dao/ui'
 import {
-  CHAIN_ID,
+  CHAIN_PREFIX_ID_MAP,
   CI,
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
@@ -34,6 +35,7 @@ import {
 } from '@dao-dao/utils'
 
 import { DaoPageWrapperProps } from '../components'
+import { fetchProposalModules } from '../utils/fetchProposalModules'
 
 interface GetDaoStaticPropsMakerProps {
   leadingTitle?: string
@@ -53,6 +55,7 @@ interface GetDaoStaticPropsMakerOptions {
     cwClient: CosmWasmClient
     coreClient: CwdCoreV2QueryClient
     config: ConfigV1Response | ConfigV2Response
+    chainId: string
     coreAddress: string
     coreVersion: ContractVersion
     proposalModules: ProposalModule[]
@@ -99,12 +102,25 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       }
     }
 
+    // Get chain for the DAO based on its address prefix.
+    const bech32Prefix = fromBech32(coreAddress).prefix
+    // If address prefix is not recognized, display not found.
+    if (!(bech32Prefix in CHAIN_PREFIX_ID_MAP)) {
+      // Excluding `info` will render DAONotFound.
+      return {
+        props: {
+          ...i18nProps,
+          title: serverT('title.daoNotFound'),
+          description: '',
+        },
+      }
+    }
+    const chainId =
+      CHAIN_PREFIX_ID_MAP[bech32Prefix as keyof typeof CHAIN_PREFIX_ID_MAP]
+
     // Add to Sentry error tags if error occurs.
     let coreVersion: ContractVersion | undefined
     try {
-      // TODO(multichain): Get this dynamically somehow.
-      const chainId = CHAIN_ID
-
       const cwClient = await cosmWasmClientRouter.connect(
         getRpcForChainId(chainId)
       )
@@ -194,6 +210,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           cwClient,
           coreClient,
           config,
+          chainId,
           coreAddress,
           coreVersion,
           proposalModules,
@@ -229,6 +246,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           accentColor,
           serializedInfo: {
             chainId,
+            bech32Prefix,
             coreAddress,
             coreVersion,
             votingModuleAddress,
@@ -300,7 +318,12 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           // Report to Sentry.
           error: processError(error, {
             forceCapture: true,
-            tags: { coreAddress, coreVersion: coreVersion ?? '<undefined>' },
+            tags: {
+              chainId,
+              coreAddress,
+              coreVersion: coreVersion ?? '<undefined>',
+              bech32Prefix,
+            },
             extra: { context },
           }),
         },
@@ -330,6 +353,7 @@ export const makeGetDaoProposalStaticProps = ({
       context: { params = {} },
       t,
       cwClient,
+      chainId,
       coreAddress,
       proposalModules,
     }) => {
@@ -355,6 +379,7 @@ export const makeGetDaoProposalStaticProps = ({
             functions: { getProposalInfo },
           },
         } = await matchAndLoadAdapter(proposalModules, proposalId, {
+          chainId,
           coreAddress,
           Logo,
           Loader,

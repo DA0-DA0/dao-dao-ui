@@ -39,7 +39,6 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
   const { t } = useTranslation()
   const router = useRouter()
   const daoInfo = useDaoInfoContext()
-  const { coreAddress, coreVersion } = daoInfo
   const { connected } = useWallet()
   const {
     adapter: {
@@ -62,7 +61,6 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()
   const actions = useActions(
-    coreVersion,
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]
@@ -101,11 +99,11 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
 
     // Manually revalidate DAO static props. Don't await this promise since we
     // just want to tell the server to do it, and we're about to reload anyway.
-    fetch(`/api/revalidate?d=${coreAddress}&p=${proposalInfo.id}`)
+    fetch(`/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`)
 
     // Refresh entire app since any DAO config may have changed.
     window.location.reload()
-  }, [coreAddress, proposalInfo.id, refreshProposalAndAll, t])
+  }, [daoInfo.coreAddress, proposalInfo.id, refreshProposalAndAll, t])
 
   const onCloseSuccess = useCallback(() => {
     refreshProposalAndAll()
@@ -126,7 +124,9 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
           availableActions={orderedActions}
           onDuplicate={(data) =>
             router.push(
-              `/dao/${coreAddress}/proposals/create?prefill=${encodeURIComponent(
+              `/dao/${
+                daoInfo.coreAddress
+              }/proposals/create?prefill=${encodeURIComponent(
                 JSON.stringify(data)
               )}`
             )
@@ -165,6 +165,7 @@ const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
     {props.proposalInfo && props.serializedInfo ? (
       <ProposalModuleAdapterProvider
         initialOptions={{
+          chainId: props.serializedInfo.chainId,
           coreAddress: props.serializedInfo.coreAddress,
           Logo,
           Loader,

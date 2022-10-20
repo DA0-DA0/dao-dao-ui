@@ -69,7 +69,7 @@ export const SegmentedControls = <T extends unknown>({
                   'text-text-secondary',
               // Highlight background when selected. Button contains its own
               // hover background class.
-              selected === value && 'bg-background-primary'
+              selected === value && '!bg-background-primary'
             )}
             loading={loading === value}
             onClick={() => onSelect(value)}

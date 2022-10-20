@@ -5,13 +5,14 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
-import { stakeAction } from '@dao-dao/actions/actions/Stake'
+import { useActionForKey } from '@dao-dao/actions'
 import {
   refreshNativeTokenStakingInfoAtom,
   tokenCardLazyStakingInfoSelector,
   useCachedLoadable,
   useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/state'
+import { ActionKey } from '@dao-dao/tstypes'
 import { TokenCardInfo } from '@dao-dao/tstypes/dao'
 import { TokenCard as StatelessTokenCard, useDaoInfoContext } from '@dao-dao/ui'
 import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
@@ -55,24 +56,29 @@ export const TokenCard = (props: TokenCardInfo) => {
       : lazyStakingInfoLoadable.contents?.stakes ?? []
 
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
-  const encodedProposalPrefillClaim = useEncodedCwdProposalSinglePrefill({
-    actions: stakesWithRewards.map(({ validator: { address } }) => ({
-      action: stakeAction,
-      data: {
-        stakeType: StakeType.WithdrawDelegatorReward,
-        validator: address,
-        // Default values, not needed for displaying this type of message.
-        amount: 1,
-        denom: props.tokenDenom,
-      },
-    })),
-  })
 
+  const stakeAction = useActionForKey(ActionKey.Stake)
+  // Prefill URLs only valid if action exists.
+  const prefillValid = !!stakeAction
+  const encodedProposalPrefillClaim = useEncodedCwdProposalSinglePrefill({
+    actions: stakeAction
+      ? stakesWithRewards.map(({ validator: { address } }) => ({
+          action: stakeAction,
+          data: {
+            stakeType: StakeType.WithdrawDelegatorReward,
+            validator: address,
+            // Default values, not needed for displaying this type of message.
+            amount: 1,
+            denom: props.tokenDenom,
+          },
+        }))
+      : [],
+  })
   const encodedProposalPrefillStakeUnstake = useEncodedCwdProposalSinglePrefill(
     {
       // If has unstaked, show stake action by default.
-      actions:
-        props.unstakedBalance > 0
+      actions: stakeAction
+        ? props.unstakedBalance > 0
           ? [
               {
                 action: stakeAction,
@@ -93,11 +99,16 @@ export const TokenCard = (props: TokenCardInfo) => {
                 amount,
                 denom: props.tokenDenom,
               },
-            })),
+            }))
+        : [],
     }
   )
 
   useEffect(() => {
+    if (!prefillValid) {
+      return
+    }
+
     router.prefetch(
       `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillClaim}`
     )
@@ -108,6 +119,7 @@ export const TokenCard = (props: TokenCardInfo) => {
     coreAddress,
     encodedProposalPrefillClaim,
     encodedProposalPrefillStakeUnstake,
+    prefillValid,
     router,
   ])
 
@@ -125,7 +137,9 @@ export const TokenCard = (props: TokenCardInfo) => {
           : undefined
       }
       onProposeClaim={
-        stakesWithRewards.length > 0 && encodedProposalPrefillClaim
+        prefillValid &&
+        stakesWithRewards.length > 0 &&
+        encodedProposalPrefillClaim
           ? () =>
               router.push(
                 `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillClaim}`
@@ -133,6 +147,7 @@ export const TokenCard = (props: TokenCardInfo) => {
           : undefined
       }
       onProposeStakeUnstake={
+        prefillValid &&
         (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
         encodedProposalPrefillStakeUnstake
           ? () =>

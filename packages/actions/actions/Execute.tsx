@@ -5,9 +5,9 @@ import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -89,28 +89,28 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
     [msg]
   )
 
-const Component: ActionComponent = (props) => {
-  const nativeBalances = useRecoilValue(
-    nativeBalancesSelector({ address: props.coreAddress })
-  )
+export const makeExecuteAction: ActionMaker<ExecuteData> = ({ t, address }) => {
+  const Component: ActionComponent = (props) => {
+    const nativeBalances = useRecoilValue(nativeBalancesSelector({ address }))
 
-  return (
-    <StatelessExecuteComponent
-      {...props}
-      options={{
-        nativeBalances,
-      }}
-    />
-  )
-}
+    return (
+      <StatelessExecuteComponent
+        {...props}
+        options={{
+          nativeBalances,
+        }}
+      />
+    )
+  }
 
-export const executeAction: Action<ExecuteData> = {
-  key: ActionKey.Execute,
-  Icon: ExecuteEmoji,
-  label: 'Execute Smart Contract',
-  description: 'Execute a message on a smart contract.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+  return {
+    key: ActionKey.Execute,
+    Icon: ExecuteEmoji,
+    label: t('title.executeSmartContract'),
+    description: t('info.executeSmartContractActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

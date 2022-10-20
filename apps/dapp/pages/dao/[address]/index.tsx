@@ -14,7 +14,7 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { manageSubDaosAction } from '@dao-dao/actions/actions/ManageSubDaos'
+import { useActionForKey } from '@dao-dao/actions'
 import {
   DaoInfoBar,
   DaoPageWrapper,
@@ -29,6 +29,7 @@ import {
   useVotingModule,
   useWalletProfile,
 } from '@dao-dao/state'
+import { ActionKey } from '@dao-dao/tstypes'
 import { CheckedDepositInfo } from '@dao-dao/tstypes/contracts/common'
 import {
   DaoHome,
@@ -76,29 +77,42 @@ const InnerDaoHome = () => {
         })
       : constSelector(undefined)
   )
-  const encodedAddSubDaoProposalPrefill = useEncodedCwdProposalSinglePrefill({
-    title: t('title.recognizeSubDao', {
-      name: daoInfo.name,
-    }),
-    description: t('info.recognizeSubDaoDescription', {
-      name: daoInfo.name,
-    }),
-    actions: [
-      {
-        action: manageSubDaosAction,
-        data: {
-          toAdd: [
+  const manageSubDaosAction = useActionForKey(ActionKey.ManageSubDaos)
+  // Prefill URL only valid if action exists.
+  const prefillValid = !!manageSubDaosAction
+  const encodedAddSubDaoProposalPrefill = useEncodedCwdProposalSinglePrefill(
+    manageSubDaosAction
+      ? {
+          title: t('title.recognizeSubDao', {
+            name: daoInfo.name,
+          }),
+          description: t('info.recognizeSubDaoDescription', {
+            name: daoInfo.name,
+          }),
+          actions: [
             {
-              addr: daoInfo.coreAddress,
+              action: manageSubDaosAction,
+              data: {
+                toAdd: [
+                  {
+                    addr: daoInfo.coreAddress,
+                  },
+                ],
+                toRemove: [],
+              },
             },
           ],
-          toRemove: [],
-        },
-      },
-    ],
-  })
-  const addSubDaoProposalPrefillHref = `/dao/${daoInfo.parentDao?.coreAddress}/proposals/create?prefill=${encodedAddSubDaoProposalPrefill}`
+        }
+      : { actions: [] }
+  )
+  const addSubDaoProposalPrefillHref =
+    prefillValid && daoInfo.parentDao && encodedAddSubDaoProposalPrefill
+      ? `/dao/${daoInfo.parentDao.coreAddress}/proposals/create?prefill=${encodedAddSubDaoProposalPrefill}`
+      : undefined
   useEffect(() => {
+    if (!addSubDaoProposalPrefillHref) {
+      return
+    }
     router.prefetch(addSubDaoProposalPrefillHref)
   }, [addSubDaoProposalPrefillHref, router])
   // Notify if parent has not yet added subDAO.
@@ -111,7 +125,7 @@ const InnerDaoHome = () => {
         ({ addr }) => addr === daoInfo.coreAddress
       )
     ) {
-      if (isMemberOfParent) {
+      if (isMemberOfParent && addSubDaoProposalPrefillHref) {
         toast(
           <p
             className="cursor-pointer transition-opacity hover:opacity-80 active:opacity-70"
@@ -153,12 +167,13 @@ const InnerDaoHome = () => {
       daoInfo.proposalModules.map(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
+            chainId: daoInfo.chainId,
             coreAddress: daoInfo.coreAddress,
             Loader,
             Logo,
           }).selectors.depositInfo
       ),
-    [daoInfo.coreAddress, daoInfo.proposalModules]
+    [daoInfo.chainId, daoInfo.coreAddress, daoInfo.proposalModules]
   )
   const proposalModuleDepositInfos = useRecoilValue(
     waitForAll(depositInfoSelectors)

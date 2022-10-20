@@ -3,9 +3,10 @@ import { useRecoilValue } from 'recoil'
 
 import { CwdCoreV2Selectors } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
+  ActionOptionsContextType,
   ContractVersion,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -28,87 +29,96 @@ const useDefaults: UseDefaults<ManageSubDaosData> = () => ({
   toRemove: [],
 })
 
-const useTransformToCosmos: UseTransformToCosmos<ManageSubDaosData> = (
-  coreAddress: string
-) =>
-  useCallback(
-    ({ toAdd, toRemove }) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: coreAddress,
-            funds: [],
-            msg: {
-              update_sub_daos: {
-                to_add: toAdd,
-                to_remove: toRemove.map(({ address }) => address),
+export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
+  t,
+  address,
+  context,
+}) => {
+  // v1 DAOS don't support SubDAOs.
+  if (
+    context.type !== ActionOptionsContextType.Dao ||
+    context.coreVersion === ContractVersion.V0_1_0
+  ) {
+    return null
+  }
+
+  const useTransformToCosmos: UseTransformToCosmos<ManageSubDaosData> = () =>
+    useCallback(
+      ({ toAdd, toRemove }) =>
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: address,
+              funds: [],
+              msg: {
+                update_sub_daos: {
+                  to_add: toAdd,
+                  to_remove: toRemove.map(({ address }) => address),
+                },
               },
             },
           },
-        },
-      }),
-    [coreAddress]
-  )
+        }),
+      []
+    )
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageSubDaosData> = (
-  msg: Record<string, any>,
-  coreAddress: string
-) =>
-  useMemo(() => {
-    if (
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'contract_addr' in msg.wasm.execute &&
-      msg.wasm.execute.contract_addr === coreAddress &&
-      'update_sub_daos' in msg.wasm.execute.msg &&
-      'to_add' in msg.wasm.execute.msg.update_sub_daos &&
-      'to_remove' in msg.wasm.execute.msg.update_sub_daos
-    ) {
-      return {
-        match: true,
-        data: {
-          toAdd: msg.wasm.execute.msg.update_sub_daos.to_add,
-          toRemove: msg.wasm.execute.msg.update_sub_daos.to_remove.map(
-            (addr: string) => ({
-              addr,
-            })
-          ),
-        },
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageSubDaosData> = (
+    msg: Record<string, any>
+  ) =>
+    useMemo(() => {
+      if (
+        'wasm' in msg &&
+        'execute' in msg.wasm &&
+        'contract_addr' in msg.wasm.execute &&
+        msg.wasm.execute.contract_addr === address &&
+        'update_sub_daos' in msg.wasm.execute.msg &&
+        'to_add' in msg.wasm.execute.msg.update_sub_daos &&
+        'to_remove' in msg.wasm.execute.msg.update_sub_daos
+      ) {
+        return {
+          match: true,
+          data: {
+            toAdd: msg.wasm.execute.msg.update_sub_daos.to_add,
+            toRemove: msg.wasm.execute.msg.update_sub_daos.to_remove.map(
+              (addr: string) => ({
+                addr,
+              })
+            ),
+          },
+        }
       }
-    }
 
-    return { match: false }
-  }, [coreAddress, msg])
+      return { match: false }
+    }, [msg])
 
-const Component: ActionComponent = (props) => {
-  const subDaos = useRecoilValue(
-    CwdCoreV2Selectors.allSubDaoConfigsSelector({
-      contractAddress: props.coreAddress,
-    })
-  )
+  const Component: ActionComponent = (props) => {
+    const subDaos = useRecoilValue(
+      CwdCoreV2Selectors.allSubDaoConfigsSelector({
+        contractAddress: address,
+      })
+    )
 
-  return (
-    <StatelessManageSubDaosComponent
-      {...props}
-      options={{
-        currentSubDaos: subDaos.map(({ address, name }) => ({
-          address,
-          name,
-        })),
-      }}
-    />
-  )
-}
+    return (
+      <StatelessManageSubDaosComponent
+        {...props}
+        options={{
+          currentSubDaos: subDaos.map(({ address, name }) => ({
+            address,
+            name,
+          })),
+        }}
+      />
+    )
+  }
 
-export const manageSubDaosAction: Action<ManageSubDaosData> = {
-  key: ActionKey.ManageSubDaos,
-  Icon: ManageSubDaosEmoji,
-  label: 'Manage SubDAOs',
-  description: 'Add or remove SubDAOs from the DAO.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
-  // Only v2 DAOs support SubDAOs.
-  supportedCoreVersions: [ContractVersion.V0_2_0],
+  return {
+    key: ActionKey.ManageSubDaos,
+    Icon: ManageSubDaosEmoji,
+    label: t('title.manageSubDaos'),
+    description: t('info.manageSubDaosActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

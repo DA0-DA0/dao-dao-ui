@@ -148,8 +148,8 @@ export const CopyToClipboardMobile = ({
   const [copied, setCopied] = useState(false)
 
   return (
-    <div className="flex justify-between rounded-md border border-inactive p-1">
-      <div className="secondary-text flex items-center gap-2 px-2 text-tertiary">
+    <div className="flex justify-between rounded-md border border-border-secondary p-1">
+      <div className="secondary-text flex items-center gap-2 px-2 text-text-tertiary">
         {copied ? (
           <CheckCircleIcon className="w-[18px]" />
         ) : (
@@ -178,7 +178,7 @@ export const CopyToClipboardMobile = ({
         size="sm"
         variant="secondary"
       >
-        <p className="caption-text text-body">{t('button.copy')}</p>
+        <p className="caption-text text-text-body">{t('button.copy')}</p>
       </Button>
     </div>
   )

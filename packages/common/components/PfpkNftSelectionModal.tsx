@@ -26,7 +26,7 @@ import {
 import { SuspenseLoader } from './SuspenseLoader'
 
 export interface PfpkNftSelectionModalProps
-  extends Pick<ModalProps, 'onClose'> {
+  extends Pick<Required<ModalProps>, 'onClose'> {
   Loader?: ComponentType<LoaderProps>
 }
 

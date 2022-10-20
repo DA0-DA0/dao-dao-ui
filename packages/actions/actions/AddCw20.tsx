@@ -5,9 +5,10 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
+  ActionOptionsContextType,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -69,28 +70,6 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-const useTransformToCosmos: UseTransformToCosmos<AddCw20Data> = (
-  coreAddress: string
-) =>
-  useCallback(
-    (data: AddCw20Data) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: coreAddress,
-            funds: [],
-            msg: {
-              update_cw20_list: {
-                to_add: [data.address],
-                to_remove: [],
-              },
-            },
-          },
-        },
-      }),
-    [coreAddress]
-  )
-
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw20Data> = (
   msg: Record<string, any>
 ) =>
@@ -113,14 +92,44 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw20Data> = (
     [msg]
   )
 
-export const addCw20Action: Action<AddCw20Data> = {
-  key: ActionKey.AddCw20,
-  Icon: AddCw20Emoji,
-  label: 'Display Token Balance in Treasury',
-  description:
-    "Display the DAO's balance of a CW20 token in the treasury view.",
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+export const makeAddCw20Action: ActionMaker<AddCw20Data> = ({
+  t,
+  address,
+  context,
+}) => {
+  // Only DAOs.
+  if (context.type !== ActionOptionsContextType.Dao) {
+    return null
+  }
+
+  const useTransformToCosmos: UseTransformToCosmos<AddCw20Data> = () =>
+    useCallback(
+      (data: AddCw20Data) =>
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: address,
+              funds: [],
+              msg: {
+                update_cw20_list: {
+                  to_add: [data.address],
+                  to_remove: [],
+                },
+              },
+            },
+          },
+        }),
+      []
+    )
+
+  return {
+    key: ActionKey.AddCw20,
+    Icon: AddCw20Emoji,
+    label: t('title.addCw20ToTreasury'),
+    description: t('info.addCw20ToTreasuryActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

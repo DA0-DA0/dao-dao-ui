@@ -31,7 +31,7 @@ export const MobileWalletConnect = ({
   return connected ? (
     <button
       className={clsx(
-        'my-1 flex items-center justify-between rounded-lg border border-transparent bg-btn-secondary py-2 px-3 transition hover:border-brand',
+        'my-1 flex items-center justify-between rounded-lg border border-transparent bg-background-button-secondary-default py-2 px-3 transition hover:border-border-interactive-active',
         className
       )}
       disabled={connected && !onDisconnect}
@@ -48,7 +48,7 @@ export const MobileWalletConnect = ({
   ) : (
     <button
       className={clsx(
-        'my-1 flex items-center gap-1 rounded-lg border border-transparent bg-btn-secondary py-2 px-3 transition hover:border-brand',
+        'my-1 flex items-center gap-1 rounded-lg border border-transparent bg-background-button-secondary-default py-2 px-3 transition hover:border-border-interactive-active',
         className
       )}
       onClick={onConnect}
@@ -87,7 +87,7 @@ export const NoMobileWallet = () => {
           </p>
 
           <button
-            className="rounded-full transition hover:bg-secondary"
+            className="rounded-full transition hover:bg-background-secondary"
             onClick={() => setShowInfo(false)}
           >
             <XIcon className="h-4 w-4" />

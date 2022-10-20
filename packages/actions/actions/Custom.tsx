@@ -2,8 +2,8 @@ import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
 import {
-  Action,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -51,13 +51,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<CustomData> = (
     [msg]
   )
 
-export const customAction: Action<CustomData> = {
+export const makeCustomAction: ActionMaker<CustomData> = ({ t, context }) => ({
   key: ActionKey.Custom,
   Icon: CustomEmoji,
-  label: 'Custom',
-  description: 'Perform any custom action a wallet can.',
+  label: t('title.custom'),
+  description: t('info.customActionDescription', {
+    context: context.type,
+  }),
   Component,
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
-}
+})

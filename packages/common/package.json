@@ -6,6 +6,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@cosmjs/encoding": "0.28.10",
     "@cosmjs/stargate": "0.28.10",
     "@dao-dao/actions": "*",
     "@dao-dao/proposal-module-adapter": "*",

@@ -5,9 +5,9 @@ import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
   DepositRefundPolicy,
   ProposalModule,
   UseDecodedCosmosMsg,
@@ -18,9 +18,8 @@ import {
   ExecuteMsg,
   UncheckedDepositInfo,
 } from '@dao-dao/tstypes/contracts/CwdPreProposeSingle'
-import { UpdateProposalConfigIcon } from '@dao-dao/ui'
+import { UpdateProposalConfigIcon, useDaoInfoContext } from '@dao-dao/ui'
 import {
-  CHAIN_BECH32_PREFIX,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
@@ -39,14 +38,86 @@ import {
   UpdatePreProposeConfigData,
 } from './UpdatePreProposeConfigComponent'
 
-// TODO: Convert this into a more generalizable 'context' abstraction.
-type AsProposalModuleMaker<T> = (proposalModule: ProposalModule) => T
+export const Component: ActionComponent = (props) => {
+  const { t } = useTranslation()
+  const { bech32Prefix } = useDaoInfoContext()
+  const {
+    id,
+    hooks: { useGovernanceTokenInfo },
+  } = useVotingModuleAdapter()
+  const { governanceTokenInfo } = useGovernanceTokenInfo?.() ?? {}
+  const cw20GovernanceTokenInfo =
+    id === CwdVotingCw20StakedAdapter.id ? governanceTokenInfo : undefined
 
-const makeUseDefaults: AsProposalModuleMaker<
-  UseDefaults<UpdatePreProposeConfigData>
-> =
-  ({ preProposeAddress }) =>
-  () => {
+  const { fieldNamePrefix, Loader } = props
+
+  const { setValue, watch } = useFormContext()
+
+  const depositInfo: UpdatePreProposeConfigData['depositInfo'] = watch(
+    fieldNamePrefix + 'depositInfo'
+  )
+
+  const tokenInfoLoadable = useRecoilValueLoadable(
+    depositInfo.type === 'cw20' &&
+      depositInfo.cw20Address &&
+      isValidContractAddress(depositInfo.cw20Address, bech32Prefix)
+      ? Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: depositInfo.cw20Address,
+          params: [],
+        })
+      : constSelector(undefined)
+  )
+
+  // Update cw20 decimals and address error.
+  const [additionalAddressError, setAdditionalAddressError] = useState<string>()
+  useEffect(() => {
+    // Update decimals in data for transforming to cosmos message.
+    if (tokenInfoLoadable.state === 'hasValue') {
+      setValue(
+        fieldNamePrefix + 'depositInfo.cw20Decimals',
+        tokenInfoLoadable.contents?.decimals ?? 0
+      )
+    }
+
+    if (tokenInfoLoadable.state !== 'hasError') {
+      if (additionalAddressError) {
+        setAdditionalAddressError(undefined)
+      }
+      return
+    }
+
+    if (!additionalAddressError) {
+      setAdditionalAddressError(t('error.notCw20Address'))
+    }
+  }, [fieldNamePrefix, setValue, tokenInfoLoadable, t, additionalAddressError])
+
+  return (
+    <UpdatePreProposeConfigComponent
+      {...props}
+      options={{
+        cw20: {
+          governanceTokenSymbol: cw20GovernanceTokenInfo?.symbol,
+          additionalAddressError,
+          formattedJsonDisplayProps: {
+            jsonLoadable: tokenInfoLoadable,
+            Loader,
+          },
+        },
+      }}
+    />
+  )
+}
+
+export const makeUpdatePreProposeConfigAction: ActionMaker<
+  UpdatePreProposeConfigData,
+  { proposalModule: ProposalModule }
+> = ({ t, proposalModule: { preProposeAddress } }) => {
+  // Only when pre propose address present.
+  if (!preProposeAddress) {
+    return null
+  }
+
+  const useDefaults: UseDefaults<UpdatePreProposeConfigData> = () => {
     const { t } = useTranslation()
     if (!preProposeAddress) {
       throw new Error(t('error.loadingData'))
@@ -122,11 +193,9 @@ const makeUseDefaults: AsProposalModuleMaker<
     }
   }
 
-const makeUseTransformToCosmos: AsProposalModuleMaker<
-  UseTransformToCosmos<UpdatePreProposeConfigData>
-> =
-  ({ preProposeAddress }) =>
-  () => {
+  const useTransformToCosmos: UseTransformToCosmos<
+    UpdatePreProposeConfigData
+  > = () => {
     const { t } = useTranslation()
     if (!preProposeAddress) {
       throw new Error(t('error.loadingData'))
@@ -201,11 +270,9 @@ const makeUseTransformToCosmos: AsProposalModuleMaker<
     )
   }
 
-const makeUseDecodedCosmosMsg: AsProposalModuleMaker<
-  UseDecodedCosmosMsg<UpdatePreProposeConfigData>
-> =
-  ({ preProposeAddress }) =>
-  (msg: Record<string, any>) => {
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdatePreProposeConfigData> = (
+    msg: Record<string, any>
+  ) => {
     const {
       id,
       hooks: { useGovernanceTokenInfo },
@@ -307,84 +374,14 @@ const makeUseDecodedCosmosMsg: AsProposalModuleMaker<
     return { match: false }
   }
 
-export const Component: ActionComponent = (props) => {
-  const { t } = useTranslation()
-  const {
-    id,
-    hooks: { useGovernanceTokenInfo },
-  } = useVotingModuleAdapter()
-  const { governanceTokenInfo } = useGovernanceTokenInfo?.() ?? {}
-  const cw20GovernanceTokenInfo =
-    id === CwdVotingCw20StakedAdapter.id ? governanceTokenInfo : undefined
-
-  const { fieldNamePrefix, Loader } = props
-
-  const { setValue, watch } = useFormContext()
-
-  const depositInfo: UpdatePreProposeConfigData['depositInfo'] = watch(
-    fieldNamePrefix + 'depositInfo'
-  )
-
-  const tokenInfoLoadable = useRecoilValueLoadable(
-    depositInfo.type === 'cw20' &&
-      depositInfo.cw20Address &&
-      isValidContractAddress(depositInfo.cw20Address, CHAIN_BECH32_PREFIX)
-      ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: depositInfo.cw20Address,
-          params: [],
-        })
-      : constSelector(undefined)
-  )
-
-  // Update cw20 decimals and address error.
-  const [additionalAddressError, setAdditionalAddressError] = useState<string>()
-  useEffect(() => {
-    // Update decimals in data for transforming to cosmos message.
-    if (tokenInfoLoadable.state === 'hasValue') {
-      setValue(
-        fieldNamePrefix + 'depositInfo.cw20Decimals',
-        tokenInfoLoadable.contents?.decimals ?? 0
-      )
-    }
-
-    if (tokenInfoLoadable.state !== 'hasError') {
-      if (additionalAddressError) {
-        setAdditionalAddressError(undefined)
-      }
-      return
-    }
-
-    if (!additionalAddressError) {
-      setAdditionalAddressError(t('error.notCw20Address'))
-    }
-  }, [fieldNamePrefix, setValue, tokenInfoLoadable, t, additionalAddressError])
-
-  return (
-    <UpdatePreProposeConfigComponent
-      {...props}
-      options={{
-        cw20: {
-          governanceTokenSymbol: cw20GovernanceTokenInfo?.symbol,
-          additionalAddressError,
-          formattedJsonDisplayProps: {
-            jsonLoadable: tokenInfoLoadable,
-            Loader,
-          },
-        },
-      }}
-    />
-  )
+  return {
+    key: ActionKey.UpdatePreProposeConfig,
+    Icon: UpdateProposalConfigIcon,
+    label: t('form.updateProposalSubmissionConfigTitle'),
+    description: t('info.updateProposalSubmissionConfigActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }
-
-export const makeUpdatePreProposeConfigAction = (
-  proposalModule: ProposalModule
-): Action<UpdatePreProposeConfigData> => ({
-  key: ActionKey.UpdatePreProposeConfig,
-  Icon: UpdateProposalConfigIcon,
-  label: 'Update Proposal Submission Config',
-  description: 'Update the proposal submission paramaters for your DAO.',
-  Component,
-  useDefaults: makeUseDefaults(proposalModule),
-  useTransformToCosmos: makeUseTransformToCosmos(proposalModule),
-  useDecodedCosmosMsg: makeUseDecodedCosmosMsg(proposalModule),
-})

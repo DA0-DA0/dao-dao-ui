@@ -18,7 +18,7 @@ interface GetProposalVotes {
   proposal: {
     votes: {
       nodes: {
-        votedAt: string // Serialized Date
+        votedAt: string // Serialized UTC Date
         walletId: string
       }[]
     }

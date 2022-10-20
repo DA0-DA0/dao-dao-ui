@@ -33,7 +33,6 @@ const Template: ComponentStory<typeof UpdatePreProposeConfigComponent> = (
 
 export const Default = Template.bind({})
 Default.args = {
-  coreAddress: 'coreAddress',
   fieldNamePrefix: 'data.',
   allActionsWithData: [],
   index: 0,

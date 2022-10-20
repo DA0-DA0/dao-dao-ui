@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ComponentType, Fragment, ReactNode } from 'react'
+import { ComponentType, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
@@ -11,29 +11,31 @@ import { Button } from '../Button'
 import { Loader } from '../Loader'
 import { Tooltip } from '../Tooltip'
 
-export interface ProposalVote {
+export interface ProposalVote<Vote extends unknown = any> {
   voterAddress: string
-  vote: ReactNode
+  vote: Vote
   votingPowerPercent: number
 }
 
-export interface ProposalVotesProps {
-  votes: ProposalVote[]
+export interface ProposalVotesProps<Vote extends unknown = any> {
+  votes: ProposalVote<Vote>[]
   getDateVoted?: (voterAddress: string) => Date | undefined
   canLoadMore: boolean
   loadMore: () => void
   loadingMore: boolean
   ProfileDisplay: ComponentType<Omit<ProfileDisplayProps, 'loadingProfile'>>
+  VoteDisplay: ComponentType<{ vote: Vote }>
 }
 
-export const ProposalVotes = ({
+export const ProposalVotes = <Vote extends unknown = any>({
   votes,
   getDateVoted,
   canLoadMore,
   loadMore,
   loadingMore,
   ProfileDisplay,
-}: ProposalVotesProps) => {
+  VoteDisplay,
+}: ProposalVotesProps<Vote>) => {
   const { t } = useTranslation()
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
@@ -98,7 +100,9 @@ export const ProposalVotes = ({
                     ) : undefined
                   }
                 >
-                  <div>{vote}</div>
+                  <div>
+                    <VoteDisplay vote={vote} />
+                  </div>
                 </Tooltip>
                 <p className="caption-text justify-self-right text-right font-mono text-text-body">
                   {formatPercentOf100(votingPowerPercent)}

@@ -1,14 +1,13 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { CwCoreV1Selectors, CwdCoreV2Selectors } from '@dao-dao/state'
 import {
-  CwCoreV1Selectors,
-  CwdCoreV2Selectors,
-  contractVersionSelector,
-} from '@dao-dao/state'
-import { ContractVersion } from '@dao-dao/tstypes'
+  ActionMaker,
+  ActionOptionsContextType,
+  ContractVersion,
+} from '@dao-dao/tstypes'
 import {
-  Action,
   ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -21,49 +20,6 @@ import {
   UpdateInfoComponent as Component,
   UpdateInfoData,
 } from '../components/UpdateInfo'
-
-const useDefaults: UseDefaults<UpdateInfoData> = (coreAddress: string) => {
-  const coreVersion = useRecoilValue(
-    contractVersionSelector({
-      contractAddress: coreAddress,
-    })
-  )
-  const config = useRecoilValue(
-    coreVersion === ContractVersion.V0_1_0
-      ? CwCoreV1Selectors.configSelector({ contractAddress: coreAddress })
-      : CwdCoreV2Selectors.configSelector({
-          contractAddress: coreAddress,
-          params: [],
-        })
-  )
-
-  return { ...config }
-}
-
-const useTransformToCosmos: UseTransformToCosmos<UpdateInfoData> = (
-  coreAddress: string
-) =>
-  useCallback(
-    (data: UpdateInfoData) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: coreAddress,
-            funds: [],
-            msg: {
-              update_config: {
-                config: {
-                  ...data,
-                  // Replace empty string with null.
-                  image_url: data.image_url?.trim() || null,
-                },
-              },
-            },
-          },
-        },
-      }),
-    [coreAddress]
-  )
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateInfoData> = (
   msg: Record<string, any>
@@ -109,13 +65,62 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateInfoData> = (
     [msg]
   )
 
-export const updateInfoAction: Action<UpdateInfoData> = {
-  key: ActionKey.UpdateInfo,
-  Icon: UpdateInfoEmoji,
-  label: 'Update Info',
-  description: "Update your DAO's name, image, and description.",
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
+  t,
+  address,
+  context,
+}) => {
+  // Only DAOs.
+  if (context.type !== ActionOptionsContextType.Dao) {
+    return null
+  }
+
+  const configSelector =
+    context.coreVersion === ContractVersion.V0_1_0
+      ? CwCoreV1Selectors.configSelector({
+          contractAddress: address,
+        })
+      : CwdCoreV2Selectors.configSelector({
+          contractAddress: address,
+          params: [],
+        })
+
+  const useDefaults: UseDefaults<UpdateInfoData> = () => {
+    const config = useRecoilValue(configSelector)
+    return { ...config }
+  }
+
+  const useTransformToCosmos: UseTransformToCosmos<UpdateInfoData> = () =>
+    useCallback(
+      (data: UpdateInfoData) =>
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: address,
+              funds: [],
+              msg: {
+                update_config: {
+                  config: {
+                    ...data,
+                    // Replace empty string with null.
+                    image_url: data.image_url?.trim() || null,
+                  },
+                },
+              },
+            },
+          },
+        }),
+      []
+    )
+
+  return {
+    key: ActionKey.UpdateInfo,
+    Icon: UpdateInfoEmoji,
+    label: t('title.updateInfo'),
+    description: t('info.updateInfoActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

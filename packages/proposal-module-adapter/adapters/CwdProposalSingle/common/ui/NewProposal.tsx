@@ -78,7 +78,7 @@ export interface NewProposalProps
 }
 
 export const NewProposal = ({
-  options: { coreAddress, Loader, Logo },
+  options: { Loader, Logo },
   createProposal,
   loading,
   isPaused,
@@ -218,7 +218,6 @@ export const NewProposal = ({
                   Loader={Loader}
                   Logo={Logo}
                   allActionsWithData={proposalActionData}
-                  coreAddress={coreAddress}
                   data={actionData.data}
                   errors={errors.actionData?.[index]?.data || {}}
                   fieldNamePrefix={`actionData.${index}.data.`}

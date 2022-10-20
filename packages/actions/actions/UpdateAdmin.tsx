@@ -1,16 +1,17 @@
 import { useCallback, useMemo, useState } from 'react'
-import { useRecoilValueLoadable } from 'recoil'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/tstypes/actions'
 import { UpdateAdminEmoji } from '@dao-dao/ui'
+import { isValidContractAddress } from '@dao-dao/utils'
 
 import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components/UpdateAdmin'
 
@@ -54,32 +55,43 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
     [msg]
   )
 
-const Component: ActionComponent = (props) => {
-  const [contract, setContract] = useState('')
+export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = ({
+  t,
+  chainId,
+  bech32Prefix,
+}) => {
+  const Component: ActionComponent = (props) => {
+    const [contract, setContract] = useState('')
 
-  const admin = useRecoilValueLoadable(
-    contractAdminSelector({ contractAddress: contract })
-  )
+    const admin = useRecoilValueLoadable(
+      contract && isValidContractAddress(contract, bech32Prefix)
+        ? contractAdminSelector({
+            contractAddress: contract,
+            chainId,
+          })
+        : constSelector(undefined)
+    )
 
-  return (
-    <StatelessUpdateAdminComponent
-      {...props}
-      options={{
-        contractAdmin:
-          admin.state === 'hasValue' ? admin.getValue() : undefined,
-        onContractChange: (contract: string) => setContract(contract),
-      }}
-    />
-  )
-}
+    return (
+      <StatelessUpdateAdminComponent
+        {...props}
+        options={{
+          contractAdmin:
+            admin.state === 'hasValue' ? admin.contents : undefined,
+          onContractChange: (contract: string) => setContract(contract),
+        }}
+      />
+    )
+  }
 
-export const updateAdminAction: Action<UpdateAdminData> = {
-  key: ActionKey.UpdateAdmin,
-  Icon: UpdateAdminEmoji,
-  label: 'Update Contract Admin',
-  description: 'Update the CosmWasm level admin of a smart contract.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
+  return {
+    key: ActionKey.UpdateAdmin,
+    Icon: UpdateAdminEmoji,
+    label: t('title.updateContractAdmin'),
+    description: t('info.updateContractAdminActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
 }

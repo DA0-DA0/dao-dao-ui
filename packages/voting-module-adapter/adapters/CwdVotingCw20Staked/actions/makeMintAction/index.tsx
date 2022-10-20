@@ -1,10 +1,9 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useMemo } from 'react'
 
 import {
-  Action,
   ActionComponent,
   ActionKey,
+  ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -25,15 +24,6 @@ import {
 export interface MintData {
   to: string
   amount: number
-}
-
-const useDefaults: UseDefaults<MintData> = (): MintData => {
-  const { address } = useWallet()
-
-  return {
-    to: address ?? '',
-    amount: 1,
-  }
 }
 
 const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
@@ -102,13 +92,20 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeMintAction = (): Action<MintData> => ({
-  key: ActionKey.Mint,
-  Icon: MintIcon,
-  label: 'Mint',
-  description: 'Mint new governance tokens.',
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
-})
+export const makeMintAction: ActionMaker<MintData> = ({ t, address }) => {
+  const useDefaults: UseDefaults<MintData> = () => ({
+    to: address,
+    amount: 1,
+  })
+
+  return {
+    key: ActionKey.Mint,
+    Icon: MintIcon,
+    label: t('title.mint'),
+    description: t('info.mintActionDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
+}

@@ -96,11 +96,11 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       />
 
       {errors?.message ? (
-        <p className="flex items-center gap-1 text-sm text-error">
+        <p className="flex items-center gap-1 text-sm text-text-interactive-error">
           <XIcon className="inline w-5" /> <span>{errors.message.message}</span>
         </p>
       ) : (
-        <p className="text-success flex items-center gap-1 text-sm">
+        <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
           <CheckIcon className="inline w-5" /> {t('info.jsonIsValid')}
         </p>
       )}
@@ -121,7 +121,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
           />
         ))}
         {!isCreating && coins.length === 0 && (
-          <p className="mt-1 mb-2 text-xs italic text-tertiary">
+          <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
             {t('info.none')}
           </p>
         )}

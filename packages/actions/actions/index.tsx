@@ -1,48 +1,42 @@
-import { ContractVersion } from '@dao-dao/tstypes'
-import { Action } from '@dao-dao/tstypes/actions'
+import { Action, ActionOptions } from '@dao-dao/tstypes/actions'
 
-import { addCw20Action } from './AddCw20'
-import { addCw721Action } from './AddCw721'
-import { customAction } from './Custom'
-import { executeAction } from './Execute'
-import { instantiateAction } from './Instantiate'
-import { manageSubDaosAction } from './ManageSubDaos'
-import { migrateAction } from './MigrateContract'
-import { removeCw20Action } from './RemoveCw20'
-import { removeCw721Action } from './RemoveCw721'
+import { makeAddCw20Action } from './AddCw20'
+import { makeAddCw721Action } from './AddCw721'
+import { makeCustomAction } from './Custom'
+import { makeExecuteAction } from './Execute'
+import { makeInstantiateAction } from './Instantiate'
+import { makeManageSubDaosAction } from './ManageSubDaos'
+import { makeMigrateAction } from './MigrateContract'
+import { makeRemoveCw20Action } from './RemoveCw20'
+import { makeRemoveCw721Action } from './RemoveCw721'
 import { makeSpendAction } from './Spend'
-import { stakeAction } from './Stake'
-import { updateAdminAction } from './UpdateAdmin'
-import { updateInfoAction } from './UpdateInfo'
+import { makeStakeAction } from './Stake'
+import { makeUpdateAdminAction } from './UpdateAdmin'
+import { makeUpdateInfoAction } from './UpdateInfo'
 
-// TODO: Add SubDAO management actions.
-export const getDaoActions = (coreVersion: ContractVersion): Action[] =>
-  [
-    // TODO: Convert this into a more generalizable 'context' abstraction.
-    makeSpendAction(false),
-    stakeAction,
-    updateInfoAction,
-    addCw20Action,
-    removeCw20Action,
-    addCw721Action,
-    removeCw721Action,
-    instantiateAction,
-    executeAction,
-    migrateAction,
-    updateAdminAction,
-    customAction,
-    manageSubDaosAction,
-  ].filter(
-    ({ supportedCoreVersions }) =>
-      !supportedCoreVersions || supportedCoreVersions.includes(coreVersion)
+export const getActions = (options: ActionOptions): Action[] => {
+  // Add action makers here to display them.
+  const actionMakers = [
+    makeSpendAction,
+    makeStakeAction,
+    makeUpdateInfoAction,
+    makeAddCw20Action,
+    makeRemoveCw20Action,
+    makeAddCw721Action,
+    makeRemoveCw721Action,
+    makeInstantiateAction,
+    makeExecuteAction,
+    makeMigrateAction,
+    makeUpdateAdminAction,
+    makeCustomAction,
+    makeManageSubDaosAction,
+  ]
+
+  return (
+    actionMakers
+      .map((makeAction) => makeAction(options))
+      // Remove null values, since maker functions return null if they don't
+      // make sense in the context (like a DAO-only action in a wallet context).
+      .filter(Boolean) as Action[]
   )
-
-export const walletActions: Action[] = [
-  // TODO: Convert this into a more generalizable 'context' abstraction.
-  makeSpendAction(true),
-  stakeAction,
-  instantiateAction,
-  executeAction,
-  migrateAction,
-  customAction,
-]
+}

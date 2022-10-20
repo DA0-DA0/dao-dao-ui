@@ -1,5 +1,4 @@
 import { Coin } from '@cosmjs/stargate'
-import { InformationCircleIcon } from '@heroicons/react/outline'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -45,7 +44,7 @@ export const stakeActions: { type: StakeType; name: string }[] = [
   },
 ]
 
-interface StakeOptions {
+export interface StakeOptions {
   nativeBalances: readonly Coin[]
   nativeDelegatedBalance: Coin
 }
@@ -257,11 +256,6 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
       </div>
 
       <InputErrorMessage error={errors?.validator} />
-
-      <div className="mt-3 flex items-center gap-2 rounded-lg bg-disabled p-2">
-        <InformationCircleIcon className="h-4" />
-        <p className="body-text">{t('info.actionInBeta')}</p>
-      </div>
     </ActionCard>
   )
 }

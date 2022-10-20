@@ -8,14 +8,12 @@ import { ActionCardLoader, LoaderProps, LogoProps } from '@dao-dao/ui'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
-  coreAddress: string
   actionData: ActionAndData[]
   Loader: ComponentType<LoaderProps>
   Logo: ComponentType<LogoProps>
 }
 
 export const ActionsRenderer = ({
-  coreAddress,
   actionData,
   Loader,
   Logo,
@@ -53,7 +51,6 @@ export const ActionsRenderer = ({
                     data,
                   })
                 )}
-                coreAddress={coreAddress}
                 data={actionData[index].data}
                 fieldNamePrefix={`${index}.`}
                 index={index}

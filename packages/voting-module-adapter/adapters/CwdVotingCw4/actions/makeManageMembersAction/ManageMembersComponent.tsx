@@ -116,14 +116,14 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
 
               {isCreating && (
                 <button onClick={() => toAddRemove(index)} type="button">
-                  <XIcon className="text-error w-4" />
+                  <XIcon className="text-text-interactive-error w-4" />
                 </button>
               )}
             </div>
           )
         })}
         {!isCreating && toAddFields.length === 0 && (
-          <p className="text-tertiary text-xs italic">{t('info.none')}</p>
+          <p className="text-text-tertiary text-xs italic">{t('info.none')}</p>
         )}
         {isCreating && (
           <Button
@@ -167,13 +167,13 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
 
             {isCreating && (
               <button onClick={() => toRemoveRemove(index)} type="button">
-                <XIcon className="text-error w-4" />
+                <XIcon className="text-text-interactive-error w-4" />
               </button>
             )}
           </div>
         ))}
         {!isCreating && toRemoveFields.length === 0 && (
-          <p className="text-tertiary text-xs italic">{t('info.none')}</p>
+          <p className="text-text-tertiary text-xs italic">{t('info.none')}</p>
         )}
         {isCreating && (
           <Button

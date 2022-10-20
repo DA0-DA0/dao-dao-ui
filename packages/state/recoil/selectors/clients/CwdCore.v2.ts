@@ -304,7 +304,6 @@ export const votingPowerAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
-      get(refreshWalletBalancesIdAtom(params[0].address))
       return await client.votingPowerAtHeight(...params)
     },
 })
@@ -320,7 +319,6 @@ export const totalPowerAtHeightSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
-      get(refreshWalletBalancesIdAtom(undefined))
       return await client.totalPowerAtHeight(...params)
     },
 })

@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalStatusMap } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalStatus'
+import { ProposalStatusMap } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalLine/ProposalStatus'
 
 import { StatusDisplay } from './StatusDisplay'
 
@@ -17,7 +17,7 @@ export const Open = Template.bind({})
 Open.args = {
   icon: (
     <ProposalStatusMap.open.Icon
-      className={`h-5 w-5 ${ProposalStatusMap.open.iconClassName}`}
+      className={`!h-5 !w-5 ${ProposalStatusMap.open.iconClassName}`}
     />
   ),
   label: <p className={ProposalStatusMap.open.textClassName}>Open</p>,
@@ -33,7 +33,7 @@ export const Passed = Template.bind({})
 Passed.args = {
   icon: (
     <ProposalStatusMap.passed.Icon
-      className={`h-5 w-5 ${ProposalStatusMap.passed.iconClassName}`}
+      className={`!h-5 !w-5 ${ProposalStatusMap.passed.iconClassName}`}
     />
   ),
   label: <p className={ProposalStatusMap.passed.textClassName}>Passed</p>,
@@ -44,9 +44,20 @@ export const Rejected = Template.bind({})
 Rejected.args = {
   icon: (
     <ProposalStatusMap.rejected.Icon
-      className={`h-5 w-5 ${ProposalStatusMap.rejected.iconClassName}`}
+      className={`!h-5 !w-5 ${ProposalStatusMap.rejected.iconClassName}`}
     />
   ),
   label: <p className={ProposalStatusMap.rejected.textClassName}>Rejected</p>,
 }
 Rejected.parameters = Open.parameters
+
+export const Executed = Template.bind({})
+Executed.args = {
+  icon: (
+    <ProposalStatusMap.executed.Icon
+      className={`!h-5 !w-5 ${ProposalStatusMap.executed.iconClassName}`}
+    />
+  ),
+  label: <p className={ProposalStatusMap.executed.textClassName}>Executed</p>,
+}
+Executed.parameters = Open.parameters

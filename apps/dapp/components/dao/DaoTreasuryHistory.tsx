@@ -193,7 +193,7 @@ export const InnerDaoTreasuryHistory = ({
           </div>
         </>
       ) : (
-        <p className="text-secondary">{t('info.nothingFound')}</p>
+        <p className="text-text-secondary">{t('info.nothingFound')}</p>
       )}
 
       <div className="flex flex-row items-center justify-between gap-4">
@@ -255,7 +255,7 @@ const TransactionRenderer = ({
       {timestamp?.toLocaleString() ?? `${height} block`}
 
       <a
-        className="text-tertiary"
+        className="text-text-tertiary"
         href={CHAIN_TXN_URL_PREFIX + hash}
         rel="noopener noreferrer"
         target="_blank"
