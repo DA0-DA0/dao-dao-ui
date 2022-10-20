@@ -17,7 +17,7 @@ const junoTestnet: CodeIdConfig = {
   CwdVotingNativeStaked: 883,
 }
 
-// TODO: Fill in once v2 contracts on mainnet.
+// TODO(v2): Fill in code IDs once v2 contracts on mainnet.
 const junoMainnet: CodeIdConfig = {
   Cw20Base: 435,
   Cw20Stake: 430,

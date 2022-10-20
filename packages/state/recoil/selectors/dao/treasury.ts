@@ -112,7 +112,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               tokenSymbol: label,
               tokenDenom: denom,
               tokenDecimals: decimals,
-              // TODO: Retrieve subtitle.
+              // TODO(v2): Retrieve subtitle.
               // subtitle: '',
               imageUrl: imageUrl || getFallbackImage(denom),
               unstakedBalance,
@@ -148,7 +148,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               tokenSymbol: symbol,
               tokenDenom: denom,
               tokenDecimals: decimals,
-              // TODO: Choose subtitle.
+              // TODO(v2): Choose subtitle.
               // subtitle: '',
               imageUrl: imageUrl || getFallbackImage(denom),
               unstakedBalance,

@@ -169,7 +169,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     return () => clearInterval(interval)
   }, [setRefreshBlockHeight])
 
-  // TODO: Add real data back in when pools indexer works.
+  // TODO(v2): Add real data back in when pools indexer works.
   // //! Token prices
   // // Updates once per minute, so token price will also update once per minute.
   // const currentBlockHeightLoadable = useCachedLoadable(blockHeightSelector)
@@ -308,7 +308,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
                   data: inbox.proposalCount,
                 },
           setCommandModalVisible: () => setCommandModalVisible(true),
-          // TODO: Add real data back in when pools indexer works.
+          // TODO(v2): Add real data back in when pools indexer works.
           tokenPrices: {
             loading: false,
             data: [],
