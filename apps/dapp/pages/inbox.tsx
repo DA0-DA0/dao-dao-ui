@@ -19,15 +19,13 @@ import {
   Inbox,
   PageLoader,
   ProfileDisconnectedCard,
-  useDaoInfoContext,
 } from '@dao-dao/ui'
-import { SITE_URL } from '@dao-dao/utils'
+import { CHAIN_ID, SITE_URL } from '@dao-dao/utils'
 
 import { ProfileHomeCard, useDAppContext } from '@/components'
 
 const InnerInbox = () => {
   const { connected } = useWallet()
-  const { chainId } = useDaoInfoContext()
   const pinnedDaoDropdownInfos = useRecoilValue(pinnedDaoDropdownInfosSelector)
 
   const {
@@ -52,7 +50,7 @@ const InnerInbox = () => {
           dao: daoDropdownInfo,
           proposals: openUnvotedProposals.map(
             ({ proposalModule: { prefix }, proposalNumber }) => ({
-              chainId,
+              chainId: CHAIN_ID,
               coreAddress,
               proposalId: `${prefix}${proposalNumber}`,
               proposalModules,
