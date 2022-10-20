@@ -42,6 +42,10 @@ import { SITE_URL } from '@dao-dao/utils'
 
 import { ProfileNewProposalCard } from '@/components'
 
+// TODO(v2): Save latest proposal to localStorage, separate from drafts.
+// TODO(v2): Fix errors getting stuck when removing components with errors (I
+// think this is when it happens). Can't click preview or submit sometimes even
+// tho there are no visible errors.
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()

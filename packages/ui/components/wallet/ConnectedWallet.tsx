@@ -1,9 +1,8 @@
-import { Check } from '@mui/icons-material'
+import { Check, Close, Link, Wallet } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Link, Tag, X } from '@dao-dao/icons'
 import { LoadingData } from '@dao-dao/tstypes'
 
 import { IconButton } from '../icon_buttons'
@@ -44,7 +43,7 @@ export const ConnectedWallet = ({
     >
       <div className="flex flex-row items-stretch gap-4">
         <div className="flex h-12 w-12 items-center justify-center rounded-full border-[2px] border-border-primary">
-          <Tag className="h-4 w-4 text-icon-primary" />
+          <Wallet className="!h-5 !w-5 text-icon-primary" />
         </div>
 
         <div className="flex flex-col justify-center gap-1">
@@ -72,7 +71,6 @@ export const ConnectedWallet = ({
             Icon={copied ? Check : Link}
             className="text-icon-secondary"
             disabled={data.loading}
-            iconClassName="w-5 h-5"
             onClick={() => {
               if (data.loading) {
                 return
@@ -90,10 +88,9 @@ export const ConnectedWallet = ({
         {onDisconnect && (
           <Tooltip title={t('info.disconnectWalletTooltip')}>
             <IconButton
-              Icon={X}
+              Icon={Close}
               className="text-icon-secondary"
               disabled={data.loading}
-              iconClassName="w-5 h-5"
               onClick={onDisconnect}
               size="sm"
               variant="ghost"

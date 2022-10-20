@@ -121,7 +121,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
             ).findIndex(({ address: a }) => a === address)
 
             return (
-              <div key={address} className="flex flex-row items-center gap-1">
+              <div key={address} className="flex flex-row items-center gap-2">
                 <Checkbox
                   checked={index > -1}
                   onClick={

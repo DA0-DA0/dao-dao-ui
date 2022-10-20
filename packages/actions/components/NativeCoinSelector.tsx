@@ -146,6 +146,7 @@ export const NativeCoinSelector = ({
         {isCreating && (
           <IconButton
             Icon={Close}
+            className="self-center"
             onClick={onRemove}
             size="sm"
             variant="ghost"
