@@ -1,6 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
+import { WhereToVoteOutlined } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
 import { NextSeo } from 'next-seo'
@@ -17,12 +18,11 @@ import { pinnedDaoDropdownInfosSelector } from '@dao-dao/state'
 import {
   DaoWithProposals,
   Inbox,
+  NoContent,
   PageLoader,
   ProfileDisconnectedCard,
 } from '@dao-dao/ui'
 import { SITE_URL } from '@dao-dao/utils'
-import { NoContent } from '@dao-dao/ui'
-import { WhereToVoteOutlined } from '@mui/icons-material'
 
 import { ProfileHomeCard, useDAppContext } from '@/components'
 
@@ -82,12 +82,9 @@ const InnerInbox = () => {
           connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
         }
       />
-      {
-        daosWithProposals.length === 0 && <NoContent
-          Icon={WhereToVoteOutlined}
-          body={t('info.noProposalsYet')}
-        />
-      }
+      {daosWithProposals.length === 0 && (
+        <NoContent Icon={WhereToVoteOutlined} body={t('info.noProposalsYet')} />
+      )}
     </>
   )
 }
