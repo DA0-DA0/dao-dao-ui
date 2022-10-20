@@ -12,6 +12,7 @@ import {
   matchAndLoadAdapter,
 } from '@dao-dao/proposal-module-adapter'
 import { CwdCoreV2QueryClient } from '@dao-dao/state'
+import { getDaoCreated } from '@dao-dao/state/subquery/daos/created'
 import {
   ContractVersion,
   DaoParentInfo,
@@ -168,22 +169,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         )
       }
 
-      // Get date DAO created.
-      let created: Date | undefined
-      const instantiateEvents = await cwClient.searchTx({
-        tags: [{ key: 'instantiate._contract_address', value: coreAddress }],
-      })
-      if (instantiateEvents.length > 0) {
-        // Should only fail if RPC node doesn't have this block height
-        // information.
-        try {
-          const block = await cwClient.getBlock(instantiateEvents[0].height)
-          created = new Date(Date.parse(block.header.time))
-        } catch (error) {
-          console.error(error)
-        }
-      }
-
       // Get DAO proposal modules.
       const proposalModules = await fetchProposalModules(
         cwClient,
@@ -229,6 +214,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           console.error(error)
         }
       }
+
+      // Get date DAO created.
+      const created = await getDaoCreated(coreAddress)
 
       return {
         props: {
