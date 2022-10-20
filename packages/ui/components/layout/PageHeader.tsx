@@ -53,10 +53,11 @@ export const PageHeader = ({
     // Prevent gradient from moving down on the page, happens during mobile
     // browser scroll bounce. Only allow negative offsets to hide gradient
     // upward as page is scrolled down.
-    const onScroll = (event: Event) =>
-      setScrollableScrollTop(
-        Math.max((event.target as HTMLDivElement).scrollTop, 0)
-      )
+    const onScroll = () =>
+      setScrollableScrollTop(Math.max(gradientScrollElement.scrollTop, 0))
+
+    // Initialize with correct value.
+    onScroll()
 
     gradientScrollElement.addEventListener('scroll', onScroll)
     return () => gradientScrollElement.removeEventListener('scroll', onScroll)

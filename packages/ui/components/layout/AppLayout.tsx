@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { RightSidebarProps } from '@dao-dao/tstypes'
 import { AppLayoutProps } from '@dao-dao/tstypes/ui/AppLayout'
@@ -47,12 +47,23 @@ export const AppLayout = ({
     []
   )
 
-  // On route change, close responsive bars.
+  const scrollableContainerRef = useRef<HTMLDivElement>(null)
+
+  // On route change, close responsive bars and scroll to top.
   useEffect(() => {
     context.responsiveNavigation.enabled &&
       context.responsiveNavigation.toggle()
     context.responsiveRightSidebar.enabled &&
       context.responsiveRightSidebar.toggle()
+
+    // When on a page, and navigating to another page with a Link, we need to
+    // make sure the scrollable container moves to the top since we may be
+    // scrolled lower on the page. Next.js automatically does this for the html
+    // tag, but we have a nested scrollable container, so we have to do this
+    // manually.
+    scrollableContainerRef.current?.scrollTo({
+      top: 0,
+    })
 
     // Only toggle on route change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,6 +123,7 @@ export const AppLayout = ({
             // scroll position so that it can move the top gradient accordingly
             // to match the underlying gradient on the page.
             id="main-content-scrollable"
+            ref={scrollableContainerRef}
           >
             <ErrorBoundary>{children}</ErrorBoundary>
           </div>
