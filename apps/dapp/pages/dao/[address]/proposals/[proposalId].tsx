@@ -165,6 +165,7 @@ const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
     {props.proposalInfo && props.serializedInfo ? (
       <ProposalModuleAdapterProvider
         initialOptions={{
+          chainId: props.serializedInfo.chainId,
           coreAddress: props.serializedInfo.coreAddress,
           Logo,
           Loader,

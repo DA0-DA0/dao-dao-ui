@@ -105,7 +105,7 @@ const InnerWallet = () => {
       setError('')
 
       try {
-        // TODO(v2): Make this work.
+        // TODO(v2): Make arbitrary wallet tx execution work.
         // const tx = await signingCosmWasmClient.signAndBroadcast(
         //   walletAddress,
         //   data,

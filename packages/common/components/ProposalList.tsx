@@ -19,7 +19,7 @@ import {
 const PROP_LOAD_LIMIT = 20
 
 export const ProposalList = () => {
-  const { coreAddress, proposalModules } = useDaoInfoContext()
+  const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
   const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,
   })
@@ -34,13 +34,14 @@ export const ProposalList = () => {
     () =>
       proposalModules.map((proposalModule) => ({
         reverseProposalInfos: matchAndLoadCommon(proposalModule, {
+          chainId,
           coreAddress,
           Logo,
           Loader,
         }).selectors.reverseProposalInfos,
         proposalModule,
       })),
-    [coreAddress, proposalModules]
+    [chainId, coreAddress, proposalModules]
   )
 
   // Cursor values for each proposal module for incremental queries.
@@ -131,6 +132,7 @@ export const ProposalList = () => {
           const transformIntoProps = ({
             id,
           }: typeof newProposalInfos[number]): ProposalLineProps => ({
+            chainId,
             coreAddress,
             proposalModules,
             proposalId: id,

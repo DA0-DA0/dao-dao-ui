@@ -25,7 +25,7 @@ import {
   VotingDurationVotingConfigItem,
   getInstantiateInfo,
 } from './daoCreation'
-import { makeGetProposalInfo } from './functions'
+import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
   useProfileVoteCardOptions,
@@ -111,6 +111,10 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
     proposalCount: {
       proposal_count: {},
     },
+  },
+
+  functions: {
+    fetchPreProposeAddress,
   },
 
   daoCreation: {

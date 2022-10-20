@@ -16,12 +16,15 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { CommandModal, makeGenericContext } from '@dao-dao/command'
-import { PfpkNftSelectionModal, SidebarWallet } from '@dao-dao/common'
+import {
+  PfpkNftSelectionModal,
+  SidebarWallet,
+  pinnedDaoDropdownInfosSelector,
+} from '@dao-dao/common'
 import {
   daoCreatedCardPropsAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
-  pinnedDaoDropdownInfosSelector,
   proposalCreatedCardPropsAtom,
   refreshBlockHeightAtom,
   useCachedLoadable,

@@ -33,8 +33,6 @@ export const proposalModuleAdapterSelector = selectorFamily<
       ),
 })
 
-// Given a contract address, determine if it corresponds with any of the
-// proposal module adapters.
 export const proposalModuleAdapterProposalCountSelector = selectorFamily<
   number | undefined,
   WithChainId<{ proposalModuleAddress: string }>

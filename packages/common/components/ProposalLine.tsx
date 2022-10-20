@@ -15,6 +15,7 @@ import {
 } from '@dao-dao/ui'
 
 export interface ProposalLineProps {
+  chainId: string
   coreAddress: string
   proposalModules: ProposalModule[]
   proposalId: string
@@ -24,6 +25,7 @@ export interface ProposalLineProps {
 }
 
 export const ProposalLine = ({
+  chainId,
   coreAddress,
   proposalModules,
   proposalId,
@@ -33,6 +35,7 @@ export const ProposalLine = ({
 }: ProposalLineProps) => (
   <ProposalModuleAdapterProvider
     initialOptions={{
+      chainId,
       coreAddress,
       Logo,
       Loader,

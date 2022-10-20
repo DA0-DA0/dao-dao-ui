@@ -11,7 +11,7 @@ import {
   ProposalModuleAdapterError,
   matchAndLoadAdapter,
 } from '@dao-dao/proposal-module-adapter'
-import { CwdCoreV2QueryClient, fetchProposalModules } from '@dao-dao/state'
+import { CwdCoreV2QueryClient } from '@dao-dao/state'
 import {
   ContractVersion,
   DaoParentInfo,
@@ -34,6 +34,7 @@ import {
 } from '@dao-dao/utils'
 
 import { DaoPageWrapperProps } from '../components'
+import { fetchProposalModules } from '../utils/fetchProposalModules'
 
 interface GetDaoStaticPropsMakerProps {
   leadingTitle?: string
@@ -53,6 +54,7 @@ interface GetDaoStaticPropsMakerOptions {
     cwClient: CosmWasmClient
     coreClient: CwdCoreV2QueryClient
     config: ConfigV1Response | ConfigV2Response
+    chainId: string
     coreAddress: string
     coreVersion: ContractVersion
     proposalModules: ProposalModule[]
@@ -194,6 +196,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           cwClient,
           coreClient,
           config,
+          chainId,
           coreAddress,
           coreVersion,
           proposalModules,
@@ -330,6 +333,7 @@ export const makeGetDaoProposalStaticProps = ({
       context: { params = {} },
       t,
       cwClient,
+      chainId,
       coreAddress,
       proposalModules,
     }) => {
@@ -355,6 +359,7 @@ export const makeGetDaoProposalStaticProps = ({
             functions: { getProposalInfo },
           },
         } = await matchAndLoadAdapter(proposalModules, proposalId, {
+          chainId,
           coreAddress,
           Logo,
           Loader,

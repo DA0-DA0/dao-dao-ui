@@ -1,14 +1,16 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
+import {
+  FetchPreProposeAddressFunction,
+  matchAdapter,
+} from '@dao-dao/proposal-module-adapter'
+import { CwCoreV1QueryClient, CwdCoreV2QueryClient } from '@dao-dao/state'
 import { ContractVersion, ProposalModule } from '@dao-dao/tstypes'
 import { InfoResponse } from '@dao-dao/tstypes/contracts/common'
-import { ProposalCreationPolicyResponse } from '@dao-dao/tstypes/contracts/CwdProposalSingle.v2'
 import {
   indexToProposalModulePrefix,
   parseContractVersion,
 } from '@dao-dao/utils'
-
-import { CwCoreV1QueryClient, CwdCoreV2QueryClient } from '../clients'
 
 export const fetchProposalModules = async (
   cwClient: CosmWasmClient,
@@ -37,11 +39,11 @@ export const fetchProposalModules = async (
           }
         )
         const version = parseContractVersion(info.version) ?? null
-        const preProposeAddress = await fetchPreProposeAddress(
-          cwClient,
-          address,
-          version
-        )
+
+        // Get pre-propose address if exists.
+        const fetchPreProposeAddress = getFetchPreProposeAddress(info.contract)
+        const preProposeAddress =
+          (await fetchPreProposeAddress?.(cwClient, address, version)) ?? null
 
         return {
           contractName: info.contract,
@@ -70,11 +72,12 @@ export const fetchProposalModules = async (
         }
       )
       const version = parseContractVersion(info.version) ?? null
-      const preProposeAddress = await fetchPreProposeAddress(
-        cwClient,
-        data.address,
-        version
-      )
+
+      // Get pre-propose address if exists.
+      const fetchPreProposeAddress = getFetchPreProposeAddress(info.contract)
+      const preProposeAddress =
+        (await fetchPreProposeAddress?.(cwClient, data.address, version)) ??
+        null
 
       return {
         contractName: info.contract,
@@ -105,36 +108,14 @@ export const fetchProposalModules = async (
   return proposalModules
 }
 
-const fetchPreProposeAddress = async (
-  cwClient: CosmWasmClient,
-  proposalModuleAddress: string,
-  version: ContractVersion | null
-): Promise<string | null> => {
-  // TODO: Move this to proposal module adapter somehow
-  let preProposeAddress: string | null = null
-  if (version !== ContractVersion.V0_1_0) {
-    try {
-      const response: ProposalCreationPolicyResponse =
-        await cwClient.queryContractSmart(proposalModuleAddress, {
-          proposal_creation_policy: {},
-        })
-
-      if (response && 'Module' in response && response.Module.addr) {
-        preProposeAddress = response.Module.addr
-      }
-    } catch (err) {
-      console.error(err)
-
-      // If query does not exist, ignore. Otherwise, rethrow error. Some
-      // proposal modules may just not implement this query.
-      if (
-        !(err instanceof Error) ||
-        !err.message.includes('Error parsing into type')
-      ) {
-        throw err
-      }
-    }
+// Find adapter for contract name and get pre-propose fetch function.
+const getFetchPreProposeAddress = (
+  proposalModuleContractName: string
+): FetchPreProposeAddressFunction | undefined => {
+  const adapter = matchAdapter(proposalModuleContractName)
+  if (!adapter) {
+    return
   }
 
-  return preProposeAddress
+  return adapter.functions.fetchPreProposeAddress
 }

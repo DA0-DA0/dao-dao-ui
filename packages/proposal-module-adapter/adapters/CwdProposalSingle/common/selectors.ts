@@ -19,6 +19,7 @@ import { reverseProposalsSelector } from '../contracts/CwdProposalSingle.common.
 import { configSelector as configV1Selector } from '../contracts/CwProposalSingle.v1.recoil'
 
 export const makeReverseProposalInfos = ({
+  chainId,
   proposalModule: { address, prefix },
 }: IProposalModuleAdapterCommonOptions): ReverseProposalInfosSelector =>
   selectorFamily({
@@ -30,6 +31,7 @@ export const makeReverseProposalInfos = ({
         const proposalResponses = get(
           reverseProposalsSelector({
             contractAddress: address,
+            chainId,
             params: [
               {
                 startBefore,
@@ -42,7 +44,10 @@ export const makeReverseProposalInfos = ({
         const timestamps = get(
           waitForAll(
             proposalResponses.map(({ proposal: { start_height } }) =>
-              blockHeightTimestampSafeSelector({ blockHeight: start_height })
+              blockHeightTimestampSafeSelector({
+                blockHeight: start_height,
+                chainId,
+              })
             )
           )
         )
@@ -61,6 +66,7 @@ export const makeReverseProposalInfos = ({
   })
 
 export const makeDepositInfo = ({
+  chainId,
   proposalModule: { address, version, preProposeAddress },
 }: IProposalModuleAdapterCommonOptions): DepositInfoSelector =>
   selector({
@@ -73,6 +79,7 @@ export const makeDepositInfo = ({
         const config = get(
           configV1Selector({
             contractAddress: address,
+            chainId,
           })
         )
 
@@ -92,6 +99,7 @@ export const makeDepositInfo = ({
         const config = get(
           configPreProposeSelector({
             contractAddress: preProposeAddress,
+            chainId,
             params: [],
           })
         )

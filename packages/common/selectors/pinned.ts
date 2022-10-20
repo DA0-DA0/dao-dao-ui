@@ -1,10 +1,9 @@
 import { selector, waitForAll } from 'recoil'
 
+import { daoDropdownInfoSelector, pinnedAddressesAtom } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/ui'
 
-import { pinnedAddressesAtom } from '../../atoms'
-import { cwCoreProposalModulesSelector } from '../proposal'
-import { daoDropdownInfoSelector } from './info'
+import { cwCoreProposalModulesSelector } from './dao'
 
 // TODO(multichain): Store pinned addresses with their chain ID in one list.
 export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({

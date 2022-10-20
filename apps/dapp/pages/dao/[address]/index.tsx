@@ -167,12 +167,13 @@ const InnerDaoHome = () => {
       daoInfo.proposalModules.map(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
+            chainId: daoInfo.chainId,
             coreAddress: daoInfo.coreAddress,
             Loader,
             Logo,
           }).selectors.depositInfo
       ),
-    [daoInfo.coreAddress, daoInfo.proposalModules]
+    [daoInfo.chainId, daoInfo.coreAddress, daoInfo.proposalModules]
   )
   const proposalModuleDepositInfos = useRecoilValue(
     waitForAll(depositInfoSelectors)

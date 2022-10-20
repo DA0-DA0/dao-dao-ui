@@ -1,12 +1,6 @@
 import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
-import { proposalModuleAdapterProposalCountSelector } from '@dao-dao/proposal-module-adapter'
-import {
-  ContractVersion,
-  DaoCardInfo,
-  DaoCardInfoLazyData,
-  WithChainId,
-} from '@dao-dao/tstypes'
+import { ContractVersion, DaoCardInfo, WithChainId } from '@dao-dao/tstypes'
 import {
   ConfigResponse as CwCoreV1ConfigResponse,
   DumpStateResponse as CwCoreV1DumpStateResponse,
@@ -29,8 +23,6 @@ import {
   contractVersionSelector,
   isContractSelector,
 } from '../contract'
-import { daoTvlSelector } from '../price'
-import { cwCoreProposalModulesSelector } from '../proposal'
 
 export const daoDropdownInfoSelector: (
   params: WithChainId<{ coreAddress: string }>
@@ -177,56 +169,6 @@ export const daoCardInfoSelector = selectorFamily<
         tokenDecimals: 6,
         tokenSymbol: 'USDC',
         lazyData: { loading: true },
-      }
-    },
-})
-
-export const daoCardInfoLazyDataSelector = selectorFamily<
-  DaoCardInfoLazyData,
-  WithChainId<{ coreAddress: string; walletAddress?: string }>
->({
-  key: 'daoCardInfoLazyData',
-  get:
-    ({ coreAddress, chainId, walletAddress }) =>
-    ({ get }) => {
-      const tvl = get(daoTvlSelector({ coreAddress, chainId }))
-
-      const walletVotingWeight = walletAddress
-        ? Number(
-            get(
-              CwdCoreV2Selectors.votingPowerAtHeightSelector({
-                contractAddress: coreAddress,
-                chainId,
-                params: [{ address: walletAddress }],
-              })
-            ).power
-          )
-        : 0
-
-      const proposalModules = get(
-        cwCoreProposalModulesSelector({
-          coreAddress,
-          chainId,
-        })
-      )
-      const proposalModuleCounts = get(
-        waitForAll(
-          proposalModules.map(({ address }) =>
-            proposalModuleAdapterProposalCountSelector({
-              proposalModuleAddress: address,
-              chainId,
-            })
-          )
-        )
-      ).filter(Boolean) as number[]
-
-      return {
-        isMember: walletVotingWeight > 0,
-        tokenBalance: tvl,
-        proposalCount: proposalModuleCounts.reduce(
-          (acc, curr) => acc + curr,
-          0
-        ),
       }
     },
 })

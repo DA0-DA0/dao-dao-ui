@@ -6,6 +6,7 @@ import { RecoilValueReadOnly } from 'recoil'
 import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
 
 import { Action } from './actions'
+import { ContractVersion } from './contract'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo } from './contracts/common'
 import {
@@ -97,6 +98,10 @@ export type ProposalModuleAdapter<
     proposalCount: Record<string, unknown>
   }
 
+  functions: {
+    fetchPreProposeAddress?: FetchPreProposeAddressFunction
+  }
+
   daoCreation: {
     defaultConfig: DaoCreationConfig
 
@@ -111,6 +116,7 @@ export type ProposalModuleAdapter<
 }
 
 export interface IProposalModuleAdapterInitialOptions {
+  chainId: string
   coreAddress: string
   Logo: ComponentType<LogoProps>
   Loader: ComponentType<LoaderProps>
@@ -136,6 +142,12 @@ export interface IProposalModuleContext {
 }
 
 // Internal Adapter Types
+
+export type FetchPreProposeAddressFunction = (
+  cosmWasmClient: CosmWasmClient,
+  proposalModuleAddress: string,
+  version: ContractVersion | null
+) => Promise<string | null>
 
 export type ReverseProposalInfosSelector = (data: {
   startBefore: number | undefined

@@ -30,7 +30,12 @@ export const ProfileProposalCard = ({
   onVoteSuccess,
 }: ProfileProposalCardProps) => {
   const { t } = useTranslation()
-  const { coreAddress, name: daoName, proposalModules } = useDaoInfoContext()
+  const {
+    chainId,
+    coreAddress,
+    name: daoName,
+    proposalModules,
+  } = useDaoInfoContext()
   const { walletProfile, updateProfileName } = useWalletProfile()
   const { updateProfileNft } = useAppLayoutContext()
 
@@ -47,12 +52,13 @@ export const ProfileProposalCard = ({
       proposalModules.map(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
+            chainId,
             coreAddress,
             Loader,
             Logo,
           }).selectors.depositInfo
       ),
-    [coreAddress, proposalModules]
+    [chainId, coreAddress, proposalModules]
   )
   const proposalModuleDepositInfos = useRecoilValue(
     waitForAll(depositInfoSelectors)
