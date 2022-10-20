@@ -69,7 +69,7 @@ export const DaoDropdown = ({
 
         <div className="ml-2 flex grow flex-row items-center gap-2">
           <div className="flex h-6 w-6 shrink-0 items-center justify-center">
-            {subdaos?.length || content ? (
+            {(showSubdaos && subdaos?.length) || content ? (
               <DropdownIconButton
                 className="text-icon-primary"
                 open={expanded}
