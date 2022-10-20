@@ -25,11 +25,16 @@ import {
 } from '../contract'
 
 export const daoDropdownInfoSelector: (
-  params: WithChainId<{ coreAddress: string }>
+  params: WithChainId<{
+    coreAddress: string
+    // Catch and prevent cycles.
+    parents?: string[]
+    noSubDaos?: boolean
+  }>
 ) => RecoilValueReadOnly<DaoDropdownInfo> = selectorFamily({
   key: 'daoDropdownInfo',
   get:
-    ({ coreAddress, chainId }) =>
+    ({ coreAddress, chainId, parents, noSubDaos }) =>
     ({ get }) => {
       const version = get(
         contractVersionSelector({
@@ -67,16 +72,23 @@ export const daoDropdownInfoSelector: (
         coreAddress,
         imageUrl: config.image_url || getFallbackImage(coreAddress),
         name: config.name,
-        subdaos: get(
-          waitForAll(
-            subDaoAddresses.map((subDaoAddress) =>
-              daoDropdownInfoSelector({
-                coreAddress: subDaoAddress,
-                chainId,
-              })
-            )
-          )
-        ),
+        subdaos: noSubDaos
+          ? []
+          : get(
+              waitForAll(
+                subDaoAddresses.map((subDaoAddress) =>
+                  daoDropdownInfoSelector({
+                    coreAddress: subDaoAddress,
+                    chainId,
+                    parents: [...(parents ?? []), coreAddress],
+                    // Prevents cycles. If one of our children is also our
+                    // ancestor, don't let it load any children, but still load
+                    // it so we can see the cycle exists.
+                    noSubDaos: !!parents?.includes(subDaoAddress),
+                  })
+                )
+              )
+            ),
       }
     },
 })
