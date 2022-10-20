@@ -1,7 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBech32 } from '@cosmjs/encoding'
 import axios from 'axios'
-import { getAverageColor } from 'fast-average-color-node'
 import type { GetStaticProps, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
@@ -192,9 +191,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         coreVersion
       )
 
-      // Must be called after server side translations has been awaited,
-      // because props may use the `t` function, and it won't be available
-      // until after.
+      // Must be called after server side translations has been awaited, because
+      // props may use the `t` function, and it won't be available until after.
       const {
         leadingTitle,
         followingTitle,
@@ -220,13 +218,12 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       let accentColor: string | null = null
       if (config.image_url) {
         try {
-          const response = await axios.get(config.image_url, {
-            responseType: 'arraybuffer',
-          })
-          const buffer = Buffer.from(response.data, 'binary')
-          const result = await getAverageColor(buffer)
+          const response = await axios.get(
+            `https://fac.withoutdoing.com/${config.image_url}`,
+            { responseType: 'text' }
+          )
 
-          accentColor = result.rgb
+          accentColor = response.data
         } catch (error) {
           // If fail to load image or get color, don't prevent page render.
           console.error(error)
