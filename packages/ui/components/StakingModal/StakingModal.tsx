@@ -1,7 +1,10 @@
 import { ChangeEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { StakingModalProps, StakingMode } from '@dao-dao/types/components/StakingModal'
+import {
+  StakingModalProps,
+  StakingMode,
+} from '@dao-dao/types/components/StakingModal'
 import { Duration } from '@dao-dao/types/contracts/common'
 import {
   convertMicroDenomToDenomWithDecimals,

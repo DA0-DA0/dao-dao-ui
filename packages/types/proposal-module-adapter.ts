@@ -4,6 +4,12 @@ import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
 import { Action } from './actions'
+import {
+  LoaderProps,
+  LogoProps,
+  ProfileNewProposalCardInfoLine,
+  ProfileVoteCardOption,
+} from './components'
 import { ContractVersion } from './contract'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo } from './contracts/common'
@@ -15,12 +21,6 @@ import {
   ProposalPrefill,
 } from './dao'
 import { ProposalCreatedCardProps } from './proposal'
-import {
-  LoaderProps,
-  LogoProps,
-  ProfileNewProposalCardInfoLine,
-  ProfileVoteCardOption,
-} from './components'
 
 export interface IProposalModuleAdapterCommon<
   FormData extends FieldValues = any
