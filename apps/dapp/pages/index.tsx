@@ -21,7 +21,7 @@ import {
   SplashStatsCard,
 } from '@dao-dao/ui'
 
-import { DaoCard } from '@/components'
+import { SplashDaoCard } from '@/components'
 
 const SplashPage: NextPage = () => {
   const { t } = useTranslation()
@@ -86,7 +86,10 @@ const SplashPage: NextPage = () => {
           <SplashAnnouncementCard />
         </div>
 
-        <FeaturedDaos DaoCard={DaoCard} featuredDaos={featuredDaosLoading} />
+        <FeaturedDaos
+          DaoCard={SplashDaoCard}
+          featuredDaos={featuredDaosLoading}
+        />
 
         <div className="divide-focus flex grid-cols-3 flex-col justify-around gap-6 py-6 md:grid md:gap-3 md:divide-x md:py-8">
           <SplashStatsCard>

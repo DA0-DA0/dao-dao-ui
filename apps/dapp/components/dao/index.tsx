@@ -5,3 +5,4 @@ export * from './tabs'
 
 export * from './DaoCard'
 export * from './DaoTreasuryHistory'
+export * from './SplashDaoCard'
