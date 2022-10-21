@@ -1,5 +1,5 @@
 import { Key, Visibility, VisibilityOff } from '@mui/icons-material'
-import { ReactNode, useCallback, useState } from 'react'
+import { ComponentType, ReactNode, useCallback, useState } from 'react'
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -9,10 +9,10 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { SuspenseLoader } from '@dao-dao/common'
 import {
   Action,
   ActionKey,
+  SuspenseLoaderProps,
   UseDefaults,
   UseTransformToCosmos,
   WalletTransactionForm,
@@ -48,6 +48,7 @@ export interface WalletProps {
   execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
   loading: boolean
   rightSidebarContent: ReactNode
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
   error?: string
 }
 
@@ -64,6 +65,7 @@ export const Wallet = ({
   execute,
   loading,
   rightSidebarContent,
+  SuspenseLoader,
   error,
 }: WalletProps) => {
   const { t } = useTranslation()

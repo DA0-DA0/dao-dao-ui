@@ -1,6 +1,6 @@
 import { ComponentType, useState } from 'react'
 
-import { Logo as DefaultLogo, LogoProps } from '@dao-dao/ui'
+import { Logo as DefaultLogo, LogoProps } from './Logo'
 
 export interface RotatableLogoProps extends LogoProps {
   Logo?: ComponentType<LogoProps>

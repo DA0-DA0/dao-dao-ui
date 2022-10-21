@@ -17,6 +17,7 @@ export const CreateDaoVoting = ({
   },
   votingModuleDaoCreationAdapter,
   proposalModuleDaoCreationAdapters,
+  SuspenseLoader,
 }: CreateDaoContext) => {
   const { t } = useTranslation()
 
@@ -79,6 +80,7 @@ export const CreateDaoVoting = ({
                 <DaoCreateConfigInputCard
                   key={index}
                   Icon={Icon}
+                  SuspenseLoader={SuspenseLoader}
                   description={t(descriptionI18nKey)}
                   error={getInputError(errors.votingModuleAdapter?.data)}
                   input={
@@ -138,6 +140,7 @@ export const CreateDaoVoting = ({
                     <DaoCreateConfigInputCard
                       key={`${index}:${itemIndex}`}
                       Icon={Icon}
+                      SuspenseLoader={SuspenseLoader}
                       description={t(descriptionI18nKey)}
                       error={getInputError(
                         errors.proposalModuleAdapters?.[index]?.data
@@ -264,6 +267,7 @@ export const CreateDaoVoting = ({
                     <DaoCreateConfigInputCard
                       key={index}
                       Icon={Icon}
+                      SuspenseLoader={SuspenseLoader}
                       description={t(descriptionI18nKey)}
                       error={getInputError(errors.votingModuleAdapter?.data)}
                       input={
@@ -323,6 +327,7 @@ export const CreateDaoVoting = ({
                         <DaoCreateConfigInputCard
                           key={`${index}:${itemIndex}`}
                           Icon={Icon}
+                          SuspenseLoader={SuspenseLoader}
                           description={t(descriptionI18nKey)}
                           error={getInputError(
                             errors.proposalModuleAdapters?.[index]?.data

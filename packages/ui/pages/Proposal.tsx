@@ -1,9 +1,9 @@
-import { ComponentType, Fragment, ReactNode, useEffect } from 'react'
+import { ComponentType, ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { CommonProposalInfo } from '@dao-dao/proposal-module-adapter'
 import {
   BaseProposalStatusAndInfoProps,
+  CommonProposalInfo,
   DaoInfo,
   LoadingData,
 } from '@dao-dao/types'

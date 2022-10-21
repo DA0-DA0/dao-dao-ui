@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 import { ComponentType, PropsWithChildren, useEffect } from 'react'
 
 import { ActionsProvider } from '@dao-dao/actions'
-import { SuspenseLoader } from '@dao-dao/common'
 import {
   ActionOptionsContextType,
   CommonProposalInfo,
@@ -22,6 +21,9 @@ import {
   useThemeContext,
 } from '@dao-dao/ui'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
+
+import { SuspenseLoader } from './SuspenseLoader'
+import { Trans } from './Trans'
 
 export type DaoPageWrapperProps = PropsWithChildren<{
   url?: string | null
@@ -109,7 +111,7 @@ export const DaoPageWrapper = ({
         ) : error ? (
           <ErrorPage500 error={error} />
         ) : (
-          <DaoNotFound />
+          <DaoNotFound Trans={Trans} />
         )}
       </SuspenseLoader>
     </>

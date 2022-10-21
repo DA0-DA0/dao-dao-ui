@@ -9,7 +9,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { useActions } from '@dao-dao/actions'
-import { DaoPageWrapper, DaoProposalPageWrapperProps } from '@dao-dao/common'
+import {
+  DaoPageWrapper,
+  DaoProposalPageWrapperProps,
+  Trans,
+} from '@dao-dao/common'
 import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
 import {
   CommonProposalInfo,
@@ -177,6 +181,7 @@ const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
       </ProposalModuleAdapterProvider>
     ) : (
       <ProposalNotFound
+        Trans={Trans}
         homeHref={
           props.serializedInfo
             ? `/dao/${props.serializedInfo.coreAddress}`

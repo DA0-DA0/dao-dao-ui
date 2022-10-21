@@ -1,14 +1,10 @@
 import { useRouter } from 'next/router'
-import { ComponentType, ReactNode, Suspense, SuspenseProps } from 'react'
+import { Suspense } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { mountedInBrowserAtom } from '@dao-dao/state'
+import { SuspenseLoaderProps } from '@dao-dao/types/ui/SuspenseLoader'
 import { ErrorBoundary } from '@dao-dao/ui'
-
-export interface SuspenseLoaderProps extends SuspenseProps {
-  ErrorBoundaryComponent?: ComponentType<{ children: ReactNode }>
-  forceFallback?: boolean
-}
 
 export const SuspenseLoader = ({
   ErrorBoundaryComponent = ErrorBoundary,

@@ -17,7 +17,7 @@ import { ContractVersion } from './contract'
 import { ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as CwdCoreV2InstantiateMsg } from './contracts/CwdCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
-import { DaoCardProps, LoadingData } from './ui'
+import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './ui'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/common/components/DaoPageWrapper
@@ -154,6 +154,7 @@ export interface CreateDaoContext<
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
   generateInstantiateMsg: () => CwdCoreV2InstantiateMsg
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
 export interface NewDao<VotingModuleAdapterData extends FieldValues = any> {

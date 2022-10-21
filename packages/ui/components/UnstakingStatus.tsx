@@ -4,7 +4,8 @@ import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { UnstakingTaskStatus } from '@dao-dao/types'
-import { StatusDisplay } from '@dao-dao/ui'
+
+import { StatusDisplay } from './StatusDisplay'
 
 export { UnstakingTaskStatus }
 

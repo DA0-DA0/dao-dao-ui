@@ -2,7 +2,8 @@ import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Loadable } from 'recoil'
 
-import { Loader as DefaultLoader, InputLabel, LoaderProps } from '@dao-dao/ui'
+import { InputLabel } from './inputs/InputLabel'
+import { Loader as DefaultLoader, LoaderProps } from './Loader'
 
 export interface FormattedJsonDisplayProps {
   jsonLoadable: Loadable<any>

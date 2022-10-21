@@ -1,7 +1,7 @@
 import { ComponentType, ReactNode } from 'react'
 import { FieldError } from 'react-hook-form'
 
-import { SuspenseLoader } from '@dao-dao/common'
+import { SuspenseLoaderProps } from '@dao-dao/types'
 
 import { InputErrorMessage } from '../../inputs'
 import { Loader as DefaultLoader, LoaderProps } from '../../Loader'
@@ -13,6 +13,7 @@ export interface DaoCreateConfigInputCardProps {
   description: string
   tooltip?: string
   input: ReactNode
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
   Loader?: ComponentType<LoaderProps>
   error?: FieldError
 }
@@ -23,6 +24,7 @@ export const DaoCreateConfigInputCard = ({
   description,
   tooltip,
   input,
+  SuspenseLoader,
   Loader = DefaultLoader,
   error,
 }: DaoCreateConfigInputCardProps) => (

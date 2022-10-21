@@ -124,6 +124,7 @@ const InnerWallet = () => {
 
   return (
     <Wallet
+      SuspenseLoader={SuspenseLoader}
       actions={actions}
       actionsWithData={actionsWithData}
       connected={connected}

@@ -1,7 +1,7 @@
 import { Close } from '@mui/icons-material'
 import clsx from 'clsx'
 
-import { IconButton } from '@dao-dao/ui'
+import { IconButton } from '../icon_buttons/IconButton'
 
 export interface ContextPillProps {
   imageUrl?: string

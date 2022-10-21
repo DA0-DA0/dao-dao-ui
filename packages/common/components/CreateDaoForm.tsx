@@ -66,6 +66,7 @@ import {
   daoCreatedCardPropsAtom,
   newDaoAtom,
 } from '../atoms/newDao'
+import { SuspenseLoader } from './SuspenseLoader'
 
 // i18n keys
 export enum CreateDaoSubmitValue {
@@ -538,6 +539,7 @@ export const CreateDaoForm = ({
       setCustomValidator: (fn) => setCustomValidator(() => fn),
       votingModuleDaoCreationAdapter,
       proposalModuleDaoCreationAdapters,
+      SuspenseLoader,
     }),
     [
       availableVotingModuleAdapters,

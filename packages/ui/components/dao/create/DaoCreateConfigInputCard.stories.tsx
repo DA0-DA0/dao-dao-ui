@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
-import { DefaultNewDao } from '@dao-dao/common'
+import { DefaultNewDao, SuspenseLoader } from '@dao-dao/common'
 import {
   VotingDurationIcon,
   VotingDurationInput,
@@ -67,6 +67,7 @@ Default.args = {
   name: 'Voting duration',
   description:
     'The amount of time proposals are open for voting. A low proposal duration may increase the speed at which your DAO can pass proposals. Setting the duration too low may make it diffcult for proposals to pass as voters will have limited time to vote. After this time elapses, the proposal will either pass or fail.',
+  SuspenseLoader,
 }
 Default.parameters = {
   design: {

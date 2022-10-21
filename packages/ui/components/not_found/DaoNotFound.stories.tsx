@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { Trans } from '@dao-dao/common'
+
 import { DaoNotFound } from './DaoNotFound'
 
 export default {
@@ -12,7 +14,9 @@ const Template: ComponentStory<typeof DaoNotFound> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  Trans,
+}
 Default.parameters = {
   design: {
     type: 'figma',

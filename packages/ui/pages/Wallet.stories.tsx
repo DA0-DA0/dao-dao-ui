@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { useActions } from '@dao-dao/actions'
+import { SuspenseLoader } from '@dao-dao/common'
 import {
   WalletProviderDecorator,
   makeActionsProviderDecorator,
@@ -91,6 +92,7 @@ Default.args = {
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
+  SuspenseLoader,
 }
 Default.parameters = {
   design: {

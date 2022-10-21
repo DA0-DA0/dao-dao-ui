@@ -9,10 +9,11 @@ import {
   LoaderProps,
   LoadingData,
 } from '@dao-dao/types'
-import { Loader as DefaultLoader, NoContent } from '@dao-dao/ui'
 
 import { ButtonLink } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
+import { Loader as DefaultLoader } from '../../Loader'
+import { NoContent } from '../../NoContent'
 
 export interface SubDaosTabProps {
   DaoCard: ComponentType<DaoCardInfo>

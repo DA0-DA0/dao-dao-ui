@@ -2,9 +2,8 @@ import { ArrowOutward, Code, Twitter } from '@mui/icons-material'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DiscordIcon } from '@dao-dao/ui'
-
 import { ButtonLink } from '../buttons'
+import { DiscordIcon } from '../icons/DiscordIcon'
 
 export const Footer = () => {
   const { t } = useTranslation()

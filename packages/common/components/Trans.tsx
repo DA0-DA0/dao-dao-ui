@@ -5,16 +5,12 @@
 // 'blocking'` on the dynamically generated pages which prevented communication
 // to the user that a page is loading and made the UI look stuck when navigating
 // to dynamic pages such as a DAO or proposal page.
-import { ComponentProps, ComponentType } from 'react'
 import { Trans as OriginalTrans } from 'react-i18next'
 
-import { Loader as DefaultLoader, LoaderProps } from '@dao-dao/ui'
+import { TransProps } from '@dao-dao/types'
+import { Loader as DefaultLoader } from '@dao-dao/ui'
 
 import { SuspenseLoader } from './SuspenseLoader'
-
-export interface TransProps extends ComponentProps<typeof OriginalTrans> {
-  Loader?: ComponentType<LoaderProps>
-}
 
 export const Trans = ({ Loader = DefaultLoader, ...props }: TransProps) => (
   <SuspenseLoader fallback={<Loader size={20} />}>

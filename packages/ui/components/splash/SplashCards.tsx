@@ -5,13 +5,9 @@ import { EmojiEmotions, PanTool } from '@mui/icons-material'
 import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
 
-import {
-  DiscordIcon,
-  GithubIcon,
-  IconButtonLink,
-  SplashVoteCard,
-  TwitterIcon,
-} from '@dao-dao/ui'
+import { IconButtonLink } from '../icon_buttons/IconButtonLink'
+import { DiscordIcon, GithubIcon, TwitterIcon } from '../icons'
+import { SplashVoteCard } from './SplashVoteCard'
 
 export const SplashCards = () => {
   const { t } = useTranslation()

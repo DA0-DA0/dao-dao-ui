@@ -3,8 +3,9 @@ import Link from 'next/link'
 import { Component, ErrorInfo, ReactNode } from 'react'
 import { WithTranslationProps, withTranslation } from 'react-i18next'
 
-import { ErrorPage } from '@dao-dao/ui'
 import { processError } from '@dao-dao/utils'
+
+import { ErrorPage } from './ErrorPage'
 
 interface ErrorBoundaryProps extends WithTranslationProps {
   children: ReactNode
