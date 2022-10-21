@@ -1,6 +1,12 @@
-import { Add, ExpandCircleDownOutlined } from '@mui/icons-material'
+import {
+  Add,
+  Check,
+  CopyAll,
+  ExpandCircleDownOutlined,
+} from '@mui/icons-material'
 import clsx from 'clsx'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { TokenCardInfo } from '@dao-dao/types'
@@ -34,6 +40,7 @@ export const TokenCard = ({
   usdcUnitPrice,
   hasStakingInfo,
   lazyStakingInfo,
+  cw20Address,
   onAddToken,
   onProposeStakeUnstake,
   onProposeClaim,
@@ -66,18 +73,46 @@ export const TokenCard = ({
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
 
+  const [copied, setCopied] = useState(false)
+  // Debounce clearing copied.
+  useEffect(() => {
+    const timeout = setTimeout(() => setCopied(false), 2000)
+    return () => clearTimeout(timeout)
+  }, [copied])
+
   const buttonPopupSections: ButtonPopupSection[] = useMemo(
     () => [
-      ...(onAddToken
+      ...(cw20Address || onAddToken
         ? [
             {
               label: t('title.token'),
               buttons: [
-                {
-                  Icon: Add,
-                  label: t('button.addToKeplr'),
-                  onClick: onAddToken,
-                },
+                ...(cw20Address
+                  ? [
+                      {
+                        Icon: copied ? Check : CopyAll,
+                        label: t('button.copyAddressToClipboard'),
+                        onClick: () => {
+                          if (!cw20Address) {
+                            return
+                          }
+
+                          navigator.clipboard.writeText(cw20Address)
+                          toast.success(t('info.copiedToClipboard'))
+                          setCopied(true)
+                        },
+                      },
+                    ]
+                  : []),
+                ...(onAddToken
+                  ? [
+                      {
+                        Icon: Add,
+                        label: t('button.addToKeplr'),
+                        onClick: onAddToken,
+                      },
+                    ]
+                  : []),
               ],
             },
           ]
@@ -110,7 +145,7 @@ export const TokenCard = ({
           ]
         : []),
     ],
-    [onAddToken, onProposeClaim, onProposeStakeUnstake, t]
+    [copied, cw20Address, onAddToken, onProposeClaim, onProposeStakeUnstake, t]
   )
 
   // Truncate IBC denominations to prevent overflow.

@@ -13,12 +13,12 @@ export const useProfileNewProposalCardAddresses =
 
     return [
       {
-        label: t('info.stakingAddress'),
-        address: stakingContractAddress,
-      },
-      {
         label: t('info.govTokenAddress'),
         address: governanceTokenAddress,
+      },
+      {
+        label: t('info.stakingAddress'),
+        address: stakingContractAddress,
       },
     ]
   }
