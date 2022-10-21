@@ -1,5 +1,0 @@
-{
-  "extends": "@dao-dao/config/ts/react-library.json",
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
-}

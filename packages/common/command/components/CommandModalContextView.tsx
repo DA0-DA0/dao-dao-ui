@@ -1,7 +1,6 @@
 import Fuse from 'fuse.js'
 import { useMemo } from 'react'
 
-import { SuspenseLoader } from '@dao-dao/common'
 import {
   CommandModalContextViewLoader,
   CommandModalContextView as StatelessCommandModalContextView,
@@ -10,6 +9,8 @@ import {
   CommandModalContext,
   CommandModalContextSection,
 } from '@dao-dao/types/command'
+
+import { SuspenseLoader } from '../../components/SuspenseLoader'
 
 export interface CommandModalContextViewProps {
   filter: string

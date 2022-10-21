@@ -15,13 +15,13 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { CommandModal, makeGenericContext } from '@dao-dao/command'
 import {
   PfpkNftSelectionModal,
   SidebarWallet,
   daoCreatedCardPropsAtom,
   pinnedDaoDropdownInfosSelector,
 } from '@dao-dao/common'
+import { CommandModal, makeGenericContext } from '@dao-dao/common/command'
 import {
   mountedInBrowserAtom,
   navigationCompactAtom,
