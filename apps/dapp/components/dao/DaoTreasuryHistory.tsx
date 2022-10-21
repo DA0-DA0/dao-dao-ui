@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { East, OpenInNew, West } from '@mui/icons-material'
+import { ArrowOutward, East, West } from '@mui/icons-material'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
@@ -256,7 +256,7 @@ const TransactionRenderer = ({
         rel="noopener noreferrer"
         target="_blank"
       >
-        <OpenInNew className="!h-4 !w-4" />
+        <ArrowOutward className="!h-4 !w-4" />
       </a>
     </p>
   </div>

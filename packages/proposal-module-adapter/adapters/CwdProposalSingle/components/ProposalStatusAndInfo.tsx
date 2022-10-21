@@ -1,9 +1,9 @@
 import {
   AccountCircleOutlined,
+  ArrowOutward,
   CancelOutlined,
   HourglassTopRounded,
   Key,
-  OpenInNew,
   Redo,
   RotateRightOutlined,
   Tag,
@@ -171,7 +171,7 @@ export const ProposalStatusAndInfo = ({
                 />
                 {!!CHAIN_TXN_URL_PREFIX && (
                   <IconButtonLink
-                    Icon={OpenInNew}
+                    Icon={ArrowOutward}
                     href={CHAIN_TXN_URL_PREFIX + executionTxHash}
                     variant="ghost"
                   />
