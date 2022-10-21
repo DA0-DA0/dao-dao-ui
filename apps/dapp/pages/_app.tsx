@@ -34,7 +34,6 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   const isHomepage = router.pathname === '/'
   // Always display the homepage with dark theme.
   const theme = isHomepage ? Theme.Dark : _theme
-  const Layout = isHomepage ? HomepageLayout : AppLayout
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -60,12 +59,16 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
         <LayoutLoading>
           <Component {...pageProps} />
         </LayoutLoading>
+      ) : isHomepage ? (
+        <HomepageLayout>
+          <Component {...pageProps} />
+        </HomepageLayout>
       ) : (
         <WalletProvider>
           <SubQueryProvider>
-            <Layout>
+            <AppLayout>
               <Component {...pageProps} />
-            </Layout>
+            </AppLayout>
           </SubQueryProvider>
         </WalletProvider>
       )}
