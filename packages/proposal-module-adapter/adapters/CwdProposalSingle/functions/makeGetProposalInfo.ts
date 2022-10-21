@@ -7,13 +7,13 @@ import {
   getGetProposalSubqueryId,
   client as subqueryClient,
 } from '@dao-dao/state/subquery'
-import { ContractVersion } from '@dao-dao/tstypes'
-import { Status } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+import { ContractVersion } from '@dao-dao/types'
+import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   InfoResponse,
   ProposalResponse as ProposalV2Response,
-} from '@dao-dao/tstypes/contracts/CwdProposalSingle.v2'
-import { ProposalResponse as ProposalV1Response } from '@dao-dao/tstypes/contracts/CwProposalSingle.v1'
+} from '@dao-dao/types/contracts/CwdProposalSingle.v2'
+import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { parseContractVersion, processError } from '@dao-dao/utils'
 
 import {

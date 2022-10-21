@@ -9,7 +9,7 @@ import {
   CommonProposalInfo,
   DaoInfo,
   DaoInfoSerializable,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import {
   DaoInfoContext,
   DaoNotFound,

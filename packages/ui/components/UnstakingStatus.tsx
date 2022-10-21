@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { UnstakingTaskStatus } from '@dao-dao/tstypes'
+import { UnstakingTaskStatus } from '@dao-dao/types'
 import { StatusDisplay } from '@dao-dao/ui'
 
 export { UnstakingTaskStatus }

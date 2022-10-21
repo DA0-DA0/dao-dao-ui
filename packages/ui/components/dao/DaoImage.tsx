@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 
-import { DaoParentInfo } from '@dao-dao/tstypes/dao'
+import { DaoParentInfo } from '@dao-dao/types/dao'
 import { getFallbackImage } from '@dao-dao/utils'
 
 export interface DaoImageProps {

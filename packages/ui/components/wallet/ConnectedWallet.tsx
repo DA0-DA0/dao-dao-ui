@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData } from '@dao-dao/tstypes'
+import { LoadingData } from '@dao-dao/types'
 
 import { IconButton } from '../icon_buttons'
 import { TokenAmountDisplay } from '../TokenAmountDisplay'

@@ -9,7 +9,7 @@ import {
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
   DepositRefundPolicy,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import {
   AddressInput,
   FormSwitchCard,

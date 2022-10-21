@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { DaoCardInfo } from '@dao-dao/tstypes'
+import { DaoCardInfo } from '@dao-dao/types'
 import { CHAIN_ID } from '@dao-dao/utils'
 
 import { FeaturedDaos } from './FeaturedDaos'

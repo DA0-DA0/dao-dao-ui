@@ -21,8 +21,8 @@ import {
   ActionKey,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes'
-import { CosmosMsgFor_Empty } from '@dao-dao/tstypes/contracts/common'
+} from '@dao-dao/types'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import {
   ActionCardLoader,
   ActionSelector,

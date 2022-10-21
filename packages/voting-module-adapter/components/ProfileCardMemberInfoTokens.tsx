@@ -6,7 +6,7 @@ import {
   BaseProfileCardMemberInfoProps,
   UnstakingTask,
   UnstakingTaskStatus,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import {
   Button,
   ButtonLink,

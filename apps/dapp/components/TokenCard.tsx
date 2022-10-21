@@ -12,8 +12,8 @@ import {
   useCachedLoadable,
   useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/tstypes'
-import { TokenCardInfo } from '@dao-dao/tstypes/dao'
+import { ActionKey } from '@dao-dao/types'
+import { TokenCardInfo } from '@dao-dao/types/dao'
 import { TokenCard as StatelessTokenCard, useDaoInfoContext } from '@dao-dao/ui'
 import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
 

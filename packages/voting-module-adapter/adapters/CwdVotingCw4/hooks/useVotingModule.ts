@@ -5,7 +5,7 @@ import {
   CwCoreV1Selectors,
   CwdVotingCw4Selectors,
 } from '@dao-dao/state'
-import { Member } from '@dao-dao/tstypes/contracts/CwdVotingCw4'
+import { Member } from '@dao-dao/types/contracts/CwdVotingCw4'
 
 interface UseVotingModuleOptions {
   fetchMembers?: boolean

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { ProfileNewProposalCardAddress } from '@dao-dao/tstypes'
+import { ProfileNewProposalCardAddress } from '@dao-dao/types'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useVotingModule } from './useVotingModule'

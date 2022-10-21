@@ -2,7 +2,7 @@ import { Check } from '@mui/icons-material'
 import clsx from 'clsx'
 import { FieldValues, UseFormSetValue } from 'react-hook-form'
 
-import { BooleanFieldNames } from '@dao-dao/tstypes'
+import { BooleanFieldNames } from '@dao-dao/types'
 
 export interface CheckboxProps {
   checked: boolean

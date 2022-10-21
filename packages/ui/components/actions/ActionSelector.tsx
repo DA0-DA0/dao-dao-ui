@@ -4,7 +4,7 @@ import Fuse from 'fuse.js'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Action } from '@dao-dao/tstypes/actions'
+import { Action } from '@dao-dao/types/actions'
 import { usePlatform } from '@dao-dao/utils'
 
 import { Button } from '../buttons'

@@ -17,9 +17,9 @@ import {
   ContractVersion,
   DaoParentInfo,
   ProposalModule,
-} from '@dao-dao/tstypes'
-import { ConfigResponse as ConfigV1Response } from '@dao-dao/tstypes/contracts/CwCore.v1'
-import { ConfigResponse as ConfigV2Response } from '@dao-dao/tstypes/contracts/CwdCore.v2'
+} from '@dao-dao/types'
+import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
+import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/CwdCore.v2'
 import { Loader, Logo } from '@dao-dao/ui'
 import {
   CHAIN_PREFIX_ID_MAP,

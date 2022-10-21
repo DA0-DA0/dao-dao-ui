@@ -3,7 +3,7 @@ import {
   CommandModalContextSection,
   CommandModalContextUseSections,
   CommandModalDaoInfo,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 
 import {
   useNavigationSection,

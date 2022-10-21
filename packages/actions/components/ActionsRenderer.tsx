@@ -3,7 +3,7 @@ import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { ActionAndData } from '@dao-dao/tstypes/actions'
+import { ActionAndData } from '@dao-dao/types/actions'
 import {
   ActionCardLoader,
   IconButton,

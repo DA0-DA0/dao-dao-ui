@@ -6,13 +6,13 @@ import {
   ActionMaker,
   ActionOptionsContextType,
   ContractVersion,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import {
   ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes/actions'
+} from '@dao-dao/types/actions'
 import { UpdateInfoEmoji } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 

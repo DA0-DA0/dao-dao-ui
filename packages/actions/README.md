@@ -17,7 +17,7 @@ address and version of the DAO's core contract.
 
 ```tsx
 import { ActionsProvider } from '@dao-dao/actions'
-import { ActionOptionsContextType } from '@dao-dao/tstypes'
+import { ActionOptionsContextType } from '@dao-dao/types'
 
 const App = () => (
   <ActionsProvider

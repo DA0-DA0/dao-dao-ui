@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { ContractVersion, WithChainId } from '@dao-dao/tstypes'
+import { ContractVersion, WithChainId } from '@dao-dao/types'
 import { parseContractVersion } from '@dao-dao/utils'
 
 import {

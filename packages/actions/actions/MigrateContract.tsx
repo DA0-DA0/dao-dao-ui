@@ -9,7 +9,7 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes/actions'
+} from '@dao-dao/types/actions'
 import { MigrateContractEmoji } from '@dao-dao/ui'
 
 import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components/MigrateContract'

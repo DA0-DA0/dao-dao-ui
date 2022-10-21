@@ -6,7 +6,7 @@ import {
   blocksPerYearSelector,
   useCachedLoadable,
 } from '@dao-dao/state'
-import { Status } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import { ProposalLine as StatelessProposalLine } from '@dao-dao/ui'
 import { useTranslatedTimeDeltaFormatter } from '@dao-dao/ui/hooks'
 import { convertExpirationToDate, formatDate } from '@dao-dao/utils'

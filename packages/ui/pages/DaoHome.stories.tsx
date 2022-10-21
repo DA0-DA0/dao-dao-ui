@@ -5,7 +5,7 @@ import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { DaoMemberCardProps } from '@dao-dao/tstypes'
+import { DaoMemberCardProps } from '@dao-dao/types'
 import { useDaoInfoContext } from '@dao-dao/ui'
 
 import {

@@ -27,8 +27,8 @@ import {
   BaseProposalStatusAndInfoProps,
   ContractVersion,
   DepositRefundPolicy,
-} from '@dao-dao/tstypes'
-import { Status } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+} from '@dao-dao/types'
+import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   ButtonLink,
   CopyToClipboardUnderline,

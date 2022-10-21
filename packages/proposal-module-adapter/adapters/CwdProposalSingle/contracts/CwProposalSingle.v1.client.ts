@@ -9,11 +9,11 @@ import {
   Coin,
   CosmosMsgForEmpty,
   Duration,
-} from '@dao-dao/tstypes/contracts/common'
+} from '@dao-dao/types/contracts/common'
 import {
   Threshold,
   Vote,
-} from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+} from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   ConfigResponse,
   DepositInfo,
@@ -26,7 +26,7 @@ import {
   ReverseProposalsResponse,
   VoteHooksResponse,
   VoteResponse,
-} from '@dao-dao/tstypes/contracts/CwProposalSingle.v1'
+} from '@dao-dao/types/contracts/CwProposalSingle.v1'
 
 export interface CwProposalSingleV1ReadOnlyInterface {
   contractAddress: string

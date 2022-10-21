@@ -32,7 +32,7 @@ import {
   ContractVersion,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import { useDaoInfoContext } from '@dao-dao/ui'
 import {
   convertExpirationToDate,

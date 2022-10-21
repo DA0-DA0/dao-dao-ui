@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { FieldValues, UseFormSetValue } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { BooleanFieldNames } from '@dao-dao/tstypes'
+import { BooleanFieldNames } from '@dao-dao/types'
 
 import { TooltipInfoIcon } from '../TooltipInfoIcon'
 

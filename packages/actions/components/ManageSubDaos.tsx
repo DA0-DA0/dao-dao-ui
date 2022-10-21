@@ -3,8 +3,8 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ActionCard } from '@dao-dao/actions'
-import { ActionComponent } from '@dao-dao/tstypes/actions'
-import { SubDao } from '@dao-dao/tstypes/contracts/CwdCore.v2'
+import { ActionComponent } from '@dao-dao/types/actions'
+import { SubDao } from '@dao-dao/types/contracts/CwdCore.v2'
 import {
   AddressInput,
   Button,

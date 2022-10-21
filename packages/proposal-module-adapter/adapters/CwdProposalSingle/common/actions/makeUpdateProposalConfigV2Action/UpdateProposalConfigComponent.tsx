@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ActionCard } from '@dao-dao/actions'
 import { Trans } from '@dao-dao/common'
-import { ActionComponent } from '@dao-dao/tstypes'
+import { ActionComponent } from '@dao-dao/types'
 import {
   FormSwitch,
   FormSwitchCard,

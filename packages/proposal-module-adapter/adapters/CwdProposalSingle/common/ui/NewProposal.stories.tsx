@@ -12,7 +12,7 @@ import {
   ActionKey,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import { Loader, Logo, useDaoInfoContext } from '@dao-dao/ui'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 

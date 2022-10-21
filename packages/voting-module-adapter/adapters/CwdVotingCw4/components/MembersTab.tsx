@@ -7,7 +7,7 @@ import {
   useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/tstypes'
+import { ActionKey } from '@dao-dao/types'
 import { MembersTab as StatelessMembersTab } from '@dao-dao/ui'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'

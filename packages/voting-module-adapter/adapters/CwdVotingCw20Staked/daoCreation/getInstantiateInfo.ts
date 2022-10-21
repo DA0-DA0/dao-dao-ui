@@ -1,10 +1,10 @@
 import { Buffer } from 'buffer'
 
-import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
+import { DaoCreationGetInstantiateInfo } from '@dao-dao/types'
 import {
   Cw20Coin,
   InstantiateMsg,
-} from '@dao-dao/tstypes/contracts/CwdVotingCw20Staked'
+} from '@dao-dao/types/contracts/CwdVotingCw20Staked'
 import {
   CODE_ID_CONFIG,
   NEW_DAO_CW20_DECIMALS,

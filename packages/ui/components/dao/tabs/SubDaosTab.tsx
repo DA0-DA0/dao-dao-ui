@@ -8,7 +8,7 @@ import {
   DaoInfo,
   LoaderProps,
   LoadingData,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import { Loader as DefaultLoader, NoContent } from '@dao-dao/ui'
 
 import { ButtonLink } from '../../buttons'

@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { Vote } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+import { Vote } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 
 import { useProfileVoteCardOptions } from '../../hooks/useProfileVoteCardOptions'
 

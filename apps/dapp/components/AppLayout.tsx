@@ -31,7 +31,7 @@ import {
   usePinnedDaos,
   useWalletProfile,
 } from '@dao-dao/state'
-import { CommandModalContextMaker } from '@dao-dao/tstypes'
+import { CommandModalContextMaker } from '@dao-dao/types'
 import {
   BetaWarningModal,
   DaoCreatedModal,

@@ -6,7 +6,7 @@ import {
   VotingDurationIcon,
   VotingDurationReview,
 } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
-import { NewDao } from '@dao-dao/tstypes'
+import { NewDao } from '@dao-dao/types'
 
 import { DaoCreateConfigReviewCard } from './DaoCreateConfigReviewCard'
 

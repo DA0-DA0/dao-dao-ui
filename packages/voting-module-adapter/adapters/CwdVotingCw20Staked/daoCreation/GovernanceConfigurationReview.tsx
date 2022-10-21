@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
-import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/tstypes'
+import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import {
   ChartDataEntry,
   CopyToClipboard,

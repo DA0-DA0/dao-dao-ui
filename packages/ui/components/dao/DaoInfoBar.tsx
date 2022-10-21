@@ -1,10 +1,10 @@
 import clsx from 'clsx'
 import { ComponentType } from 'react'
 
-import { DaoInfoBarProps } from '@dao-dao/tstypes/ui/DaoInfoBar'
-import { LoaderProps } from '@dao-dao/tstypes/ui/Loader'
+import { DaoInfoBarProps } from '@dao-dao/types/ui/DaoInfoBar'
+import { LoaderProps } from '@dao-dao/types/ui/Loader'
 
-export * from '@dao-dao/tstypes/ui/DaoInfoBar'
+export * from '@dao-dao/types/ui/DaoInfoBar'
 
 export const DaoInfoBar = ({ items, className }: DaoInfoBarProps) => (
   <div

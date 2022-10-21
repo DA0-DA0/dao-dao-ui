@@ -2,7 +2,7 @@ import { Tag } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { DaoMemberCardProps } from '@dao-dao/tstypes/ui/DaoMemberCard'
+import { DaoMemberCardProps } from '@dao-dao/types/ui/DaoMemberCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'

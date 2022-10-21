@@ -12,7 +12,7 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes/actions'
+} from '@dao-dao/types/actions'
 import { AddCw721Emoji } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 

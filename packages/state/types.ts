@@ -1,1 +1,1 @@
-export type { FunctionKeyOf } from '@dao-dao/tstypes'
+export type { FunctionKeyOf } from '@dao-dao/types'

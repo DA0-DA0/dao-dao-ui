@@ -6,7 +6,7 @@ import {
   BaseProposalStatusAndInfoProps,
   DaoInfo,
   LoadingData,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import { ProposalContentDisplay, useAppLayoutContext } from '../components'

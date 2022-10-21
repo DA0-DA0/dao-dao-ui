@@ -9,11 +9,11 @@ import {
   Coin,
   CosmosMsgForEmpty,
   Duration,
-} from '@dao-dao/tstypes/contracts/common'
+} from '@dao-dao/types/contracts/common'
 import {
   Threshold,
   Vote,
-} from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+} from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   ConfigResponse,
   DaoResponse,
@@ -28,7 +28,7 @@ import {
   ProposalResponse,
   ReverseProposalsResponse,
   VoteHooksResponse,
-} from '@dao-dao/tstypes/contracts/CwdProposalSingle.v2'
+} from '@dao-dao/types/contracts/CwdProposalSingle.v2'
 export interface CwdProposalSingleV2ReadOnlyInterface {
   contractAddress: string
   config: () => Promise<ConfigResponse>

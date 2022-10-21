@@ -1,7 +1,7 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
-import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
+import { WithChainId } from '@dao-dao/types'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   ActiveProposalModulesResponse,
   AdminNominationResponse,
@@ -21,7 +21,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/tstypes/contracts/CwdCore.v2'
+} from '@dao-dao/types/contracts/CwdCore.v2'
 import {
   CwdVotingCw20StakedAdapter,
   matchAdapter,

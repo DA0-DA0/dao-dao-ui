@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { CreateDaoContext } from '@dao-dao/tstypes'
+import { CreateDaoContext } from '@dao-dao/types'
 
 import { FormCheckbox } from '../../../inputs/Checkbox'
 import { DaoCreateConfigInputCard } from '../DaoCreateConfigInputCard'

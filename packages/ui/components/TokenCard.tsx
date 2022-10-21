@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { TokenCardInfo } from '@dao-dao/tstypes'
+import { TokenCardInfo } from '@dao-dao/types'
 import { secondsToWdhms } from '@dao-dao/utils'
 
 import { Button } from './buttons/Button'

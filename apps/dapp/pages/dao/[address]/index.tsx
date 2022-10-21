@@ -29,8 +29,8 @@ import {
   useVotingModule,
   useWalletProfile,
 } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/tstypes'
-import { CheckedDepositInfo } from '@dao-dao/tstypes/contracts/common'
+import { ActionKey } from '@dao-dao/types'
+import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import {
   DaoHome,
   Loader,

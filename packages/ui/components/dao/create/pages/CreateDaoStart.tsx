@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash.clonedeep'
 import { useTranslation } from 'react-i18next'
 
-import { CreateDaoContext } from '@dao-dao/tstypes'
+import { CreateDaoContext } from '@dao-dao/types'
 import {
   MAX_DAO_DESCRIPTION_LENGTH,
   MAX_DAO_NAME_LENGTH,

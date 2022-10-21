@@ -1,4 +1,4 @@
-import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/tstypes'
+import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import {
   ChartDataEntry,
   DaoCreateVotingPowerDistributionReviewCard,

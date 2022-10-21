@@ -10,7 +10,7 @@ import clsx from 'clsx'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Status } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import { StatusDisplay } from '@dao-dao/ui'
 
 export interface ProposalStatusProps {

@@ -5,7 +5,7 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Coin, Empty } from '@dao-dao/tstypes/contracts/common'
+import { Coin, Empty } from '@dao-dao/types/contracts/common'
 import {
   ConfigResponse,
   DaoResponse,
@@ -16,7 +16,7 @@ import {
   Status,
   UncheckedDenom,
   UncheckedDepositInfo,
-} from '@dao-dao/tstypes/contracts/CwdPreProposeSingle'
+} from '@dao-dao/types/contracts/CwdPreProposeSingle'
 
 export interface CwPreProposeSingleReadOnlyInterface {
   contractAddress: string

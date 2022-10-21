@@ -4,13 +4,13 @@ import {
   cosmWasmClientForChainSelector,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 import {
   ConfigResponse,
   DaoResponse,
   DepositInfoResponse,
   ProposalModuleResponse,
-} from '@dao-dao/tstypes/contracts/CwdPreProposeSingle'
+} from '@dao-dao/types/contracts/CwdPreProposeSingle'
 
 import {
   CwPreProposeSingleClient,

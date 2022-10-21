@@ -2,7 +2,7 @@ import { Add, HomeOutlined, InboxOutlined } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 
-import { CommandModalContextSection } from '@dao-dao/tstypes'
+import { CommandModalContextSection } from '@dao-dao/types'
 
 export const useNavigationSection = (): CommandModalContextSection => {
   const { t } = useTranslation()

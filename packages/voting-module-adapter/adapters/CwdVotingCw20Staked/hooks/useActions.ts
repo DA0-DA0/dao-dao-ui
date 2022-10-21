@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { useActionOptions } from '@dao-dao/actions/react/context'
-import { Action } from '@dao-dao/tstypes'
+import { Action } from '@dao-dao/types'
 
 import { makeMintAction } from '../actions'
 

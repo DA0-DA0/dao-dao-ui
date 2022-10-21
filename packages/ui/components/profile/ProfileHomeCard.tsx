@@ -2,7 +2,7 @@ import { LayersOutlined, PaymentsOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData } from '@dao-dao/tstypes'
+import { LoadingData } from '@dao-dao/types'
 
 import { ButtonLink } from '../buttons'
 import { TokenAmountDisplay } from '../TokenAmountDisplay'

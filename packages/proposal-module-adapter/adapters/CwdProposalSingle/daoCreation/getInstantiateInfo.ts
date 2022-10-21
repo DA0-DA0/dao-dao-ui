@@ -1,8 +1,8 @@
 import { Buffer } from 'buffer'
 
-import { DaoCreationGetInstantiateInfo } from '@dao-dao/tstypes'
-import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwdPreProposeSingle'
-import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/tstypes/contracts/CwdProposalSingle.v2'
+import { DaoCreationGetInstantiateInfo } from '@dao-dao/types'
+import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/types/contracts/CwdPreProposeSingle'
+import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/CwdProposalSingle.v2'
 import {
   CODE_ID_CONFIG,
   NATIVE_DENOM,

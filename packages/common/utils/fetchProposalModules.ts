@@ -5,8 +5,8 @@ import {
   matchAdapter,
 } from '@dao-dao/proposal-module-adapter'
 import { CwCoreV1QueryClient, CwdCoreV2QueryClient } from '@dao-dao/state'
-import { ContractVersion, ProposalModule } from '@dao-dao/tstypes'
-import { InfoResponse } from '@dao-dao/tstypes/contracts/common'
+import { ContractVersion, ProposalModule } from '@dao-dao/types'
+import { InfoResponse } from '@dao-dao/types/contracts/common'
 import {
   indexToProposalModulePrefix,
   parseContractVersion,

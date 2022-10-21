@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import {
   CreateDaoCustomValidator,
   DaoCreationGovernanceConfigInputProps,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import {
   Button,
   ChartDataEntry,

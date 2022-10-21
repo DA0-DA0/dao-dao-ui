@@ -1,4 +1,4 @@
-import { DurationWithUnits, NewDaoTier } from '@dao-dao/tstypes'
+import { DurationWithUnits, NewDaoTier } from '@dao-dao/types'
 
 export enum GovernanceTokenType {
   New,

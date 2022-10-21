@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 import {
   ActiveThresholdResponse,
   DaoResponse,
@@ -10,7 +10,7 @@ import {
   TokenContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/tstypes/contracts/CwdVotingCw20Staked'
+} from '@dao-dao/types/contracts/CwdVotingCw20Staked'
 
 import { CwdVotingCw20StakedQueryClient } from '../../../clients/CwdVotingCw20Staked'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'

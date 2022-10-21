@@ -2,7 +2,7 @@ import { PushPinOutlined } from '@mui/icons-material'
 import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoCardInfo, LoadingData } from '@dao-dao/tstypes'
+import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 
 import { SortFn, useDropdownSorter } from '../../hooks/useDropdownSorter'
 import { GridCardContainer } from '../GridCardContainer'

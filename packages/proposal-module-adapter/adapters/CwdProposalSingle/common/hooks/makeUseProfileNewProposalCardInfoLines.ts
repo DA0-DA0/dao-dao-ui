@@ -11,7 +11,7 @@ import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
   DepositRefundPolicy,
   IProposalModuleAdapterCommonOptions,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
 import {
   convertMicroDenomToDenomWithDecimals,

@@ -10,7 +10,7 @@ import {
   useProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
 import { useVotingModule, useWalletProfile } from '@dao-dao/state'
-import { CheckedDepositInfo } from '@dao-dao/tstypes/contracts/common'
+import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import {
   Loader,
   Logo,

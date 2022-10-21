@@ -13,7 +13,7 @@ import {
   CosmosMsgForEmpty,
   Duration,
   ModuleInstantiateInfo,
-} from '@dao-dao/tstypes/contracts/common'
+} from '@dao-dao/types/contracts/common'
 import {
   AdminResponse,
   Config,
@@ -31,7 +31,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/tstypes/contracts/CwCore.v1'
+} from '@dao-dao/types/contracts/CwCore.v1'
 
 export interface CwCoreV1ReadOnlyInterface {
   contractAddress: string

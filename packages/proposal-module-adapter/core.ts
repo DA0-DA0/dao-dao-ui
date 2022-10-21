@@ -1,4 +1,4 @@
-import { ProposalModule } from '@dao-dao/tstypes'
+import { ProposalModule } from '@dao-dao/types'
 import { normalizeContractName } from '@dao-dao/utils'
 
 import { CwdProposalSingleAdapter } from './adapters'

@@ -9,7 +9,7 @@ import {
   CommandModalContextSection,
   CommandModalContextUseSectionsOptions,
   CommandModalDaoInfo,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
 
 export interface UseFilteredDaosSectionOptions {

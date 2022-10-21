@@ -12,7 +12,7 @@ import {
   Member,
   MemberResponse,
   TotalWeightResponse,
-} from '@dao-dao/tstypes/contracts/Cw4Group'
+} from '@dao-dao/types/contracts/Cw4Group'
 
 export interface Cw4GroupReadOnlyInterface {
   contractAddress: string

@@ -1,5 +1,5 @@
 import { useProfile } from '@dao-dao/state'
-import { ProfileDisplayProps } from '@dao-dao/tstypes'
+import { ProfileDisplayProps } from '@dao-dao/types'
 import { ProfileDisplay as StatelessProfileDisplay } from '@dao-dao/ui'
 
 export const ProfileDisplay = (

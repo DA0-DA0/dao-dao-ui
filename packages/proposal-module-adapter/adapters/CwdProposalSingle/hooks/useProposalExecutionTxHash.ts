@@ -1,7 +1,7 @@
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { proposalExecutionTXHashSelector } from '@dao-dao/state'
-import { Status } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useProposal } from './useProposal'

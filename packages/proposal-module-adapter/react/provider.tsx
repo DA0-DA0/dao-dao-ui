@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react'
 
-import { ProposalModule } from '@dao-dao/tstypes'
+import { ProposalModule } from '@dao-dao/types'
 
 import { matchAndLoadAdapter } from '../core'
 import {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { RecoilValue, constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { CachedLoadable } from '@dao-dao/tstypes'
+import { CachedLoadable } from '@dao-dao/types'
 
 // Keep cache of previously loaded data until next data is ready. Essentially,
 // memoize a loadable to prevent UI flickering. If recoilValue is undefined,

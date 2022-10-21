@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ActionCard } from '@dao-dao/actions'
 import { Trans } from '@dao-dao/common'
-import { ActionComponent, DepositRefundPolicy } from '@dao-dao/tstypes'
+import { ActionComponent, DepositRefundPolicy } from '@dao-dao/types'
 import {
   AddressInput,
   FormSwitchCard,

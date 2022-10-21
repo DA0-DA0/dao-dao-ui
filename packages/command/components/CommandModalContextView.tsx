@@ -5,7 +5,7 @@ import { SuspenseLoader } from '@dao-dao/common'
 import {
   CommandModalContext,
   CommandModalContextSection,
-} from '@dao-dao/tstypes/command'
+} from '@dao-dao/types/command'
 import {
   CommandModalContextViewLoader,
   CommandModalContextView as StatelessCommandModalContextView,

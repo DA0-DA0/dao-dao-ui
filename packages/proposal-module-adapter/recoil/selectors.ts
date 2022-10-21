@@ -4,7 +4,7 @@ import {
   cosmWasmClientForChainSelector,
   isContractSelector,
 } from '@dao-dao/state'
-import { ProposalModuleAdapter, WithChainId } from '@dao-dao/tstypes'
+import { ProposalModuleAdapter, WithChainId } from '@dao-dao/types'
 
 import { getAdapters } from '../core'
 

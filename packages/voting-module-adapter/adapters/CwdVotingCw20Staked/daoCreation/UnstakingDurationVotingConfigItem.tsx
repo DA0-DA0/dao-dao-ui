@@ -6,7 +6,7 @@ import {
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
   DurationUnitsValues,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import { NumberInput, SelectInput } from '@dao-dao/ui'
 import {
   convertDurationWithUnitsToHumanReadableString,

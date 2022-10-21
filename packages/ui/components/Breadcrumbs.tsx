@@ -3,13 +3,13 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { useState } from 'react'
 
-import { BreadcrumbsProps } from '@dao-dao/tstypes/ui/Breadcrumbs'
+import { BreadcrumbsProps } from '@dao-dao/types/ui/Breadcrumbs'
 
 import { Button } from './buttons/Button'
 import { IconButton } from './icon_buttons/IconButton'
 import { TopGradient } from './TopGradient'
 
-export * from '@dao-dao/tstypes/ui/Breadcrumbs'
+export * from '@dao-dao/types/ui/Breadcrumbs'
 
 export const Breadcrumbs = ({
   crumbs,

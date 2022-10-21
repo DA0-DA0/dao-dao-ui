@@ -2,12 +2,12 @@ import {
   ActionKeyAndData,
   DurationWithUnits,
   ProcessedTQ,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import {
   CosmosMsgFor_Empty,
   DepositRefundPolicy,
-} from '@dao-dao/tstypes/contracts/common'
-import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
+} from '@dao-dao/types/contracts/common'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 
 export interface NewProposalForm {
   title: string

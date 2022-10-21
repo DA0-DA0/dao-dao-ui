@@ -1,1 +1,1 @@
-export * from '@dao-dao/tstypes/proposal-module-adapter'
+export * from '@dao-dao/types/proposal-module-adapter'

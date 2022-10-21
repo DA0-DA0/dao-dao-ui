@@ -6,7 +6,7 @@ import {
   TokenCardInfo,
   TokenCardLazyStakingInfo,
   WithChainId,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import { UnstakingTaskStatus } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,

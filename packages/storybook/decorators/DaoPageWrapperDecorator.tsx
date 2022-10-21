@@ -4,7 +4,7 @@ import { DecoratorFn } from '@storybook/react'
 import { useMemo } from 'react'
 
 import { DaoPageWrapper } from '@dao-dao/common'
-import { ContractVersion, DaoInfoSerializable } from '@dao-dao/tstypes'
+import { ContractVersion, DaoInfoSerializable } from '@dao-dao/types'
 import { CHAIN_BECH32_PREFIX, CHAIN_ID } from '@dao-dao/utils'
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {

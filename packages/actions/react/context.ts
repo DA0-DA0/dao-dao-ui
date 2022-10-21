@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from 'react'
 
-import { Action, ActionKey, IActionsContext } from '@dao-dao/tstypes/actions'
+import { Action, ActionKey, IActionsContext } from '@dao-dao/types/actions'
 
 //! External
 

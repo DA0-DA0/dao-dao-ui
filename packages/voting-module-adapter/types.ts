@@ -1,1 +1,1 @@
-export * from '@dao-dao/tstypes/voting-module-adapter'
+export * from '@dao-dao/types/voting-module-adapter'

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { CreateDaoContext } from '@dao-dao/tstypes'
+import { CreateDaoContext } from '@dao-dao/types'
 
 export const CreateDaoGovernance = (context: CreateDaoContext) => {
   const { t } = useTranslation()

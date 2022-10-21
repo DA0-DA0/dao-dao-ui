@@ -1,4 +1,4 @@
-import { NewDaoTier } from '@dao-dao/tstypes'
+import { NewDaoTier } from '@dao-dao/types'
 
 export interface DaoCreationConfig {
   tiers: NewDaoTier[]

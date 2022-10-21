@@ -18,7 +18,7 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
-    "@dao-dao/tstypes": "*",
+    "@dao-dao/types": "*",
     "clsx": "^1.1.1",
     "react": "18.1.0",
     "react-i18next": "^11.0.0",

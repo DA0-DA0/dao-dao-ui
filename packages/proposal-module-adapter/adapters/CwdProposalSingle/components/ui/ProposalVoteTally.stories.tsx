@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProcessedTQType } from '@dao-dao/tstypes'
+import { ProcessedTQType } from '@dao-dao/types'
 
 import { ProposalVoteTally } from './ProposalVoteTally'
 

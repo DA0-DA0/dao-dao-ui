@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
-import { DaoMemberCardProps } from '@dao-dao/tstypes'
+import { DaoMemberCardProps } from '@dao-dao/types'
 
 import { DaoMemberCard } from '../DaoMemberCard'
 import { makeProps as makeDaoMemberCardProps } from '../DaoMemberCard.stories'

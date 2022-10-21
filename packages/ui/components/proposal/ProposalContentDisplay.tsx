@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData } from '@dao-dao/tstypes'
+import { LoadingData } from '@dao-dao/types'
 import { formatDate } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'

@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react'
 
-import { DaoCardInfo, LoadingData } from '@dao-dao/tstypes'
+import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 import { useIsVisible } from '@dao-dao/utils'
 
 import { Loader } from '../Loader'

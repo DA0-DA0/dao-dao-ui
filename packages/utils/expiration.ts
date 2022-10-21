@@ -1,4 +1,4 @@
-import { Expiration } from '@dao-dao/tstypes/contracts/common'
+import { Expiration } from '@dao-dao/types/contracts/common'
 
 export const expirationExpired = (
   expiration: Expiration,

@@ -3,7 +3,7 @@ import { ComponentType, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import { ProfileDisplayProps } from '@dao-dao/tstypes'
+import { ProfileDisplayProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'

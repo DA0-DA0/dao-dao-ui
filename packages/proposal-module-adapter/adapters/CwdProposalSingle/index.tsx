@@ -1,5 +1,5 @@
-import { DepositRefundPolicy, DurationUnits } from '@dao-dao/tstypes'
-import { Vote } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+import { DepositRefundPolicy, DurationUnits } from '@dao-dao/types'
+import { Vote } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 
 import { ProposalModuleAdapter } from '../../types'
 import {

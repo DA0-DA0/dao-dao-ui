@@ -1,7 +1,7 @@
 import { useRecoilValue } from 'recoil'
 
-import { SingleChoiceProposal } from '@dao-dao/tstypes/contracts/CwdProposalSingle.v2'
-import { Proposal } from '@dao-dao/tstypes/contracts/CwProposalSingle.v1'
+import { SingleChoiceProposal } from '@dao-dao/types/contracts/CwdProposalSingle.v2'
+import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { proposalSelector } from '../contracts/CwdProposalSingle.common.recoil'

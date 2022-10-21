@@ -1,4 +1,4 @@
-import { DurationUnits } from '@dao-dao/tstypes'
+import { DurationUnits } from '@dao-dao/types'
 
 import { VotingModuleAdapter } from '../../types'
 import { ProfileCardMemberInfo } from './components'

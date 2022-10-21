@@ -7,8 +7,8 @@ import {
   DurationUnits,
   DurationWithUnits,
   LoadingData,
-} from '@dao-dao/tstypes'
-import { Expiration } from '@dao-dao/tstypes/contracts/common'
+} from '@dao-dao/types'
+import { Expiration } from '@dao-dao/types/contracts/common'
 
 export function convertMicroDenomToDenomWithDecimals(
   amount: number | string,

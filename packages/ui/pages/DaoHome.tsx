@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ReactNode, useEffect, useState } from 'react'
 
-import { DaoInfo } from '@dao-dao/tstypes'
+import { DaoInfo } from '@dao-dao/types'
 import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {

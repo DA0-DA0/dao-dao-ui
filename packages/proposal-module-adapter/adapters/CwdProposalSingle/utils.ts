@@ -1,4 +1,4 @@
-import { PercentageThreshold } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+import { PercentageThreshold } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 
 import { ThresholdValue } from './types'
 

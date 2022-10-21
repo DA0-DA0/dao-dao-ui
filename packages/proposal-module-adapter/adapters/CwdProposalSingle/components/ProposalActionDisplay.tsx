@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { ActionsRenderer } from '@dao-dao/actions'
-import { ActionAndData, BaseProposalActionDisplayProps } from '@dao-dao/tstypes'
+import { ActionAndData, BaseProposalActionDisplayProps } from '@dao-dao/types'
 import { Button, CosmosMessageDisplay } from '@dao-dao/ui'
 import { decodeMessages } from '@dao-dao/utils'
 

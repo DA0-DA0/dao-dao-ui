@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { ProposalCardProps } from '@dao-dao/tstypes'
+import { ProposalCardProps } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
 
 import {

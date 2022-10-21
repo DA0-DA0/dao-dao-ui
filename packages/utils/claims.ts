@@ -1,4 +1,4 @@
-import { Claim } from '@dao-dao/tstypes/contracts/stake-cw20'
+import { Claim } from '@dao-dao/types/contracts/stake-cw20'
 
 export function claimAvailable(claim: Claim, blockHeight: number) {
   if ('at_height' in claim.release_at) {

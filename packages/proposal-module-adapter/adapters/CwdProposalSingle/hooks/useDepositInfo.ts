@@ -4,9 +4,9 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
-} from '@dao-dao/tstypes'
-import { DepositInfoResponse as DepositInfoPreProposeResponse } from '@dao-dao/tstypes/contracts/CwdPreProposeSingle'
-import { ProposalResponse as ProposalV1Response } from '@dao-dao/tstypes/contracts/CwProposalSingle.v1'
+} from '@dao-dao/types'
+import { DepositInfoResponse as DepositInfoPreProposeResponse } from '@dao-dao/types/contracts/CwdPreProposeSingle'
+import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
 import { depositInfoSelector as depositInfoV2Selector } from '../contracts/CwdPreProposeSingle.recoil'

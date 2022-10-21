@@ -5,7 +5,7 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Empty, Expiration } from '@dao-dao/tstypes/contracts/common'
+import { Empty, Expiration } from '@dao-dao/types/contracts/common'
 import {
   AllNftInfoResponse,
   AllOperatorsResponse,
@@ -18,7 +18,7 @@ import {
   NumTokensResponse,
   OwnerOfResponse,
   TokensResponse,
-} from '@dao-dao/tstypes/contracts/Cw721Base'
+} from '@dao-dao/types/contracts/Cw721Base'
 
 export interface Cw721BaseReadOnlyInterface {
   contractAddress: string

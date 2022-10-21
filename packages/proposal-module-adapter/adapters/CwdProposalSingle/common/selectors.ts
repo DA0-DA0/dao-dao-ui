@@ -5,14 +5,14 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
-} from '@dao-dao/tstypes'
-import { Status } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+} from '@dao-dao/types'
+import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   CommonProposalListInfo,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
   ReverseProposalInfosSelector,
-} from '@dao-dao/tstypes/proposal-module-adapter'
+} from '@dao-dao/types/proposal-module-adapter'
 
 import { configSelector as configPreProposeSelector } from '../contracts/CwdPreProposeSingle.recoil'
 import { reverseProposalsSelector } from '../contracts/CwdProposalSingle.common.recoil'

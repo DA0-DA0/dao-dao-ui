@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next'
 import {
   ActionComponent,
   ActionOptionsContextType,
-} from '@dao-dao/tstypes/actions'
-import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
+} from '@dao-dao/types/actions'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   AddressInput,
   InputErrorMessage,

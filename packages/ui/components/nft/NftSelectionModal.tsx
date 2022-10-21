@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData, ModalProps, NftCardInfo } from '@dao-dao/tstypes'
+import { LoadingData, ModalProps, NftCardInfo } from '@dao-dao/types'
 
 import { SortFn, useDropdownSorter, useSearchFilter } from '../../hooks'
 import { Button } from '../buttons/Button'

@@ -8,7 +8,7 @@ import {
   useWalletProfile,
   walletStargazeNftCardInfosSelector,
 } from '@dao-dao/state'
-import { NftCardInfo } from '@dao-dao/tstypes'
+import { NftCardInfo } from '@dao-dao/types'
 import {
   Loader as DefaultLoader,
   LoaderProps,

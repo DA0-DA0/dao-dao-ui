@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Action, ActionOptions } from '@dao-dao/tstypes'
+import { Action, ActionOptions } from '@dao-dao/types'
 
 import { getActions } from '../actions'
 import { ActionsContext } from './context'

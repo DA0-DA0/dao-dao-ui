@@ -4,7 +4,7 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { FunctionKeyOf } from '@dao-dao/tstypes'
+import { FunctionKeyOf } from '@dao-dao/types'
 
 import { CwdCoreV2Client as ExecuteClient } from '../../clients/CwdCore.v2'
 import {

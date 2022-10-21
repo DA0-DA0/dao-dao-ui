@@ -17,8 +17,8 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes/actions'
-import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
+} from '@dao-dao/types/actions'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { RemoveCw20Emoji } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 

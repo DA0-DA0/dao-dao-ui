@@ -2,11 +2,11 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { CwdCoreV2Selectors } from '@dao-dao/state'
-import { WalletVoteInfo } from '@dao-dao/tstypes'
+import { WalletVoteInfo } from '@dao-dao/types'
 import {
   Status,
   Vote,
-} from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+} from '@dao-dao/types/contracts/CwdProposalSingle.common'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { getVoteSelector } from '../contracts/CwdProposalSingle.common.recoil'

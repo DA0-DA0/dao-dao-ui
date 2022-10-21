@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfo, ProposalModule } from '@dao-dao/tstypes'
+import { DaoInfo, ProposalModule } from '@dao-dao/types'
 import { getParentDaoBreadcrumbs, normalizeContractName } from '@dao-dao/utils'
 
 import { Dropdown, useAppLayoutContext } from '../components'

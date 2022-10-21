@@ -1,6 +1,6 @@
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { LoadingData, WalletProfile, WithChainId } from '@dao-dao/tstypes'
+import { LoadingData, WalletProfile, WithChainId } from '@dao-dao/types'
 import { getFallbackImage, loadableToLoadingData } from '@dao-dao/utils'
 
 import {

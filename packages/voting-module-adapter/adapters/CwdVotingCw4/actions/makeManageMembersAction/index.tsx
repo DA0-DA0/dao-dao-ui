@@ -8,7 +8,7 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes/actions'
+} from '@dao-dao/types/actions'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { useVotingModule as useCw4VotingModule } from '../../hooks/useVotingModule'

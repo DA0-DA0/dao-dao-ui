@@ -1,4 +1,4 @@
-import { Status } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 
 import { useProposal, useVotesInfo } from '../hooks'
 import { ProposalVoteTally as StatelessProposalVoteTally } from './ui/ProposalVoteTally'

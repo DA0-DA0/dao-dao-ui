@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { NftCardInfo } from '@dao-dao/tstypes'
+import { NftCardInfo } from '@dao-dao/types'
 import { normalizeNftImageUrl } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'

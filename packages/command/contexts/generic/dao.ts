@@ -16,7 +16,7 @@ import {
   CommandModalContextMaker,
   CommandModalContextSection,
   CommandModalDaoInfo,
-} from '@dao-dao/tstypes/command'
+} from '@dao-dao/types/command'
 import { CHAIN_ID, getUrlBaseForChainId } from '@dao-dao/utils'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{

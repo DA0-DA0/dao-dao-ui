@@ -17,8 +17,8 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes/actions'
-import { ContractInfoResponse } from '@dao-dao/tstypes/contracts/Cw721Base'
+} from '@dao-dao/types/actions'
+import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import { RemoveCw721Emoji } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 

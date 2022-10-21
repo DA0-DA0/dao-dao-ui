@@ -11,7 +11,7 @@ import {
   LoadingData,
   WalletProfile,
   WalletProfileUpdate,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
   PFPK_API_BASE,

@@ -11,7 +11,7 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import { ManageSubDaosEmoji } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 

@@ -17,7 +17,7 @@ import {
   useProposalModuleAdapterContext,
 } from '@dao-dao/proposal-module-adapter'
 import { useProfile } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/tstypes'
+import { ActionKey } from '@dao-dao/types'
 import {
   Loader,
   Logo,

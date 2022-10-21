@@ -2,8 +2,8 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { ContractVersion } from '@dao-dao/tstypes'
-import { Vote } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+import { ContractVersion } from '@dao-dao/types'
+import { Vote } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import { processError } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'

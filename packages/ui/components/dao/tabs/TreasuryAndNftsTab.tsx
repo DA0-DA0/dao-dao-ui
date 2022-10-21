@@ -2,7 +2,7 @@ import { Image } from '@mui/icons-material'
 import { ComponentType, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData, NftCardInfo, TokenCardInfo } from '@dao-dao/tstypes'
+import { LoadingData, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
 
 import { SortFn, useDropdownSorter } from '../../../hooks'
 import { GridCardContainer } from '../../GridCardContainer'

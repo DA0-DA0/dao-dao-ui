@@ -6,7 +6,7 @@ import {
   PfpkWalletProfile,
   WalletProfile,
   WithChainId,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import { PFPK_API_BASE, processError } from '@dao-dao/utils'
 
 import { refreshWalletProfileAtom } from '../atoms/refresh'

@@ -1,7 +1,7 @@
 import { Coin, StdFee } from '@cosmjs/amino'
 import { ExecuteResult, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
-import { Binary } from '@dao-dao/tstypes/contracts/common'
+import { Binary } from '@dao-dao/types/contracts/common'
 
 export interface CwAdminFactoryInterface {
   contractAddress: string

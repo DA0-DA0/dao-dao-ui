@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/tstypes'
+import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
 import { makeProps as makeUnstakingLineProps } from '@dao-dao/ui/components/UnstakingLine.stories'
 
 import {

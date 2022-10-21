@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { CreateDaoContext } from '@dao-dao/tstypes'
+import { CreateDaoContext } from '@dao-dao/types'
 import { parseEncodedMessage, processError } from '@dao-dao/utils'
 
 import {

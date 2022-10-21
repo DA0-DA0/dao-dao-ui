@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 import {
   ClaimsResponse,
   DaoResponse,
@@ -9,7 +9,7 @@ import {
   ListStakersResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/tstypes/contracts/CwdVotingNativeStaked'
+} from '@dao-dao/types/contracts/CwdVotingNativeStaked'
 
 import {
   CwdVotingNativeStakedClient,

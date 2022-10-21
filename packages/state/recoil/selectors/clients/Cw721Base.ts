@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 import {
   AllNftInfoResponse,
   AllOperatorsResponse,
@@ -13,7 +13,7 @@ import {
   NumTokensResponse,
   OwnerOfResponse,
   TokensResponse,
-} from '@dao-dao/tstypes/contracts/Cw721Base'
+} from '@dao-dao/types/contracts/Cw721Base'
 
 import { Cw721BaseQueryClient } from '../../../clients/Cw721Base'
 import { cosmWasmClientForChainSelector } from '../chain'

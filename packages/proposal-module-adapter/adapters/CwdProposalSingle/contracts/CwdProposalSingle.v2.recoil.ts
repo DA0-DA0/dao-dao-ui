@@ -6,7 +6,7 @@ import {
   refreshProposalsIdAtom,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 import {
   ConfigResponse,
   DaoResponse,
@@ -20,7 +20,7 @@ import {
   ProposalResponse,
   ReverseProposalsResponse,
   VoteHooksResponse,
-} from '@dao-dao/tstypes/contracts/CwdProposalSingle.v2'
+} from '@dao-dao/types/contracts/CwdProposalSingle.v2'
 
 import {
   CwdProposalSingleV2Client,

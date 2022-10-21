@@ -2,7 +2,7 @@ import { atom, atomFamily } from 'recoil'
 
 import { CwdProposalSingleAdapter } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle'
 import { localStorageEffectJSON } from '@dao-dao/state/recoil/effects'
-import { DaoCreatedCardProps, NewDao } from '@dao-dao/tstypes'
+import { DaoCreatedCardProps, NewDao } from '@dao-dao/types'
 import { CwdVotingCw4Adapter } from '@dao-dao/voting-module-adapter'
 
 export const DefaultNewDao: NewDao = {

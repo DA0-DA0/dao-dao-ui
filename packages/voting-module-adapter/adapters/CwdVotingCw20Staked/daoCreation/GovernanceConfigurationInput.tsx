@@ -11,7 +11,7 @@ import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
   CreateDaoCustomValidator,
   DaoCreationGovernanceConfigInputProps,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import {
   Button,
   ChartDataEntry,

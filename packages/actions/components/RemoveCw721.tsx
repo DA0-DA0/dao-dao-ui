@@ -2,8 +2,8 @@ import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionComponent } from '@dao-dao/tstypes/actions'
-import { ContractInfoResponse } from '@dao-dao/tstypes/contracts/Cw721Base'
+import { ActionComponent } from '@dao-dao/types/actions'
+import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
   AddressInput,
   Button,

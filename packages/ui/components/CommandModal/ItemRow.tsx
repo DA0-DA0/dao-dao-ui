@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { CommandModalContextSectionItem } from '@dao-dao/tstypes/command'
+import { CommandModalContextSectionItem } from '@dao-dao/types/command'
 
 export interface ItemRowProps {
   item: CommandModalContextSectionItem

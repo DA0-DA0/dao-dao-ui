@@ -11,7 +11,7 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes/actions'
+} from '@dao-dao/types/actions'
 import { ExecuteEmoji } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,

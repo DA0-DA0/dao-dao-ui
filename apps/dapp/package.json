@@ -24,7 +24,7 @@
     "@dao-dao/common": "*",
     "@dao-dao/i18n": "*",
     "@dao-dao/proposal-module-adapter": "*",
-    "@dao-dao/tstypes": "*",
+    "@dao-dao/types": "*",
     "@dao-dao/ui": "*",
     "@dao-dao/utils": "*",
     "@dao-dao/voting-module-adapter": "*",

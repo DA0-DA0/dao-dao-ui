@@ -13,11 +13,11 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import {
   ExecuteMsg,
   UncheckedDepositInfo,
-} from '@dao-dao/tstypes/contracts/CwdPreProposeSingle'
+} from '@dao-dao/types/contracts/CwdPreProposeSingle'
 import { UpdateProposalConfigIcon, useDaoInfoContext } from '@dao-dao/ui'
 import {
   NATIVE_DECIMALS,

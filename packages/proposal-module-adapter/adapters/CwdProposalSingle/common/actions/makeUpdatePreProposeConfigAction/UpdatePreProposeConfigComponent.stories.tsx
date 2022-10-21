@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
-import { DepositRefundPolicy } from '@dao-dao/tstypes'
+import { DepositRefundPolicy } from '@dao-dao/types'
 import { Loader, Logo } from '@dao-dao/ui'
 
 import { Component as UpdatePreProposeConfigComponent } from './index'

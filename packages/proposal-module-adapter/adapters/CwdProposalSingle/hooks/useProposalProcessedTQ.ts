@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { ProcessedThresholdQuorum } from '@dao-dao/tstypes'
+import { ProcessedThresholdQuorum } from '@dao-dao/types'
 
 import { useProcessTQ } from '../common'
 import { useProposal } from './useProposal'

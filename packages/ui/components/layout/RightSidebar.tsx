@@ -5,13 +5,13 @@ import { createPortal } from 'react-dom'
 import {
   RightSidebarContentProps,
   RightSidebarProps,
-} from '@dao-dao/tstypes/ui/RightSidebar'
+} from '@dao-dao/types/ui/RightSidebar'
 
 import { IconButton } from '../icon_buttons'
 import { useAppLayoutContext } from './AppLayoutContext'
 import { Footer } from './Footer'
 
-export * from '@dao-dao/tstypes/ui/RightSidebar'
+export * from '@dao-dao/types/ui/RightSidebar'
 
 export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
   const { enabled: responsiveEnabled, toggle: toggleResponsive } =

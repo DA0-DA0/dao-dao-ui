@@ -1,4 +1,4 @@
-import { Action, ActionOptions } from '@dao-dao/tstypes/actions'
+import { Action, ActionOptions } from '@dao-dao/types/actions'
 
 import { makeAddCw20Action } from './AddCw20'
 import { makeAddCw721Action } from './AddCw721'

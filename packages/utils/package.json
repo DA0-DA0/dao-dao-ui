@@ -8,7 +8,7 @@
   "devDependencies": {
     "@dao-dao/config": "*",
     "@dao-dao/tsconfig": "*",
-    "@dao-dao/tstypes": "*",
+    "@dao-dao/types": "*",
     "@keplr-wallet/types": "^0.10.2",
     "@noahsaso/cosmodal": "^0.6.6",
     "interchain-rpc": "^1.5.0",

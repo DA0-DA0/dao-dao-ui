@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 
-import { LoaderProps } from '@dao-dao/tstypes/ui/Loader'
-export * from '@dao-dao/tstypes/ui/Loader'
+import { LoaderProps } from '@dao-dao/types/ui/Loader'
+export * from '@dao-dao/types/ui/Loader'
 
 import { Logo as DefaultLogo } from './Logo'
 

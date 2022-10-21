@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { ProfileDisplayProps } from '@dao-dao/tstypes'
+import { ProfileDisplayProps } from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from './CopyToClipboard'

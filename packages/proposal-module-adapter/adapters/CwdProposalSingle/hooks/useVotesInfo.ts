@@ -1,4 +1,4 @@
-import { ProcessedTQType } from '@dao-dao/tstypes'
+import { ProcessedTQType } from '@dao-dao/types'
 
 import { VotesInfo } from '../types'
 import { useProposal } from './useProposal'

@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import {
   CommandModalContextSection,
   CommandModalContextSectionItem,
-} from '@dao-dao/tstypes/command'
+} from '@dao-dao/types/command'
 
 import { NoContent } from '../NoContent'
 import { ItemRow } from './ItemRow'

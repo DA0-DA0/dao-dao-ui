@@ -1,7 +1,7 @@
 import { Close } from '@mui/icons-material'
 import { ComponentType, ReactNode } from 'react'
 
-import { ActionComponentProps } from '@dao-dao/tstypes/actions'
+import { ActionComponentProps } from '@dao-dao/types/actions'
 
 interface ActionCardProps extends Pick<ActionComponentProps, 'onRemove'> {
   children: ReactNode | ReactNode[]

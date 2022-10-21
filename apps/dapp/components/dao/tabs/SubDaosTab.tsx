@@ -8,7 +8,7 @@ import {
   useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/state'
-import { ContractVersion } from '@dao-dao/tstypes'
+import { ContractVersion } from '@dao-dao/types'
 import {
   SubDaosTab as StatelessSubDaosTab,
   useDaoInfoContext,

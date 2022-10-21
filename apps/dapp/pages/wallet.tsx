@@ -13,14 +13,14 @@ import { ActionsProvider, useActions } from '@dao-dao/actions'
 import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { walletTransactionAtom } from '@dao-dao/state'
-import { WalletTransactionForm } from '@dao-dao/tstypes'
+import { WalletTransactionForm } from '@dao-dao/types'
 import {
   Action,
   ActionKey,
   ActionOptionsContextType,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes/actions'
+} from '@dao-dao/types/actions'
 import {
   Loader,
   ProfileDisconnectedCard,

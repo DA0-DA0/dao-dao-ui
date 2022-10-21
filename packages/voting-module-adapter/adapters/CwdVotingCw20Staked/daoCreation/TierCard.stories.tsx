@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { DefaultNewDao } from '@dao-dao/state'
-import { NewDao } from '@dao-dao/tstypes'
+import { NewDao } from '@dao-dao/types'
 
 import { CwdVotingCw20StakedAdapter } from '../../../index'
 import { DaoCreationConfig } from '../types'

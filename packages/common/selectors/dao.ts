@@ -11,7 +11,7 @@ import {
   DaoCardInfoLazyData,
   ProposalModule,
   WithChainId,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 
 import { fetchProposalModules } from '../utils/fetchProposalModules'
 

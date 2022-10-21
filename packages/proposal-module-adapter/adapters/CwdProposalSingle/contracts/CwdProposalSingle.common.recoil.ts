@@ -1,21 +1,21 @@
 import { selectorFamily } from 'recoil'
 
 import { contractVersionSelector } from '@dao-dao/state'
-import { ContractVersion, WithChainId } from '@dao-dao/tstypes'
+import { ContractVersion, WithChainId } from '@dao-dao/types'
 import {
   ConfigResponse as ConfigV2Response,
   GetVoteResponse as GetVoteV2Response,
   ListVotesResponse as ListVotesV2Response,
   ProposalResponse as ProposalV2Response,
   ReverseProposalsResponse as ReverseProposalsV2Response,
-} from '@dao-dao/tstypes/contracts/CwdProposalSingle.v2'
+} from '@dao-dao/types/contracts/CwdProposalSingle.v2'
 import {
   ConfigResponse as ConfigV1Response,
   VoteResponse as GetVoteV1Response,
   ListVotesResponse as ListVotesV1Response,
   ProposalResponse as ProposalV1Response,
   ReverseProposalsResponse as ReverseProposalsV1Response,
-} from '@dao-dao/tstypes/contracts/CwProposalSingle.v1'
+} from '@dao-dao/types/contracts/CwProposalSingle.v1'
 
 import {
   configSelector as configV2Selector,

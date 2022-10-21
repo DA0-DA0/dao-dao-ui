@@ -4,8 +4,8 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ActionCard } from '@dao-dao/actions'
-import { ActionComponent } from '@dao-dao/tstypes/actions'
-import { Member } from '@dao-dao/tstypes/contracts/Cw4Group'
+import { ActionComponent } from '@dao-dao/types/actions'
+import { Member } from '@dao-dao/types/contracts/Cw4Group'
 import {
   AddressInput,
   Button,

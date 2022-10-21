@@ -24,9 +24,9 @@ import {
   CreateDaoCustomValidator,
   DaoParentInfo,
   NewDao,
-} from '@dao-dao/tstypes'
-import { InstantiateMsg as CwdCoreV2InstantiateMsg } from '@dao-dao/tstypes/contracts/CwdCore.v2'
-import instantiateSchema from '@dao-dao/tstypes/contracts/CwdCore.v2.instantiate_schema.json'
+} from '@dao-dao/types'
+import { InstantiateMsg as CwdCoreV2InstantiateMsg } from '@dao-dao/types/contracts/CwdCore.v2'
+import instantiateSchema from '@dao-dao/types/contracts/CwdCore.v2.instantiate_schema.json'
 import {
   Button,
   CreateDaoPages,

@@ -14,7 +14,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
   WalletTransactionForm,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 
 import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'

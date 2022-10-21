@@ -10,9 +10,9 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes'
-import { Threshold } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
-import { ExecuteMsg } from '@dao-dao/tstypes/contracts/CwdProposalSingle.v2'
+} from '@dao-dao/types'
+import { Threshold } from '@dao-dao/types/contracts/CwdProposalSingle.common'
+import { ExecuteMsg } from '@dao-dao/types/contracts/CwdProposalSingle.v2'
 import { UpdateProposalConfigIcon } from '@dao-dao/ui'
 import { makeWasmMessage } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'

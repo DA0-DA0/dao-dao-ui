@@ -8,7 +8,7 @@ import { SuspenseLoader } from '@dao-dao/common'
 import {
   CommandModalContext,
   CommandModalProps,
-} from '@dao-dao/tstypes/command'
+} from '@dao-dao/types/command'
 import { CommandModal as StatelessCommandModal } from '@dao-dao/ui'
 
 import { CommandModalContextView } from './CommandModalContextView'

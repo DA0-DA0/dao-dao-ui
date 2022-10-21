@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { Trans } from '@dao-dao/common'
-import { ActionComponent } from '@dao-dao/tstypes/actions'
+import { ActionComponent } from '@dao-dao/types/actions'
 import {
   AddressInput,
   CodeMirrorInput,

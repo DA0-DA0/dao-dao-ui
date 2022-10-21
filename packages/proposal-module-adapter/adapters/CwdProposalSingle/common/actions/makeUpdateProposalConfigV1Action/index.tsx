@@ -11,8 +11,8 @@ import {
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes'
-import { Threshold } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
+} from '@dao-dao/types'
+import { Threshold } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import { UpdateProposalConfigIcon } from '@dao-dao/ui'
 import {
   convertDenomToMicroDenomWithDecimals,

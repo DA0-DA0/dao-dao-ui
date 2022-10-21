@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import toast from 'react-hot-toast'
 
-import { TokenStake } from '@dao-dao/tstypes'
+import { TokenStake } from '@dao-dao/types'
 
 import { TokenCard, TokenCardProps } from './TokenCard'
 import { makeProps as makeUnstakingModalProps } from './UnstakingModal.stories'
