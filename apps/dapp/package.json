@@ -70,7 +70,6 @@
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@dao-dao/config": "2.0.1",
-    "@dao-dao/tsconfig": "2.0.1",
     "@next/bundle-analyzer": "^12.1.0",
     "@sentry/cli": "^2.5.0",
     "@svgr/cli": "^6.1.1",

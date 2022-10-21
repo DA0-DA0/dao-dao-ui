@@ -32,7 +32,6 @@
   "devDependencies": {
     "@babel/core": "^7.17.5",
     "@dao-dao/config": "2.0.1",
-    "@dao-dao/tsconfig": "2.0.1",
     "@storybook/addon-actions": "^6.5.10",
     "@storybook/addon-essentials": "^6.5.10",
     "@storybook/addon-interactions": "^6.5.10",

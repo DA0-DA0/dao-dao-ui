@@ -7,7 +7,6 @@
   },
   "devDependencies": {
     "@dao-dao/config": "2.0.1",
-    "@dao-dao/tsconfig": "2.0.1",
     "@dao-dao/types": "2.0.1",
     "@keplr-wallet/types": "^0.10.2",
     "@noahsaso/cosmodal": "^0.6.6",

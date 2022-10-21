@@ -1,6 +1,0 @@
-{
-  "name": "@dao-dao/tsconfig",
-  "version": "2.0.1",
-  "prettier": "@dao-dao/config/prettier",
-  "private": true
-}
