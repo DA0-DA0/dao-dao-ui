@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
+import { UpdateProposalConfigIcon } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -13,7 +14,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import { Threshold } from '@dao-dao/types/contracts/CwdProposalSingle.common'
-import { UpdateProposalConfigIcon } from '@dao-dao/stateless'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,

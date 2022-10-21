@@ -6,16 +6,16 @@ import { useFieldArray } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  CreateDaoCustomValidator,
-  DaoCreationGovernanceConfigInputProps,
-} from '@dao-dao/types'
-import {
   Button,
   ChartDataEntry,
   DaoCreateVotingPowerDistributionBarChart,
   InputErrorMessage,
   VOTING_POWER_DISTRIBUTION_COLORS,
 } from '@dao-dao/stateless'
+import {
+  CreateDaoCustomValidator,
+  DaoCreationGovernanceConfigInputProps,
+} from '@dao-dao/types'
 
 import { CwdVotingCw4Adapter } from '../index'
 import { DaoCreationConfig } from '../types'

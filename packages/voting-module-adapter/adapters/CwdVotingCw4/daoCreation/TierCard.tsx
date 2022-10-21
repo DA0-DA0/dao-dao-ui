@@ -11,7 +11,6 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { NewDao } from '@dao-dao/types'
 import {
   AddressInput,
   Button,
@@ -22,6 +21,7 @@ import {
   TextInput,
   VOTING_POWER_DISTRIBUTION_COLORS,
 } from '@dao-dao/stateless'
+import { NewDao } from '@dao-dao/types'
 import {
   validateAddress,
   validatePositive,

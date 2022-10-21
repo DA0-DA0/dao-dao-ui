@@ -3,13 +3,13 @@ import { useMemo } from 'react'
 
 import { SuspenseLoader } from '@dao-dao/common'
 import {
-  CommandModalContext,
-  CommandModalContextSection,
-} from '@dao-dao/types/command'
-import {
   CommandModalContextViewLoader,
   CommandModalContextView as StatelessCommandModalContextView,
 } from '@dao-dao/stateless'
+import {
+  CommandModalContext,
+  CommandModalContextSection,
+} from '@dao-dao/types/command'
 
 export interface CommandModalContextViewProps {
   filter: string

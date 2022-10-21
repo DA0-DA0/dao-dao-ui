@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { CwCoreV1Selectors, CwdCoreV2Selectors } from '@dao-dao/state'
+import { UpdateInfoEmoji } from '@dao-dao/stateless'
 import {
   ActionMaker,
   ActionOptionsContextType,
@@ -13,7 +14,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { UpdateInfoEmoji } from '@dao-dao/stateless'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {

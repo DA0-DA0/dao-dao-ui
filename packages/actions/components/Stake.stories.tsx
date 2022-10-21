@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { Loader, Logo } from '@dao-dao/stateless'
+import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
 import { StakeComponent } from './Stake'

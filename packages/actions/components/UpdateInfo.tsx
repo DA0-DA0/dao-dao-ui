@@ -1,9 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionComponent } from '@dao-dao/types/actions'
-import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
-import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/CwdCore.v2'
 import {
   DaoImage,
   FormSwitch,
@@ -16,6 +13,9 @@ import {
   UpdateInfoEmoji,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { ActionComponent } from '@dao-dao/types/actions'
+import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
+import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/CwdCore.v2'
 import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   validateRequired,

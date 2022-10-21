@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { MembershipPill } from './MembershipPill'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / profile / MembershipPill',
+  title:
+    'DAO DAO / packages / stateless / components / profile / MembershipPill',
   component: MembershipPill,
 } as ComponentMeta<typeof MembershipPill>
 

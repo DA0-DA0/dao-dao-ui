@@ -21,7 +21,8 @@
     "storybook": "yarn workspace @dao-dao/storybook",
     "proposal-module-adapter": "yarn workspace @dao-dao/proposal-module-adapter",
     "voting-module-adapter": "yarn workspace @dao-dao/voting-module-adapter",
-    "command": "yarn workspace @dao-dao/command"
+    "command": "yarn workspace @dao-dao/command",
+    "types": "yarn workspace @dao-dao/types"
   },
   "devDependencies": {
     "turbo": "latest"

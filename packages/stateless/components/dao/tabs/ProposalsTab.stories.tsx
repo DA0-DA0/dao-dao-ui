@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import { useDaoInfoContext } from '@dao-dao/stateless'
+import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
 import {
   ProposalLineProps,
@@ -12,7 +12,8 @@ import * as ProposalListStories from '../../proposal/ProposalList.stories'
 import { ProposalsTab } from './ProposalsTab'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / dao / tabs / ProposalsTab',
+  title:
+    'DAO DAO / packages / stateless / components / dao / tabs / ProposalsTab',
   component: ProposalsTab,
   decorators: [DaoPageWrapperDecorator],
 } as ComponentMeta<typeof ProposalsTab>

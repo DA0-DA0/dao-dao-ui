@@ -1,12 +1,12 @@
 import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
+import { FormSwitchCard, NumberInput, SelectInput } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
 } from '@dao-dao/types'
-import { FormSwitchCard, NumberInput, SelectInput } from '@dao-dao/stateless'
 import {
   formatPercentOf100,
   validatePositive,

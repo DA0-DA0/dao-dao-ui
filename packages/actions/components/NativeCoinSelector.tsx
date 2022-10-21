@@ -4,13 +4,13 @@ import { ComponentProps, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionComponent } from '@dao-dao/types/actions'
 import {
   IconButton,
   InputErrorMessage,
   NumberInput,
   SelectInput,
 } from '@dao-dao/stateless'
+import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,

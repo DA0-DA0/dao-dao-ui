@@ -1,13 +1,13 @@
 import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
+import { NumberInput, SelectInput } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
   DurationUnitsValues,
 } from '@dao-dao/types'
-import { NumberInput, SelectInput } from '@dao-dao/stateless'
 import {
   convertDurationWithUnitsToHumanReadableString,
   validateNonNegative,

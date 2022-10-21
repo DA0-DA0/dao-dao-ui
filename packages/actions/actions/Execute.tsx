@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
+import { ExecuteEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -12,7 +13,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { ExecuteEmoji } from '@dao-dao/stateless'
 import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,

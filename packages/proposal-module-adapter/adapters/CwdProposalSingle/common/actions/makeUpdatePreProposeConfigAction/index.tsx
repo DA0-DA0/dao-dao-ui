@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
+import { UpdateProposalConfigIcon, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -18,7 +19,6 @@ import {
   ExecuteMsg,
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/CwdPreProposeSingle'
-import { UpdateProposalConfigIcon, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,

@@ -5,12 +5,12 @@ import {
   ProposalVoteTallyProps,
 } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally'
 import { Default as ProposalVoteTallyStory } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally.stories'
+import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
   makeProposalModuleAdapterDecorator,
 } from '@dao-dao/storybook/decorators'
-import { useDaoInfoContext } from '@dao-dao/stateless'
 
 import {
   ProfileVoteCard,

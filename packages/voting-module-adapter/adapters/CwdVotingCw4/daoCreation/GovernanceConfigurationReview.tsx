@@ -1,10 +1,10 @@
-import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import {
   ChartDataEntry,
   DaoCreateVotingPowerDistributionReviewCard,
   TierDataEntry,
   VOTING_POWER_DISTRIBUTION_COLORS,
 } from '@dao-dao/stateless'
+import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'

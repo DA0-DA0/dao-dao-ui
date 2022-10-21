@@ -20,14 +20,6 @@ import {
   useWalletProfile,
 } from '@dao-dao/state'
 import {
-  CreateDaoContext,
-  CreateDaoCustomValidator,
-  DaoParentInfo,
-  NewDao,
-} from '@dao-dao/types'
-import { InstantiateMsg as CwdCoreV2InstantiateMsg } from '@dao-dao/types/contracts/CwdCore.v2'
-import instantiateSchema from '@dao-dao/types/contracts/CwdCore.v2.instantiate_schema.json'
-import {
   Button,
   CreateDaoPages,
   DaoCreateSidebarCard,
@@ -36,6 +28,14 @@ import {
   useAppLayoutContext,
   useThemeContext,
 } from '@dao-dao/stateless'
+import {
+  CreateDaoContext,
+  CreateDaoCustomValidator,
+  DaoParentInfo,
+  NewDao,
+} from '@dao-dao/types'
+import { InstantiateMsg as CwdCoreV2InstantiateMsg } from '@dao-dao/types/contracts/CwdCore.v2'
+import instantiateSchema from '@dao-dao/types/contracts/CwdCore.v2.instantiate_schema.json'
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,

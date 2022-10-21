@@ -8,7 +8,8 @@ import { makeProps as makeDaoMemberCardProps } from '../DaoMemberCard.stories'
 import { MembersTab } from './MembersTab'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / dao / tabs / MembersTab',
+  title:
+    'DAO DAO / packages / stateless / components / dao / tabs / MembersTab',
   component: MembersTab,
   decorators: [DaoPageWrapperDecorator],
 } as ComponentMeta<typeof MembersTab>

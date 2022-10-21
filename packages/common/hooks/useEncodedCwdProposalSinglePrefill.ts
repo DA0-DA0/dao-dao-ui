@@ -3,8 +3,8 @@ import {
   matchAdapter as matchProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
 import { NewProposalForm } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/types'
-import { Action, ProposalPrefill } from '@dao-dao/types'
 import { useDaoInfoContext } from '@dao-dao/stateless'
+import { Action, ProposalPrefill } from '@dao-dao/types'
 
 interface ActionAndData<Data extends {} = any> {
   action: Action<Data, any>

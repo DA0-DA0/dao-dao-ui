@@ -6,7 +6,8 @@ import { Pending as ProposalWalletVoteStory } from '../proposal/ProposalWalletVo
 import { ProfileVoteCard } from './ProfileVoteCard'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / profile / ProfileVoteCard',
+  title:
+    'DAO DAO / packages / stateless / components / profile / ProfileVoteCard',
   component: ProfileVoteCard,
 } as ComponentMeta<typeof ProfileVoteCard>
 

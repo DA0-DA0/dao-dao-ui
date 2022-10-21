@@ -5,7 +5,8 @@ import toast from 'react-hot-toast'
 import { ToastNotifications } from './ToastNotifications'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / toasts / ToastNotifications',
+  title:
+    'DAO DAO / packages / stateless / components / toasts / ToastNotifications',
   component: ToastNotifications,
 } as ComponentMeta<typeof ToastNotifications>
 

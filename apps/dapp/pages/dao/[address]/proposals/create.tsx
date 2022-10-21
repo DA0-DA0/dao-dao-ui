@@ -29,7 +29,6 @@ import {
   refreshProposalsIdAtom,
   useVotingModule,
 } from '@dao-dao/state'
-import { ProposalDraft, ProposalPrefill } from '@dao-dao/types'
 import {
   CreateProposal,
   Loader,
@@ -38,6 +37,7 @@ import {
   ProfileDisconnectedCard,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { ProposalDraft, ProposalPrefill } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
 
 import { ProfileNewProposalCard } from '@/components'

@@ -5,7 +5,6 @@ import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
-import { ProposalModule } from '@dao-dao/types'
 import {
   Loader as DefaultLoader,
   Logo as DefaultLogo,
@@ -13,6 +12,7 @@ import {
   LogoProps,
   ProposalLineLoader,
 } from '@dao-dao/stateless'
+import { ProposalModule } from '@dao-dao/types'
 
 export interface ProposalLineProps {
   chainId: string

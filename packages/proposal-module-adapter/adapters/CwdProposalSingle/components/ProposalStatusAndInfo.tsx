@@ -23,12 +23,6 @@ import {
   useVotingModule,
 } from '@dao-dao/state'
 import {
-  BaseProposalStatusAndInfoProps,
-  ContractVersion,
-  DepositRefundPolicy,
-} from '@dao-dao/types'
-import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
-import {
   ButtonLink,
   CopyToClipboardUnderline,
   IconButtonLink,
@@ -39,6 +33,12 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { useTranslatedTimeDeltaFormatter } from '@dao-dao/stateless/hooks'
+import {
+  BaseProposalStatusAndInfoProps,
+  ContractVersion,
+  DepositRefundPolicy,
+} from '@dao-dao/types'
+import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   CHAIN_TXN_URL_PREFIX,
   convertExpirationToDate,

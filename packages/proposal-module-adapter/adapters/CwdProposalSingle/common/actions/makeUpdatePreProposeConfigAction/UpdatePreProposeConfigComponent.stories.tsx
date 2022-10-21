@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { Loader, Logo } from '@dao-dao/stateless'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { DepositRefundPolicy } from '@dao-dao/types'
-import { Loader, Logo } from '@dao-dao/stateless'
 
 import { Component as UpdatePreProposeConfigComponent } from './index'
 import { UpdatePreProposeConfigData } from './UpdatePreProposeConfigComponent'

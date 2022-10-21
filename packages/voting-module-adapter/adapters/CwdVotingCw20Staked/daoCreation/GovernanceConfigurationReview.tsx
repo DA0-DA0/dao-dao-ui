@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
-import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import {
   ChartDataEntry,
   CopyToClipboard,
@@ -12,6 +11,7 @@ import {
   VOTING_POWER_DISTRIBUTION_COLORS,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
+import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { DaoCreationConfig, GovernanceTokenType } from '../types'

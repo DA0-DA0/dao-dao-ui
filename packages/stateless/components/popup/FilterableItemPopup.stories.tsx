@@ -11,7 +11,8 @@ import { Button } from '../buttons'
 import { FilterableItemPopup } from './FilterableItemPopup'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / popup / FilterableItemPopup',
+  title:
+    'DAO DAO / packages / stateless / components / popup / FilterableItemPopup',
   component: FilterableItemPopup,
 } as ComponentMeta<typeof FilterableItemPopup>
 

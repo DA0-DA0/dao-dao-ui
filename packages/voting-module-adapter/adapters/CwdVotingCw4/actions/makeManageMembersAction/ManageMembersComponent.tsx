@@ -4,8 +4,6 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { ActionCard } from '@dao-dao/actions'
-import { ActionComponent } from '@dao-dao/types/actions'
-import { Member } from '@dao-dao/types/contracts/Cw4Group'
 import {
   AddressInput,
   Button,
@@ -14,6 +12,8 @@ import {
   InputLabel,
   NumberInput,
 } from '@dao-dao/stateless'
+import { ActionComponent } from '@dao-dao/types/actions'
+import { Member } from '@dao-dao/types/contracts/Cw4Group'
 import {
   validateAddress,
   validateNonNegative,

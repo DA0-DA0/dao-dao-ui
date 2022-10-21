@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { SplashStatsCard } from './SplashStatsCard'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / splash / SplashStatsCard',
+  title:
+    'DAO DAO / packages / stateless / components / splash / SplashStatsCard',
   component: SplashStatsCard,
 } as ComponentMeta<typeof SplashStatsCard>
 

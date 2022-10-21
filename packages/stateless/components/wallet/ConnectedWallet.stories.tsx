@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ConnectedWallet } from './ConnectedWallet'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / wallet / ConnectedWallet',
+  title:
+    'DAO DAO / packages / stateless / components / wallet / ConnectedWallet',
   component: ConnectedWallet,
 } as ComponentMeta<typeof ConnectedWallet>
 

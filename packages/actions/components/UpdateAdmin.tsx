@@ -1,13 +1,13 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionComponent } from '@dao-dao/types/actions'
 import {
   AddressInput,
   InputErrorMessage,
   InputLabel,
   UpdateAdminEmoji,
 } from '@dao-dao/stateless'
+import { ActionComponent } from '@dao-dao/types/actions'
 import {
   validateAddress,
   validateContractAddress,

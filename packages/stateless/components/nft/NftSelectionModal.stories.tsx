@@ -5,7 +5,8 @@ import { makeProps as makeNftCardProps } from './NftCard.stories'
 import { NftSelectionModal } from './NftSelectionModal'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / nft / NftSelectionModal',
+  title:
+    'DAO DAO / packages / stateless / components / nft / NftSelectionModal',
   component: NftSelectionModal,
 } as ComponentMeta<typeof NftSelectionModal>
 

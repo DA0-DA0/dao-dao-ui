@@ -4,7 +4,6 @@ import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionComponent } from '@dao-dao/types/actions'
 import {
   Button,
   CodeMirrorInput,
@@ -13,6 +12,7 @@ import {
   InputLabel,
   TextInput,
 } from '@dao-dao/stateless'
+import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DENOM,
   makeWasmMessage,

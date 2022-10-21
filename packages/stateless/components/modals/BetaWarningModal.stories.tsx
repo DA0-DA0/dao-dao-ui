@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { BetaWarningModal } from './BetaWarningModal'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / modals / BetaWarningModal',
+  title:
+    'DAO DAO / packages / stateless / components / modals / BetaWarningModal',
   component: BetaWarningModal,
 } as ComponentMeta<typeof BetaWarningModal>
 

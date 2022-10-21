@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / CopyToClipboardUnderline',
+  title:
+    'DAO DAO / packages / stateless / components / CopyToClipboardUnderline',
   component: CopyToClipboardUnderline,
 } as ComponentMeta<typeof CopyToClipboardUnderline>
 

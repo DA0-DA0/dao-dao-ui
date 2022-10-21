@@ -1,12 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 import { DaoMemberCardProps } from '@dao-dao/types'
-import { useDaoInfoContext } from '@dao-dao/stateless'
 
 import {
   DaoInfoBar,

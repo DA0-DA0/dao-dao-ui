@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
+import { AddCw20Emoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -13,7 +14,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { AddCw20Emoji } from '@dao-dao/stateless'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { AddCw20Component as StatelessAddCw20Component } from '../components/AddCw20'

@@ -25,6 +25,7 @@ import {
   refreshWalletBalancesIdAtom,
   useVotingModule,
 } from '@dao-dao/state'
+import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   Action,
   ActionKey,
@@ -32,7 +33,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   convertExpirationToDate,
   dateToWdhms,

@@ -8,11 +8,11 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
+import { ProfileNewProposalCardInfoLine } from '@dao-dao/stateless'
 import {
   DepositRefundPolicy,
   IProposalModuleAdapterCommonOptions,
 } from '@dao-dao/types'
-import { ProfileNewProposalCardInfoLine } from '@dao-dao/stateless'
 import {
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,

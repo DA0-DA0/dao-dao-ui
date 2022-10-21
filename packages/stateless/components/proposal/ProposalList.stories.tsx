@@ -5,7 +5,8 @@ import { makeProps as makeProposalProps } from './ProposalLine.ProposalLine.stor
 import { ProposalList } from './ProposalList'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / proposal / ProposalList',
+  title:
+    'DAO DAO / packages / stateless / components / proposal / ProposalList',
   component: ProposalList,
 } as ComponentMeta<typeof ProposalList>
 

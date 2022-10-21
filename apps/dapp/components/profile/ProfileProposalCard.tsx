@@ -10,7 +10,6 @@ import {
   useProposalModuleAdapter,
 } from '@dao-dao/proposal-module-adapter'
 import { useVotingModule, useWalletProfile } from '@dao-dao/state'
-import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import {
   Loader,
   Logo,
@@ -20,6 +19,7 @@ import {
   useAppLayoutContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 export interface ProfileProposalCardProps {

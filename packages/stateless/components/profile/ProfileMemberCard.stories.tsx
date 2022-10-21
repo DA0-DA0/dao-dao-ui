@@ -8,7 +8,8 @@ import { UnstakingTaskStatus } from '../UnstakingStatus'
 import { ProfileMemberCard, ProfileMemberCardProps } from './ProfileMemberCard'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / profile / ProfileMemberCard',
+  title:
+    'DAO DAO / packages / stateless / components / profile / ProfileMemberCard',
   component: ProfileMemberCard,
 } as ComponentMeta<typeof ProfileMemberCard>
 

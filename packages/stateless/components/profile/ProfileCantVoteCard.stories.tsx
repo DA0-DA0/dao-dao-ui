@@ -9,7 +9,8 @@ import {
 import { ProfileCantVoteCard } from './ProfileCantVoteCard'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / profile / ProfileCantVoteCard',
+  title:
+    'DAO DAO / packages / stateless / components / profile / ProfileCantVoteCard',
   component: ProfileCantVoteCard,
 } as ComponentMeta<typeof ProfileCantVoteCard>
 

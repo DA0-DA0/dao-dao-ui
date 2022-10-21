@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { FollowingToggle } from './FollowingToggle'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / buttons / FollowingToggle',
+  title:
+    'DAO DAO / packages / stateless / components / buttons / FollowingToggle',
   component: FollowingToggle,
 } as ComponentMeta<typeof FollowingToggle>
 

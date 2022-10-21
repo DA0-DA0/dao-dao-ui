@@ -2,8 +2,6 @@ import { Add, Close } from '@mui/icons-material'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionComponent } from '@dao-dao/types/actions'
-import { SubDao } from '@dao-dao/types/contracts/CwdCore.v2'
 import {
   AddressInput,
   Button,
@@ -13,6 +11,8 @@ import {
   InputLabel,
   ManageSubDaosEmoji,
 } from '@dao-dao/stateless'
+import { ActionComponent } from '@dao-dao/types/actions'
+import { SubDao } from '@dao-dao/types/contracts/CwdCore.v2'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
 import { ActionCard } from './ActionCard'

@@ -1,6 +1,7 @@
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
+import { CustomEmoji } from '@dao-dao/stateless'
 import {
   ActionKey,
   ActionMaker,
@@ -8,7 +9,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { CustomEmoji } from '@dao-dao/stateless'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { CustomComponent as Component } from '../components/Custom'

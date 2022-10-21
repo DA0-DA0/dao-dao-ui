@@ -4,17 +4,17 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ActionComponent,
-  ActionOptionsContextType,
-} from '@dao-dao/types/actions'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
-import {
   AddressInput,
   InputErrorMessage,
   NumberInput,
   SelectInput,
   SpendEmoji,
 } from '@dao-dao/stateless'
+import {
+  ActionComponent,
+  ActionOptionsContextType,
+} from '@dao-dao/types/actions'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,

@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { InputErrorMessage } from './InputErrorMessage'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / inputs / InputErrorMessage',
+  title:
+    'DAO DAO / packages / stateless / components / inputs / InputErrorMessage',
   component: InputErrorMessage,
 } as ComponentMeta<typeof InputErrorMessage>
 

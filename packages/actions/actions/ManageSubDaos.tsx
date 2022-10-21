@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { CwdCoreV2Selectors } from '@dao-dao/state'
+import { ManageSubDaosEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -12,7 +13,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { ManageSubDaosEmoji } from '@dao-dao/stateless'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {

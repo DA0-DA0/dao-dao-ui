@@ -6,7 +6,8 @@ import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { ImageSelectorModal } from './ImageSelector'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / inputs / ImageSelectorModal',
+  title:
+    'DAO DAO / packages / stateless / components / inputs / ImageSelectorModal',
   component: ImageSelectorModal,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ImageSelectorModal>

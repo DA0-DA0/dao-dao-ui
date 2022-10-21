@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ThemeToggle } from './ThemeToggle'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / icon_buttons / ThemeToggle',
+  title:
+    'DAO DAO / packages / stateless / components / icon_buttons / ThemeToggle',
   component: ThemeToggle,
 } as ComponentMeta<typeof ThemeToggle>
 

@@ -17,13 +17,6 @@ import { useTranslation } from 'react-i18next'
 import { SuspenseLoader } from '@dao-dao/common'
 import { useWalletProfile } from '@dao-dao/state'
 import {
-  Action,
-  ActionKey,
-  UseDefaults,
-  UseTransformToCosmos,
-} from '@dao-dao/types'
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
-import {
   ActionCardLoader,
   ActionSelector,
   Button,
@@ -36,6 +29,13 @@ import {
   TextInput,
   Tooltip,
 } from '@dao-dao/stateless'
+import {
+  Action,
+  ActionKey,
+  UseDefaults,
+  UseTransformToCosmos,
+} from '@dao-dao/types'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import { decodedMessagesString, validateRequired } from '@dao-dao/utils'
 
 import {

@@ -18,7 +18,8 @@ import {
 import { Default as CommandModalContextViewLoaderStory } from './CommandModalContextView.CommandModalContextViewLoader.stories'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / CommandModal / CommandModal',
+  title:
+    'DAO DAO / packages / stateless / components / CommandModal / CommandModal',
   component: CommandModal,
   decorators: [SubQueryDecorator],
 } as ComponentMeta<typeof CommandModal>

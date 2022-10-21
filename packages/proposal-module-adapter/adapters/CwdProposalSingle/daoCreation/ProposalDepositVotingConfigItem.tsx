@@ -5,12 +5,6 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
-  DaoCreationVotingConfigItem,
-  DaoCreationVotingConfigItemInputProps,
-  DaoCreationVotingConfigItemReviewProps,
-  DepositRefundPolicy,
-} from '@dao-dao/types'
-import {
   AddressInput,
   FormSwitchCard,
   FormattedJsonDisplay,
@@ -19,6 +13,12 @@ import {
   NumberInput,
   SelectInput,
 } from '@dao-dao/stateless'
+import {
+  DaoCreationVotingConfigItem,
+  DaoCreationVotingConfigItemInputProps,
+  DaoCreationVotingConfigItemReviewProps,
+  DepositRefundPolicy,
+} from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
   NATIVE_DENOM,

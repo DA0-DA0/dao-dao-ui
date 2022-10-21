@@ -7,8 +7,8 @@
 // to dynamic pages such as a DAO or proposal page.
 import { Trans as OriginalTrans } from 'react-i18next'
 
-import { TransProps } from '@dao-dao/types'
 import { Loader as DefaultLoader } from '@dao-dao/stateless'
+import { TransProps } from '@dao-dao/types'
 
 import { SuspenseLoader } from './SuspenseLoader'
 

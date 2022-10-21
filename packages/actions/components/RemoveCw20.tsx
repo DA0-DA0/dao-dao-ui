@@ -2,8 +2,6 @@ import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionComponent } from '@dao-dao/types/actions'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   AddressInput,
   Button,
@@ -13,6 +11,8 @@ import {
   InputLabel,
   RemoveCw20Emoji,
 } from '@dao-dao/stateless'
+import { ActionComponent } from '@dao-dao/types/actions'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
 import { ActionCard } from './ActionCard'

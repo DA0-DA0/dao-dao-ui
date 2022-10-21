@@ -5,11 +5,11 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/common'
 import { subDaoCardInfosSelector, useVotingModule } from '@dao-dao/state'
-import { ContractVersion } from '@dao-dao/types'
 import {
   SubDaosTab as StatelessSubDaosTab,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { ContractVersion } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { DaoCard } from '../DaoCard'

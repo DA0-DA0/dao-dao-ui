@@ -1,8 +1,8 @@
 import { Check, Close } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { ProcessedTQType } from '@dao-dao/types'
 import { ProgressBar, Tooltip, TooltipInfoIcon } from '@dao-dao/stateless'
+import { ProcessedTQType } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { VotesInfo } from '../../types'

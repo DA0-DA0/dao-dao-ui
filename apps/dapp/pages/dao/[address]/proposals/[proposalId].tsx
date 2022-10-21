@@ -21,7 +21,6 @@ import {
   useProposalModuleAdapterContext,
 } from '@dao-dao/proposal-module-adapter'
 import { useProfile } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/types'
 import {
   Loader,
   Logo,
@@ -30,6 +29,7 @@ import {
   ProposalNotFound,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { ActionKey } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 

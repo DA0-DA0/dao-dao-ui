@@ -3,16 +3,16 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  BaseProfileCardMemberInfoProps,
-  UnstakingTask,
-  UnstakingTaskStatus,
-} from '@dao-dao/types'
-import {
   Button,
   ButtonLink,
   TokenAmountDisplay,
   UnstakingModal,
 } from '@dao-dao/stateless'
+import {
+  BaseProfileCardMemberInfoProps,
+  UnstakingTask,
+  UnstakingTaskStatus,
+} from '@dao-dao/types'
 import { formatPercentOf100, secondsToWdhms } from '@dao-dao/utils'
 
 export interface ProfileCardMemberInfoTokensProps

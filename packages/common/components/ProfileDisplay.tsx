@@ -1,6 +1,6 @@
 import { useProfile } from '@dao-dao/state'
-import { ProfileDisplayProps } from '@dao-dao/types'
 import { ProfileDisplay as StatelessProfileDisplay } from '@dao-dao/stateless'
+import { ProfileDisplayProps } from '@dao-dao/types'
 
 export const ProfileDisplay = (
   props: Omit<ProfileDisplayProps, 'loadingProfile'>

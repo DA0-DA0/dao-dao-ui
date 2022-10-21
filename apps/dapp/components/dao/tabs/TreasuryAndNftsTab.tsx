@@ -12,13 +12,13 @@ import {
   treasuryTokenCardInfosSelector,
   useVotingModule,
 } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/types'
 import {
   NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { ActionKey } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 import {
   useCw20GovernanceTokenInfoResponseIfExists,

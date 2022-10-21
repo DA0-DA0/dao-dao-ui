@@ -3,8 +3,8 @@ import { Suspense } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { mountedInBrowserAtom } from '@dao-dao/state'
-import { SuspenseLoaderProps } from '@dao-dao/types/components/SuspenseLoader'
 import { ErrorBoundary } from '@dao-dao/stateless'
+import { SuspenseLoaderProps } from '@dao-dao/types/components/SuspenseLoader'
 
 export const SuspenseLoader = ({
   ErrorBoundaryComponent = ErrorBoundary,

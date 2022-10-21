@@ -4,12 +4,6 @@ import { ComponentType, PropsWithChildren, useEffect } from 'react'
 
 import { ActionsProvider } from '@dao-dao/actions'
 import {
-  ActionOptionsContextType,
-  CommonProposalInfo,
-  DaoInfo,
-  DaoInfoSerializable,
-} from '@dao-dao/types'
-import {
   DaoInfoContext,
   DaoNotFound,
   Loader as DefaultLoader,
@@ -20,6 +14,12 @@ import {
   LogoProps,
   useThemeContext,
 } from '@dao-dao/stateless'
+import {
+  ActionOptionsContextType,
+  CommonProposalInfo,
+  DaoInfo,
+  DaoInfoSerializable,
+} from '@dao-dao/types'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 import { SuspenseLoader } from './SuspenseLoader'

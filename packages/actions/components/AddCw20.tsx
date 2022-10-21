@@ -1,7 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionComponent } from '@dao-dao/types/actions'
 import {
   AddCw20Emoji,
   AddressInput,
@@ -10,6 +9,7 @@ import {
   InputErrorMessage,
   InputLabel,
 } from '@dao-dao/stateless'
+import { ActionComponent } from '@dao-dao/types/actions'
 import {
   validateContractAddress,
   validateRequired,

@@ -4,7 +4,8 @@ import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / profile / ProfileCardWrapper',
+  title:
+    'DAO DAO / packages / stateless / components / profile / ProfileCardWrapper',
   component: ProfileCardWrapper,
 } as ComponentMeta<typeof ProfileCardWrapper>
 

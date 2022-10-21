@@ -4,7 +4,6 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { walletStargazeNftCardInfosSelector } from '@dao-dao/state'
-import { NftCardInfo } from '@dao-dao/types'
 import {
   Loader as DefaultLoader,
   LoaderProps,
@@ -14,6 +13,7 @@ import {
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { NftCardInfo } from '@dao-dao/types'
 import {
   STARGAZE_CHAIN_ID,
   loadableToLoadingDataWithError,

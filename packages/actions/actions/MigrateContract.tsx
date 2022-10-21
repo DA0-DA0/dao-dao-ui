@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
+import { MigrateContractEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -10,7 +11,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { MigrateContractEmoji } from '@dao-dao/stateless'
 
 import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components/MigrateContract'
 

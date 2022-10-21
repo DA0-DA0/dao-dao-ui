@@ -13,6 +13,12 @@ import { ActionsProvider, useActions } from '@dao-dao/actions'
 import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { walletTransactionAtom } from '@dao-dao/state'
+import {
+  Loader,
+  ProfileDisconnectedCard,
+  Wallet,
+  WalletProps,
+} from '@dao-dao/stateless'
 import { WalletTransactionForm } from '@dao-dao/types'
 import {
   Action,
@@ -21,12 +27,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import {
-  Loader,
-  ProfileDisconnectedCard,
-  Wallet,
-  WalletProps,
-} from '@dao-dao/stateless'
 import { CHAIN_BECH32_PREFIX, CHAIN_ID, processError } from '@dao-dao/utils'
 
 import { ProfileHomeCard } from '@/components'

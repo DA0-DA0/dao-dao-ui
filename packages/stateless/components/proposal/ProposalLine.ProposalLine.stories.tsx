@@ -14,7 +14,8 @@ import {
 import * as ProposalWalletVoteStories from './ProposalWalletVote.stories'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / proposal / ProposalLine',
+  title:
+    'DAO DAO / packages / stateless / components / proposal / ProposalLine',
   component: ProposalLine,
   // Don't export helper function `makeProps`.
   excludeStories: ['makeProps'],

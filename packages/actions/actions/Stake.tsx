@@ -6,6 +6,7 @@ import {
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
 } from '@dao-dao/state'
+import { ActionCardLoader, StakeEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -14,7 +15,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { ActionCardLoader, StakeEmoji } from '@dao-dao/stateless'
 import {
   NATIVE_DENOM,
   StakeType,

@@ -13,8 +13,8 @@ import {
   useAwaitNextBlock,
   useWalletProfile,
 } from '@dao-dao/state'
-import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
+import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
 import {
   NATIVE_DENOM,
   convertExpirationToDate,

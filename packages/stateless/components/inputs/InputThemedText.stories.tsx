@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { InputThemedText } from './InputThemedText'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / inputs / InputThemedText',
+  title:
+    'DAO DAO / packages / stateless / components / inputs / InputThemedText',
   component: InputThemedText,
 } as ComponentMeta<typeof InputThemedText>
 

@@ -6,7 +6,8 @@ import { Vote } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import { ProposalWalletVote } from './ProposalWalletVote'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / proposal / ProposalWalletVote',
+  title:
+    'DAO DAO / packages / stateless / components / proposal / ProposalWalletVote',
   component: ProposalWalletVote,
 } as ComponentMeta<typeof ProposalWalletVote>
 

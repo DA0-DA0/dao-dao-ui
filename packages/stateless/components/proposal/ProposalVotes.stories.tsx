@@ -8,7 +8,8 @@ import { ProfileDisplay } from '../ProfileDisplay'
 import { ProposalVotes, ProposalVotesProps } from './ProposalVotes'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / proposal / ProposalVotes',
+  title:
+    'DAO DAO / packages / stateless / components / proposal / ProposalVotes',
   component: ProposalVotes,
   // Don't export helper function `makeProps`.
   excludeStories: ['makeProps'],

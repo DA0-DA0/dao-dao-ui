@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProposalIdDisplay } from './ProposalIdDisplay'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / proposal / ProposalIdDisplay',
+  title:
+    'DAO DAO / packages / stateless / components / proposal / ProposalIdDisplay',
   component: ProposalIdDisplay,
 } as ComponentMeta<typeof ProposalIdDisplay>
 

@@ -11,7 +11,6 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { NewDao } from '@dao-dao/types'
 import {
   AddressInput,
   Button,
@@ -23,6 +22,7 @@ import {
   TooltipInfoIcon,
   VOTING_POWER_DISTRIBUTION_COLORS,
 } from '@dao-dao/stateless'
+import { NewDao } from '@dao-dao/types'
 import {
   NEW_DAO_CW20_DECIMALS,
   formatPercentOf100,

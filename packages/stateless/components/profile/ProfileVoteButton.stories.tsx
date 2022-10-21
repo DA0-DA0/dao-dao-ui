@@ -4,7 +4,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProfileVoteButton } from './ProfileVoteButton'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / profile / ProfileVoteButton',
+  title:
+    'DAO DAO / packages / stateless / components / profile / ProfileVoteButton',
   component: ProfileVoteButton,
 } as ComponentMeta<typeof ProfileVoteButton>
 

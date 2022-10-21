@@ -29,8 +29,6 @@ import {
   useVotingModule,
   useWalletProfile,
 } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/types'
-import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import {
   DaoHome,
   Loader,
@@ -41,6 +39,8 @@ import {
   useAppLayoutContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { ActionKey } from '@dao-dao/types'
+import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import { SITE_URL } from '@dao-dao/utils'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 

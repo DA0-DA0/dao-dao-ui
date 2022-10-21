@@ -6,7 +6,8 @@ import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { CodeMirrorInput } from './CodeMirrorInput'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / inputs / CodeMirrorInput',
+  title:
+    'DAO DAO / packages / stateless / components / inputs / CodeMirrorInput',
   component: CodeMirrorInput,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof CodeMirrorInput>

@@ -4,7 +4,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProposalCard, ProposalCardProps } from './ProposalCard'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / proposal / ProposalCard',
+  title:
+    'DAO DAO / packages / stateless / components / proposal / ProposalCard',
   component: ProposalCard,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof ProposalCard>

@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
+import { UpdateAdminEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -10,7 +11,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { UpdateAdminEmoji } from '@dao-dao/stateless'
 import { isValidContractAddress } from '@dao-dao/utils'
 
 import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components/UpdateAdmin'

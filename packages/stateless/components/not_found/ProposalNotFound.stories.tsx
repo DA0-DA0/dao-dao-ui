@@ -5,7 +5,8 @@ import { Trans } from '@dao-dao/common'
 import { ProposalNotFound } from './ProposalNotFound'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / not_found / ProposalNotFound',
+  title:
+    'DAO DAO / packages / stateless / components / not_found / ProposalNotFound',
   component: ProposalNotFound,
 } as ComponentMeta<typeof ProposalNotFound>
 

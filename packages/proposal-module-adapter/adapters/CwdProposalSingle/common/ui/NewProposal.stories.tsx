@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { useActions } from '@dao-dao/actions'
+import { Loader, Logo, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   WalletProviderDecorator,
@@ -13,7 +14,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { Loader, Logo, useDaoInfoContext } from '@dao-dao/stateless'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { CwdProposalSingleAdapter } from '../..'

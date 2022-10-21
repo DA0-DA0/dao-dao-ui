@@ -6,7 +6,8 @@ import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { FormSwitchCard } from './Switch'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / inputs / FormSwitchCard',
+  title:
+    'DAO DAO / packages / stateless / components / inputs / FormSwitchCard',
   component: FormSwitchCard,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof FormSwitchCard>

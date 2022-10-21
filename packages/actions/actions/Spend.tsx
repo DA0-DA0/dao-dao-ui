@@ -6,6 +6,7 @@ import {
   CwdCoreV2Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
+import { SpendEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -15,7 +16,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { SpendEmoji } from '@dao-dao/stateless'
 import {
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,

@@ -9,10 +9,6 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
-  CreateDaoCustomValidator,
-  DaoCreationGovernanceConfigInputProps,
-} from '@dao-dao/types'
-import {
   Button,
   ChartDataEntry,
   DaoCreateVotingPowerDistributionBarChart,
@@ -25,6 +21,10 @@ import {
   TextInput,
   VOTING_POWER_DISTRIBUTION_COLORS,
 } from '@dao-dao/stateless'
+import {
+  CreateDaoCustomValidator,
+  DaoCreationGovernanceConfigInputProps,
+} from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
   NEW_DAO_CW20_DECIMALS,

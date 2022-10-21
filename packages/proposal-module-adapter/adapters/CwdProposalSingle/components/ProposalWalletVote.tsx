@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 
+import { ProposalWalletVote as StatelessProposalWalletVote } from '@dao-dao/stateless'
 import { BaseProposalWalletVoteProps } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/CwdProposalSingle.common'
-import { ProposalWalletVote as StatelessProposalWalletVote } from '@dao-dao/stateless'
 
 export const ProposalWalletVote = ({
   vote,

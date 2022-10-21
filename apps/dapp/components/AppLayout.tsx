@@ -30,7 +30,6 @@ import {
   usePinnedDaos,
   useWalletProfile,
 } from '@dao-dao/state'
-import { CommandModalContextMaker } from '@dao-dao/types'
 import {
   BetaWarningModal,
   DaoCreatedModal,
@@ -39,6 +38,7 @@ import {
   AppLayout as StatelessAppLayout,
   useCachedLoadable,
 } from '@dao-dao/stateless'
+import { CommandModalContextMaker } from '@dao-dao/types'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import {

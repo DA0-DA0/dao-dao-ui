@@ -9,6 +9,7 @@ import {
   nativeBalancesSelector,
   transactionEventsSelector,
 } from '@dao-dao/state'
+import { InstantiateEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -17,7 +18,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { InstantiateEmoji } from '@dao-dao/stateless'
 import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
