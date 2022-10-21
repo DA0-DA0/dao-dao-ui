@@ -1,8 +1,8 @@
 import { ChangeEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { StakingModalProps, StakingMode } from '@dao-dao/types/components/StakingModal'
 import { Duration } from '@dao-dao/types/contracts/common'
-import { StakingModalProps, StakingMode } from '@dao-dao/types/ui/StakingModal'
 import {
   convertMicroDenomToDenomWithDecimals,
   durationIsNonZero,
@@ -15,7 +15,7 @@ import { Modal } from '../modals/Modal'
 import { Tooltip } from '../Tooltip'
 import { PercentButton } from './PercentButton'
 
-export * from '@dao-dao/types/ui/StakingModal'
+export * from '@dao-dao/types/components/StakingModal'
 
 export const StakingModal = ({
   initialMode,

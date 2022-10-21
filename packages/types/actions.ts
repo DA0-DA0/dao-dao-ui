@@ -5,8 +5,8 @@ import { TFunction } from 'react-i18next'
 
 import { ContractVersion } from './contract'
 import { CosmosMsgFor_Empty } from './contracts/common'
-import { LoaderProps } from './ui/Loader'
-import { LogoProps } from './ui/Logo'
+import { LoaderProps } from './components/Loader'
+import { LogoProps } from './components/Logo'
 
 export enum ActionKey {
   Spend = 'spend',

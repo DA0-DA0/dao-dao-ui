@@ -11,8 +11,8 @@ import {
   DaoCreationGovernanceConfigReviewProps,
   DaoCreationVotingConfigItem,
 } from './dao'
-import { DaoInfoBarItem, LoaderProps, LogoProps, StakingMode } from './ui'
-import { ProfileNewProposalCardAddress } from './ui/ProfileNewProposalCard'
+import { DaoInfoBarItem, LoaderProps, LogoProps, StakingMode } from './components'
+import { ProfileNewProposalCardAddress } from './components/ProfileNewProposalCard'
 
 export interface BaseProfileCardMemberInfoProps {
   deposit: string | undefined

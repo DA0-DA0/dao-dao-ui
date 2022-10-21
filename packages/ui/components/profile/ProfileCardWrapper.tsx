@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { ProfileCardWrapperProps } from '@dao-dao/types/ui/ProfileCardWrapper'
+import { ProfileCardWrapperProps } from '@dao-dao/types/components/ProfileCardWrapper'
 import { formatDate, processError } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
@@ -14,7 +14,7 @@ import { TextInput } from '../inputs'
 import { Loader } from '../Loader'
 import { ProfileImage } from './ProfileImage'
 
-export * from '@dao-dao/types/ui/ProfileCardWrapper'
+export * from '@dao-dao/types/components/ProfileCardWrapper'
 
 export const ProfileCardWrapper = ({
   children,

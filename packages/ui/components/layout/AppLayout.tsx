@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { RightSidebarProps } from '@dao-dao/types'
-import { AppLayoutProps } from '@dao-dao/types/ui/AppLayout'
+import { AppLayoutProps } from '@dao-dao/types/components/AppLayout'
 
 import { ErrorBoundary } from '../ErrorBoundary'
 import { ProfileImage } from '../profile/ProfileImage'
@@ -12,7 +12,7 @@ import { Navigation } from './Navigation'
 import { makePageHeader } from './PageHeader'
 import { RightSidebar, makeRightSidebarContent } from './RightSidebar'
 
-export * from '@dao-dao/types/ui/AppLayout'
+export * from '@dao-dao/types/components/AppLayout'
 
 export const AppLayout = ({
   navigationProps,

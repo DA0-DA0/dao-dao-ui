@@ -20,7 +20,7 @@ import {
   LogoProps,
   ProfileNewProposalCardInfoLine,
   ProfileVoteCardOption,
-} from './ui'
+} from './components'
 
 export interface IProposalModuleAdapterCommon<
   FormData extends FieldValues = any

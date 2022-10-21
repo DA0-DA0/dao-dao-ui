@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-import { DaoDropdownProps } from '@dao-dao/types/ui/DaoDropdown'
+import { DaoDropdownProps } from '@dao-dao/types/components/DaoDropdown'
 
 import { DropdownIconButton } from '../icon_buttons'
 import { Tooltip } from '../Tooltip'
 
-export * from '@dao-dao/types/ui/DaoDropdown'
+export * from '@dao-dao/types/components/DaoDropdown'
 
 export const DaoDropdown = ({
   dao: { coreAddress, imageUrl, name, subdaos, content },

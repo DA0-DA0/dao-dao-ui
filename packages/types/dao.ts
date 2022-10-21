@@ -17,7 +17,7 @@ import { ContractVersion } from './contract'
 import { ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as CwdCoreV2InstantiateMsg } from './contracts/CwdCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
-import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './ui'
+import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './components'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/common/components/DaoPageWrapper

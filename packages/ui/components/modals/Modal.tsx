@@ -3,13 +3,13 @@ import clsx from 'clsx'
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
-import { ModalProps } from '@dao-dao/types/ui/Modal'
+import { ModalProps } from '@dao-dao/types/components/Modal'
 
 import { useMountedInBrowser } from '../../hooks'
 import { ErrorBoundary } from '../ErrorBoundary'
 import { IconButton } from '../icon_buttons'
 
-export * from '@dao-dao/types/ui/Modal'
+export * from '@dao-dao/types/components/Modal'
 
 export const Modal = ({
   children,

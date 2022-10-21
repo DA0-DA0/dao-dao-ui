@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { DaoMemberCardProps } from '@dao-dao/types/ui/DaoMemberCard'
+import { DaoMemberCardProps } from '@dao-dao/types/components/DaoMemberCard'
 
 import { DaoMemberCard } from './DaoMemberCard'
 

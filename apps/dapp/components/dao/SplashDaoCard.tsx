@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 
 import { daoCardInfoLazyDataSelector } from '@dao-dao/common'
 import { useCachedLoadable } from '@dao-dao/state'
-import { DaoCardInfo } from '@dao-dao/types/ui/DaoCard'
+import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
 import { DaoCard as StatelessDaoCard } from '@dao-dao/ui'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
