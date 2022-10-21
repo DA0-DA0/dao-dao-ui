@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { useActionOptions } from '@dao-dao/actions/react/context'
+import { useActionOptions } from '@dao-dao/common/actions/react/context'
 import { Action, IProposalModuleAdapterCommonOptions } from '@dao-dao/types'
 
 import {

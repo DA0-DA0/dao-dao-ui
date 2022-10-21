@@ -2,7 +2,7 @@
 
 import { DecoratorFn } from '@storybook/react'
 
-import { ActionsProvider, ActionsProviderProps } from '@dao-dao/actions'
+import { ActionsProvider, ActionsProviderProps } from '@dao-dao/common/actions'
 
 export const makeActionsProviderDecorator = (
   options: ActionsProviderProps['options']

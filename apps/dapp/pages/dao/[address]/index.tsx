@@ -14,7 +14,7 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { useActionForKey } from '@dao-dao/actions'
+import { useActionForKey } from '@dao-dao/common/actions'
 import {
   DaoInfoBar,
   DaoPageWrapper,

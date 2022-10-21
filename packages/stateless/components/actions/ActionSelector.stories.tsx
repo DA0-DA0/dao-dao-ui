@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { useActions } from '@dao-dao/actions'
+import { useActions } from '@dao-dao/common/actions'
 
 import { ActionSelector } from './ActionSelector'
 

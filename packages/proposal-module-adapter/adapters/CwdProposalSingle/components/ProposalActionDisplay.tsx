@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { ActionsRenderer } from '@dao-dao/actions'
+import { ActionsRenderer } from '@dao-dao/common/actions'
 import { Button, CosmosMessageDisplay } from '@dao-dao/stateless'
 import { ActionAndData, BaseProposalActionDisplayProps } from '@dao-dao/types'
 import { decodeMessages } from '@dao-dao/utils'

@@ -3,11 +3,11 @@ import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { Trans } from '@dao-dao/common'
 import { CodeMirrorInput, CustomEmoji } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
+import { Trans } from '../../components/Trans'
 import { ActionCard } from './ActionCard'
 
 const INVALID_COSMOS_MSG = 'INVALID_COSMOS_MSG'

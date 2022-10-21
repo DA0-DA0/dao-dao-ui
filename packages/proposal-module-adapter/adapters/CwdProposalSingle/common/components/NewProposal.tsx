@@ -13,7 +13,7 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
-import { useActions } from '@dao-dao/actions'
+import { useActions } from '@dao-dao/common/actions'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,

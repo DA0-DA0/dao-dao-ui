@@ -1,7 +1,7 @@
 import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useActionForKey } from '@dao-dao/actions'
+import { useActionForKey } from '@dao-dao/common/actions'
 import {
   DaoMemberCard,
   useEncodedCwdProposalSinglePrefill,

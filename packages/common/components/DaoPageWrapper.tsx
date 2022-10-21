@@ -2,7 +2,6 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ComponentType, PropsWithChildren, useEffect } from 'react'
 
-import { ActionsProvider } from '@dao-dao/actions'
 import {
   DaoInfoContext,
   DaoNotFound,
@@ -22,6 +21,7 @@ import {
 } from '@dao-dao/types'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
+import { ActionsProvider } from '../actions'
 import { SuspenseLoader } from './SuspenseLoader'
 import { Trans } from './Trans'
 

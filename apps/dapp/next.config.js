@@ -11,7 +11,6 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/stateless',
   '@dao-dao/utils',
   '@dao-dao/state',
-  '@dao-dao/actions',
   '@dao-dao/common',
   '@dao-dao/i18n',
   '@dao-dao/voting-module-adapter',

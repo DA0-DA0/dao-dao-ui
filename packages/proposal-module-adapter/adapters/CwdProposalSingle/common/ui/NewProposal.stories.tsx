@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { useActions } from '@dao-dao/actions'
+import { useActions } from '@dao-dao/common/actions'
 import { Loader, Logo, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,

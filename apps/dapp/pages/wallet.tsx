@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
-import { ActionsProvider, useActions } from '@dao-dao/actions'
+import { ActionsProvider, useActions } from '@dao-dao/common/actions'
 import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { walletTransactionAtom } from '@dao-dao/state'

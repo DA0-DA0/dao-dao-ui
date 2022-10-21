@@ -2,7 +2,6 @@ import { Check, Link } from '@mui/icons-material'
 import { ComponentType, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { SuspenseLoader } from '@dao-dao/common'
 import {
   ActionCardLoader,
   IconButton,
@@ -10,6 +9,8 @@ import {
   LogoProps,
 } from '@dao-dao/stateless'
 import { ActionAndData } from '@dao-dao/types/actions'
+
+import { SuspenseLoader } from '../../components/SuspenseLoader'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {

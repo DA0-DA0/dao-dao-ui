@@ -3,7 +3,7 @@ import Emoji from 'a11y-react-emoji'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionCard } from '@dao-dao/actions'
+import { ActionCard } from '@dao-dao/common/actions'
 import {
   AddressInput,
   Button,

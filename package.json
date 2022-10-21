@@ -15,7 +15,6 @@
     "state": "yarn workspace @dao-dao/state",
     "stateless": "yarn workspace @dao-dao/stateless",
     "utils": "yarn workspace @dao-dao/utils",
-    "actions": "yarn workspace @dao-dao/actions",
     "common": "yarn workspace @dao-dao/common",
     "i18n": "yarn workspace @dao-dao/i18n",
     "storybook": "yarn workspace @dao-dao/storybook",

@@ -2,11 +2,11 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 import { useEffect } from 'react'
 
-import { useActionForKey } from '@dao-dao/actions'
 import {
   StargazeNftImportModal,
   useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/common'
+import { useActionForKey } from '@dao-dao/common/actions'
 import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,

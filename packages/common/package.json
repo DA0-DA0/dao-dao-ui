@@ -8,7 +8,6 @@
   "dependencies": {
     "@cosmjs/encoding": "0.28.10",
     "@cosmjs/stargate": "0.28.10",
-    "@dao-dao/actions": "2.0.1",
     "@dao-dao/proposal-module-adapter": "2.0.1",
     "@dao-dao/state": "2.0.1",
     "@dao-dao/stateless": "2.0.1",
@@ -20,6 +19,8 @@
     "@mui/material": "^5.10.3",
     "@walletconnect/browser-utils": "^1.8.0",
     "axios": "^0.26.1",
+    "clsx": "^1.1.1",
+    "fuse.js": "^6.6.2",
     "i18next": "^21.8.10",
     "lodash.clonedeep": "^4.5.0",
     "next-seo": "^5.4.0",
@@ -32,13 +33,13 @@
   },
   "devDependencies": {
     "@dao-dao/config": "2.0.1",
+    "@dao-dao/types": "2.0.1",
+    "@noahsaso/cosmodal": "^0.7.1",
     "@types/lodash.clonedeep": "^4.5.0",
     "@types/remove-markdown": "^0.3.1",
+    "eslint": "^8.23.1",
+    "next": "^12.2.0",
     "typescript": "^4.8.3"
-  },
-  "peerDependencies": {
-    "@noahsaso/cosmodal": "^0.7.1",
-    "next": "^12.2.0"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true

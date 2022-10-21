@@ -1,7 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { Trans } from '@dao-dao/common'
 import {
   AddressInput,
   CodeMirrorInput,
@@ -18,6 +17,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { Trans } from '../../components/Trans'
 import { useActionOptions } from '../react/context'
 import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'

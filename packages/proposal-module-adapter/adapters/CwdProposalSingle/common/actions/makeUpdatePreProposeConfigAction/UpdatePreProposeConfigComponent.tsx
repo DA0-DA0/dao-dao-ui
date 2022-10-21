@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionCard } from '@dao-dao/actions'
+import { ActionCard } from '@dao-dao/common/actions'
 import { Trans } from '@dao-dao/common'
 import {
   AddressInput,

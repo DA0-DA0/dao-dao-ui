@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { useActions } from '@dao-dao/actions'
+import { useActions } from '@dao-dao/common/actions'
 import {
   DaoPageWrapper,
   DaoProposalPageWrapperProps,
