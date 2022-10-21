@@ -1,7 +1,5 @@
-import { BookOutlined, FlagOutlined } from '@mui/icons-material'
+import { BookOutlined, FlagOutlined, Timelapse } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-
-import { Open } from '@dao-dao/icons'
 
 import { ProposalCard, ProposalCardProps } from './ProposalCard'
 
@@ -36,7 +34,7 @@ export const makeProps = (): ProposalCardProps => ({
       label: 'Quorum: 20%',
     },
     {
-      Icon: Open,
+      Icon: Timelapse,
       label: '8 days',
     },
   ],

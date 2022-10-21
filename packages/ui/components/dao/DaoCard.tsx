@@ -1,14 +1,14 @@
-import { Check } from '@mui/icons-material'
+import {
+  AccountBalanceOutlined,
+  Check,
+  DescriptionOutlined,
+  PushPin,
+  ShortcutOutlined,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 import removeMarkdown from 'remove-markdown'
 
-import {
-  DaoCardPin,
-  DaoCardProposals,
-  Governance,
-  ParentDaoArrow,
-} from '@dao-dao/icons'
 import { DaoCardProps } from '@dao-dao/tstypes/ui/DaoCard'
 import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
@@ -63,11 +63,19 @@ export const DaoCard = ({
         {parentDao && (
           <Tooltip title={t('info.goToParent')}>
             <IconButtonLink
-              Icon={ParentDaoArrow}
+              Icon={(props) => (
+                <ShortcutOutlined
+                  // Flip upside down.
+                  className={clsx('-scale-y-100', props.className)}
+                />
+              )}
               className="text-icon-interactive-disabled"
               href={`/dao/${parentDao.coreAddress}`}
-              // Don't click on DAO card.
-              onClick={(event) => event.preventDefault()}
+              onClick={
+                // Don't click on DAO card.
+                (event) => event.preventDefault()
+              }
+              size="sm"
               variant="ghost"
             />
           </Tooltip>
@@ -81,7 +89,7 @@ export const DaoCard = ({
 
           {!hidePin && (
             <IconButton
-              Icon={DaoCardPin}
+              Icon={PushPin}
               className={clsx({
                 'text-icon-secondary': !pinned,
                 'text-icon-interactive-active': pinned,
@@ -91,6 +99,7 @@ export const DaoCard = ({
                 event.preventDefault()
                 onPin()
               }}
+              size="sm"
               variant="ghost"
             />
           )}
@@ -121,7 +130,7 @@ export const DaoCard = ({
             lazyData.loading && 'animate-pulse'
           )}
         >
-          <Governance className="h-4 w-3" />
+          <AccountBalanceOutlined className="!h-4 !w-4" />
 
           <TokenAmountDisplay
             amount={
@@ -141,7 +150,7 @@ export const DaoCard = ({
             lazyData.loading && 'animate-pulse'
           )}
         >
-          <DaoCardProposals className="h-4 w-3" />
+          <DescriptionOutlined className="!h-4 !w-4" />
           <p>
             {lazyData.loading
               ? '...'

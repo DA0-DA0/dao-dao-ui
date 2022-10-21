@@ -1,6 +1,6 @@
+import { ArrowUpward } from '@mui/icons-material'
 import clsx from 'clsx'
 
-import { ArrowUpward } from '@dao-dao/icons'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 export interface PricePercentChangeProps {
@@ -26,7 +26,7 @@ export const PricePercentChange = ({
       )}
     >
       <ArrowUpward
-        className={clsx('h-4 w-3', {
+        className={clsx('!h-4 !w-4 transition', {
           'rotate-180': negative,
         })}
       />

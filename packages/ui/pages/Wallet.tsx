@@ -1,4 +1,4 @@
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { Key, Visibility, VisibilityOff } from '@mui/icons-material'
 import { ReactNode, useCallback, useState } from 'react'
 import {
   FormProvider,
@@ -10,7 +10,6 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { Airplane } from '@dao-dao/icons'
 import {
   Action,
   ActionKey,
@@ -256,7 +255,7 @@ export const Wallet = ({
                     value={SubmitValue.Submit}
                   >
                     {t('button.execute') + ' '}
-                    <Airplane className="h-4 w-4" />
+                    <Key className="!h-5 !w-5" />
                   </Button>
                 </Tooltip>
               </div>

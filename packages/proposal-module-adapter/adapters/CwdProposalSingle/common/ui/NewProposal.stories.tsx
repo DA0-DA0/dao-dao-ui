@@ -3,7 +3,10 @@ import { useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { useActions } from '@dao-dao/actions'
-import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
+import {
+  DaoPageWrapperDecorator,
+  WalletProviderDecorator,
+} from '@dao-dao/storybook/decorators'
 import {
   Action,
   ActionKey,
@@ -23,7 +26,7 @@ export default {
   title:
     'DAO DAO / packages / proposal-module-adapter / adapters / CwdProposalSingle / common / ui / NewProposal',
   component: NewProposal,
-  decorators: [DaoPageWrapperDecorator],
+  decorators: [DaoPageWrapperDecorator, WalletProviderDecorator],
 } as ComponentMeta<typeof NewProposal>
 
 const Template: ComponentStory<typeof NewProposal> = (args) => {
@@ -118,6 +121,7 @@ Default.args = {
   isMember: true,
   depositUnsatisfied: false,
   connected: true,
+  drafts: [],
 }
 Default.parameters = {
   design: {

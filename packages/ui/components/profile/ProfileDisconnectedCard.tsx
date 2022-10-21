@@ -1,7 +1,10 @@
+import {
+  LayersOutlined,
+  PaymentsOutlined,
+  SensorsOff,
+} from '@mui/icons-material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { Disconnected, Layers, Payments } from '@dao-dao/icons'
 
 import { ProfileImage } from './ProfileImage'
 
@@ -24,7 +27,7 @@ export const ProfileDisconnectedCard = () => {
               className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border-primary bg-component-widget"
               onClick={() => setCyclopsMode(true)}
             >
-              <Disconnected className="h-5 w-5 text-icon-interactive-disabled" />
+              <SensorsOff className="!h-5 !w-5 text-icon-interactive-disabled" />
             </div>
           )}
           <div className="title-text mt-6 text-text-body">
@@ -36,7 +39,7 @@ export const ProfileDisconnectedCard = () => {
           </div>
           <div className="mt-3 grid grid-cols-[1fr_1px_1fr] items-center justify-items-center gap-2 self-stretch">
             <div className="flex flex-col items-stretch text-center">
-              <Payments className="mb-4 h-4 w-5 self-center text-center text-icon-secondary" />
+              <PaymentsOutlined className="mb-4 !h-5 !w-5 self-center text-center text-icon-secondary" />
               <p className="secondary-text mb-1">{t('title.holdings')}</p>
               <p className="title-text font-mono">--</p>
             </div>
@@ -44,7 +47,7 @@ export const ProfileDisconnectedCard = () => {
             <div className="h-10 w-[1px] bg-border-secondary"></div>
 
             <div className="flex flex-col items-center text-center">
-              <Layers className="mb-4 h-4 w-5 self-center text-icon-secondary" />
+              <LayersOutlined className="mb-4 !h-5 w-5 self-center text-icon-secondary" />
               <p className="secondary-text mb-1">{t('title.staked')}</p>
               <p className="title-text font-mono">--</p>
             </div>

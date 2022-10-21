@@ -66,7 +66,7 @@ const DaoThinInfoContent: FC = () => {
   return (
     <HorizontalInfo>
       <HorizontalInfoSection>
-        <UsersIcon className="inline w-4" />
+        <UsersIcon className="w-4 h-4" />
         {votingModuleType === VotingModuleType.Cw4Voting && cw4VotingMembers ? (
           `${cw4VotingMembers.length} member${
             cw4VotingMembers.length !== 1 ? 's' : ''
@@ -90,7 +90,7 @@ const DaoThinInfoContent: FC = () => {
         governanceTokenInfo &&
         stakedPercent !== undefined && (
           <HorizontalInfoSection>
-            <LibraryIcon className="inline w-4" />
+            <LibraryIcon className="w-4 h-4" />
             {t('info.percentStaked', {
               percent: stakedPercent,
               tokenSymbol: governanceTokenInfo.symbol,
@@ -98,7 +98,7 @@ const DaoThinInfoContent: FC = () => {
           </HorizontalInfoSection>
         )}
       <HorizontalInfoSection>
-        <Pencil className="inline" />
+        <Pencil />
         {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
@@ -153,11 +153,11 @@ const DaoThinInfoContent = () => {
   return (
     <HorizontalInfo>
       <HorizontalInfoSection>
-        <UsersIcon className="inline w-4" />
+        <UsersIcon className="w-4 h-4" />
         {t('info.numMembers', { count: cw4VotingMembers.length })}
       </HorizontalInfoSection>
       <HorizontalInfoSection>
-        <Pencil className="inline" />
+        <Pencil />
         {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>
@@ -193,7 +193,7 @@ const DaoThinInfoContent = () => {
   return (
     <HorizontalInfo>
       <HorizontalInfoSection>
-        <UsersIcon className="inline w-4" />
+        <UsersIcon className="w-4 h-4" />
         {t('info.amountTotalSupply', {
           amount: convertMicroDenomToDenomWithDecimals(
             governanceTokenInfo.total_supply,
@@ -206,7 +206,7 @@ const DaoThinInfoContent = () => {
       </HorizontalInfoSection>
       {totalGovernanceTokenSupply > 0 && (
         <HorizontalInfoSection>
-          <LibraryIcon className="inline w-4" />
+          <LibraryIcon className="w-4 h-4" />
           {t('info.percentStaked', {
             percent: formatPercentOf100(
               (totalVotingWeight / totalGovernanceTokenSupply) * 100
@@ -216,7 +216,7 @@ const DaoThinInfoContent = () => {
         </HorizontalInfoSection>
       )}
       <HorizontalInfoSection>
-        <Pencil className="inline" />
+        <Pencil />
         {t('info.proposalsCreated', { count: proposalCount })}
       </HorizontalInfoSection>
     </HorizontalInfo>

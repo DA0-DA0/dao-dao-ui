@@ -1,12 +1,11 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react'
-
 import {
-  AccountBalance,
-  CurrencyExchange,
-  Layers,
+  AccountBalanceOutlined,
+  CurrencyExchangeOutlined,
+  LayersOutlined,
   Link,
-  Payments,
-} from '@dao-dao/icons'
+  PaymentsOutlined,
+} from '@mui/icons-material'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { DaoInfoBar } from './DaoInfoBar'
@@ -39,22 +38,22 @@ Default.args = {
       ),
     },
     {
-      Icon: AccountBalance,
+      Icon: AccountBalanceOutlined,
       label: 'DAO Treasury',
       value: '35.12 $USDC',
     },
     {
-      Icon: Payments,
+      Icon: PaymentsOutlined,
       label: 'Total supply',
       value: '497 $DOG',
     },
     {
-      Icon: Layers,
+      Icon: LayersOutlined,
       label: 'Total staked',
       value: '8.249%',
     },
     {
-      Icon: CurrencyExchange,
+      Icon: CurrencyExchangeOutlined,
       label: 'Staking APR',
       value: '103.23%',
     },

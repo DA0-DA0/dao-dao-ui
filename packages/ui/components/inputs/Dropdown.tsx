@@ -1,8 +1,7 @@
+import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { ArrowDropdown } from '@dao-dao/icons'
 
 import { Button } from '../buttons'
 
@@ -117,7 +116,7 @@ export const Dropdown = <T extends unknown>({
               : t('info.numSelected', { count: selectedOptions.length })}
           </p>
 
-          <ArrowDropdown className={clsx('h-2 w-2', iconClassName)} />
+          <ArrowDropDown className={clsx('!h-5 !w-5', iconClassName)} />
         </Button>
       </div>
 

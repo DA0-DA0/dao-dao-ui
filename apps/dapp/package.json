@@ -23,7 +23,6 @@
     "@dao-dao/command": "*",
     "@dao-dao/common": "*",
     "@dao-dao/i18n": "*",
-    "@dao-dao/icons": "*",
     "@dao-dao/proposal-module-adapter": "*",
     "@dao-dao/tstypes": "*",
     "@dao-dao/ui": "*",

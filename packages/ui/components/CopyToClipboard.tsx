@@ -1,10 +1,8 @@
-import { Check } from '@mui/icons-material'
+import { Check, CopyAll } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-
-import { Copy } from '@dao-dao/icons'
 
 import { Tooltip } from './Tooltip'
 
@@ -53,7 +51,7 @@ export const CopyToClipboard = ({
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
 
-  const Icon = copied ? Check : Copy
+  const Icon = copied ? Check : CopyAll
 
   return (
     <Tooltip title={tooltip}>
@@ -76,7 +74,7 @@ export const CopyToClipboard = ({
 
         <span
           className={clsx(
-            'inline flex-1 truncate rounded-md p-1 transition hover:bg-background-button-secondary-default',
+            'flex-1 truncate rounded-md p-1 transition hover:bg-background-button-secondary-default',
             textClassName
           )}
         >

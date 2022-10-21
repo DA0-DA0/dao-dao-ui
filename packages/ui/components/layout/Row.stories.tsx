@@ -1,6 +1,5 @@
+import { InboxOutlined } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-
-import { Inbox } from '@dao-dao/icons'
 
 import { Row } from './Row'
 
@@ -17,7 +16,7 @@ const Template: ComponentStory<typeof Row> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  Icon: Inbox,
+  Icon: InboxOutlined,
   label: 'Inbox',
   onClick: undefined,
   children: (

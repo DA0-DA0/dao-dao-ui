@@ -1,6 +1,6 @@
 import { coins } from '@cosmjs/stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { BookOutlined, FlagOutlined } from '@mui/icons-material'
+import { BookOutlined, FlagOutlined, Timelapse } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useMemo, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
@@ -14,7 +14,6 @@ import {
 } from 'recoil'
 
 import { useActions } from '@dao-dao/actions'
-import { Open } from '@dao-dao/icons'
 import {
   Cw20BaseHooks,
   Cw20BaseSelectors,
@@ -376,7 +375,7 @@ export const NewProposal = ({
                     ...(expirationDate
                       ? [
                           {
-                            Icon: Open,
+                            Icon: Timelapse,
                             label: dateToWdhms(expirationDate),
                           },
                         ]

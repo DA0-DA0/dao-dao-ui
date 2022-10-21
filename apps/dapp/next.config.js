@@ -9,7 +9,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const withInterceptStdout = require('next-intercept-stdout')
 const withTM = require('next-transpile-modules')([
   '@dao-dao/ui',
-  '@dao-dao/icons',
   '@dao-dao/utils',
   '@dao-dao/state',
   '@dao-dao/actions',

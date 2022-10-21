@@ -1,10 +1,9 @@
-import { ImageNotSupported } from '@mui/icons-material'
+import { ArrowOutward, ImageNotSupported } from '@mui/icons-material'
 import clsx from 'clsx'
 import Image from 'next/image'
 import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ArrowOutward } from '@dao-dao/icons'
 import { NftCardInfo } from '@dao-dao/tstypes'
 import { normalizeNftImageUrl } from '@dao-dao/utils'
 
@@ -86,7 +85,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             >
               <TooltipLikeDisplay
                 className="absolute bottom-4 left-4 opacity-0 shadow-dp4 transition-opacity hover:!opacity-90 group-hover:opacity-100"
-                icon={<ArrowOutward color="currentColor" />}
+                icon={<ArrowOutward className="!h-5 !w-5" />}
                 label={t('button.openInDestination', {
                   destination: externalLink.name,
                 })}

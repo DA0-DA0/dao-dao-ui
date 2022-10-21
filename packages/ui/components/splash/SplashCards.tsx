@@ -5,8 +5,13 @@ import { EmojiEmotions, PanTool } from '@mui/icons-material'
 import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
 
-import { Discord, Github, Twitter } from '@dao-dao/icons'
-import { IconButtonLink, SplashVoteCard } from '@dao-dao/ui'
+import {
+  DiscordIcon,
+  GithubIcon,
+  IconButtonLink,
+  SplashVoteCard,
+  TwitterIcon,
+} from '@dao-dao/ui'
 
 export const SplashCards = () => {
   const { t } = useTranslation()
@@ -65,19 +70,19 @@ export const SplashCards = () => {
       >
         <div className="relative z-10 flex items-center gap-1">
           <IconButtonLink
-            Icon={Github}
+            Icon={GithubIcon}
             href="https://github.com/DA0-DA0"
             size="lg"
             variant="secondary"
           />
           <IconButtonLink
-            Icon={Twitter}
+            Icon={TwitterIcon}
             href="https://twitter.com/da0_da0"
             size="lg"
             variant="secondary"
           />
           <IconButtonLink
-            Icon={Discord}
+            Icon={DiscordIcon}
             href="https://discord.gg/sAaGuyW3D2"
             size="lg"
             variant="secondary"

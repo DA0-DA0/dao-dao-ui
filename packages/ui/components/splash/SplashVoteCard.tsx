@@ -1,11 +1,10 @@
-import { Check, Close, Texture } from '@mui/icons-material'
+import { Check, Close, HowToVote, Texture } from '@mui/icons-material'
 import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { Airplane } from '@dao-dao/icons'
 import { Vote as VoteChoice } from '@dao-dao/tstypes/contracts/CwdProposalSingle.common'
 import { Button } from '@dao-dao/ui'
 import { formatPercentOf100 } from '@dao-dao/utils'
@@ -92,7 +91,7 @@ export const SplashVoteCard = () => {
         }}
       >
         <div className="flex w-full items-center justify-center gap-2">
-          <p>{t('button.castYourVote')}</p> <Airplane />
+          <p>{t('button.castYourVote')}</p> <HowToVote className="!h-4 !w-4" />
         </div>
       </Button>
     </div>

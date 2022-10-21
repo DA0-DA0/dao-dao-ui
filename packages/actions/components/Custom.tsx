@@ -61,7 +61,7 @@ export const CustomComponent: ActionComponent = ({
               <Trans Loader={Loader} i18nKey="error.invalidCosmosMessage">
                 Invalid{' '}
                 <a
-                  className="link inline underline"
+                  className="link underline"
                   href="https://github.com/CosmWasm/cosmwasm/blob/d4505011e35a8877fb95e7d14357f2b8693c57bb/packages/std/schema/cosmos_msg.json"
                   rel="noreferrer"
                   target="_blank"

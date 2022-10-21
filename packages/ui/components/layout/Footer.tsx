@@ -1,8 +1,8 @@
-import { ArrowOutward } from '@mui/icons-material'
+import { ArrowOutward, Code, Twitter } from '@mui/icons-material'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Bubble, Code } from '@dao-dao/icons'
+import { DiscordIcon } from '@dao-dao/ui'
 
 import { ButtonLink } from '../buttons'
 
@@ -15,17 +15,17 @@ export const Footer = () => {
       <div className="flex flex-col gap-1">
         <FooterItem
           href="https://docs.daodao.zone"
-          icon={<Code className="h-4 w-4" />}
+          icon={<Code className="!h-4 !w-4" />}
           name={t('title.documentation')}
         />
         <FooterItem
           href="https://twitter.com/DA0_DA0"
-          icon={<Bubble className="h-4 w-4" />}
+          icon={<Twitter className="!h-4 !w-4" />}
           name={t('title.twitter')}
         />
         <FooterItem
           href="https://discord.gg/sAaGuyW3D2"
-          icon={<Bubble className="h-4 w-4" />}
+          icon={<DiscordIcon className="!h-4 !w-4" />}
           name={t('title.discord')}
         />
       </div>

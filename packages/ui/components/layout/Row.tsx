@@ -1,9 +1,8 @@
+import { UnfoldLess, UnfoldMore } from '@mui/icons-material'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
-
-import { UnfoldLess, UnfoldMore } from '@dao-dao/icons'
 
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../Loader'

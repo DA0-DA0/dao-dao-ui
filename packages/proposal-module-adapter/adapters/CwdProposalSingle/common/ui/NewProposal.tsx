@@ -1,4 +1,9 @@
-import { Close, Visibility, VisibilityOff } from '@mui/icons-material'
+import {
+  Close,
+  GavelRounded,
+  Visibility,
+  VisibilityOff,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { useCallback, useState } from 'react'
 import {
@@ -10,7 +15,6 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { Airplane } from '@dao-dao/icons'
 import { useWalletProfile } from '@dao-dao/state'
 import {
   Action,
@@ -288,7 +292,7 @@ export const NewProposal = ({
                 value={ProposeSubmitValue.Submit}
               >
                 <p>{t('button.publish')}</p>
-                <Airplane className="h-4 w-4" />
+                <GavelRounded className="!h-4 !w-4" />
               </Button>
             </Tooltip>
           </div>

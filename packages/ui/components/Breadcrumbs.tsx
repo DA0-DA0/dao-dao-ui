@@ -1,9 +1,8 @@
-import { ArrowDropDown, Close } from '@mui/icons-material'
+import { ArrowDropDown, ArrowForwardIos, Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useState } from 'react'
 
-import { ArrowForward } from '@dao-dao/icons'
 import { BreadcrumbsProps } from '@dao-dao/tstypes/ui/Breadcrumbs'
 
 import { Button } from './buttons/Button'
@@ -33,7 +32,7 @@ export const Breadcrumbs = ({
               <a className="transition-opacity hover:opacity-80">{label}</a>
             </Link>
 
-            <ArrowForward className="h-5 w-5 text-icon-tertiary" />
+            <ArrowForwardIos className="!h-5 !w-5 text-icon-tertiary" />
           </div>
         ))}
 

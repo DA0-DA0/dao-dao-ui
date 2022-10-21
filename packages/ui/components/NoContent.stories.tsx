@@ -1,6 +1,5 @@
+import { HowToVoteRounded } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-
-import { NoProposals } from '@dao-dao/icons'
 
 import { NoContent } from './NoContent'
 
@@ -15,7 +14,7 @@ const Template: ComponentStory<typeof NoContent> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  Icon: NoProposals,
+  Icon: HowToVoteRounded,
   actionNudge: 'Create the first one?',
   body: 'No proposals to vote on yet.',
   buttonLabel: 'New proposal',

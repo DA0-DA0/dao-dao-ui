@@ -12,7 +12,6 @@
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
     "test": "turbo run test",
     "dapp": "yarn workspace @dao-dao/dapp",
-    "icons": "yarn workspace @dao-dao/icons",
     "state": "yarn workspace @dao-dao/state",
     "ui": "yarn workspace @dao-dao/ui",
     "utils": "yarn workspace @dao-dao/utils",

@@ -1,8 +1,7 @@
+import { HowToVoteRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { NoProposals } from '@dao-dao/icons'
 
 import { Button } from '../buttons'
 import { DropdownIconButton } from '../icon_buttons'
@@ -87,7 +86,7 @@ export const ProposalList = <T extends {}>({
     </div>
   ) : (
     <NoContent
-      Icon={NoProposals}
+      Icon={HowToVoteRounded}
       actionNudge={t('info.createFirstOneQuestion')}
       body={t('info.noProposalsYet')}
       buttonLabel={t('button.newProposal')}

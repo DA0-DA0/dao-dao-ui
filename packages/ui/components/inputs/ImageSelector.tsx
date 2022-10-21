@@ -1,4 +1,4 @@
-import { Add } from '@mui/icons-material'
+import { Add, Check } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useState } from 'react'
 import {
@@ -12,8 +12,6 @@ import {
   Validate,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-
-import { Airplane } from '@dao-dao/icons'
 
 import { Button } from '../buttons/Button'
 import { Modal } from '../modals/Modal'
@@ -94,7 +92,7 @@ export const ImageSelectorModal = <
       </div>
       <div className="w-full text-right">
         <Button onClick={onClose} size="sm" type="button">
-          {t('button.done')} <Airplane />
+          {t('button.done')} <Check className="!h-4 !w-4" />
         </Button>
       </div>
     </Modal>

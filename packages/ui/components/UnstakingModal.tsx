@@ -1,8 +1,8 @@
+import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ArrowDropdown } from '@dao-dao/icons'
 import { UnstakingTask } from '@dao-dao/tstypes'
 
 import { Button } from './buttons/Button'
@@ -132,9 +132,9 @@ export const UnstakingModal = ({
           </>
         )}
 
-        <div className="link-text ml-2 flex flex-row items-center gap-3 text-text-secondary">
-          <ArrowDropdown
-            className={clsx('h-2 w-2', {
+        <div className="link-text ml-2 flex flex-row items-center gap-2 text-text-secondary">
+          <ArrowDropDown
+            className={clsx('!h-5 !w-5', {
               '-rotate-90': unstaking.length === 0,
             })}
           />
@@ -152,9 +152,9 @@ export const UnstakingModal = ({
 
         {claimed.length > 0 && (
           <>
-            <div className="link-text mt-6 ml-2 mb-5 flex flex-row items-center gap-3 text-text-secondary">
-              <ArrowDropdown
-                className={clsx('h-2 w-2', {
+            <div className="link-text mt-6 ml-2 mb-5 flex flex-row items-center gap-2 text-text-secondary">
+              <ArrowDropDown
+                className={clsx('!h-5 !w-5', {
                   '-rotate-90': claimed.length === 0,
                 })}
               />

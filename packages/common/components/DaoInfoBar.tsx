@@ -1,6 +1,6 @@
+import { AccountBalanceOutlined, Link } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { AccountBalance, Link } from '@dao-dao/icons'
 import { daoTvlSelector, useCachedLoadable } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
@@ -61,7 +61,7 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
           ),
         },
         {
-          Icon: AccountBalance,
+          Icon: AccountBalanceOutlined,
           label: t('title.daoTreasury'),
           value: <TokenAmountDisplay amount={treasuryUsdcValueLoading} usdc />,
         },

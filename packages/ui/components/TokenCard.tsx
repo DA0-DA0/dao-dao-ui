@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { EdamameCrown } from '@dao-dao/icons'
 import { TokenCardInfo } from '@dao-dao/tstypes'
 import { secondsToWdhms } from '@dao-dao/utils'
 
@@ -11,6 +10,7 @@ import { Button } from './buttons/Button'
 import { CopyToClipboard, concatAddressStartEnd } from './CopyToClipboard'
 import { SpendEmoji, StakeEmoji } from './emoji'
 import { IconButton } from './icon_buttons/IconButton'
+import { CrownIcon } from './icons/CrownIcon'
 import { ButtonPopup, ButtonPopupSection } from './popup'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 import { Tooltip } from './Tooltip'
@@ -136,7 +136,7 @@ export const TokenCard = ({
 
               {/* Crown */}
               {!!crown && (
-                <EdamameCrown className="absolute -top-4 -left-6 !h-8 !w-8 stroke-2 text-text-secondary" />
+                <CrownIcon className="absolute -top-4 -left-6 !h-8 !w-8 stroke-2 text-text-secondary" />
               )}
             </div>
 

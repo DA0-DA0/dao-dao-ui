@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { Trans } from '@dao-dao/common'
-import { Discord } from '@dao-dao/icons'
+import { DiscordIcon } from '@dao-dao/ui'
 
 export const Placeholder = () => {
   const { t } = useTranslation()
@@ -20,7 +20,7 @@ export const Placeholder = () => {
             target="_blank"
           >
             DAO DAO Discord
-            <Discord className="inline" />
+            <DiscordIcon />
           </a>{' '}
           and post in #dao-help.
         </Trans>
