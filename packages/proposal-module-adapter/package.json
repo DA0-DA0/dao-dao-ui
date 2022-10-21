@@ -6,9 +6,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@dao-dao/actions": "2.0.1",
+    "@dao-dao/common": "2.0.1",
     "@dao-dao/state": "2.0.1",
     "@dao-dao/ui": "2.0.1",
     "@dao-dao/utils": "2.0.1",
+    "@dao-dao/voting-module-adapter": "2.0.1",
     "@mui/icons-material": "^5.10.3",
     "a11y-react-emoji": "^1.2.0",
     "buffer": "^6.0.3",
@@ -18,15 +21,13 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
+    "@dao-dao/config": "2.0.1",
     "@dao-dao/types": "2.0.1",
+    "@noahsaso/cosmodal": "^0.7.1",
     "clsx": "^1.1.1",
     "react": "18.1.0",
     "react-i18next": "^11.0.0",
     "typescript": "^4.8.3"
-  },
-  "peerDependencies": {
-    "@dao-dao/storybook": "2.0.1",
-    "@noahsaso/cosmodal": "^0.7.1"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true
