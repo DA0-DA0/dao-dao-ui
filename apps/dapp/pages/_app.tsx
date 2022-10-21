@@ -54,26 +54,26 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
-      {router.isFallback ? (
-        <LayoutLoading>
-          <Component {...pageProps} />
-        </LayoutLoading>
-      ) : isHomepage ? (
-        <HomepageLayout>
-          <Component {...pageProps} />
-        </HomepageLayout>
-      ) : (
-        <WalletProvider>
-          <SubQueryProvider>
+      <SubQueryProvider>
+        {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
+        {router.isFallback ? (
+          <LayoutLoading>
+            <Component {...pageProps} />
+          </LayoutLoading>
+        ) : isHomepage ? (
+          <HomepageLayout>
+            <Component {...pageProps} />
+          </HomepageLayout>
+        ) : (
+          <WalletProvider>
             <AppLayout>
               <Component {...pageProps} />
             </AppLayout>
-          </SubQueryProvider>
-        </WalletProvider>
-      )}
+          </WalletProvider>
+        )}
 
-      <ToastNotifications />
+        <ToastNotifications />
+      </SubQueryProvider>
     </ThemeProvider>
   )
 }
