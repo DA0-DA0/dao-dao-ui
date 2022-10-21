@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/storybook",
-  "version": "0.0.0",
+  "version": "2.0.1",
   "scripts": {
     "build": "build-storybook",
     "start": "start-storybook --ci -p 6006",
@@ -11,8 +11,8 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
-    "@dao-dao/config": "*",
-    "@dao-dao/tsconfig": "*",
+    "@dao-dao/config": "2.0.1",
+    "@dao-dao/tsconfig": "2.0.1",
     "@storybook/addon-actions": "^6.5.12",
     "@storybook/addon-essentials": "^6.5.12",
     "@storybook/addon-interactions": "^6.5.12",

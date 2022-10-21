@@ -1,14 +1,14 @@
 {
   "name": "@dao-dao/voting-module-adapter",
-  "version": "0.1.0",
+  "version": "2.0.1",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
   "dependencies": {
-    "@dao-dao/state": "*",
-    "@dao-dao/ui": "*",
-    "@dao-dao/utils": "*",
+    "@dao-dao/state": "2.0.1",
+    "@dao-dao/ui": "2.0.1",
+    "@dao-dao/utils": "2.0.1",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
@@ -28,7 +28,7 @@
     "typescript": "^4.8.3"
   },
   "peerDependencies": {
-    "@dao-dao/storybook": "*",
+    "@dao-dao/storybook": "2.0.1",
     "@noahsaso/cosmodal": "^0.6.6"
   },
   "prettier": "@dao-dao/config/prettier",

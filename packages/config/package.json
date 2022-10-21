@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/config",
-  "version": "0.0.0",
+  "version": "2.0.1",
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",

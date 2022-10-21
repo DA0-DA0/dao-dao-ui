@@ -1,16 +1,16 @@
 {
   "name": "@dao-dao/actions",
-  "version": "0.1.0",
+  "version": "2.0.1",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
   "dependencies": {
-    "@dao-dao/proposal-module-adapter": "*",
-    "@dao-dao/state": "*",
-    "@dao-dao/ui": "*",
-    "@dao-dao/utils": "*",
-    "@dao-dao/voting-module-adapter": "*",
+    "@dao-dao/proposal-module-adapter": "2.0.1",
+    "@dao-dao/state": "2.0.1",
+    "@dao-dao/ui": "2.0.1",
+    "@dao-dao/utils": "2.0.1",
+    "@dao-dao/voting-module-adapter": "2.0.1",
     "@mui/icons-material": "^5.10.3",
     "a11y-react-emoji": "^1.2.0",
     "clsx": "^1.1.1",
@@ -20,8 +20,8 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
-    "@dao-dao/config": "*",
-    "@dao-dao/tsconfig": "*",
+    "@dao-dao/config": "2.0.1",
+    "@dao-dao/tsconfig": "2.0.1",
     "eslint": "^8.23.1",
     "typescript": "^4.8.3"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/common",
-  "version": "0.1.0",
+  "version": "2.0.1",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint ."
@@ -8,12 +8,12 @@
   "dependencies": {
     "@cosmjs/encoding": "0.28.10",
     "@cosmjs/stargate": "0.28.10",
-    "@dao-dao/actions": "*",
-    "@dao-dao/proposal-module-adapter": "*",
-    "@dao-dao/state": "*",
-    "@dao-dao/ui": "*",
-    "@dao-dao/utils": "*",
-    "@dao-dao/voting-module-adapter": "*",
+    "@dao-dao/actions": "2.0.1",
+    "@dao-dao/proposal-module-adapter": "2.0.1",
+    "@dao-dao/state": "2.0.1",
+    "@dao-dao/ui": "2.0.1",
+    "@dao-dao/utils": "2.0.1",
+    "@dao-dao/voting-module-adapter": "2.0.1",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
@@ -31,8 +31,8 @@
     "remove-markdown": "^0.5.0"
   },
   "devDependencies": {
-    "@dao-dao/config": "*",
-    "@dao-dao/tsconfig": "*",
+    "@dao-dao/config": "2.0.1",
+    "@dao-dao/tsconfig": "2.0.1",
     "@types/lodash.clonedeep": "^4.5.0",
     "@types/remove-markdown": "^0.3.1",
     "typescript": "^4.8.3"

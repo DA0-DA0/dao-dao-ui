@@ -1,14 +1,14 @@
 {
   "name": "@dao-dao/proposal-module-adapter",
-  "version": "0.1.0",
+  "version": "2.0.1",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
   "dependencies": {
-    "@dao-dao/state": "*",
-    "@dao-dao/ui": "*",
-    "@dao-dao/utils": "*",
+    "@dao-dao/state": "2.0.1",
+    "@dao-dao/ui": "2.0.1",
+    "@dao-dao/utils": "2.0.1",
     "@mui/icons-material": "^5.10.3",
     "a11y-react-emoji": "^1.2.0",
     "buffer": "^6.0.3",
@@ -18,14 +18,14 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
-    "@dao-dao/types": "*",
+    "@dao-dao/types": "2.0.1",
     "clsx": "^1.1.1",
     "react": "18.1.0",
     "react-i18next": "^11.0.0",
     "typescript": "^4.8.3"
   },
   "peerDependencies": {
-    "@dao-dao/storybook": "*",
+    "@dao-dao/storybook": "2.0.1",
     "@noahsaso/cosmodal": "^0.6.6"
   },
   "prettier": "@dao-dao/config/prettier",
