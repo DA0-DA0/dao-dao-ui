@@ -11,22 +11,25 @@ import {
 export const VotingModuleAdapterContext =
   createContext<IVotingModuleAdapterContext | null>(null)
 
-export const useVotingModuleAdapter = (): IVotingModuleAdapter & {
-  id: string
-} => {
-  const context = useContext(VotingModuleAdapterContext)
+export const useVotingModuleAdapterContext =
+  (): IVotingModuleAdapterContext => {
+    const context = useContext(VotingModuleAdapterContext)
 
-  if (!context) {
-    throw new Error(
-      'useVotingModuleAdapter can only be used in a descendant of VotingModuleAdapterProvider.'
-    )
+    if (!context) {
+      throw new Error(
+        'useVotingModuleAdapter can only be used in a descendant of VotingModuleAdapterProvider.'
+      )
+    }
+
+    return context
   }
 
-  return {
-    id: context.id,
-    ...context.adapter,
-  }
-}
+export const useVotingModuleAdapterContextIfAvailable = ():
+  | IVotingModuleAdapterContext
+  | undefined => useContext(VotingModuleAdapterContext) ?? undefined
+
+export const useVotingModuleAdapter = (): IVotingModuleAdapter =>
+  useVotingModuleAdapterContext().adapter
 
 // For internal use to pass around options.
 export const useVotingModuleAdapterOptions =

@@ -11,7 +11,10 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/ui'
 import { loadableToLoadingData } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
+import {
+  useCw20GovernanceTokenInfoResponseIfExists,
+  useVotingModuleAdapter,
+} from '@dao-dao/voting-module-adapter'
 import { useVotingModuleAdapterOptions } from '@dao-dao/voting-module-adapter/react/context'
 
 import { SuspenseLoader } from './SuspenseLoader'
@@ -34,10 +37,19 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
     hooks: { useDaoInfoBarItems },
   } = useVotingModuleAdapter()
   const votingModuleItems = useDaoInfoBarItems()
-  const { coreAddress } = useDaoInfoContext()
+  const { chainId, coreAddress } = useDaoInfoContext()
+
+  const { governanceTokenAddress: cw20GovernanceTokenAddress } =
+    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
 
   const treasuryUsdcValueLoading = loadableToLoadingData(
-    useCachedLoadable(daoTvlSelector({ coreAddress })),
+    useCachedLoadable(
+      daoTvlSelector({
+        coreAddress,
+        chainId,
+        cw20GovernanceTokenAddress,
+      })
+    ),
     -1
   )
 

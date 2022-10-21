@@ -12,7 +12,6 @@
     "@cosmjs/encoding": "0.28.10",
     "@cosmjs/proto-signing": "0.28.10",
     "@dao-dao/utils": "2.0.1",
-    "@dao-dao/voting-module-adapter": "2.0.1",
     "@habx/apollo-multi-endpoint-link": "^2.7.0",
     "@walletconnect/browser-utils": "^1.7.8",
     "@walletconnect/client": "^1.7.8",

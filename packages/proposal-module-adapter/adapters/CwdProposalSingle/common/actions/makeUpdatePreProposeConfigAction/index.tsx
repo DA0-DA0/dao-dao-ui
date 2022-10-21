@@ -27,10 +27,7 @@ import {
   isValidContractAddress,
   makeWasmMessage,
 } from '@dao-dao/utils'
-import {
-  CwdVotingCw20StakedAdapter,
-  useVotingModuleAdapter,
-} from '@dao-dao/voting-module-adapter'
+import { useCw20GovernanceTokenInfoResponseIfExists } from '@dao-dao/voting-module-adapter/react/hooks'
 
 import { configSelector } from '../../../contracts/CwdPreProposeSingle.recoil'
 import {
@@ -41,13 +38,8 @@ import {
 export const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const { bech32Prefix } = useDaoInfoContext()
-  const {
-    id,
-    hooks: { useGovernanceTokenInfo },
-  } = useVotingModuleAdapter()
-  const { governanceTokenInfo } = useGovernanceTokenInfo?.() ?? {}
   const cw20GovernanceTokenInfo =
-    id === CwdVotingCw20StakedAdapter.id ? governanceTokenInfo : undefined
+    useCw20GovernanceTokenInfoResponseIfExists()?.governanceTokenInfo
 
   const { fieldNamePrefix, Loader } = props
 
@@ -124,15 +116,9 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
     }
 
     const {
-      id,
-      hooks: { useGovernanceTokenInfo },
-    } = useVotingModuleAdapter()
-    const { governanceTokenAddress, governanceTokenInfo } =
-      useGovernanceTokenInfo?.() ?? {}
-    const cw20GovernanceTokenAddress =
-      id === CwdVotingCw20StakedAdapter.id ? governanceTokenAddress : undefined
-    const cw20GovernanceTokenInfo =
-      id === CwdVotingCw20StakedAdapter.id ? governanceTokenInfo : undefined
+      governanceTokenAddress: cw20GovernanceTokenAddress,
+      governanceTokenInfo: cw20GovernanceTokenInfo,
+    } = useCw20GovernanceTokenInfoResponseIfExists() ?? {}
 
     const configDepositInfo = useRecoilValue(
       configSelector({
@@ -201,13 +187,8 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
       throw new Error(t('error.loadingData'))
     }
 
-    const {
-      id,
-      hooks: { useGovernanceTokenInfo },
-    } = useVotingModuleAdapter()
-    const { governanceTokenInfo } = useGovernanceTokenInfo?.() ?? {}
-    const cw20GovernanceTokenInfo =
-      id === CwdVotingCw20StakedAdapter.id ? governanceTokenInfo : undefined
+    const { governanceTokenInfo: cw20GovernanceTokenInfo } =
+      useCw20GovernanceTokenInfoResponseIfExists() ?? {}
 
     const { open_proposal_submission } = useRecoilValue(
       configSelector({
@@ -274,15 +255,9 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
     msg: Record<string, any>
   ) => {
     const {
-      id,
-      hooks: { useGovernanceTokenInfo },
-    } = useVotingModuleAdapter()
-    const { governanceTokenAddress, governanceTokenInfo } =
-      useGovernanceTokenInfo?.() ?? {}
-    const cw20GovernanceTokenAddress =
-      id === CwdVotingCw20StakedAdapter.id ? governanceTokenAddress : undefined
-    const cw20GovernanceTokenInfo =
-      id === CwdVotingCw20StakedAdapter.id ? governanceTokenInfo : undefined
+      governanceTokenAddress: cw20GovernanceTokenAddress,
+      governanceTokenInfo: cw20GovernanceTokenInfo,
+    } = useCw20GovernanceTokenInfoResponseIfExists() ?? {}
 
     const configDepositInfo = msg.wasm?.execute?.msg?.update_config
       ?.deposit_info as UncheckedDepositInfo | null | undefined

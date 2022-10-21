@@ -3,6 +3,7 @@ import { selectorFamily, waitForAll } from 'recoil'
 import { proposalModuleAdapterProposalCountSelector } from '@dao-dao/proposal-module-adapter'
 import {
   CwdCoreV2Selectors,
+  CwdVotingCw20StakedSelectors,
   contractVersionSelector,
   cosmWasmClientForChainSelector,
   daoTvlSelector,
@@ -12,6 +13,8 @@ import {
   ProposalModule,
   WithChainId,
 } from '@dao-dao/types'
+import { matchAdapter as matchVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked'
 
 import { fetchProposalModules } from '../utils/fetchProposalModules'
 
@@ -37,13 +40,29 @@ export const cwCoreProposalModulesSelector = selectorFamily<
 
 export const daoCardInfoLazyDataSelector = selectorFamily<
   DaoCardInfoLazyData,
-  WithChainId<{ coreAddress: string; walletAddress?: string }>
+  WithChainId<{
+    coreAddress: string
+    walletAddress?: string
+  }>
 >({
   key: 'daoCardInfoLazyData',
   get:
     ({ coreAddress, chainId, walletAddress }) =>
     ({ get }) => {
-      const tvl = get(daoTvlSelector({ coreAddress, chainId }))
+      const cw20GovernanceTokenAddress = get(
+        daoCw20GovernanceTokenAddressSelector({
+          coreAddress,
+          chainId,
+        })
+      )
+
+      const tvl = get(
+        daoTvlSelector({
+          coreAddress,
+          chainId,
+          cw20GovernanceTokenAddress,
+        })
+      )
 
       const walletVotingWeight = walletAddress
         ? Number(
@@ -82,5 +101,60 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
           0
         ),
       }
+    },
+})
+
+// Gets CW20 governance token address if this DAO uses the cw20-staked voting
+// module adapter.
+export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
+  string | undefined,
+  WithChainId<{
+    coreAddress: string
+  }>
+>({
+  key: 'daoCw20GovernanceTokenAddress',
+  get:
+    ({ coreAddress, chainId }) =>
+    ({ get }) => {
+      const votingModuleAddress = get(
+        CwdCoreV2Selectors.votingModuleSelector({
+          contractAddress: coreAddress,
+          chainId,
+          params: [],
+        })
+      )
+      // All `info` queries are the same, so just use core's info query.
+      const votingModuleInfo = votingModuleAddress
+        ? get(
+            CwdCoreV2Selectors.infoSelector({
+              contractAddress: votingModuleAddress,
+              chainId,
+              params: [],
+            })
+          )
+        : undefined
+
+      let usesCw20VotingModule
+      try {
+        usesCw20VotingModule =
+          !!votingModuleInfo &&
+          matchVotingModuleAdapter(votingModuleInfo.info.contract)?.id ===
+            CwdVotingCw20StakedAdapter.id
+      } catch {
+        usesCw20VotingModule = false
+      }
+
+      const cw20GovernanceTokenAddress =
+        votingModuleAddress && usesCw20VotingModule
+          ? get(
+              CwdVotingCw20StakedSelectors.tokenContractSelector({
+                contractAddress: votingModuleAddress,
+                chainId,
+                params: [],
+              })
+            )
+          : undefined
+
+      return cw20GovernanceTokenAddress
     },
 })

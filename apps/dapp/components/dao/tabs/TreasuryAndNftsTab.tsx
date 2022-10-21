@@ -20,20 +20,37 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/ui'
 import { loadableToLoadingData } from '@dao-dao/utils'
+import {
+  useCw20GovernanceTokenInfoResponseIfExists,
+  useNativeGovernanceTokenInfoResponseIfExists,
+} from '@dao-dao/voting-module-adapter'
 
 import { TokenCard } from '@/components'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
   const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
+    chainId: daoInfo.chainId,
     fetchMembership: true,
   })
+  const { governanceTokenAddress: cw20GovernanceTokenAddress } =
+    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+  const { governanceTokenAddress: nativeGovernanceTokenDenom } =
+    useNativeGovernanceTokenInfoResponseIfExists() ?? {}
 
   const treasuryTokenCardInfosLoadable = useCachedLoadable(
-    treasuryTokenCardInfosSelector({ coreAddress: daoInfo.coreAddress })
+    treasuryTokenCardInfosSelector({
+      coreAddress: daoInfo.coreAddress,
+      chainId: daoInfo.chainId,
+      cw20GovernanceTokenAddress,
+      nativeGovernanceTokenDenom,
+    })
   )
   const nftCardInfosLoadable = useCachedLoadable(
-    nftCardInfosSelector({ coreAddress: daoInfo.coreAddress })
+    nftCardInfosSelector({
+      coreAddress: daoInfo.coreAddress,
+      chainId: daoInfo.chainId,
+    })
   )
 
   //! Loadable errors.

@@ -24,6 +24,7 @@ import {
   makeWasmMessage,
   nativeTokenDecimals,
 } from '@dao-dao/utils'
+import { useCw20GovernanceTokenInfoResponseIfExists } from '@dao-dao/voting-module-adapter'
 
 import { SpendComponent as StatelessSpendComponent } from '../components/Spend'
 
@@ -40,6 +41,12 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
 }) => {
   // Reused selectors in Component and useTransformToCosmos.
   const useCw20AddressesBalancesAndInfos = () => {
+    // Get CW20 governance token address from voting module adapter if exists,
+    // so we can make sure to load it with all cw20 balances, even if it has not
+    // been explicitly added to the DAO.
+    const { governanceTokenAddress } =
+      useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+
     const cw20AddressesAndBalances = useRecoilValue(
       context.type === ActionOptionsContextType.Wallet
         ? // Cannot query for wallet's cw20 addresses.
@@ -47,6 +54,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
         : // Get DAO's cw20 addresses and balances.
           CwdCoreV2Selectors.allCw20BalancesSelector({
             contractAddress: address,
+            governanceTokenAddress,
           })
     )
 
