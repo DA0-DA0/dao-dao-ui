@@ -18,7 +18,7 @@ import {
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoadable,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { loadableToLoadingData } from '@dao-dao/utils'
 import {
   useCw20GovernanceTokenInfoResponseIfExists,

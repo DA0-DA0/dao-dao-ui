@@ -2,9 +2,9 @@
 const tailwindConfig = {
   content: [
     './**/*.{js,jsx,ts,tsx}',
-    '../{ui,state,actions}/**/*.{js,jsx,ts,tsx}',
+    '../{stateless,state,actions}/**/*.{js,jsx,ts,tsx}',
   ],
-  presets: [require('@dao-dao/ui/tailwind/config')],
+  presets: [require('@dao-dao/config/tailwind/config')],
 }
 
 module.exports = tailwindConfig

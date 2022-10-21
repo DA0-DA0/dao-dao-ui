@@ -9,7 +9,7 @@ import { ContractVersion } from '@dao-dao/types'
 import {
   SubDaosTab as StatelessSubDaosTab,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { DaoCard } from '../DaoCard'

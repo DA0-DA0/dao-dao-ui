@@ -11,7 +11,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
-import { StatusDisplay } from '@dao-dao/ui'
+import { StatusDisplay } from '@dao-dao/stateless'
 
 export interface ProposalStatusProps {
   status: Status

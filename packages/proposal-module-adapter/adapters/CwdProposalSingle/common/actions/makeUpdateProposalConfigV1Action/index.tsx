@@ -13,7 +13,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import { Threshold } from '@dao-dao/types/contracts/CwdProposalSingle.common'
-import { UpdateProposalConfigIcon } from '@dao-dao/ui'
+import { UpdateProposalConfigIcon } from '@dao-dao/stateless'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,

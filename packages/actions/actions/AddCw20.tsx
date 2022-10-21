@@ -13,7 +13,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { AddCw20Emoji } from '@dao-dao/ui'
+import { AddCw20Emoji } from '@dao-dao/stateless'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { AddCw20Component as StatelessAddCw20Component } from '../components/AddCw20'

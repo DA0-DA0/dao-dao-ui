@@ -17,7 +17,7 @@ import {
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
 
 export const TokenCard = (props: TokenCardInfo) => {

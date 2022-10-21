@@ -12,7 +12,7 @@ import {
   InputErrorMessage,
   InputLabel,
   ManageSubDaosEmoji,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
 import { ActionCard } from './ActionCard'

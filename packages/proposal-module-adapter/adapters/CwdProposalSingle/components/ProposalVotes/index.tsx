@@ -6,7 +6,7 @@ import { refreshProposalIdAtom, useProposalVotesQuery } from '@dao-dao/state'
 import {
   ProposalVote,
   ProposalVotes as StatelessProposalVotes,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
 import { listVotesSelector } from '../../contracts/CwdProposalSingle.common.recoil'

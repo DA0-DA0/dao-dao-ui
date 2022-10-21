@@ -10,7 +10,7 @@ import {
   NumberInput,
   SelectInput,
   StakeEmoji,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,

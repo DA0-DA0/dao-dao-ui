@@ -10,7 +10,7 @@ import {
   useLoadingFeaturedDaoCardInfos,
   useLoadingPinnedDaoCardInfos,
 } from '@dao-dao/state'
-import { Home, ProfileDisconnectedCard } from '@dao-dao/ui'
+import { Home, ProfileDisconnectedCard } from '@dao-dao/stateless'
 
 import { commandModalVisibleAtom } from '@/atoms'
 import { DaoCard, ProfileHomeCard } from '@/components'

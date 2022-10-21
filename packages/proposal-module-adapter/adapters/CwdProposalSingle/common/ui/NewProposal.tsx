@@ -35,7 +35,7 @@ import {
   TextAreaInput,
   TextInput,
   Tooltip,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { decodedMessagesString, validateRequired } from '@dao-dao/utils'
 
 import {

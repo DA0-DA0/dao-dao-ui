@@ -9,7 +9,7 @@ import {
   DaoPageWrapperProps,
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
-import { useDaoInfoContext } from '@dao-dao/ui'
+import { useDaoInfoContext } from '@dao-dao/stateless'
 import { SITE_URL, getFallbackImage } from '@dao-dao/utils'
 
 const InnerCreateSubDaoPage = () => {

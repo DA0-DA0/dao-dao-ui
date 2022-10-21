@@ -4,7 +4,7 @@ import {
   DaoCreateVotingPowerDistributionReviewCard,
   TierDataEntry,
   VOTING_POWER_DISTRIBUTION_COLORS,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'

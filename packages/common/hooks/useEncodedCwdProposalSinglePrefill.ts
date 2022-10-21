@@ -4,7 +4,7 @@ import {
 } from '@dao-dao/proposal-module-adapter'
 import { NewProposalForm } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/types'
 import { Action, ProposalPrefill } from '@dao-dao/types'
-import { useDaoInfoContext } from '@dao-dao/ui'
+import { useDaoInfoContext } from '@dao-dao/stateless'
 
 interface ActionAndData<Data extends {} = any> {
   action: Action<Data, any>

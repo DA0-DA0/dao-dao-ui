@@ -10,7 +10,7 @@ import {
   InputErrorMessage,
   NumberInput,
   SelectInput,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,

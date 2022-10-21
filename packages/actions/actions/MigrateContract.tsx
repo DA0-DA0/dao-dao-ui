@@ -10,7 +10,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { MigrateContractEmoji } from '@dao-dao/ui'
+import { MigrateContractEmoji } from '@dao-dao/stateless'
 
 import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components/MigrateContract'
 

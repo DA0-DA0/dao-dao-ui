@@ -21,7 +21,7 @@ import {
   NumberInput,
   TextInput,
   VOTING_POWER_DISTRIBUTION_COLORS,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   validateAddress,
   validatePositive,

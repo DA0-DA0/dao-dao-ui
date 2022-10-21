@@ -6,7 +6,7 @@ import { useVotingModule } from '@dao-dao/state'
 import {
   ProposalsTab as StatelessProposalsTab,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 
 export const ProposalsTab = () => {
   const daoInfo = useDaoInfoContext()

@@ -16,7 +16,7 @@ import {
   SelectInput,
   SpendEmoji,
   UpdateProposalConfigIcon,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,

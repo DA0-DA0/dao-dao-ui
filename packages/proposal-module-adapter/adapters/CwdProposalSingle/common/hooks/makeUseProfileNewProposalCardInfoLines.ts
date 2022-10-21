@@ -12,7 +12,7 @@ import {
   DepositRefundPolicy,
   IProposalModuleAdapterCommonOptions,
 } from '@dao-dao/types'
-import { ProfileNewProposalCardInfoLine } from '@dao-dao/ui'
+import { ProfileNewProposalCardInfoLine } from '@dao-dao/stateless'
 import {
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,

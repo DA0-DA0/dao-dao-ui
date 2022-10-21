@@ -13,7 +13,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { UpdateInfoEmoji } from '@dao-dao/ui'
+import { UpdateInfoEmoji } from '@dao-dao/stateless'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {

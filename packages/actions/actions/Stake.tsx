@@ -14,7 +14,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { ActionCardLoader, StakeEmoji } from '@dao-dao/ui'
+import { ActionCardLoader, StakeEmoji } from '@dao-dao/stateless'
 import {
   NATIVE_DENOM,
   StakeType,

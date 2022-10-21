@@ -10,7 +10,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { UpdateAdminEmoji } from '@dao-dao/ui'
+import { UpdateAdminEmoji } from '@dao-dao/stateless'
 import { isValidContractAddress } from '@dao-dao/utils'
 
 import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components/UpdateAdmin'

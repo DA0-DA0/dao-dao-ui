@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { useVotingModule } from '@dao-dao/state'
-import { useDaoInfoContext } from '@dao-dao/ui'
+import { useDaoInfoContext } from '@dao-dao/stateless'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { BaseProfileCardMemberInfoProps } from '../../../types'

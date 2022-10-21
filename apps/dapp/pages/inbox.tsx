@@ -19,7 +19,7 @@ import {
   Inbox,
   PageLoader,
   ProfileDisconnectedCard,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { CHAIN_ID, SITE_URL } from '@dao-dao/utils'
 
 import { ProfileHomeCard, useDAppContext } from '@/components'

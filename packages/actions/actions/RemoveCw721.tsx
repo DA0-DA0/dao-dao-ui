@@ -19,7 +19,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
-import { RemoveCw721Emoji } from '@dao-dao/ui'
+import { RemoveCw721Emoji } from '@dao-dao/stateless'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { RemoveCw721Component as StatelessRemoveCw721Component } from '../components/RemoveCw721'

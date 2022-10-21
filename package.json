@@ -13,7 +13,7 @@
     "test": "turbo run test",
     "dapp": "yarn workspace @dao-dao/dapp",
     "state": "yarn workspace @dao-dao/state",
-    "ui": "yarn workspace @dao-dao/ui",
+    "stateless": "yarn workspace @dao-dao/stateless",
     "utils": "yarn workspace @dao-dao/utils",
     "actions": "yarn workspace @dao-dao/actions",
     "common": "yarn workspace @dao-dao/common",

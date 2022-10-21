@@ -1,0 +1,63 @@
+import { Add, ExpandCircleDownOutlined, Remove } from '@mui/icons-material'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
+
+import { StakeEmoji } from '../emoji'
+import { IconButton } from '../icon_buttons'
+import { ButtonPopup } from './ButtonPopup'
+
+export default {
+  title: 'DAO DAO / packages / stateless / components / popup / ButtonPopup',
+  component: ButtonPopup,
+} as ComponentMeta<typeof ButtonPopup>
+
+const Template: ComponentStory<typeof ButtonPopup> = (args) => (
+  <ButtonPopup {...args} />
+)
+
+export const Default = Template.bind({})
+Default.args = {
+  Trigger: ({ open, ...props }) => (
+    <IconButton
+      Icon={ExpandCircleDownOutlined}
+      className="!text-icon-secondary"
+      focused={open}
+      variant="ghost"
+      {...props}
+    />
+  ),
+  position: 'right',
+  sections: [
+    {
+      label: 'Section 1',
+      buttons: [
+        {
+          Icon: Add,
+          label: 'Button 1',
+          onClick: () => alert('button1'),
+        },
+        {
+          Icon: StakeEmoji,
+          label: 'Button 2',
+          onClick: () => alert('button2'),
+        },
+      ],
+    },
+    {
+      label: 'Section 2',
+      buttons: [
+        {
+          Icon: Remove,
+          label: 'Button 3',
+          onClick: () => alert('button3'),
+        },
+      ],
+    },
+  ],
+  popupClassName: 'w-[12rem]',
+}
+Default.parameters = {
+  design: {
+    type: 'figma',
+    url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=2747%3A53658',
+  },
+}

@@ -13,7 +13,7 @@ import {
   InputErrorMessage,
   InputLabel,
   NumberInput,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   validateAddress,
   validateNonNegative,

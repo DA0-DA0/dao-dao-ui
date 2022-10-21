@@ -4,7 +4,7 @@
 import { ArrowForwardIos } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Modal, ModalProps } from '@dao-dao/ui'
+import { Button, Modal, ModalProps } from '@dao-dao/stateless'
 
 export type InstallKeplrProps = Pick<ModalProps, 'visible' | 'onClose'>
 

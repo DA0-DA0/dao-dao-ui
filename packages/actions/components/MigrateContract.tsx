@@ -10,7 +10,7 @@ import {
   InputLabel,
   MigrateContractEmoji,
   NumberInput,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   validateContractAddress,
   validateJSON,

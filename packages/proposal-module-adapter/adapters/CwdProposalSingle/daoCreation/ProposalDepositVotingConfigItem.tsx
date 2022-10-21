@@ -18,7 +18,7 @@ import {
   InputLabel,
   NumberInput,
   SelectInput,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   CHAIN_BECH32_PREFIX,
   NATIVE_DENOM,

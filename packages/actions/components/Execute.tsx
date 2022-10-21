@@ -12,7 +12,7 @@ import {
   InputErrorMessage,
   InputLabel,
   TextInput,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   NATIVE_DENOM,
   makeWasmMessage,

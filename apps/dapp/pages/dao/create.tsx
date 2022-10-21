@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 import { CreateDaoForm, SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { PageLoader } from '@dao-dao/ui'
+import { PageLoader } from '@dao-dao/stateless'
 import { SITE_URL } from '@dao-dao/utils'
 
 const CreateDaoPage: NextPage = () => {

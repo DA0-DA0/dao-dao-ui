@@ -6,7 +6,7 @@ import {
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
 } from '@dao-dao/types'
-import { FormSwitchCard } from '@dao-dao/ui'
+import { FormSwitchCard } from '@dao-dao/stateless'
 
 import { DaoCreationConfig } from '../types'
 

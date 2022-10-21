@@ -9,7 +9,7 @@
     "@dao-dao/actions": "2.0.1",
     "@dao-dao/common": "2.0.1",
     "@dao-dao/state": "2.0.1",
-    "@dao-dao/ui": "2.0.1",
+    "@dao-dao/stateless": "2.0.1",
     "@dao-dao/utils": "2.0.1",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",

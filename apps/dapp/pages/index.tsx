@@ -19,7 +19,7 @@ import {
   SplashEnterAppButton,
   SplashGradientWrapper,
   SplashStatsCard,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 
 import { SplashDaoCard } from '@/components'
 

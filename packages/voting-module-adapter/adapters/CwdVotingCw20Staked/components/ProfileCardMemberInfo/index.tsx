@@ -14,7 +14,7 @@ import {
   useWalletProfile,
 } from '@dao-dao/state'
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/ui'
+import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   NATIVE_DENOM,
   convertExpirationToDate,

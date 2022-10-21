@@ -21,7 +21,7 @@ import {
   LineGraph,
   Loader,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   CHAIN_TXN_URL_PREFIX,
   NATIVE_DECIMALS,

@@ -19,7 +19,7 @@ import {
   LoaderProps,
   LogoProps,
   useThemeContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 import { SuspenseLoader } from './SuspenseLoader'

@@ -1,7 +1,7 @@
 import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 
 import { useWalletProfile } from '@dao-dao/state'
-import { SidebarWallet as OriginalSidebarWallet } from '@dao-dao/ui'
+import { SidebarWallet as OriginalSidebarWallet } from '@dao-dao/stateless'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 import { SuspenseLoader } from './SuspenseLoader'

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ActionsRenderer } from '@dao-dao/actions'
 import { ActionAndData, BaseProposalActionDisplayProps } from '@dao-dao/types'
-import { Button, CosmosMessageDisplay } from '@dao-dao/ui'
+import { Button, CosmosMessageDisplay } from '@dao-dao/stateless'
 import { decodeMessages } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterContext } from '../../../react'

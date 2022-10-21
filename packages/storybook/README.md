@@ -34,7 +34,7 @@ named `MyComponent.tsx` in any of the packages.
 
 As of writing this, all of the packages are setup such that stateless components
 are descendants of a `ui` folder at some level. This is represented by the
-`@dao-dao/ui` package located at `packages/ui`, since the package itself is a
+`@dao-dao/stateless` package located at `packages/ui`, since the package itself is a
 folder named `ui`. The voting and proposal module adapter packages also use the
 folder `ui` to group stateless components.
 

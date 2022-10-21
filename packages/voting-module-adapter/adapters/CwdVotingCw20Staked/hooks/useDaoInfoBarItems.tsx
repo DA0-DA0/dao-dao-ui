@@ -2,7 +2,7 @@ import { LayersOutlined, PeopleAltOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import { useVotingModule } from '@dao-dao/state'
-import { DaoInfoBarItem, TokenAmountDisplay } from '@dao-dao/ui'
+import { DaoInfoBarItem, TokenAmountDisplay } from '@dao-dao/stateless'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,

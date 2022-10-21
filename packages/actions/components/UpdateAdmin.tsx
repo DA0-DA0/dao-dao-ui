@@ -7,7 +7,7 @@ import {
   InputErrorMessage,
   InputLabel,
   UpdateAdminEmoji,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   validateAddress,
   validateContractAddress,

@@ -18,7 +18,7 @@ import {
   ExecuteMsg,
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/CwdPreProposeSingle'
-import { UpdateProposalConfigIcon, useDaoInfoContext } from '@dao-dao/ui'
+import { UpdateProposalConfigIcon, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,

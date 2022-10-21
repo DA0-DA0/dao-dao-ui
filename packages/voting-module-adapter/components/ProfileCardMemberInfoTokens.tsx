@@ -12,7 +12,7 @@ import {
   ButtonLink,
   TokenAmountDisplay,
   UnstakingModal,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { formatPercentOf100, secondsToWdhms } from '@dao-dao/utils'
 
 export interface ProfileCardMemberInfoTokensProps

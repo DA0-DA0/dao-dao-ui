@@ -19,7 +19,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
-import { RemoveCw20Emoji } from '@dao-dao/ui'
+import { RemoveCw20Emoji } from '@dao-dao/stateless'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { RemoveCw20Component as StatelessRemoveCw20Component } from '../components/RemoveCw20'

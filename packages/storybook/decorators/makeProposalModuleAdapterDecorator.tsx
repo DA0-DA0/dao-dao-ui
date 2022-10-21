@@ -3,7 +3,7 @@
 import { DecoratorFn } from '@storybook/react'
 
 import { ProposalModuleAdapterProvider } from '@dao-dao/proposal-module-adapter'
-import { Loader, Logo, useDaoInfoContext } from '@dao-dao/ui'
+import { Loader, Logo, useDaoInfoContext } from '@dao-dao/stateless'
 
 export const makeProposalModuleAdapterDecorator: (
   proposalId: string

@@ -26,7 +26,7 @@ import {
   ProfileDisconnectedCard,
   Wallet,
   WalletProps,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { CHAIN_BECH32_PREFIX, CHAIN_ID, processError } from '@dao-dao/utils'
 
 import { ProfileHomeCard } from '@/components'

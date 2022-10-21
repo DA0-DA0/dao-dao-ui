@@ -9,7 +9,7 @@ import {
 import {
   CommandModalContextViewLoader,
   CommandModalContextView as StatelessCommandModalContextView,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 
 export interface CommandModalContextViewProps {
   filter: string

@@ -12,7 +12,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { ManageSubDaosEmoji } from '@dao-dao/ui'
+import { ManageSubDaosEmoji } from '@dao-dao/stateless'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import {

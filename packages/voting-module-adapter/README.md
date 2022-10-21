@@ -356,7 +356,7 @@ descendant of the Provider to access the voting module adapter interface.
 
 ```tsx
 import { SuspenseLoader } from '@dao-dao/common'
-import { Loader } from '@dao-dao/ui'
+import { Loader } from '@dao-dao/stateless'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 const DaoThinInfoDisplay = () => {

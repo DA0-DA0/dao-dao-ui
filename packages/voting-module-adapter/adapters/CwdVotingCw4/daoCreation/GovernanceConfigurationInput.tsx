@@ -15,7 +15,7 @@ import {
   DaoCreateVotingPowerDistributionBarChart,
   InputErrorMessage,
   VOTING_POWER_DISTRIBUTION_COLORS,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 
 import { CwdVotingCw4Adapter } from '../index'
 import { DaoCreationConfig } from '../types'

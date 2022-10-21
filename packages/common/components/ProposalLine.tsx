@@ -12,7 +12,7 @@ import {
   LoaderProps,
   LogoProps,
   ProposalLineLoader,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 
 export interface ProposalLineProps {
   chainId: string

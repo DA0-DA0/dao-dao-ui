@@ -8,7 +8,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { CustomEmoji } from '@dao-dao/ui'
+import { CustomEmoji } from '@dao-dao/stateless'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { CustomComponent as Component } from '../components/Custom'

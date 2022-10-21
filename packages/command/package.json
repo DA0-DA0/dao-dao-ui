@@ -8,7 +8,7 @@
   "dependencies": {
     "@dao-dao/common": "2.0.1",
     "@dao-dao/state": "2.0.1",
-    "@dao-dao/ui": "2.0.1",
+    "@dao-dao/stateless": "2.0.1",
     "@dao-dao/utils": "2.0.1",
     "@mui/icons-material": "^5.10.3",
     "clsx": "^1.1.1",

@@ -1,7 +1,7 @@
 import { selector, waitForAll } from 'recoil'
 
 import { daoDropdownInfoSelector, pinnedAddressesAtom } from '@dao-dao/state'
-import { DaoDropdownInfo } from '@dao-dao/ui'
+import { DaoDropdownInfo } from '@dao-dao/stateless'
 
 import { cwCoreProposalModulesSelector } from './dao'
 

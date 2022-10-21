@@ -37,8 +37,8 @@ import {
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   useCachedLoadable,
   useDaoInfoContext,
-} from '@dao-dao/ui'
-import { useTranslatedTimeDeltaFormatter } from '@dao-dao/ui/hooks'
+} from '@dao-dao/stateless'
+import { useTranslatedTimeDeltaFormatter } from '@dao-dao/stateless/hooks'
 import {
   CHAIN_TXN_URL_PREFIX,
   convertExpirationToDate,

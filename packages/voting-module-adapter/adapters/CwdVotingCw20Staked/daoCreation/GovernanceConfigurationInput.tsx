@@ -24,7 +24,7 @@ import {
   SegmentedControls,
   TextInput,
   VOTING_POWER_DISTRIBUTION_COLORS,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   CHAIN_BECH32_PREFIX,
   NEW_DAO_CW20_DECIMALS,

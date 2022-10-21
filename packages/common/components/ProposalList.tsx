@@ -12,7 +12,7 @@ import {
   Logo,
   ProposalList as StatelessProposalList,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 
 // Contracts enforce a max of 30, though this is on the edge for DAOs with
 // proposals that have a large size.

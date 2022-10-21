@@ -19,7 +19,7 @@ import {
   ProfileVotedCard,
   useAppLayoutContext,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 export interface ProfileProposalCardProps {

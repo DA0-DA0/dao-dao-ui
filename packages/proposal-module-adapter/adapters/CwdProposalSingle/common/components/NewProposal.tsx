@@ -32,7 +32,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/ui'
+import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   convertExpirationToDate,
   dateToWdhms,

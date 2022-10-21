@@ -17,7 +17,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { InstantiateEmoji } from '@dao-dao/ui'
+import { InstantiateEmoji } from '@dao-dao/stateless'
 import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,

@@ -22,7 +22,7 @@ import {
   TextInput,
   TooltipInfoIcon,
   VOTING_POWER_DISTRIBUTION_COLORS,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   NEW_DAO_CW20_DECIMALS,
   formatPercentOf100,

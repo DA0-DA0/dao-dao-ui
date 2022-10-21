@@ -7,7 +7,7 @@ import {
   blockHeightSelector,
   useGetOpenProposalsWithWalletVotesVariables,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/ui'
+import { useCachedLoadable } from '@dao-dao/stateless'
 
 import { pinnedDaosWithProposalModulesSelector } from '../selectors'
 

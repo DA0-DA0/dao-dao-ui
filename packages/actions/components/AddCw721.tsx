@@ -9,7 +9,7 @@ import {
   FormattedJsonDisplayProps,
   InputErrorMessage,
   InputLabel,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   validateContractAddress,
   validateRequired,

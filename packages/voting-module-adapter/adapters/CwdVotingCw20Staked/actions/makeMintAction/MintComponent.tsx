@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ActionCard } from '@dao-dao/actions'
 import { ActionComponent } from '@dao-dao/types'
-import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/ui'
+import { AddressInput, InputErrorMessage, NumberInput } from '@dao-dao/stateless'
 import {
   validateAddress,
   validatePositive,

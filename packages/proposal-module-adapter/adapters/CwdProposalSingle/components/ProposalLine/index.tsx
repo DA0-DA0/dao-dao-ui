@@ -6,8 +6,8 @@ import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   ProposalLine as StatelessProposalLine,
   useCachedLoadable,
-} from '@dao-dao/ui'
-import { useTranslatedTimeDeltaFormatter } from '@dao-dao/ui/hooks'
+} from '@dao-dao/stateless'
+import { useTranslatedTimeDeltaFormatter } from '@dao-dao/stateless/hooks'
 import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../../react'

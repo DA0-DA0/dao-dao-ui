@@ -35,7 +35,7 @@ import {
   ImageSelector,
   useAppLayoutContext,
   useThemeContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,

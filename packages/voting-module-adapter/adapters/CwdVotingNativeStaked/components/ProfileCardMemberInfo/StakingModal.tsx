@@ -17,7 +17,7 @@ import {
   Modal,
   StakingMode,
   StakingModal as StatelessStakingModal,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,

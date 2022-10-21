@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { signingCosmWasmClientAtom } from '@dao-dao/state'
-import { Loader as DefaultLoader, LoaderProps } from '@dao-dao/ui'
+import { Loader as DefaultLoader, LoaderProps } from '@dao-dao/stateless'
 import {
   CHAIN_ID,
   CHAIN_REST_ENDPOINT,

@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 
 import { daoCardInfoLazyDataSelector } from '@dao-dao/common'
 import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
-import { DaoCard as StatelessDaoCard, useCachedLoadable } from '@dao-dao/ui'
+import { DaoCard as StatelessDaoCard, useCachedLoadable } from '@dao-dao/stateless'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 // Doesn't load any wallet information or allow pinning.

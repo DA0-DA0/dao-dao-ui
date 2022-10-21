@@ -12,7 +12,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { ExecuteEmoji } from '@dao-dao/ui'
+import { ExecuteEmoji } from '@dao-dao/stateless'
 import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,

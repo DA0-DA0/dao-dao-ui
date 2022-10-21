@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import '@dao-dao/ui/styles/index.css'
+import '@dao-dao/stateless/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
@@ -19,7 +19,7 @@ import {
   activeThemeAtom,
   mountedInBrowserAtom,
 } from '@dao-dao/state'
-import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/ui'
+import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 import { AppLayout, HomepageLayout } from '@/components'

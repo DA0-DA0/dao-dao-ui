@@ -14,7 +14,7 @@ import {
   SelectInput,
   TooltipInfoIcon,
   UpdateProposalConfigIcon,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   validatePercent,
   validatePositive,

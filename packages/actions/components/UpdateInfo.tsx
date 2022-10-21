@@ -15,7 +15,7 @@ import {
   TooltipInfoIcon,
   UpdateInfoEmoji,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   validateRequired,

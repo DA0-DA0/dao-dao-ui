@@ -13,7 +13,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { Loader, Logo, useDaoInfoContext } from '@dao-dao/ui'
+import { Loader, Logo, useDaoInfoContext } from '@dao-dao/stateless'
 import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { CwdProposalSingleAdapter } from '../..'

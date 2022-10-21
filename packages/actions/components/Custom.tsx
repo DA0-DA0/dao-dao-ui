@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Trans } from '@dao-dao/common'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { CodeMirrorInput, CustomEmoji } from '@dao-dao/ui'
+import { CodeMirrorInput, CustomEmoji } from '@dao-dao/stateless'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
 import { ActionCard } from './ActionCard'

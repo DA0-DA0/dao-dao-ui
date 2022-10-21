@@ -3,7 +3,7 @@
 
 import Link from 'next/link'
 
-import { Button } from '@dao-dao/ui'
+import { Button } from '@dao-dao/stateless'
 
 function Paginator({
   page,

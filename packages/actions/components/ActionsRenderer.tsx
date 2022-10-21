@@ -9,7 +9,7 @@ import {
   IconButton,
   LoaderProps,
   LogoProps,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {

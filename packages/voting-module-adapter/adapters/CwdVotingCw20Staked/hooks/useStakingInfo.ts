@@ -9,7 +9,7 @@ import {
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/ui'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'

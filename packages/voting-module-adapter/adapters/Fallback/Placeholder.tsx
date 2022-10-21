@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { Trans } from '@dao-dao/common'
-import { DiscordIcon } from '@dao-dao/ui'
+import { DiscordIcon } from '@dao-dao/stateless'
 
 export const Placeholder = () => {
   const { t } = useTranslation()

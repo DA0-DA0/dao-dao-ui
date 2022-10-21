@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil'
 
 import { mountedInBrowserAtom } from '@dao-dao/state'
 import { SuspenseLoaderProps } from '@dao-dao/types/components/SuspenseLoader'
-import { ErrorBoundary } from '@dao-dao/ui'
+import { ErrorBoundary } from '@dao-dao/stateless'
 
 export const SuspenseLoader = ({
   ErrorBoundaryComponent = ErrorBoundary,

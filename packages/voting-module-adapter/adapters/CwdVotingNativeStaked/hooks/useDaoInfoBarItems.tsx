@@ -1,7 +1,7 @@
 import { LayersOutlined, PeopleAltOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfoBarItem, TokenAmountDisplay } from '@dao-dao/ui'
+import { DaoInfoBarItem, TokenAmountDisplay } from '@dao-dao/stateless'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'

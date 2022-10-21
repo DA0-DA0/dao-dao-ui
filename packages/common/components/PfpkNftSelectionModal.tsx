@@ -16,7 +16,7 @@ import {
   NftSelectionModal,
   ProfileImage,
   useCachedLoadable,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   STARGAZE_CHAIN_ID,
   loadableToLoadingDataWithError,

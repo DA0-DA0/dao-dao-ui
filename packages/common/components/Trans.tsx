@@ -8,7 +8,7 @@
 import { Trans as OriginalTrans } from 'react-i18next'
 
 import { TransProps } from '@dao-dao/types'
-import { Loader as DefaultLoader } from '@dao-dao/ui'
+import { Loader as DefaultLoader } from '@dao-dao/stateless'
 
 import { SuspenseLoader } from './SuspenseLoader'
 

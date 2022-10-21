@@ -11,7 +11,7 @@ import {
   TierDataEntry,
   VOTING_POWER_DISTRIBUTION_COLORS,
   useNamedThemeColor,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { DaoCreationConfig, GovernanceTokenType } from '../types'

@@ -16,21 +16,21 @@ You can find more info in our [documentation](https://docs.daodao.zone). Join th
 ### Clone this repo and install dependencies
 
 ```bash
-git clone https://github.com/DA0-DA0/dao-ui
-cd dao-ui
+git clone https://github.com/DA0-DA0/dao-dao-ui
+cd dao-dao-ui
 yarn
 ```
 
 If you're here to work on UI components in isolation:
 
 ```bash
-yarn ui storybook
+yarn storybook start
 ```
 
 If you're here to work on app-wide stuff, run the `yarn dev` script (equivalent to running `yarn dev` from the `apps/dapp` folder) to run the main app in development mode.
 
 ```bash
-yarn turbo run dev
+yarn dev
 ```
 
 Learn more about [Turborepo](https://turborepo.org/docs).
@@ -43,7 +43,7 @@ Learn more about [Turborepo](https://turborepo.org/docs).
 
 #### `packages/`
 
-- [(wip)](https://github.com/DA0-DA0/dao-ui/issues/368)
+- [(wip)](https://github.com/DA0-DA0/dao-dao-ui/issues/368)
 
 ### Learn More
 

@@ -38,7 +38,7 @@ import {
   ProposalCreatedModal,
   AppLayout as StatelessAppLayout,
   useCachedLoadable,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import {

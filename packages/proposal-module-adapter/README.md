@@ -62,7 +62,7 @@ descendant of the Provider to access the proposal module adapter interface.
 
 ```tsx
 import { SuspenseLoader } from '@dao-dao/common'
-import { Loader } from '@dao-dao/ui'
+import { Loader } from '@dao-dao/stateless'
 import { useProposalModuleAdapter } from '@dao-dao/proposal-module-adapter'
 
 const ProposalVoteInfo = () => {

@@ -1,7 +1,7 @@
 import { PeopleAltOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfoBarItem } from '@dao-dao/ui'
+import { DaoInfoBarItem } from '@dao-dao/stateless'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useVotingModule } from './useVotingModule'

@@ -6,7 +6,7 @@ import {
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
 } from '@dao-dao/types'
-import { FormSwitchCard, NumberInput, SelectInput } from '@dao-dao/ui'
+import { FormSwitchCard, NumberInput, SelectInput } from '@dao-dao/stateless'
 import {
   formatPercentOf100,
   validatePositive,

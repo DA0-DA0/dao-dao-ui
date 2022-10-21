@@ -37,7 +37,7 @@ import {
   PageLoader,
   ProfileDisconnectedCard,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { SITE_URL } from '@dao-dao/utils'
 
 import { ProfileNewProposalCard } from '@/components'

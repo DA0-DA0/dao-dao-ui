@@ -13,7 +13,7 @@ import {
   NftSelectionModal,
   useCachedLoadable,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import {
   STARGAZE_CHAIN_ID,
   loadableToLoadingDataWithError,

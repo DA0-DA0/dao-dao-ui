@@ -15,7 +15,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { SpendEmoji } from '@dao-dao/ui'
+import { SpendEmoji } from '@dao-dao/stateless'
 import {
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
