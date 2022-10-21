@@ -20,7 +20,6 @@ import { ProfileDisplay } from '@dao-dao/common'
 import {
   blockHeightSelector,
   blocksPerYearSelector,
-  useCachedLoadable,
   useVotingModule,
 } from '@dao-dao/state'
 import {
@@ -36,6 +35,7 @@ import {
   Logo,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
+  useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/ui'
 import { useTranslatedTimeDeltaFormatter } from '@dao-dao/ui/hooks'

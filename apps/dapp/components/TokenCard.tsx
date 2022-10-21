@@ -10,11 +10,14 @@ import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/common'
 import {
   refreshNativeTokenStakingInfoAtom,
   tokenCardLazyStakingInfoSelector,
-  useCachedLoadable,
 } from '@dao-dao/state'
 import { ActionKey } from '@dao-dao/types'
 import { TokenCardInfo } from '@dao-dao/types/dao'
-import { TokenCard as StatelessTokenCard, useDaoInfoContext } from '@dao-dao/ui'
+import {
+  TokenCard as StatelessTokenCard,
+  useCachedLoadable,
+  useDaoInfoContext,
+} from '@dao-dao/ui'
 import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
 
 export const TokenCard = (props: TokenCardInfo) => {

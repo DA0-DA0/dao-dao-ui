@@ -1,13 +1,12 @@
 import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
 
-import {
-  blockHeightSelector,
-  blocksPerYearSelector,
-  useCachedLoadable,
-} from '@dao-dao/state'
+import { blockHeightSelector, blocksPerYearSelector } from '@dao-dao/state'
 import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
-import { ProposalLine as StatelessProposalLine } from '@dao-dao/ui'
+import {
+  ProposalLine as StatelessProposalLine,
+  useCachedLoadable,
+} from '@dao-dao/ui'
 import { useTranslatedTimeDeltaFormatter } from '@dao-dao/ui/hooks'
 import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
 

@@ -1,6 +1,7 @@
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { LoadingData, WalletProfile, WithChainId } from '@dao-dao/types'
+import { useCachedLoadable } from '@dao-dao/ui'
 import { getFallbackImage, loadableToLoadingData } from '@dao-dao/utils'
 
 import {
@@ -8,7 +9,6 @@ import {
   walletHexPublicKeySelector,
   walletProfileSelector,
 } from '../recoil/selectors/wallet'
-import { useCachedLoadable } from './useCachedLoadable'
 
 export type UseProfileOptions = WithChainId<
   | {

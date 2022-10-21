@@ -23,7 +23,6 @@ import {
   cosmWasmClientForChainSelector,
   nativeDenomBalanceSelector,
   refreshWalletBalancesIdAtom,
-  useCachedLoadable,
   useVotingModule,
 } from '@dao-dao/state'
 import {
@@ -33,7 +32,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { useDaoInfoContext } from '@dao-dao/ui'
+import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/ui'
 import {
   convertExpirationToDate,
   dateToWdhms,

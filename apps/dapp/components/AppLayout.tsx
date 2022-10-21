@@ -27,7 +27,6 @@ import {
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,
   refreshBlockHeightAtom,
-  useCachedLoadable,
   usePinnedDaos,
   useWalletProfile,
 } from '@dao-dao/state'
@@ -38,6 +37,7 @@ import {
   IAppLayoutContext,
   ProposalCreatedModal,
   AppLayout as StatelessAppLayout,
+  useCachedLoadable,
 } from '@dao-dao/ui'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 

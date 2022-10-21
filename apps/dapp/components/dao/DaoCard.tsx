@@ -5,9 +5,9 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect } from 'react'
 
 import { daoCardInfoLazyDataSelector } from '@dao-dao/common'
-import { useCachedLoadable, usePinnedDaos } from '@dao-dao/state'
+import { usePinnedDaos } from '@dao-dao/state'
 import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
-import { DaoCard as StatelessDaoCard } from '@dao-dao/ui'
+import { DaoCard as StatelessDaoCard, useCachedLoadable } from '@dao-dao/ui'
 import { CHAIN_ID, loadableToLoadingData } from '@dao-dao/utils'
 
 export const DaoCard = (props: DaoCardInfo) => {

@@ -10,13 +10,13 @@ import {
 import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
-  useCachedLoadable,
   useVotingModule,
 } from '@dao-dao/state'
 import { ActionKey } from '@dao-dao/types'
 import {
   NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
+  useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/ui'
 import { loadableToLoadingData } from '@dao-dao/utils'

@@ -7,8 +7,8 @@ import {
   blockHeightSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
-  useCachedLoadable,
 } from '@dao-dao/state'
+import { useCachedLoadable } from '@dao-dao/ui'
 import { claimAvailable } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'

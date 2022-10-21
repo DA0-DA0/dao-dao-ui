@@ -3,10 +3,7 @@ import { ComponentType, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import {
-  useCachedLoadable,
-  walletStargazeNftCardInfosSelector,
-} from '@dao-dao/state'
+import { walletStargazeNftCardInfosSelector } from '@dao-dao/state'
 import { NftCardInfo } from '@dao-dao/types'
 import {
   Loader as DefaultLoader,
@@ -14,6 +11,7 @@ import {
   Modal,
   ModalProps,
   NftSelectionModal,
+  useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/ui'
 import {

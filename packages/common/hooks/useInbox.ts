@@ -5,9 +5,9 @@ import { useEffect, useMemo } from 'react'
 import {
   GetOpenProposalsWithWalletVotesVariables,
   blockHeightSelector,
-  useCachedLoadable,
   useGetOpenProposalsWithWalletVotesVariables,
 } from '@dao-dao/state'
+import { useCachedLoadable } from '@dao-dao/ui'
 
 import { pinnedDaosWithProposalModulesSelector } from '../selectors'
 

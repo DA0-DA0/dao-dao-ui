@@ -1,13 +1,14 @@
 import { AccountBalanceOutlined, Link } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { daoTvlSelector, useCachedLoadable } from '@dao-dao/state'
+import { daoTvlSelector } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   DaoInfoBarLoader,
   DaoInfoBarProps,
   DaoInfoBar as StatelessDaoInfoBar,
   TokenAmountDisplay,
+  useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/ui'
 import { loadableToLoadingData } from '@dao-dao/utils'

@@ -4,7 +4,6 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
-  useCachedLoadable,
   useWalletProfile,
   walletStargazeNftCardInfosSelector,
 } from '@dao-dao/state'
@@ -16,6 +15,7 @@ import {
   ModalProps,
   NftSelectionModal,
   ProfileImage,
+  useCachedLoadable,
 } from '@dao-dao/ui'
 import {
   STARGAZE_CHAIN_ID,
