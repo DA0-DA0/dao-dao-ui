@@ -424,7 +424,9 @@ const loadParentDaoInfo = async (
   cwClient: CosmWasmClient,
   bech32Prefix: string,
   subDaoAddress: string,
-  subDaoAdmin: string | null | undefined
+  subDaoAdmin: string | null | undefined,
+  // Prevent cycles by ensuring admin has not already been seen.
+  previousParentAddresses?: string[]
 ): Promise<DaoParentInfo | null> => {
   // If no admin, or admin is set to itself, or admin is a wallet, no parent
   // DAO.
@@ -447,12 +449,18 @@ const loadParentDaoInfo = async (
       coreAddress: subDaoAdmin,
       name: name,
       imageUrl: image_url ?? null,
-      parentDao: await loadParentDaoInfo(
-        cwClient,
-        bech32Prefix,
-        subDaoAdmin,
-        admin
-      ),
+      parentDao:
+        // If parent has already been loaded, do not recurse, to prevent
+        // infinite cycles of parent DAOs.
+        admin && previousParentAddresses?.includes(admin)
+          ? null
+          : await loadParentDaoInfo(
+              cwClient,
+              bech32Prefix,
+              subDaoAdmin,
+              admin,
+              [...(previousParentAddresses ?? []), subDaoAdmin]
+            ),
     }
   } catch (err) {
     // If contract not found, ignore error.
