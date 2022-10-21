@@ -13,11 +13,7 @@ import {
 } from '@dao-dao/proposal-module-adapter'
 import { CwdCoreV2QueryClient } from '@dao-dao/state'
 import { getDaoCreated } from '@dao-dao/state/subquery/daos/created'
-import {
-  ContractVersion,
-  DaoParentInfo,
-  ProposalModule,
-} from '@dao-dao/types'
+import { ContractVersion, DaoParentInfo, ProposalModule } from '@dao-dao/types'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
 import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/CwdCore.v2'
 import { Loader, Logo } from '@dao-dao/ui'

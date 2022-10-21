@@ -1,7 +1,4 @@
-import {
-  ContractVersion,
-  FetchPreProposeAddressFunction,
-} from '@dao-dao/types'
+import { ContractVersion, FetchPreProposeAddressFunction } from '@dao-dao/types'
 
 import { CwdProposalSingleV2QueryClient } from '../contracts/CwdProposalSingle.v2.client'
 

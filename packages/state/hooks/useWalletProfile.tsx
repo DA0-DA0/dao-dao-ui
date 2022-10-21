@@ -7,11 +7,7 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
-import {
-  LoadingData,
-  WalletProfile,
-  WalletProfileUpdate,
-} from '@dao-dao/types'
+import { LoadingData, WalletProfile, WalletProfileUpdate } from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
   PFPK_API_BASE,

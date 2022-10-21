@@ -5,10 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import {
-  CommandModalContext,
-  CommandModalProps,
-} from '@dao-dao/types/command'
+import { CommandModalContext, CommandModalProps } from '@dao-dao/types/command'
 import { CommandModal as StatelessCommandModal } from '@dao-dao/ui'
 
 import { CommandModalContextView } from './CommandModalContextView'
