@@ -1,6 +1,11 @@
 import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
-import { ContractVersion, DaoCardInfo, WithChainId } from '@dao-dao/types'
+import {
+  ContractVersion,
+  DaoCardInfo,
+  DaoDropdownInfo,
+  WithChainId,
+} from '@dao-dao/types'
 import {
   ConfigResponse as CwCoreV1ConfigResponse,
   DumpStateResponse as CwCoreV1DumpStateResponse,
@@ -9,7 +14,6 @@ import {
   ConfigResponse as CwdCoreV2ConfigResponse,
   DumpStateResponse as CwdCoreV2DumpStateResponse,
 } from '@dao-dao/types/contracts/CwdCore.v2'
-import { DaoDropdownInfo } from '@dao-dao/ui'
 import {
   CHAIN_ID,
   CWCOREV1_CONTRACT_NAME,

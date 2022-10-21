@@ -2,11 +2,11 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useActionForKey } from '@dao-dao/actions'
-import { DaoMemberCard } from '@dao-dao/common'
 import {
+  DaoMemberCard,
   useEncodedCwdProposalSinglePrefill,
-  useVotingModule,
-} from '@dao-dao/state'
+} from '@dao-dao/common'
+import { useVotingModule } from '@dao-dao/state'
 import { ActionKey } from '@dao-dao/types'
 import { MembersTab as StatelessMembersTab } from '@dao-dao/ui'
 

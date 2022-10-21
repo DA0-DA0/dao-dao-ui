@@ -3,12 +3,14 @@
 import { useEffect } from 'react'
 
 import { useActionForKey } from '@dao-dao/actions'
-import { StargazeNftImportModal } from '@dao-dao/common'
+import {
+  StargazeNftImportModal,
+  useEncodedCwdProposalSinglePrefill,
+} from '@dao-dao/common'
 import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
   useCachedLoadable,
-  useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/state'
 import { ActionKey } from '@dao-dao/types'

@@ -19,12 +19,12 @@ import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
+  useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/common'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import {
   CwdCoreV2Selectors,
-  useEncodedCwdProposalSinglePrefill,
   usePinnedDaos,
   useVotingModule,
   useWalletProfile,

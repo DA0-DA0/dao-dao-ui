@@ -22,6 +22,7 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/CwdCore.v2'
+// TODO: This state package should not include the adapter package.
 import {
   CwdVotingCw20StakedAdapter,
   matchAdapter,

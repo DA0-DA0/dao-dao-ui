@@ -2,7 +2,6 @@ import { Add, Close } from '@mui/icons-material'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { ActionCard } from '@dao-dao/actions'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { SubDao } from '@dao-dao/types/contracts/CwdCore.v2'
 import {
@@ -15,6 +14,8 @@ import {
   ManageSubDaosEmoji,
 } from '@dao-dao/ui'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
+
+import { ActionCard } from './ActionCard'
 
 export interface ManageSubDaosData {
   toAdd: SubDao[]

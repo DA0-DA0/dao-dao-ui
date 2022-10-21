@@ -6,11 +6,11 @@ import { useCallback, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 import { useActionForKey } from '@dao-dao/actions'
+import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/common'
 import {
   refreshNativeTokenStakingInfoAtom,
   tokenCardLazyStakingInfoSelector,
   useCachedLoadable,
-  useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/state'
 import { ActionKey } from '@dao-dao/types'
 import { TokenCardInfo } from '@dao-dao/types/dao'

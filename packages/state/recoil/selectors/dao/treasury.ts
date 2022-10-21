@@ -5,9 +5,9 @@ import { selectorFamily, waitForAll } from 'recoil'
 import {
   TokenCardInfo,
   TokenCardLazyStakingInfo,
+  UnstakingTaskStatus,
   WithChainId,
 } from '@dao-dao/types'
-import { UnstakingTaskStatus } from '@dao-dao/ui'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
@@ -15,6 +15,7 @@ import {
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
+// TODO: This state package should not include the adapter package.
 import {
   CwdVotingNativeStakedAdapter,
   matchAdapter,
