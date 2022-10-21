@@ -26,6 +26,7 @@ const Template: ComponentStory<typeof NftSelectionModal> = (args) => {
       }}
       onSelectAll={() =>
         !args.nfts?.loading &&
+        !args.nfts?.errored &&
         setSelected(args.nfts.data.map((nft) => args.getIdForNft(nft)) ?? [])
       }
       selectedIds={selected}
@@ -37,6 +38,7 @@ export const Default = Template.bind({})
 Default.args = {
   nfts: {
     loading: false,
+    errored: false,
     data: [
       makeNftCardProps(),
       makeNftCardProps(),
@@ -59,5 +61,16 @@ Loading.args = {
   ...Default.args,
   nfts: {
     loading: true,
+    errored: false,
+  },
+}
+
+export const Errored = Template.bind({})
+Errored.args = {
+  ...Default.args,
+  nfts: {
+    loading: false,
+    errored: true,
+    error: new Error('Request rejected.'),
   },
 }

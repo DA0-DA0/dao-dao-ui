@@ -7,6 +7,7 @@ import {
   DurationUnits,
   DurationWithUnits,
   LoadingData,
+  LoadingDataWithError,
 } from '@dao-dao/types'
 import { Expiration } from '@dao-dao/types/contracts/common'
 
@@ -121,6 +122,19 @@ export const loadableToLoadingData = <T>(
     : loadable.state === 'hasValue'
     ? { loading: false, data: loadable.contents }
     : { loading: false, data: defaultValue }
+}
+
+// Convert Recoil loadable into our generic data loader with error type.
+export const loadableToLoadingDataWithError = <T>(
+  loadable: CachedLoadable<T> | Loadable<T>
+): LoadingDataWithError<T> => {
+  return loadable.state === 'loading' ||
+    // If on server, start by loading to prevent hyration error.
+    typeof window === 'undefined'
+    ? { loading: true, errored: false }
+    : loadable.state === 'hasValue'
+    ? { loading: false, errored: false, data: loadable.contents }
+    : { loading: false, errored: true, error: loadable.contents }
 }
 
 export const convertExpirationToDate = (

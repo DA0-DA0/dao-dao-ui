@@ -1,10 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-import { Image } from '@mui/icons-material'
+import { Image, WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData, ModalProps, NftCardInfo } from '@dao-dao/types'
+import { LoadingDataWithError, ModalProps, NftCardInfo } from '@dao-dao/types'
 
 import { SortFn, useDropdownSorter, useSearchFilter } from '../../hooks'
 import { Button } from '../buttons/Button'
@@ -17,7 +17,7 @@ import { NftCard } from './NftCard'
 export interface NftSelectionModalProps
   extends Omit<ModalProps, 'children' | 'header' | 'visible'>,
     Required<Pick<ModalProps, 'header'>> {
-  nfts: LoadingData<NftCardInfo[]>
+  nfts: LoadingDataWithError<NftCardInfo[]>
   selectedIds: string[]
   getIdForNft: (nft: NftCardInfo) => string
   onNftClick: (nft: NftCardInfo) => void
@@ -50,7 +50,10 @@ export const NftSelectionModal = ({
   const { t } = useTranslation()
 
   const showSelectAll =
-    (onSelectAll || onDeselectAll) && !nfts.loading && nfts.data.length > 2
+    (onSelectAll || onDeselectAll) &&
+    !nfts.loading &&
+    !nfts.errored &&
+    nfts.data.length > 2
 
   // Scroll first selected into view as soon as possible.
   const firstSelectedRef = useRef<HTMLDivElement | null>(null)
@@ -78,7 +81,10 @@ export const NftSelectionModal = ({
   }, [nfts, firstSelectedRef, scrolledToFirst])
 
   const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
-    useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
+    useDropdownSorter(
+      nfts.loading || nfts.errored ? [] : nfts.data,
+      sortOptions
+    )
 
   const { searchBarProps, filteredData } = useSearchFilter(
     sortedNfts,
@@ -163,6 +169,14 @@ export const NftSelectionModal = ({
     >
       {nfts.loading ? (
         <Loader className="-mt-6" />
+      ) : nfts.errored ? (
+        <div className="mx-auto -mt-6 flex max-w-prose grow flex-col items-center justify-center gap-4">
+          <WarningRounded className="!h-14 !w-14" />
+          <p className="body-text">{t('error.pfpkStargazeReopenModal')}</p>
+          <pre className="secondary-text whitespace-pre-wrap text-xs text-text-interactive-error">
+            {nfts.error instanceof Error ? nfts.error.message : `${nfts.error}`}
+          </pre>
+        </div>
       ) : nfts.data.length > 0 ? (
         <div className="no-scrollbar -mx-6 -mt-6 grid grow grid-flow-row auto-rows-max grid-cols-2 gap-4 overflow-y-auto py-4 px-6 sm:grid-cols-3">
           {filteredData.map((nft: NftCardInfo) => (

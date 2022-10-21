@@ -18,7 +18,7 @@ import {
 } from '@dao-dao/ui'
 import {
   STARGAZE_CHAIN_ID,
-  loadableToLoadingData,
+  loadableToLoadingDataWithError,
   processError,
 } from '@dao-dao/utils'
 
@@ -41,13 +41,12 @@ export const InnerStargazeNftImportModal = ({
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
 
-  const nfts = loadableToLoadingData(
+  const nfts = loadableToLoadingDataWithError(
     useCachedLoadable(
       stargazeWalletAddress
         ? walletStargazeNftCardInfosSelector(stargazeWalletAddress)
         : undefined
-    ),
-    []
+    )
   )
 
   const [loading, setLoading] = useState(false)
@@ -56,7 +55,7 @@ export const InnerStargazeNftImportModal = ({
       toast.error(t('error.connectWalletToContinue'))
       return
     }
-    if (!selected.length || nfts.loading) {
+    if (!selected.length || nfts.loading || nfts.errored) {
       toast.error(t('error.noNftsSelected'))
       return
     }
@@ -142,7 +141,7 @@ export const InnerStargazeNftImportModal = ({
         )
       }}
       onSelectAll={() =>
-        nfts.loading
+        nfts.loading || nfts.errored
           ? () => {}
           : setSelected(nfts.data.map((nft) => getIdForNft(nft)) ?? [])
       }

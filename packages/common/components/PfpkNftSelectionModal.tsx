@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { ComponentType, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -19,7 +19,7 @@ import {
 } from '@dao-dao/ui'
 import {
   STARGAZE_CHAIN_ID,
-  loadableToLoadingData,
+  loadableToLoadingDataWithError,
   processError,
 } from '@dao-dao/utils'
 
@@ -35,17 +35,21 @@ export const InnerPfpkNftSelectionModal = ({
   Loader = DefaultLoader,
 }: PfpkNftSelectionModalProps) => {
   const { t } = useTranslation()
-  const { address: stargazeWalletAddress } = useWallet(STARGAZE_CHAIN_ID)
+  const {
+    address: stargazeWalletAddress,
+    status: stargazeConnectionStatus,
+    error: stargazeConnectionError,
+  } = useWallet(STARGAZE_CHAIN_ID)
+
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
 
-  const nfts = loadableToLoadingData(
+  const nfts = loadableToLoadingDataWithError(
     useCachedLoadable(
       stargazeWalletAddress
         ? walletStargazeNftCardInfosSelector(stargazeWalletAddress)
         : undefined
-    ),
-    []
+    )
   )
 
   const {
@@ -61,7 +65,7 @@ export const InnerPfpkNftSelectionModal = ({
       : undefined
   )
   const selectedNft =
-    !nfts.loading && selected
+    !nfts.loading && !nfts.errored && selected
       ? nfts.data.find((nft) => selected === getIdForNft(nft))
       : undefined
   // If nonce changes, set selected NFT.
@@ -125,7 +129,11 @@ export const InnerPfpkNftSelectionModal = ({
         title: t('title.chooseNftProfilePicture'),
         subtitle: t('info.chooseNftProfilePictureSubtitle'),
       }}
-      nfts={nfts}
+      nfts={
+        stargazeConnectionStatus === WalletConnectionStatus.Errored
+          ? { loading: false, errored: true, error: stargazeConnectionError }
+          : nfts
+      }
       onAction={onAction}
       onClose={onClose}
       onNftClick={(nft) =>

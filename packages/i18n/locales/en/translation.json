@@ -192,6 +192,7 @@
     "notCw721Address": "This contract address is not a NFT (CW721).",
     "notEnoughForDeposit": "You do not have enough tokens in your balance to pay the proposal deposit",
     "pageNotFound": "We couldn't find that page.",
+    "pfpkStargazeReopenModal": "Failed to connect to Stargaze. Reopen the modal to try again.",
     "subDaoAlreadyExists": "SubDAO already exists.",
     "unexpectedError": "An unexpected error occurred."
   },
