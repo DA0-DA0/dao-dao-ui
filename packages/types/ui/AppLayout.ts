@@ -1,11 +1,10 @@
 import { ComponentType, ReactNode } from 'react'
 
-import { PageHeaderProps } from '@dao-dao/ui'
-
 import { CommandModalContextMaker } from '../command'
 import { WalletProfile } from '../wallet'
 import { LoadingData } from './common'
 import { NavigationProps } from './Navigation'
+import { PageHeaderProps } from './PageHeader'
 import { RightSidebarProps } from './RightSidebar'
 
 export interface IAppLayoutContext {

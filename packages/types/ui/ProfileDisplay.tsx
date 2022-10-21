@@ -1,7 +1,6 @@
-import { CopyToClipboardProps } from '@dao-dao/ui'
-
 import { WalletProfile } from '../wallet'
 import { LoadingData } from './common'
+import { CopyToClipboardProps } from './CopyToClipboard'
 
 export interface ProfileDisplayProps {
   address: string

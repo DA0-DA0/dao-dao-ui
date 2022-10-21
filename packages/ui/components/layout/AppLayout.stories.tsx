@@ -1,10 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
+import { PageHeaderProps } from '@dao-dao/types'
+
 import { AppLayout, AppLayoutProps, IAppLayoutContext } from './AppLayout'
 import { NavigationProps } from './Navigation'
 import { Default as NavigatonStory } from './Navigation.stories'
-import { PageHeader, PageHeaderProps } from './PageHeader'
+import { PageHeader } from './PageHeader'
 import { Default as PageHeaderStory } from './PageHeader.stories'
 import { DefaultArgs as RightSidebarStoryArgs } from './RightSidebar.stories'
 

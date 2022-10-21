@@ -3,10 +3,10 @@ import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
-import { LoaderProps, LogoProps } from '@dao-dao/ui'
-
 import { ContractVersion } from './contract'
 import { CosmosMsgFor_Empty } from './contracts/common'
+import { LoaderProps } from './ui/Loader'
+import { LogoProps } from './ui/Logo'
 
 export enum ActionKey {
   Spend = 'spend',

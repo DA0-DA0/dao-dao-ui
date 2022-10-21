@@ -1,25 +1,14 @@
 import { Menu } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-import { Breadcrumbs, BreadcrumbsProps } from '../Breadcrumbs'
+import { PageHeaderProps } from '@dao-dao/types/ui/PageHeader'
+
+import { Breadcrumbs } from '../Breadcrumbs'
 import { IconButton } from '../icon_buttons'
 import { TopGradient } from '../TopGradient'
 import { useAppLayoutContext } from './AppLayoutContext'
-
-export interface PageHeaderProps {
-  title?: string
-  breadcrumbs?: BreadcrumbsProps
-  className?: string
-  noBorder?: boolean
-  // Center title, breadcrumbs, or centerNode (whichever is displayed) even when
-  // not responsive.
-  forceCenter?: boolean
-  centerNode?: ReactNode
-  rightNode?: ReactNode
-  gradient?: boolean
-}
 
 export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-20'
 
