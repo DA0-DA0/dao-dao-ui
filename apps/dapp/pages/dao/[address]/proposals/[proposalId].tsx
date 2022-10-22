@@ -8,19 +8,19 @@ import { useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { useProfile } from '@dao-dao/state'
 import {
   DaoPageWrapper,
   DaoProposalPageWrapperProps,
   Trans,
-} from '@dao-dao/common'
-import { useActions } from '@dao-dao/common/actions'
+} from '@dao-dao/stateful'
+import { useActions } from '@dao-dao/stateful/actions'
 import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapterContext,
-} from '@dao-dao/common/proposal-module-adapter'
-import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
-import { useVotingModuleAdapter } from '@dao-dao/common/voting-module-adapter'
-import { useProfile } from '@dao-dao/state'
+} from '@dao-dao/stateful/proposal-module-adapter'
+import { makeGetDaoProposalStaticProps } from '@dao-dao/stateful/server'
+import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   Loader,
   Logo,

@@ -11,7 +11,7 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/stateless',
   '@dao-dao/utils',
   '@dao-dao/state',
-  '@dao-dao/common',
+  '@dao-dao/stateful',
   '@dao-dao/i18n',
   '@dao-dao/types',
 ])

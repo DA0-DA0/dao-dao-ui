@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { CwdVotingCw20StakedAdapter } from '@dao-dao/common/voting-module-adapter/adapters/CwdVotingCw20Staked'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter/adapters/CwdVotingCw20Staked'
 import {
   WalletProviderDecorator,
   makeAppLayoutDecorator,

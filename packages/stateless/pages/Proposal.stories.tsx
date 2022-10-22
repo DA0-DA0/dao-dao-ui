@@ -3,8 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import {
   ProposalVoteTally,
   ProposalVoteTallyProps,
-} from '@dao-dao/common/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally'
-import { Default as ProposalVoteTallyStory } from '@dao-dao/common/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally.stories'
+} from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally'
+import { Default as ProposalVoteTallyStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally.stories'
 import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,

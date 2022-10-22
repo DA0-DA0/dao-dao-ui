@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { CwdProposalSingleAdapter } from '@dao-dao/common/proposal-module-adapter'
-import { CwdVotingCw20StakedAdapter } from '@dao-dao/common/voting-module-adapter'
+import { CwdProposalSingleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   WalletProviderDecorator,
   makeAppLayoutDecorator,

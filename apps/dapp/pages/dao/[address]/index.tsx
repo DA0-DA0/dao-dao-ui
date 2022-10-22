@@ -15,21 +15,21 @@ import {
 } from 'recoil'
 
 import {
-  DaoInfoBar,
-  DaoPageWrapper,
-  DaoPageWrapperProps,
-  useEncodedCwdProposalSinglePrefill,
-} from '@dao-dao/common'
-import { useActionForKey } from '@dao-dao/common/actions'
-import { matchAndLoadCommon } from '@dao-dao/common/proposal-module-adapter'
-import { makeGetDaoStaticProps } from '@dao-dao/common/server'
-import { useVotingModuleAdapter } from '@dao-dao/common/voting-module-adapter'
-import {
   CwdCoreV2Selectors,
   usePinnedDaos,
   useVotingModule,
   useWalletProfile,
 } from '@dao-dao/state'
+import {
+  DaoInfoBar,
+  DaoPageWrapper,
+  DaoPageWrapperProps,
+  useEncodedCwdProposalSinglePrefill,
+} from '@dao-dao/stateful'
+import { useActionForKey } from '@dao-dao/stateful/actions'
+import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
+import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
+import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   DaoHome,
   Loader,

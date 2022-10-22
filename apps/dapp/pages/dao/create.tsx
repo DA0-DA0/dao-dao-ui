@@ -5,8 +5,8 @@ import { GetStaticProps, NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useTranslation } from 'react-i18next'
 
-import { CreateDaoForm, SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+import { CreateDaoForm, SuspenseLoader } from '@dao-dao/stateful'
 import { PageLoader } from '@dao-dao/stateless'
 import { SITE_URL } from '@dao-dao/utils'
 

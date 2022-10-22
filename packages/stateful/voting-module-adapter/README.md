@@ -1,4 +1,4 @@
-# @dao-dao/common/voting-module-adapter
+# @dao-dao/stateful/voting-module-adapter
 
 Author: [@NoahSaso](https://github.com/NoahSaso)
 
@@ -309,7 +309,7 @@ of the DAO's core contract, as well as some commonly used components, like
 `Logo` and `Loader`.
 
 ```tsx
-import { VotingModuleAdapterProvider } from '@dao-dao/common/voting-module-adapter'
+import { VotingModuleAdapterProvider } from '@dao-dao/stateful/voting-module-adapter'
 
 const App = () => (
   <VotingModuleAdapterProvider
@@ -355,9 +355,9 @@ Now that the library has been setup, we can use the hook anywhere as a
 descendant of the Provider to access the voting module adapter interface.
 
 ```tsx
-import { SuspenseLoader } from '@dao-dao/common'
+import { SuspenseLoader } from '@dao-dao/stateful'
 import { Loader } from '@dao-dao/stateless'
-import { useVotingModuleAdapter } from '@dao-dao/common/voting-module-adapter'
+import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 
 const DaoThinInfoDisplay = () => {
   const {
@@ -420,7 +420,7 @@ Example:
 <summary>`CwdVotingCw20Staked/components/DaoTreasuryFooter.tsx`</summary>
 
 ```tsx
-import { useVotingModuleAdapterOptions } from '@dao-dao/common/voting-module-adapter/react/context'
+import { useVotingModuleAdapterOptions } from '@dao-dao/stateful/voting-module-adapter/react/context'
 
 const DaoTreasuryFooter = () => {
   const { t } = useTranslation()

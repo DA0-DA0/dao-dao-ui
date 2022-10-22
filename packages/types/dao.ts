@@ -20,7 +20,7 @@ import { InstantiateMsg as CwdCoreV2InstantiateMsg } from './contracts/CwdCore.v
 import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
-// Used in DaoInfoContext in @dao-dao/common/components/DaoPageWrapper
+// Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
 export interface DaoInfo {
   chainId: string
   bech32Prefix: string
@@ -44,8 +44,8 @@ export interface DaoParentInfo {
   parentDao?: DaoParentInfo | null
 }
 
-// Used in @dao-dao/common/components/DaoPageWrapper to serialize DaoInfo loaded
-// via static props (@dao-dao/common/server/makeGetDaoStaticProps) to be fed
+// Used in @dao-dao/stateful/components/DaoPageWrapper to serialize DaoInfo loaded
+// via static props (@dao-dao/stateful/server/makeGetDaoStaticProps) to be fed
 // into DaoPageWrapper and available in the UI via DaoInfoContext.
 export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
   // Created needs to be serialized and de-serialized.

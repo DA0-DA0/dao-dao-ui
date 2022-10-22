@@ -1,6 +1,6 @@
 import { DecoratorFn } from '@storybook/react'
 
-import { CreateDaoForm } from '@dao-dao/common'
+import { CreateDaoForm } from '@dao-dao/stateful'
 import { NewDao } from '@dao-dao/types'
 
 export const makeCreateDaoFormDecorator: (

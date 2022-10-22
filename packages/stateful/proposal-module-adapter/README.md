@@ -1,4 +1,4 @@
-# @dao-dao/common/proposal-module-adapter
+# @dao-dao/stateful/proposal-module-adapter
 
 Author: [@NoahSaso](https://github.com/NoahSaso)
 
@@ -34,7 +34,7 @@ of the DAO's core contract, as well as some commonly used components, like
 `Logo` and `Loader`.
 
 ```tsx
-import { ProposalModuleAdapterProvider } from '@dao-dao/common/proposal-module-adapter'
+import { ProposalModuleAdapterProvider } from '@dao-dao/stateful/proposal-module-adapter'
 
 const App = () => (
   <ProposalModuleAdapterProvider
@@ -61,9 +61,9 @@ Now that the library has been setup, we can use the hook anywhere as a
 descendant of the Provider to access the proposal module adapter interface.
 
 ```tsx
-import { SuspenseLoader } from '@dao-dao/common'
+import { SuspenseLoader } from '@dao-dao/stateful'
 import { Loader } from '@dao-dao/stateless'
-import { useProposalModuleAdapter } from '@dao-dao/common/proposal-module-adapter'
+import { useProposalModuleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
 
 const ProposalVoteInfo = () => {
   const {
@@ -87,7 +87,7 @@ Here is an example that displays a dropdown of proposal modules and lets you
 view the voting configuration for each one:
 
 ```tsx
-import { matchAndLoadCommon } from '@dao-dao/common/proposal-module-adapter'
+import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
 
 export const DaoInfo = () => {
   const { coreAddress, proposalModules } = useDaoInfoContext()

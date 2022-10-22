@@ -3,10 +3,10 @@
 
 import { useTranslation } from 'react-i18next'
 
-import { SuspenseLoader } from '@dao-dao/common'
-import { matchAndLoadCommon } from '@dao-dao/common/proposal-module-adapter'
-import { useVotingModuleAdapter } from '@dao-dao/common/voting-module-adapter'
 import { useWalletProfile } from '@dao-dao/state'
+import { SuspenseLoader } from '@dao-dao/stateful'
+import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
+import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   ProfileNewProposalCard as StatelessProfileNewProposalCard,
   useAppLayoutContext,

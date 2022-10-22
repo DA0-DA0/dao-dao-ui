@@ -7,13 +7,13 @@ import { NextSeo } from 'next-seo'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   ProposalLine,
   ProposalLineProps,
   SuspenseLoader,
   pinnedDaoDropdownInfosSelector,
-} from '@dao-dao/common'
-import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+} from '@dao-dao/stateful'
 import {
   DaoWithProposals,
   Inbox,

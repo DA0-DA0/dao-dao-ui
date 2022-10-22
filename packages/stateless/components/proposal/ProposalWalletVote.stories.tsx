@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalWalletVoteClassNameMap } from '@dao-dao/common/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalWalletVote'
+import { ProposalWalletVoteClassNameMap } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalWalletVote'
 import { Vote } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 
 import { ProposalWalletVote } from './ProposalWalletVote'

@@ -19,7 +19,7 @@
     "@cosmjs/encoding": "0.28.10",
     "@cosmjs/proto-signing": "0.28.10",
     "@cosmjs/stargate": "0.28.10",
-    "@dao-dao/common": "2.0.1",
+    "@dao-dao/stateful": "2.0.1",
     "@dao-dao/i18n": "2.0.1",
     "@dao-dao/types": "2.0.1",
     "@dao-dao/stateless": "2.0.1",

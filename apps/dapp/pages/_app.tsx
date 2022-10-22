@@ -13,12 +13,12 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { WalletProvider } from '@dao-dao/common'
 import {
   SubQueryProvider,
   activeThemeAtom,
   mountedInBrowserAtom,
 } from '@dao-dao/state'
+import { WalletProvider } from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 

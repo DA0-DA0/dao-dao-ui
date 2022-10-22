@@ -6,7 +6,6 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
-import { SuspenseLoader } from '@dao-dao/common'
 import {
   TransformedTreasuryTransaction,
   blockHeightSelector,
@@ -15,6 +14,7 @@ import {
   nativeBalanceSelector,
   transformedTreasuryTransactionsSelector,
 } from '@dao-dao/state'
+import { SuspenseLoader } from '@dao-dao/stateful'
 import {
   Button,
   CopyToClipboard,

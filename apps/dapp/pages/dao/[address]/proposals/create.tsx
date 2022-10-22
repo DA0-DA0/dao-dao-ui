@@ -12,22 +12,22 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
-  DaoPageWrapper,
-  DaoPageWrapperProps,
-  SuspenseLoader,
-} from '@dao-dao/common'
-import {
-  CwdProposalSingleAdapter,
-  matchAndLoadCommon,
-  matchAdapter as matchProposalModuleAdapter,
-} from '@dao-dao/common/proposal-module-adapter'
-import { makeGetDaoStaticProps } from '@dao-dao/common/server'
-import {
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
   refreshProposalsIdAtom,
   useVotingModule,
 } from '@dao-dao/state'
+import {
+  DaoPageWrapper,
+  DaoPageWrapperProps,
+  SuspenseLoader,
+} from '@dao-dao/stateful'
+import {
+  CwdProposalSingleAdapter,
+  matchAndLoadCommon,
+  matchAdapter as matchProposalModuleAdapter,
+} from '@dao-dao/stateful/proposal-module-adapter'
+import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import {
   CreateProposal,
   Loader,

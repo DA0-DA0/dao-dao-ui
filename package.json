@@ -12,13 +12,13 @@
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
     "test": "turbo run test",
     "dapp": "yarn workspace @dao-dao/dapp",
+    "i18n": "yarn workspace @dao-dao/i18n",
     "state": "yarn workspace @dao-dao/state",
     "stateless": "yarn workspace @dao-dao/stateless",
-    "utils": "yarn workspace @dao-dao/utils",
-    "common": "yarn workspace @dao-dao/common",
-    "i18n": "yarn workspace @dao-dao/i18n",
+    "stateful": "yarn workspace @dao-dao/stateful",
     "storybook": "yarn workspace @dao-dao/storybook",
-    "types": "yarn workspace @dao-dao/types"
+    "types": "yarn workspace @dao-dao/types",
+    "utils": "yarn workspace @dao-dao/utils"
   },
   "devDependencies": {
     "turbo": "latest"

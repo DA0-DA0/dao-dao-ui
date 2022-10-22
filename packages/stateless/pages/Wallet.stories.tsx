@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
-import { SuspenseLoader } from '@dao-dao/common'
-import { useActions } from '@dao-dao/common/actions'
+import { SuspenseLoader } from '@dao-dao/stateful'
+import { useActions } from '@dao-dao/stateful/actions'
 import {
   WalletProviderDecorator,
   makeActionsProviderDecorator,

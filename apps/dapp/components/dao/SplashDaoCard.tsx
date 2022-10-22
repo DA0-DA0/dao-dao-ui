@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react'
 
-import { daoCardInfoLazyDataSelector } from '@dao-dao/common'
+import { daoCardInfoLazyDataSelector } from '@dao-dao/stateful'
 import {
   DaoCard as StatelessDaoCard,
   useCachedLoadable,

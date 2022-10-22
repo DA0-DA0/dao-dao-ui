@@ -5,12 +5,12 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { useVotingModule, useWalletProfile } from '@dao-dao/state'
 import {
   matchAndLoadCommon,
   useProposalModuleAdapter,
-} from '@dao-dao/common/proposal-module-adapter'
-import { useVotingModuleAdapter } from '@dao-dao/common/voting-module-adapter'
-import { useVotingModule, useWalletProfile } from '@dao-dao/state'
+} from '@dao-dao/stateful/proposal-module-adapter'
+import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   Loader,
   Logo,

@@ -3,19 +3,19 @@
 import { useEffect } from 'react'
 
 import {
-  StargazeNftImportModal,
-  useEncodedCwdProposalSinglePrefill,
-} from '@dao-dao/common'
-import { useActionForKey } from '@dao-dao/common/actions'
-import {
-  useCw20GovernanceTokenInfoResponseIfExists,
-  useNativeGovernanceTokenInfoResponseIfExists,
-} from '@dao-dao/common/voting-module-adapter'
-import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
   useVotingModule,
 } from '@dao-dao/state'
+import {
+  StargazeNftImportModal,
+  useEncodedCwdProposalSinglePrefill,
+} from '@dao-dao/stateful'
+import { useActionForKey } from '@dao-dao/stateful/actions'
+import {
+  useCw20GovernanceTokenInfoResponseIfExists,
+  useNativeGovernanceTokenInfoResponseIfExists,
+} from '@dao-dao/stateful/voting-module-adapter'
 import {
   NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,

@@ -1,4 +1,4 @@
-# @dao-dao/common/command
+# @dao-dao/stateful/command
 
 This package provides a convenient interface for customizing the command modal
 (command-K/control-K), the component that lets you quickly navigate the site and

@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { DisplayInfoIcon } from '@dao-dao/common/voting-module-adapter/adapters/CwdVotingCw4/daoCreation'
+import { DisplayInfoIcon } from '@dao-dao/stateful/voting-module-adapter/adapters/CwdVotingCw4/daoCreation'
 
 import { DaoStructureCard } from './DaoStructureCard'
 

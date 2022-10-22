@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Trans } from '@dao-dao/common'
+import { Trans } from '@dao-dao/stateful'
 
 import { DaoNotFound } from './DaoNotFound'
 

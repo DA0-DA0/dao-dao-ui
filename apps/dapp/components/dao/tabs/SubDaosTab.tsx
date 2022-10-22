@@ -3,8 +3,8 @@
 import { useEffect } from 'react'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/common'
 import { subDaoCardInfosSelector, useVotingModule } from '@dao-dao/state'
+import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/stateful'
 import {
   SubDaosTab as StatelessSubDaosTab,
   useDaoInfoContext,
