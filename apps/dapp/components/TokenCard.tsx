@@ -5,8 +5,8 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
-import { useActionForKey } from '@dao-dao/common/actions'
 import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/common'
+import { useActionForKey } from '@dao-dao/common/actions'
 import {
   refreshNativeTokenStakingInfoAtom,
   tokenCardLazyStakingInfoSelector,

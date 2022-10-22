@@ -18,8 +18,6 @@
     "common": "yarn workspace @dao-dao/common",
     "i18n": "yarn workspace @dao-dao/i18n",
     "storybook": "yarn workspace @dao-dao/storybook",
-    "proposal-module-adapter": "yarn workspace @dao-dao/proposal-module-adapter",
-    "voting-module-adapter": "yarn workspace @dao-dao/voting-module-adapter",
     "types": "yarn workspace @dao-dao/types"
   },
   "devDependencies": {

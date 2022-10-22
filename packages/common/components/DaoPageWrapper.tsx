@@ -19,9 +19,9 @@ import {
   DaoInfo,
   DaoInfoSerializable,
 } from '@dao-dao/types'
-import { VotingModuleAdapterProvider } from '@dao-dao/voting-module-adapter'
 
 import { ActionsProvider } from '../actions'
+import { VotingModuleAdapterProvider } from '../voting-module-adapter'
 import { SuspenseLoader } from './SuspenseLoader'
 import { Trans } from './Trans'
 

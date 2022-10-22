@@ -4,8 +4,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRecoilCallback } from 'recoil'
 
-import { ProposalLine, ProposalLineProps } from '@dao-dao/common'
-import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import { useVotingModule } from '@dao-dao/state'
 import {
   Loader,
@@ -13,6 +11,9 @@ import {
   ProposalList as StatelessProposalList,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+
+import { matchAndLoadCommon } from '../proposal-module-adapter'
+import { ProposalLine, ProposalLineProps } from './ProposalLine'
 
 // Contracts enforce a max of 30, though this is on the edge for DAOs with
 // proposals that have a large size.

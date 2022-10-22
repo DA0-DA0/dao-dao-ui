@@ -1,10 +1,5 @@
 import { ComponentType } from 'react'
 
-import { SuspenseLoader } from '@dao-dao/common'
-import {
-  ProposalModuleAdapterProvider,
-  useProposalModuleAdapter,
-} from '@dao-dao/proposal-module-adapter'
 import {
   Loader as DefaultLoader,
   Logo as DefaultLogo,
@@ -13,6 +8,12 @@ import {
   ProposalLineLoader,
 } from '@dao-dao/stateless'
 import { ProposalModule } from '@dao-dao/types'
+
+import {
+  ProposalModuleAdapterProvider,
+  useProposalModuleAdapter,
+} from '../proposal-module-adapter'
+import { SuspenseLoader } from './SuspenseLoader'
 
 export interface ProposalLineProps {
   chainId: string

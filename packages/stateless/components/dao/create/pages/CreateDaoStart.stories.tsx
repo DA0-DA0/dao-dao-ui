@@ -1,12 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { CwdProposalSingleAdapter } from '@dao-dao/proposal-module-adapter'
+import { CwdProposalSingleAdapter } from '@dao-dao/common/proposal-module-adapter'
+import { CwdVotingCw20StakedAdapter } from '@dao-dao/common/voting-module-adapter'
 import {
   WalletProviderDecorator,
   makeAppLayoutDecorator,
   makeCreateDaoFormDecorator,
 } from '@dao-dao/storybook/decorators'
-import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter'
 
 import { CreateDaoStart } from './CreateDaoStart'
 

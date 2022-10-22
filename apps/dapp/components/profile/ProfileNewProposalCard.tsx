@@ -4,14 +4,14 @@
 import { useTranslation } from 'react-i18next'
 
 import { SuspenseLoader } from '@dao-dao/common'
-import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
+import { matchAndLoadCommon } from '@dao-dao/common/proposal-module-adapter'
+import { useVotingModuleAdapter } from '@dao-dao/common/voting-module-adapter'
 import { useWalletProfile } from '@dao-dao/state'
 import {
   ProfileNewProposalCard as StatelessProfileNewProposalCard,
   useAppLayoutContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 export interface ProfileNewProposalCardProps {
   proposalModuleAdapterCommon: ReturnType<typeof matchAndLoadCommon>

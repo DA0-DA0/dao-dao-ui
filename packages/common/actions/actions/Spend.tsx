@@ -24,8 +24,8 @@ import {
   makeWasmMessage,
   nativeTokenDecimals,
 } from '@dao-dao/utils'
-import { useCw20GovernanceTokenInfoResponseIfExists } from '@dao-dao/voting-module-adapter'
 
+import { useCw20GovernanceTokenInfoResponseIfExists } from '../../voting-module-adapter'
 import { SpendComponent as StatelessSpendComponent } from '../components/Spend'
 
 interface SpendData {

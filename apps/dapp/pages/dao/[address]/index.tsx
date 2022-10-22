@@ -14,15 +14,16 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { useActionForKey } from '@dao-dao/common/actions'
 import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
   useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/common'
+import { useActionForKey } from '@dao-dao/common/actions'
+import { matchAndLoadCommon } from '@dao-dao/common/proposal-module-adapter'
 import { makeGetDaoStaticProps } from '@dao-dao/common/server'
-import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
+import { useVotingModuleAdapter } from '@dao-dao/common/voting-module-adapter'
 import {
   CwdCoreV2Selectors,
   usePinnedDaos,
@@ -42,7 +43,6 @@ import {
 import { ActionKey } from '@dao-dao/types'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import { SITE_URL } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 

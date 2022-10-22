@@ -13,8 +13,6 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/state',
   '@dao-dao/common',
   '@dao-dao/i18n',
-  '@dao-dao/voting-module-adapter',
-  '@dao-dao/proposal-module-adapter',
   '@dao-dao/types',
 ])
 

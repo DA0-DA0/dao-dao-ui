@@ -12,12 +12,12 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { loadableToLoadingData } from '@dao-dao/utils'
+
 import {
   useCw20GovernanceTokenInfoResponseIfExists,
   useVotingModuleAdapter,
-} from '@dao-dao/voting-module-adapter'
-import { useVotingModuleAdapterOptions } from '@dao-dao/voting-module-adapter/react/context'
-
+} from '../voting-module-adapter'
+import { useVotingModuleAdapterOptions } from '../voting-module-adapter/react/context'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const DaoInfoBar = (props: InnerDaoInfoBarProps) => {

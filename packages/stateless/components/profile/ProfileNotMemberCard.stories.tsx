@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileCardMemberInfoTokens } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens'
-import { makeProps as makeProfileCardMemberInfoTokensProps } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens.stories'
+import { ProfileCardMemberInfoTokens } from '@dao-dao/common/voting-module-adapter/components/ProfileCardMemberInfoTokens'
+import { makeProps as makeProfileCardMemberInfoTokensProps } from '@dao-dao/common/voting-module-adapter/components/ProfileCardMemberInfoTokens.stories'
 
 import { ProfileNotMemberCard } from './ProfileNotMemberCard'
 

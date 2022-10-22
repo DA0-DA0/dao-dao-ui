@@ -4,7 +4,6 @@ import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { useProposalModuleAdapterIfAvailable } from '@dao-dao/proposal-module-adapter/react/context'
 import {
   nativeBalancesSelector,
   transactionEventsSelector,
@@ -25,6 +24,7 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 
+import { useProposalModuleAdapterIfAvailable } from '../../proposal-module-adapter/react/context'
 import { InstantiateComponent as StatelessInstantiateComponent } from '../components/Instantiate'
 
 interface InstantiateData {

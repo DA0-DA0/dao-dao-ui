@@ -5,7 +5,7 @@ import { DefaultNewDao } from '@dao-dao/common'
 import {
   VotingDurationIcon,
   VotingDurationReview,
-} from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
+} from '@dao-dao/common/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
 import { NewDao } from '@dao-dao/types'
 
 import { DaoCreateConfigReviewCard } from './DaoCreateConfigReviewCard'

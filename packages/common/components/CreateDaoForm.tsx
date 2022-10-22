@@ -10,10 +10,6 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import {
-  ProposalModuleAdapter,
-  getAdapterById as getProposalModuleAdapterById,
-} from '@dao-dao/proposal-module-adapter'
-import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
   usePinnedDaos,
@@ -33,6 +29,7 @@ import {
   CreateDaoCustomValidator,
   DaoParentInfo,
   NewDao,
+  ProposalModuleAdapter,
 } from '@dao-dao/types'
 import { InstantiateMsg as CwdCoreV2InstantiateMsg } from '@dao-dao/types/contracts/CwdCore.v2'
 import instantiateSchema from '@dao-dao/types/contracts/CwdCore.v2.instantiate_schema.json'
@@ -51,21 +48,22 @@ import {
   processError,
   validateUrl,
 } from '@dao-dao/utils'
-import {
-  CwdVotingCw20StakedAdapter,
-  getAdapterById as getVotingModuleAdapterById,
-  getAdapters as getVotingModuleAdapters,
-} from '@dao-dao/voting-module-adapter'
-import {
-  DaoCreationConfig as CwdVotingCw20StakedCreationConfig,
-  GovernanceTokenType,
-} from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked/types'
 
 import {
   DefaultNewDao,
   daoCreatedCardPropsAtom,
   newDaoAtom,
 } from '../atoms/newDao'
+import { getAdapterById as getProposalModuleAdapterById } from '../proposal-module-adapter'
+import {
+  CwdVotingCw20StakedAdapter,
+  getAdapterById as getVotingModuleAdapterById,
+  getAdapters as getVotingModuleAdapters,
+} from '../voting-module-adapter'
+import {
+  DaoCreationConfig as CwdVotingCw20StakedCreationConfig,
+  GovernanceTokenType,
+} from '../voting-module-adapter/adapters/CwdVotingCw20Staked/types'
 import { SuspenseLoader } from './SuspenseLoader'
 
 // i18n keys

@@ -4,9 +4,9 @@ import { useState } from 'react'
 import {
   CwdProposalSingleAdapter,
   matchAdapter as matchProposalModuleAdapter,
-} from '@dao-dao/proposal-module-adapter'
-import { NewProposalProps } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/common/ui/NewProposal'
-import { Default as NewProposalStory } from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/common/ui/NewProposal.stories'
+} from '@dao-dao/common/proposal-module-adapter'
+import { NewProposalProps } from '@dao-dao/common/proposal-module-adapter/adapters/CwdProposalSingle/common/ui/NewProposal'
+import { Default as NewProposalStory } from '@dao-dao/common/proposal-module-adapter/adapters/CwdProposalSingle/common/ui/NewProposal.stories'
 import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,

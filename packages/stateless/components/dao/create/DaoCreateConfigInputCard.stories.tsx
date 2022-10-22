@@ -5,7 +5,7 @@ import { DefaultNewDao, SuspenseLoader } from '@dao-dao/common'
 import {
   VotingDurationIcon,
   VotingDurationInput,
-} from '@dao-dao/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
+} from '@dao-dao/common/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
 import { NewDao } from '@dao-dao/types'
 
 import { DaoCreateConfigInputCard } from './DaoCreateConfigInputCard'

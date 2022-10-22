@@ -16,13 +16,13 @@ import {
   DaoPageWrapperProps,
   SuspenseLoader,
 } from '@dao-dao/common'
-import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import {
   BaseNewProposalProps,
   CwdProposalSingleAdapter,
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
-} from '@dao-dao/proposal-module-adapter'
+} from '@dao-dao/common/proposal-module-adapter'
+import { makeGetDaoStaticProps } from '@dao-dao/common/server'
 import {
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,

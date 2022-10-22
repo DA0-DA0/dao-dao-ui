@@ -1,10 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileCardMemberInfoTokens } from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens'
+import { ProfileCardMemberInfoTokens } from '@dao-dao/common/voting-module-adapter/components/ProfileCardMemberInfoTokens'
 import {
   makeProps as makeProfileCardMemberInfoTokenProps,
   makeCantVoteOnProposalProps as makeProfileCardMemberInfoTokensCantVoteOnProposalProps,
-} from '@dao-dao/voting-module-adapter/components/ProfileCardMemberInfoTokens.stories'
+} from '@dao-dao/common/voting-module-adapter/components/ProfileCardMemberInfoTokens.stories'
 
 import { ProfileCantVoteCard } from './ProfileCantVoteCard'
 

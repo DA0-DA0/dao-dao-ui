@@ -1,6 +1,5 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { proposalModuleAdapterProposalCountSelector } from '@dao-dao/proposal-module-adapter'
 import {
   CwdCoreV2Selectors,
   CwdVotingCw20StakedSelectors,
@@ -13,10 +12,11 @@ import {
   ProposalModule,
   WithChainId,
 } from '@dao-dao/types'
-import { matchAdapter as matchVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
-import { CwdVotingCw20StakedAdapter } from '@dao-dao/voting-module-adapter/adapters/CwdVotingCw20Staked'
 
+import { proposalModuleAdapterProposalCountSelector } from '../proposal-module-adapter'
 import { fetchProposalModules } from '../utils/fetchProposalModules'
+import { matchAdapter as matchVotingModuleAdapter } from '../voting-module-adapter'
+import { CwdVotingCw20StakedAdapter } from '../voting-module-adapter/adapters/CwdVotingCw20Staked'
 
 export const cwCoreProposalModulesSelector = selectorFamily<
   ProposalModule[],

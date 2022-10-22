@@ -8,7 +8,8 @@ import { useRecoilValue, waitForAll } from 'recoil'
 import {
   matchAndLoadCommon,
   useProposalModuleAdapter,
-} from '@dao-dao/proposal-module-adapter'
+} from '@dao-dao/common/proposal-module-adapter'
+import { useVotingModuleAdapter } from '@dao-dao/common/voting-module-adapter'
 import { useVotingModule, useWalletProfile } from '@dao-dao/state'
 import {
   Loader,
@@ -20,7 +21,6 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 export interface ProfileProposalCardProps {
   onVoteSuccess: () => void | Promise<void>

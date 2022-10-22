@@ -8,6 +8,10 @@ import {
 } from '@dao-dao/common'
 import { useActionForKey } from '@dao-dao/common/actions'
 import {
+  useCw20GovernanceTokenInfoResponseIfExists,
+  useNativeGovernanceTokenInfoResponseIfExists,
+} from '@dao-dao/common/voting-module-adapter'
+import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
   useVotingModule,
@@ -20,10 +24,6 @@ import {
 } from '@dao-dao/stateless'
 import { ActionKey } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
-import {
-  useCw20GovernanceTokenInfoResponseIfExists,
-  useNativeGovernanceTokenInfoResponseIfExists,
-} from '@dao-dao/voting-module-adapter'
 
 import { TokenCard } from '@/components'
 

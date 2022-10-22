@@ -1,16 +1,18 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
-import {
-  FetchPreProposeAddressFunction,
-  matchAdapter,
-} from '@dao-dao/proposal-module-adapter'
 import { CwCoreV1QueryClient, CwdCoreV2QueryClient } from '@dao-dao/state'
-import { ContractVersion, ProposalModule } from '@dao-dao/types'
+import {
+  ContractVersion,
+  FetchPreProposeAddressFunction,
+  ProposalModule,
+} from '@dao-dao/types'
 import { InfoResponse } from '@dao-dao/types/contracts/common'
 import {
   indexToProposalModulePrefix,
   parseContractVersion,
 } from '@dao-dao/utils'
+
+import { matchAdapter } from '../proposal-module-adapter'
 
 export const fetchProposalModules = async (
   cwClient: CosmWasmClient,
