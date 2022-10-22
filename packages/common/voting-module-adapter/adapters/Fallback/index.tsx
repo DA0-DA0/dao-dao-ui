@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 
-import { VotingModuleAdapter } from '../../types'
+import { VotingModuleAdapter } from '@dao-dao/types'
+
 import { Placeholder } from './Placeholder'
 
 // Used in case no voting module adapter applies so that it still loads.

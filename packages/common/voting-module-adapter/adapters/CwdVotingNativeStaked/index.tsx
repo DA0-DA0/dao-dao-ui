@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 
-import { VotingModuleAdapter } from '../../types'
+import { VotingModuleAdapter } from '@dao-dao/types'
+
 import { ProfileCardMemberInfo } from './components'
 import {
   useDaoInfoBarItems,

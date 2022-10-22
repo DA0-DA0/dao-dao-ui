@@ -9,6 +9,10 @@ import {
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
 import {
+  UseGovernanceTokenInfoOptions,
+  UseGovernanceTokenInfoResponse,
+} from '@dao-dao/types'
+import {
   MarketingInfoResponse,
   TokenInfoResponse,
 } from '@dao-dao/types/contracts/Cw20Base'
@@ -19,10 +23,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
-import {
-  UseGovernanceTokenInfoOptions,
-  UseGovernanceTokenInfoResponse,
-} from '../../../types'
 
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,

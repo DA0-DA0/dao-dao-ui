@@ -1,8 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
+import { BaseProfileCardMemberInfoProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
-
-import { BaseProfileCardMemberInfoProps } from '../../../types'
 
 export interface ProfileCardMemberInfoProps
   extends Omit<BaseProfileCardMemberInfoProps, 'deposit'> {

@@ -1,5 +1,6 @@
+import { UseGovernanceTokenInfoResponse } from '@dao-dao/types'
+
 import { CwdVotingNativeStakedAdapter } from '../../adapters/CwdVotingNativeStaked'
-import { UseGovernanceTokenInfoResponse } from '../../types'
 import { useVotingModuleAdapterContextIfAvailable } from '../context'
 
 // Returns the useGovernanceTokenInfo hook response if using the native-staked

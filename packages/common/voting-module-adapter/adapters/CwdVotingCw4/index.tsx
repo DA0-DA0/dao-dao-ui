@@ -1,4 +1,5 @@
-import { VotingModuleAdapter } from '../../types'
+import { VotingModuleAdapter } from '@dao-dao/types'
+
 import { MembersTab, ProfileCardMemberInfo } from './components'
 import {
   DisplayInfoIcon,

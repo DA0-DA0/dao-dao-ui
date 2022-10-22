@@ -1,10 +1,11 @@
 import { ReactNode, useState } from 'react'
 
-import { matchAndLoadAdapter } from '../core'
 import {
   IVotingModuleAdapterContext,
   IVotingModuleAdapterOptions,
-} from '../types'
+} from '@dao-dao/types'
+
+import { matchAndLoadAdapter } from '../core'
 import { VotingModuleAdapterContext } from './context'
 
 export interface VotingModuleAdapterProviderProps {

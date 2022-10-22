@@ -4,7 +4,7 @@ import {
   IVotingModuleAdapter,
   IVotingModuleAdapterContext,
   IVotingModuleAdapterOptions,
-} from '../types'
+} from '@dao-dao/types'
 
 // External API
 

@@ -14,7 +14,11 @@ import {
   useWalletProfile,
 } from '@dao-dao/state'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
-import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
+import {
+  BaseProfileCardMemberInfoProps,
+  UnstakingTask,
+  UnstakingTaskStatus,
+} from '@dao-dao/types'
 import {
   NATIVE_DENOM,
   convertExpirationToDate,
@@ -25,7 +29,6 @@ import {
 } from '@dao-dao/utils'
 
 import { ProfileCardMemberInfoTokens } from '../../../../components'
-import { BaseProfileCardMemberInfoProps } from '../../../../types'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 import { StakingModal } from './StakingModal'
 

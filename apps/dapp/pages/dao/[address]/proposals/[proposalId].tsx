@@ -15,7 +15,6 @@ import {
 } from '@dao-dao/common'
 import { useActions } from '@dao-dao/common/actions'
 import {
-  CommonProposalInfo,
   ProposalModuleAdapterProvider,
   useProposalModuleAdapterContext,
 } from '@dao-dao/common/proposal-module-adapter'
@@ -30,7 +29,7 @@ import {
   ProposalNotFound,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { ActionKey } from '@dao-dao/types'
+import { ActionKey, CommonProposalInfo } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
 
 import { ProfileProposalCard } from '@/components'

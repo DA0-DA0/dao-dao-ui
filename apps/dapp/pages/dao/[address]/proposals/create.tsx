@@ -17,7 +17,6 @@ import {
   SuspenseLoader,
 } from '@dao-dao/common'
 import {
-  BaseNewProposalProps,
   CwdProposalSingleAdapter,
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
@@ -37,7 +36,11 @@ import {
   ProfileDisconnectedCard,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { ProposalDraft, ProposalPrefill } from '@dao-dao/types'
+import {
+  BaseNewProposalProps,
+  ProposalDraft,
+  ProposalPrefill,
+} from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
 
 import { ProfileNewProposalCard } from '@/components'

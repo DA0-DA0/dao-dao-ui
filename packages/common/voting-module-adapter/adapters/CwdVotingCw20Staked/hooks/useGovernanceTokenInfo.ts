@@ -6,12 +6,12 @@ import {
   CwdVotingCw20StakedSelectors,
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
-
-import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
   UseGovernanceTokenInfoOptions,
   UseGovernanceTokenInfoResponse,
-} from '../../../types'
+} from '@dao-dao/types'
+
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,

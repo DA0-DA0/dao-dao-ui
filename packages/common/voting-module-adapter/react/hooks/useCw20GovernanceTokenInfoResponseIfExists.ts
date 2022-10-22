@@ -1,5 +1,6 @@
+import { UseGovernanceTokenInfoResponse } from '@dao-dao/types'
+
 import { CwdVotingCw20StakedAdapter } from '../../adapters/CwdVotingCw20Staked'
-import { UseGovernanceTokenInfoResponse } from '../../types'
 import { useVotingModuleAdapterContextIfAvailable } from '../context'
 
 // Returns the useGovernanceTokenInfo hook response if using the cw20-staked

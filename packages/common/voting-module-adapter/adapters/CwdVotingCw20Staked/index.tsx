@@ -1,6 +1,5 @@
-import { DurationUnits } from '@dao-dao/types'
+import { DurationUnits, VotingModuleAdapter } from '@dao-dao/types'
 
-import { VotingModuleAdapter } from '../../types'
 import { ProfileCardMemberInfo } from './components'
 import {
   DisplayInfoIcon,
