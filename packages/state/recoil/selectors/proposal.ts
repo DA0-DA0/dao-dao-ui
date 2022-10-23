@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 
 import { cosmWasmClientForChainSelector } from './chain'
 

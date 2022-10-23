@@ -1,6 +1,6 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 
-import { DaoCardInfo, LoadingData } from '@dao-dao/tstypes'
+import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 import { CHAIN_ID, getFallbackImage } from '@dao-dao/utils'
 
 import featuredDaos from '../featured_daos.json'

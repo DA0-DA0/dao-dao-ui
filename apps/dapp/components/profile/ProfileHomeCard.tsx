@@ -5,7 +5,7 @@ import { useWalletProfile, useWalletProposalsQuery } from '@dao-dao/state'
 import {
   ProfileHomeCard as StatelessProfileHomeCard,
   useAppLayoutContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 import { useDAppContext } from '../DAppContext'

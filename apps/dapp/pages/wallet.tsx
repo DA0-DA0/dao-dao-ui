@@ -9,24 +9,24 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
-import { ActionsProvider, useActions } from '@dao-dao/actions'
-import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { walletTransactionAtom } from '@dao-dao/state'
-import { WalletTransactionForm } from '@dao-dao/tstypes'
+import { SuspenseLoader } from '@dao-dao/stateful'
+import { ActionsProvider, useActions } from '@dao-dao/stateful/actions'
+import {
+  Loader,
+  ProfileDisconnectedCard,
+  Wallet,
+  WalletProps,
+} from '@dao-dao/stateless'
+import { WalletTransactionForm } from '@dao-dao/types'
 import {
   Action,
   ActionKey,
   ActionOptionsContextType,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/tstypes/actions'
-import {
-  Loader,
-  ProfileDisconnectedCard,
-  Wallet,
-  WalletProps,
-} from '@dao-dao/ui'
+} from '@dao-dao/types/actions'
 import { CHAIN_BECH32_PREFIX, CHAIN_ID, processError } from '@dao-dao/utils'
 
 import { ProfileHomeCard } from '@/components'
@@ -124,6 +124,7 @@ const InnerWallet = () => {
 
   return (
     <Wallet
+      SuspenseLoader={SuspenseLoader}
       actions={actions}
       actionsWithData={actionsWithData}
       connected={connected}

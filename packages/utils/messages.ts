@@ -7,7 +7,7 @@ import {
   MintMsg,
   StakingMsg,
   WasmMsg,
-} from '@dao-dao/tstypes/contracts/common'
+} from '@dao-dao/types/contracts/common'
 
 export function parseEncodedMessage(base64String?: string) {
   if (base64String) {

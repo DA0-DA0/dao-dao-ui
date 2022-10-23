@@ -1,4 +1,4 @@
-import { BreadcrumbsProps, DaoParentInfo } from '@dao-dao/tstypes'
+import { BreadcrumbsProps, DaoParentInfo } from '@dao-dao/types'
 
 export const getParentDaoBreadcrumbs = (
   parentDao: DaoParentInfo | null | undefined

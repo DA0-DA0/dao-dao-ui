@@ -5,7 +5,7 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Binary, Duration, Uint128 } from '@dao-dao/tstypes/contracts/common'
+import { Binary, Duration, Uint128 } from '@dao-dao/types/contracts/common'
 import {
   ClaimsResponse,
   GetConfigResponse,
@@ -15,7 +15,7 @@ import {
   StakedValueResponse,
   TotalStakedAtHeightResponse,
   TotalValueResponse,
-} from '@dao-dao/tstypes/contracts/Cw20Stake'
+} from '@dao-dao/types/contracts/Cw20Stake'
 
 export interface Cw20StakeReadOnlyInterface {
   contractAddress: string

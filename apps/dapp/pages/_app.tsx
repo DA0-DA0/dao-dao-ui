@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import '@dao-dao/ui/styles/index.css'
+import '@dao-dao/stateless/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
@@ -13,13 +13,13 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { WalletProvider } from '@dao-dao/common'
 import {
   SubQueryProvider,
   activeThemeAtom,
   mountedInBrowserAtom,
 } from '@dao-dao/state'
-import { Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
+import { WalletProvider } from '@dao-dao/stateful'
+import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 import { AppLayout, HomepageLayout } from '@/components'
@@ -34,7 +34,6 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   const isHomepage = router.pathname === '/'
   // Always display the homepage with dark theme.
   const theme = isHomepage ? Theme.Dark : _theme
-  const Layout = isHomepage ? HomepageLayout : AppLayout
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -55,22 +54,26 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
-      {router.isFallback ? (
-        <LayoutLoading>
-          <Component {...pageProps} />
-        </LayoutLoading>
-      ) : (
-        <WalletProvider>
-          <SubQueryProvider>
-            <Layout>
+      <SubQueryProvider>
+        {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
+        {router.isFallback ? (
+          <LayoutLoading>
+            <Component {...pageProps} />
+          </LayoutLoading>
+        ) : isHomepage ? (
+          <HomepageLayout>
+            <Component {...pageProps} />
+          </HomepageLayout>
+        ) : (
+          <WalletProvider>
+            <AppLayout>
               <Component {...pageProps} />
-            </Layout>
-          </SubQueryProvider>
-        </WalletProvider>
-      )}
+            </AppLayout>
+          </WalletProvider>
+        )}
 
-      <Notifications />
+        <ToastNotifications />
+      </SubQueryProvider>
     </ThemeProvider>
   )
 }

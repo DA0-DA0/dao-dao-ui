@@ -3,16 +3,13 @@
 import { useEffect } from 'react'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import {
-  subDaoCardInfosSelector,
-  useEncodedCwdProposalSinglePrefill,
-  useVotingModule,
-} from '@dao-dao/state'
-import { ContractVersion } from '@dao-dao/tstypes'
+import { subDaoCardInfosSelector, useVotingModule } from '@dao-dao/state'
+import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/stateful'
 import {
   SubDaosTab as StatelessSubDaosTab,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
+import { ContractVersion } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { DaoCard } from '../DaoCard'

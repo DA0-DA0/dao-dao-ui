@@ -1,5 +1,9 @@
 import { makeSignDoc } from '@cosmjs/amino'
-import { ChainInfoID, useWallet } from '@noahsaso/cosmodal'
+import {
+  ChainInfoID,
+  useConnectWalletToChain,
+  useWallet,
+} from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   constSelector,
@@ -7,11 +11,7 @@ import {
   useSetRecoilState,
 } from 'recoil'
 
-import {
-  LoadingData,
-  WalletProfile,
-  WalletProfileUpdate,
-} from '@dao-dao/tstypes'
+import { LoadingData, WalletProfile, WalletProfileUpdate } from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
   PFPK_API_BASE,
@@ -43,11 +43,8 @@ export interface UseWalletProfileReturn {
 }
 
 export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
-  const { address, publicKey } = useWallet(chainId)
-  // Use a consistent chain for the signer since the chain ID is part of the
-  // signature and PFPK needs to know what to expect.
-  const { address: signingAddress, walletClient: signingWalletClient } =
-    useWallet(ChainInfoID.Juno1)
+  const { address, connected, publicKey } = useWallet(chainId)
+  const connectWalletToChain = useConnectWalletToChain()
 
   // Fetch wallet balance.
   const {
@@ -114,15 +111,19 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
       onUpdate?: () => void
     ): Promise<void> => {
       if (
+        !connected ||
         !publicKey ||
-        !signingAddress ||
-        !signingWalletClient ||
         walletProfile.loading ||
         // Disallow editing if we don't have correct nonce from server.
         walletProfile.data.nonce < 0
       ) {
         return
       }
+
+      // Use a consistent chain for the signer since the chain ID is part of the
+      // signature and PFPK needs to know what to expect.
+      const { address: signingAddress, walletClient: signingWalletClient } =
+        await connectWalletToChain(ChainInfoID.Juno1)
 
       // Set onUpdate handler.
       onUpdateRef.current = onUpdate
@@ -192,10 +193,10 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
       }
     },
     [
+      connectWalletToChain,
+      connected,
       publicKey,
       refreshWalletProfile,
-      signingAddress,
-      signingWalletClient,
       walletProfile,
     ]
   )

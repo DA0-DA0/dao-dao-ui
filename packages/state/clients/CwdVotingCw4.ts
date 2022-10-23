@@ -12,7 +12,7 @@ import {
   MemberDiff,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/tstypes/contracts/CwdVotingCw4'
+} from '@dao-dao/types/contracts/CwdVotingCw4'
 
 export interface CwdVotingCw4ReadOnlyInterface {
   contractAddress: string

@@ -2,21 +2,27 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 import { useEffect } from 'react'
 
-import { useActionForKey } from '@dao-dao/actions'
-import { StargazeNftImportModal } from '@dao-dao/common'
 import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
-  useCachedLoadable,
-  useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/tstypes'
+import {
+  StargazeNftImportModal,
+  useEncodedCwdProposalSinglePrefill,
+} from '@dao-dao/stateful'
+import { useActionForKey } from '@dao-dao/stateful/actions'
+import {
+  useCw20GovernanceTokenInfoResponseIfExists,
+  useNativeGovernanceTokenInfoResponseIfExists,
+} from '@dao-dao/stateful/voting-module-adapter'
 import {
   NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
+  useCachedLoadable,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
+import { ActionKey } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { TokenCard } from '@/components'
@@ -24,14 +30,27 @@ import { TokenCard } from '@/components'
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
   const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
+    chainId: daoInfo.chainId,
     fetchMembership: true,
   })
+  const { governanceTokenAddress: cw20GovernanceTokenAddress } =
+    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+  const { governanceTokenAddress: nativeGovernanceTokenDenom } =
+    useNativeGovernanceTokenInfoResponseIfExists() ?? {}
 
   const treasuryTokenCardInfosLoadable = useCachedLoadable(
-    treasuryTokenCardInfosSelector({ coreAddress: daoInfo.coreAddress })
+    treasuryTokenCardInfosSelector({
+      coreAddress: daoInfo.coreAddress,
+      chainId: daoInfo.chainId,
+      cw20GovernanceTokenAddress,
+      nativeGovernanceTokenDenom,
+    })
   )
   const nftCardInfosLoadable = useCachedLoadable(
-    nftCardInfosSelector({ coreAddress: daoInfo.coreAddress })
+    nftCardInfosSelector({
+      coreAddress: daoInfo.coreAddress,
+      chainId: daoInfo.chainId,
+    })
   )
 
   //! Loadable errors.

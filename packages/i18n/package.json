@@ -1,14 +1,13 @@
 {
   "name": "@dao-dao/i18n",
-  "version": "0.1.0",
+  "version": "2.0.1",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint .",
     "lint-missing-keys": "eslint . -c .eslintrc-missing-keys.js"
   },
   "devDependencies": {
-    "@dao-dao/config": "*",
-    "@dao-dao/tsconfig": "*",
+    "@dao-dao/config": "2.0.1",
     "eslint-plugin-i18n-json": "^3.1.0"
   },
   "prettier": "@dao-dao/config/prettier",

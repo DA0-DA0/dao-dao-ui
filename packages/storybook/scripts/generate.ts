@@ -231,7 +231,7 @@ const project = new Project({
       // // `components` in apps.
       // project.addSourceFilesAtPaths('../../apps/**/{ui,components}/**/*.tsx')
 
-      // Add @dao-dao/ui package.
+      // Add @dao-dao/stateless package.
       project.addSourceFilesAtPaths('../ui/**/*.tsx')
       // Add all tsx files that exist as a descendant of a folder named `ui` in
       // the adapter packages.

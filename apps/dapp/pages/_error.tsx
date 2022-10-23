@@ -25,7 +25,7 @@ import NextErrorComponent from 'next/error'
 import Link from 'next/link'
 import { useEffect } from 'react'
 
-import { ErrorPage } from '@dao-dao/ui'
+import { ErrorPage } from '@dao-dao/stateless'
 import { processError } from '@dao-dao/utils'
 
 interface CustomErrorComponentProps {

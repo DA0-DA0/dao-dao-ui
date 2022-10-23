@@ -8,16 +8,19 @@ import { useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { useActions } from '@dao-dao/actions'
-import { DaoPageWrapper, DaoProposalPageWrapperProps } from '@dao-dao/common'
-import { makeGetDaoProposalStaticProps } from '@dao-dao/common/server'
+import { useProfile } from '@dao-dao/state'
 import {
-  CommonProposalInfo,
+  DaoPageWrapper,
+  DaoProposalPageWrapperProps,
+  Trans,
+} from '@dao-dao/stateful'
+import { useActions } from '@dao-dao/stateful/actions'
+import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapterContext,
-} from '@dao-dao/proposal-module-adapter'
-import { useProfile } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/tstypes'
+} from '@dao-dao/stateful/proposal-module-adapter'
+import { makeGetDaoProposalStaticProps } from '@dao-dao/stateful/server'
+import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   Loader,
   Logo,
@@ -25,9 +28,9 @@ import {
   Proposal,
   ProposalNotFound,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
+import { ActionKey, CommonProposalInfo } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { ProfileProposalCard } from '@/components'
 
@@ -177,6 +180,7 @@ const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
       </ProposalModuleAdapterProvider>
     ) : (
       <ProposalNotFound
+        Trans={Trans}
         homeHref={
           props.serializedInfo
             ? `/dao/${props.serializedInfo.coreAddress}`

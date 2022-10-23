@@ -1,7 +1,7 @@
 import { atom, atomFamily } from 'recoil'
 
-import { ProposalDraft } from '@dao-dao/tstypes'
-import { ProposalCreatedCardProps } from '@dao-dao/tstypes/proposal'
+import { ProposalDraft } from '@dao-dao/types'
+import { ProposalCreatedCardProps } from '@dao-dao/types/proposal'
 
 import { localStorageEffectJSON } from '../effects'
 

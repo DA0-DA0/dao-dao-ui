@@ -12,24 +12,22 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
-  DaoPageWrapper,
-  DaoPageWrapperProps,
-  SuspenseLoader,
-} from '@dao-dao/common'
-import { makeGetDaoStaticProps } from '@dao-dao/common/server'
-import {
-  BaseNewProposalProps,
-  CwdProposalSingleAdapter,
-  matchAndLoadCommon,
-  matchAdapter as matchProposalModuleAdapter,
-} from '@dao-dao/proposal-module-adapter'
-import {
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
   refreshProposalsIdAtom,
   useVotingModule,
 } from '@dao-dao/state'
-import { ProposalDraft, ProposalPrefill } from '@dao-dao/tstypes'
+import {
+  DaoPageWrapper,
+  DaoPageWrapperProps,
+  SuspenseLoader,
+} from '@dao-dao/stateful'
+import {
+  CwdProposalSingleAdapter,
+  matchAndLoadCommon,
+  matchAdapter as matchProposalModuleAdapter,
+} from '@dao-dao/stateful/proposal-module-adapter'
+import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import {
   CreateProposal,
   Loader,
@@ -37,11 +35,20 @@ import {
   PageLoader,
   ProfileDisconnectedCard,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
+import {
+  BaseNewProposalProps,
+  ProposalDraft,
+  ProposalPrefill,
+} from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
 
 import { ProfileNewProposalCard } from '@/components'
 
+// TODO(v2): Save latest proposal to localStorage, separate from drafts.
+// TODO(v2): Fix errors getting stuck when removing components with errors (I
+// think this is when it happens). Can't click preview or submit sometimes even
+// tho there are no visible errors.
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()

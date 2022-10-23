@@ -8,17 +8,12 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 const withInterceptStdout = require('next-intercept-stdout')
 const withTM = require('next-transpile-modules')([
-  '@dao-dao/ui',
-  '@dao-dao/icons',
+  '@dao-dao/stateless',
   '@dao-dao/utils',
   '@dao-dao/state',
-  '@dao-dao/actions',
-  '@dao-dao/common',
+  '@dao-dao/stateful',
   '@dao-dao/i18n',
-  '@dao-dao/voting-module-adapter',
-  '@dao-dao/proposal-module-adapter',
-  '@dao-dao/tstypes',
-  '@dao-dao/command',
+  '@dao-dao/types',
 ])
 
 const { withSentryConfig } = require('@sentry/nextjs')

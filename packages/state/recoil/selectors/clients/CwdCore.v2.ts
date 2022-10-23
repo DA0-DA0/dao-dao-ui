@@ -1,7 +1,7 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
-import { TokenInfoResponse } from '@dao-dao/tstypes/contracts/Cw20Base'
+import { WithChainId } from '@dao-dao/types'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   ActiveProposalModulesResponse,
   AdminNominationResponse,
@@ -21,13 +21,9 @@ import {
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/tstypes/contracts/CwdCore.v2'
-import {
-  CwdVotingCw20StakedAdapter,
-  matchAdapter,
-} from '@dao-dao/voting-module-adapter'
+} from '@dao-dao/types/contracts/CwdCore.v2'
 
-import { Cw20BaseSelectors, CwdVotingCw20StakedSelectors } from '.'
+import { Cw20BaseSelectors } from '.'
 import {
   CwdCoreV2Client,
   CwdCoreV2QueryClient,
@@ -348,46 +344,6 @@ export const allCw20TokenListSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
-      //! Check if has governance token, and add to list if necessary.
-      const votingModuleAddress = get(
-        votingModuleSelector({ ...queryClientParams, params: [] })
-      )
-      // All `info` queries are the same, so just use core's info query.
-      const votingModuleInfo = votingModuleAddress
-        ? get(
-            infoSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-
-              contractAddress: votingModuleAddress,
-              params: [],
-            })
-          )
-        : undefined
-
-      let hasGovernanceToken
-      try {
-        hasGovernanceToken =
-          !!votingModuleInfo &&
-          matchAdapter(votingModuleInfo.info.contract)?.id ===
-            CwdVotingCw20StakedAdapter.id
-      } catch {
-        hasGovernanceToken = false
-      }
-      const governanceTokenAddress =
-        votingModuleAddress && hasGovernanceToken
-          ? get(
-              CwdVotingCw20StakedSelectors.tokenContractSelector({
-                // Copies over chainId and any future additions to client
-                // params.
-                ...queryClientParams,
-
-                contractAddress: votingModuleAddress,
-                params: [],
-              })
-            )
-          : undefined
-
       //! Get all tokens.
       const tokenList: Cw20TokenListResponse = []
       while (true) {
@@ -412,15 +368,6 @@ export const allCw20TokenListSelector = selectorFamily<
         }
       }
 
-      //! Add governance token if exists but missing from list.
-      if (
-        governanceTokenAddress &&
-        !tokenList.includes(governanceTokenAddress)
-      ) {
-        // Add to beginning of list.
-        tokenList.splice(0, 0, governanceTokenAddress)
-      }
-
       return tokenList
     },
 })
@@ -430,46 +377,14 @@ export const allCw20BalancesSelector = selectorFamily<
   (Cw20BalancesResponse[number] & {
     isGovernanceToken: boolean
   })[],
-  QueryClientParams
+  QueryClientParams & {
+    governanceTokenAddress?: string
+  }
 >({
   key: 'cwdCoreV2AllCw20Balances',
   get:
-    (queryClientParams) =>
+    ({ governanceTokenAddress, ...queryClientParams }) =>
     async ({ get }) => {
-      //! Check if has governance token, and add to list if necessary.
-      const votingModuleAddress = get(
-        votingModuleSelector({ ...queryClientParams, params: [] })
-      )
-      // All `info` queries are the same, so just use core's info query.
-      const votingModuleInfo = get(
-        infoSelector({
-          // Copies over chainId and any future additions to client params.
-          ...queryClientParams,
-
-          contractAddress: votingModuleAddress,
-          params: [],
-        })
-      )
-
-      let hasGovernanceToken
-      try {
-        hasGovernanceToken =
-          matchAdapter(votingModuleInfo.info.contract)?.id ===
-          CwdVotingCw20StakedAdapter.id
-      } catch {
-        hasGovernanceToken = false
-      }
-      const governanceTokenAddress = hasGovernanceToken
-        ? get(
-            CwdVotingCw20StakedSelectors.tokenContractSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-
-              contractAddress: votingModuleAddress,
-              params: [],
-            })
-          )
-        : undefined
       const governanceTokenBalance = governanceTokenAddress
         ? get(
             Cw20BaseSelectors.balanceSelector({
@@ -536,13 +451,20 @@ export const cw20BalancesInfoSelector = selectorFamily<
     imageUrl: string | undefined
     isGovernanceToken: boolean
   }[],
-  QueryClientParams
+  QueryClientParams & {
+    governanceTokenAddress?: string
+  }
 >({
   key: 'cwdCoreV2Cw20BalancesInfo',
   get:
-    (queryClientParams) =>
+    ({ governanceTokenAddress, ...queryClientParams }) =>
     async ({ get }) => {
-      const cw20List = get(allCw20BalancesSelector(queryClientParams))
+      const cw20List = get(
+        allCw20BalancesSelector({
+          ...queryClientParams,
+          governanceTokenAddress,
+        })
+      )
 
       const cw20Info = get(
         waitForAll(

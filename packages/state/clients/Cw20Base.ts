@@ -4,7 +4,7 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Binary, Expiration, Uint128 } from '@dao-dao/tstypes/contracts/common'
+import { Binary, Expiration, Uint128 } from '@dao-dao/types/contracts/common'
 import {
   AllAccountsResponse,
   AllAllowancesResponse,
@@ -14,7 +14,7 @@ import {
   MarketingInfoResponse,
   MinterResponse,
   TokenInfoResponse,
-} from '@dao-dao/tstypes/contracts/Cw20Base'
+} from '@dao-dao/types/contracts/Cw20Base'
 
 export interface Cw20BaseReadOnlyInterface {
   contractAddress: string

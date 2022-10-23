@@ -2,7 +2,7 @@
 
 import { atom } from 'recoil'
 
-import { WalletTransactionForm } from '@dao-dao/tstypes'
+import { WalletTransactionForm } from '@dao-dao/types'
 
 import { localStorageEffectJSON } from '../effects'
 

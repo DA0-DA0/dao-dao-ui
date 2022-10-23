@@ -14,23 +14,22 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { useActionForKey } from '@dao-dao/actions'
-import {
-  DaoInfoBar,
-  DaoPageWrapper,
-  DaoPageWrapperProps,
-} from '@dao-dao/common'
-import { makeGetDaoStaticProps } from '@dao-dao/common/server'
-import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
 import {
   CwdCoreV2Selectors,
-  useEncodedCwdProposalSinglePrefill,
   usePinnedDaos,
   useVotingModule,
   useWalletProfile,
 } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/tstypes'
-import { CheckedDepositInfo } from '@dao-dao/tstypes/contracts/common'
+import {
+  DaoInfoBar,
+  DaoPageWrapper,
+  DaoPageWrapperProps,
+  useEncodedCwdProposalSinglePrefill,
+} from '@dao-dao/stateful'
+import { useActionForKey } from '@dao-dao/stateful/actions'
+import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
+import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
+import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   DaoHome,
   Loader,
@@ -40,9 +39,10 @@ import {
   ProfileNotMemberCard,
   useAppLayoutContext,
   useDaoInfoContext,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
+import { ActionKey } from '@dao-dao/types'
+import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import { SITE_URL } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
 
 import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 

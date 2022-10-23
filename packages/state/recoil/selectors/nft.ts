@@ -1,12 +1,12 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { constSelector, selectorFamily, waitForAll } from 'recoil'
 
-import { NftCardInfo, WithChainId } from '@dao-dao/tstypes'
+import { NftCardInfo, WithChainId } from '@dao-dao/types'
 import {
   ContractInfoResponse,
   NftInfoResponse,
-} from '@dao-dao/tstypes/contracts/Cw721Base'
-import { StargazeNft } from '@dao-dao/tstypes/nft'
+} from '@dao-dao/types/contracts/Cw721Base'
+import { StargazeNft } from '@dao-dao/types/nft'
 import {
   STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_URL_BASE,

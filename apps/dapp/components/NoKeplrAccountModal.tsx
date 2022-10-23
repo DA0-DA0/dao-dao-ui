@@ -1,10 +1,10 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { ChevronRightIcon } from '@heroicons/react/outline'
+import { ArrowForwardIos } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Modal, ModalProps } from '@dao-dao/ui'
+import { Button, Modal, ModalProps } from '@dao-dao/stateless'
 
 export type NoKeplrAccountModalProps = Pick<ModalProps, 'visible' | 'onClose'>
 
@@ -21,7 +21,7 @@ export const NoKeplrAccountModal = (props: NoKeplrAccountModalProps) => {
         </p>
       ))}
       <Button onClick={props.onClose}>
-        {t('button.gotIt')} <ChevronRightIcon className="w-4" />
+        {t('button.gotIt')} <ArrowForwardIos className="!h-4 !w-4" />
       </Button>
     </Modal>
   )

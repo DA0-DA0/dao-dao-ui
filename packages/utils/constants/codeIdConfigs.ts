@@ -1,4 +1,4 @@
-import { CodeIdConfig } from '@dao-dao/tstypes'
+import { CodeIdConfig } from '@dao-dao/types'
 
 // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.0-beta
 const junoTestnet: CodeIdConfig = {

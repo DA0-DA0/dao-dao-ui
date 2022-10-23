@@ -1,6 +1,6 @@
 {
-  "name": "dao-dao",
-  "version": "0.3.0",
+  "name": "dao-dao-ui",
+  "version": "2.0.1",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -12,17 +12,13 @@
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
     "test": "turbo run test",
     "dapp": "yarn workspace @dao-dao/dapp",
-    "icons": "yarn workspace @dao-dao/icons",
-    "state": "yarn workspace @dao-dao/state",
-    "ui": "yarn workspace @dao-dao/ui",
-    "utils": "yarn workspace @dao-dao/utils",
-    "actions": "yarn workspace @dao-dao/actions",
-    "common": "yarn workspace @dao-dao/common",
     "i18n": "yarn workspace @dao-dao/i18n",
+    "state": "yarn workspace @dao-dao/state",
+    "stateless": "yarn workspace @dao-dao/stateless",
+    "stateful": "yarn workspace @dao-dao/stateful",
     "storybook": "yarn workspace @dao-dao/storybook",
-    "proposal-module-adapter": "yarn workspace @dao-dao/proposal-module-adapter",
-    "voting-module-adapter": "yarn workspace @dao-dao/voting-module-adapter",
-    "command": "yarn workspace @dao-dao/command"
+    "types": "yarn workspace @dao-dao/types",
+    "utils": "yarn workspace @dao-dao/utils"
   },
   "devDependencies": {
     "turbo": "latest"

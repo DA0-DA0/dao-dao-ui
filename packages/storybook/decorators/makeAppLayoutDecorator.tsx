@@ -3,9 +3,9 @@ import { DecoratorFn } from '@storybook/react'
 import {
   Default as AppLayoutStory,
   DefaultArgs as AppLayoutStoryArgs,
-} from '@dao-dao/ui/components/layout/AppLayout.stories'
-import { NavigationProps } from '@dao-dao/ui/components/layout/Navigation'
-import { RightSidebarProps } from '@dao-dao/ui/components/layout/RightSidebar'
+} from '@dao-dao/stateless/components/layout/AppLayout.stories'
+import { NavigationProps } from '@dao-dao/stateless/components/layout/Navigation'
+import { RightSidebarProps } from '@dao-dao/stateless/components/layout/RightSidebar'
 
 export const makeAppLayoutDecorator: (props?: {
   navigationProps?: Partial<NavigationProps>

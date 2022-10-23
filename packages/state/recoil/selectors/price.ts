@@ -1,7 +1,7 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 import {
   USDC_SWAP_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
@@ -110,11 +110,14 @@ export const usdcPerMacroTokenSelector = selectorFamily<
 
 export const daoTvlSelector = selectorFamily<
   number,
-  WithChainId<{ coreAddress: string }>
+  WithChainId<{
+    coreAddress: string
+    cw20GovernanceTokenAddress?: string
+  }>
 >({
   key: 'daoTvl',
   get:
-    ({ coreAddress, chainId }) =>
+    ({ coreAddress, cw20GovernanceTokenAddress, chainId }) =>
     async ({ get }) => {
       const nativeBalances = get(
         nativeBalancesSelector({ address: coreAddress, chainId })
@@ -123,6 +126,7 @@ export const daoTvlSelector = selectorFamily<
         CwdCoreV2Selectors.cw20BalancesInfoSelector({
           contractAddress: coreAddress,
           chainId,
+          governanceTokenAddress: cw20GovernanceTokenAddress,
         })
       )
 

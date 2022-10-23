@@ -1,4 +1,4 @@
-import { ProposalCardProps } from './ui/ProposalCard'
+import { ProposalCardProps } from './components/ProposalCard'
 
 export type ProposalCreatedCardProps = Omit<
   ProposalCardProps,

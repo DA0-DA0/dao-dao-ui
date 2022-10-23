@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 import {
   AllAccountsResponse,
   AllAllowancesResponse,
@@ -10,7 +10,7 @@ import {
   MarketingInfoResponse,
   MinterResponse,
   TokenInfoResponse,
-} from '@dao-dao/tstypes/contracts/Cw20Base'
+} from '@dao-dao/types/contracts/Cw20Base'
 
 import { Cw20BaseClient, Cw20BaseQueryClient } from '../../../clients/Cw20Base'
 import {

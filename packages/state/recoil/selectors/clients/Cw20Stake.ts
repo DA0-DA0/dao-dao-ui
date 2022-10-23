@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 import {
   ClaimsResponse,
   GetConfigResponse,
@@ -10,7 +10,7 @@ import {
   StakedValueResponse,
   TotalStakedAtHeightResponse,
   TotalValueResponse,
-} from '@dao-dao/tstypes/contracts/Cw20Stake'
+} from '@dao-dao/types/contracts/Cw20Stake'
 
 import {
   Cw20StakeClient,

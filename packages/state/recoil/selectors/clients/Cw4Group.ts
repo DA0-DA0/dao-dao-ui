@@ -1,13 +1,13 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 import {
   AdminResponse,
   HooksResponse,
   ListMembersResponse,
   MemberResponse,
   TotalWeightResponse,
-} from '@dao-dao/tstypes/contracts/Cw4Group'
+} from '@dao-dao/types/contracts/Cw4Group'
 
 import { Cw4GroupQueryClient } from '../../../clients/Cw4Group'
 import { cosmWasmClientForChainSelector } from '../chain'

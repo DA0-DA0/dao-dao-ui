@@ -5,16 +5,19 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
-import { useActionForKey } from '@dao-dao/actions'
 import {
   refreshNativeTokenStakingInfoAtom,
   tokenCardLazyStakingInfoSelector,
-  useCachedLoadable,
-  useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/state'
-import { ActionKey } from '@dao-dao/tstypes'
-import { TokenCardInfo } from '@dao-dao/tstypes/dao'
-import { TokenCard as StatelessTokenCard, useDaoInfoContext } from '@dao-dao/ui'
+import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/stateful'
+import { useActionForKey } from '@dao-dao/stateful/actions'
+import {
+  TokenCard as StatelessTokenCard,
+  useCachedLoadable,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
+import { ActionKey } from '@dao-dao/types'
+import { TokenCardInfo } from '@dao-dao/types/dao'
 import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
 
 export const TokenCard = (props: TokenCardInfo) => {

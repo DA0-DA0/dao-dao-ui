@@ -1,7 +1,7 @@
 import { DecoratorFn } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
-import { AppLayoutContext } from '@dao-dao/ui/components/layout/AppLayoutContext'
+import { AppLayoutContext } from '@dao-dao/stateless/components/layout/AppLayoutContext'
 
 // Useful when testing individual components that rely on this context value but
 // don't want to render the entire AppLayout.

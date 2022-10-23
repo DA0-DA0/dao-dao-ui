@@ -5,12 +5,12 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
+import { useVotingModule, useWalletProfile } from '@dao-dao/state'
 import {
   matchAndLoadCommon,
   useProposalModuleAdapter,
-} from '@dao-dao/proposal-module-adapter'
-import { useVotingModule, useWalletProfile } from '@dao-dao/state'
-import { CheckedDepositInfo } from '@dao-dao/tstypes/contracts/common'
+} from '@dao-dao/stateful/proposal-module-adapter'
+import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   Loader,
   Logo,
@@ -19,8 +19,8 @@ import {
   ProfileVotedCard,
   useAppLayoutContext,
   useDaoInfoContext,
-} from '@dao-dao/ui'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
+} from '@dao-dao/stateless'
+import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 
 export interface ProfileProposalCardProps {
   onVoteSuccess: () => void | Promise<void>

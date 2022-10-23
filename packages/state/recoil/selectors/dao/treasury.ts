@@ -5,9 +5,9 @@ import { selectorFamily, waitForAll } from 'recoil'
 import {
   TokenCardInfo,
   TokenCardLazyStakingInfo,
+  UnstakingTaskStatus,
   WithChainId,
-} from '@dao-dao/tstypes'
-import { UnstakingTaskStatus } from '@dao-dao/ui'
+} from '@dao-dao/types'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
@@ -15,10 +15,6 @@ import {
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
-import {
-  CwdVotingNativeStakedAdapter,
-  matchAdapter,
-} from '@dao-dao/voting-module-adapter'
 
 import {
   blockHeightTimestampSafeSelector,
@@ -28,16 +24,25 @@ import {
   nativeStakingInfoSelector,
   nativeUnstakingDurationSecondsSelector,
 } from '../chain'
-import { CwdCoreV2Selectors, CwdVotingNativeStakedSelectors } from '../clients'
+import { CwdCoreV2Selectors } from '../clients'
 import { usdcPerMacroTokenSelector } from '../price'
 
 export const treasuryTokenCardInfosSelector = selectorFamily<
   TokenCardInfo[],
-  WithChainId<{ coreAddress: string }>
+  WithChainId<{
+    coreAddress: string
+    cw20GovernanceTokenAddress?: string
+    nativeGovernanceTokenDenom?: string
+  }>
 >({
   key: 'treasuryTokenCardInfos',
   get:
-    ({ coreAddress, chainId }) =>
+    ({
+      coreAddress,
+      cw20GovernanceTokenAddress,
+      nativeGovernanceTokenDenom,
+      chainId,
+    }) =>
     ({ get }) => {
       const nativeBalances = get(
         nativeBalancesSelector({ address: coreAddress, chainId })
@@ -46,42 +51,9 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
         CwdCoreV2Selectors.cw20BalancesInfoSelector({
           contractAddress: coreAddress,
           chainId,
+          governanceTokenAddress: cw20GovernanceTokenAddress,
         })
       )
-
-      //! Check if has native governance token, and set crown accordingly.
-      const votingModuleAddress = get(
-        CwdCoreV2Selectors.votingModuleSelector({
-          contractAddress: coreAddress,
-          chainId,
-          params: [],
-        })
-      )
-      // All `info` queries are the same, so just use core's info query.
-      const votingModuleInfo = get(
-        CwdCoreV2Selectors.infoSelector({
-          contractAddress: votingModuleAddress,
-          chainId,
-          params: [],
-        })
-      )
-      let nativeGovernanceTokenDenom: string | undefined
-      try {
-        if (
-          matchAdapter(votingModuleInfo.info.contract)?.id ===
-          CwdVotingNativeStakedAdapter.id
-        ) {
-          nativeGovernanceTokenDenom = get(
-            CwdVotingNativeStakedSelectors.getConfigSelector({
-              contractAddress: votingModuleAddress,
-              chainId,
-              params: [],
-            })
-          ).denom
-        }
-      } catch (err) {
-        console.error(err)
-      }
 
       const infos: TokenCardInfo[] = [
         ...nativeBalances.map(
@@ -358,7 +330,6 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
           const tokenLabel = nativeTokenLabel(coin.denom)
 
           // Only convert value and denom at the same time. If decimals are
-          // found but label is not for some reason (which should never happen)
           // or vice versa, display value in non-converted decimals with
           // non-converted denom.
           const amountValue =

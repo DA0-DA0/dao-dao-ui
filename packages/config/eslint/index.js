@@ -92,16 +92,16 @@ const eslintConfig = {
                 'Import from @dao-dao/* instead of a relative path (i.e. replace "@/../../packages" with "@dao-dao").',
             },
             {
-              regex: '\\@dao\\-dao\\/ui\\/(components|theme)[^\'"]*',
-              replacement: '@dao-dao/ui',
+              regex: '\\@dao\\-dao\\/stateless\\/(components|theme)[^\'"]*',
+              replacement: '@dao-dao/stateless',
               files: {
                 // Let storybook files (stories and files within the storybook
-                // package like decorators) import specific UI files, like other
-                // storybook files.
+                // package like decorators) import specific stateless files,
+                // like other storybook files.
                 ignore: '.*\\.stories\\.tsx|packages/storybook',
               },
               message:
-                'Import from root @dao-dao/ui instead of a direct path. Ensure the export has been added to its sibling index.',
+                'Import from root @dao-dao/stateless instead of a direct path. Ensure the export has been added to its sibling index.',
             },
             {
               regex: '\\@dao\\-dao\\/state\\/hooks\\/clients[^\'"]*',

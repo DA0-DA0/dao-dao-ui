@@ -15,7 +15,7 @@ import {
   TokenContractResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/tstypes/contracts/CwdVotingCw20Staked'
+} from '@dao-dao/types/contracts/CwdVotingCw20Staked'
 
 export interface CwdVotingCw20StakedReadOnlyInterface {
   contractAddress: string

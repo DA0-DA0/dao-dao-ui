@@ -12,7 +12,7 @@ import {
   Duration,
   ModuleInstantiateInfo,
   Uint128,
-} from '@dao-dao/tstypes/contracts/common'
+} from '@dao-dao/types/contracts/common'
 import {
   ActiveProposalModulesResponse,
   AdminNominationResponse,
@@ -34,7 +34,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/tstypes/contracts/CwdCore.v2'
+} from '@dao-dao/types/contracts/CwdCore.v2'
 
 export interface CwdCoreV2ReadOnlyInterface {
   contractAddress: string

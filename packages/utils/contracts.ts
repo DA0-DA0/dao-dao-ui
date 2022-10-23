@@ -1,4 +1,4 @@
-import { ContractVersion } from '@dao-dao/tstypes'
+import { ContractVersion } from '@dao-dao/types'
 
 export const parseContractVersion = (
   version: string

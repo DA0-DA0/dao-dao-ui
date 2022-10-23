@@ -7,19 +7,19 @@ import { NextSeo } from 'next-seo'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   ProposalLine,
   ProposalLineProps,
   SuspenseLoader,
   pinnedDaoDropdownInfosSelector,
-} from '@dao-dao/common'
-import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+} from '@dao-dao/stateful'
 import {
   DaoWithProposals,
   Inbox,
   PageLoader,
   ProfileDisconnectedCard,
-} from '@dao-dao/ui'
+} from '@dao-dao/stateless'
 import { CHAIN_ID, SITE_URL } from '@dao-dao/utils'
 
 import { ProfileHomeCard, useDAppContext } from '@/components'

@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/tstypes'
+import { WithChainId } from '@dao-dao/types'
 import {
   AdminResponse,
   ConfigResponse,
@@ -16,7 +16,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/tstypes/contracts/CwCore.v1'
+} from '@dao-dao/types/contracts/CwCore.v1'
 
 import {
   CwCoreV1Client as ExecuteClient,

@@ -16,7 +16,7 @@ import {
   UnbondingDelegation,
   Validator,
   WithChainId,
-} from '@dao-dao/tstypes'
+} from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
   CHAIN_ID,
