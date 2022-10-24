@@ -10,6 +10,7 @@ import {
   PushPinOutlined,
   Search,
 } from '@mui/icons-material'
+import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
@@ -186,14 +187,16 @@ export const Navigation = ({
             label={t('title.search')}
             onClick={setCommandModalVisible}
             rightNode={
-              <div className="legend-text flex flex-row items-center gap-1 text-icon-primary">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
-                  <p>{isMac ? '⌘' : '⌃'}</p>
+              !isMobile() && (
+                <div className="legend-text flex flex-row items-center gap-1 text-icon-primary">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
+                    <p>{isMac ? '⌘' : '⌃'}</p>
+                  </div>
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
+                    <p>k</p>
+                  </div>
                 </div>
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
-                  <p>k</p>
-                </div>
-              </div>
+              )
             }
           />
 

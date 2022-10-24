@@ -1,4 +1,5 @@
 import { Add } from '@mui/icons-material'
+import { isMobile } from '@walletconnect/browser-utils'
 import { useRouter } from 'next/router'
 import { ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -53,8 +54,10 @@ export const ProposalsTab = ({
         <Tooltip
           title={
             isMember
-              ? // eslint-disable-next-line i18next/no-literal-string
-                (isMac ? '⌘' : '⌃') + '⇧P'
+              ? isMobile()
+                ? undefined
+                : // eslint-disable-next-line i18next/no-literal-string
+                  (isMac ? '⌘' : '⌃') + '⇧P'
               : t('error.mustBeMemberToCreateProposal')
           }
         >

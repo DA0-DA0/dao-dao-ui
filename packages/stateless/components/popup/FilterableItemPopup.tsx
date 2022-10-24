@@ -170,7 +170,7 @@ export const FilterableItemPopup = <
     >
       <div
         className={clsx(
-          'no-scrollbar w-full grow space-y-1 overflow-y-auto px-4',
+          'no-scrollbar -mt-4 w-full grow space-y-1 overflow-y-auto px-4 pt-4',
           listClassName
         )}
         ref={itemsListRef}
