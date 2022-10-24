@@ -68,11 +68,22 @@ export const PageHeader = ({
         <div
           className={clsx(
             'relative flex h-full w-full flex-row items-center justify-center',
-            !forceCenter && 'sm:justify-start'
+            !forceCenter && 'sm:justify-start',
+            // When showing title or breadcrumbs, add padding. The `sm`
+            // breakpoint is when the UI switches from responsive to desktop
+            // mode, and on DAO pages, this is when the pin toggle displays its
+            // text instead of just its icon. On these larger views, add more
+            // padding to compensate.
+            (title || breadcrumbs) && {
+              'px-16 sm:px-28': true,
+              // Centered on small screen or if forceCenter is true. If not
+              // centered, no left padding.
+              'sm:!pl-0': !forceCenter,
+            }
           )}
         >
           {title ? (
-            <p className="header-text leading-[5rem]">{title}</p>
+            <p className="header-text truncate leading-[5rem]">{title}</p>
           ) : breadcrumbs ? (
             <Breadcrumbs {...breadcrumbs} />
           ) : (

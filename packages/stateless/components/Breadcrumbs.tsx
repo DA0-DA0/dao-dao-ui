@@ -22,7 +22,7 @@ export const Breadcrumbs = ({
     <>
       <div
         className={clsx(
-          'header-text flex flex-row items-center gap-2 text-text-secondary',
+          'header-text flex flex-row items-center gap-2 overflow-hidden text-text-secondary',
           className
         )}
       >
@@ -37,15 +37,19 @@ export const Breadcrumbs = ({
         ))}
 
         <Button
-          // Disable touch interaction when not responsive.
-          className="text-text-primary sm:pointer-events-none"
+          // Disable touch interaction when not responsive. Flex items have
+          // min-width set to auto by default, which prevents text ellipses
+          // since this will overflow its parent. Set min-width to 0 so this
+          // cannot overflow its parent, and the child text can truncate.
+          className="min-w-0 text-text-primary sm:pointer-events-none"
+          contentContainerClassName="justify-center"
           onClick={() => setResponsive(true)}
           size="none"
           variant="none"
         >
-          <p>{current}</p>
+          <p className="truncate">{current}</p>
 
-          <ArrowDropDown className="!h-6 !w-6 text-icon-primary sm:!hidden" />
+          <ArrowDropDown className="!h-6 !w-6 shrink-0 text-icon-primary sm:!hidden" />
         </Button>
       </div>
 
