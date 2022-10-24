@@ -5,6 +5,7 @@ import {
   VisibilityOff,
 } from '@mui/icons-material'
 import clsx from 'clsx'
+import Fuse from 'fuse.js'
 import { useCallback, useState } from 'react'
 import {
   SubmitErrorHandler,
@@ -20,6 +21,7 @@ import {
   ActionSelector,
   Button,
   CosmosMessageDisplay,
+  FilterableItem,
   FilterableItemPopup,
   IconButton,
   InputErrorMessage,
@@ -399,8 +401,6 @@ export const NewProposal = ({
                   })
                 )}
                 onSelect={(_, index) => loadDraft(index)}
-                popupClassName="!w-[24rem] max-w-[96vw] max-h-[96vh]"
-                position="left"
                 searchPlaceholder={t('info.searchDraftPlaceholder')}
               />
             )}
@@ -425,4 +425,4 @@ export const NewProposal = ({
   )
 }
 
-const FILTERABLE_KEYS = ['name']
+const FILTERABLE_KEYS: Fuse.FuseOptionKey<FilterableItem>[] = ['label']

@@ -75,8 +75,6 @@ export const ActionSelector = ({
       getKeydownEventListener={getKeydownEventListener}
       items={actions}
       onSelect={onSelectAction}
-      popupClassName="!w-[24rem] max-w-[96vw] !h-[32rem] max-h-[96vh]"
-      position="right"
       searchPlaceholder={t('info.searchActionPlaceholder')}
     />
   )

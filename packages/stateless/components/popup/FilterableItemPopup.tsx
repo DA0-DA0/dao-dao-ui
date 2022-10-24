@@ -1,3 +1,4 @@
+import { WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import {
@@ -10,62 +11,55 @@ import {
   useRef,
   useState,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useSearchFilter } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { SearchBar } from '../inputs/SearchBar'
-import { Popup, PopupProps } from './Popup'
+import { Modal } from '../modals'
+import { NoContent } from '../NoContent'
 
-export interface FilterableItemPopupProps<T>
-  extends Omit<PopupProps, 'headerContent' | 'children' | 'setOpenRef'> {
+export interface FilterableItem {
+  key: string | number
+  Icon?: ComponentType
+  label: ReactNode
+  description?: ReactNode
+  rightNode?: ReactNode
+}
+
+export interface FilterableItemPopupProps<T extends FilterableItem> {
+  Trigger: ComponentType<{ onClick: () => void; open: boolean }>
   items: T[]
   filterableItemKeys: Fuse.FuseOptionKey<T>[]
   onSelect: (item: T, index: number) => void
   searchPlaceholder?: string
   listClassName?: string
   closeOnSelect?: boolean
+  getKeydownEventListener?: (
+    open: boolean,
+    setOpen: Dispatch<SetStateAction<boolean>>
+  ) => (event: KeyboardEvent) => any
 }
 
-export const FilterableItemPopup = <
-  T extends {
-    key: string | number
-    Icon?: ComponentType
-    label: ReactNode
-    description?: ReactNode
-    rightNode?: ReactNode
-  }
->({
+export const FilterableItemPopup = <T extends FilterableItem>({
+  Trigger,
   items,
   filterableItemKeys,
   onSelect,
   searchPlaceholder,
   listClassName,
   closeOnSelect = true,
-  // Popup props and overrides.
-  onOpen,
-  onClose,
-  popupClassName,
-  ...popupProps
+  getKeydownEventListener,
 }: FilterableItemPopupProps<T>) => {
+  const { t } = useTranslation()
+
+  const [open, setOpen] = useState(false)
   const { searchBarProps, filteredData, setFilter } = useSearchFilter(
     items,
     filterableItemKeys
   )
   const itemsListRef = useRef<HTMLDivElement>(null)
   const searchBarRef = useRef<HTMLInputElement>(null)
-  const openRef = useRef<boolean | null>(null)
-  const setOpenRef = useRef<Dispatch<SetStateAction<boolean>> | null>(null)
-
-  const onSelectItem = useCallback(
-    (item: T, index: number) => {
-      onSelect(item, index)
-      // Close.
-      if (closeOnSelect) {
-        setOpenRef.current?.(false)
-      }
-    },
-    [closeOnSelect, onSelect]
-  )
 
   const [selectedIndex, setSelectedIndex] = useState(0)
   // When filtered items update, reset selection to top.
@@ -89,10 +83,21 @@ export const FilterableItemPopup = <
     })
   }, [selectedIndex])
 
+  const onSelectItem = useCallback(
+    (item: T, index: number) => {
+      onSelect(item, index)
+      // Close.
+      if (closeOnSelect) {
+        setOpen(false)
+      }
+    },
+    [closeOnSelect, onSelect]
+  )
+
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
-      // If openRef is unset or false (so, closed), do not take over keypresses.
-      if (!openRef.current) {
+      // If closed, do not process keypresses.
+      if (!open) {
         return
       }
 
@@ -123,90 +128,115 @@ export const FilterableItemPopup = <
           break
       }
     },
-    [selectedIndex, filteredData, onSelectItem]
+    [open, selectedIndex, filteredData, onSelectItem]
   )
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress)
-    // Clean up event listener on unmount.
-    return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [handleKeyPress])
 
-  // Auto focus on search bar on open.
-  const onPopupOpen = useCallback(() => {
-    searchBarRef.current?.focus()
+    // Add custom listener if provided.
+    const listener =
+      getKeydownEventListener && getKeydownEventListener(open, setOpen)
+    if (listener) {
+      document.addEventListener('keydown', listener)
+    }
 
-    // Call original callback if passed in.
-    onOpen?.()
-  }, [onOpen, searchBarRef])
+    // Clean up event listeners on unmount.
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress)
 
-  // Clear filter on close.
-  const onPopupClose = useCallback(() => {
-    // Blur search bar in case focused.
-    searchBarRef.current?.blur()
+      // Remove custom listener if provided.
+      if (listener) {
+        document.removeEventListener('keydown', listener)
+      }
+    }
+  }, [getKeydownEventListener, handleKeyPress, open])
 
-    // Small delay to let it fade away first.
-    setTimeout(() => setFilter(''), 200)
+  useEffect(() => {
+    // Auto focus on search bar on open.
+    if (open) {
+      searchBarRef.current?.focus()
+      // Clear filter on close.
+    } else {
+      // Blur search bar in case focused.
+      searchBarRef.current?.blur()
 
-    // Call original callback if passed in.
-    onClose?.()
-  }, [onClose, setFilter])
+      // Small delay to let it fade away first.
+      setTimeout(() => setFilter(''), 200)
+    }
+  }, [open, searchBarRef, setFilter])
 
   return (
-    <Popup
-      headerContent={
-        <SearchBar
-          placeholder={searchPlaceholder}
-          ref={searchBarRef}
-          {...searchBarProps}
-        />
-      }
-      onClose={onPopupClose}
-      onOpen={onPopupOpen}
-      openRef={openRef}
-      popupClassName={clsx('h-80 w-60', popupClassName)}
-      setOpenRef={setOpenRef}
-      {...popupProps}
-    >
-      <div
-        className={clsx(
-          'no-scrollbar -mt-4 w-full grow space-y-1 overflow-y-auto px-4 pt-4',
-          listClassName
-        )}
-        ref={itemsListRef}
+    <>
+      <Trigger onClick={() => setOpen((o) => !o)} open={open} />
+
+      <Modal
+        containerClassName="p-0 !w-[24rem] !max-w-[96vw] !h-[32rem] !max-h-[96vh]"
+        headerContainerClassName="!m-0 px-4 py-6"
+        headerContent={
+          <SearchBar
+            className="!primary-text text-text-body"
+            containerClassName="grow"
+            ghost
+            hideIcon
+            placeholder={searchPlaceholder}
+            ref={searchBarRef}
+            {...searchBarProps}
+          />
+        }
+        hideCloseButton
+        onClose={() => setOpen(false)}
+        visible={open}
       >
-        {filteredData.map((item, index) => (
-          <Button
-            key={item.key}
-            className={clsx(
-              'w-full',
-              selectedIndex === index && 'bg-background-interactive-selected'
-            )}
-            contentContainerClassName="gap-4"
-            onClick={() => onSelectItem(item, index)}
-            variant="ghost"
-          >
-            {item.Icon && (
-              <p className="text-2xl">
-                <item.Icon />
-              </p>
-            )}
+        <div
+          className={clsx(
+            'no-scrollbar grow space-y-1 overflow-y-auto p-3 pt-4',
+            listClassName
+          )}
+          ref={itemsListRef}
+        >
+          {filteredData.length > 0 ? (
+            filteredData.map((item, index) => (
+              <Button
+                key={item.key}
+                className={clsx(
+                  'w-full',
+                  selectedIndex === index &&
+                    'bg-background-interactive-selected'
+                )}
+                contentContainerClassName="gap-4"
+                onClick={() => onSelectItem(item, index)}
+                variant="ghost"
+              >
+                {item.Icon && (
+                  <p className="text-2xl">
+                    <item.Icon />
+                  </p>
+                )}
 
-            <div className="space-y-1 text-left">
-              <p className="link-text text-text-body">{item.label}</p>
-              {item.description && (
-                <p className="secondary-text">{item.description}</p>
-              )}
-            </div>
+                <div className="space-y-1 text-left">
+                  <p className="link-text text-text-body">{item.label}</p>
+                  {item.description && (
+                    <p className="secondary-text">{item.description}</p>
+                  )}
+                </div>
 
-            {item.rightNode && (
-              <div className="flex grow flex-row items-center justify-end">
-                {item.rightNode}
-              </div>
-            )}
-          </Button>
-        ))}
-      </div>
-    </Popup>
+                {item.rightNode && (
+                  <div className="flex grow flex-row items-center justify-end">
+                    {item.rightNode}
+                  </div>
+                )}
+              </Button>
+            ))
+          ) : (
+            <NoContent
+              Icon={WarningRounded}
+              body={t('info.nothingFound')}
+              className="h-full w-full justify-center border-0"
+            />
+          )}
+        </div>
+      </Modal>
+    </>
   )
 }
