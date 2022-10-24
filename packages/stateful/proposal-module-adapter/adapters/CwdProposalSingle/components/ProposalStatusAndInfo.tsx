@@ -114,7 +114,10 @@ export const ProposalStatusAndInfo = ({
       Value: (props) => (
         <ProfileDisplay
           address={proposal.proposer}
-          copyToClipboardProps={props}
+          copyToClipboardProps={{
+            ...props,
+            success: t('info.copiedAddressToClipboard'),
+          }}
         />
       ),
     },

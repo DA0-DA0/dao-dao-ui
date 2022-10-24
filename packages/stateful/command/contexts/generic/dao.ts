@@ -86,7 +86,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
         },
         {
           name: copied
-            ? t('button.copiedDaoAddress')
+            ? t('info.copiedDaoAddress')
             : t('button.copyDaoAddress'),
           Icon: copied ? Check : CopyAll,
           onChoose: () => {
