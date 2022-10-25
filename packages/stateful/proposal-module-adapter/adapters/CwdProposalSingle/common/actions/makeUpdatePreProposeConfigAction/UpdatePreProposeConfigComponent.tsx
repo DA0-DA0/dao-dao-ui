@@ -196,7 +196,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
               }
               selected={watch(fieldNamePrefix + 'depositInfo.refundPolicy')}
               tabs={DepositRefundPolicyValues.map((depositRefundPolicy) => ({
-                label: t(`info.depositRefundPolicy.${depositRefundPolicy}`),
+                label: t(`depositRefundPolicy.${depositRefundPolicy}`),
                 value: depositRefundPolicy,
               }))}
             />

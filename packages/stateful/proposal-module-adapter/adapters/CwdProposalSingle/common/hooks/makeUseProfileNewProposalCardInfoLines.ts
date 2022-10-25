@@ -106,7 +106,7 @@ export const makeUseProfileNewProposalCardInfoLines = (
             {
               Icon: ChangeCircleOutlined,
               label: t('title.depositRefunds'),
-              value: t(`info.depositRefundPolicy.${depositInfo.refund_policy}`),
+              value: t(`depositRefundPolicy.${depositInfo.refund_policy}`),
               valueClassName:
                 depositInfo.refund_policy !== DepositRefundPolicy.Always
                   ? '!border-component-badge-error'
