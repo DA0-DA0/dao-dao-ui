@@ -4,11 +4,13 @@
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint .",
-    "lint-missing-keys": "eslint . -c .eslintrc-missing-keys.js"
+    "lint-missing-keys": "eslint . -c .eslintrc-missing-keys.js",
+    "remove-unused": "node ./scripts/removeUnused.js"
   },
   "devDependencies": {
     "@dao-dao/config": "2.0.1",
-    "eslint-plugin-i18n-json": "^3.1.0"
+    "eslint-plugin-i18n-json": "^3.1.0",
+    "i18n-unused": "^0.10.0"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true,
