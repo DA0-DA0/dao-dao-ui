@@ -9,7 +9,7 @@ export interface ProposalLineProps {
   proposalPrefix: string
   proposalNumber: number
   title: string
-  expiration: ReactNode
+  timestampDisplay: ReactNode
   Status: ComponentType<{ dimmed?: boolean }>
   vote: ReactNode
   votingOpen: boolean
@@ -22,7 +22,7 @@ export const ProposalLine = ({
   proposalPrefix,
   proposalNumber,
   title,
-  expiration,
+  timestampDisplay,
   Status,
   vote,
   votingOpen,
@@ -50,7 +50,7 @@ export const ProposalLine = ({
       </div>
       <p className="body-text grow truncate">{title}</p>
       <p className="caption-text shrink-0 break-words text-right font-mono">
-        {expiration}
+        {timestampDisplay}
       </p>
       {vote}
     </div>
@@ -80,7 +80,7 @@ export const ProposalLine = ({
           >
             {/* eslint-disable-next-line i18next/no-literal-string */}
             <span className="mr-2 inline-block">–</span>
-            {expiration}
+            {timestampDisplay}
           </p>
         </div>
 

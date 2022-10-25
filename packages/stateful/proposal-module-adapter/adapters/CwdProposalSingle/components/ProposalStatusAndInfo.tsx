@@ -13,14 +13,9 @@ import clsx from 'clsx'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
 
-import {
-  blockHeightSelector,
-  blocksPerYearSelector,
-  useVotingModule,
-} from '@dao-dao/state'
+import { useVotingModule } from '@dao-dao/state'
 import {
   ButtonLink,
   CopyToClipboardUnderline,
@@ -28,10 +23,8 @@ import {
   Logo,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
-  useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { useTranslatedTimeDeltaFormatter } from '@dao-dao/stateless/hooks'
 import {
   BaseProposalStatusAndInfoProps,
   ContractVersion,
@@ -40,8 +33,6 @@ import {
 import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   CHAIN_TXN_URL_PREFIX,
-  convertExpirationToDate,
-  formatDate,
   formatPercentOf100,
   processError,
 } from '@dao-dao/utils'
@@ -61,6 +52,7 @@ import {
   useDepositInfo,
   useProposal,
   useProposalExecutionTxHash,
+  useTimestampDisplay,
   useVotesInfo,
 } from '../hooks'
 
@@ -82,19 +74,11 @@ export const ProposalStatusAndInfo = ({
       contractAddress: proposalModule.address,
     })
   )
+
   const proposal = useProposal()
   const depositInfo = useDepositInfo()
-
   const executionTxHash = useProposalExecutionTxHash()
-  const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
-  const expirationDate = convertExpirationToDate(
-    blocksPerYear,
-    proposal.expiration,
-    blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
-  )
-
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: false })
+  const timestampDisplay = useTimestampDisplay()
 
   const info: ProposalStatusAndInfoProps['info'] = [
     {
@@ -137,25 +121,12 @@ export const ProposalStatusAndInfo = ({
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
-    ...(expirationDate
+    ...(timestampDisplay
       ? ([
           {
             Icon: HourglassTopRounded,
-            label:
-              proposal.status === Status.Open &&
-              expirationDate.getTime() > Date.now()
-                ? t('title.timeLeft')
-                : t('info.completed'),
-            Value: (props) => (
-              <p {...props}>
-                {proposal.status === Status.Open &&
-                expirationDate.getTime() > Date.now() ? (
-                  <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
-                ) : (
-                  formatDate(expirationDate)
-                )}
-              </p>
-            ),
+            label: timestampDisplay.label,
+            Value: (props) => <p {...props}>{timestampDisplay.content}</p>,
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
