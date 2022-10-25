@@ -5,6 +5,7 @@ import {
   ExpandCircleDownOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
+import { NextRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -24,9 +25,10 @@ import { UnstakingModal } from './UnstakingModal'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export interface TokenCardProps extends TokenCardInfo {
+  router: NextRouter
   onAddToken?: () => void
-  onProposeStakeUnstake?: () => void
-  onProposeClaim?: () => void
+  proposeStakeUnstakeHref?: string
+  proposeClaimHref?: string
   refreshUnstakingTasks?: () => void
 }
 
@@ -42,9 +44,10 @@ export const TokenCard = ({
   lazyStakingInfo,
   cw20Address,
   onAddToken,
-  onProposeStakeUnstake,
-  onProposeClaim,
+  proposeStakeUnstakeHref,
+  proposeClaimHref,
   refreshUnstakingTasks,
+  router,
 }: TokenCardProps) => {
   const { t } = useTranslation()
 
@@ -117,26 +120,26 @@ export const TokenCard = ({
             },
           ]
         : []),
-      ...(onProposeStakeUnstake || onProposeClaim
+      ...(proposeStakeUnstakeHref || proposeClaimHref
         ? [
             {
               label: t('title.newProposalTo'),
               buttons: [
-                ...(onProposeStakeUnstake
+                ...(proposeStakeUnstakeHref
                   ? [
                       {
                         Icon: StakeEmoji,
                         label: t('button.stakeOrUnstake'),
-                        onClick: onProposeStakeUnstake,
+                        href: proposeStakeUnstakeHref,
                       },
                     ]
                   : []),
-                ...(onProposeClaim
+                ...(proposeClaimHref
                   ? [
                       {
                         Icon: SpendEmoji,
                         label: t('button.claim'),
-                        onClick: onProposeClaim,
+                        href: proposeClaimHref,
                       },
                     ]
                   : []),
@@ -145,7 +148,14 @@ export const TokenCard = ({
           ]
         : []),
     ],
-    [copied, cw20Address, onAddToken, onProposeClaim, onProposeStakeUnstake, t]
+    [
+      copied,
+      cw20Address,
+      onAddToken,
+      proposeClaimHref,
+      proposeStakeUnstakeHref,
+      t,
+    ]
   )
 
   // Truncate IBC denominations to prevent overflow.
@@ -372,7 +382,9 @@ export const TokenCard = ({
 
       {!lazyStakingInfo.loading && lazyStakingInfo.data && (
         <UnstakingModal
-          onClaim={onProposeClaim}
+          onClaim={
+            proposeClaimHref ? () => router.push(proposeClaimHref) : undefined
+          }
           onClose={() => setShowUnstakingTokens(false)}
           refresh={refreshUnstakingTasks}
           tasks={lazyStakingInfo.data.unstakingTasks}

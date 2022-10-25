@@ -144,8 +144,8 @@ export const Popup = ({
           },
           // Open.
           {
-            'pointer-events-none opacity-0': !open,
-            'opacity-100': open,
+            'pointer-events-none scale-95 opacity-0': !open,
+            'scale-100 opacity-100': open,
           },
           popupClassName
         )}
