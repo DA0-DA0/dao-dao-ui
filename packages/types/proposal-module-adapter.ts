@@ -5,6 +5,7 @@ import { RecoilValueReadOnly } from 'recoil'
 
 import { Action } from './actions'
 import {
+  LinkWrapperProps,
   LoaderProps,
   LogoProps,
   ProfileNewProposalCardInfoLine,
@@ -196,6 +197,7 @@ export interface BaseProposalWalletVoteProps<T> {
 
 export interface BaseProposalLineProps {
   href: string
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export interface BaseNewProposalProps<FormData = any> {

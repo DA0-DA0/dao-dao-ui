@@ -3,6 +3,7 @@ import { useState } from 'react'
 
 import { makeAppLayoutContextDecorator } from '@dao-dao/storybook/decorators'
 
+import { LinkWrapper } from '../LinkWrapper'
 import { Navigation, NavigationProps } from './Navigation'
 
 export default {
@@ -149,6 +150,7 @@ export const DefaultArgs: NavigationProps = {
   compact: false,
   setCompact: (compact) => alert(`compact! ${compact}`),
   mountedInBrowser: true,
+  LinkWrapper,
 }
 
 export const Default = Template.bind({})

@@ -17,6 +17,7 @@ import {
   SubQueryProvider,
   activeThemeAtom,
   mountedInBrowserAtom,
+  navigatingToPageAtom,
 } from '@dao-dao/state'
 import { WalletProvider } from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
@@ -28,6 +29,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
+  const setNavigatingToPage = useSetRecoilState(navigatingToPageAtom)
   const [_theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
 
@@ -47,6 +49,11 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
     // Update theme change count.
     setThemeChangeCount((c) => c + 1)
   }, [theme])
+
+  // On route change, clear navigation loading state.
+  useEffect(() => {
+    setNavigatingToPage(undefined)
+  }, [router.asPath, setNavigatingToPage])
 
   return (
     <ThemeProvider

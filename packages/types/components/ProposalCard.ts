@@ -1,5 +1,7 @@
 import { ComponentType } from 'react'
 
+import { LinkWrapperProps } from './LinkWrapper'
+
 export interface ProposalCardProps {
   dao: {
     coreAddress: string
@@ -13,6 +15,7 @@ export interface ProposalCardProps {
   className?: string
   onMouseOver?: () => void
   onMouseLeave?: () => void
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export interface ProfileCardInfoLine {

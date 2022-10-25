@@ -5,7 +5,7 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect } from 'react'
 
 import { usePinnedDaos } from '@dao-dao/state'
-import { daoCardInfoLazyDataSelector } from '@dao-dao/stateful'
+import { LinkWrapper, daoCardInfoLazyDataSelector } from '@dao-dao/stateful'
 import {
   DaoCard as StatelessDaoCard,
   useCachedLoadable,
@@ -35,6 +35,7 @@ export const DaoCard = (props: DaoCardInfo) => {
   return (
     <StatelessDaoCard
       {...props}
+      LinkWrapper={LinkWrapper}
       hidePin={
         // Don't allow pinning if on different chain. This prevents pinning
         // featured mainnet DAOs on testnet.

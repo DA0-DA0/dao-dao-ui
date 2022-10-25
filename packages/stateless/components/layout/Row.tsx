@@ -1,8 +1,9 @@
 import { UnfoldLess, UnfoldMore } from '@mui/icons-material'
 import clsx from 'clsx'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
+
+import { LinkWrapperProps } from '@dao-dao/types'
 
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../Loader'
@@ -17,9 +18,10 @@ export interface RowProps {
   children?: ReactNode
   rightNode?: ReactNode
   defaultExpanded?: boolean
-  localHref?: string
+  href?: string
   compact?: boolean
   loading?: boolean
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export const Row = ({
@@ -31,9 +33,10 @@ export const Row = ({
   children,
   rightNode,
   defaultExpanded = false,
-  localHref,
+  href,
   compact = false,
   loading = false,
+  LinkWrapper,
 }: RowProps) => {
   const { asPath } = useRouter()
   const [expanded, setExpanded] = useState(
@@ -50,13 +53,12 @@ export const Row = ({
   const ExpandButton = expanded ? UnfoldLess : UnfoldMore
 
   return compact ? (
-    <RowWrapper localHref={localHref}>
+    <RowWrapper LinkWrapper={LinkWrapper} href={href}>
       <div
         className={clsx('body-text flex flex-row items-center py-2.5 px-6', {
           'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
-            onClick || localHref,
-          'bg-background-interactive-selected':
-            localHref && localHref === asPath,
+            onClick || href,
+          'bg-background-interactive-selected': href && href === asPath,
         })}
         onClick={onClick}
       >
@@ -78,13 +80,13 @@ export const Row = ({
       <div>{children}</div>
     </RowWrapper>
   ) : (
-    <RowWrapper localHref={localHref}>
+    <RowWrapper LinkWrapper={LinkWrapper} href={href}>
       <div
         className={clsx('body-text flex flex-row items-center gap-4 p-2', {
           'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
-            onClick || localHref,
+            onClick || href,
           'rounded-md bg-background-interactive-selected':
-            localHref && localHref === asPath,
+            href && href === asPath,
         })}
         onClick={onClick}
       >
@@ -122,20 +124,16 @@ export const Row = ({
 }
 
 interface RowWrapperProps {
-  localHref?: string
-  remoteHref?: string
+  LinkWrapper: ComponentType<LinkWrapperProps>
+  href?: string
   children: ReactNode
 }
 
-const RowWrapper = ({ localHref, remoteHref, children }: RowWrapperProps) =>
-  localHref ? (
-    <Link href={localHref}>
-      <a className="block">{children}</a>
-    </Link>
-  ) : remoteHref ? (
-    <a className="block" href={remoteHref} rel="noreferrer" target="_blank">
+const RowWrapper = ({ LinkWrapper, href, children }: RowWrapperProps) =>
+  href ? (
+    <LinkWrapper className="block" href={href}>
       {children}
-    </a>
+    </LinkWrapper>
   ) : (
     <div>{children}</div>
   )

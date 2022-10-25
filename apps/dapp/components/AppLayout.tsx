@@ -24,6 +24,7 @@ import {
   useWalletProfile,
 } from '@dao-dao/state'
 import {
+  LinkWrapper,
   PfpkNftSelectionModal,
   SidebarWallet,
   daoCreatedCardPropsAtom,
@@ -279,6 +280,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
               isPinned(daoCreatedCardProps.coreAddress)
                 ? setUnpinned(daoCreatedCardProps.coreAddress)
                 : setPinned(daoCreatedCardProps.coreAddress),
+            LinkWrapper,
           }}
           modalProps={{
             onClose: () => setDaoCreatedCardProps(undefined),
@@ -289,7 +291,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
       {proposalCreatedCardProps && (
         <ProposalCreatedModal
-          itemProps={proposalCreatedCardProps}
+          itemProps={{
+            ...proposalCreatedCardProps,
+            LinkWrapper,
+          }}
           modalProps={{
             onClose: () => setProposalCreatedCardProps(undefined),
           }}
@@ -299,6 +304,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
       <StatelessAppLayout
         context={appLayoutContext}
         navigationProps={{
+          LinkWrapper,
           inboxCount:
             inbox.loading ||
             // Prevent hydration errors by loading until mounted.

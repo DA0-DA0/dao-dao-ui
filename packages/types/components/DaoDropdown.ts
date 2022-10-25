@@ -1,4 +1,6 @@
-import { ReactNode } from 'react'
+import { ComponentType, ReactNode } from 'react'
+
+import { LinkWrapperProps } from './LinkWrapper'
 
 export interface DaoDropdownInfo {
   coreAddress: string
@@ -15,4 +17,5 @@ export interface DaoDropdownProps {
   showSubdaos?: boolean
   indent?: number
   compact?: boolean
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }

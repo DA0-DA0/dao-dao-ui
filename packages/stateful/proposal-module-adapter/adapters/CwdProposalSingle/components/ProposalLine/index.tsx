@@ -16,7 +16,7 @@ import { useProposal, useWalletVoteInfo } from '../../hooks'
 import { ProposalWalletVote } from '../ProposalWalletVote'
 import { ProposalStatus } from './ProposalStatus'
 
-export const ProposalLine = ({ href }: BaseProposalLineProps) => {
+export const ProposalLine = (props: BaseProposalLineProps) => {
   const {
     proposalModule: { prefix: proposalPrefix },
     proposalNumber,
@@ -48,7 +48,6 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
             )
           : expirationDate && formatDate(expirationDate)) || ''
       }
-      href={href}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
       title={proposal.title}
@@ -60,6 +59,7 @@ export const ProposalLine = ({ href }: BaseProposalLineProps) => {
         )
       }
       votingOpen={proposal.status === Status.Open}
+      {...props}
     />
   )
 }

@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import clsx from 'clsx'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
@@ -18,6 +17,7 @@ export const DaoDropdown = ({
   showSubdaos = true,
   indent = 0,
   compact = false,
+  LinkWrapper,
 }: DaoDropdownProps) => {
   const { asPath } = useRouter()
 
@@ -36,18 +36,17 @@ export const DaoDropdown = ({
 
   // If compact, just show image.
   return compact ? (
-    <Link href={`/dao/${coreAddress}`}>
-      <a
-        className={clsx(
-          'box-content flex h-8 w-8 flex-row items-center justify-center py-1.5 px-6 transition-opacity hover:opacity-70 active:opacity-60',
-          selected && 'bg-background-interactive-selected'
-        )}
-      >
-        <Tooltip title={name}>
-          <img alt="" className="h-7 w-7 rounded-full" src={imageUrl} />
-        </Tooltip>
-      </a>
-    </Link>
+    <LinkWrapper
+      className={clsx(
+        'box-content flex h-8 w-8 flex-row items-center justify-center py-1.5 px-6 transition-opacity hover:opacity-70 active:opacity-60',
+        selected && 'bg-background-interactive-selected'
+      )}
+      href={`/dao/${coreAddress}`}
+    >
+      <Tooltip title={name}>
+        <img alt="" className="h-7 w-7 rounded-full" src={imageUrl} />
+      </Tooltip>
+    </LinkWrapper>
   ) : (
     <div>
       <div
@@ -80,13 +79,14 @@ export const DaoDropdown = ({
             )}
           </div>
 
-          <Link href={`/dao/${coreAddress}`}>
-            <a className="flex grow flex-row items-center gap-2 py-2 transition-opacity hover:opacity-70 active:opacity-60">
-              <img alt="" className="h-5 w-5 rounded-full" src={imageUrl} />
+          <LinkWrapper
+            className="flex grow flex-row items-center gap-2 py-2 transition-opacity hover:opacity-70 active:opacity-60"
+            href={`/dao/${coreAddress}`}
+          >
+            <img alt="" className="h-5 w-5 rounded-full" src={imageUrl} />
 
-              <p className="link-text text-text-body">{name}</p>
-            </a>
-          </Link>
+            <p className="link-text text-text-body">{name}</p>
+          </LinkWrapper>
         </div>
       </div>
 
@@ -102,6 +102,7 @@ export const DaoDropdown = ({
           subdaos?.map((dao, index) => (
             <DaoDropdown
               key={index}
+              LinkWrapper={LinkWrapper}
               compact={compact}
               dao={dao}
               indent={indent + 1}

@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react'
 
-import { daoCardInfoLazyDataSelector } from '@dao-dao/stateful'
+import { LinkWrapper, daoCardInfoLazyDataSelector } from '@dao-dao/stateful'
 import {
   DaoCard as StatelessDaoCard,
   useCachedLoadable,
@@ -30,6 +30,7 @@ export const SplashDaoCard = (props: DaoCardInfo) => {
   return (
     <StatelessDaoCard
       {...props}
+      LinkWrapper={LinkWrapper}
       hidePin
       lazyData={loadableToLoadingData(lazyDataLoadable, {
         isMember: false,

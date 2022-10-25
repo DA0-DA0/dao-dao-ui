@@ -253,4 +253,7 @@ export type DaoCreationGetInstantiateInfo<
   t: TFunction
 ) => ModuleInstantiateInfo
 
-export type DaoCreatedCardProps = Omit<DaoCardProps, 'pinned' | 'onPin'>
+export type DaoCreatedCardProps = Omit<
+  DaoCardProps,
+  'pinned' | 'onPin' | 'LinkWrapper'
+>

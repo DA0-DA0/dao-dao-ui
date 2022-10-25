@@ -1,5 +1,8 @@
+import { ComponentType } from 'react'
+
 import { LoadingData } from './common'
 import { DaoDropdownInfo } from './DaoDropdown'
+import { LinkWrapperProps } from './LinkWrapper'
 
 export interface NavigationTokenPrice {
   label: string
@@ -18,4 +21,5 @@ export interface NavigationProps {
   compact: boolean
   setCompact: (compact: boolean) => void
   mountedInBrowser: boolean
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }

@@ -61,6 +61,7 @@ export const Navigation = ({
   compact,
   setCompact,
   mountedInBrowser,
+  LinkWrapper,
 }: NavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
@@ -176,13 +177,15 @@ export const Navigation = ({
         <div className={clsx(!compact && 'pt-2')}>
           <Row
             Icon={HomeOutlined}
+            LinkWrapper={LinkWrapper}
             compact={compact}
+            href="/home"
             label={t('title.home')}
-            localHref="/home"
           />
 
           <Row
             Icon={Search}
+            LinkWrapper={LinkWrapper}
             compact={compact}
             label={t('title.search')}
             onClick={setCommandModalVisible}
@@ -203,27 +206,30 @@ export const Navigation = ({
           {!hideInbox && (
             <Row
               Icon={InboxOutlined}
+              LinkWrapper={LinkWrapper}
               compact={compact}
+              href="/inbox"
               label={
                 !inboxCount.loading && inboxCount.data > 0
                   ? t('title.inboxWithCount', { count: inboxCount.data })
                   : t('title.inbox')
               }
               loading={inboxCount.loading}
-              localHref="/inbox"
               showBadge={!inboxCount.loading && inboxCount.data > 0}
             />
           )}
 
           <Row
             Icon={Add}
+            LinkWrapper={LinkWrapper}
             compact={compact}
+            href="/dao/create"
             label={t('button.create')}
-            localHref="/dao/create"
           />
 
           <Row
             Icon={PushPinOutlined}
+            LinkWrapper={LinkWrapper}
             compact={compact}
             defaultExpanded
             label={t('title.following')}
@@ -250,6 +256,7 @@ export const Navigation = ({
                 {pinnedDaos.data.map((dao, index) => (
                   <DaoDropdown
                     key={index}
+                    LinkWrapper={LinkWrapper}
                     compact={compact}
                     dao={dao}
                     defaultExpanded

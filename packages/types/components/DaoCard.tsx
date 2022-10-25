@@ -1,5 +1,8 @@
+import { ComponentType } from 'react'
+
 import { DaoParentInfo } from '../dao'
 import { LoadingData } from './common'
+import { LinkWrapperProps } from './LinkWrapper'
 
 // Loaded by card once displaying.
 export interface DaoCardInfoLazyData {
@@ -31,4 +34,5 @@ export interface DaoCardProps extends DaoCardInfo {
   hidePin?: boolean
   onMouseOver?: () => void
   onMouseLeave?: () => void
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }

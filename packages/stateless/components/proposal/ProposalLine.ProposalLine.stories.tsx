@@ -6,6 +6,7 @@ import {
 } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalLine/ProposalStatus'
 import { formatDate, secondsToWdhms } from '@dao-dao/utils'
 
+import { LinkWrapper } from '../LinkWrapper'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
 import {
   ProposalWalletVote,
@@ -54,6 +55,7 @@ export const makeProps = (
     />
   ),
   votingOpen: status === 'open',
+  LinkWrapper,
 })
 
 export const Default = Template.bind({})

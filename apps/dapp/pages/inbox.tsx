@@ -9,6 +9,7 @@ import { useRecoilValue } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
+  LinkWrapper,
   ProposalLine,
   ProposalLineProps,
   SuspenseLoader,
@@ -64,6 +65,7 @@ const InnerInbox = () => {
 
   return (
     <Inbox
+      LinkWrapper={LinkWrapper}
       ProposalLine={ProposalLine}
       daosWithProposals={
         loading
