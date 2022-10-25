@@ -378,7 +378,11 @@ export const TokenCard = ({
           tasks={lazyStakingInfo.data.unstakingTasks}
           unstakingDuration={
             lazyStakingInfo.data.unstakingDurationSeconds
-              ? secondsToWdhms(lazyStakingInfo.data.unstakingDurationSeconds)
+              ? secondsToWdhms(
+                  lazyStakingInfo.data.unstakingDurationSeconds,
+                  2,
+                  false
+                )
               : undefined
           }
           visible={showUnstakingTokens}
