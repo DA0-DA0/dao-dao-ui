@@ -372,13 +372,26 @@ export const nativeStakingInfoSelector = selectorFamily<
                 validators.find(
                   ({ operatorAddress }) => operatorAddress === address
                 ) ?? {}
-              const pendingReward = rewards
+              let pendingReward = rewards
                 .find(({ validatorAddress }) => validatorAddress === address)
                 ?.reward.find(({ denom }) => denom === NATIVE_DENOM)
 
               if (!description || !pendingReward) {
                 return
               }
+
+              // All balances in the SDK are represented in the native denom
+              // (for example, ujuno) through Coin types. For some reason, some
+              // balances are considered shares instead, and shares are
+              // represented as the native denom with 18 decimals. Additionally,
+              // the string representations of those decimal values don't even
+              // include decimal points. Knowing that they use 18 decimals, we
+              // can just adjust that value here so that it is in terms of
+              // native denom with no decimals, since they are supposed to be
+              // integers.
+              pendingReward.amount = Math.round(
+                Number(pendingReward.amount) / Math.pow(10, 18)
+              ).toString()
 
               const { moniker, website, details } = description
 
