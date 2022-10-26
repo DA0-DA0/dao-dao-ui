@@ -87,8 +87,9 @@ export const makeProps = (crown = false): TokenCardProps => {
       },
     },
     onAddToken: () => toast.success('added'),
-    onProposeClaim: () => alert('claim'),
-    onProposeStakeUnstake: () => alert('stakeUnstake'),
+    proposeClaimHref: '#',
+    proposeStakeUnstakeHref: '#',
+    onClaim: () => alert('claim'),
   }
 }
 

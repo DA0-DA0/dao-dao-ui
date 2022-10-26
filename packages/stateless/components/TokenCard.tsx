@@ -5,7 +5,6 @@ import {
   ExpandCircleDownOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { NextRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -25,11 +24,11 @@ import { UnstakingModal } from './UnstakingModal'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export interface TokenCardProps extends TokenCardInfo {
-  router: NextRouter
   onAddToken?: () => void
   proposeStakeUnstakeHref?: string
   proposeClaimHref?: string
   refreshUnstakingTasks?: () => void
+  onClaim?: () => void
 }
 
 export const TokenCard = ({
@@ -47,7 +46,7 @@ export const TokenCard = ({
   proposeStakeUnstakeHref,
   proposeClaimHref,
   refreshUnstakingTasks,
-  router,
+  onClaim,
 }: TokenCardProps) => {
   const { t } = useTranslation()
 
@@ -382,9 +381,7 @@ export const TokenCard = ({
 
       {!lazyStakingInfo.loading && lazyStakingInfo.data && (
         <UnstakingModal
-          onClaim={
-            proposeClaimHref ? () => router.push(proposeClaimHref) : undefined
-          }
+          onClaim={onClaim}
           onClose={() => setShowUnstakingTokens(false)}
           refresh={refreshUnstakingTasks}
           tasks={lazyStakingInfo.data.unstakingTasks}
