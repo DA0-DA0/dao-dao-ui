@@ -139,6 +139,7 @@ export const DaoCard = ({
                 : { loading: false, data: lazyData.data.tokenBalance }
             }
             decimals={tokenDecimals}
+            hideApprox
             maxDecimals={3}
             symbol={tokenSymbol}
           />

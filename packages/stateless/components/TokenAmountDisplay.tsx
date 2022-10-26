@@ -18,6 +18,8 @@ export type TokenAmountDisplayProps = Omit<
   suffix?: string
   // Max decimals to display.
   maxDecimals?: number
+  // Don't show approximation indication (like a tilde).
+  hideApprox?: boolean
 } & ( // If not USDC, require symbol.
     | {
         symbol: string
@@ -36,6 +38,7 @@ export const TokenAmountDisplay = ({
   prefix,
   suffix,
   maxDecimals,
+  hideApprox,
   symbol: _symbol,
   usdc,
   ...props
@@ -111,7 +114,9 @@ export const TokenAmountDisplay = ({
     // When 1000 or larger, the compact notation (e.g. 1.52K or 23.5M) is enough
     // to indicate that there is missing info, and we don't need the explicit
     // approximation indication.
-    full !== compact && amount < 1000 ? 'format.tokenApprox' : 'format.token',
+    full !== compact && amount < 1000 && !hideApprox
+      ? 'format.tokenApprox'
+      : 'format.token',
     {
       amount: compact,
       symbol,

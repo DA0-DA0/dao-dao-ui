@@ -54,6 +54,7 @@ export const ProfileHomeCard = ({
                 amount={lazyData.data.unstakedBalance}
                 className="title-text break-words font-mono"
                 decimals={tokenDecimals}
+                hideApprox
                 maxDecimals={2}
                 symbol={tokenSymbol}
               />
@@ -73,6 +74,7 @@ export const ProfileHomeCard = ({
                 amount={lazyData.data.stakedBalance}
                 className="title-text break-words font-mono"
                 decimals={tokenDecimals}
+                hideApprox
                 maxDecimals={2}
                 symbol={tokenSymbol}
               />
