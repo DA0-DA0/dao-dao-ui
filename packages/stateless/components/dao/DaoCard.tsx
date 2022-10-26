@@ -138,10 +138,15 @@ export const DaoCard = ({
                 ? { loading: true }
                 : { loading: false, data: lazyData.data.tokenBalance }
             }
-            decimals={tokenDecimals}
             hideApprox
-            maxDecimals={3}
-            symbol={tokenSymbol}
+            {...(tokenSymbol === 'USDC'
+              ? {
+                  usdcConversion: true,
+                }
+              : {
+                  decimals: tokenDecimals,
+                  symbol: tokenSymbol,
+                })}
           />
         </div>
 

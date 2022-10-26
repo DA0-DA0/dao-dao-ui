@@ -253,7 +253,7 @@ export const TokenCard = ({
                     ? { loading: true }
                     : totalBalance * usdcUnitPrice
                 }
-                usdc
+                usdcConversion
               />
             </div>
           </div>
@@ -273,7 +273,7 @@ export const TokenCard = ({
 
                 <TokenAmountDisplay
                   amount={unstakedBalance * usdcUnitPrice}
-                  usdc
+                  usdcConversion
                 />
               </div>
             </div>

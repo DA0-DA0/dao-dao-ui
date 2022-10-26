@@ -3,17 +3,39 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
-import { NATIVE_DECIMALS, formatTime, toFixedDown } from '@dao-dao/utils'
+import { USDC_DECIMALS, formatTime, toFixedDown } from '@dao-dao/utils'
 
 import { Tooltip } from './Tooltip'
+
+// Standardized display for token amounts, with support for displaying compact
+// notation of numbers and providing tooltips with precise numbers when any
+// abbreviation occurs.
+//
+// It automatically displays max 2 decimals when abbreviating larger values,
+// since the abbreviation already implies an approximate is being displayed, and
+// the token decimals no longer carry the same meaning in the abbreviated value.
+//
+// For example: 250,319,726.80401 $JUNO abbreviates to 250.31K $JUNO, which
+// looks much better than 250.319726K $JUNO.
+//
+// Notes:
+//
+// The only token amounts we intentionally don't show with full decimals are
+// USDC conversions (max 3) and ProfileHomeCard's unstaked and staked balances
+// (max 2). USDC conversions use 3 to draw a distinction from USD's 2 decimals,
+// while still acknowledging that a USDC conversion is approximate in nature,
+// and the decimal specifics (all 6) are not relevant.
+
+// Default maximum decimals to use in a USDC conversion.
+const USDC_CONVERSION_DEFAULT_MAX_DECIMALS = 3
+// Maximum decimals to use in a large compacted value.
+const LARGE_COMPACT_MAX_DECIMALS = 2
 
 export type TokenAmountDisplayProps = Omit<
   ComponentPropsWithoutRef<'p'>,
   'children'
 > & {
   amount: number | LoadingData<number>
-  // Full decimal precision of the value.
-  decimals?: number
   prefix?: string
   suffix?: string
   // Max decimals to display.
@@ -22,33 +44,37 @@ export type TokenAmountDisplayProps = Omit<
   hideApprox?: boolean
   // Add to tooltip if present.
   dateFetched?: Date
-} & ( // If not USDC, require symbol.
+} & ( // If not USDC conversion, require symbol and decimals.
     | {
         symbol: string
-        usdc?: false
+        // Full decimal precision of the value.
+        decimals: number
+        usdcConversion?: false
       }
-    // If USDC, disallow symbol.
+    // If USDC conversion, disallow symbol and decimals.
     | {
         symbol?: never
-        usdc: true
+        decimals?: never
+        usdcConversion: true
       }
   )
 
 export const TokenAmountDisplay = ({
   amount: _amount,
-  decimals = NATIVE_DECIMALS,
+  decimals: _decimals,
   prefix,
   suffix,
   maxDecimals,
   hideApprox,
   dateFetched,
   symbol: _symbol,
-  usdc,
+  usdcConversion,
   ...props
 }: TokenAmountDisplayProps) => {
   const { t } = useTranslation()
 
-  const symbol = usdc ? 'USDC' : _symbol
+  const symbol = usdcConversion ? 'USDC' : _symbol
+  const decimals = usdcConversion ? USDC_DECIMALS : _decimals
 
   // If loading, display pulsing ellipses.
   if (typeof _amount !== 'number' && 'loading' in _amount && _amount.loading) {
@@ -74,42 +100,58 @@ export const TokenAmountDisplay = ({
     roundingPriority: 'morePrecision',
   }
 
+  const maxCompactDecimals =
+    maxDecimals ??
+    (usdcConversion ? USDC_CONVERSION_DEFAULT_MAX_DECIMALS : decimals)
+  const compactOptions: Intl.NumberFormatOptions & {
+    roundingPriority: string
+  } = {
+    ...options,
+    notation: 'compact',
+    maximumFractionDigits: maxCompactDecimals,
+    // notation=compact seems to set maximumSignificantDigits if undefined.
+    // Because we are rounding toward more precision above, set
+    // maximumSignificantDigits to 1 so that notation=compact does not
+    // override it and display extra decimals in case maximumFractionDigits is
+    // less. This appears to work fine on both Chrome and Safari, which is
+    // good enough for now. This is a crazy hack.
+    maximumSignificantDigits: 1,
+  }
+
   const full = toFixedDown(amount, decimals).toLocaleString(undefined, options)
-  // If USDC, default maxCompactDecimals to 3.
-  const maxCompactDecimals = usdc ? maxDecimals ?? 3 : maxDecimals ?? decimals
-  // Abbreviated number. Example: 1,000,000 => 1M
+  // Abbreviated number. Example: 1,000,000 => 1M, or 1.2345 => 1.23.
   let compact = toFixedDown(amount, maxCompactDecimals).toLocaleString(
     undefined,
-    {
-      ...options,
-      notation: 'compact',
-      maximumFractionDigits: maxCompactDecimals,
-    }
+    compactOptions
   )
 
-  // If compacted, use fewer decimals because compact looks bad with too many
-  // decimals. We first needed to use the same decimals to compare and see if
-  // compact had any effect. If compact changed nothing, we want to keep the
+  const largeNumber = amount >= 1000
+
+  // If this is a large number that is compacted, and maxDecimals is not being
+  // overridden, use fewer decimals because compact notation looks bad with too
+  // many decimals. We first needed to use the same decimals to compare and see
+  // if compact had any effect. If compact changed nothing, we want to keep the
   // original decimals.
-  if (full !== compact) {
-    const compactedDecimals = maxDecimals ?? 2
-    compact = toFixedDown(amount, compactedDecimals).toLocaleString(undefined, {
-      ...options,
-      notation: 'compact',
-      maximumFractionDigits: compactedDecimals,
-    })
+  if (largeNumber && full !== compact && maxDecimals === undefined) {
+    compact = toFixedDown(amount, LARGE_COMPACT_MAX_DECIMALS).toLocaleString(
+      undefined,
+      {
+        ...compactOptions,
+        maximumFractionDigits: LARGE_COMPACT_MAX_DECIMALS,
+      }
+    )
   }
 
   const wasCompacted = full !== compact
 
   // Display compact.
   const display = t(
-    // If compact is different from full, and smaller than 1000, display
+    // If compact is different from full and not a large number, display
     // approximation indication (e.g. ~15.34 when the full value is 15.344913).
-    // When 1000 or larger, the compact notation (e.g. 1.52K or 23.5M) is enough
-    // to indicate that there is missing info, and we don't need the explicit
+    // When large, the compact notation (e.g. 1.52K or 23.5M) is enough to
+    // indicate that there is missing info, and we don't need the explicit
     // approximation indication.
-    wasCompacted && amount < 1000 && !hideApprox
+    wasCompacted && !largeNumber && !hideApprox
       ? 'format.tokenApprox'
       : 'format.token',
     {

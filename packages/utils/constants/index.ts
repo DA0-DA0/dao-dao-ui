@@ -20,6 +20,10 @@ export const NATIVE_DECIMALS = parseInt(
   10
 )
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
+export const USDC_DECIMALS = parseInt(
+  process.env.NEXT_PUBLIC_USDC_DECIMALS || '6',
+  10
+)
 
 // True if on mainnet, false if on testnet.
 export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
