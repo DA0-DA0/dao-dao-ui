@@ -58,8 +58,14 @@ export const TokenAmountDisplay = ({
   // Extract amount from loaded value.
   const amount = typeof _amount === 'number' ? _amount : _amount.data
 
-  const options: Intl.NumberFormatOptions = {
+  const options: Intl.NumberFormatOptions & { roundingPriority: string } = {
     maximumFractionDigits: decimals,
+    // Safari (and potentially other non-Chrome browsers) uses only 1 decimal
+    // when notation=compact. I think notation=compact implicitly sets
+    // maximumSignificantDigits=1, because roundingPriority=morePrecision tells
+    // it to resolve these decimal contraint conflicts with whichever results in
+    // greater precision.
+    roundingPriority: 'morePrecision',
   }
 
   const full = toFixedDown(amount, decimals).toLocaleString(undefined, options)
