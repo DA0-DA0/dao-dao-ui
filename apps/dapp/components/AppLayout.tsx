@@ -166,6 +166,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     ]
   )
 
+  //! Refresh every minute. Block height and wallet balances.
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
   // Refresh block height and wallet balances every minute.
   useEffect(() => {

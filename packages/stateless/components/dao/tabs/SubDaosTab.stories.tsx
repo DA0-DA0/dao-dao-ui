@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { LinkWrapper, useDaoInfoContext } from '@dao-dao/stateless'
+import { ButtonLink, LinkWrapper, useDaoInfoContext } from '@dao-dao/stateless'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
 import { DaoCard } from '../DaoCard'
@@ -55,6 +55,7 @@ Default.args = {
   },
   createSubDaoHref: '#',
   upgradeToV2Href: '#',
+  ButtonLink,
 }
 
 export const Loading = Template.bind({})

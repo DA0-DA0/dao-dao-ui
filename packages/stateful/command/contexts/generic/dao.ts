@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import {
-  navigatingToPageAtom,
+  navigatingToHrefAtom,
   usePinnedDaos,
   useVotingModule,
 } from '@dao-dao/state'
@@ -47,8 +47,8 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
       return () => clearTimeout(timeout)
     }, [copied])
 
-    const [navigatingToPage, setNavigatingToPage] =
-      useRecoilState(navigatingToPageAtom)
+    const [navigatingToHref, setNavigatingToHref] =
+      useRecoilState(navigatingToHrefAtom)
     const daoPageHref = `${getUrlBaseForChainId(chainId)}/dao/${coreAddress}`
     const createProposalHref = `${getUrlBaseForChainId(
       chainId
@@ -71,7 +71,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
 
         //! 'href' in item
         // Open remote links in new tab.
-        if (item.href.startsWith('https://')) {
+        if (item.href.startsWith('http')) {
           window.open(item.href, '_blank')
         } else {
           // Navigate to local links.
@@ -80,7 +80,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           // If not on destination page, set navigating state. If already there,
           // do nothing.
           if (router.asPath !== item.href) {
-            setNavigatingToPage(item.href)
+            setNavigatingToHref(item.href)
           }
         }
       },
@@ -89,7 +89,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           name: t('button.goToDaoPage'),
           Icon: HomeOutlined,
           href: daoPageHref,
-          loading: navigatingToPage === daoPageHref,
+          loading: navigatingToHref === daoPageHref,
         },
         {
           name: t('button.createAProposal'),
@@ -97,7 +97,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           href: createProposalHref,
           disabled: !isMember,
           loading:
-            navigatingToPage === createProposalHref ||
+            navigatingToHref === createProposalHref ||
             status === WalletConnectionStatus.Initializing ||
             status === WalletConnectionStatus.Connecting,
         },

@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType } from 'react'
 
-import { Button, ButtonLink } from '../buttons'
+import { Button, ButtonLinkProps } from '../buttons'
 import { Popup, PopupProps } from './Popup'
 
 export interface ButtonPopupSection {
@@ -21,9 +21,14 @@ export interface ButtonPopupSection {
 
 export interface ButtonPopupProps extends Omit<PopupProps, 'children'> {
   sections: ButtonPopupSection[]
+  ButtonLink: ComponentType<ButtonLinkProps>
 }
 
-export const ButtonPopup = ({ sections, ...props }: ButtonPopupProps) => (
+export const ButtonPopup = ({
+  sections,
+  ButtonLink,
+  ...props
+}: ButtonPopupProps) => (
   <Popup {...props}>
     {sections.map(({ label, buttons }, index) => (
       <div

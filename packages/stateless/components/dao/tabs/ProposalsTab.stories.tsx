@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { ButtonLink, useDaoInfoContext } from '@dao-dao/stateless'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
 import {
@@ -31,6 +31,7 @@ Default.args = {
         .args as ProposalListProps<ProposalLineProps>)}
     />
   ),
+  ButtonLink,
 }
 
 export const None = Template.bind({})
@@ -42,4 +43,5 @@ None.args = {
         .args as ProposalListProps<ProposalLineProps>)}
     />
   ),
+  ButtonLink,
 }

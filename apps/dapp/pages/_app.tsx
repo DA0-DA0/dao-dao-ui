@@ -17,7 +17,7 @@ import {
   SubQueryProvider,
   activeThemeAtom,
   mountedInBrowserAtom,
-  navigatingToPageAtom,
+  navigatingToHrefAtom,
 } from '@dao-dao/state'
 import { WalletProvider } from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
@@ -29,7 +29,8 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
-  const setNavigatingToPage = useSetRecoilState(navigatingToPageAtom)
+  const [navigatingToHref, setNavigatingToHref] =
+    useRecoilState(navigatingToHrefAtom)
   const [_theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
 
@@ -52,8 +53,14 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
 
   // On route change, clear navigation loading state.
   useEffect(() => {
-    setNavigatingToPage(undefined)
-  }, [router.asPath, setNavigatingToPage])
+    setNavigatingToHref(undefined)
+  }, [router.asPath, setNavigatingToHref])
+
+  // Unset navigation loading state after 30 second timeout.
+  useEffect(() => {
+    const timeout = setTimeout(() => setNavigatingToHref(undefined), 30 * 1000)
+    return () => clearTimeout(timeout)
+  }, [navigatingToHref, setNavigatingToHref])
 
   return (
     <ThemeProvider

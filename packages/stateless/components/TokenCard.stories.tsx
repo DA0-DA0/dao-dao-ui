@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 
 import { TokenStake } from '@dao-dao/types'
 
+import { ButtonLink } from './buttons/ButtonLink'
 import { TokenCard, TokenCardProps } from './TokenCard'
 import { makeProps as makeUnstakingModalProps } from './UnstakingModal.stories'
 
@@ -90,6 +91,7 @@ export const makeProps = (crown = false): TokenCardProps => {
     proposeClaimHref: '#',
     proposeStakeUnstakeHref: '#',
     onClaim: () => alert('claim'),
+    ButtonLink,
   }
 }
 

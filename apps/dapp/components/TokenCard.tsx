@@ -9,7 +9,10 @@ import {
   refreshNativeTokenStakingInfoAtom,
   tokenCardLazyStakingInfoSelector,
 } from '@dao-dao/state'
-import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/stateful'
+import {
+  ButtonLink,
+  useEncodedCwdProposalSinglePrefill,
+} from '@dao-dao/stateful'
 import { useActionForKey } from '@dao-dao/stateful/actions'
 import {
   TokenCard as StatelessTokenCard,
@@ -131,6 +134,7 @@ export const TokenCard = (props: TokenCardInfo) => {
   return (
     <StatelessTokenCard
       {...props}
+      ButtonLink={ButtonLink}
       lazyStakingInfo={
         props.hasStakingInfo
           ? loadableToLoadingData(lazyStakingInfoLoadable, undefined)

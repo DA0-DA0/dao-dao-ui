@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { useVotingModule } from '@dao-dao/state'
-import { ProposalList } from '@dao-dao/stateful'
+import { ButtonLink, ProposalList } from '@dao-dao/stateful'
 import {
   ProposalsTab as StatelessProposalsTab,
   useDaoInfoContext,
@@ -16,6 +16,7 @@ export const ProposalsTab = () => {
 
   return (
     <StatelessProposalsTab
+      ButtonLink={ButtonLink}
       daoInfo={daoInfo}
       isMember={isMember}
       proposalList={<ProposalList />}

@@ -3,6 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import { DaoMemberCardProps } from '@dao-dao/types'
 
+import { ButtonLink } from '../../buttons/ButtonLink'
 import { DaoMemberCard } from '../DaoMemberCard'
 import { makeProps as makeDaoMemberCardProps } from '../DaoMemberCard.stories'
 import { MembersTab } from './MembersTab'
@@ -30,4 +31,5 @@ Default.args = {
   ],
   isMember: true,
   addMemberHref: '#',
+  ButtonLink,
 }

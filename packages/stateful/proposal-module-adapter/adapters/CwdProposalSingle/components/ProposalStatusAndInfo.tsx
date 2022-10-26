@@ -17,7 +17,6 @@ import { useRecoilValue } from 'recoil'
 
 import { useVotingModule } from '@dao-dao/state'
 import {
-  ButtonLink,
   CopyToClipboardUnderline,
   IconButtonLink,
   Logo,
@@ -37,6 +36,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { ButtonLink } from '../../../../components/ButtonLink'
 import { ProfileDisplay } from '../../../../components/ProfileDisplay'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { configSelector } from '../contracts/CwdProposalSingle.common.recoil'

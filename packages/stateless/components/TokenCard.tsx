@@ -5,13 +5,14 @@ import {
   ExpandCircleDownOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect, useMemo, useState } from 'react'
+import { ComponentType, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { TokenCardInfo } from '@dao-dao/types'
 import { secondsToWdhms } from '@dao-dao/utils'
 
+import { ButtonLinkProps } from './buttons'
 import { Button } from './buttons/Button'
 import { CopyToClipboard, concatAddressStartEnd } from './CopyToClipboard'
 import { SpendEmoji, StakeEmoji } from './emoji'
@@ -29,6 +30,7 @@ export interface TokenCardProps extends TokenCardInfo {
   proposeClaimHref?: string
   refreshUnstakingTasks?: () => void
   onClaim?: () => void
+  ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const TokenCard = ({
@@ -47,6 +49,7 @@ export const TokenCard = ({
   proposeClaimHref,
   refreshUnstakingTasks,
   onClaim,
+  ButtonLink,
 }: TokenCardProps) => {
   const { t } = useTranslation()
 
@@ -206,6 +209,7 @@ export const TokenCard = ({
           {(waitingForStakingInfo || buttonPopupSections.length > 0) && (
             <div className="absolute top-3 right-3">
               <ButtonPopup
+                ButtonLink={ButtonLink}
                 Trigger={({ open, ...props }) => (
                   <IconButton
                     Icon={ExpandCircleDownOutlined}

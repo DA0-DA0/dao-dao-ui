@@ -6,7 +6,7 @@ import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
 import { ActionKey } from '@dao-dao/types'
 
 import { useActionForKey } from '../../../../actions'
-import { DaoMemberCard } from '../../../../components'
+import { ButtonLink, DaoMemberCard } from '../../../../components'
 import { useEncodedCwdProposalSinglePrefill } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
@@ -52,6 +52,7 @@ export const MembersTab = () => {
 
   return (
     <StatelessMembersTab
+      ButtonLink={ButtonLink}
       DaoMemberCard={DaoMemberCard}
       addMemberHref={
         prefillValid && encodedProposalPrefill

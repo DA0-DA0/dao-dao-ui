@@ -4,7 +4,10 @@ import { useEffect } from 'react'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { subDaoCardInfosSelector, useVotingModule } from '@dao-dao/state'
-import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/stateful'
+import {
+  ButtonLink,
+  useEncodedCwdProposalSinglePrefill,
+} from '@dao-dao/stateful'
 import {
   SubDaosTab as StatelessSubDaosTab,
   useDaoInfoContext,
@@ -41,6 +44,7 @@ export const SubDaosTab = () => {
 
   return (
     <StatelessSubDaosTab
+      ButtonLink={ButtonLink}
       DaoCard={DaoCard}
       createSubDaoHref={`/dao/${daoInfo.coreAddress}/create`}
       daoInfo={daoInfo}

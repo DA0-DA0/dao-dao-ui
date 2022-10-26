@@ -10,7 +10,7 @@ import {
   LoadingData,
 } from '@dao-dao/types'
 
-import { ButtonLink } from '../../buttons'
+import { ButtonLinkProps } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Loader as DefaultLoader } from '../../Loader'
 import { NoContent } from '../../NoContent'
@@ -23,6 +23,7 @@ export interface SubDaosTabProps {
   createSubDaoHref?: string
   upgradeToV2Href?: string
   Loader?: ComponentType<LoaderProps>
+  ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const SubDaosTab = ({
@@ -33,6 +34,7 @@ export const SubDaosTab = ({
   createSubDaoHref,
   upgradeToV2Href,
   Loader = DefaultLoader,
+  ButtonLink,
 }: SubDaosTabProps) => {
   const { t } = useTranslation()
 
