@@ -12,10 +12,11 @@ export type TokenAmountDisplayProps = Omit<
   'children'
 > & {
   amount: number | LoadingData<number>
+  // Full decimal precision of the value.
   decimals?: number
   prefix?: string
   suffix?: string
-  // Max to show.
+  // Max decimals to display.
   maxDecimals?: number
 } & ( // If not USDC, require symbol.
     | {
@@ -98,10 +99,24 @@ export const TokenAmountDisplay = ({
     full === compact
       ? // No need for tooltip if no information is hidden.
         undefined
-      : t('format.token', { amount: full, symbol })
+      : t('format.token', {
+          amount: full,
+          symbol,
+        })
 
   // Display compact.
-  const display = t('format.token', { amount: compact, symbol })
+  const display = t(
+    // If compact is different from full, and smaller than 1000, display
+    // approximation indication (e.g. ~15.34 when the full value is 15.344913).
+    // When 1000 or larger, the compact notation (e.g. 1.52K or 23.5M) is enough
+    // to indicate that there is missing info, and we don't need the explicit
+    // approximation indication.
+    full !== compact && amount < 1000 ? 'format.tokenApprox' : 'format.token',
+    {
+      amount: compact,
+      symbol,
+    }
+  )
 
   return (
     <Tooltip title={tooltip}>

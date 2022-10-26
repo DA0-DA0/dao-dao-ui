@@ -246,7 +246,8 @@
     "time": "{{value}} {{unit}}",
     "timeAgo": "{{value}} {{unit}} ago",
     "timeLeft": "{{value}} {{unit}} left",
-    "token": "{{amount}} ${{symbol}}"
+    "token": "{{amount}} ${{symbol}}",
+    "tokenApprox": "~{{amount}} ${{symbol}}"
   },
   "info": {
     "abstainVote": "Abstain",
