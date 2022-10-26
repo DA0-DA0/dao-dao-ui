@@ -29,6 +29,19 @@ export const formatDate = (date: Date) =>
     ? dateFormatterNoYear.format(date)
     : dateFormatterNoDay.format(date)
 
+export const dateTimeFormatter = new Intl.DateTimeFormat('default', {
+  dateStyle: 'short',
+  timeStyle: 'short',
+})
+
+export const formatDateTime = (date: Date) => dateTimeFormatter.format(date)
+
+export const timeFormatter = new Intl.DateTimeFormat('default', {
+  timeStyle: 'short',
+})
+
+export const formatTime = (date: Date) => timeFormatter.format(date)
+
 // Select number of decimal digits, rounding down / truncating.
 export const toFixedDown = (value: Number, digits: Number) => {
   const re = new RegExp('(\\d+\\.\\d{' + digits + '})(\\d)')

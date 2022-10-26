@@ -39,7 +39,12 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
-import { decodedMessagesString, validateRequired } from '@dao-dao/utils'
+import {
+  decodedMessagesString,
+  formatDateTime,
+  formatTime,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components/SuspenseLoader'
 import { NewProposalData, NewProposalForm } from '../../types'
@@ -347,7 +352,7 @@ export const NewProposal = ({
               {draftSaving
                 ? t('info.draftSaving')
                 : t('info.draftSavedAtTime', {
-                    time: new Date(draft.lastUpdatedAt).toLocaleTimeString(),
+                    time: formatTime(new Date(draft.lastUpdatedAt)),
                   })}
             </p>
 
@@ -380,9 +385,11 @@ export const NewProposal = ({
                     label: name,
                     description: (
                       <>
-                        Created: {new Date(createdAt).toLocaleString()}
+                        {t('title.created')}:{' '}
+                        {formatDateTime(new Date(createdAt))}
                         <br />
-                        Last updated: {new Date(lastUpdatedAt).toLocaleString()}
+                        {t('title.lastUpdated')}:{' '}
+                        {formatDateTime(new Date(lastUpdatedAt))}
                       </>
                     ),
                     rightNode: (

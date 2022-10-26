@@ -3,7 +3,7 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
-import { NATIVE_DECIMALS, toFixedDown } from '@dao-dao/utils'
+import { NATIVE_DECIMALS, formatTime, toFixedDown } from '@dao-dao/utils'
 
 import { Tooltip } from './Tooltip'
 
@@ -132,9 +132,9 @@ export const TokenAmountDisplay = ({
             {wasCompacted && dateFetched && <br />}
             {/* Show date fetched if present. */}
             {dateFetched && (
-              <span className="caption-text italic">
-                {t('info.fetchedAtDate', {
-                  date: dateFetched.toLocaleTimeString(),
+              <span className="caption-text">
+                {t('info.fetchedAtTime', {
+                  time: formatTime(dateFetched),
                 })}
               </span>
             )}
