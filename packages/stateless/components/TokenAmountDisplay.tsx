@@ -61,10 +61,9 @@ export const TokenAmountDisplay = ({
   const options: Intl.NumberFormatOptions & { roundingPriority: string } = {
     maximumFractionDigits: decimals,
     // Safari (and potentially other non-Chrome browsers) uses only 1 decimal
-    // when notation=compact. I think notation=compact implicitly sets
-    // maximumSignificantDigits=1, because roundingPriority=morePrecision tells
-    // it to resolve these decimal contraint conflicts with whichever results in
-    // greater precision.
+    // when notation=compact. roundingPriority=morePrecision tells the formatter
+    // to resolve decimal contraint conflicts with the result with greater
+    // precision.
     roundingPriority: 'morePrecision',
   }
 
