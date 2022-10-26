@@ -21,13 +21,11 @@ import { Tooltip } from './Tooltip'
 // Notes:
 //
 // The only token amounts we intentionally don't show with full decimals are
-// USDC conversions (max 3) and ProfileHomeCard's unstaked and staked balances
-// (max 2). USDC conversions use 3 to draw a distinction from USD's 2 decimals,
-// while still acknowledging that a USDC conversion is approximate in nature,
-// and the decimal specifics (all 6) are not relevant.
+// USDC conversions (max 2) and ProfileHomeCard's unstaked and staked balances
+// (max 2).
 
 // Default maximum decimals to use in a USDC conversion.
-const USDC_CONVERSION_DEFAULT_MAX_DECIMALS = 3
+const USDC_CONVERSION_DEFAULT_MAX_DECIMALS = 2
 // Maximum decimals to use in a large compacted value.
 const LARGE_COMPACT_MAX_DECIMALS = 2
 
