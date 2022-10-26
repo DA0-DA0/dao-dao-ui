@@ -106,8 +106,6 @@ export const NEW_DAO_CW20_DECIMALS = parseInt(
 )
 
 // Stargaze
-export const STARGAZE_CHAIN_ID = process.env
-  .NEXT_PUBLIC_STARGAZE_CHAIN_ID as string
 export const STARGAZE_RPC_ENDPOINT = process.env
   .NEXT_PUBLIC_STARGAZE_RPC_ENDPOINT as string
 export const STARGAZE_REST_ENDPOINT = process.env

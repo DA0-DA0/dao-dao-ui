@@ -7,7 +7,11 @@ import {
   WalletProfile,
   WithChainId,
 } from '@dao-dao/types'
-import { PFPK_API_BASE, processError } from '@dao-dao/utils'
+import {
+  PFPK_API_BASE,
+  processError,
+  transformIpfsUrlToHttpsIfNecessary,
+} from '@dao-dao/utils'
 
 import { refreshWalletProfileAtom } from '../atoms/refresh'
 import { cosmWasmClientForChainSelector } from './chain'
@@ -55,7 +59,9 @@ export const walletProfileSelector = selectorFamily<WalletProfile, string>({
           profile.nft = pfpkProfile.nft
           // Set root-level `imageUrl` if NFT present.
           if (pfpkProfile.nft?.imageUrl) {
-            profile.imageUrl = pfpkProfile.nft.imageUrl
+            profile.imageUrl = transformIpfsUrlToHttpsIfNecessary(
+              pfpkProfile.nft.imageUrl
+            )
           }
         } else {
           console.error(await response.json())
@@ -86,7 +92,9 @@ export const keplrProfileImageSelector = selectorFamily<
       }
 
       const { profile }: KeplrWalletProfile = await response.json()
-      return 'imageUrl' in profile ? profile.imageUrl : undefined
+      return 'imageUrl' in profile
+        ? transformIpfsUrlToHttpsIfNecessary(profile.imageUrl)
+        : undefined
     } catch (err) {
       console.error(err)
       // Fail silently.

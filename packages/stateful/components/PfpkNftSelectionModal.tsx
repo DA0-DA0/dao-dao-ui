@@ -1,9 +1,14 @@
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import {
+  ChainInfoID,
+  WalletConnectionStatus,
+  useWallet,
+} from '@noahsaso/cosmodal'
+import { ComponentType, useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
+  useGetLoopNftsQuery,
   useWalletProfile,
   walletStargazeNftCardInfosSelector,
 } from '@dao-dao/state'
@@ -16,9 +21,9 @@ import {
   ProfileImage,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { NftCardInfo } from '@dao-dao/types'
+import { LoadingDataWithError, NftCardInfoWithChainId } from '@dao-dao/types'
 import {
-  STARGAZE_CHAIN_ID,
+  getNftName,
   loadableToLoadingDataWithError,
   processError,
 } from '@dao-dao/utils'
@@ -36,20 +41,69 @@ export const InnerPfpkNftSelectionModal = ({
 }: PfpkNftSelectionModalProps) => {
   const { t } = useTranslation()
   const {
+    address: junoWalletAddress,
+    status: junoConnectionStatus,
+    error: junoConnectionError,
+  } = useWallet(ChainInfoID.Juno1)
+  const {
     address: stargazeWalletAddress,
     status: stargazeConnectionStatus,
     error: stargazeConnectionError,
-  } = useWallet(STARGAZE_CHAIN_ID)
+  } = useWallet(ChainInfoID.Stargaze1)
 
-  const getIdForNft = (nft: NftCardInfo) =>
+  const getIdForNft = (nft: NftCardInfoWithChainId) =>
     `${nft.collection.address}:${nft.tokenId}`
 
-  const nfts = loadableToLoadingDataWithError(
+  const stargazeNfts = loadableToLoadingDataWithError(
     useCachedLoadable(
       stargazeWalletAddress
         ? walletStargazeNftCardInfosSelector(stargazeWalletAddress)
         : undefined
     )
+  )
+
+  const loopNftsQuery = useGetLoopNftsQuery({
+    walletAddress: junoWalletAddress ?? '',
+  })
+  const loopNfts =
+    loopNftsQuery.data?.nfts.nodes ?? loopNftsQuery.previousData?.nfts.nodes
+
+  const nfts: LoadingDataWithError<NftCardInfoWithChainId[]> = useMemo(
+    () =>
+      stargazeNfts.loading || stargazeNfts.errored
+        ? stargazeNfts
+        : {
+            loading: false,
+            errored: false,
+            data: [
+              ...stargazeNfts.data.map((nft) => ({
+                ...nft,
+                chainId: ChainInfoID.Stargaze1,
+              })),
+              ...(loopNfts?.map(
+                ({
+                  tokenID,
+                  image,
+                  name,
+                  contract,
+                }): NftCardInfoWithChainId => ({
+                  chainId: ChainInfoID.Juno1,
+                  collection: {
+                    address: contract.id,
+                    name: contract.name,
+                  },
+                  tokenId: tokenID,
+                  externalLink: {
+                    href: `https://nft-juno.loop.markets/nftDetail/${contract.id}/${tokenID}`,
+                    name: 'Loop',
+                  },
+                  imageUrl: image,
+                  name: getNftName(contract.name, name || tokenID),
+                })
+              ) ?? []),
+            ],
+          },
+    [loopNfts, stargazeNfts]
   )
 
   const {
@@ -103,7 +157,7 @@ export const InnerPfpkNftSelectionModal = ({
       await updateProfileNft(
         selectedNft
           ? {
-              chainId: STARGAZE_CHAIN_ID,
+              chainId: selectedNft.chainId,
               collectionAddress: selectedNft.collection.address,
               tokenId: selectedNft.tokenId,
             }
@@ -132,6 +186,8 @@ export const InnerPfpkNftSelectionModal = ({
       nfts={
         stargazeConnectionStatus === WalletConnectionStatus.Errored
           ? { loading: false, errored: true, error: stargazeConnectionError }
+          : junoConnectionStatus === WalletConnectionStatus.Errored
+          ? { loading: false, errored: true, error: junoConnectionError }
           : nfts
       }
       onAction={onAction}
