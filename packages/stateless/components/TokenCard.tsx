@@ -349,7 +349,11 @@ export const TokenCard = ({
                 )}
                 disabled={lazyStakingInfo.loading}
                 onClick={() => setShowUnstakingTokens(true)}
-                variant={lazyStakingInfo.loading ? 'none' : 'underline'}
+                variant={
+                  lazyStakingInfo.loading || unstakingBalance === 0
+                    ? 'none'
+                    : 'underline'
+                }
               >
                 {lazyStakingInfo.loading
                   ? '...'
