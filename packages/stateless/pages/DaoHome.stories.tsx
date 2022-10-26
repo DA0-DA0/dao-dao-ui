@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { SuspenseLoader } from '@dao-dao/stateful'
 import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
@@ -11,6 +12,7 @@ import { DaoMemberCardProps } from '@dao-dao/types'
 import {
   DaoInfoBar,
   DaoInfoBarProps,
+  Loader,
   MembersTabProps,
   NftCardProps,
   ProfileMemberCard,
@@ -77,6 +79,9 @@ Default.args = {
     <ProfileMemberCard
       {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
     />
+  ),
+  SuspenseLoader: ({ children }) => (
+    <SuspenseLoader fallback={<Loader />}>{children}</SuspenseLoader>
   ),
 }
 Default.parameters = {

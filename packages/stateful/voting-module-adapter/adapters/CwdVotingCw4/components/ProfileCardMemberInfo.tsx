@@ -22,15 +22,22 @@ export const ProfileCardMemberInfo = ({
     }
   )
 
-  if (walletVotingWeight === undefined || totalVotingWeight === undefined) {
+  if (totalVotingWeight === undefined) {
     throw new Error(t('error.loadingData'))
   }
 
   return (
     <StatelessProfileCardMemberInfo
-      daoName={daoName}
-      votingPower={(walletVotingWeight / totalVotingWeight) * 100}
       {...props}
+      daoName={daoName}
+      votingPower={
+        walletVotingWeight === undefined
+          ? { loading: true }
+          : {
+              loading: false,
+              data: (walletVotingWeight / totalVotingWeight) * 100,
+            }
+      }
     />
   )
 }

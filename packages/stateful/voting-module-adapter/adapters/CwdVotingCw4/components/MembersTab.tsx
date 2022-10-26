@@ -15,10 +15,7 @@ export const MembersTab = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
-  })
-  const { totalVotingWeight } = useVotingModule(coreAddress, {
+  const { isMember = false, totalVotingWeight } = useVotingModule(coreAddress, {
     fetchMembership: true,
   })
   const { members } = useCw4VotingModule(coreAddress, { fetchMembers: true })
