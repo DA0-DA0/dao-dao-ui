@@ -403,11 +403,11 @@ export const nativeStakingInfoSelector = selectorFamily<
               // converted manually. See issues:
               // https://github.com/osmosis-labs/telescope/issues/247
               // https://github.com/cosmos/cosmos-sdk/issues/10863
-              pendingReward.amount = Math.floor(
-                decodeCosmosSdkDecFromProto(
-                  pendingReward.amount
-                ).toFloatApproximation()
-              ).toString()
+              pendingReward.amount = decodeCosmosSdkDecFromProto(
+                pendingReward.amount
+              )
+                .floor()
+                .toString()
 
               const { moniker, website, details } = description
 
