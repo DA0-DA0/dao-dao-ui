@@ -161,6 +161,20 @@ export const nativeBalancesSelector = selectorFamily<
     },
 })
 
+// Refreshes when wallet balances refresh.
+export const nativeBalancesFetchedAtSelector = selectorFamily<
+  Date,
+  WithChainId<{ address: string }>
+>({
+  key: 'nativeBalancesFetchedAt',
+  get:
+    ({ address }) =>
+    ({ get }) => {
+      get(refreshWalletBalancesIdAtom(address))
+      return new Date()
+    },
+})
+
 export const nativeBalanceSelector = selectorFamily<
   Coin,
   WithChainId<{ address: string }>

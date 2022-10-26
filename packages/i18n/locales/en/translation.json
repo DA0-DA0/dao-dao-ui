@@ -296,6 +296,7 @@
     "establishedAbbr": "Est.",
     "executeSmartContractActionDescription": "Execute a message on a smart contract.",
     "failing": "Failing",
+    "fetchedAtDate": "Fetched at {{date}}",
     "getTokensOn": "Get tokens on {{name}}.",
     "goToParent": "Go to parent DAO",
     "govTokenAddress": "Governance Token",

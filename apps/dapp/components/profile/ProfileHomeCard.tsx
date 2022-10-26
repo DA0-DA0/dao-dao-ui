@@ -16,6 +16,7 @@ export const ProfileHomeCard = () => {
     walletProfile,
     walletBalance,
     walletStakedBalance,
+    dateBalancesFetched,
     updateProfileName,
   } = useWalletProfile()
   const { updateProfileNft } = useAppLayoutContext()
@@ -31,13 +32,15 @@ export const ProfileHomeCard = () => {
       lazyData={
         !data ||
         walletBalance === undefined ||
-        walletStakedBalance === undefined
+        walletStakedBalance === undefined ||
+        dateBalancesFetched === undefined
           ? { loading: true }
           : {
               loading: false,
               data: {
                 unstakedBalance: walletBalance,
                 stakedBalance: walletStakedBalance,
+                dateBalancesFetched,
                 proposalsCreated: data.proposalsCreated.totalCount,
                 votesCast: data.proposalVotes.totalCount,
               },

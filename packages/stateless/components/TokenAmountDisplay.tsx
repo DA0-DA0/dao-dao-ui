@@ -20,6 +20,8 @@ export type TokenAmountDisplayProps = Omit<
   maxDecimals?: number
   // Don't show approximation indication (like a tilde).
   hideApprox?: boolean
+  // Add to tooltip if present.
+  dateFetched?: Date
 } & ( // If not USDC, require symbol.
     | {
         symbol: string
@@ -39,6 +41,7 @@ export const TokenAmountDisplay = ({
   suffix,
   maxDecimals,
   hideApprox,
+  dateFetched,
   symbol: _symbol,
   usdc,
   ...props
@@ -97,15 +100,7 @@ export const TokenAmountDisplay = ({
     })
   }
 
-  // Show full in tooltip if different from compact.
-  const tooltip =
-    full === compact
-      ? // No need for tooltip if no information is hidden.
-        undefined
-      : t('format.token', {
-          amount: full,
-          symbol,
-        })
+  const wasCompacted = full !== compact
 
   // Display compact.
   const display = t(
@@ -114,7 +109,7 @@ export const TokenAmountDisplay = ({
     // When 1000 or larger, the compact notation (e.g. 1.52K or 23.5M) is enough
     // to indicate that there is missing info, and we don't need the explicit
     // approximation indication.
-    full !== compact && amount < 1000 && !hideApprox
+    wasCompacted && amount < 1000 && !hideApprox
       ? 'format.tokenApprox'
       : 'format.token',
     {
@@ -124,7 +119,29 @@ export const TokenAmountDisplay = ({
   )
 
   return (
-    <Tooltip title={tooltip}>
+    <Tooltip
+      title={
+        (wasCompacted || dateFetched) && (
+          <>
+            {/* Show full in tooltip if different from compact. */}
+            {wasCompacted &&
+              t('format.token', {
+                amount: full,
+                symbol,
+              })}
+            {wasCompacted && dateFetched && <br />}
+            {/* Show date fetched if present. */}
+            {dateFetched && (
+              <span className="caption-text italic">
+                {t('info.fetchedAtDate', {
+                  date: dateFetched.toLocaleTimeString(),
+                })}
+              </span>
+            )}
+          </>
+        )
+      }
+    >
       <p {...props}>
         {prefix}
         {display}

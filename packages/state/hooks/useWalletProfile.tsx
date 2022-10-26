@@ -5,12 +5,9 @@ import {
   useWallet,
 } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import {
-  constSelector,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-} from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
+import { useCachedLoadable } from '@dao-dao/stateless'
 import { LoadingData, WalletProfile, WalletProfileUpdate } from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
@@ -20,6 +17,7 @@ import {
 
 import {
   nativeBalanceSelector,
+  nativeBalancesFetchedAtSelector,
   nativeDelegatedBalanceSelector,
   refreshWalletBalancesIdAtom,
   refreshWalletProfileAtom,
@@ -30,6 +28,7 @@ export interface UseWalletProfileReturn {
   walletAddress: string | undefined
   walletBalance: number | undefined
   walletStakedBalance: number | undefined
+  dateBalancesFetched: Date | undefined
   refreshBalances: () => void
 
   walletProfile: LoadingData<WalletProfile>
@@ -50,10 +49,8 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
   const {
     state: walletNativeBalanceState,
     contents: walletNativeBalanceContents,
-  } = useRecoilValueLoadable(
-    address
-      ? nativeBalanceSelector({ address, chainId })
-      : constSelector(undefined)
+  } = useCachedLoadable(
+    address ? nativeBalanceSelector({ address, chainId }) : undefined
   )
   const walletBalance =
     walletNativeBalanceState === 'hasValue' && walletNativeBalanceContents
@@ -67,10 +64,8 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
   const {
     state: walletStakedNativeBalanceState,
     contents: walletStakedNativeBalanceContents,
-  } = useRecoilValueLoadable(
-    address
-      ? nativeDelegatedBalanceSelector({ address, chainId })
-      : constSelector(undefined)
+  } = useCachedLoadable(
+    address ? nativeDelegatedBalanceSelector({ address, chainId }) : undefined
   )
   const walletStakedBalance =
     walletStakedNativeBalanceState === 'hasValue' &&
@@ -79,6 +74,18 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
           walletStakedNativeBalanceContents.amount,
           NATIVE_DECIMALS
         )
+      : undefined
+
+  // Get balance fetch time.
+  const {
+    state: nativeBalancesFetchedAtState,
+    contents: nativeBalancesFetchedAtContents,
+  } = useCachedLoadable(
+    address ? nativeBalancesFetchedAtSelector({ address, chainId }) : undefined
+  )
+  const dateBalancesFetched =
+    nativeBalancesFetchedAtState === 'hasValue'
+      ? nativeBalancesFetchedAtContents
       : undefined
 
   const setRefreshWalletBalancesId = useSetRecoilState(
@@ -239,6 +246,7 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
     walletAddress: address,
     walletBalance,
     walletStakedBalance,
+    dateBalancesFetched,
     refreshBalances,
 
     walletProfile,

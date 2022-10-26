@@ -22,6 +22,7 @@ export interface ProfileHomeCardProps
   lazyData: LoadingData<{
     unstakedBalance: number
     stakedBalance: number
+    dateBalancesFetched: Date
     proposalsCreated: number
     votesCast: number
   }>
@@ -53,6 +54,7 @@ export const ProfileHomeCard = ({
               <TokenAmountDisplay
                 amount={lazyData.data.unstakedBalance}
                 className="title-text break-words font-mono"
+                dateFetched={lazyData.data.dateBalancesFetched}
                 decimals={tokenDecimals}
                 hideApprox
                 maxDecimals={2}
@@ -73,6 +75,7 @@ export const ProfileHomeCard = ({
               <TokenAmountDisplay
                 amount={lazyData.data.stakedBalance}
                 className="title-text break-words font-mono"
+                dateFetched={lazyData.data.dateBalancesFetched}
                 decimals={tokenDecimals}
                 hideApprox
                 maxDecimals={2}
