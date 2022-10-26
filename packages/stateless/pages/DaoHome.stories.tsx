@@ -80,9 +80,8 @@ Default.args = {
       {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
     />
   ),
-  SuspenseLoader: ({ children }) => (
-    <SuspenseLoader fallback={<Loader />}>{children}</SuspenseLoader>
-  ),
+  SuspenseLoader,
+  Loader,
 }
 Default.parameters = {
   design: {

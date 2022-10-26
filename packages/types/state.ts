@@ -16,3 +16,8 @@ export type CachedLoadable<T> =
 export type WithChainId<T> = T & {
   chainId?: string
 }
+
+export interface PriceWithTimestamp {
+  price: number
+  timestamp: Date
+}

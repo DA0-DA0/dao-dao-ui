@@ -51,7 +51,10 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
         cw20GovernanceTokenAddress,
       })
     ),
-    -1
+    {
+      price: -1,
+      timestamp: new Date(),
+    }
   )
 
   return (
@@ -78,7 +81,19 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
           label: t('title.daoTreasury'),
           value: (
             <TokenAmountDisplay
-              amount={treasuryUsdcValueLoading}
+              amount={
+                treasuryUsdcValueLoading.loading
+                  ? { loading: true }
+                  : {
+                      loading: false,
+                      data: treasuryUsdcValueLoading.data.price,
+                    }
+              }
+              dateFetched={
+                treasuryUsdcValueLoading.loading
+                  ? undefined
+                  : treasuryUsdcValueLoading.data.timestamp
+              }
               hideApprox
               usdcConversion
             />

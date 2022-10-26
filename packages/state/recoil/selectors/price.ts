@@ -1,7 +1,7 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/types'
+import { PriceWithTimestamp, WithChainId } from '@dao-dao/types'
 import {
   USDC_SWAP_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
@@ -23,22 +23,24 @@ const BASE_SWAP_DECIMALS = 6
 // denomination or the address of a cw20 token. Price data is only available for
 // tokens that are tradable on Junoswap.
 export const usdcPerMacroTokenSelector = selectorFamily<
-  number | undefined,
+  PriceWithTimestamp | undefined,
   { denom: string; decimals: number }
 >({
   key: 'usdcPerMacroToken',
   get:
     ({ denom, decimals }) =>
     async ({ get }) => {
-      // If checking price of USDC, just return 1.
-      if (isJunoIbcUsdc(denom)) {
-        return 1
-      }
+      const timestamp = new Date()
 
       // Allow refreshing all prices at once.
       get(refreshTokenUsdcPriceAtom(''))
       // Allow refreshing just this denom.
       get(refreshTokenUsdcPriceAtom(denom))
+
+      // If checking price of USDC, just return 1.
+      if (isJunoIbcUsdc(denom)) {
+        return { price: 1, timestamp }
+      }
 
       const tokens = get(junoswapPoolsListSelector)
       if (!tokens) {
@@ -75,7 +77,7 @@ export const usdcPerMacroTokenSelector = selectorFamily<
       // Don't need to query again for price of native token.
       if (denom === BASE_SWAP_DENOM) {
         // USDC / JUNO
-        return Number(nativeUSDC)
+        return { price: Number(nativeUSDC), timestamp }
       }
 
       // Find swap for denom.
@@ -113,12 +115,12 @@ export const usdcPerMacroTokenSelector = selectorFamily<
         // Mutltiply by the number of decimals in TOKEN.
         Math.pow(10, decimals)
 
-      return price
+      return { price, timestamp }
     },
 })
 
 export const daoTvlSelector = selectorFamily<
-  number,
+  PriceWithTimestamp,
   WithChainId<{
     coreAddress: string
     cw20GovernanceTokenAddress?: string
@@ -128,6 +130,8 @@ export const daoTvlSelector = selectorFamily<
   get:
     ({ coreAddress, cw20GovernanceTokenAddress, chainId }) =>
     async ({ get }) => {
+      const timestamp = new Date()
+
       const nativeBalances = get(
         nativeBalancesSelector({ address: coreAddress, chainId })
       )
@@ -153,12 +157,15 @@ export const daoTvlSelector = selectorFamily<
       ]
 
       const prices = balances.map(({ amount, denom, decimals }) => {
-        const price = get(usdcPerMacroTokenSelector({ denom, decimals }))
+        const price = get(usdcPerMacroTokenSelector({ denom, decimals }))?.price
         return price
           ? convertMicroDenomToDenomWithDecimals(amount, decimals) * price
           : 0
       })
 
-      return prices.reduce((price, total) => price + total, 0)
+      return {
+        price: prices.reduce((price, total) => price + total, 0),
+        timestamp,
+      }
     },
 })

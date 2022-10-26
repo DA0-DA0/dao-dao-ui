@@ -18,6 +18,7 @@ import { ContractVersion } from './contract'
 import { ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as CwdCoreV2InstantiateMsg } from './contracts/CwdCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
+import { PriceWithTimestamp } from './state'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
@@ -74,10 +75,15 @@ export interface TokenStake {
   rewards: number
 }
 
-export interface TokenCardLazyStakingInfo {
-  unstakingTasks: UnstakingTask[]
-  unstakingDurationSeconds: number | undefined
-  stakes: TokenStake[]
+export interface TokenCardLazyInfo {
+  usdcUnitPrice: PriceWithTimestamp | undefined
+  stakingInfo:
+    | {
+        unstakingTasks: UnstakingTask[]
+        unstakingDurationSeconds: number | undefined
+        stakes: TokenStake[]
+      }
+    | undefined
 }
 
 export interface TokenCardInfo {
@@ -88,15 +94,13 @@ export interface TokenCardInfo {
   subtitle?: string
   imageUrl: string
   unstakedBalance: number
-  usdcUnitPrice: number
   // Defined if this is a Cw20 token.
   cw20Address?: string
 
   // Only native tokens load staking info for now, so let's show a nice loader.
   hasStakingInfo: boolean
-  // TODO: Move usdcUnitPrice into this, turn into generic lazy info, and refresh unit
-  // price every minute.
-  lazyStakingInfo: LoadingData<TokenCardLazyStakingInfo | undefined>
+
+  lazyInfo: LoadingData<TokenCardLazyInfo>
 }
 
 export interface NftCardInfo {

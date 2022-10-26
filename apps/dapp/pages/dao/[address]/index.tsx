@@ -190,9 +190,8 @@ const InnerDaoHome = () => {
 
   return (
     <DaoHome
-      SuspenseLoader={({ children }) => (
-        <SuspenseLoader fallback={<Loader />}>{children}</SuspenseLoader>
-      )}
+      Loader={Loader}
+      SuspenseLoader={SuspenseLoader}
       daoInfo={daoInfo}
       daoInfoBar={<DaoInfoBar />}
       membersTab={MembersTab && <MembersTab />}
