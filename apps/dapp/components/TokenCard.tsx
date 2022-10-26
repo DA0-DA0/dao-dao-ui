@@ -9,7 +9,10 @@ import {
   refreshNativeTokenStakingInfoAtom,
   tokenCardLazyStakingInfoSelector,
 } from '@dao-dao/state'
-import { useEncodedCwdProposalSinglePrefill } from '@dao-dao/stateful'
+import {
+  ButtonLink,
+  useEncodedCwdProposalSinglePrefill,
+} from '@dao-dao/stateful'
 import { useActionForKey } from '@dao-dao/stateful/actions'
 import {
   TokenCard as StatelessTokenCard,
@@ -107,58 +110,40 @@ export const TokenCard = (props: TokenCardInfo) => {
     }
   )
 
-  useEffect(() => {
-    if (!prefillValid) {
-      return
-    }
+  const proposeClaimHref =
+    prefillValid && stakesWithRewards.length > 0 && encodedProposalPrefillClaim
+      ? `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillClaim}`
+      : undefined
 
-    router.prefetch(
-      `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillClaim}`
-    )
-    router.prefetch(
-      `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillStakeUnstake}`
-    )
-  }, [
-    coreAddress,
-    encodedProposalPrefillClaim,
-    encodedProposalPrefillStakeUnstake,
-    prefillValid,
-    router,
-  ])
+  const proposeStakeUnstakeHref =
+    prefillValid &&
+    (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
+    encodedProposalPrefillStakeUnstake
+      ? `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillStakeUnstake}`
+      : undefined
+
+  const onAddToken =
+    addToken && props.cw20Address
+      ? () => props.cw20Address && addToken(props.cw20Address)
+      : undefined
+
+  const onClaim = proposeClaimHref
+    ? () => router.push(proposeClaimHref)
+    : undefined
 
   return (
     <StatelessTokenCard
       {...props}
+      ButtonLink={ButtonLink}
       lazyStakingInfo={
         props.hasStakingInfo
           ? loadableToLoadingData(lazyStakingInfoLoadable, undefined)
           : { loading: false, data: undefined }
       }
-      onAddToken={
-        addToken && props.cw20Address
-          ? () => props.cw20Address && addToken(props.cw20Address)
-          : undefined
-      }
-      onProposeClaim={
-        prefillValid &&
-        stakesWithRewards.length > 0 &&
-        encodedProposalPrefillClaim
-          ? () =>
-              router.push(
-                `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillClaim}`
-              )
-          : undefined
-      }
-      onProposeStakeUnstake={
-        prefillValid &&
-        (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
-        encodedProposalPrefillStakeUnstake
-          ? () =>
-              router.push(
-                `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillStakeUnstake}`
-              )
-          : undefined
-      }
+      onAddToken={onAddToken}
+      onClaim={onClaim}
+      proposeClaimHref={proposeClaimHref}
+      proposeStakeUnstakeHref={proposeStakeUnstakeHref}
       refreshUnstakingTasks={refreshNativeTokenStakingInfo}
     />
   )

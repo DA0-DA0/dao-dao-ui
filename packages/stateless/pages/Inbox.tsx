@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData } from '@dao-dao/types'
+import { LinkWrapperProps, LoadingData } from '@dao-dao/types'
 
 import {
   DaoDropdown,
@@ -25,6 +25,7 @@ export interface InboxProps<T> {
   ProposalLine: ComponentType<T>
   onRefresh: () => void
   refreshing: boolean
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export const Inbox = <T extends {}>({
@@ -33,6 +34,7 @@ export const Inbox = <T extends {}>({
   ProposalLine,
   onRefresh,
   refreshing,
+  LinkWrapper,
 }: InboxProps<T>) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
@@ -102,6 +104,7 @@ export const Inbox = <T extends {}>({
               {daosWithProposals.data.map(({ dao, proposals }, index) => (
                 <DaoDropdown
                   key={index}
+                  LinkWrapper={LinkWrapper}
                   dao={{
                     ...dao,
                     content: proposals.length ? (

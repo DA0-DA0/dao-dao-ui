@@ -18,7 +18,6 @@ import {
   CHAIN_REST_ENDPOINT,
   CHAIN_RPC_ENDPOINT,
   SITE_URL,
-  STARGAZE_CHAIN_ID,
   STARGAZE_REST_ENDPOINT,
   STARGAZE_RPC_ENDPOINT,
   WC_ICON_PATH,
@@ -52,7 +51,6 @@ export const WalletProvider = ({
         },
         {
           ...ChainInfoMap[ChainInfoID.Stargaze1],
-          chainId: STARGAZE_CHAIN_ID,
           rpc: STARGAZE_RPC_ENDPOINT,
           rest: STARGAZE_REST_ENDPOINT,
         },

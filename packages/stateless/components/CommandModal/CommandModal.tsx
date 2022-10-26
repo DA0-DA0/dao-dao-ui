@@ -72,7 +72,7 @@ export const CommandModal = ({
               // If hits Escape and there are no contexts, this event will
               // propagate to the Modal, which will then close itself.
             }}
-            placeholder={t('commandModal.prompt')}
+            placeholder={t('info.whatAreYouLookingForPrompt')}
             ref={searchBarRef}
             value={filter}
           />

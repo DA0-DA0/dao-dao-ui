@@ -1,6 +1,7 @@
 import { Add, ExpandCircleDownOutlined, Remove } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ButtonLink } from '../buttons/ButtonLink'
 import { StakeEmoji } from '../emoji'
 import { IconButton } from '../icon_buttons'
 import { ButtonPopup } from './ButtonPopup'
@@ -54,6 +55,7 @@ Default.args = {
     },
   ],
   popupClassName: 'w-[12rem]',
+  ButtonLink,
 }
 Default.parameters = {
   design: {

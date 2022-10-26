@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { ButtonLink, LinkWrapper, useDaoInfoContext } from '@dao-dao/stateless'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
 import { DaoCard } from '../DaoCard'
@@ -24,6 +24,7 @@ const Template: ComponentStory<typeof SubDaosTab> = (args) => {
       DaoCard={(props) => (
         <DaoCard
           {...props}
+          LinkWrapper={LinkWrapper}
           onPin={() =>
             setPinned((current) =>
               current.includes(props.coreAddress)
@@ -54,6 +55,7 @@ Default.args = {
   },
   createSubDaoHref: '#',
   upgradeToV2Href: '#',
+  ButtonLink,
 }
 
 export const Loading = Template.bind({})

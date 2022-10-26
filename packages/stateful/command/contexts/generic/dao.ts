@@ -10,8 +10,13 @@ import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRecoilState } from 'recoil'
 
-import { usePinnedDaos, useVotingModule } from '@dao-dao/state'
+import {
+  navigatingToHrefAtom,
+  usePinnedDaos,
+  useVotingModule,
+} from '@dao-dao/state'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,
@@ -42,11 +47,18 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
       return () => clearTimeout(timeout)
     }, [copied])
 
-    const [navigatingHref, setNavigatingHref] = useState<string>()
+    const [navigatingToHref, setNavigatingToHref] =
+      useRecoilState(navigatingToHrefAtom)
     const daoPageHref = `${getUrlBaseForChainId(chainId)}/dao/${coreAddress}`
     const createProposalHref = `${getUrlBaseForChainId(
       chainId
     )}/dao/${coreAddress}/proposals/create`
+
+    // Pre-fetch routes.
+    useEffect(() => {
+      router.prefetch(daoPageHref)
+      router.prefetch(createProposalHref)
+    }, [createProposalHref, daoPageHref, router])
 
     const actionsSection: CommandModalContextSection<
       { href: string } | { onChoose: () => void }
@@ -59,12 +71,17 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
 
         //! 'href' in item
         // Open remote links in new tab.
-        if (item.href.startsWith('https://')) {
+        if (item.href.startsWith('http')) {
           window.open(item.href, '_blank')
         } else {
           // Navigate to local links.
           router.push(item.href)
-          setNavigatingHref(item.href)
+
+          // If not on destination page, set navigating state. If already there,
+          // do nothing.
+          if (router.asPath !== item.href) {
+            setNavigatingToHref(item.href)
+          }
         }
       },
       items: [
@@ -72,7 +89,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           name: t('button.goToDaoPage'),
           Icon: HomeOutlined,
           href: daoPageHref,
-          loading: navigatingHref === daoPageHref,
+          loading: navigatingToHref === daoPageHref,
         },
         {
           name: t('button.createAProposal'),
@@ -80,13 +97,13 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           href: createProposalHref,
           disabled: !isMember,
           loading:
-            navigatingHref === createProposalHref ||
+            navigatingToHref === createProposalHref ||
             status === WalletConnectionStatus.Initializing ||
             status === WalletConnectionStatus.Connecting,
         },
         {
           name: copied
-            ? t('button.copiedDaoAddress')
+            ? t('info.copiedDaoAddress')
             : t('button.copyDaoAddress'),
           Icon: copied ? Check : CopyAll,
           onChoose: () => {

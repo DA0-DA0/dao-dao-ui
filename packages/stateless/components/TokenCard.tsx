@@ -5,13 +5,14 @@ import {
   ExpandCircleDownOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect, useMemo, useState } from 'react'
+import { ComponentType, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { TokenCardInfo } from '@dao-dao/types'
 import { secondsToWdhms } from '@dao-dao/utils'
 
+import { ButtonLinkProps } from './buttons'
 import { Button } from './buttons/Button'
 import { CopyToClipboard, concatAddressStartEnd } from './CopyToClipboard'
 import { SpendEmoji, StakeEmoji } from './emoji'
@@ -25,9 +26,11 @@ import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export interface TokenCardProps extends TokenCardInfo {
   onAddToken?: () => void
-  onProposeStakeUnstake?: () => void
-  onProposeClaim?: () => void
+  proposeStakeUnstakeHref?: string
+  proposeClaimHref?: string
   refreshUnstakingTasks?: () => void
+  onClaim?: () => void
+  ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const TokenCard = ({
@@ -42,9 +45,11 @@ export const TokenCard = ({
   lazyStakingInfo,
   cw20Address,
   onAddToken,
-  onProposeStakeUnstake,
-  onProposeClaim,
+  proposeStakeUnstakeHref,
+  proposeClaimHref,
   refreshUnstakingTasks,
+  onClaim,
+  ButtonLink,
 }: TokenCardProps) => {
   const { t } = useTranslation()
 
@@ -117,26 +122,26 @@ export const TokenCard = ({
             },
           ]
         : []),
-      ...(onProposeStakeUnstake || onProposeClaim
+      ...(proposeStakeUnstakeHref || proposeClaimHref
         ? [
             {
               label: t('title.newProposalTo'),
               buttons: [
-                ...(onProposeStakeUnstake
+                ...(proposeStakeUnstakeHref
                   ? [
                       {
                         Icon: StakeEmoji,
                         label: t('button.stakeOrUnstake'),
-                        onClick: onProposeStakeUnstake,
+                        href: proposeStakeUnstakeHref,
                       },
                     ]
                   : []),
-                ...(onProposeClaim
+                ...(proposeClaimHref
                   ? [
                       {
                         Icon: SpendEmoji,
                         label: t('button.claim'),
-                        onClick: onProposeClaim,
+                        href: proposeClaimHref,
                       },
                     ]
                   : []),
@@ -145,7 +150,14 @@ export const TokenCard = ({
           ]
         : []),
     ],
-    [copied, cw20Address, onAddToken, onProposeClaim, onProposeStakeUnstake, t]
+    [
+      copied,
+      cw20Address,
+      onAddToken,
+      proposeClaimHref,
+      proposeStakeUnstakeHref,
+      t,
+    ]
   )
 
   // Truncate IBC denominations to prevent overflow.
@@ -197,6 +209,7 @@ export const TokenCard = ({
           {(waitingForStakingInfo || buttonPopupSections.length > 0) && (
             <div className="absolute top-3 right-3">
               <ButtonPopup
+                ButtonLink={ButtonLink}
                 Trigger={({ open, ...props }) => (
                   <IconButton
                     Icon={ExpandCircleDownOutlined}
@@ -244,7 +257,7 @@ export const TokenCard = ({
                     ? { loading: true }
                     : totalBalance * usdcUnitPrice
                 }
-                usdc
+                usdcConversion
               />
             </div>
           </div>
@@ -264,7 +277,7 @@ export const TokenCard = ({
 
                 <TokenAmountDisplay
                   amount={unstakedBalance * usdcUnitPrice}
-                  usdc
+                  usdcConversion
                 />
               </div>
             </div>
@@ -340,7 +353,11 @@ export const TokenCard = ({
                 )}
                 disabled={lazyStakingInfo.loading}
                 onClick={() => setShowUnstakingTokens(true)}
-                variant={lazyStakingInfo.loading ? 'none' : 'underline'}
+                variant={
+                  lazyStakingInfo.loading || unstakingBalance === 0
+                    ? 'none'
+                    : 'underline'
+                }
               >
                 {lazyStakingInfo.loading
                   ? '...'
@@ -372,13 +389,17 @@ export const TokenCard = ({
 
       {!lazyStakingInfo.loading && lazyStakingInfo.data && (
         <UnstakingModal
-          onClaim={onProposeClaim}
+          onClaim={onClaim}
           onClose={() => setShowUnstakingTokens(false)}
           refresh={refreshUnstakingTasks}
           tasks={lazyStakingInfo.data.unstakingTasks}
           unstakingDuration={
             lazyStakingInfo.data.unstakingDurationSeconds
-              ? secondsToWdhms(lazyStakingInfo.data.unstakingDurationSeconds)
+              ? secondsToWdhms(
+                  lazyStakingInfo.data.unstakingDurationSeconds,
+                  2,
+                  false
+                )
               : undefined
           }
           visible={showUnstakingTokens}

@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Image, WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
+import Fuse from 'fuse.js'
 import { ComponentType, ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -14,13 +15,13 @@ import { Modal } from '../modals/Modal'
 import { NoContent } from '../NoContent'
 import { NftCard } from './NftCard'
 
-export interface NftSelectionModalProps
+export interface NftSelectionModalProps<T extends NftCardInfo>
   extends Omit<ModalProps, 'children' | 'header' | 'visible'>,
     Required<Pick<ModalProps, 'header'>> {
-  nfts: LoadingDataWithError<NftCardInfo[]>
+  nfts: LoadingDataWithError<T[]>
   selectedIds: string[]
-  getIdForNft: (nft: NftCardInfo) => string
-  onNftClick: (nft: NftCardInfo) => void
+  getIdForNft: (nft: T) => string
+  onNftClick: (nft: T) => void
   onSelectAll?: () => void
   onDeselectAll?: () => void
   onAction: () => void
@@ -31,7 +32,7 @@ export interface NftSelectionModalProps
   selectedDisplay?: ReactNode
 }
 
-export const NftSelectionModal = ({
+export const NftSelectionModal = <T extends NftCardInfo>({
   nfts,
   selectedIds,
   getIdForNft,
@@ -46,7 +47,7 @@ export const NftSelectionModal = ({
   allowSelectingNone,
   selectedDisplay,
   ...modalProps
-}: NftSelectionModalProps) => {
+}: NftSelectionModalProps<T>) => {
   const { t } = useTranslation()
 
   const showSelectAll =
@@ -179,7 +180,7 @@ export const NftSelectionModal = ({
         </div>
       ) : nfts.data.length > 0 ? (
         <div className="no-scrollbar -mx-6 -mt-6 grid grow grid-flow-row auto-rows-max grid-cols-2 gap-4 overflow-y-auto py-4 px-6 sm:grid-cols-3">
-          {filteredData.map((nft: NftCardInfo) => (
+          {filteredData.map((nft: T) => (
             <NftCard
               key={getIdForNft(nft)}
               ref={
@@ -220,4 +221,8 @@ const sortOptions: DropdownOption<SortFn<Pick<NftCardInfo, 'name'>>>[] = [
   },
 ]
 
-const FILTERABLE_KEYS = ['name', 'description']
+const FILTERABLE_KEYS: Fuse.FuseOptionKey<NftCardInfo>[] = [
+  'name',
+  'description',
+  'collection.address',
+]

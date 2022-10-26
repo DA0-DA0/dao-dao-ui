@@ -204,7 +204,7 @@ export const ProposalDepositInput = ({
           >
             {DepositRefundPolicyValues.map((depositRefundPolicy) => (
               <option key={depositRefundPolicy} value={depositRefundPolicy}>
-                {t(`info.depositRefundPolicy.${depositRefundPolicy}`)}
+                {t(`depositRefundPolicy.${depositRefundPolicy}`)}
               </option>
             ))}
           </SelectInput>

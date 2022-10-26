@@ -5,6 +5,7 @@ export const GET_PROPOSAL = gql`
   query GetProposal($id: String!) @api(name: proposals) {
     proposal(id: $id) {
       createdAt
+      completedAt
       executedAt
       closedAt
       votes {
@@ -20,8 +21,9 @@ export const GET_PROPOSAL = gql`
 export interface GetProposal {
   proposal: {
     createdAt: string // Serialized UTC Date
-    executedAt: string // Serialized UTC Date
-    closedAt: string // Serialized UTC Date
+    completedAt: string | undefined // Serialized UTC Date
+    executedAt: string | undefined // Serialized UTC Date
+    closedAt: string | undefined // Serialized UTC Date
     votes: {
       nodes: {
         votedAt: string // Serialized UTC Date
@@ -40,7 +42,7 @@ export const getGetProposalSubqueryId = (
   proposalNumber: number
 ) => `${proposalModuleAddress}:${proposalNumber}`
 
-export const useProposalQuery = (
+export const useGetProposalQuery = (
   ...args: Parameters<typeof getGetProposalSubqueryId>
 ) =>
   useQuery<GetProposal>(GET_PROPOSAL, {

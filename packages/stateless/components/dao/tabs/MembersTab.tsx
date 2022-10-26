@@ -2,7 +2,7 @@ import { Add } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ButtonLink } from '../../buttons'
+import { ButtonLinkProps } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
 
 export interface MembersTabProps<D> {
@@ -10,6 +10,7 @@ export interface MembersTabProps<D> {
   members: D[]
   isMember: boolean
   addMemberHref?: string
+  ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const MembersTab = <D extends {}>({
@@ -17,6 +18,7 @@ export const MembersTab = <D extends {}>({
   members,
   isMember,
   addMemberHref,
+  ButtonLink,
 }: MembersTabProps<D>) => {
   const { t } = useTranslation()
 

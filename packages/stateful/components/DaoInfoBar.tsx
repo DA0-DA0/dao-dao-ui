@@ -76,7 +76,13 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
         {
           Icon: AccountBalanceOutlined,
           label: t('title.daoTreasury'),
-          value: <TokenAmountDisplay amount={treasuryUsdcValueLoading} usdc />,
+          value: (
+            <TokenAmountDisplay
+              amount={treasuryUsdcValueLoading}
+              hideApprox
+              usdcConversion
+            />
+          ),
         },
         // Voting module-specific items.
         ...votingModuleItems,

@@ -6,6 +6,7 @@ import {
 } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalLine/ProposalStatus'
 import { formatDate, secondsToWdhms } from '@dao-dao/utils'
 
+import { LinkWrapper } from '../LinkWrapper'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
 import {
   ProposalWalletVote,
@@ -36,7 +37,7 @@ export const makeProps = (
   proposalNumber: Math.floor(Math.random() * 100),
   title:
     "Give everyone 1 million dollars, which is a lot of money, but how much though? Let's find out.",
-  expiration:
+  timestampDisplay:
     status === 'open'
       ? secondsToWdhms(secondsFromNow, 1) + ' left'
       : formatDate(new Date(Date.now() - secondsFromNow * 1000)),
@@ -54,6 +55,7 @@ export const makeProps = (
     />
   ),
   votingOpen: status === 'open',
+  LinkWrapper,
 })
 
 export const Default = Template.bind({})

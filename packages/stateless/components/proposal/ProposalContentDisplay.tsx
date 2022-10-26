@@ -41,6 +41,7 @@ export const ProposalContentDisplay = ({
           // If name exists, use that. Otherwise, will fall back to
           // truncated address display.
           label={(!creator.name.loading && creator.name.data) || undefined}
+          success={t('info.copiedAddressToClipboard')}
           tooltip={
             // If displaying name, show tooltip to copy address.
             !creator.name.loading && creator.name.data

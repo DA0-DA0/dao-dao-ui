@@ -220,7 +220,7 @@ export const ProfileCardMemberInfoTokens = ({
         tasks={unstakingTasks}
         unstakingDuration={
           unstakingDurationSeconds
-            ? secondsToWdhms(unstakingDurationSeconds)
+            ? secondsToWdhms(unstakingDurationSeconds, 2, false)
             : undefined
         }
         visible={showUnstakingTokens}

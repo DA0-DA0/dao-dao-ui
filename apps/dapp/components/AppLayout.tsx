@@ -24,6 +24,7 @@ import {
   useWalletProfile,
 } from '@dao-dao/state'
 import {
+  LinkWrapper,
   PfpkNftSelectionModal,
   SidebarWallet,
   daoCreatedCardPropsAtom,
@@ -84,7 +85,11 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
   //! WALLET CONNECTION ERROR MODALS
   const { error, status } = useWalletManager()
-  const { walletProfile } = useWalletProfile()
+  const {
+    walletAddress,
+    walletProfile,
+    refreshBalances: refreshWalletBalances,
+  } = useWalletProfile()
   useEffect(() => {
     setInstallWarningVisible(
       error instanceof Error &&
@@ -161,16 +166,18 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     ]
   )
 
-  //! Block height
+  //! Refresh every minute. Block height and wallet balances.
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
-  // Refresh block height every minute.
+  // Refresh block height and wallet balances every minute.
   useEffect(() => {
-    const interval = setInterval(
-      () => setRefreshBlockHeight((id) => id + 1),
-      60 * 1000
-    )
+    const interval = setInterval(() => {
+      setRefreshBlockHeight((id) => id + 1)
+      if (walletAddress) {
+        refreshWalletBalances()
+      }
+    }, 60 * 1000)
     return () => clearInterval(interval)
-  }, [setRefreshBlockHeight])
+  }, [refreshWalletBalances, setRefreshBlockHeight, walletAddress])
 
   // TODO(v2): Add real data back in when pools indexer works.
   // //! Token prices
@@ -279,6 +286,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
               isPinned(daoCreatedCardProps.coreAddress)
                 ? setUnpinned(daoCreatedCardProps.coreAddress)
                 : setPinned(daoCreatedCardProps.coreAddress),
+            LinkWrapper,
           }}
           modalProps={{
             onClose: () => setDaoCreatedCardProps(undefined),
@@ -289,7 +297,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
 
       {proposalCreatedCardProps && (
         <ProposalCreatedModal
-          itemProps={proposalCreatedCardProps}
+          itemProps={{
+            ...proposalCreatedCardProps,
+            LinkWrapper,
+          }}
           modalProps={{
             onClose: () => setProposalCreatedCardProps(undefined),
           }}
@@ -299,6 +310,7 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
       <StatelessAppLayout
         context={appLayoutContext}
         navigationProps={{
+          LinkWrapper,
           inboxCount:
             inbox.loading ||
             // Prevent hydration errors by loading until mounted.

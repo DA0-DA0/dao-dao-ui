@@ -35,6 +35,7 @@ Default.args = {
     data: {
       unstakedBalance: 2400.111111,
       stakedBalance: 1603,
+      dateBalancesFetched: new Date(),
       proposalsCreated: 23,
       votesCast: 234,
     },

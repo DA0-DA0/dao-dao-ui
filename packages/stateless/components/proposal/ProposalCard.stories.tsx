@@ -1,6 +1,7 @@
 import { BookOutlined, FlagOutlined, Timelapse } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { LinkWrapper } from '../LinkWrapper'
 import { ProposalCard, ProposalCardProps } from './ProposalCard'
 
 export default {
@@ -39,6 +40,7 @@ export const makeProps = (): ProposalCardProps => ({
       label: '8 days',
     },
   ],
+  LinkWrapper,
 })
 
 export const Default = Template.bind({})

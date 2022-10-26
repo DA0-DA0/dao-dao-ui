@@ -46,13 +46,16 @@ export const CommandModalContextView = ({
     itemsWithSection[selectedIndex]
 
   // Cap selection at last item if items length changes.
-  useEffect(
-    () =>
-      setSelectedIndex((selected) =>
-        Math.min(selected, itemsWithSection.length - 1)
-      ),
-    [itemsWithSection.length]
-  )
+  useEffect(() => {
+    // If empty, do nothing to prevent negative index.
+    if (itemsWithSection.length === 0) {
+      return
+    }
+
+    setSelectedIndex((selected) =>
+      Math.min(selected, itemsWithSection.length - 1)
+    )
+  }, [itemsWithSection.length])
 
   // Navigate on keypress.
   const handleKeyPress = useCallback(

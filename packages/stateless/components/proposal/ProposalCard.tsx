@@ -4,7 +4,6 @@ import removeMarkdown from 'remove-markdown'
 import { ProposalCardProps } from '@dao-dao/types/components/ProposalCard'
 
 import { DaoImage } from '../dao/DaoImage'
-import { LinkWrapper } from '../LinkWrapper'
 
 export * from '@dao-dao/types/components/ProposalCard'
 
@@ -17,6 +16,7 @@ export const ProposalCard = ({
   className,
   onMouseOver,
   onMouseLeave,
+  LinkWrapper,
 }: ProposalCardProps) => (
   <LinkWrapper
     className={clsx(

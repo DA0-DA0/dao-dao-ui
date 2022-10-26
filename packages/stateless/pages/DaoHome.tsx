@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ReactNode, useEffect, useState } from 'react'
+import { ComponentType, ReactNode, useEffect, useState } from 'react'
 
 import { DaoInfo } from '@dao-dao/types'
 import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
@@ -22,6 +22,7 @@ export interface DaoHomeProps {
   subDaosTab: ReactNode
   membersTab?: ReactNode
   rightSidebarContent: ReactNode
+  SuspenseLoader: ComponentType<{ children: ReactNode }>
 }
 
 export const DaoHome = ({
@@ -34,6 +35,7 @@ export const DaoHome = ({
   subDaosTab,
   membersTab,
   rightSidebarContent,
+  SuspenseLoader,
 }: DaoHomeProps) => {
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
@@ -109,19 +111,19 @@ export const DaoHome = ({
 
         <div className="py-6">
           <div className={clsx(selectedTab !== Tab.Proposals && 'hidden')}>
-            {proposalsTab}
+            <SuspenseLoader>{proposalsTab}</SuspenseLoader>
           </div>
           <div
             className={clsx(selectedTab !== Tab.TreasuryAndNfts && 'hidden')}
           >
-            {treasuryAndNftsTab}
+            <SuspenseLoader>{treasuryAndNftsTab}</SuspenseLoader>
           </div>
           <div className={clsx(selectedTab !== Tab.SubDaos && 'hidden')}>
-            {subDaosTab}
+            <SuspenseLoader>{subDaosTab}</SuspenseLoader>
           </div>
           {membersTab !== undefined && (
             <div className={clsx(selectedTab !== Tab.Members && 'hidden')}>
-              {membersTab}
+              <SuspenseLoader>{membersTab}</SuspenseLoader>
             </div>
           )}
         </div>

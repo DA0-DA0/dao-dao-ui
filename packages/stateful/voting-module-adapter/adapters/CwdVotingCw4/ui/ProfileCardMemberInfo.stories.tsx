@@ -20,7 +20,7 @@ const Template: ComponentStory<typeof ProfileCardMemberInfo> = (args) => (
 
 export const DefaultArgs: ProfileCardMemberInfoProps = {
   daoName: 'DAO Name',
-  votingPower: 34.2,
+  votingPower: { loading: false, data: 34.2 },
 }
 
 export const Default = Template.bind({})
@@ -29,12 +29,12 @@ Default.args = DefaultArgs
 export const NotMember = Template.bind({})
 NotMember.args = {
   ...DefaultArgs,
-  votingPower: 0,
+  votingPower: { loading: false, data: 0 },
 }
 
 export const NotMemberProposal = Template.bind({})
 NotMemberProposal.args = {
   ...NotMember.args,
-  votingPower: 0,
+  votingPower: { loading: false, data: 0 },
   cantVoteOnProposal: true,
 }

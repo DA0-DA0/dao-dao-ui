@@ -29,6 +29,8 @@ export const client = new ApolloClient({
             ? 'https://index.daodao.zone/proposals'
             : 'https://index.daodao.zone/testnet-proposals',
         wasmswap: 'https://index.daodao.zone/wasmswap',
+        // Juno Loop NFT Market
+        loop: 'https://nft-juno-backend.loop.markets',
       },
       createHttpLink: () => createHttpLink(),
       httpSuffix: '',

@@ -53,7 +53,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
           //   amount: 0,
           //   denom: '',
           // }
-          name: getNftName(collection.name, name),
+          name: getNftName(collection.name, name || tokenId),
         })
       )
 

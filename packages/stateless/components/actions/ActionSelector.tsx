@@ -1,4 +1,5 @@
 import { Add } from '@mui/icons-material'
+import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { useCallback } from 'react'
@@ -61,16 +62,19 @@ export const ActionSelector = ({
               open ? 'text-icon-brand' : 'text-icon-primary'
             )}
           />{' '}
-          {t('button.addAnAction')}{' '}
-          <p className="text-text-tertiary">{isMac ? '⌘' : '⌃'}A</p>
+          {t('button.addAnAction')}
+          {!isMobile() && (
+            <>
+              {' '}
+              <p className="text-text-tertiary">{isMac ? '⌘' : '⌃'}A</p>
+            </>
+          )}
         </Button>
       )}
       filterableItemKeys={FILTERABLE_KEYS}
       getKeydownEventListener={getKeydownEventListener}
       items={actions}
       onSelect={onSelectAction}
-      popupClassName="!w-[24rem] max-w-[96vw] !h-[32rem] max-h-[96vh]"
-      position="right"
       searchPlaceholder={t('info.searchActionPlaceholder')}
     />
   )

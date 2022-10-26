@@ -24,6 +24,7 @@ import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
+  SuspenseLoader,
   useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/stateful'
 import { useActionForKey } from '@dao-dao/stateful/actions'
@@ -189,6 +190,9 @@ const InnerDaoHome = () => {
 
   return (
     <DaoHome
+      SuspenseLoader={({ children }) => (
+        <SuspenseLoader fallback={<Loader />}>{children}</SuspenseLoader>
+      )}
       daoInfo={daoInfo}
       daoInfoBar={<DaoInfoBar />}
       membersTab={MembersTab && <MembersTab />}

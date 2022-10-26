@@ -115,6 +115,8 @@ export interface NftCardInfo {
   name: string
 }
 
+export type NftCardInfoWithChainId = NftCardInfo & { chainId: string }
+
 export interface ProposalModule {
   contractName: string
   version: ContractVersion | null
@@ -253,4 +255,7 @@ export type DaoCreationGetInstantiateInfo<
   t: TFunction
 ) => ModuleInstantiateInfo
 
-export type DaoCreatedCardProps = Omit<DaoCardProps, 'pinned' | 'onPin'>
+export type DaoCreatedCardProps = Omit<
+  DaoCardProps,
+  'pinned' | 'onPin' | 'LinkWrapper'
+>

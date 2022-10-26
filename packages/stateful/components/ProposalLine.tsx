@@ -13,6 +13,7 @@ import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapter,
 } from '../proposal-module-adapter'
+import { LinkWrapper } from './LinkWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export interface ProposalLineProps {
@@ -57,7 +58,7 @@ const InnerProposalLine = ({ proposalViewUrl }: InnerProposalLineProps) => {
 
   return (
     <SuspenseLoader fallback={<ProposalLineLoader />}>
-      <ProposalLine href={proposalViewUrl} />
+      <ProposalLine LinkWrapper={LinkWrapper} href={proposalViewUrl} />
     </SuspenseLoader>
   )
 }

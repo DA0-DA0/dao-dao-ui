@@ -1,6 +1,8 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { useCachedLoadable } from '@dao-dao/stateless'
+
 import { CwdCoreV2Selectors } from '../recoil/selectors'
 
 interface UseVotingModuleOptions {
@@ -28,15 +30,17 @@ export const useVotingModule = (
       params: [],
     })
   )
-  const _walletVotingWeight = useRecoilValue(
+  // Use loadable to prevent flickering loading states when wallet address
+  // changes and on initial load if wallet is connecting.
+  const _walletVotingWeight = useCachedLoadable(
     fetchMembership && walletAddress
       ? CwdCoreV2Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           chainId,
           params: [{ address: walletAddress }],
         })
-      : constSelector(undefined)
-  )?.power
+      : undefined
+  )
   const _totalVotingWeight = useRecoilValue(
     fetchMembership
       ? CwdCoreV2Selectors.totalPowerAtHeightSelector({
@@ -47,9 +51,11 @@ export const useVotingModule = (
       : constSelector(undefined)
   )?.power
 
-  const walletVotingWeight = !isNaN(Number(_walletVotingWeight))
-    ? Number(_walletVotingWeight)
-    : undefined
+  const walletVotingWeight =
+    _walletVotingWeight.state === 'hasValue' &&
+    !isNaN(Number(_walletVotingWeight.contents.power))
+      ? Number(_walletVotingWeight.contents.power)
+      : undefined
   const totalVotingWeight = !isNaN(Number(_totalVotingWeight))
     ? Number(_totalVotingWeight)
     : undefined

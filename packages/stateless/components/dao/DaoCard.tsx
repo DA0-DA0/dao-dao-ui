@@ -13,7 +13,6 @@ import { DaoCardProps } from '@dao-dao/types/components/DaoCard'
 import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
 import { IconButton, IconButtonLink } from '../icon_buttons'
-import { LinkWrapper } from '../LinkWrapper'
 import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Tooltip } from '../Tooltip'
 import { DaoImage } from './DaoImage'
@@ -38,6 +37,7 @@ export const DaoCard = ({
   onMouseOver,
   onMouseLeave,
   hidePin,
+  LinkWrapper,
 }: DaoCardProps) => {
   const { t } = useTranslation()
 
@@ -138,9 +138,15 @@ export const DaoCard = ({
                 ? { loading: true }
                 : { loading: false, data: lazyData.data.tokenBalance }
             }
-            decimals={tokenDecimals}
-            maxDecimals={3}
-            symbol={tokenSymbol}
+            hideApprox
+            {...(tokenSymbol === 'USDC'
+              ? {
+                  usdcConversion: true,
+                }
+              : {
+                  decimals: tokenDecimals,
+                  symbol: tokenSymbol,
+                })}
           />
         </div>
 

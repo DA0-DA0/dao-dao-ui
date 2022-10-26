@@ -4,6 +4,7 @@ import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
 
 import {
   DaoCard,
+  LinkWrapper,
   ProfileDisconnectedCard,
   ProfileHomeCard,
   ProfileHomeCardProps,
@@ -27,6 +28,7 @@ Connected.args = {
     DaoCard: (props) => (
       <DaoCard
         {...props}
+        LinkWrapper={LinkWrapper}
         onPin={() => alert('pin ' + props.coreAddress)}
         pinned={false}
       />
@@ -38,6 +40,7 @@ Connected.args = {
     DaoCard: (props) => (
       <DaoCard
         {...props}
+        LinkWrapper={LinkWrapper}
         onPin={() => alert('pin ' + props.coreAddress)}
         pinned={false}
       />
@@ -67,6 +70,7 @@ Disconnected.args = {
     DaoCard: (props) => (
       <DaoCard
         {...props}
+        LinkWrapper={LinkWrapper}
         onPin={() => alert('pin ' + props.coreAddress)}
         pinned={false}
       />

@@ -1,5 +1,9 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { Coin, StargateClient } from '@cosmjs/stargate'
+import {
+  Coin,
+  StargateClient,
+  decodeCosmosSdkDecFromProto,
+} from '@cosmjs/stargate'
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { cosmos, juno } from 'interchain-rpc'
 import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
@@ -158,6 +162,20 @@ export const nativeBalancesSelector = selectorFamily<
         label: nativeTokenLabel(denom),
         imageUrl: nativeTokenLogoURI(denom),
       }))
+    },
+})
+
+// Refreshes when wallet balances refresh.
+export const nativeBalancesFetchedAtSelector = selectorFamily<
+  Date,
+  WithChainId<{ address: string }>
+>({
+  key: 'nativeBalancesFetchedAt',
+  get:
+    ({ address }) =>
+    ({ get }) => {
+      get(refreshWalletBalancesIdAtom(address))
+      return new Date()
     },
 })
 
@@ -372,13 +390,24 @@ export const nativeStakingInfoSelector = selectorFamily<
                 validators.find(
                   ({ operatorAddress }) => operatorAddress === address
                 ) ?? {}
-              const pendingReward = rewards
+              let pendingReward = rewards
                 .find(({ validatorAddress }) => validatorAddress === address)
                 ?.reward.find(({ denom }) => denom === NATIVE_DENOM)
 
               if (!description || !pendingReward) {
                 return
               }
+
+              // pendingReward is represented as a Decimal Coin (DecCoin), which
+              // includes 18 decimals and no decimal point, so it needs to be
+              // converted manually. See issues:
+              // https://github.com/osmosis-labs/telescope/issues/247
+              // https://github.com/cosmos/cosmos-sdk/issues/10863
+              pendingReward.amount = decodeCosmosSdkDecFromProto(
+                pendingReward.amount
+              )
+                .floor()
+                .toString()
 
               const { moniker, website, details } = description
 

@@ -10,6 +10,7 @@ import {
   PushPinOutlined,
   Search,
 } from '@mui/icons-material'
+import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
@@ -60,6 +61,7 @@ export const Navigation = ({
   compact,
   setCompact,
   mountedInBrowser,
+  LinkWrapper,
 }: NavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
@@ -175,52 +177,59 @@ export const Navigation = ({
         <div className={clsx(!compact && 'pt-2')}>
           <Row
             Icon={HomeOutlined}
+            LinkWrapper={LinkWrapper}
             compact={compact}
+            href="/home"
             label={t('title.home')}
-            localHref="/home"
           />
 
           <Row
             Icon={Search}
+            LinkWrapper={LinkWrapper}
             compact={compact}
             label={t('title.search')}
             onClick={setCommandModalVisible}
             rightNode={
-              <div className="legend-text flex flex-row items-center gap-1 text-icon-primary">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
-                  <p>{isMac ? '⌘' : '⌃'}</p>
+              !isMobile() && (
+                <div className="legend-text flex flex-row items-center gap-1 text-icon-primary">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
+                    <p>{isMac ? '⌘' : '⌃'}</p>
+                  </div>
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
+                    <p>k</p>
+                  </div>
                 </div>
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
-                  <p>k</p>
-                </div>
-              </div>
+              )
             }
           />
 
           {!hideInbox && (
             <Row
               Icon={InboxOutlined}
+              LinkWrapper={LinkWrapper}
               compact={compact}
+              href="/inbox"
               label={
                 !inboxCount.loading && inboxCount.data > 0
                   ? t('title.inboxWithCount', { count: inboxCount.data })
                   : t('title.inbox')
               }
               loading={inboxCount.loading}
-              localHref="/inbox"
               showBadge={!inboxCount.loading && inboxCount.data > 0}
             />
           )}
 
           <Row
             Icon={Add}
+            LinkWrapper={LinkWrapper}
             compact={compact}
+            href="/dao/create"
             label={t('button.create')}
-            localHref="/dao/create"
           />
 
           <Row
             Icon={PushPinOutlined}
+            LinkWrapper={LinkWrapper}
             compact={compact}
             defaultExpanded
             label={t('title.following')}
@@ -247,6 +256,7 @@ export const Navigation = ({
                 {pinnedDaos.data.map((dao, index) => (
                   <DaoDropdown
                     key={index}
+                    LinkWrapper={LinkWrapper}
                     compact={compact}
                     dao={dao}
                     defaultExpanded

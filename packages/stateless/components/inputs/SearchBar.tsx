@@ -46,7 +46,7 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 
         <input
           className={clsx(
-            'secondary-text grow bg-transparent pr-4 leading-4 text-text-tertiary transition placeholder:text-text-tertiary focus:text-text-body focus:outline-none',
+            'secondary-text grow bg-transparent leading-4 text-text-tertiary transition placeholder:text-text-tertiary focus:text-text-body focus:outline-none',
             className
           )}
           placeholder={t('title.search')}

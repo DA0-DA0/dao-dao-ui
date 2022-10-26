@@ -20,6 +20,10 @@ export const NATIVE_DECIMALS = parseInt(
   10
 )
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
+export const USDC_DECIMALS = parseInt(
+  process.env.NEXT_PUBLIC_USDC_DECIMALS || '6',
+  10
+)
 
 // True if on mainnet, false if on testnet.
 export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
@@ -102,8 +106,6 @@ export const NEW_DAO_CW20_DECIMALS = parseInt(
 )
 
 // Stargaze
-export const STARGAZE_CHAIN_ID = process.env
-  .NEXT_PUBLIC_STARGAZE_CHAIN_ID as string
 export const STARGAZE_RPC_ENDPOINT = process.env
   .NEXT_PUBLIC_STARGAZE_RPC_ENDPOINT as string
 export const STARGAZE_REST_ENDPOINT = process.env

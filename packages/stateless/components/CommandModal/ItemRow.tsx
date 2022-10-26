@@ -43,7 +43,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
         ) : (
           <item.Icon
             className={clsx(
-              '!h-6 !w-6 transition',
+              '!h-6 !w-6 !transition',
               item.disabled
                 ? 'text-icon-interactive-disabled'
                 : 'text-icon-primary'
