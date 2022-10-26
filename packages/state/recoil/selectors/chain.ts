@@ -1,5 +1,9 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { Coin, StargateClient } from '@cosmjs/stargate'
+import {
+  Coin,
+  StargateClient,
+  decodeCosmosSdkDecFromProto,
+} from '@cosmjs/stargate'
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { cosmos, juno } from 'interchain-rpc'
 import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
@@ -394,17 +398,15 @@ export const nativeStakingInfoSelector = selectorFamily<
                 return
               }
 
-              // All balances in the SDK are represented in the native denom
-              // (for example, ujuno) through Coin types. For some reason, some
-              // balances are considered shares instead, and shares are
-              // represented as the native denom with 18 decimals. Additionally,
-              // the string representations of those decimal values don't even
-              // include decimal points. Knowing that they use 18 decimals, we
-              // can just adjust that value here so that it is in terms of
-              // native denom with no decimals, since they are supposed to be
-              // integers.
-              pendingReward.amount = Math.round(
-                Number(pendingReward.amount) / Math.pow(10, 18)
+              // pendingReward is represented as a Decimal Coin (DecCoin), which
+              // includes 18 decimals and no decimal point, so it needs to be
+              // converted manually. See issues:
+              // https://github.com/osmosis-labs/telescope/issues/247
+              // https://github.com/cosmos/cosmos-sdk/issues/10863
+              pendingReward.amount = Math.floor(
+                decodeCosmosSdkDecFromProto(
+                  pendingReward.amount
+                ).toFloatApproximation()
               ).toString()
 
               const { moniker, website, details } = description
