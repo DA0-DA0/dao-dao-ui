@@ -5,9 +5,10 @@ import { WithChainId } from '@dao-dao/types'
 import {
   USDC_SWAP_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
+  isJunoIbcUsdc,
 } from '@dao-dao/utils'
 
-import { refreshTokenUsdcPriceIdAtom } from '../atoms/refresh'
+import { refreshTokenUsdcPriceAtom } from '../atoms/refresh'
 import { cosmWasmClientForChainSelector, nativeBalancesSelector } from './chain'
 import { CwdCoreV2Selectors } from './clients'
 import { junoswapPoolsListSelector } from './pools'
@@ -29,14 +30,22 @@ export const usdcPerMacroTokenSelector = selectorFamily<
   get:
     ({ denom, decimals }) =>
     async ({ get }) => {
-      get(refreshTokenUsdcPriceIdAtom(denom))
+      // If checking price of USDC, just return 1.
+      if (isJunoIbcUsdc(denom)) {
+        return 1
+      }
+
+      // Allow refreshing all prices at once.
+      get(refreshTokenUsdcPriceAtom(''))
+      // Allow refreshing just this denom.
+      get(refreshTokenUsdcPriceAtom(denom))
 
       const tokens = get(junoswapPoolsListSelector)
       if (!tokens) {
         return
       }
 
-      // Find USDC swap by USDC_SWAP_ADDRESS
+      // Find JUNO-USDC swap by USDC_SWAP_ADDRESS.
       const usdcSwap = tokens.pools.find(
         ({ swap_address }) => swap_address === USDC_SWAP_ADDRESS
       )

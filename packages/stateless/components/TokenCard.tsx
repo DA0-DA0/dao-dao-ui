@@ -10,7 +10,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { TokenCardInfo } from '@dao-dao/types'
-import { secondsToWdhms } from '@dao-dao/utils'
+import { isJunoIbcUsdc, secondsToWdhms } from '@dao-dao/utils'
 
 import { ButtonLinkProps } from './buttons'
 import { Button } from './buttons/Button'
@@ -36,6 +36,7 @@ export interface TokenCardProps extends TokenCardInfo {
 export const TokenCard = ({
   crown,
   tokenSymbol,
+  tokenDenom,
   tokenDecimals,
   subtitle,
   imageUrl,
@@ -249,16 +250,18 @@ export const TokenCard = ({
                 symbol={tokenSymbol}
               />
 
-              <TokenAmountDisplay
-                amount={
-                  // If staking info has not finished loading, don't show until
-                  // it is loaded so this is accurate.
-                  waitingForStakingInfo
-                    ? { loading: true }
-                    : totalBalance * usdcUnitPrice
-                }
-                usdcConversion
-              />
+              {!isJunoIbcUsdc(tokenDenom) && (
+                <TokenAmountDisplay
+                  amount={
+                    // If staking info has not finished loading, don't show until
+                    // it is loaded so this is accurate.
+                    waitingForStakingInfo
+                      ? { loading: true }
+                      : totalBalance * usdcUnitPrice
+                  }
+                  usdcConversion
+                />
+              )}
             </div>
           </div>
 
@@ -275,10 +278,12 @@ export const TokenCard = ({
                   symbol={tokenSymbol}
                 />
 
-                <TokenAmountDisplay
-                  amount={unstakedBalance * usdcUnitPrice}
-                  usdcConversion
-                />
+                {!isJunoIbcUsdc(tokenDenom) && (
+                  <TokenAmountDisplay
+                    amount={unstakedBalance * usdcUnitPrice}
+                    usdcConversion
+                  />
+                )}
               </div>
             </div>
           )}

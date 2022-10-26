@@ -94,6 +94,8 @@ export interface TokenCardInfo {
 
   // Only native tokens load staking info for now, so let's show a nice loader.
   hasStakingInfo: boolean
+  // TODO: Move usdcUnitPrice into this, turn into generic lazy info, and refresh unit
+  // price every minute.
   lazyStakingInfo: LoadingData<TokenCardLazyStakingInfo | undefined>
 }
 
