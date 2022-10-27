@@ -7,12 +7,14 @@ export interface ProfileVoteButtonProps {
   option: ProfileVoteCardOption<unknown>
   onClick: () => void
   pressed?: boolean
+  disabled?: boolean
 }
 
 export const ProfileVoteButton = ({
   option: { label, Icon },
   onClick,
   pressed = false,
+  disabled = false,
 }: ProfileVoteButtonProps) => (
   <Button
     className={clsx('mb-2 w-full border-2 border-transparent pl-4', {
@@ -21,6 +23,7 @@ export const ProfileVoteButton = ({
     contentContainerClassName={clsx('justify-between text-sm', {
       'primary-text': !pressed,
     })}
+    disabled={disabled}
     onClick={onClick}
     pressed={pressed}
     size="lg"

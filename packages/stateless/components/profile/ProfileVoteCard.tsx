@@ -55,6 +55,7 @@ export const ProfileVoteCard = <T extends unknown>({
       {options.map((option, index) => (
         <ProfileVoteButton
           key={index}
+          disabled={loading}
           onClick={() => setSelected(option.value)}
           option={option}
           pressed={option.value === selected}
