@@ -1,4 +1,9 @@
-import { Key, Visibility, VisibilityOff } from '@mui/icons-material'
+import {
+  ArrowOutward,
+  Key,
+  Visibility,
+  VisibilityOff,
+} from '@mui/icons-material'
 import { ComponentType, ReactNode, useCallback, useState } from 'react'
 import {
   FormProvider,
@@ -18,12 +23,14 @@ import {
   WalletTransactionForm,
 } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
-import { decodedMessagesString } from '@dao-dao/utils'
+import { CHAIN_TXN_URL_PREFIX, decodedMessagesString } from '@dao-dao/utils'
 
 import {
   ActionCardLoader,
   ActionSelector,
   Button,
+  ButtonLink,
+  CopyToClipboard,
   CosmosMessageDisplay,
   Loader,
   Logo,
@@ -50,6 +57,7 @@ export interface WalletProps {
   rightSidebarContent: ReactNode
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   error?: string
+  txHash?: string
 }
 
 enum SubmitValue {
@@ -67,6 +75,7 @@ export const Wallet = ({
   rightSidebarContent,
   SuspenseLoader,
   error,
+  txHash,
 }: WalletProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
@@ -273,6 +282,20 @@ export const Wallet = ({
               <p className="secondary-text max-w-prose self-end text-right text-sm text-text-interactive-error">
                 {error}
               </p>
+            )}
+
+            {txHash && (
+              <div className="flex flex-col items-end gap-2 self-end text-text-interactive-valid">
+                <CopyToClipboard takeAll value={txHash} />
+
+                <ButtonLink
+                  href={CHAIN_TXN_URL_PREFIX + txHash}
+                  variant="ghost"
+                >
+                  {t('button.openInChainExplorer')}{' '}
+                  <ArrowOutward className="!h-4 !w-4" />
+                </ButtonLink>
+              </div>
             )}
 
             {showPreview && (

@@ -6,6 +6,7 @@ import cloneDeep from 'lodash.clonedeep'
 import { GetStaticProps, NextPage } from 'next'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
@@ -27,7 +28,12 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { CHAIN_BECH32_PREFIX, CHAIN_ID, processError } from '@dao-dao/utils'
+import {
+  CHAIN_BECH32_PREFIX,
+  CHAIN_ID,
+  cwMsgToEncodeObject,
+  processError,
+} from '@dao-dao/utils'
 
 import { ProfileHomeCard } from '@/components'
 
@@ -94,8 +100,9 @@ const InnerWallet = () => {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [txHash, setTxHash] = useState('')
   const execute: WalletProps['execute'] = useCallback(
-    async (_data) => {
+    async (data) => {
       if (!signingCosmWasmClient || !walletAddress) {
         setError(t('error.connectWalletToContinue'))
         return
@@ -103,14 +110,20 @@ const InnerWallet = () => {
 
       setLoading(true)
       setError('')
+      setTxHash('')
 
       try {
-        // TODO(v2): Make arbitrary wallet tx execution work.
-        // const tx = await signingCosmWasmClient.signAndBroadcast(
-        //   walletAddress,
-        //   data,
-        //   'auto'
-        // )
+        const encodeObjects = data.map((msg) =>
+          cwMsgToEncodeObject(msg, walletAddress)
+        )
+        const tx = await signingCosmWasmClient.signAndBroadcast(
+          walletAddress,
+          encodeObjects,
+          'auto'
+        )
+
+        toast.success(t('success.transactionExecuted'))
+        setTxHash(tx.transactionHash)
       } catch (err) {
         const error = processError(err)
         console.error(error)
@@ -135,6 +148,7 @@ const InnerWallet = () => {
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }
+      txHash={txHash}
     />
   )
 }

@@ -50,6 +50,7 @@
     "numProposalsInInbox_one": "{{count}} Proposal in Inbox",
     "numProposalsInInbox_other": "{{count}} Proposals in Inbox",
     "numProposalsInInbox_zero": "Proposal Inbox",
+    "openInChainExplorer": "Open in chain explorer",
     "openInDestination": "Open in {{destination}}",
     "preview": "Preview",
     "proposeUpgrade": "Propose upgrade",
@@ -459,6 +460,7 @@
     "daoCreatedPleaseWait": "DAO created. You will be redirected once the DAO page is ready...",
     "proposalClosed": "Closed successfully.",
     "proposalExecuted": "Executed successfully. Refreshing page...",
+    "transactionExecuted": "Transaction executed successfully.",
     "voteCast": "Vote successfully cast."
   },
   "title": {
@@ -582,6 +584,7 @@
     "token": "Token",
     "totalStaked": "Total staked",
     "totalSupply": "Total supply",
+    "transaction": "Transaction",
     "treasury": "Treasury",
     "treasuryHistory": "Treasury history",
     "turnout": "Turnout",
