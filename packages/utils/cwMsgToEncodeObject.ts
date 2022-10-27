@@ -8,6 +8,7 @@ import {
 import { fromBase64 } from '@cosmjs/encoding'
 import { EncodeObject } from '@cosmjs/proto-signing'
 import {
+  MsgBeginRedelegateEncodeObject,
   MsgDelegateEncodeObject,
   MsgSendEncodeObject,
   MsgUndelegateEncodeObject,
@@ -71,7 +72,18 @@ export const cwMsgToEncodeObject = (
       return encodeObject
     }
 
-    // redelegate does not exist?
+    if ('redelegate' in stakingMsg) {
+      const encodeObject: MsgBeginRedelegateEncodeObject = {
+        typeUrl: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
+        value: {
+          delegatorAddress: sender,
+          validatorSrcAddress: stakingMsg.redelegate.src_validator,
+          validatorDstAddress: stakingMsg.redelegate.dst_validator,
+          amount: stakingMsg.redelegate.amount,
+        },
+      }
+      return encodeObject
+    }
 
     throw new Error('Unsupported staking module message.')
   }

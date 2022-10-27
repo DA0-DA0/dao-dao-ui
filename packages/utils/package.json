@@ -6,20 +6,20 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "0.28.10",
-    "@cosmjs/encoding": "0.28.10",
+    "@cosmjs/cosmwasm-stargate": "0.29.3",
+    "@cosmjs/encoding": "0.29.3",
     "@keplr-wallet/stores": "^0.10.5",
     "ajv": "^8.11.0",
     "next-i18next": "^11.0.0",
     "react": "18.1.0"
   },
   "devDependencies": {
-    "@cosmjs/proto-signing": "0.28.10",
-    "@cosmjs/stargate": "0.28.10",
+    "@cosmjs/proto-signing": "0.29.3",
+    "@cosmjs/stargate": "0.29.3",
     "@dao-dao/config": "2.0.1",
     "@dao-dao/types": "2.0.1",
     "@keplr-wallet/types": "^0.10.2",
-    "@noahsaso/cosmodal": "^0.7.1",
+    "@noahsaso/cosmodal": "^0.8.0",
     "cosmjs-types": "^0.4.0",
     "interchain-rpc": "^1.5.0",
     "recoil": "^0.7.2",
