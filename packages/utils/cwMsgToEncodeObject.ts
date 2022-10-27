@@ -180,7 +180,7 @@ export const cwMsgToEncodeObject = (
   if ('gov' in msg) {
     const govMsg = msg.gov
 
-    // MsgDepositEncodeObject and MsgVoteEncodeObject missing from
+    // MsgDepositEncodeObject and MsgSubmitProposalEncodeObject missing from
     // CosmosMsgFor_Empty.
 
     if ('vote' in govMsg) {
