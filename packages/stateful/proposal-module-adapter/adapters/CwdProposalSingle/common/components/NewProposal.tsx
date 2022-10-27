@@ -22,6 +22,7 @@ import {
   cosmWasmClientForChainSelector,
   nativeDenomBalanceSelector,
   refreshWalletBalancesIdAtom,
+  useAwaitNextBlock,
   useVotingModule,
 } from '@dao-dao/state'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
@@ -221,6 +222,8 @@ export const NewProposal = ({
     sender: walletAddress ?? '',
   })
 
+  const awaitNextBlock = useAwaitNextBlock()
+
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
   const cosmWasmClient = useRecoilValue(
     cosmWasmClientForChainSelector(daoInfo.chainId)
@@ -282,7 +285,7 @@ export const NewProposal = ({
               })
 
               // Allowances will not update until the next block has been added.
-              setTimeout(refreshBalances, 6500)
+              awaitNextBlock().then(refreshBalances)
             } catch (err) {
               console.error(err)
               toast.error(

@@ -150,7 +150,10 @@ export const makeStakeAction: ActionMaker<StakeData> = ({ t, address }) => {
     return (
       <SuspenseLoader
         fallback={<ActionCardLoader Loader={Loader} />}
-        forceFallback={nativeBalancesLoadable.loading}
+        forceFallback={
+          nativeBalancesLoadable.loading ||
+          nativeDelegatedBalanceLoadable.loading
+        }
       >
         <StatelessStakeComponent
           {...props}

@@ -1,6 +1,6 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useMemo } from 'react'
-import { constSelector, useRecoilValue, waitForAll } from 'recoil'
+import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   Cw20BaseSelectors,
@@ -47,37 +47,45 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
   address,
   context,
 }) => {
-  // Reused selectors in Component and useTransformToCosmos.
-  const useCw20AddressesBalancesAndInfos = () => {
+  // Reused selectors in Component and useTransformToCosmos. Undefined when
+  // loading.
+  const useCw20BalancesAndInfos = () => {
     // Get CW20 governance token address from voting module adapter if exists,
     // so we can make sure to load it with all cw20 balances, even if it has not
     // been explicitly added to the DAO.
     const { governanceTokenAddress } =
       useCw20GovernanceTokenInfoResponseIfExists() ?? {}
 
-    const cw20AddressesAndBalances = useRecoilValue(
-      context.type === ActionOptionsContextType.Wallet
-        ? // Cannot query for wallet's cw20 addresses.
-          constSelector([])
-        : // Get DAO's cw20 addresses and balances.
-          CwdCoreV2Selectors.allCw20BalancesSelector({
+    const cw20BalancesAndInfosLoadable = useCachedLoadable(
+      context.type === ActionOptionsContextType.Dao
+        ? // Get DAO's cw20 balances and infos.
+          CwdCoreV2Selectors.allCw20BalancesAndInfosSelector({
             contractAddress: address,
             governanceTokenAddress,
           })
+        : undefined
     )
 
-    const cw20Infos = useRecoilValue(
-      waitForAll(
-        cw20AddressesAndBalances.map(({ addr }) =>
-          Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: addr,
-            params: [],
-          })
-        )
-      )
+    const cw20BalancesAndInfos = useMemo(
+      () =>
+        context.type === ActionOptionsContextType.Dao
+          ? cw20BalancesAndInfosLoadable.state === 'hasValue'
+            ? cw20BalancesAndInfosLoadable.contents.map(
+                ({ addr, ...rest }) => ({
+                  address: addr,
+                  ...rest,
+                })
+              )
+            : undefined
+          : // If not a DAO, just return empty array.
+            [],
+      [
+        cw20BalancesAndInfosLoadable.contents,
+        cw20BalancesAndInfosLoadable.state,
+      ]
     )
 
-    return { cw20AddressesAndBalances, cw20Infos }
+    return cw20BalancesAndInfos
   }
 
   const Component: ActionComponent<undefined, SpendData> = (props) => {
@@ -88,22 +96,15 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
       []
     )
 
-    const { cw20AddressesAndBalances, cw20Infos } =
-      useCw20AddressesBalancesAndInfos()
-    const cw20Balances = useMemo(
-      () =>
-        cw20AddressesAndBalances.map(({ addr, balance }, idx) => ({
-          address: addr,
-          balance,
-          info: cw20Infos[idx],
-        })),
-      [cw20AddressesAndBalances, cw20Infos]
-    )
+    // Undefined when loading.
+    const cw20LoadingBalances = useCw20BalancesAndInfos()
 
     return (
       <SuspenseLoader
         fallback={<ActionCardLoader Loader={Loader} />}
-        forceFallback={nativeBalancesLoadable.loading}
+        forceFallback={
+          nativeBalancesLoadable.loading || cw20LoadingBalances === undefined
+        }
       >
         <StatelessSpendComponent
           {...props}
@@ -111,7 +112,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
             nativeBalances: nativeBalancesLoadable.loading
               ? []
               : nativeBalancesLoadable.data,
-            cw20Balances,
+            cw20Balances: cw20LoadingBalances ?? [],
           }}
         />
       </SuspenseLoader>
@@ -129,16 +130,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
   }
 
   const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
-    const { cw20AddressesAndBalances, cw20Infos } =
-      useCw20AddressesBalancesAndInfos()
-    const cw20Tokens = useMemo(
-      () =>
-        cw20AddressesAndBalances.map(({ addr }, idx) => ({
-          address: addr,
-          info: cw20Infos[idx],
-        })),
-      [cw20AddressesAndBalances, cw20Infos]
-    )
+    const cw20Tokens = useCw20BalancesAndInfos()
 
     return useCallback(
       (data: SpendData) => {
@@ -153,7 +145,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
         }
 
         // Get cw20 token decimals from cw20 treasury list.
-        const cw20TokenInfo = cw20Tokens.find(
+        const cw20TokenInfo = cw20Tokens?.find(
           ({ address }) => address === data.denom
         )?.info
         if (!cw20TokenInfo) {

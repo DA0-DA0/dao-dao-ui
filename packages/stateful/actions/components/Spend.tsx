@@ -120,22 +120,25 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     // clearing errors unless already set.
     const currentError = errors?._error
 
-    if ((!spendDenom || !spendAmount) && currentError) {
-      clearErrors(fieldNamePrefix + '_error')
+    if (!spendDenom || !spendAmount) {
+      if (currentError) {
+        clearErrors(fieldNamePrefix + '_error')
+      }
       return
     }
 
     const validation = validatePossibleSpend(spendDenom, spendAmount)
-    if (validation === true && currentError) {
-      clearErrors(fieldNamePrefix + '_error')
-    } else if (
-      typeof validation === 'string' &&
-      (!currentError || currentError.message !== validation)
-    ) {
-      setError(fieldNamePrefix + '_error', {
-        type: 'custom',
-        message: validation,
-      })
+    if (validation === true) {
+      if (currentError) {
+        clearErrors(fieldNamePrefix + '_error')
+      }
+    } else if (typeof validation === 'string') {
+      if (!currentError || currentError.message !== validation) {
+        setError(fieldNamePrefix + '_error', {
+          type: 'custom',
+          message: validation,
+        })
+      }
     }
   }, [
     spendAmount,

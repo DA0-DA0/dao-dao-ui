@@ -373,9 +373,10 @@ export const allCw20TokenListSelector = selectorFamily<
 })
 
 const CW20_BALANCES_LIMIT = 10
-export const allCw20BalancesSelector = selectorFamily<
+export const allCw20BalancesAndInfosSelector = selectorFamily<
   (Cw20BalancesResponse[number] & {
     isGovernanceToken: boolean
+    info: TokenInfoResponse
   })[],
   QueryClientParams & {
     governanceTokenAddress?: string
@@ -434,8 +435,23 @@ export const allCw20BalancesSelector = selectorFamily<
         })
       }
 
-      return balances.map((balance) => ({
+      const infos = get(
+        waitForAll(
+          balances.map(({ addr }) =>
+            Cw20BaseSelectors.tokenInfoSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
+              contractAddress: addr,
+              params: [],
+            })
+          )
+        )
+      )
+
+      return balances.map((balance, index) => ({
         ...balance,
+        info: infos[index],
         isGovernanceToken:
           !!governanceTokenAddress && governanceTokenAddress === balance.addr,
       }))
@@ -460,7 +476,7 @@ export const cw20BalancesInfoSelector = selectorFamily<
     ({ governanceTokenAddress, ...queryClientParams }) =>
     async ({ get }) => {
       const cw20List = get(
-        allCw20BalancesSelector({
+        allCw20BalancesAndInfosSelector({
           ...queryClientParams,
           governanceTokenAddress,
         })
