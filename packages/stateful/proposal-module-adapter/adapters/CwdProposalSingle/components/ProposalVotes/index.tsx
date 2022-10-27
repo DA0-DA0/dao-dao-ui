@@ -36,7 +36,7 @@ export const ProposalVotes = () => {
   const [canLoadMore, setCanLoadMore] = useState(true)
   const loadMore = useRecoilCallback(
     ({ snapshot }) =>
-      async () => {
+      async (reset = false) => {
         setLoading(true)
         try {
           const newVotes = (
@@ -46,7 +46,10 @@ export const ProposalVotes = () => {
                 params: [
                   {
                     proposalId: proposalNumber,
-                    startAfter: votes[votes.length - 1]?.voterAddress,
+                    // If resetting, start at beginning.
+                    startAfter: reset
+                      ? undefined
+                      : votes[votes.length - 1]?.voterAddress,
                     limit: VOTE_LIMIT,
                   },
                 ],
@@ -59,7 +62,8 @@ export const ProposalVotes = () => {
           setCanLoadMore(newVotes.length === 30)
 
           setVotes((votes) => [
-            ...votes,
+            // If resetting, don't include old votes.
+            ...(reset ? [] : votes),
             ...newVotes.map(
               ({ vote, voter, power }): ProposalVote => ({
                 voterAddress: voter,
@@ -92,8 +96,7 @@ export const ProposalVotes = () => {
 
   // Load more on mount and when refresh ID changes.
   useEffect(() => {
-    setVotes([])
-    loadMore()
+    loadMore(true)
     // Only execute when refresh ID changes, not instance of loadMore function.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshProposalId])

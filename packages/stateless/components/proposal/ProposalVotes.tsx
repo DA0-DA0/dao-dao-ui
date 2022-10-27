@@ -122,7 +122,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
             <Button
               className="secondary"
               loading={loadingMore}
-              onClick={loadMore}
+              onClick={() => loadMore()}
             >
               {t('button.loadMore')}
             </Button>
