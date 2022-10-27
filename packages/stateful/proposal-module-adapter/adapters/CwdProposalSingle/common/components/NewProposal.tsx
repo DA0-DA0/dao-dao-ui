@@ -238,19 +238,23 @@ export const NewProposal = ({
 
         setLoading(true)
 
-        try {
-          // Throws error if simulation fails, indicating invalid message.
-          await simulateMsgs(newProposalData.msgs)
-        } catch (err) {
-          console.error(err)
-          toast.error(
-            `${t('error.invalidProposalActions')} ${
-              // Don't send to Sentry, but still format SDK errors nicely.
-              processError(err, { forceCapture: false })
-            }`
-          )
-          setLoading(false)
-          return
+        // Only simulate messages if any exist. Allow proposals without
+        // messages.
+        if (newProposalData.msgs.length > 0) {
+          try {
+            // Throws error if simulation fails, indicating invalid message.
+            await simulateMsgs(newProposalData.msgs)
+          } catch (err) {
+            console.error(err)
+            toast.error(
+              `${t('error.invalidProposalActions')} ${
+                // Don't send to Sentry, but still format SDK errors nicely.
+                processError(err, { forceCapture: false })
+              }`
+            )
+            setLoading(false)
+            return
+          }
         }
 
         // Increase CW20 deposit token allowance if necessary.

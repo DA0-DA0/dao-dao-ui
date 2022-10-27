@@ -305,6 +305,11 @@ const InnerProposalCreate = () => {
   // these messages from the DAO core address.
   const simulateMsgs = useCallback(
     async (msgs: CosmosMsgFor_Empty[]): Promise<void> => {
+      // If no messages, nothing to simulate.
+      if (msgs.length === 0) {
+        return
+      }
+
       // Need signing client to access protobuf type registry.
       if (!signingCosmWasmClient) {
         throw new Error(t('error.connectWalletToContinue'))
