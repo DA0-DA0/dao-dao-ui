@@ -236,7 +236,7 @@ export const Wallet = ({
 
               <div className="flex flex-row items-center justify-end gap-2">
                 <Button
-                  disabled={loading}
+                  disabled={loading || proposalActionData.length === 0}
                   type="submit"
                   value={SubmitValue.Preview}
                   variant="secondary"
@@ -260,7 +260,7 @@ export const Wallet = ({
                   }
                 >
                   <Button
-                    disabled={!connected}
+                    disabled={!connected || proposalActionData.length === 0}
                     loading={loading}
                     type="submit"
                     value={SubmitValue.Submit}

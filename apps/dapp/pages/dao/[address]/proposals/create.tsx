@@ -2,6 +2,14 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
+import { SignMode } from 'interchain-rpc/main/codegen/cosmos/tx/signing/v1beta1/signing'
+import { SimulateRequest } from 'interchain-rpc/main/codegen/cosmos/tx/v1beta1/service'
+import {
+  AuthInfo,
+  Fee,
+  Tx,
+  TxBody,
+} from 'interchain-rpc/main/codegen/cosmos/tx/v1beta1/tx'
 import cloneDeep from 'lodash.clonedeep'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -9,9 +17,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
+  cosmosRpcClientForChainSelector,
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
   refreshProposalsIdAtom,
@@ -38,10 +47,11 @@ import {
 } from '@dao-dao/stateless'
 import {
   BaseNewProposalProps,
+  CosmosMsgFor_Empty,
   ProposalDraft,
   ProposalPrefill,
 } from '@dao-dao/types'
-import { SITE_URL } from '@dao-dao/utils'
+import { SITE_URL, cwMsgToEncodeObject } from '@dao-dao/utils'
 
 import { ProfileNewProposalCard } from '@/components'
 
@@ -56,7 +66,7 @@ const InnerProposalCreate = () => {
   const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
     fetchMembership: true,
   })
-  const { connected, status } = useWallet()
+  const { connected, status, signingCosmWasmClient } = useWallet()
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(
     // Default to single choice proposal module or first otherwise.
@@ -280,6 +290,58 @@ const InnerProposalCreate = () => {
     ]
   )
 
+  const cosmosRpcClient = useRecoilValue(
+    cosmosRpcClientForChainSelector(daoInfo.chainId)
+  )
+  // Simulate executing Cosmos messages on-chain to check errors before a
+  // proposal is created. We can't just use the simulate function on
+  // SigningCosmWasmClient or SigningStargateClient because they include signer
+  // info from the wallet. We want to simulate these messages coming from the
+  // DAO, so we don't want wallet signing info included. Those simulate
+  // functions internally call this function:
+  // https://github.com/cosmos/cosmjs/blob/2c3b27eeb3622a6108086267ba6faf3984251be3/packages/stargate/src/modules/tx/queries.ts#L47
+  // We can copy this simulate function and leave out the wallet-specific fields
+  // (i.e. sequence) and unnecessary fields (i.e. publicKey, memo) to simulate
+  // these messages from the DAO core address.
+  const simulateMsgs = useCallback(
+    async (msgs: CosmosMsgFor_Empty[]): Promise<void> => {
+      // Need signing client to access protobuf type registry.
+      if (!signingCosmWasmClient) {
+        throw new Error(t('error.connectWalletToContinue'))
+      }
+
+      const encodeObjects = msgs.map((msg) => {
+        const encoded = cwMsgToEncodeObject(msg, daoInfo.coreAddress)
+        return signingCosmWasmClient.registry.encodeAsAny(encoded)
+      })
+
+      const tx = Tx.fromPartial({
+        authInfo: AuthInfo.fromPartial({
+          fee: Fee.fromPartial({}),
+          signerInfos: [
+            {
+              modeInfo: {
+                single: { mode: SignMode.SIGN_MODE_UNSPECIFIED },
+              },
+            },
+          ],
+        }),
+        body: TxBody.fromPartial({
+          messages: encodeObjects,
+          memo: '',
+        }),
+        signatures: [new Uint8Array()],
+      })
+
+      const request = SimulateRequest.fromPartial({
+        txBytes: Tx.encode(tx).finish(),
+      })
+
+      await cosmosRpcClient.tx.v1beta1.simulate(request)
+    },
+    [cosmosRpcClient.tx.v1beta1, daoInfo.coreAddress, signingCosmWasmClient, t]
+  )
+
   return (
     <FormProvider {...formMethods}>
       <CreateProposal
@@ -297,6 +359,7 @@ const InnerProposalCreate = () => {
               loadDraft={loadDraft}
               onCreateSuccess={onCreateSuccess}
               saveDraft={saveDraft}
+              simulateMsgs={simulateMsgs}
               unloadDraft={unloadDraft}
             />
           </SuspenseLoader>

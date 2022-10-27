@@ -63,6 +63,7 @@ export type NewProposalProps = BaseNewProposalProps<NewProposalForm> &
 
 export const NewProposal = ({
   onCreateSuccess,
+  simulateMsgs,
   options,
   ...props
 }: NewProposalProps) => {
@@ -222,22 +223,39 @@ export const NewProposal = ({
 
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
   const cosmWasmClient = useRecoilValue(
-    cosmWasmClientForChainSelector(undefined)
+    cosmWasmClientForChainSelector(daoInfo.chainId)
   )
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
       async (newProposalData: NewProposalData) => {
         if (!connected || blockHeight === undefined) {
-          throw new Error(t('error.loadingData'))
+          toast.error(t('error.loadingData'))
+          return
         }
 
         setLoading(true)
+
+        try {
+          // Throws error if simulation fails, indicating invalid message.
+          await simulateMsgs(newProposalData.msgs)
+        } catch (err) {
+          console.error(err)
+          toast.error(
+            `${t('error.invalidProposalActions')} ${
+              // Don't send to Sentry, but still format SDK errors nicely.
+              processError(err, { forceCapture: false })
+            }`
+          )
+          setLoading(false)
+          return
+        }
 
         // Increase CW20 deposit token allowance if necessary.
         if (requiredProposalDeposit && depositInfoCw20TokenAddress) {
           // CW20 allowance response must be checked.
           if (!cw20DepositTokenAllowanceResponse) {
-            throw new Error(t('error.loadingData'))
+            toast.error(t('error.loadingData'))
+            return
           }
 
           const remainingAllowanceNeeded =

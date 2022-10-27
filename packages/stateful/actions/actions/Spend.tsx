@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useMemo } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
@@ -6,7 +7,12 @@ import {
   CwdCoreV2Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
-import { SpendEmoji } from '@dao-dao/stateless'
+import {
+  ActionCardLoader,
+  Loader,
+  SpendEmoji,
+  useCachedLoadable,
+} from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -20,11 +26,13 @@ import {
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  loadableToLoadingData,
   makeBankMessage,
   makeWasmMessage,
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
+import { SuspenseLoader } from '../../components'
 import { useCw20GovernanceTokenInfoResponseIfExists } from '../../voting-module-adapter'
 import { SpendComponent as StatelessSpendComponent } from '../components/Spend'
 
@@ -72,8 +80,13 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
     return { cw20AddressesAndBalances, cw20Infos }
   }
 
-  const Component: ActionComponent = (props) => {
-    const nativeBalances = useRecoilValue(nativeBalancesSelector({ address }))
+  const Component: ActionComponent<undefined, SpendData> = (props) => {
+    const nativeBalancesLoadable = loadableToLoadingData(
+      useCachedLoadable(
+        address ? nativeBalancesSelector({ address }) : undefined
+      ),
+      []
+    )
 
     const { cw20AddressesAndBalances, cw20Infos } =
       useCw20AddressesBalancesAndInfos()
@@ -88,21 +101,32 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
     )
 
     return (
-      <StatelessSpendComponent
-        {...props}
-        options={{
-          nativeBalances,
-          cw20Balances,
-        }}
-      />
+      <SuspenseLoader
+        fallback={<ActionCardLoader Loader={Loader} />}
+        forceFallback={nativeBalancesLoadable.loading}
+      >
+        <StatelessSpendComponent
+          {...props}
+          options={{
+            nativeBalances: nativeBalancesLoadable.loading
+              ? []
+              : nativeBalancesLoadable.data,
+            cw20Balances,
+          }}
+        />
+      </SuspenseLoader>
     )
   }
 
-  const useDefaults: UseDefaults<SpendData> = () => ({
-    to: address,
-    amount: 1,
-    denom: NATIVE_DENOM,
-  })
+  const useDefaults: UseDefaults<SpendData> = () => {
+    const { address: walletAddress = '' } = useWallet()
+
+    return {
+      to: walletAddress,
+      amount: 1,
+      denom: NATIVE_DENOM,
+    }
+  }
 
   const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
     const { cw20AddressesAndBalances, cw20Infos } =

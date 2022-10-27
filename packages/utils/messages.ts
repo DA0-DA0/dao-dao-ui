@@ -1,4 +1,4 @@
-import { toAscii, toBase64 } from '@cosmjs/encoding'
+import { fromAscii, fromBase64, toAscii, toBase64 } from '@cosmjs/encoding'
 
 import {
   BankMsg,
@@ -11,7 +11,7 @@ import {
 
 export function parseEncodedMessage(base64String?: string) {
   if (base64String) {
-    const jsonMessage = decodeURIComponent(escape(atob(base64String)))
+    const jsonMessage = fromAscii(fromBase64(base64String))
     if (jsonMessage) {
       return JSON.parse(jsonMessage)
     }
@@ -115,16 +115,16 @@ export const makeWasmMessage = (message: {
   // We need to encode Wasm Execute, Instantiate, and Migrate messages.
   let msg = message
   if (message?.wasm?.execute) {
-    msg.wasm.execute.msg = btoa(
-      unescape(encodeURIComponent(JSON.stringify(message.wasm.execute.msg)))
+    msg.wasm.execute.msg = toBase64(
+      toAscii(JSON.stringify(message.wasm.execute.msg))
     )
   } else if (message?.wasm?.instantiate) {
-    msg.wasm.instantiate.msg = btoa(
-      unescape(encodeURIComponent(JSON.stringify(message.wasm.instantiate.msg)))
+    msg.wasm.instantiate.msg = toBase64(
+      toAscii(JSON.stringify(message.wasm.instantiate.msg))
     )
   } else if (message.wasm.migrate) {
-    msg.wasm.migrate.msg = btoa(
-      unescape(encodeURIComponent(JSON.stringify(message.wasm.migrate.msg)))
+    msg.wasm.migrate.msg = toBase64(
+      toAscii(JSON.stringify(message.wasm.migrate.msg))
     )
   }
   // Messages such as update or clear admin pass through without modification.
