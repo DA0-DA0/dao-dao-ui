@@ -54,9 +54,9 @@ export const ProposalVotes = <Vote extends unknown = any>({
   return (
     <>
       {votes.length > 0 && (
-        <div className="grid-rows-auto grid grid-cols-[1fr_auto_auto] items-center gap-x-8 gap-y-6 xs:grid-cols-[auto_1fr_auto_auto]">
+        <div className="grid-rows-auto grid grid-cols-[minmax(5rem,1fr)_auto_auto] items-center gap-x-8 gap-y-6 overflow-x-auto sm:grid-cols-[auto_minmax(5rem,1fr)_auto_auto]">
           {/* Titles */}
-          <p className="caption-text hidden font-mono font-normal text-text-secondary xs:block">
+          <p className="caption-text hidden font-mono font-normal text-text-secondary sm:block">
             {t('title.when')}
           </p>
           <p className="caption-text font-mono font-normal text-text-secondary">
@@ -75,7 +75,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
               <Fragment key={index}>
                 <p
                   className={clsx(
-                    'caption-text hidden xs:block',
+                    'caption-text hidden sm:block',
                     when ? 'text-text-body' : 'text-text-tertiary'
                   )}
                 >
