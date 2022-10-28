@@ -200,7 +200,7 @@ export interface BaseProposalLineProps {
   LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
-export interface BaseNewProposalProps<FormData = any> {
+export interface BaseNewProposalProps<FormData extends FieldValues = any> {
   onCreateSuccess: (props: ProposalCreatedCardProps) => void
   simulateMsgs: (msgs: CosmosMsgFor_Empty[]) => Promise<void>
   draft?: ProposalDraft<FormData>

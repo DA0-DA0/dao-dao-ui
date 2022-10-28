@@ -1,84 +1,94 @@
-import { selector, selectorFamily, waitForAll } from 'recoil'
+import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
 import { blockHeightTimestampSafeSelector } from '@dao-dao/state'
 import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
+  WithChainId,
 } from '@dao-dao/types'
 import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   CommonProposalListInfo,
   DepositInfoSelector,
-  IProposalModuleAdapterCommonOptions,
-  ReverseProposalInfosSelector,
 } from '@dao-dao/types/proposal-module-adapter'
 
 import { configSelector as configPreProposeSelector } from '../contracts/CwdPreProposeSingle.recoil'
 import { reverseProposalsSelector } from '../contracts/CwdProposalSingle.common.recoil'
 import { configSelector as configV1Selector } from '../contracts/CwProposalSingle.v1.recoil'
 
-export const makeReverseProposalInfos = ({
-  chainId,
-  proposalModule: { address, prefix },
-}: IProposalModuleAdapterCommonOptions): ReverseProposalInfosSelector =>
-  selectorFamily({
-    // Unique for inputs.
-    key: `cwdProposalSingleReverseProposalInfos_${address}_${prefix}`,
-    get:
-      ({ startBefore, limit }) =>
-      async ({ get }) => {
-        const proposalResponses = get(
-          reverseProposalsSelector({
-            contractAddress: address,
-            chainId,
-            params: [
-              {
-                startBefore,
-                limit,
-              },
-            ],
-          })
-        ).proposals
+export const reverseProposalInfosSelector: (
+  info: WithChainId<{
+    proposalModuleAddress: string
+    proposalModulePrefix: string
+    startBefore: number | undefined
+    limit: number | undefined
+  }>
+) => RecoilValueReadOnly<CommonProposalListInfo[]> = selectorFamily({
+  key: 'cwdProposalSingleReverseProposalInfos',
+  get:
+    ({
+      chainId,
+      proposalModuleAddress,
+      proposalModulePrefix,
+      startBefore,
+      limit,
+    }) =>
+    async ({ get }) => {
+      const proposalResponses = get(
+        reverseProposalsSelector({
+          contractAddress: proposalModuleAddress,
+          chainId,
+          params: [
+            {
+              startBefore,
+              limit,
+            },
+          ],
+        })
+      ).proposals
 
-        const timestamps = get(
-          waitForAll(
-            proposalResponses.map(({ proposal: { start_height } }) =>
-              blockHeightTimestampSafeSelector({
-                blockHeight: start_height,
-                chainId,
-              })
-            )
+      const timestamps = get(
+        waitForAll(
+          proposalResponses.map(({ proposal: { start_height } }) =>
+            blockHeightTimestampSafeSelector({
+              blockHeight: start_height,
+              chainId,
+            })
           )
         )
+      )
 
-        const proposalInfos: CommonProposalListInfo[] = proposalResponses.map(
-          ({ id, proposal: { status } }, index) => ({
-            id: `${prefix}${id}`,
-            proposalNumber: id,
-            timestamp: timestamps[index],
-            isOpen: status === Status.Open,
-          })
-        )
+      const proposalInfos: CommonProposalListInfo[] = proposalResponses.map(
+        ({ id, proposal: { status } }, index) => ({
+          id: `${proposalModulePrefix}${id}`,
+          proposalNumber: id,
+          timestamp: timestamps[index],
+          isOpen: status === Status.Open,
+        })
+      )
 
-        return proposalInfos
-      },
-  })
+      return proposalInfos
+    },
+})
 
-export const makeDepositInfo = ({
-  chainId,
-  proposalModule: { address, version, preProposeAddress },
-}: IProposalModuleAdapterCommonOptions): DepositInfoSelector =>
-  selector({
-    // Unique for inputs.
-    key: `cwdProposalSingleDepositInfo_${address}_${version}_${preProposeAddress}`,
-    get: ({ get }) => {
+export const makeDepositInfoSelector: (
+  info: WithChainId<{
+    proposalModuleAddress: string
+    version: ContractVersion | null
+    preProposeAddress: string | null
+  }>
+) => DepositInfoSelector = selectorFamily({
+  key: 'cwdProposalSingleDepositInfo',
+  get:
+    ({ chainId, proposalModuleAddress, version, preProposeAddress }) =>
+    ({ get }) => {
       let depositInfo: CheckedDepositInfo | undefined
       //! V1
       if (version === ContractVersion.V0_1_0) {
         const config = get(
           configV1Selector({
-            contractAddress: address,
+            contractAddress: proposalModuleAddress,
             chainId,
           })
         )
@@ -110,4 +120,4 @@ export const makeDepositInfo = ({
 
       return depositInfo
     },
-  })
+})

@@ -31,6 +31,7 @@ import {
   ActionKey,
   BaseNewProposalProps,
   ContractVersion,
+  DepositInfoSelector,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
@@ -53,19 +54,21 @@ import {
   makeUseActions as makeUseProposalModuleActions,
   useProcessTQ,
 } from '../hooks'
-import { makeDepositInfo } from '../selectors'
 import {
   NewProposal as StatelessNewProposal,
   NewProposalProps as StatelessNewProposalProps,
 } from '../ui/NewProposal'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> &
-  Pick<StatelessNewProposalProps, 'options'>
+  Pick<StatelessNewProposalProps, 'options'> & {
+    depositInfoSelector: DepositInfoSelector
+  }
 
 export const NewProposal = ({
   onCreateSuccess,
   simulateMsgs,
   options,
+  depositInfoSelector,
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
@@ -120,7 +123,7 @@ export const NewProposal = ({
 
   const formMethods = useFormContext<NewProposalForm>()
 
-  const depositInfo = useRecoilValue(makeDepositInfo(options))
+  const depositInfo = useRecoilValue(depositInfoSelector)
   const depositInfoCw20TokenAddress =
     depositInfo?.denom && 'cw20' in depositInfo.denom
       ? depositInfo.denom.cw20

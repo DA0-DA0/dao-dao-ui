@@ -10,6 +10,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import { ProfileNewProposalCardInfoLine } from '@dao-dao/stateless'
 import {
+  DepositInfoSelector,
   DepositRefundPolicy,
   IProposalModuleAdapterCommonOptions,
 } from '@dao-dao/types'
@@ -20,23 +21,22 @@ import {
 } from '@dao-dao/utils'
 
 import { configSelector } from '../../contracts/CwdProposalSingle.common.recoil'
-import { makeDepositInfo } from '../selectors'
 import { useProcessTQ } from './useProcessTQ'
 
-export const makeUseProfileNewProposalCardInfoLines = (
-  options: IProposalModuleAdapterCommonOptions
-) => {
-  const {
-    proposalModule: { address },
-  } = options
-  const depositInfoSelector = makeDepositInfo(options)
-
-  return (): ProfileNewProposalCardInfoLine[] => {
+export const makeUseProfileNewProposalCardInfoLines =
+  ({
+    options,
+    depositInfoSelector,
+  }: {
+    options: IProposalModuleAdapterCommonOptions
+    depositInfoSelector: DepositInfoSelector
+  }) =>
+  (): ProfileNewProposalCardInfoLine[] => {
     const { t } = useTranslation()
 
     const config = useRecoilValue(
       configSelector({
-        contractAddress: address,
+        contractAddress: options.proposalModule.address,
       })
     )
     const depositInfo = useRecoilValue(depositInfoSelector)
@@ -116,4 +116,3 @@ export const makeUseProfileNewProposalCardInfoLines = (
         : []),
     ]
   }
-}
