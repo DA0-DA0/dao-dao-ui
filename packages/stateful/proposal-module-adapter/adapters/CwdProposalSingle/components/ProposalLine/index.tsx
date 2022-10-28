@@ -1,3 +1,4 @@
+import { useVotingModule } from '@dao-dao/state/hooks'
 import { ProposalLine as StatelessProposalLine } from '@dao-dao/stateless'
 import { BaseProposalLineProps } from '@dao-dao/types'
 import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
@@ -13,12 +14,16 @@ import { ProposalStatus } from './ProposalStatus'
 
 export const ProposalLine = (props: BaseProposalLineProps) => {
   const {
+    coreAddress,
     proposalModule: { prefix: proposalPrefix },
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
   const proposal = useProposal()
-  const { canVote, vote } = useWalletVoteInfo()
+  const { isMember = false } = useVotingModule(coreAddress, {
+    fetchMembership: true,
+  })
+  const { couldVote, canVote, vote } = useWalletVoteInfo()
   const timestampDisplay = useTimestampDisplay()
 
   return (
@@ -30,11 +35,22 @@ export const ProposalLine = (props: BaseProposalLineProps) => {
       proposalPrefix={proposalPrefix}
       timestampDisplay={timestampDisplay?.content ?? ''}
       title={proposal.title}
-      // Even if no vote, display pending if can vote. If can't vote and didn't
-      // vote, show nothing.
+      // Show vote if they are a member of the DAO or if they could vote on this
+      // proposal. This ensures that someone who is part of the DAO sees their
+      // votes on every proposal (for visual consistency and reassurance), even
+      // 'None' for proposals they were unable to vote on due to previously not
+      // being part of the DAO. This also ensures that someone who is no longer
+      // part of the DAO can still see their past votes.
       vote={
-        (vote || canVote) && (
-          <ProposalWalletVote fallback="pending" vote={vote} />
+        (isMember || couldVote) && (
+          <ProposalWalletVote
+            fallback={
+              // If did not vote, display pending or none based on if they are
+              // currently able to vote.
+              canVote ? 'pending' : 'none'
+            }
+            vote={vote}
+          />
         )
       }
       votingOpen={proposal.status === Status.Open}
