@@ -49,46 +49,30 @@ const InnerStakingModal = ({
   const {
     governanceTokenAddress,
     governanceTokenInfo,
-    walletBalance: unstakedBalance,
+    loadingWalletBalance: loadingUnstakedBalance,
   } = useGovernanceTokenInfo({
-    fetchWalletBalance: true,
+    fetchLoadingWalletBalance: true,
   })
   const {
     unstakingDuration,
     refreshTotals,
     sumClaimsAvailable,
-    walletStakedValue,
-    totalStakedValue,
+    loadingWalletStakedValue,
     refreshClaims,
   } = useStakingInfo({
     fetchClaims: true,
-    fetchWalletStakedValue: true,
-    fetchTotalStakedValue: true,
+    fetchLoadingWalletStakedValue: true,
   })
 
   if (
     sumClaimsAvailable === undefined ||
-    unstakedBalance === undefined ||
-    walletStakedValue === undefined ||
-    totalStakedValue === undefined
+    loadingUnstakedBalance === undefined ||
+    loadingWalletStakedValue === undefined
   ) {
     throw new Error(t('error.loadingData'))
   }
 
-  // When staking, default to all unstaked balance (less proposal deposit if
-  // exists).
-  const [amount, setAmount] = useState(
-    initialMode === StakingMode.Stake
-      ? convertMicroDenomToDenomWithDecimals(
-          !!maxDeposit &&
-            Number(maxDeposit) > 0 &&
-            unstakedBalance > Number(maxDeposit)
-            ? unstakedBalance - Number(maxDeposit)
-            : unstakedBalance,
-          governanceTokenInfo.decimals
-        )
-      : 0
-  )
+  const [amount, setAmount] = useState(0)
 
   const doStake = CwdVotingNativeStakedHooks.useStake({
     contractAddress: votingModuleAddress,
@@ -111,6 +95,7 @@ const InnerStakingModal = ({
   const onAction = async (mode: StakingMode, amount: number) => {
     if (!connected) {
       toast.error(t('error.connectWalletToContinue'))
+      return
     }
 
     setStakingLoading(true)
@@ -244,6 +229,28 @@ const InnerStakingModal = ({
       error={connected ? undefined : t('error.connectWalletToContinue')}
       initialMode={initialMode}
       loading={stakingLoading}
+      loadingStakableTokens={
+        loadingUnstakedBalance.loading
+          ? { loading: true }
+          : {
+              loading: false,
+              data: convertMicroDenomToDenomWithDecimals(
+                loadingUnstakedBalance.data,
+                governanceTokenInfo.decimals
+              ),
+            }
+      }
+      loadingUnstakableTokens={
+        loadingWalletStakedValue.loading
+          ? { loading: true }
+          : {
+              loading: false,
+              data: convertMicroDenomToDenomWithDecimals(
+                loadingWalletStakedValue.data,
+                governanceTokenInfo.decimals
+              ),
+            }
+      }
       onAction={onAction}
       onClose={onClose}
       proposalDeposit={
@@ -255,16 +262,8 @@ const InnerStakingModal = ({
           : undefined
       }
       setAmount={(newAmount) => setAmount(newAmount)}
-      stakableTokens={convertMicroDenomToDenomWithDecimals(
-        unstakedBalance,
-        governanceTokenInfo.decimals
-      )}
       tokenDecimals={governanceTokenInfo.decimals}
       tokenSymbol={governanceTokenInfo.symbol}
-      unstakableTokens={convertMicroDenomToDenomWithDecimals(
-        walletStakedValue,
-        governanceTokenInfo.decimals
-      )}
       unstakingDuration={unstakingDuration ?? null}
     />
   )

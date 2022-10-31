@@ -10,7 +10,7 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '@dao-dao/types'
-import { claimAvailable } from '@dao-dao/utils'
+import { claimAvailable, loadableToLoadingData } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
@@ -18,6 +18,7 @@ export const useStakingInfo = ({
   fetchClaims = false,
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
+  fetchLoadingWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
@@ -89,6 +90,17 @@ export const useStakingInfo = ({
         })
       : constSelector(undefined)
   )?.power
+  const loadingWalletStakedValue = loadableToLoadingData(
+    useCachedLoadable(
+      fetchLoadingWalletStakedValue && walletAddress
+        ? CwdVotingNativeStakedSelectors.votingPowerAtHeightSelector({
+            contractAddress: votingModuleAddress,
+            params: [{ address: walletAddress }],
+          })
+        : constSelector(undefined)
+    ),
+    undefined
+  )
 
   return {
     stakingContractAddress: '',
@@ -103,12 +115,18 @@ export const useStakingInfo = ({
     claimsAvailable,
     sumClaimsAvailable,
     // Total staked value
-    totalStakedValue: fetchTotalStakedValue
-      ? Number(totalStakedValue)
-      : undefined,
+    totalStakedValue: totalStakedValue ? Number(totalStakedValue) : undefined,
     // Wallet staked value
-    walletStakedValue: fetchWalletStakedValue
+    walletStakedValue: walletStakedValue
       ? Number(walletStakedValue)
       : undefined,
+    loadingWalletStakedValue: loadingWalletStakedValue.loading
+      ? { loading: true }
+      : !loadingWalletStakedValue.data
+      ? undefined
+      : {
+          loading: false,
+          data: Number(loadingWalletStakedValue.data.value),
+        },
   }
 }

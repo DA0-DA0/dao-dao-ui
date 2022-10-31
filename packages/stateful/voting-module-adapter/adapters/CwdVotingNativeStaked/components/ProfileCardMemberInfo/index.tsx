@@ -50,9 +50,9 @@ export const ProfileCardMemberInfo = ({
   const {
     governanceTokenAddress,
     governanceTokenInfo,
-    walletBalance: unstakedBalance,
+    loadingWalletBalance: loadingUnstakedBalance,
   } = useGovernanceTokenInfo({
-    fetchWalletBalance: true,
+    fetchLoadingWalletBalance: true,
   })
 
   const {
@@ -61,12 +61,12 @@ export const ProfileCardMemberInfo = ({
     claimsPending,
     claimsAvailable,
     sumClaimsAvailable,
-    walletStakedValue,
+    loadingWalletStakedValue,
     totalStakedValue,
     refreshClaims,
   } = useStakingInfo({
     fetchClaims: true,
-    fetchWalletStakedValue: true,
+    fetchLoadingWalletStakedValue: true,
     fetchTotalStakedValue: true,
   })
 
@@ -74,8 +74,8 @@ export const ProfileCardMemberInfo = ({
     claimsPending === undefined ||
     claimsAvailable === undefined ||
     sumClaimsAvailable === undefined ||
-    unstakedBalance === undefined ||
-    walletStakedValue === undefined ||
+    loadingUnstakedBalance === undefined ||
+    loadingWalletStakedValue === undefined ||
     totalStakedValue === undefined
   ) {
     throw new Error(t('error.loadingData'))
@@ -203,27 +203,48 @@ export const ProfileCardMemberInfo = ({
               )}&to=${governanceTokenPoolSymbol}`
             : undefined
         }
+        loadingStakedTokens={
+          loadingWalletStakedValue.loading
+            ? { loading: true }
+            : {
+                loading: false,
+                data: convertMicroDenomToDenomWithDecimals(
+                  loadingWalletStakedValue.data,
+                  governanceTokenInfo.decimals
+                ),
+              }
+        }
+        loadingUnstakedTokens={
+          loadingUnstakedBalance.loading
+            ? { loading: true }
+            : {
+                loading: false,
+                data: convertMicroDenomToDenomWithDecimals(
+                  loadingUnstakedBalance.data,
+                  governanceTokenInfo.decimals
+                ),
+              }
+        }
+        loadingVotingPower={
+          loadingWalletStakedValue.loading
+            ? { loading: true }
+            : {
+                loading: false,
+                data: (loadingWalletStakedValue.data / totalStakedValue) * 100,
+              }
+        }
         onClaim={onClaim}
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => refreshClaims?.()}
-        stakedTokens={convertMicroDenomToDenomWithDecimals(
-          walletStakedValue,
-          governanceTokenInfo.decimals
-        )}
         stakingLoading={stakingLoading}
         tokenDecimals={governanceTokenInfo.decimals}
         tokenSymbol={governanceTokenInfo.symbol}
-        unstakedTokens={convertMicroDenomToDenomWithDecimals(
-          unstakedBalance,
-          governanceTokenInfo.decimals
-        )}
         unstakingDurationSeconds={
           (unstakingDuration &&
             durationToSeconds(blocksPerYear, unstakingDuration)) ||
           undefined
         }
         unstakingTasks={unstakingTasks}
-        votingPower={(walletStakedValue / totalStakedValue) * 100}
         {...props}
       />
     </>

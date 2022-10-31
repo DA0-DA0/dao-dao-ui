@@ -30,10 +30,10 @@ export const makeProps = (
   stakingLoading: false,
   onClaim: () => alert('claim'),
   onStake: () => alert('stake'),
-  stakedTokens: stakedTokens ?? 50,
+  loadingStakedTokens: { loading: false, data: stakedTokens ?? 50 },
   tokenDecimals: 6,
   tokenSymbol: 'DOG',
-  unstakedTokens: 45.413,
+  loadingUnstakedTokens: { loading: false, data: 45.413 },
   unstakingDurationSeconds: 28 * 24 * 3600,
   unstakingTasks: unstakingTasks ?? [
     makeUnstakingLineProps(UnstakingTaskStatus.ReadyToClaim, 'DOG').task,
@@ -41,7 +41,7 @@ export const makeProps = (
     makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
     makeUnstakingLineProps(UnstakingTaskStatus.Unstaking, 'DOG').task,
   ],
-  votingPower: 34.2,
+  loadingVotingPower: { loading: false, data: 34.2 },
   refreshUnstakingTasks: () => console.log('refresh unstaking tasks'),
 })
 
@@ -49,8 +49,8 @@ export const makeCantVoteOnProposalProps = (
   ...params: Parameters<typeof makeProps>
 ): ProfileCardMemberInfoTokensProps => ({
   ...makeProps(...params),
-  stakedTokens: 0,
-  votingPower: 0,
+  loadingStakedTokens: { loading: false, data: 0 },
+  loadingVotingPower: { loading: false, data: 0 },
   cantVoteOnProposal: true,
   junoswapHref: 'https://junoswap.com',
 })
@@ -64,11 +64,19 @@ Default.parameters = {
   },
 }
 
+export const Loading = Template.bind({})
+Loading.args = {
+  ...makeProps(),
+  loadingStakedTokens: { loading: true },
+  loadingUnstakedTokens: { loading: true },
+  loadingVotingPower: { loading: true },
+}
+
 export const NotMember = Template.bind({})
 NotMember.args = {
   ...makeProps(),
-  stakedTokens: 0,
-  votingPower: 0,
+  loadingStakedTokens: { loading: false, data: 0 },
+  loadingVotingPower: { loading: false, data: 0 },
   junoswapHref: 'https://junoswap.com',
 }
 NotMember.parameters = {
