@@ -94,7 +94,7 @@ export const DefaultArgs: NavigationProps = {
           },
           {
             coreAddress: 'pool',
-            name: 'Pool distribution',
+            name: 'Pool distribution super duper long name',
             imageUrl: '/placeholders/4.svg',
             subdaos: [
               {

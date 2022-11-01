@@ -66,7 +66,7 @@ export const DaoDropdown = ({
           ></div>
         ))}
 
-        <div className="ml-2 flex grow flex-row items-center gap-2">
+        <div className="ml-2 flex grow flex-row items-center gap-2 overflow-hidden">
           <div className="flex h-6 w-6 shrink-0 items-center justify-center">
             {(showSubdaos && subdaos?.length) || content ? (
               <DropdownIconButton
@@ -80,12 +80,12 @@ export const DaoDropdown = ({
           </div>
 
           <LinkWrapper
-            className="flex grow flex-row items-center gap-2 py-2 transition-opacity hover:opacity-70 active:opacity-60"
+            className="flex grow flex-row items-center gap-2 overflow-hidden py-2 transition-opacity hover:opacity-70 active:opacity-60"
             href={`/dao/${coreAddress}`}
           >
             <img alt="" className="h-5 w-5 rounded-full" src={imageUrl} />
 
-            <p className="link-text text-text-body">{name}</p>
+            <p className="link-text truncate text-text-body">{name}</p>
           </LinkWrapper>
         </div>
       </div>
