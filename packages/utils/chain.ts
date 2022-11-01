@@ -1,8 +1,20 @@
 import { ChainInfoID, ChainInfoMap } from '@noahsaso/cosmodal'
 
-import { CHAIN_ID } from './constants'
+import {
+  CHAIN_ID,
+  CHAIN_RPC_ENDPOINT,
+  STARGAZE_RPC_ENDPOINT,
+} from './constants'
 
 export const getRpcForChainId = (chainId: string): string => {
+  // Override from environment variables. Matched in
+  // @dao-dao/stateful/components/WalletProvider.tsx
+  if (chainId === CHAIN_ID) {
+    return CHAIN_RPC_ENDPOINT
+  } else if (chainId === ChainInfoID.Stargaze1) {
+    return STARGAZE_RPC_ENDPOINT
+  }
+
   if (!(chainId in ChainInfoMap)) {
     throw new Error(`Unknown chain ID "${chainId}"`)
   }

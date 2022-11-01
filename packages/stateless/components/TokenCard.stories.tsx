@@ -77,14 +77,19 @@ export const makeProps = (crown = false): TokenCardProps => {
     subtitle: 'Juno Network',
     unstakedBalance,
     tokenDecimals: 6,
-    usdcUnitPrice: 5.38,
     hasStakingInfo: true,
-    lazyStakingInfo: {
+    lazyInfo: {
       loading: false,
       data: {
-        unstakingTasks: makeUnstakingModalProps('JUNO').tasks,
-        unstakingDurationSeconds: 28 * 24 * 3600,
-        stakes,
+        usdcUnitPrice: {
+          price: 5.38,
+          timestamp: new Date(),
+        },
+        stakingInfo: {
+          unstakingTasks: makeUnstakingModalProps('JUNO').tasks,
+          unstakingDurationSeconds: 28 * 24 * 3600,
+          stakes,
+        },
       },
     },
     onAddToken: () => toast.success('added'),
@@ -107,5 +112,5 @@ Default.parameters = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...makeProps(),
-  lazyStakingInfo: { loading: true },
+  lazyInfo: { loading: true },
 }

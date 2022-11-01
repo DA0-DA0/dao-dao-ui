@@ -18,7 +18,7 @@ const Template: ComponentStory<typeof PercentButton> = (args) => {
 export const Default = Template.bind({})
 Default.args = {
   label: '25%',
-  max: 1234,
+  loadingMax: { loading: false, data: 1234 },
   percent: 0.25,
   tokenDecimals: 6,
 }

@@ -8,7 +8,7 @@
   "dependencies": {},
   "devDependencies": {
     "@dao-dao/config": "2.0.1",
-    "@noahsaso/cosmodal": "0.7.1",
+    "@noahsaso/cosmodal": "^0.8.0",
     "next-i18next": "^11.0.0",
     "react": "18.1.0",
     "react-hook-form": "7.20.4",

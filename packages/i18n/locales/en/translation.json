@@ -50,6 +50,7 @@
     "numProposalsInInbox_one": "{{count}} Proposal in Inbox",
     "numProposalsInInbox_other": "{{count}} Proposals in Inbox",
     "numProposalsInInbox_zero": "Proposal Inbox",
+    "openInChainExplorer": "Open in chain explorer",
     "openInDestination": "Open in {{destination}}",
     "preview": "Preview",
     "proposeUpgrade": "Propose upgrade",
@@ -145,6 +146,7 @@
     "invalidDuplicateFound": "Invalid. Duplicate found in other list.",
     "invalidExecuteMessage": "Invalid execute message",
     "invalidMessage": "Invalid message",
+    "invalidProposalActions": "Invalid proposal actions.",
     "loadingData": "Failed to load data.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
     "nameIncorrectLength": "A DAO's name must be between {{min}} and {{max}} characters.",
@@ -390,7 +392,11 @@
     "unstakingDurationExplanation": "It takes {{duration}} to unstake tokens.",
     "unstakingDurationNoneExplanation": "Your tokens will unstake immediately.",
     "unstakingMechanics": "It will take {{humanReadableTime}} from the time you unstake your tokens before they are able to be redeemed by you. During that time, you will not receive staking rewards. You will not be able to cancel the unbonding.",
-    "unstakingStatus": {},
+    "unstakingStatus": {
+      "claimed": "Claimed",
+      "readyToClaim": "Ready to claim",
+      "unstaking": "Unstaking"
+    },
     "updateContractAdminActionDescription": "Update the CosmWasm level admin of a smart contract.",
     "updateInfoActionDescription": "Update your DAO's name, image, and description.",
     "updateProposalSubmissionConfigActionDescription": "Update the proposal submission paramaters for your DAO.",
@@ -459,6 +465,7 @@
     "daoCreatedPleaseWait": "DAO created. You will be redirected once the DAO page is ready...",
     "proposalClosed": "Closed successfully.",
     "proposalExecuted": "Executed successfully. Refreshing page...",
+    "transactionExecuted": "Transaction executed successfully.",
     "voteCast": "Vote successfully cast."
   },
   "title": {
@@ -582,6 +589,7 @@
     "token": "Token",
     "totalStaked": "Total staked",
     "totalSupply": "Total supply",
+    "transaction": "Transaction",
     "treasury": "Treasury",
     "treasuryHistory": "Treasury history",
     "turnout": "Turnout",

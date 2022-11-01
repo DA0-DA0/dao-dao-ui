@@ -5,6 +5,7 @@ import { Action } from './actions'
 import {
   DaoInfoBarItem,
   LoaderProps,
+  LoadingData,
   LogoProps,
   StakingMode,
 } from './components'
@@ -33,6 +34,7 @@ export interface BaseStakingModalProps {
 
 export interface UseGovernanceTokenInfoOptions {
   fetchWalletBalance?: boolean
+  fetchLoadingWalletBalance?: boolean
   fetchTreasuryBalance?: boolean
   fetchUsdcPrice?: boolean
 }
@@ -45,6 +47,7 @@ export interface UseGovernanceTokenInfoResponse {
   /// Optional
   // Wallet balance
   walletBalance?: number
+  loadingWalletBalance?: LoadingData<number>
   // Treasury balance
   treasuryBalance?: number
   // Price
@@ -55,6 +58,7 @@ export interface UseStakingInfoOptions {
   fetchClaims?: boolean
   fetchTotalStakedValue?: boolean
   fetchWalletStakedValue?: boolean
+  fetchLoadingWalletStakedValue?: boolean
 }
 
 export interface UseStakingInfoResponse {
@@ -73,6 +77,7 @@ export interface UseStakingInfoResponse {
   totalStakedValue?: number
   // Wallet staked value
   walletStakedValue?: number
+  loadingWalletStakedValue?: LoadingData<number>
 }
 
 export interface IVotingModuleAdapter {

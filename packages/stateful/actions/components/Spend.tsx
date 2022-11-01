@@ -116,19 +116,29 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   // would lead to the error not updating if amount set an error and then
   // denom was changed.
   useEffect(() => {
+    // Prevent infinite loops by not setting errors if already set, and only
+    // clearing errors unless already set.
+    const currentError = errors?._error
+
     if (!spendDenom || !spendAmount) {
-      clearErrors(fieldNamePrefix + '_error')
+      if (currentError) {
+        clearErrors(fieldNamePrefix + '_error')
+      }
       return
     }
 
     const validation = validatePossibleSpend(spendDenom, spendAmount)
     if (validation === true) {
-      clearErrors(fieldNamePrefix + '_error')
+      if (currentError) {
+        clearErrors(fieldNamePrefix + '_error')
+      }
     } else if (typeof validation === 'string') {
-      setError(fieldNamePrefix + '_error', {
-        type: 'custom',
-        message: validation,
-      })
+      if (!currentError || currentError.message !== validation) {
+        setError(fieldNamePrefix + '_error', {
+          type: 'custom',
+          message: validation,
+        })
+      }
     }
   }, [
     spendAmount,
@@ -137,6 +147,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     clearErrors,
     validatePossibleSpend,
     fieldNamePrefix,
+    errors?._error,
   ])
 
   const amountDecimals = useMemo(
@@ -149,7 +160,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   return (
     <ActionCard Icon={SpendEmoji} onRemove={onRemove} title={t('title.spend')}>
       <div className="flex flex-row items-center gap-4">
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-stretch gap-2">
           <NumberInput
             disabled={!isCreating}
             error={errors?.amount}
@@ -202,7 +213,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         {/* eslint-disable-next-line i18next/no-literal-string */}
         <p className="secondary-text font-mono text-2xl">&#10142;</p>
 
-        <div className="grow">
+        <div className="flex grow flex-row items-stretch self-stretch">
           <AddressInput
             containerClassName="grow"
             disabled={!isCreating}

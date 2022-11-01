@@ -1,10 +1,12 @@
 import clsx from 'clsx'
 
+import { LoadingData } from '@dao-dao/types'
+
 import { Button } from '../buttons'
 
 export interface PercentButtonProps {
   label: string
-  max: number
+  loadingMax: LoadingData<number>
   percent: number
   amount: number
   setAmount: (newAmount: number) => void
@@ -15,7 +17,7 @@ export interface PercentButtonProps {
 
 export const PercentButton = ({
   label,
-  max,
+  loadingMax,
   percent,
   amount,
   setAmount,
@@ -25,22 +27,28 @@ export const PercentButton = ({
 }: PercentButtonProps) => (
   <Button
     className={clsx('flex w-full flex-row justify-center', className)}
+    disabled={loadingMax.loading}
     onClick={() =>
+      !loadingMax.loading &&
       setAmount(
         Math.min(
           Math.max(
             Number(
-              (max * percent + (absoluteOffset ?? 0)).toFixed(tokenDecimals)
+              (loadingMax.data * percent + (absoluteOffset ?? 0)).toFixed(
+                tokenDecimals
+              )
             ),
             1 / Math.pow(10, tokenDecimals)
           ),
-          max
+          loadingMax.data
         )
       )
     }
     pressed={
-      (max * percent + (absoluteOffset ?? 0)).toFixed(tokenDecimals) ===
-      amount.toFixed(tokenDecimals)
+      !loadingMax.loading &&
+      (loadingMax.data * percent + (absoluteOffset ?? 0)).toFixed(
+        tokenDecimals
+      ) === amount.toFixed(tokenDecimals)
     }
     size="lg"
     variant="secondary"

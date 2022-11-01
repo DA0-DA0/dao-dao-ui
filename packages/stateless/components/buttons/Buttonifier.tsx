@@ -94,12 +94,11 @@ export const getButtonifiedClassNames = ({
       // Default, not pressed
       'bg-background-button-secondary-default text-icon-primary':
         !disabledOrLoading && !pressed,
-      // Default, pressed
-      'bg-background-interactive-active text-text-interactive-active':
-        !disabledOrLoading && pressed,
-      // Disabled
+      // Disabled, not pressed
       'bg-background-button-secondary-disabled text-text-interactive-disabled':
-        disabledOrLoading,
+        disabledOrLoading && !pressed,
+      // Default or disabled, pressed
+      'bg-background-interactive-active text-text-interactive-active': pressed,
     },
     // Ghost variant
     variant === 'ghost' && {
@@ -108,10 +107,11 @@ export const getButtonifiedClassNames = ({
         !disabledOrLoading,
       // Default, not pressed
       'bg-transparent text-text-secondary': !disabledOrLoading && !pressed,
-      // Default, pressed
-      'bg-transparent text-text-brand': !disabledOrLoading && pressed,
-      // Disabled
-      'bg-transparent text-text-interactive-disabled': disabledOrLoading,
+      // Disabled, not pressed
+      'bg-transparent text-text-interactive-disabled':
+        disabledOrLoading && !pressed,
+      // Default or disabled, pressed
+      'bg-transparent text-text-brand': pressed,
     },
     // Underline variant
     (variant === 'underline' || variant === 'none') && {

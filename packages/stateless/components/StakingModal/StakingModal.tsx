@@ -1,6 +1,8 @@
+import clsx from 'clsx'
 import { ChangeEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { LoadingData } from '@dao-dao/types'
 import {
   StakingModalProps,
   StakingMode,
@@ -28,9 +30,9 @@ export const StakingModal = ({
   // microdenom
   claimableTokens,
   // macrodenom
-  stakableTokens,
+  loadingStakableTokens,
   // macrodenom
-  unstakableTokens,
+  loadingUnstakableTokens,
   unstakingDuration,
   tokenSymbol,
   tokenDecimals,
@@ -43,7 +45,14 @@ export const StakingModal = ({
   const { t } = useTranslation()
 
   const [mode, setMode] = useState(initialMode)
-  const maxTx = mode === StakingMode.Stake ? stakableTokens : unstakableTokens
+  const maxTx =
+    mode === StakingMode.Stake
+      ? loadingStakableTokens.loading
+        ? undefined
+        : loadingStakableTokens.data
+      : loadingUnstakableTokens.loading
+      ? undefined
+      : loadingUnstakableTokens.data
 
   const invalidAmount = (): string | undefined => {
     if (mode === StakingMode.Claim) {
@@ -51,6 +60,9 @@ export const StakingModal = ({
     }
     if (amount <= 0) {
       return t('error.cannotTxZeroTokens')
+    }
+    if (maxTx === undefined) {
+      return t('error.loadingData')
     }
     if (amount > maxTx) {
       return t('error.cannotStakeMoreThanYouHave')
@@ -90,7 +102,7 @@ export const StakingModal = ({
       {mode === StakingMode.Stake && (
         <StakeUnstakeModesBody
           amount={amount}
-          max={stakableTokens}
+          loadingMax={loadingStakableTokens}
           mode={mode}
           proposalDeposit={proposalDeposit}
           setAmount={(amount: number) => setAmount(amount)}
@@ -102,7 +114,7 @@ export const StakingModal = ({
       {mode === StakingMode.Unstake && (
         <StakeUnstakeModesBody
           amount={amount}
-          max={unstakableTokens}
+          loadingMax={loadingUnstakableTokens}
           mode={mode}
           setAmount={(amount: number) => setAmount(amount)}
           tokenDecimals={tokenDecimals}
@@ -141,7 +153,7 @@ export const StakingModal = ({
 interface StakeUnstakeModesBodyProps {
   amount: number
   mode: StakingMode
-  max: number
+  loadingMax: LoadingData<number>
   setAmount: (newAmount: number) => void
   tokenSymbol: string
   tokenDecimals: number
@@ -153,7 +165,7 @@ const StakeUnstakeModesBody = ({
   amount,
   setAmount,
   mode,
-  max,
+  loadingMax,
   tokenSymbol,
   tokenDecimals,
   unstakingDuration,
@@ -173,27 +185,43 @@ const StakeUnstakeModesBody = ({
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setAmount(e.target.valueAsNumber)
           }
-          onMinus={() => setAmount(Math.max(Math.min(amount - 1, max), 0))}
-          onPlus={() => setAmount(Math.max(Math.min(amount + 1, max), 0))}
+          onMinus={
+            loadingMax.loading
+              ? // Use empty function so button still appears.
+                () => {}
+              : () =>
+                  setAmount(Math.max(Math.min(amount - 1, loadingMax.data), 0))
+          }
+          onPlus={
+            loadingMax.loading
+              ? // Use empty function so button still appears.
+                () => {}
+              : () =>
+                  setAmount(Math.max(Math.min(amount + 1, loadingMax.data), 0))
+          }
           textClassName="font-mono leading-5 symbol-small-body-text"
           unit={`$${tokenSymbol}`}
           value={amount}
         />
-        {amount > max && (
+        {!loadingMax.loading && amount > loadingMax.data && (
           <span className="caption-text mt-1 ml-1 text-text-interactive-error">
             {t('error.cannotStakeMoreThanYouHave')}
           </span>
         )}
-        <span className="caption-text mt-4 font-mono">
+        <p className="caption-text mt-4 font-mono">
           {t('info.yourBalance')}
           {': '}
-          {t('format.token', {
-            amount: max.toLocaleString(undefined, {
-              maximumFractionDigits: tokenDecimals,
-            }),
-            symbol: tokenSymbol,
-          })}
-        </span>
+          <span className={clsx(loadingMax.loading && 'animate-pulse')}>
+            {loadingMax.loading
+              ? `... $${tokenSymbol}`
+              : t('format.token', {
+                  amount: loadingMax.data.toLocaleString(undefined, {
+                    maximumFractionDigits: tokenDecimals,
+                  }),
+                  symbol: tokenSymbol,
+                })}
+          </span>
+        </p>
         <div className="mt-6">
           <div className="grid grid-cols-5 gap-2">
             {[10, 25, 50, 75, 100].map((percent) => (
@@ -201,7 +229,7 @@ const StakeUnstakeModesBody = ({
                 key={percent}
                 amount={amount}
                 label={`${percent}%`}
-                max={max}
+                loadingMax={loadingMax}
                 percent={percent / 100}
                 setAmount={setAmount}
                 tokenDecimals={tokenDecimals}
@@ -210,7 +238,8 @@ const StakeUnstakeModesBody = ({
           </div>
           {mode === StakingMode.Stake &&
             !!proposalDeposit &&
-            max > proposalDeposit && (
+            !loadingMax.loading &&
+            loadingMax.data > proposalDeposit && (
               <PercentButton
                 absoluteOffset={-proposalDeposit}
                 amount={amount}
@@ -221,7 +250,7 @@ const StakeUnstakeModesBody = ({
                   }),
                   tokenSymbol,
                 })}
-                max={max}
+                loadingMax={loadingMax}
                 percent={1}
                 setAmount={setAmount}
                 tokenDecimals={tokenDecimals}

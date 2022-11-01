@@ -8,6 +8,7 @@ import {
   nativeSupplySelector,
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import {
   UseGovernanceTokenInfoOptions,
   UseGovernanceTokenInfoResponse,
@@ -17,6 +18,7 @@ import {
   TokenInfoResponse,
 } from '@dao-dao/types/contracts/Cw20Base'
 import {
+  loadableToLoadingData,
   nativeTokenDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
@@ -26,6 +28,7 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
+  fetchLoadingWalletBalance = false,
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
@@ -72,6 +75,17 @@ export const useGovernanceTokenInfo = ({
         })
       : constSelector(undefined)
   )?.amount
+  const loadingWalletBalance = loadableToLoadingData(
+    useCachedLoadable(
+      fetchLoadingWalletBalance && walletAddress
+        ? nativeDenomBalanceSelector({
+            walletAddress,
+            denom,
+          })
+        : constSelector(undefined)
+    ),
+    undefined
+  )
 
   // Treasury balance
   const treasuryBalance = useRecoilValue(
@@ -91,7 +105,7 @@ export const useGovernanceTokenInfo = ({
           decimals: governanceTokenInfo.decimals,
         })
       : constSelector(undefined)
-  )
+  )?.price
 
   return {
     stakingContractAddress: '',
@@ -101,6 +115,14 @@ export const useGovernanceTokenInfo = ({
     /// Optional
     // Wallet balance
     walletBalance: walletBalance ? Number(walletBalance) : undefined,
+    loadingWalletBalance: loadingWalletBalance.loading
+      ? { loading: true }
+      : !loadingWalletBalance.data
+      ? undefined
+      : {
+          loading: false,
+          data: Number(loadingWalletBalance.data.amount),
+        },
     // Treasury balance
     treasuryBalance: treasuryBalance ? Number(treasuryBalance) : undefined,
     // Price

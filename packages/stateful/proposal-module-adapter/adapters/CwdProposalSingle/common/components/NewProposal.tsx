@@ -22,6 +22,7 @@ import {
   cosmWasmClientForChainSelector,
   nativeDenomBalanceSelector,
   refreshWalletBalancesIdAtom,
+  useAwaitNextBlock,
   useVotingModule,
 } from '@dao-dao/state'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
@@ -30,6 +31,7 @@ import {
   ActionKey,
   BaseNewProposalProps,
   ContractVersion,
+  DepositInfoSelector,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
@@ -52,18 +54,21 @@ import {
   makeUseActions as makeUseProposalModuleActions,
   useProcessTQ,
 } from '../hooks'
-import { makeDepositInfo } from '../selectors'
 import {
   NewProposal as StatelessNewProposal,
   NewProposalProps as StatelessNewProposalProps,
 } from '../ui/NewProposal'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> &
-  Pick<StatelessNewProposalProps, 'options'>
+  Pick<StatelessNewProposalProps, 'options'> & {
+    depositInfoSelector: DepositInfoSelector
+  }
 
 export const NewProposal = ({
   onCreateSuccess,
+  simulateMsgs,
   options,
+  depositInfoSelector,
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
@@ -118,7 +123,7 @@ export const NewProposal = ({
 
   const formMethods = useFormContext<NewProposalForm>()
 
-  const depositInfo = useRecoilValue(makeDepositInfo(options))
+  const depositInfo = useRecoilValue(depositInfoSelector)
   const depositInfoCw20TokenAddress =
     depositInfo?.denom && 'cw20' in depositInfo.denom
       ? depositInfo.denom.cw20
@@ -220,24 +225,47 @@ export const NewProposal = ({
     sender: walletAddress ?? '',
   })
 
+  const awaitNextBlock = useAwaitNextBlock()
+
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
   const cosmWasmClient = useRecoilValue(
-    cosmWasmClientForChainSelector(undefined)
+    cosmWasmClientForChainSelector(daoInfo.chainId)
   )
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
       async (newProposalData: NewProposalData) => {
         if (!connected || blockHeight === undefined) {
-          throw new Error(t('error.loadingData'))
+          toast.error(t('error.loadingData'))
+          return
         }
 
         setLoading(true)
+
+        // Only simulate messages if any exist. Allow proposals without
+        // messages.
+        if (newProposalData.msgs.length > 0) {
+          try {
+            // Throws error if simulation fails, indicating invalid message.
+            await simulateMsgs(newProposalData.msgs)
+          } catch (err) {
+            console.error(err)
+            toast.error(
+              `${t('error.invalidProposalActions')} ${
+                // Don't send to Sentry, but still format SDK errors nicely.
+                processError(err, { forceCapture: false })
+              }`
+            )
+            setLoading(false)
+            return
+          }
+        }
 
         // Increase CW20 deposit token allowance if necessary.
         if (requiredProposalDeposit && depositInfoCw20TokenAddress) {
           // CW20 allowance response must be checked.
           if (!cw20DepositTokenAllowanceResponse) {
-            throw new Error(t('error.loadingData'))
+            toast.error(t('error.loadingData'))
+            return
           }
 
           const remainingAllowanceNeeded =
@@ -264,7 +292,7 @@ export const NewProposal = ({
               })
 
               // Allowances will not update until the next block has been added.
-              setTimeout(refreshBalances, 6500)
+              awaitNextBlock().then(refreshBalances)
             } catch (err) {
               console.error(err)
               toast.error(

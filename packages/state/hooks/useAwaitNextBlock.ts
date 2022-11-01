@@ -14,8 +14,11 @@ export const useAwaitNextBlock = (chainId?: string) => {
 
   const doAfterNextBlock = useCallback(async () => {
     let currentBlockHeight = await client.getHeight()
-    // Store what block height we want to wait for.
-    const nextBlockHeight = currentBlockHeight + 1
+    // Store what block height we want to wait for. Wait for one past next block
+    // to ensure one whole block starts and finishes. If we wait for the next
+    // one and we are only 2 seconds from it, it's possible the transaction
+    // we're waiting for has not yet happened.
+    const nextBlockHeight = currentBlockHeight + 2
 
     // Refresh block height every 1 second until height changes.
     while (currentBlockHeight < nextBlockHeight) {

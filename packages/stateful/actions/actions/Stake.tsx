@@ -1,11 +1,16 @@
+import { coin } from '@cosmjs/stargate'
 import { useCallback, useMemo } from 'react'
-import { useRecoilValue } from 'recoil'
 
 import {
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
 } from '@dao-dao/state'
-import { ActionCardLoader, StakeEmoji } from '@dao-dao/stateless'
+import {
+  ActionCardLoader,
+  Loader,
+  StakeEmoji,
+  useCachedLoadable,
+} from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -19,6 +24,7 @@ import {
   StakeType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  loadableToLoadingData,
   makeDistributeMessage,
   makeStakingMessage,
   nativeTokenDecimals,
@@ -126,28 +132,43 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
   }, [msg])
 
 export const makeStakeAction: ActionMaker<StakeData> = ({ t, address }) => {
-  const InnerStakeComponent: ActionComponent = (props) => {
-    const nativeBalances = useRecoilValue(nativeBalancesSelector({ address }))
-    const nativeDelegatedBalance = useRecoilValue(
-      nativeDelegatedBalanceSelector({ address })
+  const Component: ActionComponent<undefined, StakeData> = (props) => {
+    const nativeBalancesLoadable = loadableToLoadingData(
+      useCachedLoadable(
+        address ? nativeBalancesSelector({ address }) : undefined
+      ),
+      []
+    )
+
+    const nativeDelegatedBalanceLoadable = loadableToLoadingData(
+      useCachedLoadable(
+        address ? nativeDelegatedBalanceSelector({ address }) : undefined
+      ),
+      coin(0, '')
     )
 
     return (
-      <StatelessStakeComponent
-        {...props}
-        options={{
-          nativeBalances,
-          nativeDelegatedBalance,
-        }}
-      />
+      <SuspenseLoader
+        fallback={<ActionCardLoader Loader={Loader} />}
+        forceFallback={
+          nativeBalancesLoadable.loading ||
+          nativeDelegatedBalanceLoadable.loading
+        }
+      >
+        <StatelessStakeComponent
+          {...props}
+          options={{
+            nativeBalances: nativeBalancesLoadable.loading
+              ? []
+              : nativeBalancesLoadable.data,
+            nativeDelegatedBalance: nativeDelegatedBalanceLoadable.loading
+              ? coin(0, '')
+              : nativeDelegatedBalanceLoadable.data,
+          }}
+        />
+      </SuspenseLoader>
     )
   }
-
-  const Component: ActionComponent = (props) => (
-    <SuspenseLoader fallback={<ActionCardLoader Loader={props.Loader} />}>
-      <InnerStakeComponent {...props} />
-    </SuspenseLoader>
-  )
 
   return {
     key: ActionKey.Stake,

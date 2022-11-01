@@ -10,7 +10,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { TokenCardInfo } from '@dao-dao/types'
-import { secondsToWdhms } from '@dao-dao/utils'
+import { isJunoIbcUsdc, secondsToWdhms } from '@dao-dao/utils'
 
 import { ButtonLinkProps } from './buttons'
 import { Button } from './buttons/Button'
@@ -36,13 +36,13 @@ export interface TokenCardProps extends TokenCardInfo {
 export const TokenCard = ({
   crown,
   tokenSymbol,
+  tokenDenom,
   tokenDecimals,
   subtitle,
   imageUrl,
   unstakedBalance,
-  usdcUnitPrice,
   hasStakingInfo,
-  lazyStakingInfo,
+  lazyInfo,
   cw20Address,
   onAddToken,
   proposeStakeUnstakeHref,
@@ -54,13 +54,13 @@ export const TokenCard = ({
   const { t } = useTranslation()
 
   const lazyStakes =
-    lazyStakingInfo.loading || !lazyStakingInfo.data
+    lazyInfo.loading || !lazyInfo.data.stakingInfo
       ? []
-      : lazyStakingInfo.data.stakes
+      : lazyInfo.data.stakingInfo.stakes
   const lazyUnstakingTasks =
-    lazyStakingInfo.loading || !lazyStakingInfo.data
+    lazyInfo.loading || !lazyInfo.data.stakingInfo
       ? []
-      : lazyStakingInfo.data.unstakingTasks
+      : lazyInfo.data.stakingInfo.unstakingTasks
 
   const totalStaked =
     lazyStakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
@@ -165,7 +165,7 @@ export const TokenCard = ({
   const isIbc = tokenSymbol.toLowerCase().startsWith('ibc')
   tokenSymbol = isIbc ? concatAddressStartEnd(tokenSymbol, 3, 2) : tokenSymbol
 
-  const waitingForStakingInfo = hasStakingInfo && lazyStakingInfo.loading
+  const waitingForStakingInfo = hasStakingInfo && lazyInfo.loading
 
   return (
     <>
@@ -249,16 +249,25 @@ export const TokenCard = ({
                 symbol={tokenSymbol}
               />
 
-              <TokenAmountDisplay
-                amount={
-                  // If staking info has not finished loading, don't show until
-                  // it is loaded so this is accurate.
-                  waitingForStakingInfo
-                    ? { loading: true }
-                    : totalBalance * usdcUnitPrice
-                }
-                usdcConversion
-              />
+              {!isJunoIbcUsdc(tokenDenom) && (
+                <TokenAmountDisplay
+                  amount={
+                    // If staking info has not finished loading, don't show
+                    // until it is loaded so this is accurate.
+                    waitingForStakingInfo ||
+                    lazyInfo.loading ||
+                    !lazyInfo.data.usdcUnitPrice
+                      ? { loading: true }
+                      : totalBalance * lazyInfo.data.usdcUnitPrice.price
+                  }
+                  dateFetched={
+                    lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
+                      ? undefined
+                      : lazyInfo.data.usdcUnitPrice.timestamp
+                  }
+                  usdcConversion
+                />
+              )}
             </div>
           </div>
 
@@ -275,16 +284,27 @@ export const TokenCard = ({
                   symbol={tokenSymbol}
                 />
 
-                <TokenAmountDisplay
-                  amount={unstakedBalance * usdcUnitPrice}
-                  usdcConversion
-                />
+                {!isJunoIbcUsdc(tokenDenom) && (
+                  <TokenAmountDisplay
+                    amount={
+                      lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
+                        ? { loading: true }
+                        : unstakedBalance * lazyInfo.data.usdcUnitPrice.price
+                    }
+                    dateFetched={
+                      lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
+                        ? undefined
+                        : lazyInfo.data.usdcUnitPrice.timestamp
+                    }
+                    usdcConversion
+                  />
+                )}
               </div>
             </div>
           )}
         </div>
 
-        {hasStakingInfo && (lazyStakingInfo.loading || lazyStakingInfo.data) && (
+        {hasStakingInfo && (lazyInfo.loading || lazyInfo.data) && (
           <div className="flex flex-col gap-2 border-t border-border-secondary px-6 pt-4 pb-6">
             <p className="link-text mb-1">{t('info.stakes')}</p>
 
@@ -292,9 +312,7 @@ export const TokenCard = ({
               <p className="secondary-text">{t('title.staked')}</p>
 
               <TokenAmountDisplay
-                amount={
-                  lazyStakingInfo.loading ? { loading: true } : totalStaked
-                }
+                amount={lazyInfo.loading ? { loading: true } : totalStaked}
                 className="caption-text text-right font-mono text-text-body"
                 decimals={tokenDecimals}
                 symbol={tokenSymbol}
@@ -307,10 +325,10 @@ export const TokenCard = ({
               <p
                 className={clsx(
                   'caption-text text-right font-mono text-text-body',
-                  lazyStakingInfo.loading && 'animate-pulse'
+                  lazyInfo.loading && 'animate-pulse'
                 )}
               >
-                {lazyStakingInfo.loading
+                {lazyInfo.loading
                   ? '...'
                   : lazyStakes.length > 0 && (
                       <>
@@ -349,17 +367,17 @@ export const TokenCard = ({
                 className={clsx(
                   'caption-text text-right font-mono underline-offset-2',
                   unstakingBalance > 0 && 'text-text-body',
-                  lazyStakingInfo.loading && 'animate-pulse !text-text-body'
+                  lazyInfo.loading && 'animate-pulse !text-text-body'
                 )}
-                disabled={lazyStakingInfo.loading}
+                disabled={lazyInfo.loading}
                 onClick={() => setShowUnstakingTokens(true)}
                 variant={
-                  lazyStakingInfo.loading || unstakingBalance === 0
+                  lazyInfo.loading || unstakingBalance === 0
                     ? 'none'
                     : 'underline'
                 }
               >
-                {lazyStakingInfo.loading
+                {lazyInfo.loading
                   ? '...'
                   : t('format.token', {
                       amount: unstakingBalance.toLocaleString(undefined, {
@@ -375,9 +393,7 @@ export const TokenCard = ({
               <p className="secondary-text">{t('info.pendingRewards')}</p>
 
               <TokenAmountDisplay
-                amount={
-                  lazyStakingInfo.loading ? { loading: true } : pendingRewards
-                }
+                amount={lazyInfo.loading ? { loading: true } : pendingRewards}
                 className="caption-text text-right font-mono text-text-body"
                 decimals={tokenDecimals}
                 symbol={tokenSymbol}
@@ -387,16 +403,16 @@ export const TokenCard = ({
         )}
       </div>
 
-      {!lazyStakingInfo.loading && lazyStakingInfo.data && (
+      {!lazyInfo.loading && lazyInfo.data.stakingInfo && (
         <UnstakingModal
           onClaim={onClaim}
           onClose={() => setShowUnstakingTokens(false)}
           refresh={refreshUnstakingTasks}
-          tasks={lazyStakingInfo.data.unstakingTasks}
+          tasks={lazyInfo.data.stakingInfo.unstakingTasks}
           unstakingDuration={
-            lazyStakingInfo.data.unstakingDurationSeconds
+            lazyInfo.data.stakingInfo.unstakingDurationSeconds
               ? secondsToWdhms(
-                  lazyStakingInfo.data.unstakingDurationSeconds,
+                  lazyInfo.data.stakingInfo.unstakingDurationSeconds,
                   2,
                   false
                 )

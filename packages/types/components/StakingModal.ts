@@ -1,4 +1,5 @@
 import { Duration } from '../contracts/common'
+import { LoadingData } from './common'
 
 export enum StakingMode {
   Stake = 'stake',
@@ -18,9 +19,9 @@ export interface StakingModalProps {
   // The number of tokens that are currently claimable.
   claimableTokens: number
   // The number of tokens that are unstakable.
-  unstakableTokens: number
+  loadingUnstakableTokens: LoadingData<number>
   // The number of tokens that are stakable.
-  stakableTokens: number
+  loadingStakableTokens: LoadingData<number>
   // The duration for unstaking.
   unstakingDuration: Duration | null
   // Symbol for the token that is being staked.

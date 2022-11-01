@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
 
-import { DaoInfo } from '@dao-dao/types'
+import { DaoInfo, LoaderProps, SuspenseLoaderProps } from '@dao-dao/types'
 import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {
@@ -22,7 +22,8 @@ export interface DaoHomeProps {
   subDaosTab: ReactNode
   membersTab?: ReactNode
   rightSidebarContent: ReactNode
-  SuspenseLoader: ComponentType<{ children: ReactNode }>
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
+  Loader: ComponentType<LoaderProps>
 }
 
 export const DaoHome = ({
@@ -36,6 +37,7 @@ export const DaoHome = ({
   membersTab,
   rightSidebarContent,
   SuspenseLoader,
+  Loader,
 }: DaoHomeProps) => {
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
@@ -111,19 +113,25 @@ export const DaoHome = ({
 
         <div className="py-6">
           <div className={clsx(selectedTab !== Tab.Proposals && 'hidden')}>
-            <SuspenseLoader>{proposalsTab}</SuspenseLoader>
+            <SuspenseLoader fallback={<Loader />}>
+              {proposalsTab}
+            </SuspenseLoader>
           </div>
           <div
             className={clsx(selectedTab !== Tab.TreasuryAndNfts && 'hidden')}
           >
-            <SuspenseLoader>{treasuryAndNftsTab}</SuspenseLoader>
+            <SuspenseLoader fallback={<Loader />}>
+              {treasuryAndNftsTab}
+            </SuspenseLoader>
           </div>
           <div className={clsx(selectedTab !== Tab.SubDaos && 'hidden')}>
-            <SuspenseLoader>{subDaosTab}</SuspenseLoader>
+            <SuspenseLoader fallback={<Loader />}>{subDaosTab}</SuspenseLoader>
           </div>
           {membersTab !== undefined && (
             <div className={clsx(selectedTab !== Tab.Members && 'hidden')}>
-              <SuspenseLoader>{membersTab}</SuspenseLoader>
+              <SuspenseLoader fallback={<Loader />}>
+                {membersTab}
+              </SuspenseLoader>
             </div>
           )}
         </div>

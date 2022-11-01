@@ -7,10 +7,10 @@ import { Vote } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 
 import {
   NewProposal,
-  makeDepositInfo,
-  makeReverseProposalInfos,
+  makeDepositInfoSelector,
   makeUseActions,
   makeUseProfileNewProposalCardInfoLines,
+  reverseProposalInfosSelector,
 } from './common'
 import {
   ProposalActionDisplay,
@@ -51,35 +51,62 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
     'cwd-proposal-single',
   ],
 
-  loadCommon: (options) => ({
-    // Fields
-    fields: {
-      defaultNewProposalForm: {
-        title: '',
-        description: '',
-        actionData: [],
+  // TODO: Make common accessible somehow inside components and hooks via hooks?
+  // Make react provider for this common object?
+  loadCommon: (options) => {
+    // Make here so we can pass into common hooks and components that need it.
+    const depositInfoSelector = makeDepositInfoSelector({
+      chainId: options.chainId,
+      proposalModuleAddress: options.proposalModule.address,
+      version: options.proposalModule.version,
+      preProposeAddress: options.proposalModule.preProposeAddress,
+    })
+
+    return {
+      // Fields
+      fields: {
+        defaultNewProposalForm: {
+          title: '',
+          description: '',
+          actionData: [],
+        },
+        newProposalFormTitleKey: 'title',
       },
-      newProposalFormTitleKey: 'title',
-    },
 
-    // Selectors
-    selectors: {
-      reverseProposalInfos: makeReverseProposalInfos(options),
-      depositInfo: makeDepositInfo(options),
-    },
+      // Selectors
+      selectors: {
+        reverseProposalInfos: (props) =>
+          reverseProposalInfosSelector({
+            chainId: options.chainId,
+            proposalModuleAddress: options.proposalModule.address,
+            proposalModulePrefix: options.proposalModule.prefix,
+            ...props,
+          }),
+        depositInfo: depositInfoSelector,
+      },
 
-    // Hooks
-    hooks: {
-      useActions: makeUseActions(options),
-      useProfileNewProposalCardInfoLines:
-        makeUseProfileNewProposalCardInfoLines(options),
-    },
+      // Hooks
+      hooks: {
+        useActions: makeUseActions(options),
+        useProfileNewProposalCardInfoLines:
+          makeUseProfileNewProposalCardInfoLines({
+            options,
+            depositInfoSelector,
+          }),
+      },
 
-    // Components
-    components: {
-      NewProposal: (props) => <NewProposal options={options} {...props} />,
-    },
-  }),
+      // Components
+      components: {
+        NewProposal: (props) => (
+          <NewProposal
+            depositInfoSelector={depositInfoSelector}
+            options={options}
+            {...props}
+          />
+        ),
+      },
+    }
+  },
 
   load: (options) => ({
     // Selectors

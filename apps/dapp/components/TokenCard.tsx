@@ -7,7 +7,7 @@ import { useSetRecoilState } from 'recoil'
 
 import {
   refreshNativeTokenStakingInfoAtom,
-  tokenCardLazyStakingInfoSelector,
+  tokenCardLazyInfoSelector,
 } from '@dao-dao/state'
 import {
   ButtonLink,
@@ -29,23 +29,21 @@ export const TokenCard = (props: TokenCardInfo) => {
 
   const addToken = useAddToken()
 
-  const lazyStakingInfoLoadable = useCachedLoadable(
-    props.hasStakingInfo
-      ? tokenCardLazyStakingInfoSelector({
-          walletAddress: coreAddress,
-          denom: props.tokenDenom,
-          tokenDecimals: props.tokenDecimals,
-          tokenSymbol: props.tokenSymbol,
-        })
-      : undefined
+  const lazyInfoLoadable = useCachedLoadable(
+    tokenCardLazyInfoSelector({
+      walletAddress: coreAddress,
+      denom: props.tokenDenom,
+      tokenDecimals: props.tokenDecimals,
+      tokenSymbol: props.tokenSymbol,
+    })
   )
 
   //! Loadable errors.
   useEffect(() => {
-    if (lazyStakingInfoLoadable.state === 'hasError') {
-      console.error(lazyStakingInfoLoadable.contents)
+    if (lazyInfoLoadable.state === 'hasError') {
+      console.error(lazyInfoLoadable.contents)
     }
-  }, [lazyStakingInfoLoadable.contents, lazyStakingInfoLoadable.state])
+  }, [lazyInfoLoadable.contents, lazyInfoLoadable.state])
 
   // Refresh staking info.
   const setRefreshNativeTokenStakingInfo = useSetRecoilState(
@@ -57,9 +55,9 @@ export const TokenCard = (props: TokenCardInfo) => {
   )
 
   const lazyStakes =
-    lazyStakingInfoLoadable.state !== 'hasValue'
+    lazyInfoLoadable.state !== 'hasValue'
       ? []
-      : lazyStakingInfoLoadable.contents?.stakes ?? []
+      : lazyInfoLoadable.contents?.stakingInfo?.stakes ?? []
 
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
@@ -135,11 +133,10 @@ export const TokenCard = (props: TokenCardInfo) => {
     <StatelessTokenCard
       {...props}
       ButtonLink={ButtonLink}
-      lazyStakingInfo={
-        props.hasStakingInfo
-          ? loadableToLoadingData(lazyStakingInfoLoadable, undefined)
-          : { loading: false, data: undefined }
-      }
+      lazyInfo={loadableToLoadingData(lazyInfoLoadable, {
+        usdcUnitPrice: undefined,
+        stakingInfo: undefined,
+      })}
       onAddToken={onAddToken}
       onClaim={onClaim}
       proposeClaimHref={proposeClaimHref}

@@ -13,7 +13,7 @@ import {
 } from './components'
 import { ContractVersion } from './contract'
 import { Expiration } from './contracts'
-import { CheckedDepositInfo } from './contracts/common'
+import { CheckedDepositInfo, CosmosMsgFor_Empty } from './contracts/common'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
@@ -200,8 +200,9 @@ export interface BaseProposalLineProps {
   LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
-export interface BaseNewProposalProps<FormData = any> {
+export interface BaseNewProposalProps<FormData extends FieldValues = any> {
   onCreateSuccess: (props: ProposalCreatedCardProps) => void
+  simulateMsgs: (msgs: CosmosMsgFor_Empty[]) => Promise<void>
   draft?: ProposalDraft<FormData>
   saveDraft: () => void
   drafts: ProposalDraft[]

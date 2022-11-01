@@ -20,6 +20,7 @@ import {
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,
   refreshBlockHeightAtom,
+  refreshTokenUsdcPriceAtom,
   usePinnedDaos,
   useWalletProfile,
 } from '@dao-dao/state'
@@ -166,18 +167,25 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     ]
   )
 
-  //! Refresh every minute. Block height and wallet balances.
+  //! Refresh every minute. Block height, USDC conversions, and wallet balances.
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
+  const setRefreshUsdcPrices = useSetRecoilState(refreshTokenUsdcPriceAtom(''))
   // Refresh block height and wallet balances every minute.
   useEffect(() => {
     const interval = setInterval(() => {
       setRefreshBlockHeight((id) => id + 1)
+      setRefreshUsdcPrices((id) => id + 1)
       if (walletAddress) {
         refreshWalletBalances()
       }
     }, 60 * 1000)
     return () => clearInterval(interval)
-  }, [refreshWalletBalances, setRefreshBlockHeight, walletAddress])
+  }, [
+    refreshWalletBalances,
+    setRefreshBlockHeight,
+    setRefreshUsdcPrices,
+    walletAddress,
+  ])
 
   // TODO(v2): Add real data back in when pools indexer works.
   // //! Token prices

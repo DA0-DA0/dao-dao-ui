@@ -10,6 +10,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
+  LoadingData,
   UnstakingTask,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
@@ -20,35 +21,35 @@ export interface ProfileCardMemberInfoTokensProps
   daoName: string
   claimingLoading: boolean
   stakingLoading: boolean
-  votingPower: number
   tokenSymbol: string
-  stakedTokens: number
   tokenDecimals: number
   unstakingTasks: UnstakingTask[]
-  unstakedTokens: number
   unstakingDurationSeconds: number | undefined
   onClaim: () => void
   onStake: () => void
   refreshUnstakingTasks: () => void
   junoswapHref?: string
+  loadingVotingPower: LoadingData<number>
+  loadingStakedTokens: LoadingData<number>
+  loadingUnstakedTokens: LoadingData<number>
 }
 
 export const ProfileCardMemberInfoTokens = ({
   daoName,
   claimingLoading,
   stakingLoading,
-  votingPower,
   tokenSymbol,
-  stakedTokens,
   tokenDecimals,
   unstakingTasks,
-  unstakedTokens,
   unstakingDurationSeconds,
   onClaim,
   onStake,
   refreshUnstakingTasks,
   junoswapHref,
   cantVoteOnProposal,
+  loadingVotingPower,
+  loadingStakedTokens,
+  loadingUnstakedTokens,
 }: ProfileCardMemberInfoTokensProps) => {
   const { t } = useTranslation()
 
@@ -77,8 +78,11 @@ export const ProfileCardMemberInfoTokens = ({
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
 
-  const isMember = stakedTokens > 0
-  const canBeMemberButIsnt = !isMember && unstakedTokens > 0
+  const isMember = !loadingStakedTokens.loading && loadingStakedTokens.data > 0
+  const canBeMemberButIsnt =
+    !loadingUnstakedTokens.loading &&
+    !isMember &&
+    loadingUnstakedTokens.data > 0
 
   return (
     <>
@@ -117,15 +121,17 @@ export const ProfileCardMemberInfoTokens = ({
               // If can't vote on proposal or has staked tokens, show staked
               // tokens first since it is most relevant. Otherwise, show
               // unstaked tokens first.
-              cantVoteOnProposal || stakedTokens > 0
+              cantVoteOnProposal ||
+                (!loadingStakedTokens.loading && loadingStakedTokens.data > 0)
                 ? 'flex-col'
                 : 'flex-col-reverse'
             )}
           >
             <TokenAmountDisplay
-              amount={stakedTokens}
+              amount={loadingStakedTokens}
               className={clsx('text-right font-mono', {
-                'text-text-tertiary': stakedTokens === 0,
+                'text-text-tertiary':
+                  loadingStakedTokens.loading || loadingStakedTokens.data === 0,
               })}
               decimals={tokenDecimals}
               suffix={` ${t('info.staked')}`}
@@ -133,23 +139,35 @@ export const ProfileCardMemberInfoTokens = ({
             />
 
             <TokenAmountDisplay
-              amount={unstakedTokens}
-              className={clsx('text-right font-mono', {
-                'text-text-tertiary': unstakedTokens === 0,
-                'text-icon-interactive-valid': unstakedTokens > 0,
-              })}
+              amount={loadingUnstakedTokens}
+              className={clsx(
+                'text-right font-mono',
+                loadingUnstakedTokens.loading ||
+                  loadingUnstakedTokens.data === 0
+                  ? 'text-text-tertiary'
+                  : 'text-icon-interactive-valid'
+              )}
               decimals={tokenDecimals}
               symbol={tokenSymbol}
             />
           </div>
         </div>
 
-        {/* Only show voting power if non-zero. */}
-        {votingPower > 0 && (
+        {/* Only show voting power if loading or non-zero. */}
+        {(loadingVotingPower.loading || loadingVotingPower.data > 0) && (
           <div className="flex flex-row items-center justify-between">
             <p>{t('title.votingPower')}</p>
-            <p className="text-right font-mono text-text-primary">
-              {formatPercentOf100(votingPower)}
+            <p
+              className={clsx(
+                'text-right font-mono',
+                loadingVotingPower.loading
+                  ? 'animate-pulse text-text-tertiary'
+                  : 'text-text-primary'
+              )}
+            >
+              {loadingVotingPower.loading
+                ? '...'
+                : formatPercentOf100(loadingVotingPower.data)}
             </p>
           </div>
         )}
@@ -201,13 +219,18 @@ export const ProfileCardMemberInfoTokens = ({
 
         <Button
           contentContainerClassName="justify-center"
-          disabled={claimingLoading || (!isMember && unstakedTokens === 0)}
+          disabled={
+            claimingLoading ||
+            (!isMember &&
+              (loadingUnstakedTokens.loading ||
+                loadingUnstakedTokens.data === 0))
+          }
           loading={stakingLoading}
           onClick={onStake}
           size="lg"
           variant={canBeMemberButIsnt ? 'primary' : 'secondary'}
         >
-          {stakedTokens === 0
+          {!loadingStakedTokens.loading && loadingStakedTokens.data === 0
             ? t('button.stakeTokenSymbol', { tokenSymbol })
             : t('button.manageStake', { tokenSymbol })}
         </Button>
