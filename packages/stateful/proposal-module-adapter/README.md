@@ -36,7 +36,7 @@ of the DAO's core contract, as well as some commonly used components, like
 ```tsx
 import { ProposalModuleAdapterProvider } from '@dao-dao/stateful/proposal-module-adapter'
 
-const App = () => (
+const ProposalPage = () => (
   <ProposalModuleAdapterProvider
     initialOptions={{
       coreAddress,
@@ -141,7 +141,10 @@ import { ProposalModuleAdapter } from '@dao-dao/types/proposal-module-adapter'
 
 const MyProposalModuleAdapter: ProposalModuleAdapter = {
   id: 'my_proposal_module_adapter_id',
-  matcher: (contractName: string) => contractName === 'my_proposal_module_adapter_id',
+  contractNames: [
+    'cwd-my-proposal-module-v1',
+    'cwd-my-proposal-module-v2',
+  ],
 
   loadCommon: (options) => ({
     hooks: {
@@ -162,6 +165,18 @@ const MyProposalModuleAdapter: ProposalModuleAdapter = {
       ...
     },
   }),
+
+  queries: {
+    ...
+  },
+
+  functions: {
+    ...
+  },
+
+  daoCreation: {
+    ...
+  },
 }
 ```
 

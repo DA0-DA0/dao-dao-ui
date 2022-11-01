@@ -109,9 +109,6 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
   },
 
   load: (options) => ({
-    // Selectors
-    selectors: {},
-
     // Functions
     functions: {
       getProposalInfo: makeGetProposalInfo(options),
