@@ -4,7 +4,10 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { Button, CosmosMessageDisplay, Loader } from '@dao-dao/stateless'
-import { ActionAndData, BaseProposalActionDisplayProps } from '@dao-dao/types'
+import {
+  ActionAndData,
+  BaseProposalInnerContentDisplayProps,
+} from '@dao-dao/types'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import { decodeMessages } from '@dao-dao/utils'
@@ -15,8 +18,8 @@ import { useProposalModuleAdapterContext } from '../../../react'
 import { useLoadingProposal } from '../hooks'
 import { NewProposalForm } from '../types'
 
-export const ProposalActionDisplay = (
-  props: BaseProposalActionDisplayProps<NewProposalForm>
+export const ProposalInnerContentDisplay = (
+  props: BaseProposalInnerContentDisplayProps<NewProposalForm>
 ) => {
   const loadingProposal = useLoadingProposal()
 
@@ -26,7 +29,7 @@ export const ProposalActionDisplay = (
       forceFallback={loadingProposal.loading}
     >
       {!loadingProposal.loading && (
-        <InnerProposalActionDisplay
+        <InnerProposalInnerContentDisplay
           {...props}
           proposal={loadingProposal.data}
         />
@@ -35,12 +38,12 @@ export const ProposalActionDisplay = (
   )
 }
 
-const InnerProposalActionDisplay = ({
+const InnerProposalInnerContentDisplay = ({
   onDuplicate,
   duplicateLoading,
   availableActions,
   proposal,
-}: BaseProposalActionDisplayProps<NewProposalForm> & {
+}: BaseProposalInnerContentDisplayProps<NewProposalForm> & {
   proposal: Proposal | SingleChoiceProposal
 }) => {
   const { t } = useTranslation()

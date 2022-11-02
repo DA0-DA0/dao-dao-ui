@@ -8,7 +8,10 @@ import {
 } from '@dao-dao/types'
 import { normalizeContractName } from '@dao-dao/utils'
 
-import { DaoProposalSingleAdapter } from './adapters'
+import {
+  CwdProposalMultipleAdapter,
+  DaoProposalSingleAdapter,
+} from './adapters'
 
 // Adapters need to be loaded lazily like this, as opposed to just defining a
 // global array, due to cyclic dependencies. The adapter defintion files include
@@ -20,6 +23,7 @@ import { DaoProposalSingleAdapter } from './adapters'
 // This is a problem to solve later.
 export const getAdapters = (): readonly ProposalModuleAdapter[] => [
   DaoProposalSingleAdapter,
+  CwdProposalMultipleAdapter,
 ]
 
 export const getAdapterById = (id: string) =>

@@ -96,7 +96,7 @@ export const makeUseProfileNewProposalCardInfoLines =
       {
         Icon: MultilineChart,
         label: t('title.passingThreshold'),
-        value: threshold.display,
+        value: threshold!.display,
       },
       ...(quorum
         ? [

@@ -22,7 +22,7 @@ export interface ProposalVote<Vote extends unknown = any> {
 export interface ProposalVotesProps<Vote extends unknown = any> {
   votes: LoadingData<ProposalVote<Vote>[]>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
-  VoteDisplay: ComponentType<{ vote: Vote }>
+  VoteDisplay: ComponentType<{ vote: Vote; proposal?: any }>
   // Only allows refreshing when voting is open.
   votingOpen: boolean
 }

@@ -27,6 +27,7 @@ export const VoteDisplay = ({ vote }: VoteDisplayProps) => {
 
       <Icon
         className={clsx('!h-4 !w-4', ProposalVoteColorMap[vote].iconClassName)}
+        style={undefined}
       />
     </div>
   )

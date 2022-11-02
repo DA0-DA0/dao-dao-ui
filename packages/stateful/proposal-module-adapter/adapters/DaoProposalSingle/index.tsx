@@ -14,7 +14,7 @@ import {
   reverseProposalInfosSelector,
 } from './common'
 import {
-  ProposalActionDisplay,
+  ProposalInnerContentDisplay,
   ProposalLine,
   ProposalStatusAndInfo,
   ProposalVoteTally,
@@ -132,7 +132,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
     // Components
     components: {
       ProposalStatusAndInfo,
-      ProposalActionDisplay,
+      ProposalInnerContentDisplay,
       ProposalWalletVote,
       ProposalVotes,
       ProposalVoteTally,

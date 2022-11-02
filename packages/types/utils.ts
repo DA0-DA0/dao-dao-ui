@@ -10,7 +10,7 @@ export type ProcessedTQ = { display: string } & (
 )
 
 export type ProcessedThresholdQuorum = {
-  threshold: ProcessedTQ
+  threshold?: ProcessedTQ
   quorum?: ProcessedTQ
 }
 

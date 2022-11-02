@@ -5,7 +5,7 @@ import { RecoilValueReadOnly } from 'recoil'
 import { Action } from './actions'
 import { ContractVersion } from './chain'
 import { Expiration } from './contracts'
-import { CheckedDepositInfo } from './contracts/common'
+import { CheckedDepositInfo, CosmosMsgFor_Empty } from './contracts/common'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
@@ -55,7 +55,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
   hooks: {
     useProposalRefreshers: () => ProposalRefreshers
     useLoadingProposalExecutionTxHash: () => LoadingData<string | undefined>
-    useVoteOptions: () => ProposalVoteOption<Vote>[]
+    useVoteOptions: (proposal?: any) => ProposalVoteOption<Vote>[]
     // Return when no wallet connected.
     useLoadingWalletVoteInfo: () =>
       | undefined
@@ -69,7 +69,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
   // Components
   components: {
     ProposalStatusAndInfo: ComponentType<BaseProposalStatusAndInfoProps>
-    ProposalActionDisplay: ComponentType<BaseProposalActionDisplayProps>
+    ProposalInnerContentDisplay: ComponentType<BaseProposalInnerContentDisplayProps>
     ProposalWalletVote: ComponentType<BaseProposalWalletVoteProps<Vote>>
     ProposalVotes: ComponentType
     ProposalVoteTally: ComponentType
@@ -179,10 +179,17 @@ export interface BaseProposalStatusAndInfoProps {
   onCloseSuccess: () => void | Promise<void>
 }
 
-export interface BaseProposalActionDisplayProps<D extends any = any> {
+export interface BaseProposalInnerContentDisplayProps<D extends any = any> {
   onDuplicate: (data: ProposalPrefill<D>) => void
   duplicateLoading: boolean
   availableActions: Action[]
+}
+
+// Represents one instance of {title; description; actions[]} (multiple choice will have an array of these, single choice will have one.)
+export interface ProposalInnerContent {
+  title: string
+  description: string
+  actions: Action[]
 }
 
 export interface BaseProposalWalletVoteProps<T> {
@@ -197,6 +204,7 @@ export interface BaseProposalLineProps {
 
 export interface BaseNewProposalProps<FormData extends FieldValues = any> {
   onCreateSuccess: (props: ProposalCreatedCardProps) => void
+  simulateMsgs?: (msgs: CosmosMsgFor_Empty[]) => Promise<void>
   draft?: ProposalDraft<FormData>
   saveDraft: () => void
   drafts: ProposalDraft[]
@@ -221,9 +229,10 @@ export interface ProposalRefreshers {
 }
 
 export interface ProposalVoteOption<Vote> {
-  Icon: ComponentType<{ className: string }>
+  Icon: ComponentType<{ className: string; style?: object }>
   label: string
   value: Vote
+  style?: object
 }
 
 export interface ProfileNewProposalCardInfoLine {

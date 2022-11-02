@@ -48,7 +48,7 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     adapter: {
       components: {
         ProposalStatusAndInfo,
-        ProposalActionDisplay,
+        ProposalInnerContentDisplay: ProposalInnerContentDisplay,
         ProposalVoteTally,
         ProposalVotes,
       },
@@ -148,19 +148,6 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
   return (
     <Proposal
       ProposalStatusAndInfo={CachedProposalStatusAndInfo}
-      actionDisplay={
-        <ProposalActionDisplay
-          availableActions={orderedActions}
-          duplicateLoading={!!navigatingToHref?.startsWith(duplicateUrlPrefix)}
-          onDuplicate={(data) => {
-            const url =
-              duplicateUrlPrefix + encodeURIComponent(JSON.stringify(data))
-            router.push(url)
-            // Show loading on duplicate button.
-            setNavigatingToHref(url)
-          }}
-        />
-      }
       creator={{
         name: creatorProfile.loading
           ? creatorProfile
@@ -173,6 +160,19 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
       daoInfo={daoInfo}
       onRefresh={refreshProposal}
       proposalInfo={proposalInfo}
+      proposalInnerContentDisplay={
+        <ProposalInnerContentDisplay
+          availableActions={orderedActions}
+          duplicateLoading={!!navigatingToHref?.startsWith(duplicateUrlPrefix)}
+          onDuplicate={(data) => {
+            const url =
+              duplicateUrlPrefix + encodeURIComponent(JSON.stringify(data))
+            router.push(url)
+            // Show loading on duplicate button.
+            setNavigatingToHref(url)
+          }}
+        />
+      }
       refreshing={refreshing}
       rightSidebarContent={
         connected ? <ProfileProposalCard /> : <ProfileDisconnectedCard />

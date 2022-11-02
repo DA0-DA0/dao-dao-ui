@@ -436,11 +436,6 @@ export const ProposalCreationForm = ({
           {showPreview && (
             <div className="mt-4 rounded-md border border-border-secondary p-6">
               <ProposalContentDisplay
-                actionDisplay={
-                  <CosmosMessageDisplay
-                    value={decodedMessagesString(completeRatings.cosmosMsgs)}
-                  />
-                }
                 createdAt={new Date()}
                 creator={{
                   address: walletAddress,
@@ -449,6 +444,11 @@ export const ProposalCreationForm = ({
                     : { loading: false, data: entity.data.name },
                 }}
                 description={proposalDescription}
+                proposalInnerContentDisplay={
+                  <CosmosMessageDisplay
+                    value={decodedMessagesString(completeRatings.cosmosMsgs)}
+                  />
+                }
                 title={proposalTitle}
               />
             </div>

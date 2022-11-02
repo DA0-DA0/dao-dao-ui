@@ -357,7 +357,15 @@ export const NewProposal = ({
         {showPreview && (
           <div className="mt-4 rounded-md border border-border-secondary p-6">
             <ProposalContentDisplay
-              actionDisplay={
+              createdAt={new Date()}
+              creator={{
+                address: walletAddress,
+                name: walletProfile.loading
+                  ? walletProfile
+                  : { loading: false, data: walletProfile.data.name },
+              }}
+              description={proposalDescription}
+              proposalInnerContentDisplay={
                 actionDataFields.length ? (
                   <CosmosMessageDisplay
                     value={decodedMessagesString(
@@ -375,14 +383,6 @@ export const NewProposal = ({
                   />
                 ) : undefined
               }
-              createdAt={new Date()}
-              creator={{
-                address: walletAddress,
-                name: walletProfile.loading
-                  ? walletProfile
-                  : { loading: false, data: walletProfile.data.name },
-              }}
-              description={proposalDescription}
               title={proposalTitle}
             />
           </div>

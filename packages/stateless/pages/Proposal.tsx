@@ -18,7 +18,7 @@ export interface ProposalProps {
   ProposalStatusAndInfo: ComponentType<
     Pick<BaseProposalStatusAndInfoProps, 'inline'>
   >
-  actionDisplay: ReactNode
+  proposalInnerContentDisplay: ReactNode
   daoInfo: DaoInfo
   creator: {
     address: string
@@ -34,7 +34,7 @@ export const Proposal = ({
   voteTally,
   votesCast,
   ProposalStatusAndInfo,
-  actionDisplay,
+  proposalInnerContentDisplay,
   daoInfo,
   creator,
   rightSidebarContent,
@@ -88,13 +88,13 @@ export const Proposal = ({
         <div className="no-scrollbar absolute top-0 right-0 bottom-0 left-0 z-[1] h-full overflow-y-auto pt-10 pb-6 md:pl-[21rem]">
           <div className="mb-3">
             <ProposalContentDisplay
-              actionDisplay={actionDisplay}
               createdAt={
                 createdAtEpoch !== null ? new Date(createdAtEpoch) : undefined
               }
               creator={creator}
               description={description}
               onRefresh={onRefresh}
+              proposalInnerContentDisplay={proposalInnerContentDisplay}
               refreshing={refreshing}
               title={title}
             />

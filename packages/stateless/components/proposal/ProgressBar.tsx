@@ -10,6 +10,7 @@ export interface ProgressBarProps {
     data?: {
       value: number
       color: string
+      tooltipTitle?: string
     }[]
   }[]
   caretPosition?: number
@@ -40,18 +41,31 @@ export const ProgressBar = ({
             height: thickness,
           }}
         >
-          {data?.map(({ value, color }, index) => (
-            <div
-              key={index}
-              className="h-full"
-              style={{ width: `${value}%`, backgroundColor: color }}
-            ></div>
-          ))}
+          {data?.map(({ value, color, tooltipTitle }, index) =>
+            tooltipTitle ? (
+              <Tooltip title={tooltipTitle}>
+                <div
+                  key={index}
+                  className="h-full"
+                  style={{ width: `${value}%`, backgroundColor: color }}
+                >
+                  {' '}
+                </div>
+              </Tooltip>
+            ) : (
+              <div
+                key={index}
+                className="h-full"
+                style={{ width: `${value}%`, backgroundColor: color }}
+              >
+                {' '}
+              </div>
+            )
+          )}
         </div>
       ))}
     </div>
-
-    {caretPosition !== undefined && (
+    {caretPosition && (
       <Tooltip title={caretTooltip}>
         <ArrowDropUp
           className="absolute bottom-[-0.825rem] z-10 !h-6 !w-6 text-icon-primary"

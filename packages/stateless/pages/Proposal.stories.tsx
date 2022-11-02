@@ -79,7 +79,7 @@ Default.args = {
     name: { loading: false, data: 'Ben2x4' },
     address: 'juno789def000ghi',
   },
-  actionDisplay: (
+  proposalInnerContentDisplay: (
     <p className="rounded-md border border-border-primary p-4 text-center">
       Action display placeholder
     </p>

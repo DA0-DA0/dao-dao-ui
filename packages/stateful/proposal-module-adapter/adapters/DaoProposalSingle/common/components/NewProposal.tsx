@@ -169,7 +169,7 @@ export const NewProposal = ({
                   info: [
                     {
                       Icon: BookOutlined,
-                      label: `${t('title.threshold')}: ${threshold.display}`,
+                      label: `${t('title.threshold')}: ${threshold?.display}`,
                     },
                     ...(quorum
                       ? [

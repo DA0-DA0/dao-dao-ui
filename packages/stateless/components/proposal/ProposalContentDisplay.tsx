@@ -13,7 +13,7 @@ import { MarkdownRenderer } from '../MarkdownRenderer'
 export interface ProposalContentDisplayProps {
   title: string
   description: string
-  actionDisplay: ReactNode
+  proposalInnerContentDisplay: ReactNode
   creator: {
     address: string
     name: LoadingData<string | null>
@@ -26,7 +26,7 @@ export interface ProposalContentDisplayProps {
 export const ProposalContentDisplay = ({
   title,
   description,
-  actionDisplay,
+  proposalInnerContentDisplay,
   creator,
   createdAt,
   onRefresh,
@@ -103,7 +103,9 @@ export const ProposalContentDisplay = ({
         markdown={description}
       />
 
-      {actionDisplay && <div className="mt-9">{actionDisplay}</div>}
+      {proposalInnerContentDisplay && (
+        <div className="mt-9">{proposalInnerContentDisplay}</div>
+      )}
     </>
   )
 }
