@@ -1,31 +1,32 @@
 {
   "name": "@dao-dao/state",
-  "version": "0.1.0",
+  "version": "2.0.1",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "0.28.10",
-    "@cosmjs/proto-signing": "0.28.10",
-    "@dao-dao/ui": "*",
-    "@keplr-wallet/stores": "^0.10.3",
+    "@apollo/client": "^3.6.9",
+    "@cosmjs/amino": "0.29.3",
+    "@cosmjs/cosmwasm-stargate": "0.29.3",
+    "@cosmjs/encoding": "0.29.3",
+    "@cosmjs/proto-signing": "0.29.3",
+    "@dao-dao/utils": "2.0.1",
+    "@habx/apollo-multi-endpoint-link": "^2.7.0",
     "@walletconnect/browser-utils": "^1.7.8",
     "@walletconnect/client": "^1.7.8",
     "ajv": "^8.11.0",
+    "graphql": "^16.6.0",
+    "interchain-rpc": "^1.5.0",
     "react": "18.1.0",
     "recoil": "^0.7.2"
   },
   "devDependencies": {
-    "@dao-dao/config": "*",
-    "@dao-dao/tsconfig": "*",
-    "@dao-dao/types": "^1.0.0",
-    "@keplr-wallet/types": "^0.10.8",
+    "@dao-dao/config": "2.0.1",
+    "@dao-dao/types": "2.0.1",
+    "@noahsaso/cosmodal": "^0.8.0",
     "@walletconnect/types": "^1.7.8",
-    "typescript": "^4.5.3"
-  },
-  "peerDependencies": {
-    "@noahsaso/cosmodal": "0.6.1"
+    "typescript": "^4.8.3"
   },
   "prettier": "@dao-dao/config/prettier",
   "private": true

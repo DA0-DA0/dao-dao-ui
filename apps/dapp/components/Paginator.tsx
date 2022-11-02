@@ -3,7 +3,7 @@
 
 import Link from 'next/link'
 
-import { Button } from '@dao-dao/ui'
+import { Button } from '@dao-dao/stateless'
 
 function Paginator({
   page,
@@ -17,7 +17,7 @@ function Paginator({
   const total = Math.ceil(count / limit)
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       {Array.from(Array(total), (_, i) => (
         <Link key={i + 1} href={`?page=${i + 1}&limit=${limit}`} passHref>
           <Button className={`${page - 1 === i ? 'ring' : ''}`} size="sm">

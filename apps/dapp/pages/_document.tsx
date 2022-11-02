@@ -4,9 +4,10 @@
 import { Head, Html, Main, NextScript } from 'next/document'
 
 const Document = () => (
-  <Html>
+  // Initialize with dark theme active (determined by class on html).
+  <Html className="dark">
     <Head />
-    <body className="antialiased bg-white body-text">
+    <body className="body-text bg-background-base antialiased">
       <Main />
       <NextScript />
     </body>

@@ -313,7 +313,9 @@
     "yourTokensUnstaked": "Twoje ${{tokenSymbol}} tokeny zostały wypłacone."
   },
   "proposalModuleLabel": {
-    "cw-govmod-single": "Pojedynczy wybór"
+    "cw-govmod-single": "Pojedynczy wybór",
+    "cw-proposal-single": "Pojedynczy wybór",
+    "cwd-proposal-single": "Pojedynczy wybór"
   },
   "splash": {
     "anyoneCanParticipate": "Każdy z twojej społeczności może być pełnoprawnym uczestnikiem.",

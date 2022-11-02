@@ -1,5 +1,5 @@
 {
-  "extends": "@dao-dao/tsconfig/nextjs.json",
+  "extends": "@dao-dao/config/ts/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

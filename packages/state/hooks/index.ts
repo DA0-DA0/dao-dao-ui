@@ -1,4 +1,8 @@
 export * from './clients'
-export * from './useCw4VotingModule'
+
+export * from './useAwaitNextBlock'
+export * from './useLoadingDaoCardInfos'
+export * from './usePinnedDaos'
+export * from './useProfile'
 export * from './useVotingModule'
-export * from './useWalletBalance'
+export * from './useWalletProfile'

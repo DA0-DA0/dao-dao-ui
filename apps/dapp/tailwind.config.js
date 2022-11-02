@@ -7,7 +7,7 @@ const tailwindConfig = {
     './{components,pages,services}/**/*.{js,jsx,ts,tsx}',
     '../../packages/**/*.{js,jsx,ts,tsx}',
   ],
-  presets: [require('@dao-dao/ui/tailwind/config')],
+  presets: [require('@dao-dao/config/tailwind/config')],
   theme: {
     extend: {
       keyframes: {

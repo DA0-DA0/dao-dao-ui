@@ -5,9 +5,9 @@ import type { GetStaticProps, NextPage } from 'next'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 
-import { SuspenseLoader } from '@dao-dao/common'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { ErrorPage } from '@dao-dao/ui'
+import { SuspenseLoader } from '@dao-dao/stateful'
+import { ErrorPage } from '@dao-dao/stateless'
 
 const Custom404: NextPage = () => {
   const { t } = useTranslation()
@@ -18,7 +18,7 @@ const Custom404: NextPage = () => {
         <p>
           {t('error.pageNotFound')}{' '}
           <Link href="/">
-            <a className="underline link-text">
+            <a className="link-text underline">
               {t('info.considerReturningHome')}
             </a>
           </Link>

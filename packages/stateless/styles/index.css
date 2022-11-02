@@ -1,0 +1,398 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'studiofeixen';
+  src: url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold.eot');
+  src: url('https://font.withoutdoing.com/StudioFeixenSansEdgy-Bold.eot')
+      format('embedded-opentype'),
+    url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold.woff2')
+      format('woff2'),
+    url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold')
+      format('woff'),
+    url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold.ttf')
+      format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Fill full window height. */
+html,
+body,
+div#__next {
+  height: 100%;
+}
+
+/* Outline the tooltip arrow. */
+.MuiTooltip-arrow::before {
+  border-width: 1px;
+  border-color: var(--border-primary);
+}
+
+html {
+  --logo-fill: #06090b;
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  --logo-fill: #fff;
+  color-scheme: dark;
+}
+
+ol,
+ul,
+menu {
+  list-style: inherit;
+}
+
+.CodeMirror {
+  height: auto !important;
+  border-radius: 6px;
+}
+
+/* Don't show default up / down arrows on number input. */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* COLOR SYSTEM FIGMAS */
+/* https://www.figma.com/file/6M11csIFIi3IwnmDq9ZAB9/%E2%99%A3%EF%B8%8E--Dark-Tokens */
+/* https://www.figma.com/file/k0Qf3UOkEs6lPuezuDbkwN/%E2%99%A3%EF%B8%8E--Light-Tokens */
+
+@layer base {
+  :root {
+    /* Constants */
+    --vanta: 0, 0, 0;
+    --black: 21, 22, 23;
+    --dark: 36, 38, 40;
+    --light: 243, 246, 248;
+    --white: 255, 255, 255;
+    --brand: 123, 97, 255;
+    --active: 179, 160, 255;
+    --error: 199, 62, 89;
+    --valid: 57, 166, 153;
+    --warning: 255, 217, 102;
+
+    --color-vanta: rgb(var(--vanta));
+    --color-black: rgb(var(--black));
+    --color-dark: rgb(var(--dark));
+    --color-light: rgb(var(--light));
+    --color-white: rgb(var(--white));
+    --color-brand: rgb(var(--brand));
+    --color-active: rgb(var(--active));
+    --color-error: rgb(var(--error));
+    --color-valid: rgb(var(--valid));
+    --color-warning: rgb(var(--warning));
+
+    /* LIGHT THEME */
+    --color-background-base: var(--white);
+
+    /* Text */
+    --text-primary: rgba(var(--black), 1);
+    --text-body: rgba(var(--dark), 0.95);
+    --text-secondary: rgba(var(--dark), 0.7);
+    --text-tertiary: rgba(var(--dark), 0.5);
+    --text-brand: rgba(var(--brand), 0.95);
+    --text-interactive-disabled: rgba(var(--dark), 0.2);
+    --text-interactive-active: rgba(var(--active), 0.95);
+    --text-interactive-error: rgba(var(--error), 0.95);
+    --text-interactive-valid: rgba(var(--valid), 0.95);
+    --text-interactive-warning-title: rgba(var(--warning), 0.95);
+    --text-interactive-warning-body: rgba(var(--warning), 0.7);
+    --text-button-primary: rgba(var(--white), 0.95);
+    --text-button-disabled: rgba(var(--light), 0.75);
+
+    /* Icon */
+    --icon-primary: rgba(var(--dark), 0.9);
+    --icon-secondary: rgba(var(--dark), 0.6);
+    --icon-tertiary: rgba(var(--dark), 0.45);
+    --icon-brand: rgba(var(--brand), 0.9);
+    --icon-interactive-disabled: rgba(var(--dark), 0.15);
+    --icon-interactive-active: rgba(var(--active), 0.9);
+    --icon-interactive-error: rgba(var(--error), 0.9);
+    --icon-interactive-valid: rgba(var(--valid), 0.9);
+    --icon-interactive-warning: rgba(var(--warning), 0.9);
+    --icon-button-primary: rgba(var(--light), 0.95);
+    --icon-button-disabled: rgba(var(--light), 0.7);
+
+    /* Border */
+    --border-base: rgba(var(--light), 1);
+    --border-primary: rgba(var(--dark), 0.1);
+    --border-secondary: rgba(var(--dark), 0.05);
+    --border-interactive-hover: rgba(var(--dark), 0.15);
+    --border-interactive-selected: rgba(var(--dark), 0.2);
+    --border-interactive-focus: rgba(var(--dark), 0.2);
+    --border-interactive-disabled: rgba(var(--dark), 0.05);
+    --border-interactive-active: rgba(var(--brand), 0.65);
+    --border-interactive-error: rgba(var(--error), 0.65);
+
+    /* Background */
+    --background-primary: rgba(var(--dark), 0.08);
+    --background-secondary: rgba(var(--dark), 0.05);
+    --background-tertiary: rgba(var(--dark), 0.03);
+    --background-button: rgba(var(--black), 0.9);
+    --background-base: rgba(var(--white), 1);
+    --background-overlay: rgba(var(--vanta), 0.2);
+    --background-interactive-hover: rgba(var(--dark), 0.1);
+    --background-interactive-selected: rgba(var(--dark), 0.08);
+    --background-interactive-pressed: rgba(var(--dark), 0.15);
+    --background-interactive-disabled: rgba(var(--dark), 0.03);
+    --background-interactive-active: rgba(var(--brand), 0.25);
+    --background-interactive-error: rgba(var(--error), 0.15);
+    --background-interactive-valid: rgba(var(--valid), 0.08);
+    --background-interactive-warning: rgba(var(--warning), 0.05);
+    --background-button-hover: rgba(var(--black), 0.95);
+    --background-button-pressed: rgba(var(--vanta), 1);
+    --background-button-progress: rgba(var(--dark), 0.75);
+    --background-button-disabled: rgba(var(--dark), 0.4);
+    --background-button-active: rgba(var(--brand), 0.9);
+    /* Extra */
+    --background-button-secondary-default: rgba(var(--dark), 0.08);
+    --background-button-secondary-hover: rgba(var(--dark), 0.12);
+    --background-button-secondary-pressed: rgba(var(--dark), 0.15);
+    --background-button-secondary-disabled: rgba(var(--dark), 0.03);
+
+    /* Component */
+    --component-modal: rgba(var(--white), 1);
+    --component-dropdown: rgba(var(--white), 1);
+    --component-tooltip: rgba(15, 15, 16, 1);
+    --component-toast: rgba(12, 12, 13, 1);
+    --component-widget: rgba(var(--light), 0.2);
+    --component-pill: rgba(var(--brand), 0.8);
+    --component-badge-primary: rgba(var(--dark), 0.25);
+    --component-badge-brand: rgba(var(--brand), 0.4);
+    --component-badge-valid: rgba(var(--valid), 0.45);
+    --component-badge-error: rgba(var(--error), 0.45);
+  }
+
+  .dark {
+    /* DARK THEME */
+    --color-background-base: var(--black);
+
+    /* Text */
+    --text-primary: rgba(var(--white), 1);
+    --text-body: rgba(var(--light), 0.95);
+    --text-secondary: rgba(var(--light), 0.7);
+    --text-tertiary: rgba(var(--light), 0.5);
+    /* --text-brand is the same as the light theme */
+    --text-interactive-disabled: rgba(var(--light), 0.2);
+    /* remaining --text-interactive-* are the same as the light theme */
+    --text-button-primary: rgba(var(--black), 0.95);
+    --text-button-disabled: rgba(var(--dark), 0.75);
+
+    /* Icon */
+    --icon-primary: rgba(var(--light), 0.9);
+    --icon-secondary: rgba(var(--light), 0.6);
+    --icon-tertiary: rgba(var(--light), 0.45);
+    /* --icon-brand is the same as the light theme */
+    --icon-interactive-disabled: rgba(var(--light), 0.15);
+    /* --text-interactive-* are the same as the light theme */
+    --icon-button-primary: rgba(var(--dark), 0.95);
+    --icon-button-disabled: rgba(var(--dark), 0.7);
+
+    /* Border */
+    --border-base: rgba(var(--vanta), 1);
+    --border-primary: rgba(var(--light), 0.1);
+    --border-secondary: rgba(var(--light), 0.05);
+    --border-interactive-hover: rgba(var(--light), 0.15);
+    --border-interactive-selected: rgba(var(--light), 0.2);
+    --border-interactive-focus: rgba(var(--light), 0.2);
+    --border-interactive-disabled: rgba(var(--light), 0.05);
+    /* --border-interactive-active and --border-interactive-error are the same as the light theme */
+
+    /* Background */
+    --background-primary: rgba(var(--light), 0.08);
+    --background-secondary: rgba(var(--light), 0.05);
+    --background-tertiary: rgba(var(--light), 0.03);
+    --background-button: rgba(var(--light), 0.9);
+    --background-base: rgba(var(--black), 1);
+    --background-overlay: rgba(var(--vanta), 0.7);
+    --background-interactive-hover: rgba(var(--light), 0.1);
+    --background-interactive-selected: rgba(var(--light), 0.08);
+    --background-interactive-pressed: rgba(var(--light), 0.15);
+    --background-interactive-disabled: rgba(var(--light), 0.03);
+    /* --background-interactive-active, --background-interactive-error, and --background-interactive-valid are the same as the light theme */
+    --background-button-hover: rgba(var(--white), 0.95);
+    --background-button-pressed: rgba(var(--white), 1);
+    --background-button-progress: rgba(var(--light), 0.75);
+    --background-button-disabled: rgba(var(--light), 0.4);
+    /* --background-button-active is the same as the light theme */
+    /* Extra */
+    --background-button-secondary-default: rgba(var(--light), 0.08);
+    --background-button-secondary-hover: rgba(var(--light), 0.12);
+    --background-button-secondary-pressed: rgba(var(--light), 0.15);
+    --background-button-secondary-disabled: rgba(var(--light), 0.03);
+
+    /* Component */
+    --component-modal: rgba(var(--black), 1);
+    --component-dropdown: rgba(29, 30, 31, 1);
+    /* --component-tooltip, --component-toast, and --component-pill are the same as the light theme */
+    --component-widget: rgba(var(--dark), 0.2);
+    --component-badge-primary: rgba(var(--light), 0.25);
+    /* --component-badge-* are the same as the light theme */
+  }
+
+  .hero-text {
+    font-family: 'studiofeixen';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1.625rem;
+    line-height: 2rem;
+    color: var(--text-primary);
+  }
+
+  .header-text {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+    color: var(--text-primary);
+  }
+
+  .title-text {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    color: var(--text-primary);
+  }
+
+  .primary-text {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    line-height: 1.25rem;
+    color: var(--text-primary);
+  }
+
+  .body-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--text-body);
+  }
+
+  .button-text {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--text-button-primary);
+  }
+
+  .button-text-sm {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    color: var(--text-button-primary);
+  }
+
+  .link-text {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    color: var(--text-body);
+  }
+
+  .secondary-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 0.8125rem;
+    line-height: 1rem;
+    color: var(--text-secondary);
+  }
+
+  .legend-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--text-secondary);
+  }
+
+  .caption-text {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--text-tertiary);
+  }
+
+  .symbol-small-body-text {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.375rem;
+    color: var(--text-body);
+  }
+
+  .gradient-text {
+    background: radial-gradient(
+      146.53% 281.23% at 4.24% 23.36%,
+      #f99974 0%,
+      #fe4366 16.67%,
+      #f43d88 40.23%,
+      #d72de5 55.27%,
+      #3b7bea 68.75%,
+      #30b1cd 82.81%,
+      #40cad7 92.71%,
+      #09aca2 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    mix-blend-mode: normal;
+  }
+}
+
+@layer utilities {
+  .styled-scrollbar {
+    scrollbar-color: rgba(var(--dark), 0.1);
+    scrollbar-width: thin;
+  }
+  .styled-scrollbar::-webkit-scrollbar {
+    width: 0.3rem;
+    height: 0.3rem;
+  }
+  .styled-scrollbar::-webkit-scrollbar-track {
+    width: 0.3rem;
+    height: 0.3rem;
+    background-color: transparent;
+  }
+  .styled-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--dark), 0.1);
+    cursor: pointer;
+    border-radius: 999px;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar,
+  .no-scrollbar::-webkit-scrollbar-track,
+  .no-scrollbar::-webkit-scrollbar-thumb {
+    display: none;
+    width: 0;
+    height: 0;
+    background-color: transparent;
+  }
+}

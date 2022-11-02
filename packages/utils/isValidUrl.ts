@@ -1,8 +1,9 @@
 export const isValidUrl = (url: string) => {
-  if (url === '') {
-    return true
-  } else {
-    const regex = /^https:\/\/[^\s]*\.(?:gif|png|jpg|jpeg|svg)$/
-    return regex.test(url)
+  let u
+  try {
+    u = new URL(url)
+  } catch (_) {
+    return false
   }
+  return u.protocol === 'https:'
 }

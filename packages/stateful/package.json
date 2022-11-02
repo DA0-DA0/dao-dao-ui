@@ -1,0 +1,47 @@
+{
+  "name": "@dao-dao/stateful",
+  "version": "2.0.1",
+  "scripts": {
+    "format": "eslint . --fix",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@cosmjs/encoding": "0.29.3",
+    "@cosmjs/stargate": "0.29.3",
+    "@dao-dao/state": "2.0.1",
+    "@dao-dao/stateless": "2.0.1",
+    "@dao-dao/utils": "2.0.1",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/icons-material": "^5.10.3",
+    "@mui/material": "^5.10.3",
+    "@walletconnect/browser-utils": "^1.8.0",
+    "axios": "^0.26.1",
+    "a11y-react-emoji": "^1.2.0",
+    "buffer": "^6.0.3",
+    "clsx": "^1.1.1",
+    "fuse.js": "^6.6.2",
+    "i18next": "^21.8.10",
+    "lodash.clonedeep": "^4.5.0",
+    "next-seo": "^5.4.0",
+    "react": "18.1.0",
+    "react-hook-form": "7.20.4",
+    "react-hot-toast": "^2.1.1",
+    "react-i18next": "^11.0.0",
+    "react-timeago": "^7.1.0",
+    "recoil": "^0.7.2",
+    "remove-markdown": "^0.5.0"
+  },
+  "devDependencies": {
+    "@dao-dao/config": "2.0.1",
+    "@dao-dao/types": "2.0.1",
+    "@noahsaso/cosmodal": "^0.8.0",
+    "@types/lodash.clonedeep": "^4.5.0",
+    "@types/remove-markdown": "^0.3.1",
+    "eslint": "^8.23.1",
+    "next": "^12.2.0",
+    "typescript": "^4.8.3"
+  },
+  "prettier": "@dao-dao/config/prettier",
+  "private": true
+}
