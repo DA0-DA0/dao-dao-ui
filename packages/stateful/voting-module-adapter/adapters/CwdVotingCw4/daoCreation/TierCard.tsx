@@ -24,7 +24,7 @@ import {
 import { NewDao } from '@dao-dao/types'
 import {
   validateAddress,
-  validatePositive,
+  validateNonNegative,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -141,18 +141,18 @@ export const TierCard = ({
             onMinus={() =>
               setValue(
                 `votingModuleAdapter.data.tiers.${tierIndex}.weight`,
-                Math.max((data.tiers?.[tierIndex]?.weight ?? 0) - 1, 1)
+                Math.max((data.tiers?.[tierIndex]?.weight ?? 0) - 1, 0)
               )
             }
             onPlus={() =>
               setValue(
                 `votingModuleAdapter.data.tiers.${tierIndex}.weight`,
-                Math.max((data.tiers?.[tierIndex]?.weight ?? 0) + 1, 1)
+                Math.max((data.tiers?.[tierIndex]?.weight ?? 0) + 1, 0)
               )
             }
             register={register}
             step={1}
-            validation={[validatePositive, validateRequired]}
+            validation={[validateNonNegative, validateRequired]}
           />
 
           <InputErrorMessage
