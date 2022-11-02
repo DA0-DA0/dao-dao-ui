@@ -211,6 +211,7 @@ export const InnerPfpkNftSelectionModal = ({
         />
       }
       selectedIds={selected ? [selected] : []}
+      visible
     />
   )
 }

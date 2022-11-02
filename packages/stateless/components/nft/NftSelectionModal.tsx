@@ -16,7 +16,7 @@ import { NoContent } from '../NoContent'
 import { NftCard } from './NftCard'
 
 export interface NftSelectionModalProps<T extends NftCardInfo>
-  extends Omit<ModalProps, 'children' | 'header' | 'visible'>,
+  extends Omit<ModalProps, 'children' | 'header'>,
     Required<Pick<ModalProps, 'header'>> {
   nfts: LoadingDataWithError<T[]>
   selectedIds: string[]
@@ -166,7 +166,6 @@ export const NftSelectionModal = <T extends NftCardInfo>({
           />
         </div>
       }
-      visible
     >
       {nfts.loading ? (
         <Loader className="-mt-6" />

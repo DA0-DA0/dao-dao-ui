@@ -55,6 +55,7 @@ Default.args = {
     subtitle: 'Select the NFTs you want to stake from the {{name}} collection.',
   },
   actionLabel: 'Stake',
+  visible: true,
 }
 
 export const Loading = Template.bind({})

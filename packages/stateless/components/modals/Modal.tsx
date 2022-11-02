@@ -11,6 +11,20 @@ import { IconButton } from '../icon_buttons'
 
 export * from '@dao-dao/types/components/Modal'
 
+// This component renders a modal above the page content with a dim backdrop.
+//
+// Ideally, it is not conditionally rendered, but instead is always rendered and
+// its `visible` prop is used to control its visibility. This is because the
+// fade in/out animation only occurs when the component is mounted and
+// hidden/unhidden. Some modals, like the stateful PfpkNftSelectionModal, are
+// conditionally rendered because they load a good amount of state which we
+// don't want to load until necessary.
+//
+// Common gotcha: If adding any keypress listeners to navigate or perform
+// actions in the modal, make sure to only add the listeners when the modal is
+// visible. See the code below which adds a keypress listener to close the modal
+// on escape, which only adds the listener when visible.
+
 export const Modal = ({
   children,
   visible,
@@ -24,9 +38,9 @@ export const Modal = ({
   headerContainerClassName,
   titleClassName,
 }: ModalProps) => {
-  // Close modal on escape.
+  // Close modal on escape, only listening if visible.
   useEffect(() => {
-    if (!onClose) {
+    if (!onClose || !visible) {
       return
     }
 
@@ -37,7 +51,7 @@ export const Modal = ({
     document.addEventListener('keydown', handleKeyPress)
     // Clean up event listener.
     return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [onClose])
+  }, [onClose, visible])
 
   const mountedInBrowser = useMountedInBrowser()
 

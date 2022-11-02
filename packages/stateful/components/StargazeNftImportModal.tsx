@@ -141,6 +141,7 @@ export const InnerStargazeNftImportModal = ({
           : setSelected(nfts.data.map((nft) => getIdForNft(nft)) ?? [])
       }
       selectedIds={selected}
+      visible
     />
   )
 }
