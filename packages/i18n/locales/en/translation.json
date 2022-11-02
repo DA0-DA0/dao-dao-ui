@@ -69,9 +69,9 @@
     "stakeOrUnstake": "Stake or unstake",
     "stakeTokenSymbol": "Stake ${{tokenSymbol}}",
     "stakingMode": {
+      "claim": "Claim tokens",
       "stake": "Stake tokens",
-      "unstake": "Unstake tokens",
-      "claim": "Claim tokens"
+      "unstake": "Unstake tokens"
     },
     "toggleTheme": "Toggle theme",
     "unfollow": "Unfollow",
@@ -466,22 +466,22 @@
   "success": {
     "addedToken": "Added token to Keplr.",
     "daoCreatedPleaseWait": "DAO created. You will be redirected once the DAO page is ready...",
+    "depositedTokenIntoDao": "Deposited {{amount}} ${{tokenSymbol}} into the {{daoName}} treasury.",
     "proposalClosed": "Closed successfully.",
     "proposalExecuted": "Executed successfully. Refreshing page...",
     "transactionExecuted": "Transaction executed successfully.",
-    "voteCast": "Vote successfully cast.",
-    "depositedTokenIntoDao": "Deposited {{amount}} ${{tokenSymbol}} into the {{daoName}} treasury."
+    "voteCast": "Vote successfully cast."
   },
   "title": {
     "404": "404: Not Found",
     "500": "500: Error",
     "actions": "Actions",
-    "balance": "Balance",
     "actions_one": "Action",
     "actions_other": "Actions",
     "addCw20ToTreasury": "Display Token Balance in Treasury",
     "addCw721ToTreasury": "Display NFT Collection in Treasury",
     "advancedConfiguration": "Advanced configuration",
+    "balance": "Balance",
     "balances": "Balances",
     "beforeYouEnter": "Before you enter",
     "casting": "Casting",
