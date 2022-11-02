@@ -1,20 +1,17 @@
-import { toAscii, toBase64 } from '@cosmjs/encoding'
+import { fromAscii, fromBase64, toAscii, toBase64 } from '@cosmjs/encoding'
 
 import {
   BankMsg,
-  DistributionMsg,
-  StakingMsg,
-} from '@dao-dao/state/clients/cw-proposal-single'
-import { ExecuteMsg as MintExecuteMsg } from '@dao-dao/types/contracts/cw20-gov'
-import {
   CosmosMsgFor_Empty,
-  ProposalResponse,
+  DistributionMsg,
+  MintMsg,
+  StakingMsg,
   WasmMsg,
-} from '@dao-dao/types/contracts/cw3-dao'
+} from '@dao-dao/types/contracts/common'
 
 export function parseEncodedMessage(base64String?: string) {
   if (base64String) {
-    const jsonMessage = decodeURIComponent(escape(atob(base64String)))
+    const jsonMessage = fromAscii(fromBase64(base64String))
     if (jsonMessage) {
       return JSON.parse(jsonMessage)
     }
@@ -67,7 +64,7 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
 }
 
 export function decodeMessages(
-  msgs: ProposalResponse['msgs']
+  msgs: CosmosMsgFor_Empty[]
 ): { [key: string]: any }[] {
   const decodedMessageArray: any[] = []
   const proposalMsgs = Object.values(msgs)
@@ -104,7 +101,7 @@ export function decodeMessages(
   return decodedMessages
 }
 
-export function decodedMessagesString(msgs: ProposalResponse['msgs']): string {
+export function decodedMessagesString(msgs: CosmosMsgFor_Empty[]): string {
   const decodedMessageArray = decodeMessages(msgs)
   return JSON.stringify(decodedMessageArray, undefined, 2)
 }
@@ -118,16 +115,16 @@ export const makeWasmMessage = (message: {
   // We need to encode Wasm Execute, Instantiate, and Migrate messages.
   let msg = message
   if (message?.wasm?.execute) {
-    msg.wasm.execute.msg = btoa(
-      unescape(encodeURIComponent(JSON.stringify(message.wasm.execute.msg)))
+    msg.wasm.execute.msg = toBase64(
+      toAscii(JSON.stringify(message.wasm.execute.msg))
     )
   } else if (message?.wasm?.instantiate) {
-    msg.wasm.instantiate.msg = btoa(
-      unescape(encodeURIComponent(JSON.stringify(message.wasm.instantiate.msg)))
+    msg.wasm.instantiate.msg = toBase64(
+      toAscii(JSON.stringify(message.wasm.instantiate.msg))
     )
   } else if (message.wasm.migrate) {
-    msg.wasm.migrate.msg = btoa(
-      unescape(encodeURIComponent(JSON.stringify(message.wasm.migrate.msg)))
+    msg.wasm.migrate.msg = toBase64(
+      toAscii(JSON.stringify(message.wasm.migrate.msg))
     )
   }
   // Messages such as update or clear admin pass through without modification.
@@ -135,7 +132,7 @@ export const makeWasmMessage = (message: {
 }
 
 export const makeExecutableMintMessage = (
-  msg: MintExecuteMsg,
+  msg: MintMsg,
   contractAddress: string
 ): CosmosMsgFor_Empty => ({
   wasm: {
@@ -150,7 +147,7 @@ export const makeExecutableMintMessage = (
 export const makeMintMessage = (
   amount: string,
   recipient: string
-): MintExecuteMsg => ({
+): MintMsg => ({
   mint: {
     amount,
     recipient,

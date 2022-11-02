@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import '@dao-dao/ui/styles/index.css'
+import '@dao-dao/stateless/styles/index.css'
 import '@fontsource/inter/latin.css'
 import '@fontsource/jetbrains-mono/latin.css'
 
@@ -9,31 +9,34 @@ import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
-import { useRegisterAdaptersOnMount } from '@dao-dao/common'
-import { activeThemeAtom, mountedInBrowserAtom } from '@dao-dao/state'
-import { ErrorBoundary, Notifications, Theme, ThemeProvider } from '@dao-dao/ui'
+import {
+  SubQueryProvider,
+  activeThemeAtom,
+  mountedInBrowserAtom,
+  navigatingToHrefAtom,
+} from '@dao-dao/state'
+import { WalletProvider } from '@dao-dao/stateful'
+import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 import { AppLayout, HomepageLayout } from '@/components'
 
 const InnerApp = ({ Component, pageProps }: AppProps) => {
-  useRegisterAdaptersOnMount()
-
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
+  const [navigatingToHref, setNavigatingToHref] =
+    useRecoilState(navigatingToHrefAtom)
   const [_theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
-  const [accentColor, setAccentColor] = useState<string | undefined>()
 
   const isHomepage = router.pathname === '/'
   // Always display the homepage with dark theme.
   const theme = isHomepage ? Theme.Dark : _theme
-  const Layout = isHomepage ? HomepageLayout : AppLayout
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -48,24 +51,51 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
     setThemeChangeCount((c) => c + 1)
   }, [theme])
 
+  // On route change, clear navigation loading state.
+  useEffect(() => {
+    setNavigatingToHref(undefined)
+  }, [router.asPath, setNavigatingToHref])
+
+  // Unset navigation loading state after 30 second timeout.
+  useEffect(() => {
+    const timeout = setTimeout(() => setNavigatingToHref(undefined), 30 * 1000)
+    return () => clearTimeout(timeout)
+  }, [navigatingToHref, setNavigatingToHref])
+
   return (
     <ThemeProvider
-      accentColor={accentColor}
-      setAccentColor={setAccentColor}
       theme={theme}
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <ErrorBoundary>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+      <SubQueryProvider>
+        {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
+        {router.isFallback ? (
+          <LayoutLoading>
+            <Component {...pageProps} />
+          </LayoutLoading>
+        ) : isHomepage ? (
+          <HomepageLayout>
+            <Component {...pageProps} />
+          </HomepageLayout>
+        ) : (
+          <WalletProvider>
+            <AppLayout>
+              <Component {...pageProps} />
+            </AppLayout>
+          </WalletProvider>
+        )}
 
-        <Notifications />
-      </ErrorBoundary>
+        <ToastNotifications />
+      </SubQueryProvider>
     </ThemeProvider>
   )
 }
+
+// Plain layout while layout is loading (fallback page).
+const LayoutLoading = ({ children }: { children: ReactNode }) => (
+  <main className="h-full min-h-screen w-full overflow-hidden">{children}</main>
+)
 
 const DApp = (props: AppProps) => {
   const { t } = useTranslation()

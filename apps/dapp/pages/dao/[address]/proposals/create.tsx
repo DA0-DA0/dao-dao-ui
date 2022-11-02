@@ -1,48 +1,263 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { InformationCircleIcon } from '@heroicons/react/outline'
-import { useWallet } from '@noahsaso/cosmodal'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
+import { SignMode } from 'interchain-rpc/main/codegen/cosmos/tx/signing/v1beta1/signing'
+import { SimulateRequest } from 'interchain-rpc/main/codegen/cosmos/tx/v1beta1/service'
+import {
+  AuthInfo,
+  Fee,
+  Tx,
+  TxBody,
+} from 'interchain-rpc/main/codegen/cosmos/tx/v1beta1/tx'
+import cloneDeep from 'lodash.clonedeep'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
-  ConnectWalletButton,
+  cosmosRpcClientForChainSelector,
+  proposalCreatedCardPropsAtom,
+  proposalDraftsAtom,
+  refreshProposalsIdAtom,
+  useVotingModule,
+} from '@dao-dao/state'
+import {
   DaoPageWrapper,
   DaoPageWrapperProps,
   SuspenseLoader,
-  useDaoInfoContext,
-} from '@dao-dao/common'
-import { makeGetDaoStaticProps } from '@dao-dao/common/server'
-import { matchAndLoadCommon } from '@dao-dao/proposal-module-adapter'
-import { refreshProposalsIdAtom, useVotingModule } from '@dao-dao/state'
+} from '@dao-dao/stateful'
 import {
-  Breadcrumbs,
-  CopyToClipboard,
-  InputThemedText,
+  CwdProposalSingleAdapter,
+  matchAndLoadCommon,
+  matchAdapter as matchProposalModuleAdapter,
+} from '@dao-dao/stateful/proposal-module-adapter'
+import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
+import {
+  CreateProposal,
   Loader,
   Logo,
   PageLoader,
-  Tooltip,
-} from '@dao-dao/ui'
-import { SITE_URL } from '@dao-dao/utils'
-import { useVotingModuleAdapter } from '@dao-dao/voting-module-adapter'
+  ProfileDisconnectedCard,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
+import {
+  BaseNewProposalProps,
+  CosmosMsgFor_Empty,
+  ProposalDraft,
+  ProposalPrefill,
+} from '@dao-dao/types'
+import { SITE_URL, cwMsgToEncodeObject } from '@dao-dao/utils'
 
-import { SmallScreenNav } from '@/components'
+import { ProfileNewProposalCard } from '@/components'
 
+// TODO(v2): Save latest proposal to localStorage, separate from drafts.
+// TODO(v2): Fix errors getting stuck when removing components with errors (I
+// think this is when it happens). Can't click preview or submit sometimes even
+// tho there are no visible errors.
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, name, proposalModules } = useDaoInfoContext()
-  const { address: walletAddress, connected } = useWallet()
+  const daoInfo = useDaoInfoContext()
+  const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
+    fetchMembership: true,
+  })
+  const { connected, status, signingCosmWasmClient } = useWallet()
 
-  const { isMember } = useVotingModule(coreAddress, { fetchMembership: true })
+  const [selectedProposalModule, setSelectedProposalModule] = useState(
+    // Default to single choice proposal module or first otherwise.
+    daoInfo.proposalModules.find(
+      ({ contractName }) =>
+        matchProposalModuleAdapter(contractName)?.id ===
+        CwdProposalSingleAdapter.id
+    ) ?? daoInfo.proposalModules[0]
+  )
+  // Set once prefill has been assessed, indicating NewProposal can load now.
+  const [prefillChecked, setPrefillChecked] = useState(false)
+
+  const proposalModuleAdapterCommon = useMemo(
+    () =>
+      matchAndLoadCommon(selectedProposalModule, {
+        chainId: daoInfo.chainId,
+        coreAddress: daoInfo.coreAddress,
+        Loader,
+        Logo,
+      }),
+    [daoInfo.chainId, daoInfo.coreAddress, selectedProposalModule]
+  )
+
   const {
-    components: { ProposalCreationAdditionalAddresses },
-  } = useVotingModuleAdapter()
+    fields: { defaultNewProposalForm, newProposalFormTitleKey },
+    components: { NewProposal },
+  } = proposalModuleAdapterCommon
+
+  const formMethods = useForm({
+    mode: 'onChange',
+    defaultValues: defaultNewProposalForm,
+  })
+
+  const loadPrefill = useCallback(
+    ({ id, data }: ProposalPrefill<any>) => {
+      // Attempt to find proposal module to prefill and set if found.
+      const matchingProposalModule = daoInfo.proposalModules.find(
+        ({ contractName }) =>
+          matchProposalModuleAdapter(contractName)?.id === id
+      )
+
+      if (matchingProposalModule) {
+        setSelectedProposalModule(matchingProposalModule)
+        formMethods.reset(data)
+      }
+    },
+    [daoInfo.proposalModules, formMethods]
+  )
+
+  // Prefill form with data from parameter once ready.
+  useEffect(() => {
+    if (!router.isReady || prefillChecked) {
+      return
+    }
+
+    try {
+      const potentialDefaultValue = router.query.prefill
+      if (typeof potentialDefaultValue !== 'string') {
+        return
+      }
+
+      const prefillData = JSON.parse(potentialDefaultValue)
+      if (
+        prefillData.constructor.name === 'Object' &&
+        'id' in prefillData &&
+        'data' in prefillData
+      ) {
+        loadPrefill(prefillData)
+      }
+      // If failed to parse, do nothing.
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setPrefillChecked(true)
+    }
+  }, [
+    router.query.prefill,
+    router.isReady,
+    daoInfo.proposalModules,
+    formMethods,
+    prefillChecked,
+    loadPrefill,
+  ])
+
+  const setProposalCreatedCardProps = useSetRecoilState(
+    proposalCreatedCardPropsAtom
+  )
+
+  const [drafts, setDrafts] = useRecoilState(
+    proposalDraftsAtom(daoInfo.coreAddress)
+  )
+  const [draftIndex, setDraftIndex] = useState<number>()
+  const draft =
+    draftIndex !== undefined && drafts.length > draftIndex
+      ? drafts[draftIndex]
+      : undefined
+  const loadDraft = useCallback(
+    (loadIndex: number) => {
+      // Already saving to a selected draft or draft doesn't exist.
+      if (draftIndex || loadIndex >= drafts.length) {
+        return
+      }
+
+      const draft = drafts[loadIndex]
+      if (!draft) {
+        toast.error(t('error.loadingData'))
+      }
+      // Deep clone to prevent values from being readOnly.
+      loadPrefill(cloneDeep(draft.proposal))
+      setDraftIndex(loadIndex)
+    },
+    [draftIndex, drafts, loadPrefill, t]
+  )
+  const deleteDraft = useCallback(
+    (deleteIndex: number) => {
+      setDrafts((drafts) => drafts.filter((_, index) => index !== deleteIndex))
+      setDraftIndex(undefined)
+    },
+    [setDrafts]
+  )
+  const unloadDraft = () => setDraftIndex(undefined)
+
+  const proposalData = formMethods.watch()
+  const proposalName = formMethods.watch(newProposalFormTitleKey)
+  const saveDraft = useCallback(() => {
+    // Already saving to a selected draft.
+    if (draft) {
+      return
+    }
+
+    const newDraft: ProposalDraft = {
+      name: proposalName,
+      createdAt: Date.now(),
+      lastUpdatedAt: Date.now(),
+      proposal: {
+        id: proposalModuleAdapterCommon.id,
+        data: proposalData,
+      },
+    }
+
+    setDrafts([newDraft, ...drafts])
+    setDraftIndex(0)
+  }, [
+    draft,
+    drafts,
+    proposalData,
+    proposalModuleAdapterCommon.id,
+    setDrafts,
+    proposalName,
+  ])
+
+  // Debounce saving draft every 3 seconds.
+  const [draftSaving, setDraftSaving] = useState(false)
+  useEffect(() => {
+    if (draftIndex === undefined) {
+      return
+    }
+
+    // Save after 3 seconds.
+    setDraftSaving(true)
+    const timeout = setTimeout(() => {
+      setDrafts((drafts) =>
+        drafts.map((savedDraft, index) =>
+          index === draftIndex
+            ? {
+                ...savedDraft,
+                name: proposalName,
+                lastUpdatedAt: Date.now(),
+                proposal: {
+                  id: proposalModuleAdapterCommon.id,
+                  // Deep clone to prevent values from becoming readOnly.
+                  data: cloneDeep(proposalData),
+                },
+              }
+            : savedDraft
+        )
+      )
+      setDraftSaving(false)
+    }, 3000)
+    // Debounce.
+    return () => clearTimeout(timeout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    // Instance changes every time, so compare stringified verison.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    JSON.stringify(proposalData),
+    draftIndex,
+    setDrafts,
+    proposalName,
+    proposalModuleAdapterCommon.id,
+  ])
 
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
   const refreshProposals = useCallback(
@@ -50,136 +265,130 @@ const InnerProposalCreate = () => {
     [setRefreshProposalsId]
   )
 
-  const onCreateSuccess = useCallback(
-    async (proposalId: string) => {
+  const onCreateSuccess: BaseNewProposalProps['onCreateSuccess'] = useCallback(
+    (info) => {
+      // Show modal.
+      setProposalCreatedCardProps(info)
+
+      // Delete draft.
+      if (draftIndex !== undefined) {
+        deleteDraft(draftIndex)
+      }
+
+      // Refresh proposals state.
       refreshProposals()
-      // Manually revalidate DAO static props (and proposal page, in case it
-      // cached a 404 from a previous visit attempt) and navigate to new
-      // proposal page.
-      await fetch(`/api/revalidate?d=${coreAddress}&p=${proposalId}`)
-      router.push(`/dao/${coreAddress}/proposals/${proposalId}`)
+
+      // Navigate to proposal (underneath the creation modal).
+      router.push(`/dao/${info.dao.coreAddress}/proposals/${info.id}`)
     },
-    [coreAddress, refreshProposals, router]
+    [
+      deleteDraft,
+      draftIndex,
+      refreshProposals,
+      router,
+      setProposalCreatedCardProps,
+    ]
   )
 
-  const [selectedProposalModuleIndex, setSelectedProposalModuleIndex] =
-    useState(0)
-  const selectedProposalModule = proposalModules[selectedProposalModuleIndex]
+  const cosmosRpcClient = useRecoilValue(
+    cosmosRpcClientForChainSelector(daoInfo.chainId)
+  )
+  // Simulate executing Cosmos messages on-chain to check errors before a
+  // proposal is created. We can't just use the simulate function on
+  // SigningCosmWasmClient or SigningStargateClient because they include signer
+  // info from the wallet. We want to simulate these messages coming from the
+  // DAO, so we don't want wallet signing info included. Those simulate
+  // functions internally call this function:
+  // https://github.com/cosmos/cosmjs/blob/2c3b27eeb3622a6108086267ba6faf3984251be3/packages/stargate/src/modules/tx/queries.ts#L47
+  // We can copy this simulate function and leave out the wallet-specific fields
+  // (i.e. sequence) and unnecessary fields (i.e. publicKey, memo) to simulate
+  // these messages from the DAO core address.
+  const simulateMsgs = useCallback(
+    async (msgs: CosmosMsgFor_Empty[]): Promise<void> => {
+      // If no messages, nothing to simulate.
+      if (msgs.length === 0) {
+        return
+      }
 
-  const selectedProposalModuleCommon = useMemo(
-    () =>
-      matchAndLoadCommon(selectedProposalModule, {
-        coreAddress,
-        Logo,
-        Loader,
-      }),
-    [coreAddress, selectedProposalModule]
+      // Need signing client to access protobuf type registry.
+      if (!signingCosmWasmClient) {
+        throw new Error(t('error.connectWalletToContinue'))
+      }
+
+      const encodeObjects = msgs.map((msg) => {
+        const encoded = cwMsgToEncodeObject(msg, daoInfo.coreAddress)
+        return signingCosmWasmClient.registry.encodeAsAny(encoded)
+      })
+
+      const tx = Tx.fromPartial({
+        authInfo: AuthInfo.fromPartial({
+          fee: Fee.fromPartial({}),
+          signerInfos: [
+            {
+              modeInfo: {
+                single: { mode: SignMode.SIGN_MODE_UNSPECIFIED },
+              },
+            },
+          ],
+        }),
+        body: TxBody.fromPartial({
+          messages: encodeObjects,
+          memo: '',
+        }),
+        signatures: [new Uint8Array()],
+      })
+
+      const request = SimulateRequest.fromPartial({
+        txBytes: Tx.encode(tx).finish(),
+      })
+
+      await cosmosRpcClient.tx.v1beta1.simulate(request)
+    },
+    [cosmosRpcClient.tx.v1beta1, daoInfo.coreAddress, signingCosmWasmClient, t]
   )
 
   return (
-    <>
-      <SmallScreenNav />
-
-      <div className="flex flex-col gap-14 justify-center p-6 md:flex-row md:gap-8">
-        <div className="md:w-2/3">
-          <Breadcrumbs
-            className="mb-6"
-            crumbs={[
-              ['/home', t('title.home')],
-              [`/dao/${coreAddress}`, name],
-              [router.asPath, t('title.createAProposal')],
-            ]}
-          />
-
-          <h2 className="mb-6 font-medium lg:hidden">
-            {t('title.createAProposal')}
-          </h2>
-
-          {!isMember && (
-            <p className="-mt-4 mb-6 text-error caption-text">
-              {t('error.mustBeMemberToCreateProposal')}
-            </p>
-          )}
-
-          {proposalModules.length > 1 ? (
-            <select
-              className="py-2 px-3 mb-2 text-body bg-transparent rounded-lg border border-default focus:outline-none focus:ring-1 ring-brand ring-offset-0 transition"
-              onChange={({ target: { value } }) =>
-                setSelectedProposalModuleIndex(Number(value))
-              }
-              value={selectedProposalModuleIndex}
-            >
-              {proposalModules.map(({ address, contractName }, index) => (
-                <option key={address} value={index}>
-                  {t(
-                    `proposalModuleLabel.${
-                      contractName.split(':').slice(-1)[0]
-                    }`
-                  )}{' '}
-                  {t('title.proposals', { count: 1 })}
-                </option>
-              ))}
-            </select>
+    <FormProvider {...formMethods}>
+      <CreateProposal
+        daoInfo={daoInfo}
+        newProposal={
+          <SuspenseLoader
+            fallback={<PageLoader />}
+            forceFallback={!prefillChecked}
+          >
+            <NewProposal
+              deleteDraft={deleteDraft}
+              draft={draft}
+              draftSaving={draftSaving}
+              drafts={drafts}
+              loadDraft={loadDraft}
+              onCreateSuccess={onCreateSuccess}
+              saveDraft={saveDraft}
+              simulateMsgs={simulateMsgs}
+              unloadDraft={unloadDraft}
+            />
+          </SuspenseLoader>
+        }
+        notMember={
+          isMember === false &&
+          // Only confirm not a member once wallet status has stopped trying
+          // to connect. If autoconnecting, we don't want to flash "you're not
+          // a member" text yet.
+          status === WalletConnectionStatus.ReadyForConnection
+        }
+        proposalModule={selectedProposalModule}
+        rightSidebarContent={
+          connected ? (
+            <ProfileNewProposalCard
+              proposalModuleAdapterCommon={proposalModuleAdapterCommon}
+            />
           ) : (
-            <Tooltip label={t('info.proposalModuleCreationTooltip')}>
-              <div>
-                <InputThemedText className="inline-flex flex-row gap-2 items-center px-3 mb-2">
-                  <span>
-                    {t(
-                      `proposalModuleLabel.${
-                        selectedProposalModule.contractName
-                          .split(':')
-                          .slice(-1)[0]
-                      }`
-                    )}{' '}
-                    {t('title.proposals', { count: 1 })}
-                  </span>
-
-                  <InformationCircleIcon className="shrink-0 w-4 h-4 text-disabled cursor-help" />
-                </InputThemedText>
-              </div>
-            </Tooltip>
-          )}
-
-          {selectedProposalModuleCommon && (
-            <SuspenseLoader fallback={<Loader />}>
-              <selectedProposalModuleCommon.components.CreateProposalForm
-                ConnectWalletButton={ConnectWalletButton}
-                connected={connected}
-                onCreateSuccess={onCreateSuccess}
-                walletAddress={walletAddress}
-              />
-            </SuspenseLoader>
-          )}
-        </div>
-
-        <div className="flex-1">
-          <h2 className="mb-4 font-medium text-medium">
-            {t('title.addresses')}
-          </h2>
-
-          <div className="grid grid-cols-3 gap-x-1 gap-y-2 items-center mb-8">
-            <p className="font-mono text-sm text-tertiary">
-              {t('info.daoAddress')}
-            </p>
-            <div className="col-span-2">
-              <CopyToClipboard value={coreAddress} />
-            </div>
-
-            <ProposalCreationAdditionalAddresses />
-          </div>
-
-          {selectedProposalModuleCommon && (
-            <>
-              <h2 className="mb-4 font-medium text-medium">
-                {t('title.proposalInfo')}
-              </h2>
-              <selectedProposalModuleCommon.components.ProposalModuleInfo className="md:flex-col md:items-stretch md:p-0 md:border-0" />
-            </>
-          )}
-        </div>
-      </div>
-    </>
+            <ProfileDisconnectedCard />
+          )
+        }
+        setProposalModule={setSelectedProposalModule}
+      />
+    </FormProvider>
   )
 }
 
@@ -188,9 +397,7 @@ const ProposalCreatePage: NextPage<DaoPageWrapperProps> = ({
   ...props
 }) => (
   <DaoPageWrapper {...props}>
-    <SuspenseLoader fallback={<PageLoader />}>
-      <InnerProposalCreate />
-    </SuspenseLoader>
+    <InnerProposalCreate />
   </DaoPageWrapper>
 )
 

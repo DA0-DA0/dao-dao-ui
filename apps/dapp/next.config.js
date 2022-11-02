@@ -8,15 +8,12 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 const withInterceptStdout = require('next-intercept-stdout')
 const withTM = require('next-transpile-modules')([
-  '@dao-dao/ui',
-  '@dao-dao/icons',
+  '@dao-dao/stateless',
   '@dao-dao/utils',
   '@dao-dao/state',
-  '@dao-dao/actions',
-  '@dao-dao/common',
+  '@dao-dao/stateful',
   '@dao-dao/i18n',
-  '@dao-dao/voting-module-adapter',
-  '@dao-dao/proposal-module-adapter',
+  '@dao-dao/types',
 ])
 
 const { withSentryConfig } = require('@sentry/nextjs')
@@ -30,7 +27,7 @@ const sentryWebpackPluginOptions = {
 const { i18n } = require('./next-i18next.config')
 
 /** @type {import("next").NextConfig} */
-let config = {
+const config = {
   i18n,
   /*
     The reactStrictMode flag is set to false
@@ -87,6 +84,9 @@ let config = {
       process.env.CI !== 'true' || !process.env.SENTRY_AUTH_TOKEN,
     disableClientWebpackPlugin:
       process.env.CI !== 'true' || !process.env.SENTRY_AUTH_TOKEN,
+  },
+  images: {
+    domains: ['ipfs.stargaze.zone', 'nftstorage.link'],
   },
 }
 

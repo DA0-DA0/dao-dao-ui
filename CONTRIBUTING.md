@@ -28,11 +28,11 @@ In general, you'll want to either (1) create issues for bugs or (2) create pull 
 If you spot a problem, [search if an issue already
 exists](https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-issues-and-pull-requests#search-by-the-title-body-or-comments).
 If a related issue doesn't exist, you can open a new issue using a relevant
-[issue form](https://github.com/DA0-DA0/dao-ui/issues/new/choose).
+[issue form](https://github.com/DA0-DA0/dao-dao-ui/issues/new/choose).
 
 #### Solve an issue
 
-Scan through our [existing issues](https://github.com/DA0-DA0/dao-ui/issues) to
+Scan through our [existing issues](https://github.com/DA0-DA0/dao-dao-ui/issues) to
 find one that interests you. You can narrow down the search using `labels` as
 filters. As a general rule, we don't assign issues to anyone. If you find an
 issue to work on, you are welcome to open a PR with a fix.
