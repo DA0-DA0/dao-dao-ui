@@ -82,7 +82,7 @@ export const makeProps = (crown = false): TokenCardProps => {
       loading: false,
       data: {
         usdcUnitPrice: {
-          price: 5.38,
+          amount: 5.38,
           timestamp: new Date(),
         },
         stakingInfo: {
