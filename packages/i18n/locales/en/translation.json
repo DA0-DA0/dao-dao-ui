@@ -70,7 +70,8 @@
     "stakeTokenSymbol": "Stake ${{tokenSymbol}}",
     "stakingMode": {
       "stake": "Stake tokens",
-      "unstake": "Unstake tokens"
+      "unstake": "Unstake tokens",
+      "claim": "Claim tokens"
     },
     "toggleTheme": "Toggle theme",
     "unfollow": "Unfollow",
@@ -258,7 +259,7 @@
     "addCw721ToTreasuryActionDescription": "Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.",
     "andNumMore": "and {{count}} more",
     "areTheyMissingQuestion": "Are they missing?",
-    "available": "Available",
+    "available": "available",
     "availableBalance": "Available balance",
     "availableHistoryLoaded": "All available history has been loaded.",
     "chooseNftProfilePictureSubtitle": "Use one of your Stargaze NFTs to represent your identity on DAO DAO. Your Keplr profile image will be used as a backup if available.",
@@ -288,6 +289,7 @@
     "daosLogo": "DAO's Logo",
     "depositFromStargazeQuestion": "Deposit NFTs from Stargaze?",
     "depositNftsModalSubtitle": "Select the NFTs you want to deposit into {{daoName}} from your Stargaze wallet.",
+    "depositTokenSubtitle": "Tokens will be sent from your wallet.",
     "disabled": "Disabled",
     "disconnectWalletTooltip": "Disconnect wallet",
     "draftSavedAtTime": "Draft saved at {{time}}.",
@@ -467,12 +469,14 @@
     "proposalClosed": "Closed successfully.",
     "proposalExecuted": "Executed successfully. Refreshing page...",
     "transactionExecuted": "Transaction executed successfully.",
-    "voteCast": "Vote successfully cast."
+    "voteCast": "Vote successfully cast.",
+    "depositedTokenIntoDao": "Deposited {{amount}} ${{tokenSymbol}} into the {{daoName}} treasury."
   },
   "title": {
     "404": "404: Not Found",
     "500": "500: Error",
     "actions": "Actions",
+    "balance": "Balance",
     "actions_one": "Action",
     "actions_other": "Actions",
     "addCw20ToTreasury": "Display Token Balance in Treasury",
@@ -507,6 +511,7 @@
     "deposit": "Deposit",
     "depositNfts": "Import NFTs",
     "depositRefunds": "Deposit refunds",
+    "depositToken": "Deposit ${{tokenSymbol}}",
     "discord": "Discord",
     "distribution": "Distribution",
     "documentation": "Documentation",

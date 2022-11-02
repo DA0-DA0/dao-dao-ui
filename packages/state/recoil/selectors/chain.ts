@@ -16,6 +16,7 @@ import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 
 import {
+  AmountWithTimestamp,
   Delegation,
   UnbondingDelegation,
   Validator,
@@ -208,6 +209,26 @@ export const nativeDenomBalanceSelector = selectorFamily<
       get(refreshWalletBalancesIdAtom(walletAddress))
 
       return await client.getBalance(walletAddress, denom)
+    },
+})
+
+export const nativeDenomBalanceWithTimestampSelector = selectorFamily<
+  AmountWithTimestamp,
+  WithChainId<{ walletAddress: string; denom: string }>
+>({
+  key: 'nativeDenomBalanceWithTimestamp',
+  get:
+    ({ walletAddress, denom, chainId }) =>
+    ({ get }) => {
+      const amount = Number(
+        get(nativeDenomBalanceSelector({ walletAddress, denom, chainId }))
+          .amount
+      )
+
+      return {
+        amount,
+        timestamp: new Date(),
+      }
     },
 })
 

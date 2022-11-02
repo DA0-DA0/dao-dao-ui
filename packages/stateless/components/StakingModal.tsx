@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { ChangeEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -8,17 +7,13 @@ import {
   StakingMode,
 } from '@dao-dao/types/components/StakingModal'
 import { Duration } from '@dao-dao/types/contracts/common'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  durationIsNonZero,
-  humanReadableDuration,
-} from '@dao-dao/utils'
+import { durationIsNonZero, humanReadableDuration } from '@dao-dao/utils'
 
-import { Button } from '../buttons/Button'
-import { NumberInput, SegmentedControls } from '../inputs'
-import { Modal } from '../modals/Modal'
-import { Tooltip } from '../Tooltip'
-import { PercentButton } from './PercentButton'
+import { Button } from './buttons/Button'
+import { NumberInput, PercentButton, SegmentedControls } from './inputs'
+import { Modal } from './modals/Modal'
+import { TokenAmountDisplay } from './TokenAmountDisplay'
+import { Tooltip } from './Tooltip'
 
 export * from '@dao-dao/types/components/StakingModal'
 
@@ -208,20 +203,14 @@ const StakeUnstakeModesBody = ({
             {t('error.cannotStakeMoreThanYouHave')}
           </span>
         )}
-        <p className="caption-text mt-4 font-mono">
-          {t('info.yourBalance')}
-          {': '}
-          <span className={clsx(loadingMax.loading && 'animate-pulse')}>
-            {loadingMax.loading
-              ? `... $${tokenSymbol}`
-              : t('format.token', {
-                  amount: loadingMax.data.toLocaleString(undefined, {
-                    maximumFractionDigits: tokenDecimals,
-                  }),
-                  symbol: tokenSymbol,
-                })}
-          </span>
-        </p>
+        <TokenAmountDisplay
+          amount={loadingMax}
+          className="caption-text mt-4 font-mono"
+          decimals={tokenDecimals}
+          prefix={t('info.yourBalance') + ': '}
+          showFullAmount
+          symbol={tokenSymbol}
+        />
         <div className="mt-6">
           <div className="grid grid-cols-5 gap-2">
             {[10, 25, 50, 75, 100].map((percent) => (
@@ -292,20 +281,17 @@ const ClaimModeBody = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col">
-      <h2 className="font-medium">
-        {t('format.token', {
-          amount: convertMicroDenomToDenomWithDecimals(
-            amount,
-            tokenDecimals
-          ).toLocaleString(undefined, {
-            maximumFractionDigits: tokenDecimals,
-          }),
-          symbol: tokenSymbol,
-        })}{' '}
-        {t('info.available')}
-      </h2>
-      <p className="mt-3 mb-3 text-sm">{t('info.claimToReceiveUnstaked')}</p>
+    <div className="flex flex-col gap-3">
+      <TokenAmountDisplay
+        amount={amount}
+        className="font-medium"
+        decimals={tokenDecimals}
+        showFullAmount
+        suffix={' ' + t('info.available')}
+        symbol={tokenSymbol}
+      />
+
+      <p className="text-sm">{t('info.claimToReceiveUnstaked')}</p>
     </div>
   )
 }

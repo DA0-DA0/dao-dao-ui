@@ -52,7 +52,7 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
       })
     ),
     {
-      price: -1,
+      amount: -1,
       timestamp: new Date(),
     }
   )
@@ -86,7 +86,7 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
                   ? { loading: true }
                   : {
                       loading: false,
-                      data: treasuryUsdcValueLoading.data.price,
+                      data: treasuryUsdcValueLoading.data.amount,
                     }
               }
               dateFetched={

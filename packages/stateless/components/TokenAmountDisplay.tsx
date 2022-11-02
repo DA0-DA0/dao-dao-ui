@@ -42,6 +42,8 @@ export type TokenAmountDisplayProps = Omit<
   hideApprox?: boolean
   // Add to tooltip if present.
   dateFetched?: Date
+  // Show full amount if true.
+  showFullAmount?: boolean
 } & ( // If not USDC conversion, require symbol and decimals.
     | {
         symbol: string
@@ -65,6 +67,7 @@ export const TokenAmountDisplay = ({
   maxDecimals,
   hideApprox,
   dateFetched,
+  showFullAmount,
   symbol: _symbol,
   usdcConversion,
   ...props
@@ -130,7 +133,12 @@ export const TokenAmountDisplay = ({
   // many decimals. We first needed to use the same decimals to compare and see
   // if compact had any effect. If compact changed nothing, we want to keep the
   // original decimals.
-  if (largeNumber && full !== compact && maxDecimals === undefined) {
+  if (
+    !showFullAmount &&
+    largeNumber &&
+    full !== compact &&
+    maxDecimals === undefined
+  ) {
     compact = toFixedDown(amount, LARGE_COMPACT_MAX_DECIMALS).toLocaleString(
       undefined,
       {
@@ -142,18 +150,17 @@ export const TokenAmountDisplay = ({
 
   const wasCompacted = full !== compact
 
-  // Display compact.
   const display = t(
     // If compact is different from full and not a large number, display
     // approximation indication (e.g. ~15.34 when the full value is 15.344913).
     // When large, the compact notation (e.g. 1.52K or 23.5M) is enough to
     // indicate that there is missing info, and we don't need the explicit
     // approximation indication.
-    wasCompacted && !largeNumber && !hideApprox
+    !showFullAmount && wasCompacted && !largeNumber && !hideApprox
       ? 'format.tokenApprox'
       : 'format.token',
     {
-      amount: compact,
+      amount: showFullAmount ? full : compact,
       symbol,
     }
   )
@@ -161,6 +168,7 @@ export const TokenAmountDisplay = ({
   return (
     <Tooltip
       title={
+        !showFullAmount &&
         (wasCompacted || dateFetched) && (
           <>
             {/* Show full in tooltip if different from compact. */}

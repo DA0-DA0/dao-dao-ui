@@ -105,7 +105,7 @@ export const useGovernanceTokenInfo = ({
           decimals: governanceTokenInfo.decimals,
         })
       : constSelector(undefined)
-  )?.price
+  )?.amount
 
   return {
     stakingContractAddress: '',

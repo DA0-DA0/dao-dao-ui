@@ -1,4 +1,5 @@
 import {
+  AccountBalance,
   Add,
   Check,
   CopyAll,
@@ -30,6 +31,7 @@ export interface TokenCardProps extends TokenCardInfo {
   proposeClaimHref?: string
   refreshUnstakingTasks?: () => void
   onClaim?: () => void
+  showDeposit?: () => void
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
@@ -49,6 +51,7 @@ export const TokenCard = ({
   proposeClaimHref,
   refreshUnstakingTasks,
   onClaim,
+  showDeposit,
   ButtonLink,
 }: TokenCardProps) => {
   const { t } = useTranslation()
@@ -87,7 +90,7 @@ export const TokenCard = ({
 
   const buttonPopupSections: ButtonPopupSection[] = useMemo(
     () => [
-      ...(cw20Address || onAddToken
+      ...(cw20Address || onAddToken || showDeposit
         ? [
             {
               label: t('title.token'),
@@ -115,6 +118,15 @@ export const TokenCard = ({
                         Icon: Add,
                         label: t('button.addToKeplr'),
                         onClick: onAddToken,
+                      },
+                    ]
+                  : []),
+                ...(showDeposit
+                  ? [
+                      {
+                        Icon: AccountBalance,
+                        label: t('button.deposit'),
+                        onClick: showDeposit,
                       },
                     ]
                   : []),
@@ -156,6 +168,7 @@ export const TokenCard = ({
       onAddToken,
       proposeClaimHref,
       proposeStakeUnstakeHref,
+      showDeposit,
       t,
     ]
   )
@@ -258,7 +271,7 @@ export const TokenCard = ({
                     lazyInfo.loading ||
                     !lazyInfo.data.usdcUnitPrice
                       ? { loading: true }
-                      : totalBalance * lazyInfo.data.usdcUnitPrice.price
+                      : totalBalance * lazyInfo.data.usdcUnitPrice.amount
                   }
                   dateFetched={
                     lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
@@ -289,7 +302,7 @@ export const TokenCard = ({
                     amount={
                       lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
                         ? { loading: true }
-                        : unstakedBalance * lazyInfo.data.usdcUnitPrice.price
+                        : unstakedBalance * lazyInfo.data.usdcUnitPrice.amount
                     }
                     dateFetched={
                       lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
@@ -377,15 +390,13 @@ export const TokenCard = ({
                     : 'underline'
                 }
               >
-                {lazyInfo.loading
-                  ? '...'
-                  : t('format.token', {
-                      amount: unstakingBalance.toLocaleString(undefined, {
-                        notation: 'compact',
-                        maximumFractionDigits: tokenDecimals,
-                      }),
-                      symbol: tokenSymbol,
-                    })}
+                <TokenAmountDisplay
+                  amount={
+                    lazyInfo.loading ? { loading: true } : unstakingBalance
+                  }
+                  decimals={tokenDecimals}
+                  symbol={tokenSymbol}
+                />
               </Button>
             </div>
 

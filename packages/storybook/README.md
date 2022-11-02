@@ -32,17 +32,10 @@ named `MyComponent.tsx` in any of the packages.
 
 ### Optimizations
 
-As of writing this, all of the packages are setup such that stateless components
-are descendants of a `ui` folder at some level. This is represented by the
-`@dao-dao/stateless` package located at `packages/ui`, since the package itself is a
-folder named `ui`. The voting and proposal module adapter packages also use the
-folder `ui` to group stateless components.
-
-Because of this pattern, if the argument does **not** start with `.` (period),
-`/` (forward slash), or `*` (asterisk)—which are all symbols related to
-path/glob syntax—it will automatically be prefixed with `../**/ui/**/*`. This
-will match all files and folders, descendant of `packages`, that have a folder
-named `ui` as an ancestor at any level in the tree below `packages`.
+If the argument does **not** start with `.` (period), `/` (forward slash), or
+`*` (asterisk)—which are all symbols related to path/glob syntax—it will
+automatically be prefixed with `../**/*`. This will match all files and folders
+descendant of `packages`.
 
 Additionally, the argument will be suffixed with `*.tsx` if it does **not**
 already end with `.tsx`, since most (if not all) of our components use that
@@ -55,10 +48,10 @@ targeting.
 ### Examples
 
 ```bash
-# All files that lives somewhere inside the `packages` folder with a name that starts with `ILoveMyNewHome` and an ancestor folder named `ui`, such as a new component in the UI package at `packages/ui/components/ILoveMyNewHomeInTheUiPackage.tsx`.
+# All files that lives somewhere inside the `packages` folder with a name that starts with `ILoveMyNewHome`, such as a new component in the stateless package at `packages/stateless/components/ILoveMyNewHomeInTheUiPackage.tsx`.
 yarn generate ILoveMyNewHome
 
-# All files that live somewhere inside the `packages` folder, are immediate children of any folder that ends with `dao`, and have an ancestor folder named `ui`, such as `packages/ui/components/dao/*.tsx` or `packages/ui/components/some_dao/*.tsx`
+# All files that live somewhere inside the `packages` folder and are immediate children of any folder that ends with `dao`, such as `packages/stateless/components/dao/*.tsx` or `packages/stateless/components/some_dao/*.tsx`
 yarn generate dao/
 
 # All files named `MyComponent.tsx` that are descendants of `packages/storybook` at any level

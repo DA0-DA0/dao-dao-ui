@@ -62,7 +62,7 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
           chainId,
           cw20GovernanceTokenAddress,
         })
-      ).price
+      ).amount
 
       const walletVotingWeight = walletAddress
         ? Number(

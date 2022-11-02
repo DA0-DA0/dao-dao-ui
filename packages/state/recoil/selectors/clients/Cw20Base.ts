@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/types'
+import { AmountWithTimestamp, WithChainId } from '@dao-dao/types'
 import {
   AllAccountsResponse,
   AllAllowancesResponse,
@@ -170,5 +170,26 @@ export const downloadLogoSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       return await client.downloadLogo(...params)
+    },
+})
+
+//! Custom
+
+export const balanceWithTimestampSelector = selectorFamily<
+  AmountWithTimestamp,
+  QueryClientParams & {
+    params: Parameters<Cw20BaseQueryClient['balance']>
+  }
+>({
+  key: 'cw20BaseBalanceWithTimestamp',
+  get:
+    (params) =>
+    ({ get }) => {
+      const amount = Number(get(balanceSelector(params)).balance)
+
+      return {
+        amount,
+        timestamp: new Date(),
+      }
     },
 })

@@ -26,7 +26,8 @@ export const PercentButton = ({
   absoluteOffset,
 }: PercentButtonProps) => (
   <Button
-    className={clsx('flex w-full flex-row justify-center', className)}
+    center
+    className={clsx('w-full', className)}
     disabled={loadingMax.loading}
     onClick={() =>
       !loadingMax.loading &&
@@ -50,7 +51,6 @@ export const PercentButton = ({
         tokenDecimals
       ) === amount.toFixed(tokenDecimals)
     }
-    size="lg"
     variant="secondary"
   >
     {label}

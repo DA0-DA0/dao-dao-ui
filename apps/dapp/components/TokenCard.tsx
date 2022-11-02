@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { useRouter } from 'next/router'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 import {
@@ -11,6 +11,7 @@ import {
 } from '@dao-dao/state'
 import {
   ButtonLink,
+  DaoTokenDepositModal,
   useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/stateful'
 import { useActionForKey } from '@dao-dao/stateful/actions'
@@ -129,19 +130,35 @@ export const TokenCard = (props: TokenCardInfo) => {
     ? () => router.push(proposeClaimHref)
     : undefined
 
+  const [depositVisible, setDepositVisible] = useState(false)
+  const showDeposit = useCallback(() => setDepositVisible(true), [])
+
   return (
-    <StatelessTokenCard
-      {...props}
-      ButtonLink={ButtonLink}
-      lazyInfo={loadableToLoadingData(lazyInfoLoadable, {
-        usdcUnitPrice: undefined,
-        stakingInfo: undefined,
-      })}
-      onAddToken={onAddToken}
-      onClaim={onClaim}
-      proposeClaimHref={proposeClaimHref}
-      proposeStakeUnstakeHref={proposeStakeUnstakeHref}
-      refreshUnstakingTasks={refreshNativeTokenStakingInfo}
-    />
+    <>
+      <StatelessTokenCard
+        {...props}
+        ButtonLink={ButtonLink}
+        lazyInfo={loadableToLoadingData(lazyInfoLoadable, {
+          usdcUnitPrice: undefined,
+          stakingInfo: undefined,
+        })}
+        onAddToken={onAddToken}
+        onClaim={onClaim}
+        proposeClaimHref={proposeClaimHref}
+        proposeStakeUnstakeHref={proposeStakeUnstakeHref}
+        refreshUnstakingTasks={refreshNativeTokenStakingInfo}
+        showDeposit={showDeposit}
+      />
+
+      <DaoTokenDepositModal
+        onClose={() => setDepositVisible(false)}
+        tokenDecimals={props.tokenDecimals}
+        tokenDenomOrAddress={props.cw20Address ?? props.tokenDenom}
+        tokenImageUrl={props.imageUrl}
+        tokenSymbol={props.tokenSymbol}
+        tokenType={props.cw20Address ? 'cw20' : 'native'}
+        visible={depositVisible}
+      />
+    </>
   )
 }

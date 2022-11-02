@@ -4,8 +4,7 @@ import { useState } from 'react'
 import { PercentButton } from './PercentButton'
 
 export default {
-  title:
-    'DAO DAO / packages / stateless / components / StakingModal / PercentButton',
+  title: 'DAO DAO / packages / stateless / components / inputs / PercentButton',
   component: PercentButton,
 } as ComponentMeta<typeof PercentButton>
 
