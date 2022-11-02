@@ -148,6 +148,7 @@
     "invalidMessage": "Invalid message",
     "invalidProposalActions": "Invalid proposal actions.",
     "loadingData": "Failed to load data.",
+    "missingGovernanceTokenAddress": "Missing governance token address.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
     "nameIncorrectLength": "A DAO's name must be between {{min}} and {{max}} characters.",
     "noClaimsAvailable": "No claims available.",

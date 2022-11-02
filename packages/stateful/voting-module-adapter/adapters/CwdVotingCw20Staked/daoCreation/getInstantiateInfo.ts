@@ -71,7 +71,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     }
   } else {
     if (!existingGovernanceTokenAddress) {
-      throw new Error(t('errors.noGovTokenAddr'))
+      throw new Error(t('error.missingGovernanceTokenAddress'))
     }
 
     tokenInfo = {
