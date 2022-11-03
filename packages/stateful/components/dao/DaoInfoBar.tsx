@@ -16,9 +16,9 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 import {
   useCw20GovernanceTokenInfoResponseIfExists,
   useVotingModuleAdapter,
-} from '../voting-module-adapter'
-import { useVotingModuleAdapterOptions } from '../voting-module-adapter/react/context'
-import { SuspenseLoader } from './SuspenseLoader'
+} from '../../voting-module-adapter'
+import { useVotingModuleAdapterOptions } from '../../voting-module-adapter/react/context'
+import { SuspenseLoader } from '../SuspenseLoader'
 
 export const DaoInfoBar = (props: InnerDaoInfoBarProps) => {
   const { Loader } = useVotingModuleAdapterOptions()

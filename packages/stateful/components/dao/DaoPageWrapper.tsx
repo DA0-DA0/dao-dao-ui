@@ -20,10 +20,10 @@ import {
   DaoInfoSerializable,
 } from '@dao-dao/types'
 
-import { ActionsProvider } from '../actions'
-import { VotingModuleAdapterProvider } from '../voting-module-adapter'
-import { SuspenseLoader } from './SuspenseLoader'
-import { Trans } from './Trans'
+import { ActionsProvider } from '../../actions'
+import { VotingModuleAdapterProvider } from '../../voting-module-adapter'
+import { SuspenseLoader } from '../SuspenseLoader'
+import { Trans } from '../Trans'
 
 export type DaoPageWrapperProps = PropsWithChildren<{
   url?: string | null

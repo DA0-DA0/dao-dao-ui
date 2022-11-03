@@ -7,6 +7,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@apollo/client": "^3.6.9",
     "@cosmjs/encoding": "0.29.3",
     "@cosmjs/stargate": "0.29.3",
     "@dao-dao/state": "2.0.1",

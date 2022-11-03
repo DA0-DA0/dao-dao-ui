@@ -1,15 +1,11 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { useWalletProposalsQuery } from '@dao-dao/state'
-import { useWalletProfile } from '@dao-dao/stateful'
 import {
   ProfileHomeCard as StatelessProfileHomeCard,
   useAppLayoutContext,
 } from '@dao-dao/stateless'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
-import { useDAppContext } from '../DAppContext'
+import { useWalletProfile } from '../../hooks'
 
 export const ProfileHomeCard = () => {
   const {
@@ -20,9 +16,7 @@ export const ProfileHomeCard = () => {
     dateBalancesFetched,
     updateProfileName,
   } = useWalletProfile()
-  const { updateProfileNft } = useAppLayoutContext()
-
-  const { inbox } = useDAppContext()
+  const { updateProfileNft, inbox } = useAppLayoutContext()
 
   const query = useWalletProposalsQuery(walletAddress)
   const data = query.data || query.previousData

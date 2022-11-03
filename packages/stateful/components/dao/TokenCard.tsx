@@ -1,18 +1,8 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useState } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 import { refreshNativeTokenStakingInfoAtom } from '@dao-dao/state'
-import {
-  ButtonLink,
-  DaoTokenDepositModal,
-  tokenCardLazyInfoSelector,
-  useEncodedCwdProposalSinglePrefill,
-} from '@dao-dao/stateful'
-import { useActionForKey } from '@dao-dao/stateful/actions'
 import {
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
@@ -21,6 +11,12 @@ import {
 import { ActionKey } from '@dao-dao/types'
 import { TokenCardInfo } from '@dao-dao/types/dao'
 import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
+
+import { useActionForKey } from '../../actions'
+import { useEncodedCwdProposalSinglePrefill } from '../../hooks'
+import { tokenCardLazyInfoSelector } from '../../recoil'
+import { ButtonLink } from '../ButtonLink'
+import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 
 export const TokenCard = (props: TokenCardInfo) => {
   const router = useRouter()

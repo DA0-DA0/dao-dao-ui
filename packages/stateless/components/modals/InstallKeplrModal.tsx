@@ -1,14 +1,11 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { ArrowForwardIos } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Modal, ModalProps } from '@dao-dao/stateless'
 
-export type InstallKeplrProps = Pick<ModalProps, 'visible' | 'onClose'>
+export type InstallKeplrModalProps = Pick<ModalProps, 'visible' | 'onClose'>
 
-export const InstallKeplr = (props: InstallKeplrProps) => {
+export const InstallKeplrModal = (props: InstallKeplrModalProps) => {
   const { t } = useTranslation()
   const grafs = t('info.keplrModalWalletExplanation').split('\n')
 

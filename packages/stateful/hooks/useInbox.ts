@@ -8,10 +8,11 @@ import {
   useGetOpenProposalsWithWalletVotesVariables,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
+import { DaoWithOpenUnvotedProposals, UseInboxReturn } from '@dao-dao/types'
 
 import { pinnedDaosWithProposalModulesSelector } from '../recoil/selectors'
 
-export const useInbox = () => {
+export const useInbox = (): UseInboxReturn => {
   const { address: walletAddress } = useWallet()
 
   const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
@@ -70,10 +71,10 @@ export const useInbox = () => {
     error,
   ])
 
-  const daosWithOpenUnvotedProposals =
+  const daosWithOpenUnvotedProposals: DaoWithOpenUnvotedProposals[] =
     pinnedDaosWithProposalModulesLoadable.state === 'hasValue'
       ? pinnedDaosWithProposalModulesLoadable.contents.map(
-          ({ coreAddress, proposalModules }) => ({
+          ({ coreAddress, proposalModules }): DaoWithOpenUnvotedProposals => ({
             coreAddress,
             proposalModules,
             // Undefined if data not yet loaded.

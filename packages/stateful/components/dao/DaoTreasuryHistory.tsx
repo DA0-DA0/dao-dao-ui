@@ -1,6 +1,3 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { ArrowOutward, East, West } from '@mui/icons-material'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -14,7 +11,6 @@ import {
   nativeBalanceSelector,
   transformedTreasuryTransactionsSelector,
 } from '@dao-dao/state'
-import { SuspenseLoader } from '@dao-dao/stateful'
 import {
   Button,
   CopyToClipboard,
@@ -30,6 +26,8 @@ import {
   nativeTokenLabel,
   processError,
 } from '@dao-dao/utils'
+
+import { SuspenseLoader } from '../SuspenseLoader'
 
 interface DaoTreasuryHistoryProps {
   shortTitle?: boolean
@@ -91,34 +89,41 @@ export const InnerDaoTreasuryHistory = ({
   const loadMoreTransactions = useRecoilCallback(
     ({ snapshot }) =>
       async (maxHeight: number) => {
-        const minHeight = maxHeight - BLOCK_HEIGHT_INTERVAL
-
         setLoading(true)
+
+        let minHeight
         try {
-          const newTransactions = await snapshot.getPromise(
-            transformedTreasuryTransactionsSelector({
-              address: coreAddress,
-              minHeight,
-              maxHeight,
-            })
-          )
+          // Loop until we find transactions.
+          while (true) {
+            minHeight = maxHeight - BLOCK_HEIGHT_INTERVAL
 
-          const newLowestHeightLoadedTimestamp = await snapshot.getPromise(
-            blockHeightTimestampSelector({ blockHeight: minHeight })
-          )
+            const newTransactions = await snapshot.getPromise(
+              transformedTreasuryTransactionsSelector({
+                address: coreAddress,
+                minHeight,
+                maxHeight,
+              })
+            )
 
-          setLowestHeightLoaded(minHeight)
-          setLowestHeightLoadedTimestamp(newLowestHeightLoadedTimestamp)
+            const newLowestHeightLoadedTimestamp = await snapshot.getPromise(
+              blockHeightTimestampSelector({ blockHeight: minHeight })
+            )
 
-          // If no transactions found, try to load more.
-          if (!newTransactions.length) {
-            return await loadMoreTransactions(minHeight)
+            setLowestHeightLoaded(minHeight)
+            setLowestHeightLoadedTimestamp(newLowestHeightLoadedTimestamp)
+
+            // If no transactions found, try to load more.
+            if (!newTransactions.length) {
+              maxHeight -= BLOCK_HEIGHT_INTERVAL
+            } else {
+              // If found transactions, set and stop looping.
+              setTransactions((transactions) => [
+                ...transactions,
+                ...newTransactions,
+              ])
+              break
+            }
           }
-
-          setTransactions((transactions) => [
-            ...transactions,
-            ...newTransactions,
-          ])
         } catch (err) {
           console.error(
             processError(err, { tags: { coreAddress, minHeight, maxHeight } })

@@ -7,6 +7,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@apollo/client": "^3.6.9",
     "@dao-dao/config": "2.0.1",
     "@noahsaso/cosmodal": "^0.8.0",
     "next-i18next": "^11.0.0",

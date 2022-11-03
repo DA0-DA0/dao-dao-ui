@@ -1,6 +1,7 @@
 import { DecoratorFn } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
+import { EMPTY_INBOX } from '@dao-dao/stateless/components/layout/AppLayout.stories'
 import { AppLayoutContext } from '@dao-dao/stateless/components/layout/AppLayoutContext'
 
 // Useful when testing individual components that rely on this context value but
@@ -34,6 +35,7 @@ export const makeAppLayoutContextDecorator: (
             PageHeader: () => null,
             RightSidebarContent: () => null,
             setRootCommandContextMaker: () => {},
+            inbox: EMPTY_INBOX,
           }),
           [
             responsiveNavigationEnabled,

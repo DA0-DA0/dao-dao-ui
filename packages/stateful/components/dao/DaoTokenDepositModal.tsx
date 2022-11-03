@@ -23,7 +23,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { Cw20BaseHooks, useWalletProfile } from '../hooks'
+import { Cw20BaseHooks, useWalletProfile } from '../../hooks'
 
 export type DaoTokenDepositModalProps = Omit<
   TokenDepositModalProps,

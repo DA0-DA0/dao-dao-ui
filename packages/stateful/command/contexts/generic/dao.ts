@@ -13,13 +13,14 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { navigatingToHrefAtom } from '@dao-dao/state'
-import { usePinnedDaos, useVotingModule } from '@dao-dao/stateful'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,
   CommandModalDaoInfo,
 } from '@dao-dao/types/command'
 import { CHAIN_ID, getUrlBaseForChainId } from '@dao-dao/utils'
+
+import { usePinnedDaos, useVotingModule } from '../../../hooks'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo

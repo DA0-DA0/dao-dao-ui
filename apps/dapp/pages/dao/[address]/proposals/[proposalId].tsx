@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoPageWrapper,
   DaoProposalPageWrapperProps,
+  ProfileProposalCard,
   Trans,
   useProfile,
 } from '@dao-dao/stateful'
@@ -31,8 +32,6 @@ import {
 } from '@dao-dao/stateless'
 import { ActionKey, CommonProposalInfo } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
-
-import { ProfileProposalCard } from '@/components'
 
 interface InnerProposalProps {
   proposalInfo: CommonProposalInfo

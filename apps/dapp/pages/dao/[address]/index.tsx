@@ -19,7 +19,10 @@ import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
+  ProposalsTab,
+  SubDaosTab,
   SuspenseLoader,
+  TreasuryAndNftsTab,
   useEncodedCwdProposalSinglePrefill,
   usePinnedDaos,
   useVotingModule,
@@ -42,8 +45,6 @@ import {
 import { ActionKey } from '@dao-dao/types'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import { SITE_URL } from '@dao-dao/utils'
-
-import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 
 const InnerDaoHome = () => {
   const { t } = useTranslation()

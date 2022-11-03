@@ -1,6 +1,7 @@
 import { ComponentType, ReactNode } from 'react'
 
 import { CommandModalContextMaker } from '../command'
+import { UseInboxReturn } from '../inbox'
 import { WalletProfile } from '../wallet'
 import { LoadingData } from './common'
 import { NavigationProps } from './Navigation'
@@ -25,6 +26,7 @@ export interface IAppLayoutContext {
   setRootCommandContextMaker: (
     rootCommandContextMaker: CommandModalContextMaker
   ) => void
+  inbox: UseInboxReturn
 }
 
 export interface AppLayoutProps {

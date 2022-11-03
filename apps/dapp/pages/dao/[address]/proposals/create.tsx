@@ -28,6 +28,7 @@ import {
 import {
   DaoPageWrapper,
   DaoPageWrapperProps,
+  ProfileNewProposalCard,
   SuspenseLoader,
   useVotingModule,
 } from '@dao-dao/stateful'
@@ -52,8 +53,6 @@ import {
   ProposalPrefill,
 } from '@dao-dao/types'
 import { SITE_URL, cwMsgToEncodeObject } from '@dao-dao/utils'
-
-import { ProfileNewProposalCard } from '@/components'
 
 // TODO(v2): Save latest proposal to localStorage, separate from drafts.
 // TODO(v2): Fix errors getting stuck when removing components with errors (I

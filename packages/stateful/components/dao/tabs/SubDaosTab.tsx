@@ -1,14 +1,6 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
 import { useEffect } from 'react'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import {
-  ButtonLink,
-  subDaoCardInfosSelector,
-  useEncodedCwdProposalSinglePrefill,
-  useVotingModule,
-} from '@dao-dao/stateful'
 import {
   SubDaosTab as StatelessSubDaosTab,
   useDaoInfoContext,
@@ -16,6 +8,12 @@ import {
 import { ContractVersion } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
+import {
+  useEncodedCwdProposalSinglePrefill,
+  useVotingModule,
+} from '../../../hooks'
+import { subDaoCardInfosSelector } from '../../../recoil'
+import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
 
 export const SubDaosTab = () => {

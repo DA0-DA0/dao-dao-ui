@@ -1,20 +1,16 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect } from 'react'
 
-import {
-  LinkWrapper,
-  daoCardInfoLazyDataSelector,
-  usePinnedDaos,
-} from '@dao-dao/stateful'
 import {
   DaoCard as StatelessDaoCard,
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
 import { CHAIN_ID, loadableToLoadingData } from '@dao-dao/utils'
+
+import { usePinnedDaos } from '../../hooks'
+import { daoCardInfoLazyDataSelector } from '../../recoil'
+import { LinkWrapper } from '../LinkWrapper'
 
 export const DaoCard = (props: DaoCardInfo) => {
   const { address: walletAddress } = useWallet()

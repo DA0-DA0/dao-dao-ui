@@ -1,15 +1,14 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { useEffect } from 'react'
 
-import { LinkWrapper, daoCardInfoLazyDataSelector } from '@dao-dao/stateful'
 import {
   DaoCard as StatelessDaoCard,
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
 import { loadableToLoadingData } from '@dao-dao/utils'
+
+import { daoCardInfoLazyDataSelector } from '../../recoil'
+import { LinkWrapper } from '../LinkWrapper'
 
 // Doesn't load any wallet information or allow pinning.
 export const SplashDaoCard = (props: DaoCardInfo) => {

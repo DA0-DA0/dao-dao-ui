@@ -3,14 +3,7 @@
 
 import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
-import {
-  PropsWithChildren,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -26,20 +19,13 @@ import {
   refreshBlockHeightAtom,
   refreshTokenUsdcPriceAtom,
 } from '@dao-dao/state'
-import {
-  LinkWrapper,
-  PfpkNftSelectionModal,
-  SidebarWallet,
-  daoCreatedCardPropsAtom,
-  pinnedDaoDropdownInfosSelector,
-  usePinnedDaos,
-  useWalletProfile,
-} from '@dao-dao/stateful'
 import { CommandModal, makeGenericContext } from '@dao-dao/stateful/command'
 import {
   BetaWarningModal,
   DaoCreatedModal,
   IAppLayoutContext,
+  InstallKeplrModal,
+  NoKeplrAccountModal,
   ProposalCreatedModal,
   AppLayout as StatelessAppLayout,
   useCachedLoadable,
@@ -47,17 +33,16 @@ import {
 import { CommandModalContextMaker } from '@dao-dao/types'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
-import { DAppProvider, useDAppContext } from './DAppContext'
-import { InstallKeplr } from './InstallKeplr'
-import { NoKeplrAccountModal } from './NoKeplrAccountModal'
+import { useInbox, usePinnedDaos, useWalletProfile } from '../hooks'
+import {
+  daoCreatedCardPropsAtom,
+  pinnedDaoDropdownInfosSelector,
+} from '../recoil'
+import { LinkWrapper } from './LinkWrapper'
+import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
+import { SidebarWallet } from './SidebarWallet'
 
-export const AppLayout = ({ children }: { children: ReactNode }) => (
-  <DAppProvider>
-    <AppLayoutInner>{children}</AppLayoutInner>
-  </DAppProvider>
-)
-
-const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
+export const AppLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
   const router = useRouter()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
@@ -130,6 +115,29 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     return () => document.removeEventListener('keydown', handleKeyPress)
   }, [handleKeyPress])
 
+  //! Inbox
+  const inbox = useInbox()
+  // Inbox notifications
+  const [lastProposalCount, setLastProposalCount] = useState(
+    inbox.proposalCount
+  )
+  useEffect(() => {
+    if (inbox.proposalCount > lastProposalCount) {
+      setTimeout(
+        () =>
+          toast.success(
+            t('info.openProposalsInInbox', {
+              count: inbox.proposalCount,
+            })
+          ),
+        // 3 second delay.
+        3 * 1000
+      )
+    }
+    setLastProposalCount(inbox.proposalCount)
+  }, [inbox.proposalCount, lastProposalCount, t])
+
+  //! AppLayoutContext
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
   const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
@@ -156,8 +164,10 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
         // See comment in `_setRootCommandContextMaker` for an explanation on
         // why we pass a function here.
         _setRootCommandContextMaker(() => maker),
+      inbox,
     }),
     [
+      inbox,
       responsiveNavigationEnabled,
       responsiveRightSidebarEnabled,
       updateProfileNftVisible,
@@ -232,31 +242,9 @@ const AppLayoutInner = ({ children }: PropsWithChildren<{}>) => {
     pinnedDaoDropdownInfosLoadable.state,
   ])
 
-  //! Inbox
-  const { inbox } = useDAppContext()
-  // Inbox notifications
-  const [lastProposalCount, setLastProposalCount] = useState(
-    inbox.proposalCount
-  )
-  useEffect(() => {
-    if (inbox.proposalCount > lastProposalCount) {
-      setTimeout(
-        () =>
-          toast.success(
-            t('info.openProposalsInInbox', {
-              count: inbox.proposalCount,
-            })
-          ),
-        // 3 second delay.
-        3 * 1000
-      )
-    }
-    setLastProposalCount(inbox.proposalCount)
-  }, [inbox.proposalCount, lastProposalCount, t])
-
   return (
     <>
-      <InstallKeplr
+      <InstallKeplrModal
         onClose={() => setInstallWarningVisible(false)}
         visible={installWarningVisible}
       />

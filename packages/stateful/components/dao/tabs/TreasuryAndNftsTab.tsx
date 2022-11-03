@@ -1,19 +1,5 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
 import { useEffect } from 'react'
 
-import {
-  StargazeNftImportModal,
-  nftCardInfosSelector,
-  treasuryTokenCardInfosSelector,
-  useEncodedCwdProposalSinglePrefill,
-  useVotingModule,
-} from '@dao-dao/stateful'
-import { useActionForKey } from '@dao-dao/stateful/actions'
-import {
-  useCw20GovernanceTokenInfoResponseIfExists,
-  useNativeGovernanceTokenInfoResponseIfExists,
-} from '@dao-dao/stateful/voting-module-adapter'
 import {
   NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
@@ -23,7 +9,21 @@ import {
 import { ActionKey } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { TokenCard } from '@/components'
+import { useActionForKey } from '../../../actions'
+import {
+  useEncodedCwdProposalSinglePrefill,
+  useVotingModule,
+} from '../../../hooks'
+import {
+  nftCardInfosSelector,
+  treasuryTokenCardInfosSelector,
+} from '../../../recoil'
+import {
+  useCw20GovernanceTokenInfoResponseIfExists,
+  useNativeGovernanceTokenInfoResponseIfExists,
+} from '../../../voting-module-adapter'
+import { StargazeNftImportModal } from '../../StargazeNftImportModal'
+import { TokenCard } from '../TokenCard'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()

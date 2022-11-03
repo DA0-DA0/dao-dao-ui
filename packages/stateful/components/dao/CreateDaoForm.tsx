@@ -48,23 +48,23 @@ import {
   useAwaitNextBlock,
   usePinnedDaos,
   useWalletProfile,
-} from '../hooks'
-import { getAdapterById as getProposalModuleAdapterById } from '../proposal-module-adapter'
+} from '../../hooks'
+import { getAdapterById as getProposalModuleAdapterById } from '../../proposal-module-adapter'
 import {
   DefaultNewDao,
   daoCreatedCardPropsAtom,
   newDaoAtom,
-} from '../recoil/atoms/newDao'
+} from '../../recoil/atoms/newDao'
 import {
   CwdVotingCw20StakedAdapter,
   getAdapterById as getVotingModuleAdapterById,
   getAdapters as getVotingModuleAdapters,
-} from '../voting-module-adapter'
+} from '../../voting-module-adapter'
 import {
   DaoCreationConfig as CwdVotingCw20StakedCreationConfig,
   GovernanceTokenType,
-} from '../voting-module-adapter/adapters/CwdVotingCw20Staked/types'
-import { SuspenseLoader } from './SuspenseLoader'
+} from '../../voting-module-adapter/adapters/CwdVotingCw20Staked/types'
+import { SuspenseLoader } from '../SuspenseLoader'
 
 // i18n keys
 export enum CreateDaoSubmitValue {

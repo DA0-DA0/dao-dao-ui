@@ -1,16 +1,15 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { useTranslation } from 'react-i18next'
 
-import { SuspenseLoader, useWalletProfile } from '@dao-dao/stateful'
-import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
-import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   ProfileNewProposalCard as StatelessProfileNewProposalCard,
   useAppLayoutContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+
+import { useWalletProfile } from '../../hooks'
+import { matchAndLoadCommon } from '../../proposal-module-adapter'
+import { useVotingModuleAdapter } from '../../voting-module-adapter'
+import { SuspenseLoader } from '../SuspenseLoader'
 
 export interface ProfileNewProposalCardProps {
   proposalModuleAdapterCommon: ReturnType<typeof matchAndLoadCommon>

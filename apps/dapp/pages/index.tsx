@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
+  SplashDaoCard,
   SuspenseLoader,
   useLoadingFeaturedDaoCardInfos,
 } from '@dao-dao/stateful'
@@ -22,8 +23,6 @@ import {
   SplashGradientWrapper,
   SplashStatsCard,
 } from '@dao-dao/stateless'
-
-import { SplashDaoCard } from '@/components'
 
 const SplashPage: NextPage = () => {
   const { t } = useTranslation()

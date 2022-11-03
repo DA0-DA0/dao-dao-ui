@@ -1,16 +1,7 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { useVotingModule, useWalletProfile } from '@dao-dao/stateful'
-import {
-  matchAndLoadCommon,
-  useProposalModuleAdapter,
-} from '@dao-dao/stateful/proposal-module-adapter'
-import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   Loader,
   Logo,
@@ -21,6 +12,13 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
+
+import { useVotingModule, useWalletProfile } from '../../hooks'
+import {
+  matchAndLoadCommon,
+  useProposalModuleAdapter,
+} from '../../proposal-module-adapter'
+import { useVotingModuleAdapter } from '../../voting-module-adapter'
 
 export interface ProfileProposalCardProps {
   onVoteSuccess: () => void | Promise<void>

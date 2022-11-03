@@ -2,15 +2,16 @@ import { useTranslation } from 'react-i18next'
 
 import { useSearchDaos } from '@dao-dao/state/subquery/daos'
 import {
-  useLoadingFeaturedDaoCardInfos,
-  useLoadingPinnedDaoCardInfos,
-} from '@dao-dao/stateful'
-import {
   CommandModalContextSection,
   CommandModalContextUseSectionsOptions,
   CommandModalDaoInfo,
 } from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
+
+import {
+  useLoadingFeaturedDaoCardInfos,
+  useLoadingPinnedDaoCardInfos,
+} from '../../hooks'
 
 export interface UseFilteredDaosSectionOptions {
   options: CommandModalContextUseSectionsOptions
