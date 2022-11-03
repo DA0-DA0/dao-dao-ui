@@ -1,3 +1,14 @@
 # @dao-dao/stateless
 
-Reusable React components and stylesheets for various projects
+React components, React hooks, and other stateless rendering utilities which do
+not access live data.
+
+## Folders
+
+| Folder                         | Summary                                               |
+| ------------------------------ | ----------------------------------------------------- |
+| [`components`](./components)   | Individual React components.                          |
+| [`hooks`](./hooks)             | React hooks.                                          |
+| [`pages`](./pages)             | React components pieced together into complete pages. |
+| [`styles`](./styles/index.css) | CSS.                                                  |
+| [`theme`](./theme/index.tsx)   | Theme system components and hooks.                    |

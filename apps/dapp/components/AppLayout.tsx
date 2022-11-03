@@ -21,8 +21,6 @@ import {
   proposalCreatedCardPropsAtom,
   refreshBlockHeightAtom,
   refreshTokenUsdcPriceAtom,
-  usePinnedDaos,
-  useWalletProfile,
 } from '@dao-dao/state'
 import {
   LinkWrapper,
@@ -30,6 +28,8 @@ import {
   SidebarWallet,
   daoCreatedCardPropsAtom,
   pinnedDaoDropdownInfosSelector,
+  usePinnedDaos,
+  useWalletProfile,
 } from '@dao-dao/stateful'
 import { CommandModal, makeGenericContext } from '@dao-dao/stateful/command'
 import {

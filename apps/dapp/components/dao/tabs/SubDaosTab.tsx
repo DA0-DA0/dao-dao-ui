@@ -3,10 +3,11 @@
 import { useEffect } from 'react'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { subDaoCardInfosSelector, useVotingModule } from '@dao-dao/state'
+import { subDaoCardInfosSelector } from '@dao-dao/state'
 import {
   ButtonLink,
   useEncodedCwdProposalSinglePrefill,
+  useVotingModule,
 } from '@dao-dao/stateful'
 import {
   SubDaosTab as StatelessSubDaosTab,

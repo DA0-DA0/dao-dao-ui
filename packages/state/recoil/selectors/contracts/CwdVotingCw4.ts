@@ -12,7 +12,7 @@ import {
 import {
   CwdVotingCw4Client,
   CwdVotingCw4QueryClient,
-} from '../../../clients/CwdVotingCw4'
+} from '../../../contracts/CwdVotingCw4'
 import { signingCosmWasmClientAtom } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
 

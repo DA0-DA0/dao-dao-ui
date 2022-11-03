@@ -4,7 +4,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   cosmWasmClientForChainSelector,
   refreshBlockHeightAtom,
-} from '../recoil'
+} from '@dao-dao/state'
 
 // Returns a function that polls the chain's block height and resolves once it
 // increments.

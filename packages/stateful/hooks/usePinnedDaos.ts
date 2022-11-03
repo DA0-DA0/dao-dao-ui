@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useRecoilState } from 'recoil'
 
-import { pinnedAddressesAtom } from '../recoil/atoms/pinned'
+import { pinnedAddressesAtom } from '@dao-dao/state'
 
 export const usePinnedDaos = () => {
   const [pinnedAddresses, setPinnedAddresses] =

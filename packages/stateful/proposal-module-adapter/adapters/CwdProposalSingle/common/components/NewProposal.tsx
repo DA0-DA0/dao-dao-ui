@@ -14,7 +14,6 @@ import {
 } from 'recoil'
 
 import {
-  Cw20BaseHooks,
   Cw20BaseSelectors,
   CwCoreV1Selectors,
   blockHeightSelector,
@@ -22,8 +21,6 @@ import {
   cosmWasmClientForChainSelector,
   nativeDenomBalanceSelector,
   refreshWalletBalancesIdAtom,
-  useAwaitNextBlock,
-  useVotingModule,
 } from '@dao-dao/state'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
@@ -43,6 +40,11 @@ import {
 } from '@dao-dao/utils'
 
 import { useActions } from '../../../../../actions'
+import {
+  Cw20BaseHooks,
+  useAwaitNextBlock,
+  useVotingModule,
+} from '../../../../../hooks'
 import { useVotingModuleAdapter } from '../../../../../voting-module-adapter'
 import { usePropose as useProposePrePropose } from '../../contracts/CwdPreProposeSingle.hooks'
 import { proposalSelector } from '../../contracts/CwdProposalSingle.common.recoil'

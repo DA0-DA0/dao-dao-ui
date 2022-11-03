@@ -9,7 +9,7 @@ import {
   TotalWeightResponse,
 } from '@dao-dao/types/contracts/Cw4Group'
 
-import { Cw4GroupQueryClient } from '../../../clients/Cw4Group'
+import { Cw4GroupQueryClient } from '../../../contracts/Cw4Group'
 import { cosmWasmClientForChainSelector } from '../chain'
 
 type QueryClientParams = WithChainId<{

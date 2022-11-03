@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next'
 
 import {
   useGetLoopNftsQuery,
-  useWalletProfile,
   walletStargazeNftCardInfosSelector,
 } from '@dao-dao/state'
 import {
@@ -28,6 +27,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { useWalletProfile } from '../hooks'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export interface PfpkNftSelectionModalProps

@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { CwAdminFactoryClient as ExecuteClient } from '../../../clients/CwAdminFactory'
+import { CwAdminFactoryClient as ExecuteClient } from '../../../contracts/CwAdminFactory'
 import { signingCosmWasmClientAtom } from '../../atoms'
 
 export type ExecuteClientParams = {

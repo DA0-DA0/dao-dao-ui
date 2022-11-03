@@ -5,7 +5,6 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { Cw20BaseHooks, useWalletProfile } from '@dao-dao/state/hooks'
 import {
   Cw20BaseSelectors,
   nativeDenomBalanceWithTimestampSelector,
@@ -23,6 +22,8 @@ import {
   loadableToLoadingData,
   processError,
 } from '@dao-dao/utils'
+
+import { Cw20BaseHooks, useWalletProfile } from '../hooks'
 
 export type DaoTokenDepositModalProps = Omit<
   TokenDepositModalProps,

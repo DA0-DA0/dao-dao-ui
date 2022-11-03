@@ -104,16 +104,6 @@ const eslintConfig = {
                 'Import from root @dao-dao/stateless instead of a direct path. Ensure the export has been added to its sibling index.',
             },
             {
-              regex: '\\@dao\\-dao\\/state\\/hooks\\/clients[^\'"]*',
-              message:
-                'Import from root @dao-dao/state using a grouped export, such as CwCoreHooks, instead of a direct path.',
-            },
-            {
-              regex: '\\@dao\\-dao\\/state\\/recoil\\/selectors[^\'"]*',
-              message:
-                'Import from root @dao-dao/state instead of a direct path. If using contract client selectors, use a grouped export, such as CwCoreV1Selectors.',
-            },
-            {
               regex: '(?:\\.\\.\\/)+(atoms|components|hooks|util)',
               replacement: {
                 function: '"@/" + $[1]',

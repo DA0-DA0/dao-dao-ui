@@ -12,11 +12,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
-import {
-  navigatingToHrefAtom,
-  usePinnedDaos,
-  useVotingModule,
-} from '@dao-dao/state'
+import { navigatingToHrefAtom } from '@dao-dao/state'
+import { usePinnedDaos, useVotingModule } from '@dao-dao/stateful'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,

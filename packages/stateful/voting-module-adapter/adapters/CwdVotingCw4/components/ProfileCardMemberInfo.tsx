@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 
-import { useVotingModule } from '@dao-dao/state'
 import { useDaoInfoContext } from '@dao-dao/stateless'
 import { BaseProfileCardMemberInfoProps } from '@dao-dao/types'
 
+import { useVotingModule } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { ProfileCardMemberInfo as StatelessProfileCardMemberInfo } from '../ui/ProfileCardMemberInfo'
 

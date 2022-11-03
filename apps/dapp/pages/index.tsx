@@ -7,8 +7,10 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { useLoadingFeaturedDaoCardInfos } from '@dao-dao/state'
-import { SuspenseLoader } from '@dao-dao/stateful'
+import {
+  SuspenseLoader,
+  useLoadingFeaturedDaoCardInfos,
+} from '@dao-dao/stateful'
 import {
   FeaturedDaos,
   Logo,

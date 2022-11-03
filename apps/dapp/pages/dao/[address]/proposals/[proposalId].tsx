@@ -8,11 +8,11 @@ import { useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { useProfile } from '@dao-dao/state'
 import {
   DaoPageWrapper,
   DaoProposalPageWrapperProps,
   Trans,
+  useProfile,
 } from '@dao-dao/stateful'
 import { useActions } from '@dao-dao/stateful/actions'
 import {

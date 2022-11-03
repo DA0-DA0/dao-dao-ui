@@ -12,7 +12,7 @@ import {
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/CwdVotingCw20Staked'
 
-import { CwdVotingCw20StakedQueryClient } from '../../../clients/CwdVotingCw20Staked'
+import { CwdVotingCw20StakedQueryClient } from '../../../contracts/CwdVotingCw20Staked'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientForChainSelector } from '../chain'
 

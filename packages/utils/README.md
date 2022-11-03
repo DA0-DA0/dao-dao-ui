@@ -1,3 +1,3 @@
 # @dao-dao/utils
 
-Collection of TypeScript utilities
+A collection of simple utility functions used across packages.

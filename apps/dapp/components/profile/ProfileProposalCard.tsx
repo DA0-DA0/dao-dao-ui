@@ -5,7 +5,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { useVotingModule, useWalletProfile } from '@dao-dao/state'
+import { useVotingModule, useWalletProfile } from '@dao-dao/stateful'
 import {
   matchAndLoadCommon,
   useProposalModuleAdapter,

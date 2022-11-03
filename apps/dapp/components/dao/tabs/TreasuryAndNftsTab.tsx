@@ -5,11 +5,11 @@ import { useEffect } from 'react'
 import {
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
-  useVotingModule,
 } from '@dao-dao/state'
 import {
   StargazeNftImportModal,
   useEncodedCwdProposalSinglePrefill,
+  useVotingModule,
 } from '@dao-dao/stateful'
 import { useActionForKey } from '@dao-dao/stateful/actions'
 import {

@@ -4,12 +4,12 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { Cw20BaseClient as ExecuteClient } from '../../clients/Cw20Base'
+import { Cw20BaseClient as ExecuteClient } from '@dao-dao/state/contracts/Cw20Base'
 import {
   ExecuteClientParams,
   executeClient,
-} from '../../recoil/selectors/clients/Cw20Base'
-import { FunctionKeyOf } from '../../types'
+} from '@dao-dao/state/recoil/selectors/contracts/Cw20Base'
+import { FunctionKeyOf } from '@dao-dao/types'
 
 // This hook wrapper lets us easily make hooks out of all execution functions on
 // the contract clients, without having to fetch the `executeClient` selector as

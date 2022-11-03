@@ -15,7 +15,7 @@ import {
 import {
   Cw20StakeClient,
   Cw20StakeQueryClient,
-} from '../../../clients/Cw20Stake'
+} from '../../../contracts/Cw20Stake'
 import {
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,

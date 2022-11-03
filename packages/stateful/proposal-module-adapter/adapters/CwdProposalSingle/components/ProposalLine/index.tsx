@@ -1,8 +1,8 @@
-import { useVotingModule } from '@dao-dao/state/hooks'
 import { ProposalLine as StatelessProposalLine } from '@dao-dao/stateless'
 import { BaseProposalLineProps } from '@dao-dao/types'
 import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 
+import { useVotingModule } from '../../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../../react'
 import {
   useProposal,

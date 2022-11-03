@@ -1,6 +1,4 @@
 export * as Cw20BaseHooks from './Cw20Base'
 export * as Cw20StakeHooks from './Cw20Stake'
 export * as CwAdminFactoryHooks from './CwAdminFactory'
-export * as CwCoreV1Hooks from './CwCore.v1'
-export * as CwdCoreV2Hooks from './CwdCore.v2'
 export * as CwdVotingNativeStakedHooks from './CwdVotingNativeStaked'

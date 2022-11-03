@@ -14,18 +14,16 @@ import {
   waitForAll,
 } from 'recoil'
 
-import {
-  CwdCoreV2Selectors,
-  usePinnedDaos,
-  useVotingModule,
-  useWalletProfile,
-} from '@dao-dao/state'
+import { CwdCoreV2Selectors } from '@dao-dao/state'
 import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
   SuspenseLoader,
   useEncodedCwdProposalSinglePrefill,
+  usePinnedDaos,
+  useVotingModule,
+  useWalletProfile,
 } from '@dao-dao/stateful'
 import { useActionForKey } from '@dao-dao/stateful/actions'
 import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'

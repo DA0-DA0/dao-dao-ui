@@ -4,13 +4,12 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { FunctionKeyOf } from '@dao-dao/types'
-
-import { CwdCoreV2Client as ExecuteClient } from '../../clients/CwdCore.v2'
+import { CwAdminFactoryClient as ExecuteClient } from '@dao-dao/state/contracts/CwAdminFactory'
 import {
   ExecuteClientParams,
   executeClient,
-} from '../../recoil/selectors/clients/CwdCore.v2'
+} from '@dao-dao/state/recoil/selectors/contracts/CwAdminFactory'
+import { FunctionKeyOf } from '@dao-dao/types'
 
 // This hook wrapper lets us easily make hooks out of all execution functions on
 // the contract clients, without having to fetch the `executeClient` selector as
@@ -36,15 +35,6 @@ const wrapExecuteHook =
     )
   }
 
-export const useExecuteAdminMsgs = wrapExecuteHook('executeAdminMsgs')
-export const useExecuteProposalHook = wrapExecuteHook('executeProposalHook')
-export const usePause = wrapExecuteHook('pause')
-export const useUpdateConfig = wrapExecuteHook('updateConfig')
-export const useUpdateVotingModule = wrapExecuteHook('updateVotingModule')
-export const useUpdateProposalModules = wrapExecuteHook('updateProposalModules')
-export const useSetItem = wrapExecuteHook('setItem')
-export const useRemoveItem = wrapExecuteHook('removeItem')
-export const useReceive = wrapExecuteHook('receive')
-export const useReceiveNft = wrapExecuteHook('receiveNft')
-export const useUpdateCw20List = wrapExecuteHook('updateCw20List')
-export const useUpdateCw721List = wrapExecuteHook('updateCw721List')
+export const useInstantiateWithAdminFactory = wrapExecuteHook(
+  'instantiateContractWithSelfAdmin'
+)

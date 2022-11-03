@@ -7,6 +7,13 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSetRecoilState } from 'recoil'
 
+import {
+  nativeBalanceSelector,
+  nativeBalancesFetchedAtSelector,
+  nativeDelegatedBalanceSelector,
+  refreshWalletBalancesIdAtom,
+  refreshWalletProfileAtom,
+} from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { LoadingData, WalletProfile, WalletProfileUpdate } from '@dao-dao/types'
 import {
@@ -15,13 +22,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import {
-  nativeBalanceSelector,
-  nativeBalancesFetchedAtSelector,
-  nativeDelegatedBalanceSelector,
-  refreshWalletBalancesIdAtom,
-  refreshWalletProfileAtom,
-} from '../recoil'
 import { useProfile } from './useProfile'
 
 export interface UseWalletProfileReturn {

@@ -1,6 +1,7 @@
 # @dao-dao/storybook
 
-Storybook renderer for all packages in the monorepo.
+[Storybook](https://storybook.js.org/) renderer for all packages in the
+monorepo.
 
 ## Running
 

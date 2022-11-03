@@ -21,7 +21,7 @@ import {
   getFallbackImage,
 } from '@dao-dao/utils'
 
-import { CwCoreV1Selectors, CwdCoreV2Selectors } from '../clients'
+import { CwCoreV1Selectors, CwdCoreV2Selectors } from '../contracts'
 import {
   contractInstantiateTimeSelector,
   contractVersionSelector,

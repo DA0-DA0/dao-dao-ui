@@ -10,7 +10,7 @@ import {
 
 import { refreshTokenUsdcPriceAtom } from '../atoms/refresh'
 import { cosmWasmClientForChainSelector, nativeBalancesSelector } from './chain'
-import { CwdCoreV2Selectors } from './clients'
+import { CwdCoreV2Selectors } from './contracts'
 import { junoswapPoolsListSelector } from './pools'
 
 // TODO(multichain): Figure out how to match CW20s on other chains to CW20s in

@@ -7,7 +7,7 @@ import {
   blockHeightTimestampSafeSelector,
   cosmWasmClientForChainSelector,
 } from './chain'
-import { CwdCoreV2Selectors } from './clients'
+import { CwdCoreV2Selectors } from './contracts'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,

@@ -15,7 +15,6 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { useVotingModule } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   IconButtonLink,
@@ -38,6 +37,7 @@ import {
 
 import { ButtonLink } from '../../../../components/ButtonLink'
 import { ProfileDisplay } from '../../../../components/ProfileDisplay'
+import { useVotingModule } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { configSelector } from '../contracts/CwdProposalSingle.common.recoil'
 import {

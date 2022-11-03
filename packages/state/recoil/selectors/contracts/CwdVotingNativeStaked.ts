@@ -14,7 +14,7 @@ import {
 import {
   CwdVotingNativeStakedClient,
   CwdVotingNativeStakedQueryClient,
-} from '../../../clients/CwdVotingNativeStaked'
+} from '../../../contracts/CwdVotingNativeStaked'
 import { signingCosmWasmClientAtom } from '../../atoms'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientForChainSelector } from '../chain'

@@ -24,12 +24,12 @@ import {
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
   refreshProposalsIdAtom,
-  useVotingModule,
 } from '@dao-dao/state'
 import {
   DaoPageWrapper,
   DaoPageWrapperProps,
   SuspenseLoader,
+  useVotingModule,
 } from '@dao-dao/stateful'
 import {
   CwdProposalSingleAdapter,

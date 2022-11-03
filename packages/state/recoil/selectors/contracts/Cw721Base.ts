@@ -15,7 +15,7 @@ import {
   TokensResponse,
 } from '@dao-dao/types/contracts/Cw721Base'
 
-import { Cw721BaseQueryClient } from '../../../clients/Cw721Base'
+import { Cw721BaseQueryClient } from '../../../contracts/Cw721Base'
 import { cosmWasmClientForChainSelector } from '../chain'
 
 type QueryClientParams = WithChainId<{

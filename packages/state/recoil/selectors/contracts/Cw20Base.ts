@@ -12,7 +12,10 @@ import {
   TokenInfoResponse,
 } from '@dao-dao/types/contracts/Cw20Base'
 
-import { Cw20BaseClient, Cw20BaseQueryClient } from '../../../clients/Cw20Base'
+import {
+  Cw20BaseClient,
+  Cw20BaseQueryClient,
+} from '../../../contracts/Cw20Base'
 import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,

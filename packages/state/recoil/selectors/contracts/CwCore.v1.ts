@@ -21,7 +21,7 @@ import {
 import {
   CwCoreV1Client as ExecuteClient,
   CwCoreV1QueryClient as QueryClient,
-} from '../../../clients/CwCore.v1'
+} from '../../../contracts/CwCore.v1'
 import {
   refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,

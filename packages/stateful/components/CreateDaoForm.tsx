@@ -10,12 +10,6 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import {
-  CwAdminFactoryHooks,
-  useAwaitNextBlock,
-  usePinnedDaos,
-  useWalletProfile,
-} from '@dao-dao/state'
-import {
   Button,
   CreateDaoPages,
   DaoCreateSidebarCard,
@@ -54,6 +48,12 @@ import {
   daoCreatedCardPropsAtom,
   newDaoAtom,
 } from '../atoms/newDao'
+import {
+  CwAdminFactoryHooks,
+  useAwaitNextBlock,
+  usePinnedDaos,
+  useWalletProfile,
+} from '../hooks'
 import { getAdapterById as getProposalModuleAdapterById } from '../proposal-module-adapter'
 import {
   CwdVotingCw20StakedAdapter,

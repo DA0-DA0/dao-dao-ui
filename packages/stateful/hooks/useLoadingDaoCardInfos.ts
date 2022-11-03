@@ -1,10 +1,10 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 
+import { GetDaosApiName, useGetDaos } from '@dao-dao/state'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 import { CHAIN_ID, getFallbackImage } from '@dao-dao/utils'
 
 import featuredDaos from '../featured_daos.json'
-import { GetDaosApiName, useGetDaos } from '../subquery/daos/info'
 import { usePinnedDaos } from './usePinnedDaos'
 
 export interface UseLoadingDaoCardInfosOptions {

@@ -27,7 +27,7 @@ import { Cw20BaseSelectors } from '.'
 import {
   CwdCoreV2Client,
   CwdCoreV2QueryClient,
-} from '../../../clients/CwdCore.v2'
+} from '../../../contracts/CwdCore.v2'
 import {
   refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,

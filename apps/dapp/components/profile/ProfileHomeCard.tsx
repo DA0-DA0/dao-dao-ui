@@ -1,7 +1,8 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { useWalletProfile, useWalletProposalsQuery } from '@dao-dao/state'
+import { useWalletProposalsQuery } from '@dao-dao/state'
+import { useWalletProfile } from '@dao-dao/stateful'
 import {
   ProfileHomeCard as StatelessProfileHomeCard,
   useAppLayoutContext,

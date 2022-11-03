@@ -9,7 +9,7 @@ import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   useLoadingFeaturedDaoCardInfos,
   useLoadingPinnedDaoCardInfos,
-} from '@dao-dao/state'
+} from '@dao-dao/stateful'
 import { Home, ProfileDisconnectedCard } from '@dao-dao/stateless'
 
 import { commandModalVisibleAtom } from '@/atoms'

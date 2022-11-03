@@ -4,8 +4,11 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect } from 'react'
 
-import { usePinnedDaos } from '@dao-dao/state'
-import { LinkWrapper, daoCardInfoLazyDataSelector } from '@dao-dao/stateful'
+import {
+  LinkWrapper,
+  daoCardInfoLazyDataSelector,
+  usePinnedDaos,
+} from '@dao-dao/stateful'
 import {
   DaoCard as StatelessDaoCard,
   useCachedLoadable,

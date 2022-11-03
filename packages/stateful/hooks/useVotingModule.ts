@@ -1,9 +1,8 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { CwdCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-
-import { CwdCoreV2Selectors } from '../recoil/selectors'
 
 interface UseVotingModuleOptions {
   chainId?: string

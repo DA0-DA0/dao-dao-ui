@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
+import { useSearchDaos } from '@dao-dao/state/subquery/daos'
 import {
   useLoadingFeaturedDaoCardInfos,
   useLoadingPinnedDaoCardInfos,
-} from '@dao-dao/state'
-import { useSearchDaos } from '@dao-dao/state/subquery/daos'
+} from '@dao-dao/stateful'
 import {
   CommandModalContextSection,
   CommandModalContextUseSectionsOptions,

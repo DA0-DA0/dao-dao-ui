@@ -10,13 +10,9 @@ import {
 } from 'recoil'
 
 import {
-  Cw20BaseHooks,
-  Cw20StakeHooks,
   Cw20StakeSelectors,
   refreshDaoVotingPowerAtom,
   stakingLoadingAtom,
-  useAwaitNextBlock,
-  useWalletProfile,
 } from '@dao-dao/state'
 import {
   Modal,
@@ -32,6 +28,12 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components'
+import {
+  Cw20BaseHooks,
+  Cw20StakeHooks,
+  useAwaitNextBlock,
+  useWalletProfile,
+} from '../../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 

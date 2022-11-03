@@ -24,7 +24,7 @@ import {
   nativeStakingInfoSelector,
   nativeUnstakingDurationSecondsSelector,
 } from '../chain'
-import { CwdCoreV2Selectors } from '../clients'
+import { CwdCoreV2Selectors } from '../contracts'
 import { usdcPerMacroTokenSelector } from '../price'
 
 export const treasuryTokenCardInfosSelector = selectorFamily<

@@ -15,7 +15,6 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { useWalletProfile } from '@dao-dao/state'
 import {
   ActionCardLoader,
   ActionSelector,
@@ -47,6 +46,7 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components/SuspenseLoader'
+import { useWalletProfile } from '../../../../../hooks'
 import { NewProposalData, NewProposalForm } from '../../types'
 
 enum ProposeSubmitValue {

@@ -5,13 +5,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
-import {
-  CwdVotingNativeStakedHooks,
-  refreshDaoVotingPowerAtom,
-  stakingLoadingAtom,
-  useAwaitNextBlock,
-  useWalletProfile,
-} from '@dao-dao/state'
+import { refreshDaoVotingPowerAtom, stakingLoadingAtom } from '@dao-dao/state'
 import {
   Modal,
   StakingMode,
@@ -25,6 +19,11 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components'
+import {
+  CwdVotingNativeStakedHooks,
+  useAwaitNextBlock,
+  useWalletProfile,
+} from '../../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 

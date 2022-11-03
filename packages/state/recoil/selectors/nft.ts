@@ -15,7 +15,7 @@ import {
 } from '@dao-dao/utils'
 
 import { refreshWalletStargazeNftsAtom } from '../atoms/refresh'
-import { Cw721BaseSelectors, CwdCoreV2Selectors } from './clients'
+import { Cw721BaseSelectors, CwdCoreV2Selectors } from './contracts'
 
 export const walletStargazeNftCardInfosSelector = selectorFamily<
   NftCardInfo[],
