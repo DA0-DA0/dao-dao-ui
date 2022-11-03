@@ -1,9 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { ButtonLink, LinkWrapper, useDaoInfoContext } from '@dao-dao/stateless'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
+import { ButtonLink } from '../../buttons'
+import { useDaoInfoContext } from '../../DaoInfoContext'
+import { LinkWrapper } from '../../LinkWrapper'
 import { DaoCard } from '../DaoCard'
 import { makeProps as makeDaoCardProps } from '../DaoCard.stories'
 import { SubDaosTab } from './SubDaosTab'

@@ -1,7 +1,10 @@
 import { ArrowForwardIos } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Modal, ModalProps } from '@dao-dao/stateless'
+import { ModalProps } from '@dao-dao/types'
+
+import { Button } from '../buttons/Button'
+import { Modal } from './Modal'
 
 export type NoKeplrAccountModalProps = Pick<ModalProps, 'visible' | 'onClose'>
 

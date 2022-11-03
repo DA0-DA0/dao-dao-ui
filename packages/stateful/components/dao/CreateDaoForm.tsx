@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { ArrowBack } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
@@ -588,7 +590,7 @@ export const CreateDaoForm = ({
               watch={form.watch}
             />
 
-            <p className="primary-text mt-6 text-text-tertiary">
+            <p className="primary-text text-text-tertiary mt-6">
               {t('form.addAnImage')}
             </p>
           </div>
@@ -604,7 +606,7 @@ export const CreateDaoForm = ({
 
         {/* Divider line shown after first page. */}
         {pageIndex > 0 && (
-          <div className="mb-7 h-[1px] w-full bg-border-base"></div>
+          <div className="bg-border-base mb-7 h-[1px] w-full"></div>
         )}
 
         <div className="mb-14">
@@ -612,7 +614,7 @@ export const CreateDaoForm = ({
         </div>
 
         <div
-          className="flex flex-row items-center border-y border-border-secondary py-7"
+          className="border-border-secondary flex flex-row items-center border-y py-7"
           // justify-end doesn't work in tailwind for some reason
           style={{
             justifyContent: showBack ? 'space-between' : 'flex-end',
@@ -625,7 +627,7 @@ export const CreateDaoForm = ({
               value={CreateDaoSubmitValue.Back}
               variant="secondary"
             >
-              <ArrowBack className="!h-4 !w-4 text-icon-primary" />
+              <ArrowBack className="text-icon-primary !h-4 !w-4" />
               <p>{t(CreateDaoSubmitValue.Back)}</p>
             </Button>
           )}

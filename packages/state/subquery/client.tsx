@@ -2,12 +2,10 @@ import {
   ApolloClient,
   ApolloLink,
   InMemoryCache,
-  ApolloProvider as OriginalApolloProvider,
   createHttpLink,
-} from '@apollo/client'
+} from '@apollo/client/core'
 import { MultiAPILink } from '@habx/apollo-multi-endpoint-link'
 import { ChainInfoID } from '@noahsaso/cosmodal'
-import { ReactNode } from 'react'
 
 import { CHAIN_ID } from '@dao-dao/utils'
 
@@ -38,7 +36,3 @@ export const client = new ApolloClient({
   ]),
   cache: new InMemoryCache(),
 })
-
-export const SubQueryProvider = ({ children }: { children: ReactNode }) => (
-  <OriginalApolloProvider client={client}>{children}</OriginalApolloProvider>
-)

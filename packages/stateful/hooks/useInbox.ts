@@ -1,4 +1,4 @@
-import { NetworkStatus } from '@apollo/client'
+import { NetworkStatus } from '@apollo/client/core'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect, useMemo } from 'react'
 

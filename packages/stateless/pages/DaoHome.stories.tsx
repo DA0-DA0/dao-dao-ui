@@ -2,7 +2,6 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
 import { SuspenseLoader } from '@dao-dao/stateful'
-import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
@@ -21,6 +20,7 @@ import {
   SubDaosTabProps,
   TokenCardProps,
   TreasuryAndNftsTabProps,
+  useDaoInfoContext,
 } from '../components'
 import { Default as DaoInfoBarStory } from '../components/dao/DaoInfoBar.DaoInfoBar.stories'
 import { Default as MembersTabStory } from '../components/dao/tabs/MembersTab.stories'

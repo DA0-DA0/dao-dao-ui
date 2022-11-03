@@ -5,7 +5,6 @@ import {
   ProposalVoteTallyProps,
 } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally'
 import { Default as ProposalVoteTallyStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally.stories'
-import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
@@ -16,6 +15,7 @@ import {
   ProfileVoteCard,
   ProfileVoteCardProps,
   ProposalStatusAndInfoProps,
+  useDaoInfoContext,
 } from '../components'
 import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVoteCard.stories'
 import { Default as ProposalStatusAndInfoStory } from '../components/proposal/ProposalStatusAndInfo.stories'
@@ -79,7 +79,7 @@ Default.args = {
     address: 'juno789def000ghi',
   },
   actionDisplay: (
-    <p className="rounded-md border border-border-primary p-4 text-center">
+    <p className="border-border-primary rounded-md border p-4 text-center">
       Action display placeholder
     </p>
   ),

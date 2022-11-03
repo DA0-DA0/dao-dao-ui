@@ -23,7 +23,6 @@ import {
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/CwdCore.v2'
 
-import { Cw20BaseSelectors } from '.'
 import {
   CwdCoreV2Client,
   CwdCoreV2QueryClient,
@@ -34,6 +33,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import * as Cw20BaseSelectors from './Cw20Base'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string

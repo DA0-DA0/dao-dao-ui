@@ -7,12 +7,12 @@ import {
 } from '@dao-dao/stateful/proposal-module-adapter'
 import { NewProposalProps } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/common/ui/NewProposal'
 import { Default as NewProposalStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/common/ui/NewProposal.stories'
-import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 
+import { useDaoInfoContext } from '../components/DaoInfoContext'
 import {
   ProfileNewProposalCard,
   ProfileNewProposalCardProps,

@@ -14,12 +14,11 @@ import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
-  SubQueryProvider,
   activeThemeAtom,
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
-import { AppLayout, WalletProvider } from '@dao-dao/stateful'
+import { AppLayout, SubQueryProvider, WalletProvider } from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 

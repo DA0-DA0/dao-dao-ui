@@ -19,7 +19,6 @@ import {
   refreshBlockHeightAtom,
   refreshTokenUsdcPriceAtom,
 } from '@dao-dao/state'
-import { CommandModal, makeGenericContext } from '@dao-dao/stateful/command'
 import {
   BetaWarningModal,
   DaoCreatedModal,
@@ -33,6 +32,7 @@ import {
 import { CommandModalContextMaker } from '@dao-dao/types'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
+import { CommandModal, makeGenericContext } from '../command'
 import { useInbox, usePinnedDaos, useWalletProfile } from '../hooks'
 import {
   daoCreatedCardPropsAtom,

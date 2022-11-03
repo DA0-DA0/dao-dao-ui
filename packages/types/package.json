@@ -5,14 +5,14 @@
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
-  "dependencies": {},
   "devDependencies": {
     "@apollo/client": "^3.6.9",
+    "@cosmjs/cosmwasm-stargate": "0.29.3",
     "@dao-dao/config": "2.0.1",
-    "@noahsaso/cosmodal": "^0.8.0",
     "next-i18next": "^11.0.0",
     "react": "18.1.0",
     "react-hook-form": "7.20.4",
+    "react-i18next": "^11.0.0",
     "recoil": "^0.7.2",
     "typescript": "^4.8.3"
   },

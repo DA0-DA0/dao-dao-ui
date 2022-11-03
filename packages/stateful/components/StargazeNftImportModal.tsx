@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 import { ChainInfoID, useWallet } from '@noahsaso/cosmodal'
 import { ComponentType, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
