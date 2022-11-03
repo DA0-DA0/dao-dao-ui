@@ -94,7 +94,7 @@ export const CreateDaoReview = ({
 
   return (
     <>
-      <p className="title-text text-text-body mt-9 mb-7">
+      <p className="title-text mt-9 mb-7 text-text-body">
         {t('title.governanceConfiguration')}
       </p>
 
@@ -103,7 +103,7 @@ export const CreateDaoReview = ({
         newDao={newDao}
       />
 
-      <p className="title-text text-text-body mt-9 mb-7">
+      <p className="title-text mt-9 mb-7 text-text-body">
         {t('title.votingConfiguration')}
       </p>
 
@@ -210,7 +210,7 @@ export const CreateDaoReview = ({
         </div>
       )}
       {previewError && (
-        <p className="text-text-interactive-error mt-4">{previewError}</p>
+        <p className="mt-4 text-text-interactive-error">{previewError}</p>
       )}
     </>
   )

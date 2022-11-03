@@ -37,7 +37,7 @@ export const getIconButtonifiedClassNames = ({
   clsx(
     'flex shrink-0 items-center justify-center transition-all',
 
-    focused && 'ring-border-interactive-focus ring-2 ring-inset',
+    focused && 'ring-2 ring-inset ring-border-interactive-focus',
 
     // Rounding.
     circular ? 'rounded-full' : 'rounded-md',
@@ -70,7 +70,7 @@ export const getIconButtonifiedClassNames = ({
     // Ghost variant
     variant === 'ghost' && {
       // Default
-      'text-icon-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed bg-transparent':
+      'bg-transparent text-icon-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
         !disabled,
       // Disabled
       'text-icon-interactive-disabled': disabled,
@@ -79,7 +79,7 @@ export const getIconButtonifiedClassNames = ({
     variant === 'none' && {
       'p-0': true,
       // Default
-      'text-icon-primary bg-transparent transition-opacity hover:opacity-80 active:opacity-70':
+      'bg-transparent text-icon-primary transition-opacity hover:opacity-80 active:opacity-70':
         !disabled,
       // Disabled
       'text-icon-interactive-disabled': disabled,

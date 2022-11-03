@@ -85,7 +85,7 @@ export const UpdateInfoComponent: ActionComponent<
             <InputErrorMessage error={errors?.description} />
           </div>
           <div className="flex flex-row flex-wrap gap-2">
-            <div className="bg-background-secondary flex grow flex-row items-center justify-between gap-4 rounded-md py-2 px-3">
+            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3">
               <div className="flex flex-row items-center gap-1">
                 <TooltipInfoIcon
                   size="sm"
@@ -104,7 +104,7 @@ export const UpdateInfoComponent: ActionComponent<
                 value={watch(fieldNamePrefix + 'automatically_add_cw20s')}
               />
             </div>
-            <div className="bg-background-secondary flex grow flex-row items-center justify-between gap-4 rounded-md py-2 px-3">
+            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3">
               <div className="flex flex-row items-center gap-1">
                 <TooltipInfoIcon
                   size="sm"
@@ -125,7 +125,7 @@ export const UpdateInfoComponent: ActionComponent<
             </div>
           </div>
           {!isCreating && (
-            <p className="text-text-tertiary text-xs italic">
+            <p className="text-xs italic text-text-tertiary">
               {t('info.daoInfoWillRefresh', {
                 minutes: DAO_STATIC_PROPS_CACHE_SECONDS / 60,
               })}

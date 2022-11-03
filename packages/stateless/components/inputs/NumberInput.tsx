@@ -120,7 +120,7 @@ export const NumberInput = <
 
       <input
         className={clsx(
-          'ring-none secondary-text text-text-body w-full grow appearance-none border-none bg-transparent text-right outline-none',
+          'ring-none secondary-text w-full grow appearance-none border-none bg-transparent text-right text-text-body outline-none',
           className,
           textClassName
         )}
@@ -139,7 +139,7 @@ export const NumberInput = <
       {unit && (
         <p
           className={clsx(
-            'secondary-text text-text-tertiary shrink-0 text-right',
+            'secondary-text shrink-0 text-right text-text-tertiary',
             textClassName,
             unitClassName
           )}

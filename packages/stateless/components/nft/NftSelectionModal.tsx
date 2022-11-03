@@ -134,7 +134,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
           >
             {showSelectAll && (
               <Button
-                className="text-text-interactive-active mt-4"
+                className="mt-4 text-text-interactive-active"
                 disabled={nfts.loading}
                 onClick={
                   nfts.loading
@@ -173,7 +173,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
         <div className="mx-auto -mt-6 flex max-w-prose grow flex-col items-center justify-center gap-4">
           <WarningRounded className="!h-14 !w-14" />
           <p className="body-text">{t('error.pfpkStargazeReopenModal')}</p>
-          <pre className="secondary-text text-text-interactive-error whitespace-pre-wrap text-xs">
+          <pre className="secondary-text whitespace-pre-wrap text-xs text-text-interactive-error">
             {nfts.error instanceof Error ? nfts.error.message : `${nfts.error}`}
           </pre>
         </div>

@@ -22,7 +22,7 @@ export const ProfileCardMemberInfo = ({
       <p>{t('title.votingPower')}</p>
       <p
         className={clsx(
-          'text-text-primary font-mono',
+          'font-mono text-text-primary',
           votingPower.loading && 'animate-pulse'
         )}
       >

@@ -30,7 +30,7 @@ export const SegmentedControls = <T extends unknown>({
   return (
     <div
       className={clsx(
-        'group bg-background-tertiary grid auto-cols-fr grid-flow-col rounded-md',
+        'group grid auto-cols-fr grid-flow-col rounded-md bg-background-tertiary',
         disabled && 'pointer-events-none',
         className
       )}
@@ -42,7 +42,7 @@ export const SegmentedControls = <T extends unknown>({
           {index > 0 && (
             <div
               className={clsx(
-                'bg-border-primary h-4 w-[1px] self-center opacity-100 transition-opacity',
+                'h-4 w-[1px] self-center bg-border-primary opacity-100 transition-opacity',
                 {
                   // Do not show left border if...
                   '!opacity-0':

@@ -52,8 +52,8 @@ export const DaoImage = ({
       className={clsx(
         'relative inline-block rounded-full',
         blur
-          ? `border-border-secondary border ${sizeClassNames}`
-          : 'border-border-primary border-2 p-1',
+          ? `border border-border-secondary ${sizeClassNames}`
+          : 'border-2 border-border-primary p-1',
         className
       )}
     >

@@ -182,7 +182,7 @@ export const TokenCard = ({
 
   return (
     <>
-      <div className="bg-background-tertiary rounded-lg">
+      <div className="rounded-lg bg-background-tertiary">
         <div className="relative p-5">
           <div className="flex flex-row gap-4 pr-5">
             <div className="relative">
@@ -196,7 +196,7 @@ export const TokenCard = ({
 
               {/* Crown */}
               {!!crown && (
-                <CrownIcon className="text-text-secondary absolute -top-4 -left-6 !h-8 !w-8 stroke-2" />
+                <CrownIcon className="absolute -top-4 -left-6 !h-8 !w-8 stroke-2 text-text-secondary" />
               )}
             </div>
 
@@ -245,7 +245,7 @@ export const TokenCard = ({
           )}
         </div>
 
-        <div className="border-border-secondary flex flex-col gap-3 border-t py-4 px-6">
+        <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
           <div className="flex flex-row items-start justify-between gap-8">
             <p className="link-text">{t('info.totalHoldings')}</p>
             {/* leading-5 to match link-text's line-height. */}
@@ -257,7 +257,7 @@ export const TokenCard = ({
                   // it is loaded so this is accurate.
                   waitingForStakingInfo ? { loading: true } : totalBalance
                 }
-                className="text-text-body leading-5"
+                className="leading-5 text-text-body"
                 decimals={tokenDecimals}
                 symbol={tokenSymbol}
               />
@@ -292,7 +292,7 @@ export const TokenCard = ({
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
                   amount={unstakedBalance}
-                  className="text-text-body leading-5"
+                  className="leading-5 text-text-body"
                   decimals={tokenDecimals}
                   symbol={tokenSymbol}
                 />
@@ -318,7 +318,7 @@ export const TokenCard = ({
         </div>
 
         {hasStakingInfo && (lazyInfo.loading || lazyInfo.data) && (
-          <div className="border-border-secondary flex flex-col gap-2 border-t px-6 pt-4 pb-6">
+          <div className="flex flex-col gap-2 border-t border-border-secondary px-6 pt-4 pb-6">
             <p className="link-text mb-1">{t('info.stakes')}</p>
 
             <div className="flex flex-row items-center justify-between gap-8">
@@ -326,7 +326,7 @@ export const TokenCard = ({
 
               <TokenAmountDisplay
                 amount={lazyInfo.loading ? { loading: true } : totalStaked}
-                className="caption-text text-text-body text-right font-mono"
+                className="caption-text text-right font-mono text-text-body"
                 decimals={tokenDecimals}
                 symbol={tokenSymbol}
               />
@@ -337,7 +337,7 @@ export const TokenCard = ({
 
               <p
                 className={clsx(
-                  'caption-text text-text-body text-right font-mono',
+                  'caption-text text-right font-mono text-text-body',
                   lazyInfo.loading && 'animate-pulse'
                 )}
               >
@@ -380,7 +380,7 @@ export const TokenCard = ({
                 className={clsx(
                   'caption-text text-right font-mono underline-offset-2',
                   unstakingBalance > 0 && 'text-text-body',
-                  lazyInfo.loading && '!text-text-body animate-pulse'
+                  lazyInfo.loading && 'animate-pulse !text-text-body'
                 )}
                 disabled={lazyInfo.loading}
                 onClick={() => setShowUnstakingTokens(true)}
@@ -405,7 +405,7 @@ export const TokenCard = ({
 
               <TokenAmountDisplay
                 amount={lazyInfo.loading ? { loading: true } : pendingRewards}
-                className="caption-text text-text-body text-right font-mono"
+                className="caption-text text-right font-mono text-text-body"
                 decimals={tokenDecimals}
                 symbol={tokenSymbol}
               />

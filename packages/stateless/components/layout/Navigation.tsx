@@ -141,12 +141,12 @@ export const Navigation = ({
       <nav
         className={clsx(
           // General
-          'no-scrollbar bg-background-base flex h-full shrink-0 flex-col overflow-y-auto py-6 pt-0 text-lg',
+          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base py-6 pt-0 text-lg',
           // If compact, items will manager their own padding so that
           // highlighted rows fill the whole width.
           !compact && 'px-6',
           // Responsive
-          'shadow-dp8 absolute top-0 bottom-0 z-20 w-[90vw] transition-all',
+          'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
           'sm:relative sm:left-0 sm:shadow-none sm:transition-[padding-left]',
@@ -188,11 +188,11 @@ export const Navigation = ({
             onClick={setCommandModalVisible}
             rightNode={
               !isMobile() && (
-                <div className="legend-text text-icon-primary flex flex-row items-center gap-1">
-                  <div className="bg-background-interactive-disabled flex h-6 w-6 items-center justify-center rounded-md">
+                <div className="legend-text flex flex-row items-center gap-1 text-icon-primary">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
                     <p>{isMac ? '⌘' : '⌃'}</p>
                   </div>
-                  <div className="bg-background-interactive-disabled flex h-6 w-6 items-center justify-center rounded-md">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-background-interactive-disabled">
                     <p>k</p>
                   </div>
                 </div>
@@ -244,7 +244,7 @@ export const Navigation = ({
                 {/* Top border */}
                 <div
                   className={clsx(
-                    'bg-border-primary sticky top-0 right-0 left-0 h-[1px] transition-opacity',
+                    'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
                     showPinnedTopBorder ? 'opacity-100' : 'opacity-0'
                   )}
                 ></div>
@@ -263,7 +263,7 @@ export const Navigation = ({
                 {/* Bottom border */}
                 <div
                   className={clsx(
-                    'bg-border-primary sticky right-0 bottom-0 left-0 h-[1px] transition-opacity',
+                    'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
                     showPinnedBottomBorder ? 'opacity-100' : 'opacity-0'
                   )}
                 ></div>

@@ -161,7 +161,7 @@ export const ProfileCardMemberInfoTokens = ({
               className={clsx(
                 'text-right font-mono',
                 loadingVotingPower.loading
-                  ? 'text-text-tertiary animate-pulse'
+                  ? 'animate-pulse text-text-tertiary'
                   : 'text-text-primary'
               )}
             >

@@ -128,7 +128,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
           )
         })}
         {!isCreating && toAddFields.length === 0 && (
-          <p className="text-text-tertiary text-xs italic">{t('info.none')}</p>
+          <p className="text-xs italic text-text-tertiary">{t('info.none')}</p>
         )}
         {isCreating && (
           <Button
@@ -181,7 +181,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
           </div>
         ))}
         {!isCreating && toRemoveFields.length === 0 && (
-          <p className="text-text-tertiary text-xs italic">{t('info.none')}</p>
+          <p className="text-xs italic text-text-tertiary">{t('info.none')}</p>
         )}
         {isCreating && (
           <Button

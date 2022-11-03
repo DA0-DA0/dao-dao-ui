@@ -86,7 +86,7 @@ export const AppLayout = ({
 
         <main
           className={clsx(
-            'border-border-base flex grow flex-col overflow-hidden border-x transition-opacity',
+            'flex grow flex-col overflow-hidden border-x border-border-base transition-opacity',
             // Navigation bar can be responsive up to sm size. After that, it
             // automatically displays.
             context.responsiveNavigation.enabled
@@ -98,11 +98,11 @@ export const AppLayout = ({
           )}
         >
           <div
-            className="bg-background-base shadow-dp8 fixed right-4 bottom-4 z-10 cursor-pointer rounded-full sm:right-6 sm:bottom-6 xl:hidden"
+            className="fixed right-4 bottom-4 z-10 cursor-pointer rounded-full bg-background-base shadow-dp8 sm:right-6 sm:bottom-6 xl:hidden"
             onClick={context.responsiveRightSidebar.toggle}
           >
             <ProfileImage
-              className="bg-background-primary hover:bg-background-interactive-hover active:bg-background-interactive-pressed transition"
+              className="bg-background-primary transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed"
               fallbackIconClassName="!text-icon-primary !w-3/5 !h-3/5"
               imageUrl={
                 !walletProfile || walletProfile.loading

@@ -45,7 +45,7 @@ export const ProfileHomeCard = ({
       underHeaderComponent={
         <div className="mt-3 grid grid-cols-[1fr_1px_1fr] items-center justify-items-center gap-2 self-stretch">
           <div className="flex flex-col items-stretch text-center">
-            <PaymentsOutlined className="text-icon-secondary mb-4 !h-5 !w-5 self-center text-center" />
+            <PaymentsOutlined className="mb-4 !h-5 !w-5 self-center text-center text-icon-secondary" />
             <p className="secondary-text mb-1">{t('title.holdings')}</p>
 
             {lazyData.loading ? (
@@ -63,10 +63,10 @@ export const ProfileHomeCard = ({
             )}
           </div>
 
-          <div className="bg-border-secondary h-10 w-[1px]"></div>
+          <div className="h-10 w-[1px] bg-border-secondary"></div>
 
           <div className="flex flex-col items-center text-center">
-            <LayersOutlined className="text-icon-secondary mb-4 !h-5 !w-5 self-center" />
+            <LayersOutlined className="mb-4 !h-5 !w-5 self-center text-icon-secondary" />
             <p className="secondary-text mb-1">{t('title.staked')}</p>
 
             {lazyData.loading ? (
@@ -93,7 +93,7 @@ export const ProfileHomeCard = ({
 
           <p
             className={clsx(
-              'text-text-primary font-mono',
+              'font-mono text-text-primary',
               lazyData.loading && 'animate-pulse'
             )}
           >
@@ -106,7 +106,7 @@ export const ProfileHomeCard = ({
 
           <p
             className={clsx(
-              'text-text-primary font-mono',
+              'font-mono text-text-primary',
               lazyData.loading && 'animate-pulse'
             )}
           >
@@ -115,7 +115,7 @@ export const ProfileHomeCard = ({
         </div>
       </div>
 
-      <div className="border-t-border-primary border-t p-6">
+      <div className="border-t border-t-border-primary p-6">
         <ButtonLink
           className="w-full"
           contentContainerClassName="justify-center"

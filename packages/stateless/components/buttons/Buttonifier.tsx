@@ -55,7 +55,7 @@ export const getButtonifiedClassNames = ({
   const disabledOrLoading = disabled || loading
 
   return clsx(
-    'focus:outline-background-button-disabled relative rounded-md transition-all focus:outline-2',
+    'relative rounded-md transition-all focus:outline-2 focus:outline-background-button-disabled',
     // Ensure cannot click when loading.
     disabledOrLoading && 'pointer-events-none',
     // Let variants take color precedence over the text classes used here since
@@ -80,7 +80,7 @@ export const getButtonifiedClassNames = ({
     variant === 'primary_outline' && {
       'ring-2 ring-inset': true,
       // Default
-      'text-background-button ring-background-button hover:bg-background-button-hover hover:text-text-button-primary active:bg-background-button-pressed active:text-text-button-primary hover:ring-0 active:ring-0':
+      'text-background-button ring-background-button hover:bg-background-button-hover hover:text-text-button-primary hover:ring-0 active:bg-background-button-pressed active:text-text-button-primary active:ring-0':
         !disabledOrLoading,
       // Disabled
       'text-background-button-disabled ring-background-button-disabled':
@@ -106,12 +106,12 @@ export const getButtonifiedClassNames = ({
       'hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
         !disabledOrLoading,
       // Default, not pressed
-      'text-text-secondary bg-transparent': !disabledOrLoading && !pressed,
+      'bg-transparent text-text-secondary': !disabledOrLoading && !pressed,
       // Disabled, not pressed
-      'text-text-interactive-disabled bg-transparent':
+      'bg-transparent text-text-interactive-disabled':
         disabledOrLoading && !pressed,
       // Default or disabled, pressed
-      'text-text-brand bg-transparent': pressed,
+      'bg-transparent text-text-brand': pressed,
     },
     // Underline variant
     (variant === 'underline' || variant === 'none') && {
@@ -153,7 +153,7 @@ export const ButtonifiedChildren = ({
       )}
     >
       {loading && (
-        <div className="animate-spin-medium mx-auto inline-block aspect-square h-full">
+        <div className="mx-auto inline-block aspect-square h-full animate-spin-medium">
           <Logo invert={variant === 'primary'} size="100%" />
         </div>
       )}
@@ -175,7 +175,7 @@ export const ButtonifiedChildren = ({
     </div>
 
     {showBadge && (
-      <div className="border-background-base bg-icon-interactive-active absolute top-[3px] right-[3px] box-content h-[6px] w-[6px] rounded-full border-[3px]"></div>
+      <div className="absolute top-[3px] right-[3px] box-content h-[6px] w-[6px] rounded-full border-[3px] border-background-base bg-icon-interactive-active"></div>
     )}
   </>
 )

@@ -27,7 +27,7 @@ export const MembershipPill = ({
         'link-text max-w-full',
         ghost
           ? 'caption-text text-text-secondary'
-          : 'border-border-primary flex flex-row items-center gap-2 rounded-full border-2 py-1 px-[10px]',
+          : 'flex flex-row items-center gap-2 rounded-full border-2 border-border-primary py-1 px-[10px]',
         !isMember && 'text-text-interactive-disabled'
       )}
     >

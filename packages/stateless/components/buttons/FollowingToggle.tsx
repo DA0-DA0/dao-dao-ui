@@ -18,10 +18,10 @@ export const FollowingToggle = ({
   return (
     <Button onClick={(_e) => onToggle()} variant="secondary">
       {/* Don't show text on mobile, header too small. */}
-      <p className="text-text-body hidden sm:block">
+      <p className="hidden text-text-body sm:block">
         {following ? t('button.following') : t('button.follow')}
       </p>
-      <Icon className="!text-icon-primary !h-4 !w-4" />
+      <Icon className="!h-4 !w-4 !text-icon-primary" />
     </Button>
   )
 }

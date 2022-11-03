@@ -12,8 +12,8 @@ export const DaoCreateSidebarCard = ({
   const { t } = useTranslation()
 
   return (
-    <div className="border-border-primary relative rounded-lg border">
-      <div className="border-border-secondary space-y-1 border-b p-6">
+    <div className="relative rounded-lg border border-border-primary">
+      <div className="space-y-1 border-b border-border-secondary p-6">
         <p className="title-text text-text-body">
           {t('title.daoCreationProcess')}
         </p>
@@ -23,7 +23,7 @@ export const DaoCreateSidebarCard = ({
       </div>
 
       <div className="flex flex-row items-stretch">
-        <div className="border-border-primary w-8 border-r-4"></div>
+        <div className="w-8 border-r-4 border-border-primary"></div>
         <div className="flex flex-col py-4">
           {[
             t('info.createStep1'),
@@ -55,12 +55,12 @@ export const DaoCreateSidebarCard = ({
                       'h-3 w-3': current || future,
                       'bg-icon-brand': current,
                       'bg-icon-interactive-disabled': future,
-                      'bg-background-button flex h-4 w-4 items-center justify-center':
+                      'flex h-4 w-4 items-center justify-center bg-background-button':
                         done,
                     })}
                   >
                     {done && (
-                      <Check className="text-background-base !h-3 !w-3" />
+                      <Check className="!h-3 !w-3 text-background-base" />
                     )}
                   </div>
                 </div>

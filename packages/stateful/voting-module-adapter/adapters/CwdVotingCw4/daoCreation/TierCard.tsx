@@ -74,8 +74,8 @@ export const TierCard = ({
   const tierVotingWeight = data.tiers?.[tierIndex]?.weight ?? 0
 
   return (
-    <div className="bg-background-tertiary rounded-lg">
-      <div className="border-border-base flex h-14 flex-row items-center justify-between border-b p-4">
+    <div className="rounded-lg bg-background-tertiary">
+      <div className="flex h-14 flex-row items-center justify-between border-b border-border-base p-4">
         <div className="flex flex-row items-center gap-3">
           {!showColorDotOnMember && (
             <div
@@ -103,7 +103,7 @@ export const TierCard = ({
       </div>
 
       <div className="flex flex-col items-stretch sm:flex-row sm:items-center sm:justify-between">
-        <div className="border-border-secondary flex grow flex-col border-b p-6 sm:border-r sm:border-b-0">
+        <div className="flex grow flex-col border-b border-border-secondary p-6 sm:border-r sm:border-b-0">
           <InputLabel
             containerProps={{ className: 'mb-2' }}
             name={t('form.tierNameTitle')}
@@ -158,7 +158,7 @@ export const TierCard = ({
         </div>
       </div>
 
-      <div className="border-border-secondary flex flex-col border-t p-6">
+      <div className="flex flex-col border-t border-border-secondary p-6">
         <InputLabel
           containerProps={{ className: 'mb-2' }}
           name={t('title.members')}
@@ -168,7 +168,7 @@ export const TierCard = ({
           {members.map(({ id }, memberIndex) => (
             <div
               key={id}
-              className="bg-background-secondary flex flex-row items-center gap-4 rounded-lg p-4"
+              className="flex flex-row items-center gap-4 rounded-lg bg-background-secondary p-4"
             >
               <div className="grow">
                 <div className="flex flex-row items-center gap-4">
@@ -221,7 +221,7 @@ export const TierCard = ({
             onClick={() => appendMember({ address: '' })}
             variant="ghost"
           >
-            <Add className="text-icon-secondary !h-6 !w-6" />
+            <Add className="!h-6 !w-6 text-icon-secondary" />
             <p>{t('button.addMember')}</p>
           </Button>
 

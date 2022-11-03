@@ -62,7 +62,7 @@ export const DaoDropdown = ({
             // ml-2, so to center this border beneath the arrow, we need to
             // include the full offset (ml-2) and half the width (w-3), getting
             // w-5.
-            className="border-border-secondary w-5 shrink-0 border-r"
+            className="w-5 shrink-0 border-r border-border-secondary"
           ></div>
         ))}
 
@@ -75,7 +75,7 @@ export const DaoDropdown = ({
                 toggle={() => setExpanded((e) => !e)}
               />
             ) : (
-              <div className="bg-icon-interactive-disabled h-1 w-1 rounded-full"></div>
+              <div className="h-1 w-1 rounded-full bg-icon-interactive-disabled"></div>
             )}
           </div>
 
@@ -85,7 +85,7 @@ export const DaoDropdown = ({
           >
             <img alt="" className="h-5 w-5 rounded-full" src={imageUrl} />
 
-            <p className="link-text text-text-body truncate">{name}</p>
+            <p className="link-text truncate text-text-body">{name}</p>
           </LinkWrapper>
         </div>
       </div>

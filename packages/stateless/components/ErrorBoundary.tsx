@@ -54,7 +54,7 @@ class ErrorBoundaryInner extends Component<
         </p>
 
         {!!this.state.error && (
-          <pre className="text-text-interactive-error mt-6 whitespace-pre-wrap text-xs">
+          <pre className="mt-6 whitespace-pre-wrap text-xs text-text-interactive-error">
             {this.state.error}
           </pre>
         )}

@@ -25,7 +25,7 @@ export const MembersTab = <D extends {}>({
   return (
     <>
       {addMemberHref && (
-        <div className="border-b-border-secondary mb-6 flex flex-row items-center justify-between gap-8 border-b pb-6">
+        <div className="mb-6 flex flex-row items-center justify-between gap-8 border-b border-b-border-secondary pb-6">
           <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1">
             <p className="title-text text-text-body">{t('title.newMember')}</p>
             <p className="secondary-text">{t('info.newMemberExplanation')}</p>
@@ -42,7 +42,7 @@ export const MembersTab = <D extends {}>({
         </div>
       )}
 
-      <p className="title-text text-text-body mb-6">
+      <p className="title-text mb-6 text-text-body">
         {t('title.numMembers', { count: members.length })}
       </p>
 

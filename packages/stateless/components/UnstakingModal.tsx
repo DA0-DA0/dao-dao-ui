@@ -132,7 +132,7 @@ export const UnstakingModal = ({
           </>
         )}
 
-        <div className="link-text text-text-secondary ml-2 flex flex-row items-center gap-2">
+        <div className="link-text ml-2 flex flex-row items-center gap-2 text-text-secondary">
           <ArrowDropDown
             className={clsx('!h-5 !w-5', {
               '-rotate-90': unstaking.length === 0,
@@ -152,7 +152,7 @@ export const UnstakingModal = ({
 
         {claimed.length > 0 && (
           <>
-            <div className="link-text text-text-secondary mt-6 ml-2 mb-5 flex flex-row items-center gap-2">
+            <div className="link-text mt-6 ml-2 mb-5 flex flex-row items-center gap-2 text-text-secondary">
               <ArrowDropDown
                 className={clsx('!h-5 !w-5', {
                   '-rotate-90': claimed.length === 0,

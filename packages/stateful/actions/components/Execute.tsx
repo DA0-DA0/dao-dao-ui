@@ -96,11 +96,11 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       />
 
       {errors?.message ? (
-        <p className="text-text-interactive-error flex items-center gap-1 text-sm">
+        <p className="flex items-center gap-1 text-sm text-text-interactive-error">
           <Close className="!h-5 !w-5" /> <span>{errors.message.message}</span>
         </p>
       ) : (
-        <p className="text-text-interactive-valid flex items-center gap-1 text-sm">
+        <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
           <Check className="!h-5 !w-5" /> {t('info.jsonIsValid')}
         </p>
       )}
@@ -121,7 +121,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
           />
         ))}
         {!isCreating && coins.length === 0 && (
-          <p className="text-text-tertiary mt-1 mb-2 text-xs italic">
+          <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
             {t('info.none')}
           </p>
         )}

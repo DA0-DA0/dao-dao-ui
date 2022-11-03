@@ -154,7 +154,7 @@ export const CommandModalContextView = ({
       {sections.length > 0 ? (
         sections.map(({ name, items, onChoose }, sectionIndex) => (
           <Fragment key={sectionIndex}>
-            <p className="link-text text-text-tertiary h-7 py-1 pl-3">{name}</p>
+            <p className="link-text h-7 py-1 pl-3 text-text-tertiary">{name}</p>
 
             {items.map((item, itemIndex) => {
               const selected =
@@ -165,7 +165,7 @@ export const CommandModalContextView = ({
                   key={itemIndex}
                   className={
                     loading
-                      ? '!bg-background-interactive-disabled pointer-events-none'
+                      ? 'pointer-events-none !bg-background-interactive-disabled'
                       : undefined
                   }
                   item={item}

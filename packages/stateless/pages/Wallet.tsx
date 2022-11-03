@@ -180,7 +180,7 @@ export const Wallet = ({
             </div>
           </div> */}
 
-            <p className="title-text text-text-body mt-6 mb-2">
+            <p className="title-text mt-6 mb-2 text-text-body">
               {t('title.actions', { count: proposalActionData.length })}
             </p>
 
@@ -229,7 +229,7 @@ export const Wallet = ({
               />
             </div>
 
-            <div className="border-border-secondary flex flex-row items-center justify-between gap-6 border-y py-6">
+            <div className="flex flex-row items-center justify-between gap-6 border-y border-border-secondary py-6">
               <p className="title-text text-text-body">
                 {t('info.reviewYourTransaction')}
               </p>
@@ -273,19 +273,19 @@ export const Wallet = ({
             </div>
 
             {showSubmitErrorNote && (
-              <p className="secondary-text text-text-interactive-error max-w-prose self-end text-right text-base">
+              <p className="secondary-text max-w-prose self-end text-right text-base text-text-interactive-error">
                 {t('error.createProposalSubmitInvalid')}
               </p>
             )}
 
             {error && (
-              <p className="secondary-text text-text-interactive-error max-w-prose self-end text-right text-sm">
+              <p className="secondary-text max-w-prose self-end text-right text-sm text-text-interactive-error">
                 {error}
               </p>
             )}
 
             {txHash && (
-              <div className="text-text-interactive-valid flex flex-col items-end gap-2 self-end">
+              <div className="flex flex-col items-end gap-2 self-end text-text-interactive-valid">
                 <CopyToClipboard takeAll value={txHash} />
 
                 <ButtonLink

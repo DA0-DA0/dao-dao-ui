@@ -73,7 +73,7 @@ export const Modal = ({
         >
           <div
             className={clsx(
-              'no-scrollbar border-border-secondary bg-background-base shadow-dp8 relative flex h-min max-h-full max-w-md cursor-auto flex-col overflow-y-auto rounded-lg border p-6 transition-transform duration-[120ms]',
+              'no-scrollbar relative flex h-min max-h-full max-w-md cursor-auto flex-col overflow-y-auto rounded-lg border border-border-secondary bg-background-base p-6 shadow-dp8 transition-transform duration-[120ms]',
               visible ? 'scale-100' : 'scale-90',
               // If no children, remove bottom padding since header has its own
               // padding.
@@ -100,7 +100,7 @@ export const Modal = ({
                   // whole width.
                   '-mx-6 flex shrink-0 flex-col gap-1 px-6 pb-6',
                   // If children, add bottom border and margin.
-                  children && 'border-border-base mb-6 border-b',
+                  children && 'mb-6 border-b border-border-base',
                   headerContainerClassName
                 )}
               >
@@ -122,7 +122,7 @@ export const Modal = ({
             <ErrorBoundary>{children}</ErrorBoundary>
 
             {footerContent && (
-              <div className="border-border-secondary -mx-6 -mb-6 shrink-0 border-t py-5 px-6">
+              <div className="-mx-6 -mb-6 shrink-0 border-t border-border-secondary py-5 px-6">
                 {footerContent}
               </div>
             )}

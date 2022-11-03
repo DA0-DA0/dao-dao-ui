@@ -48,7 +48,7 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   return (
     <input
       className={clsx(
-        'secondary-text text-text-body placeholder:text-text-tertiary w-full appearance-none bg-transparent transition focus:outline-none',
+        'secondary-text w-full appearance-none bg-transparent text-text-body transition placeholder:text-text-tertiary focus:outline-none',
         // Padding and outline
         !ghost && 'rounded-md py-3 px-4 ring-1 focus:ring-2',
         // Outline color

@@ -59,7 +59,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             <InputErrorMessage error={errors?.amount} />
           </div>
           {govTokenSymbol && (
-            <p className="text-text-secondary font-mono text-sm uppercase">
+            <p className="font-mono text-sm uppercase text-text-secondary">
               ${govTokenSymbol}
             </p>
           )}

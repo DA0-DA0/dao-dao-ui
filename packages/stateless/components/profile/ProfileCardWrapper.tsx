@@ -58,7 +58,7 @@ export const ProfileCardWrapper = ({
   const canEdit = !walletProfile.loading && walletProfile.data.nonce >= 0
 
   return (
-    <div className="border-border-primary relative rounded-lg border">
+    <div className="relative rounded-lg border border-border-primary">
       {/* Absolutely positioned, against relative outer-most div (without padding). */}
       {compact && !!averageImgColor && (
         <CornerGradient className="h-36 opacity-50" color={averageImgColor} />
@@ -116,7 +116,7 @@ export const ProfileCardWrapper = ({
 
       <div
         className={clsx(
-          'border-t-border-primary flex flex-col items-stretch border-t p-6',
+          'flex flex-col items-stretch border-t border-t-border-primary p-6',
           childContainerClassName
         )}
       >
@@ -183,7 +183,7 @@ const ProfileNameDisplayAndEditor = ({
             // (https://bugs.webkit.org/show_bug.cgi?id=195884#c4).
             autoFocus
             className={clsx(
-              '!title-text border-border-primary border-b pb-1',
+              '!title-text border-b border-border-primary pb-1',
               !compact && 'text-center'
             )}
             ghost
@@ -235,7 +235,7 @@ const ProfileNameDisplayAndEditor = ({
               'title-text',
               walletProfile.loading && 'animate-pulse',
               noNameSet
-                ? 'text-text-secondary font-normal italic'
+                ? 'font-normal italic text-text-secondary'
                 : 'text-text-body'
             )}
           >
@@ -251,7 +251,7 @@ const ProfileNameDisplayAndEditor = ({
           {canEdit && (
             <Edit
               className={clsx(
-                'text-icon-secondary absolute -right-6 !h-4 !w-6 pl-2',
+                'absolute -right-6 !h-4 !w-6 pl-2 text-icon-secondary',
                 !noNameSet &&
                   'opacity-0 transition-opacity group-hover:opacity-100'
               )}

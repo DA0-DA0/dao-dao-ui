@@ -30,9 +30,9 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
       <div
         className={clsx(
           // General
-          'no-scrollbar bg-background-base flex w-[90vw] flex-col items-stretch overflow-y-auto p-6 pt-0 transition-all duration-[225ms] sm:w-96',
+          'no-scrollbar flex w-[90vw] flex-col items-stretch overflow-y-auto bg-background-base p-6 pt-0 transition-all duration-[225ms] sm:w-96',
           // Responsive
-          'shadow-dp8 absolute top-0 bottom-0 z-30',
+          'absolute top-0 bottom-0 z-30 shadow-dp8',
           responsiveEnabled
             ? 'right-0 opacity-100'
             : 'pointer-events-none -right-full opacity-0 sm:-right-96',
@@ -41,7 +41,7 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
         )}
       >
         {/* Show responsive close button. */}
-        <div className="bg-background-base shadow-dp8 fixed right-4 bottom-4 z-40 cursor-pointer rounded-full transition sm:right-6 sm:bottom-6 xl:hidden">
+        <div className="fixed right-4 bottom-4 z-40 cursor-pointer rounded-full bg-background-base shadow-dp8 transition sm:right-6 sm:bottom-6 xl:hidden">
           <IconButton
             Icon={KeyboardDoubleArrowRight}
             // Match ProfileImage rounding.

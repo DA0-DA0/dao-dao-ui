@@ -19,7 +19,7 @@ export const ProposalWalletVote = ({
   >
     <p>{label}</p>
     {showBadge && (
-      <div className="bg-icon-interactive-active absolute top-[1.5px] right-[1.5px] h-[0.375rem] w-[0.375rem] rounded-full"></div>
+      <div className="absolute top-[1.5px] right-[1.5px] h-[0.375rem] w-[0.375rem] rounded-full bg-icon-interactive-active"></div>
     )}
   </div>
 )

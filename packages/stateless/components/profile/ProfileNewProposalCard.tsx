@@ -48,13 +48,13 @@ export const ProfileNewProposalCard = ({
                 className="ml-1 flex flex-row items-center justify-between gap-2"
               >
                 <div className="flex flex-row items-center gap-2">
-                  <Icon className="text-icon-primary h-5 w-5" />
+                  <Icon className="h-5 w-5 text-icon-primary" />
                   <p className="primary-text text-text-body">{label}</p>
                 </div>
 
                 <p
                   className={clsx(
-                    'caption-text border-component-badge-primary text-text-primary break-words rounded-full border-2 py-1 px-2 text-center font-mono',
+                    'caption-text break-words rounded-full border-2 border-component-badge-primary py-1 px-2 text-center font-mono text-text-primary',
                     valueClassName
                   )}
                 >
@@ -67,7 +67,7 @@ export const ProfileNewProposalCard = ({
       </div>
 
       {!info.loading && info.data.addresses.length > 0 && (
-        <div className="border-border-primary flex flex-col gap-5 border-t p-6">
+        <div className="flex flex-col gap-5 border-t border-border-primary p-6">
           {info.data.addresses.map(({ label, address }, index) => (
             <div key={index} className="space-y-2">
               <div className="flex flex-row items-center justify-between gap-6">
@@ -84,7 +84,7 @@ export const ProfileNewProposalCard = ({
                 />
               </div>
 
-              <p className="legend-text text-text-primary truncate pr-8 font-mono">
+              <p className="legend-text truncate pr-8 font-mono text-text-primary">
                 {concatAddressStartEnd(address, 16, 16)}
               </p>
             </div>

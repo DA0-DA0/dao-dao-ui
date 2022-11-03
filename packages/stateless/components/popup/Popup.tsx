@@ -135,7 +135,7 @@ export const Popup = ({
       {/* Popup */}
       <div
         className={clsx(
-          'border-border-primary bg-component-dropdown shadow-dp8 absolute top-full z-10 mt-1 flex flex-col rounded-lg border transition-all',
+          'absolute top-full z-10 mt-1 flex flex-col rounded-lg border border-border-primary bg-component-dropdown shadow-dp8 transition-all',
           // Position.
           {
             // Offset for outline of Trigger.
@@ -151,7 +151,7 @@ export const Popup = ({
         )}
       >
         {headerContent && (
-          <div className="border-border-base mb-4 border-b">
+          <div className="mb-4 border-b border-border-base">
             <div className="p-4">{headerContent}</div>
           </div>
         )}

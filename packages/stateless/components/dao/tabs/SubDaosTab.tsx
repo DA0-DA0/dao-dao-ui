@@ -71,12 +71,12 @@ export const SubDaosTab = ({
           href={isMember ? upgradeToV2Href : undefined}
         />
       ) : subdaos.loading ? (
-        <div className="border-border-secondary border-t pt-6">
+        <div className="border-t border-border-secondary pt-6">
           <Loader fill={false} />
         </div>
       ) : subdaos.data.length > 0 ? (
         <>
-          <p className="title-text border-border-secondary text-text-body mb-6 border-t pt-6">
+          <p className="title-text mb-6 border-t border-border-secondary pt-6 text-text-body">
             {t('title.numSubDaos', { count: subdaos.data.length })}
           </p>
 

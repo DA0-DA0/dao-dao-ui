@@ -16,7 +16,7 @@ export const TooltipLikeDisplay = ({
 }: TooltipLikeDisplayProps) => (
   <div
     className={clsx(
-      'caption-text border-border-primary bg-component-tooltip text-text-body inline-flex flex-row items-start gap-2 rounded-md border py-2 px-3',
+      'caption-text inline-flex flex-row items-start gap-2 rounded-md border border-border-primary bg-component-tooltip py-2 px-3 text-text-body',
       className
     )}
   >

@@ -44,7 +44,7 @@ export const DaoCard = ({
   return (
     <LinkWrapper
       className={clsx(
-        'bg-background-secondary hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus relative flex h-[328px] w-full flex-col items-center justify-between rounded-md py-7 px-6 ring-1 ring-inset ring-transparent transition-all',
+        'relative flex h-[328px] w-full flex-col items-center justify-between rounded-md bg-background-secondary py-7 px-6 ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus',
         className
       )}
       href={`${getUrlBaseForChainId(chainId)}/dao/${coreAddress}`}
@@ -83,7 +83,7 @@ export const DaoCard = ({
         <div className="flex flex-row items-center gap-3">
           {showIsMember && !lazyData.loading && lazyData.data.isMember && (
             <Tooltip title={t('info.youAreMember')}>
-              <Check className="text-icon-secondary !h-4 !w-4" />
+              <Check className="!h-4 !w-4 text-icon-secondary" />
             </Tooltip>
           )}
 
@@ -120,7 +120,7 @@ export const DaoCard = ({
       </div>
 
       <div className="self-stretch">
-        <p className="secondary-text line-clamp-3 mb-5 w-full break-words">
+        <p className="secondary-text mb-5 w-full break-words line-clamp-3">
           {removeMarkdown(description)}
         </p>
 

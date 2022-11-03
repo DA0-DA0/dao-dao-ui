@@ -33,7 +33,7 @@ export const DaoHeader = ({
 
       <p className="hero-text mt-6 text-center">{name}</p>
       {established && (
-        <p className="primary-text text-text-tertiary mt-2">
+        <p className="primary-text mt-2 text-text-tertiary">
           {t('info.establishedAbbr')} {established}
         </p>
       )}

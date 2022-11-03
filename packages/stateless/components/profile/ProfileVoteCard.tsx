@@ -42,7 +42,7 @@ export const ProfileVoteCard = <T extends unknown>({
             title={t('info.votingPowerAtCreationTooltip')}
           />
         </div>
-        <p className="text-text-primary font-mono">
+        <p className="font-mono text-text-primary">
           {formatPercentOf100(votingPower)}
         </p>
       </div>

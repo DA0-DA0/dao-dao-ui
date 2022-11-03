@@ -18,7 +18,7 @@ export const DaoCreateConfigReviewCard = ({
   reviewClassName,
   review,
 }: DaoCreateConfigReviewCardProps) => (
-  <div className="bg-background-tertiary flex flex-row items-center justify-between gap-6 rounded-lg py-8 px-6">
+  <div className="flex flex-row items-center justify-between gap-6 rounded-lg bg-background-tertiary py-8 px-6">
     <div className="flex flex-row items-center gap-3">
       <p className="text-xl">
         <Icon />
@@ -29,7 +29,7 @@ export const DaoCreateConfigReviewCard = ({
 
     <p
       className={clsx(
-        'link-text bg-component-badge-primary text-text-primary rounded-full py-1 px-2 text-center font-mono',
+        'link-text rounded-full bg-component-badge-primary py-1 px-2 text-center font-mono text-text-primary',
         reviewClassName
       )}
     >
