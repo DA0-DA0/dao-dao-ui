@@ -34,12 +34,12 @@ export const ProposalStatusAndInfo = ({
       className={clsx(
         'flex flex-col items-stretch',
         inline &&
-          'rounded-lg border border-border-secondary bg-background-tertiary'
+          'border-border-secondary bg-background-tertiary rounded-lg border'
       )}
     >
       <div className={clsx('flex flex-col gap-4', inline ? 'p-6' : 'pb-10')}>
         <div className="flex flex-row items-center gap-3">
-          <AnalyticsOutlined className="h-6 w-6 text-icon-secondary" />
+          <AnalyticsOutlined className="text-icon-secondary h-6 w-6" />
           <p className="secondary-text">{t('title.status')}</p>
         </div>
 
@@ -48,7 +48,7 @@ export const ProposalStatusAndInfo = ({
 
       <div
         className={clsx(
-          'grid grid-cols-2 items-center gap-3 border-t border-border-secondary',
+          'border-border-secondary grid grid-cols-2 items-center gap-3 border-t',
           inline ? 'p-6' : 'py-8',
           // If not inline, or an action button is present, add bottom border.
           (!inline || (inline && action)) && 'border-b'
@@ -57,11 +57,11 @@ export const ProposalStatusAndInfo = ({
         {info.map(({ Icon, label, Value }, index) => (
           <Fragment key={index}>
             <div className="flex flex-row items-center gap-3">
-              <Icon className="h-6 w-6 text-icon-secondary" />
+              <Icon className="text-icon-secondary h-6 w-6" />
               <p className="secondary-text">{label}</p>
             </div>
 
-            <Value className="text-left !font-mono !text-base !font-medium !leading-5 !text-text-body" />
+            <Value className="!text-text-body text-left !font-mono !text-base !font-medium !leading-5" />
           </Fragment>
         ))}
       </div>

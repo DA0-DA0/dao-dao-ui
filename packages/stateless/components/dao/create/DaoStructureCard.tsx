@@ -30,21 +30,21 @@ export const DaoStructureCard = ({
         'relative cursor-pointer rounded-lg border-2 transition',
         selected
           ? 'border-border-interactive-focus bg-background-interactive-hover'
-          : 'border-[transparent] bg-background-secondary'
+          : 'bg-background-secondary border-[transparent]'
       )}
       onClick={onSelect}
     >
       <div
         className={clsx(
-          'absolute top-5 left-5 h-5 w-5 rounded-full border border-border-primary transition',
+          'border-border-primary absolute top-5 left-5 h-5 w-5 rounded-full border transition',
           selected
-            ? 'flex items-center justify-center bg-component-pill'
+            ? 'bg-component-pill flex items-center justify-center'
             : 'bg-background-primary'
         )}
       >
         <Check
           className={clsx(
-            '!h-4 !w-4 text-icon-primary transition',
+            'text-icon-primary !h-4 !w-4 transition',
             selected ? 'opacity-100' : 'opacity-0'
           )}
         />
@@ -54,17 +54,17 @@ export const DaoStructureCard = ({
         <Icon />
       </div>
 
-      <div className="flex flex-row items-center justify-between border-y border-border-secondary py-4 px-6">
+      <div className="border-border-secondary flex flex-row items-center justify-between border-y py-4 px-6">
         <div className="space-y-1">
           <p className="secondary-text">{t('title.supplies')}</p>
-          <p className="legend-text font-mono text-text-body">{supplies}</p>
+          <p className="legend-text text-text-body font-mono">{supplies}</p>
         </div>
 
-        <div className="h-6 w-[1px] bg-border-secondary"></div>
+        <div className="bg-border-secondary h-6 w-[1px]"></div>
 
         <div className="space-y-1 text-right">
           <p className="secondary-text">{t('title.membership')}</p>
-          <p className="legend-text font-mono text-text-body">{membership}</p>
+          <p className="legend-text text-text-body font-mono">{membership}</p>
         </div>
       </div>
 

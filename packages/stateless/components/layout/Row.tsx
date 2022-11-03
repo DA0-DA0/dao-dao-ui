@@ -71,7 +71,7 @@ export const Row = ({
           >
             <Icon className="!h-8 !w-8" />
             {showBadge && (
-              <div className="absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 rounded-full bg-icon-interactive-active"></div>
+              <div className="bg-icon-interactive-active absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 rounded-full"></div>
             )}
           </div>
         </Tooltip>
@@ -85,7 +85,7 @@ export const Row = ({
         className={clsx('body-text flex flex-row items-center gap-4 p-2', {
           'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
             onClick || href,
-          'rounded-md bg-background-interactive-selected':
+          'bg-background-interactive-selected rounded-md':
             href && href === asPath,
         })}
         onClick={onClick}
@@ -93,7 +93,7 @@ export const Row = ({
         <div className="relative flex h-6 w-6 items-center justify-center">
           <Icon className="!h-6 !w-6" />
           {showBadge && (
-            <div className="absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 rounded-full bg-icon-interactive-active"></div>
+            <div className="bg-icon-interactive-active absolute -top-[0.1875rem] -right-[0.1875rem] h-1.5 w-1.5 rounded-full"></div>
           )}
         </div>
 

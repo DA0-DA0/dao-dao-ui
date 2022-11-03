@@ -97,7 +97,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
           </div>
         ))}
         {!isCreating && toAddFields.length === 0 && (
-          <p className="text-xs italic text-text-tertiary">{t('info.none')}</p>
+          <p className="text-text-tertiary text-xs italic">{t('info.none')}</p>
         )}
         {isCreating && (
           <Button
@@ -155,7 +155,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
         {(isCreating
           ? currentSubDaos.length === 0
           : toRemoveFields.length === 0) && (
-          <p className="text-xs italic text-text-tertiary">{t('info.none')}</p>
+          <p className="text-text-tertiary text-xs italic">{t('info.none')}</p>
         )}
       </div>
     </ActionCard>

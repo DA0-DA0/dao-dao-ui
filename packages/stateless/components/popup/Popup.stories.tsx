@@ -26,7 +26,7 @@ Default.args = {
   children: (
     <>
       <p className="p-6">This is content!</p>
-      <p className="border-t border-border-secondary p-6">And some more.</p>
+      <p className="border-border-secondary border-t p-6">And some more.</p>
     </>
   ),
   popupClassName: 'w-[12rem]',

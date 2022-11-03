@@ -39,7 +39,7 @@ export const ProfileCantVoteCard = ({
       }
       {...wrapperProps}
     >
-      <div className="border-t border-t-border-primary p-6">
+      <div className="border-t-border-primary border-t p-6">
         <div className="secondary-text flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-2">
             <p>{t('title.votingPower')}</p>
@@ -50,7 +50,7 @@ export const ProfileCantVoteCard = ({
             />
           </div>
 
-          <p className="font-mono text-text-interactive-disabled">0%</p>
+          <p className="text-text-interactive-disabled font-mono">0%</p>
         </div>
 
         <div className="secondary-text mt-3 flex flex-row items-center justify-between">
@@ -59,7 +59,7 @@ export const ProfileCantVoteCard = ({
         </div>
       </div>
 
-      <div className="border-t border-t-border-primary p-6">
+      <div className="border-t-border-primary border-t p-6">
         <p className="link-text mb-1">{t('title.membership')}</p>
 
         {membershipInfo}

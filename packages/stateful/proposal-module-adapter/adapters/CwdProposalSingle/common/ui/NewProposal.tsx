@@ -162,8 +162,8 @@ export const NewProposal = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
-      <div className="rounded-lg bg-background-tertiary">
-        <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
+      <div className="bg-background-tertiary rounded-lg">
+        <div className="border-border-secondary flex flex-row items-center justify-between gap-6 border-b py-4 px-6">
           <p className="primary-text text-text-body">
             {t('form.proposalsName')}
           </p>
@@ -203,7 +203,7 @@ export const NewProposal = ({
         </div>
       </div>
 
-      <p className="title-text my-6 text-text-body">
+      <p className="title-text text-text-body my-6">
         {t('title.actions', { count: proposalActionData.length })}
       </p>
 
@@ -249,7 +249,7 @@ export const NewProposal = ({
         }}
       />
 
-      <div className="mt-6 flex flex-col gap-2 border-y border-border-secondary py-6">
+      <div className="border-border-secondary mt-6 flex flex-col gap-2 border-y py-6">
         <div className="flex flex-row items-center justify-between gap-6">
           <p className="title-text text-text-body">
             {t('info.reviewYourProposal')}
@@ -304,13 +304,13 @@ export const NewProposal = ({
         </div>
 
         {showSubmitErrorNote && (
-          <p className="secondary-text text-right text-text-interactive-error">
+          <p className="secondary-text text-text-interactive-error text-right">
             {t('error.createProposalSubmitInvalid')}
           </p>
         )}
 
         {showPreview && (
-          <div className="mt-4 rounded-md border border-border-secondary p-6">
+          <div className="border-border-secondary mt-4 rounded-md border p-6">
             <ProposalContentDisplay
               actionDisplay={
                 proposalActionData.length ? (

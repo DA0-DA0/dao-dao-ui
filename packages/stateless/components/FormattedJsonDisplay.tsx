@@ -23,7 +23,7 @@ export const FormattedJsonDisplay = ({
     jsonLoadable.contents !== undefined ? (
     <div className="space-y-2">
       <InputLabel name={t('form.tokenInfo')} />
-      <pre className="overflow-auto rounded-lg bg-background-interactive-disabled p-2 text-text-secondary">
+      <pre className="bg-background-interactive-disabled text-text-secondary overflow-auto rounded-lg p-2">
         {JSON.stringify(jsonLoadable.contents, null, 2)}
       </pre>
     </div>

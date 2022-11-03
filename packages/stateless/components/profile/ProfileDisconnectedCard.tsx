@@ -13,7 +13,7 @@ export const ProfileDisconnectedCard = () => {
   const [cyclopsMode, setCyclopsMode] = useState(false)
 
   return (
-    <div className="relative rounded-lg border border-border-primary">
+    <div className="border-border-primary relative rounded-lg border">
       <div className="p-6">
         <div className="flex flex-col items-center justify-center pt-4">
           {cyclopsMode ? (
@@ -24,13 +24,13 @@ export const ProfileDisconnectedCard = () => {
             />
           ) : (
             <div
-              className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border-primary bg-component-widget"
+              className="border-border-primary bg-component-widget flex h-16 w-16 items-center justify-center rounded-2xl border"
               onClick={() => setCyclopsMode(true)}
             >
-              <SensorsOff className="!h-5 !w-5 text-icon-interactive-disabled" />
+              <SensorsOff className="text-icon-interactive-disabled !h-5 !w-5" />
             </div>
           )}
-          <div className="title-text mt-6 text-text-body">
+          <div className="title-text text-text-body mt-6">
             {/* eslint-disable-next-line i18next/no-literal-string */}
             {cyclopsMode ? 'Odysseus' : t('title.nobody')}
           </div>
@@ -39,15 +39,15 @@ export const ProfileDisconnectedCard = () => {
           </div>
           <div className="mt-3 grid grid-cols-[1fr_1px_1fr] items-center justify-items-center gap-2 self-stretch">
             <div className="flex flex-col items-stretch text-center">
-              <PaymentsOutlined className="mb-4 !h-5 !w-5 self-center text-center text-icon-secondary" />
+              <PaymentsOutlined className="text-icon-secondary mb-4 !h-5 !w-5 self-center text-center" />
               <p className="secondary-text mb-1">{t('title.holdings')}</p>
               <p className="title-text font-mono">--</p>
             </div>
 
-            <div className="h-10 w-[1px] bg-border-secondary"></div>
+            <div className="bg-border-secondary h-10 w-[1px]"></div>
 
             <div className="flex flex-col items-center text-center">
-              <LayersOutlined className="mb-4 !h-5 w-5 self-center text-icon-secondary" />
+              <LayersOutlined className="text-icon-secondary mb-4 !h-5 w-5 self-center" />
               <p className="secondary-text mb-1">{t('title.staked')}</p>
               <p className="title-text font-mono">--</p>
             </div>
@@ -55,15 +55,15 @@ export const ProfileDisconnectedCard = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-stretch border-t border-t-border-primary p-6">
+      <div className="border-t-border-primary flex flex-col items-stretch border-t p-6">
         <div className="secondary-text flex flex-row items-center justify-between">
           <p>{t('title.membership')}</p>
-          <p className="font-mono text-text-primary">--</p>
+          <p className="text-text-primary font-mono">--</p>
         </div>
 
         <div className="secondary-text mt-3 flex flex-row items-center justify-between">
           <p>{t('title.contributions')}</p>
-          <p className="font-mono text-text-primary">--</p>
+          <p className="text-text-primary font-mono">--</p>
         </div>
       </div>
     </div>

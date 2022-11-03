@@ -70,7 +70,7 @@ export const ProposalVoteTally = ({
   }
 
   return (
-    <div className="rounded-lg border border-border-secondary bg-component-widget">
+    <div className="border-border-secondary bg-component-widget rounded-lg border">
       <div className="space-y-4 py-4 px-6">
         {/* Threshold title */}
         <p className="link-text text-text-body">
@@ -156,11 +156,11 @@ export const ProposalVoteTally = ({
             {/* A proposal will automatically close once no more votes can affect the outcome, not waiting for the expiration time. This means we can simply check if the proposal is open to know whether the threshold being reached indicates a final verdict or just the current state of the turnout. We could, more verbosely, always display the final verdict (reached/not met) when there is no quorum (i.e. if using an absolute threshold config), but once the final verdict is set, the status will change. Thus, we don't need to check if a quorum exists to choose this status indicator. */}
             {thresholdReached ? (
               <Tooltip title={open ? t('info.passing') : t('info.reached')}>
-                <Check className="!h-5 !w-5 text-icon-primary" />
+                <Check className="text-icon-primary !h-5 !w-5" />
               </Tooltip>
             ) : (
               <Tooltip title={open ? t('info.failing') : t('info.notMet')}>
-                <Close className="!h-5 !w-5 text-icon-primary" />
+                <Close className="text-icon-primary !h-5 !w-5" />
               </Tooltip>
             )}
           </p>
@@ -169,7 +169,7 @@ export const ProposalVoteTally = ({
 
       {/* Quorum, if present */}
       {effectiveQuorum && (
-        <div className="space-y-4 border-t border-border-secondary py-4 px-6">
+        <div className="border-border-secondary space-y-4 border-t py-4 px-6">
           {/* Quorum title */}
           <p className="link-text text-text-body">
             {t('title.percentTurnout', {
@@ -213,11 +213,11 @@ export const ProposalVoteTally = ({
 
               {quorumReached ? (
                 <Tooltip title={t('info.reached')}>
-                  <Check className="!h-5 !w-5 text-icon-primary" />
+                  <Check className="text-icon-primary !h-5 !w-5" />
                 </Tooltip>
               ) : (
                 <Tooltip title={t('info.notMet')}>
-                  <Close className="!h-5 !w-5 text-icon-primary" />
+                  <Close className="text-icon-primary !h-5 !w-5" />
                 </Tooltip>
               )}
             </p>
@@ -233,7 +233,7 @@ export const ProposalVoteTally = ({
           effectiveThresholdValue === 50 &&
           turnoutTotal > 0 &&
           yesVotes === noVotes && (
-            <div className="space-y-2 border-t border-border-secondary py-4 px-6">
+            <div className="border-border-secondary space-y-2 border-t py-4 px-6">
               <p className="secondary-text text-text-tertiary">
                 {t('title.proposalTieClarification')}
               </p>
@@ -247,7 +247,7 @@ export const ProposalVoteTally = ({
 
       {/* Provide clarification for what happens in the event that all voters abstain. */}
       {turnoutTotal > 0 && abstainVotes === turnoutTotal && (
-        <div className="space-y-2 border-t border-border-secondary py-4 px-6">
+        <div className="border-border-secondary space-y-2 border-t py-4 px-6">
           <p className="secondary-text text-text-tertiary">
             {t('title.proposalAllAbstain')}
           </p>

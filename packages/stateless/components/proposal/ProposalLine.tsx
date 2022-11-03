@@ -32,7 +32,7 @@ export const ProposalLine = ({
 }: ProposalLineProps) => (
   <LinkWrapper
     className={clsx(
-      'block cursor-pointer rounded-md bg-background-secondary transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
+      'bg-background-secondary hover:bg-background-interactive-hover active:bg-background-interactive-pressed block cursor-pointer rounded-md transition',
       className
     )}
     href={href}
@@ -65,7 +65,7 @@ export const ProposalLine = ({
           />
         </p>
 
-        <p className="body-text col-span-3 break-words line-clamp-2">{title}</p>
+        <p className="body-text line-clamp-2 col-span-3 break-words">{title}</p>
       </div>
 
       <div className="flex flex-row items-center justify-between gap-6">
@@ -74,8 +74,8 @@ export const ProposalLine = ({
 
           <p
             className={clsx(
-              'link-text break-words text-center font-mono leading-5 text-text-tertiary',
-              !votingOpen && 'hidden xs:inline-block'
+              'link-text text-text-tertiary break-words text-center font-mono leading-5',
+              !votingOpen && 'xs:inline-block hidden'
             )}
           >
             {/* eslint-disable-next-line i18next/no-literal-string */}
@@ -98,9 +98,9 @@ export const ProposalLineLoader = () => (
 )
 
 const ProposalLineLoaderDesktop = () => (
-  <div className="hidden h-12 animate-pulse rounded-md bg-background-primary md:block"></div>
+  <div className="bg-background-primary hidden h-12 animate-pulse rounded-md md:block"></div>
 )
 
 const ProposalLineLoaderMobile = () => (
-  <div className="h-[9.5rem] animate-pulse rounded-md bg-background-primary md:hidden"></div>
+  <div className="bg-background-primary h-[9.5rem] animate-pulse rounded-md md:hidden"></div>
 )

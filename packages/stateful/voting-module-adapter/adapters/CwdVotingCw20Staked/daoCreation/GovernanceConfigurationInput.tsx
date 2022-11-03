@@ -266,8 +266,8 @@ export const GovernanceConfigurationInput = ({
 
       {data.tokenType === GovernanceTokenType.New ? (
         <>
-          <div className="mb-10 rounded-lg bg-background-tertiary">
-            <div className="flex h-14 flex-row border-b border-border-base p-4">
+          <div className="bg-background-tertiary mb-10 rounded-lg">
+            <div className="border-border-base flex h-14 flex-row border-b p-4">
               <p className="primary-text text-text-body">
                 {t('form.tokenDefinition')}
               </p>
@@ -285,11 +285,11 @@ export const GovernanceConfigurationInput = ({
                     watch={watch}
                   />
                 </div>
-                <div className="flex flex-col gap-5 border-y border-border-secondary py-6 px-8 sm:border-y-0 sm:border-x">
+                <div className="border-border-secondary flex flex-col gap-5 border-y py-6 px-8 sm:border-y-0 sm:border-x">
                   <InputLabel name={t('form.symbol')} />
                   <div className="flex flex-col">
                     <div className="flex flex-row items-center gap-2">
-                      <p className="flex items-center justify-center rounded-full text-base text-text-tertiary">
+                      <p className="text-text-tertiary flex items-center justify-center rounded-full text-base">
                         $
                       </p>
                       <TextInput
@@ -326,7 +326,7 @@ export const GovernanceConfigurationInput = ({
               </div>
             </div>
 
-            <div className="flex flex-row items-center gap-6 border-y border-border-secondary py-7 px-6">
+            <div className="border-border-secondary flex flex-row items-center gap-6 border-y py-7 px-6">
               <p className="primary-text text-text-body">
                 {t('form.initialSupply')}
               </p>
@@ -334,7 +334,7 @@ export const GovernanceConfigurationInput = ({
               <div className="flex grow flex-col">
                 <div className="flex grow flex-row items-center gap-2">
                   <NumberInput
-                    className="symbol-small-body-text font-mono leading-5 text-text-secondary"
+                    className="symbol-small-body-text text-text-secondary font-mono leading-5"
                     containerClassName="grow"
                     error={
                       errors.votingModuleAdapter?.data?.newInfo?.initialSupply
@@ -345,7 +345,7 @@ export const GovernanceConfigurationInput = ({
                     step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
                     validation={[validatePositive, validateRequired]}
                   />
-                  <p className="symbol-small-body-text font-mono leading-5 text-text-tertiary">
+                  <p className="symbol-small-body-text text-text-tertiary font-mono leading-5">
                     $
                     {data.newInfo.symbol.trim() ||
                       t('info.token').toLocaleUpperCase()}
@@ -370,7 +370,7 @@ export const GovernanceConfigurationInput = ({
                 <div className="flex grow flex-col">
                   <div className="flex grow flex-row items-center gap-2">
                     <NumberInput
-                      className="symbol-small-body-text font-mono leading-5 text-text-secondary"
+                      className="symbol-small-body-text text-text-secondary font-mono leading-5"
                       containerClassName="grow"
                       error={
                         errors.votingModuleAdapter?.data?.newInfo
@@ -388,7 +388,7 @@ export const GovernanceConfigurationInput = ({
                       ]}
                     />
 
-                    <p className="symbol-small-body-text font-mono leading-5 text-text-tertiary">
+                    <p className="symbol-small-body-text text-text-tertiary font-mono leading-5">
                       %
                     </p>
                   </div>
@@ -453,7 +453,7 @@ export const GovernanceConfigurationInput = ({
                 ref={addTierRef}
                 variant="secondary"
               >
-                <Add className="!h-6 !w-6 text-icon-primary" />
+                <Add className="text-icon-primary !h-6 !w-6" />
                 <p>{t('button.addTier')}</p>
               </Button>
 
@@ -464,8 +464,8 @@ export const GovernanceConfigurationInput = ({
           </div>
         </>
       ) : data.tokenType === GovernanceTokenType.Existing ? (
-        <div className="rounded-lg bg-background-tertiary">
-          <div className="flex h-14 flex-row border-b border-border-base p-4">
+        <div className="bg-background-tertiary rounded-lg">
+          <div className="border-border-base flex h-14 flex-row border-b p-4">
             <p className="primary-text text-text-body">
               {t('form.tokenContractAddressTitle')}
             </p>
@@ -474,7 +474,7 @@ export const GovernanceConfigurationInput = ({
           <div className="space-y-4 p-4">
             <div>
               <TextInput
-                className="symbol-small-body-text font-mono text-text-secondary"
+                className="symbol-small-body-text text-text-secondary font-mono"
                 error={
                   errors.votingModuleAdapter?.data
                     ?.existingGovernanceTokenAddress

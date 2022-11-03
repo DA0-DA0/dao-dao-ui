@@ -83,7 +83,7 @@ export const Dropdown = <T extends unknown>({
         className={clsx(
           'overflow-hidden rounded-md border border-b-0 transition-all',
           open
-            ? 'rounded-b-none border-border-primary bg-component-dropdown'
+            ? 'border-border-primary bg-component-dropdown rounded-b-none'
             : 'border-transparent '
         )}
       >
@@ -123,14 +123,14 @@ export const Dropdown = <T extends unknown>({
       {/* Dropdown */}
       <div
         className={clsx(
-          'absolute right-0 left-0 z-10 overflow-hidden rounded-b-md border border-t-0 border-border-primary bg-component-dropdown transition-all',
+          'border-border-primary bg-component-dropdown absolute right-0 left-0 z-10 overflow-hidden rounded-b-md border border-t-0 transition-all',
           {
             'pointer-events-none opacity-0': !open,
             'opacity-100': open,
           }
         )}
       >
-        <div className="no-scrollbar flex h-full max-h-80 flex-col gap-[1px] overflow-y-auto border-t border-t-border-base">
+        <div className="no-scrollbar border-t-border-base flex h-full max-h-80 flex-col gap-[1px] overflow-y-auto border-t">
           {options.map((option, index) => (
             <Button
               key={index}

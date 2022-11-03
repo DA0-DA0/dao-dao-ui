@@ -51,7 +51,7 @@ export const CommandModal = ({
           ))}
 
           <SearchBar
-            className="!primary-text leading-8 text-text-body"
+            className="!primary-text text-text-body leading-8"
             containerClassName="grow"
             ghost
             hideIcon

@@ -59,7 +59,7 @@ export const CopyToClipboard = ({
 
         <span
           className={clsx(
-            'flex-1 truncate rounded-md p-1 transition hover:bg-background-button-secondary-default',
+            'hover:bg-background-button-secondary-default flex-1 truncate rounded-md p-1 transition',
             textClassName
           )}
         >
@@ -96,7 +96,7 @@ export const CopyToClipboardUnderline = ({
     <Tooltip title={tooltip}>
       <p
         className={clsx(
-          'cursor-pointer truncate font-mono text-xs text-text-body underline transition-opacity hover:opacity-80 active:opacity-70',
+          'text-text-body cursor-pointer truncate font-mono text-xs underline transition-opacity hover:opacity-80 active:opacity-70',
           className,
           textClassName
         )}

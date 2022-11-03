@@ -17,7 +17,7 @@ export const SplashVoteCard = () => {
   const [selected, setSelected] = useState<VoteChoice | undefined>()
 
   return (
-    <div className="flex max-w-3xl flex-col gap-3 rounded-lg border border-border-primary bg-background-primary p-4 backdrop-blur-lg">
+    <div className="border-border-primary bg-background-primary flex max-w-3xl flex-col gap-3 rounded-lg border p-4 backdrop-blur-lg">
       <div className="flex items-center gap-2">
         <p className="mr-1 text-2xl">
           <Emoji label={t('emoji.ballotBox')} symbol="🗳" />
@@ -80,7 +80,7 @@ export const SplashVoteCard = () => {
           }
           variant="secondary"
         >
-          <Texture className="!h-4 !w-4 text-icon-primary" />
+          <Texture className="text-icon-primary !h-4 !w-4" />
           {t('info.abstainVote')}
         </Button>
       </div>

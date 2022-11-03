@@ -55,7 +55,7 @@ export const CustomComponent: ActionComponent = ({
 
       <div className="mt-2">
         {errors?.message ? (
-          <p className="flex items-center gap-1 text-sm text-text-interactive-error">
+          <p className="text-text-interactive-error flex items-center gap-1 text-sm">
             <Close className="!h-5 !w-5" />{' '}
             {errors.message.message === INVALID_COSMOS_MSG ? (
               <Trans Loader={Loader} i18nKey="error.invalidCosmosMessage">
@@ -74,7 +74,7 @@ export const CustomComponent: ActionComponent = ({
             )}
           </p>
         ) : (
-          <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
+          <p className="text-text-interactive-valid flex items-center gap-1 text-sm">
             <Check className="!h-5 !w-5" /> {t('info.jsonIsValid')}
           </p>
         )}

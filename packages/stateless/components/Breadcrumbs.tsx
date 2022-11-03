@@ -22,7 +22,7 @@ export const Breadcrumbs = ({
     <>
       <div
         className={clsx(
-          'header-text flex flex-row items-center gap-2 overflow-hidden text-text-secondary',
+          'header-text text-text-secondary flex flex-row items-center gap-2 overflow-hidden',
           className
         )}
       >
@@ -32,7 +32,7 @@ export const Breadcrumbs = ({
               <a className="transition-opacity hover:opacity-80">{label}</a>
             </Link>
 
-            <ArrowForwardIos className="!h-5 !w-5 text-icon-tertiary" />
+            <ArrowForwardIos className="text-icon-tertiary !h-5 !w-5" />
           </div>
         ))}
 
@@ -41,7 +41,7 @@ export const Breadcrumbs = ({
           // min-width set to auto by default, which prevents text ellipses
           // since this will overflow its parent. Set min-width to 0 so this
           // cannot overflow its parent, and the child text can truncate.
-          className="min-w-0 text-text-primary sm:pointer-events-none"
+          className="text-text-primary min-w-0 sm:pointer-events-none"
           contentContainerClassName="justify-center"
           onClick={() => setResponsive(true)}
           size="none"
@@ -49,13 +49,13 @@ export const Breadcrumbs = ({
         >
           <p className="truncate">{current}</p>
 
-          <ArrowDropDown className="!h-6 !w-6 shrink-0 text-icon-primary sm:!hidden" />
+          <ArrowDropDown className="text-icon-primary !h-6 !w-6 shrink-0 sm:!hidden" />
         </Button>
       </div>
 
       <div
         className={clsx(
-          'header-text fixed top-0 right-0 bottom-0 left-0 z-20 flex flex-col bg-background-base transition-opacity',
+          'header-text bg-background-base fixed top-0 right-0 bottom-0 left-0 z-20 flex flex-col transition-opacity',
           responsive
             ? 'opacity-100 sm:pointer-events-none sm:opacity-0'
             : 'pointer-events-none opacity-0'
@@ -77,7 +77,7 @@ export const Breadcrumbs = ({
             <div
               key={idx}
               className={clsx(
-                'absolute right-0 left-0 flex h-20 flex-row items-center justify-center gap-3 text-text-secondary transition-all',
+                'text-text-secondary absolute right-0 left-0 flex h-20 flex-row items-center justify-center gap-3 transition-all',
                 responsive ? 'opacity-100' : 'opacity-0'
               )}
               style={{

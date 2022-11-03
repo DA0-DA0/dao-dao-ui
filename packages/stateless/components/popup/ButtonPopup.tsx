@@ -39,7 +39,7 @@ export const ButtonPopup = ({
           key={index}
           className={clsx(
             'flex flex-col gap-2 py-3 px-4',
-            index > 0 && 'border-t border-border-secondary'
+            index > 0 && 'border-border-secondary border-t'
           )}
         >
           {label && <p className="link-text text-text-secondary">{label}</p>}
@@ -49,7 +49,7 @@ export const ButtonPopup = ({
               <>
                 {Icon && (
                   <div className="flex h-6 w-6 items-center justify-center text-lg ">
-                    <Icon className="h-5 w-5 text-icon-primary" />
+                    <Icon className="text-icon-primary h-5 w-5" />
                   </div>
                 )}
                 <p className="link-text text-text-body">{label}</p>

@@ -102,7 +102,7 @@ export const DaoHome = ({
 
         {daoInfoBar}
 
-        <div className="flex flex-col items-center border-y border-t-border-base border-b-border-secondary py-6">
+        <div className="border-t-border-base border-b-border-secondary flex flex-col items-center border-y py-6">
           <SegmentedControls
             className="w-full max-w-2xl shrink"
             onSelect={setSelectedTab}

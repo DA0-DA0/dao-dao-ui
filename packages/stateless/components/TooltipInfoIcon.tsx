@@ -19,7 +19,7 @@ export const TooltipInfoIcon = ({
       // Only change background on hover, and don't outline. Don't make this
       // feel like a clickable button.
       className={clsx(
-        'cursor-help !bg-transparent !p-1.5 !outline-none hover:!bg-background-interactive-hover',
+        'hover:!bg-background-interactive-hover cursor-help !bg-transparent !p-1.5 !outline-none',
         className
       )}
       iconClassName={iconClassName}

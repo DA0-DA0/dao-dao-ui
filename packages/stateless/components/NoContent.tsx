@@ -21,17 +21,17 @@ export const NoContent = forwardRef<HTMLAnchorElement, NoContentProps>(
   ) {
     const hasAction = !!href || !!onClick
     const containerClassName = clsx(
-      'flex flex-col items-center gap-5 rounded-md border-2 border-dashed border-border-primary py-10 px-6',
+      'border-border-primary flex flex-col items-center gap-5 rounded-md border-2 border-dashed py-10 px-6',
       hasAction &&
-        'cursor-pointer transition-all hover:border-solid hover:border-border-interactive-hover',
+        'hover:border-border-interactive-hover cursor-pointer transition-all hover:border-solid',
       className
     )
 
     const content = (
       <>
-        <Icon className="!h-14 !w-14 text-icon-tertiary" />
+        <Icon className="text-icon-tertiary !h-14 !w-14" />
 
-        <p className="secondary-text text-center text-text-tertiary">
+        <p className="secondary-text text-text-tertiary text-center">
           {body}
 
           {!!actionNudge && hasAction && (

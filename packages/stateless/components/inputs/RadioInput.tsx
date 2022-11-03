@@ -65,7 +65,7 @@ export const RadioButton = ({
     className={clsx(
       'flex flex-row items-center gap-3 transition',
       {
-        'rounded-md py-3 px-4 hover:bg-background-interactive-active':
+        'hover:bg-background-interactive-active rounded-md py-3 px-4':
           background,
         'bg-background-secondary': background && selected,
         'cursor-pointer': onClick,
@@ -74,10 +74,10 @@ export const RadioButton = ({
     )}
     onClick={onClick}
   >
-    <div className="flex aspect-square h-5 w-5 items-center justify-center rounded-full border border-border-primary">
+    <div className="border-border-primary flex aspect-square h-5 w-5 items-center justify-center rounded-full border">
       <div
         className={clsx(
-          'h-3 w-3 rounded-full bg-background-button-active transition',
+          'bg-background-button-active h-3 w-3 rounded-full transition',
           {
             'opacity-0': !selected,
             'opacity-100': selected,

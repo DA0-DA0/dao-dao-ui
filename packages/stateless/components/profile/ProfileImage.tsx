@@ -57,11 +57,11 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
           // Center icon.
           'relative flex items-center justify-center',
           (!imageUrl || loadingImage) &&
-            'border border-border-interactive-disabled',
+            'border-border-interactive-disabled border',
           sizingRoundingClassNames,
           // Pulse person placeholder when loading.
           loadingImage &&
-            'animate-pulse border border-border-interactive-disabled',
+            'border-border-interactive-disabled animate-pulse border',
           // Make clickable for onClick and onEdit.
           (onClick || onEdit) && 'cursor-pointer',
           // Enable group events for onEdit.
@@ -85,7 +85,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         {/* No image (hides underneath image always) */}
         <PersonOutline
           className={clsx(
-            '!h-1/2 !w-1/2 text-icon-interactive-disabled',
+            'text-icon-interactive-disabled !h-1/2 !w-1/2',
             fallbackIconClassName
           )}
         />
@@ -99,7 +99,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
             )}
             onClick={onEdit}
           >
-            <Edit className="!h-1/2 !w-1/2 text-icon-primary" />
+            <Edit className="text-icon-primary !h-1/2 !w-1/2" />
           </div>
         )}
       </div>

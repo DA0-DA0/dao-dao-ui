@@ -58,7 +58,7 @@ export const ItemCreatedModal = <
         )}
 
         <div className="relative z-20 flex h-full w-full flex-col gap-10 overflow-y-auto">
-          <div className="w-[18rem] max-w-[90%] shrink-0 self-center rounded-md bg-background-base shadow-dp8">
+          <div className="bg-background-base shadow-dp8 w-[18rem] max-w-[90%] shrink-0 self-center rounded-md">
             <props.Item
               {...props.itemProps}
               className={clsx(
@@ -74,9 +74,9 @@ export const ItemCreatedModal = <
             />
           </div>
 
-          <div className="shrink-0 rounded-md bg-background-base shadow-dp4">
+          <div className="bg-background-base shadow-dp4 shrink-0 rounded-md">
             <CopyToClipboard
-              className="symbol-small-body-text w-full gap-4 rounded-md bg-background-secondary p-4 text-left font-mono transition hover:bg-background-button-secondary-default"
+              className="symbol-small-body-text bg-background-secondary hover:bg-background-button-secondary-default w-full gap-4 rounded-md p-4 text-left font-mono transition"
               onCopy={() => {
                 setResetConfetti(true)
                 setConfettiVisible(false)

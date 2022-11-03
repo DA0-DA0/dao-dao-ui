@@ -18,7 +18,7 @@ export const MarkdownPreview = ({
   className,
 }: MarkdownPreviewProps) => (
   <ReactMarkdown
-    className={clsx('prose prose-sm break-words dark:prose-invert', className)}
+    className={clsx('prose prose-sm dark:prose-invert break-words', className)}
     components={{
       h1: HeadingRenderer,
       h2: HeadingRenderer,

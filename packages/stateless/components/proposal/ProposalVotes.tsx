@@ -56,16 +56,16 @@ export const ProposalVotes = <Vote extends unknown = any>({
       {votes.length > 0 && (
         <div className="grid-rows-auto grid grid-cols-[minmax(5rem,1fr)_auto_auto] items-center gap-x-8 gap-y-6 overflow-x-auto sm:grid-cols-[auto_minmax(5rem,1fr)_auto_auto]">
           {/* Titles */}
-          <p className="caption-text hidden font-mono font-normal text-text-secondary sm:block">
+          <p className="caption-text text-text-secondary hidden font-mono font-normal sm:block">
             {t('title.when')}
           </p>
-          <p className="caption-text font-mono font-normal text-text-secondary">
+          <p className="caption-text text-text-secondary font-mono font-normal">
             {t('title.voter')}
           </p>
-          <p className="caption-text font-mono font-normal text-text-secondary">
+          <p className="caption-text text-text-secondary font-mono font-normal">
             {t('title.vote')}
           </p>
-          <p className="caption-text font-mono font-normal text-text-secondary">
+          <p className="caption-text text-text-secondary font-mono font-normal">
             {t('title.votingPower')}
           </p>
 
@@ -104,7 +104,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
                     <VoteDisplay vote={vote} />
                   </div>
                 </Tooltip>
-                <p className="caption-text justify-self-right text-right font-mono text-text-body">
+                <p className="caption-text justify-self-right text-text-body text-right font-mono">
                   {formatPercentOf100(votingPowerPercent)}
                 </p>
               </Fragment>

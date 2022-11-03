@@ -8,14 +8,14 @@ export const Placeholder = () => {
   const { t } = useTranslation()
 
   return (
-    <div className="grow space-y-2 rounded-lg border border-border-primary p-5 text-base text-text-tertiary">
+    <div className="border-border-primary text-text-tertiary grow space-y-2 rounded-lg border p-5 text-base">
       <p>{t('info.votingModuleNotYetSupported')}</p>
 
       <p>
         <Trans i18nKey="info.votingModuleAdapterCreationDiscord">
           Want to help us support this voting module? Join the{' '}
           <a
-            className="inline-flex flex-row items-center gap-1 text-text-secondary transition hover:opacity-70"
+            className="text-text-secondary inline-flex flex-row items-center gap-1 transition hover:opacity-70"
             href="https://discord.gg/sAaGuyW3D2"
             rel="noreferrer"
             target="_blank"

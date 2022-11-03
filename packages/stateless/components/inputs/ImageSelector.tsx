@@ -62,7 +62,7 @@ export const ImageSelectorModal = <
     >
       <div
         aria-label={t('info.daosLogo')}
-        className="h-[95px] w-[95px] rounded-full border border-border-secondary bg-cover bg-center"
+        className="border-border-secondary h-[95px] w-[95px] rounded-full border bg-cover bg-center"
         role="img"
         style={{ backgroundImage: `url(${imageUrl})` }}
       />
@@ -133,10 +133,10 @@ export const ImageSelector = <
     <>
       <button
         className={clsx(
-          'flex shrink-0 items-center justify-center rounded-full border border-border-secondary bg-background-secondary bg-cover bg-center transition',
+          'border-border-secondary bg-background-secondary flex shrink-0 items-center justify-center rounded-full border bg-cover bg-center transition',
           {
             'hover:ring': !disabled,
-            'ring ring-border-interactive-error': error,
+            'ring-border-interactive-error ring': error,
             'h-24 w-24': size === undefined,
           },
           className
@@ -150,7 +150,7 @@ export const ImageSelector = <
         type="button"
       >
         {(typeof imageUrl !== 'string' || !imageUrl?.trim()) && (
-          <Add className="h-6 w-6 text-icon-primary" />
+          <Add className="text-icon-primary h-6 w-6" />
         )}
       </button>
 

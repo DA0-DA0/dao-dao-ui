@@ -65,9 +65,9 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col items-stretch rounded-lg bg-background-tertiary sm:flex-row">
-      <div className="flex shrink-0 flex-col items-center gap-8 border-b border-border-secondary p-6 sm:border-r sm:border-b-0">
-        <p className="primary-text self-stretch text-text-body">
+    <div className="bg-background-tertiary flex flex-col items-stretch rounded-lg sm:flex-row">
+      <div className="border-border-secondary flex shrink-0 flex-col items-center gap-8 border-b p-6 sm:border-r sm:border-b-0">
+        <p className="primary-text text-text-body self-stretch">
           {t('title.votingPower')}
         </p>
 
@@ -75,7 +75,7 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
       </div>
 
       <div className="flex grow flex-col gap-6 overflow-hidden p-6">
-        <p className="primary-text mb-2 text-text-body">
+        <p className="primary-text text-text-body mb-2">
           {distributionPrefix}
           {t('title.distribution')}
         </p>
@@ -96,7 +96,7 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
                 <p className="link-text text-text-secondary">{name}</p>
               </div>
 
-              <p className="caption-text text-right font-mono text-text-tertiary">
+              <p className="caption-text text-text-tertiary text-right font-mono">
                 {readableValue}
               </p>
             </div>
@@ -119,7 +119,7 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
                   />
                 </div>
 
-                <p className="caption-text text-right font-mono text-text-tertiary">
+                <p className="caption-text text-text-tertiary text-right font-mono">
                   {readableValue}
                 </p>
               </div>

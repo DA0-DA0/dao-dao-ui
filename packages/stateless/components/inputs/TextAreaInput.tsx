@@ -40,7 +40,7 @@ export const TextAreaInput = <
   return (
     <textarea
       className={clsx(
-        'secondary-text w-full appearance-none rounded-md bg-transparent py-3 px-4 text-text-body ring-1 transition placeholder:text-text-tertiary focus:outline-none focus:ring-2',
+        'secondary-text text-text-body placeholder:text-text-tertiary w-full appearance-none rounded-md bg-transparent py-3 px-4 ring-1 transition focus:outline-none focus:ring-2',
         error
           ? 'ring-border-interactive-error'
           : 'ring-border-primary focus:ring-border-interactive-focus',

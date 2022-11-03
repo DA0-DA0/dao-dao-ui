@@ -18,7 +18,7 @@ export const DaoInfoBar = ({ items, className }: DaoInfoBarProps) => (
         key={index}
         className="flex grow basis-0 flex-col items-center gap-1 text-center"
       >
-        <Icon className="mb-2 h-5 w-5 text-icon-secondary" />
+        <Icon className="text-icon-secondary mb-2 h-5 w-5" />
 
         <p className="secondary-text">{label}</p>
         <div className="symbol-small-body-text flex flex-row gap-1 font-mono">

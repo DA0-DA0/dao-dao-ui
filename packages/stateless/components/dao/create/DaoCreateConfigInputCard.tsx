@@ -28,12 +28,12 @@ export const DaoCreateConfigInputCard = ({
   Loader = DefaultLoader,
   error,
 }: DaoCreateConfigInputCardProps) => (
-  <div className="relative flex flex-col rounded-lg bg-background-tertiary">
+  <div className="bg-background-tertiary relative flex flex-col rounded-lg">
     {tooltip && (
       <TooltipInfoIcon className="absolute top-3 right-3" title={tooltip} />
     )}
 
-    <div className="flex h-32 items-center justify-center border-b border-border-secondary text-6xl">
+    <div className="border-border-secondary flex h-32 items-center justify-center border-b text-6xl">
       <Icon />
     </div>
 

@@ -48,13 +48,13 @@ const SplashPage: NextPage = () => {
   return (
     <SuspenseLoader fallback={<PageLoader className="h-screen w-screen" />}>
       <SplashGradientWrapper>
-        <nav className="w-full border-b border-border-secondary bg-opacity-40 bg-clip-padding py-4 px-6 backdrop-blur-xl backdrop-filter">
+        <nav className="border-border-secondary w-full border-b bg-opacity-40 bg-clip-padding py-4 px-6 backdrop-blur-xl backdrop-filter">
           <div className="mx-auto flex max-w-screen-lg items-center justify-between">
             <div className="flex flex-row items-center">
               <Logo className="mr-3" size={32} />
               <p className="mr-1 font-medium">DAO</p>
               <p
-                className="font-semibold text-text-secondary"
+                className="text-text-secondary font-semibold"
                 style={{ transform: 'scaleY(-1) scaleX(-1)' }}
               >
                 DAO
@@ -77,7 +77,7 @@ const SplashPage: NextPage = () => {
         <h1 className="hero-text mt-16 text-center md:mt-[33vh]">
           {t('splash.shortTagline')}
         </h1>
-        <p className="my-10 mx-auto max-w-lg px-4 text-center text-lg text-text-secondary">
+        <p className="text-text-secondary my-10 mx-auto max-w-lg px-4 text-center text-lg">
           {t('splash.longTagline')}
         </p>
         <div className="mx-auto">
@@ -128,7 +128,7 @@ const SplashPage: NextPage = () => {
           <h2 className="header-text mt-12 w-full px-4 text-center">
             {t('splash.transparentGovernanceOnChain')}
           </h2>
-          <p className="primary-text mx-auto mt-4 max-w-xl px-4 text-center text-text-tertiary">
+          <p className="primary-text text-text-tertiary mx-auto mt-4 max-w-xl px-4 text-center">
             {t('splash.transparencyExplanation')}
           </p>
           <div className="mt-12">
@@ -148,7 +148,7 @@ const SplashPage: NextPage = () => {
                 })}
               </p>
               <a
-                className="inline-flex flex-row items-center gap-2 transition hover:text-text-primary"
+                className="hover:text-text-primary inline-flex flex-row items-center gap-2 transition"
                 href="https://www.junonetwork.io/"
                 rel="noreferrer"
                 target="_blank"

@@ -58,7 +58,7 @@ export const RemoveCw721Component: ActionComponent<RemoveCw721Options> = ({
               <Button
                 key={address}
                 className={clsx('text-center', {
-                  'bg-transparent text-text-secondary':
+                  'text-text-secondary bg-transparent':
                     address !== tokenAddress,
                 })}
                 disabled={!isCreating}

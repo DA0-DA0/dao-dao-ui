@@ -56,8 +56,8 @@ export const CreateDaoVoting = ({
 
   return (
     <>
-      <div className="border-b border-b-border-secondary pb-6">
-        <p className="title-text my-9 text-text-body">
+      <div className="border-b-border-secondary border-b pb-6">
+        <p className="title-text text-text-body my-9">
           {t('title.votingConfiguration')}
         </p>
 
@@ -230,10 +230,10 @@ export const CreateDaoVoting = ({
                   (advancedWarningI18nKey, index) => (
                     <div
                       key={index}
-                      className="flex flex-col gap-2 rounded-lg bg-background-interactive-warning py-5 px-6"
+                      className="bg-background-interactive-warning flex flex-col gap-2 rounded-lg py-5 px-6"
                     >
                       <div className="flex flex-row items-center gap-3">
-                        <WarningRounded className="!h-6 !w-6 text-icon-interactive-warning" />
+                        <WarningRounded className="text-icon-interactive-warning !h-6 !w-6" />
                         <p className="primary-text text-text-interactive-warning-title">
                           {t('title.watchOut')}
                         </p>

@@ -16,7 +16,7 @@ export const DaoMemberCard = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col justify-between rounded-md border border-border-primary">
+    <div className="border-border-primary flex flex-col justify-between rounded-md border">
       <div className="flex flex-col items-center px-4 pt-10 pb-8">
         {/* Image */}
         <ProfileImage
@@ -27,7 +27,7 @@ export const DaoMemberCard = ({
         {/* Name */}
         <p
           className={clsx(
-            'title-text mt-4 mb-1 text-text-body',
+            'title-text text-text-body mt-4 mb-1',
             profile.loading && 'animate-pulse'
           )}
         >
@@ -35,10 +35,10 @@ export const DaoMemberCard = ({
         </p>
         {/* Address */}
         <div className="flex flex-row items-center gap-1">
-          <Tag className="!h-5 !w-5 text-icon-tertiary" />
+          <Tag className="text-icon-tertiary !h-5 !w-5" />
 
           <CopyToClipboardUnderline
-            className="text-sm !text-text-tertiary"
+            className="!text-text-tertiary text-sm"
             takeStartEnd={{
               start: 12,
               end: 8,
@@ -48,7 +48,7 @@ export const DaoMemberCard = ({
         </div>
       </div>
 
-      <div className="flex flex-row items-center justify-between gap-4 border-t border-border-interactive-disabled p-4">
+      <div className="border-border-interactive-disabled flex flex-row items-center justify-between gap-4 border-t p-4">
         {/* Voting power */}
         <p className="secondary-text">{t('title.votingPower')}</p>
         <p className="symbol-small-body-text font-mono">

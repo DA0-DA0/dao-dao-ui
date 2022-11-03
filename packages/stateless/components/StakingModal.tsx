@@ -199,7 +199,7 @@ const StakeUnstakeModesBody = ({
           value={amount}
         />
         {!loadingMax.loading && amount > loadingMax.data && (
-          <span className="caption-text mt-1 ml-1 text-text-interactive-error">
+          <span className="caption-text text-text-interactive-error mt-1 ml-1">
             {t('error.cannotStakeMoreThanYouHave')}
           </span>
         )}
@@ -251,7 +251,7 @@ const StakeUnstakeModesBody = ({
       {(mode === StakingMode.Stake || mode === StakingMode.Unstake) &&
         unstakingDuration &&
         durationIsNonZero(unstakingDuration) && (
-          <div className="-mx-6 mt-7 space-y-5 border-t border-border-secondary px-6 pt-7">
+          <div className="border-border-secondary -mx-6 mt-7 space-y-5 border-t px-6 pt-7">
             <p className="primary-text text-text-secondary">
               {t('title.unstakingPeriod') +
                 `: ${humanReadableDuration(unstakingDuration)}`}

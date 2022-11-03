@@ -107,7 +107,7 @@ export const PageHeader = ({
 
         {/* Use div for border so we can set absolute positioning and padding. */}
         {!noBorder && (
-          <div className="absolute right-0 bottom-0 left-0 h-[1px] bg-border-secondary"></div>
+          <div className="bg-border-secondary absolute right-0 bottom-0 left-0 h-[1px]"></div>
         )}
       </div>
     </div>

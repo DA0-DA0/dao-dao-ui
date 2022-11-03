@@ -191,7 +191,7 @@ export const GovernanceConfigurationInput = ({
             ref={addTierRef}
             variant="secondary"
           >
-            <Add className="!h-6 !w-6 text-icon-primary" />
+            <Add className="text-icon-primary !h-6 !w-6" />
             <p>{t('button.addTier')}</p>
           </Button>
 

@@ -238,7 +238,7 @@ const TransactionRenderer = ({
     outgoing,
   },
 }: TransactionRendererProps) => (
-  <div className="flex flex-row items-start justify-between gap-4 xs:gap-12">
+  <div className="xs:gap-12 flex flex-row items-start justify-between gap-4">
     <div className="flex flex-row flex-wrap items-center gap-x-4 text-sm leading-6">
       <CopyToClipboard value={outgoing ? recipient : sender} />
       {/* Outgoing transactions are received by the address above, so point to the left. */}

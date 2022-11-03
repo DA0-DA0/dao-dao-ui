@@ -42,8 +42,8 @@ export const ConnectedWallet = ({
       className={clsx('flex flex-row items-center justify-between', className)}
     >
       <div className="flex flex-row items-stretch gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border-[2px] border-border-primary">
-          <Wallet className="!h-5 !w-5 text-icon-primary" />
+        <div className="border-border-primary flex h-12 w-12 items-center justify-center rounded-full border-[2px]">
+          <Wallet className="text-icon-primary !h-5 !w-5" />
         </div>
 
         <div className="flex flex-col justify-center gap-1">

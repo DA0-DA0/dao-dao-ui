@@ -40,7 +40,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
     return (
       <div
         className={clsx(
-          'group relative flex flex-col items-stretch overflow-hidden rounded-lg bg-background-primary outline outline-2 ring-2 ring-inset ring-[transparent] transition-all',
+          'group bg-background-primary relative flex flex-col items-stretch overflow-hidden rounded-lg outline outline-2 ring-2 ring-inset ring-[transparent] transition-all',
           {
             'hover:bg-background-secondary hover:ring-border-interactive-focus':
               externalLink || checkbox,
@@ -71,7 +71,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             />
           ) : (
             <div className="flex aspect-square items-center justify-center">
-              <ImageNotSupported className="!h-14 !w-14 text-icon-tertiary" />
+              <ImageNotSupported className="text-icon-tertiary !h-14 !w-14" />
             </div>
           )}
 
@@ -84,7 +84,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               target="_blank"
             >
               <TooltipLikeDisplay
-                className="absolute bottom-4 left-4 opacity-0 shadow-dp4 transition-opacity hover:!opacity-90 group-hover:opacity-100"
+                className="shadow-dp4 absolute bottom-4 left-4 opacity-0 transition-opacity hover:!opacity-90 group-hover:opacity-100"
                 icon={<ArrowOutward className="!h-5 !w-5" />}
                 label={t('button.openInDestination', {
                   destination: externalLink.name,
@@ -97,13 +97,13 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
         {checkbox && (
           <Checkbox
             {...checkbox}
-            className="absolute top-3 left-3 shadow-dp4"
+            className="shadow-dp4 absolute top-3 left-3"
           />
         )}
 
         <div
           className={clsx(
-            'grid items-center gap-x-4 border-b border-border-secondary py-4 px-6',
+            'border-border-secondary grid items-center gap-x-4 border-b py-4 px-6',
             {
               'grid-cols-1': !floorPrice,
               'grid-cols-[1fr_1px_1fr]': floorPrice,
@@ -122,7 +122,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           {floorPrice && (
             <>
               {/* Separator */}
-              <div className="h-6 w-[1px] bg-background-primary"></div>
+              <div className="bg-background-primary h-6 w-[1px]"></div>
 
               {/* Floor price */}
               <div className="flex flex-col items-end gap-1">

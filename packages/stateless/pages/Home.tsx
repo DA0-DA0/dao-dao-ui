@@ -70,7 +70,7 @@ export const Home = ({
         </div>
 
         {/* Divider */}
-        <div className={clsx('h-[1px] bg-border-secondary', maxWidth)}></div>
+        <div className={clsx('bg-border-secondary h-[1px]', maxWidth)}></div>
 
         {/* Pinned DAOs */}
         <div className={clsx('flex flex-col gap-8', maxWidth)}>
