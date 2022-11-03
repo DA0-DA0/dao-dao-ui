@@ -3,6 +3,16 @@ import { IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily, waitForAll } from 'recoil'
 
 import {
+  CwdCoreV2Selectors,
+  blockHeightTimestampSafeSelector,
+  cosmWasmClientForChainSelector,
+  nativeBalancesSelector,
+  nativeDelegatedBalanceSelector,
+  nativeStakingInfoSelector,
+  nativeUnstakingDurationSecondsSelector,
+  usdcPerMacroTokenSelector,
+} from '@dao-dao/state'
+import {
   TokenCardInfo,
   TokenCardLazyInfo,
   UnstakingTaskStatus,
@@ -15,17 +25,6 @@ import {
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
-
-import {
-  blockHeightTimestampSafeSelector,
-  cosmWasmClientForChainSelector,
-  nativeBalancesSelector,
-  nativeDelegatedBalanceSelector,
-  nativeStakingInfoSelector,
-  nativeUnstakingDurationSecondsSelector,
-} from '../chain'
-import { CwdCoreV2Selectors } from '../contracts'
-import { usdcPerMacroTokenSelector } from '../price'
 
 export const treasuryTokenCardInfosSelector = selectorFamily<
   TokenCardInfo[],

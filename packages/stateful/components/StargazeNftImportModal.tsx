@@ -3,7 +3,6 @@ import { ComponentType, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { walletStargazeNftCardInfosSelector } from '@dao-dao/state'
 import {
   Loader as DefaultLoader,
   LoaderProps,
@@ -16,6 +15,7 @@ import {
 import { NftCardInfo } from '@dao-dao/types'
 import { loadableToLoadingDataWithError, processError } from '@dao-dao/utils'
 
+import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export interface StargazeNftImportModalProps

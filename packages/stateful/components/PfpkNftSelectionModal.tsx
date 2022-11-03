@@ -7,10 +7,7 @@ import { ComponentType, useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import {
-  useGetLoopNftsQuery,
-  walletStargazeNftCardInfosSelector,
-} from '@dao-dao/state'
+import { useGetLoopNftsQuery } from '@dao-dao/state'
 import {
   Loader as DefaultLoader,
   LoaderProps,
@@ -28,6 +25,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useWalletProfile } from '../hooks'
+import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export interface PfpkNftSelectionModalProps

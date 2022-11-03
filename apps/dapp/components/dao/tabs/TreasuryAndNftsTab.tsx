@@ -3,11 +3,9 @@
 import { useEffect } from 'react'
 
 import {
+  StargazeNftImportModal,
   nftCardInfosSelector,
   treasuryTokenCardInfosSelector,
-} from '@dao-dao/state'
-import {
-  StargazeNftImportModal,
   useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/stateful'

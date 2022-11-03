@@ -3,9 +3,9 @@
 import { useEffect } from 'react'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { subDaoCardInfosSelector } from '@dao-dao/state'
 import {
   ButtonLink,
+  subDaoCardInfosSelector,
   useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '@dao-dao/stateful'

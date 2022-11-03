@@ -5,13 +5,11 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect, useState } from 'react'
 import { useSetRecoilState } from 'recoil'
 
-import {
-  refreshNativeTokenStakingInfoAtom,
-  tokenCardLazyInfoSelector,
-} from '@dao-dao/state'
+import { refreshNativeTokenStakingInfoAtom } from '@dao-dao/state'
 import {
   ButtonLink,
   DaoTokenDepositModal,
+  tokenCardLazyInfoSelector,
   useEncodedCwdProposalSinglePrefill,
 } from '@dao-dao/stateful'
 import { useActionForKey } from '@dao-dao/stateful/actions'

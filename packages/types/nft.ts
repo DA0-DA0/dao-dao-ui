@@ -1,3 +1,5 @@
+import { ContractInfoResponse } from './contracts/Cw721Base'
+
 export interface StargazeNft {
   name: string
   image: string
@@ -25,4 +27,15 @@ export interface StargazeNft {
   // reserveFor: null
   // expiresAt: null
   // expiresAtDateTime: null
+}
+
+export interface NativeStargazeCollectionInfo {
+  native: {
+    address: string
+    info: ContractInfoResponse
+  }
+  stargaze?: {
+    address: string
+    info: ContractInfoResponse
+  }
 }

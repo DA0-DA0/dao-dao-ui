@@ -3,8 +3,8 @@ import { atom, atomFamily } from 'recoil'
 import { localStorageEffectJSON } from '@dao-dao/state/recoil/effects'
 import { DaoCreatedCardProps, NewDao } from '@dao-dao/types'
 
-import { CwdProposalSingleAdapter } from '../proposal-module-adapter/adapters/CwdProposalSingle'
-import { CwdVotingCw4Adapter } from '../voting-module-adapter'
+import { CwdProposalSingleAdapter } from '../../proposal-module-adapter/adapters/CwdProposalSingle'
+import { CwdVotingCw4Adapter } from '../../voting-module-adapter'
 
 export const DefaultNewDao: NewDao = {
   name: '',

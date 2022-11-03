@@ -1,22 +1,16 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily } from 'recoil'
 
 import {
   CwdCoreV2Selectors,
   CwdVotingCw20StakedSelectors,
   contractVersionSelector,
   cosmWasmClientForChainSelector,
-  daoTvlSelector,
 } from '@dao-dao/state'
-import {
-  DaoCardInfoLazyData,
-  ProposalModule,
-  WithChainId,
-} from '@dao-dao/types'
+import { ProposalModule, WithChainId } from '@dao-dao/types'
 
-import { proposalModuleAdapterProposalCountSelector } from '../proposal-module-adapter'
-import { fetchProposalModules } from '../utils/fetchProposalModules'
-import { matchAdapter as matchVotingModuleAdapter } from '../voting-module-adapter'
-import { CwdVotingCw20StakedAdapter } from '../voting-module-adapter/adapters/CwdVotingCw20Staked'
+import { fetchProposalModules } from '../../../utils/fetchProposalModules'
+import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
+import { CwdVotingCw20StakedAdapter } from '../../../voting-module-adapter/adapters/CwdVotingCw20Staked'
 
 export const cwCoreProposalModulesSelector = selectorFamily<
   ProposalModule[],
@@ -35,72 +29,6 @@ export const cwCoreProposalModulesSelector = selectorFamily<
       )
 
       return await fetchProposalModules(client, coreAddress, coreVersion)
-    },
-})
-
-export const daoCardInfoLazyDataSelector = selectorFamily<
-  DaoCardInfoLazyData,
-  WithChainId<{
-    coreAddress: string
-    walletAddress?: string
-  }>
->({
-  key: 'daoCardInfoLazyData',
-  get:
-    ({ coreAddress, chainId, walletAddress }) =>
-    ({ get }) => {
-      const cw20GovernanceTokenAddress = get(
-        daoCw20GovernanceTokenAddressSelector({
-          coreAddress,
-          chainId,
-        })
-      )
-
-      const tvl = get(
-        daoTvlSelector({
-          coreAddress,
-          chainId,
-          cw20GovernanceTokenAddress,
-        })
-      ).amount
-
-      const walletVotingWeight = walletAddress
-        ? Number(
-            get(
-              CwdCoreV2Selectors.votingPowerAtHeightSelector({
-                contractAddress: coreAddress,
-                chainId,
-                params: [{ address: walletAddress }],
-              })
-            ).power
-          )
-        : 0
-
-      const proposalModules = get(
-        cwCoreProposalModulesSelector({
-          coreAddress,
-          chainId,
-        })
-      )
-      const proposalModuleCounts = get(
-        waitForAll(
-          proposalModules.map(({ address }) =>
-            proposalModuleAdapterProposalCountSelector({
-              proposalModuleAddress: address,
-              chainId,
-            })
-          )
-        )
-      ).filter(Boolean) as number[]
-
-      return {
-        isMember: walletVotingWeight > 0,
-        tokenBalance: tvl,
-        proposalCount: proposalModuleCounts.reduce(
-          (acc, curr) => acc + curr,
-          0
-        ),
-      }
     },
 })
 

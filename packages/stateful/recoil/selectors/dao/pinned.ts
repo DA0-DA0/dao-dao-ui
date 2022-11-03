@@ -1,11 +1,11 @@
 import { selector, waitForAll } from 'recoil'
 
-import { daoDropdownInfoSelector, pinnedAddressesAtom } from '@dao-dao/state'
+import { pinnedAddressesAtom } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
 
-import { cwCoreProposalModulesSelector } from './dao'
+import { daoDropdownInfoSelector } from './cards'
+import { cwCoreProposalModulesSelector } from './misc'
 
-// TODO(multichain): Store pinned addresses with their chain ID in one list.
 export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
   key: 'pinnedDaoDropdownInfo',
   get: ({ get }) => {
@@ -20,7 +20,6 @@ export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
   },
 })
 
-// TODO(multichain): Store pinned addresses with their chain ID in one list.
 export const pinnedDaosWithProposalModulesSelector = selector({
   key: 'pinnedDaosWithProposalModules',
   get: ({ get }) => {

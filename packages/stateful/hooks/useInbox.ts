@@ -9,7 +9,7 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 
-import { pinnedDaosWithProposalModulesSelector } from '../selectors'
+import { pinnedDaosWithProposalModulesSelector } from '../recoil/selectors'
 
 export const useInbox = () => {
   const { address: walletAddress } = useWallet()

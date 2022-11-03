@@ -1,5 +1,4 @@
 export * from './contracts'
-export * from './dao'
 
 export * from './chain'
 export * from './contract'
@@ -7,4 +6,5 @@ export * from './nft'
 export * from './pools'
 export * from './price'
 export * from './proposal'
+export * from './treasury'
 export * from './wallet'

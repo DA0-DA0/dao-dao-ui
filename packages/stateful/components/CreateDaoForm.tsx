@@ -44,17 +44,17 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  DefaultNewDao,
-  daoCreatedCardPropsAtom,
-  newDaoAtom,
-} from '../atoms/newDao'
-import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
   usePinnedDaos,
   useWalletProfile,
 } from '../hooks'
 import { getAdapterById as getProposalModuleAdapterById } from '../proposal-module-adapter'
+import {
+  DefaultNewDao,
+  daoCreatedCardPropsAtom,
+  newDaoAtom,
+} from '../recoil/atoms/newDao'
 import {
   CwdVotingCw20StakedAdapter,
   getAdapterById as getVotingModuleAdapterById,
