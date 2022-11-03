@@ -16,8 +16,12 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
+  betaWarningAcceptedAtom,
+  commandModalVisibleAtom,
+  installWarningVisibleAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
+  noKeplrAccountAtom,
   proposalCreatedCardPropsAtom,
   refreshBlockHeightAtom,
   refreshTokenUsdcPriceAtom,
@@ -42,13 +46,6 @@ import {
 } from '@dao-dao/stateless'
 import { CommandModalContextMaker } from '@dao-dao/types'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
-
-import {
-  betaWarningAcceptedAtom,
-  commandModalVisibleAtom,
-  installWarningVisibleAtom,
-  noKeplrAccountAtom,
-} from '@/atoms'
 
 import { DAppProvider, useDAppContext } from './DAppContext'
 import { InstallKeplr } from './InstallKeplr'

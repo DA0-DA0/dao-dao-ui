@@ -6,13 +6,13 @@ import { GetStaticProps, NextPage } from 'next'
 import { useSetRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+import { commandModalVisibleAtom } from '@dao-dao/state'
 import {
   useLoadingFeaturedDaoCardInfos,
   useLoadingPinnedDaoCardInfos,
 } from '@dao-dao/stateful'
 import { Home, ProfileDisconnectedCard } from '@dao-dao/stateless'
 
-import { commandModalVisibleAtom } from '@/atoms'
 import { DaoCard, ProfileHomeCard } from '@/components'
 
 const HomePage: NextPage = () => {
