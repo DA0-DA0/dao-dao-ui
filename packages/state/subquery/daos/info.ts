@@ -52,4 +52,6 @@ export const useGetDaos = (
     context: {
       apiName,
     },
+    // Refresh every 60 seconds.
+    pollInterval: 60 * 1000,
   })
