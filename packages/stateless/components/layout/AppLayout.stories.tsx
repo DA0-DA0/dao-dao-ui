@@ -1,7 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
-import { PageHeaderProps, UseInboxReturn } from '@dao-dao/types'
+import { EMPTY_INBOX } from '@dao-dao/storybook/decorators'
+import { PageHeaderProps } from '@dao-dao/types'
 
 import { AppLayout, AppLayoutProps, IAppLayoutContext } from './AppLayout'
 import { NavigationProps } from './Navigation'
@@ -15,15 +16,6 @@ export default {
   component: AppLayout,
   excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof AppLayout>
-
-export const EMPTY_INBOX: UseInboxReturn = {
-  loading: false,
-  refetching: false,
-  error: undefined,
-  daosWithOpenUnvotedProposals: [],
-  proposalCount: 0,
-  refetch: async () => alert('refetch inbox'),
-}
 
 export const DefaultArgs: AppLayoutProps = {
   navigationProps: NavigatonStory.args as NavigationProps,
