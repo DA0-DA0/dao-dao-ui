@@ -73,7 +73,7 @@ export const Modal = ({
         >
           <div
             className={clsx(
-              'no-scrollbar relative flex h-min max-h-full max-w-md cursor-auto flex-col overflow-y-auto rounded-lg border border-border-secondary bg-background-base p-6 shadow-dp8 transition-transform duration-[120ms]',
+              'no-scrollbar relative flex h-min max-h-full max-w-md cursor-auto flex-col overflow-y-auto overflow-x-hidden rounded-lg border border-border-secondary bg-background-base p-6 shadow-dp8 transition-transform duration-[120ms]',
               visible ? 'scale-100' : 'scale-90',
               // If no children, remove bottom padding since header has its own
               // padding.
