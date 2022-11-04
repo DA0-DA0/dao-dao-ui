@@ -54,6 +54,14 @@ Default.args = {
           name: 'DAO 5',
           imageUrl: '/placeholders/5.svg',
         },
+        {
+          name: 'DAO 6',
+          imageUrl: '/placeholders/1.svg',
+        },
+        {
+          name: 'DAO 7',
+          imageUrl: '/placeholders/2.svg',
+        },
       ],
     },
   ],

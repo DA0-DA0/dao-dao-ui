@@ -11,7 +11,7 @@ import { useGetLoopNftsQuery } from '@dao-dao/state'
 import {
   Loader as DefaultLoader,
   LoaderProps,
-  Modal,
+  ModalLoader,
   ModalProps,
   NftSelectionModal,
   ProfileImage,
@@ -214,17 +214,8 @@ export const InnerPfpkNftSelectionModal = ({
   )
 }
 
-export const PfpkNftSelectionModal = ({
-  Loader = DefaultLoader,
-  ...props
-}: PfpkNftSelectionModalProps) => (
-  <SuspenseLoader
-    fallback={
-      <Modal containerClassName="!p-40" visible {...props}>
-        <Loader />
-      </Modal>
-    }
-  >
+export const PfpkNftSelectionModal = (props: PfpkNftSelectionModalProps) => (
+  <SuspenseLoader fallback={<ModalLoader {...props} />}>
     <InnerPfpkNftSelectionModal {...props} />
   </SuspenseLoader>
 )

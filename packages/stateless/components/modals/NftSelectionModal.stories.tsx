@@ -1,12 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { makeProps as makeNftCardProps } from './NftCard.stories'
+import { makeProps as makeNftCardProps } from '../NftCard.stories'
 import { NftSelectionModal } from './NftSelectionModal'
 
 export default {
   title:
-    'DAO DAO / packages / stateless / components / nft / NftSelectionModal',
+    'DAO DAO / packages / stateless / components / modals / NftSelectionModal',
   component: NftSelectionModal,
 } as ComponentMeta<typeof NftSelectionModal>
 
@@ -52,10 +52,20 @@ Default.args = {
   getIdForNft: (nft) => `${nft.collection.address}:${nft.tokenId}`,
   header: {
     title: 'Stake NFTs',
-    subtitle: 'Select the NFTs you want to stake from the {{name}} collection.',
+    subtitle: 'Select the NFTs you want to stake from the NFT collection.',
   },
   actionLabel: 'Stake',
   visible: true,
+}
+
+export const Empty = Template.bind({})
+Empty.args = {
+  ...Default.args,
+  nfts: {
+    loading: false,
+    errored: false,
+    data: [],
+  },
 }
 
 export const Loading = Template.bind({})
@@ -73,6 +83,8 @@ Errored.args = {
   nfts: {
     loading: false,
     errored: true,
-    error: new Error('Request rejected.'),
+    error: new Error(
+      'Request rejected and some other info that takes up a lot of space.'
+    ),
   },
 }

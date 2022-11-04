@@ -30,8 +30,9 @@ export const CommandModal = ({
 
   return (
     <Modal
-      containerClassName="p-0 !w-[36rem] !max-w-[90vw] !h-[28rem] !max-h-[90vh]"
-      headerContainerClassName="!m-0 px-4 py-6"
+      containerClassName="!w-[36rem] !max-w-[90vw] !h-[28rem] !max-h-[90vh]"
+      contentContainerClassName="p-3 pt-4"
+      headerContainerClassName="p-4"
       headerContent={
         <div className="flex h-8 flex-row items-stretch gap-4">
           {/* Don't show the root context. */}

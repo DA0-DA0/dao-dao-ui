@@ -171,8 +171,9 @@ export const FilterableItemPopup = <T extends FilterableItem>({
       <Trigger onClick={() => setOpen((o) => !o)} open={open} />
 
       <Modal
-        containerClassName="p-0 !w-[24rem] !max-w-[96vw] !h-[32rem] !max-h-[96vh]"
-        headerContainerClassName="!m-0 px-4 py-6"
+        containerClassName="!w-[24rem] !max-w-[96vw] !h-[32rem] !max-h-[96vh]"
+        contentContainerClassName="p-3 pt-4"
+        headerContainerClassName="p-4"
         headerContent={
           <SearchBar
             className="!primary-text text-text-body"
@@ -190,7 +191,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
       >
         <div
           className={clsx(
-            'no-scrollbar grow space-y-1 overflow-y-auto p-3 pt-4',
+            'no-scrollbar grow space-y-1 overflow-y-auto',
             listClassName
           )}
           ref={itemsListRef}

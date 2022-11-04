@@ -56,7 +56,7 @@ export const ImageSelectorModal = <
 
   return (
     <Modal
-      containerClassName="flex flex-col gap-3 items-center"
+      contentContainerClassName="gap-3 items-center"
       onClose={onClose}
       visible
     >

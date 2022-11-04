@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Loader as DefaultLoader,
   LoaderProps,
-  Modal,
+  ModalLoader,
   ModalProps,
   NftSelectionModal,
   useCachedLoadable,
@@ -148,17 +148,8 @@ export const InnerStargazeNftImportModal = ({
   )
 }
 
-export const StargazeNftImportModal = ({
-  onClose,
-  Loader = DefaultLoader,
-}: StargazeNftImportModalProps) => (
-  <SuspenseLoader
-    fallback={
-      <Modal containerClassName="!p-40" onClose={onClose} visible>
-        <Loader />
-      </Modal>
-    }
-  >
-    <InnerStargazeNftImportModal onClose={onClose} />
+export const StargazeNftImportModal = (props: StargazeNftImportModalProps) => (
+  <SuspenseLoader fallback={<ModalLoader {...props} />}>
+    <InnerStargazeNftImportModal {...props} />
   </SuspenseLoader>
 )

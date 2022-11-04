@@ -11,9 +11,9 @@ import { SortFn, useDropdownSorter, useSearchFilter } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { Dropdown, DropdownOption, SearchBar } from '../inputs'
 import { Loader as DefaultLoader, LoaderProps } from '../Loader'
-import { Modal } from '../modals/Modal'
+import { NftCard } from '../NftCard'
 import { NoContent } from '../NoContent'
-import { NftCard } from './NftCard'
+import { Modal } from './Modal'
 
 export interface NftSelectionModalProps<T extends NftCardInfo>
   extends Omit<ModalProps, 'children' | 'header'>,
@@ -96,9 +96,16 @@ export const NftSelectionModal = <T extends NftCardInfo>({
     <Modal
       {...modalProps}
       containerClassName={clsx(
-        'flex h-[48rem] w-full !max-w-3xl flex-col',
+        'h-[48rem] w-full !max-w-3xl',
         containerClassName
       )}
+      contentContainerClassName={
+        nfts.errored
+          ? 'items-center justify-center gap-4'
+          : !nfts.loading && nfts.data.length > 0
+          ? 'no-scrollbar grid grid-flow-row auto-rows-max grid-cols-2 gap-4 overflow-y-auto sm:grid-cols-3'
+          : undefined
+      }
       footerContent={
         <div
           className={clsx(
@@ -124,7 +131,13 @@ export const NftSelectionModal = <T extends NftCardInfo>({
         </div>
       }
       headerContent={
-        <div className="flex flex-col gap-2">
+        <div className="mt-4 flex flex-col gap-4">
+          <SearchBar
+            autoFocus
+            placeholder={t('info.searchNftsPlaceholder')}
+            {...searchBarProps}
+          />
+
           <div
             className={clsx(
               'flex flex-row items-center gap-12',
@@ -134,7 +147,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
           >
             {showSelectAll && (
               <Button
-                className="mt-4 text-text-interactive-active"
+                className="text-text-interactive-active"
                 disabled={nfts.loading}
                 onClick={
                   nfts.loading
@@ -158,49 +171,39 @@ export const NftSelectionModal = <T extends NftCardInfo>({
               <Dropdown {...sortDropdownProps} />
             </div>
           </div>
-
-          <SearchBar
-            autoFocus
-            placeholder={t('info.searchNftsPlaceholder')}
-            {...searchBarProps}
-          />
         </div>
       }
     >
       {nfts.loading ? (
-        <Loader className="-mt-6" />
+        <Loader />
       ) : nfts.errored ? (
-        <div className="mx-auto -mt-6 flex max-w-prose grow flex-col items-center justify-center gap-4">
+        <>
           <WarningRounded className="!h-14 !w-14" />
           <p className="body-text">{t('error.pfpkStargazeReopenModal')}</p>
-          <pre className="secondary-text whitespace-pre-wrap text-xs text-text-interactive-error">
+          <pre className="secondary-text max-w-prose whitespace-pre-wrap text-center text-xs text-text-interactive-error">
             {nfts.error instanceof Error ? nfts.error.message : `${nfts.error}`}
           </pre>
-        </div>
+        </>
       ) : nfts.data.length > 0 ? (
-        <div className="no-scrollbar -mx-6 -mt-6 grid grow grid-flow-row auto-rows-max grid-cols-2 gap-4 overflow-y-auto py-4 px-6 sm:grid-cols-3">
-          {filteredData.map((nft: T) => (
-            <NftCard
-              key={getIdForNft(nft)}
-              ref={
-                selectedIds[0] === getIdForNft(nft)
-                  ? firstSelectedRef
-                  : undefined
-              }
-              {...nft}
-              checkbox={{
-                checked: selectedIds.includes(getIdForNft(nft)),
-                // Disable toggling if currently staking.
-                onClick: () => !actionLoading && onNftClick(nft),
-              }}
-            />
-          ))}
-        </div>
+        filteredData.map((nft: T) => (
+          <NftCard
+            key={getIdForNft(nft)}
+            ref={
+              selectedIds[0] === getIdForNft(nft) ? firstSelectedRef : undefined
+            }
+            {...nft}
+            checkbox={{
+              checked: selectedIds.includes(getIdForNft(nft)),
+              // Disable toggling if currently staking.
+              onClick: () => !actionLoading && onNftClick(nft),
+            }}
+          />
+        ))
       ) : (
         <NoContent
           Icon={Image}
           body={t('info.noNftsYet')}
-          className="mb-6 h-full w-full justify-center"
+          className="grow justify-center"
         />
       )}
     </Modal>

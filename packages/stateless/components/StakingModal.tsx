@@ -66,6 +66,23 @@ export const StakingModal = ({
 
   return (
     <Modal
+      footerContainerClassName="flex flex-row justify-end !p-4"
+      footerContent={
+        <Tooltip title={error || invalidAmount()}>
+          <Button
+            disabled={!!error}
+            loading={loading}
+            onClick={() =>
+              onAction(
+                mode,
+                mode === StakingMode.Claim ? claimableTokens : amount
+              )
+            }
+          >
+            {t(`button.stakingMode.${mode}`)}
+          </Button>
+        </Tooltip>
+      }
       header={{
         title:
           mode === StakingMode.Claim
@@ -94,55 +111,36 @@ export const StakingModal = ({
       onClose={onClose}
       visible
     >
-      <div className="no-scrollbar -m-6 grow overflow-y-auto p-6">
-        {mode === StakingMode.Stake && (
-          <StakeUnstakeModesBody
-            amount={amount}
-            loadingMax={loadingStakableTokens}
-            mode={mode}
-            proposalDeposit={proposalDeposit}
-            setAmount={(amount: number) => setAmount(amount)}
-            tokenDecimals={tokenDecimals}
-            tokenSymbol={tokenSymbol}
-            unstakingDuration={unstakingDuration}
-          />
-        )}
-        {mode === StakingMode.Unstake && (
-          <StakeUnstakeModesBody
-            amount={amount}
-            loadingMax={loadingUnstakableTokens}
-            mode={mode}
-            setAmount={(amount: number) => setAmount(amount)}
-            tokenDecimals={tokenDecimals}
-            tokenSymbol={tokenSymbol}
-            unstakingDuration={unstakingDuration}
-          />
-        )}
-        {mode === StakingMode.Claim && (
-          <ClaimModeBody
-            amount={claimableTokens}
-            tokenDecimals={tokenDecimals}
-            tokenSymbol={tokenSymbol}
-          />
-        )}
-        <div className="flex justify-end pt-6">
-          <Tooltip title={error || invalidAmount()}>
-            <Button
-              disabled={!!error}
-              loading={loading}
-              onClick={() =>
-                onAction(
-                  mode,
-                  mode === StakingMode.Claim ? claimableTokens : amount
-                )
-              }
-              size="lg"
-            >
-              {t(`button.stakingMode.${mode}`)}
-            </Button>
-          </Tooltip>
-        </div>
-      </div>
+      {mode === StakingMode.Stake && (
+        <StakeUnstakeModesBody
+          amount={amount}
+          loadingMax={loadingStakableTokens}
+          mode={mode}
+          proposalDeposit={proposalDeposit}
+          setAmount={(amount: number) => setAmount(amount)}
+          tokenDecimals={tokenDecimals}
+          tokenSymbol={tokenSymbol}
+          unstakingDuration={unstakingDuration}
+        />
+      )}
+      {mode === StakingMode.Unstake && (
+        <StakeUnstakeModesBody
+          amount={amount}
+          loadingMax={loadingUnstakableTokens}
+          mode={mode}
+          setAmount={(amount: number) => setAmount(amount)}
+          tokenDecimals={tokenDecimals}
+          tokenSymbol={tokenSymbol}
+          unstakingDuration={unstakingDuration}
+        />
+      )}
+      {mode === StakingMode.Claim && (
+        <ClaimModeBody
+          amount={claimableTokens}
+          tokenDecimals={tokenDecimals}
+          tokenSymbol={tokenSymbol}
+        />
+      )}
     </Modal>
   )
 }
@@ -172,82 +170,80 @@ const StakeUnstakeModesBody = ({
 
   return (
     <>
-      <div className="flex flex-col">
-        <h2 className="primary-text mb-6">{t('title.chooseTokenAmount')}</h2>
-        <NumberInput
-          containerClassName="py-7 w-full h-20 pl-6 pr-8 bg-background-secondary rounded-md gap-4"
-          ghost
-          iconContainerClassName="gap-1"
-          iconSize="default"
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setAmount(e.target.valueAsNumber)
-          }
-          onMinus={
-            loadingMax.loading
-              ? // Use empty function so button still appears.
-                () => {}
-              : () =>
-                  setAmount(Math.max(Math.min(amount - 1, loadingMax.data), 0))
-          }
-          onPlus={
-            loadingMax.loading
-              ? // Use empty function so button still appears.
-                () => {}
-              : () =>
-                  setAmount(Math.max(Math.min(amount + 1, loadingMax.data), 0))
-          }
-          textClassName="font-mono leading-5 symbol-small-body-text"
-          unit={`$${tokenSymbol}`}
-          value={amount}
-        />
-        {!loadingMax.loading && amount > loadingMax.data && (
-          <span className="caption-text mt-1 ml-1 text-text-interactive-error">
-            {t('error.cannotStakeMoreThanYouHave')}
-          </span>
-        )}
-        <TokenAmountDisplay
-          amount={loadingMax}
-          className="caption-text mt-4 font-mono"
-          decimals={tokenDecimals}
-          prefix={t('info.yourBalance') + ': '}
-          showFullAmount
-          symbol={tokenSymbol}
-        />
-        <div className="mt-6">
-          <div className="grid grid-cols-5 gap-2">
-            {[10, 25, 50, 75, 100].map((percent) => (
-              <PercentButton
-                key={percent}
-                amount={amount}
-                label={`${percent}%`}
-                loadingMax={loadingMax}
-                percent={percent / 100}
-                setAmount={setAmount}
-                tokenDecimals={tokenDecimals}
-              />
-            ))}
-          </div>
-          {mode === StakingMode.Stake &&
-            !!proposalDeposit &&
-            !loadingMax.loading &&
-            loadingMax.data > proposalDeposit && (
-              <PercentButton
-                absoluteOffset={-proposalDeposit}
-                amount={amount}
-                className="mt-2"
-                label={t('button.stakeAllButProposalDeposit', {
-                  proposalDeposit: proposalDeposit.toLocaleString(undefined, {
-                    maximumFractionDigits: tokenDecimals,
-                  }),
-                  tokenSymbol,
-                })}
-                loadingMax={loadingMax}
-                percent={1}
-                setAmount={setAmount}
-                tokenDecimals={tokenDecimals}
-              />
-            )}
+      <h2 className="primary-text mb-6">{t('title.chooseTokenAmount')}</h2>
+      <NumberInput
+        containerClassName="py-7 w-full h-20 pl-6 pr-8 bg-background-secondary rounded-md gap-4"
+        ghost
+        iconContainerClassName="gap-1"
+        iconSize="default"
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          setAmount(e.target.valueAsNumber)
+        }
+        onMinus={
+          loadingMax.loading
+            ? // Use empty function so button still appears.
+              () => {}
+            : () =>
+                setAmount(Math.max(Math.min(amount - 1, loadingMax.data), 0))
+        }
+        onPlus={
+          loadingMax.loading
+            ? // Use empty function so button still appears.
+              () => {}
+            : () =>
+                setAmount(Math.max(Math.min(amount + 1, loadingMax.data), 0))
+        }
+        textClassName="font-mono leading-5 symbol-small-body-text"
+        unit={`$${tokenSymbol}`}
+        value={amount}
+      />
+      {!loadingMax.loading && amount > loadingMax.data && (
+        <span className="caption-text mt-1 ml-1 text-text-interactive-error">
+          {t('error.cannotStakeMoreThanYouHave')}
+        </span>
+      )}
+      <TokenAmountDisplay
+        amount={loadingMax}
+        className="caption-text mt-4 font-mono"
+        decimals={tokenDecimals}
+        prefix={t('info.yourBalance') + ': '}
+        showFullAmount
+        symbol={tokenSymbol}
+      />
+      <div className="mt-6">
+        <div className="grid grid-cols-5 gap-2">
+          {[10, 25, 50, 75, 100].map((percent) => (
+            <PercentButton
+              key={percent}
+              amount={amount}
+              label={`${percent}%`}
+              loadingMax={loadingMax}
+              percent={percent / 100}
+              setAmount={setAmount}
+              tokenDecimals={tokenDecimals}
+            />
+          ))}
         </div>
+        {mode === StakingMode.Stake &&
+          !!proposalDeposit &&
+          !loadingMax.loading &&
+          loadingMax.data > proposalDeposit && (
+            <PercentButton
+              absoluteOffset={-proposalDeposit}
+              amount={amount}
+              className="mt-2"
+              label={t('button.stakeAllButProposalDeposit', {
+                proposalDeposit: proposalDeposit.toLocaleString(undefined, {
+                  maximumFractionDigits: tokenDecimals,
+                }),
+                tokenSymbol,
+              })}
+              loadingMax={loadingMax}
+              percent={1}
+              setAmount={setAmount}
+              tokenDecimals={tokenDecimals}
+            />
+          )}
       </div>
 
       {(mode === StakingMode.Stake || mode === StakingMode.Unstake) &&

@@ -146,10 +146,7 @@ export const CommandModalContextView = ({
 
   return (
     <div
-      className={clsx(
-        'no-scrollbar flex grow flex-col gap-1 overflow-y-auto p-3 pt-4',
-        loading && 'animate-pulse'
-      )}
+      className={clsx('flex grow flex-col gap-1', loading && 'animate-pulse')}
     >
       {sections.length > 0 ? (
         sections.map(({ name, items, onChoose }, sectionIndex) => (

@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next'
 import { NftCardInfo } from '@dao-dao/types'
 import { normalizeNftImageUrl } from '@dao-dao/utils'
 
-import { CopyToClipboardUnderline } from '../CopyToClipboard'
-import { Checkbox } from '../inputs'
-import { TooltipLikeDisplay } from '../TooltipLikeDisplay'
+import { CopyToClipboardUnderline } from './CopyToClipboard'
+import { Checkbox } from './inputs'
+import { TooltipLikeDisplay } from './TooltipLikeDisplay'
 
 export interface NftCardProps extends NftCardInfo {
   checkbox?: {

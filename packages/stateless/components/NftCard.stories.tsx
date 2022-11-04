@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { NftCard, NftCardProps } from './NftCard'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / nft / NftCard',
+  title: 'DAO DAO / packages / stateless / components / NftCard',
   component: NftCard,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof NftCard>

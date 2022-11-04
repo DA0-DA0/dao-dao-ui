@@ -17,4 +17,5 @@ Default.args = {
     title: 'Title!',
     subtitle: 'A subtitle explaining something.',
   },
+  footerContent: 'The footer!',
 }
