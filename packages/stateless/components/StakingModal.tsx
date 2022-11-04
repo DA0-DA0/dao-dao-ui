@@ -75,7 +75,7 @@ export const StakingModal = ({
       headerContent={
         mode === StakingMode.Claim ? undefined : (
           <SegmentedControls
-            className="mt-5 w-max"
+            className="mt-5"
             onSelect={setMode}
             selected={mode}
             tabs={[
@@ -94,52 +94,54 @@ export const StakingModal = ({
       onClose={onClose}
       visible
     >
-      {mode === StakingMode.Stake && (
-        <StakeUnstakeModesBody
-          amount={amount}
-          loadingMax={loadingStakableTokens}
-          mode={mode}
-          proposalDeposit={proposalDeposit}
-          setAmount={(amount: number) => setAmount(amount)}
-          tokenDecimals={tokenDecimals}
-          tokenSymbol={tokenSymbol}
-          unstakingDuration={unstakingDuration}
-        />
-      )}
-      {mode === StakingMode.Unstake && (
-        <StakeUnstakeModesBody
-          amount={amount}
-          loadingMax={loadingUnstakableTokens}
-          mode={mode}
-          setAmount={(amount: number) => setAmount(amount)}
-          tokenDecimals={tokenDecimals}
-          tokenSymbol={tokenSymbol}
-          unstakingDuration={unstakingDuration}
-        />
-      )}
-      {mode === StakingMode.Claim && (
-        <ClaimModeBody
-          amount={claimableTokens}
-          tokenDecimals={tokenDecimals}
-          tokenSymbol={tokenSymbol}
-        />
-      )}
-      <div className="flex justify-end pt-6">
-        <Tooltip title={error || invalidAmount()}>
-          <Button
-            disabled={!!error}
-            loading={loading}
-            onClick={() =>
-              onAction(
-                mode,
-                mode === StakingMode.Claim ? claimableTokens : amount
-              )
-            }
-            size="lg"
-          >
-            {t(`button.stakingMode.${mode}`)}
-          </Button>
-        </Tooltip>
+      <div className="no-scrollbar -m-6 grow overflow-y-auto p-6">
+        {mode === StakingMode.Stake && (
+          <StakeUnstakeModesBody
+            amount={amount}
+            loadingMax={loadingStakableTokens}
+            mode={mode}
+            proposalDeposit={proposalDeposit}
+            setAmount={(amount: number) => setAmount(amount)}
+            tokenDecimals={tokenDecimals}
+            tokenSymbol={tokenSymbol}
+            unstakingDuration={unstakingDuration}
+          />
+        )}
+        {mode === StakingMode.Unstake && (
+          <StakeUnstakeModesBody
+            amount={amount}
+            loadingMax={loadingUnstakableTokens}
+            mode={mode}
+            setAmount={(amount: number) => setAmount(amount)}
+            tokenDecimals={tokenDecimals}
+            tokenSymbol={tokenSymbol}
+            unstakingDuration={unstakingDuration}
+          />
+        )}
+        {mode === StakingMode.Claim && (
+          <ClaimModeBody
+            amount={claimableTokens}
+            tokenDecimals={tokenDecimals}
+            tokenSymbol={tokenSymbol}
+          />
+        )}
+        <div className="flex justify-end pt-6">
+          <Tooltip title={error || invalidAmount()}>
+            <Button
+              disabled={!!error}
+              loading={loading}
+              onClick={() =>
+                onAction(
+                  mode,
+                  mode === StakingMode.Claim ? claimableTokens : amount
+                )
+              }
+              size="lg"
+            >
+              {t(`button.stakingMode.${mode}`)}
+            </Button>
+          </Tooltip>
+        </div>
       </div>
     </Modal>
   )
