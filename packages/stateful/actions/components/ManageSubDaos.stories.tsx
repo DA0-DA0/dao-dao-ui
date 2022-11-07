@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Loader, Logo } from '@dao-dao/stateless'
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 
 import { ManageSubDaosComponent } from './ManageSubDaos'
@@ -21,8 +20,6 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   data: {},
-  Loader,
-  Logo,
   isCreating: true,
   onRemove: () => alert('remove'),
   errors: {},

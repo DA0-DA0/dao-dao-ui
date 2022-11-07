@@ -1,7 +1,7 @@
 import clsx from 'clsx'
-import { ComponentType, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
-import { Logo as DefaultLogo, LogoProps } from '../logo/Logo'
+import { Logo } from '../logo/Logo'
 
 const defaultVariant = 'primary'
 const defaultSize = 'default'
@@ -21,7 +21,6 @@ export interface ButtonifierProps {
   hovering?: boolean
   disabled?: boolean
   showBadge?: boolean
-  Logo?: ComponentType<LogoProps>
   className?: string
   children?: ReactNode | ReactNode[]
   center?: boolean
@@ -37,7 +36,6 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   pressed: _pressed,
   hovering: _hovering,
   showBadge: _showBadge,
-  Logo: _Logo,
   className: _className,
   children: _children,
   center: _center,
@@ -133,7 +131,6 @@ export const ButtonifiedChildren = ({
   size = defaultSize,
   loading = false,
   contentContainerClassName,
-  Logo = DefaultLogo,
   showBadge,
   children,
   center,

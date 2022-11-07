@@ -6,10 +6,10 @@ import {
   AddressInput,
   Button,
   Checkbox,
+  FamilyEmoji,
   IconButton,
   InputErrorMessage,
   InputLabel,
-  FamilyEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { SubDao } from '@dao-dao/types/contracts/CwdCore.v2'

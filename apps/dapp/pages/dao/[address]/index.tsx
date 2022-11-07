@@ -34,8 +34,6 @@ import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   DaoHome,
-  Loader,
-  Logo,
   ProfileDisconnectedCard,
   ProfileMemberCard,
   ProfileNotMemberCard,
@@ -169,8 +167,6 @@ const InnerDaoHome = () => {
           matchAndLoadCommon(proposalModule, {
             chainId: daoInfo.chainId,
             coreAddress: daoInfo.coreAddress,
-            Loader,
-            Logo,
           }).selectors.depositInfo
       ),
     [daoInfo.chainId, daoInfo.coreAddress, daoInfo.proposalModules]
@@ -189,7 +185,6 @@ const InnerDaoHome = () => {
 
   return (
     <DaoHome
-      Loader={Loader}
       SuspenseLoader={SuspenseLoader}
       daoInfo={daoInfo}
       daoInfoBar={<DaoInfoBar />}

@@ -2,7 +2,7 @@
 import { Image, WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { ComponentType, ReactNode, useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingDataWithError, ModalProps, NftCardInfo } from '@dao-dao/types'
@@ -10,7 +10,7 @@ import { LoadingDataWithError, ModalProps, NftCardInfo } from '@dao-dao/types'
 import { SortFn, useDropdownSorter, useSearchFilter } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { Dropdown, DropdownOption, SearchBar } from '../inputs'
-import { Loader as DefaultLoader, LoaderProps } from '../logo/Loader'
+import { Loader } from '../logo/Loader'
 import { NftCard } from '../NftCard'
 import { NoContent } from '../NoContent'
 import { Modal } from './Modal'
@@ -27,7 +27,6 @@ export interface NftSelectionModalProps<T extends NftCardInfo>
   onAction: () => void
   actionLoading: boolean
   actionLabel: string
-  Loader?: ComponentType<LoaderProps>
   allowSelectingNone?: boolean
   selectedDisplay?: ReactNode
 }
@@ -43,7 +42,6 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   actionLoading,
   actionLabel,
   containerClassName,
-  Loader = DefaultLoader,
   allowSelectingNone,
   selectedDisplay,
   ...modalProps

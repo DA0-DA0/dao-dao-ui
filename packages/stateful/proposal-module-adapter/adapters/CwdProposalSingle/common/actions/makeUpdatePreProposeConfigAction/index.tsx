@@ -41,7 +41,7 @@ export const Component: ActionComponent = (props) => {
   const cw20GovernanceTokenInfo =
     useCw20GovernanceTokenInfoResponseIfExists()?.governanceTokenInfo
 
-  const { fieldNamePrefix, Loader } = props
+  const { fieldNamePrefix } = props
 
   const { setValue, watch } = useFormContext()
 
@@ -92,7 +92,6 @@ export const Component: ActionComponent = (props) => {
           additionalAddressError,
           formattedJsonDisplayProps: {
             jsonLoadable: tokenInfoLoadable,
-            Loader,
           },
         },
       }}

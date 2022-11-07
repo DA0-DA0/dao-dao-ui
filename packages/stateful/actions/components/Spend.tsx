@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next'
 import {
   AddressInput,
   InputErrorMessage,
+  MoneyEmoji,
   NumberInput,
   SelectInput,
-  MoneyEmoji,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,

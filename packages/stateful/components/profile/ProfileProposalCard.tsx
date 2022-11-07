@@ -3,8 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
-  Loader,
-  Logo,
   ProfileCantVoteCard,
   ProfileVoteCard,
   ProfileVotedCard,
@@ -52,8 +50,6 @@ export const ProfileProposalCard = ({
           matchAndLoadCommon(proposalModule, {
             chainId,
             coreAddress,
-            Loader,
-            Logo,
           }).selectors.depositInfo
       ),
     [chainId, coreAddress, proposalModules]

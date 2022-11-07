@@ -1,6 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
-import { BallotDepositEmoji, NumberInput, SelectInput } from '@dao-dao/stateless'
+import {
+  BallotDepositEmoji,
+  NumberInput,
+  SelectInput,
+} from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,

@@ -5,12 +5,12 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  BabyEmoji,
   Button,
   CodeMirrorInput,
   CopyToClipboard,
   InputErrorMessage,
   InputLabel,
-  BabyEmoji,
   NumberInput,
   TextInput,
 } from '@dao-dao/stateless'

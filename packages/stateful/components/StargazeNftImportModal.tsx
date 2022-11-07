@@ -1,13 +1,11 @@
 import { Buffer } from 'buffer'
 
 import { ChainInfoID, useWallet } from '@noahsaso/cosmodal'
-import { ComponentType, useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
-  Loader as DefaultLoader,
-  LoaderProps,
   ModalLoader,
   ModalProps,
   NftSelectionModal,
@@ -20,14 +18,10 @@ import { loadableToLoadingDataWithError, processError } from '@dao-dao/utils'
 import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export interface StargazeNftImportModalProps
-  extends Pick<ModalProps, 'onClose'> {
-  Loader?: ComponentType<LoaderProps>
-}
+export type StargazeNftImportModalProps = Pick<ModalProps, 'onClose'>
 
 export const InnerStargazeNftImportModal = ({
   onClose,
-  Loader = DefaultLoader,
 }: StargazeNftImportModalProps) => {
   const { t } = useTranslation()
   const { coreAddress, name: daoName } = useDaoInfoContext()
@@ -117,7 +111,6 @@ export const InnerStargazeNftImportModal = ({
 
   return (
     <NftSelectionModal
-      Loader={Loader}
       actionLabel={t('button.import')}
       actionLoading={loading}
       getIdForNft={getIdForNft}

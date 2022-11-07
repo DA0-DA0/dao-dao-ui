@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Loader } from '../logo/Loader'
 import { DaoInfoBarLoader } from './DaoInfoBar'
 
 export default {
@@ -8,11 +7,9 @@ export default {
   component: DaoInfoBarLoader,
 } as ComponentMeta<typeof DaoInfoBarLoader>
 
-const Template: ComponentStory<typeof DaoInfoBarLoader> = (args) => (
-  <DaoInfoBarLoader {...args} />
+const Template: ComponentStory<typeof DaoInfoBarLoader> = (_args) => (
+  <DaoInfoBarLoader />
 )
 
 export const Default = Template.bind({})
-Default.args = {
-  Loader,
-}
+Default.args = {}

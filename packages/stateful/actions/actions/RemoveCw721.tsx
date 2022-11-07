@@ -67,7 +67,7 @@ export const makeRemoveCw721Action: ActionMaker<RemoveCw721Data> = ({
 
   const Component: ActionComponent = (props) => {
     const { t } = useTranslation()
-    const { fieldNamePrefix, Loader } = props
+    const { fieldNamePrefix } = props
 
     const { watch } = useFormContext()
 
@@ -146,7 +146,6 @@ export const makeRemoveCw721Action: ActionMaker<RemoveCw721Data> = ({
           existingTokens,
           formattedJsonDisplayProps: {
             jsonLoadable: tokenInfoLoadable,
-            Loader,
           },
         }}
       />

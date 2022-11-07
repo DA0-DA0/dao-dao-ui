@@ -1,12 +1,13 @@
 import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
 
-import { DaoInfo, LoaderProps, SuspenseLoaderProps } from '@dao-dao/types'
+import { DaoInfo, SuspenseLoaderProps } from '@dao-dao/types'
 import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {
   DaoHeader,
   FollowingToggle,
+  Loader,
   SegmentedControls,
   useAppLayoutContext,
 } from '../components'
@@ -23,7 +24,6 @@ export interface DaoHomeProps {
   membersTab?: ReactNode
   rightSidebarContent: ReactNode
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
-  Loader: ComponentType<LoaderProps>
 }
 
 export const DaoHome = ({
@@ -37,7 +37,6 @@ export const DaoHome = ({
   membersTab,
   rightSidebarContent,
   SuspenseLoader,
-  Loader,
 }: DaoHomeProps) => {
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 

@@ -23,8 +23,6 @@ import {
 import { makeGetDaoProposalStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
-  Loader,
-  Logo,
   ProfileDisconnectedCard,
   Proposal,
   ProposalNotFound,
@@ -169,8 +167,6 @@ const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
         initialOptions={{
           chainId: props.serializedInfo.chainId,
           coreAddress: props.serializedInfo.coreAddress,
-          Logo,
-          Loader,
         }}
         proposalId={props.proposalInfo.id}
         proposalModules={props.serializedInfo.proposalModules}

@@ -1,16 +1,10 @@
 import clsx from 'clsx'
 
 import { LoaderProps } from '@dao-dao/types/components/Loader'
-export * from '@dao-dao/types/components/Loader'
 
-import { Logo as DefaultLogo } from './Logo'
+import { Logo } from './Logo'
 
-export const Loader = ({
-  fill = true,
-  size = 42,
-  className,
-  Logo = DefaultLogo,
-}: LoaderProps) => (
+export const Loader = ({ fill = true, size = 42, className }: LoaderProps) => (
   <div
     className={clsx(
       'flex flex-row items-center justify-center',

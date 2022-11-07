@@ -5,10 +5,10 @@ import { createPortal } from 'react-dom'
 
 import { PageHeaderProps } from '@dao-dao/types/components/PageHeader'
 
-import { Breadcrumbs } from './Breadcrumbs'
 import { IconButton } from '../icon_buttons'
 import { TopGradient } from '../TopGradient'
 import { useAppLayoutContext } from './AppLayoutContext'
+import { Breadcrumbs } from './Breadcrumbs'
 
 export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-20'
 

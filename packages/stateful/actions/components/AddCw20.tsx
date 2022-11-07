@@ -2,12 +2,12 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  TokenEmoji,
   AddressInput,
   FormattedJsonDisplay,
   FormattedJsonDisplayProps,
   InputErrorMessage,
   InputLabel,
+  TokenEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {

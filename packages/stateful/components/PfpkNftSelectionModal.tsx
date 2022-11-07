@@ -3,14 +3,12 @@ import {
   WalletConnectionStatus,
   useWallet,
 } from '@noahsaso/cosmodal'
-import { ComponentType, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { useGetLoopNftsQuery } from '@dao-dao/state'
 import {
-  Loader as DefaultLoader,
-  LoaderProps,
   ModalLoader,
   ModalProps,
   NftSelectionModal,
@@ -28,14 +26,10 @@ import { useWalletProfile } from '../hooks'
 import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export interface PfpkNftSelectionModalProps
-  extends Pick<Required<ModalProps>, 'onClose'> {
-  Loader?: ComponentType<LoaderProps>
-}
+export type PfpkNftSelectionModalProps = Pick<Required<ModalProps>, 'onClose'>
 
 export const InnerPfpkNftSelectionModal = ({
   onClose,
-  Loader = DefaultLoader,
 }: PfpkNftSelectionModalProps) => {
   const { t } = useTranslation()
   const {
@@ -172,7 +166,6 @@ export const InnerPfpkNftSelectionModal = ({
 
   return (
     <NftSelectionModal
-      Loader={Loader}
       actionLabel={t('button.save')}
       actionLoading={updatingProfile}
       allowSelectingNone

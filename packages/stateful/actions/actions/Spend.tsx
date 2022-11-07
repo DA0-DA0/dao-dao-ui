@@ -9,7 +9,6 @@ import {
 } from '@dao-dao/state'
 import {
   ActionCardLoader,
-  Loader,
   MoneyEmoji,
   useCachedLoadable,
 } from '@dao-dao/stateless'
@@ -101,7 +100,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
 
     return (
       <SuspenseLoader
-        fallback={<ActionCardLoader Loader={Loader} />}
+        fallback={<ActionCardLoader />}
         forceFallback={
           nativeBalancesLoadable.loading || cw20LoadingBalances === undefined
         }

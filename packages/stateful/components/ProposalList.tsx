@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRecoilCallback } from 'recoil'
 
 import {
-  Loader,
-  Logo,
   ProposalList as StatelessProposalList,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
@@ -34,8 +32,6 @@ export const ProposalList = () => {
         reverseProposalInfos: matchAndLoadCommon(proposalModule, {
           chainId,
           coreAddress,
-          Logo,
-          Loader,
         }).selectors.reverseProposalInfos,
         proposalModule,
       })),

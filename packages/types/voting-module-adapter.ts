@@ -2,13 +2,7 @@ import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 
 import { Action } from './actions'
-import {
-  DaoInfoBarItem,
-  LoaderProps,
-  LoadingData,
-  LogoProps,
-  StakingMode,
-} from './components'
+import { DaoInfoBarItem, LoadingData, StakingMode } from './components'
 import { ProfileNewProposalCardAddress } from './components/ProfileNewProposalCard'
 import { Duration } from './contracts/common'
 import { MarketingInfoResponse, TokenInfoResponse } from './contracts/Cw20Base'
@@ -134,8 +128,6 @@ export type VotingModuleAdapter<DaoCreationConfig extends FieldValues = any> = {
 export interface IVotingModuleAdapterOptions {
   coreAddress: string
   votingModuleAddress: string
-  Logo: ComponentType<LogoProps>
-  Loader: ComponentType<LoaderProps>
 }
 
 export interface IVotingModuleAdapterContext {

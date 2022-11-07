@@ -305,8 +305,7 @@ to encompass the entire app or entire pages. At this point, you must already
 know the contract name of the voting module (from the `info` query) so that the
 correct adapter can be chosen and its interface passed down to descendant
 components. You will also need to pass some options, like the contract address
-of the DAO's core contract, as well as some commonly used components, like
-`Logo` and `Loader`.
+of the DAO's core contract.
 
 ```tsx
 import { VotingModuleAdapterProvider } from '@dao-dao/stateful/voting-module-adapter'
@@ -317,8 +316,6 @@ const App = () => (
     options={{
       votingModuleAddress,
       coreAddress,
-      Logo,
-      Loader,
     }}
   >
     {children}

@@ -17,18 +17,13 @@ import {
   useCw20GovernanceTokenInfoResponseIfExists,
   useVotingModuleAdapter,
 } from '../../voting-module-adapter'
-import { useVotingModuleAdapterOptions } from '../../voting-module-adapter/react/context'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export const DaoInfoBar = (props: InnerDaoInfoBarProps) => {
-  const { Loader } = useVotingModuleAdapterOptions()
-
-  return (
-    <SuspenseLoader fallback={<DaoInfoBarLoader Loader={Loader} />}>
-      <InnerDaoInfoBar {...props} />
-    </SuspenseLoader>
-  )
-}
+export const DaoInfoBar = (props: InnerDaoInfoBarProps) => (
+  <SuspenseLoader fallback={<DaoInfoBarLoader />}>
+    <InnerDaoInfoBar {...props} />
+  </SuspenseLoader>
+)
 
 type InnerDaoInfoBarProps = Omit<DaoInfoBarProps, 'items'>
 

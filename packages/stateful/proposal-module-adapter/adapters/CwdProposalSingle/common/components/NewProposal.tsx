@@ -29,6 +29,7 @@ import {
   BaseNewProposalProps,
   ContractVersion,
   DepositInfoSelector,
+  IProposalModuleAdapterCommonOptions,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
@@ -56,15 +57,12 @@ import {
   makeUseActions as makeUseProposalModuleActions,
   useProcessTQ,
 } from '../hooks'
-import {
-  NewProposal as StatelessNewProposal,
-  NewProposalProps as StatelessNewProposalProps,
-} from '../ui/NewProposal'
+import { NewProposal as StatelessNewProposal } from '../ui/NewProposal'
 
-export type NewProposalProps = BaseNewProposalProps<NewProposalForm> &
-  Pick<StatelessNewProposalProps, 'options'> & {
-    depositInfoSelector: DepositInfoSelector
-  }
+export type NewProposalProps = BaseNewProposalProps<NewProposalForm> & {
+  options: IProposalModuleAdapterCommonOptions
+  depositInfoSelector: DepositInfoSelector
+}
 
 export const NewProposal = ({
   onCreateSuccess,
@@ -74,9 +72,10 @@ export const NewProposal = ({
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
-  const daoInfo = useDaoInfoContext()
+  const { imageUrl: daoImageUrl } = useDaoInfoContext()
+  const { chainId, coreAddress, proposalModule } = options
   const { connected, address: walletAddress } = useWallet()
-  const { isMember = false } = useVotingModule(options.coreAddress, {
+  const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,
   })
   const [loading, setLoading] = useState(false)
@@ -84,7 +83,7 @@ export const NewProposal = ({
   // Info about if the DAO is paused.
   const pauseInfo = useRecoilValue(
     CwCoreV1Selectors.pauseInfoSelector({
-      contractAddress: options.coreAddress,
+      contractAddress: coreAddress,
     })
   )
   const isPaused = 'Paused' in pauseInfo
@@ -154,8 +153,7 @@ export const NewProposal = ({
               // If pre-propose address set, give that one deposit allowance
               // instead of proposal module.
               spender:
-                options.proposalModule.preProposeAddress ||
-                options.proposalModule.address,
+                proposalModule.preProposeAddress || proposalModule.address,
             },
           ],
         })
@@ -215,24 +213,22 @@ export const NewProposal = ({
     sender: walletAddress ?? '',
   })
   const doProposeV1 = useProposeV1({
-    contractAddress: options.proposalModule.address,
+    contractAddress: proposalModule.address,
     sender: walletAddress ?? '',
   })
   const doProposeV2 = useProposeV2({
-    contractAddress: options.proposalModule.address,
+    contractAddress: proposalModule.address,
     sender: walletAddress ?? '',
   })
   const doProposePrePropose = useProposePrePropose({
-    contractAddress: options.proposalModule.preProposeAddress ?? '',
+    contractAddress: proposalModule.preProposeAddress ?? '',
     sender: walletAddress ?? '',
   })
 
   const awaitNextBlock = useAwaitNextBlock()
 
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
-  const cosmWasmClient = useRecoilValue(
-    cosmWasmClientForChainSelector(daoInfo.chainId)
-  )
+  const cosmWasmClient = useRecoilValue(cosmWasmClientForChainSelector(chainId))
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
       async (newProposalData: NewProposalData) => {
@@ -289,8 +285,7 @@ export const NewProposal = ({
                 spender:
                   // If pre-propose address set, give that one deposit allowance
                   // instead of proposal module.
-                  options.proposalModule.preProposeAddress ||
-                  options.proposalModule.address,
+                  proposalModule.preProposeAddress || proposalModule.address,
               })
 
               // Allowances will not update until the next block has been added.
@@ -317,7 +312,7 @@ export const NewProposal = ({
         try {
           let response
           //! V1
-          if (options.proposalModule.version === ContractVersion.V0_1_0) {
+          if (proposalModule.version === ContractVersion.V0_1_0) {
             response = await doProposeV1(
               newProposalData,
               'auto',
@@ -326,7 +321,7 @@ export const NewProposal = ({
             )
             //! V2
           } else {
-            response = options.proposalModule.preProposeAddress
+            response = proposalModule.preProposeAddress
               ? await doProposePrePropose(
                   {
                     msg: {
@@ -352,7 +347,7 @@ export const NewProposal = ({
           const proposalNumber = Number(
             findAttribute(response.logs, 'wasm', 'proposal_id').value
           )
-          const proposalId = `${options.proposalModule.prefix}${proposalNumber}`
+          const proposalId = `${proposalModule.prefix}${proposalNumber}`
 
           const proposalInfo = await makeGetProposalInfo({
             ...options,
@@ -370,7 +365,7 @@ export const NewProposal = ({
           const proposal = (
             await snapshot.getPromise(
               proposalSelector({
-                contractAddress: options.proposalModule.address,
+                contractAddress: proposalModule.address,
                 params: [
                   {
                     proposalId: proposalNumber,
@@ -411,8 +406,8 @@ export const NewProposal = ({
                       : []),
                   ],
                   dao: {
-                    coreAddress: daoInfo.coreAddress,
-                    imageUrl: daoInfo.imageUrl,
+                    coreAddress,
+                    imageUrl: daoImageUrl,
                   },
                 }
               : {
@@ -421,8 +416,8 @@ export const NewProposal = ({
                   description: formMethods.getValues('description'),
                   info: [],
                   dao: {
-                    coreAddress: daoInfo.coreAddress,
-                    imageUrl: daoInfo.imageUrl,
+                    coreAddress,
+                    imageUrl: daoImageUrl,
                   },
                 }
           )
@@ -437,19 +432,23 @@ export const NewProposal = ({
       connected,
       blockHeight,
       requiredProposalDeposit,
-      cw20DepositTokenAllowanceResponse,
+      depositInfoCw20TokenAddress,
       depositInfoNativeTokenDenom,
       t,
+      simulateMsgs,
+      cw20DepositTokenAllowanceResponse,
       increaseCw20DepositAllowance,
-      options,
+      proposalModule,
+      awaitNextBlock,
       refreshBalances,
+      options,
       cosmWasmClient,
       blocksPerYear,
       processTQ,
       onCreateSuccess,
       formMethods,
-      daoInfo.coreAddress,
-      daoInfo.imageUrl,
+      coreAddress,
+      daoImageUrl,
       doProposeV1,
       doProposePrePropose,
       doProposeV2,
@@ -466,7 +465,6 @@ export const NewProposal = ({
       isMember={isMember}
       isPaused={isPaused}
       loading={loading}
-      options={options}
       {...props}
     />
   )

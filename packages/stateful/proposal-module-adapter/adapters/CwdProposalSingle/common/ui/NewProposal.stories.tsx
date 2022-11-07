@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { Loader, Logo, useDaoInfoContext } from '@dao-dao/stateless'
+import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   WalletProviderDecorator,
@@ -46,8 +46,6 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
     chainId,
     proposalModule: singleChoiceProposalModule,
     coreAddress,
-    Loader,
-    Logo,
   })()
   const actions = useActions(
     useMemo(
@@ -98,13 +96,6 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
         {...args}
         actions={actions}
         actionsWithData={actionsWithData}
-        options={{
-          chainId,
-          proposalModule: singleChoiceProposalModule,
-          coreAddress,
-          Loader,
-          Logo,
-        }}
       />
     </FormProvider>
   )

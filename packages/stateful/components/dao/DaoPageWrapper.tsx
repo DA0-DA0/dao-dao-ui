@@ -1,16 +1,12 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { ComponentType, PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, useEffect } from 'react'
 
 import {
   DaoInfoContext,
   DaoNotFound,
-  Loader as DefaultLoader,
-  Logo as DefaultLogo,
-  PageLoader as DefaultPageLoader,
   ErrorPage500,
-  LoaderProps,
-  LogoProps,
+  PageLoader,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
@@ -32,9 +28,6 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   accentColor?: string | null
   serializedInfo?: DaoInfoSerializable
   error?: string
-  Logo?: ComponentType<LogoProps>
-  Loader?: ComponentType<LoaderProps>
-  PageLoader?: ComponentType<LoaderProps>
 }>
 
 export interface DaoProposalPageWrapperProps extends DaoPageWrapperProps {
@@ -49,7 +42,6 @@ export const DaoPageWrapper = ({
   serializedInfo,
   error,
   children,
-  PageLoader = DefaultPageLoader,
   ...innerProps
 }: DaoPageWrapperProps) => {
   const { isReady, isFallback } = useRouter()
@@ -119,16 +111,11 @@ export const DaoPageWrapper = ({
 }
 
 interface InnerDaoPageWrapperProps
-  extends Pick<DaoPageWrapperProps, 'Logo' | 'Loader' | 'children'> {
+  extends Pick<DaoPageWrapperProps, 'children'> {
   info: DaoInfo
 }
 
-const InnerDaoPageWrapper = ({
-  info,
-  children,
-  Logo = DefaultLogo,
-  Loader = DefaultLoader,
-}: InnerDaoPageWrapperProps) => (
+const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => (
   // Add a unique key here to tell React to re-render everything when the
   // `coreAddress` is changed, since for some insane reason, Next.js does not
   // reset state when navigating between dynamic rotues. Even though the
@@ -141,8 +128,6 @@ const InnerDaoPageWrapper = ({
       options={{
         votingModuleAddress: info.votingModuleAddress,
         coreAddress: info.coreAddress,
-        Logo,
-        Loader,
       }}
     >
       <ActionsProvider

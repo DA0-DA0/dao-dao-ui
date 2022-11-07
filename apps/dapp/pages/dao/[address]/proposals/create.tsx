@@ -40,8 +40,6 @@ import {
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import {
   CreateProposal,
-  Loader,
-  Logo,
   PageLoader,
   ProfileDisconnectedCard,
   useDaoInfoContext,
@@ -83,8 +81,6 @@ const InnerProposalCreate = () => {
       matchAndLoadCommon(selectedProposalModule, {
         chainId: daoInfo.chainId,
         coreAddress: daoInfo.coreAddress,
-        Loader,
-        Logo,
       }),
     [daoInfo.chainId, daoInfo.coreAddress, selectedProposalModule]
   )

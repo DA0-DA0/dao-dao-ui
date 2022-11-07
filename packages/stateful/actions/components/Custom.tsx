@@ -17,17 +17,12 @@ export const CustomComponent: ActionComponent = ({
   onRemove,
   errors,
   isCreating,
-  Loader,
 }) => {
   const { t } = useTranslation()
   const { control } = useFormContext()
 
   return (
-    <ActionCard
-      Icon={RobotEmoji}
-      onRemove={onRemove}
-      title={t('title.custom')}
-    >
+    <ActionCard Icon={RobotEmoji} onRemove={onRemove} title={t('title.custom')}>
       <CodeMirrorInput
         control={control}
         error={errors?.message}
@@ -58,7 +53,7 @@ export const CustomComponent: ActionComponent = ({
           <p className="flex items-center gap-1 text-sm text-text-interactive-error">
             <Close className="!h-5 !w-5" />{' '}
             {errors.message.message === INVALID_COSMOS_MSG ? (
-              <Trans Loader={Loader} i18nKey="error.invalidCosmosMessage">
+              <Trans i18nKey="error.invalidCosmosMessage">
                 Invalid{' '}
                 <a
                   className="link underline"

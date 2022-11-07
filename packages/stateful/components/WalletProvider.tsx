@@ -7,12 +7,12 @@ import {
   useWallet,
 } from '@noahsaso/cosmodal'
 import { isMobile } from '@walletconnect/browser-utils'
-import { ComponentType, PropsWithChildren, ReactNode, useEffect } from 'react'
+import { PropsWithChildren, ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { signingCosmWasmClientAtom } from '@dao-dao/state'
-import { Loader as DefaultLoader, LoaderProps } from '@dao-dao/stateless'
+import { Loader } from '@dao-dao/stateless'
 import {
   CHAIN_ID,
   CHAIN_REST_ENDPOINT,
@@ -30,13 +30,9 @@ if (!(Object.values(ChainInfoID) as string[]).includes(CHAIN_ID)) {
 
 export interface WalletProviderProps {
   children: ReactNode
-  Loader?: ComponentType<LoaderProps>
 }
 
-export const WalletProvider = ({
-  Loader = DefaultLoader,
-  children,
-}: WalletProviderProps) => {
+export const WalletProvider = ({ children }: WalletProviderProps) => {
   const { t } = useTranslation()
 
   return (

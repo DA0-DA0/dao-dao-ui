@@ -28,7 +28,7 @@ const useDefaults: UseDefaults<AddCw20Data> = () => ({
 
 const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
-  const { fieldNamePrefix, Loader } = props
+  const { fieldNamePrefix } = props
 
   const { watch } = useFormContext()
 
@@ -63,7 +63,6 @@ const Component: ActionComponent = (props) => {
         additionalAddressError,
         formattedJsonDisplayProps: {
           jsonLoadable: tokenInfoLoadable,
-          Loader,
         },
       }}
     />

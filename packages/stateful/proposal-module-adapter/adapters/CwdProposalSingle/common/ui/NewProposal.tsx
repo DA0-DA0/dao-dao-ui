@@ -33,7 +33,6 @@ import {
   Action,
   ActionKey,
   BaseNewProposalProps,
-  IProposalModuleAdapterCommonOptions,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
@@ -65,7 +64,6 @@ export interface NewProposalProps
     | 'draftSaving'
     | 'deleteDraft'
   > {
-  options: IProposalModuleAdapterCommonOptions
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
   isPaused: boolean
@@ -86,7 +84,6 @@ export interface NewProposalProps
 }
 
 export const NewProposal = ({
-  options: { Loader, Logo },
   createProposal,
   loading,
   isPaused,
@@ -218,13 +215,8 @@ export const NewProposal = ({
             }
 
             return (
-              <SuspenseLoader
-                key={index}
-                fallback={<ActionCardLoader Loader={Loader} />}
-              >
+              <SuspenseLoader key={index} fallback={<ActionCardLoader />}>
                 <Component
-                  Loader={Loader}
-                  Logo={Logo}
                   allActionsWithData={proposalActionData}
                   data={actionData.data}
                   errors={errors.actionData?.[index]?.data || {}}

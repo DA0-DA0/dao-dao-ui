@@ -50,14 +50,7 @@ export interface UpdatePreProposeConfigOptions {
 
 export const UpdatePreProposeConfigComponent: ActionComponent<
   UpdatePreProposeConfigOptions
-> = ({
-  fieldNamePrefix,
-  errors,
-  onRemove,
-  isCreating,
-  Loader,
-  options: { cw20 },
-}) => {
+> = ({ fieldNamePrefix, errors, onRemove, isCreating, options: { cw20 } }) => {
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
@@ -75,10 +68,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
       title={t('form.updateProposalSubmissionConfigTitle')}
     >
       <p className="secondary-text mb-3 max-w-prose">
-        <Trans
-          Loader={Loader}
-          i18nKey="form.updateProposalSubmissionConfigDescription"
-        >
+        <Trans i18nKey="form.updateProposalSubmissionConfigDescription">
           This will update the proposal submission configuration for this DAO. A
           bad configuration can lock the DAO. Take care. If you have questions,
           please feel free to ask in the{' '}

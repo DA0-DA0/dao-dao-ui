@@ -7,12 +7,12 @@
 // to dynamic pages such as a DAO or proposal page.
 import { Trans as OriginalTrans } from 'react-i18next'
 
-import { Loader as DefaultLoader } from '@dao-dao/stateless'
+import { Loader } from '@dao-dao/stateless'
 import { TransProps } from '@dao-dao/types'
 
 import { SuspenseLoader } from './SuspenseLoader'
 
-export const Trans = ({ Loader = DefaultLoader, ...props }: TransProps) => (
+export const Trans = ({ ...props }: TransProps) => (
   <SuspenseLoader fallback={<Loader size={20} />}>
     <OriginalTrans {...props} />
   </SuspenseLoader>

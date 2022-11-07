@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next'
 import {
   Button,
   CodeMirrorInput,
-  SwordsEmoji,
   InputErrorMessage,
   InputLabel,
+  SwordsEmoji,
   TextInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'

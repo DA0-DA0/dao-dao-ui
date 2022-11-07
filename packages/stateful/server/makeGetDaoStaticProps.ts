@@ -8,7 +8,6 @@ import removeMarkdown from 'remove-markdown'
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import { CwdCoreV2QueryClient } from '@dao-dao/state'
 import { getDaoCreated } from '@dao-dao/state/subquery/daos/created'
-import { Loader, Logo } from '@dao-dao/stateless'
 import {
   CommonProposalInfo,
   ContractVersion,
@@ -372,8 +371,6 @@ export const makeGetDaoProposalStaticProps = ({
         } = await matchAndLoadAdapter(proposalModules, proposalId, {
           chainId,
           coreAddress,
-          Logo,
-          Loader,
         })
 
         // If proposal is numeric, i.e. has no prefix, redirect to prefixed URL.

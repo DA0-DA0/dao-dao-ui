@@ -11,7 +11,6 @@ import { DaoMemberCardProps } from '@dao-dao/types'
 import {
   DaoInfoBar,
   DaoInfoBarProps,
-  Loader,
   MembersTabProps,
   NftCardProps,
   ProfileMemberCard,
@@ -81,7 +80,6 @@ Default.args = {
     />
   ),
   SuspenseLoader,
-  Loader,
 }
 Default.parameters = {
   design: {

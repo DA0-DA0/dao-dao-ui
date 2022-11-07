@@ -7,7 +7,6 @@ import {
 } from '@dao-dao/state'
 import {
   ActionCardLoader,
-  Loader,
   DepositEmoji,
   useCachedLoadable,
 } from '@dao-dao/stateless'
@@ -149,7 +148,7 @@ export const makeStakeAction: ActionMaker<StakeData> = ({ t, address }) => {
 
     return (
       <SuspenseLoader
-        fallback={<ActionCardLoader Loader={Loader} />}
+        fallback={<ActionCardLoader />}
         forceFallback={
           nativeBalancesLoadable.loading ||
           nativeDelegatedBalanceLoadable.loading
