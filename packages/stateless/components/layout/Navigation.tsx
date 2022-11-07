@@ -301,7 +301,7 @@ export const Navigation = ({
 
           <div
             className={clsx(
-              'mt-8 flex gap-2',
+              'mt-4 flex gap-2',
               compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >
