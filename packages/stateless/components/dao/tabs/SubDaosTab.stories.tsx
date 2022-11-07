@@ -3,8 +3,8 @@ import { useState } from 'react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
+import { useDaoInfoContext } from '../../../hooks/useDaoInfoContext'
 import { ButtonLink } from '../../buttons'
-import { useDaoInfoContext } from '../../DaoInfoContext'
 import { LinkWrapper } from '../../LinkWrapper'
 import { DaoCard } from '../DaoCard'
 import { makeProps as makeDaoCardProps } from '../DaoCard.stories'

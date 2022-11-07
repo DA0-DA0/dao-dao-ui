@@ -2,8 +2,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
+import { useDaoInfoContext } from '../../../hooks/useDaoInfoContext'
 import { ButtonLink } from '../../buttons'
-import { useDaoInfoContext } from '../../DaoInfoContext'
 import {
   ProposalLineProps,
   ProposalList,

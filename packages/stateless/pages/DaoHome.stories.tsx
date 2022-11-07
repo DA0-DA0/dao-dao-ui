@@ -20,7 +20,6 @@ import {
   SubDaosTabProps,
   TokenCardProps,
   TreasuryAndNftsTabProps,
-  useDaoInfoContext,
 } from '../components'
 import { Default as DaoInfoBarStory } from '../components/dao/DaoInfoBar.DaoInfoBar.stories'
 import { Default as MembersTabStory } from '../components/dao/tabs/MembersTab.stories'
@@ -28,6 +27,7 @@ import { Default as ProposalsTabStory } from '../components/dao/tabs/ProposalsTa
 import { Default as SubDaosTabStory } from '../components/dao/tabs/SubDaosTab.stories'
 import { Default as TreasuryAndNftsTabStory } from '../components/dao/tabs/TreasuryAndNftsTab.stories'
 import { Default as ProfileMemberCardStory } from '../components/profile/ProfileMemberCard.stories'
+import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { DaoHome } from './DaoHome'
 
 export default {

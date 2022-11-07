@@ -15,12 +15,12 @@ import {
   ProfileVoteCard,
   ProfileVoteCardProps,
   ProposalStatusAndInfoProps,
-  useDaoInfoContext,
 } from '../components'
 import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVoteCard.stories'
 import { Default as ProposalStatusAndInfoStory } from '../components/proposal/ProposalStatusAndInfo.stories'
 import { ProposalVotes } from '../components/proposal/ProposalVotes'
 import { makeProps as makeProposalVotesProps } from '../components/proposal/ProposalVotes.stories'
+import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { Proposal } from './Proposal'
 
 const proposalId = 'A72'
