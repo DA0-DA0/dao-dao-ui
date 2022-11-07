@@ -194,39 +194,6 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
     walletAddress,
   ])
 
-  // TODO(v2): Add real data back in when pools indexer works.
-  // //! Token prices
-  // // Updates once per minute, so token price will also update once per minute.
-  // const currentBlockHeightLoadable = useCachedLoadable(blockHeightSelector)
-  // const blocksPerYearLoadable = useCachedLoadable(blocksPerYearSelector)
-  // // Current native pool data and snapshot from ~24 hours ago.
-  // const nativeUsdcPoolAndSnapshotQuery = usePoolAndSnapshotAtBlockHeight({
-  //   swapContractAddress: USDC_SWAP_ADDRESS,
-  //   blockHeight:
-  //     currentBlockHeightLoadable.state !== 'hasValue' ||
-  //     blocksPerYearLoadable.state !== 'hasValue'
-  //       ? 0
-  //       : currentBlockHeightLoadable.contents -
-  //         convertSecondsToBlocks(blocksPerYearLoadable.contents, 24 * 3600),
-  // })
-  // const nativeUsdcPoolAndSnapshot =
-  //   nativeUsdcPoolAndSnapshotQuery.data ??
-  //   nativeUsdcPoolAndSnapshotQuery.previousData
-
-  // const currentNativePrice = nativeUsdcPoolAndSnapshot
-  //   ? Number(
-  //       Number(nativeUsdcPoolAndSnapshot.current.token2Amount) /
-  //         Number(nativeUsdcPoolAndSnapshot.current.token1Amount)
-  //     )
-  //   : undefined
-  // const yesterdayNativePrice =
-  //   nativeUsdcPoolAndSnapshot?.snapshots.nodes.length === 1
-  //     ? Number(
-  //         Number(nativeUsdcPoolAndSnapshot.snapshots.nodes[0].token2Amount) /
-  //           Number(nativeUsdcPoolAndSnapshot.snapshots.nodes[0].token1Amount)
-  //       )
-  //     : undefined
-
   //! Pinned DAOs
   const pinnedDaoDropdownInfosLoadable = useCachedLoadable(
     pinnedDaoDropdownInfosSelector
@@ -316,7 +283,6 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
                   data: inbox.proposalCount,
                 },
           setCommandModalVisible: () => setCommandModalVisible(true),
-          // TODO(v2): Add real data back in when pools indexer works.
           tokenPrices: {
             loading: false,
             data: [],

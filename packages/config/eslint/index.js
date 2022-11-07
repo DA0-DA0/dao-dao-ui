@@ -1,13 +1,10 @@
 // @ts-check
 
-// FIXME: Switch back to using typescript to improve linting once ciruclar
-// dependencies are resolved.
-// const fs = require('fs')
-// const path = require('path')
-// const tsConfig = fs.existsSync('tsconfig.json')
-//   ? path.resolve('tsconfig.json')
-//   : undefined
-const tsConfig = undefined
+const fs = require('fs')
+const path = require('path')
+const tsConfig = fs.existsSync('tsconfig.json')
+  ? path.resolve('tsconfig.json')
+  : undefined
 
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {

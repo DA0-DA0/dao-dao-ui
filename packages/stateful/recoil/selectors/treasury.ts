@@ -81,8 +81,6 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               tokenSymbol: label,
               tokenDenom: denom,
               tokenDecimals: decimals,
-              // TODO(v2): Retrieve subtitle.
-              // subtitle: '',
               imageUrl: imageUrl || getFallbackImage(denom),
               unstakedBalance,
               hasStakingInfo,
@@ -112,8 +110,6 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               tokenSymbol: symbol,
               tokenDenom: denom,
               tokenDecimals: decimals,
-              // TODO(v2): Choose subtitle.
-              // subtitle: '',
               imageUrl: imageUrl || getFallbackImage(denom),
               unstakedBalance,
               cw20Address: denom,

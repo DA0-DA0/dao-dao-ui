@@ -8,10 +8,7 @@ import {
 import { ContractVersion } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
-import {
-  useEncodedCwdProposalSinglePrefill,
-  useVotingModule,
-} from '../../../hooks'
+import { useVotingModule } from '../../../hooks'
 import { subDaoCardInfosSelector } from '../../../recoil'
 import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
@@ -37,9 +34,9 @@ export const SubDaosTab = () => {
   }, [subDaoCardInfosLoadable.contents, subDaoCardInfosLoadable.state])
 
   // TODO(v2): Add v1 to v2 migrate action.
-  const encodedProposalPrefillUpgrade = useEncodedCwdProposalSinglePrefill({
-    actions: [],
-  })
+  // const encodedProposalPrefillUpgrade = useEncodedCwdProposalSinglePrefill({
+  //   actions: [],
+  // })
 
   return (
     <StatelessSubDaosTab
@@ -49,7 +46,7 @@ export const SubDaosTab = () => {
       daoInfo={daoInfo}
       isMember={isMember}
       subDaos={loadableToLoadingData(subDaoCardInfosLoadable, [])}
-      upgradeToV2Href={`/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefillUpgrade}`}
+      // upgradeToV2Href={`/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefillUpgrade}`}
     />
   )
 }
