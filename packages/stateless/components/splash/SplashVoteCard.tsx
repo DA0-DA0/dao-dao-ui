@@ -1,5 +1,4 @@
 import { Check, Close, HowToVote, Texture } from '@mui/icons-material'
-import Emoji from 'a11y-react-emoji'
 import clsx from 'clsx'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -9,6 +8,7 @@ import { Vote as VoteChoice } from '@dao-dao/types/contracts/CwdProposalSingle.c
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
+import { BallotDepositEmoji } from '../emoji'
 
 const VOTER_WEIGHT_PERCENT = formatPercentOf100(7)
 
@@ -20,7 +20,7 @@ export const SplashVoteCard = () => {
     <div className="flex max-w-3xl flex-col gap-3 rounded-lg border border-border-primary bg-background-primary p-4 backdrop-blur-lg">
       <div className="flex items-center gap-2">
         <p className="mr-1 text-2xl">
-          <Emoji label={t('emoji.ballotBox')} symbol="🗳" />
+          <BallotDepositEmoji />
         </p>
         <p className="primary-text">{t('title.casting')}</p>
         <p className="secondary-text">

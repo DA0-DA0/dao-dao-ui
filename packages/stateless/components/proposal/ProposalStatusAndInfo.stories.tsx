@@ -10,7 +10,7 @@ import clsx from 'clsx'
 
 import { ButtonLink } from '../buttons'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
-import { Logo } from '../Logo'
+import { Logo } from '../logo/Logo'
 import { ProposalStatusAndInfo } from './ProposalStatusAndInfo'
 
 export default {

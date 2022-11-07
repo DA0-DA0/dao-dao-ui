@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { StakingModal, StakingMode } from './StakingModal'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / StakingModal',
+  title: 'DAO DAO / packages / stateless / components / token / StakingModal',
   component: StakingModal,
 } as ComponentMeta<typeof StakingModal>
 

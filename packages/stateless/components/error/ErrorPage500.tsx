@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useAppLayoutContext } from '../layout/AppLayoutContext'
 import { ErrorPage } from './ErrorPage'
-import { useAppLayoutContext } from './layout/AppLayoutContext'
 
 export interface ErrorPage500Props {
   error: string

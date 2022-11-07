@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddCw20Emoji,
+  TokenEmoji,
   AddressInput,
   FormattedJsonDisplay,
   FormattedJsonDisplayProps,
@@ -34,7 +34,7 @@ export const AddCw20Component: ActionComponent<AddCw20Options> = ({
 
   return (
     <ActionCard
-      Icon={AddCw20Emoji}
+      Icon={TokenEmoji}
       onRemove={onRemove}
       title={t('title.addCw20ToTreasury')}
     >

@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { CwCoreV1Selectors, CwdCoreV2Selectors } from '@dao-dao/state'
-import { UpdateInfoEmoji } from '@dao-dao/stateless'
+import { InfoEmoji } from '@dao-dao/stateless'
 import {
   ActionMaker,
   ActionOptionsContextType,
@@ -115,7 +115,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
 
   return {
     key: ActionKey.UpdateInfo,
-    Icon: UpdateInfoEmoji,
+    Icon: InfoEmoji,
     label: t('title.updateInfo'),
     description: t('info.updateInfoActionDescription'),
     Component,

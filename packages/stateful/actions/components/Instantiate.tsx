@@ -10,7 +10,7 @@ import {
   CopyToClipboard,
   InputErrorMessage,
   InputLabel,
-  InstantiateEmoji,
+  BabyEmoji,
   NumberInput,
   TextInput,
 } from '@dao-dao/stateless'
@@ -59,7 +59,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
   return (
     <ActionCard
-      Icon={InstantiateEmoji}
+      Icon={BabyEmoji}
       onRemove={onRemove}
       title={t('title.instantiateSmartContract')}
     >

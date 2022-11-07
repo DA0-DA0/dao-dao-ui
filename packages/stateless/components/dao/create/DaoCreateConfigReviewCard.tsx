@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType, ReactNode } from 'react'
 
-import { TooltipInfoIcon } from '../../TooltipInfoIcon'
+import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
 
 export interface DaoCreateConfigReviewCardProps {
   Icon: ComponentType

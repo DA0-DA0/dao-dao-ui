@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType, ReactNode } from 'react'
 
-import { Logo as DefaultLogo, LogoProps } from '../Logo'
+import { Logo as DefaultLogo, LogoProps } from '../logo/Logo'
 
 const defaultVariant = 'primary'
 const defaultSize = 'default'

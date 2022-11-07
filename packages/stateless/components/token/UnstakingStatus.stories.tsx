@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { UnstakingStatus, UnstakingTaskStatus } from './UnstakingStatus'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / UnstakingStatus',
+  title:
+    'DAO DAO / packages / stateless / components / token / UnstakingStatus',
   component: UnstakingStatus,
 } as ComponentMeta<typeof UnstakingStatus>
 

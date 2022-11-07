@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { UnstakingTaskStatus } from '@dao-dao/types'
 
-import { StatusDisplay } from './StatusDisplay'
+import { StatusDisplay } from '../StatusDisplay'
 
 export { UnstakingTaskStatus }
 

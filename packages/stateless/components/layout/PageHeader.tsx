@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 
 import { PageHeaderProps } from '@dao-dao/types/components/PageHeader'
 
-import { Breadcrumbs } from '../Breadcrumbs'
+import { Breadcrumbs } from './Breadcrumbs'
 import { IconButton } from '../icon_buttons'
 import { TopGradient } from '../TopGradient'
 import { useAppLayoutContext } from './AppLayoutContext'

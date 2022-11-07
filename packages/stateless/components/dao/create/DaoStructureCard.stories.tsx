@@ -1,8 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { DisplayInfoIcon } from '@dao-dao/stateful/voting-module-adapter/adapters/CwdVotingCw4/daoCreation'
-
+import { HandshakeEmoji } from '../../emoji'
 import { DaoStructureCard } from './DaoStructureCard'
 
 export default {
@@ -27,7 +26,7 @@ const Template: ComponentStory<typeof DaoStructureCard> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  Icon: DisplayInfoIcon,
+  Icon: HandshakeEmoji,
   name: 'Spiritual DAO',
   description:
     'Astrally projected organization existing in a liminal space between the reality of human mortality and the nature of non-dual existence. You may find yourself dissolving into the universal energy source shortlty after joining.',

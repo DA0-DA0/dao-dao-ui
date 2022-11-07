@@ -5,7 +5,7 @@ import TimeAgo from 'react-timeago'
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
 import { formatDate } from '@dao-dao/utils'
 
-import { useTranslatedTimeDeltaFormatter } from '../hooks'
+import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 import { UnstakingStatus } from './UnstakingStatus'
 

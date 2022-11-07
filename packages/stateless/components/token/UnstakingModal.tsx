@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 
 import { UnstakingTask } from '@dao-dao/types'
 
-import { Button } from './buttons/Button'
-import { Modal, ModalProps } from './modals/Modal'
+import { Button } from '../buttons/Button'
+import { Modal, ModalProps } from '../modals/Modal'
 import { UnstakingLine } from './UnstakingLine'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 

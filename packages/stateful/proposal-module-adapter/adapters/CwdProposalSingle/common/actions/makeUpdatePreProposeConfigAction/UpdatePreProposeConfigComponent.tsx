@@ -6,13 +6,13 @@ import {
   FormSwitchCard,
   FormattedJsonDisplay,
   FormattedJsonDisplayProps,
+  GearEmoji,
   InputErrorMessage,
   InputLabel,
+  MoneyEmoji,
   NumberInput,
   SegmentedControls,
   SelectInput,
-  SpendEmoji,
-  UpdateProposalConfigIcon,
 } from '@dao-dao/stateless'
 import { ActionComponent, DepositRefundPolicy } from '@dao-dao/types'
 import {
@@ -70,7 +70,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
 
   return (
     <ActionCard
-      Icon={UpdateProposalConfigIcon}
+      Icon={GearEmoji}
       onRemove={onRemove}
       title={t('form.updateProposalSubmissionConfigTitle')}
     >
@@ -98,7 +98,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-start justify-between gap-2">
             <h3 className="primary-text">
-              <SpendEmoji /> {t('form.proposalDepositTitle')}
+              <MoneyEmoji /> {t('form.proposalDepositTitle')}
             </h3>
 
             <FormSwitchCard

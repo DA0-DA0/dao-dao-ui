@@ -3,12 +3,12 @@ import toast from 'react-hot-toast'
 
 import { TokenStake } from '@dao-dao/types'
 
-import { ButtonLink } from './buttons/ButtonLink'
+import { ButtonLink } from '../buttons/ButtonLink'
 import { TokenCard, TokenCardProps } from './TokenCard'
 import { makeProps as makeUnstakingModalProps } from './UnstakingModal.stories'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / TokenCard',
+  title: 'DAO DAO / packages / stateless / components / token / TokenCard',
   component: TokenCard,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof TokenCard>

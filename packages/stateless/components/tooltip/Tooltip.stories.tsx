@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { Tooltip } from './Tooltip'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / Tooltip',
+  title: 'DAO DAO / packages / stateless / components / tooltip / Tooltip',
   component: Tooltip,
 } as ComponentMeta<typeof Tooltip>
 

@@ -6,7 +6,7 @@ import {
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
-  MigrateContractEmoji,
+  WhaleEmoji,
   NumberInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -41,7 +41,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
 
   return (
     <ActionCard
-      Icon={MigrateContractEmoji}
+      Icon={WhaleEmoji}
       onRemove={onRemove}
       title={t('title.migrateSmartContract')}
     >

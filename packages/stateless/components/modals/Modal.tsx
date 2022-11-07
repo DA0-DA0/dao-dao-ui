@@ -6,9 +6,9 @@ import { createPortal } from 'react-dom'
 import { ModalProps } from '@dao-dao/types/components/Modal'
 
 import { useMountedInBrowser } from '../../hooks'
-import { ErrorBoundary } from '../ErrorBoundary'
+import { ErrorBoundary } from '../error/ErrorBoundary'
 import { IconButton } from '../icon_buttons'
-import { Loader } from '../Loader'
+import { Loader } from '../logo/Loader'
 
 export * from '@dao-dao/types/components/Modal'
 

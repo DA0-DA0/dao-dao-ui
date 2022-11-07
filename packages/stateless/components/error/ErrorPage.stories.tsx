@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ErrorPage } from './ErrorPage'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / ErrorPage',
+  title: 'DAO DAO / packages / stateless / components / error / ErrorPage',
   component: ErrorPage,
 } as ComponentMeta<typeof ErrorPage>
 

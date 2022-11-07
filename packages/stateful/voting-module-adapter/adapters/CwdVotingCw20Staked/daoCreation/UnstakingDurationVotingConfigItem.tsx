@@ -1,7 +1,6 @@
-import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
-import { NumberInput, SelectInput } from '@dao-dao/stateless'
+import { ClockEmoji, NumberInput, SelectInput } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
@@ -15,11 +14,6 @@ import {
 } from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'
-
-export const UnstakingDurationIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.clock')} symbol="⏰" />
-}
 
 export const UnstakingDurationInput = ({
   data: { unstakingDuration },
@@ -82,7 +76,7 @@ export const UnstakingDurationReview = ({
 
 export const UnstakingDurationVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
-    Icon: UnstakingDurationIcon,
+    Icon: ClockEmoji,
     nameI18nKey: 'form.unstakingDurationTitle',
     descriptionI18nKey: 'form.unstakingDurationDescription',
     Input: UnstakingDurationInput,

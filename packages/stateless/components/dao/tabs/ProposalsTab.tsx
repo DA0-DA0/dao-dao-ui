@@ -8,7 +8,7 @@ import { DaoInfo } from '@dao-dao/types'
 import { usePlatform } from '@dao-dao/utils'
 
 import { ButtonLinkProps } from '../../buttons'
-import { Tooltip } from '../../Tooltip'
+import { Tooltip } from '../../tooltip/Tooltip'
 
 export interface ProposalsTabProps {
   daoInfo: DaoInfo

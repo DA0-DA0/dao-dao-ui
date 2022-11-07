@@ -1,6 +1,6 @@
 import { Toast } from 'react-hot-toast'
 
-import { Loader } from '../Loader'
+import { Loader } from '../logo/Loader'
 import { ToastCard } from './ToastCard'
 
 export interface LoadingToastProps {

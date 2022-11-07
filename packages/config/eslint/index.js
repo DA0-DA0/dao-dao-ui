@@ -182,7 +182,6 @@ const eslintConfig = {
                 'name',
                 'description',
                 'subtitle',
-                'emoji',
               ],
             },
             'object-properties': {

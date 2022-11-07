@@ -13,15 +13,15 @@ import { useTranslation } from 'react-i18next'
 import { TokenCardInfo } from '@dao-dao/types'
 import { isJunoIbcUsdc, secondsToWdhms } from '@dao-dao/utils'
 
-import { ButtonLinkProps } from './buttons'
-import { Button } from './buttons/Button'
-import { CopyToClipboard, concatAddressStartEnd } from './CopyToClipboard'
-import { SpendEmoji, StakeEmoji } from './emoji'
-import { IconButton } from './icon_buttons/IconButton'
-import { CrownIcon } from './icons/CrownIcon'
-import { ButtonPopup, ButtonPopupSection } from './popup'
+import { ButtonLinkProps } from '../buttons'
+import { Button } from '../buttons/Button'
+import { CopyToClipboard, concatAddressStartEnd } from '../CopyToClipboard'
+import { MoneyEmoji, DepositEmoji } from '../emoji'
+import { IconButton } from '../icon_buttons/IconButton'
+import { CrownIcon } from '../icons/CrownIcon'
+import { ButtonPopup, ButtonPopupSection } from '../popup'
+import { Tooltip } from '../tooltip/Tooltip'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
-import { Tooltip } from './Tooltip'
 import { UnstakingModal } from './UnstakingModal'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
@@ -142,7 +142,7 @@ export const TokenCard = ({
                 ...(proposeStakeUnstakeHref
                   ? [
                       {
-                        Icon: StakeEmoji,
+                        Icon: DepositEmoji,
                         label: t('button.stakeOrUnstake'),
                         href: proposeStakeUnstakeHref,
                       },
@@ -151,7 +151,7 @@ export const TokenCard = ({
                 ...(proposeClaimHref
                   ? [
                       {
-                        Icon: SpendEmoji,
+                        Icon: MoneyEmoji,
                         label: t('button.claim'),
                         href: proposeClaimHref,
                       },

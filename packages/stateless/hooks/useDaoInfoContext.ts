@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { DaoInfoContext } from '../components/DaoInfoContext'
+import { DaoInfoContext } from '../components/dao/DaoInfoContext'
 
 export const useDaoInfoContext = () => {
   const context = useContext(DaoInfoContext)

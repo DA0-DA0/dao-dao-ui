@@ -5,9 +5,9 @@ import { useState } from 'react'
 
 import { BreadcrumbsProps } from '@dao-dao/types/components/Breadcrumbs'
 
-import { Button } from './buttons/Button'
-import { IconButton } from './icon_buttons/IconButton'
-import { TopGradient } from './TopGradient'
+import { Button } from '../buttons/Button'
+import { IconButton } from '../icon_buttons/IconButton'
+import { TopGradient } from '../TopGradient'
 
 export * from '@dao-dao/types/components/Breadcrumbs'
 

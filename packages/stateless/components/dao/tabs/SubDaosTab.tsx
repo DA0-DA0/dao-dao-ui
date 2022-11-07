@@ -12,7 +12,7 @@ import {
 
 import { ButtonLinkProps } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
-import { Loader as DefaultLoader } from '../../Loader'
+import { Loader as DefaultLoader } from '../../logo/Loader'
 import { NoContent } from '../../NoContent'
 
 export interface SubDaosTabProps {

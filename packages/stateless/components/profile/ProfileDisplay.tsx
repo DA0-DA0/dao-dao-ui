@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { ProfileDisplayProps } from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
 
-import { CopyToClipboardUnderline } from './CopyToClipboard'
-import { Tooltip } from './Tooltip'
+import { CopyToClipboardUnderline } from '../CopyToClipboard'
+import { Tooltip } from '../tooltip/Tooltip'
 
 export const ProfileDisplay = ({
   address,

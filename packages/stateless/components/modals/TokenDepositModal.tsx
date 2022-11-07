@@ -6,7 +6,7 @@ import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import { NumberInput, PercentButton } from '../inputs'
-import { TokenAmountDisplay } from '../TokenAmountDisplay'
+import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import { Modal } from './Modal'
 
 export type TokenDepositModalProps = Pick<ModalProps, 'visible' | 'onClose'> & {

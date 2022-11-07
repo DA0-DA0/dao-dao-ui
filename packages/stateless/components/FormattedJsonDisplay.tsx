@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Loadable } from 'recoil'
 
 import { InputLabel } from './inputs/InputLabel'
-import { Loader as DefaultLoader, LoaderProps } from './Loader'
+import { Loader as DefaultLoader, LoaderProps } from './logo/Loader'
 
 export interface FormattedJsonDisplayProps {
   jsonLoadable: Loadable<any>

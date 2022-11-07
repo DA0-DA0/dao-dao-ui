@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next'
 
 import { TransProps } from '@dao-dao/types'
 
-import { ErrorPage } from '../ErrorPage'
+import { ButtonLink } from '../buttons'
+import { ErrorPage } from '../error/ErrorPage'
 import { useAppLayoutContext } from '../layout/AppLayoutContext'
-import { LinkText } from '../LinkText'
-import { Loader as DefaultLoader, LoaderProps } from '../Loader'
+import { Loader as DefaultLoader, LoaderProps } from '../logo/Loader'
 
 export interface ProposalNotFoundProps {
   homeHref: string
@@ -33,12 +33,13 @@ export const ProposalNotFound = ({
           <Trans Loader={Loader} i18nKey="error.couldntFindProposal">
             We couldn&apos;t find a proposal with that ID. See all proposals on
             the{' '}
-            <LinkText
-              aProps={{ className: 'underline link-text' }}
+            <ButtonLink
+              className="link-text"
               href={homeHref}
+              variant="underline"
             >
               {homeLabel}
-            </LinkText>
+            </ButtonLink>
             .
           </Trans>
         </p>

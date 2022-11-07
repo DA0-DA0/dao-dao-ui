@@ -1,5 +1,4 @@
 import { Add, Close } from '@mui/icons-material'
-import Emoji from 'a11y-react-emoji'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -10,6 +9,7 @@ import {
   InputErrorMessage,
   InputLabel,
   NumberInput,
+  PeopleEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { Member } from '@dao-dao/types/contracts/Cw4Group'
@@ -60,7 +60,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
 
   return (
     <ActionCard
-      Icon={ManageMembersIcon}
+      Icon={PeopleEmoji}
       onRemove={onRemove}
       title={t('title.manageMembers')}
     >
@@ -197,9 +197,4 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const ManageMembersIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.people')} symbol="👥" />
 }

@@ -1,7 +1,7 @@
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
-import { CustomEmoji } from '@dao-dao/stateless'
+import { RobotEmoji } from '@dao-dao/stateless'
 import {
   ActionKey,
   ActionMaker,
@@ -53,7 +53,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<CustomData> = (
 
 export const makeCustomAction: ActionMaker<CustomData> = ({ t, context }) => ({
   key: ActionKey.Custom,
-  Icon: CustomEmoji,
+  Icon: RobotEmoji,
   label: t('title.custom'),
   description: t('info.customActionDescription', {
     context: context.type,

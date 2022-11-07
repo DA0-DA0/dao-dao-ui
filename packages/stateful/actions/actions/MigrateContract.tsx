@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
-import { MigrateContractEmoji } from '@dao-dao/stateless'
+import { WhaleEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -80,7 +80,7 @@ export const makeMigrateAction: ActionMaker<MigrateData> = ({ t }) => {
 
   return {
     key: ActionKey.Migrate,
-    Icon: MigrateContractEmoji,
+    Icon: WhaleEmoji,
     label: t('title.migrateSmartContract'),
     description: t('info.migrateSmartContractActionDescription'),
     Component,

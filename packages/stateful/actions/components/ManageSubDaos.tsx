@@ -9,7 +9,7 @@ import {
   IconButton,
   InputErrorMessage,
   InputLabel,
-  ManageSubDaosEmoji,
+  FamilyEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { SubDao } from '@dao-dao/types/contracts/CwdCore.v2'
@@ -58,7 +58,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
 
   return (
     <ActionCard
-      Icon={ManageSubDaosEmoji}
+      Icon={FamilyEmoji}
       onRemove={onRemove}
       title={t('title.manageSubDaos')}
     >

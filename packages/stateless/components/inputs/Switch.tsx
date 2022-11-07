@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { BooleanFieldNames } from '@dao-dao/types'
 
-import { TooltipInfoIcon } from '../TooltipInfoIcon'
+import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 
 export interface SwitchProps {
   enabled: boolean

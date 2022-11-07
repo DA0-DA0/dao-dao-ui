@@ -11,7 +11,7 @@ import { Button } from '../buttons'
 import { CornerGradient } from '../CornerGradient'
 import { IconButton } from '../icon_buttons'
 import { TextInput } from '../inputs'
-import { Loader } from '../Loader'
+import { Loader } from '../logo/Loader'
 import { ProfileImage } from './ProfileImage'
 
 export * from '@dao-dao/types/components/ProfileCardWrapper'

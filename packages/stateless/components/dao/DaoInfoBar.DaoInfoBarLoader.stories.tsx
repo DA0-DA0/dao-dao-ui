@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Loader } from '../Loader'
+import { Loader } from '../logo/Loader'
 import { DaoInfoBarLoader } from './DaoInfoBar'
 
 export default {

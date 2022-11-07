@@ -10,7 +10,7 @@ import {
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 import { useIsVisible } from '@dao-dao/utils'
 
-import { Loader } from '../Loader'
+import { Loader } from '../logo/Loader'
 
 export interface FeaturedDaosProps {
   DaoCard: ComponentType<DaoCardInfo>

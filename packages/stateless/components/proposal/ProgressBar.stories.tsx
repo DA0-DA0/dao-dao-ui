@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProgressBar } from './ProgressBar'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / ProgressBar',
+  title: 'DAO DAO / packages / stateless / components / proposal / ProgressBar',
   component: ProgressBar,
 } as ComponentMeta<typeof ProgressBar>
 

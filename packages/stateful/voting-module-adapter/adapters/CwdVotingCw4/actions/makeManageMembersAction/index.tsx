@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { PeopleEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -14,7 +15,6 @@ import { makeWasmMessage } from '@dao-dao/utils'
 import { useVotingModule as useCw4VotingModule } from '../../hooks/useVotingModule'
 import {
   ManageMembersData,
-  ManageMembersIcon,
   ManageMembersComponent as StatelessManageMembersComponent,
 } from './ManageMembersComponent'
 
@@ -102,7 +102,7 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
 
   return {
     key: ActionKey.ManageMembers,
-    Icon: ManageMembersIcon,
+    Icon: PeopleEmoji,
     label: t('title.manageMembers'),
     description: t('info.manageMembersActionDescription'),
     Component,

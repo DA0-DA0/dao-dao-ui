@@ -1,7 +1,6 @@
-import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
-import { NumberInput, SelectInput } from '@dao-dao/stateless'
+import { BallotDepositEmoji, NumberInput, SelectInput } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
@@ -14,11 +13,6 @@ import {
 } from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'
-
-export const ThresholdIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.ballotBox')} symbol="🗳️" />
-}
 
 export const ThresholdInput = ({
   data: {
@@ -72,7 +66,7 @@ export const ThresholdReview = ({
 
 export const ThresholdVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
-    Icon: ThresholdIcon,
+    Icon: BallotDepositEmoji,
     nameI18nKey: 'form.passingThresholdTitle',
     descriptionI18nKey: 'form.passingThresholdDescription',
     Input: ThresholdInput,

@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / TokenAmountDisplay',
+  title:
+    'DAO DAO / packages / stateless / components / token / TokenAmountDisplay',
   component: TokenAmountDisplay,
 } as ComponentMeta<typeof TokenAmountDisplay>
 

@@ -4,8 +4,8 @@ import { FieldError } from 'react-hook-form'
 import { SuspenseLoaderProps } from '@dao-dao/types'
 
 import { InputErrorMessage } from '../../inputs'
-import { Loader as DefaultLoader, LoaderProps } from '../../Loader'
-import { TooltipInfoIcon } from '../../TooltipInfoIcon'
+import { Loader as DefaultLoader, LoaderProps } from '../../logo/Loader'
+import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
 
 export interface DaoCreateConfigInputCardProps {
   Icon: ComponentType

@@ -9,7 +9,7 @@ import {
 } from 'recoil'
 
 import { Cw721BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
-import { RemoveCw721Emoji } from '@dao-dao/stateless'
+import { XEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -175,7 +175,7 @@ export const makeRemoveCw721Action: ActionMaker<RemoveCw721Data> = ({
 
   return {
     key: ActionKey.RemoveCw721,
-    Icon: RemoveCw721Emoji,
+    Icon: XEmoji,
     label: t('title.removeCw721FromTreasury'),
     description: t('info.removeCw721FromTreasuryActionDescription'),
     Component,

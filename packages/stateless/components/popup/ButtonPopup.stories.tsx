@@ -2,7 +2,7 @@ import { Add, ExpandCircleDownOutlined, Remove } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ButtonLink } from '../buttons/ButtonLink'
-import { StakeEmoji } from '../emoji'
+import { DepositEmoji } from '../emoji'
 import { IconButton } from '../icon_buttons'
 import { ButtonPopup } from './ButtonPopup'
 
@@ -37,7 +37,7 @@ Default.args = {
           onClick: () => alert('button1'),
         },
         {
-          Icon: StakeEmoji,
+          Icon: DepositEmoji,
           label: 'Button 2',
           onClick: () => alert('button2'),
         },

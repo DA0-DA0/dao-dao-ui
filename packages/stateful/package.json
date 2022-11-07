@@ -22,7 +22,6 @@
     "@mui/material": "^5.10.3",
     "@walletconnect/browser-utils": "^1.8.0",
     "axios": "^0.26.1",
-    "a11y-react-emoji": "^1.2.0",
     "buffer": "^6.0.3",
     "clsx": "^1.1.1",
     "fuse.js": "^6.6.2",

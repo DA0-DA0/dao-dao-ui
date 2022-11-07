@@ -9,11 +9,11 @@ import {
 import { Duration } from '@dao-dao/types/contracts/common'
 import { durationIsNonZero, humanReadableDuration } from '@dao-dao/utils'
 
-import { Button } from './buttons/Button'
-import { NumberInput, PercentButton, SegmentedControls } from './inputs'
-import { Modal } from './modals/Modal'
+import { Button } from '../buttons/Button'
+import { NumberInput, PercentButton, SegmentedControls } from '../inputs'
+import { Modal } from '../modals/Modal'
+import { Tooltip } from '../tooltip/Tooltip'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
-import { Tooltip } from './Tooltip'
 
 export * from '@dao-dao/types/components/StakingModal'
 

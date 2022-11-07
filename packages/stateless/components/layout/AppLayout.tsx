@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { RightSidebarProps } from '@dao-dao/types'
 import { AppLayoutProps } from '@dao-dao/types/components/AppLayout'
 
-import { ErrorBoundary } from '../ErrorBoundary'
+import { ErrorBoundary } from '../error/ErrorBoundary'
 import { ProfileImage } from '../profile/ProfileImage'
 import { AppLayoutContext } from './AppLayoutContext'
 import { Navigation } from './Navigation'

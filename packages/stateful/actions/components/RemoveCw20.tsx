@@ -9,7 +9,7 @@ import {
   FormattedJsonDisplayProps,
   InputErrorMessage,
   InputLabel,
-  RemoveCw20Emoji,
+  XEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
@@ -46,7 +46,7 @@ export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
 
   return (
     <ActionCard
-      Icon={RemoveCw20Emoji}
+      Icon={XEmoji}
       onRemove={onRemove}
       title={t('title.removeCw20FromTreasury')}
     >

@@ -4,8 +4,8 @@ import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
 import { NftCard, NftCardProps } from '../../NftCard'
 import { makeProps as makeNftCardProps } from '../../NftCard.stories'
-import { TokenCard, TokenCardProps } from '../../TokenCard'
-import { makeProps as makeTokenCardProps } from '../../TokenCard.stories'
+import { TokenCard, TokenCardProps } from '../../token/TokenCard'
+import { makeProps as makeTokenCardProps } from '../../token/TokenCard.stories'
 import { TreasuryAndNftsTab } from './TreasuryAndNftsTab'
 
 export default {

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { LoadingData } from '@dao-dao/types'
 import { USDC_DECIMALS, formatTime, toFixedDown } from '@dao-dao/utils'
 
-import { Tooltip } from './Tooltip'
+import { Tooltip } from '../tooltip/Tooltip'
 
 // Standardized display for token amounts, with support for displaying compact
 // notation of numbers and providing tooltips with precise numbers when any

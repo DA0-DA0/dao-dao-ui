@@ -2,12 +2,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { DefaultNewDao } from '@dao-dao/stateful'
-import {
-  VotingDurationIcon,
-  VotingDurationReview,
-} from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
+import { VotingDurationReview } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
 import { NewDao } from '@dao-dao/types'
 
+import { HourglassEmoji } from '../../emoji'
 import { DaoCreateConfigReviewCard } from './DaoCreateConfigReviewCard'
 
 export default {
@@ -42,7 +40,7 @@ const Template: ComponentStory<typeof DaoCreateConfigReviewCard> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  Icon: VotingDurationIcon,
+  Icon: HourglassEmoji,
   name: 'Voting duration',
 }
 Default.parameters = {

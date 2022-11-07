@@ -1,7 +1,6 @@
-import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
-import { FormSwitchCard } from '@dao-dao/stateless'
+import { FormSwitchCard, RecycleEmoji } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
@@ -9,11 +8,6 @@ import {
 } from '@dao-dao/types'
 
 import { DaoCreationConfig } from '../types'
-
-export const AllowRevotingIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.recycle')} symbol="♻️" />
-}
 
 export const AllowRevotingInput = ({
   data: { allowRevoting },
@@ -43,7 +37,7 @@ export const AllowRevotingReview = ({
 
 export const AllowRevotingVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
-    Icon: AllowRevotingIcon,
+    Icon: RecycleEmoji,
     nameI18nKey: 'form.allowRevotingTitle',
     descriptionI18nKey: 'form.allowRevotingDescription',
     Input: AllowRevotingInput,

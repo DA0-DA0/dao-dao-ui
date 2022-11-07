@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { LoadingData } from '@dao-dao/types'
 
 import { ButtonLink } from '../buttons'
-import { TokenAmountDisplay } from '../TokenAmountDisplay'
+import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import {
   ProfileCardWrapper,
   ProfileCardWrapperProps,

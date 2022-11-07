@@ -1,7 +1,11 @@
-import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
-import { FormSwitchCard, NumberInput, SelectInput } from '@dao-dao/stateless'
+import {
+  FormSwitchCard,
+  MegaphoneEmoji,
+  NumberInput,
+  SelectInput,
+} from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
@@ -14,11 +18,6 @@ import {
 } from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'
-
-export const QuorumIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.megaphone')} symbol="📣" />
-}
 
 export const QuorumInput = ({
   data: {
@@ -93,7 +92,7 @@ export const QuorumReview = ({
 
 export const QuorumVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
-    Icon: QuorumIcon,
+    Icon: MegaphoneEmoji,
     nameI18nKey: 'form.quorumTitle',
     descriptionI18nKey: 'form.quorumDescription',
     Input: QuorumInput,

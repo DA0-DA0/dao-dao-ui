@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import { CopyToClipboardProps } from '@dao-dao/types/components/CopyToClipboard'
 
-import { Tooltip } from './Tooltip'
+import { Tooltip } from './tooltip/Tooltip'
 
 export const concatAddressStartEnd = (
   address: string,

@@ -1,7 +1,7 @@
 import { InfoOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 
-import { IconButton, IconButtonProps } from './icon_buttons/IconButton'
+import { IconButton, IconButtonProps } from '../icon_buttons/IconButton'
 import { Tooltip, TooltipProps } from './Tooltip'
 
 export type TooltipInfoIconProps = Omit<TooltipProps, 'children'> &

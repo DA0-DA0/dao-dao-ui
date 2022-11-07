@@ -1,6 +1,6 @@
 import { ArrowDropUp } from '@mui/icons-material'
 
-import { Tooltip } from './Tooltip'
+import { Tooltip } from '../tooltip/Tooltip'
 
 export interface ProgressBarProps {
   rows: {

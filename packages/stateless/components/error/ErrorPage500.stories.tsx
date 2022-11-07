@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ErrorPage500 } from './ErrorPage500'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / ErrorPage500',
+  title: 'DAO DAO / packages / stateless / components / error / ErrorPage500',
   component: ErrorPage500,
 } as ComponentMeta<typeof ErrorPage500>
 

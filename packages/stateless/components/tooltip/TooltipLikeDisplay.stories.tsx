@@ -4,7 +4,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { TooltipLikeDisplay } from './TooltipLikeDisplay'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / TooltipLikeDisplay',
+  title:
+    'DAO DAO / packages / stateless / components / tooltip / TooltipLikeDisplay',
   component: TooltipLikeDisplay,
 } as ComponentMeta<typeof TooltipLikeDisplay>
 

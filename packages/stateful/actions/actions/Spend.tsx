@@ -10,7 +10,7 @@ import {
 import {
   ActionCardLoader,
   Loader,
-  SpendEmoji,
+  MoneyEmoji,
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import {
@@ -243,7 +243,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
 
   return {
     key: ActionKey.Spend,
-    Icon: SpendEmoji,
+    Icon: MoneyEmoji,
     label: t('title.spend'),
     description: t('info.spendActionDescription', {
       context: context.type,

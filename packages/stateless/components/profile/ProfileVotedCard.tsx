@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { TooltipInfoIcon } from '../TooltipInfoIcon'
+import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 import { MembershipPill } from './MembershipPill'
 import {
   ProfileCardWrapper,

@@ -1,11 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Button } from './buttons/Button'
+import { Button } from '../buttons/Button'
 import { UnstakingLine, UnstakingLineProps } from './UnstakingLine'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / UnstakingLine',
+  title: 'DAO DAO / packages / stateless / components / token / UnstakingLine',
   component: UnstakingLine,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof UnstakingLine>

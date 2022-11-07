@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { PricePercentChange } from './PricePercentChange'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / PricePercentChange',
+  title:
+    'DAO DAO / packages / stateless / components / token / PricePercentChange',
   component: PricePercentChange,
 } as ComponentMeta<typeof PricePercentChange>
 

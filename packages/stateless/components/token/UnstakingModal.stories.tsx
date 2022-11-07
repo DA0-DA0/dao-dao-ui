@@ -5,7 +5,7 @@ import { UnstakingModal, UnstakingModalProps } from './UnstakingModal'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / UnstakingModal',
+  title: 'DAO DAO / packages / stateless / components / token / UnstakingModal',
   component: UnstakingModal,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof UnstakingModal>
