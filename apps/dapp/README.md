@@ -67,10 +67,9 @@ Please ensure you have the [Keplr wallet
 extension](https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap)
 installed in your Chrome-based browser (Chrome, Brave, etc).
 
-## Learn More
+## Main Libraries
 
-This project was bootstrapped with
-[`next-cosmwasm-keplr-starter`](https://github.com/ebaker/next-cosmwasm-keplr-starter).
+We use a handful of powerful libraries to build this dApp.
 
 To learn more about Next.js, CosmJS, Keplr, and Tailwind CSS, take a look at the
 following resources:
@@ -88,14 +87,10 @@ following resources:
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs) - utility-first CSS
   framework.
 
-You can check out [the Next.js GitHub
-repository](https://github.com/vercel/next.js/) - your feedback and
-contributions are welcome!
-
 ## Contributing
 
 Interested in contributing to DAO DAO? Check out
-[CONTRIBUTING.md](../CONTRIBUTING.md).
+[CONTRIBUTING.md](../../CONTRIBUTING.md).
 
 ## Disclaimer
 
