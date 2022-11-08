@@ -109,9 +109,8 @@ export const DaoInfo = () => {
     () =>
       proposalModules.map((proposalModule) => ({
         DaoInfoVotingConfiguration: matchAndLoadCommon(proposalModule, {
+          chainId,
           coreAddress,
-          Loader,
-          Logo,
         }).components.DaoInfoVotingConfiguration,
         proposalModule,
       })),
@@ -201,5 +200,4 @@ There's one more thing to be aware of when writing adapters... the
 This hook simply provides the `options` passed to the
 `ProposalModuleAdapterProvider` (with `proposalModuleAddress`, `proposalId`, and
 `proposalNumber` added), so you can easily access the `coreAddress` as well as
-other common data and components instead of needing to manually pass them into
-everything.
+other common info instead of needing to manually pass them around.
