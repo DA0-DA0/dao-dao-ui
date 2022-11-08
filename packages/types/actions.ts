@@ -3,8 +3,6 @@ import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
-import { LoaderProps } from './components/Loader'
-import { LogoProps } from './components/Logo'
 import { ContractVersion } from './contract'
 import { CosmosMsgFor_Empty } from './contracts/common'
 
@@ -44,8 +42,6 @@ export type ActionComponentProps<O = undefined, D = any> = {
   allActionsWithData: ActionKeyAndData[]
   index: number
   data: D
-  Loader: ComponentType<LoaderProps>
-  Logo: ComponentType<LogoProps>
 } & (
   | {
       isCreating: true

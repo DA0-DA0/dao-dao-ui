@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Button } from '../buttons'
 import { DropdownIconButton } from '../icon_buttons'
-import { Loader } from '../Loader'
+import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
 
 export interface ProposalListProps<T> {

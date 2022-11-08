@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
+import { EMPTY_INBOX } from '@dao-dao/storybook/decorators'
 import { PageHeaderProps } from '@dao-dao/types'
 
 import { AppLayout, AppLayoutProps, IAppLayoutContext } from './AppLayout'
@@ -51,6 +52,7 @@ export const DefaultArgs: AppLayoutProps = {
       toggle: () => alert('toggle update'),
     },
     setRootCommandContextMaker: () => {},
+    inbox: EMPTY_INBOX,
   },
 }
 
@@ -80,6 +82,7 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
         toggle: () => setUpdateProfileVisible((v) => !v),
       },
       setRootCommandContextMaker: () => {},
+      inbox: EMPTY_INBOX,
     }),
     [
       responsiveNavigationEnabled,

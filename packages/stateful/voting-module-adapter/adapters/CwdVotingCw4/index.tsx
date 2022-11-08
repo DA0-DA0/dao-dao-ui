@@ -1,8 +1,8 @@
+import { HandshakeEmoji } from '@dao-dao/stateless'
 import { VotingModuleAdapter } from '@dao-dao/types'
 
 import { MembersTab, ProfileCardMemberInfo } from './components'
 import {
-  DisplayInfoIcon,
   GovernanceConfigurationInput,
   GovernanceConfigurationReview,
   getInstantiateInfo,
@@ -40,7 +40,7 @@ export const CwdVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
 
   daoCreation: {
     displayInfo: {
-      Icon: DisplayInfoIcon,
+      Icon: HandshakeEmoji,
       nameI18nKey: 'daoCreationAdapter.CwdVotingCw4.name',
       descriptionI18nKey: 'daoCreationAdapter.CwdVotingCw4.description',
       suppliesI18nKey: 'daoCreationAdapter.CwdVotingCw4.supplies',

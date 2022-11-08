@@ -9,7 +9,7 @@ import {
 } from 'recoil'
 
 import { Cw20BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
-import { RemoveCw20Emoji } from '@dao-dao/stateless'
+import { XEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -66,7 +66,7 @@ export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
 
   const Component: ActionComponent = (props) => {
     const { t } = useTranslation()
-    const { fieldNamePrefix, Loader } = props
+    const { fieldNamePrefix } = props
 
     const { watch } = useFormContext()
 
@@ -145,7 +145,6 @@ export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
           existingTokens,
           formattedJsonDisplayProps: {
             jsonLoadable: tokenInfoLoadable,
-            Loader,
           },
         }}
       />
@@ -174,7 +173,7 @@ export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
 
   return {
     key: ActionKey.RemoveCw20,
-    Icon: RemoveCw20Emoji,
+    Icon: XEmoji,
     label: t('title.removeCw20FromTreasury'),
     description: t('info.removeCw20FromTreasuryActionDescription'),
     Component,

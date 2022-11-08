@@ -5,7 +5,7 @@ import {
   AddressInput,
   InputErrorMessage,
   InputLabel,
-  UpdateAdminEmoji,
+  MushroomEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
@@ -36,7 +36,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
 
   return (
     <ActionCard
-      Icon={UpdateAdminEmoji}
+      Icon={MushroomEmoji}
       onRemove={onRemove}
       title={t('title.updateContractAdmin')}
     >

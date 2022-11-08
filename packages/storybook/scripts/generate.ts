@@ -3,7 +3,7 @@
 
 // `yarn storybook:generate <glob>` to generate just the missing storybook files
 // for the matching files. The argument will automatically be prefixed with
-// `../**/ui/**/*` if it does not start with `.`, `/`, or `*`, and suffixed with
+// `../**/*` if it does not start with `.`, `/`, or `*`, and suffixed with
 // `*.tsx` if it does not end with `.tsx`.
 
 // Author: Noah Saso (@NoahSaso)
@@ -209,14 +209,14 @@ const project = new Project({
     // Use arg for source files glob pattern if present.
     let arg = process.argv[2]
     if (arg) {
-      // Automatically prefix with a `ui` folder at any level glob if not
-      // starting with a path/glob related symbol.
+      // Automatically prefix with a wildcard glob if not starting with a
+      // path/glob related symbol.
       if (
         !arg.startsWith('.') &&
         !arg.startsWith('/') &&
         !arg.startsWith('*')
       ) {
-        arg = '../**/ui/**/*' + arg
+        arg = '../**/*' + arg
       }
       // Automatically add TypeScript extension if necessary.
       if (!arg.endsWith('.tsx')) {
@@ -227,17 +227,8 @@ const project = new Project({
 
       project.addSourceFilesAtPaths(arg)
     } else {
-      // // Add all tsx files that exist as a descendant of a folder named `ui` or
-      // // `components` in apps.
-      // project.addSourceFilesAtPaths('../../apps/**/{ui,components}/**/*.tsx')
-
-      // Add @dao-dao/stateless package.
-      project.addSourceFilesAtPaths('../ui/**/*.tsx')
-      // Add all tsx files that exist as a descendant of a folder named `ui` in
-      // the adapter packages.
-      project.addSourceFilesAtPaths(
-        '../{voting,proposal}-module-adapter/**/ui/**/*.tsx'
-      )
+      // Add @dao-dao/stateless and @dao-dao/stateful packages.
+      project.addSourceFilesAtPaths('../{stateless,stateful}/**/*.tsx')
     }
 
     await Promise.all(

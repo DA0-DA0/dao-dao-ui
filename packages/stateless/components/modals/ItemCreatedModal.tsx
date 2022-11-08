@@ -21,7 +21,10 @@ export const ItemCreatedModal = <
     onMouseLeave?: () => void
   }
 >({
-  modalProps: { containerClassName: modalContainerClassName, ...modalProps },
+  modalProps: {
+    containerClassName: modalContainerClassName,
+    ...modalProps
+  } = {},
   header,
   url,
   ...props

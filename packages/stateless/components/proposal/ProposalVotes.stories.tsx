@@ -4,7 +4,7 @@ import { VoteDisplay } from '@dao-dao/stateful/proposal-module-adapter/adapters/
 import { Vote } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import { getFallbackImage } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../ProfileDisplay'
+import { ProfileDisplay } from '../profile/ProfileDisplay'
 import { ProposalVotes, ProposalVotesProps } from './ProposalVotes'
 
 export default {

@@ -8,8 +8,8 @@ import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { Button } from '../buttons'
-import { Loader } from '../Loader'
-import { Tooltip } from '../Tooltip'
+import { Loader } from '../logo/Loader'
+import { Tooltip } from '../tooltip/Tooltip'
 
 export interface ProposalVote<Vote extends unknown = any> {
   voterAddress: string

@@ -12,7 +12,7 @@ import { useRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { walletTransactionAtom } from '@dao-dao/state'
-import { SuspenseLoader } from '@dao-dao/stateful'
+import { ProfileHomeCard, SuspenseLoader } from '@dao-dao/stateful'
 import { ActionsProvider, useActions } from '@dao-dao/stateful/actions'
 import {
   Loader,
@@ -34,8 +34,6 @@ import {
   cwMsgToEncodeObject,
   processError,
 } from '@dao-dao/utils'
-
-import { ProfileHomeCard } from '@/components'
 
 const InnerWallet = () => {
   const { t } = useTranslation()

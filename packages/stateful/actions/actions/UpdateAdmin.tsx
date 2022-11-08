@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
-import { UpdateAdminEmoji } from '@dao-dao/stateless'
+import { MushroomEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -86,7 +86,7 @@ export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = ({
 
   return {
     key: ActionKey.UpdateAdmin,
-    Icon: UpdateAdminEmoji,
+    Icon: MushroomEmoji,
     label: t('title.updateContractAdmin'),
     description: t('info.updateContractAdminActionDescription'),
     Component,

@@ -1,8 +1,8 @@
 import clsx from 'clsx'
-import { ComponentType } from 'react'
 
 import { DaoInfoBarProps } from '@dao-dao/types/components/DaoInfoBar'
-import { LoaderProps } from '@dao-dao/types/components/Loader'
+
+import { Loader } from '../logo/Loader'
 
 export * from '@dao-dao/types/components/DaoInfoBar'
 
@@ -29,10 +29,4 @@ export const DaoInfoBar = ({ items, className }: DaoInfoBarProps) => (
   </div>
 )
 
-export interface DaoInfoBarLoaderProps {
-  Loader: ComponentType<LoaderProps>
-}
-
-export const DaoInfoBarLoader = ({ Loader }: DaoInfoBarLoaderProps) => (
-  <Loader className="h-32" />
-)
+export const DaoInfoBarLoader = () => <Loader className="h-32" />

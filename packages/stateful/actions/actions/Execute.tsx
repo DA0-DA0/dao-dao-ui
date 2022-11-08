@@ -4,7 +4,7 @@ import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
-import { ExecuteEmoji } from '@dao-dao/stateless'
+import { SwordsEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -105,7 +105,7 @@ export const makeExecuteAction: ActionMaker<ExecuteData> = ({ t, address }) => {
 
   return {
     key: ActionKey.Execute,
-    Icon: ExecuteEmoji,
+    Icon: SwordsEmoji,
     label: t('title.executeSmartContract'),
     description: t('info.executeSmartContractActionDescription'),
     Component,

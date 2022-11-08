@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { CwdCoreV2Selectors } from '@dao-dao/state'
-import { ManageSubDaosEmoji } from '@dao-dao/stateless'
+import { FamilyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -113,7 +113,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
 
   return {
     key: ActionKey.ManageSubDaos,
-    Icon: ManageSubDaosEmoji,
+    Icon: FamilyEmoji,
     label: t('title.manageSubDaos'),
     description: t('info.manageSubDaosActionDescription'),
     Component,

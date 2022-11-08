@@ -1,4 +1,3 @@
-import Emoji from 'a11y-react-emoji'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
@@ -10,6 +9,7 @@ import {
   FormattedJsonDisplay,
   InputErrorMessage,
   InputLabel,
+  MoneyEmoji,
   NumberInput,
   SelectInput,
 } from '@dao-dao/stateless'
@@ -38,11 +38,6 @@ import {
 import { DaoCreationConfig } from '../types'
 
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
-
-export const ProposalDepositIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.money')} symbol="💵" />
-}
 
 export const ProposalDepositInput = ({
   newDao: { votingModuleAdapter },
@@ -267,7 +262,7 @@ export const ProposalDepositReview = ({
 
 export const ProposalDepositVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
-    Icon: ProposalDepositIcon,
+    Icon: MoneyEmoji,
     nameI18nKey: 'form.proposalDepositTitle',
     descriptionI18nKey: 'form.proposalDepositDescription',
     Input: ProposalDepositInput,

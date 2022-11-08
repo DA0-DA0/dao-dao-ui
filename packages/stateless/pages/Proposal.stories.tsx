@@ -5,7 +5,6 @@ import {
   ProposalVoteTallyProps,
 } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally'
 import { Default as ProposalVoteTallyStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/components/ui/ProposalVoteTally.stories'
-import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
@@ -21,6 +20,7 @@ import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVo
 import { Default as ProposalStatusAndInfoStory } from '../components/proposal/ProposalStatusAndInfo.stories'
 import { ProposalVotes } from '../components/proposal/ProposalVotes'
 import { makeProps as makeProposalVotesProps } from '../components/proposal/ProposalVotes.stories'
+import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { Proposal } from './Proposal'
 
 const proposalId = 'A72'

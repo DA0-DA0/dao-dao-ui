@@ -8,11 +8,12 @@ import { useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { useProfile } from '@dao-dao/state'
 import {
   DaoPageWrapper,
   DaoProposalPageWrapperProps,
+  ProfileProposalCard,
   Trans,
+  useProfile,
 } from '@dao-dao/stateful'
 import { useActions } from '@dao-dao/stateful/actions'
 import {
@@ -22,8 +23,6 @@ import {
 import { makeGetDaoProposalStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
-  Loader,
-  Logo,
   ProfileDisconnectedCard,
   Proposal,
   ProposalNotFound,
@@ -31,8 +30,6 @@ import {
 } from '@dao-dao/stateless'
 import { ActionKey, CommonProposalInfo } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
-
-import { ProfileProposalCard } from '@/components'
 
 interface InnerProposalProps {
   proposalInfo: CommonProposalInfo
@@ -170,8 +167,6 @@ const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
         initialOptions={{
           chainId: props.serializedInfo.chainId,
           coreAddress: props.serializedInfo.coreAddress,
-          Logo,
-          Loader,
         }}
         proposalId={props.proposalInfo.id}
         proposalModules={props.serializedInfo.proposalModules}

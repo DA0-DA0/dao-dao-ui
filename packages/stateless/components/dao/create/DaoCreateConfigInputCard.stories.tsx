@@ -2,12 +2,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { DefaultNewDao, SuspenseLoader } from '@dao-dao/stateful'
-import {
-  VotingDurationIcon,
-  VotingDurationInput,
-} from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
+import { VotingDurationInput } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
 import { NewDao } from '@dao-dao/types'
 
+import { HourglassEmoji } from '../../emoji'
 import { DaoCreateConfigInputCard } from './DaoCreateConfigInputCard'
 
 export default {
@@ -63,7 +61,7 @@ const Template: ComponentStory<typeof DaoCreateConfigInputCard> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  Icon: VotingDurationIcon,
+  Icon: HourglassEmoji,
   name: 'Voting duration',
   description:
     'The amount of time proposals are open for voting. A low proposal duration may increase the speed at which your DAO can pass proposals. Setting the duration too low may make it diffcult for proposals to pass as voters will have limited time to vote. After this time elapses, the proposal will either pass or fail.',

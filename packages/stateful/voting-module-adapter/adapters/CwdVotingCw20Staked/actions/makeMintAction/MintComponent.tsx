@@ -1,9 +1,9 @@
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
   AddressInput,
+  HerbEmoji,
   InputErrorMessage,
   NumberInput,
 } from '@dao-dao/stateless'
@@ -32,7 +32,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   const amount = watch(fieldNamePrefix + 'amount')
 
   return (
-    <ActionCard Icon={MintIcon} onRemove={onRemove} title={t('title.mint')}>
+    <ActionCard Icon={HerbEmoji} onRemove={onRemove} title={t('title.mint')}>
       <div className="flex flex-row items-center gap-4">
         <div className="flex flex-row items-center gap-2">
           <div>
@@ -80,9 +80,4 @@ export const MintComponent: ActionComponent<MintOptions> = ({
       </div>
     </ActionCard>
   )
-}
-
-export const MintIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.herb')} symbol="🌿" />
 }

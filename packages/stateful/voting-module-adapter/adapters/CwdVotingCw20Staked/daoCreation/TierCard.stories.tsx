@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 
 import { NewDao } from '@dao-dao/types'
 
-import { DefaultNewDao } from '../../../../atoms'
+import { DefaultNewDao } from '../../../../recoil/atoms'
 import { CwdVotingCw20StakedAdapter } from '../../../index'
 import { DaoCreationConfig } from '../types'
 import { TierCard } from './TierCard'

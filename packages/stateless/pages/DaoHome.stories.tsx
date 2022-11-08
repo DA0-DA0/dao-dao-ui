@@ -2,7 +2,6 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
 import { SuspenseLoader } from '@dao-dao/stateful'
-import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
@@ -12,7 +11,6 @@ import { DaoMemberCardProps } from '@dao-dao/types'
 import {
   DaoInfoBar,
   DaoInfoBarProps,
-  Loader,
   MembersTabProps,
   NftCardProps,
   ProfileMemberCard,
@@ -28,6 +26,7 @@ import { Default as ProposalsTabStory } from '../components/dao/tabs/ProposalsTa
 import { Default as SubDaosTabStory } from '../components/dao/tabs/SubDaosTab.stories'
 import { Default as TreasuryAndNftsTabStory } from '../components/dao/tabs/TreasuryAndNftsTab.stories'
 import { Default as ProfileMemberCardStory } from '../components/profile/ProfileMemberCard.stories'
+import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { DaoHome } from './DaoHome'
 
 export default {
@@ -81,7 +80,6 @@ Default.args = {
     />
   ),
   SuspenseLoader,
-  Loader,
 }
 Default.parameters = {
   design: {

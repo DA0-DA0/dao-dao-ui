@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ComponentProps, ReactNode } from 'react'
 
-import { TooltipInfoIcon } from '../TooltipInfoIcon'
+import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 
 export interface InputLabelProps
   extends Omit<ComponentProps<'span'>, 'children'> {

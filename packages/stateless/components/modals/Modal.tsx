@@ -6,10 +6,25 @@ import { createPortal } from 'react-dom'
 import { ModalProps } from '@dao-dao/types/components/Modal'
 
 import { useMountedInBrowser } from '../../hooks'
-import { ErrorBoundary } from '../ErrorBoundary'
+import { ErrorBoundary } from '../error/ErrorBoundary'
 import { IconButton } from '../icon_buttons'
+import { Loader } from '../logo/Loader'
 
 export * from '@dao-dao/types/components/Modal'
+
+// This component renders a modal above the page content with a dim backdrop.
+//
+// Ideally, it is not conditionally rendered, but instead is always rendered and
+// its `visible` prop is used to control its visibility. This is because the
+// fade in/out animation only occurs when the component is mounted and
+// hidden/unhidden. Some modals, like the stateful PfpkNftSelectionModal, are
+// conditionally rendered because they load a good amount of state which we
+// don't want to load until necessary.
+//
+// Common gotcha: If adding any keypress listeners to navigate or perform
+// actions in the modal, make sure to only add the listeners when the modal is
+// visible. See the code below which adds a keypress listener to close the modal
+// on escape, which only adds the listener when visible.
 
 export const Modal = ({
   children,
@@ -22,11 +37,13 @@ export const Modal = ({
   headerContent,
   footerContent,
   headerContainerClassName,
+  contentContainerClassName,
+  footerContainerClassName,
   titleClassName,
 }: ModalProps) => {
-  // Close modal on escape.
+  // Close modal on escape, only listening if visible.
   useEffect(() => {
-    if (!onClose) {
+    if (!onClose || !visible) {
       return
     }
 
@@ -37,7 +54,7 @@ export const Modal = ({
     document.addEventListener('keydown', handleKeyPress)
     // Clean up event listener.
     return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [onClose])
+  }, [onClose, visible])
 
   const mountedInBrowser = useMountedInBrowser()
 
@@ -59,7 +76,7 @@ export const Modal = ({
         >
           <div
             className={clsx(
-              'no-scrollbar relative flex h-min max-h-full max-w-md cursor-auto flex-col overflow-y-auto rounded-lg border border-border-secondary bg-background-base p-6 shadow-dp8 transition-transform duration-[120ms]',
+              'relative flex h-min max-h-[90vh] max-w-md cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 transition-transform duration-[120ms]',
               visible ? 'scale-100' : 'scale-90',
               // If no children, remove bottom padding since header has its own
               // padding.
@@ -67,7 +84,7 @@ export const Modal = ({
               containerClassName
             )}
           >
-            {!hideCloseButton && (
+            {!hideCloseButton && onClose && (
               <IconButton
                 Icon={Close}
                 circular
@@ -81,22 +98,27 @@ export const Modal = ({
             {(header || headerContent) && (
               <div
                 className={clsx(
-                  // Undo container padding with negative margin, and then re-add
-                  // the padding internally, so that the bottom border spans the
-                  // whole width.
-                  '-mx-6 flex shrink-0 flex-col gap-1 px-6 pb-6',
-                  // If children, add bottom border and margin.
-                  children && 'mb-6 border-b border-border-base',
+                  'flex shrink-0 flex-col gap-1 p-6',
+                  // If children, add bottom border.
+                  children && 'border-b border-border-base',
+                  // If close button displaying, add more right padding.
+                  !hideCloseButton && 'pr-12',
                   headerContainerClassName
                 )}
               >
                 {header && (
                   <>
-                    <p className={clsx('header-text', titleClassName)}>
+                    <p className={clsx('header-text mb-1', titleClassName)}>
                       {header.title}
                     </p>
                     {!!header.subtitle && (
-                      <p className="body-text">{header.subtitle}</p>
+                      <div className="space-y-1">
+                        {header.subtitle.split('\n').map((line, index) => (
+                          <p key={index} className="body-text">
+                            {line}
+                          </p>
+                        ))}
+                      </div>
                     )}
                   </>
                 )}
@@ -105,10 +127,26 @@ export const Modal = ({
               </div>
             )}
 
-            <ErrorBoundary>{children}</ErrorBoundary>
+            {children && (
+              <ErrorBoundary>
+                <div
+                  className={clsx(
+                    'no-scrollbar flex grow flex-col overflow-y-auto p-6',
+                    contentContainerClassName
+                  )}
+                >
+                  {children}
+                </div>
+              </ErrorBoundary>
+            )}
 
             {footerContent && (
-              <div className="-mx-6 -mb-6 shrink-0 border-t border-border-secondary py-5 px-6">
+              <div
+                className={clsx(
+                  'shrink-0 border-t border-border-secondary py-5 px-6',
+                  footerContainerClassName
+                )}
+              >
                 {footerContent}
               </div>
             )}
@@ -118,3 +156,9 @@ export const Modal = ({
       )
     : null
 }
+
+export const ModalLoader = (props: Pick<ModalProps, 'onClose'>) => (
+  <Modal contentContainerClassName="!p-40" visible {...props}>
+    <Loader />
+  </Modal>
+)

@@ -24,15 +24,15 @@ export const MembershipPill = ({
   return (
     <div
       className={clsx(
-        'link-text',
+        'link-text max-w-full',
         ghost
           ? 'caption-text text-text-secondary'
           : 'flex flex-row items-center gap-2 rounded-full border-2 border-border-primary py-1 px-[10px]',
         !isMember && 'text-text-interactive-disabled'
       )}
     >
-      <div className="shrink-0">{text}</div>
-      {!ghost && <Icon className="!h-4 !w-4" />}
+      <p className="truncate">{text}</p>
+      {!ghost && <Icon className="!h-4 !w-4 shrink-0" />}
     </div>
   )
 }

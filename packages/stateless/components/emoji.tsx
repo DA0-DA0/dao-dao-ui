@@ -1,69 +1,102 @@
 import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
-export const SpendEmoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.money')} symbol="💵" />
+export interface EmojiWrapperProps {
+  labelI18nKey: string
+  emoji: string
 }
 
-export const StakeEmoji = () => {
+export const EmojiWrapper = ({ labelI18nKey, emoji }: EmojiWrapperProps) => {
   const { t } = useTranslation()
-  return <Emoji label={t('emoji.box')} symbol="📥" />
+  return <Emoji label={t(labelI18nKey)} symbol={emoji} />
 }
 
-export const AddCw20Emoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.token')} symbol="🔘" />
-}
+export const MoneyEmoji = () => (
+  <EmojiWrapper emoji="💵" labelI18nKey="emoji.money" />
+)
 
-export const AddCw721Emoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.image')} symbol="🖼" />
-}
+export const DepositEmoji = () => (
+  <EmojiWrapper emoji="📥" labelI18nKey="emoji.deposit" />
+)
 
-export const CustomEmoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.robot')} symbol="🤖" />
-}
+export const TokenEmoji = () => (
+  <EmojiWrapper emoji="🔘" labelI18nKey="emoji.token" />
+)
 
-export const ExecuteEmoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.swords')} symbol="⚔️" />
-}
+export const ImageEmoji = () => (
+  <EmojiWrapper emoji="🖼" labelI18nKey="emoji.image" />
+)
 
-export const InstantiateEmoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.baby')} symbol="👶" />
-}
+export const RobotEmoji = () => (
+  <EmojiWrapper emoji="🤖" labelI18nKey="emoji.robot" />
+)
 
-export const MigrateContractEmoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.whale')} symbol="🐋" />
-}
+export const SwordsEmoji = () => (
+  <EmojiWrapper emoji="⚔️" labelI18nKey="emoji.swords" />
+)
 
-export const RemoveCw20Emoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.x')} symbol="❌" />
-}
+export const BabyEmoji = () => (
+  <EmojiWrapper emoji="👶" labelI18nKey="emoji.baby" />
+)
 
-export const RemoveCw721Emoji = RemoveCw20Emoji
+export const WhaleEmoji = () => (
+  <EmojiWrapper emoji="🐋" labelI18nKey="emoji.whale" />
+)
 
-export const UpdateAdminEmoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.mushroom')} symbol="🍄" />
-}
+export const XEmoji = () => <EmojiWrapper emoji="❌" labelI18nKey="emoji.x" />
 
-export const UpdateInfoEmoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.info')} symbol="ℹ️" />
-}
+export const MushroomEmoji = () => (
+  <EmojiWrapper emoji="🍄" labelI18nKey="emoji.mushroom" />
+)
 
-export const ManageSubDaosEmoji = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.family')} symbol="👨‍👦" />
-}
+export const InfoEmoji = () => (
+  <EmojiWrapper emoji="ℹ️" labelI18nKey="emoji.info" />
+)
 
-export const UpdateProposalConfigIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.gear')} symbol="⚙️" />
-}
+export const FamilyEmoji = () => (
+  <EmojiWrapper emoji="👨‍👦" labelI18nKey="emoji.family" />
+)
+
+export const GearEmoji = () => (
+  <EmojiWrapper emoji="⚙️" labelI18nKey="emoji.gear" />
+)
+
+export const ChartEmoji = () => (
+  <EmojiWrapper emoji="📊" labelI18nKey="emoji.chart" />
+)
+
+export const PeopleEmoji = () => (
+  <EmojiWrapper emoji="👥" labelI18nKey="emoji.people" />
+)
+
+export const ClockEmoji = () => (
+  <EmojiWrapper emoji="⏰" labelI18nKey="emoji.clock" />
+)
+
+export const RecycleEmoji = () => (
+  <EmojiWrapper emoji="♻️" labelI18nKey="emoji.recycle" />
+)
+
+export const MegaphoneEmoji = () => (
+  <EmojiWrapper emoji="📣" labelI18nKey="emoji.megaphone" />
+)
+
+export const BallotDepositEmoji = () => (
+  <EmojiWrapper emoji="🗳️" labelI18nKey="emoji.ballotBox" />
+)
+
+export const HourglassEmoji = () => (
+  <EmojiWrapper emoji="⏳" labelI18nKey="emoji.hourglass" />
+)
+
+export const HerbEmoji = () => (
+  <EmojiWrapper emoji="🌿" labelI18nKey="emoji.herb" />
+)
+
+export const DaoEmoji = () => (
+  <EmojiWrapper emoji="☯️" labelI18nKey="emoji.yinYang" />
+)
+
+export const HandshakeEmoji = () => (
+  <EmojiWrapper emoji="🤝" labelI18nKey="emoji.handshake" />
+)

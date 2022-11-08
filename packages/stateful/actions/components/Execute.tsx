@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next'
 import {
   Button,
   CodeMirrorInput,
-  ExecuteEmoji,
   InputErrorMessage,
   InputLabel,
+  SwordsEmoji,
   TextInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -48,7 +48,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
 
   return (
     <ActionCard
-      Icon={ExecuteEmoji}
+      Icon={SwordsEmoji}
       onRemove={onRemove}
       title={t('title.executeSmartContract')}
     >

@@ -1,16 +1,20 @@
-import Emoji from 'a11y-react-emoji'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ChartEmoji,
+  ClockEmoji,
   FormSwitch,
   FormSwitchCard,
+  GearEmoji,
   InputErrorMessage,
   InputLabel,
+  MoneyEmoji,
   NumberInput,
+  PeopleEmoji,
+  RecycleEmoji,
   SelectInput,
   TooltipInfoIcon,
-  UpdateProposalConfigIcon,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import {
@@ -34,7 +38,6 @@ export const UpdateProposalConfigComponent: ActionComponent<
   onRemove,
   isCreating,
   options: { governanceTokenSymbol },
-  Loader,
 }) => {
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
@@ -53,12 +56,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
 
   return (
     <ActionCard
-      Icon={UpdateProposalConfigIcon}
+      Icon={GearEmoji}
       onRemove={onRemove}
       title={t('form.updateVotingConfigTitle')}
     >
       <p className="secondary-text mb-3 max-w-prose">
-        <Trans Loader={Loader} i18nKey="form.updateVotingConfigDescription">
+        <Trans i18nKey="form.updateVotingConfigDescription">
           This will update the voting configuration for this DAO. A bad
           configuration can lock the DAO or create unexpected voting outcomes.
           Take care. If you have questions, please feel free to ask in the{' '}
@@ -120,8 +123,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         <div className="flex flex-row flex-wrap justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
           <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
             <h3 className="primary-text">
-              <Emoji label={t('emoji.money')} symbol="💵" />{' '}
-              {t('form.proposalDepositTitle')}
+              <MoneyEmoji /> {t('form.proposalDepositTitle')}
             </h3>
             <p className="secondary-text">
               {t('form.proposalDepositDescription')}
@@ -173,8 +175,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
       <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
-            <Emoji label={t('emoji.chart')} symbol="📊" />{' '}
-            {t('form.passingThresholdTitle')}
+            <ChartEmoji /> {t('form.passingThresholdTitle')}
           </h3>
           <p className="secondary-text">
             {t('form.passingThresholdDescription')}
@@ -220,8 +221,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <div className="flex flex-row items-center justify-between gap-4">
             <h3 className="primary-text">
-              <Emoji label={t('emoji.people')} symbol="👥" />{' '}
-              {t('form.quorumTitle')}
+              <PeopleEmoji /> {t('form.quorumTitle')}
             </h3>
 
             <FormSwitchCard
@@ -276,8 +276,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
       <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
-            <Emoji label={t('emoji.clock')} symbol="⏰" />{' '}
-            {t('form.votingDurationTitle')}
+            <ClockEmoji /> {t('form.votingDurationTitle')}
           </h3>
           <p className="secondary-text">
             {t('form.votingDurationDescription')}
@@ -347,8 +346,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
       <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
-            <Emoji label={t('emoji.recycle')} symbol="♻️" />{' '}
-            {t('form.allowRevotingTitle')}
+            <RecycleEmoji /> {t('form.allowRevotingTitle')}
           </h3>
           <p className="secondary-text">{t('form.allowRevotingDescription')}</p>
         </div>

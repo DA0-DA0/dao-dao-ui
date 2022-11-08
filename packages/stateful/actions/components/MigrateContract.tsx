@@ -6,8 +6,8 @@ import {
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
-  MigrateContractEmoji,
   NumberInput,
+  WhaleEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
@@ -33,7 +33,6 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
   errors,
   isCreating,
   options: { onContractChange, contractAdmin },
-  Loader,
 }) => {
   const { register, control } = useFormContext()
   const { t } = useTranslation()
@@ -41,12 +40,12 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
 
   return (
     <ActionCard
-      Icon={MigrateContractEmoji}
+      Icon={WhaleEmoji}
       onRemove={onRemove}
       title={t('title.migrateSmartContract')}
     >
       <p className="secondary-text mb-4 max-w-prose">
-        <Trans key={'form.migrateDescription'} Loader={Loader}>
+        <Trans key="form.migrateDescription">
           This will{' '}
           <a
             className="underline"

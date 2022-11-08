@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { makeProps as makeUnstakingLineProps } from '@dao-dao/stateless/components/UnstakingLine.stories'
+import { makeProps as makeUnstakingLineProps } from '@dao-dao/stateless/components/token/UnstakingLine.stories'
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
 
 import {

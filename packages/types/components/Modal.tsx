@@ -14,5 +14,7 @@ export interface ModalProps {
   headerContent?: ReactNode
   footerContent?: ReactNode
   headerContainerClassName?: string
+  contentContainerClassName?: string
+  footerContainerClassName?: string
   titleClassName?: string
 }

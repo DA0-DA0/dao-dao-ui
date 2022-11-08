@@ -1,19 +1,13 @@
 import { coins } from '@cosmjs/stargate'
 import { useWallet } from '@noahsaso/cosmodal'
-import { PropsWithChildren, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
+import { refreshDaoVotingPowerAtom, stakingLoadingAtom } from '@dao-dao/state'
 import {
-  CwdVotingNativeStakedHooks,
-  refreshDaoVotingPowerAtom,
-  stakingLoadingAtom,
-  useAwaitNextBlock,
-  useWalletProfile,
-} from '@dao-dao/state'
-import {
-  Modal,
+  ModalLoader,
   StakingMode,
   StakingModal as StatelessStakingModal,
 } from '@dao-dao/stateless'
@@ -25,11 +19,16 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components'
+import {
+  CwdVotingNativeStakedHooks,
+  useAwaitNextBlock,
+  useWalletProfile,
+} from '../../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
-  <SuspenseLoader fallback={<StakingModalLoader {...props} />}>
+  <SuspenseLoader fallback={<ModalLoader onClose={props.onClose} />}>
     <InnerStakingModal {...props} />
   </SuspenseLoader>
 )
@@ -266,30 +265,5 @@ const InnerStakingModal = ({
       tokenSymbol={governanceTokenInfo.symbol}
       unstakingDuration={unstakingDuration ?? null}
     />
-  )
-}
-
-type StakingModalWrapperProps = PropsWithChildren<
-  Pick<BaseStakingModalProps, 'onClose'>
->
-
-export const StakingModalWrapper = ({
-  children,
-  onClose,
-}: StakingModalWrapperProps) => (
-  <Modal containerClassName="!p-40" onClose={onClose} visible>
-    {children}
-  </Modal>
-)
-
-const StakingModalLoader = (
-  props: Omit<StakingModalWrapperProps, 'children'>
-) => {
-  const { Loader } = useVotingModuleAdapterOptions()
-
-  return (
-    <StakingModalWrapper {...props}>
-      <Loader />
-    </StakingModalWrapper>
   )
 }

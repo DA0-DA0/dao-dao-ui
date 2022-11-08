@@ -6,8 +6,6 @@ import { RecoilValueReadOnly } from 'recoil'
 import { Action } from './actions'
 import {
   LinkWrapperProps,
-  LoaderProps,
-  LogoProps,
   ProfileNewProposalCardInfoLine,
   ProfileVoteCardOption,
 } from './components'
@@ -122,8 +120,6 @@ export type ProposalModuleAdapter<
 export interface IProposalModuleAdapterInitialOptions {
   chainId: string
   coreAddress: string
-  Logo: ComponentType<LogoProps>
-  Loader: ComponentType<LoaderProps>
 }
 
 export interface IProposalModuleAdapterCommonOptions

@@ -1,3 +1,4 @@
+export * from './ProgressBar'
 export * from './ProposalCard'
 export * from './ProposalContainer'
 export * from './ProposalContentDisplay'

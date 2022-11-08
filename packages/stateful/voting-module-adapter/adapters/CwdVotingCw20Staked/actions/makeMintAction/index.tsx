@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react'
 
+import { HerbEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -16,10 +17,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useGovernanceTokenInfo } from '../../hooks'
-import {
-  MintIcon,
-  MintComponent as StatelessMintComponent,
-} from './MintComponent'
+import { MintComponent as StatelessMintComponent } from './MintComponent'
 
 export interface MintData {
   to: string
@@ -100,7 +98,7 @@ export const makeMintAction: ActionMaker<MintData> = ({ t, address }) => {
 
   return {
     key: ActionKey.Mint,
-    Icon: MintIcon,
+    Icon: HerbEmoji,
     label: t('title.mint'),
     description: t('info.mintActionDescription'),
     Component,

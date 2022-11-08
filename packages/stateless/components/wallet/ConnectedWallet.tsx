@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next'
 import { LoadingData } from '@dao-dao/types'
 
 import { IconButton } from '../icon_buttons'
-import { TokenAmountDisplay } from '../TokenAmountDisplay'
-import { Tooltip } from '../Tooltip'
+import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
+import { Tooltip } from '../tooltip/Tooltip'
 
 export interface ConnectedWalletProps {
   data: LoadingData<{

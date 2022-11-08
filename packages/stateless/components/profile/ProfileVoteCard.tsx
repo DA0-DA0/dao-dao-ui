@@ -6,7 +6,7 @@ import { ProfileVoteCardProps } from '@dao-dao/types/components/ProfileVoteCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
-import { TooltipInfoIcon } from '../TooltipInfoIcon'
+import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 import { ProfileVoteButton } from './ProfileVoteButton'

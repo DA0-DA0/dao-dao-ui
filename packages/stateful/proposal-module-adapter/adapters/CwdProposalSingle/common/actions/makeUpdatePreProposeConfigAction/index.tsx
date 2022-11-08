@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
-import { UpdateProposalConfigIcon, useDaoInfoContext } from '@dao-dao/stateless'
+import { GearEmoji, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -41,7 +41,7 @@ export const Component: ActionComponent = (props) => {
   const cw20GovernanceTokenInfo =
     useCw20GovernanceTokenInfoResponseIfExists()?.governanceTokenInfo
 
-  const { fieldNamePrefix, Loader } = props
+  const { fieldNamePrefix } = props
 
   const { setValue, watch } = useFormContext()
 
@@ -92,7 +92,6 @@ export const Component: ActionComponent = (props) => {
           additionalAddressError,
           formattedJsonDisplayProps: {
             jsonLoadable: tokenInfoLoadable,
-            Loader,
           },
         },
       }}
@@ -351,7 +350,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
 
   return {
     key: ActionKey.UpdatePreProposeConfig,
-    Icon: UpdateProposalConfigIcon,
+    Icon: GearEmoji,
     label: t('form.updateProposalSubmissionConfigTitle'),
     description: t('info.updateProposalSubmissionConfigActionDescription'),
     Component,

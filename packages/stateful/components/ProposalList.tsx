@@ -1,17 +1,12 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import { useEffect, useMemo, useState } from 'react'
 import { useRecoilCallback } from 'recoil'
 
-import { useVotingModule } from '@dao-dao/state'
 import {
-  Loader,
-  Logo,
   ProposalList as StatelessProposalList,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
+import { useVotingModule } from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
 
@@ -37,8 +32,6 @@ export const ProposalList = () => {
         reverseProposalInfos: matchAndLoadCommon(proposalModule, {
           chainId,
           coreAddress,
-          Logo,
-          Loader,
         }).selectors.reverseProposalInfos,
         proposalModule,
       })),

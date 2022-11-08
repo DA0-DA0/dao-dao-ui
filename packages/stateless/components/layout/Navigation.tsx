@@ -1,6 +1,3 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import {
   Add,
   HomeOutlined,
@@ -21,10 +18,10 @@ import { usePlatform } from '@dao-dao/utils'
 
 import { DaoDropdown } from '../dao'
 import { IconButton, ThemeToggle } from '../icon_buttons'
-import { Loader } from '../Loader'
-import { Logo } from '../Logo'
-import { PricePercentChange } from '../PricePercentChange'
-import { Tooltip } from '../Tooltip'
+import { Loader } from '../logo/Loader'
+import { Logo } from '../logo/Logo'
+import { PricePercentChange } from '../token/PricePercentChange'
+import { Tooltip } from '../tooltip/Tooltip'
 import { useAppLayoutContext } from './AppLayoutContext'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
@@ -304,7 +301,7 @@ export const Navigation = ({
 
           <div
             className={clsx(
-              'mt-8 flex gap-2',
+              'mt-4 flex gap-2',
               compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >

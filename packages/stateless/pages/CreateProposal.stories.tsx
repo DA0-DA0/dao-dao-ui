@@ -7,7 +7,6 @@ import {
 } from '@dao-dao/stateful/proposal-module-adapter'
 import { NewProposalProps } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/common/ui/NewProposal'
 import { Default as NewProposalStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/common/ui/NewProposal.stories'
-import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
@@ -18,6 +17,7 @@ import {
   ProfileNewProposalCardProps,
 } from '../components/profile/ProfileNewProposalCard'
 import { Default as ProfileNewProposalCardStory } from '../components/profile/ProfileNewProposalCard.stories'
+import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { CreateProposal } from './CreateProposal'
 
 export default {

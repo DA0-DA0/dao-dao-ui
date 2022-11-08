@@ -14,18 +14,19 @@ import {
   waitForAll,
 } from 'recoil'
 
-import {
-  CwdCoreV2Selectors,
-  usePinnedDaos,
-  useVotingModule,
-  useWalletProfile,
-} from '@dao-dao/state'
+import { CwdCoreV2Selectors } from '@dao-dao/state'
 import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
+  ProposalsTab,
+  SubDaosTab,
   SuspenseLoader,
+  TreasuryAndNftsTab,
   useEncodedCwdProposalSinglePrefill,
+  usePinnedDaos,
+  useVotingModule,
+  useWalletProfile,
 } from '@dao-dao/stateful'
 import { useActionForKey } from '@dao-dao/stateful/actions'
 import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
@@ -33,8 +34,6 @@ import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   DaoHome,
-  Loader,
-  Logo,
   ProfileDisconnectedCard,
   ProfileMemberCard,
   ProfileNotMemberCard,
@@ -44,8 +43,6 @@ import {
 import { ActionKey } from '@dao-dao/types'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import { SITE_URL } from '@dao-dao/utils'
-
-import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '@/components'
 
 const InnerDaoHome = () => {
   const { t } = useTranslation()
@@ -170,8 +167,6 @@ const InnerDaoHome = () => {
           matchAndLoadCommon(proposalModule, {
             chainId: daoInfo.chainId,
             coreAddress: daoInfo.coreAddress,
-            Loader,
-            Logo,
           }).selectors.depositInfo
       ),
     [daoInfo.chainId, daoInfo.coreAddress, daoInfo.proposalModules]
@@ -190,7 +185,6 @@ const InnerDaoHome = () => {
 
   return (
     <DaoHome
-      Loader={Loader}
       SuspenseLoader={SuspenseLoader}
       daoInfo={daoInfo}
       daoInfoBar={<DaoInfoBar />}

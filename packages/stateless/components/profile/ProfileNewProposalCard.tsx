@@ -7,7 +7,7 @@ import { ProfileNewProposalCardProps } from '@dao-dao/types/components/ProfileNe
 
 import { concatAddressStartEnd } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons'
-import { Loader } from '../Loader'
+import { Loader } from '../logo/Loader'
 import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 

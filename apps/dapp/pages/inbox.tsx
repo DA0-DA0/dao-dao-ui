@@ -10,6 +10,7 @@ import { useRecoilValue } from 'recoil'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   LinkWrapper,
+  ProfileHomeCard,
   ProposalLine,
   ProposalLineProps,
   SuspenseLoader,
@@ -20,10 +21,9 @@ import {
   Inbox,
   PageLoader,
   ProfileDisconnectedCard,
+  useAppLayoutContext,
 } from '@dao-dao/stateless'
 import { CHAIN_ID, SITE_URL } from '@dao-dao/utils'
-
-import { ProfileHomeCard, useDAppContext } from '@/components'
 
 const InnerInbox = () => {
   const { connected } = useWallet()
@@ -31,7 +31,7 @@ const InnerInbox = () => {
 
   const {
     inbox: { loading, refetching, refetch, daosWithOpenUnvotedProposals },
-  } = useDAppContext()
+  } = useAppLayoutContext()
 
   const daosWithProposals = daosWithOpenUnvotedProposals
     .map(

@@ -1,13 +1,8 @@
 import { Check, Link } from '@mui/icons-material'
-import { ComponentType, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import {
-  ActionCardLoader,
-  IconButton,
-  LoaderProps,
-  LogoProps,
-} from '@dao-dao/stateless'
+import { ActionCardLoader, IconButton } from '@dao-dao/stateless'
 import { ActionAndData } from '@dao-dao/types/actions'
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
@@ -15,15 +10,11 @@ import { SuspenseLoader } from '../../components/SuspenseLoader'
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
   actionData: ActionAndData[]
-  Loader: ComponentType<LoaderProps>
-  Logo: ComponentType<LogoProps>
   onCopyLink: () => void
 }
 
 export const ActionsRenderer = ({
   actionData,
-  Loader,
-  Logo,
   onCopyLink,
 }: ActionsRendererProps) => {
   const formMethods = useForm({
@@ -49,10 +40,8 @@ export const ActionsRenderer = ({
       <form>
         {actionData.map(({ action: { Component } }, index) => (
           <div key={index} className="group relative" id={`A${index + 1}`}>
-            <SuspenseLoader fallback={<ActionCardLoader Loader={Loader} />}>
+            <SuspenseLoader fallback={<ActionCardLoader />}>
               <Component
-                Loader={Loader}
-                Logo={Logo}
                 allActionsWithData={actionData.map(
                   ({ action: { key }, data }) => ({
                     key,

@@ -7,7 +7,7 @@ import { LoadingData, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
 import { SortFn, useDropdownSorter } from '../../../hooks'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown, DropdownOption } from '../../inputs/Dropdown'
-import { Loader } from '../../Loader'
+import { Loader } from '../../logo/Loader'
 import { ModalProps } from '../../modals/Modal'
 import { NoContent } from '../../NoContent'
 

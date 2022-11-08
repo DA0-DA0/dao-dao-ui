@@ -6,13 +6,13 @@ import {
   FormSwitchCard,
   FormattedJsonDisplay,
   FormattedJsonDisplayProps,
+  GearEmoji,
   InputErrorMessage,
   InputLabel,
+  MoneyEmoji,
   NumberInput,
   SegmentedControls,
   SelectInput,
-  SpendEmoji,
-  UpdateProposalConfigIcon,
 } from '@dao-dao/stateless'
 import { ActionComponent, DepositRefundPolicy } from '@dao-dao/types'
 import {
@@ -50,14 +50,7 @@ export interface UpdatePreProposeConfigOptions {
 
 export const UpdatePreProposeConfigComponent: ActionComponent<
   UpdatePreProposeConfigOptions
-> = ({
-  fieldNamePrefix,
-  errors,
-  onRemove,
-  isCreating,
-  Loader,
-  options: { cw20 },
-}) => {
+> = ({ fieldNamePrefix, errors, onRemove, isCreating, options: { cw20 } }) => {
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
@@ -70,15 +63,12 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
 
   return (
     <ActionCard
-      Icon={UpdateProposalConfigIcon}
+      Icon={GearEmoji}
       onRemove={onRemove}
       title={t('form.updateProposalSubmissionConfigTitle')}
     >
       <p className="secondary-text mb-3 max-w-prose">
-        <Trans
-          Loader={Loader}
-          i18nKey="form.updateProposalSubmissionConfigDescription"
-        >
+        <Trans i18nKey="form.updateProposalSubmissionConfigDescription">
           This will update the proposal submission configuration for this DAO. A
           bad configuration can lock the DAO. Take care. If you have questions,
           please feel free to ask in the{' '}
@@ -98,7 +88,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-start justify-between gap-2">
             <h3 className="primary-text">
-              <SpendEmoji /> {t('form.proposalDepositTitle')}
+              <MoneyEmoji /> {t('form.proposalDepositTitle')}
             </h3>
 
             <FormSwitchCard

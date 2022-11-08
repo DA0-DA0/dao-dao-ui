@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { TooltipInfoIcon } from '../TooltipInfoIcon'
+import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 import { MembershipPill } from './MembershipPill'
 import {
   ProfileCardWrapper,

@@ -1,12 +1,4 @@
-import { ComponentType } from 'react'
-
-import {
-  Loader as DefaultLoader,
-  Logo as DefaultLogo,
-  LoaderProps,
-  LogoProps,
-  ProposalLineLoader,
-} from '@dao-dao/stateless'
+import { ProposalLineLoader } from '@dao-dao/stateless'
 import { ProposalModule } from '@dao-dao/types'
 
 import {
@@ -22,8 +14,6 @@ export interface ProposalLineProps {
   proposalModules: ProposalModule[]
   proposalId: string
   proposalViewUrl: string
-  Logo?: ComponentType<LogoProps>
-  Loader?: ComponentType<LoaderProps>
 }
 
 export const ProposalLine = ({
@@ -31,16 +21,12 @@ export const ProposalLine = ({
   coreAddress,
   proposalModules,
   proposalId,
-  Logo = DefaultLogo,
-  Loader = DefaultLoader,
   ...props
 }: ProposalLineProps) => (
   <ProposalModuleAdapterProvider
     initialOptions={{
       chainId,
       coreAddress,
-      Logo,
-      Loader,
     }}
     proposalId={proposalId}
     proposalModules={proposalModules}

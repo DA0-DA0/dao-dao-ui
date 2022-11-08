@@ -7,7 +7,7 @@ import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 import { SortFn, useDropdownSorter } from '../../hooks/useDropdownSorter'
 import { GridCardContainer } from '../GridCardContainer'
 import { Dropdown, DropdownOption } from '../inputs/Dropdown'
-import { Loader } from '../Loader'
+import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
 
 export interface PinnedDaosProps {

@@ -18,10 +18,7 @@ export const ProposalActionDisplay = ({
 }: BaseProposalActionDisplayProps<NewProposalForm>) => {
   const { t } = useTranslation()
   const [showRaw, setShowRaw] = useState(false)
-  const {
-    id: proposalModuleAdapterId,
-    options: { Logo, Loader },
-  } = useProposalModuleAdapterContext()
+  const { id: proposalModuleAdapterId } = useProposalModuleAdapterContext()
 
   const proposal = useProposal()
 
@@ -54,8 +51,6 @@ export const ProposalActionDisplay = ({
   return decodedMessages?.length ? (
     <div className="space-y-3">
       <ActionsRenderer
-        Loader={Loader}
-        Logo={Logo}
         actionData={actionData}
         onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
       />

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
-import { AddCw20Emoji } from '@dao-dao/stateless'
+import { TokenEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -28,7 +28,7 @@ const useDefaults: UseDefaults<AddCw20Data> = () => ({
 
 const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
-  const { fieldNamePrefix, Loader } = props
+  const { fieldNamePrefix } = props
 
   const { watch } = useFormContext()
 
@@ -63,7 +63,6 @@ const Component: ActionComponent = (props) => {
         additionalAddressError,
         formattedJsonDisplayProps: {
           jsonLoadable: tokenInfoLoadable,
-          Loader,
         },
       }}
     />
@@ -124,7 +123,7 @@ export const makeAddCw20Action: ActionMaker<AddCw20Data> = ({
 
   return {
     key: ActionKey.AddCw20,
-    Icon: AddCw20Emoji,
+    Icon: TokenEmoji,
     label: t('title.addCw20ToTreasury'),
     description: t('info.addCw20ToTreasuryActionDescription'),
     Component,

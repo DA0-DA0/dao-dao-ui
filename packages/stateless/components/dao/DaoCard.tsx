@@ -13,8 +13,8 @@ import { DaoCardProps } from '@dao-dao/types/components/DaoCard'
 import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
 import { IconButton, IconButtonLink } from '../icon_buttons'
-import { TokenAmountDisplay } from '../TokenAmountDisplay'
-import { Tooltip } from '../Tooltip'
+import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
+import { Tooltip } from '../tooltip/Tooltip'
 import { DaoImage } from './DaoImage'
 
 export * from '@dao-dao/types/components/DaoCard'

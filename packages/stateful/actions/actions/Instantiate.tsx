@@ -8,7 +8,7 @@ import {
   nativeBalancesSelector,
   transactionEventsSelector,
 } from '@dao-dao/state'
-import { InstantiateEmoji } from '@dao-dao/stateless'
+import { BabyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -199,7 +199,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
 
   return {
     key: ActionKey.Instantiate,
-    Icon: InstantiateEmoji,
+    Icon: BabyEmoji,
     label: t('title.instantiateSmartContract'),
     description: t('info.instantiateSmartContractActionDescription'),
     Component,

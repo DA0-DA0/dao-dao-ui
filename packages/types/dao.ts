@@ -18,7 +18,7 @@ import { ContractVersion } from './contract'
 import { ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as CwdCoreV2InstantiateMsg } from './contracts/CwdCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
-import { PriceWithTimestamp } from './state'
+import { AmountWithTimestamp } from './state'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
@@ -76,7 +76,7 @@ export interface TokenStake {
 }
 
 export interface TokenCardLazyInfo {
-  usdcUnitPrice: PriceWithTimestamp | undefined
+  usdcUnitPrice: AmountWithTimestamp | undefined
   stakingInfo:
     | {
         unstakingTasks: UnstakingTask[]

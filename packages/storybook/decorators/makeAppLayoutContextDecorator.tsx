@@ -2,6 +2,7 @@ import { DecoratorFn } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
 import { AppLayoutContext } from '@dao-dao/stateless/components/layout/AppLayoutContext'
+import { UseInboxReturn } from '@dao-dao/types'
 
 // Useful when testing individual components that rely on this context value but
 // don't want to render the entire AppLayout.
@@ -34,6 +35,7 @@ export const makeAppLayoutContextDecorator: (
             PageHeader: () => null,
             RightSidebarContent: () => null,
             setRootCommandContextMaker: () => {},
+            inbox: EMPTY_INBOX,
           }),
           [
             responsiveNavigationEnabled,
@@ -46,3 +48,12 @@ export const makeAppLayoutContextDecorator: (
       </AppLayoutContext.Provider>
     )
   }
+
+export const EMPTY_INBOX: UseInboxReturn = {
+  loading: false,
+  refetching: false,
+  error: undefined,
+  daosWithOpenUnvotedProposals: [],
+  proposalCount: 0,
+  refetch: async () => alert('refetch inbox'),
+}

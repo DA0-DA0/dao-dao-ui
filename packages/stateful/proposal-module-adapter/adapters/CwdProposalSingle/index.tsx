@@ -51,8 +51,6 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
     'cwd-proposal-single',
   ],
 
-  // TODO: Make common accessible somehow inside components and hooks via hooks?
-  // Make react provider for this common object?
   loadCommon: (options) => {
     // Make here so we can pass into common hooks and components that need it.
     const depositInfoSelector = makeDepositInfoSelector({
@@ -109,9 +107,6 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
   },
 
   load: (options) => ({
-    // Selectors
-    selectors: {},
-
     // Functions
     functions: {
       getProposalInfo: makeGetProposalInfo(options),

@@ -17,7 +17,7 @@ export type WithChainId<T> = T & {
   chainId?: string
 }
 
-export interface PriceWithTimestamp {
-  price: number
+export interface AmountWithTimestamp {
+  amount: number
   timestamp: Date
 }

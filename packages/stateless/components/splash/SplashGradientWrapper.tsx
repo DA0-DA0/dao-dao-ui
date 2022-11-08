@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-import { LogoNoBorder } from '../Logo'
+import { LogoNoBorder } from '../logo/Logo'
 
 export interface SplashGradientWrapperProps {
   children: ReactNode

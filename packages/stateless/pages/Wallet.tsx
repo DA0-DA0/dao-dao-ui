@@ -32,8 +32,6 @@ import {
   ButtonLink,
   CopyToClipboard,
   CosmosMessageDisplay,
-  Loader,
-  Logo,
   Tooltip,
   useAppLayoutContext,
 } from '../components'
@@ -196,13 +194,8 @@ export const Wallet = ({
                   }
 
                   return (
-                    <SuspenseLoader
-                      key={index}
-                      fallback={<ActionCardLoader Loader={Loader} />}
-                    >
+                    <SuspenseLoader key={index} fallback={<ActionCardLoader />}>
                       <Component
-                        Loader={Loader}
-                        Logo={Logo}
                         allActionsWithData={proposalActionData}
                         data={actionData.data}
                         errors={errors.actionData?.[index]?.data || {}}

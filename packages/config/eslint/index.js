@@ -1,13 +1,10 @@
 // @ts-check
 
-// FIXME: Switch back to using typescript to improve linting once ciruclar
-// dependencies are resolved.
-// const fs = require('fs')
-// const path = require('path')
-// const tsConfig = fs.existsSync('tsconfig.json')
-//   ? path.resolve('tsconfig.json')
-//   : undefined
-const tsConfig = undefined
+const fs = require('fs')
+const path = require('path')
+const tsConfig = fs.existsSync('tsconfig.json')
+  ? path.resolve('tsconfig.json')
+  : undefined
 
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {
@@ -104,16 +101,6 @@ const eslintConfig = {
                 'Import from root @dao-dao/stateless instead of a direct path. Ensure the export has been added to its sibling index.',
             },
             {
-              regex: '\\@dao\\-dao\\/state\\/hooks\\/clients[^\'"]*',
-              message:
-                'Import from root @dao-dao/state using a grouped export, such as CwCoreHooks, instead of a direct path.',
-            },
-            {
-              regex: '\\@dao\\-dao\\/state\\/recoil\\/selectors[^\'"]*',
-              message:
-                'Import from root @dao-dao/state instead of a direct path. If using contract client selectors, use a grouped export, such as CwCoreV1Selectors.',
-            },
-            {
               regex: '(?:\\.\\.\\/)+(atoms|components|hooks|util)',
               replacement: {
                 function: '"@/" + $[1]',
@@ -192,7 +179,6 @@ const eslintConfig = {
                 'name',
                 'description',
                 'subtitle',
-                'emoji',
               ],
             },
             'object-properties': {

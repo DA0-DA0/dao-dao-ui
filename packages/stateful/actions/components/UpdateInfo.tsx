@@ -5,12 +5,12 @@ import {
   DaoImage,
   FormSwitch,
   ImageSelector,
+  InfoEmoji,
   InputErrorMessage,
   InputLabel,
   TextAreaInput,
   TextInput,
   TooltipInfoIcon,
-  UpdateInfoEmoji,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -36,7 +36,7 @@ export const UpdateInfoComponent: ActionComponent<
 
   return (
     <ActionCard
-      Icon={UpdateInfoEmoji}
+      Icon={InfoEmoji}
       onRemove={onRemove}
       title={t('title.updateInfo')}
     >

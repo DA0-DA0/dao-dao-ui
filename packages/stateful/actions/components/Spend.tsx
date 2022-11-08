@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next'
 import {
   AddressInput,
   InputErrorMessage,
+  MoneyEmoji,
   NumberInput,
   SelectInput,
-  SpendEmoji,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -158,7 +158,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   )
 
   return (
-    <ActionCard Icon={SpendEmoji} onRemove={onRemove} title={t('title.spend')}>
+    <ActionCard Icon={MoneyEmoji} onRemove={onRemove} title={t('title.spend')}>
       <div className="flex flex-row items-center gap-4">
         <div className="flex flex-row items-stretch gap-2">
           <NumberInput

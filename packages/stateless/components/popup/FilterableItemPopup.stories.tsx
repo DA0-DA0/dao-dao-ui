@@ -27,6 +27,7 @@ Default.args = {
       Click me!
     </Button>
   ),
+  searchPlaceholder: 'Filter...',
   items: [
     {
       key: 0,

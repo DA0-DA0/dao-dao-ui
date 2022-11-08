@@ -1,6 +1,6 @@
 import { DecoratorFn } from '@storybook/react'
 
-import { SubQueryProvider } from '@dao-dao/state'
+import { SubQueryProvider } from '@dao-dao/stateful'
 
 export const SubQueryDecorator: DecoratorFn = (Story) => (
   <SubQueryProvider>

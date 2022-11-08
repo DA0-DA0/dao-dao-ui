@@ -1,8 +1,8 @@
+import { DaoEmoji } from '@dao-dao/stateless'
 import { DurationUnits, VotingModuleAdapter } from '@dao-dao/types'
 
 import { ProfileCardMemberInfo } from './components'
 import {
-  DisplayInfoIcon,
   GovernanceConfigurationInput,
   GovernanceConfigurationReview,
   UnstakingDurationVotingConfigItem,
@@ -45,7 +45,7 @@ export const CwdVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> 
 
     daoCreation: {
       displayInfo: {
-        Icon: DisplayInfoIcon,
+        Icon: DaoEmoji,
         nameI18nKey: 'daoCreationAdapter.CwdVotingCw20Staked.name',
         descriptionI18nKey:
           'daoCreationAdapter.CwdVotingCw20Staked.description',

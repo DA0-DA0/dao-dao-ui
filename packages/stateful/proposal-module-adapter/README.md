@@ -30,18 +30,16 @@ level to encompass entire pages. At this point, you must already know the
 available proposal modules and proposal ID of the relevant proposal so that the
 correct adapter can be chosen and its interface passed down to descendant
 components. You will also need to pass some options, like the contract address
-of the DAO's core contract, as well as some commonly used components, like
-`Logo` and `Loader`.
+of the DAO's core contract and its chain ID.
 
 ```tsx
 import { ProposalModuleAdapterProvider } from '@dao-dao/stateful/proposal-module-adapter'
 
-const App = () => (
+const ProposalPage = () => (
   <ProposalModuleAdapterProvider
     initialOptions={{
+      chainId,
       coreAddress,
-      Logo,
-      Loader,
     }}
     proposalModules={proposalModules}
     proposalId={proposalId}
@@ -141,7 +139,10 @@ import { ProposalModuleAdapter } from '@dao-dao/types/proposal-module-adapter'
 
 const MyProposalModuleAdapter: ProposalModuleAdapter = {
   id: 'my_proposal_module_adapter_id',
-  matcher: (contractName: string) => contractName === 'my_proposal_module_adapter_id',
+  contractNames: [
+    'cwd-my-proposal-module-v1',
+    'cwd-my-proposal-module-v2',
+  ],
 
   loadCommon: (options) => ({
     hooks: {
@@ -162,6 +163,18 @@ const MyProposalModuleAdapter: ProposalModuleAdapter = {
       ...
     },
   }),
+
+  queries: {
+    ...
+  },
+
+  functions: {
+    ...
+  },
+
+  daoCreation: {
+    ...
+  },
 }
 ```
 

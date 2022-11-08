@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next'
 
 import {
   AddressInput,
+  DepositEmoji,
   InputErrorMessage,
   NumberInput,
   SelectInput,
-  StakeEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
@@ -155,7 +155,11 @@ export const StakeComponent: ActionComponent<StakeOptions> = ({
   ])
 
   return (
-    <ActionCard Icon={StakeEmoji} onRemove={onRemove} title={t('title.stake')}>
+    <ActionCard
+      Icon={DepositEmoji}
+      onRemove={onRemove}
+      title={t('title.stake')}
+    >
       <div className="mt-2 flex flex-row gap-4">
         <SelectInput
           defaultValue={stakeActions[0].type}

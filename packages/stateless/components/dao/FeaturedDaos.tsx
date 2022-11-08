@@ -1,19 +1,16 @@
-// GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
-// See the "LICENSE" file in the root directory of this package for more copyright information.
-
 import {
   ComponentType,
   UIEventHandler,
-  createRef,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react'
 
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 import { useIsVisible } from '@dao-dao/utils'
 
-import { Loader } from '../Loader'
+import { Loader } from '../logo/Loader'
 
 export interface FeaturedDaosProps {
   DaoCard: ComponentType<DaoCardInfo>
@@ -24,8 +21,12 @@ export const FeaturedDaos = ({ DaoCard, featuredDaos }: FeaturedDaosProps) => {
   const [clonesWidth, setClonesWidth] = useState(0)
   const [autoscroll, setAutoscroll] = useState(true)
 
-  const scrollRef = createRef<HTMLDivElement>()
-  const mirrorRef = createRef<HTMLDivElement>()
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const mirrorRef = useRef<HTMLDivElement | null>(null)
+  // Prevent autoscroll if user scrolled within past 150ms. Replicate a scroll
+  // end event by clearing and resetting a timer on scroll.
+  const userScrolling = useRef(false)
+  const userScrollingTimer = useRef<ReturnType<typeof setTimeout>>()
 
   // Don't scroll this element if it isn't visible as the scrolling is a
   // reasonably heavy operation.
@@ -35,6 +36,16 @@ export const FeaturedDaos = ({ DaoCard, featuredDaos }: FeaturedDaosProps) => {
 
   const handleScroll: UIEventHandler<HTMLDivElement> = useCallback(
     (e) => {
+      // Clear timeout if exists so we can reset it.
+      if (userScrollingTimer.current) {
+        clearTimeout(userScrollingTimer.current)
+      }
+      // Reset timer to unset user scrolling in 150ms.
+      userScrollingTimer.current = setTimeout(() => {
+        userScrolling.current = false
+        userScrollingTimer.current = undefined
+      }, 150)
+
       const container = e.currentTarget
       const scrollPos = container.scrollLeft
       const scrollWidth = container.scrollWidth
@@ -76,13 +87,17 @@ export const FeaturedDaos = ({ DaoCard, featuredDaos }: FeaturedDaosProps) => {
   }, [])
 
   useEffect(() => {
+    if (!autoscroll || !componentIsVisible) {
+      return
+    }
+
     const interval = setInterval(() => {
-      if (scrollRef && autoscroll && componentIsVisible) {
-        scrollRef.current?.scrollBy(1, 0)
+      if (scrollRef.current && !userScrolling.current) {
+        scrollRef.current.scrollBy(1, 0)
       }
     }, 50)
     return () => clearInterval(interval)
-  }, [scrollRef, autoscroll, componentIsVisible])
+  }, [autoscroll, componentIsVisible])
 
   return (
     <div
@@ -90,6 +105,9 @@ export const FeaturedDaos = ({ DaoCard, featuredDaos }: FeaturedDaosProps) => {
       onMouseEnter={() => setAutoscroll(false)}
       onMouseLeave={() => setAutoscroll(true)}
       onScroll={handleScroll}
+      onTouchStart={() => {
+        userScrolling.current = true
+      }}
       ref={scrollRef}
     >
       {featuredDaos.loading ? (

@@ -2,10 +2,10 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddCw721Emoji,
   AddressInput,
   FormattedJsonDisplay,
   FormattedJsonDisplayProps,
+  ImageEmoji,
   InputErrorMessage,
   InputLabel,
 } from '@dao-dao/stateless'
@@ -34,7 +34,7 @@ export const AddCw721Component: ActionComponent<AddCw721Options> = ({
 
   return (
     <ActionCard
-      Icon={AddCw721Emoji}
+      Icon={ImageEmoji}
       onRemove={onRemove}
       title={t('title.addCw721ToTreasury')}
     >

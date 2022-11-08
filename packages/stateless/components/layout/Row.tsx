@@ -6,8 +6,8 @@ import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { LinkWrapperProps } from '@dao-dao/types'
 
 import { IconButton } from '../icon_buttons'
-import { Loader } from '../Loader'
-import { Tooltip } from '../Tooltip'
+import { Loader } from '../logo/Loader'
+import { Tooltip } from '../tooltip/Tooltip'
 
 export interface RowProps {
   Icon: ComponentType<{ className: string }>

@@ -1,13 +1,12 @@
+import { Buffer } from 'buffer'
+
 import { ChainInfoID, useWallet } from '@noahsaso/cosmodal'
-import { ComponentType, useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { walletStargazeNftCardInfosSelector } from '@dao-dao/state'
 import {
-  Loader as DefaultLoader,
-  LoaderProps,
-  Modal,
+  ModalLoader,
   ModalProps,
   NftSelectionModal,
   useCachedLoadable,
@@ -16,16 +15,13 @@ import {
 import { NftCardInfo } from '@dao-dao/types'
 import { loadableToLoadingDataWithError, processError } from '@dao-dao/utils'
 
+import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export interface StargazeNftImportModalProps
-  extends Pick<ModalProps, 'onClose'> {
-  Loader?: ComponentType<LoaderProps>
-}
+export type StargazeNftImportModalProps = Pick<ModalProps, 'onClose'>
 
 export const InnerStargazeNftImportModal = ({
   onClose,
-  Loader = DefaultLoader,
 }: StargazeNftImportModalProps) => {
   const { t } = useTranslation()
   const { coreAddress, name: daoName } = useDaoInfoContext()
@@ -115,7 +111,6 @@ export const InnerStargazeNftImportModal = ({
 
   return (
     <NftSelectionModal
-      Loader={Loader}
       actionLabel={t('button.import')}
       actionLoading={loading}
       getIdForNft={getIdForNft}
@@ -141,21 +136,13 @@ export const InnerStargazeNftImportModal = ({
           : setSelected(nfts.data.map((nft) => getIdForNft(nft)) ?? [])
       }
       selectedIds={selected}
+      visible
     />
   )
 }
 
-export const StargazeNftImportModal = ({
-  onClose,
-  Loader = DefaultLoader,
-}: StargazeNftImportModalProps) => (
-  <SuspenseLoader
-    fallback={
-      <Modal containerClassName="!p-40" onClose={onClose} visible>
-        <Loader />
-      </Modal>
-    }
-  >
-    <InnerStargazeNftImportModal onClose={onClose} />
+export const StargazeNftImportModal = (props: StargazeNftImportModalProps) => (
+  <SuspenseLoader fallback={<ModalLoader {...props} />}>
+    <InnerStargazeNftImportModal {...props} />
   </SuspenseLoader>
 )

@@ -14,16 +14,13 @@ import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
-  SubQueryProvider,
   activeThemeAtom,
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
-import { WalletProvider } from '@dao-dao/stateful'
+import { AppLayout, SubQueryProvider, WalletProvider } from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
-
-import { AppLayout, HomepageLayout } from '@/components'
 
 const InnerApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
@@ -75,9 +72,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
             <Component {...pageProps} />
           </LayoutLoading>
         ) : isHomepage ? (
-          <HomepageLayout>
-            <Component {...pageProps} />
-          </HomepageLayout>
+          <Component {...pageProps} />
         ) : (
           <WalletProvider>
             <AppLayout>

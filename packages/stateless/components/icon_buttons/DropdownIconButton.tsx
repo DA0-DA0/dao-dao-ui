@@ -2,7 +2,7 @@ import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
 import { forwardRef } from 'react'
 
-import { IconButton, IconButtonProps } from '.'
+import { IconButton, IconButtonProps } from './IconButton'
 
 export interface DropdownIconButtonProps
   extends Partial<Omit<IconButtonProps, 'onClick' | 'Icon'>> {

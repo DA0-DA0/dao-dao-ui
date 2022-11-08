@@ -5,12 +5,12 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  BabyEmoji,
   Button,
   CodeMirrorInput,
   CopyToClipboard,
   InputErrorMessage,
   InputLabel,
-  InstantiateEmoji,
   NumberInput,
   TextInput,
 } from '@dao-dao/stateless'
@@ -59,7 +59,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
   return (
     <ActionCard
-      Icon={InstantiateEmoji}
+      Icon={BabyEmoji}
       onRemove={onRemove}
       title={t('title.instantiateSmartContract')}
     >

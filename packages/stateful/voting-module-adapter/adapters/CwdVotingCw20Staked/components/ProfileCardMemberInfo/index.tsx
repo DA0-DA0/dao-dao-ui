@@ -5,13 +5,10 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import {
-  Cw20StakeHooks,
   blockHeightSelector,
   blocksPerYearSelector,
   junoswapPoolsListSelector,
   stakingLoadingAtom,
-  useAwaitNextBlock,
-  useWalletProfile,
 } from '@dao-dao/state'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
@@ -28,6 +25,11 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import {
+  Cw20StakeHooks,
+  useAwaitNextBlock,
+  useWalletProfile,
+} from '../../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../../components'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 import { StakingModal } from './StakingModal'

@@ -1,7 +1,6 @@
-import Emoji from 'a11y-react-emoji'
 import { useTranslation } from 'react-i18next'
 
-import { NumberInput, SelectInput } from '@dao-dao/stateless'
+import { HourglassEmoji, NumberInput, SelectInput } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
@@ -16,11 +15,6 @@ import {
 } from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'
-
-export const VotingDurationIcon = () => {
-  const { t } = useTranslation()
-  return <Emoji label={t('emoji.hourglass')} symbol="⏳" />
-}
 
 export const VotingDurationInput = ({
   data: { votingDuration },
@@ -90,7 +84,7 @@ export const VotingDurationReview = ({
 
 export const VotingDurationVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
   {
-    Icon: VotingDurationIcon,
+    Icon: HourglassEmoji,
     nameI18nKey: 'form.votingDurationTitle',
     descriptionI18nKey: 'form.votingDurationDescription',
     Input: VotingDurationInput,

@@ -1,3 +1,3 @@
 # @dao-dao/types
 
-A collection of types used in various packages.
+A collection of types used across packages.

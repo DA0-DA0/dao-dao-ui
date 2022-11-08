@@ -24,12 +24,13 @@ import {
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
   refreshProposalsIdAtom,
-  useVotingModule,
 } from '@dao-dao/state'
 import {
   DaoPageWrapper,
   DaoPageWrapperProps,
+  ProfileNewProposalCard,
   SuspenseLoader,
+  useVotingModule,
 } from '@dao-dao/stateful'
 import {
   CwdProposalSingleAdapter,
@@ -39,8 +40,6 @@ import {
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import {
   CreateProposal,
-  Loader,
-  Logo,
   PageLoader,
   ProfileDisconnectedCard,
   useDaoInfoContext,
@@ -52,8 +51,6 @@ import {
   ProposalPrefill,
 } from '@dao-dao/types'
 import { SITE_URL, cwMsgToEncodeObject } from '@dao-dao/utils'
-
-import { ProfileNewProposalCard } from '@/components'
 
 // TODO(v2): Save latest proposal to localStorage, separate from drafts.
 // TODO(v2): Fix errors getting stuck when removing components with errors (I
@@ -84,8 +81,6 @@ const InnerProposalCreate = () => {
       matchAndLoadCommon(selectedProposalModule, {
         chainId: daoInfo.chainId,
         coreAddress: daoInfo.coreAddress,
-        Loader,
-        Logo,
       }),
     [daoInfo.chainId, daoInfo.coreAddress, selectedProposalModule]
   )
