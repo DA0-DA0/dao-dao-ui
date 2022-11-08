@@ -249,7 +249,7 @@ const StakeUnstakeModesBody = ({
       {(mode === StakingMode.Stake || mode === StakingMode.Unstake) &&
         unstakingDuration &&
         durationIsNonZero(unstakingDuration) && (
-          <div className="space-y-5 border-t border-border-secondary pt-7">
+          <div className="mt-7 space-y-5 border-t border-border-secondary pt-7">
             <p className="primary-text text-text-secondary">
               {t('title.unstakingPeriod') +
                 `: ${humanReadableDuration(unstakingDuration)}`}
