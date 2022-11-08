@@ -1,5 +1,5 @@
 import { DaoMemberCard as StatelessDaoMemberCard } from '@dao-dao/stateless'
-import { DaoMemberCardProps } from '@dao-dao/types/components/DaoMemberCard'
+import { DaoMemberCardProps } from '@dao-dao/types/stateless/DaoMemberCard'
 
 import { useProfile } from '../../hooks'
 

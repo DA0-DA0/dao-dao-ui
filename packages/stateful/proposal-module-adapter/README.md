@@ -2,6 +2,21 @@
 
 Author: [@NoahSaso](https://github.com/NoahSaso)
 
+## Adapters
+
+| Adapter                                           | Summary                 |
+| ------------------------------------------------- | ----------------------- |
+| [CwdProposalSingle](./adapters/CwdProposalSingle) | Single choice proposals |
+
+## Layout
+
+| Location               | Summary                                                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [adapters](./adapters) | Proposal module adapters.                                                                                                                                                |
+| [react](./react)       | The external React interface used by apps and packages when using this proposal module adapter system. This uses the core logic under the hood.                          |
+| [recoil](./recoil)     | The external [Recoil](https://recoiljs.org) interface used by apps and packages when using this proposal module adapter system. This uses the core logic under the hood. |
+| [core.ts](./core.ts)   | The core logic that matches and loads an adapter from the available adapters.                                                                                            |
+
 ## What is it?
 
 This is a proposal module adapter package. It creates a common interface for
@@ -94,9 +109,8 @@ export const DaoInfo = () => {
     () =>
       proposalModules.map((proposalModule) => ({
         DaoInfoVotingConfiguration: matchAndLoadCommon(proposalModule, {
+          chainId,
           coreAddress,
-          Loader,
-          Logo,
         }).components.DaoInfoVotingConfiguration,
         proposalModule,
       })),
@@ -186,5 +200,4 @@ There's one more thing to be aware of when writing adapters... the
 This hook simply provides the `options` passed to the
 `ProposalModuleAdapterProvider` (with `proposalModuleAddress`, `proposalId`, and
 `proposalNumber` added), so you can easily access the `coreAddress` as well as
-other common data and components instead of needing to manually pass them into
-everything.
+other common info instead of needing to manually pass them around.

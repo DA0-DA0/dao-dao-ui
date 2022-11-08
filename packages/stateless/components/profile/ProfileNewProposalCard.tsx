@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProfileNewProposalCardProps } from '@dao-dao/types/components/ProfileNewProposalCard'
+import { ProfileNewProposalCardProps } from '@dao-dao/types/stateless/ProfileNewProposalCard'
 
 import { concatAddressStartEnd } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons'
@@ -11,7 +11,7 @@ import { Loader } from '../logo/Loader'
 import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
-export * from '@dao-dao/types/components/ProfileNewProposalCard'
+export * from '@dao-dao/types/stateless/ProfileNewProposalCard'
 
 export const ProfileNewProposalCard = ({
   daoName,

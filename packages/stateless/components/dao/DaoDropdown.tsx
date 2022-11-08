@@ -3,12 +3,12 @@ import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-import { DaoDropdownProps } from '@dao-dao/types/components/DaoDropdown'
+import { DaoDropdownProps } from '@dao-dao/types/stateless/DaoDropdown'
 
 import { DropdownIconButton } from '../icon_buttons'
 import { Tooltip } from '../tooltip/Tooltip'
 
-export * from '@dao-dao/types/components/DaoDropdown'
+export * from '@dao-dao/types/stateless/DaoDropdown'
 
 export const DaoDropdown = ({
   dao: { coreAddress, imageUrl, name, subdaos, content },

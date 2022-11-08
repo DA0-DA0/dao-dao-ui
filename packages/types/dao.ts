@@ -12,13 +12,12 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
-import { Validator } from './chain'
-import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './components'
-import { ContractVersion } from './contract'
+import { ContractVersion, Validator } from './chain'
 import { ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as CwdCoreV2InstantiateMsg } from './contracts/CwdCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { AmountWithTimestamp } from './state'
+import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './stateless'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper

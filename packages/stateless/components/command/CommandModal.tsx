@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { CommandModalProps } from '@dao-dao/types/components/CommandModal'
+import { CommandModalProps } from '@dao-dao/types/stateless/CommandModal'
 
 import { SearchBar } from '../inputs/SearchBar'
 import { Modal } from '../modals/Modal'

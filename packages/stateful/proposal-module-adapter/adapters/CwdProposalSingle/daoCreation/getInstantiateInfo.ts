@@ -2,6 +2,7 @@ import { Buffer } from 'buffer'
 
 import { DaoCreationGetInstantiateInfo } from '@dao-dao/types'
 import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/types/contracts/CwdPreProposeSingle'
+import { PercentageThreshold } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/CwdProposalSingle.v2'
 import {
   CODE_ID_CONFIG,
@@ -19,8 +20,7 @@ import {
   GovernanceTokenType,
 } from '../../../../voting-module-adapter/adapters/CwdVotingCw20Staked/types'
 import { CwdProposalSingleAdapter } from '../../index'
-import { DaoCreationConfig } from '../types'
-import { convertThresholdValueToPercentageThreshold } from '../utils'
+import { DaoCreationConfig, ThresholdValue } from '../types'
 import instantiateSchema from './instantiate_schema.json'
 import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
@@ -139,3 +139,9 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }
 }
+
+const convertThresholdValueToPercentageThreshold = ({
+  majority,
+  value,
+}: ThresholdValue): PercentageThreshold =>
+  majority ? { majority: {} } : { percent: (value / 100).toFixed(2) }

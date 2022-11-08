@@ -2,9 +2,9 @@
 
 State retrieval and management for the DAO DAO UI.
 
-## Folders
+## Layout
 
-| Folder                     | Summary                                                                                                                                          |
+| Location                   | Summary                                                                                                                                          |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [`contracts`](./contracts) | Smart contract query and execute clients auto-generated with [@cosmwasm/ts-codegen](https://www.npmjs.com/package/@cosmwasm/ts-codegen).         |
 | [`recoil`](./recoil)       | [Recoil](https://recoiljs.org/) atoms and selectors for loading and caching state.                                                               |

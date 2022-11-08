@@ -1,4 +1,4 @@
-# dao-dao-dapp
+# @dao-dao/dapp
 
 Web application for creating and managing multiple DAOs. Live in production at
 [daodao.zone](https://daodao.zone).

@@ -2,6 +2,24 @@
 
 Author: [@NoahSaso](https://github.com/NoahSaso)
 
+## Adapters
+
+| Adapter                                                   | Summary                                                                                         |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [CwdVotingCw20Staked](./adapters/CwdVotingCw20Staked)     | [CW20](https://docs.cosmwasm.com/cw-plus/0.9.0/cw20/spec) token staked balance voting.          |
+| [CwdVotingCw4](./adapters/CwdVotingCw4)                   | [CW4](https://docs.cosmwasm.com/cw-plus/0.9.0/cw4/cw4-group-spec) group voting, multisig style. |
+| [CwdVotingNativeStaked](./adapters/CwdVotingNativeStaked) | Native token staked balance voting.                                                             |
+| [Fallback](./adapters/Fallback)                           | Fallback to allow for DAO page rendering even with an unsupported voting module.                |
+
+## Layout
+
+| Location                   | Summary                                                                                                                                       |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| [adapters](./adapters)     | Voting module adapters.                                                                                                                       |
+| [components](./components) | Components shared between adapters.                                                                                                           |
+| [react](./react)           | The external React interface used by apps and packages when using this voting module adapter system. This uses the core logic under the hood. |
+| [core.ts](./core.ts)       | The core logic that matches and loads an adapter from the available adapters.                                                                 |
+
 ## What is it?
 
 This is a voting module adapter package. It creates a common interface for
@@ -22,279 +40,6 @@ could potentially be needed by any voting module, using conditional statements
 to check which data we expected to be defined. This led to, unsurprisingly,
 confusing and unreadable code. And we only had two voting modules at the time of
 writing this!
-
-## Examples
-
-Sometimes it makes sense to create two different components, when the
-information displayed is significantly different:
-
-<details>
-<summary>Before</summary>
-
-```tsx
-const DaoThinInfoDisplay = () => (
-  <SuspenseLoader fallback={<FallbackDisplay />}>
-    <DaoThinInfoContent />
-  </SuspenseLoader>
-)
-
-const DaoThinInfoContent: FC = () => {
-  const { t } = useTranslation()
-  const { coreAddress, votingModuleType } = useDaoInfoContext()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
-  const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
-    fetchCw4VotingMembers: votingModuleType === VotingModuleType.Cw4Voting,
-  })
-  const { proposalCount } = useProposalModule(coreAddress, {
-    fetchProposalCount: true,
-  })
-
-  if (totalVotingWeight === undefined || proposalCount === undefined) {
-    throw new Error(t('error.loadingData'))
-  }
-
-  const stakedPercent =
-    votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-    totalVotingWeight !== undefined &&
-    governanceTokenInfo &&
-    Number(governanceTokenInfo.total_supply) > 0
-      ? formatPercentOf100(
-          (totalVotingWeight / Number(governanceTokenInfo.total_supply)) * 100
-        )
-      : undefined
-
-  return (
-    <HorizontalInfo>
-      <HorizontalInfoSection>
-        <UsersIcon className="w-4 h-4" />
-        {votingModuleType === VotingModuleType.Cw4Voting && cw4VotingMembers ? (
-          `${cw4VotingMembers.length} member${
-            cw4VotingMembers.length !== 1 ? 's' : ''
-          }`
-        ) : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-          governanceTokenInfo ? (
-          <>
-            {t('info.amountTotalSupply', {
-              amount: convertMicroDenomToDenomWithDecimals(
-                governanceTokenInfo.total_supply,
-                governanceTokenInfo.decimals
-              ).toLocaleString(undefined, {
-                maximumFractionDigits: governanceTokenInfo.decimals,
-              }),
-              tokenSymbol: governanceTokenInfo.symbol,
-            })}
-          </>
-        ) : null}
-      </HorizontalInfoSection>
-      {votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-        governanceTokenInfo &&
-        stakedPercent !== undefined && (
-          <HorizontalInfoSection>
-            <LibraryIcon className="w-4 h-4" />
-            {t('info.percentStaked', {
-              percent: stakedPercent,
-              tokenSymbol: governanceTokenInfo.symbol,
-            })}
-          </HorizontalInfoSection>
-        )}
-      <HorizontalInfoSection>
-        <Pencil />
-        {t('info.proposalsCreated', { count: proposalCount })}
-      </HorizontalInfoSection>
-    </HorizontalInfo>
-  )
-}
-```
-
-</details>
-
-<details>
-<summary>After</summary>
-
-```tsx
-const DaoThinInfoDisplay = () => {
-  const {
-    ui: { DaoThinInfoContent },
-  } = useVotingModuleAdapter()
-
-  return (
-    <SuspenseLoader fallback={<FallbackDisplay />}>
-      <DaoThinInfoContent />
-    </SuspenseLoader>
-  )
-}
-```
-
-</details>
-<br/>
-
-<details>
-<summary>`CwdVotingCw4/components/DaoThinInfoContent.tsx`</summary>
-
-```tsx
-const DaoThinInfoContent = () => {
-  const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
-  const { totalVotingWeight, cw4VotingMembers } = useVotingModule(coreAddress, {
-    fetchCw4VotingMembers: true,
-  })
-  const { proposalCount } = useProposalModule(coreAddress, {
-    fetchProposalCount: true,
-  })
-
-  if (
-    totalVotingWeight === undefined ||
-    proposalCount === undefined ||
-    !cw4VotingMembers
-  ) {
-    throw new Error(t('error.loadingData'))
-  }
-
-  return (
-    <HorizontalInfo>
-      <HorizontalInfoSection>
-        <UsersIcon className="w-4 h-4" />
-        {t('info.numMembers', { count: cw4VotingMembers.length })}
-      </HorizontalInfoSection>
-      <HorizontalInfoSection>
-        <Pencil />
-        {t('info.proposalsCreated', { count: proposalCount })}
-      </HorizontalInfoSection>
-    </HorizontalInfo>
-  )
-}
-```
-
-</details>
-
-<details>
-<summary>`CwdVotingCw20Staked/components/DaoThinInfoContent.tsx`</summary>
-
-```tsx
-const DaoThinInfoContent = () => {
-  const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
-  const { totalVotingWeight } = useVotingModule(coreAddress)
-  const { proposalCount } = useProposalModule(coreAddress, {
-    fetchProposalCount: true,
-  })
-
-  if (
-    !governanceTokenInfo ||
-    totalVotingWeight === undefined ||
-    proposalCount === undefined
-  ) {
-    throw new Error(t('error.loadingData'))
-  }
-
-  const totalGovernanceTokenSupply = Number(governanceTokenInfo.total_supply)
-
-  return (
-    <HorizontalInfo>
-      <HorizontalInfoSection>
-        <UsersIcon className="w-4 h-4" />
-        {t('info.amountTotalSupply', {
-          amount: convertMicroDenomToDenomWithDecimals(
-            governanceTokenInfo.total_supply,
-            governanceTokenInfo.decimals
-          ).toLocaleString(undefined, {
-            maximumFractionDigits: governanceTokenInfo.decimals,
-          }),
-          tokenSymbol: governanceTokenInfo.symbol,
-        })}
-      </HorizontalInfoSection>
-      {totalGovernanceTokenSupply > 0 && (
-        <HorizontalInfoSection>
-          <LibraryIcon className="w-4 h-4" />
-          {t('info.percentStaked', {
-            percent: formatPercentOf100(
-              (totalVotingWeight / totalGovernanceTokenSupply) * 100
-            ),
-            tokenSymbol: governanceTokenInfo.symbol,
-          })}
-        </HorizontalInfoSection>
-      )}
-      <HorizontalInfoSection>
-        <Pencil />
-        {t('info.proposalsCreated', { count: proposalCount })}
-      </HorizontalInfoSection>
-    </HorizontalInfo>
-  )
-}
-```
-
-</details>
-<br/>
-
-Other times it makes sense to create objects or hooks:
-
-<details>
-<summary>Before</summary>
-
-```ts
-const { coreAddress, votingModuleType } = useDaoInfoContext()
-const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
-
-const voteConversionDecimals = useMemo(
-  () =>
-    votingModuleType === VotingModuleType.Cw4Voting
-      ? 0
-      : votingModuleType === VotingModuleType.Cw20StakedBalanceVoting &&
-        governanceTokenInfo
-      ? governanceTokenInfo.decimals
-      : undefined,
-  [votingModuleType, governanceTokenInfo]
-)
-```
-
-</details>
-
-<details>
-<summary>After</summary>
-
-```ts
-const {
-  hooks: { useVoteConversionDecimals },
-} = useVotingModuleAdapter()
-
-const voteConversionDecimals = useVoteConversionDecimals()
-```
-
-</details>
-<br/>
-
-<details>
-<summary>`CwdVotingCw4/hooks/useVoteConversionDecimals.ts`</summary>
-
-```ts
-const useVoteConversionDecimals = () => 0
-```
-
-</details>
-
-<details>
-<summary>`CwdVotingCw20Staked/hooks/useVoteConversionDecimals.ts`</summary>
-
-```ts
-const useVoteConversionDecimals = () => {
-  const { t } = useTranslation()
-  const { coreAddress } = useVotingModuleAdapterOptions()
-  const { governanceTokenInfo } = useGovernanceTokenInfo(coreAddress)
-  if (!governanceTokenInfo) {
-    throw new Error(t('error.loadingData'))
-  }
-
-  return governanceTokenInfo.decimals
-}
-```
-
-</details>
-<br/>
-
-This voting module adapter allows the code to be more readable in components and
-pages, prevents having to load unused hooks/data, and puts all the relevant
-voting module code together.
 
 ## React Setup
 
@@ -383,18 +128,14 @@ import { VotingModuleAdapter } from '@dao-dao/types/voting-module-adapter'
 
 const MyVotingModuleAdapter: VotingModuleAdapter = {
   id: 'my_voting_module_adapter_id',
-  matcher: (contractName: string) => contractName === 'my_voting_module',
+  contractNames: ['my_voting_module'],
 
   load: (options) => ({
-    fields: {
-      ...
-    },
-
     hooks: {
       ...
     },
 
-    ui: {
+    components: {
       ...
     },
   }),
@@ -408,33 +149,43 @@ There's one more thing to be aware of when writing adapters... the
 
 This hook simply provides the `options` passed to the
 `VotingModuleAdapterProvider`, so you can easily access the `coreAddress` as
-well as other common data and components instead of needing to manually pass
-them into everything.
+well as other common info instead of needing to manually pass them around.
 
 Example:
 
 <details>
-<summary>`CwdVotingCw20Staked/components/DaoTreasuryFooter.tsx`</summary>
+<summary>`CwdVotingCw4/hooks/useDaoInfoBarItems.ts`</summary>
 
 ```tsx
-import { useVotingModuleAdapterOptions } from '@dao-dao/stateful/voting-module-adapter/react/context'
+import { PeopleAltOutlined } from '@mui/icons-material'
+import { useTranslation } from 'react-i18next'
 
-const DaoTreasuryFooter = () => {
+import { DaoInfoBarItem } from '@dao-dao/stateless'
+
+// IMPORT HOOK:
+import { useVotingModuleAdapterOptions } from '../../../react/context'
+// OR:
+// import { useVotingModuleAdapterOptions } from '@dao-dao/stateful/voting-module-adapter/react/context'
+
+import { useVotingModule } from './useVotingModule'
+
+export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
   const { t } = useTranslation()
-  // Hook used to access `coreAddress` instead of expecting it as a prop.
+  // USE HOOK TO GET `coreAddress` FROM OPTIONS:
   const { coreAddress } = useVotingModuleAdapterOptions()
+  const { members } = useVotingModule(coreAddress, { fetchMembers: true })
 
-  const addToken = useAddToken()
-  const { governanceTokenAddress } = useGovernanceTokenInfo(coreAddress)
-  if (!governanceTokenAddress) {
+  if (!members) {
     throw new Error(t('error.loadingData'))
   }
 
-  return addToken ? (
-    <Button onClick={() => addToken(governanceTokenAddress)}>
-      {t('button.addToKeplr')}
-    </Button>
-  ) : null
+  return [
+    {
+      Icon: PeopleAltOutlined,
+      label: t('title.members'),
+      value: members.length,
+    },
+  ]
 }
 ```
 

@@ -27,7 +27,7 @@ yarn
 If you're here to work on UI components in isolation, you will likely want to
 run the [Storybook](https://storybook.js.org/) server to mock up components and
 iterate quickly without having to access live chain data. Check out the
-[storybook package README](./packages/storybook/README.md) for usage
+[storybook package README](./packages/storybook) for usage
 instructions.
 
 To start the Storybook server, run this command from the root of this monorepo:
@@ -49,24 +49,24 @@ If something is misconfigured, check out the docs for
 
 ## Packages
 
-#### `apps/`
+#### `/apps`
 
-| App                             | Summary     |
-| ------------------------------- | ----------- |
-| [`dapp`](./apps/dapp/README.md) | DAO DAO UI. |
+| App                   | Summary                                                          |
+| --------------------- | ---------------------------------------------------------------- |
+| [`dapp`](./apps/dapp) | DAO DAO UI hosted at [https://daodao.zone](https://daodao.zone). |
 
-#### `packages/`
+#### `/packages`
 
-| Package                                       | Summary                                                                                               |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| [`config`](./packages/config/README.md)       | Configurations for various dev tools.                                                                 |
-| [`i18n`](./packages/i18n/README.md)           | Translation system.                                                                                   |
-| [`state`](./packages/state/README.md)         | State retrieval and management for the DAO DAO UI.                                                    |
-| [`stateful`](./packages/stateful/README.md)   | Stateful components, hooks, and systems that access and manipulate live data.                         |
-| [`stateless`](./packages/stateless/README.md) | React components, React hooks, and other stateless rendering utilities which do not access live data. |
-| [`storybook`](./packages/storybook/README.md) | [Storybook](https://storybook.js.org/) server configuration.                                          |
-| [`types`](./packages/types/README.md)         | Types used across packages.                                                                           |
-| [`utils`](./packages/utils/README.md)         | Utility functions used across packages.                                                               |
+| Package                             | Summary                                                                                               |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [`config`](./packages/config)       | Configurations for various dev tools.                                                                 |
+| [`i18n`](./packages/i18n)           | Internationalization/translation system.                                                              |
+| [`state`](./packages/state)         | State retrieval and management for the DAO DAO UI.                                                    |
+| [`stateful`](./packages/stateful)   | Stateful components, hooks, and systems that access and manipulate live data.                         |
+| [`stateless`](./packages/stateless) | React components, React hooks, and other stateless rendering utilities which do not access live data. |
+| [`storybook`](./packages/storybook) | [Storybook](https://storybook.js.org/) server configuration and story decorators.                     |
+| [`types`](./packages/types)         | Types used across packages.                                                                           |
+| [`utils`](./packages/utils)         | Utility functions used across packages.                                                               |
 
 ## Contributing
 

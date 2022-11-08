@@ -3,9 +3,9 @@
 React components, React hooks, and other stateless rendering utilities which do
 not access live data.
 
-## Folders
+## Layout
 
-| Folder                         | Summary                                               |
+| Location                       | Summary                                               |
 | ------------------------------ | ----------------------------------------------------- |
 | [`components`](./components)   | Individual React components.                          |
 | [`hooks`](./hooks)             | React hooks.                                          |

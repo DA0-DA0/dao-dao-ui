@@ -1,6 +1,7 @@
 # @dao-dao/i18n
 
-Translations for the DAO DAO UI.
+[Internationalization](https://www.w3.org/standards/webdesign/i18n) (i.e.
+translation) system for the DAO DAO UI.
 
 ## Contributing a translation
 

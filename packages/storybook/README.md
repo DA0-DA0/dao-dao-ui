@@ -3,6 +3,13 @@
 [Storybook](https://storybook.js.org/) renderer for all packages in the
 monorepo.
 
+## Layout
+
+| Location                     | Summary                                                                                                                                                                    |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`decorators`](./decorators) | Decorators to be used in story files to wrap components in necessary parent components. Mostly [React Context provider](https://reactjs.org/docs/context.html) decorators. |
+| [`scripts`](./scripts)       | Scripts to assist in using Storybook.                                                                                                                                      |
+
 ## Running
 
 ```bash

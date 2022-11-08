@@ -9,7 +9,7 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 import removeMarkdown from 'remove-markdown'
 
-import { DaoCardProps } from '@dao-dao/types/components/DaoCard'
+import { DaoCardProps } from '@dao-dao/types/stateless/DaoCard'
 import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
 import { IconButton, IconButtonLink } from '../icon_buttons'
@@ -17,7 +17,7 @@ import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import { Tooltip } from '../tooltip/Tooltip'
 import { DaoImage } from './DaoImage'
 
-export * from '@dao-dao/types/components/DaoCard'
+export * from '@dao-dao/types/stateless/DaoCard'
 
 export const DaoCard = ({
   chainId,

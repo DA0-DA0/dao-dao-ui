@@ -3,7 +3,7 @@ import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
-import { ContractVersion } from './contract'
+import { ContractVersion } from './chain'
 import { CosmosMsgFor_Empty } from './contracts/common'
 
 export enum ActionKey {
