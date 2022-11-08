@@ -54,16 +54,17 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
       classNames={{
         modalOverlay: '!backdrop-brightness-50 !backdrop-filter',
         modalContent:
-          '!p-6 !max-w-md !bg-background-base !rounded-lg !border !border-border-interactive-focus',
+          '!p-6 !max-w-md !bg-background-base !rounded-lg !border !border-border-secondary !shadow-dp8',
         modalCloseButton:
-          '!p-1 hover:!bg-background-secondary !rounded-full !transition !absolute !top-2 !right-2 ',
+          '!p-1 !text-icon-tertiary bg-transparent hover:!bg-background-interactive-hover active:!bg-background-interactive-pressed !rounded-full !transition !absolute !top-2 !right-2',
         modalHeader: '!header-text',
         modalSubheader: '!title-text',
-        wallet: '!rounded-lg !bg-background-secondary !p-4 !shadow-none',
+        wallet:
+          '!rounded-lg !bg-background-secondary !p-4 !shadow-none transition-opacity opacity-100 hover:opacity-80 active:opacity-70',
         walletImage: '!rounded-full',
         walletName: '!primary-text',
         walletDescription: '!caption-text',
-        textContent: '!primary-text',
+        textContent: '!body-text',
       }}
       defaultChainId={CHAIN_ID}
       enabledWalletTypes={[
@@ -88,7 +89,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         // If on a mobile device, default to WalletConnect.
         isMobile() ? WalletType.WalletConnectKeplr : undefined
       }
-      renderLoader={() => <Loader size={64} />}
+      renderLoader={() => <Loader size={42} />}
       walletConnectClientMeta={{
         name: t('meta.title'),
         description: t('meta.description'),
