@@ -20,18 +20,20 @@ export const ToastCard = ({
     {({ message }) => (
       <div
         className={clsx(
-          'caption-text flex flex-row items-start gap-4 rounded-lg bg-component-toast p-4 text-sm text-text-body shadow-dp2',
+          'caption-text flex min-w-0 flex-row items-start gap-4 rounded-lg bg-component-toast p-4 text-sm text-text-body shadow-dp2',
           containerClassName
         )}
       >
         {preMessage}
 
-        <p className="grow break-words">
+        <div className="min-w-0 grow break-words">
           {!message || typeof message === 'string'
             ? message
-            : // eslint-disable-next-line i18next/no-literal-string
-              cloneElement(message, { className: '!m-0' })}
-        </p>
+            : cloneElement(message, {
+                // eslint-disable-next-line i18next/no-literal-string
+                className: '!block !m-0 break-words',
+              })}
+        </div>
 
         <IconButton
           Icon={Close}
