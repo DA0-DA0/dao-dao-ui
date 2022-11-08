@@ -5,7 +5,7 @@ import {
   DaoCard as StatelessDaoCard,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
+import { DaoCardInfo } from '@dao-dao/types/stateless/DaoCard'
 import { CHAIN_ID, loadableToLoadingData } from '@dao-dao/utils'
 
 import { usePinnedDaos } from '../../hooks'

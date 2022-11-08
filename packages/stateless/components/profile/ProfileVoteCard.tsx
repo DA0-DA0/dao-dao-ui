@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProfileVoteCardProps } from '@dao-dao/types/components/ProfileVoteCard'
+import { ProfileVoteCardProps } from '@dao-dao/types/stateless/ProfileVoteCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
@@ -11,7 +11,7 @@ import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 import { ProfileVoteButton } from './ProfileVoteButton'
 
-export * from '@dao-dao/types/components/ProfileVoteCard'
+export * from '@dao-dao/types/stateless/ProfileVoteCard'
 
 export const ProfileVoteCard = <T extends unknown>({
   options,

@@ -3,14 +3,14 @@ import clsx from 'clsx'
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
-import { ModalProps } from '@dao-dao/types/components/Modal'
+import { ModalProps } from '@dao-dao/types/stateless/Modal'
 
 import { useMountedInBrowser } from '../../hooks'
 import { ErrorBoundary } from '../error/ErrorBoundary'
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 
-export * from '@dao-dao/types/components/Modal'
+export * from '@dao-dao/types/stateless/Modal'
 
 // This component renders a modal above the page content with a dim backdrop.
 //

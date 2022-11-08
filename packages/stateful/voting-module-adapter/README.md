@@ -2,6 +2,24 @@
 
 Author: [@NoahSaso](https://github.com/NoahSaso)
 
+## Adapters
+
+| Adapter                                                   | Summary                                                                                         |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [CwdVotingCw20Staked](./adapters/CwdVotingCw20Staked)     | [CW20](https://docs.cosmwasm.com/cw-plus/0.9.0/cw20/spec) token staked balance voting.          |
+| [CwdVotingCw4](./adapters/CwdVotingCw4)                   | [CW4](https://docs.cosmwasm.com/cw-plus/0.9.0/cw4/cw4-group-spec) group voting, multisig style. |
+| [CwdVotingNativeStaked](./adapters/CwdVotingNativeStaked) | Native token staked balance voting.                                                             |
+| [Fallback](./adapters/Fallback)                           | Fallback to allow for DAO page rendering even with an unsupported voting module.                |
+
+## Layout
+
+| Location                   | Summary                                                                                                                                       |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| [adapters](./adapters)     | Voting module adapters.                                                                                                                       |
+| [components](./components) | Components shared between adapters.                                                                                                           |
+| [react](./react)           | The external React interface used by apps and packages when using this voting module adapter system. This uses the core logic under the hood. |
+| [core.ts](./core.ts)       | The core logic that matches and loads an adapter from the available adapters.                                                                 |
+
 ## What is it?
 
 This is a voting module adapter package. It creates a common interface for

@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 
-import { IAppLayoutContext } from '@dao-dao/types/components/AppLayout'
+import { IAppLayoutContext } from '@dao-dao/types/stateless/AppLayout'
 
 export const AppLayoutContext = createContext<IAppLayoutContext | null>(null)
 

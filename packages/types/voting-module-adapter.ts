@@ -2,8 +2,6 @@ import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 
 import { Action } from './actions'
-import { DaoInfoBarItem, LoadingData, StakingMode } from './components'
-import { ProfileNewProposalCardAddress } from './components/ProfileNewProposalCard'
 import { Duration } from './contracts/common'
 import { MarketingInfoResponse, TokenInfoResponse } from './contracts/Cw20Base'
 import { Claim } from './contracts/stake-cw20'
@@ -13,6 +11,8 @@ import {
   DaoCreationGovernanceConfigReviewProps,
   DaoCreationVotingConfigItem,
 } from './dao'
+import { DaoInfoBarItem, LoadingData, StakingMode } from './stateless'
+import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
 
 export interface BaseProfileCardMemberInfoProps {
   deposit: string | undefined

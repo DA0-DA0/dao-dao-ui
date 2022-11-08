@@ -4,7 +4,7 @@ import {
   DaoCard as StatelessDaoCard,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
+import { DaoCardInfo } from '@dao-dao/types/stateless/DaoCard'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { daoCardInfoLazyDataSelector } from '../../recoil'

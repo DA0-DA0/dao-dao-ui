@@ -1,11 +1,11 @@
 import clsx from 'clsx'
 import removeMarkdown from 'remove-markdown'
 
-import { ProposalCardProps } from '@dao-dao/types/components/ProposalCard'
+import { ProposalCardProps } from '@dao-dao/types/stateless/ProposalCard'
 
 import { DaoImage } from '../dao/DaoImage'
 
-export * from '@dao-dao/types/components/ProposalCard'
+export * from '@dao-dao/types/stateless/ProposalCard'
 
 export const ProposalCard = ({
   dao: { coreAddress, imageUrl },
