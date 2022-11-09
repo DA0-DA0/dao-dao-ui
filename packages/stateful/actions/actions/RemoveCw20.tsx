@@ -12,9 +12,9 @@ import { Cw20BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
 import { XEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
   ActionOptionsContextType,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -172,7 +172,7 @@ export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
     )
 
   return {
-    key: ActionKey.RemoveCw20,
+    key: CoreActionKey.RemoveCw20,
     Icon: XEmoji,
     label: t('title.removeCw20FromTreasury'),
     description: t('info.removeCw20FromTreasuryActionDescription'),

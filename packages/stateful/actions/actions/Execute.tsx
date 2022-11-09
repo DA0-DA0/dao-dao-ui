@@ -7,8 +7,8 @@ import { nativeBalancesSelector } from '@dao-dao/state'
 import { SwordsEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -104,7 +104,7 @@ export const makeExecuteAction: ActionMaker<ExecuteData> = ({ t, address }) => {
   }
 
   return {
-    key: ActionKey.Execute,
+    key: CoreActionKey.Execute,
     Icon: SwordsEmoji,
     label: t('title.executeSmartContract'),
     description: t('info.executeSmartContractActionDescription'),

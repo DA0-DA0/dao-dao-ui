@@ -8,11 +8,11 @@ import {
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { ActionKey } from '@dao-dao/types'
+import { CoreActionKey } from '@dao-dao/types'
 import { TokenCardInfo } from '@dao-dao/types/dao'
 import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
 
-import { useActionForKey } from '../../actions'
+import { useCoreActionForKey } from '../../actions'
 import { useEncodedCwdProposalSinglePrefill } from '../../hooks'
 import { tokenCardLazyInfoSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
@@ -56,7 +56,7 @@ export const TokenCard = (props: TokenCardInfo) => {
 
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
-  const stakeAction = useActionForKey(ActionKey.Stake)
+  const stakeAction = useCoreActionForKey(CoreActionKey.Stake)
   // Prefill URLs only valid if action exists.
   const prefillValid = !!stakeAction
   const encodedProposalPrefillClaim = useEncodedCwdProposalSinglePrefill({

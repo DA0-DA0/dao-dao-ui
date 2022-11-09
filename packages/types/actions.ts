@@ -6,25 +6,33 @@ import { TFunction } from 'react-i18next'
 import { ContractVersion } from './chain'
 import { CosmosMsgFor_Empty } from './contracts/common'
 
-export enum ActionKey {
+// Actions defined in the core actions system (@dao-dao/stateful/actions). These
+// are provided in the top-level ActionsProvider.
+export enum CoreActionKey {
   Spend = 'spend',
-  Mint = 'mint',
   Stake = 'stake',
   AddCw20 = 'addCw20',
   RemoveCw20 = 'removeCw20',
   AddCw721 = 'addCw721',
   RemoveCw721 = 'removeCw721',
-  ManageMembers = 'manageMembers',
   ManageSubDaos = 'manageSubDaos',
   UpdateInfo = 'updateInfo',
-  UpdatePreProposeConfig = 'updatePreProposeConfig',
-  UpdateProposalConfig = 'updateProposalConfig',
   Instantiate = 'instantiate',
   Execute = 'execute',
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',
   Custom = 'custom',
 }
+
+// Actions defined in voting or proposal module adapters.
+export enum AdapterActionKey {
+  ManageMembers = 'manageMembers',
+  Mint = 'mint',
+  UpdatePreProposeConfig = 'updatePreProposeConfig',
+  UpdateProposalConfig = 'updateProposalConfig',
+}
+
+export type ActionKey = CoreActionKey | AdapterActionKey
 
 export interface ActionAndData {
   action: Action

@@ -13,7 +13,7 @@ import { useRecoilState } from 'recoil'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { walletTransactionAtom } from '@dao-dao/state'
 import { ProfileHomeCard, SuspenseLoader } from '@dao-dao/stateful'
-import { ActionsProvider, useActions } from '@dao-dao/stateful/actions'
+import { ActionsProvider, useCoreActions } from '@dao-dao/stateful/actions'
 import {
   Loader,
   ProfileDisconnectedCard,
@@ -44,7 +44,7 @@ const InnerWallet = () => {
     signingCosmWasmClient,
   } = useWallet()
 
-  const actions = useActions()
+  const actions = useCoreActions()
 
   // Call relevant action hooks in the same order every time.
   const actionsWithData: Partial<

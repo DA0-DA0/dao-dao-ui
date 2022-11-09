@@ -4,8 +4,8 @@ import { useRecoilValue } from 'recoil'
 import { GearEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
+  AdapterActionKey,
   ContractVersion,
   ProposalModule,
   UseDecodedCosmosMsg,
@@ -278,7 +278,7 @@ export const makeUpdateProposalConfigV2Action: ActionMaker<
   }
 
   return {
-    key: ActionKey.UpdateProposalConfig,
+    key: AdapterActionKey.UpdateProposalConfig,
     Icon: GearEmoji,
     label: t('form.updateVotingConfigTitle'),
     description: t('info.updateVotingConfigActionDescription'),

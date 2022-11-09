@@ -28,7 +28,7 @@ import {
   useVotingModule,
   useWalletProfile,
 } from '@dao-dao/stateful'
-import { useActionForKey } from '@dao-dao/stateful/actions'
+import { useCoreActionForKey } from '@dao-dao/stateful/actions'
 import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
@@ -40,7 +40,7 @@ import {
   useAppLayoutContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { ActionKey } from '@dao-dao/types'
+import { CoreActionKey } from '@dao-dao/types'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 import { SITE_URL } from '@dao-dao/utils'
 
@@ -75,7 +75,7 @@ const InnerDaoHome = () => {
         })
       : constSelector(undefined)
   )
-  const manageSubDaosAction = useActionForKey(ActionKey.ManageSubDaos)
+  const manageSubDaosAction = useCoreActionForKey(CoreActionKey.ManageSubDaos)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageSubDaosAction
   const encodedAddSubDaoProposalPrefill = useEncodedCwdProposalSinglePrefill(

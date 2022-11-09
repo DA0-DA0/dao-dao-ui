@@ -11,8 +11,8 @@ import {
 import { BabyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -143,7 +143,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
       const instantiateActionsData = props.allActionsWithData
         .filter(
           ({ key, data }) =>
-            key === ActionKey.Instantiate &&
+            key === CoreActionKey.Instantiate &&
             'codeId' in data &&
             data.codeId === codeId
         )
@@ -198,7 +198,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
   }
 
   return {
-    key: ActionKey.Instantiate,
+    key: CoreActionKey.Instantiate,
     Icon: BabyEmoji,
     label: t('title.instantiateSmartContract'),
     description: t('info.instantiateSmartContractActionDescription'),

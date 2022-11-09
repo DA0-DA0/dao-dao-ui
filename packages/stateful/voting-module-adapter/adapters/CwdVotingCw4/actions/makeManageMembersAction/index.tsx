@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { PeopleEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
+  AdapterActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -101,7 +101,7 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
   }
 
   return {
-    key: ActionKey.ManageMembers,
+    key: AdapterActionKey.ManageMembers,
     Icon: PeopleEmoji,
     label: t('title.manageMembers'),
     description: t('info.manageMembersActionDescription'),

@@ -15,7 +15,7 @@ import {
   Trans,
   useProfile,
 } from '@dao-dao/stateful'
-import { useActions } from '@dao-dao/stateful/actions'
+import { useCoreActions } from '@dao-dao/stateful/actions'
 import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapterContext,
@@ -28,7 +28,7 @@ import {
   ProposalNotFound,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { ActionKey, CommonProposalInfo } from '@dao-dao/types'
+import { ActionKey, CommonProposalInfo, CoreActionKey } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
 
 interface InnerProposalProps {
@@ -60,7 +60,7 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
 
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()
-  const actions = useActions(
+  const actions = useCoreActions(
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]
@@ -77,7 +77,7 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
   // and sorting the actions in ascending order.
   const orderedActions = useMemo(() => {
     const keyToValue = (key: ActionKey) =>
-      key === ActionKey.Execute ? 1 : key === ActionKey.Custom ? 2 : 0
+      key === CoreActionKey.Execute ? 1 : key === CoreActionKey.Custom ? 2 : 0
 
     return actions.sort((a, b) => {
       const aValue = keyToValue(a.key)

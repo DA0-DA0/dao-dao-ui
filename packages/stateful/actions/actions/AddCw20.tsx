@@ -7,9 +7,9 @@ import { Cw20BaseSelectors } from '@dao-dao/state'
 import { TokenEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
   ActionOptionsContextType,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -122,7 +122,7 @@ export const makeAddCw20Action: ActionMaker<AddCw20Data> = ({
     )
 
   return {
-    key: ActionKey.AddCw20,
+    key: CoreActionKey.AddCw20,
     Icon: TokenEmoji,
     label: t('title.addCw20ToTreasury'),
     description: t('info.addCw20ToTreasuryActionDescription'),
