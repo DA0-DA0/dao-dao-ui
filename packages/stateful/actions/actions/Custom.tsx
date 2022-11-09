@@ -3,8 +3,8 @@ import { useCallback, useMemo } from 'react'
 
 import { RobotEmoji } from '@dao-dao/stateless'
 import {
-  ActionKey,
   ActionMaker,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -52,7 +52,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<CustomData> = (
   )
 
 export const makeCustomAction: ActionMaker<CustomData> = ({ t, context }) => ({
-  key: ActionKey.Custom,
+  key: CoreActionKey.Custom,
   Icon: RobotEmoji,
   label: t('title.custom'),
   description: t('info.customActionDescription', {

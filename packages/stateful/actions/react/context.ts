@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from 'react'
 
-import { Action, ActionKey, IActionsContext } from '@dao-dao/types/actions'
+import { Action, CoreActionKey, IActionsContext } from '@dao-dao/types/actions'
 
 //! External
 
@@ -18,7 +18,7 @@ const useActionsContext = (): IActionsContext => {
   return context
 }
 
-export const useActions = (additionalActions?: Action[]): Action[] => {
+export const useCoreActions = (additionalActions?: Action[]): Action[] => {
   const baseActions = useActionsContext().actions
 
   return useMemo(
@@ -32,8 +32,11 @@ export const useActions = (additionalActions?: Action[]): Action[] => {
     [additionalActions, baseActions]
   )
 }
-export const useActionForKey = (actionKey: ActionKey) =>
-  useActions().find(({ key }) => key === actionKey)
+
+// Only core actions are provided by the top-level context. Adapter-specific
+// actions are only available in the adapter.
+export const useCoreActionForKey = (actionKey: CoreActionKey) =>
+  useCoreActions().find(({ key }) => key === actionKey)
 
 //! Internal
 

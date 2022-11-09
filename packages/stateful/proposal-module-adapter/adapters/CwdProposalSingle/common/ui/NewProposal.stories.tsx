@@ -14,7 +14,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 
-import { useActions } from '../../../../../actions'
+import { useCoreActions } from '../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../voting-module-adapter'
 import { matchAdapter as matchProposalModuleAdapter } from '../../../../core'
 import { CwdProposalSingleAdapter } from '../../index'
@@ -47,7 +47,7 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
     proposalModule: singleChoiceProposalModule,
     coreAddress,
   })()
-  const actions = useActions(
+  const actions = useCoreActions(
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]

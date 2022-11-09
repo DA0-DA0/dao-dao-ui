@@ -14,9 +14,9 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
   ActionOptionsContextType,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -241,7 +241,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
   }
 
   return {
-    key: ActionKey.Spend,
+    key: CoreActionKey.Spend,
     Icon: MoneyEmoji,
     label: t('title.spend'),
     description: t('info.spendActionDescription', {

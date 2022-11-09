@@ -7,8 +7,8 @@ import { Cw20BaseSelectors } from '@dao-dao/state'
 import { GearEmoji, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
+  AdapterActionKey,
   DepositRefundPolicy,
   ProposalModule,
   UseDecodedCosmosMsg,
@@ -349,7 +349,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
   }
 
   return {
-    key: ActionKey.UpdatePreProposeConfig,
+    key: AdapterActionKey.UpdatePreProposeConfig,
     Icon: GearEmoji,
     label: t('form.updateProposalSubmissionConfigTitle'),
     description: t('info.updateProposalSubmissionConfigActionDescription'),

@@ -5,8 +5,8 @@ import { contractAdminSelector } from '@dao-dao/state'
 import { MushroomEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -85,7 +85,7 @@ export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = ({
   }
 
   return {
-    key: ActionKey.UpdateAdmin,
+    key: CoreActionKey.UpdateAdmin,
     Icon: MushroomEmoji,
     label: t('title.updateContractAdmin'),
     description: t('info.updateContractAdminActionDescription'),

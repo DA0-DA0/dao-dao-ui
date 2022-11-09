@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/stateful'
-import { useActions } from '@dao-dao/stateful/actions'
+import { useCoreActions } from '@dao-dao/stateful/actions'
 import {
   WalletProviderDecorator,
   makeActionsProviderDecorator,
@@ -39,7 +39,7 @@ export default {
 } as ComponentMeta<typeof Wallet>
 
 const Template: ComponentStory<typeof Wallet> = (args) => {
-  const actions = useActions()
+  const actions = useCoreActions()
   // Call relevant action hooks in the same order every time.
   const actionsWithData: Partial<
     Record<

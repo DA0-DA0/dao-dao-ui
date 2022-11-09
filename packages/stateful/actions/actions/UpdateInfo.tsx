@@ -9,7 +9,7 @@ import {
   ContractVersion,
 } from '@dao-dao/types'
 import {
-  ActionKey,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -114,7 +114,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
     )
 
   return {
-    key: ActionKey.UpdateInfo,
+    key: CoreActionKey.UpdateInfo,
     Icon: InfoEmoji,
     label: t('title.updateInfo'),
     description: t('info.updateInfoActionDescription'),

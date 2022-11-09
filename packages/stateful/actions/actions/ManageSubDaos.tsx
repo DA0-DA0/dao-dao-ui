@@ -5,10 +5,10 @@ import { CwdCoreV2Selectors } from '@dao-dao/state'
 import { FamilyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
   ActionOptionsContextType,
   ContractVersion,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -112,7 +112,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
   }
 
   return {
-    key: ActionKey.ManageSubDaos,
+    key: CoreActionKey.ManageSubDaos,
     Icon: FamilyEmoji,
     label: t('title.manageSubDaos'),
     description: t('info.manageSubDaosActionDescription'),

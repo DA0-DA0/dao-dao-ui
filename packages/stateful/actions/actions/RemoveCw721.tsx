@@ -12,9 +12,9 @@ import { Cw721BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
 import { XEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
   ActionOptionsContextType,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -173,7 +173,7 @@ export const makeRemoveCw721Action: ActionMaker<RemoveCw721Data> = ({
     )
 
   return {
-    key: ActionKey.RemoveCw721,
+    key: CoreActionKey.RemoveCw721,
     Icon: XEmoji,
     label: t('title.removeCw721FromTreasury'),
     description: t('info.removeCw721FromTreasuryActionDescription'),

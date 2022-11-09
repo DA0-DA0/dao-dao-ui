@@ -2,15 +2,15 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
-import { ActionKey } from '@dao-dao/types'
 
-import { useActionForKey } from '../../../../actions'
+import { useActionOptions } from '../../../../actions'
 import { ButtonLink, DaoMemberCard } from '../../../../components'
 import {
   useEncodedCwdProposalSinglePrefill,
   useVotingModule,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { makeManageMembersAction } from '../actions'
 import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
 
 export const MembersTab = () => {
@@ -26,7 +26,8 @@ export const MembersTab = () => {
     throw new Error(t('error.loadingData'))
   }
 
-  const manageMembersAction = useActionForKey(ActionKey.ManageMembers)
+  const options = useActionOptions()
+  const manageMembersAction = makeManageMembersAction(options)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageMembersAction
   const encodedProposalPrefill = useEncodedCwdProposalSinglePrefill({

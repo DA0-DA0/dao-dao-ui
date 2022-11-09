@@ -7,9 +7,9 @@ import { Cw721BaseSelectors } from '@dao-dao/state'
 import { ImageEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
   ActionOptionsContextType,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -122,7 +122,7 @@ export const makeAddCw721Action: ActionMaker<AddCw721Data> = ({
     )
 
   return {
-    key: ActionKey.AddCw721,
+    key: CoreActionKey.AddCw721,
     Icon: ImageEmoji,
     label: t('title.addCw721ToTreasury'),
     description: t('info.addCw721ToTreasuryActionDescription'),

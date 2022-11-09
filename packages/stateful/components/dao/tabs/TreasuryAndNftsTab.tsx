@@ -6,10 +6,10 @@ import {
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { ActionKey } from '@dao-dao/types'
+import { CoreActionKey } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { useActionForKey } from '../../../actions'
+import { useCoreActionForKey } from '../../../actions'
 import {
   useEncodedCwdProposalSinglePrefill,
   useVotingModule,
@@ -66,7 +66,7 @@ export const TreasuryAndNftsTab = () => {
     treasuryTokenCardInfosLoadable.state,
   ])
 
-  const addCw721Action = useActionForKey(ActionKey.AddCw721)
+  const addCw721Action = useCoreActionForKey(CoreActionKey.AddCw721)
   // Prefill URL only valid if action exists.
   const prefillValid = !!addCw721Action
   const encodedProposalPrefill = useEncodedCwdProposalSinglePrefill({

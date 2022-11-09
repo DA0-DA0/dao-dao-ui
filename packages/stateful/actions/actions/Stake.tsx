@@ -12,8 +12,8 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionKey,
   ActionMaker,
+  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -170,7 +170,7 @@ export const makeStakeAction: ActionMaker<StakeData> = ({ t, address }) => {
   }
 
   return {
-    key: ActionKey.Stake,
+    key: CoreActionKey.Stake,
     Icon: DepositEmoji,
     label: t('title.stake'),
     description: t('info.stakeActionDescription'),

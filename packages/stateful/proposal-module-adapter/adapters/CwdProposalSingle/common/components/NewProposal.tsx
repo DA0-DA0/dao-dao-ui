@@ -40,7 +40,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useActions } from '../../../../../actions'
+import { useCoreActions } from '../../../../../actions'
 import {
   Cw20BaseHooks,
   useAwaitNextBlock,
@@ -93,7 +93,7 @@ export const NewProposal = ({
   } = useVotingModuleAdapter()
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = makeUseProposalModuleActions(options)()
-  const actions = useActions(
+  const actions = useCoreActions(
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]
