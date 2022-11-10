@@ -424,6 +424,7 @@
   "proposalModuleLabel": {
     "cw-govmod-single": "Single Choice",
     "cw-proposal-single": "Single Choice",
+    "cwd-proposal-multiple": "Multiple Choice",
     "cwd-proposal-single": "Single Choice"
   },
   "proposalStatusTitle": {

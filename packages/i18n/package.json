@@ -5,7 +5,8 @@
     "format": "eslint . --fix",
     "lint": "eslint .",
     "lint-missing-keys": "eslint . -c .eslintrc-missing-keys.js",
-    "remove-unused": "node ./scripts/removeUnused.js"
+    "remove-unused": "node ./scripts/removeUnused.js",
+    "get-diff": "node ./scripts/getDiff.js"
   },
   "dependencies": {
     "i18next": "^21.8.10",
