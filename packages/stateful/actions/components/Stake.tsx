@@ -113,6 +113,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
         )
       : sourceValidatorStaked
 
+  // Manually validate based on context.
   const validate = useCallback((): string | boolean => {
     if (!validator) {
       return t('error.noValidatorFound')
@@ -193,11 +194,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
     sourceValidatorStaked,
   ])
 
-  // Update amount+denom combo error each time either field is updated
-  // instead of setting errors individually on each field. Since we only
-  // show one or the other and can't detect which error is newer, this
-  // would lead to the error not updating if amount set an error and then
-  // denom was changed.
+  // Perform validation.
   useEffect(() => {
     if (!amount || !denom) {
       clearErrors(fieldNamePrefix + '_error')

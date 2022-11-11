@@ -127,7 +127,7 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
   const useDefaults: UseDefaults<StakeData> = () => {
     const stakeActions = useStakeActions()
 
-    const nativeDelegationInfoLoadable = loadableToLoadingData(
+    const loadingNativeDelegationInfo = loadableToLoadingData(
       useCachedLoadable(
         address
           ? nativeDelegationInfoSelector({
@@ -146,8 +146,8 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
       stakeType: stakeActions[0].type,
       // Default to first validator if exists.
       validator:
-        (!nativeDelegationInfoLoadable.loading &&
-          nativeDelegationInfoLoadable.data?.delegations[0]?.validator
+        (!loadingNativeDelegationInfo.loading &&
+          loadingNativeDelegationInfo.data?.delegations[0]?.validator
             .address) ||
         '',
       toValidator: '',
