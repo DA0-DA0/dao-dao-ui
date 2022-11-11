@@ -22,6 +22,7 @@ import {
   nativeTokenDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
+  secondsToWdhms,
   validatePositive,
   validateRequired,
   validateValidatorAddress,
@@ -59,6 +60,7 @@ export interface StakeOptions {
   validators: Validator[]
   executed: boolean
   claimedRewards?: number
+  nativeUnstakingDurationSeconds: number
 }
 
 export interface StakeData {
@@ -75,7 +77,14 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
   onRemove,
   errors,
   isCreating,
-  options: { nativeBalances, stakes, validators, executed, claimedRewards },
+  options: {
+    nativeBalances,
+    stakes,
+    validators,
+    executed,
+    claimedRewards,
+    nativeUnstakingDurationSeconds,
+  },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setError, clearErrors, setValue } = useFormContext()
@@ -354,6 +363,20 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
             symbol={nativeTokenLabel(denom)}
           />
         </div>
+      )}
+
+      {stakeType === StakeType.Undelegate && isCreating && (
+        <p className="caption-text mt-2">
+          {nativeUnstakingDurationSeconds
+            ? t('info.unstakingDurationExplanation', {
+                duration: secondsToWdhms(
+                  nativeUnstakingDurationSeconds,
+                  2,
+                  false
+                ),
+              })
+            : t('info.unstakingDurationNoneExplanation')}
+        </p>
       )}
 
       {/* If redelegating, show selection for destination validator. */}

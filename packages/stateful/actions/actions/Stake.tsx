@@ -6,6 +6,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   nativeBalancesSelector,
   nativeDelegationInfoSelector,
+  nativeUnstakingDurationSecondsSelector,
   transactionEventsSelector,
   validatorsSelector,
 } from '@dao-dao/state'
@@ -202,6 +203,12 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
       []
     )
 
+    const nativeUnstakingDurationSeconds = useRecoilValue(
+      nativeUnstakingDurationSecondsSelector({
+        chainId,
+      })
+    )
+
     // If in DAO context, use proposal execution hash to find claimed rewards.
     // If in wallet context, proposal module adapter will not be available.
     const {
@@ -319,6 +326,7 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
             validators: loadingValidators.loading ? [] : loadingValidators.data,
             executed,
             claimedRewards,
+            nativeUnstakingDurationSeconds,
           }}
         />
       </SuspenseLoader>

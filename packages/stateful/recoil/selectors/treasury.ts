@@ -155,7 +155,9 @@ export const tokenCardLazyInfoSelector = selectorFamily<
 
         if (nativeDelegationInfo) {
           const unstakingDurationSeconds = get(
-            nativeUnstakingDurationSecondsSelector({})
+            nativeUnstakingDurationSecondsSelector({
+              chainId,
+            })
           )
 
           stakingInfo = {
