@@ -155,6 +155,7 @@
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
     "nameIncorrectLength": "A DAO's name must be between {{min}} and {{max}} characters.",
     "noClaimsAvailable": "No claims available.",
+    "noCw20Tokens": "There are no CW20 tokens in the treasury.",
     "noMembers": "You haven't added any members to your DAO.",
     "noNftsSelected": "No NFTs selected.",
     "noValidatorFound": "No validator found.",
