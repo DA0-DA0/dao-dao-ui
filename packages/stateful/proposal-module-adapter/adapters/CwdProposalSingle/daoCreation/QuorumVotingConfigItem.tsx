@@ -50,9 +50,7 @@ export const QuorumInput = ({
 
           <SelectInput
             className={majority ? 'grow' : undefined}
-            onChange={({ target: { value } }) =>
-              setValue('quorum.majority', value === '1')
-            }
+            onChange={(value) => setValue('quorum.majority', value === '1')}
             validation={[validateRequired]}
             value={majority ? '1' : '0'}
           >
