@@ -155,6 +155,7 @@
     "noClaimsAvailable": "No claims available.",
     "noMembers": "You haven't added any members to your DAO.",
     "noNftsSelected": "No NFTs selected.",
+    "noValidatorFound": "No validator found.",
     "noVotingPower": "You have not given anyone voting power. Add some members to your DAO.",
     "notCw20Address": "This contract address is not a CW20 token.",
     "notCw721Address": "This contract address is not a NFT (CW721).",
@@ -162,6 +163,8 @@
     "pageNotFound": "We couldn't find that page.",
     "pfpkStargazeReopenModal": "Failed to connect to Stargaze. Reopen the modal to try again.",
     "subDaoAlreadyExists": "SubDAO already exists.",
+    "treasuryInsufficientCannotStake": "The treasury only has {{amount}} ${{tokenSymbol}}, which is insufficient.",
+    "treasuryNoTokensCannotStake": "The treasury has no ${{tokenSymbol}}, so you can't stake any tokens.",
     "unexpectedError": "An unexpected error occurred."
   },
   "form": {
@@ -503,6 +506,7 @@
     "created": "Created",
     "creator": "Creator",
     "custom": "Custom",
+    "customValidatorAddress": "Custom Validator Address",
     "dao": "DAO",
     "daoCreationProcess": "DAO Creation Process",
     "daoNotFound": "DAO Not Found",

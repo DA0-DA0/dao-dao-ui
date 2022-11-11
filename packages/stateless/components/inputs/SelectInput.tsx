@@ -12,12 +12,13 @@ import {
 export interface SelectInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
-> extends Omit<ComponentPropsWithoutRef<'select'>, 'required'> {
+> extends Omit<ComponentPropsWithoutRef<'select'>, 'required' | 'onChange'> {
   fieldName?: FieldName
   register?: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError
   required?: boolean
+  onChange?: (value: string) => void
 }
 
 export const SelectInput = <
@@ -31,6 +32,7 @@ export const SelectInput = <
   children,
   required,
   className,
+  onChange,
   ...props
 }: SelectInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
@@ -51,7 +53,13 @@ export const SelectInput = <
       {...props}
       {...(register &&
         fieldName &&
-        register(fieldName, { required: required && 'Required', validate }))}
+        register(fieldName, {
+          required: required && 'Required',
+          validate,
+          ...(onChange && {
+            onChange: (e: any) => onChange(e.target.value),
+          }),
+        }))}
     >
       {children}
     </select>

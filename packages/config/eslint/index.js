@@ -1,10 +1,12 @@
 // @ts-check
 
-const fs = require('fs')
-const path = require('path')
-const tsConfig = fs.existsSync('tsconfig.json')
-  ? path.resolve('tsconfig.json')
-  : undefined
+// Disable type-aware linting for performance reasons.
+// const fs = require('fs')
+// const path = require('path')
+// const tsConfig = fs.existsSync('tsconfig.json')
+//   ? path.resolve('tsconfig.json')
+//   : undefined
+const tsConfig = undefined
 
 /** @type {import("eslint").Linter.Config} */
 const eslintConfig = {

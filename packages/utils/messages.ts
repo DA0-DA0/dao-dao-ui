@@ -182,7 +182,7 @@ export const makeStakingMessage = (
   amount: string,
   denom: string,
   validator: string,
-  fromValidator?: string
+  toValidator = ''
 ): CosmosMsgFor_Empty => {
   const coin = {
     amount,
@@ -208,13 +208,11 @@ export const makeStakingMessage = (
       }
       break
     case StakeType.Redelegate:
-      if (!fromValidator) throw new Error('fromValidator not set')
-
       staking = {
         redelegate: {
           amount: coin,
-          src_validator: fromValidator,
-          dst_validator: validator,
+          src_validator: validator,
+          dst_validator: toValidator,
         },
       }
       break

@@ -19,6 +19,12 @@ const Template: ComponentStory<typeof TokenCard> = (args) => (
   </div>
 )
 
+const denomProps = {
+  denom: 'ujuno',
+  symbol: 'JUNO',
+  decimals: 6,
+}
+
 export const makeProps = (crown = false): TokenCardProps => {
   // Random price between 0 and 10000 with up to 6 decimals.
   const unstakedBalance = Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6
@@ -33,6 +39,7 @@ export const makeProps = (crown = false): TokenCardProps => {
         details: '',
       },
       rewards: 1.23,
+      ...denomProps,
     },
     {
       // Random price between 0 and 10000 with up to 6 decimals.
@@ -44,6 +51,7 @@ export const makeProps = (crown = false): TokenCardProps => {
         details: '',
       },
       rewards: 4.56,
+      ...denomProps,
     },
     {
       // Random price between 0 and 10000 with up to 6 decimals.
@@ -55,6 +63,7 @@ export const makeProps = (crown = false): TokenCardProps => {
         details: '',
       },
       rewards: 7.89,
+      ...denomProps,
     },
     {
       // Random price between 0 and 10000 with up to 6 decimals.
@@ -66,6 +75,7 @@ export const makeProps = (crown = false): TokenCardProps => {
         details: '',
       },
       rewards: 10.11,
+      ...denomProps,
     },
   ]
 
