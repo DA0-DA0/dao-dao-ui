@@ -44,6 +44,9 @@ export type TokenAmountDisplayProps = Omit<
   dateFetched?: Date
   // Show full amount if true.
   showFullAmount?: boolean
+  // If present, will add a rounded icon to the left.
+  iconUrl?: string
+  iconClassName?: string
 } & ( // If not USDC conversion, require symbol and decimals.
     | {
         symbol: string
@@ -68,6 +71,8 @@ export const TokenAmountDisplay = ({
   hideApprox,
   dateFetched,
   showFullAmount,
+  iconUrl,
+  iconClassName,
   symbol: _symbol,
   usdcConversion,
   ...props
@@ -165,6 +170,14 @@ export const TokenAmountDisplay = ({
     }
   )
 
+  const content = (
+    <p {...props}>
+      {prefix}
+      {display}
+      {suffix}
+    </p>
+  )
+
   return (
     <Tooltip
       title={
@@ -190,11 +203,26 @@ export const TokenAmountDisplay = ({
         )
       }
     >
-      <p {...props}>
-        {prefix}
-        {display}
-        {suffix}
-      </p>
+      {iconUrl ? (
+        <div className="flex flex-row items-center gap-2">
+          {/* Icon */}
+          <div
+            className={clsx(
+              'h-5 w-5 rounded-full bg-cover bg-center',
+              iconClassName
+            )}
+            style={{
+              backgroundImage: `url(${iconUrl})`,
+            }}
+          ></div>
+
+          {/* Amount Display */}
+          {content}
+        </div>
+      ) : (
+        // Amount Display
+        content
+      )}
     </Tooltip>
   )
 }

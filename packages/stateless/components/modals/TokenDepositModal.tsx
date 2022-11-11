@@ -57,30 +57,21 @@ export const TokenDepositModal = ({
       <div className="flex flex-row items-center justify-between gap-10">
         <p className="secondary-text">{t('title.balance')}</p>
 
-        <div className="flex flex-row items-center gap-2">
-          {/* Image */}
-          <div
-            className="h-5 w-5 rounded-full bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${tokenImageUrl})`,
-            }}
-          ></div>
-
-          {/* Balance */}
-          <TokenAmountDisplay
-            amount={
-              loadingBalance.loading
-                ? loadingBalance
-                : { loading: false, data: loadingBalance.data.amount }
-            }
-            dateFetched={
-              loadingBalance.loading ? undefined : loadingBalance.data.timestamp
-            }
-            decimals={tokenDecimals}
-            showFullAmount
-            symbol={tokenSymbol}
-          />
-        </div>
+        {/* Balance */}
+        <TokenAmountDisplay
+          amount={
+            loadingBalance.loading
+              ? loadingBalance
+              : { loading: false, data: loadingBalance.data.amount }
+          }
+          dateFetched={
+            loadingBalance.loading ? undefined : loadingBalance.data.timestamp
+          }
+          decimals={tokenDecimals}
+          iconUrl={tokenImageUrl}
+          showFullAmount
+          symbol={tokenSymbol}
+        />
       </div>
 
       <NumberInput
