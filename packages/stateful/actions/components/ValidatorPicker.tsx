@@ -79,7 +79,7 @@ export const ValidatorPicker = ({
       Trigger={({ open, ...props }) => (
         <>
           {selectedAddress && (
-            <InputThemedText className="flex flex-row items-center justify-between gap-10">
+            <InputThemedText className="flex min-w-0 flex-row items-center justify-between gap-10">
               <CopyToClipboard
                 label={selectedValidator?.moniker}
                 tooltip={t('button.clickToCopyAddress')}
@@ -109,8 +109,15 @@ export const ValidatorPicker = ({
       )}
       filterableItemKeys={FILTERABLE_KEYS}
       items={sortedValidators.map((validator) => {
-        const { address, moniker, details, website, commission, tokens } =
-          validator
+        const {
+          address,
+          moniker,
+          details,
+          website,
+          commission,
+          tokens,
+          status,
+        } = validator
 
         const existingStake = stakes?.find(
           (stake) => stake.validator.address === address
@@ -122,18 +129,6 @@ export const ValidatorPicker = ({
           label: moniker,
           description: (
             <div className="space-y-1">
-              {existingStake && (
-                <TokenAmountDisplay
-                  amount={existingStake.amount}
-                  className="inline-block text-text-brand"
-                  decimals={existingStake.decimals}
-                  prefix={t('title.daosStake') + ': '}
-                  prefixClassName="font-semibold"
-                  showFullAmount
-                  symbol={existingStake.symbol}
-                />
-              )}
-
               <p>
                 <span className="font-semibold">{t('title.commission')}:</span>{' '}
                 {formatPercentOf100(commission * 100)}
@@ -152,6 +147,24 @@ export const ValidatorPicker = ({
               />
 
               {details && <p>{details}</p>}
+
+              {existingStake && (
+                <TokenAmountDisplay
+                  amount={existingStake.amount}
+                  className="!mt-3 inline-block italic text-text-interactive-valid opacity-80"
+                  decimals={existingStake.decimals}
+                  prefix={t('title.daosStake') + ': '}
+                  prefixClassName="font-semibold"
+                  showFullAmount
+                  symbol={existingStake.symbol}
+                />
+              )}
+
+              {status !== 'BOND_STATUS_BONDED' && (
+                <p className="text-xs italic text-text-interactive-error">
+                  {t('error.notInActiveSet')}
+                </p>
+              )}
             </div>
           ),
           searchableDescription: commission + details,
@@ -168,6 +181,7 @@ export const ValidatorPicker = ({
               />
             </Tooltip>
           ) : undefined,
+          selected: address === selectedAddress,
         }
       })}
       onSelect={({ validator }) => onSelect(validator)}

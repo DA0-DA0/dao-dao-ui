@@ -162,6 +162,7 @@
     "notCw20Address": "This contract address is not a CW20 token.",
     "notCw721Address": "This contract address is not a NFT (CW721).",
     "notEnoughForDeposit": "You do not have enough tokens in your balance to pay the proposal deposit",
+    "notInActiveSet": "Not in active set.",
     "nothingStaked": "Nothing staked.",
     "pageNotFound": "We couldn't find that page.",
     "pfpkStargazeReopenModal": "Failed to connect to Stargaze. Reopen the modal to try again.",

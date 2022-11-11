@@ -1,4 +1,4 @@
-import { WarningRounded } from '@mui/icons-material'
+import { Check, WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import {
@@ -25,6 +25,7 @@ export interface FilterableItem {
   label: ReactNode
   description?: ReactNode
   rightNode?: ReactNode
+  selected?: boolean
 }
 
 export interface FilterableItemPopupProps<T extends FilterableItem> {
@@ -215,10 +216,26 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                   </p>
                 )}
 
-                <div className="space-y-1 text-left">
-                  <p className="link-text text-text-body">{item.label}</p>
+                <div className="min-w-0 space-y-1 text-left">
+                  <div className="flex flex-row items-center gap-2">
+                    {item.selected && (
+                      <Check className="!h-4 !w-4 text-icon-brand" />
+                    )}
+
+                    <p
+                      className={clsx(
+                        'link-text break-words',
+                        item.selected ? 'text-text-brand' : 'text-text-body'
+                      )}
+                    >
+                      {item.label}
+                    </p>
+                  </div>
+
                   {item.description && (
-                    <div className="secondary-text">{item.description}</div>
+                    <div className="secondary-text break-words">
+                      {item.description}
+                    </div>
                   )}
                 </div>
 
