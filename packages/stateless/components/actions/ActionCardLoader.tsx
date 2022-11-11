@@ -1,7 +1,7 @@
 import { Loader } from '../logo/Loader'
 
 export const ActionCardLoader = () => (
-  <div className="my-2 rounded-lg bg-background-primary p-3">
+  <div className="rounded-lg bg-background-tertiary p-6">
     <Loader />
   </div>
 )

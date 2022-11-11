@@ -183,7 +183,7 @@ export const Wallet = ({
             </p>
 
             {proposalActionData.length > 0 && (
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-2">
                 {proposalActionData.map((actionData, index) => {
                   const Component =
                     actionsWithData[actionData.key]?.action?.Component

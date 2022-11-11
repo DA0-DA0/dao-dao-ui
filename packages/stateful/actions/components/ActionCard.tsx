@@ -1,6 +1,7 @@
 import { Close } from '@mui/icons-material'
 import { ComponentType, ReactNode } from 'react'
 
+import { IconButton } from '@dao-dao/stateless'
 import { ActionComponentProps } from '@dao-dao/types/actions'
 
 interface ActionCardProps extends Pick<ActionComponentProps, 'onRemove'> {
@@ -15,22 +16,21 @@ export const ActionCard = ({
   onRemove,
   children,
 }: ActionCardProps) => (
-  <div className="my-2 flex flex-col gap-2 rounded-lg bg-background-primary p-3">
-    <div className="flex flex-row items-start justify-between gap-2">
-      <div className="flex flex-row items-center gap-2">
-        <h2 className="text-3xl">
+  <div className="flex flex-col rounded-lg bg-background-tertiary">
+    <div className="primary-text flex flex-row items-start justify-between gap-4 border-b border-border-base p-4 text-text-body">
+      <div className="flex flex-row items-center gap-3">
+        <p className="text-xl">
           <Icon />
-        </h2>
-        <h2>{title}</h2>
+        </p>
+
+        <p>{title}</p>
       </div>
 
       {onRemove && (
-        <button onClick={onRemove} type="button">
-          <Close className="!h-4 !w-4" />
-        </button>
+        <IconButton Icon={Close} onClick={onRemove} size="sm" variant="ghost" />
       )}
     </div>
 
-    {children}
+    <div className="flex flex-col gap-2 p-6 pt-4">{children}</div>
   </div>
 )

@@ -205,7 +205,7 @@ export const NewProposal = ({
       </p>
 
       {proposalActionData.length > 0 && (
-        <div className="mb-4 flex flex-col gap-1">
+        <div className="mb-4 flex flex-col gap-2">
           {proposalActionData.map((actionData, index) => {
             const Component = actionsWithData[actionData.key]?.action?.Component
             if (!Component) {
