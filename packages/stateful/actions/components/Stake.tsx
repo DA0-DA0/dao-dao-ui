@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import {
   DepositEmoji,
   InputErrorMessage,
+  InputThemedText,
   NumberInput,
   SelectInput,
   TokenAmountDisplay,
@@ -29,24 +30,28 @@ import {
 import { ActionCard } from './ActionCard'
 import { ValidatorPicker } from './ValidatorPicker'
 
-export const stakeActions: { type: StakeType; name: string }[] = [
-  {
-    type: StakeType.Delegate,
-    name: 'Delegate',
-  },
-  {
-    type: StakeType.Undelegate,
-    name: 'Undelegate',
-  },
-  {
-    type: StakeType.Redelegate,
-    name: 'Redelegate',
-  },
-  {
-    type: StakeType.WithdrawDelegatorReward,
-    name: 'Claim Rewards',
-  },
-]
+export const useStakeActions = (): { type: StakeType; name: string }[] => {
+  const { t } = useTranslation()
+
+  return [
+    {
+      type: StakeType.Delegate,
+      name: t('title.delegate'),
+    },
+    {
+      type: StakeType.Undelegate,
+      name: t('title.undelegate'),
+    },
+    {
+      type: StakeType.Redelegate,
+      name: t('title.redelegate'),
+    },
+    {
+      type: StakeType.WithdrawDelegatorReward,
+      name: t('title.claimRewards'),
+    },
+  ]
+}
 
 export interface StakeOptions {
   nativeBalances: readonly Coin[]
@@ -72,6 +77,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 }) => {
   const { t } = useTranslation()
   const { register, watch, setError, clearErrors, setValue } = useFormContext()
+  const stakeActions = useStakeActions()
 
   const stakedValidatorAddresses = new Set(
     stakes.map((s) => s.validator.address)
@@ -144,16 +150,20 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
     else if (stakeType === StakeType.Undelegate) {
       return (
         Number(amount) <= sourceValidatorStaked ||
-        `${
-          sourceValidatorStaked === 0
-            ? 'No token delegations of'
-            : `Max amount that can be undelegated is ${humanReadableAmount}`
-        } ${nativeTokenLabel(denom)}.`
+        (sourceValidatorStaked === 0
+          ? t('error.nothingStaked')
+          : t('error.stakeInsufficient', {
+              amount: humanReadableAmount,
+              tokenSymbol: nativeTokenLabel(denom),
+            }))
       )
     }
     // Logic for redelegating.
     else if (stakeType === StakeType.Redelegate) {
       // Validate toValidator address.
+      if (!toValidator) {
+        return t('error.noValidatorFound')
+      }
       const validateToValidator = validateValidatorAddress(toValidator)
       if (typeof validateToValidator === 'string') {
         return validateToValidator
@@ -161,15 +171,16 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 
       return (
         Number(amount) <= sourceValidatorStaked ||
-        `${
-          sourceValidatorStaked === 0
-            ? 'No token delegations of'
-            : `Max amount that can be redelegated is ${humanReadableAmount}`
-        } ${nativeTokenLabel(denom)}.`
+        (sourceValidatorStaked === 0
+          ? t('error.nothingStaked')
+          : t('error.stakeInsufficient', {
+              amount: humanReadableAmount,
+              tokenSymbol: nativeTokenLabel(denom),
+            }))
       )
     }
 
-    return 'Invalid stake type.'
+    return t('error.unexpectedError')
   }, [
     validator,
     toValidator,
@@ -262,7 +273,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 
         {/* If not claiming (i.e. withdrawing reward), show amount input. */}
         {stakeType !== StakeType.WithdrawDelegatorReward && (
-          <>
+          <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-2">
               <NumberInput
                 containerClassName="grow"
@@ -310,25 +321,26 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 
             {/* If not delegating, show staked balance for source validator. */}
             {stakeType !== StakeType.Delegate && (
-              <div className="flex flex-row items-center justify-between gap-10">
-                <p className="secondary-text">{t('title.daosStake')}</p>
+              <InputThemedText className="flex flex-row items-center justify-between gap-4 self-end !text-text-brand">
+                <p className="secondary-text font-semibold">
+                  {t('title.staked')}:
+                </p>
 
-                {/* Balance */}
                 <TokenAmountDisplay
                   amount={sourceValidatorStaked}
                   decimals={denomDecimals}
                   showFullAmount
                   symbol={nativeTokenLabel(denom)}
                 />
-              </div>
+              </InputThemedText>
             )}
-          </>
+          </div>
         )}
 
         {/* If redelegating, show selection for destination validator. */}
         {stakeType === StakeType.Redelegate && (
-          <>
-            <p className="mt-2">{t('form.toValidator')}:</p>
+          <div className="flex flex-col items-start gap-2">
+            <p>{t('form.toValidator')}</p>
 
             <ValidatorPicker
               nativeDecimals={NATIVE_DECIMALS}
@@ -341,7 +353,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
               stakes={stakes}
               validators={validators}
             />
-          </>
+          </div>
         )}
 
         <InputErrorMessage error={errors?.denom} />

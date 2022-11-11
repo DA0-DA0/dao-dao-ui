@@ -80,16 +80,11 @@ export const ValidatorPicker = ({
         <>
           {selectedAddress && (
             <InputThemedText className="flex flex-row items-center justify-between gap-10">
-              <div className="flex grow flex-row items-center gap-3">
-                <p className="hidden font-semibold md:block">
-                  {t('form.validator')}:{' '}
-                </p>
-                <CopyToClipboard
-                  label={selectedValidator?.moniker}
-                  tooltip={t('button.clickToCopyAddress')}
-                  value={selectedAddress}
-                />
-              </div>
+              <CopyToClipboard
+                label={selectedValidator?.moniker}
+                tooltip={t('button.clickToCopyAddress')}
+                value={selectedAddress}
+              />
 
               {!readOnly && (
                 <Button pressed={open} variant="ghost" {...props}>

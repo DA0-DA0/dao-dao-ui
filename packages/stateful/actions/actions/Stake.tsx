@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 
 import {
   nativeBalancesSelector,
@@ -35,7 +35,7 @@ import { SuspenseLoader } from '../../components/SuspenseLoader'
 import {
   StakeData,
   StakeComponent as StatelessStakeComponent,
-  stakeActions,
+  useStakeActions,
 } from '../components/Stake'
 
 const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
@@ -59,64 +59,65 @@ const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
   msg: Record<string, any>
-) =>
-  useMemo(() => {
+) => {
+  const stakeActions = useStakeActions()
+
+  if (
+    'distribution' in msg &&
+    StakeType.WithdrawDelegatorReward in msg.distribution &&
+    'validator' in msg.distribution.withdraw_delegator_reward
+  ) {
+    return {
+      match: true,
+      data: {
+        stakeType: StakeType.WithdrawDelegatorReward,
+        validator: msg.distribution.withdraw_delegator_reward.validator,
+        // Default values, not needed for displaying this type of message.
+        toValidator: '',
+        amount: 1,
+        denom: NATIVE_DENOM,
+      },
+    }
+  } else if ('staking' in msg) {
+    const stakeType = stakeActions
+      .map(({ type }) => type)
+      .find((type) => type in msg.staking)
+    if (!stakeType) return { match: false }
+
+    const data = msg.staking[stakeType]
     if (
-      'distribution' in msg &&
-      StakeType.WithdrawDelegatorReward in msg.distribution &&
-      'validator' in msg.distribution.withdraw_delegator_reward
+      ((stakeType === StakeType.Redelegate &&
+        'src_validator' in data &&
+        'dst_validator' in data) ||
+        (stakeType !== StakeType.Redelegate && 'validator' in data)) &&
+      'amount' in data &&
+      'amount' in data.amount &&
+      'denom' in data.amount
     ) {
+      const { amount, denom } = data.amount
+
       return {
         match: true,
         data: {
-          stakeType: StakeType.WithdrawDelegatorReward,
-          validator: msg.distribution.withdraw_delegator_reward.validator,
-          // Default values, not needed for displaying this type of message.
-          toValidator: '',
-          amount: 1,
-          denom: NATIVE_DENOM,
+          stakeType,
+          validator:
+            stakeType === StakeType.Redelegate
+              ? data.src_validator
+              : data.validator,
+          toValidator:
+            stakeType === StakeType.Redelegate ? data.dst_validator : '',
+          amount: convertMicroDenomToDenomWithDecimals(
+            amount,
+            nativeTokenDecimals(denom)!
+          ),
+          denom,
         },
       }
-    } else if ('staking' in msg) {
-      const stakeType = stakeActions
-        .map(({ type }) => type)
-        .find((type) => type in msg.staking)
-      if (!stakeType) return { match: false }
-
-      const data = msg.staking[stakeType]
-      if (
-        ((stakeType === StakeType.Redelegate &&
-          'src_validator' in data &&
-          'dst_validator' in data) ||
-          (stakeType !== StakeType.Redelegate && 'validator' in data)) &&
-        'amount' in data &&
-        'amount' in data.amount &&
-        'denom' in data.amount
-      ) {
-        const { amount, denom } = data.amount
-
-        return {
-          match: true,
-          data: {
-            stakeType,
-            validator:
-              stakeType === StakeType.Redelegate
-                ? data.src_validator
-                : data.validator,
-            toValidator:
-              stakeType === StakeType.Redelegate ? data.dst_validator : '',
-            amount: convertMicroDenomToDenomWithDecimals(
-              amount,
-              nativeTokenDecimals(denom)!
-            ),
-            denom,
-          },
-        }
-      }
     }
+  }
 
-    return { match: false }
-  }, [msg])
+  return { match: false }
+}
 
 export const makeStakeAction: ActionMaker<StakeData> = ({
   t,
@@ -124,6 +125,8 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
   address,
 }) => {
   const useDefaults: UseDefaults<StakeData> = () => {
+    const stakeActions = useStakeActions()
+
     const nativeDelegationInfoLoadable = loadableToLoadingData(
       useCachedLoadable(
         address
