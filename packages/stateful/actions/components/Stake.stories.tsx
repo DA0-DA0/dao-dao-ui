@@ -39,6 +39,54 @@ const denomProps = {
   decimals: 6,
 }
 
+const stakes = [
+  {
+    // Random price between 0 and 10000 with up to 6 decimals.
+    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+    validator: {
+      address: 'sparkIBC',
+      moniker: 'Spark IBC',
+      website: '',
+      details: '',
+      commission: 0.05,
+      status: 'BOND_STATUS_BONDED',
+      tokens: 5,
+    },
+    rewards: 1.23,
+    ...denomProps,
+  },
+  {
+    // Random price between 0 and 10000 with up to 6 decimals.
+    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+    validator: {
+      address: 'elsehow',
+      moniker: 'elsehow',
+      website: '',
+      details: '',
+      commission: 0.05,
+      status: 'BOND_STATUS_BONDED',
+      tokens: 6.2,
+    },
+    rewards: 4.56,
+    ...denomProps,
+  },
+  {
+    // Random price between 0 and 10000 with up to 6 decimals.
+    amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
+    validator: {
+      address: 'cosmostation',
+      moniker: 'Cosmostation',
+      website: '',
+      details: '',
+      commission: 0.05,
+      status: 'BOND_STATUS_BONDED',
+      tokens: 7,
+    },
+    rewards: 7.89,
+    ...denomProps,
+  },
+]
+
 export const Default = Template.bind({})
 Default.args = {
   fieldNamePrefix: '',
@@ -51,54 +99,9 @@ Default.args = {
         amount: '1234567890',
       },
     ],
-    stakes: [
-      {
-        // Random price between 0 and 10000 with up to 6 decimals.
-        amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
-        validator: {
-          address: 'sparkIBC',
-          moniker: 'Spark IBC',
-          website: '',
-          details: '',
-          commission: 0.05,
-          status: 'BOND_STATUS_BONDED',
-          tokens: 5,
-        },
-        rewards: 1.23,
-        ...denomProps,
-      },
-      {
-        // Random price between 0 and 10000 with up to 6 decimals.
-        amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
-        validator: {
-          address: 'elsehow',
-          moniker: 'elsehow',
-          website: '',
-          details: '',
-          commission: 0.05,
-          status: 'BOND_STATUS_BONDED',
-          tokens: 6.2,
-        },
-        rewards: 4.56,
-        ...denomProps,
-      },
-      {
-        // Random price between 0 and 10000 with up to 6 decimals.
-        amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
-        validator: {
-          address: 'cosmostation',
-          moniker: 'Cosmostation',
-          website: '',
-          details: '',
-          commission: 0.05,
-          status: 'BOND_STATUS_BONDED',
-          tokens: 7,
-        },
-        rewards: 7.89,
-        ...denomProps,
-      },
-    ],
+    stakes,
     validators: [
+      ...stakes.map(({ validator }) => validator),
       {
         address: 'aDifferentOne',
         moniker: 'A different one',
