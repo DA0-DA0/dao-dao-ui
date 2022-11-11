@@ -218,7 +218,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                 <div className="space-y-1 text-left">
                   <p className="link-text text-text-body">{item.label}</p>
                   {item.description && (
-                    <p className="secondary-text">{item.description}</p>
+                    <div className="secondary-text">{item.description}</div>
                   )}
                 </div>
 

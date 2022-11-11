@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react'
 import {
   nativeBalancesSelector,
   nativeDelegationInfoSelector,
+  validatorsSelector,
 } from '@dao-dao/state'
 import {
   ActionCardLoader,
@@ -32,7 +33,6 @@ import {
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
 import {
-  CUSTOM_VALIDATOR,
   StakeData,
   StakeComponent as StatelessStakeComponent,
   stakeActions,
@@ -52,12 +52,8 @@ const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
       data.stakeType,
       amount.toString(),
       data.denom,
-      data.validator === CUSTOM_VALIDATOR
-        ? data.customValidator
-        : data.validator,
-      data.toValidator === CUSTOM_VALIDATOR
-        ? data.customToValidator
-        : data.toValidator
+      data.validator,
+      data.toValidator
     )
   }, [])
 
@@ -74,13 +70,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
         match: true,
         data: {
           stakeType: StakeType.WithdrawDelegatorReward,
-          // The validator info may or may not be loaded, so force display
-          // custom validator input instead for now.
-          validator: CUSTOM_VALIDATOR,
-          customValidator: msg.distribution.withdraw_delegator_reward.validator,
+          validator: msg.distribution.withdraw_delegator_reward.validator,
           // Default values, not needed for displaying this type of message.
-          toValidator: CUSTOM_VALIDATOR,
-          customToValidator: '',
+          toValidator: '',
           amount: 1,
           denom: NATIVE_DENOM,
         },
@@ -107,17 +99,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
           match: true,
           data: {
             stakeType,
-            // The validator info may or may not be loaded, so force display
-            // custom validator input instead for now.
-            validator: CUSTOM_VALIDATOR,
-            customValidator:
+            validator:
               stakeType === StakeType.Redelegate
                 ? data.src_validator
                 : data.validator,
-            // The validator info may or may not be loaded, so force display
-            // custom validator input instead for now.
-            toValidator: CUSTOM_VALIDATOR,
-            customToValidator:
+            toValidator:
               stakeType === StakeType.Redelegate ? data.dst_validator : '',
             amount: convertMicroDenomToDenomWithDecimals(
               amount,
@@ -160,10 +146,8 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
         (!nativeDelegationInfoLoadable.loading &&
           nativeDelegationInfoLoadable.data?.delegations[0]?.validator
             .address) ||
-        CUSTOM_VALIDATOR,
-      customValidator: '',
-      toValidator: CUSTOM_VALIDATOR,
-      customToValidator: '',
+        '',
+      toValidator: '',
       amount: 1,
       denom: NATIVE_DENOM,
     }
@@ -174,7 +158,7 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
     // when this data updates on a schedule. Manually trigger a suspense loader
     // the first time when the initial data is still loading.
 
-    const nativeBalancesLoadable = loadableToLoadingData(
+    const loadingNativeBalances = loadableToLoadingData(
       useCachedLoadable(
         address
           ? nativeBalancesSelector({
@@ -186,7 +170,7 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
       []
     )
 
-    const nativeDelegationInfoLoadable = loadableToLoadingData(
+    const loadingNativeDelegationInfo = loadableToLoadingData(
       useCachedLoadable(
         address
           ? nativeDelegationInfoSelector({
@@ -201,27 +185,37 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
       }
     )
 
+    const loadingValidators = loadableToLoadingData(
+      useCachedLoadable(
+        validatorsSelector({
+          chainId,
+        })
+      ),
+      []
+    )
+
     return (
       <SuspenseLoader
         fallback={<ActionCardLoader />}
         forceFallback={
           // Manually trigger loader.
-          nativeBalancesLoadable.loading ||
-          nativeDelegationInfoLoadable.loading ||
-          !nativeDelegationInfoLoadable.data
+          loadingNativeBalances.loading ||
+          loadingNativeDelegationInfo.loading ||
+          !loadingNativeDelegationInfo.data ||
+          loadingValidators.loading
         }
       >
         <StatelessStakeComponent
           {...props}
           options={{
-            nativeBalances: nativeBalancesLoadable.loading
+            nativeBalances: loadingNativeBalances.loading
               ? []
-              : nativeBalancesLoadable.data,
+              : loadingNativeBalances.data,
             stakes:
-              nativeDelegationInfoLoadable.loading ||
-              !nativeDelegationInfoLoadable.data
+              loadingNativeDelegationInfo.loading ||
+              !loadingNativeDelegationInfo.data
                 ? []
-                : nativeDelegationInfoLoadable.data.delegations.map(
+                : loadingNativeDelegationInfo.data.delegations.map(
                     ({ validator, delegated, pendingReward }) => ({
                       validator,
                       amount: convertMicroDenomToDenomWithDecimals(
@@ -237,6 +231,7 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
                       decimals: NATIVE_DECIMALS,
                     })
                   ),
+            validators: loadingValidators.loading ? [] : loadingValidators.data,
           }}
         />
       </SuspenseLoader>

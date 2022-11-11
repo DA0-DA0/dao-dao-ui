@@ -18,6 +18,7 @@ import { selector, selectorFamily } from 'recoil'
 import {
   AmountWithTimestamp,
   Delegation,
+  NativeDelegationInfo,
   UnbondingDelegation,
   Validator,
   WithChainId,
@@ -28,6 +29,7 @@ import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   cosmWasmClientRouter,
+  cosmosValidatorToValidator,
   getAllRpcResponse,
   getRpcForChainId,
   nativeTokenDecimals,
@@ -312,20 +314,11 @@ export const validatorSelector = selectorFamily<
     async ({ get }) => {
       const client = get(cosmosRpcClientForChainSelector(chainId))
 
-      const {
-        validator: {
-          description: { moniker, website, details },
-        },
-      } = await client.staking.v1beta1.validator({
+      const { validator } = await client.staking.v1beta1.validator({
         validatorAddr,
       })
 
-      return {
-        address: validatorAddr,
-        moniker,
-        website,
-        details,
-      }
+      return cosmosValidatorToValidator(validator)
     },
 })
 
@@ -343,15 +336,40 @@ export const nativeUnstakingDurationSecondsSelector = selectorFamily<
     },
 })
 
-export const nativeStakingInfoSelector = selectorFamily<
-  | {
-      delegations: Delegation[]
-      unbondingDelegations: UnbondingDelegation[]
-    }
-  | undefined,
+export const validatorsSelector = selectorFamily<Validator[], WithChainId<{}>>({
+  key: 'validators',
+  get:
+    ({ chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      let validators: RpcValidator[]
+      try {
+        validators = await getAllRpcResponse(
+          client.staking.v1beta1.validators,
+          {
+            status: '',
+          },
+          'validators'
+        )
+      } catch (err) {
+        console.error(err)
+        return []
+      }
+
+      console.log(validators)
+
+      return validators
+        .map((validator) => cosmosValidatorToValidator(validator))
+        .sort((a, b) => b.tokens - a.tokens)
+    },
+})
+
+export const nativeDelegationInfoSelector = selectorFamily<
+  NativeDelegationInfo | undefined,
   WithChainId<{ address: string }>
 >({
-  key: 'nativeStakingInfo',
+  key: 'nativeDelegationInfo',
   get:
     ({ address: delegatorAddr, chainId }) =>
     async ({ get }) => {
@@ -407,15 +425,14 @@ export const nativeStakingInfoSelector = selectorFamily<
                 return
               }
 
-              const { description } =
-                validators.find(
-                  ({ operatorAddress }) => operatorAddress === address
-                ) ?? {}
+              const validator = validators.find(
+                ({ operatorAddress }) => operatorAddress === address
+              )
               let pendingReward = rewards
                 .find(({ validatorAddress }) => validatorAddress === address)
                 ?.reward.find(({ denom }) => denom === NATIVE_DENOM)
 
-              if (!description || !pendingReward) {
+              if (!validator || !pendingReward) {
                 return
               }
 
@@ -430,15 +447,8 @@ export const nativeStakingInfoSelector = selectorFamily<
                 .floor()
                 .toString()
 
-              const { moniker, website, details } = description
-
               return {
-                validator: {
-                  address,
-                  moniker,
-                  website,
-                  details,
-                },
+                validator: cosmosValidatorToValidator(validator),
                 delegated: delegationBalance,
                 pendingReward,
               }

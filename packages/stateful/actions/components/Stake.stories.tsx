@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { NATIVE_DENOM, StakeType } from '@dao-dao/utils'
 
-import { CUSTOM_VALIDATOR, StakeComponent, StakeData } from './Stake'
+import { StakeComponent, StakeData } from './Stake'
 
 export default {
   title: 'DAO DAO / packages / actions / components / Stake',
@@ -17,10 +17,8 @@ const Template: ComponentStory<typeof StakeComponent> = (args) => (
     {...useForm<StakeData>({
       defaultValues: {
         stakeType: StakeType.Delegate,
-        validator: CUSTOM_VALIDATOR,
-        customValidator: '',
-        toValidator: CUSTOM_VALIDATOR,
-        customToValidator: '',
+        validator: '',
+        toValidator: '',
         amount: 1,
         denom: NATIVE_DENOM,
       },
@@ -62,6 +60,9 @@ Default.args = {
           moniker: 'Spark IBC',
           website: '',
           details: '',
+          commission: 0.05,
+          status: 'BOND_STATUS_BONDED',
+          tokens: 5,
         },
         rewards: 1.23,
         ...denomProps,
@@ -74,6 +75,9 @@ Default.args = {
           moniker: 'elsehow',
           website: '',
           details: '',
+          commission: 0.05,
+          status: 'BOND_STATUS_BONDED',
+          tokens: 6.2,
         },
         rewards: 4.56,
         ...denomProps,
@@ -86,9 +90,23 @@ Default.args = {
           moniker: 'Cosmostation',
           website: '',
           details: '',
+          commission: 0.05,
+          status: 'BOND_STATUS_BONDED',
+          tokens: 7,
         },
         rewards: 7.89,
         ...denomProps,
+      },
+    ],
+    validators: [
+      {
+        address: 'aDifferentOne',
+        moniker: 'A different one',
+        website: '',
+        details: '',
+        commission: 0.05,
+        status: 'BOND_STATUS_BONDED',
+        tokens: 9,
       },
     ],
   },

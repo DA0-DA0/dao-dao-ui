@@ -8,9 +8,11 @@
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "0.29.3",
     "@cosmjs/encoding": "0.29.3",
+    "@cosmjs/stargate": "0.29.3",
     "@keplr-wallet/stores": "^0.10.5",
     "@sentry/nextjs": "^7.7.0",
     "ajv": "^8.11.0",
+    "cosmjs-types": "^0.4.0",
     "json5": "^2.2.0",
     "long": "^5.2.1",
     "next-i18next": "^11.0.0",
@@ -20,12 +22,10 @@
   },
   "devDependencies": {
     "@cosmjs/proto-signing": "0.29.3",
-    "@cosmjs/stargate": "0.29.3",
     "@dao-dao/config": "2.0.1",
     "@dao-dao/types": "2.0.1",
     "@keplr-wallet/types": "^0.10.2",
     "@noahsaso/cosmodal": "^0.8.0",
-    "cosmjs-types": "^0.4.0",
     "interchain-rpc": "^1.5.0",
     "recoil": "^0.7.2",
     "typescript": "^4.8.3"

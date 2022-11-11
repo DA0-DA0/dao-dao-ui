@@ -5,6 +5,9 @@ export interface Validator {
   moniker: string
   website: string
   details: string
+  commission: number
+  status: string
+  tokens: number
 }
 
 export interface Delegation {
