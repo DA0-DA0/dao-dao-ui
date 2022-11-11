@@ -22,6 +22,7 @@ import {
   isValidValidatorAddress,
   nativeTokenDecimals,
   nativeTokenLabel,
+  nativeTokenLogoURI,
   validatePositive,
   validateRequired,
   validateValidatorAddress,
@@ -273,8 +274,25 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 
         {/* If not claiming (i.e. withdrawing reward), show amount input. */}
         {stakeType !== StakeType.WithdrawDelegatorReward && (
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-row gap-2">
+          <div className="flex flex-col gap-2 md:flex-row-reverse">
+            {/* If not delegating, show staked balance for source validator. */}
+            {stakeType !== StakeType.Delegate && (
+              <InputThemedText className="flex flex-row items-center justify-between gap-4">
+                <p className="secondary-text font-semibold">
+                  {t('title.delegated')}:
+                </p>
+
+                <TokenAmountDisplay
+                  amount={sourceValidatorStaked}
+                  decimals={denomDecimals}
+                  iconUrl={nativeTokenLogoURI(denom)}
+                  showFullAmount
+                  symbol={nativeTokenLabel(denom)}
+                />
+              </InputThemedText>
+            )}
+
+            <div className="flex grow flex-row gap-2">
               <NumberInput
                 containerClassName="grow"
                 disabled={!isCreating}
@@ -318,28 +336,12 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
                 )}
               </SelectInput>
             </div>
-
-            {/* If not delegating, show staked balance for source validator. */}
-            {stakeType !== StakeType.Delegate && (
-              <InputThemedText className="flex flex-row items-center justify-between gap-4 self-end !text-text-brand">
-                <p className="secondary-text font-semibold">
-                  {t('title.staked')}:
-                </p>
-
-                <TokenAmountDisplay
-                  amount={sourceValidatorStaked}
-                  decimals={denomDecimals}
-                  showFullAmount
-                  symbol={nativeTokenLabel(denom)}
-                />
-              </InputThemedText>
-            )}
           </div>
         )}
 
         {/* If redelegating, show selection for destination validator. */}
         {stakeType === StakeType.Redelegate && (
-          <div className="flex flex-col items-start gap-2">
+          <div className="mt-2 flex flex-col items-start gap-2">
             <p>{t('form.toValidator')}</p>
 
             <ValidatorPicker

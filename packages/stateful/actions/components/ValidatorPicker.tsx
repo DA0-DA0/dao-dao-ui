@@ -15,6 +15,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   nativeTokenLabel,
+  nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
 export interface ValidatorPickerProps {
@@ -128,7 +129,7 @@ export const ValidatorPicker = ({
           key: address,
           label: moniker,
           description: (
-            <div className="space-y-1">
+            <div className="flex flex-col gap-1">
               <p>
                 <span className="font-semibold">{t('title.commission')}:</span>{' '}
                 {formatPercentOf100(commission * 100)}
@@ -141,7 +142,7 @@ export const ValidatorPicker = ({
                 )}
                 className="inline-block"
                 decimals={nativeDecimals}
-                prefix={t('title.votingPower') + ': '}
+                prefix={t('title.totalStaked') + ': '}
                 prefixClassName="font-semibold"
                 symbol={nativeTokenLabel(nativeDenom)}
               />
@@ -149,15 +150,19 @@ export const ValidatorPicker = ({
               {details && <p>{details}</p>}
 
               {existingStake && (
-                <TokenAmountDisplay
-                  amount={existingStake.amount}
-                  className="!mt-3 inline-block italic text-text-interactive-valid opacity-80"
-                  decimals={existingStake.decimals}
-                  prefix={t('title.daosStake') + ': '}
-                  prefixClassName="font-semibold"
-                  showFullAmount
-                  symbol={existingStake.symbol}
-                />
+                <div className="mt-1 flex flex-row items-center gap-3">
+                  <p className="font-semibold text-text-interactive-valid">
+                    {t('title.staked')}:
+                  </p>
+
+                  <TokenAmountDisplay
+                    amount={existingStake.amount}
+                    decimals={existingStake.decimals}
+                    iconUrl={nativeTokenLogoURI(existingStake.denom)}
+                    showFullAmount
+                    symbol={existingStake.symbol}
+                  />
+                </div>
               )}
 
               {status !== 'BOND_STATUS_BONDED' && (
