@@ -1,4 +1,5 @@
 import { ArrowOutward } from '@mui/icons-material'
+import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -28,6 +29,7 @@ export interface ValidatorPickerProps {
   // token on the chain).
   nativeDenom: string
   nativeDecimals: number
+  displayClassName?: string
 }
 
 export const ValidatorPicker = ({
@@ -38,6 +40,7 @@ export const ValidatorPicker = ({
   onSelect,
   nativeDenom,
   nativeDecimals,
+  displayClassName,
 }: ValidatorPickerProps) => {
   const { t } = useTranslation()
 
@@ -78,9 +81,9 @@ export const ValidatorPicker = ({
   return (
     <FilterableItemPopup
       Trigger={({ open, ...props }) => (
-        <>
-          {selectedAddress && (
-            <InputThemedText className="flex min-w-0 flex-row items-center justify-between gap-10">
+        <div className={clsx('flex', displayClassName)}>
+          {selectedAddress ? (
+            <InputThemedText className="flex min-w-0 grow flex-row items-center justify-between gap-10">
               <CopyToClipboard
                 label={selectedValidator?.moniker}
                 tooltip={t('button.clickToCopyAddress')}
@@ -93,11 +96,10 @@ export const ValidatorPicker = ({
                 </Button>
               )}
             </InputThemedText>
-          )}
-
-          {!readOnly && !selectedAddress && (
+          ) : !readOnly ? (
             <Button
               center
+              className="grow"
               pressed={open}
               size="lg"
               variant="primary"
@@ -105,8 +107,8 @@ export const ValidatorPicker = ({
             >
               {t('button.selectValidator')}
             </Button>
-          )}
-        </>
+          ) : null}
+        </div>
       )}
       filterableItemKeys={FILTERABLE_KEYS}
       items={sortedValidators.map((validator) => {
@@ -150,19 +152,33 @@ export const ValidatorPicker = ({
               {details && <p>{details}</p>}
 
               {existingStake && (
-                <div className="mt-1 flex flex-row items-center gap-3">
-                  <p className="font-semibold text-text-interactive-valid">
-                    {t('title.staked')}:
-                  </p>
+                <>
+                  <div className="mt-1 flex flex-row items-center gap-3">
+                    <p className="font-semibold text-text-interactive-valid">
+                      {t('title.staked')}:
+                    </p>
 
-                  <TokenAmountDisplay
-                    amount={existingStake.amount}
-                    decimals={existingStake.decimals}
-                    iconUrl={nativeTokenLogoURI(existingStake.denom)}
-                    showFullAmount
-                    symbol={existingStake.symbol}
-                  />
-                </div>
+                    <TokenAmountDisplay
+                      amount={existingStake.amount}
+                      decimals={existingStake.decimals}
+                      iconUrl={nativeTokenLogoURI(existingStake.denom)}
+                      symbol={existingStake.symbol}
+                    />
+                  </div>
+
+                  <div className="flex flex-row items-center gap-3">
+                    <p className="font-semibold text-text-interactive-valid">
+                      {t('info.pendingRewards')}:
+                    </p>
+
+                    <TokenAmountDisplay
+                      amount={existingStake.rewards}
+                      decimals={existingStake.decimals}
+                      iconUrl={nativeTokenLogoURI(existingStake.denom)}
+                      symbol={existingStake.symbol}
+                    />
+                  </div>
+                </>
               )}
 
               {status !== 'BOND_STATUS_BONDED' && (

@@ -52,7 +52,6 @@ export const CopyToClipboard = ({
           toast.success(success || t('info.copiedToClipboard'))
           onCopy?.()
         }}
-        title={value}
         type="button"
       >
         <Icon className="!h-[18px] !w-[18px]" />

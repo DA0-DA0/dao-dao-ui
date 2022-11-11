@@ -1,6 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import {
   Coin,
+  Event,
   StargateClient,
   decodeCosmosSdkDecFromProto,
 } from '@cosmjs/stargate'
@@ -12,7 +13,6 @@ import {
   UnbondingDelegation as RpcUnbondingDelegation,
   Validator as RpcValidator,
 } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
-import JSON5 from 'json5'
 import { selector, selectorFamily } from 'recoil'
 
 import {
@@ -357,8 +357,6 @@ export const validatorsSelector = selectorFamily<Validator[], WithChainId<{}>>({
         return []
       }
 
-      console.log(validators)
-
       return validators
         .map((validator) => cosmosValidatorToValidator(validator))
         .sort((a, b) => b.tokens - a.tokens)
@@ -488,7 +486,7 @@ export const nativeDelegationInfoSelector = selectorFamily<
 })
 
 export const transactionEventsSelector = selectorFamily<
-  Record<string, any>[],
+  readonly Event[] | undefined,
   WithChainId<{ txHash: string }>
 >({
   key: 'transactionEvents',
@@ -498,6 +496,6 @@ export const transactionEventsSelector = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
 
       const tx = await client.getTx(txHash)
-      return tx?.rawLog ? JSON5.parse(tx.rawLog)[0].events : undefined
+      return tx ? tx.events : undefined
     },
 })

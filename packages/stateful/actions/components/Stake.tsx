@@ -57,6 +57,8 @@ export interface StakeOptions {
   nativeBalances: readonly Coin[]
   stakes: TokenStake[]
   validators: Validator[]
+  executed: boolean
+  claimedRewards?: number
 }
 
 export interface StakeData {
@@ -73,7 +75,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
   onRemove,
   errors,
   isCreating,
-  options: { nativeBalances, stakes, validators },
+  options: { nativeBalances, stakes, validators, executed, claimedRewards },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setError, clearErrors, setValue } = useFormContext()
@@ -94,11 +96,16 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
   const denomDecimals = nativeTokenDecimals(denom) ?? NATIVE_DECIMALS
   const minAmount = 1 / Math.pow(10, NATIVE_DECIMALS)
 
-  // Get how much is staked for the selected validator.
+  // Get how much is staked and pending for the selected validator.
   const sourceValidatorStaked =
     (isValidValidatorAddress(validator, CHAIN_BECH32_PREFIX) &&
       stakes.find(({ validator: { address } }) => address === validator)
         ?.amount) ||
+    0
+  const sourceValidatorPendingRewards =
+    (isValidValidatorAddress(validator, CHAIN_BECH32_PREFIX) &&
+      stakes.find(({ validator: { address } }) => address === validator)
+        ?.rewards) ||
     0
 
   // If staking, maxAmount is denom treasury balance. Otherwise (for
@@ -220,7 +227,6 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
       <div className="flex flex-row gap-2">
         {/* Choose type of stake operation. */}
         <SelectInput
-          className="grow"
           defaultValue={stakeActions[0].type}
           disabled={!isCreating}
           error={errors?.stakeType}
@@ -250,6 +256,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 
         {/* Choose source validator. */}
         <ValidatorPicker
+          displayClassName="grow"
           nativeDecimals={NATIVE_DECIMALS}
           nativeDenom={NATIVE_DENOM}
           onSelect={({ address }) =>
@@ -269,69 +276,84 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 
       {/* If not claiming (i.e. withdrawing reward), show amount input. */}
       {stakeType !== StakeType.WithdrawDelegatorReward && (
-        <>
-          <div className="flex flex-row gap-2">
-            <NumberInput
-              containerClassName="grow"
-              disabled={!isCreating}
-              error={errors?.amount}
-              fieldName={fieldNamePrefix + 'amount'}
-              max={maxAmount}
-              min={minAmount}
-              onMinus={() =>
-                setValue(
-                  fieldNamePrefix + 'amount',
-                  Math.min(Math.max(amount - 1, minAmount), maxAmount)
-                )
-              }
-              onPlus={() =>
-                setValue(
-                  fieldNamePrefix + 'amount',
-                  Math.min(Math.max(amount + 1, minAmount), maxAmount)
-                )
-              }
-              register={register}
-              step={minAmount}
-              validation={[validateRequired, validatePositive]}
-            />
+        <div className="flex flex-row gap-2">
+          <NumberInput
+            containerClassName="grow"
+            disabled={!isCreating}
+            error={errors?.amount}
+            fieldName={fieldNamePrefix + 'amount'}
+            max={maxAmount}
+            min={minAmount}
+            onMinus={() =>
+              setValue(
+                fieldNamePrefix + 'amount',
+                Math.min(Math.max(amount - 1, minAmount), maxAmount)
+              )
+            }
+            onPlus={() =>
+              setValue(
+                fieldNamePrefix + 'amount',
+                Math.min(Math.max(amount + 1, minAmount), maxAmount)
+              )
+            }
+            register={register}
+            step={minAmount}
+            validation={[validateRequired, validatePositive]}
+          />
 
-            <SelectInput
-              disabled={!isCreating}
-              error={errors?.denom}
-              fieldName={fieldNamePrefix + 'denom'}
-              register={register}
-            >
-              {nativeBalances.length !== 0 ? (
-                nativeBalances.map(({ denom }) => (
-                  <option key={denom} value={denom}>
-                    ${nativeTokenLabel(denom)}
-                  </option>
-                ))
-              ) : (
-                <option value={NATIVE_DENOM}>
-                  ${nativeTokenLabel(NATIVE_DENOM)}
+          <SelectInput
+            disabled={!isCreating}
+            error={errors?.denom}
+            fieldName={fieldNamePrefix + 'denom'}
+            register={register}
+          >
+            {nativeBalances.length !== 0 ? (
+              nativeBalances.map(({ denom }) => (
+                <option key={denom} value={denom}>
+                  ${nativeTokenLabel(denom)}
                 </option>
-              )}
-            </SelectInput>
-          </div>
+              ))
+            ) : (
+              <option value={NATIVE_DENOM}>
+                ${nativeTokenLabel(NATIVE_DENOM)}
+              </option>
+            )}
+          </SelectInput>
+        </div>
+      )}
 
-          <div className="mt-1 flex flex-row items-center gap-4">
-            <p className="secondary-text font-semibold">
-              {stakeType === StakeType.Delegate
-                ? t('title.balance')
-                : t('title.staked')}
-              :
-            </p>
+      {(stakeType !== StakeType.WithdrawDelegatorReward ||
+        // If claiming rewards, show pending rewards if not executed, and
+        // claimed rewards if executed.
+        (executed && !!claimedRewards) ||
+        (!executed && sourceValidatorPendingRewards > 0)) && (
+        <div className="mt-1 flex flex-row items-center gap-4">
+          <p className="secondary-text font-semibold">
+            {stakeType === StakeType.Delegate
+              ? t('title.balance')
+              : stakeType === StakeType.WithdrawDelegatorReward
+              ? executed
+                ? t('info.claimedRewards')
+                : t('info.pendingRewards')
+              : // stakeType === StakeType.Undelegate || stakeType === StakeType.Redelegate
+                t('title.staked')}
+            :
+          </p>
 
-            <TokenAmountDisplay
-              amount={maxAmount}
-              decimals={denomDecimals}
-              iconUrl={nativeTokenLogoURI(denom)}
-              showFullAmount
-              symbol={nativeTokenLabel(denom)}
-            />
-          </div>
-        </>
+          <TokenAmountDisplay
+            amount={
+              stakeType === StakeType.WithdrawDelegatorReward
+                ? executed
+                  ? claimedRewards ?? 0
+                  : sourceValidatorPendingRewards
+                : maxAmount
+            }
+            decimals={denomDecimals}
+            iconUrl={nativeTokenLogoURI(denom)}
+            showFullAmount
+            symbol={nativeTokenLabel(denom)}
+          />
+        </div>
       )}
 
       {/* If redelegating, show selection for destination validator. */}

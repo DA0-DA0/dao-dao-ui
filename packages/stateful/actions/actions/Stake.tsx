@@ -1,8 +1,12 @@
+import { parseCoins } from '@cosmjs/amino'
 import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
+import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   nativeBalancesSelector,
   nativeDelegationInfoSelector,
+  transactionEventsSelector,
   validatorsSelector,
 } from '@dao-dao/state'
 import {
@@ -32,6 +36,7 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
+import { useProposalModuleAdapterIfAvailable } from '../../proposal-module-adapter/react/context'
 import {
   StakeData,
   StakeComponent as StatelessStakeComponent,
@@ -197,6 +202,83 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
       []
     )
 
+    // If in DAO context, use proposal execution hash to find claimed rewards.
+    // If in wallet context, proposal module adapter will not be available.
+    const {
+      hooks: { useProposalExecutionTxHash },
+    } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
+    const executionTxHash = useProposalExecutionTxHash?.()
+    const executed = !!executionTxHash
+
+    const txEvents = useRecoilValue(
+      executionTxHash
+        ? transactionEventsSelector({ txHash: executionTxHash })
+        : constSelector(undefined)
+    )
+
+    const { watch } = useFormContext()
+    let claimedRewards: number | undefined
+    if (
+      executed &&
+      txEvents &&
+      watch(props.fieldNamePrefix + 'stakeType') ===
+        StakeType.WithdrawDelegatorReward
+    ) {
+      const validator = watch(props.fieldNamePrefix + 'validator')
+
+      const claimValidatorRewardsEvents = txEvents.filter(
+        ({ type, attributes }) =>
+          type === 'withdraw_rewards' &&
+          attributes.some(
+            ({ key, value }) => key === 'validator' && value === validator
+          )
+      )
+
+      // All action data that claims rewards from the same validator.
+      const claimValidatorRewardsActionData = props.allActionsWithData
+        .filter(
+          ({ key, data }) =>
+            key === CoreActionKey.Stake &&
+            'stakeType' in data &&
+            data.stakeType === StakeType.WithdrawDelegatorReward &&
+            'validator' in data &&
+            data.validator === validator
+        )
+        .map(({ data }) => data)
+      // Index of this action in the list of all claim rewards actions.
+      const innerIndex = claimValidatorRewardsActionData.indexOf(
+        props.allActionsWithData[props.index].data
+      )
+      // Should never happen since this action is part of all actions.
+      if (innerIndex === -1) {
+        throw new Error(
+          'internal error: could not find inner claim rewards action index'
+        )
+      }
+
+      // If the claim rewards action length does not match the actual claim
+      // rewards events from the chain, then another message must've claimed
+      // some rewards, so we cannot definitively locate the claimed rewards from
+      // this action.
+      if (
+        claimValidatorRewardsActionData.length ===
+        claimValidatorRewardsEvents.length
+      ) {
+        const coin = parseCoins(
+          claimValidatorRewardsEvents[innerIndex].attributes.find(
+            ({ key }) => key === 'amount'
+          )?.value ?? '0' + NATIVE_DENOM
+        )[0]
+
+        if (coin) {
+          claimedRewards = convertMicroDenomToDenomWithDecimals(
+            coin.amount ?? 0,
+            nativeTokenDecimals(coin.denom) ?? NATIVE_DECIMALS
+          )
+        }
+      }
+    }
+
     return (
       <SuspenseLoader
         fallback={<ActionCardLoader />}
@@ -235,6 +317,8 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
                     })
                   ),
             validators: loadingValidators.loading ? [] : loadingValidators.data,
+            executed,
+            claimedRewards,
           }}
         />
       </SuspenseLoader>

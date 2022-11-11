@@ -160,7 +160,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
       }
 
       // Instantiation events from the transaction data.
-      const instantiationAttributes: { key: string; value: string }[] =
+      const instantiationAttributes =
         txEvents.find(({ type }) => type === 'instantiate')?.attributes ?? []
       // Instantiated addresses for the code ID this action instantiated.
       const codeIdInstantiations = instantiationAttributes.reduce(
