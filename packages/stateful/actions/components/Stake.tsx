@@ -36,15 +36,15 @@ export const useStakeActions = (): { type: StakeType; name: string }[] => {
   return [
     {
       type: StakeType.Delegate,
-      name: t('title.delegate'),
+      name: t('title.stake'),
     },
     {
       type: StakeType.Undelegate,
-      name: t('title.undelegate'),
+      name: t('title.unstake'),
     },
     {
       type: StakeType.Redelegate,
-      name: t('title.redelegate'),
+      name: t('title.restake'),
     },
     {
       type: StakeType.WithdrawDelegatorReward,
@@ -315,11 +315,11 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
             </SelectInput>
           </div>
 
-          <div className="mt-2 flex flex-row items-center gap-4">
+          <div className="mt-1 flex flex-row items-center gap-4">
             <p className="secondary-text font-semibold">
               {stakeType === StakeType.Delegate
                 ? t('title.balance')
-                : t('title.delegated')}
+                : t('title.staked')}
               :
             </p>
 
