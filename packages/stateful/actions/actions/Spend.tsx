@@ -88,6 +88,9 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
   }
 
   const Component: ActionComponent<undefined, SpendData> = (props) => {
+    // This needs to be loaded via a cached loadable to avoid displaying a
+    // loader when this data updates on a schedule. Manually trigger a suspense
+    // loader the first time when the initial data is still loading.
     const nativeBalancesLoadable = loadableToLoadingData(
       useCachedLoadable(
         address ? nativeBalancesSelector({ address }) : undefined
@@ -102,6 +105,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
       <SuspenseLoader
         fallback={<ActionCardLoader />}
         forceFallback={
+          // Manually trigger loader.
           nativeBalancesLoadable.loading || cw20LoadingBalances === undefined
         }
       >

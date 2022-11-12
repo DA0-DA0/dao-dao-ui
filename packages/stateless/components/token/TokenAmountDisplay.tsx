@@ -35,7 +35,9 @@ export type TokenAmountDisplayProps = Omit<
 > & {
   amount: number | LoadingData<number>
   prefix?: string
+  prefixClassName?: string
   suffix?: string
+  suffixClassName?: string
   // Max decimals to display.
   maxDecimals?: number
   // Don't show approximation indication (like a tilde).
@@ -66,7 +68,9 @@ export const TokenAmountDisplay = ({
   amount: _amount,
   decimals: _decimals,
   prefix,
+  prefixClassName,
   suffix,
+  suffixClassName,
   maxDecimals,
   hideApprox,
   dateFetched,
@@ -172,9 +176,9 @@ export const TokenAmountDisplay = ({
 
   const content = (
     <p {...props}>
-      {prefix}
+      <span className={prefixClassName}>{prefix}</span>
       {display}
-      {suffix}
+      <span className={suffixClassName}>{suffix}</span>
     </p>
   )
 

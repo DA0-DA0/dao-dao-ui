@@ -2,6 +2,7 @@ import {
   PageRequest,
   PageResponseSDKType,
 } from 'interchain-rpc/types/codegen/cosmos/base/query/v1beta1/pagination'
+import Long from 'long'
 
 export const getAllRpcResponse = async <
   P extends { pagination?: PageRequest; [key: string]: any },
@@ -18,14 +19,26 @@ export const getAllRpcResponse = async <
   do {
     const response = await queryFn({
       ...params,
-      pagination,
+      pagination: {
+        key: new Uint8Array(),
+        ...pagination,
+        // Get all.
+        offset: Long.ZERO,
+        limit: Long.MAX_VALUE,
+      },
     })
 
     pagination = response.pagination?.next_key?.length
       ? { key: response.pagination.next_key }
       : undefined
 
-    data.push(...(response[key] as any[]))
+    const results = response[key] as any[]
+    // If no results retrieved, stop.
+    if (!results.length) {
+      break
+    }
+
+    data.push(...results)
   } while (pagination !== undefined)
 
   return data as R[K]

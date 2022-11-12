@@ -225,12 +225,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <InputErrorMessage error={errors?.amount} />
-        <InputErrorMessage error={errors?.denom} />
-        <InputErrorMessage error={errors?.to} />
-        <InputErrorMessage error={errors?._error} />
-      </div>
+      <InputErrorMessage error={errors?.amount} />
+      <InputErrorMessage error={errors?.denom} />
+      <InputErrorMessage error={errors?.to} />
+      <InputErrorMessage error={errors?._error} />
     </ActionCard>
   )
 }

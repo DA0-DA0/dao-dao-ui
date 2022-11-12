@@ -72,6 +72,9 @@ export interface TokenStake {
   validator: Validator
   amount: number
   rewards: number
+  denom: string
+  symbol: string
+  decimals: number
 }
 
 export interface TokenCardLazyInfo {

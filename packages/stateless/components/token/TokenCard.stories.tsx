@@ -19,6 +19,12 @@ const Template: ComponentStory<typeof TokenCard> = (args) => (
   </div>
 )
 
+const denomProps = {
+  denom: 'ujuno',
+  symbol: 'JUNO',
+  decimals: 6,
+}
+
 export const makeProps = (crown = false): TokenCardProps => {
   // Random price between 0 and 10000 with up to 6 decimals.
   const unstakedBalance = Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6
@@ -31,8 +37,12 @@ export const makeProps = (crown = false): TokenCardProps => {
         moniker: 'Stakefish',
         website: '',
         details: '',
+        commission: 0.05,
+        status: 'BOND_STATUS_BONDED',
+        tokens: 7,
       },
       rewards: 1.23,
+      ...denomProps,
     },
     {
       // Random price between 0 and 10000 with up to 6 decimals.
@@ -42,8 +52,12 @@ export const makeProps = (crown = false): TokenCardProps => {
         moniker: '2x4 Ben',
         website: '',
         details: '',
+        commission: 0.05,
+        status: 'BOND_STATUS_BONDED',
+        tokens: 7,
       },
       rewards: 4.56,
+      ...denomProps,
     },
     {
       // Random price between 0 and 10000 with up to 6 decimals.
@@ -53,8 +67,12 @@ export const makeProps = (crown = false): TokenCardProps => {
         moniker: 'Cosmostation',
         website: '',
         details: '',
+        commission: 0.05,
+        status: 'BOND_STATUS_BONDED',
+        tokens: 7,
       },
       rewards: 7.89,
+      ...denomProps,
     },
     {
       // Random price between 0 and 10000 with up to 6 decimals.
@@ -64,8 +82,12 @@ export const makeProps = (crown = false): TokenCardProps => {
         moniker: 'SG-1',
         website: '',
         details: '',
+        commission: 0.05,
+        status: 'BOND_STATUS_BONDED',
+        tokens: 7,
       },
       rewards: 10.11,
+      ...denomProps,
     },
   ]
 

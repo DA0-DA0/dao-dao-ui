@@ -8,7 +8,7 @@ import {
   cosmWasmClientForChainSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
-  nativeStakingInfoSelector,
+  nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
@@ -149,17 +149,19 @@ export const tokenCardLazyInfoSelector = selectorFamily<
 
       // For now, stakingInfo only exists for native token, until ICA.
       if (denom === NATIVE_DENOM) {
-        const nativeStakingInfo = get(
-          nativeStakingInfoSelector({ address: walletAddress, chainId })
+        const nativeDelegationInfo = get(
+          nativeDelegationInfoSelector({ address: walletAddress, chainId })
         )
 
-        if (nativeStakingInfo) {
+        if (nativeDelegationInfo) {
           const unstakingDurationSeconds = get(
-            nativeUnstakingDurationSecondsSelector({})
+            nativeUnstakingDurationSecondsSelector({
+              chainId,
+            })
           )
 
           stakingInfo = {
-            unstakingTasks: nativeStakingInfo.unbondingDelegations.map(
+            unstakingTasks: nativeDelegationInfo.unbondingDelegations.map(
               ({ balance, finishesAt }) => ({
                 status: UnstakingTaskStatus.Unstaking,
                 amount: convertMicroDenomToDenomWithDecimals(
@@ -172,7 +174,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
               })
             ),
             unstakingDurationSeconds,
-            stakes: nativeStakingInfo.delegations.map(
+            stakes: nativeDelegationInfo.delegations.map(
               ({ validator, delegated, pendingReward }) => ({
                 validator,
                 amount: convertMicroDenomToDenomWithDecimals(
@@ -183,6 +185,9 @@ export const tokenCardLazyInfoSelector = selectorFamily<
                   pendingReward.amount,
                   tokenDecimals
                 ),
+                denom,
+                symbol: tokenSymbol,
+                decimals: tokenDecimals,
               })
             ),
           }

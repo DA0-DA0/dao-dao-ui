@@ -8,7 +8,7 @@ export const InputThemedText = ({
   children,
   ...props
 }: InputThemedTextProps) => (
-  <p
+  <div
     className={clsx(
       'rounded-md py-3 px-4 ring-1 ring-border-primary',
       className
@@ -16,5 +16,5 @@ export const InputThemedText = ({
     {...props}
   >
     {children}
-  </p>
+  </div>
 )

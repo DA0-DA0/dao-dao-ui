@@ -1,4 +1,9 @@
+import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import { ChainInfoID, ChainInfoMap } from '@noahsaso/cosmodal'
+import { bondStatusToJSON } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
+import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
+
+import { Validator } from '@dao-dao/types'
 
 import {
   CHAIN_ID,
@@ -31,3 +36,22 @@ export const getUrlBaseForChainId = (chainId: string): string =>
     : chainId === ChainInfoID.Uni5
     ? 'https://testnet.daodao.zone'
     : ''
+
+export const cosmosValidatorToValidator = ({
+  operatorAddress: address,
+  description: { moniker, website, details },
+  commission,
+  status,
+  tokens,
+}: RpcValidator): Validator => ({
+  address,
+  moniker,
+  website:
+    website && (website.startsWith('http') ? website : `https://${website}`),
+  details,
+  commission: decodeCosmosSdkDecFromProto(
+    commission.commissionRates.rate
+  ).toFloatApproximation(),
+  status: bondStatusToJSON(status),
+  tokens: Number(tokens),
+})

@@ -37,7 +37,7 @@ export const ActionsRenderer = ({
 
   return (
     <FormProvider {...formMethods}>
-      <form>
+      <form className="flex flex-col gap-2">
         {actionData.map(({ action: { Component } }, index) => (
           <div key={index} className="group relative" id={`A${index + 1}`}>
             <SuspenseLoader fallback={<ActionCardLoader />}>

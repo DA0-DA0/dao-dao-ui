@@ -5,6 +5,9 @@ export interface Validator {
   moniker: string
   website: string
   details: string
+  commission: number
+  status: string
+  tokens: number
 }
 
 export interface Delegation {
@@ -18,6 +21,11 @@ export interface UnbondingDelegation {
   balance: Coin
   startedAtHeight: number
   finishesAt: Date
+}
+
+export interface NativeDelegationInfo {
+  delegations: Delegation[]
+  unbondingDelegations: UnbondingDelegation[]
 }
 
 export enum ContractVersion {

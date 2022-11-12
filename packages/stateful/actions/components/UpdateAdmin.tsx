@@ -43,6 +43,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
       <p className="secondary-text mb-4 max-w-prose">
         {t('form.updateAdminDescription')}
       </p>
+
       <div className="flex flex-row flex-wrap gap-2">
         <div className="flex grow flex-col gap-1">
           <InputLabel name={t('form.smartContractAddress')} />
@@ -68,9 +69,8 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
           <InputErrorMessage error={errors?.tokenAddress} />
         </div>
       </div>
-      <div className="my-2">
-        <IsAdminWarning admin={contractAdmin} maybeAdmin={address} />
-      </div>
+
+      <IsAdminWarning admin={contractAdmin} maybeAdmin={address} />
     </ActionCard>
   )
 }
