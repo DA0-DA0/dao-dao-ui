@@ -57,24 +57,26 @@ export const ValidatorPicker = ({
     {} as Record<string, number | undefined>
   )
 
-  // Sort staked first, then by total staked tokens (i.e. voting powe and
+  // Sort staked first, then by total staked tokens (i.e. voting power and
   // popularity).
   const sortedValidators = [...validators].sort((a, b) => {
+    // Get the staked amount for each validator address.
     const aStake = validatorStakedAmountMap?.[a.address]
     const bStake = validatorStakedAmountMap?.[b.address]
 
+    // If both validators have a stake, sort by stake.
     if (aStake && bStake) {
       return bStake - aStake
     }
-
-    if (aStake) {
+    // If only one validator has a stake, sort that one first.
+    else if (aStake) {
       return -1
-    }
-
-    if (bStake) {
+    } else if (bStake) {
       return 1
     }
 
+    // If neither validator has a stake, sort by total tokens staked (i.e.
+    // popularity).
     return b.tokens - a.tokens
   })
 
