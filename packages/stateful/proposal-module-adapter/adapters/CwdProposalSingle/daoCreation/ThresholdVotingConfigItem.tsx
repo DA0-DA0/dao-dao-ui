@@ -45,7 +45,7 @@ export const ThresholdInput = ({
       )}
 
       <SelectInput
-        className={majority ? 'grow' : undefined}
+        containerClassName={majority ? 'grow' : undefined}
         onChange={(value) => setValue('threshold.majority', value === '1')}
         validation={[validateRequired]}
         value={majority ? '1' : '0'}
