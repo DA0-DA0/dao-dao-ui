@@ -61,15 +61,18 @@ export const SelectInput = <
         )}
         disabled={disabled}
         {...props}
-        {...(register &&
-          fieldName &&
-          register(fieldName, {
-            required: required && 'Required',
-            validate,
-            ...(onChange && {
-              onChange: (e: any) => onChange(e.target.value),
-            }),
-          }))}
+        {...(register && fieldName
+          ? register(fieldName, {
+              required: required && 'Required',
+              validate,
+              ...(onChange && {
+                onChange: (e: any) => onChange(e.target.value),
+              }),
+            })
+          : {
+              required,
+              onChange: onChange && ((e: any) => onChange(e.target.value)),
+            })}
       >
         {children}
       </select>
