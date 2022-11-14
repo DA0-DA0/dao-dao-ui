@@ -1,5 +1,7 @@
 import '@dao-dao/stateless/styles/index.css'
 
+import { MINIMAL_VIEWPORTS } from '@storybook/addon-viewport'
+
 import i18n from './i18next'
 import { NotificationsDecorator, RecoilDecorator, ThemeDecorator } from '../decorators'
 
@@ -27,6 +29,19 @@ export const parameters = {
       type: 'code'
     },
   },
+  viewport: {
+    viewports: {
+      mobile1_5: {
+        name: 'Tall small mobile',
+        styles: {
+          height: '768px',
+          width: '320px',
+        },
+        type: 'mobile',
+      },
+      ...MINIMAL_VIEWPORTS,
+    }
+  }
   // No need to enable `darkMode.stylePreview` because we handle theme manually
   // in `ThemeDecorator`.
 }

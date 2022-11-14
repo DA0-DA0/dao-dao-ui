@@ -8,13 +8,10 @@ import {
   FormSwitchCard,
   GearEmoji,
   InputErrorMessage,
-  InputLabel,
-  MoneyEmoji,
   NumberInput,
   PeopleEmoji,
   RecycleEmoji,
   SelectInput,
-  TooltipInfoIcon,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import {
@@ -26,23 +23,15 @@ import {
 import { ActionCard } from '../../../../../../actions'
 import { Trans } from '../../../../../../components/Trans'
 
-export interface UpdateProposalConfigOptions {
-  governanceTokenSymbol?: string
-}
-
-export const UpdateProposalConfigComponent: ActionComponent<
-  UpdateProposalConfigOptions
-> = ({
+export const UpdateProposalConfigComponent: ActionComponent = ({
   fieldNamePrefix,
   errors,
   onRemove,
   isCreating,
-  options: { governanceTokenSymbol },
 }) => {
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
-  const depositRequired = watch(fieldNamePrefix + 'depositRequired')
   const thresholdType = watch(fieldNamePrefix + 'thresholdType')
   const quorumType = watch(fieldNamePrefix + 'quorumType')
   const proposalDuration = watch(fieldNamePrefix + 'proposalDuration')
@@ -76,103 +65,19 @@ export const UpdateProposalConfigComponent: ActionComponent<
           .
         </Trans>
       </p>
-      <div className="flex flex-row flex-wrap gap-2">
-        {governanceTokenSymbol !== undefined && (
-          <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3 md:w-min">
-            <div className="flex flex-row items-center gap-2">
-              <TooltipInfoIcon
-                size="sm"
-                title={t('form.requireProposalDepositTooltip')}
-              />
+      <FormSwitchCard
+        containerClassName="grow"
+        fieldName={fieldNamePrefix + 'onlyMembersExecute'}
+        label={t('form.onlyMembersExecuteTitle')}
+        readOnly={!isCreating}
+        setValue={setValue}
+        sizing="sm"
+        tooltip={t('form.onlyMembersExecuteTooltip')}
+        tooltipIconSize="sm"
+        value={watch(fieldNamePrefix + 'onlyMembersExecute')}
+      />
 
-              <p className="secondary-text w-max">
-                {t('form.requireProposalDepositTitle')}
-              </p>
-            </div>
-            <FormSwitch
-              fieldName={fieldNamePrefix + 'depositRequired'}
-              readOnly={!isCreating}
-              setValue={setValue}
-              sizing="sm"
-              value={watch(fieldNamePrefix + 'depositRequired')}
-            />
-          </div>
-        )}
-        <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3 md:w-min">
-          <div className="flex flex-row items-center gap-2">
-            <TooltipInfoIcon
-              size="sm"
-              title={t('form.onlyMembersExecuteTooltip')}
-            />
-
-            <p className="secondary-text w-max">
-              {t('form.onlyMembersExecuteTitle')}
-            </p>
-          </div>
-          <FormSwitch
-            fieldName={fieldNamePrefix + 'onlyMembersExecute'}
-            readOnly={!isCreating}
-            setValue={setValue}
-            sizing="sm"
-            value={watch(fieldNamePrefix + 'onlyMembersExecute')}
-          />
-        </div>
-      </div>
-
-      {depositRequired && (
-        <div className="flex flex-row flex-wrap justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
-          <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
-            <h3 className="primary-text">
-              <MoneyEmoji /> {t('form.proposalDepositTitle')}
-            </h3>
-            <p className="secondary-text">
-              {t('form.proposalDepositDescription')}
-            </p>
-          </div>
-          <div className="flex grow flex-col gap-1">
-            <div className="flex flex-col gap-1">
-              <InputLabel
-                name={`${t('form.proposalDepositTitle')}${
-                  governanceTokenSymbol ? ` ($${governanceTokenSymbol})` : ''
-                }`}
-              />
-              <NumberInput
-                disabled={!isCreating}
-                error={errors?.depositInfo?.deposit}
-                fieldName={fieldNamePrefix + 'depositInfo.deposit'}
-                register={register}
-                step={0.000001}
-                validation={[validateRequired, validatePositive]}
-              />
-              <InputErrorMessage error={errors?.depositInfo?.deposit} />
-            </div>
-            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3">
-              <div className="flex flex-row items-center gap-2">
-                <TooltipInfoIcon
-                  size="sm"
-                  title={t('form.refundFailedProposalsTooltip')}
-                />
-
-                <p className="secondary-text w-max">
-                  {t('form.refundFailedProposalsTitle')}
-                </p>
-              </div>
-              <FormSwitch
-                fieldName={
-                  fieldNamePrefix + 'depositInfo.refundFailedProposals'
-                }
-                readOnly={!isCreating}
-                setValue={setValue}
-                sizing="sm"
-                value={watch(
-                  fieldNamePrefix + 'depositInfo.refundFailedProposals'
-                )}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <ChartEmoji /> {t('form.passingThresholdTitle')}
@@ -217,9 +122,9 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
-          <div className="flex flex-row items-center justify-between gap-4">
+          <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
             <h3 className="primary-text">
               <PeopleEmoji /> {t('form.quorumTitle')}
             </h3>
@@ -273,7 +178,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
         )}
       </div>
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <ClockEmoji /> {t('form.votingDurationTitle')}
@@ -343,7 +248,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <RecycleEmoji /> {t('form.allowRevotingTitle')}

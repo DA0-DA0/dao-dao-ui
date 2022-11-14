@@ -7,7 +7,7 @@ import {
 
 export default {
   title:
-    'DAO DAO / packages / voting-module-adapter / adapters / CwdVotingCw4 / ui / ProfileCardMemberInfo',
+    'DAO DAO / packages / stateful / voting-module-adapter / adapters / CwdVotingCw4 / ui / ProfileCardMemberInfo',
   component: ProfileCardMemberInfo,
   excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof ProfileCardMemberInfo>

@@ -10,7 +10,7 @@ import { TierCard } from './TierCard'
 
 export default {
   title:
-    'DAO DAO / packages / voting-module-adapter / adapters / CwdVotingCw20Staked / daoCreation / TierCard',
+    'DAO DAO / packages / stateful / voting-module-adapter / adapters / CwdVotingCw20Staked / daoCreation / TierCard',
   component: TierCard,
 } as ComponentMeta<typeof TierCard>
 

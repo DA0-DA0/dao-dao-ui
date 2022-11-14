@@ -86,7 +86,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
 
       <div className="flex flex-col gap-4 rounded-lg border border-border-primary p-3">
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row items-start justify-between gap-2">
+          <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
             <h3 className="primary-text">
               <MoneyEmoji /> {t('form.proposalDepositTitle')}
             </h3>
@@ -106,12 +106,24 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
 
         {depositRequired && (
           <div className="flex grow flex-col gap-1">
-            <div className="flex grow flex-row items-stretch gap-1">
+            <div className="flex grow flex-col gap-1 xs:flex-row xs:items-stretch">
               <NumberInput
                 containerClassName="grow"
                 disabled={!isCreating}
                 error={errors?.depositInfo?.amount}
                 fieldName={fieldNamePrefix + 'depositInfo.amount'}
+                onMinus={() =>
+                  setValue(
+                    fieldNamePrefix + 'depositInfo.amount',
+                    Math.max(depositInfo.amount - 1, 0)
+                  )
+                }
+                onPlus={() =>
+                  setValue(
+                    fieldNamePrefix + 'depositInfo.amount',
+                    Math.max(depositInfo.amount + 1, 0)
+                  )
+                }
                 register={register}
                 step={Math.pow(
                   10,
@@ -121,6 +133,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                 )}
                 validation={[validateRequired, validatePositive]}
               />
+
               <SelectInput
                 disabled={!isCreating}
                 error={errors?.depositInfo?.type}

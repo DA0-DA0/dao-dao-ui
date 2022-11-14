@@ -3,15 +3,13 @@ import { useTranslation } from 'react-i18next'
 
 import {
   DaoImage,
-  FormSwitch,
+  FormSwitchCard,
   ImageSelector,
   InfoEmoji,
   InputErrorMessage,
   InputLabel,
   TextAreaInput,
   TextInput,
-  TooltipInfoIcon,
-  useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
@@ -22,6 +20,7 @@ import {
   validateUrl,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../react'
 import { ActionCard } from './ActionCard'
 
 export type UpdateInfoData = ConfigV1Response | ConfigV2Response
@@ -30,7 +29,7 @@ export const UpdateInfoComponent: ActionComponent<
   undefined,
   UpdateInfoData
 > = ({ fieldNamePrefix, errors, onRemove, isCreating, data }) => {
-  const { coreAddress } = useDaoInfoContext()
+  const { address } = useActionOptions()
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
@@ -55,13 +54,13 @@ export const UpdateInfoComponent: ActionComponent<
         ) : (
           <DaoImage
             className="ml-2"
-            coreAddress={coreAddress}
+            coreAddress={address}
             imageUrl={data.image_url}
             size="lg"
           />
         )}
 
-        <div className="flex grow flex-col gap-3">
+        <div className="flex grow flex-col gap-2">
           <div>
             <TextInput
               disabled={!isCreating}
@@ -73,6 +72,7 @@ export const UpdateInfoComponent: ActionComponent<
             />
             <InputErrorMessage error={errors?.name} />
           </div>
+
           <div>
             <TextAreaInput
               disabled={!isCreating}
@@ -84,45 +84,31 @@ export const UpdateInfoComponent: ActionComponent<
             />
             <InputErrorMessage error={errors?.description} />
           </div>
+
           <div className="flex flex-row flex-wrap gap-2">
-            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3">
-              <div className="flex flex-row items-center gap-1">
-                <TooltipInfoIcon
-                  size="sm"
-                  title={t('form.automaticallyAddTokensTooltip')}
-                />
+            <FormSwitchCard
+              containerClassName="grow"
+              fieldName={fieldNamePrefix + 'automatically_add_cw20s'}
+              label={t('form.automaticallyAddTokensTitle')}
+              readOnly={!isCreating}
+              setValue={setValue}
+              sizing="sm"
+              tooltip={t('form.automaticallyAddTokensTooltip')}
+              tooltipIconSize="sm"
+              value={watch(fieldNamePrefix + 'automatically_add_cw20s')}
+            />
 
-                <p className="secondary-text w-max">
-                  {t('form.automaticallyAddTokensTitle')}
-                </p>
-              </div>
-              <FormSwitch
-                fieldName={fieldNamePrefix + 'automatically_add_cw20s'}
-                readOnly={!isCreating}
-                setValue={setValue}
-                sizing="sm"
-                value={watch(fieldNamePrefix + 'automatically_add_cw20s')}
-              />
-            </div>
-            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3">
-              <div className="flex flex-row items-center gap-1">
-                <TooltipInfoIcon
-                  size="sm"
-                  title={t('form.automaticallyAddNFTsTooltip')}
-                />
-
-                <p className="secondary-text w-max">
-                  {t('form.automaticallyAddNFTsTitle')}
-                </p>
-              </div>
-              <FormSwitch
-                fieldName={fieldNamePrefix + 'automatically_add_cw721s'}
-                readOnly={!isCreating}
-                setValue={setValue}
-                sizing="sm"
-                value={watch(fieldNamePrefix + 'automatically_add_cw721s')}
-              />
-            </div>
+            <FormSwitchCard
+              containerClassName="grow"
+              fieldName={fieldNamePrefix + 'automatically_add_cw721s'}
+              label={t('form.automaticallyAddNFTsTitle')}
+              readOnly={!isCreating}
+              setValue={setValue}
+              sizing="sm"
+              tooltip={t('form.automaticallyAddNFTsTooltip')}
+              tooltipIconSize="sm"
+              value={watch(fieldNamePrefix + 'automatically_add_cw721s')}
+            />
           </div>
           {!isCreating && (
             <p className="text-xs italic text-text-tertiary">

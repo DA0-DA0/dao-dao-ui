@@ -1,41 +1,31 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { FormProvider, useForm } from 'react-hook-form'
 
-import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
+import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { NATIVE_DENOM, StakeType } from '@dao-dao/utils'
 
 import { StakeComponent, StakeData } from './Stake'
 
 export default {
-  title: 'DAO DAO / packages / actions / components / Stake',
+  title: 'DAO DAO / packages / stateful / actions / components / Stake',
   component: StakeComponent,
-  decorators: [ReactHookFormDecorator],
+  decorators: [
+    makeReactHookFormDecorator<StakeData>({
+      stakeType: StakeType.Delegate,
+      validator: '',
+      toValidator: '',
+      amount: 1,
+      denom: NATIVE_DENOM,
+    }),
+  ],
 } as ComponentMeta<typeof StakeComponent>
 
 const Template: ComponentStory<typeof StakeComponent> = (args) => (
-  <FormProvider
-    {...useForm<StakeData>({
-      defaultValues: {
-        stakeType: StakeType.Delegate,
-        validator: '',
-        toValidator: '',
-        amount: 1,
-        denom: NATIVE_DENOM,
-      },
-    })}
-  >
-    <StakeComponent
-      {...args}
-      errors={{}}
-      isCreating
-      onRemove={() => alert('remove')}
-    />
-  </FormProvider>
+  <StakeComponent {...args} />
 )
 
 const denomProps = {
-  denom: 'ujuno',
-  symbol: 'JUNO',
+  denom: NATIVE_DENOM,
+  symbol: 'JUNOX',
   decimals: 6,
 }
 
@@ -115,4 +105,7 @@ Default.args = {
     executed: false,
     nativeUnstakingDurationSeconds: 2419200,
   },
+  isCreating: true,
+  onRemove: () => alert('remove'),
+  errors: {},
 }

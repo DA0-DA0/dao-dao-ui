@@ -1,4 +1,8 @@
 import { Coin } from '@cosmjs/stargate'
+import {
+  ArrowRightAltRounded,
+  SubdirectoryArrowRightRounded,
+} from '@mui/icons-material'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -29,7 +33,13 @@ import {
 import { useActionOptions } from '../react'
 import { ActionCard } from './ActionCard'
 
-interface SpendOptions {
+export interface SpendData {
+  to: string
+  amount: number
+  denom: string
+}
+
+export interface SpendOptions {
   nativeBalances: readonly Coin[]
   cw20Balances: {
     address: string
@@ -159,9 +169,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   return (
     <ActionCard Icon={MoneyEmoji} onRemove={onRemove} title={t('title.spend')}>
-      <div className="flex flex-row items-center gap-4">
-        <div className="flex flex-row items-stretch gap-2">
+      <div className="flex flex-col gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
+        <div className="flex grow flex-row items-stretch gap-2">
           <NumberInput
+            containerClassName="grow"
             disabled={!isCreating}
             error={errors?.amount}
             fieldName={fieldNamePrefix + 'amount'}
@@ -210,10 +221,12 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           </SelectInput>
         </div>
 
-        {/* eslint-disable-next-line i18next/no-literal-string */}
-        <p className="secondary-text font-mono text-2xl">&#10142;</p>
+        <div className="flex grow flex-row items-stretch gap-2 sm:gap-3">
+          <div className="flex flex-row items-center pl-1 sm:pl-0">
+            <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
+            <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
+          </div>
 
-        <div className="flex grow flex-row items-stretch self-stretch">
           <AddressInput
             containerClassName="grow"
             disabled={!isCreating}

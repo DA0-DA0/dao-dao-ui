@@ -2,9 +2,10 @@ import { action } from '@storybook/addon-actions'
 import { DecoratorFn } from '@storybook/react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-export const makeReactHookFormDecorator =
-  (defaultValues?: Record<string, unknown>): DecoratorFn =>
-  (Story) => {
+export const makeReactHookFormDecorator = <T extends Record<string, any> = {}>(
+  defaultValues?: T
+): DecoratorFn =>
+  function ReactHookFormDecorator(Story) {
     const methods = useForm({
       defaultValues: {
         // Used in various components to choose default values in inputs. Set

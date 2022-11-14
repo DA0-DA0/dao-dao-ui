@@ -23,7 +23,7 @@ export interface NumberInputProps<
   onMinus?: () => void
   onPlus?: () => void
   containerClassName?: string
-  sizing?: 'sm' | 'md' | 'auto'
+  sizing?: 'sm' | 'md' | 'auto' | 'fill'
   required?: boolean
   setValueAs?: (value: any) => any
   ghost?: boolean
@@ -89,6 +89,7 @@ export const NumberInput = <
           'w-28': sizing === 'sm',
           'w-40': sizing === 'md',
           'w-28 md:w-32 lg:w-40': sizing === 'auto',
+          'w-full': sizing === 'fill',
         },
         containerClassName
       )}

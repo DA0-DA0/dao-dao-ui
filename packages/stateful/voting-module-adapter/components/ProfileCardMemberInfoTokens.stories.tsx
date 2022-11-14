@@ -10,7 +10,7 @@ import {
 
 export default {
   title:
-    'DAO DAO / packages / voting-module-adapter / components / ProfileCardMemberInfoTokens',
+    'DAO DAO / packages / stateful / voting-module-adapter / components / ProfileCardMemberInfoTokens',
   component: ProfileCardMemberInfoTokens,
   excludeStories: ['makeProps'],
 } as ComponentMeta<typeof ProfileCardMemberInfoTokens>

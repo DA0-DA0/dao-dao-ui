@@ -8,13 +8,11 @@ import {
   FormSwitchCard,
   GearEmoji,
   InputErrorMessage,
-  InputLabel,
   MoneyEmoji,
   NumberInput,
   PeopleEmoji,
   RecycleEmoji,
   SelectInput,
-  TooltipInfoIcon,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import {
@@ -42,6 +40,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
+  const deposit = watch(fieldNamePrefix + 'depositInfo.deposit')
   const depositRequired = watch(fieldNamePrefix + 'depositRequired')
   const thresholdType = watch(fieldNamePrefix + 'thresholdType')
   const quorumType = watch(fieldNamePrefix + 'quorumType')
@@ -76,51 +75,36 @@ export const UpdateProposalConfigComponent: ActionComponent<
           .
         </Trans>
       </p>
-      <div className="flex flex-row flex-wrap gap-2">
+      <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
         {governanceTokenSymbol !== undefined && (
-          <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3 md:w-min">
-            <div className="flex flex-row items-center gap-2">
-              <TooltipInfoIcon
-                size="sm"
-                title={t('form.requireProposalDepositTooltip')}
-              />
-
-              <p className="secondary-text w-max">
-                {t('form.requireProposalDepositTitle')}
-              </p>
-            </div>
-            <FormSwitch
-              fieldName={fieldNamePrefix + 'depositRequired'}
-              readOnly={!isCreating}
-              setValue={setValue}
-              sizing="sm"
-              value={watch(fieldNamePrefix + 'depositRequired')}
-            />
-          </div>
-        )}
-        <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3 md:w-min">
-          <div className="flex flex-row items-center gap-2">
-            <TooltipInfoIcon
-              size="sm"
-              title={t('form.onlyMembersExecuteTooltip')}
-            />
-
-            <p className="secondary-text w-max">
-              {t('form.onlyMembersExecuteTitle')}
-            </p>
-          </div>
-          <FormSwitch
-            fieldName={fieldNamePrefix + 'onlyMembersExecute'}
+          <FormSwitchCard
+            containerClassName="grow"
+            fieldName={fieldNamePrefix + 'depositRequired'}
+            label={t('form.requireProposalDepositTitle')}
             readOnly={!isCreating}
             setValue={setValue}
             sizing="sm"
-            value={watch(fieldNamePrefix + 'onlyMembersExecute')}
+            tooltip={t('form.requireProposalDepositTooltip')}
+            tooltipIconSize="sm"
+            value={watch(fieldNamePrefix + 'depositRequired')}
           />
-        </div>
+        )}
+
+        <FormSwitchCard
+          containerClassName="grow"
+          fieldName={fieldNamePrefix + 'onlyMembersExecute'}
+          label={t('form.onlyMembersExecuteTitle')}
+          readOnly={!isCreating}
+          setValue={setValue}
+          sizing="sm"
+          tooltip={t('form.onlyMembersExecuteTooltip')}
+          tooltipIconSize="sm"
+          value={watch(fieldNamePrefix + 'onlyMembersExecute')}
+        />
       </div>
 
       {depositRequired && (
-        <div className="flex flex-row flex-wrap justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
+        <div className="flex flex-col gap-4 rounded-lg border border-border-primary p-3">
           <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
             <h3 className="primary-text">
               <MoneyEmoji /> {t('form.proposalDepositTitle')}
@@ -129,50 +113,49 @@ export const UpdateProposalConfigComponent: ActionComponent<
               {t('form.proposalDepositDescription')}
             </p>
           </div>
-          <div className="flex grow flex-col gap-1">
+          <div className="flex flex-col gap-1">
             <div className="flex flex-col gap-1">
-              <InputLabel
-                name={`${t('form.proposalDepositTitle')}${
-                  governanceTokenSymbol ? ` ($${governanceTokenSymbol})` : ''
-                }`}
-              />
               <NumberInput
                 disabled={!isCreating}
                 error={errors?.depositInfo?.deposit}
                 fieldName={fieldNamePrefix + 'depositInfo.deposit'}
+                onMinus={() =>
+                  setValue(
+                    fieldNamePrefix + 'depositInfo.deposit',
+                    Math.max(deposit - 1, 0.000001)
+                  )
+                }
+                onPlus={() =>
+                  setValue(
+                    fieldNamePrefix + 'depositInfo.deposit',
+                    Math.max(deposit + 1, 0.000001)
+                  )
+                }
                 register={register}
                 step={0.000001}
+                unit={`$${governanceTokenSymbol}`}
                 validation={[validateRequired, validatePositive]}
               />
               <InputErrorMessage error={errors?.depositInfo?.deposit} />
             </div>
-            <div className="flex grow flex-row items-center justify-between gap-4 rounded-md bg-background-secondary py-2 px-3">
-              <div className="flex flex-row items-center gap-2">
-                <TooltipInfoIcon
-                  size="sm"
-                  title={t('form.refundFailedProposalsTooltip')}
-                />
 
-                <p className="secondary-text w-max">
-                  {t('form.refundFailedProposalsTitle')}
-                </p>
-              </div>
-              <FormSwitch
-                fieldName={
-                  fieldNamePrefix + 'depositInfo.refundFailedProposals'
-                }
-                readOnly={!isCreating}
-                setValue={setValue}
-                sizing="sm"
-                value={watch(
-                  fieldNamePrefix + 'depositInfo.refundFailedProposals'
-                )}
-              />
-            </div>
+            <FormSwitchCard
+              containerClassName="grow"
+              fieldName={fieldNamePrefix + 'depositInfo.refundFailedProposals'}
+              label={t('form.refundFailedProposalsTitle')}
+              readOnly={!isCreating}
+              setValue={setValue}
+              sizing="sm"
+              tooltip={t('form.refundFailedProposalsTooltip')}
+              tooltipIconSize="sm"
+              value={watch(
+                fieldNamePrefix + 'depositInfo.refundFailedProposals'
+              )}
+            />
           </div>
         </div>
       )}
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <ChartEmoji /> {t('form.passingThresholdTitle')}
@@ -217,9 +200,9 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
-          <div className="flex flex-row items-center justify-between gap-4">
+          <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
             <h3 className="primary-text">
               <PeopleEmoji /> {t('form.quorumTitle')}
             </h3>
@@ -273,7 +256,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
         )}
       </div>
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <ClockEmoji /> {t('form.votingDurationTitle')}
@@ -343,7 +326,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3 md:gap-1">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <RecycleEmoji /> {t('form.allowRevotingTitle')}

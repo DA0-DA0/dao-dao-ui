@@ -5,7 +5,7 @@ import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { ManageSubDaosComponent } from './ManageSubDaos'
 
 export default {
-  title: 'DAO DAO / packages / actions / components / ManageSubDaosComponent',
+  title: 'DAO DAO / packages / stateful / actions / components / ManageSubDaos',
   component: ManageSubDaosComponent,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ManageSubDaosComponent>

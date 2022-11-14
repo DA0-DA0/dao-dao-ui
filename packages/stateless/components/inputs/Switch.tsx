@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next'
 
 import { BooleanFieldNames } from '@dao-dao/types'
 
-import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
+import {
+  TooltipInfoIcon,
+  TooltipInfoIconProps,
+} from '../tooltip/TooltipInfoIcon'
 
 export interface SwitchProps {
   enabled: boolean
@@ -27,7 +30,7 @@ export const Switch = ({
       {
         'cursor-pointer hover:opacity-90': !readOnly,
         'bg-background-button-active': enabled,
-        'border border-color-dark bg-transparent': !enabled,
+        'border border-border-interactive-focus bg-transparent': !enabled,
         // Sizing.
         'h-[16px] w-[28px]': sizing === 'sm',
         'h-[38px] w-[67px]': sizing === 'lg',
@@ -57,22 +60,27 @@ export const Switch = ({
 
 export interface SwitchCardProps extends SwitchProps {
   containerClassName?: string
+  // Fallback for both on and off. Use if label should not change.
+  label?: string
   onLabel?: string
   offLabel?: string
   tooltip?: string
+  tooltipIconSize?: TooltipInfoIconProps['size']
 }
 
 export const SwitchCard = ({
   containerClassName,
+  label,
   onLabel: _onLabel,
   offLabel: _offLabel,
   tooltip,
+  tooltipIconSize,
   ...props
 }: SwitchCardProps) => {
   const { t } = useTranslation()
 
-  const onLabel = _onLabel ?? t('info.enabled')
-  const offLabel = _offLabel ?? t('info.disabled')
+  const onLabel = _onLabel ?? label ?? t('info.enabled')
+  const offLabel = _offLabel ?? label ?? t('info.disabled')
 
   return (
     <div
@@ -82,10 +90,11 @@ export const SwitchCard = ({
       )}
     >
       <div className="flex flex-row items-center gap-1">
+        {tooltip && <TooltipInfoIcon size={tooltipIconSize} title={tooltip} />}
+
         <p className="secondary-text min-w-[5rem]">
           {props.enabled ? onLabel : offLabel}
         </p>
-        {tooltip && <TooltipInfoIcon title={tooltip} />}
       </div>
 
       <Switch {...props} />
