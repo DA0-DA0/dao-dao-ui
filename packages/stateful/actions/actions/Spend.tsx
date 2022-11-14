@@ -33,13 +33,10 @@ import {
 
 import { SuspenseLoader } from '../../components'
 import { useCw20GovernanceTokenInfoResponseIfExists } from '../../voting-module-adapter'
-import { SpendComponent as StatelessSpendComponent } from '../components/Spend'
-
-interface SpendData {
-  to: string
-  amount: number
-  denom: string
-}
+import {
+  SpendData,
+  SpendComponent as StatelessSpendComponent,
+} from '../components/Spend'
 
 export const makeSpendAction: ActionMaker<SpendData> = ({
   t,
