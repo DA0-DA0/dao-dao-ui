@@ -3,7 +3,6 @@ import { useRecoilValue } from 'recoil'
 
 import { GearEmoji } from '@dao-dao/stateless'
 import {
-  ActionComponent,
   ActionMaker,
   AdapterActionKey,
   ContractVersion,
@@ -16,9 +15,8 @@ import { Threshold } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import { ExecuteMsg } from '@dao-dao/types/contracts/CwdProposalSingle.v2'
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
 import { configSelector } from '../../../contracts/CwdProposalSingle.v2.recoil'
-import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
+import { UpdateProposalConfigComponent as Component } from './UpdateProposalConfigComponent'
 
 export interface UpdateProposalConfigData {
   onlyMembersExecute: boolean
@@ -117,21 +115,6 @@ const maxVotingInfoToCosmos = (
   return {
     time: converter[t] * v,
   }
-}
-
-const Component: ActionComponent = (props) => {
-  const {
-    hooks: { useGovernanceTokenInfo },
-  } = useVotingModuleAdapter()
-  const governanceTokenSymbol =
-    useGovernanceTokenInfo?.().governanceTokenInfo.symbol
-
-  return (
-    <UpdateProposalConfigComponent
-      {...props}
-      options={{ governanceTokenSymbol }}
-    />
-  )
 }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
