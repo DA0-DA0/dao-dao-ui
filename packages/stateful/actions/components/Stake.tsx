@@ -233,9 +233,10 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
       onRemove={onRemove}
       title={t('title.stake')}
     >
-      <div className="flex flex-row gap-2">
+      <div className="flex flex-col gap-2 xs:flex-row">
         {/* Choose type of stake operation. */}
         <SelectInput
+          containerClassName="shrink-0"
           defaultValue={stakeActions[0].type}
           disabled={!isCreating}
           error={errors?.stakeType}
@@ -265,7 +266,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 
         {/* Choose source validator. */}
         <ValidatorPicker
-          displayClassName="grow"
+          displayClassName="grow min-w-0"
           nativeDecimals={NATIVE_DECIMALS}
           nativeDenom={NATIVE_DENOM}
           onSelect={({ address }) =>
@@ -285,7 +286,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 
       {/* If not claiming (i.e. withdrawing reward), show amount input. */}
       {stakeType !== StakeType.WithdrawDelegatorReward && (
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-col gap-2 xs:flex-row">
           <NumberInput
             containerClassName="grow"
             disabled={!isCreating}
