@@ -1,4 +1,9 @@
-import { Add, Close } from '@mui/icons-material'
+import {
+  Add,
+  ArrowRightAltRounded,
+  Close,
+  SubdirectoryArrowRightRounded,
+} from '@mui/icons-material'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -65,7 +70,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
       title={t('title.manageMembers')}
     >
       <InputLabel className="mt-2" name={t('form.membersToAddOrUpdate')} />
-      <div className="flex flex-col items-stretch gap-2">
+      <div className="flex flex-col items-stretch gap-1">
         {toAddFields.map(({ id }, index) => {
           const addrFieldName = (fieldNamePrefix +
             `toAdd.${index}.addr`) as `toAdd.${number}.addr`
@@ -73,9 +78,12 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
             `toAdd.${index}.weight`) as `toAdd.${number}.weight`
 
           return (
-            <div key={id} className="flex flex-row items-center gap-4">
-              <div className="flex flex-row items-center gap-2">
-                <div>
+            <div
+              key={id}
+              className="flex flex-row items-center gap-3 rounded-lg bg-background-secondary p-4"
+            >
+              <div className="flex grow flex-col items-stretch gap-x-3 gap-y-2 sm:flex-row">
+                <div className="flex flex-col">
                   <NumberInput
                     disabled={!isCreating}
                     error={errors?.toAdd?.[index]?.weight}
@@ -83,37 +91,47 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
                     onMinus={() =>
                       setValue(
                         weightFieldName,
-                        Math.max(watch(weightFieldName) - 1, 0)
+                        Math.max((watch(weightFieldName) || 0) - 1, 0)
                       )
                     }
                     onPlus={() =>
-                      setValue(weightFieldName, watch(weightFieldName) + 1)
+                      setValue(
+                        weightFieldName,
+                        Math.max((watch(weightFieldName) || 0) + 1, 0)
+                      )
                     }
                     placeholder={t('form.votingWeightPlaceholder')}
                     register={register}
-                    sizing="md"
+                    sizing="fill"
                     validation={[validateRequired, validateNonNegative]}
                   />
                   <InputErrorMessage error={errors?.toAdd?.[index]?.weight} />
                 </div>
-              </div>
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              <p className="secondary-text font-mono text-2xl">&#10142;</p>
-              <div className="grow">
-                <AddressInput
-                  disabled={!isCreating}
-                  error={errors?.toAdd?.[index]?.addr}
-                  fieldName={addrFieldName}
-                  register={register}
-                  validation={[
-                    validateRequired,
-                    validateAddress,
-                    (value) =>
-                      toRemoveFields.every(({ addr }) => addr !== value) ||
-                      t('error.invalidDuplicateFound'),
-                  ]}
-                />
-                <InputErrorMessage error={errors?.toAdd?.[index]?.addr} />
+
+                <div className="flex grow flex-row items-stretch gap-2 sm:gap-3">
+                  <div className="flex flex-row items-center pl-1 sm:pl-0">
+                    <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
+                    <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
+                  </div>
+
+                  <div className="flex grow flex-col">
+                    <AddressInput
+                      containerClassName="h-full"
+                      disabled={!isCreating}
+                      error={errors?.toAdd?.[index]?.addr}
+                      fieldName={addrFieldName}
+                      register={register}
+                      validation={[
+                        validateRequired,
+                        validateAddress,
+                        (value) =>
+                          toRemoveFields.every(({ addr }) => addr !== value) ||
+                          t('error.invalidDuplicateFound'),
+                      ]}
+                    />
+                    <InputErrorMessage error={errors?.toAdd?.[index]?.addr} />
+                  </div>
+                </div>
               </div>
 
               {isCreating && (
@@ -132,7 +150,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
         )}
         {isCreating && (
           <Button
-            className="self-start"
+            className="mt-1 self-start"
             onClick={() => toAddAppend({ weight: NaN, addr: '' })}
             size="sm"
             variant="secondary"
@@ -144,9 +162,12 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
       </div>
 
       <InputLabel className="mt-4" name={t('form.membersToRemove')} />
-      <div className="flex flex-col items-stretch gap-2">
+      <div className="flex flex-col items-stretch gap-1">
         {toRemoveFields.map(({ id }, index) => (
-          <div key={id} className="flex flex-row items-center gap-4">
+          <div
+            key={id}
+            className="flex flex-row items-center gap-3 rounded-lg bg-background-secondary p-4"
+          >
             <div className="grow">
               <AddressInput
                 disabled={!isCreating}
@@ -185,7 +206,7 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
         )}
         {isCreating && (
           <Button
-            className="self-start"
+            className="mt-1 self-start"
             onClick={() => toRemoveAppend({ addr: '' })}
             size="sm"
             variant="secondary"
