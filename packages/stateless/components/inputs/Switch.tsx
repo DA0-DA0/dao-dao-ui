@@ -30,7 +30,7 @@ export const Switch = ({
       {
         'cursor-pointer hover:opacity-90': !readOnly,
         'bg-background-button-active': enabled,
-        'border border-color-dark bg-transparent': !enabled,
+        'border border-border-interactive-focus bg-transparent': !enabled,
         // Sizing.
         'h-[16px] w-[28px]': sizing === 'sm',
         'h-[38px] w-[67px]': sizing === 'lg',
