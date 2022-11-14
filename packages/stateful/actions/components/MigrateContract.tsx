@@ -58,7 +58,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
           the selected contract to a new code ID.
         </Trans>
       </p>
-      <div className="flex flex-row flex-wrap gap-2">
+      <div className="flex flex-col items-stretch gap-2 xs:flex-row">
         <div className="flex grow flex-col gap-1">
           <InputLabel name={t('form.smartContractAddress')} />
           <AddressInput
@@ -74,10 +74,12 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         <div className="flex flex-col gap-1">
           <InputLabel name={t('form.codeID')} />
           <NumberInput
+            containerClassName="xs:h-full"
             disabled={!isCreating}
             error={errors?.code_id}
             fieldName={fieldNamePrefix + 'codeId'}
             register={register}
+            sizing="fill"
             validation={[validateRequired, validatePositive]}
           />
           <InputErrorMessage error={errors?.codeId} />

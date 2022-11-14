@@ -17,7 +17,7 @@ import {
 
 import { ActionCard } from './ActionCard'
 
-interface AddCw721Options {
+export interface AddCw721Options {
   additionalAddressError?: string
   formattedJsonDisplayProps: FormattedJsonDisplayProps
 }

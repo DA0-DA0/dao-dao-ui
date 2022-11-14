@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -22,7 +21,7 @@ interface Token {
   info: TokenInfoResponse
 }
 
-interface RemoveCw20Options {
+export interface RemoveCw20Options {
   additionalAddressError?: string
   existingTokens: Token[]
   formattedJsonDisplayProps: FormattedJsonDisplayProps
@@ -53,16 +52,14 @@ export const RemoveCw20Component: ActionComponent<RemoveCw20Options> = ({
       {existingTokens.length > 0 && (
         <>
           <InputLabel name={t('form.existingTokens')} />
-          <div className="mb-2 grid grid-cols-5 gap-1">
+          <div className="mb-2 flex flex-row flex-wrap gap-1">
             {existingTokens.map(({ address, info }) => (
               <Button
                 key={address}
-                className={clsx('text-center', {
-                  'bg-transparent text-text-secondary':
-                    address !== tokenAddress,
-                })}
+                center
                 disabled={!isCreating}
                 onClick={() => setValue(fieldNamePrefix + 'address', address)}
+                pressed={address === tokenAddress}
                 size="sm"
                 type="button"
                 variant="secondary"

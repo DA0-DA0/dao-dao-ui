@@ -17,7 +17,7 @@ import {
 
 import { ActionCard } from './ActionCard'
 
-interface AddCw20Options {
+export interface AddCw20Options {
   additionalAddressError?: string
   formattedJsonDisplayProps: FormattedJsonDisplayProps
 }
