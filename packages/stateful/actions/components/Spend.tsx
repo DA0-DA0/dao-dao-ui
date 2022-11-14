@@ -165,7 +165,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   return (
     <ActionCard Icon={MoneyEmoji} onRemove={onRemove} title={t('title.spend')}>
-      <div className="flex flex-col gap-x-4 gap-y-2 sm:flex-row">
+      <div className="flex flex-col gap-x-4 gap-y-2 sm:flex-row sm:items-stretch">
         <div className="flex grow flex-row items-stretch gap-2">
           <NumberInput
             containerClassName="grow"
@@ -223,16 +223,14 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             <p className="secondary-text font-mono text-2xl">&#10142;</p>
           </div>
 
-          <div className="flex grow flex-row items-stretch self-stretch">
-            <AddressInput
-              containerClassName="grow"
-              disabled={!isCreating}
-              error={errors?.to}
-              fieldName={fieldNamePrefix + 'to'}
-              register={register}
-              validation={[validateRequired, validateAddress]}
-            />
-          </div>
+          <AddressInput
+            containerClassName="grow"
+            disabled={!isCreating}
+            error={errors?.to}
+            fieldName={fieldNamePrefix + 'to'}
+            register={register}
+            validation={[validateRequired, validateAddress]}
+          />
         </div>
       </div>
 
