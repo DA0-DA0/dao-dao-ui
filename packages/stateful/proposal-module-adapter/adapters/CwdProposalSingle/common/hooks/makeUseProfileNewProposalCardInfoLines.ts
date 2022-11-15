@@ -3,11 +3,12 @@ import {
   ChangeCircleOutlined,
   FlagOutlined,
   MultilineChart,
+  Timelapse,
 } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { Cw20BaseSelectors } from '@dao-dao/state'
+import { Cw20BaseSelectors, blocksPerYearSelector } from '@dao-dao/state'
 import { ProfileNewProposalCardInfoLine } from '@dao-dao/stateless'
 import {
   DepositInfoSelector,
@@ -16,8 +17,10 @@ import {
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
+  durationToSeconds,
   nativeTokenDecimals,
   nativeTokenLabel,
+  secondsToWdhms,
 } from '@dao-dao/utils'
 
 import { configSelector } from '../../contracts/CwdProposalSingle.common.recoil'
@@ -37,6 +40,7 @@ export const makeUseProfileNewProposalCardInfoLines =
     const config = useRecoilValue(
       configSelector({
         contractAddress: options.proposalModule.address,
+        chainId: options.chainId,
       })
     )
     const depositInfo = useRecoilValue(depositInfoSelector)
@@ -48,6 +52,7 @@ export const makeUseProfileNewProposalCardInfoLines =
       depositInfo?.denom && 'cw20' in depositInfo.denom
         ? Cw20BaseSelectors.tokenInfoSelector({
             contractAddress: depositInfo.denom.cw20,
+            chainId: options.chainId,
             params: [],
           })
         : constSelector(undefined)
@@ -74,7 +79,22 @@ export const makeUseProfileNewProposalCardInfoLines =
         )
       : 0
 
+    const blocksPerYear = useRecoilValue(
+      blocksPerYearSelector({
+        chainId: options.chainId,
+      })
+    )
+
     return [
+      {
+        Icon: Timelapse,
+        label: t('form.votingDurationTitle'),
+        value: secondsToWdhms(
+          durationToSeconds(blocksPerYear, config.max_voting_period),
+          2,
+          false
+        ),
+      },
       {
         Icon: MultilineChart,
         label: t('title.passingThreshold'),
