@@ -1,4 +1,4 @@
-import { fromAscii, fromBase64, toAscii, toBase64 } from '@cosmjs/encoding'
+import { fromBase64, fromUtf8, toBase64, toUtf8 } from '@cosmjs/encoding'
 
 import {
   BankMsg,
@@ -11,7 +11,7 @@ import {
 
 export function parseEncodedMessage(base64String?: string) {
   if (base64String) {
-    const jsonMessage = fromAscii(fromBase64(base64String))
+    const jsonMessage = fromUtf8(fromBase64(base64String))
     if (jsonMessage) {
       return JSON.parse(jsonMessage)
     }
@@ -116,15 +116,15 @@ export const makeWasmMessage = (message: {
   let msg = message
   if (message?.wasm?.execute) {
     msg.wasm.execute.msg = toBase64(
-      toAscii(JSON.stringify(message.wasm.execute.msg))
+      toUtf8(JSON.stringify(message.wasm.execute.msg))
     )
   } else if (message?.wasm?.instantiate) {
     msg.wasm.instantiate.msg = toBase64(
-      toAscii(JSON.stringify(message.wasm.instantiate.msg))
+      toUtf8(JSON.stringify(message.wasm.instantiate.msg))
     )
   } else if (message.wasm.migrate) {
     msg.wasm.migrate.msg = toBase64(
-      toAscii(JSON.stringify(message.wasm.migrate.msg))
+      toUtf8(JSON.stringify(message.wasm.migrate.msg))
     )
   }
   // Messages such as update or clear admin pass through without modification.
@@ -138,7 +138,7 @@ export const makeExecutableMintMessage = (
   wasm: {
     execute: {
       contract_addr: contractAddress,
-      msg: toBase64(toAscii(JSON.stringify(msg))),
+      msg: toBase64(toUtf8(JSON.stringify(msg))),
       funds: [],
     },
   },
