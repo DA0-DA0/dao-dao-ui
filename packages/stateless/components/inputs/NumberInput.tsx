@@ -23,7 +23,7 @@ export interface NumberInputProps<
   onMinus?: () => void
   onPlus?: () => void
   containerClassName?: string
-  sizing?: 'sm' | 'md' | 'auto' | 'fill'
+  sizing?: 'sm' | 'md' | 'auto' | 'fill' | 'none'
   required?: boolean
   setValueAs?: (value: any) => any
   ghost?: boolean

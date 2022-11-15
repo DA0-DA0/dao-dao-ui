@@ -39,7 +39,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
     <ActionCard Icon={HerbEmoji} onRemove={onRemove} title={t('title.mint')}>
       <div className="flex flex-col items-stretch gap-x-3 gap-y-2 sm:flex-row">
         <NumberInput
-          containerClassName="grow"
+          containerClassName="w-full sm:w-auto"
           disabled={!isCreating}
           error={errors?.amount}
           fieldName={fieldNamePrefix + 'amount'}
@@ -56,7 +56,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             )
           }
           register={register}
-          sizing="fill"
+          sizing="none"
           unit={`$${govTokenSymbol}`}
           validation={[validateRequired, validatePositive]}
         />
