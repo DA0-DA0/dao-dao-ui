@@ -1,3 +1,4 @@
+import JSON5 from 'json5'
 import { useCallback, useMemo, useState } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
@@ -11,6 +12,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { makeWasmMessage } from '@dao-dao/utils'
 
 import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components/MigrateContract'
 
@@ -28,15 +30,29 @@ const useDefaults: UseDefaults<MigrateData> = () => ({
 
 const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () =>
   useCallback(
-    ({ contract: contract_addr, codeId: new_code_id, msg }: MigrateData) => ({
-      wasm: {
-        migrate: {
-          contract_addr,
-          new_code_id,
-          msg: btoa(msg),
+    ({
+      contract: contract_addr,
+      codeId: new_code_id,
+      msg: msgString,
+    }: MigrateData) => {
+      let msg
+      try {
+        msg = JSON5.parse(msgString)
+      } catch (err) {
+        console.error(`internal error. unparsable message: (${msg})`, err)
+        return
+      }
+
+      return makeWasmMessage({
+        wasm: {
+          migrate: {
+            contract_addr,
+            new_code_id,
+            msg,
+          },
         },
-      },
-    }),
+      })
+    },
     []
   )
 
@@ -51,7 +67,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
             data: {
               contract: msg.wasm.migrate.contract_addr,
               codeId: msg.wasm.migrate.new_code_id,
-              msg: JSON.stringify(msg.wasm.migrate.msg),
+              msg: JSON.stringify(msg.wasm.migrate.msg, undefined, 2),
             },
           }
         : { match: false },
