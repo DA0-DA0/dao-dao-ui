@@ -1,4 +1,4 @@
-import { Refresh } from '@mui/icons-material'
+import { Refresh, WhereToVoteOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +10,7 @@ import {
   DaoDropdownInfo,
   IconButton,
   Loader,
+  NoContent,
   ProposalContainer,
   useAppLayoutContext,
 } from '../components'
@@ -94,6 +95,11 @@ export const Inbox = <T extends {}>({
       <div className="mx-auto flex max-w-5xl flex-col items-stretch">
         {daosWithProposals.loading ? (
           <Loader fill={false} />
+        ) : daosWithProposals?.data?.length === 0 ? (
+          <NoContent
+            Icon={WhereToVoteOutlined}
+            body={t('info.noProposalsYet')}
+          />
         ) : (
           <>
             <p className="title-text">
