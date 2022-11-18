@@ -248,7 +248,7 @@ export const NewProposal = ({
           } catch (err) {
             console.error(err)
             toast.error(
-              `${t('error.invalidProposalActions')} ${
+              `${t('error.simulationFailedInvalidProposalActions')} ${
                 // Don't send to Sentry, but still format SDK errors nicely.
                 processError(err, { forceCapture: false })
               }`
