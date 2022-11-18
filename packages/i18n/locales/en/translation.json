@@ -166,7 +166,7 @@
     "nothingStaked": "Nothing staked.",
     "pageNotFound": "We couldn't find that page.",
     "pfpkStargazeReopenModal": "Failed to connect to Stargaze. Reopen the modal to try again.",
-    "simulationFailedInvalidProposalActions": "Simulation failed. Verify your proposal actions are valid, and check the browser console for more details.",
+    "simulationFailedInvalidProposalActions": "Simulation failed. Verify your proposal actions are valid.",
     "stakeInsufficient": "The DAO has {{amount}} ${{tokenSymbol}} staked, which is insufficient.",
     "subDaoAlreadyExists": "SubDAO already exists.",
     "treasuryInsufficientCannotStake": "The treasury only has {{amount}} ${{tokenSymbol}}, which is insufficient.",
