@@ -93,7 +93,6 @@ export enum CommonError {
   Unauthorized = 'Unauthorized.',
   InsufficientForProposalDeposit = 'Insufficient unstaked deposit tokens. Ensure you have enough unstaked deposit tokens to pay for the proposal deposit.',
   PendingTransaction = 'You have another pending transaction. Please try again in 30 seconds.',
-  NotFound = 'Not found.',
   TextEncodingDecodingError = 'Text encoding/decoding error. Invalid character present in text.',
   TxnSentTimeout = 'Transaction sent but has not yet been detected. Refresh this page to view its changes or check back later.',
   InvalidJSONResponse = 'Invalid JSON response from server.',
@@ -139,7 +138,6 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
   [CommonError.Unauthorized]: ['Unauthorized'],
   [CommonError.InsufficientForProposalDeposit]: ['Overflow: Cannot Sub with'],
   [CommonError.PendingTransaction]: ['account sequence mismatch'],
-  [CommonError.NotFound]: ['not found'],
   [CommonError.TextEncodingDecodingError]: ['out of printable ASCII range'],
   [CommonError.TxnSentTimeout]: [
     'was submitted but was not yet found on the chain',
