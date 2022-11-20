@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { DaoInfo, SuspenseLoaderProps } from '@dao-dao/types'
 import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
@@ -22,6 +23,7 @@ export interface DaoHomeProps {
   treasuryAndNftsTab: ReactNode
   subDaosTab: ReactNode
   membersTab?: ReactNode
+  payrollTab?: ReactNode
   rightSidebarContent: ReactNode
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
@@ -35,9 +37,11 @@ export const DaoHome = ({
   treasuryAndNftsTab,
   subDaosTab,
   membersTab,
+  payrollTab,
   rightSidebarContent,
   SuspenseLoader,
 }: DaoHomeProps) => {
+  const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const windowHash =
@@ -57,8 +61,10 @@ export const DaoHome = ({
     Tab.SubDaos,
     // Don't include Members if no membersTab.
     ...(membersTab !== undefined ? [Tab.Members] : []),
+    // Don't include Payroll if no payrollTab.
+    ...(payrollTab !== undefined ? [Tab.Payroll] : []),
   ].map((tab) => ({
-    label: TabTitleMap[tab],
+    label: t(TabTitleI18nKeyMap[tab]),
     value: tab,
   }))
 
@@ -133,6 +139,13 @@ export const DaoHome = ({
               </SuspenseLoader>
             </div>
           )}
+          {payrollTab !== undefined && (
+            <div className={clsx(selectedTab !== Tab.Payroll && 'hidden')}>
+              <SuspenseLoader fallback={<Loader />}>
+                {payrollTab}
+              </SuspenseLoader>
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -145,12 +158,14 @@ enum Tab {
   TreasuryAndNfts = 'treasury',
   SubDaos = 'subdaos',
   Members = 'members',
+  Payroll = 'payroll',
 }
 const TabValues = Object.values(Tab)
 
-export const TabTitleMap: Record<Tab, string> = {
-  [Tab.Proposals]: 'Proposals',
-  [Tab.TreasuryAndNfts]: 'Treasury & NFTs',
-  [Tab.SubDaos]: 'SubDAOs',
-  [Tab.Members]: 'Members',
+export const TabTitleI18nKeyMap: Record<Tab, string> = {
+  [Tab.Proposals]: 'title.proposals',
+  [Tab.TreasuryAndNfts]: 'title.treasuryAndNfts',
+  [Tab.SubDaos]: 'title.subDaos',
+  [Tab.Members]: 'title.members',
+  [Tab.Payroll]: 'title.payroll',
 }
