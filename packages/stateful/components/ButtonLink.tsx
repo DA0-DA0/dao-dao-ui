@@ -11,14 +11,18 @@ import {
 
 export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
   function ButtonLink(
-    { children, loading, className, onClick, ...props },
+    { children, loading, className, onClick, href, ...props },
     ref
   ) {
     const router = useRouter()
     const [navigatingToHref, setNavigatingToHref] =
       useRecoilState(navigatingToHrefAtom)
 
-    const navigating = !!props.href && navigatingToHref === props.href
+    // If disabled or loading, don't navigate anywhere. Anchor tags cannot be
+    // disabled, so this is a workaround.
+    href = props.disabled || loading ? '#' : href
+
+    const navigating = !!href && navigatingToHref === href
 
     // Pulse for these variants instead of displaying loader.
     const pulseVariant =
@@ -34,10 +38,10 @@ export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
         loading={loading || (!pulseVariant && navigating)}
         onClick={(event) => {
           onClick?.(event)
-          // If not on destination page, set navigating state. If already there,
-          // do nothing.
-          if (router.asPath !== props.href) {
-            setNavigatingToHref(props.href)
+          // If not on destination page, set navigating state. If already there
+          // or href is invalid, do nothing.
+          if (router.asPath !== href && href && href !== '#') {
+            setNavigatingToHref(href)
           }
         }}
         ref={ref}
