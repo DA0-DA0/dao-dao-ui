@@ -1,37 +1,194 @@
+import { Add, Ballot, Remove } from '@mui/icons-material'
+import clsx from 'clsx'
+import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { NewSurvey, Status } from '../../types'
-import { NewSurveyForm } from './NewSurveyForm'
+import {
+  Button,
+  Loader,
+  MarkdownPreview,
+  NoContent,
+  Tooltip,
+} from '@dao-dao/stateless'
+import { LoadingData } from '@dao-dao/types'
+import { formatDateTimeTz } from '@dao-dao/utils'
+
+import {
+  CompletedSurvey,
+  LoadedCompletedSurvey,
+  Status,
+  SurveyStatus,
+} from '../../types'
+import { CompletedSurveyRow } from './CompletedSurveyRow'
 
 export interface PayrollTabProps {
-  status: Status | undefined
+  loadingStatus: LoadingData<Status | undefined>
+  loadingCompletedSurveys: LoadingData<CompletedSurvey[]>
   isMember: boolean
-  onCreate: (newSurvey: NewSurvey) => Promise<void>
-  createLoading: boolean
+  NewSurveyForm: ComponentType
+  ContributionForm: ComponentType
+  RatingForm: ComponentType
+  ProposalCreationForm: ComponentType
+  selectCompletedSurvey: (pastSurvey: CompletedSurvey) => void
+  loadingCompletedSurvey: boolean
+  loadedCompletedSurvey: LoadedCompletedSurvey | undefined
 }
 
 export const PayrollTab = ({
-  status,
+  loadingStatus,
+  loadingCompletedSurveys,
   isMember,
-  onCreate,
-  createLoading,
+  NewSurveyForm,
+  ContributionForm,
+  ProposalCreationForm,
+  RatingForm,
+  selectCompletedSurvey,
+  loadingCompletedSurvey,
+  loadedCompletedSurvey,
 }: PayrollTabProps) => {
   const { t } = useTranslation()
 
+  const [showCreate, setShowCreate] = useState(false)
+  // Can create survey if member of DAO and there does not exist a current
+  // survey.
+  const canCreateSurvey =
+    isMember && !loadingStatus.loading && !loadingStatus.data
+
+  // Subtitle status.
+  const subtitleStatus =
+    !loadingStatus.loading && !loadingStatus.data
+      ? t('info.noActiveSurvey')
+      : null
+
   return (
-    <div>
-      {status ? (
-        <>
-          <pre>{JSON.stringify(status, undefined, 2)}</pre>
-        </>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row items-center justify-between gap-8 border-b border-border-secondary pb-6">
+        <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1">
+          <p className="title-text text-text-body">
+            {t('title.retroactiveCompensation')}
+          </p>
+
+          {subtitleStatus && <p className="secondary-text">{subtitleStatus}</p>}
+        </div>
+
+        <Tooltip
+          title={
+            !isMember
+              ? t('error.mustBeMemberToCreateSurvey')
+              : !loadingStatus.loading && loadingStatus.data
+              ? t('error.cannotCreateSurveyAlreadyActive')
+              : undefined
+          }
+        >
+          <Button
+            className="shrink-0"
+            disabled={!canCreateSurvey}
+            onClick={() => setShowCreate((c) => !c)}
+          >
+            {canCreateSurvey && showCreate ? (
+              <>
+                <Remove className="!h-4 !w-4" />
+                {t('button.hideNewSurvey')}
+              </>
+            ) : (
+              <>
+                <Add className="!h-4 !w-4" />
+                {t('button.newSurvey')}
+              </>
+            )}
+          </Button>
+        </Tooltip>
+      </div>
+
+      {loadingStatus.loading ? (
+        <Loader fill={false} />
+      ) : // If no active survey, text is shown at the top. No need to render anything here.
+      !loadingStatus.data ? null : loadingStatus.data.survey.status ===
+          SurveyStatus.Inactive ||
+        loadingStatus.data.survey.status ===
+          SurveyStatus.AcceptingContributions ? (
+        <div className="border-b border-border-primary pb-6">
+          <ContributionForm />
+        </div>
+      ) : loadingStatus.data.survey.status === SurveyStatus.AcceptingRatings ? (
+        <div
+          className={clsx(
+            'border-b border-border-primary',
+            isMember ? 'pb-6' : 'pb-40'
+          )}
+        >
+          {isMember ? (
+            <RatingForm />
+          ) : (
+            <>
+              <p className="hero-text mb-4 max-w-prose break-words">
+                {loadingStatus.data.survey.name}
+              </p>
+
+              <MarkdownPreview
+                markdown={t('info.contributionsBeingRated', {
+                  date: formatDateTimeTz(
+                    new Date(loadingStatus.data.survey.ratingsCloseAt)
+                  ),
+                })}
+              />
+            </>
+          )}
+        </div>
+      ) : loadingStatus.data.survey.status ===
+        SurveyStatus.AwaitingCompletion ? (
+        <div
+          className={clsx(
+            'border-b border-border-primary',
+            isMember ? 'pb-6' : 'pb-40'
+          )}
+        >
+          {isMember ? (
+            <ProposalCreationForm />
+          ) : (
+            <>
+              <p className="hero-text mb-4 max-w-prose break-words">
+                {loadingStatus.data.survey.name}
+              </p>
+
+              <MarkdownPreview markdown={t('info.surveyPendingCompletion')} />
+            </>
+          )}
+        </div>
+      ) : null}
+
+      {canCreateSurvey && showCreate ? (
+        <NewSurveyForm />
       ) : (
         <>
-          <p>{t('info.noActiveSurvey')}</p>
+          <p className="title-text text-text-body">
+            {t('title.completedSurveys')}
+          </p>
 
-          {isMember && (
-            <div className="mt-6">
-              <NewSurveyForm loading={createLoading} onCreate={onCreate} />
+          {loadingCompletedSurveys.loading ? (
+            <Loader fill={false} />
+          ) : loadingCompletedSurveys.data.length > 0 ? (
+            <div className="flex flex-col gap-1">
+              {loadingCompletedSurveys.data.map((survey, index) => (
+                <CompletedSurveyRow
+                  key={index}
+                  onClick={() => selectCompletedSurvey(survey)}
+                  survey={survey}
+                />
+              ))}
             </div>
+          ) : (
+            <NoContent
+              Icon={Ballot}
+              actionNudge={t('info.createFirstOneQuestion')}
+              body={t('info.noCompletedSurveysYet')}
+              buttonLabel={t('button.newSurvey')}
+              onClick={
+                canCreateSurvey && !showCreate
+                  ? () => setShowCreate(true)
+                  : undefined
+              }
+            />
           )}
         </>
       )}

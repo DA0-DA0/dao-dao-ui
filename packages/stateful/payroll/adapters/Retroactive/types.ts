@@ -1,38 +1,137 @@
 export enum SurveyStatus {
   Inactive = 'inactive',
   AcceptingContributions = 'accepting_contributions',
-  AcceptingRankings = 'accepting_rankings',
+  AcceptingRatings = 'accepting_ratings',
   AwaitingCompletion = 'awaiting_completion',
   Complete = 'complete',
 }
 
+export interface NativeToken {
+  denom: string
+  amount: string
+}
+
+export interface Cw20Token {
+  address: string
+  amount: string
+}
+
 export interface Attribute {
   name: string
-  nativeTokens: {
-    denom: string
-    amount: string
-  }[]
-  cw20Tokens: {
-    address: string
-    amount: string
-  }[]
+  nativeTokens: NativeToken[]
+  cw20Tokens: Cw20Token[]
 }
 
 export interface Survey {
   status: string
   name: string
   contributionsOpenAt: string
-  contributionsCloseRankingsOpenAt: string
-  rankingsCloseAt: string
-  contributionDescription: string
-  rankingDescription: string
+  contributionsCloseRatingsOpenAt: string
+  ratingsCloseAt: string
+  contributionInstructions: string
+  ratingInstructions: string
   attributes: Attribute[]
 }
 
-export type NewSurvey = Omit<Survey, 'status'>
+export type NewSurveyRequest = Omit<Survey, 'status'>
+
+export interface NewSurveyFormData
+  extends Omit<NewSurveyRequest, 'attributes'> {
+  // Combine native and CW20 tokens into one, and uncombine before submitting.
+  attributes: {
+    name: string
+    tokens: {
+      denomOrAddress: string
+      amount: string
+    }[]
+  }[]
+}
+
+export type LoadedCompletedSurvey = Omit<Survey, 'status'> & {
+  // Only present for DAO members.
+  contributions:
+    | {
+        id: number
+        contributor: string
+        content: string
+        createdAt: string
+        updatedAt: string
+      }[]
+    | undefined
+  // Only present for DAO members.
+  ratings:
+    | {
+        rater: string
+        contributions: {
+          contributor: string
+          content: string
+          // The position matches the position in the survey's attributes list.
+          attributes: (number | null)[]
+        }[]
+      }[]
+    | undefined
+}
 
 export interface Status {
   survey: Survey
-  contributed: boolean
-  ranked: boolean
+  contribution: string | null
+  rated: boolean
+}
+
+export interface CompletedSurvey {
+  id: number
+  name: string
+  contributionCount: number
+  openedAt: string
+}
+
+export interface ContributionRating {
+  contributionId: number
+  // The position matches the position in the survey's attributes list.
+  attributes: (number | null)[]
+}
+
+export interface RatingsFormData {
+  ratings: ContributionRating[]
+}
+
+export interface Identity {
+  publicKey: string
+  address: string
+}
+
+export interface ContributionResponse {
+  id: number
+  contributor: string
+  content: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Contribution
+  extends Omit<ContributionResponse, 'contributor'> {
+  contributor: Identity
+}
+
+export interface RatingResponse {
+  rater: string
+  contributions: {
+    id: number
+    // The position matches the position in the survey's attributes list.
+    attributes: (number | null)[]
+  }[]
+}
+
+export interface Rating extends Omit<RatingResponse, 'rater'> {
+  rater: Identity
+}
+
+export interface RatingsResponse {
+  contributions: ContributionResponse[]
+  ratings: RatingResponse[]
+}
+
+export interface CompleteRatings {
+  contributions: Contribution[]
+  ratings: Rating[]
 }

@@ -19,7 +19,7 @@ export const usePostRequest = () => {
   } = useWallet(chainId)
 
   const postRequest = useCallback(
-    async (endpoint: string, data: Record<string, unknown>) => {
+    async (endpoint: string, data?: Record<string, unknown>) => {
       if (!walletClient || !publicKey || !chainInfo || !walletAddress) {
         toast.error(t('error.connectWalletToContinue'))
         return
@@ -96,18 +96,16 @@ export const usePostRequest = () => {
         body: JSON.stringify(body),
       })
 
-      // If response not OK, display error.
+      // If response not OK, throw error.
       if (!response.ok) {
         const responseBody = await response.json().catch((err) => ({
           error: err instanceof Error ? err.message : JSON.stringify(err),
         }))
-        console.error('Failed to send request.', response, responseBody)
-        toast.error(
+        throw new Error(
           responseBody && 'error' in responseBody && responseBody.error
             ? responseBody.error
             : `${t('error.unexpectedError')} ${responseBody}`
         )
-        return
       }
 
       // If response OK, return response body.

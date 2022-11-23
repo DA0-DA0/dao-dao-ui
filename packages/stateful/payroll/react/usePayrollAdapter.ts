@@ -13,17 +13,18 @@ import { DAO_PAYROLL_ITEM_KEY, getAdapterById } from '../core'
 export const usePayrollAdapter = (): PayrollAdapter | undefined => {
   const { chainId, coreAddress } = useDaoInfoContext()
 
-  const payrollItem = useRecoilValue(
-    CwdCoreV2Selectors.getItemSelector({
-      chainId,
-      contractAddress: coreAddress,
-      params: [
-        {
-          key: DAO_PAYROLL_ITEM_KEY,
-        },
-      ],
-    })
-  ).item
+  const payrollItem =
+    useRecoilValue(
+      CwdCoreV2Selectors.getItemSelector({
+        chainId,
+        contractAddress: coreAddress,
+        params: [
+          {
+            key: DAO_PAYROLL_ITEM_KEY,
+          },
+        ],
+      })
+    ).item || 'retroactive'
 
   return payrollItem ? getAdapterById(payrollItem) : undefined
 }

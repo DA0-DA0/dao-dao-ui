@@ -372,6 +372,52 @@ export const allCw20TokenListSelector = selectorFamily<
     },
 })
 
+export const allCw20InfosSelector = selectorFamily<
+  {
+    address: string
+    info: TokenInfoResponse
+  }[],
+  QueryClientParams & {
+    governanceTokenAddress?: string
+  }
+>({
+  key: 'cwdCoreV2AllCw20Infos',
+  get:
+    ({ governanceTokenAddress, ...queryClientParams }) =>
+    async ({ get }) => {
+      //! Get all addresses.
+      const addresses = get(allCw20TokenListSelector(queryClientParams))
+
+      //! Add governance token balance if exists but missing from list.
+      if (
+        governanceTokenAddress &&
+        !addresses.includes(governanceTokenAddress)
+      ) {
+        // Add to beginning of list.
+        addresses.splice(0, 0, governanceTokenAddress)
+      }
+
+      const infos = get(
+        waitForAll(
+          addresses.map((contractAddress) =>
+            Cw20BaseSelectors.tokenInfoSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
+              contractAddress,
+              params: [],
+            })
+          )
+        )
+      )
+
+      return addresses.map((address, index) => ({
+        address,
+        info: infos[index],
+      }))
+    },
+})
+
 const CW20_BALANCES_LIMIT = 10
 export const allCw20BalancesAndInfosSelector = selectorFamily<
   (Cw20BalancesResponse[number] & {

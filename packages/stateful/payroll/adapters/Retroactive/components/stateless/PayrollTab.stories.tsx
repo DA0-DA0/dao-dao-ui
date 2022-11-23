@@ -1,5 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import {
+  Default as NewStoryFormStory,
+  makeProps as makeNewSurveyFormProps,
+} from './NewSurveyForm.stories'
 import { PayrollTab } from './PayrollTab'
 
 export default {
@@ -14,7 +18,31 @@ const Template: ComponentStory<typeof PayrollTab> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  status: undefined,
+  loadingStatus: { loading: false, data: undefined },
+  loadingCompletedSurveys: {
+    loading: false,
+    data: [
+      {
+        id: 1,
+        name: 'October 2022 Contributor Drop',
+        contributionCount: 10,
+        openedAt: '2022-10-01T12:00:00.000Z',
+      },
+      {
+        id: 2,
+        name: 'November 2022 Contributor Drop',
+        contributionCount: 7,
+        openedAt: '2022-11-01T12:00:00.000Z',
+      },
+      {
+        id: 3,
+        name: 'December 2022 Contributor Drop',
+        contributionCount: 14,
+        openedAt: '2022-12-01T12:00:00.000Z',
+      },
+    ],
+  },
   isMember: true,
-  onCreate: async () => alert('create'),
+  NewSurveyForm: () => <NewStoryFormStory {...makeNewSurveyFormProps()} />,
+  selectCompletedSurvey: async (survey) => alert('select ' + survey.name),
 }

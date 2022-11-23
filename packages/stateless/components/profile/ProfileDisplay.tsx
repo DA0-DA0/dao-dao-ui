@@ -13,11 +13,12 @@ export const ProfileDisplay = ({
   imageSize = 20,
   hideImage,
   copyToClipboardProps,
+  className,
 }: ProfileDisplayProps) => {
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-row items-center gap-2">
+    <div className={clsx('flex flex-row items-center gap-2', className)}>
       {!hideImage && (
         <Tooltip
           title={

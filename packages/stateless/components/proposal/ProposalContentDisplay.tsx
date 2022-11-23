@@ -60,7 +60,11 @@ export const ProposalContentDisplay = ({
         )}
       </div>
 
-      <MarkdownPreview className="max-w-full" markdown={description} />
+      <MarkdownPreview
+        addAnchors
+        className="max-w-full"
+        markdown={description}
+      />
 
       {actionDisplay && <div className="mt-9">{actionDisplay}</div>}
     </>
