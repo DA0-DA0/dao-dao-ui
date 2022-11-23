@@ -121,7 +121,74 @@ export const ProposalCreationForm = ({
             </div>
           ))}
 
-          <p className="header-text">{t('title.proposal')}</p>
+          <p className="header-text">{t('title.averages')}</p>
+
+          <div
+            className="grid-rows-auto grid items-stretch justify-items-stretch"
+            // Column for contributor and each rater.
+            style={{
+              gridTemplateColumns: `minmax(0,1fr) ${survey.attributes
+                .map(() => 'auto')
+                .join(' ')}`,
+            }}
+          >
+            {/* Row for titles, which are mostly attribute names. */}
+            <p className="rounded-tl-md bg-background-primary p-4">
+              {t('title.contributor')}
+            </p>
+            {survey.attributes.map(({ name }, attributeIndex) => (
+              <p
+                key={attributeIndex}
+                className={clsx(
+                  'border-l border-border-secondary bg-background-primary p-4',
+                  attributeIndex === survey.attributes.length - 1 &&
+                    'rounded-tr-md'
+                )}
+              >
+                {name}
+              </p>
+            ))}
+
+            {/* Row for each contributor. */}
+            {completeRatings.contributions.map(
+              (contribution, contributionIndex) => {
+                // Every other row.
+                const backgroundClassName =
+                  contributionIndex % 2 !== 0 && 'bg-background-tertiary'
+
+                return (
+                  <Fragment key={contribution.id}>
+                    <IdentityProfileDisplay
+                      className={clsx(
+                        'p-4',
+                        backgroundClassName,
+                        contributionIndex ===
+                          completeRatings.contributions.length - 1 &&
+                          'rounded-bl-md'
+                      )}
+                      identity={contribution.contributor}
+                    />
+
+                    {survey.attributes.map((_, attributeIndex) => (
+                      <p
+                        key={attributeIndex}
+                        className={clsx(
+                          'flex flex-col items-end justify-center border-l border-border-secondary p-4 font-mono',
+                          backgroundClassName,
+                          attributeIndex === survey.attributes.length - 1 &&
+                            contributionIndex ===
+                              completeRatings.contributions.length - 1 &&
+                            'rounded-br-md'
+                        )}
+                      >
+                        {contribution.averageRatingPerAttribute[attributeIndex]}
+                      </p>
+                    ))}
+                  </Fragment>
+                )
+              }
+            )}
+          </div>
 
           <Button
             className="mb-10 self-end"

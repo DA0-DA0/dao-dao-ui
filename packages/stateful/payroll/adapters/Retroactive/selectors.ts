@@ -15,7 +15,7 @@ export const statusSelector = selectorFamily<
   get:
     ({ daoAddress, walletPublicKey }) =>
     async ({ get }) => {
-      get(refreshStatusAtom({ daoAddress, walletPublicKey }))
+      get(refreshStatusAtom({ daoAddress }))
 
       const response = await fetch(
         `${API_BASE}/${daoAddress}/${walletPublicKey}/status`

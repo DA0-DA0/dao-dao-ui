@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -33,7 +32,6 @@ import { NewSurveyForm as StatelessNewSurveyForm } from '../stateless/NewSurveyF
 export const NewSurveyForm = () => {
   const { t } = useTranslation()
   const { coreAddress, chainId } = useDaoInfoContext()
-  const { publicKey: walletPublicKey } = useWallet()
 
   // Get CW20 governance token address from voting module adapter if exists, so
   // we can make sure to load it with all cw20 balances, even if it has not been
@@ -65,7 +63,6 @@ export const NewSurveyForm = () => {
   const setRefreshStatus = useSetRecoilState(
     refreshStatusAtom({
       daoAddress: coreAddress,
-      walletPublicKey: walletPublicKey?.hex ?? '',
     })
   )
 

@@ -17,8 +17,9 @@ import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
 import {
+  AnyToken,
   CompleteRatings,
-  Contribution,
+  ContributionWithCompensation,
   Rating,
   RatingsResponse,
 } from '../../types'
@@ -34,15 +35,16 @@ export const ProposalCreationForm = () => {
   const postRequest = usePostRequest()
 
   const statusLoadable = useCachedLoadable(
-    statusSelector({
-      daoAddress: coreAddress,
-      walletPublicKey: walletPublicKey?.hex ?? '',
-    })
+    walletPublicKey?.hex
+      ? statusSelector({
+          daoAddress: coreAddress,
+          walletPublicKey: walletPublicKey.hex,
+        })
+      : undefined
   )
   const setRefreshStatus = useSetRecoilState(
     refreshStatusAtom({
       daoAddress: coreAddress,
-      walletPublicKey: walletPublicKey?.hex ?? '',
     })
   )
 
@@ -50,6 +52,11 @@ export const ProposalCreationForm = () => {
 
   const [completeRatings, setCompleteRatings] = useState<CompleteRatings>()
   const loadRatings = useCallback(async () => {
+    // Need survey status to be loaded to compute compensation.
+    if (statusLoadable.state !== 'hasValue' || !statusLoadable.contents) {
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -58,16 +65,90 @@ export const ProposalCreationForm = () => {
         `/${coreAddress}/ratings`
       )
 
-      // Get addresses for contributor public keys.
+      // Compute average of ratings for contributions for each attribute.
+      const contributionsWithAverageRatings = response.contributions.map(
+        (contribution) => {
+          // Each item is an array of attribute ratings for this contributor.
+          // The order of attributes matches the attribute order in the survey.
+          const attributeRatings = response.ratings.map(
+            (rating) =>
+              rating.contributions.find(({ id }) => id === contribution.id)
+                ?.attributes ?? []
+          )
+
+          // Average attribute rating for each attribute. If the ratings were
+          // [50, 100], the average is 75. If the ratings were [null, 50], the
+          // average is 50. If the ratings were [null, null], the average is 0.
+          const averageAttributeRatings =
+            statusLoadable.contents!.survey.attributes.map(
+              (_, attributeIndex) => {
+                const nonAbstainRatings = attributeRatings
+                  .map((ratings) => ratings[attributeIndex])
+                  .filter((rating) => typeof rating === 'number') as number[]
+
+                // If all ratings are abstain, return 0.
+                return nonAbstainRatings.length === 0
+                  ? 0
+                  : // Otherwise, return average.
+                    nonAbstainRatings.reduce((sum, rating) => sum + rating, 0) /
+                      nonAbstainRatings.length
+              }
+            )
+
+          return averageAttributeRatings
+        }
+      )
+
+      // Compute total of averages for each attribute.
+      const totalsOfAverages = statusLoadable.contents!.survey.attributes.map(
+        (_, attributeIndex) =>
+          contributionsWithAverageRatings.reduce(
+            (sum, averageAttributeRatings) =>
+              sum + averageAttributeRatings[attributeIndex],
+            0
+          )
+      )
+
+      // Get addresses for contributor public keys, and compute compensation.
       const contributions = await Promise.all(
         response.contributions.map(
-          async ({
-            contributor: publicKey,
-            ...contribution
-          }): Promise<Contribution> => {
+          async (
+            { contributor: publicKey, ...contribution },
+            contributionIndex
+          ): Promise<ContributionWithCompensation> => {
             const address = await secp256k1PublicKeyToBech32Address(
               publicKey,
               bech32Prefix
+            )
+
+            const averageRatingPerAttribute =
+              contributionsWithAverageRatings[contributionIndex]
+
+            const tokens = statusLoadable.contents!.survey.attributes.flatMap(
+              ({ nativeTokens, cw20Tokens }, attributeIndex): AnyToken[] => {
+                const averageRating = averageRatingPerAttribute[attributeIndex]
+                const totalOfAverages = totalsOfAverages[attributeIndex]
+                const proportionalCompensation = averageRating / totalOfAverages
+
+                return [
+                  ...nativeTokens.map(
+                    ({ denom, amount }): AnyToken => ({
+                      denomOrAddress: denom,
+                      amount: Math.floor(
+                        Number(amount) * proportionalCompensation
+                      ).toString(),
+                    })
+                  ),
+                  ...cw20Tokens.map(
+                    ({ address, amount }): AnyToken => ({
+                      denomOrAddress: address,
+                      amount: Math.floor(
+                        Number(amount) * proportionalCompensation
+                      ).toString(),
+                    })
+                  ),
+                ]
+              }
             )
 
             return {
@@ -76,12 +157,13 @@ export const ProposalCreationForm = () => {
                 publicKey,
                 address,
               },
+              averageRatingPerAttribute,
+              tokens,
             }
           }
         )
       )
 
-      // Get addresses for rater public keys.
       const ratings = await Promise.all(
         response.ratings.map(
           async ({ rater: publicKey, ...rating }): Promise<Rating> => {
@@ -113,7 +195,13 @@ export const ProposalCreationForm = () => {
     } finally {
       setLoading(false)
     }
-  }, [bech32Prefix, coreAddress, postRequest])
+  }, [
+    bech32Prefix,
+    coreAddress,
+    postRequest,
+    statusLoadable.contents,
+    statusLoadable.state,
+  ])
 
   const onComplete = useCallback(async () => {
     setLoading(true)

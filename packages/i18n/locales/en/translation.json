@@ -410,7 +410,6 @@
       "willPass": "If the current vote stands, this proposal will pass."
     },
     "proposalThresholdTooltip": "A proposal must attain this proportion of 'Yes' votes to pass.",
-    "tokensWillBeSplitAmongContributors": "{{tokens}} will be split among contributors.",
     "ratingClosesAt": "Rating closes at {{date}}.",
     "reached": "Reached",
     "recognizeSubDaoDescription": "Recognizing {{name}} as a SubDAO will display it inside the SubDAOs tab.",
@@ -448,6 +447,7 @@
     "token": "token",
     "tokenDaoNotMemberInfoProposal": "You were not a member of {{daoName}} when this proposal was created, so you cannot vote on it. You will be able to vote on future proposals as long as you have ${{tokenSymbol}} staked at the time those proposals are created.",
     "tokens": "tokens",
+    "tokensWillBeSplitAmongContributors": "{{tokens}} will be split among contributors.",
     "tos": "DAO DAO TOOLING IS PROVIDED \"AS IS\", AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND. No developer or entity involved in creating the DAO DAO UI or smart contracts will be liable for any claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of DAO DAO tooling, including any direct, indirect, incidental, special, exemplary, punitive or consequential damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.",
     "totalHoldings": "Total holdings",
     "treasuryBalanceDescription": "{{numberOfTokensMinted, number}} tokens will be minted. {{memberPercent}} will be sent to members according to the distribution below. The remaining {{treasuryPercent}} will go to the DAO's treasury, where they can be distributed later via governance proposals.",
@@ -547,6 +547,7 @@
     "addCw20ToTreasury": "Display Token Balance in Treasury",
     "addCw721ToTreasury": "Display NFT Collection in Treasury",
     "advancedConfiguration": "Advanced configuration",
+    "averages": "Averages",
     "balance": "Balance",
     "balances": "Balances",
     "beforeYouEnter": "Before you enter",

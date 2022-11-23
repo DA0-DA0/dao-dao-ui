@@ -22,6 +22,11 @@ export interface Attribute {
   cw20Tokens: Cw20Token[]
 }
 
+export interface AnyToken {
+  denomOrAddress: string
+  amount: string
+}
+
 export interface Survey {
   status: string
   name: string
@@ -40,10 +45,7 @@ export interface NewSurveyFormData
   // Combine native and CW20 tokens into one, and uncombine before submitting.
   attributes: {
     name: string
-    tokens: {
-      denomOrAddress: string
-      amount: string
-    }[]
+    tokens: AnyToken[]
   }[]
 }
 
@@ -131,7 +133,12 @@ export interface RatingsResponse {
   ratings: RatingResponse[]
 }
 
+export interface ContributionWithCompensation extends Contribution {
+  averageRatingPerAttribute: number[]
+  tokens: AnyToken[]
+}
+
 export interface CompleteRatings {
-  contributions: Contribution[]
+  contributions: ContributionWithCompensation[]
   ratings: Rating[]
 }

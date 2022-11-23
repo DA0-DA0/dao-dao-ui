@@ -28,15 +28,16 @@ export const ContributionForm = () => {
   const postRequest = usePostRequest()
 
   const statusLoadable = useCachedLoadable(
-    statusSelector({
-      daoAddress: coreAddress,
-      walletPublicKey: walletPublicKey?.hex ?? '',
-    })
+    walletPublicKey?.hex
+      ? statusSelector({
+          daoAddress: coreAddress,
+          walletPublicKey: walletPublicKey.hex,
+        })
+      : undefined
   )
   const setRefreshStatus = useSetRecoilState(
     refreshStatusAtom({
       daoAddress: coreAddress,
-      walletPublicKey: walletPublicKey?.hex ?? '',
     })
   )
 
