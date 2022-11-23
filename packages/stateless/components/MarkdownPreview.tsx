@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
 import { HeadingComponent } from 'react-markdown/lib/ast-to-react'
+import remarkGfm from 'remark-gfm'
 
 import { IconButton } from './icon_buttons/IconButton'
 
@@ -18,7 +19,10 @@ export const MarkdownPreview = ({
   className,
 }: MarkdownPreviewProps) => (
   <ReactMarkdown
-    className={clsx('prose prose-sm break-words dark:prose-invert', className)}
+    className={clsx(
+      'prose prose-sm overflow-auto break-words dark:prose-invert',
+      className
+    )}
     components={{
       h1: HeadingRenderer,
       h2: HeadingRenderer,
@@ -29,6 +33,7 @@ export const MarkdownPreview = ({
     }}
     linkTarget="_blank"
     rawSourcePos
+    remarkPlugins={[remarkGfm]}
   >
     {markdown}
   </ReactMarkdown>
