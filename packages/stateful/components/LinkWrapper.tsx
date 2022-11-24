@@ -21,9 +21,9 @@ export const LinkWrapper = forwardRef<
       loading={navigatingToHref === href}
       onClick={(event) => {
         onClick?.(event)
-        // If not on destination page, set navigating state. If already there,
-        // do nothing.
-        if (router.asPath !== href) {
+        // If not on destination page, set navigating state. If already there or
+        // href is invalid, do nothing.
+        if (router.asPath !== href && href && href !== '#') {
           setNavigatingToHref(href)
         }
       }}

@@ -1,8 +1,9 @@
 import { ComponentPropsWithoutRef, forwardRef } from 'react'
 
+import { IconButtonifierProps } from '@dao-dao/types/stateless/IconButtonifier'
+
 import {
   IconButtonifiedChildren,
-  IconButtonifierProps,
   getIconButtonifiedClassNames,
   getNonIconButtonifierProps,
 } from './IconButtonifier'
