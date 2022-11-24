@@ -13,11 +13,19 @@ import {
 export const IconButtonLink = forwardRef<
   HTMLAnchorElement,
   IconButtonLinkProps
->(function IconButtonLink(props, ref) {
-  const className = clsx(getIconButtonifiedClassNames(props), 'inline-block')
+>(function IconButtonLink({ disabled, ...props }, ref) {
+  const className = clsx(
+    getIconButtonifiedClassNames({
+      ...props,
+      // Disabled does not exist on link tags, but it is used by the class names
+      // generator to add disabled stylings, so add it back in here.
+      disabled,
+    }),
+    'inline-block'
+  )
   // If disabled, don't navigate anywhere. Anchor tags cannot be disabled, so
   // this is a workaround.
-  props.href = props.disabled ? '#' : props.href
+  props.href = disabled ? '#' : props.href
 
   return (
     <LinkWrapper
