@@ -4,10 +4,8 @@ import { forwardRef } from 'react'
 import { useRecoilState } from 'recoil'
 
 import { navigatingToHrefAtom } from '@dao-dao/state/recoil'
-import {
-  IconButtonLinkProps,
-  IconButtonLink as StatelessIconButtonLink,
-} from '@dao-dao/stateless'
+import { IconButtonLink as StatelessIconButtonLink } from '@dao-dao/stateless'
+import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
 
 export const IconButtonLink = forwardRef<
   HTMLAnchorElement,
