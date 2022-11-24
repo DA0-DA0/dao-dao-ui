@@ -58,8 +58,10 @@ export const getButtonifiedClassNames = ({
 
   return clsx(
     'relative rounded-md transition-all focus:outline-2 focus:outline-background-button-disabled',
+
     // No cursor pointer if disabled or loading.
     disabledOrLoading && 'cursor-default',
+
     // Let variants take color precedence over the text classes used here since
     // the variants are more specific, so just use the font text styling here.
     {

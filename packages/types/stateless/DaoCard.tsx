@@ -2,6 +2,7 @@ import { ComponentType } from 'react'
 
 import { DaoParentInfo } from '../dao'
 import { LoadingData } from './common'
+import { IconButtonLinkProps } from './IconButtonLink'
 import { LinkWrapperProps } from './LinkWrapper'
 
 // Loaded by card once displaying.
@@ -35,4 +36,5 @@ export interface DaoCardProps extends DaoCardInfo {
   onMouseOver?: () => void
   onMouseLeave?: () => void
   LinkWrapper: ComponentType<LinkWrapperProps>
+  IconButtonLink: ComponentType<IconButtonLinkProps>
 }

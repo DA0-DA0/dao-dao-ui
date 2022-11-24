@@ -3,6 +3,7 @@ export * from './profile'
 
 export * from './AppLayout'
 export * from './ButtonLink'
+export * from './IconButtonLink'
 export * from './LinkWrapper'
 export * from './PfpkNftSelectionModal'
 export * from './ProfileDisplay'
