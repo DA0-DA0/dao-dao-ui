@@ -425,6 +425,7 @@
     "searchNftsPlaceholder": "Find an NFT...",
     "searchValidatorsPlaceholder": "Find a validator...",
     "selectingSurveyDownloadsCsv": "Selecting a survey will prompt for authentication before downloading a CSV file with the survey's data. It will succeed if you were a member of the DAO when the survey was created.",
+    "selectingSurveyOpensProposal": "Selecting a survey will open its proposal if one exists.",
     "spendActionDescription_dao": "Spend native or CW20 tokens from the treasury.",
     "spendActionDescription_wallet": "Spend native tokens from your wallet.",
     "stakeActionDescription": "Manage native token staking.",

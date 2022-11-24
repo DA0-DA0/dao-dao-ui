@@ -163,11 +163,12 @@ export const PayrollTab = ({
             <p className="title-text text-text-body">
               {t('title.completedSurveys')}
             </p>
-            {isMember && (
-              <p className="secondary-text max-w-prose italic">
-                {t('info.selectingSurveyDownloadsCsv')}
-              </p>
-            )}
+
+            <p className="secondary-text max-w-prose italic">
+              {isMember
+                ? t('info.selectingSurveyDownloadsCsv')
+                : t('info.selectingSurveyOpensProposal')}
+            </p>
           </div>
 
           {loadingCompletedSurveys.loading ? (
@@ -178,12 +179,13 @@ export const PayrollTab = ({
                 <CompletedSurveyRow
                   key={survey.id}
                   IconButtonLink={IconButtonLink}
-                  className={
+                  className={clsx(
                     // If survey is loading, animate pulse.
-                    loadingCompletedSurveyId === survey.id
-                      ? 'animate-pulse'
-                      : undefined
-                  }
+                    loadingCompletedSurveyId === survey.id && 'animate-pulse',
+                    // If not a member and no proposal, disable pointer events
+                    // since we can't go anywhere.
+                    !isMember && !survey.proposalId && 'pointer-events-none'
+                  )}
                   onClick={() =>
                     isMember
                       ? // If member, prompt for authentication before downloading CSV.
