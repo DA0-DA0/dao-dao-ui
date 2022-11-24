@@ -29,9 +29,20 @@ Default.args = {
           publicKey: 'publicKey1',
           address: 'juno1',
         },
-        content: 'I did stuff',
+        content: 'I contributed so much of my BLOOD SWEAT AND TEARS',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        averageRatingPerAttribute: [0, 30],
+        tokens: [
+          {
+            denomOrAddress: 'ujuno',
+            amount: '0',
+          },
+          {
+            denomOrAddress: 'ujuno',
+            amount: '10000000000',
+          },
+        ],
       },
       {
         id: 2,
@@ -39,9 +50,21 @@ Default.args = {
           publicKey: 'publicKey2',
           address: 'juno2',
         },
-        content: 'I did other stuff\n:D',
+        content:
+          "i did absolutely nothing but i expect money because i'm around",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        averageRatingPerAttribute: [100, 75],
+        tokens: [
+          {
+            denomOrAddress: 'ujuno',
+            amount: '15000000000',
+          },
+          {
+            denomOrAddress: 'ujuno',
+            amount: '25000000000',
+          },
+        ],
       },
     ],
     ratings: [
@@ -53,11 +76,11 @@ Default.args = {
         contributions: [
           {
             id: 1,
-            attributes: [null, 2],
+            attributes: [null, 10],
           },
           {
             id: 2,
-            attributes: [50, 70],
+            attributes: [100, 100],
           },
         ],
       },
@@ -69,11 +92,11 @@ Default.args = {
         contributions: [
           {
             id: 1,
-            attributes: [null, null],
+            attributes: [null, 50],
           },
           {
             id: 2,
-            attributes: [0, 28],
+            attributes: [null, 50],
           },
         ],
       },
