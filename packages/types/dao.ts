@@ -265,5 +265,5 @@ export type DaoCreationGetInstantiateInfo<
 
 export type DaoCreatedCardProps = Omit<
   DaoCardProps,
-  'pinned' | 'onPin' | 'LinkWrapper'
+  'pinned' | 'onPin' | 'LinkWrapper' | 'IconButtonLink'
 >

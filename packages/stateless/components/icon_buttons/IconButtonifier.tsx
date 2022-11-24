@@ -1,17 +1,6 @@
 import clsx from 'clsx'
-import { ComponentType } from 'react'
 
-export interface IconButtonifierProps {
-  variant: 'primary' | 'secondary' | 'ghost' | 'none'
-  // Custom size requires manual setting of sizes.
-  size?: 'default' | 'xl' | 'lg' | 'sm' | 'xs' | 'custom'
-  circular?: boolean
-  Icon: ComponentType<{ className: string }>
-  disabled?: boolean
-  focused?: boolean
-  className?: string
-  iconClassName?: string
-}
+import { IconButtonifierProps } from '@dao-dao/types/stateless/IconButtonifier'
 
 // Get props that should pass through the IconButtonifier. None of the
 // IconButtonifier props should pass through except `disabled`.
@@ -41,6 +30,9 @@ export const getIconButtonifiedClassNames = ({
 
     // Rounding.
     circular ? 'rounded-full' : 'rounded-md',
+
+    // No cursor pointer if disabled.
+    disabled && 'cursor-default',
 
     // Sizes.
     {

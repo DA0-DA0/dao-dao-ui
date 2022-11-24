@@ -8,6 +8,7 @@ import { DaoCardInfo } from '@dao-dao/types/stateless/DaoCard'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { daoCardInfoLazyDataSelector } from '../../recoil'
+import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 
 // Doesn't load any wallet information or allow pinning.
@@ -29,6 +30,7 @@ export const SplashDaoCard = (props: DaoCardInfo) => {
   return (
     <StatelessDaoCard
       {...props}
+      IconButtonLink={IconButtonLink}
       LinkWrapper={LinkWrapper}
       hidePin
       lazyData={loadableToLoadingData(lazyDataLoadable, {

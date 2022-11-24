@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { IconButtonLink } from '../icon_buttons'
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoCard, DaoCardProps } from './DaoCard'
 
@@ -46,6 +47,7 @@ export const makeProps = (): DaoCardProps => ({
 
   showIsMember: true,
   LinkWrapper,
+  IconButtonLink,
 })
 
 export const Default = Template.bind({})
