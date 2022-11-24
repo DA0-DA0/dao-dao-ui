@@ -209,7 +209,7 @@ export const ProposalCreationForm = () => {
     try {
       // Propose.
       // TODO: Make proposal
-      const proposalId = 'A1'
+      const proposalId = ''
 
       // Complete with proposal ID.
       await postRequest(`/${coreAddress}/complete`, { proposalId })

@@ -5,33 +5,30 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  IconButtonLinkProps,
   Loader,
   MarkdownPreview,
   NoContent,
   Tooltip,
+  useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import { formatDateTimeTz } from '@dao-dao/utils'
 
-import {
-  CompletedSurvey,
-  LoadedCompletedSurvey,
-  Status,
-  SurveyStatus,
-} from '../../types'
+import { CompletedSurveyListing, Status, SurveyStatus } from '../../types'
 import { CompletedSurveyRow } from './CompletedSurveyRow'
 
 export interface PayrollTabProps {
   loadingStatus: LoadingData<Status | undefined>
-  loadingCompletedSurveys: LoadingData<CompletedSurvey[]>
+  loadingCompletedSurveys: LoadingData<CompletedSurveyListing[]>
   isMember: boolean
   NewSurveyForm: ComponentType
   ContributionForm: ComponentType
   RatingForm: ComponentType
   ProposalCreationForm: ComponentType
-  selectCompletedSurvey: (pastSurvey: CompletedSurvey) => void
-  loadingCompletedSurvey: boolean
-  loadedCompletedSurvey: LoadedCompletedSurvey | undefined
+  downloadCompletedSurvey: (pastSurvey: CompletedSurveyListing) => void
+  loadingCompletedSurveyId: number | undefined
+  IconButtonLink: ComponentType<IconButtonLinkProps>
 }
 
 export const PayrollTab = ({
@@ -42,11 +39,12 @@ export const PayrollTab = ({
   ContributionForm,
   ProposalCreationForm,
   RatingForm,
-  selectCompletedSurvey,
-  loadingCompletedSurvey,
-  loadedCompletedSurvey,
+  downloadCompletedSurvey,
+  loadingCompletedSurveyId,
+  IconButtonLink,
 }: PayrollTabProps) => {
   const { t } = useTranslation()
+  const { coreAddress } = useDaoInfoContext()
 
   const [showCreate, setShowCreate] = useState(false)
   // Can create survey if member of DAO and there does not exist a current
@@ -161,18 +159,41 @@ export const PayrollTab = ({
         <NewSurveyForm />
       ) : (
         <>
-          <p className="title-text text-text-body">
-            {t('title.completedSurveys')}
-          </p>
+          <div className="space-y-1">
+            <p className="title-text text-text-body">
+              {t('title.completedSurveys')}
+            </p>
+            {isMember && (
+              <p className="secondary-text max-w-prose italic">
+                {t('info.selectingSurveyDownloadsCsv')}
+              </p>
+            )}
+          </div>
 
           {loadingCompletedSurveys.loading ? (
             <Loader fill={false} />
           ) : loadingCompletedSurveys.data.length > 0 ? (
             <div className="flex flex-col gap-1">
-              {loadingCompletedSurveys.data.map((survey, index) => (
+              {loadingCompletedSurveys.data.map((survey) => (
                 <CompletedSurveyRow
-                  key={index}
-                  onClick={() => selectCompletedSurvey(survey)}
+                  key={survey.id}
+                  IconButtonLink={IconButtonLink}
+                  className={
+                    // If survey is loading, animate pulse.
+                    loadingCompletedSurveyId === survey.id
+                      ? 'animate-pulse'
+                      : undefined
+                  }
+                  onClick={() =>
+                    isMember
+                      ? // If member, prompt for authentication before downloading CSV.
+                        downloadCompletedSurvey(survey)
+                      : // If not a member but proposal exists, open survey in new tab on select.
+                        survey.proposalId &&
+                        window.open(
+                          `/dao/${coreAddress}/proposals/${survey.proposalId}`
+                        )
+                  }
                   survey={survey}
                 />
               ))}

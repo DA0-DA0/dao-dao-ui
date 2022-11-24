@@ -49,42 +49,18 @@ export interface NewSurveyFormData
   }[]
 }
 
-export type LoadedCompletedSurvey = Omit<Survey, 'status'> & {
-  // Only present for DAO members.
-  contributions:
-    | {
-        id: number
-        contributor: string
-        content: string
-        createdAt: string
-        updatedAt: string
-      }[]
-    | undefined
-  // Only present for DAO members.
-  ratings:
-    | {
-        rater: string
-        contributions: {
-          contributor: string
-          content: string
-          // The position matches the position in the survey's attributes list.
-          attributes: (number | null)[]
-        }[]
-      }[]
-    | undefined
-}
-
 export interface Status {
   survey: Survey
   contribution: string | null
   rated: boolean
 }
 
-export interface CompletedSurvey {
+export interface CompletedSurveyListing {
   id: number
   name: string
   contributionCount: number
-  openedAt: string
+  contributionsOpenedAt: string
+  proposalId: string
 }
 
 export interface ContributionRating {
@@ -141,4 +117,10 @@ export interface ContributionWithCompensation extends Contribution {
 export interface CompleteRatings {
   contributions: ContributionWithCompensation[]
   ratings: Rating[]
+}
+
+export type CompletedSurvey = Omit<Survey, 'status'> & {
+  id: number
+  contributions: ContributionResponse[]
+  ratings: RatingResponse[]
 }

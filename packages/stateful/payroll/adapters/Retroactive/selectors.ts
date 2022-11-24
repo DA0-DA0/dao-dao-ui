@@ -2,7 +2,7 @@ import { selectorFamily } from 'recoil'
 
 import { refreshStatusAtom } from './atoms'
 import { API_BASE } from './constants'
-import { CompletedSurvey, Status } from './types'
+import { CompletedSurveyListing, Status } from './types'
 
 export const statusSelector = selectorFamily<
   Status | undefined,
@@ -44,7 +44,7 @@ export const statusSelector = selectorFamily<
 })
 
 export const listCompletedSurveysSelector = selectorFamily<
-  CompletedSurvey[],
+  CompletedSurveyListing[],
   {
     daoAddress: string
   }

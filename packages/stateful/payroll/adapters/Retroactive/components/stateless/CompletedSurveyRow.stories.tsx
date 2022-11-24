@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { IconButtonLink } from '@dao-dao/stateless'
+
 import { CompletedSurveyRow } from './CompletedSurveyRow'
 
 export default {
@@ -18,6 +20,8 @@ Default.args = {
     id: 1,
     name: 'October 2022 Contributor Drop',
     contributionCount: 10,
-    openedAt: new Date().toISOString(),
+    contributionsOpenedAt: new Date().toISOString(),
+    proposalId: 'A1',
   },
+  IconButtonLink,
 }

@@ -1,7 +1,6 @@
 import { makeSignDoc } from '@cosmjs/amino'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
-import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { useDaoInfoContext } from '@dao-dao/stateless'
@@ -21,8 +20,7 @@ export const usePostRequest = () => {
   const postRequest = useCallback(
     async (endpoint: string, data?: Record<string, unknown>) => {
       if (!walletClient || !publicKey || !chainInfo || !walletAddress) {
-        toast.error(t('error.connectWalletToContinue'))
-        return
+        throw new Error(t('error.connectWalletToContinue'))
       }
 
       // Fetch nonce.
@@ -34,8 +32,7 @@ export const usePostRequest = () => {
         typeof nonceResponse.nonce !== 'number'
       ) {
         console.error('Failed to fetch nonce.', nonceResponse, publicKey.hex)
-        toast.error(t('error.loadingData'))
-        return
+        throw new Error(t('error.loadingData'))
       }
 
       const dataWithAuth = {
