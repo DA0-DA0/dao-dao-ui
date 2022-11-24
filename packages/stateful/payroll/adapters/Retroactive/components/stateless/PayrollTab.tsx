@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
-  IconButtonLinkProps,
   Loader,
   MarkdownPreview,
   NoContent,
@@ -13,6 +12,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
+import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
 import { formatDateTimeTz } from '@dao-dao/utils'
 
 import { CompletedSurveyListing, Status, SurveyStatus } from '../../types'

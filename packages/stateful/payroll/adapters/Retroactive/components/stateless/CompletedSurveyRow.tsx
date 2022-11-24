@@ -3,11 +3,8 @@ import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  IconButtonLinkProps,
-  Tooltip,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { Tooltip, useDaoInfoContext } from '@dao-dao/stateless'
+import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
 import { formatDate } from '@dao-dao/utils'
 
 import { CompletedSurveyListing } from '../../types'

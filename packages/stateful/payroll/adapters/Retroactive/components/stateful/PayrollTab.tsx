@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ConnectWallet,
-  IconButtonLink,
   Loader,
   useCachedLoadable,
   useDaoInfoContext,
@@ -21,7 +20,7 @@ import {
   secp256k1PublicKeyToBech32Address,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../../components'
+import { IconButtonLink, SuspenseLoader } from '../../../../../components'
 import { useVotingModule } from '../../../../../hooks/useVotingModule'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { listCompletedSurveysSelector, statusSelector } from '../../selectors'
