@@ -38,6 +38,7 @@ import {
   daoCreatedCardPropsAtom,
   pinnedDaoDropdownInfosSelector,
 } from '../recoil'
+import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
@@ -247,6 +248,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
                 ? setUnpinned(daoCreatedCardProps.coreAddress)
                 : setPinned(daoCreatedCardProps.coreAddress),
             LinkWrapper,
+            IconButtonLink,
           }}
           modalProps={{
             onClose: () => setDaoCreatedCardProps(undefined),
