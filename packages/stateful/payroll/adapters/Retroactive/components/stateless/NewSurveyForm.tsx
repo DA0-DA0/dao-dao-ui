@@ -335,7 +335,12 @@ export const NewSurveyForm = ({
 
           <Button
             className="self-start"
-            onClick={() => appendAttribute({})}
+            onClick={() =>
+              appendAttribute({
+                name: '',
+                tokens: [],
+              })
+            }
             variant="ghost"
           >
             <Add className="!h-4 !w-4" />

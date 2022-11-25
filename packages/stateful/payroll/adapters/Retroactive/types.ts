@@ -109,9 +109,17 @@ export interface RatingsResponse {
   ratings: RatingResponse[]
 }
 
+export interface ContributionCompensation {
+  contributionId: number
+  compensationPerAttribute: {
+    averageRating: number
+    nativeTokens: NativeToken[]
+    cw20Tokens: Cw20Token[]
+  }[]
+}
+
 export interface ContributionWithCompensation extends Contribution {
-  averageRatingPerAttribute: number[]
-  tokens: AnyToken[]
+  compensation: ContributionCompensation
 }
 
 export interface CompleteRatings {

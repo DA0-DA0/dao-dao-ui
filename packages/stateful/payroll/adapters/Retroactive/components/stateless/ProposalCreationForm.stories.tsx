@@ -32,17 +32,31 @@ Default.args = {
         content: 'I contributed so much of my BLOOD SWEAT AND TEARS',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        averageRatingPerAttribute: [0, 30],
-        tokens: [
-          {
-            denomOrAddress: 'ujuno',
-            amount: '0',
-          },
-          {
-            denomOrAddress: 'ujuno',
-            amount: '10000000000',
-          },
-        ],
+        compensation: {
+          contributionId: 1,
+          compensationPerAttribute: [
+            {
+              averageRating: 0,
+              nativeTokens: [
+                {
+                  denom: 'ujuno',
+                  amount: '0',
+                },
+              ],
+              cw20Tokens: [],
+            },
+            {
+              averageRating: 30,
+              nativeTokens: [
+                {
+                  denom: 'ujuno',
+                  amount: '10000000000',
+                },
+              ],
+              cw20Tokens: [],
+            },
+          ],
+        },
       },
       {
         id: 2,
@@ -54,17 +68,31 @@ Default.args = {
           "i did absolutely nothing but i expect money because i'm around",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        averageRatingPerAttribute: [100, 75],
-        tokens: [
-          {
-            denomOrAddress: 'ujuno',
-            amount: '15000000000',
-          },
-          {
-            denomOrAddress: 'ujuno',
-            amount: '25000000000',
-          },
-        ],
+        compensation: {
+          contributionId: 2,
+          compensationPerAttribute: [
+            {
+              averageRating: 100,
+              nativeTokens: [
+                {
+                  denom: 'ujuno',
+                  amount: '15000000000',
+                },
+              ],
+              cw20Tokens: [],
+            },
+            {
+              averageRating: 75,
+              nativeTokens: [
+                {
+                  denom: 'ujuno',
+                  amount: '25000000000',
+                },
+              ],
+              cw20Tokens: [],
+            },
+          ],
+        },
       },
     ],
     ratings: [

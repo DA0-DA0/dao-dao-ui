@@ -17,12 +17,12 @@ import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
 import {
-  AnyToken,
   CompleteRatings,
   ContributionWithCompensation,
   Rating,
   RatingsResponse,
 } from '../../types'
+import { computeCompensation } from '../../utils'
 import { ProposalCreationForm as StatelessProposalCreationForm } from '../stateless/ProposalCreationForm'
 import { IdentityProfileDisplay } from './IdentityProfileDisplay'
 
@@ -65,48 +65,16 @@ export const ProposalCreationForm = () => {
         `/${coreAddress}/ratings`
       )
 
-      // Compute average of ratings for contributions for each attribute.
-      const contributionsWithAverageRatings = response.contributions.map(
-        (contribution) => {
-          // Each item is an array of attribute ratings for this contributor.
-          // The order of attributes matches the attribute order in the survey.
-          const attributeRatings = response.ratings.map(
-            (rating) =>
-              rating.contributions.find(({ id }) => id === contribution.id)
-                ?.attributes ?? []
-          )
-
-          // Average attribute rating for each attribute. If the ratings were
-          // [50, 100], the average is 75. If the ratings were [null, 50], the
-          // average is 50. If the ratings were [null, null], the average is 0.
-          const averageAttributeRatings =
-            statusLoadable.contents!.survey.attributes.map(
-              (_, attributeIndex) => {
-                const nonAbstainRatings = attributeRatings
-                  .map((ratings) => ratings[attributeIndex])
-                  .filter((rating) => typeof rating === 'number') as number[]
-
-                // If all ratings are abstain, return 0.
-                return nonAbstainRatings.length === 0
-                  ? 0
-                  : // Otherwise, return average.
-                    nonAbstainRatings.reduce((sum, rating) => sum + rating, 0) /
-                      nonAbstainRatings.length
-              }
-            )
-
-          return averageAttributeRatings
-        }
-      )
-
-      // Compute total of averages for each attribute.
-      const totalsOfAverages = statusLoadable.contents!.survey.attributes.map(
-        (_, attributeIndex) =>
-          contributionsWithAverageRatings.reduce(
-            (sum, averageAttributeRatings) =>
-              sum + averageAttributeRatings[attributeIndex],
-            0
-          )
+      // Compute compensation.
+      const compensationPerContribution = computeCompensation(
+        response.contributions.map(({ id }) => id),
+        response.ratings.flatMap((rating) =>
+          rating.contributions.map(({ id, attributes }) => ({
+            contributionId: id,
+            attributes,
+          }))
+        ),
+        statusLoadable.contents.survey.attributes
       )
 
       // Get addresses for contributor public keys, and compute compensation.
@@ -121,35 +89,7 @@ export const ProposalCreationForm = () => {
               bech32Prefix
             )
 
-            const averageRatingPerAttribute =
-              contributionsWithAverageRatings[contributionIndex]
-
-            const tokens = statusLoadable.contents!.survey.attributes.flatMap(
-              ({ nativeTokens, cw20Tokens }, attributeIndex): AnyToken[] => {
-                const averageRating = averageRatingPerAttribute[attributeIndex]
-                const totalOfAverages = totalsOfAverages[attributeIndex]
-                const proportionalCompensation = averageRating / totalOfAverages
-
-                return [
-                  ...nativeTokens.map(
-                    ({ denom, amount }): AnyToken => ({
-                      denomOrAddress: denom,
-                      amount: Math.floor(
-                        Number(amount) * proportionalCompensation
-                      ).toString(),
-                    })
-                  ),
-                  ...cw20Tokens.map(
-                    ({ address, amount }): AnyToken => ({
-                      denomOrAddress: address,
-                      amount: Math.floor(
-                        Number(amount) * proportionalCompensation
-                      ).toString(),
-                    })
-                  ),
-                ]
-              }
-            )
+            const compensation = compensationPerContribution[contributionIndex]
 
             return {
               ...contribution,
@@ -157,8 +97,7 @@ export const ProposalCreationForm = () => {
                 publicKey,
                 address,
               },
-              averageRatingPerAttribute,
-              tokens,
+              compensation,
             }
           }
         )

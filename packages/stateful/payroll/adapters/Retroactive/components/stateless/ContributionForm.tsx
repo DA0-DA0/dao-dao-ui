@@ -85,7 +85,7 @@ export const ContributionForm = ({
           markdown={survey.contributionInstructions}
         />
 
-        <div className="flex grow flex-col gap-6">
+        <div className="flex grow flex-col gap-4 pb-10">
           <div className="flex flex-col gap-2">
             <p className="primary-text text-text-body">{t('title.you')}</p>
 
@@ -102,12 +102,6 @@ export const ContributionForm = ({
             )}
           </div>
 
-          {contributed && (
-            <p className="legend-text text-text-interactive-valid">
-              {t('form.contributionSubmitted')}
-            </p>
-          )}
-
           <div className="flex flex-col">
             <TextAreaInput
               error={errors.contribution}
@@ -119,6 +113,20 @@ export const ContributionForm = ({
             />
             <InputErrorMessage error={errors.contribution} />
           </div>
+
+          {contributed && (
+            <p className="caption-text self-end text-right text-text-interactive-valid">
+              {t('form.contributionSubmitted')}
+            </p>
+          )}
+
+          {survey.status === SurveyStatus.Inactive && (
+            <p className="caption-text self-end text-right text-text-interactive-error">
+              {t('info.surveyOpensAt', {
+                date: formatDateTimeTz(new Date(survey.contributionsOpenAt)),
+              })}
+            </p>
+          )}
 
           <Tooltip
             title={
@@ -134,7 +142,7 @@ export const ContributionForm = ({
             }
           >
             <Button
-              className="mb-10 self-end"
+              className="self-end"
               disabled={
                 survey.status === SurveyStatus.Inactive || !walletProfile.name
               }

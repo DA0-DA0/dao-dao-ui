@@ -29,7 +29,7 @@ export const ProposalCreationForm = ({
   const { t } = useTranslation()
 
   return (
-    <div className="grow space-y-6">
+    <div className="grow space-y-6 pb-10">
       <p className="hero-text max-w-prose break-words">{survey.name}</p>
 
       <MarkdownPreview markdown={t('info.surveyClosedAwaitingCompletion')} />
@@ -151,13 +151,13 @@ export const ProposalCreationForm = ({
 
             {/* Row for each contributor. */}
             {completeRatings.contributions.map(
-              (contribution, contributionIndex) => {
+              ({ id, contributor, compensation }, contributionIndex) => {
                 // Every other row.
                 const backgroundClassName =
                   contributionIndex % 2 !== 0 && 'bg-background-tertiary'
 
                 return (
-                  <Fragment key={contribution.id}>
+                  <Fragment key={id}>
                     <IdentityProfileDisplay
                       className={clsx(
                         'p-4',
@@ -166,7 +166,7 @@ export const ProposalCreationForm = ({
                           completeRatings.contributions.length - 1 &&
                           'rounded-bl-md'
                       )}
-                      identity={contribution.contributor}
+                      identity={contributor}
                     />
 
                     {survey.attributes.map((_, attributeIndex) => (
@@ -181,7 +181,10 @@ export const ProposalCreationForm = ({
                             'rounded-br-md'
                         )}
                       >
-                        {contribution.averageRatingPerAttribute[attributeIndex]}
+                        {
+                          compensation.compensationPerAttribute[attributeIndex]
+                            .averageRating
+                        }
                       </p>
                     ))}
                   </Fragment>
@@ -190,11 +193,7 @@ export const ProposalCreationForm = ({
             )}
           </div>
 
-          <Button
-            className="mb-10 self-end"
-            loading={loading}
-            onClick={onComplete}
-          >
+          <Button className="self-end" loading={loading} onClick={onComplete}>
             <p>{t('button.publishProposal')}</p>
             <GavelRounded className="!h-4 !w-4" />
           </Button>

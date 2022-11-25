@@ -386,7 +386,7 @@ export const allCw20InfosSelector = selectorFamily<
     ({ governanceTokenAddress, ...queryClientParams }) =>
     async ({ get }) => {
       //! Get all addresses.
-      const addresses = get(allCw20TokenListSelector(queryClientParams))
+      const addresses = [...get(allCw20TokenListSelector(queryClientParams))]
 
       //! Add governance token balance if exists but missing from list.
       if (
