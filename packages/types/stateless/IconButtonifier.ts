@@ -7,6 +7,7 @@ export interface IconButtonifierProps {
   circular?: boolean
   Icon: ComponentType<{ className: string }>
   disabled?: boolean
+  loading?: boolean
   focused?: boolean
   className?: string
   iconClassName?: string

@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { LinkWrapper } from '../LinkWrapper'
 import { DaoImage } from './DaoImage'
 
 export default {
@@ -15,6 +16,7 @@ export const Small = Template.bind({})
 Small.args = {
   size: 'sm',
   imageUrl: '/placeholders/1.svg',
+  LinkWrapper,
 }
 
 export const SmallWithParent = Template.bind({})
@@ -25,12 +27,14 @@ SmallWithParent.args = {
     coreAddress: 'parent',
     imageUrl: '/placeholders/2.svg',
   },
+  LinkWrapper,
 }
 
 export const Large = Template.bind({})
 Large.args = {
   size: 'lg',
   imageUrl: '/placeholders/1.svg',
+  LinkWrapper,
 }
 
 export const LargeWithParent = Template.bind({})
@@ -41,4 +45,5 @@ LargeWithParent.args = {
     coreAddress: 'parent',
     imageUrl: '/placeholders/2.svg',
   },
+  LinkWrapper,
 }

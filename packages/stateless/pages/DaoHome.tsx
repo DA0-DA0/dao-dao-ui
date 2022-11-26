@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfo, SuspenseLoaderProps } from '@dao-dao/types'
+import { DaoInfo, LinkWrapperProps, SuspenseLoaderProps } from '@dao-dao/types'
 import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {
@@ -26,6 +26,7 @@ export interface DaoHomeProps {
   payrollTab?: ReactNode
   rightSidebarContent: ReactNode
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export const DaoHome = ({
@@ -40,6 +41,7 @@ export const DaoHome = ({
   payrollTab,
   rightSidebarContent,
   SuspenseLoader,
+  LinkWrapper,
 }: DaoHomeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
@@ -97,6 +99,7 @@ export const DaoHome = ({
 
       <div className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch">
         <DaoHeader
+          LinkWrapper={LinkWrapper}
           coreAddress={daoInfo.coreAddress}
           description={daoInfo.description}
           established={daoInfo.created && formatDate(daoInfo.created)}

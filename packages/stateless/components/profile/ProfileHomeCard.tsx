@@ -1,10 +1,11 @@
 import { LayersOutlined, PaymentsOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
 
-import { ButtonLink } from '../buttons'
+import { ButtonLinkProps } from '../buttons'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import {
   ProfileCardWrapper,
@@ -26,6 +27,7 @@ export interface ProfileHomeCardProps
     proposalsCreated: number
     votesCast: number
   }>
+  ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const ProfileHomeCard = ({
@@ -34,6 +36,7 @@ export const ProfileHomeCard = ({
   tokenDecimals,
   inboxProposalCount,
   lazyData,
+  ButtonLink,
   ...wrapperProps
 }: ProfileHomeCardProps) => {
   const { t } = useTranslation()

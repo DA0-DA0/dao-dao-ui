@@ -19,6 +19,7 @@ import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
+  LinkWrapper,
   ProposalsTab,
   SubDaosTab,
   SuspenseLoader,
@@ -189,6 +190,7 @@ const InnerDaoHome = () => {
 
   return (
     <DaoHome
+      LinkWrapper={LinkWrapper}
       SuspenseLoader={SuspenseLoader}
       daoInfo={daoInfo}
       daoInfoBar={<DaoInfoBar />}
