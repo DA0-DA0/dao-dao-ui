@@ -35,7 +35,7 @@ export const PayrollTab = () => {
   const { t } = useTranslation()
   const { chainId } = useDaoInfoContext()
   const { connect } = useWalletManager()
-  const { connected, status, error } = useWallet(chainId)
+  const { connected, status } = useWallet(chainId)
 
   // Show loader while connecting instead of blinking the connect wallet button.
   const connecting =
@@ -54,12 +54,6 @@ export const PayrollTab = () => {
       </p>
 
       <ConnectWallet onConnect={connect} />
-
-      {error && (
-        <pre className="text-text-error mt-4">
-          {error instanceof Error ? error.message : JSON.stringify(error)}
-        </pre>
-      )}
     </>
   )
 }
