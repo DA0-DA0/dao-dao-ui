@@ -146,10 +146,11 @@ export const RatingForm = ({
         {data ? (
           <>
             <div
-              className="grid-rows-auto grid items-stretch justify-items-stretch"
-              // Column for contributor and each attribute.
+              className="grid-rows-auto grid items-stretch justify-items-stretch overflow-x-auto"
+              // Column for contributor, each attribute, and projected
+              // compenstaion.
               style={{
-                gridTemplateColumns: `minmax(0,1fr) ${survey.attributes
+                gridTemplateColumns: `auto ${survey.attributes
                   .map(() => 'auto')
                   .join(' ')} auto`,
               }}

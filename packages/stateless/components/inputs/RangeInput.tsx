@@ -44,63 +44,54 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
 }: RangeInputProps<FV, FieldName>) => {
   const value = watch && fieldName ? Number(watch(fieldName) || 0) : _value ?? 0
 
-  // When defined, we are dragging. Used to offset mouse so that the thumb
-  // doesn't jump to a weird offset of the mouse position. This is the
-  // difference between the mouse's apparent value and the actual value.
-  const [initialValueDelta, setInitialValueDelta] = useState<number>()
   // This is the value that we are currently dragging, and will be saved once we
-  // let go of the mouse.
+  // let go of the mouse/touch.
   const [pendingNewValue, setPendingNewValue] = useState<number | undefined>()
   const barRef = useRef<HTMLDivElement>(null)
 
-  // Returns the value within the input's bounds given the mouse relative to the
-  // bar.
-  const getValueForMousePosition = useCallback(
+  const updatePendingValue = useCallback(
     (mouseX: number) => {
       if (!barRef.current) {
-        return 0
+        return
       }
 
       // Get bounds of the bar.
-      const { clientLeft, clientWidth } = barRef.current
+      const { left, width } = barRef.current.getBoundingClientRect()
 
       // Get the current mouse offset from the left edge of the bar.
-      const offsetX = mouseX - clientLeft
+      const offsetX = mouseX - left
 
       // Get the value based on the bar's width and its bounds.
-      const value = Math.round((offsetX / clientWidth) * (max - min) + min)
-      return value
+      const unclampedNewValue = Math.round(
+        (offsetX / width) * (max - min) + min
+      )
+
+      // Clamp.
+      const clampedValue = Math.max(min, Math.min(unclampedNewValue, max))
+
+      // Update the pending value.
+      setPendingNewValue(clampedValue)
     },
     [max, min]
   )
 
-  const onMouseMove = useCallback(
-    (event: MouseEvent) => {
-      if (disabled || initialValueDelta === undefined || !barRef.current) {
-        return
-      }
-
-      // Get the new value for the mouse position.
-      const unclampedNewValue =
-        getValueForMousePosition(event.clientX) - initialValueDelta
-      // Clamp.
-      const clampedValue = Math.max(min, Math.min(unclampedNewValue, max))
-
-      setPendingNewValue(clampedValue)
-    },
-    [disabled, getValueForMousePosition, initialValueDelta, max, min]
-  )
-
-  // Add global mouse up and move handler to handle dragging.
+  // Add global mouse/touch up and move handlers to handle dragging.
   useEffect(() => {
-    if (initialValueDelta === undefined) {
+    if (disabled || !barRef.current || pendingNewValue === undefined) {
       return
     }
 
-    // On mouse release, set pending value if different from current value.
-    const onMouseUp = () => {
-      setInitialValueDelta(undefined)
+    // On move, update the pending value with the position of the mouse/touch.
+    const onMouseMove = (event: MouseEvent) => {
+      updatePendingValue(event.clientX)
+    }
+    const onTouchMove = (event: TouchEvent) => {
+      const touch = event.touches.item(0)
+      touch && updatePendingValue(touch.clientX)
+    }
 
+    // On release, set pending value if different from current value.
+    const onRelease = () => {
       if (pendingNewValue !== undefined && pendingNewValue !== value) {
         if (setValue && fieldName) {
           setValue(fieldName, pendingNewValue as any)
@@ -112,67 +103,85 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
 
       setPendingNewValue(undefined)
     }
-    window.addEventListener('mouseup', onMouseUp)
+
+    window.addEventListener('mouseup', onRelease)
+    window.addEventListener('touchend', onRelease)
 
     window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('touchmove', onTouchMove)
 
     return () => {
-      window.removeEventListener('mouseup', onMouseUp)
+      window.removeEventListener('mouseup', onRelease)
+      window.removeEventListener('touchend', onRelease)
       window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('touchmove', onTouchMove)
     }
   }, [
+    disabled,
     fieldName,
-    initialValueDelta,
     onChange,
-    onMouseMove,
     pendingNewValue,
     setValue,
+    updatePendingValue,
     value,
   ])
 
+  // When mouse down or touch start, set state to indicate dragging.
+  const onStartDrag = (initialX: number) => {
+    // Initialize at current value.
+    updatePendingValue(initialX)
+    // Callback to indicate started dragging.
+    onStartChange?.()
+  }
+
   return (
-    <div className={clsx('flex h-4 flex-col justify-center px-2', className)}>
-      {/* Background bar. */}
+    <div
+      className={clsx(
+        'relative h-8 overflow-hidden rounded-sm bg-background-primary transition',
+        disabled ? 'pointer-events-none cursor-default' : 'cursor-col-resize',
+        className
+      )}
+      onMouseDown={
+        disabled || !barRef.current
+          ? undefined
+          : (event) => {
+              updatePendingValue(event.clientX)
+              onStartDrag(event.clientX)
+            }
+      }
+      onTouchStart={
+        disabled || !barRef.current
+          ? undefined
+          : (event) => {
+              const touch = event.touches.item(0)
+              touch && onStartDrag(touch.clientX)
+            }
+      }
+      ref={barRef}
+    >
+      {/* Progress bar. */}
       <div
         className={clsx(
-          'relative h-2 rounded-full transition',
+          'absolute top-0 left-0 bottom-0 h-full rounded-sm transition',
           disabled || dimmed
-            ? 'bg-background-interactive-disabled'
-            : 'bg-background-primary'
+            ? 'bg-background-primary'
+            : 'bg-background-interactive-active'
         )}
-        ref={barRef}
+        style={{
+          width: `calc(${
+            ((pendingNewValue ?? value) - min) / (max - min)
+          } * 100%)`,
+        }}
+      ></div>
+      {/* Value */}
+      <p
+        className={clsx(
+          'absolute left-0 top-0 right-0 bottom-0 flex select-none flex-row items-center justify-center font-mono',
+          disabled || dimmed ? 'text-text-tertiary' : 'text-text-brand'
+        )}
       >
-        {/* Orb slider. */}
-        <div
-          className={clsx(
-            'absolute top-1/2 -mt-2 -ml-2 h-4 w-4 rounded-full shadow-dp2 transition',
-            disabled || dimmed
-              ? 'bg-background-button-disabled'
-              : 'bg-background-button',
-            disabled
-              ? 'pointer-events-none'
-              : 'cursor-pointer hover:bg-background-button-hover active:bg-background-button-pressed'
-          )}
-          onMouseDown={
-            disabled || !barRef.current
-              ? undefined
-              : (event) => {
-                  // Initialize at current value.
-                  setPendingNewValue(value)
-                  setInitialValueDelta(
-                    getValueForMousePosition(event.clientX) - value
-                  )
-                  // Callback to indicate started dragging.
-                  onStartChange?.()
-                }
-          }
-          style={{
-            left: `calc(${
-              ((pendingNewValue ?? value) - min) / (max - min)
-            } * 100%)`,
-          }}
-        ></div>
-      </div>
+        {pendingNewValue ?? value}
+      </p>
     </div>
   )
 }
