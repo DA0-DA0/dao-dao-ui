@@ -74,7 +74,7 @@ export const DaoCard = ({
               href={`/dao/${parentDao.coreAddress}`}
               onClick={
                 // Don't click on DAO card.
-                (event) => event.preventDefault()
+                (event) => event.stopPropagation()
               }
               size="sm"
               variant="ghost"
@@ -109,6 +109,7 @@ export const DaoCard = ({
 
       <div className="flex flex-col items-center">
         <DaoImage
+          LinkWrapper={LinkWrapper}
           coreAddress={coreAddress}
           imageUrl={imageUrl}
           parentDao={parentDao}

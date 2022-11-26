@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { formatDate } from '@dao-dao/utils'
 
+import { LinkWrapper } from '../LinkWrapper'
 import { DaoHeader } from './DaoHeader'
 
 export default {
@@ -21,10 +22,5 @@ Default.args = {
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
   imageUrl: '/placeholders/1.svg',
   established: formatDate(new Date('May 14, 2022 00:00:00')),
-}
-Default.parameters = {
-  design: {
-    type: 'figma',
-    url: '',
-  },
+  LinkWrapper,
 }

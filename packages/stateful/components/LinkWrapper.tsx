@@ -7,7 +7,7 @@ import { LinkWrapper as StatelessLinkWrapper } from '@dao-dao/stateless'
 import { LinkWrapperProps } from '@dao-dao/types'
 
 export const LinkWrapper = forwardRef<
-  HTMLAnchorElement,
+  HTMLDivElement,
   Omit<LinkWrapperProps, 'loading'>
 >(function LinkWrapper({ children, href, onClick, ...props }, ref) {
   const router = useRouter()
