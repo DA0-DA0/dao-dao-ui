@@ -146,11 +146,11 @@ export const RatingForm = ({
         {data ? (
           <>
             <div
-              className="grid-rows-auto grid items-stretch justify-items-stretch overflow-x-auto"
+              className="grid-rows-auto -mb-2 grid items-stretch justify-items-stretch overflow-x-auto pb-4"
               // Column for contributor, each attribute, and projected
               // compenstaion.
               style={{
-                gridTemplateColumns: `auto ${survey.attributes
+                gridTemplateColumns: `1fr ${survey.attributes
                   .map(() => 'auto')
                   .join(' ')} auto`,
               }}
@@ -219,11 +219,28 @@ export const RatingForm = ({
                   ),
                 ].reduce((acc, amount) => acc + amount, 0)
 
+                const attributeRatingsFieldName =
+                  `ratings.${contributionIndex}.attributes` as const
+                const attributeRatings = watch(attributeRatingsFieldName) || []
+                const allRatingsAbstain = attributeRatings.every(
+                  (rating) => rating === null
+                )
+                const toggleAbstain = () =>
+                  allRatingsAbstain
+                    ? setValue(
+                        attributeRatingsFieldName,
+                        [...Array(survey.attributes.length)].map(() => 0)
+                      )
+                    : setValue(
+                        attributeRatingsFieldName,
+                        [...Array(survey.attributes.length)].map(() => null)
+                      )
+
                 return (
                   <Fragment key={contribution.id}>
                     <div
                       className={clsx(
-                        'max-h-60 space-y-4 overflow-y-auto border-border-secondary p-6',
+                        'min-w-[14rem] space-y-2 border-border-secondary p-6',
                         backgroundClassName,
                         contributionIndex === data.contributions.length - 1 &&
                           'rounded-bl-md'
@@ -233,17 +250,31 @@ export const RatingForm = ({
                         identity={contribution.contributor}
                       />
 
-                      <MarkdownPreview markdown={contribution.content} />
+                      <MarkdownPreview
+                        className="styled-scrollbar max-h-40 overflow-y-auto py-2 pr-2"
+                        markdown={contribution.content}
+                      />
+
+                      <div className="!mt-4 flex flex-row items-center gap-2">
+                        <Checkbox
+                          checked={allRatingsAbstain}
+                          onClick={toggleAbstain}
+                          size="sm"
+                        />
+
+                        <p
+                          className="body-text cursor-pointer text-xs"
+                          onClick={toggleAbstain}
+                        >
+                          {t('info.dontKnowNotSure')}
+                        </p>
+                      </div>
                     </div>
 
                     {survey.attributes.map((_, attributeIndex) => {
                       const fieldName =
                         `ratings.${contributionIndex}.attributes.${attributeIndex}` as const
                       const value = watch(fieldName)
-                      const toggleAbstain = () =>
-                        value === null
-                          ? setValue(fieldName, 0)
-                          : setValue(fieldName, null)
 
                       return (
                         <div
@@ -253,36 +284,21 @@ export const RatingForm = ({
                             backgroundClassName
                           )}
                         >
-                          <div className="mb-4 flex flex-row items-center gap-2">
-                            <Checkbox
-                              checked={value === null}
-                              onClick={toggleAbstain}
-                            />
-
-                            <p
-                              className="body-text cursor-pointer text-sm"
-                              onClick={toggleAbstain}
-                            >
-                              {t('info.dontKnowNotSure')}
-                            </p>
-                          </div>
-
                           <RangeInput
-                            className="w-40"
+                            className="!h-20 w-40"
                             dimmed={
-                              // Dim instead of disable if abstaining, but
-                              // allow interaction to automatically unset
-                              // abstaining when changing.
+                              // Dim instead of disable if abstaining, but allow
+                              // interaction to automatically unset abstaining
+                              // when changing.
                               value === null
                             }
                             fieldName={fieldName}
                             max={100}
                             min={0}
                             onStartChange={
-                              // If starting to change, unset abstaining.
-                              value === null
-                                ? () => setValue(fieldName, 0)
-                                : undefined
+                              // If starting to change, unset abstaining for
+                              // all.
+                              allRatingsAbstain ? toggleAbstain : undefined
                             }
                             setValue={setValue}
                             watch={watch}
@@ -305,6 +321,7 @@ export const RatingForm = ({
                           <TokenAmountDisplay
                             key={index}
                             amount={amount}
+                            className="text-right"
                             decimals={nativeTokenDecimals(denom) ?? 0}
                             iconUrl={nativeTokenLogoURI(denom)}
                             symbol={nativeTokenLabel(denom)}
@@ -316,6 +333,7 @@ export const RatingForm = ({
                           <TokenAmountDisplay
                             key={index}
                             amount={amount}
+                            className="text-right"
                             decimals={cw20TokenInfosMap[address]?.decimals ?? 0}
                             iconUrl={
                               cw20TokenInfosMap[address]?.logoUrl ||
@@ -331,7 +349,7 @@ export const RatingForm = ({
                       <div className="mt-4">
                         <TokenAmountDisplay
                           amount={totalUsdc}
-                          className="caption-text"
+                          className="caption-text text-right"
                           dateFetched={prices[0]?.timestamp}
                           hideApprox
                           prefix="= "

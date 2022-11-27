@@ -365,7 +365,7 @@ input[type='number']::-webkit-outer-spin-button {
 
 @layer utilities {
   .styled-scrollbar {
-    scrollbar-color: rgba(var(--dark), 0.1);
+    scrollbar-color: rgba(var(--light), 0.1);
     scrollbar-width: thin;
   }
   .styled-scrollbar::-webkit-scrollbar {
@@ -378,7 +378,7 @@ input[type='number']::-webkit-outer-spin-button {
     background-color: transparent;
   }
   .styled-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(var(--dark), 0.1);
+    background-color: rgba(var(--light), 0.1);
     cursor: pointer;
     border-radius: 999px;
   }

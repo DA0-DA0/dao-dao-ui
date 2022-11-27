@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import {
   FieldValues,
   Path,
@@ -27,6 +27,8 @@ export interface RangeInputProps<
   // Looks like disabled but still allows interaction.
   dimmed?: boolean
   onStartChange?: () => void
+  // Override text progress value display.
+  overrideText?: ReactNode
 }
 
 export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
@@ -41,12 +43,14 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   disabled,
   dimmed,
   onStartChange,
+  overrideText,
 }: RangeInputProps<FV, FieldName>) => {
   const value = watch && fieldName ? Number(watch(fieldName) || 0) : _value ?? 0
 
   // This is the value that we are currently dragging, and will be saved once we
   // let go of the mouse/touch.
   const [pendingNewValue, setPendingNewValue] = useState<number | undefined>()
+  const isDragging = pendingNewValue !== undefined
   const barRef = useRef<HTMLDivElement>(null)
 
   const updatePendingValue = useCallback(
@@ -75,9 +79,9 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
     [max, min]
   )
 
-  // Add global mouse/touch up and move handlers to handle dragging.
+  // Add global move handlers to handle dragging.
   useEffect(() => {
-    if (disabled || !barRef.current || pendingNewValue === undefined) {
+    if (disabled || !barRef.current || !isDragging) {
       return
     }
 
@@ -88,6 +92,21 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
     const onTouchMove = (event: TouchEvent) => {
       const touch = event.touches.item(0)
       touch && updatePendingValue(touch.clientX)
+    }
+
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('touchmove', onTouchMove)
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('touchmove', onTouchMove)
+    }
+  }, [disabled, updatePendingValue, isDragging])
+
+  // Add global mouse/touch up handlers.
+  useEffect(() => {
+    if (disabled || !barRef.current || !isDragging) {
+      return
     }
 
     // On release, set pending value if different from current value.
@@ -107,18 +126,14 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
     window.addEventListener('mouseup', onRelease)
     window.addEventListener('touchend', onRelease)
 
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('touchmove', onTouchMove)
-
     return () => {
       window.removeEventListener('mouseup', onRelease)
       window.removeEventListener('touchend', onRelease)
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('touchmove', onTouchMove)
     }
   }, [
     disabled,
     fieldName,
+    isDragging,
     onChange,
     pendingNewValue,
     setValue,
@@ -128,10 +143,10 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
 
   // When mouse down or touch start, set state to indicate dragging.
   const onStartDrag = (initialX: number) => {
-    // Initialize at current value.
-    updatePendingValue(initialX)
     // Callback to indicate started dragging.
     onStartChange?.()
+    // Initialize at current value.
+    updatePendingValue(initialX)
   }
 
   return (
@@ -180,7 +195,7 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
           disabled || dimmed ? 'text-text-tertiary' : 'text-text-brand'
         )}
       >
-        {pendingNewValue ?? value}
+        {overrideText ?? pendingNewValue ?? value}
       </p>
     </div>
   )
