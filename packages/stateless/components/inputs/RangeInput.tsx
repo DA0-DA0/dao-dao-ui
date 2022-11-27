@@ -150,7 +150,10 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
     <div
       className={clsx(
         'relative h-8 overflow-hidden rounded-sm bg-background-primary transition',
-        disabled ? 'pointer-events-none cursor-default' : 'cursor-col-resize',
+        disabled
+          ? 'pointer-events-none cursor-default'
+          : // touch-none prevents the parent from moving/scrolling when dragging.
+            'cursor-col-resize touch-none',
         className
       )}
       onMouseDown={
