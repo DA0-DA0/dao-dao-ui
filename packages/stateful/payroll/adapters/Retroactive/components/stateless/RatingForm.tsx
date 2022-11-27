@@ -271,41 +271,29 @@ export const RatingForm = ({
                       </div>
                     </div>
 
-                    {survey.attributes.map((_, attributeIndex) => {
-                      const fieldName =
-                        `ratings.${contributionIndex}.attributes.${attributeIndex}` as const
-                      const value = watch(fieldName)
-
-                      return (
-                        <div
-                          key={attributeIndex}
-                          className={clsx(
-                            'flex flex-col justify-center border-l border-border-secondary p-6',
-                            backgroundClassName
-                          )}
-                        >
-                          <RangeInput
-                            className="!h-20 w-40"
-                            dimmed={
-                              // Dim instead of disable if abstaining, but allow
-                              // interaction to automatically unset abstaining
-                              // when changing.
-                              value === null
-                            }
-                            fieldName={fieldName}
-                            max={100}
-                            min={0}
-                            onStartChange={
-                              // If starting to change, unset abstaining for
-                              // all.
-                              allRatingsAbstain ? toggleAbstain : undefined
-                            }
-                            setValue={setValue}
-                            watch={watch}
-                          />
-                        </div>
-                      )
-                    })}
+                    {survey.attributes.map((_, attributeIndex) => (
+                      <div
+                        key={attributeIndex}
+                        className={clsx(
+                          'flex flex-col justify-center border-l border-border-secondary p-6',
+                          backgroundClassName
+                        )}
+                      >
+                        <RangeInput
+                          className="!h-20 w-40"
+                          fieldName={`ratings.${contributionIndex}.attributes.${attributeIndex}`}
+                          max={100}
+                          min={0}
+                          onStartChange={
+                            // If starting to change, unset abstaining for
+                            // all.
+                            allRatingsAbstain ? toggleAbstain : undefined
+                          }
+                          setValue={setValue}
+                          watch={watch}
+                        />
+                      </div>
+                    ))}
 
                     {/* Projected compensation */}
                     <div

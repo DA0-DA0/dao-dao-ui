@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   FieldValues,
   Path,
@@ -19,33 +19,30 @@ export interface RangeInputProps<
   watch?: UseFormWatch<FV>
   setValue?: UseFormSetValue<FV>
   // Manual value handling
-  value?: number
+  value?: number | undefined | null
   onChange?: (value: number) => void
   // Other
   className?: string
   disabled?: boolean
-  // Looks like disabled but still allows interaction.
-  dimmed?: boolean
   onStartChange?: () => void
-  // Override text progress value display.
-  overrideText?: ReactNode
 }
 
 export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   fieldName,
   watch,
-  value: _value,
+  value: manualValue,
   setValue,
   onChange,
   className,
   min,
   max,
   disabled,
-  dimmed,
   onStartChange,
-  overrideText,
 }: RangeInputProps<FV, FieldName>) => {
-  const value = watch && fieldName ? Number(watch(fieldName) || 0) : _value ?? 0
+  const _value = watch && fieldName ? watch(fieldName) : manualValue
+  const value = Number(_value || 0)
+  // If no value, display a dash and dim as if disabled.
+  const noValue = _value === undefined || _value === null
 
   // This is the value that we are currently dragging, and will be saved once we
   // let go of the mouse/touch.
@@ -178,7 +175,7 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
       <div
         className={clsx(
           'absolute top-0 left-0 bottom-0 h-full rounded-sm transition',
-          disabled || dimmed
+          disabled || noValue
             ? 'bg-background-primary'
             : 'bg-background-interactive-active'
         )}
@@ -192,10 +189,10 @@ export const RangeInput = <FV extends FieldValues, FieldName extends Path<FV>>({
       <p
         className={clsx(
           'absolute left-0 top-0 right-0 bottom-0 flex select-none flex-row items-center justify-center font-mono',
-          disabled || dimmed ? 'text-text-tertiary' : 'text-text-brand'
+          disabled || noValue ? 'text-text-tertiary' : 'text-text-brand'
         )}
       >
-        {overrideText ?? pendingNewValue ?? value}
+        {pendingNewValue ?? (noValue ? '-' : value)}
       </p>
     </div>
   )

@@ -67,7 +67,7 @@ export const NewAttribute = ({
       .symbol ?? nativeTokenLabel(denomOrAddress)
 
   // Combine tokens into readable list.
-  const stringifiedTokens = watch(`attributes.${attributeIndex}.tokens`)
+  const stringifiedTokens = (watch(`attributes.${attributeIndex}.tokens`) || [])
     .filter(({ amount }) => amount && !isNaN(Number(amount)))
     .map(
       ({ amount, denomOrAddress }) =>

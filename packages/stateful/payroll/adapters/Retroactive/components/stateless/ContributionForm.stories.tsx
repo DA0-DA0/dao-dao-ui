@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProfileDisplay } from '@dao-dao/stateless/components/profile/ProfileDisplay'
+
 import { Survey, SurveyStatus } from '../../types'
 import { ContributionForm } from './ContributionForm'
 
@@ -30,8 +32,7 @@ export const makeSurvey = (): Survey => ({
       nativeTokens: [],
       cw20Tokens: [
         {
-          address:
-            'juno1pqht3pkhr5fpyre2tw3ltrzc0kvxknnsgt04thym9l7n2rmxgw0sgefues',
+          address: 'usdc',
           amount: '18700045900',
         },
       ],
@@ -58,4 +59,24 @@ Default.args = {
   },
   onSubmit: async (contribution) => alert('submit: ' + contribution),
   loading: false,
+  walletProfile: {
+    name: 'wallet Person!',
+    nft: null,
+    nonce: 1,
+    imageUrl: '/placeholders/1.svg',
+  },
+  ProfileDisplay: () => (
+    <ProfileDisplay
+      address="juno123"
+      loadingProfile={{
+        loading: false,
+        data: {
+          name: 'wallet Person!',
+          nft: null,
+          nonce: 1,
+          imageUrl: '/placeholders/1.svg',
+        },
+      }}
+    />
+  ),
 }
