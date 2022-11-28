@@ -77,9 +77,12 @@ export const makeSetItemAction: ActionMaker<SetItemData> = ({
     )
   }
 
-  // V1 DAOs use a value key of `addr`, V2 uses `value`.
+  // V1 DAOs and V2-alpha DAOs use a value key of `addr`, V2-beta uses `value`.
   const valueKey =
-    context.coreVersion === ContractVersion.V0_1_0 ? 'addr' : 'value'
+    context.coreVersion === ContractVersion.V1 ||
+    context.coreVersion === ContractVersion.V2Alpha
+      ? 'addr'
+      : 'value'
 
   const useTransformToCosmos: UseTransformToCosmos<SetItemData> = () =>
     useCallback(({ key, value }: SetItemData) => {
