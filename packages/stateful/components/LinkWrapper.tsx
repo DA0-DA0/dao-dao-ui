@@ -1,18 +1,15 @@
-import { useRouter } from 'next/router'
 import { forwardRef } from 'react'
-import { useRecoilState } from 'recoil'
 
-import { navigatingToHrefAtom } from '@dao-dao/state/recoil'
 import { LinkWrapper as StatelessLinkWrapper } from '@dao-dao/stateless'
 import { LinkWrapperProps } from '@dao-dao/types'
+
+import { useUpdateNavigatingHref } from '../hooks/useUpdateNavigatingHref'
 
 export const LinkWrapper = forwardRef<
   HTMLDivElement,
   Omit<LinkWrapperProps, 'loading'>
 >(function LinkWrapper({ children, href, onClick, ...props }, ref) {
-  const router = useRouter()
-  const [navigatingToHref, setNavigatingToHref] =
-    useRecoilState(navigatingToHrefAtom)
+  const { navigatingToHref, updateNavigatingHref } = useUpdateNavigatingHref()
 
   return (
     <StatelessLinkWrapper
@@ -21,11 +18,8 @@ export const LinkWrapper = forwardRef<
       loading={navigatingToHref === href}
       onClick={(event) => {
         onClick?.(event)
-        // If not on destination page, set navigating state. If already there or
-        // href is invalid, do nothing.
-        if (router.asPath !== href && href && href !== '#') {
-          setNavigatingToHref(href)
-        }
+        // Update global loading state.
+        updateNavigatingHref(href)
       }}
       ref={ref}
     >

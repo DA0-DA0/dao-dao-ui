@@ -1,16 +1,13 @@
-import { useRouter } from 'next/router'
 import { forwardRef } from 'react'
-import { useRecoilState } from 'recoil'
 
-import { navigatingToHrefAtom } from '@dao-dao/state/recoil'
 import { IconButtonLink as StatelessIconButtonLink } from '@dao-dao/stateless'
 import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
 
+import { useUpdateNavigatingHref } from '../hooks/useUpdateNavigatingHref'
+
 export const IconButtonLink = forwardRef<HTMLDivElement, IconButtonLinkProps>(
   function IconButtonLink({ children, loading, onClick, href, ...props }, ref) {
-    const router = useRouter()
-    const [navigatingToHref, setNavigatingToHref] =
-      useRecoilState(navigatingToHrefAtom)
+    const { navigatingToHref, updateNavigatingHref } = useUpdateNavigatingHref()
 
     const navigating = !!href && navigatingToHref === href
 
@@ -21,17 +18,8 @@ export const IconButtonLink = forwardRef<HTMLDivElement, IconButtonLinkProps>(
         loading={loading || navigating}
         onClick={(event) => {
           onClick?.(event)
-          // If not on destination page, set navigating state. If already there
-          // or href is invalid, do nothing.
-          if (
-            router.asPath !== href &&
-            href &&
-            href !== '#' &&
-            // Don't set navigating if remote.
-            !href.startsWith('http')
-          ) {
-            setNavigatingToHref(href)
-          }
+          // Update global loading state.
+          updateNavigatingHref(href)
         }}
         ref={ref}
       >
