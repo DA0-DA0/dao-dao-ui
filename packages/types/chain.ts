@@ -29,6 +29,7 @@ export interface NativeDelegationInfo {
 }
 
 export enum ContractVersion {
-  V0_1_0 = '0.1.0',
-  V0_2_0 = '0.2.0',
+  V1 = '0.1.0',
+  V2Alpha = '0.2.0',
+  V2Beta = '2.0.0-beta',
 }

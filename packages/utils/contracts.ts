@@ -1,13 +1,13 @@
 import { ContractVersion } from '@dao-dao/types'
 
+const CONTRACT_VERSIONS = Object.values(ContractVersion)
+
+// If version is defined, returns it. Otherwise, returns `undefined`.
+// Essentially just filters version by its presence in the `ContractVersion`
+// enum.
 export const parseContractVersion = (
   version: string
-): ContractVersion | undefined =>
-  version === ContractVersion.V0_1_0
-    ? ContractVersion.V0_1_0
-    : version === ContractVersion.V0_2_0
-    ? ContractVersion.V0_2_0
-    : undefined
+): ContractVersion | undefined => CONTRACT_VERSIONS.find((v) => v === version)
 
 export const indexToProposalModulePrefix = (index: number) => {
   index += 1

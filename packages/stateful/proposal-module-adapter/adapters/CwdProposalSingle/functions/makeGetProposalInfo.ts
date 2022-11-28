@@ -40,7 +40,7 @@ export const makeGetProposalInfo =
       const version = parseContractVersion(info.version)
 
       const queryClient =
-        version === ContractVersion.V0_1_0
+        version === ContractVersion.V1
           ? new CwProposalSingleV1QueryClient(
               cosmWasmClient,
               proposalModule.address
