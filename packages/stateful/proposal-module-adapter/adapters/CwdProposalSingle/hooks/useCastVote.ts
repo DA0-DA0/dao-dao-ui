@@ -15,7 +15,7 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
   const { connected, address: walletAddress = '' } = useWallet()
 
   const castVote = (
-    proposalModule.version === ContractVersion.V0_1_0 ? useVoteV1 : useVoteV2
+    proposalModule.version === ContractVersion.V1 ? useVoteV1 : useVoteV2
   )({
     contractAddress: proposalModule.address,
     sender: walletAddress ?? '',

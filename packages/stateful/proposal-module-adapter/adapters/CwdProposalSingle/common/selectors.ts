@@ -85,7 +85,7 @@ export const makeDepositInfoSelector: (
     ({ get }) => {
       let depositInfo: CheckedDepositInfo | undefined
       //! V1
-      if (version === ContractVersion.V0_1_0) {
+      if (version === ContractVersion.V1) {
         const config = get(
           configV1Selector({
             contractAddress: proposalModuleAddress,

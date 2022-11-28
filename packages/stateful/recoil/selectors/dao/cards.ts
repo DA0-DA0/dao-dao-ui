@@ -238,7 +238,7 @@ export const daoDropdownInfoSelector: (
         })
       )
       const config =
-        version === ContractVersion.V0_1_0
+        version === ContractVersion.V1
           ? get(
               CwCoreV1Selectors.configSelector({
                 contractAddress: coreAddress,
@@ -254,7 +254,7 @@ export const daoDropdownInfoSelector: (
             )
 
       const subDaoAddresses: string[] =
-        version === ContractVersion.V0_1_0
+        version === ContractVersion.V1
           ? []
           : get(
               CwdCoreV2Selectors.listAllSubDaosSelector({

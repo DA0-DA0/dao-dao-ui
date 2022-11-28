@@ -13,13 +13,13 @@ export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
       chainId: CHAIN_ID,
       bech32Prefix: CHAIN_BECH32_PREFIX,
       coreAddress: CHAIN_BECH32_PREFIX + 'DaoCoreAddress',
-      coreVersion: ContractVersion.V0_2_0,
+      coreVersion: ContractVersion.V2Alpha,
       votingModuleAddress: 'votingModuleAddress',
       votingModuleContractName: 'crates.io:cwd-voting-cw20-staked',
       proposalModules: [
         {
           contractName: 'crates.io:cwd-proposal-single',
-          version: ContractVersion.V0_2_0,
+          version: ContractVersion.V2Alpha,
           address: 'proposalModuleAddress',
           prefix: 'A',
           preProposeAddress: 'preProposeModuleAddress',
