@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - development
+      - legacy
   pull_request:
     branches:
       - main
       - development
+      - legacy
 
 env:
   NEXT_PUBLIC_CHAIN_ID: NEXT_PUBLIC_CHAIN_ID
