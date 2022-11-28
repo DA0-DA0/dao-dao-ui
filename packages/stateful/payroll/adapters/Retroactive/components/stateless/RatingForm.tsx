@@ -304,46 +304,52 @@ export const RatingForm = ({
                           'rounded-br-md'
                       )}
                     >
-                      {Object.entries(nativeTokens).map(
-                        ([denom, amount], index) => (
-                          <TokenAmountDisplay
-                            key={index}
-                            amount={amount}
-                            className="text-right"
-                            decimals={nativeTokenDecimals(denom) ?? 0}
-                            iconUrl={nativeTokenLogoURI(denom)}
-                            symbol={nativeTokenLabel(denom)}
-                          />
-                        )
-                      )}
-                      {Object.entries(cw20Tokens).map(
-                        ([address, amount], index) => (
-                          <TokenAmountDisplay
-                            key={index}
-                            amount={amount}
-                            className="text-right"
-                            decimals={cw20TokenInfosMap[address]?.decimals ?? 0}
-                            iconUrl={
-                              cw20TokenInfosMap[address]?.logoUrl ||
-                              getFallbackImage(address)
-                            }
-                            symbol={
-                              cw20TokenInfosMap[address]?.symbol ?? address
-                            }
-                          />
-                        )
-                      )}
+                      {!allRatingsAbstain && (
+                        <>
+                          {Object.entries(nativeTokens).map(
+                            ([denom, amount], index) => (
+                              <TokenAmountDisplay
+                                key={index}
+                                amount={amount}
+                                className="text-right"
+                                decimals={nativeTokenDecimals(denom) ?? 0}
+                                iconUrl={nativeTokenLogoURI(denom)}
+                                symbol={nativeTokenLabel(denom)}
+                              />
+                            )
+                          )}
+                          {Object.entries(cw20Tokens).map(
+                            ([address, amount], index) => (
+                              <TokenAmountDisplay
+                                key={index}
+                                amount={amount}
+                                className="text-right"
+                                decimals={
+                                  cw20TokenInfosMap[address]?.decimals ?? 0
+                                }
+                                iconUrl={
+                                  cw20TokenInfosMap[address]?.logoUrl ||
+                                  getFallbackImage(address)
+                                }
+                                symbol={
+                                  cw20TokenInfosMap[address]?.symbol ?? address
+                                }
+                              />
+                            )
+                          )}
 
-                      <div className="mt-4">
-                        <TokenAmountDisplay
-                          amount={totalUsdc}
-                          className="caption-text text-right"
-                          dateFetched={prices[0]?.timestamp}
-                          hideApprox
-                          prefix="= "
-                          usdcConversion
-                        />
-                      </div>
+                          <div className="mt-4">
+                            <TokenAmountDisplay
+                              amount={totalUsdc}
+                              className="caption-text text-right"
+                              dateFetched={prices[0]?.timestamp}
+                              hideApprox
+                              prefix="= "
+                              usdcConversion
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
                   </Fragment>
                 )
