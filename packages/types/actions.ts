@@ -22,6 +22,8 @@ export enum CoreActionKey {
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',
   Custom = 'custom',
+  SetItem = 'setItem',
+  RemoveItem = 'removeItem',
 }
 
 // Actions defined in voting or proposal module adapters.

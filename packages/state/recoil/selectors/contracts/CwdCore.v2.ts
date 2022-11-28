@@ -680,3 +680,40 @@ export const allSubDaoConfigsSelector = selectorFamily<
       }))
     },
 })
+
+const ITEM_LIST_LIMIT = 30
+export const listAllItemsSelector = selectorFamily<
+  ListItemsResponse,
+  QueryClientParams
+>({
+  key: 'cwdCoreV2ListAllItems',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const items: ListItemsResponse = []
+
+      while (true) {
+        const response = await get(
+          listItemsSelector({
+            ...queryClientParams,
+            params: [
+              {
+                startAfter: items[items.length - 1],
+                limit: ITEM_LIST_LIMIT,
+              },
+            ],
+          })
+        )
+        if (!response?.length) break
+
+        items.push(...response)
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < ITEM_LIST_LIMIT) {
+          break
+        }
+      }
+
+      return items
+    },
+})

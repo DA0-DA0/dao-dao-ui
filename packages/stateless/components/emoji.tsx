@@ -100,3 +100,7 @@ export const DaoEmoji = () => (
 export const HandshakeEmoji = () => (
   <EmojiWrapper emoji="🤝" labelI18nKey="emoji.handshake" />
 )
+
+export const WrenchEmoji = () => (
+  <EmojiWrapper emoji="🔧" labelI18nKey="emoji.wrench" />
+)

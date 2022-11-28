@@ -9,6 +9,8 @@ import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeMigrateAction } from './MigrateContract'
 import { makeRemoveCw20Action } from './RemoveCw20'
 import { makeRemoveCw721Action } from './RemoveCw721'
+import { makeRemoveItemAction } from './RemoveItem'
+import { makeSetItemAction } from './SetItem'
 import { makeSpendAction } from './Spend'
 import { makeStakeAction } from './Stake'
 import { makeUpdateAdminAction } from './UpdateAdmin'
@@ -30,6 +32,8 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeUpdateAdminAction,
     makeCustomAction,
     makeManageSubDaosAction,
+    makeSetItemAction,
+    makeRemoveItemAction,
   ]
 
   return (
