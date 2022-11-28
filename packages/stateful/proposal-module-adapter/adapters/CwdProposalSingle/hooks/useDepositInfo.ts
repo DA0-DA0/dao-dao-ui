@@ -52,8 +52,7 @@ export const useDepositInfo = (): CheckedDepositInfo | undefined => {
 
   const depositInfo: CheckedDepositInfo | undefined =
     //! V1
-    version === ContractVersion.V1 &&
-    proposalResponse?.proposal?.deposit_info
+    version === ContractVersion.V1 && proposalResponse?.proposal?.deposit_info
       ? {
           amount: proposalResponse.proposal.deposit_info.deposit,
           denom: {

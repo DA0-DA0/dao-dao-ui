@@ -187,9 +187,7 @@ export const ProposalStatusAndInfo = ({
         })
 
   const executeProposal = (
-    proposalModule.version === ContractVersion.V1
-      ? useExecuteV1
-      : useExecuteV2
+    proposalModule.version === ContractVersion.V1 ? useExecuteV1 : useExecuteV2
   )({
     contractAddress: proposalModule.address,
     sender: walletAddress,
