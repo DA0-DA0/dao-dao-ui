@@ -1,6 +1,4 @@
-import { ComponentPropsWithoutRef } from 'react'
-
 import { IconButtonifierProps } from './IconButtonifier'
+import { LinkWrapperProps } from './LinkWrapper'
 
-export type IconButtonLinkProps = ComponentPropsWithoutRef<'a'> &
-  IconButtonifierProps
+export type IconButtonLinkProps = IconButtonifierProps & LinkWrapperProps

@@ -2,9 +2,9 @@ import clsx from 'clsx'
 
 import { IconButtonifierProps } from '@dao-dao/types/stateless/IconButtonifier'
 
-// Get props that should pass through the IconButtonifier. None of the
-// IconButtonifier props should pass through except `disabled`.
-export const getNonIconButtonifierProps = <P extends IconButtonifierProps>({
+// Get props that should pass through the IconButtonifier, such as native props.
+// Disable button if disabled or loading.
+export const getPassthroughProps = <P extends IconButtonifierProps>({
   variant: _variant,
   size: _size,
   circular: _circular,
@@ -12,14 +12,20 @@ export const getNonIconButtonifierProps = <P extends IconButtonifierProps>({
   focused: _focused,
   className: _className,
   iconClassName: _iconClassName,
+  disabled,
+  loading,
   ...props
-}: P) => props
+}: P) => ({
+  ...props,
+  disabled: disabled || loading,
+})
 
 export const getIconButtonifiedClassNames = ({
   variant = 'primary',
   size = 'default',
   circular,
   disabled,
+  loading,
   focused,
   className,
 }: Omit<IconButtonifierProps, 'icon'>) =>
@@ -33,6 +39,9 @@ export const getIconButtonifiedClassNames = ({
 
     // No cursor pointer if disabled.
     disabled && 'cursor-default',
+
+    // Pulse if loading.
+    loading && 'animate-pulse',
 
     // Sizes.
     {

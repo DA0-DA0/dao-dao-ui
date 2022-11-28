@@ -6,6 +6,9 @@ import { Logo } from '../logo/Logo'
 const defaultVariant = 'primary'
 const defaultSize = 'default'
 
+// Pulse for these variants instead of displaying loader.
+const PULSE_LOADING_VARIANTS = 'underline' || 'none'
+
 export interface ButtonifierProps {
   variant?:
     | 'primary'
@@ -57,10 +60,13 @@ export const getButtonifiedClassNames = ({
   const disabledOrLoading = disabled || loading
 
   return clsx(
-    'relative rounded-md transition-all focus:outline-2 focus:outline-background-button-disabled',
+    'relative block rounded-md transition-all focus:outline-2 focus:outline-background-button-disabled',
 
     // No cursor pointer if disabled or loading.
     disabledOrLoading && 'cursor-default',
+
+    // Pulse if loading for a variant that we don't display the loader.
+    loading && variant === PULSE_LOADING_VARIANTS && 'animate-pulse',
 
     // Let variants take color precedence over the text classes used here since
     // the variants are more specific, so just use the font text styling here.
@@ -155,7 +161,7 @@ export const ButtonifiedChildren = ({
         }
       )}
     >
-      {loading && (
+      {loading && variant !== PULSE_LOADING_VARIANTS && (
         <div className="mx-auto inline-block aspect-square h-full animate-spin-medium">
           <Logo invert={variant === 'primary'} size="100%" />
         </div>
