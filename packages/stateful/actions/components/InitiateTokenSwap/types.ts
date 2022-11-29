@@ -1,6 +1,11 @@
-import { UseFormReturn } from 'react-hook-form'
+import { ComponentType } from 'react'
 
-import { Coin, LoadingData, TokenSwapStatusProps } from '@dao-dao/types'
+import {
+  Coin,
+  LoadingData,
+  ProfileDisplayProps,
+  TokenSwapStatusProps,
+} from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 
 //! Initial instantiate form interfaces.
@@ -21,18 +26,13 @@ export interface InstantiateFormData {
 //! Action interfaces.
 
 export interface InitiateTokenSwapData {
-  tokenSwapContract?: {
-    address: string
-    type: 'cw20' | 'native'
-    denomOrAddress: string
-    amount: number
-  }
+  tokenSwapContractAddress?: string
+  instantiateData?: InstantiateFormData
 }
 
-export interface InstantiateTokenSwapProps {
-  instantiateForm: UseFormReturn<InstantiateFormData>
+export interface InstantiateTokenSwapOptions {
   instantiating: boolean
-  onInstantiate: (data: InstantiateFormData) => Promise<void>
+  onInstantiate: () => Promise<void>
 
   selfPartyNativeBalances: readonly Coin[]
   selfPartyCw20Balances: {
@@ -49,8 +49,10 @@ export interface InstantiateTokenSwapProps {
       info: TokenInfoResponse
     }[]
   >
+
+  ProfileDisplay: ComponentType<Omit<ProfileDisplayProps, 'loadingProfile'>>
 }
 
-export interface InstantiatedTokenSwapProps {
+export interface InstantiatedTokenSwapOptions {
   tokenSwapStatusProps: TokenSwapStatusProps
 }

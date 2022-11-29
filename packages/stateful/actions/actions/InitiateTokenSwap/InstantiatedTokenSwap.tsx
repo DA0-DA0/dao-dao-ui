@@ -13,12 +13,12 @@ import { ProfileDisplay } from '../../../components'
 import { InstantiatedTokenSwap as StatelessInstantiatedTokenSwap } from '../../components/InitiateTokenSwap'
 import { useActionOptions } from '../../react'
 
-export const InstantiatedTokenSwap: ActionComponent = ({ fieldNamePrefix }) => {
+export const InstantiatedTokenSwap: ActionComponent = (props) => {
   const { address, chainId } = useActionOptions()
 
   const { watch } = useFormContext()
   const tokenSwapContractAddress: string | undefined = watch(
-    fieldNamePrefix + 'tokenSwapContractAddress'
+    props.fieldNamePrefix + 'tokenSwapContractAddress'
   )
 
   if (!tokenSwapContractAddress) {
@@ -98,7 +98,10 @@ export const InstantiatedTokenSwap: ActionComponent = ({ fieldNamePrefix }) => {
 
   return (
     <StatelessInstantiatedTokenSwap
-      tokenSwapStatusProps={tokenSwapStatusProps}
+      {...props}
+      options={{
+        tokenSwapStatusProps,
+      }}
     />
   )
 }

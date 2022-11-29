@@ -21,4 +21,5 @@ export interface TokenSwapStatusProps {
   }
 
   ProfileDisplay: ComponentType<Omit<ProfileDisplayProps, 'loadingProfile'>>
+  className?: string
 }

@@ -1,6 +1,6 @@
 import { Code, Wallet } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ChangeEventHandler, ComponentPropsWithoutRef } from 'react'
+import { ChangeEventHandler, ComponentPropsWithoutRef, ReactNode } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -24,6 +24,7 @@ export interface AddressInputProps<
   required?: boolean
   containerClassName?: string
   iconType?: 'wallet' | 'contract'
+  rightNode?: ReactNode
 }
 
 export const AddressInput = <
@@ -40,6 +41,7 @@ export const AddressInput = <
   className,
   containerClassName,
   iconType = 'wallet',
+  rightNode,
   ...rest
 }: AddressInputProps<FV, FieldName>) => {
   const { t } = useTranslation()
@@ -76,6 +78,7 @@ export const AddressInput = <
           onChange,
         })}
       />
+      {rightNode}
     </div>
   )
 }

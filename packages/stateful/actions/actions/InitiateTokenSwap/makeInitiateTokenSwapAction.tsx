@@ -13,6 +13,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  convertDenomToMicroDenomWithDecimals,
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
@@ -35,7 +36,8 @@ import { InstantiateTokenSwap } from './InstantiateTokenSwap'
 const CW20_SEND_MSG_KEY = 'dao_dao_initiate_token_swap'
 
 const useDefaults: UseDefaults<InitiateTokenSwapData> = () => ({
-  tokenSwapContract: undefined,
+  tokenSwapContractAddress: undefined,
+  instantiateData: undefined,
 })
 
 export const makeInitiateTokenSwapAction: ActionMaker<
@@ -45,7 +47,9 @@ export const makeInitiateTokenSwapAction: ActionMaker<
     props
   ) => {
     const { watch } = useFormContext()
-    const tokenSwapContract = watch(props.fieldNamePrefix + 'tokenSwapContract')
+    const tokenSwapContractAddress = watch(
+      props.fieldNamePrefix + 'tokenSwapContractAddress'
+    )
 
     return (
       <ActionCard
@@ -54,7 +58,7 @@ export const makeInitiateTokenSwapAction: ActionMaker<
         title={t('title.initiateTokenSwap')}
       >
         <SuspenseLoader fallback={<Loader />}>
-          {tokenSwapContract ? (
+          {tokenSwapContractAddress ? (
             <InstantiatedTokenSwap {...props} />
           ) : (
             <InstantiateTokenSwap {...props} />
@@ -67,50 +71,64 @@ export const makeInitiateTokenSwapAction: ActionMaker<
   const useTransformToCosmos: UseTransformToCosmos<
     InitiateTokenSwapData
   > = () =>
-    useCallback(({ tokenSwapContract }: InitiateTokenSwapData) => {
-      // Should never happen if form validation is working correctly.
-      if (!tokenSwapContract) {
-        throw new Error(t('error.loadingData'))
-      }
+    useCallback(
+      ({
+        tokenSwapContractAddress,
+        instantiateData,
+      }: InitiateTokenSwapData) => {
+        // Should never happen if form validation is working correctly.
+        if (!tokenSwapContractAddress || !instantiateData) {
+          throw new Error(t('error.loadingData'))
+        }
 
-      return tokenSwapContract.type === 'cw20'
-        ? makeWasmMessage({
-            wasm: {
-              execute: {
-                // Execute CW20 send message.
-                contract_addr: tokenSwapContract.denomOrAddress,
-                funds: [],
-                msg: {
-                  amount: tokenSwapContract.amount,
-                  contract: tokenSwapContract.address,
-                  msg: toBase64(
-                    toUtf8(
-                      JSON.stringify({
-                        // Use common key to identify CW20s being sent to token
-                        // swaps from this DAO DAO action.
-                        [CW20_SEND_MSG_KEY]: {},
-                      })
-                    )
+        // Convert amount to micro amount.
+        const amount = convertDenomToMicroDenomWithDecimals(
+          instantiateData.selfParty.amount,
+          instantiateData.selfParty.decimals
+        ).toString()
+
+        return instantiateData.selfParty.type === 'cw20'
+          ? makeWasmMessage({
+              wasm: {
+                execute: {
+                  // Execute CW20 send message.
+                  contract_addr: instantiateData.selfParty.denomOrAddress,
+                  funds: [],
+                  msg: {
+                    send: {
+                      amount,
+                      contract: tokenSwapContractAddress,
+                      msg: toBase64(
+                        toUtf8(
+                          JSON.stringify({
+                            // Use common key to identify CW20s being sent to token
+                            // swaps from this DAO DAO action.
+                            [CW20_SEND_MSG_KEY]: {},
+                          })
+                        )
+                      ),
+                    },
+                  },
+                },
+              },
+            })
+          : makeWasmMessage({
+              wasm: {
+                execute: {
+                  contract_addr: tokenSwapContractAddress,
+                  funds: coins(
+                    amount,
+                    instantiateData.selfParty.denomOrAddress
                   ),
+                  msg: {
+                    fund: {},
+                  },
                 },
               },
-            },
-          })
-        : makeWasmMessage({
-            wasm: {
-              execute: {
-                contract_addr: tokenSwapContract.address,
-                funds: coins(
-                  tokenSwapContract.amount,
-                  tokenSwapContract.denomOrAddress
-                ),
-                msg: {
-                  fund: {},
-                },
-              },
-            },
-          })
-    }, [])
+            })
+      },
+      []
+    )
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<InitiateTokenSwapData> = (
     msg: Record<string, any>
@@ -134,12 +152,9 @@ export const makeInitiateTokenSwapAction: ActionMaker<
       return {
         match: true,
         data: {
-          tokenSwapContract: {
-            address: msg.wasm.execute.contract_addr,
-            type: 'native',
-            denomOrAddress: msg.wasm.execute.funds[0].denom,
-            amount: Number(msg.wasm.execute.funds[0].amount),
-          },
+          tokenSwapContractAddress: msg.wasm.execute.contract_addr,
+          // Only used during instantiation.
+          instantiateData: undefined,
         },
       }
     }
@@ -152,26 +167,25 @@ export const makeInitiateTokenSwapAction: ActionMaker<
             contract_addr: {},
             funds: {},
             msg: {
-              amount: {},
-              contract: {},
-              msg: {},
+              send: {
+                amount: {},
+                contract: {},
+                msg: {},
+              },
             },
           },
         },
       }) &&
       // Use common key to identify CW20s being sent to token swaps from this
       // DAO DAO action.
-      CW20_SEND_MSG_KEY in parseEncodedMessage(msg.wasm.execute.msg.msg)
+      CW20_SEND_MSG_KEY in parseEncodedMessage(msg.wasm.execute.msg.send.msg)
     ) {
       return {
         match: true,
         data: {
-          tokenSwapContract: {
-            address: msg.wasm.execute.msg.contract,
-            type: 'cw20',
-            denomOrAddress: msg.wasm.execute.contract_addr,
-            amount: Number(msg.wasm.execute.msg.amount),
-          },
+          tokenSwapContractAddress: msg.wasm.execute.msg.send.contract,
+          // Only used during creation.
+          instantiateData: undefined,
         },
       }
     }

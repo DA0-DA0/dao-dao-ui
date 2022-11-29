@@ -171,6 +171,7 @@
     "simulationFailedInvalidProposalActions": "Simulation failed. Verify your proposal actions are valid.",
     "stakeInsufficient": "The DAO has {{amount}} ${{tokenSymbol}} staked, which is insufficient.",
     "subDaoAlreadyExists": "SubDAO already exists.",
+    "tokenSwapNeedsInstantiation": "You must instantiate the token swap contract before using this action.",
     "treasuryInsufficient": "The treasury only has {{amount}} ${{tokenSymbol}}, which is insufficient.",
     "treasuryNoTokensCannotStake": "The treasury has no ${{tokenSymbol}}, so you can't stake any tokens.",
     "unexpectedError": "An unexpected error occurred."
@@ -270,7 +271,8 @@
   },
   "info": {
     "abstainVote": "Abstain",
-    "actionPaysTokenSwap": "This action sends {{amount}} ${{tokenSymbol}} to the token swap contract.",
+    "actionPaysTokenSwap_paid": "This action sent {{amount}} ${{tokenSymbol}} to the token swap contract below.",
+    "actionPaysTokenSwap_unpaid": "This action sends {{amount}} ${{tokenSymbol}} to the token swap contract below.",
     "addCw20ToTreasuryActionDescription": "Display the DAO's balance of a CW20 token in the treasury view.",
     "addCw721ToTreasuryActionDescription": "Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.",
     "andNumMore": "and {{count}} more",

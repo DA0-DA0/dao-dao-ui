@@ -14,11 +14,17 @@ export const TokenSwapStatus = ({
   selfParty,
   counterparty,
   ProfileDisplay,
+  className,
 }: TokenSwapStatusProps) => {
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col items-center justify-center gap-x-6 gap-y-4 sm:flex-row">
+    <div
+      className={clsx(
+        'flex flex-col items-center justify-center gap-x-6 gap-y-4 sm:flex-row',
+        className
+      )}
+    >
       <div className="flex flex-col items-center gap-2">
         <ProfileDisplay address={selfParty.address} size="lg" />
         <TokenAmountDisplay

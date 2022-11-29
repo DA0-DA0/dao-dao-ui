@@ -29,12 +29,7 @@ import {
   TextInput,
   Tooltip,
 } from '@dao-dao/stateless'
-import {
-  Action,
-  ActionsWithData,
-  ActionsWithData,
-  BaseNewProposalProps,
-} from '@dao-dao/types'
+import { Action, ActionsWithData, BaseNewProposalProps } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import {
   decodedMessagesString,

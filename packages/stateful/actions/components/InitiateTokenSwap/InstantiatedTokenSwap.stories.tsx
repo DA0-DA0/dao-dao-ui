@@ -17,13 +17,7 @@ export default {
 
   decorators: [
     makeReactHookFormDecorator<InitiateTokenSwapData>({
-      tokenSwapContract: {
-        address: 'junoTokenSwapContract',
-        // Unused when displaying.
-        type: 'native',
-        denomOrAddress: '',
-        amount: 0,
-      },
+      tokenSwapContractAddress: 'junoTokenSwapContract',
     }),
     makeActionsProviderDecorator({
       address: 'junoWalletAddress',
@@ -45,5 +39,14 @@ const Template: ComponentStory<typeof InstantiatedTokenSwap> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  tokenSwapStatusProps: makeTokenSwapStatusProps(),
+  fieldNamePrefix: '',
+  allActionsWithData: [],
+  index: 0,
+  data: {},
+  isCreating: true,
+  onRemove: () => alert('remove'),
+  errors: {},
+  options: {
+    tokenSwapStatusProps: makeTokenSwapStatusProps(),
+  },
 }

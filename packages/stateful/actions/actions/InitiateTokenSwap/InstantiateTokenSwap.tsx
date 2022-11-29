@@ -1,6 +1,6 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useCallback, useState } from 'react'
-import { useForm, useFormContext } from 'react-hook-form'
+import { useCallback, useEffect, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
@@ -23,16 +23,19 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { ProfileDisplay } from '../../../components'
 import { useCw20GovernanceTokenInfoResponseIfExists } from '../../../voting-module-adapter/react/hooks/useCw20GovernanceTokenInfoResponseIfExists'
 import {
   InitiateTokenSwapData,
-  InstantiateFormData,
+  InstantiateTokenSwapOptions,
   InstantiateTokenSwap as StatelessInstantiateTokenSwap,
-  InstantiateTokenSwapProps as StatelessInstantiateTokenSwapProps,
 } from '../../components/InitiateTokenSwap'
 import { useActionOptions } from '../../react'
 
-export const InstantiateTokenSwap: ActionComponent = ({ fieldNamePrefix }) => {
+export const InstantiateTokenSwap: ActionComponent<
+  undefined,
+  InitiateTokenSwapData
+> = (props) => {
   const { address: selfAddress, context, chainId, t } = useActionOptions()
   const { setValue } = useFormContext()
   const { address: walletAddress, signingCosmWasmClient } = useWallet()
@@ -82,154 +85,168 @@ export const InstantiateTokenSwap: ActionComponent = ({ fieldNamePrefix }) => {
         []
 
   const [instantiating, setInstantiating] = useState(false)
-  const onInstantiate = useCallback(
-    async (data: InstantiateFormData) => {
-      if (!walletAddress || !signingCosmWasmClient) {
-        toast.error(t('error.connectWalletToContinue'))
-        return
+  const onInstantiate = useCallback(async () => {
+    const { instantiateData } = props.data
+
+    if (!instantiateData) {
+      toast.error(t('error.loadingData'))
+      return
+    }
+
+    if (!walletAddress || !signingCosmWasmClient) {
+      toast.error(t('error.connectWalletToContinue'))
+      return
+    }
+
+    setInstantiating(true)
+
+    try {
+      const instantiateMsg: InstantiateMsg = {
+        counterparty_one: {
+          address: selfAddress,
+          promise:
+            instantiateData.selfParty.type === 'cw20'
+              ? {
+                  cw20: {
+                    contract_addr: instantiateData.selfParty.denomOrAddress,
+                    amount: convertDenomToMicroDenomWithDecimals(
+                      instantiateData.selfParty.amount,
+                      instantiateData.selfParty.decimals
+                    ).toString(),
+                  },
+                }
+              : {
+                  native: {
+                    denom: instantiateData.selfParty.denomOrAddress,
+                    amount: convertDenomToMicroDenomWithDecimals(
+                      instantiateData.selfParty.amount,
+                      instantiateData.selfParty.decimals
+                    ).toString(),
+                  },
+                },
+        },
+        counterparty_two: {
+          address: instantiateData.counterparty.address,
+          promise:
+            instantiateData.counterparty.type === 'cw20'
+              ? {
+                  cw20: {
+                    contract_addr: instantiateData.counterparty.denomOrAddress,
+                    amount: convertDenomToMicroDenomWithDecimals(
+                      instantiateData.counterparty.amount,
+                      instantiateData.counterparty.decimals
+                    ).toString(),
+                  },
+                }
+              : {
+                  native: {
+                    denom: instantiateData.counterparty.denomOrAddress,
+                    amount: convertDenomToMicroDenomWithDecimals(
+                      instantiateData.counterparty.amount,
+                      instantiateData.counterparty.decimals
+                    ).toString(),
+                  },
+                },
+        },
       }
 
-      setInstantiating(true)
+      const { contractAddress } = await signingCosmWasmClient.instantiate(
+        walletAddress,
+        CODE_ID_CONFIG.CwTokenSwap,
+        instantiateMsg,
+        `TokenSwap_${instantiateData.selfParty.denomOrAddress}_${instantiateData.counterparty.denomOrAddress}`,
+        'auto'
+      )
 
-      try {
-        const instantiateMsg: InstantiateMsg = {
-          counterparty_one: {
-            address: selfAddress,
-            promise:
-              data.selfParty.type === 'cw20'
-                ? {
-                    cw20: {
-                      contract_addr: data.selfParty.denomOrAddress,
-                      amount: convertDenomToMicroDenomWithDecimals(
-                        data.selfParty.amount,
-                        data.selfParty.decimals
-                      ).toString(),
-                    },
-                  }
-                : {
-                    native: {
-                      denom: data.selfParty.denomOrAddress,
-                      amount: convertDenomToMicroDenomWithDecimals(
-                        data.selfParty.amount,
-                        data.selfParty.decimals
-                      ).toString(),
-                    },
-                  },
-          },
-          counterparty_two: {
-            address: data.counterparty.address,
-            promise:
-              data.counterparty.type === 'cw20'
-                ? {
-                    cw20: {
-                      contract_addr: data.counterparty.denomOrAddress,
-                      amount: convertDenomToMicroDenomWithDecimals(
-                        data.counterparty.amount,
-                        data.counterparty.decimals
-                      ).toString(),
-                    },
-                  }
-                : {
-                    native: {
-                      denom: data.counterparty.denomOrAddress,
-                      amount: convertDenomToMicroDenomWithDecimals(
-                        data.counterparty.amount,
-                        data.counterparty.decimals
-                      ).toString(),
-                    },
-                  },
-          },
-        }
-
-        const { contractAddress } = await signingCosmWasmClient.instantiate(
-          walletAddress,
-          CODE_ID_CONFIG.CwTokenSwap,
-          instantiateMsg,
-          `TokenSwap_${data.selfParty.denomOrAddress}_${data.counterparty.denomOrAddress}`,
-          'auto'
-        )
-
-        // Update action form data with funding details.
-        setValue(fieldNamePrefix + 'tokenSwapContract', {
-          address: contractAddress,
-          type: data.selfParty.type,
-          denomOrAddress: data.selfParty.denomOrAddress,
-          amount: convertDenomToMicroDenomWithDecimals(
-            data.selfParty.amount,
-            data.selfParty.decimals
-          ),
-        } as InitiateTokenSwapData['tokenSwapContract'])
-        // Display success.
-        toast.success(t('success.tokenSwapContractInstantiated'))
-      } catch (err) {
-        console.error(err)
-        toast.error(processError(err))
-      } finally {
-        setInstantiating(false)
-      }
-    },
-    [
-      fieldNamePrefix,
-      selfAddress,
-      setValue,
-      signingCosmWasmClient,
-      t,
-      walletAddress,
-    ]
-  )
+      // Update action form data with address.
+      setValue(
+        props.fieldNamePrefix + 'tokenSwapContractAddress',
+        contractAddress
+      )
+      // Display success.
+      toast.success(t('success.tokenSwapContractInstantiated'))
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setInstantiating(false)
+    }
+  }, [
+    props.data,
+    props.fieldNamePrefix,
+    selfAddress,
+    setValue,
+    signingCosmWasmClient,
+    t,
+    walletAddress,
+  ])
 
   return selfPartyNativeBalances === undefined ||
     selfPartyCw20Balances === undefined ? (
     <Loader />
   ) : (
     <InnerInstantiateTokenSwap
-      instantiating={instantiating}
-      onInstantiate={onInstantiate}
-      selfPartyCw20Balances={selfPartyCw20Balances}
-      selfPartyNativeBalances={selfPartyNativeBalances}
+      {...props}
+      options={{
+        selfPartyCw20Balances,
+        selfPartyNativeBalances,
+        instantiating,
+        onInstantiate,
+        ProfileDisplay,
+      }}
     />
   )
 }
 
-const InnerInstantiateTokenSwap = (
-  props: Omit<
-    StatelessInstantiateTokenSwapProps,
-    | 'instantiateForm'
-    | 'counterpartyNativeBalances'
-    | 'counterpartyCw20Balances'
+const InnerInstantiateTokenSwap: ActionComponent<
+  Omit<
+    InstantiateTokenSwapOptions,
+    'counterpartyNativeBalances' | 'counterpartyCw20Balances'
   >
-) => {
+> = (props) => {
   const { chainId } = useActionOptions()
+  const { resetField, watch } = useFormContext()
 
-  // Default selfParty to first CW20 if present. Otherwise, native.
-  const selfPartyDefaultCw20 =
-    props.selfPartyCw20Balances && props.selfPartyCw20Balances.length > 0
-      ? props.selfPartyCw20Balances[0]
-      : undefined
+  const [defaultsSet, setDefaultsSet] = useState(false)
+  // Set form defaults on load.
+  useEffect(() => {
+    // Default selfParty to first CW20 if present. Otherwise, native.
+    const selfPartyDefaultCw20 =
+      props.options.selfPartyCw20Balances &&
+      props.options.selfPartyCw20Balances.length > 0
+        ? props.options.selfPartyCw20Balances[0]
+        : undefined
 
-  const instantiateForm = useForm<InstantiateFormData>({
-    defaultValues: {
-      selfParty: {
-        type: selfPartyDefaultCw20 ? 'cw20' : 'native',
-        denomOrAddress: selfPartyDefaultCw20
-          ? selfPartyDefaultCw20.address
-          : NATIVE_DENOM,
-        amount: 0,
-        decimals: selfPartyDefaultCw20
-          ? selfPartyDefaultCw20.info.decimals
-          : nativeTokenDecimals(NATIVE_DENOM) ?? 0,
+    resetField(props.fieldNamePrefix + 'instantiateData', {
+      defaultValue: {
+        selfParty: {
+          type: selfPartyDefaultCw20 ? 'cw20' : 'native',
+          denomOrAddress: selfPartyDefaultCw20
+            ? selfPartyDefaultCw20.address
+            : NATIVE_DENOM,
+          amount: 0,
+          decimals: selfPartyDefaultCw20
+            ? selfPartyDefaultCw20.info.decimals
+            : nativeTokenDecimals(NATIVE_DENOM) ?? 0,
+        },
+        counterparty: {
+          address: '',
+          type: 'native',
+          denomOrAddress: NATIVE_DENOM,
+          amount: 0,
+          decimals: nativeTokenDecimals(NATIVE_DENOM) ?? 0,
+        },
       },
-      counterparty: {
-        address: '',
-        type: 'native',
-        denomOrAddress: NATIVE_DENOM,
-        amount: 0,
-        decimals: nativeTokenDecimals(NATIVE_DENOM) ?? 0,
-      },
-    },
-  })
+    })
 
-  const counterpartyAddress = instantiateForm.watch('counterparty.address')
+    setDefaultsSet(true)
+    // Only run on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const counterpartyAddress: string | undefined = watch(
+    props.fieldNamePrefix + 'instantiateData.counterparty.address'
+  )
 
   // Load balances as loadables since they refresh automatically on a timer.
   const counterpartyNativeBalances = loadableToLoadingData(
@@ -276,29 +293,33 @@ const InnerInstantiateTokenSwap = (
           })
         : undefined
     ),
-    // If errors
+    // Default to empty array if errors.
     []
   )
 
-  return (
+  // Wait for defaults to be set before loading component with form inputs.
+  return defaultsSet ? (
     <StatelessInstantiateTokenSwap
       {...props}
-      counterpartyCw20Balances={
-        counterpartyDaoCw20Balances.loading
-          ? { loading: true }
-          : {
-              loading: false,
-              data: counterpartyDaoCw20Balances.data.map(
-                ({ addr, balance, info }) => ({
-                  address: addr,
-                  balance,
-                  info,
-                })
-              ),
-            }
-      }
-      counterpartyNativeBalances={counterpartyNativeBalances}
-      instantiateForm={instantiateForm}
+      options={{
+        ...props.options,
+        counterpartyCw20Balances:
+          counterpartyDaoCw20Balances.loading || !counterpartyAddressIsContract
+            ? { loading: true }
+            : {
+                loading: false,
+                data: counterpartyDaoCw20Balances.data.map(
+                  ({ addr, balance, info }) => ({
+                    address: addr,
+                    balance,
+                    info,
+                  })
+                ),
+              },
+        counterpartyNativeBalances,
+      }}
     />
+  ) : (
+    <Loader />
   )
 }
