@@ -270,6 +270,7 @@
   },
   "info": {
     "abstainVote": "Abstain",
+    "actionPaysTokenSwap": "This action sends {{amount}} ${{tokenSymbol}} to the token swap contract.",
     "addCw20ToTreasuryActionDescription": "Display the DAO's balance of a CW20 token in the treasury view.",
     "addCw721ToTreasuryActionDescription": "Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.",
     "andNumMore": "and {{count}} more",

@@ -17,7 +17,7 @@ import { InitiateTokenSwapOptions } from '../InitiateTokenSwap'
 // Displayed when displaying an existing token swap.
 export const InstantiatedTokenSwap: ActionComponent<
   InitiateTokenSwapOptions
-> = ({ onRemove, isCreating, options }) => {
+> = ({ onRemove, options }) => {
   const { t } = useTranslation()
 
   // This component should not be displaying if this is false.
@@ -32,6 +32,18 @@ export const InstantiatedTokenSwap: ActionComponent<
       title={t('title.initiateTokenSwap')}
     >
       <TokenSwapStatus {...options.tokenSwapStatusProps} />
+
+      <p className="caption-text mt-10 text-center">
+        {t('info.actionPaysTokenSwap', {
+          amount: options.tokenSwapStatusProps.self.amount.toLocaleString(
+            undefined,
+            {
+              maximumFractionDigits: options.tokenSwapStatusProps.self.decimals,
+            }
+          ),
+          tokenSymbol: options.tokenSwapStatusProps.self.symbol,
+        })}
+      </p>
     </ActionCard>
   )
 }
