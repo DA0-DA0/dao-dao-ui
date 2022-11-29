@@ -15,6 +15,7 @@ const junoTestnet: CodeIdConfig = {
   CwdVotingCw4: 881,
   CwdVotingCw721Staked: 882,
   CwdVotingNativeStaked: 883,
+  CwTokenSwap: -1,
 }
 
 // TODO(v2): Fill in code IDs once v2 contracts on mainnet.
@@ -32,6 +33,7 @@ const junoMainnet: CodeIdConfig = {
   CwdVotingCw4: -1,
   CwdVotingCw721Staked: -1,
   CwdVotingNativeStaked: -1,
+  CwTokenSwap: -1,
 }
 
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {
