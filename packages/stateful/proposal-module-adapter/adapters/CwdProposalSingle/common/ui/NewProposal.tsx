@@ -31,10 +31,9 @@ import {
 } from '@dao-dao/stateless'
 import {
   Action,
-  ActionKey,
+  ActionsWithData,
+  ActionsWithData,
   BaseNewProposalProps,
-  UseDefaults,
-  UseTransformToCosmos,
 } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import {
@@ -71,16 +70,7 @@ export interface NewProposalProps
   depositUnsatisfied: boolean
   connected: boolean
   actions: Action[]
-  actionsWithData: Partial<
-    Record<
-      ActionKey,
-      {
-        action: Action
-        transform: ReturnType<UseTransformToCosmos>
-        defaults: ReturnType<UseDefaults>
-      }
-    >
-  >
+  actionsWithData: ActionsWithData
 }
 
 export const NewProposal = ({

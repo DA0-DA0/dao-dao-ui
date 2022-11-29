@@ -325,6 +325,7 @@
     "groupAddress": "CW4 Group",
     "historySinceDate": "History since {{date}}",
     "inboxDescription": "Open proposals for your DAOs.",
+    "initiateTokenSwapDescription": "Create and fund a token swap contract that completes when both parties have submitted their tokens.",
     "instantiateSmartContractActionDescription": "Instantiate a smart contract.",
     "jsonIsValid": "json is valid",
     "keplrModalWalletExplanation": "Your wallet is your digital identity on the blockchain. Having one lets you interact with web3 applications like DAO DAO.\nWe recommend the Keplr wallet.",
@@ -491,6 +492,7 @@
     "depositedTokenIntoDao": "Deposited {{amount}} ${{tokenSymbol}} into the {{daoName}} treasury.",
     "proposalClosed": "Closed successfully.",
     "proposalExecuted": "Executed successfully. Refreshing page...",
+    "tokenSwapContractInstantiated": "Token swap contract instantiated successfully.",
     "transactionExecuted": "Transaction executed successfully.",
     "voteCast": "Vote successfully cast."
   },

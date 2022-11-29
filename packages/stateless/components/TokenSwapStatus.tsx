@@ -11,7 +11,7 @@ import { TokenAmountDisplay } from '@dao-dao/stateless'
 import { TokenSwapStatusProps } from '@dao-dao/types/stateless/TokenSwapStatus'
 
 export const TokenSwapStatus = ({
-  self,
+  selfParty,
   counterparty,
   ProfileDisplay,
 }: TokenSwapStatusProps) => {
@@ -20,15 +20,15 @@ export const TokenSwapStatus = ({
   return (
     <div className="flex flex-col items-center justify-center gap-x-6 gap-y-4 sm:flex-row">
       <div className="flex flex-col items-center gap-2">
-        <ProfileDisplay address={self.address} size="lg" />
+        <ProfileDisplay address={selfParty.address} size="lg" />
         <TokenAmountDisplay
-          amount={self.amount}
-          decimals={self.decimals}
-          iconUrl={self.tokenLogoUrl}
-          symbol={self.symbol}
+          amount={selfParty.amount}
+          decimals={selfParty.decimals}
+          iconUrl={selfParty.tokenLogoUrl}
+          symbol={selfParty.symbol}
         />
         <div className="flex flex-row items-center gap-2">
-          {self.provided ? (
+          {selfParty.provided ? (
             <Check className="!h-4 !w-4 text-icon-interactive-valid" />
           ) : (
             <Close className="!h-4 !w-4 text-icon-interactive-error" />
@@ -36,12 +36,12 @@ export const TokenSwapStatus = ({
 
           <p
             className={clsx(
-              self.provided
+              selfParty.provided
                 ? 'text-text-interactive-valid'
                 : 'text-text-interactive-error'
             )}
           >
-            {self.provided ? t('info.paid') : t('info.unpaid')}
+            {selfParty.provided ? t('info.paid') : t('info.unpaid')}
           </p>
         </div>
       </div>

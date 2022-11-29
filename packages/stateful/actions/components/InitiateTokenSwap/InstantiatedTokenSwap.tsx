@@ -1,49 +1,30 @@
 import { useTranslation } from 'react-i18next'
 
-import { HandshakeEmoji, TokenSwapStatus } from '@dao-dao/stateless'
-import { ActionComponent } from '@dao-dao/types/actions'
+import { TokenSwapStatus } from '@dao-dao/stateless'
 
-import { ActionCard } from '../ActionCard'
-import { InitiateTokenSwapOptions } from '../InitiateTokenSwap'
-
-// This action requires the user to first instantiate a token swap contract
-// themself, and then the user can use this action to propose funding that token
-// swap to the DAO. The token swap contract instantiator is irrelevant, so
-// there's no reason to make the DAO submit two proposals (one to instantiate
-// and one to fund). Thus, this action has a preliminary step, in which the user
-// enters the token swap contract instantiation information and executes the
-// instantiation. Once done, the action is ready to submit.
+import { InstantiatedTokenSwapProps } from './types'
 
 // Displayed when displaying an existing token swap.
-export const InstantiatedTokenSwap: ActionComponent<
-  InitiateTokenSwapOptions
-> = ({ onRemove, options }) => {
+export const InstantiatedTokenSwap = ({
+  tokenSwapStatusProps,
+}: InstantiatedTokenSwapProps) => {
   const { t } = useTranslation()
 
-  // This component should not be displaying if this is false.
-  if (!options.contractInstantiated) {
-    throw new Error(t('error.loadingData'))
-  }
-
   return (
-    <ActionCard
-      Icon={HandshakeEmoji}
-      onRemove={onRemove}
-      title={t('title.initiateTokenSwap')}
-    >
-      <TokenSwapStatus {...options.tokenSwapStatusProps} />
+    <>
+      <TokenSwapStatus {...tokenSwapStatusProps} />
 
       <p className="caption-text mt-10 text-center">
         {t('info.actionPaysTokenSwap', {
-          amount: options.tokenSwapStatusProps.self.amount.toLocaleString(
+          amount: tokenSwapStatusProps.selfParty.amount.toLocaleString(
             undefined,
             {
-              maximumFractionDigits: options.tokenSwapStatusProps.self.decimals,
+              maximumFractionDigits: tokenSwapStatusProps.selfParty.decimals,
             }
           ),
-          tokenSymbol: options.tokenSwapStatusProps.self.symbol,
+          tokenSymbol: tokenSwapStatusProps.selfParty.symbol,
         })}
       </p>
-    </ActionCard>
+    </>
   )
 }

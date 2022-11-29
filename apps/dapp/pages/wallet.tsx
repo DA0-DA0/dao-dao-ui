@@ -22,11 +22,8 @@ import {
 } from '@dao-dao/stateless'
 import { WalletTransactionForm } from '@dao-dao/types'
 import {
-  Action,
-  ActionKey,
   ActionOptionsContextType,
-  UseDefaults,
-  UseTransformToCosmos,
+  ActionsWithData,
 } from '@dao-dao/types/actions'
 import {
   CHAIN_BECH32_PREFIX,
@@ -47,16 +44,7 @@ const InnerWallet = () => {
   const actions = useCoreActions()
 
   // Call relevant action hooks in the same order every time.
-  const actionsWithData: Partial<
-    Record<
-      ActionKey,
-      {
-        action: Action
-        transform: ReturnType<UseTransformToCosmos>
-        defaults: ReturnType<UseDefaults>
-      }
-    >
-  > = actions.reduce(
+  const actionsWithData: ActionsWithData = actions.reduce(
     (acc, action) => ({
       ...acc,
       [action.key]: {

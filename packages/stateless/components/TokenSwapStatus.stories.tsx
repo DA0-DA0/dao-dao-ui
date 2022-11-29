@@ -16,7 +16,7 @@ const Template: ComponentStory<typeof TokenSwapStatus> = (args) => (
 )
 
 export const makeProps = (): TokenSwapStatusProps => ({
-  self: {
+  selfParty: {
     address: 'juno1qrmk7202w7c6lwmykkr420j6wrrntt8wwzsrqvdtdv64xrtkrs5sn57s0l',
     amount: 420000,
     decimals: 6,

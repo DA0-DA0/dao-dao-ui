@@ -3,7 +3,7 @@ import { ComponentType } from 'react'
 import { ProfileDisplayProps } from './ProfileDisplay'
 
 export interface TokenSwapStatusProps {
-  self: {
+  selfParty: {
     address: string
     amount: number
     decimals: number

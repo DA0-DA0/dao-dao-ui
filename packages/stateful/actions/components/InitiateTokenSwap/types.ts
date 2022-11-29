@@ -7,8 +7,10 @@ import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 
 export interface Counterparty {
   address: string
+  type: 'cw20' | 'native'
   denomOrAddress: string
   amount: number
+  decimals: number
 }
 
 export interface InstantiateFormData {
@@ -19,34 +21,36 @@ export interface InstantiateFormData {
 //! Action interfaces.
 
 export interface InitiateTokenSwapData {
-  tokenSwapContractAddress?: string
+  tokenSwapContract?: {
+    address: string
+    type: 'cw20' | 'native'
+    denomOrAddress: string
+    amount: number
+  }
 }
 
-export type InitiateTokenSwapOptions =
-  | {
-      contractInstantiated: true
+export interface InstantiateTokenSwapProps {
+  instantiateForm: UseFormReturn<InstantiateFormData>
+  instantiating: boolean
+  onInstantiate: (data: InstantiateFormData) => Promise<void>
 
-      tokenSwapStatusProps: TokenSwapStatusProps
-    }
-  | {
-      contractInstantiated: false
+  selfPartyNativeBalances: readonly Coin[]
+  selfPartyCw20Balances: {
+    address: string
+    balance: string
+    info: TokenInfoResponse
+  }[]
 
-      instantiateForm: UseFormReturn<InstantiateFormData>
-      onInstantiate: (data: InstantiateFormData) => Promise<void>
+  counterpartyNativeBalances: LoadingData<readonly Coin[]>
+  counterpartyCw20Balances: LoadingData<
+    {
+      address: string
+      balance: string
+      info: TokenInfoResponse
+    }[]
+  >
+}
 
-      selfNativeBalances: readonly Coin[]
-      selfCw20Balances: {
-        address: string
-        balance: string
-        info: TokenInfoResponse
-      }[]
-
-      counterpartyNativeBalances: LoadingData<readonly Coin[]>
-      counterpartyCw20Balances: LoadingData<
-        {
-          address: string
-          balance: string
-          info: TokenInfoResponse
-        }[]
-      >
-    }
+export interface InstantiatedTokenSwapProps {
+  tokenSwapStatusProps: TokenSwapStatusProps
+}
