@@ -26,7 +26,7 @@ import {
   useEncodedCwdProposalSinglePrefill,
   usePinnedDaos,
   useVotingModule,
-  useWalletProfile,
+  useWalletInfo,
 } from '@dao-dao/stateful'
 import { useCoreActionForKey } from '@dao-dao/stateful/actions'
 import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
@@ -48,7 +48,7 @@ const InnerDaoHome = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { connected } = useWallet()
-  const { walletProfile, updateProfileName } = useWalletProfile()
+  const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
 
   const daoInfo = useDaoInfoContext()

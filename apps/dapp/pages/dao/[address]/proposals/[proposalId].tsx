@@ -13,7 +13,7 @@ import {
   DaoProposalPageWrapperProps,
   ProfileProposalCard,
   Trans,
-  useProfile,
+  useWalletProfile,
 } from '@dao-dao/stateful'
 import { useCoreActions } from '@dao-dao/stateful/actions'
 import {
@@ -67,7 +67,7 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     )
   )
 
-  const { profile: creatorProfile } = useProfile({
+  const { profile: creatorProfile } = useWalletProfile({
     walletAddress: proposalInfo.createdByAddress,
   })
 

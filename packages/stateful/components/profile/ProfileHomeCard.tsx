@@ -5,7 +5,7 @@ import {
 } from '@dao-dao/stateless'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
-import { useWalletProfile } from '../../hooks'
+import { useWalletInfo } from '../../hooks'
 
 export const ProfileHomeCard = () => {
   const {
@@ -15,7 +15,7 @@ export const ProfileHomeCard = () => {
     walletStakedBalance,
     dateBalancesFetched,
     updateProfileName,
-  } = useWalletProfile()
+  } = useWalletInfo()
   const { updateProfileNft, inbox } = useAppLayoutContext()
 
   const query = useWalletProposalsQuery(walletAddress)

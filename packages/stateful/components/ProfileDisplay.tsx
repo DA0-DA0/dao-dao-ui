@@ -6,8 +6,8 @@ import { useProfile } from '../hooks'
 export const ProfileDisplay = (
   props: Omit<ProfileDisplayProps, 'loadingProfile'>
 ) => {
-  const { profile } = useProfile({
-    walletAddress: props.address,
+  const profile = useProfile({
+    address: props.address,
   })
 
   return <StatelessProfileDisplay {...props} loadingProfile={profile} />

@@ -49,7 +49,7 @@ import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
   usePinnedDaos,
-  useWalletProfile,
+  useWalletInfo,
 } from '../../hooks'
 import { getAdapterById as getProposalModuleAdapterById } from '../../proposal-module-adapter'
 import {
@@ -277,7 +277,7 @@ export const CreateDaoForm = ({
 
   const [creating, setCreating] = useState(false)
   const { connected, address: walletAddress } = useWallet()
-  const { refreshBalances } = useWalletProfile()
+  const { refreshBalances } = useWalletInfo()
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({

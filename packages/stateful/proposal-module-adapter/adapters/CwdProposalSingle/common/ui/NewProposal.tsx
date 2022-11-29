@@ -45,7 +45,7 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components/SuspenseLoader'
-import { useWalletProfile } from '../../../../../hooks'
+import { useWalletInfo } from '../../../../../hooks'
 import { NewProposalData, NewProposalForm } from '../../types'
 
 enum ProposeSubmitValue {
@@ -115,7 +115,7 @@ export const NewProposal = ({
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
 
-  const { walletAddress = '', walletProfile } = useWalletProfile()
+  const { walletAddress = '', walletProfile } = useWalletInfo()
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')

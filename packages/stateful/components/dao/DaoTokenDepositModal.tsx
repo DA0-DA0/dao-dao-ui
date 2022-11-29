@@ -23,7 +23,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { Cw20BaseHooks, useWalletProfile } from '../../hooks'
+import { Cw20BaseHooks, useWalletInfo } from '../../hooks'
 
 export type DaoTokenDepositModalProps = Omit<
   TokenDepositModalProps,
@@ -44,7 +44,7 @@ export const DaoTokenDepositModal = ({
   const { t } = useTranslation()
   const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
   const { address, signingCosmWasmClient } = useWallet()
-  const { refreshBalances: refreshWalletBalances } = useWalletProfile()
+  const { refreshBalances: refreshWalletBalances } = useWalletInfo()
 
   const setRefreshDaoBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(coreAddress)

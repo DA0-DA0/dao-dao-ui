@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-import { WalletProfile } from '../wallet'
+import { WalletProfile } from '../profile'
 import { LoadingData } from './common'
 
 export type ProfileCardWrapperProps = {

@@ -1,68 +1,51 @@
-import { constSelector, useRecoilValueLoadable } from 'recoil'
+import { useRecoilValueLoadable } from 'recoil'
 
-import {
-  keplrProfileImageSelector,
-  walletHexPublicKeySelector,
-  walletProfileSelector,
-} from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
-import { LoadingData, WalletProfile, WithChainId } from '@dao-dao/types'
-import { getFallbackImage, loadableToLoadingData } from '@dao-dao/utils'
+import { CwdCoreV2Selectors } from '@dao-dao/state'
+import { LoadingData, Profile, WithChainId } from '@dao-dao/types'
+import { getFallbackImage } from '@dao-dao/utils'
 
-export type UseProfileOptions = WithChainId<
-  | {
-      walletAddress: string
-    }
-  | {
-      hexPublicKey?: string
-    }
->
+import { useWalletProfile } from './useWalletProfile'
 
-export interface UseProfileReturn {
-  profile: LoadingData<WalletProfile>
-  backupProfileImage: string
-}
+export type UseProfileOptions = WithChainId<{
+  address: string
+}>
 
-export const useProfile = (options: UseProfileOptions): UseProfileReturn => {
-  const publicKeyLoadable = useRecoilValueLoadable(
-    'walletAddress' in options
-      ? walletHexPublicKeySelector({
-          walletAddress: options.walletAddress,
-          chainId: options.chainId,
-        })
-      : constSelector(options.hexPublicKey)
+export const useProfile = ({
+  address,
+  chainId,
+}: UseProfileOptions): LoadingData<Profile> => {
+  // Try to load config assuming the address is a DAO.
+  const daoConfig = useRecoilValueLoadable(
+    CwdCoreV2Selectors.configSelector({
+      contractAddress: address,
+      chainId,
+      params: [],
+    })
   )
-  const publicKey =
-    publicKeyLoadable.state === 'hasValue'
-      ? publicKeyLoadable.contents
-      : undefined
 
-  // Get wallet profile from API.
-  const profile = loadableToLoadingData(
-    useCachedLoadable(publicKey ? walletProfileSelector(publicKey) : undefined),
-    {
-      // Disallows editing if we don't have correct nonce from server.
-      nonce: -1,
-      name: null,
-      imageUrl: '',
-      nft: null,
-    }
-  )
-  // Get Keplr wallet image from API.
-  const keplrProfileImageLoadable = useCachedLoadable(
-    publicKey ? keplrProfileImageSelector(publicKey) : undefined
-  )
-  const keplrProfileImage =
-    keplrProfileImageLoadable.state === 'hasValue'
-      ? keplrProfileImageLoadable.contents
-      : undefined
-  // Use Keplr profile image API (followed by a fallback image) as backup if
-  // PFPK not set.
-  const backupProfileImage = keplrProfileImage || getFallbackImage(publicKey)
-  // If no NFT from PFPK, fallback.
-  if (!profile.loading && !profile.data.nft) {
-    profile.data.imageUrl = backupProfileImage
-  }
+  // Try loading wallet profile assuming the address is a wallet.
+  const walletProfile = useWalletProfile({
+    walletAddress: address,
+  })
 
-  return { profile, backupProfileImage }
+  return daoConfig.state !== 'hasValue' && walletProfile.profile.loading
+    ? { loading: true }
+    : {
+        loading: false,
+        data: {
+          address,
+          name:
+            daoConfig.state === 'hasValue'
+              ? daoConfig.contents.name
+              : !walletProfile.profile.loading
+              ? walletProfile.profile.data.name
+              : null,
+          imageUrl:
+            (daoConfig.state === 'hasValue'
+              ? daoConfig.contents.image_url
+              : !walletProfile.profile.loading
+              ? walletProfile.profile.data.imageUrl
+              : undefined) || getFallbackImage(address),
+        },
+      }
 }

@@ -39,10 +39,9 @@ export const makeProps = (): ProposalVotesProps<Vote> => ({
       loadingProfile={{
         loading: false,
         data: {
-          imageUrl: getFallbackImage(props.address),
-          nonce: 0,
+          address: props.address,
           name: null,
-          nft: null,
+          imageUrl: getFallbackImage(props.address),
         },
       }}
       {...props}
