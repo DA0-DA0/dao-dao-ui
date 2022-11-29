@@ -66,6 +66,7 @@ import {
   DaoCreationConfig as CwdVotingCw20StakedCreationConfig,
   GovernanceTokenType,
 } from '../../voting-module-adapter/adapters/CwdVotingCw20Staked/types'
+import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 // i18n keys
@@ -596,6 +597,7 @@ export const CreateDaoForm = ({
           </div>
         ) : (
           <DaoHeader
+            LinkWrapper={LinkWrapper}
             description={description}
             established={t('info.today')}
             imageUrl={imageUrl}

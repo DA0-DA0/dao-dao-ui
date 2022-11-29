@@ -29,6 +29,7 @@ export const ProposalCard = ({
   >
     <div className="flex flex-col gap-4 px-6 pt-8 pb-6">
       <DaoImage
+        LinkWrapper={LinkWrapper}
         blur
         className="self-center"
         coreAddress={coreAddress}

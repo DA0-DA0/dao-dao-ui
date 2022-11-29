@@ -20,6 +20,7 @@ import {
   validateUrl,
 } from '@dao-dao/utils'
 
+import { LinkWrapper } from '../../components'
 import { useActionOptions } from '../react'
 import { ActionCard } from './ActionCard'
 
@@ -53,6 +54,7 @@ export const UpdateInfoComponent: ActionComponent<
           </div>
         ) : (
           <DaoImage
+            LinkWrapper={LinkWrapper}
             className="ml-2"
             coreAddress={address}
             imageUrl={data.image_url}

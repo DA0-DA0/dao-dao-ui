@@ -1,7 +1,7 @@
 import clsx from 'clsx'
-import Link from 'next/link'
-import { ReactNode } from 'react'
+import { ComponentType, ReactNode } from 'react'
 
+import { LinkWrapperProps } from '@dao-dao/types'
 import { DaoParentInfo } from '@dao-dao/types/dao'
 import { getFallbackImage } from '@dao-dao/utils'
 
@@ -15,6 +15,7 @@ export interface DaoImageProps {
   imageClassName?: string
   children?: ReactNode
   blur?: boolean
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export const DaoImage = ({
@@ -26,20 +27,8 @@ export const DaoImage = ({
   imageClassName,
   children,
   blur,
+  LinkWrapper,
 }: DaoImageProps) => {
-  const parentDaoClassNames = clsx(
-    'absolute right-0 bottom-0 rounded-full bg-cover bg-center drop-shadow',
-    {
-      'h-8 w-8': size === 'sm',
-      'h-10 w-10': size === 'lg',
-    }
-  )
-  const parentDaoStyle = {
-    backgroundImage: `url(${
-      parentDao?.imageUrl || getFallbackImage(parentDao?.coreAddress)
-    })`,
-  }
-
   const sizeClassNames = clsx('overflow-hidden rounded-full', {
     // DaoCard
     'h-[4.5rem] w-[4.5rem]': size === 'sm',
@@ -76,10 +65,25 @@ export const DaoImage = ({
         </div>
       )}
 
+      {/* Link to parent DAO in a circle in the bottom right. */}
       {parentDao && (
-        <Link href={`/dao/${parentDao.coreAddress}`}>
-          <a className={parentDaoClassNames} style={parentDaoStyle}></a>
-        </Link>
+        <LinkWrapper
+          className="block h-full w-full"
+          containerClassName={clsx(
+            'absolute right-0 bottom-0 rounded-full bg-cover bg-center shadow-dp4',
+            {
+              'h-8 w-8': size === 'sm',
+              'h-10 w-10': size === 'lg',
+            }
+          )}
+          href={`/dao/${parentDao.coreAddress}`}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            backgroundImage: `url(${
+              parentDao.imageUrl || getFallbackImage(parentDao.coreAddress)
+            })`,
+          }}
+        />
       )}
     </div>
   )

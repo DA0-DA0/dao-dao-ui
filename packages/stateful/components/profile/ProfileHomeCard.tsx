@@ -6,6 +6,7 @@ import {
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 import { useWalletInfo } from '../../hooks'
+import { ButtonLink } from '../ButtonLink'
 
 export const ProfileHomeCard = () => {
   const {
@@ -23,6 +24,7 @@ export const ProfileHomeCard = () => {
 
   return (
     <StatelessProfileHomeCard
+      ButtonLink={ButtonLink}
       inboxProposalCount={inbox.proposalCount}
       lazyData={
         !data ||

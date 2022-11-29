@@ -14,7 +14,7 @@ export interface NoContentProps {
   className?: string
 }
 
-export const NoContent = forwardRef<HTMLAnchorElement, NoContentProps>(
+export const NoContent = forwardRef<HTMLDivElement, NoContentProps>(
   function NoContent(
     { Icon, body, href, onClick, actionNudge, buttonLabel, className },
     ref
@@ -51,7 +51,7 @@ export const NoContent = forwardRef<HTMLAnchorElement, NoContentProps>(
     )
 
     return onClick ? (
-      <div className={containerClassName} onClick={onClick}>
+      <div className={containerClassName} onClick={onClick} ref={ref}>
         {content}
       </div>
     ) : (
