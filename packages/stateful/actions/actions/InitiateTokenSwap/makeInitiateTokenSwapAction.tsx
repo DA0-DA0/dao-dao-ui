@@ -1,6 +1,6 @@
 import { coins } from '@cosmjs/amino'
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { HandshakeEmoji, Loader } from '@dao-dao/stateless'
@@ -46,10 +46,22 @@ export const makeInitiateTokenSwapAction: ActionMaker<
   const Component: ActionComponent<undefined, InitiateTokenSwapData> = (
     props
   ) => {
-    const { watch } = useFormContext()
+    const { watch, setValue } = useFormContext()
     const tokenSwapContractAddress = watch(
       props.fieldNamePrefix + 'tokenSwapContractAddress'
     )
+
+    const [mounted, setMounted] = useState(false)
+    // If address is set on mount during creation, clear it. This must have been
+    // set by duplicating an existing action.
+    useEffect(() => {
+      if (tokenSwapContractAddress && props.isCreating) {
+        setValue(props.fieldNamePrefix + 'tokenSwapContractAddress', undefined)
+      }
+      setMounted(true)
+      // Only run on mount.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
       <ActionCard
@@ -57,7 +69,7 @@ export const makeInitiateTokenSwapAction: ActionMaker<
         onRemove={props.onRemove}
         title={t('title.initiateTokenSwap')}
       >
-        <SuspenseLoader fallback={<Loader />}>
+        <SuspenseLoader fallback={<Loader />} forceFallback={!mounted}>
           {tokenSwapContractAddress ? (
             <InstantiatedTokenSwap {...props} />
           ) : (
