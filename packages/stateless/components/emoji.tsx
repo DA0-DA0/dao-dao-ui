@@ -11,6 +11,26 @@ export const EmojiWrapper = ({ labelI18nKey, emoji }: EmojiWrapperProps) => {
   return <Emoji label={t(labelI18nKey)} symbol={emoji} />
 }
 
+export const KeyEmoji = () => (
+  <EmojiWrapper emoji="🔑" labelI18nKey="emoji.key" />
+)
+
+export const LockWithKeyEmoji = () => (
+  <EmojiWrapper emoji="🔐" labelI18nKey="emoji.closed_lock_with_key" />
+)
+
+export const PickEmoji = () => (
+  <EmojiWrapper emoji="⛏" labelI18nKey="emoji.pick" />
+)
+
+export const PencilEmoji = () => (
+  <EmojiWrapper emoji="✏" labelI18nKey="emoji.pencil" />
+)
+
+export const UnlockEmoji = () => (
+  <EmojiWrapper emoji="🔓" labelI18nKey="emoji.unlock" />
+)
+
 export const MoneyEmoji = () => (
   <EmojiWrapper emoji="💵" labelI18nKey="emoji.money" />
 )

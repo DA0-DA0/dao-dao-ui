@@ -3,7 +3,11 @@ import { DISABLED_ACTIONS } from '@dao-dao/utils'
 
 import { makeAddCw20Action } from './AddCw20'
 import { makeAddCw721Action } from './AddCw721'
+import { makeAuthzAuthorizationAction } from './AuthzAuthorization'
+import { makeAuthzExecAction } from './AuthzExec'
+import { makeCreateValidatorAction } from './CreateValidator'
 import { makeCustomAction } from './Custom'
+import { makeEditValidatorAction } from './EditValidator'
 import { makeExecuteAction } from './Execute'
 import { makeInstantiateAction } from './Instantiate'
 import { makeManageSubDaosAction } from './ManageSubDaos'
@@ -23,6 +27,7 @@ import {
   makePerformTokenSwapAction,
   makeWithdrawTokenSwapAction,
 } from './token_swap'
+import { makeUnjailValidatorAction } from './UnjailValidator'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
 
@@ -49,6 +54,11 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeWithdrawTokenSwapAction,
     makeSetItemAction,
     makeRemoveItemAction,
+    makeAuthzAuthorizationAction,
+    makeAuthzExecAction,
+    makeCreateValidatorAction,
+    makeEditValidatorAction,
+    makeUnjailValidatorAction,
   ]
 
   return actionMakers
