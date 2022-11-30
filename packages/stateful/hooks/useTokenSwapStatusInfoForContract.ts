@@ -15,6 +15,10 @@ export interface UseTokenSwapStatusInfoForContractOptions {
   selfPartyAddress: string
 }
 
+// Returns info for a given token swap, with the parties identified between self
+// and counter. Also collects the metadata into props for the TokenSwapStatus
+// stateless component. This hook is used in the FundTokenSwap and
+// WithdrawTokenSwap stateful action components.
 export const useTokenSwapStatusInfoForContract = ({
   contractAddress,
   chainId,
