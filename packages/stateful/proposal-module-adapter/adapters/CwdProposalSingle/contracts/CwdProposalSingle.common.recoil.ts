@@ -58,7 +58,7 @@ export const getVoteSelector = selectorFamily<
         })
       )
       const selector =
-        proposalModuleVersion === ContractVersion.V0_1_0
+        proposalModuleVersion === ContractVersion.V1
           ? getVoteV1Selector
           : getVoteV2Selector
 
@@ -89,7 +89,7 @@ export const listVotesSelector = selectorFamily<
         })
       )
       const selector =
-        proposalModuleVersion === ContractVersion.V0_1_0
+        proposalModuleVersion === ContractVersion.V1
           ? listVotesV1Selector
           : listVotesV2Selector
 
@@ -118,7 +118,7 @@ export const proposalSelector = selectorFamily<
         })
       )
       const selector =
-        proposalModuleVersion === ContractVersion.V0_1_0
+        proposalModuleVersion === ContractVersion.V1
           ? proposalV1Selector
           : proposalV2Selector
 
@@ -141,7 +141,7 @@ export const configSelector = selectorFamily<
         })
       )
       const selector =
-        proposalModuleVersion === ContractVersion.V0_1_0
+        proposalModuleVersion === ContractVersion.V1
           ? configV1Selector
           : configV2Selector
 
@@ -171,7 +171,7 @@ export const reverseProposalsSelector = selectorFamily<
         })
       )
       const selector =
-        proposalModuleVersion === ContractVersion.V0_1_0
+        proposalModuleVersion === ContractVersion.V1
           ? reverseProposalsV1Selector
           : reverseProposalsV2Selector
 

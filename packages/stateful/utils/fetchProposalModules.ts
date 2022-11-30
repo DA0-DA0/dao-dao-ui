@@ -91,7 +91,7 @@ export const fetchProposalModules = async (
 
   while (true) {
     const _proposalModules = await Promise.all(
-      coreVersion === ContractVersion.V0_1_0
+      coreVersion === ContractVersion.V1
         ? await getV0_1_0ProposalModules()
         : await getV0_2_0ProposalModules()
     )

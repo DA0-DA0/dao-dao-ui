@@ -37,7 +37,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
   // v1 DAOS don't support SubDAOs.
   if (
     context.type !== ActionOptionsContextType.Dao ||
-    context.coreVersion === ContractVersion.V0_1_0
+    context.coreVersion === ContractVersion.V1
   ) {
     return null
   }
