@@ -11,10 +11,10 @@ import { ActionComponent, TokenSwapStatusProps } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { ProfileDisplay } from '../../../components'
-import { InstantiatedTokenSwap as StatelessInstantiatedTokenSwap } from '../../components/PerformTokenSwap'
+import { ExistingTokenSwap as StatelessExistingTokenSwap } from '../../components/PerformTokenSwap'
 import { useActionOptions } from '../../react'
 
-export const InstantiatedTokenSwap: ActionComponent = (props) => {
+export const ExistingTokenSwap: ActionComponent = (props) => {
   const { address, chainId } = useActionOptions()
 
   const { watch, setValue } = useFormContext()
@@ -121,7 +121,7 @@ export const InstantiatedTokenSwap: ActionComponent = (props) => {
   ])
 
   return (
-    <StatelessInstantiatedTokenSwap
+    <StatelessExistingTokenSwap
       {...props}
       options={{
         tokenSwapStatusProps,

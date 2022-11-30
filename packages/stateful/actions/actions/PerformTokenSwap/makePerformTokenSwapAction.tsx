@@ -2,15 +2,10 @@ import { coins } from '@cosmjs/amino'
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useRecoilCallback } from 'recoil'
 
-import { CwTokenSwapSelectors } from '@dao-dao/state/recoil'
 import {
-  AddressInput,
-  Button,
   HandshakeEmoji,
   InputErrorMessage,
-  InputLabel,
   Loader,
   SegmentedControls,
 } from '@dao-dao/stateless'
@@ -27,15 +22,13 @@ import {
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
-  processError,
-  validateContractAddress,
-  validateRequired,
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../components'
 import { ActionCard } from '../../components/ActionCard'
 import { PerformTokenSwapData } from '../../components/PerformTokenSwap'
-import { InstantiatedTokenSwap } from './InstantiatedTokenSwap'
+import { ChooseExistingTokenSwap } from './ChooseExistingTokenSwap'
+import { ExistingTokenSwap } from './ExistingTokenSwap'
 import { InstantiateTokenSwap } from './InstantiateTokenSwap'
 
 // This action requires the user to first instantiate a token swap contract
@@ -60,15 +53,11 @@ const useDefaults: UseDefaults<PerformTokenSwapData> = () => ({
 
 export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
   t,
-  chainId,
-  address,
-  context,
 }) => {
   const Component: ActionComponent<undefined, PerformTokenSwapData> = (
     props
   ) => {
-    const { watch, setValue, register, trigger, setError, clearErrors } =
-      useFormContext()
+    const { watch, setValue, register } = useFormContext()
     const contractChosen = watch(props.fieldNamePrefix + 'contractChosen')
 
     const [creatingNew, setCreatingNew] = useState(true)
@@ -92,122 +81,6 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
       })
     }, [props.fieldNamePrefix, register])
 
-    const tokenSwapContractAddress = watch(
-      props.fieldNamePrefix + 'tokenSwapContractAddress'
-    )
-    const [validatingExistingContract, setValidatingExistingContract] =
-      useState(false)
-    const onChooseExistingContract = useRecoilCallback(
-      ({ snapshot }) =>
-        async () => {
-          setValidatingExistingContract(true)
-          try {
-            clearErrors(props.fieldNamePrefix + 'tokenSwapContractAddress')
-
-            // Manually validate the contract address.
-            const valid = await trigger(
-              props.fieldNamePrefix + 'tokenSwapContractAddress'
-            )
-            if (!valid) {
-              // Error will be set by trigger.
-              return
-            }
-
-            // Verify contract exists and looks like a token swap contract.
-            let status
-            try {
-              status = await snapshot.getPromise(
-                CwTokenSwapSelectors.statusSelector({
-                  contractAddress: tokenSwapContractAddress,
-                  chainId,
-                  params: [],
-                })
-              )
-            } catch (err) {
-              console.error(err)
-
-              // If query failed, different contract.
-              if (
-                err instanceof Error &&
-                err.message.includes('Query failed') &&
-                err.message.includes('unknown variant')
-              ) {
-                throw new Error(t('error.notATokenSwapContractAddress'))
-              }
-
-              // If unrecognized error, rethrow.
-              throw err
-            }
-
-            // Verify status response looks correct.
-            if (
-              !objectMatchesStructure(status, {
-                counterparty_one: {
-                  address: {},
-                  promise: {},
-                  provided: {},
-                },
-                counterparty_two: {
-                  address: {},
-                  promise: {},
-                  provided: {},
-                },
-              })
-            ) {
-              throw new Error(t('error.notATokenSwapContractAddress'))
-            }
-
-            // Verify we are one of the parties.
-            const selfParty =
-              status.counterparty_one.address === address
-                ? status.counterparty_one
-                : status.counterparty_two.address === address
-                ? status.counterparty_two
-                : undefined
-            if (!selfParty) {
-              throw new Error(
-                t('error.notPartyInTokenSwap', {
-                  context: context.type,
-                })
-              )
-            }
-
-            // Verify we have not already paid our share.
-            if (selfParty.provided) {
-              throw new Error(
-                t('error.alreadySentTokenSwap', {
-                  context: context.type,
-                })
-              )
-            }
-
-            // Indicate contract is ready.
-            setValue(props.fieldNamePrefix + 'contractChosen', true, {
-              shouldValidate: true,
-            })
-          } catch (err) {
-            console.error(err)
-            setError(props.fieldNamePrefix + 'tokenSwapContractAddress', {
-              type: 'custom',
-              message:
-                err instanceof Error ? err.message : `${processError(err)}`,
-            })
-            return
-          } finally {
-            setValidatingExistingContract(false)
-          }
-        },
-      [
-        trigger,
-        props.fieldNamePrefix,
-        setValue,
-        tokenSwapContractAddress,
-        setError,
-        clearErrors,
-        setValidatingExistingContract,
-      ]
-    )
-
     return (
       <ActionCard
         Icon={HandshakeEmoji}
@@ -216,7 +89,7 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
       >
         <SuspenseLoader fallback={<Loader />} forceFallback={!mounted}>
           {contractChosen ? (
-            <InstantiatedTokenSwap {...props} />
+            <ExistingTokenSwap {...props} />
           ) : (
             <div className="flex flex-col gap-4">
               <SegmentedControls<boolean>
@@ -237,34 +110,7 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
               {creatingNew ? (
                 <InstantiateTokenSwap {...props} />
               ) : (
-                <>
-                  <div className="space-y-2">
-                    <InputLabel name={t('form.existingTokenSwapContract')} />
-
-                    <AddressInput
-                      error={props.errors?.tokenSwapContractAddress}
-                      fieldName={
-                        props.fieldNamePrefix + 'tokenSwapContractAddress'
-                      }
-                      iconType="contract"
-                      register={register}
-                      validation={[validateRequired, validateContractAddress]}
-                    />
-
-                    <InputErrorMessage
-                      error={props.errors?.tokenSwapContractAddress}
-                    />
-                  </div>
-
-                  <Button
-                    className="self-end"
-                    loading={validatingExistingContract}
-                    onClick={onChooseExistingContract}
-                    size="lg"
-                  >
-                    {t('button.continue')}
-                  </Button>
-                </>
+                <ChooseExistingTokenSwap {...props} />
               )}
             </div>
           )}

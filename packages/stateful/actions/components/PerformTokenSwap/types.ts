@@ -8,8 +8,6 @@ import {
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 
-//! Initial instantiate form interfaces.
-
 export interface Counterparty {
   address: string
   type: 'cw20' | 'native'
@@ -17,8 +15,6 @@ export interface Counterparty {
   amount: number
   decimals: number
 }
-
-//! Action interfaces.
 
 export interface PerformTokenSwapData {
   // Whether or not the contract has been chosen. When this is `false`, shows
@@ -32,6 +28,8 @@ export interface PerformTokenSwapData {
   selfParty?: Omit<Counterparty, 'address'>
   counterparty?: Counterparty
 }
+
+//! Stateless component options
 
 export interface InstantiateTokenSwapOptions {
   instantiating: boolean
@@ -56,10 +54,11 @@ export interface InstantiateTokenSwapOptions {
   ProfileDisplay: ComponentType<Omit<ProfileDisplayProps, 'loadingProfile'>>
 }
 
-export interface InstantiatedTokenSwapOptions {
+export interface ExistingTokenSwapOptions {
   tokenSwapStatusProps: TokenSwapStatusProps
 }
 
-export interface NewOrExistingTokenSwapOptions {
-  onContinue: () => void
+export interface ChooseExistingTokenSwapOptions {
+  chooseLoading: boolean
+  onChooseExistingContract: () => Promise<void>
 }

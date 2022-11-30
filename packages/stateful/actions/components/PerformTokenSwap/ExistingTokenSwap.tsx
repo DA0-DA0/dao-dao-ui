@@ -5,12 +5,13 @@ import { useTranslation } from 'react-i18next'
 import { CopyToClipboard, TokenSwapStatus } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 
-import { InstantiatedTokenSwapOptions } from './types'
+import { ExistingTokenSwapOptions } from './types'
 
 // Displayed when displaying an existing token swap.
-export const InstantiatedTokenSwap: ActionComponent<
-  InstantiatedTokenSwapOptions
-> = ({ fieldNamePrefix, options: { tokenSwapStatusProps } }) => {
+export const ExistingTokenSwap: ActionComponent<ExistingTokenSwapOptions> = ({
+  fieldNamePrefix,
+  options: { tokenSwapStatusProps },
+}) => {
   const { t } = useTranslation()
   const { watch } = useFormContext()
 

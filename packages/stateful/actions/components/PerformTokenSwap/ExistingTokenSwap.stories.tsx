@@ -7,13 +7,13 @@ import {
 } from '@dao-dao/storybook'
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 
-import { InstantiatedTokenSwap } from './InstantiatedTokenSwap'
+import { ExistingTokenSwap } from './ExistingTokenSwap'
 import { PerformTokenSwapData } from './types'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / components / PerformTokenSwap / InstantiatedTokenSwap',
-  component: InstantiatedTokenSwap,
+    'DAO DAO / packages / stateful / actions / components / PerformTokenSwap / ExistingTokenSwap',
+  component: ExistingTokenSwap,
 
   decorators: [
     makeReactHookFormDecorator<PerformTokenSwapData>({
@@ -30,11 +30,11 @@ export default {
       },
     }),
   ],
-} as ComponentMeta<typeof InstantiatedTokenSwap>
+} as ComponentMeta<typeof ExistingTokenSwap>
 
-const Template: ComponentStory<typeof InstantiatedTokenSwap> = (args) => (
+const Template: ComponentStory<typeof ExistingTokenSwap> = (args) => (
   <div className="max-w-xl">
-    <InstantiatedTokenSwap {...args} />
+    <ExistingTokenSwap {...args} />
   </div>
 )
 
