@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -11,20 +10,13 @@ import { InstantiatedTokenSwapOptions } from './types'
 // Displayed when displaying an existing token swap.
 export const InstantiatedTokenSwap: ActionComponent<
   InstantiatedTokenSwapOptions
-> = ({ fieldNamePrefix, errors, options: { tokenSwapStatusProps } }) => {
+> = ({ fieldNamePrefix, options: { tokenSwapStatusProps } }) => {
   const { t } = useTranslation()
-  const { watch, clearErrors } = useFormContext()
+  const { watch } = useFormContext()
 
   const tokenSwapContractAddress = watch(
     fieldNamePrefix + 'tokenSwapContractAddress'
   )
-
-  // Cleared instantiation validation since we are now instantiated.
-  useEffect(() => {
-    if (errors?.instantiateData?._error) {
-      clearErrors(fieldNamePrefix + 'instantiateData._error')
-    }
-  }, [clearErrors, errors?.instantiateData?._error, fieldNamePrefix, t])
 
   return (
     <>

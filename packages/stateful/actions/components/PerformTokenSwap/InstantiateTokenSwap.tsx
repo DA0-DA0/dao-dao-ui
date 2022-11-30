@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -43,10 +42,10 @@ export const InstantiateTokenSwap: ActionComponent<
 }) => {
   const { t } = useTranslation()
 
-  const { register, watch, setValue, trigger, setError } = useFormContext()
+  const { register, watch, setValue, trigger } = useFormContext()
 
-  const selfParty = watch(fieldNamePrefix + 'instantiateData.selfParty')
-  const counterparty = watch(fieldNamePrefix + 'instantiateData.counterparty')
+  const selfParty = watch(fieldNamePrefix + 'selfParty')
+  const counterparty = watch(fieldNamePrefix + 'counterparty')
 
   const selfCw20 = selfPartyCw20Balances.find(
     ({ address }) => selfParty.denomOrAddress === address
@@ -96,16 +95,6 @@ export const InstantiateTokenSwap: ActionComponent<
     !!counterparty.address &&
     isValidAddress(counterparty.address, CHAIN_BECH32_PREFIX)
 
-  // Validate instantiation. Cleared in InstantiatedTokenSwap component.
-  useEffect(() => {
-    if (!errors?.instantiateData?._error) {
-      setError(fieldNamePrefix + 'instantiateData._error', {
-        type: 'custom',
-        message: t('error.tokenSwapNeedsInstantiation'),
-      })
-    }
-  }, [errors?.instantiateData?._error, fieldNamePrefix, setError, t])
-
   return (
     <div className="flex flex-col gap-4">
       <p className="max-w-prose">
@@ -118,18 +107,18 @@ export const InstantiateTokenSwap: ActionComponent<
         <div className="flex flex-row items-stretch gap-2">
           <NumberInput
             containerClassName="grow"
-            error={errors?.instantiateData?.selfParty?.amount}
-            fieldName={fieldNamePrefix + 'instantiateData.selfParty.amount'}
+            error={errors?.selfParty?.amount}
+            fieldName={fieldNamePrefix + 'selfParty.amount'}
             max={selfMax}
             onMinus={() =>
               setValue(
-                fieldNamePrefix + 'instantiateData.selfParty.amount',
+                fieldNamePrefix + 'selfParty.amount',
                 Math.max(selfParty.amount - 1, selfMin)
               )
             }
             onPlus={() =>
               setValue(
-                fieldNamePrefix + 'instantiateData.selfParty.amount',
+                fieldNamePrefix + 'selfParty.amount',
                 Math.max(selfParty.amount + 1, selfMin)
               )
             }
@@ -151,21 +140,19 @@ export const InstantiateTokenSwap: ActionComponent<
           />
 
           <SelectInput
-            error={errors?.instantiateData?.selfParty?.denomOrAddress}
-            fieldName={
-              fieldNamePrefix + 'instantiateData.selfParty.denomOrAddress'
-            }
+            error={errors?.selfParty?.denomOrAddress}
+            fieldName={fieldNamePrefix + 'selfParty.denomOrAddress'}
             onChange={(denomOrAddress) => {
               const foundCw20 = selfPartyCw20Balances.find(
                 ({ address }) => counterparty.denomOrAddress === address
               )
               // Update type and decimals.
               setValue(
-                fieldNamePrefix + 'instantiateData.selfParty.type',
+                fieldNamePrefix + 'selfParty.type',
                 foundCw20 ? 'cw20' : 'native'
               )
               setValue(
-                fieldNamePrefix + 'instantiateData.selfParty.decimals',
+                fieldNamePrefix + 'selfParty.decimals',
                 foundCw20
                   ? foundCw20.info.decimals
                   : nativeTokenDecimals(denomOrAddress) ?? 0
@@ -187,18 +174,16 @@ export const InstantiateTokenSwap: ActionComponent<
           </SelectInput>
         </div>
 
-        <InputErrorMessage error={errors?.instantiateData?.selfParty?.amount} />
-        <InputErrorMessage
-          error={errors?.instantiateData?.selfParty?.denomOrAddress}
-        />
+        <InputErrorMessage error={errors?.selfParty?.amount} />
+        <InputErrorMessage error={errors?.selfParty?.denomOrAddress} />
       </div>
 
       <div className="space-y-2">
         <InputLabel name={t('form.counterparty')} />
 
         <AddressInput
-          error={errors?.instantiateData?.counterparty?.address}
-          fieldName={fieldNamePrefix + 'instantiateData.counterparty.address'}
+          error={errors?.counterparty?.address}
+          fieldName={fieldNamePrefix + 'counterparty.address'}
           register={register}
           rightNode={
             counterpartyAddressValid ? (
@@ -210,9 +195,7 @@ export const InstantiateTokenSwap: ActionComponent<
           validation={[validateRequired, validateAddress]}
         />
 
-        <InputErrorMessage
-          error={errors?.instantiateData?.counterparty?.address}
-        />
+        <InputErrorMessage error={errors?.counterparty?.address} />
       </div>
 
       {/* If address invalid, show nothing. */}
@@ -228,19 +211,17 @@ export const InstantiateTokenSwap: ActionComponent<
               <div className="flex flex-row items-stretch gap-2">
                 <NumberInput
                   containerClassName="grow"
-                  error={errors?.instantiateData?.counterparty?.amount}
-                  fieldName={
-                    fieldNamePrefix + 'instantiateData.counterparty.amount'
-                  }
+                  error={errors?.counterparty?.amount}
+                  fieldName={fieldNamePrefix + 'counterparty.amount'}
                   onMinus={() =>
                     setValue(
-                      fieldNamePrefix + 'instantiateData.counterparty.amount',
+                      fieldNamePrefix + 'counterparty.amount',
                       Math.max(counterparty.amount - 1, counterpartyMin)
                     )
                   }
                   onPlus={() =>
                     setValue(
-                      fieldNamePrefix + 'instantiateData.counterparty.amount',
+                      fieldNamePrefix + 'counterparty.amount',
                       Math.max(counterparty.amount + 1, counterpartyMin)
                     )
                   }
@@ -251,22 +232,19 @@ export const InstantiateTokenSwap: ActionComponent<
                 />
 
                 <SelectInput
-                  error={errors?.instantiateData?.counterparty?.denomOrAddress}
-                  fieldName={
-                    fieldNamePrefix +
-                    'instantiateData.counterparty.denomOrAddress'
-                  }
+                  error={errors?.counterparty?.denomOrAddress}
+                  fieldName={fieldNamePrefix + 'counterparty.denomOrAddress'}
                   onChange={(denomOrAddress) => {
                     const foundCw20 = counterpartyCw20Balances.data.find(
                       ({ address }) => counterparty.denomOrAddress === address
                     )
                     // Update type and decimals.
                     setValue(
-                      fieldNamePrefix + 'instantiateData.counterparty.type',
+                      fieldNamePrefix + 'counterparty.type',
                       foundCw20 ? 'cw20' : 'native'
                     )
                     setValue(
-                      fieldNamePrefix + 'instantiateData.counterparty.decimals',
+                      fieldNamePrefix + 'counterparty.decimals',
                       foundCw20
                         ? foundCw20.info.decimals
                         : nativeTokenDecimals(denomOrAddress) ?? 0
@@ -302,22 +280,21 @@ export const InstantiateTokenSwap: ActionComponent<
                 </p>
               )}
 
-              <InputErrorMessage
-                error={errors?.instantiateData?.counterparty?.amount}
-              />
-              <InputErrorMessage
-                error={errors?.instantiateData?.counterparty?.denomOrAddress}
-              />
+              <InputErrorMessage error={errors?.counterparty?.amount} />
+              <InputErrorMessage error={errors?.counterparty?.denomOrAddress} />
             </div>
           </>
         ))}
 
-      <div className="flex flex-col items-end space-y-2 self-end">
+      <div className="flex flex-col items-end gap-2 self-end">
         <Button
           loading={instantiating}
           onClick={async () => {
             // Manually validate just the instantiation fields.
-            const valid = await trigger(fieldNamePrefix + 'instantiateData')
+            const valid = await trigger([
+              fieldNamePrefix + 'selfParty',
+              fieldNamePrefix + 'counterparty',
+            ])
             valid && onInstantiate()
           }}
           size="lg"
@@ -328,11 +305,6 @@ export const InstantiateTokenSwap: ActionComponent<
         <p className="caption-text text-right">
           {t('info.noFundsDuringInstantiation')}
         </p>
-
-        <InputErrorMessage
-          className="text-right"
-          error={errors?.instantiateData?._error}
-        />
       </div>
     </div>
   )

@@ -8,15 +8,16 @@ import {
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 
 import { InstantiatedTokenSwap } from './InstantiatedTokenSwap'
-import { InitiateTokenSwapData } from './types'
+import { PerformTokenSwapData } from './types'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / components / InitiateTokenSwap / InstantiatedTokenSwap',
+    'DAO DAO / packages / stateful / actions / components / PerformTokenSwap / InstantiatedTokenSwap',
   component: InstantiatedTokenSwap,
 
   decorators: [
-    makeReactHookFormDecorator<InitiateTokenSwapData>({
+    makeReactHookFormDecorator<PerformTokenSwapData>({
+      contractChosen: true,
       tokenSwapContractAddress: 'junoTokenSwapContract',
     }),
     makeActionsProviderDecorator({

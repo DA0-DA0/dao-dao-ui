@@ -12,7 +12,7 @@ import { InstantiateTokenSwap } from './InstantiateTokenSwap'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / components / InitiateTokenSwap / InstantiateTokenSwap',
+    'DAO DAO / packages / stateful / actions / components / PerformTokenSwap / InstantiateTokenSwap',
   component: InstantiateTokenSwap,
   decorators: [
     ReactHookFormDecorator,

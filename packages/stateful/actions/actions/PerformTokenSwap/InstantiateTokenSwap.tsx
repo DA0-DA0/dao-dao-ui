@@ -26,15 +26,15 @@ import {
 import { ProfileDisplay } from '../../../components'
 import { useCw20GovernanceTokenInfoResponseIfExists } from '../../../voting-module-adapter/react/hooks/useCw20GovernanceTokenInfoResponseIfExists'
 import {
-  InitiateTokenSwapData,
   InstantiateTokenSwapOptions,
+  PerformTokenSwapData,
   InstantiateTokenSwap as StatelessInstantiateTokenSwap,
-} from '../../components/InitiateTokenSwap'
+} from '../../components/PerformTokenSwap'
 import { useActionOptions } from '../../react'
 
 export const InstantiateTokenSwap: ActionComponent<
   undefined,
-  InitiateTokenSwapData
+  PerformTokenSwapData
 > = (props) => {
   const { address: selfAddress, context, chainId, t } = useActionOptions()
   const { setValue } = useFormContext()
@@ -86,9 +86,9 @@ export const InstantiateTokenSwap: ActionComponent<
 
   const [instantiating, setInstantiating] = useState(false)
   const onInstantiate = useCallback(async () => {
-    const { instantiateData } = props.data
+    const { selfParty, counterparty } = props.data
 
-    if (!instantiateData) {
+    if (!selfParty || !counterparty) {
       toast.error(t('error.loadingData'))
       return
     }
@@ -105,45 +105,45 @@ export const InstantiateTokenSwap: ActionComponent<
         counterparty_one: {
           address: selfAddress,
           promise:
-            instantiateData.selfParty.type === 'cw20'
+            selfParty.type === 'cw20'
               ? {
                   cw20: {
-                    contract_addr: instantiateData.selfParty.denomOrAddress,
+                    contract_addr: selfParty.denomOrAddress,
                     amount: convertDenomToMicroDenomWithDecimals(
-                      instantiateData.selfParty.amount,
-                      instantiateData.selfParty.decimals
+                      selfParty.amount,
+                      selfParty.decimals
                     ).toString(),
                   },
                 }
               : {
                   native: {
-                    denom: instantiateData.selfParty.denomOrAddress,
+                    denom: selfParty.denomOrAddress,
                     amount: convertDenomToMicroDenomWithDecimals(
-                      instantiateData.selfParty.amount,
-                      instantiateData.selfParty.decimals
+                      selfParty.amount,
+                      selfParty.decimals
                     ).toString(),
                   },
                 },
         },
         counterparty_two: {
-          address: instantiateData.counterparty.address,
+          address: counterparty.address,
           promise:
-            instantiateData.counterparty.type === 'cw20'
+            counterparty.type === 'cw20'
               ? {
                   cw20: {
-                    contract_addr: instantiateData.counterparty.denomOrAddress,
+                    contract_addr: counterparty.denomOrAddress,
                     amount: convertDenomToMicroDenomWithDecimals(
-                      instantiateData.counterparty.amount,
-                      instantiateData.counterparty.decimals
+                      counterparty.amount,
+                      counterparty.decimals
                     ).toString(),
                   },
                 }
               : {
                   native: {
-                    denom: instantiateData.counterparty.denomOrAddress,
+                    denom: counterparty.denomOrAddress,
                     amount: convertDenomToMicroDenomWithDecimals(
-                      instantiateData.counterparty.amount,
-                      instantiateData.counterparty.decimals
+                      counterparty.amount,
+                      counterparty.decimals
                     ).toString(),
                   },
                 },
@@ -154,15 +154,22 @@ export const InstantiateTokenSwap: ActionComponent<
         walletAddress,
         CODE_ID_CONFIG.CwTokenSwap,
         instantiateMsg,
-        `TokenSwap_${instantiateData.selfParty.denomOrAddress}_${instantiateData.counterparty.denomOrAddress}`,
+        `TokenSwap_${selfParty.denomOrAddress}_${counterparty.denomOrAddress}`,
         'auto'
       )
 
       // Update action form data with address.
       setValue(
         props.fieldNamePrefix + 'tokenSwapContractAddress',
-        contractAddress
+        contractAddress,
+        {
+          shouldValidate: true,
+        }
       )
+      // Indicate that contract is ready.
+      setValue(props.fieldNamePrefix + 'contractChosen', true, {
+        shouldValidate: true,
+      })
       // Display success.
       toast.success(t('success.tokenSwapContractInstantiated'))
     } catch (err) {
@@ -217,25 +224,25 @@ const InnerInstantiateTokenSwap: ActionComponent<
         ? props.options.selfPartyCw20Balances[0]
         : undefined
 
-    resetField(props.fieldNamePrefix + 'instantiateData', {
+    resetField(props.fieldNamePrefix + 'selfParty', {
       defaultValue: {
-        selfParty: {
-          type: selfPartyDefaultCw20 ? 'cw20' : 'native',
-          denomOrAddress: selfPartyDefaultCw20
-            ? selfPartyDefaultCw20.address
-            : NATIVE_DENOM,
-          amount: 0,
-          decimals: selfPartyDefaultCw20
-            ? selfPartyDefaultCw20.info.decimals
-            : nativeTokenDecimals(NATIVE_DENOM) ?? 0,
-        },
-        counterparty: {
-          address: '',
-          type: 'native',
-          denomOrAddress: NATIVE_DENOM,
-          amount: 0,
-          decimals: nativeTokenDecimals(NATIVE_DENOM) ?? 0,
-        },
+        type: selfPartyDefaultCw20 ? 'cw20' : 'native',
+        denomOrAddress: selfPartyDefaultCw20
+          ? selfPartyDefaultCw20.address
+          : NATIVE_DENOM,
+        amount: 0,
+        decimals: selfPartyDefaultCw20
+          ? selfPartyDefaultCw20.info.decimals
+          : nativeTokenDecimals(NATIVE_DENOM) ?? 0,
+      },
+    })
+    resetField(props.fieldNamePrefix + 'counterparty', {
+      defaultValue: {
+        address: '',
+        type: 'native',
+        denomOrAddress: NATIVE_DENOM,
+        amount: 0,
+        decimals: nativeTokenDecimals(NATIVE_DENOM) ?? 0,
       },
     })
 
@@ -245,14 +252,18 @@ const InnerInstantiateTokenSwap: ActionComponent<
   }, [])
 
   const counterpartyAddress: string | undefined = watch(
-    props.fieldNamePrefix + 'instantiateData.counterparty.address'
+    props.fieldNamePrefix + 'counterparty.address'
   )
+
+  //! Try to get CW20s assuming it's a DAO.
+  const counterpartyAddressIsContract =
+    counterpartyAddress &&
+    isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
 
   // Load balances as loadables since they refresh automatically on a timer.
   const counterpartyNativeBalances = loadableToLoadingData(
     useCachedLoadable(
-      counterpartyAddress &&
-        isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
+      counterpartyAddressIsContract
         ? nativeBalancesSelector({
             address: counterpartyAddress,
             chainId,
@@ -261,11 +272,6 @@ const InnerInstantiateTokenSwap: ActionComponent<
     ),
     []
   )
-
-  //! Try to get CW20s assuming it's a DAO.
-  const counterpartyAddressIsContract =
-    counterpartyAddress &&
-    isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
 
   // Try to retrieve governance token address, failing if not a cw20-based DAO.
   const counterpartyDaoGovernanceTokenAddress = useRecoilValueLoadable(

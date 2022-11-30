@@ -18,16 +18,19 @@ export interface Counterparty {
   decimals: number
 }
 
-export interface InstantiateFormData {
-  selfParty: Omit<Counterparty, 'address'>
-  counterparty: Counterparty
-}
-
 //! Action interfaces.
 
-export interface InitiateTokenSwapData {
+export interface PerformTokenSwapData {
+  // Whether or not the contract has been chosen. When this is `false`, shows
+  // form allowing user to create a new swap contract or enter an existing
+  // address. When `true`, it shows the status of the swap.
+  // `tokenSwapContractAddress` should be defined and valid when this is `true`.
+  contractChosen: boolean
+
   tokenSwapContractAddress?: string
-  instantiateData?: InstantiateFormData
+
+  selfParty?: Omit<Counterparty, 'address'>
+  counterparty?: Counterparty
 }
 
 export interface InstantiateTokenSwapOptions {
@@ -55,4 +58,8 @@ export interface InstantiateTokenSwapOptions {
 
 export interface InstantiatedTokenSwapOptions {
   tokenSwapStatusProps: TokenSwapStatusProps
+}
+
+export interface NewOrExistingTokenSwapOptions {
+  onContinue: () => void
 }

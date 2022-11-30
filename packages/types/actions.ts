@@ -22,7 +22,7 @@ export enum CoreActionKey {
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',
   Custom = 'custom',
-  InitiateTokenSwap = 'initiateTokenSwap',
+  PerformTokenSwap = 'performTokenSwap',
 }
 
 // Actions defined in voting or proposal module adapters.
