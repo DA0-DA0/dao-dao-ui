@@ -76,7 +76,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
   }
 
   const configSelector =
-    context.coreVersion === ContractVersion.V0_1_0
+    context.coreVersion === ContractVersion.V1
       ? CwCoreV1Selectors.configSelector({
           contractAddress: address,
         })

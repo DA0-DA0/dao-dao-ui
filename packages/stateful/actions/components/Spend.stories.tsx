@@ -24,7 +24,7 @@ export default {
       bech32Prefix: 'juno',
       context: {
         type: ActionOptionsContextType.Dao,
-        coreVersion: ContractVersion.V0_2_0,
+        coreVersion: ContractVersion.V2Alpha,
       },
     }),
   ],

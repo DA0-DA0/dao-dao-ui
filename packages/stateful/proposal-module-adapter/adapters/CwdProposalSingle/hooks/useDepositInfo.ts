@@ -22,7 +22,7 @@ export const useDepositInfo = (): CheckedDepositInfo | undefined => {
     ProposalV1Response | DepositInfoPreProposeResponse | undefined
   >(
     //! V1
-    version === ContractVersion.V0_1_0
+    version === ContractVersion.V1
       ? proposalV1Selector({
           contractAddress: address,
           params: [
@@ -52,8 +52,7 @@ export const useDepositInfo = (): CheckedDepositInfo | undefined => {
 
   const depositInfo: CheckedDepositInfo | undefined =
     //! V1
-    version === ContractVersion.V0_1_0 &&
-    proposalResponse?.proposal?.deposit_info
+    version === ContractVersion.V1 && proposalResponse?.proposal?.deposit_info
       ? {
           amount: proposalResponse.proposal.deposit_info.deposit,
           denom: {

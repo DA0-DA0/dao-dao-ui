@@ -7,8 +7,8 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
   proposalModuleAddress,
   version
 ) => {
-  // Only v2 supports pre-propose.
-  if (version !== ContractVersion.V0_2_0) {
+  // v1 does not support pre-propose.
+  if (version === ContractVersion.V1) {
     return null
   }
 

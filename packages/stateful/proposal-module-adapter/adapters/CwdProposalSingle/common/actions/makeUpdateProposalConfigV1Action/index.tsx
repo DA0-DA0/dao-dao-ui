@@ -211,7 +211,7 @@ export const makeUpdateProposalConfigV1Action: ActionMaker<
   { proposalModule: ProposalModule }
 > = ({ t, proposalModule: { version, address: proposalModuleAddress } }) => {
   // Only v1.
-  if (version !== ContractVersion.V0_1_0) {
+  if (version !== ContractVersion.V1) {
     return null
   }
 

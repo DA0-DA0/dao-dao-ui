@@ -300,7 +300,7 @@ export const NewProposal = ({
         try {
           let response
           //! V1
-          if (proposalModule.version === ContractVersion.V0_1_0) {
+          if (proposalModule.version === ContractVersion.V1) {
             response = await doProposeV1(
               newProposalData,
               'auto',
