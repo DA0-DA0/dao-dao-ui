@@ -547,6 +547,7 @@
     "daoCreatedPleaseWait": "DAO created. You will be redirected once the DAO page is ready...",
     "depositedTokenIntoDao": "Deposited {{amount}} ${{tokenSymbol}} into the {{daoName}} treasury.",
     "proposalClosed": "Closed successfully.",
+    "proposalCreatedCompleteSurvey": "Proposal published. Complete the survey by saving the proposal ID.",
     "proposalExecuted": "Executed successfully. Refreshing page...",
     "ratingsSubmitted": "Ratings submitted.",
     "surveyCompleted": "Survey completed. Redirecting to proposal...",

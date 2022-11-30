@@ -212,7 +212,9 @@ export const ProposalCreationForm = () => {
           ...formData,
           msgs: completeRatings.cosmosMsgs,
         }
+
         const { proposalId } = await publishProposal(data)
+        toast.success(t('success.proposalCreatedCompleteSurvey'))
 
         // Complete with proposal ID.
         await postRequest(`/${coreAddress}/complete`, { proposalId })
