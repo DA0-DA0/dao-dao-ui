@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useRecoilCallback } from 'recoil'
@@ -11,7 +10,7 @@ import { ChooseExistingTokenSwap as StatelessChooseExistingTokenSwap } from '../
 import { useActionOptions } from '../../react'
 
 export const ChooseExistingTokenSwap: ActionComponent = (props) => {
-  const { address, chainId, context } = useActionOptions()
+  const { address, chainId, context, t } = useActionOptions()
   const { watch, setValue, setError, clearErrors, trigger } = useFormContext()
 
   const tokenSwapContractAddress: string | undefined = watch(
