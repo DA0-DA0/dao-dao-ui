@@ -62,12 +62,15 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
 
     const [creatingNew, setCreatingNew] = useState(true)
     const [mounted, setMounted] = useState(false)
-
-    // If contractChosen is true on mount during creation, clear it. This must
-    // have been set by duplicating an existing action.
+    // If `contractChosen` is true on mount during creation, this must have been
+    // set by duplicating an existing action. In this case, we want to default
+    // to using the existing contract since the address is filled in, and clear
+    // `contractChosen` so the user has to confirm the contract. This may be
+    // used to quickly perform a token swap with an existing contract.
     useEffect(() => {
       if (contractChosen && props.isCreating) {
         setValue(props.fieldNamePrefix + 'contractChosen', false)
+        setCreatingNew(false)
       }
       setMounted(true)
       // Only run on mount.
