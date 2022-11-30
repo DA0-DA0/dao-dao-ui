@@ -39,6 +39,11 @@ import { InstantiateTokenSwap } from './InstantiateTokenSwap'
 // enters the token swap contract instantiation information and executes the
 // instantiation. Once done, the action is ready to submit.
 
+// Use common key to identify CW20s being sent to token swaps from this DAO DAO
+// action. This is passed into the `msg` parameter of the CW20 `send` execute
+// variant, since it can take arbitrary JSON. This allows us to detect if a CW20
+// send was a result of a token swap funding action in order to display this
+// action accordingly.
 const CW20_SEND_MSG_KEY = 'dao_dao_initiate_token_swap'
 
 const useDefaults: UseDefaults<PerformTokenSwapData> = () => ({
@@ -158,8 +163,8 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
                       msg: toBase64(
                         toUtf8(
                           JSON.stringify({
-                            // Use common key to identify CW20s being sent to token
-                            // swaps from this DAO DAO action.
+                            // Use common key to identify CW20s being sent to
+                            // token swaps from this DAO DAO action.
                             [CW20_SEND_MSG_KEY]: {},
                           })
                         )
