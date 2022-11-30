@@ -7,11 +7,14 @@ import { makeExecuteAction } from './Execute'
 import { makeInstantiateAction } from './Instantiate'
 import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeMigrateAction } from './MigrateContract'
-import { makePerformTokenSwapAction } from './PerformTokenSwap'
 import { makeRemoveCw20Action } from './RemoveCw20'
 import { makeRemoveCw721Action } from './RemoveCw721'
 import { makeSpendAction } from './Spend'
 import { makeStakeAction } from './Stake'
+import {
+  makePerformTokenSwapAction,
+  makeWithdrawTokenSwapAction,
+} from './token_swap'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
 
@@ -32,6 +35,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeCustomAction,
     makeManageSubDaosAction,
     makePerformTokenSwapAction,
+    makeWithdrawTokenSwapAction,
   ]
 
   return (

@@ -1,23 +1,24 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { makeProps as makeTokenSwapStatusProps } from '@dao-dao/stateless/components/TokenSwapStatus.stories'
 import {
   makeActionsProviderDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 
-import { ChooseExistingTokenSwap } from './ChooseExistingTokenSwap'
+import { FundTokenSwap } from './FundTokenSwap'
 import { PerformTokenSwapData } from './types'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / components / PerformTokenSwap / ChooseExistingTokenSwap',
-  component: ChooseExistingTokenSwap,
+    'DAO DAO / packages / stateful / actions / components / token_swap / FundTokenSwap',
+  component: FundTokenSwap,
 
   decorators: [
     makeReactHookFormDecorator<PerformTokenSwapData>({
-      contractChosen: false,
-      tokenSwapContractAddress: undefined,
+      contractChosen: true,
+      tokenSwapContractAddress: 'junoTokenSwapContract',
     }),
     makeActionsProviderDecorator({
       address: 'junoWalletAddress',
@@ -29,11 +30,11 @@ export default {
       },
     }),
   ],
-} as ComponentMeta<typeof ChooseExistingTokenSwap>
+} as ComponentMeta<typeof FundTokenSwap>
 
-const Template: ComponentStory<typeof ChooseExistingTokenSwap> = (args) => (
+const Template: ComponentStory<typeof FundTokenSwap> = (args) => (
   <div className="max-w-xl">
-    <ChooseExistingTokenSwap {...args} />
+    <FundTokenSwap {...args} />
   </div>
 )
 
@@ -47,7 +48,6 @@ Default.args = {
   onRemove: () => alert('remove'),
   errors: {},
   options: {
-    chooseLoading: false,
-    onChooseExistingContract: async () => alert('choose'),
+    tokenSwapStatusProps: makeTokenSwapStatusProps(),
   },
 }

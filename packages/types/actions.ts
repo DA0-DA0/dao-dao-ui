@@ -23,6 +23,7 @@ export enum CoreActionKey {
   UpdateAdmin = 'updateAdmin',
   Custom = 'custom',
   PerformTokenSwap = 'performTokenSwap',
+  WithdrawTokenSwap = 'withdrawTokenSwap',
 }
 
 // Actions defined in voting or proposal module adapters.

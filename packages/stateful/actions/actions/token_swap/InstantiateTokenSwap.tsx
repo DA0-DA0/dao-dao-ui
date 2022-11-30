@@ -29,7 +29,7 @@ import {
   InstantiateTokenSwapOptions,
   PerformTokenSwapData,
   InstantiateTokenSwap as StatelessInstantiateTokenSwap,
-} from '../../components/PerformTokenSwap'
+} from '../../components/token_swap'
 import { useActionOptions } from '../../react'
 
 export const InstantiateTokenSwap: ActionComponent<

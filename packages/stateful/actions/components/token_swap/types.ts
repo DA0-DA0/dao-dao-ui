@@ -29,6 +29,15 @@ export interface PerformTokenSwapData {
   counterparty?: Counterparty
 }
 
+export interface WithdrawTokenSwapData {
+  // Whether or not the contract has been chosen. When this is `false`, shows
+  // form allowing user to enter an existing address. When `true`, it shows the
+  // status of the swap. `tokenSwapContractAddress` should be defined and valid
+  // when this is `true`.
+  contractChosen: boolean
+  tokenSwapContractAddress?: string
+}
+
 //! Stateless component options
 
 export interface InstantiateTokenSwapOptions {

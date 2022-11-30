@@ -6,10 +6,16 @@ import { CwTokenSwapSelectors } from '@dao-dao/state/recoil'
 import { ActionComponent } from '@dao-dao/types'
 import { objectMatchesStructure, processError } from '@dao-dao/utils'
 
-import { ChooseExistingTokenSwap as StatelessChooseExistingTokenSwap } from '../../components/PerformTokenSwap'
+import { ChooseExistingTokenSwap as StatelessChooseExistingTokenSwap } from '../../components/token_swap'
 import { useActionOptions } from '../../react'
 
-export const ChooseExistingTokenSwap: ActionComponent = (props) => {
+interface ChooseExistingTokenSwapOptions {
+  action: 'fund' | 'withdraw'
+}
+
+export const ChooseExistingTokenSwap: ActionComponent<
+  ChooseExistingTokenSwapOptions
+> = ({ options: { action }, ...props }) => {
   const { address, chainId, context, t } = useActionOptions()
   const { watch, setValue, setError, clearErrors, trigger } = useFormContext()
 
@@ -98,10 +104,18 @@ export const ChooseExistingTokenSwap: ActionComponent = (props) => {
             )
           }
 
-          // Verify we have not already paid our share.
-          if (selfParty.provided) {
+          // If funding, verify we have not already paid our share.
+          if (action === 'fund' && selfParty.provided) {
             throw new Error(
               t('error.alreadySentTokenSwap', {
+                context: context.type,
+              })
+            )
+          }
+          // If withdrawing, verify we have already paid our share.
+          if (action === 'withdraw' && !selfParty.provided) {
+            throw new Error(
+              t('error.notYetSentTokenSwap', {
                 context: context.type,
               })
             )
@@ -131,6 +145,7 @@ export const ChooseExistingTokenSwap: ActionComponent = (props) => {
       setError,
       clearErrors,
       setChooseLoading,
+      action,
     ]
   )
 

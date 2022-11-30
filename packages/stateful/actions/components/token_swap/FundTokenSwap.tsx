@@ -7,8 +7,8 @@ import { ActionComponent } from '@dao-dao/types'
 
 import { ExistingTokenSwapOptions } from './types'
 
-// Displayed when displaying an existing token swap.
-export const ExistingTokenSwap: ActionComponent<ExistingTokenSwapOptions> = ({
+// Displayed when displaying an existing token swap being funded.
+export const FundTokenSwap: ActionComponent<ExistingTokenSwapOptions> = ({
   fieldNamePrefix,
   options: { tokenSwapStatusProps },
 }) => {

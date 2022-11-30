@@ -26,9 +26,9 @@ import {
 
 import { SuspenseLoader } from '../../../components'
 import { ActionCard } from '../../components/ActionCard'
-import { PerformTokenSwapData } from '../../components/PerformTokenSwap'
+import { PerformTokenSwapData } from '../../components/token_swap'
 import { ChooseExistingTokenSwap } from './ChooseExistingTokenSwap'
-import { ExistingTokenSwap } from './ExistingTokenSwap'
+import { FundTokenSwap } from './FundTokenSwap'
 import { InstantiateTokenSwap } from './InstantiateTokenSwap'
 
 // This action requires the user to first instantiate a token swap contract
@@ -92,7 +92,7 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
       >
         <SuspenseLoader fallback={<Loader />} forceFallback={!mounted}>
           {contractChosen ? (
-            <ExistingTokenSwap {...props} />
+            <FundTokenSwap {...props} />
           ) : (
             <div className="flex flex-col gap-4">
               <SegmentedControls<boolean>
@@ -113,7 +113,10 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
               {creatingNew ? (
                 <InstantiateTokenSwap {...props} />
               ) : (
-                <ChooseExistingTokenSwap {...props} />
+                <ChooseExistingTokenSwap
+                  {...props}
+                  options={{ action: 'fund' }}
+                />
               )}
             </div>
           )}
