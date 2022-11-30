@@ -65,6 +65,7 @@ export interface InstantiateTokenSwapOptions {
 
 export interface ExistingTokenSwapOptions {
   tokenSwapStatusProps: TokenSwapStatusProps
+  status: string
 }
 
 export interface ChooseExistingTokenSwapOptions {

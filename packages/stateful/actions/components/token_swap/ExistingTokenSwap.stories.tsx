@@ -7,16 +7,16 @@ import {
 } from '@dao-dao/storybook'
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 
-import { WithdrawTokenSwapData } from './types'
-import { WithdrawTokenSwap } from './WithdrawTokenSwap'
+import { ExistingTokenSwap } from './ExistingTokenSwap'
+import { PerformTokenSwapData } from './types'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / components / token_swap / WithdrawTokenSwap',
-  component: WithdrawTokenSwap,
+    'DAO DAO / packages / stateful / actions / components / token_swap / ExistingTokenSwap',
+  component: ExistingTokenSwap,
 
   decorators: [
-    makeReactHookFormDecorator<WithdrawTokenSwapData>({
+    makeReactHookFormDecorator<PerformTokenSwapData>({
       contractChosen: true,
       tokenSwapContractAddress: 'junoTokenSwapContract',
     }),
@@ -30,11 +30,11 @@ export default {
       },
     }),
   ],
-} as ComponentMeta<typeof WithdrawTokenSwap>
+} as ComponentMeta<typeof ExistingTokenSwap>
 
-const Template: ComponentStory<typeof WithdrawTokenSwap> = (args) => (
+const Template: ComponentStory<typeof ExistingTokenSwap> = (args) => (
   <div className="max-w-xl">
-    <WithdrawTokenSwap {...args} />
+    <ExistingTokenSwap {...args} />
   </div>
 )
 
@@ -49,5 +49,6 @@ Default.args = {
   errors: {},
   options: {
     tokenSwapStatusProps: makeTokenSwapStatusProps(),
+    status: 'This action does something.',
   },
 }

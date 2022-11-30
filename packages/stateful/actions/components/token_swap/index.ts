@@ -1,5 +1,4 @@
 export * from './ChooseExistingTokenSwap'
-export * from './FundTokenSwap'
+export * from './ExistingTokenSwap'
 export * from './InstantiateTokenSwap'
 export * from './types'
-export * from './WithdrawTokenSwap'

@@ -1,15 +1,14 @@
-import { t } from 'i18next'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { ActionComponent } from '@dao-dao/types'
 
 import { useTokenSwapStatusInfoForContract } from '../../../hooks/useTokenSwapStatusInfoForContract'
-import { FundTokenSwap as StatelessFundTokenSwap } from '../../components/token_swap'
+import { ExistingTokenSwap } from '../../components/token_swap'
 import { useActionOptions } from '../../react'
 
 export const FundTokenSwap: ActionComponent = (props) => {
-  const { address, chainId } = useActionOptions()
+  const { address, chainId, t } = useActionOptions()
 
   const { watch, setValue } = useFormContext()
   const tokenSwapContractAddress: string | undefined = watch(
@@ -55,10 +54,17 @@ export const FundTokenSwap: ActionComponent = (props) => {
   ])
 
   return (
-    <StatelessFundTokenSwap
+    <ExistingTokenSwap
       {...props}
       options={{
         tokenSwapStatusProps,
+        status: t('info.actionPaysTokenSwap', {
+          context: selfParty.provided ? 'paid' : 'unpaid',
+          amount: selfPartyAmount.toLocaleString(undefined, {
+            maximumFractionDigits: selfPartyTokenInfo.decimals,
+          }),
+          tokenSymbol: selfPartyTokenInfo.symbol,
+        }),
       }}
     />
   )
