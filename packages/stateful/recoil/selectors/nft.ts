@@ -1,4 +1,9 @@
-import { constSelector, selectorFamily, waitForAll } from 'recoil'
+import {
+  constSelector,
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+} from 'recoil'
 
 import {
   Cw721BaseSelectors,
@@ -76,8 +81,10 @@ export const nftCardInfosSelector = selectorFamily<
         })
       )
 
+      // Ignore errors by waiting for all to settle, and then ignoring any that
+      // do not have a value.
       const nftCollectionInfos = get(
-        waitForAll(
+        waitForAllSettled(
           nftCollectionAddresses.map((collectionAddress) =>
             nativeAndStargazeCollectionInfoSelector({
               nativeCollectionAddress: collectionAddress,
@@ -100,10 +107,11 @@ export const nftCardInfosSelector = selectorFamily<
       )
 
       const collectionsWithTokens = nftCollectionInfos
-        .map((collectionInfo, index) => {
+        .map((collectionInfoLoadable, index) => {
           // Don't filter undefined infos out until inside this map so we can
           // use the index to zip with token IDs.
-          if (!collectionInfo) {
+
+          if (collectionInfoLoadable.state !== 'hasValue') {
             return
           }
 
@@ -113,7 +121,8 @@ export const nftCardInfosSelector = selectorFamily<
             waitForAll(
               tokenIds.map((tokenId) =>
                 Cw721BaseSelectors.nftInfoSelector({
-                  contractAddress: collectionInfo.native.address,
+                  contractAddress:
+                    collectionInfoLoadable.contents.native.address,
                   chainId,
                   params: [{ tokenId }],
                 })
@@ -132,7 +141,7 @@ export const nftCardInfosSelector = selectorFamily<
           )
 
           return {
-            collectionInfo,
+            collectionInfo: collectionInfoLoadable.contents,
             tokens: tokenIds
               .map((tokenId, index) => ({
                 tokenId,
