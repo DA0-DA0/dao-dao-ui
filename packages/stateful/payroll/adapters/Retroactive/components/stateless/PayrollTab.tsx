@@ -86,7 +86,7 @@ export const PayrollTab = ({
             {canCreateSurvey && showCreate ? (
               <>
                 <Remove className="!h-4 !w-4" />
-                {t('button.hideNewSurvey')}
+                {t('button.cancelNewSurvey')}
               </>
             ) : (
               <>

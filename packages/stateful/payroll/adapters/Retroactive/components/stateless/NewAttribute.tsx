@@ -6,6 +6,7 @@ import {
   Button,
   IconButton,
   InputErrorMessage,
+  InputLabel,
   NumberInput,
   SelectInput,
   TextInput,
@@ -84,41 +85,28 @@ export const NewAttribute = ({
 
   return (
     <div className="flex flex-col rounded-lg bg-background-tertiary">
-      <div className="flex flex-col gap-y-2 gap-x-4 py-4 pl-6 pr-6 sm:flex-row sm:items-center sm:pr-4">
+      <div className="flex flex-col gap-y-2 gap-x-4 py-4 px-6">
         <div className="flex flex-row items-center justify-between">
-          <p className="primary-text text-text-body">
-            {t('form.attributeName')}
-          </p>
+          <InputLabel name={t('form.attributeName')} />
 
           <IconButton
             Icon={Close}
-            className="xs:hidden"
             onClick={onRemove}
             size="sm"
             variant="ghost"
           />
         </div>
 
-        <div className="flex grow flex-row items-center gap-4">
-          <div className="flex grow flex-col">
-            <TextInput
-              error={errors.attributes?.[attributeIndex]?.name}
-              fieldName={`attributes.${attributeIndex}.name`}
-              placeholder={t('form.attributeNamePlaceholder')}
-              register={register}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage
-              error={errors.attributes?.[attributeIndex]?.name}
-            />
-          </div>
-
-          <IconButton
-            Icon={Close}
-            className="hidden xs:block"
-            onClick={onRemove}
-            size="sm"
-            variant="ghost"
+        <div className="grow">
+          <TextInput
+            error={errors.attributes?.[attributeIndex]?.name}
+            fieldName={`attributes.${attributeIndex}.name`}
+            placeholder={t('form.attributeNamePlaceholder')}
+            register={register}
+            validation={[validateRequired]}
+          />
+          <InputErrorMessage
+            error={errors.attributes?.[attributeIndex]?.name}
           />
         </div>
       </div>
