@@ -178,7 +178,7 @@
     "noVotingPower": "You have not given anyone voting power. Add some members to your DAO.",
     "notCw20Address": "This contract address is not a CW20 token.",
     "notCw721Address": "This contract address is not a NFT (CW721).",
-    "notEnoughForDeposit": "You do not have enough tokens in your balance to pay the proposal deposit",
+    "notEnoughForDeposit": "You do not have enough tokens to pay the proposal deposit.",
     "notInActiveSet": "This validator is not in the active set. No rewards will be earned while this is the case.",
     "nothingStaked": "Nothing staked.",
     "pageNotFound": "We couldn't find that page.",
