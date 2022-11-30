@@ -93,7 +93,7 @@
     "daoNotFound": "找不到DAO",
     "errorOccurredOnPage": "此頁面發生錯誤",
     "failedParsingCoreVersion": "無法判斷核心版本",
-    "failedToGetTokenInfo": "無法查看代幣資訊，請輸入有效的 CW20 合約地址",
+    "failedToGetTokenInfo": "無法查看代幣資訊，請輸入有效的 {{tokenType}} 合約地址",
     "fieldRequired": "請於此輸入資訊",
     "govTokenBalancesDoNotSumTo100": "代幣分配總額必須等於100%，但是現在只有 {{totalPercent}}",
     "invalidAddress": "無效地址",

@@ -89,7 +89,7 @@
     "createProposalSubmitInvalid": "미리보기 혹은 게시하기 이전에, 상단의 오류를 수정해주세요.",
     "daoIsPaused": "DAO가 멈추었을 때에는 제안을 생성할 수 없습니다.",
     "daoNotFound": "DAO를 찾을 수 없습니다.",
-    "failedToGetTokenInfo": "토큰 정보를 찾을 수 없습니다. 유효한 CW20 계약 주소를 입력해주세요.",
+    "failedToGetTokenInfo": "토큰 정보를 찾을 수 없습니다. 유효한 {{tokenType}} 계약 주소를 입력해주세요.",
     "fieldRequired": "이 필드는 필수 입력란입니다.",
     "govTokenBalancesDoNotSumTo100": "전체 토큰 분배 비율은 100% 여야 합니다. 현재 총 분배 비율은 총 {{totalPercent}} 입니다.",
     "internalServerError": "이 페이지 상에서 내부 서버 오류가 발생하였습니다.",

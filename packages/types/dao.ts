@@ -62,7 +62,7 @@ export interface UnstakingTask {
   status: UnstakingTaskStatus
   amount: number
   tokenSymbol: string
-  tokenDecimals: number
+  tokenDecimals?: number
   // If unstaking or ready to claim, date it will be/was unstaked.
   // If claimed, date it was claimed.
   date?: Date

@@ -93,7 +93,7 @@
     "daoNotFound": "No se encuentra la DAO",
     "errorOccurredOnPage": "Se encontró un error en esta página",
     "failedParsingCoreVersion": "No se pudo determinar la versión de núcleo..",
-    "failedToGetTokenInfo": "No se encontró la información del token. Ingresar una versión válida de dirección de contrato CW20..",
+    "failedToGetTokenInfo": "No se encontró la información del token. Ingresar una versión válida de dirección de contrato {{tokenType}}..",
     "fieldRequired": "Campo requerido.",
     "govTokenBalancesDoNotSumTo100": "El porcentaje de la distribución total del token debe sumar a 100%, pero actualmente suma a {{totalPercent}}.",
     "invalidAddress": "Dirección inválida.",

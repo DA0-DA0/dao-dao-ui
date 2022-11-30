@@ -10,8 +10,14 @@ import {
   DaoCreationGovernanceConfigInputProps,
   DaoCreationGovernanceConfigReviewProps,
   DaoCreationVotingConfigItem,
+  NftCardInfo,
 } from './dao'
-import { DaoInfoBarItem, LoadingData, StakingMode } from './stateless'
+import {
+  DaoInfoBarItem,
+  LoadingData,
+  LoadingDataWithError,
+  StakingMode,
+} from './stateless'
 import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
 
 export interface BaseProfileCardMemberInfoProps {
@@ -53,6 +59,7 @@ export interface UseStakingInfoOptions {
   fetchTotalStakedValue?: boolean
   fetchWalletStakedValue?: boolean
   fetchLoadingWalletStakedValue?: boolean
+  fetchLoadingWalletUnstakedValue?: boolean
 }
 
 export interface UseStakingInfoResponse {
@@ -72,6 +79,8 @@ export interface UseStakingInfoResponse {
   // Wallet staked value
   walletStakedValue?: number
   loadingWalletStakedValue?: LoadingData<number>
+  loadingWalletStakedNfts?: LoadingDataWithError<NftCardInfo[]>
+  loadingWalletUnstakedNfts?: LoadingDataWithError<NftCardInfo[]>
 }
 
 export interface IVotingModuleAdapter {

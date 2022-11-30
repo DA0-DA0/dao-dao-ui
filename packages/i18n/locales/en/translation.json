@@ -95,6 +95,12 @@
       "membership": "By invitation",
       "name": "Membership DAO (Multisig)",
       "supplies": "None"
+    },
+    "CwdVotingCw721Staked": {
+      "description": "Fluid organization with many members who can join and leave as they wish. Members can alter their governance power and participation by exchanging non-fungible tokens.",
+      "membership": "By staking NFTs",
+      "name": "Non-Fungible Token (NFT)-based DAO",
+      "supplies": "Non-Fungible Tokens"
     }
   },
   "depositRefundPolicy": {
@@ -142,7 +148,7 @@
     "descriptionTooLong": "A DAO's description must be less than or equal to {{max}} characters long.",
     "errorOccurredOnPage": "An error occured on this page.",
     "failedParsingCoreVersion": "Failed to determine core version.",
-    "failedToGetTokenInfo": "Failed to get token info. Please enter a valid CW20 contract address.",
+    "failedToGetTokenInfo": "Failed to get token info. Please enter a valid {{tokenType}} contract address.",
     "govTokenBalancesDoNotSumTo100": "Total token distribution percentage must equal 100%, but it currently sums to {{totalPercent}}.",
     "insufficientWalletBalance": "Insufficient wallet balance (total: {{amount}} ${{tokenSymbol}}).",
     "invalidCosmosMessage": "Invalid <2>Cosmos message</2>",
@@ -604,6 +610,13 @@
     "stake": "Stake",
     "staked": "Staked",
     "stakedTo": "Staked to...",
+    "stakingModeNfts": {
+      "claim": "Claim NFTs",
+      "stake": "Stake NFTs",
+      "stakeHeaderSubtitle": "Select the NFTs you want to stake from the NFT collection.",
+      "unstake": "Unstake NFTs",
+      "unstakeHeaderSubtitle": "Select the NFTs you want to unstake from the NFT collection."
+    },
     "status": "Status",
     "subDaos": "SubDAOs",
     "supplies": "Supplies",

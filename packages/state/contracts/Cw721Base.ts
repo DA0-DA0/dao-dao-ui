@@ -1,6 +1,7 @@
 import { Coin, StdFee } from '@cosmjs/amino'
 import {
   CosmWasmClient,
+  ExecuteInstruction,
   ExecuteResult,
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
@@ -364,6 +365,7 @@ export class Cw721BaseClient
     this.contractAddress = contractAddress
     this.transferNft = this.transferNft.bind(this)
     this.sendNft = this.sendNft.bind(this)
+    this.sendNftMultiple = this.sendNftMultiple.bind(this)
     this.approve = this.approve.bind(this)
     this.revoke = this.revoke.bind(this)
     this.approveAll = this.approveAll.bind(this)
@@ -425,6 +427,39 @@ export class Cw721BaseClient
       fee,
       memo,
       funds
+    )
+  }
+  sendNftMultiple = async (
+    {
+      contract,
+      msg,
+      tokenIds,
+    }: {
+      contract: string
+      msg: string
+      tokenIds: string[]
+    },
+    fee: number | StdFee | 'auto' = 'auto',
+    memo?: string
+  ): Promise<ExecuteResult> => {
+    let instructions: ExecuteInstruction[] = tokenIds.map((tokenId) => {
+      return {
+        contractAddress: this.contractAddress,
+        msg: {
+          send_nft: {
+            contract,
+            msg,
+            token_id: tokenId,
+          },
+        },
+      } as ExecuteInstruction
+    })
+
+    return await this.client.executeMultiple(
+      this.sender,
+      instructions,
+      fee,
+      memo
     )
   }
   approve = async (

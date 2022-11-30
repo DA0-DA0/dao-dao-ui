@@ -1,4 +1,5 @@
 export * from './CwdVotingCw4'
 export * from './CwdVotingCw20Staked'
+export * from './CwdVotingCw721Staked'
 export * from './CwdVotingNativeStaked'
 export * from './Fallback'

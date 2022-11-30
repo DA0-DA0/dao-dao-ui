@@ -8,6 +8,7 @@ import { normalizeContractName } from '@dao-dao/utils'
 import {
   CwdVotingCw20StakedAdapter,
   CwdVotingCw4Adapter,
+  CwdVotingCw721StakedAdapter,
   CwdVotingNativeStakedAdapter,
   FallbackAdapter,
 } from './adapters'
@@ -24,6 +25,7 @@ export const getAdapters = (): readonly VotingModuleAdapter[] => [
   CwdVotingCw4Adapter,
   CwdVotingCw20StakedAdapter,
   CwdVotingNativeStakedAdapter,
+  CwdVotingCw721StakedAdapter,
 
   FallbackAdapter,
 ]

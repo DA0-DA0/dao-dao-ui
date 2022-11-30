@@ -207,7 +207,7 @@ export const GovernanceConfigurationInput = ({
     if (!errors?.votingModuleAdapter?.data?.existingGovernanceTokenInfo) {
       setError('votingModuleAdapter.data.existingGovernanceTokenInfo._error', {
         type: 'manual',
-        message: t('error.failedToGetTokenInfo'),
+        message: t('error.failedToGetTokenInfo', { tokenType: 'CW20' }),
       })
     }
   }, [
