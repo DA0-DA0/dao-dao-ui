@@ -1,4 +1,4 @@
-import { DurationWithUnits, NewDaoTier } from '@dao-dao/types'
+import { DurationWithUnits } from '@dao-dao/types'
 
 export enum GovernanceTokenType {
   New,
@@ -6,9 +6,6 @@ export enum GovernanceTokenType {
 }
 
 export interface DaoCreationConfig {
-  tiers: NewDaoTier[]
-  // For custom errors.
-  _tiersError?: undefined
   tokenType: GovernanceTokenType
   newInfo?: {
     initialSupply: number

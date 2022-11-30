@@ -54,17 +54,6 @@ export const CwdVotingCw721StakedAdapter: VotingModuleAdapter<DaoCreationConfig>
         membershipI18nKey: 'daoCreationAdapter.CwdVotingCw721Staked.membership',
       },
       defaultConfig: {
-        tiers: [
-          {
-            name: '',
-            weight: 10,
-            members: [
-              {
-                address: '',
-              },
-            ],
-          },
-        ],
         tokenType: GovernanceTokenType.Existing,
         existingGovernanceTokenAddress: '',
         unstakingDuration: {
