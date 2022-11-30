@@ -129,8 +129,30 @@ Default.args = {
         ],
       },
     ],
+    cosmosMsgs: [],
   },
-  onComplete: async () => alert('complete'),
+  onComplete: async (data) => alert('complete: ' + JSON.stringify(data)),
   loading: false,
   IdentityProfileDisplay,
+  cw20TokenInfos: [
+    {
+      address: 'usdc',
+      name: 'USDC',
+      symbol: 'USDC',
+      decimals: 6,
+      total_supply: '1000000000000000',
+    },
+  ],
+  prices: [
+    {
+      denom: 'ujuno',
+      amount: 1,
+      timestamp: new Date(),
+    },
+    {
+      denom: 'usdc',
+      amount: 1,
+      timestamp: new Date(),
+    },
+  ],
 }

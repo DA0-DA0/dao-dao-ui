@@ -38,23 +38,27 @@ export const CompletedSurveyRow = ({
         className="hidden h-12 flex-row items-center gap-6 p-3 sm:flex"
         onClick={onClick}
       >
-        <div className="flex grow flex-row items-center gap-3">
-          <p className="body-text truncate">{name}</p>
-          {!!proposalId && (
-            <Tooltip title={t('button.goToProposal')}>
-              <IconButtonLink
-                Icon={DescriptionOutlined}
-                href={`/dao/${coreAddress}/proposals/${proposalId}`}
-                size="sm"
-                variant="ghost"
-              />
-            </Tooltip>
-          )}
-        </div>
+        <p className="body-text grow truncate">{name}</p>
+
+        {!!proposalId && (
+          <Tooltip title={t('button.goToProposal')}>
+            <IconButtonLink
+              Icon={DescriptionOutlined}
+              href={`/dao/${coreAddress}/proposals/${proposalId}`}
+              onClick={
+                // Don't click on row.
+                (e) => e.stopPropagation()
+              }
+              size="sm"
+              variant="ghost"
+            />
+          </Tooltip>
+        )}
 
         <p className="text-right">
           {t('info.numContributors', { count: contributionCount })}
         </p>
+
         {!isNaN(openedAtEpoch) && (
           <p className="caption-text shrink-0 break-words text-right font-mono">
             {formatDate(new Date(contributionsOpenedAt))}

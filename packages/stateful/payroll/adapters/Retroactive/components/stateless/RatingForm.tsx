@@ -169,7 +169,7 @@ export const RatingForm = ({
                 </p>
               ))}
               {/* Projected compensation */}
-              <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-6">
+              <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-6 text-right">
                 {t('title.projectedCompensation')}
               </p>
 

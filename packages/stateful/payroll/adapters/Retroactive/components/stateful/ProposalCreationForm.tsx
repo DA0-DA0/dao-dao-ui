@@ -3,16 +3,31 @@ import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
+import { useSetRecoilState, waitForAll } from 'recoil'
 
+import {
+  Cw20BaseSelectors,
+  usdcPerMacroTokenSelector,
+} from '@dao-dao/state/recoil'
 import {
   Loader,
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
+import { AmountWithTimestampAndDenom, CosmosMsgFor_Empty } from '@dao-dao/types'
+import {
+  makeBankMessage,
+  makeWasmMessage,
+  nativeTokenDecimals,
+  secp256k1PublicKeyToBech32Address,
+} from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components'
+import {
+  useCwdProposalSinglePublishProposal,
+  useWalletProfile,
+} from '../../../../../hooks'
+import { NewProposalData } from '../../../../../proposal-module-adapter/adapters/CwdProposalSingle/types'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
@@ -23,7 +38,10 @@ import {
   RatingsResponse,
 } from '../../types'
 import { computeCompensation } from '../../utils'
-import { ProposalCreationForm as StatelessProposalCreationForm } from '../stateless/ProposalCreationForm'
+import {
+  ProposalCreationFormData,
+  ProposalCreationForm as StatelessProposalCreationForm,
+} from '../stateless/ProposalCreationForm'
 import { IdentityProfileDisplay } from './IdentityProfileDisplay'
 
 export const ProposalCreationForm = () => {
@@ -122,9 +140,40 @@ export const ProposalCreationForm = () => {
         )
       )
 
+      const cosmosMsgs: CosmosMsgFor_Empty[] = contributions.flatMap(
+        ({ contributor, compensation }) =>
+          compensation.compensationPerAttribute.flatMap(
+            ({ nativeTokens, cw20Tokens }): CosmosMsgFor_Empty[] => [
+              ...nativeTokens.map(
+                ({ amount, denom }): CosmosMsgFor_Empty => ({
+                  bank: makeBankMessage(amount, contributor.address, denom),
+                })
+              ),
+              ...cw20Tokens.map(
+                ({ amount, address }): CosmosMsgFor_Empty =>
+                  makeWasmMessage({
+                    wasm: {
+                      execute: {
+                        contract_addr: address,
+                        funds: [],
+                        msg: {
+                          transfer: {
+                            recipient: contributor.address,
+                            amount,
+                          },
+                        },
+                      },
+                    },
+                  })
+              ),
+            ]
+          )
+      )
+
       const completeRatings: CompleteRatings = {
         contributions,
         ratings,
+        cosmosMsgs,
       }
 
       setCompleteRatings(completeRatings)
@@ -142,46 +191,133 @@ export const ProposalCreationForm = () => {
     statusLoadable.state,
   ])
 
-  const onComplete = useCallback(async () => {
-    setLoading(true)
+  const publishProposal = useCwdProposalSinglePublishProposal()
 
-    try {
-      // Propose.
-      // TODO: Make proposal
-      const proposalId = ''
+  const onComplete = useCallback(
+    async (formData: ProposalCreationFormData) => {
+      if (!completeRatings) {
+        toast.error(t('error.loadingData'))
+        return
+      }
+      if (!publishProposal) {
+        toast.error(t('error.noSingleChoiceProposalModule'))
+        return
+      }
 
-      // Complete with proposal ID.
-      await postRequest(`/${coreAddress}/complete`, { proposalId })
-      toast.success(t('success.surveyCompleted'))
+      setLoading(true)
 
-      // Reload status on success.
-      setRefreshStatus((id) => id + 1)
+      try {
+        // Propose.
+        const data: NewProposalData = {
+          ...formData,
+          msgs: completeRatings.cosmosMsgs,
+        }
+        const { proposalId } = await publishProposal(data)
 
-      // Navigate to proposal.
-      router.push(`/dao/${coreAddress}/proposals/${proposalId}`)
-    } catch (err) {
-      console.error(err)
-      toast.error(err instanceof Error ? err.message : JSON.stringify(err))
-    } finally {
-      setLoading(false)
-    }
-  }, [coreAddress, postRequest, router, setRefreshStatus, t])
+        // Complete with proposal ID.
+        await postRequest(`/${coreAddress}/complete`, { proposalId })
+        toast.success(t('success.surveyCompleted'))
+
+        // Reload status on success.
+        setRefreshStatus((id) => id + 1)
+
+        // Navigate to proposal.
+        router.push(`/dao/${coreAddress}/proposals/${proposalId}`)
+
+        // Don't stop loading on success since we are now navigating.
+      } catch (err) {
+        console.error(err)
+        toast.error(err instanceof Error ? err.message : JSON.stringify(err))
+        setLoading(false)
+      }
+    },
+    [
+      completeRatings,
+      coreAddress,
+      postRequest,
+      publishProposal,
+      router,
+      setRefreshStatus,
+      t,
+    ]
+  )
+
+  const loadingCw20TokenInfos = useCachedLoadable(
+    statusLoadable.state === 'hasValue' && statusLoadable.contents
+      ? waitForAll(
+          statusLoadable.contents.survey.attributes.flatMap(({ cw20Tokens }) =>
+            cw20Tokens.map(({ address }) =>
+              Cw20BaseSelectors.tokenInfoWithAddressAndLogoSelector({
+                contractAddress: address,
+                chainId,
+                params: [],
+              })
+            )
+          )
+        )
+      : undefined
+  )
+
+  const prices = useCachedLoadable(
+    statusLoadable.state === 'hasValue' &&
+      statusLoadable.contents &&
+      loadingCw20TokenInfos.state === 'hasValue'
+      ? waitForAll(
+          statusLoadable.contents.survey.attributes.flatMap(
+            ({ nativeTokens, cw20Tokens }) => [
+              ...nativeTokens.map(({ denom }) => {
+                const decimals = nativeTokenDecimals(denom)
+                if (decimals === undefined) {
+                  throw new Error(`Unknown denom: ${denom}`)
+                }
+                return usdcPerMacroTokenSelector({
+                  denom,
+                  decimals,
+                })
+              }),
+              ...cw20Tokens.map(({ address }, cw20TokenIndex) =>
+                usdcPerMacroTokenSelector({
+                  denom: address,
+                  decimals:
+                    loadingCw20TokenInfos.contents[cw20TokenIndex].decimals,
+                })
+              ),
+            ]
+          )
+        )
+      : undefined
+  )
+
+  const { walletAddress = '', walletProfile } = useWalletProfile()
 
   return (
     <SuspenseLoader
       fallback={<Loader />}
-      forceFallback={statusLoadable.state === 'loading'}
+      forceFallback={
+        statusLoadable.state === 'loading' ||
+        loadingCw20TokenInfos.state === 'loading' ||
+        prices.state === 'loading'
+      }
     >
-      {statusLoadable.state === 'hasValue' && !!statusLoadable.contents && (
-        <StatelessProposalCreationForm
-          IdentityProfileDisplay={IdentityProfileDisplay}
-          completeRatings={completeRatings}
-          loadRatings={loadRatings}
-          loading={loading || statusLoadable.updating}
-          onComplete={onComplete}
-          status={statusLoadable.contents}
-        />
-      )}
+      {statusLoadable.state === 'hasValue' &&
+        !!statusLoadable.contents &&
+        loadingCw20TokenInfos.state === 'hasValue' &&
+        prices.state === 'hasValue' && (
+          <StatelessProposalCreationForm
+            IdentityProfileDisplay={IdentityProfileDisplay}
+            completeRatings={completeRatings}
+            cw20TokenInfos={loadingCw20TokenInfos.contents}
+            loadRatings={loadRatings}
+            loading={loading || statusLoadable.updating}
+            onComplete={onComplete}
+            prices={
+              prices.contents.filter(Boolean) as AmountWithTimestampAndDenom[]
+            }
+            status={statusLoadable.contents}
+            walletAddress={walletAddress}
+            walletProfile={walletProfile}
+          />
+        )}
     </SuspenseLoader>
   )
 }
