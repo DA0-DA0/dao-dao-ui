@@ -1,12 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { SignMode } from 'interchain-rpc/main/codegen/cosmos/tx/signing/v1beta1/signing'
-import { SimulateRequest } from 'interchain-rpc/main/codegen/cosmos/tx/v1beta1/service'
-import {
-  AuthInfo,
-  Fee,
-  Tx,
-  TxBody,
-} from 'interchain-rpc/main/codegen/cosmos/tx/v1beta1/tx'
+import { cosmos } from 'interchain-rpc'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
@@ -19,6 +12,9 @@ export interface UseSimulateCosmosMsgsOptions {
   senderAddress: string
   chainId?: string
 }
+
+const { SignMode } = cosmos.tx.signing.v1beta1
+const { AuthInfo, Fee, Tx, TxBody, SimulateRequest } = cosmos.tx.v1beta1
 
 // Simulate executing Cosmos messages on-chain. We can't just use the simulate
 // function on SigningCosmWasmClient or SigningStargateClient because they
@@ -63,7 +59,9 @@ export const useSimulateCosmosMsgs = ({
           signerInfos: [
             {
               modeInfo: {
-                single: { mode: SignMode.SIGN_MODE_UNSPECIFIED },
+                single: {
+                  mode: SignMode.SIGN_MODE_UNSPECIFIED,
+                },
               },
             },
           ],
