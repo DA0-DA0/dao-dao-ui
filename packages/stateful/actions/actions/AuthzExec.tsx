@@ -48,22 +48,23 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
     [msg]
   )
 
-export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({ t }) => {
-  const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = (
-    coreAddress: string
-  ) =>
+export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
+  t,
+  address,
+}) => {
+  const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = () =>
     useCallback(
       (data: AuthzExecData) =>
         makeStargateMessage({
           stargate: {
             type_url: data.type_url,
             value: {
-              grantee: coreAddress,
+              grantee: address,
               msgs: data.value.msgs,
             },
           },
         }),
-      [coreAddress]
+      [address]
     )
 
   return {

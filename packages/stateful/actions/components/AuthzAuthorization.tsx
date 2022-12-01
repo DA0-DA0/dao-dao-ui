@@ -27,8 +27,6 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
   const { data, fieldNamePrefix, onRemove, errors, isCreating } = props
   const { register, setValue, watch } = useFormContext()
 
-  console.log(data)
-
   return (
     <ActionCard
       Icon={KeyEmoji}

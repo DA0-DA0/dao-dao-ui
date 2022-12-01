@@ -2,17 +2,17 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 
-import { CreateValidatorComponent } from './CreateValidator'
+import { ValidatorActionsComponent } from './ValidatorActions'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / components / CreateValidator',
-  component: CreateValidatorComponent,
+    'DAO DAO / packages / stateful / actions / components / ValidatorActions',
+  component: ValidatorActionsComponent,
   decorators: [ReactHookFormDecorator],
-} as ComponentMeta<typeof CreateValidatorComponent>
+} as ComponentMeta<typeof ValidatorActionsComponent>
 
-const Template: ComponentStory<typeof CreateValidatorComponent> = (args) => (
-  <CreateValidatorComponent {...args} />
+const Template: ComponentStory<typeof ValidatorActionsComponent> = (args) => (
+  <ValidatorActionsComponent {...args} />
 )
 
 export const Default = Template.bind({})

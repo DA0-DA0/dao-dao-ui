@@ -47,6 +47,8 @@ const WASM_TYPES: WasmMsgType[] = [
   'clear_admin',
 ]
 
+export type CosmWasmStargateMsg = { stargate: { type_url: string; value: any } }
+
 const BINARY_WASM_TYPES: { [key: string]: boolean } = {
   execute: true,
   instantiate: true,
@@ -69,8 +71,9 @@ function getWasmMsgType(wasm: WasmMsg): WasmMsgType | undefined {
   return undefined
 }
 
-// TODO refine types
-export function isStargateMsg(msg?: any): msg is any {
+export function isStargateMsg(
+  msg?: CosmWasmStargateMsg
+): msg is CosmWasmStargateMsg {
   if (msg) {
     return (msg as any).stargate !== undefined
   }
@@ -85,7 +88,7 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
 }
 
 export function decodeMessages(
-  msgs: CosmosMsgFor_Empty[]
+  msgs: CosmosMsgFor_Empty[] | CosmWasmStargateMsg[]
 ): { [key: string]: any }[] {
   const decodedMessageArray: any[] = []
   const proposalMsgs = Object.values(msgs)
@@ -211,7 +214,7 @@ export const makeWasmMessage = (message: {
 
 export const makeStargateMessage = (message: {
   stargate: { type_url: string; value: any }
-}): any => {
+}): CosmWasmStargateMsg => {
   let msg = message
   switch (message.stargate.type_url) {
     case '/cosmos.authz.v1beta1.MsgExec':
@@ -295,6 +298,16 @@ export const makeStargateMessage = (message: {
         ).finish()
       )
       break
+    case '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission':
+      msg.stargate.value = toBase64(
+        MsgWithdrawValidatorCommission.encode({
+          validatorAddress: msg.stargate.value.validatorAddress,
+        }).finish()
+      )
+      break
+    default:
+      console.log(msg)
+      throw Error('Unrecognized CosmWasm Stargate message')
   }
 
   return msg
@@ -339,12 +352,18 @@ export const makeBankMessage = (
   },
 })
 
+export enum ValidatorActionType {
+  CreateValidator = 'create_validator',
+  EditValidator = 'edit_validator',
+  UnjailValidator = 'unjail_validator',
+  WithdrawValidatorCommission = 'withdraw_validator_commission',
+}
+
 export enum StakeType {
   Delegate = 'delegate',
   Undelegate = 'undelegate',
   Redelegate = 'redelegate',
   WithdrawDelegatorReward = 'withdraw_delegator_reward',
-  WithdrawValidatorCommission = 'withdraw_validator_commission',
 }
 
 export const makeStakingMessage = (
@@ -394,31 +413,13 @@ export const makeStakingMessage = (
 }
 
 export const makeDistributeMessage = (
-  validator: string,
-  type?: `${StakeType}`
-): CosmosMsgFor_Empty | { stargate: any } => {
-  switch (type) {
-    case StakeType.WithdrawValidatorCommission:
-      console.log('meow')
-      return {
-        stargate: {
-          type_url:
-            '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission',
-          value: toBase64(
-            MsgWithdrawValidatorCommission.encode({
-              validatorAddress: validator,
-            }).finish()
-          ),
-        },
-      }
-      break
-    default:
-      return {
-        distribution: {
-          withdraw_delegator_reward: {
-            validator,
-          },
-        } as DistributionMsg,
-      }
+  validator: string
+): CosmosMsgFor_Empty => {
+  return {
+    distribution: {
+      withdraw_delegator_reward: {
+        validator,
+      },
+    } as DistributionMsg,
   }
 }

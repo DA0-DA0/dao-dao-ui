@@ -29,6 +29,7 @@ export enum CoreActionKey {
   CreateValidator = 'createValidator',
   EditValidator = 'editValidator',
   UnjailValidator = 'unjailValidator',
+  ValidatorActions = 'validatorActions',
   Custom = 'custom',
   PerformTokenSwap = 'performTokenSwap',
   WithdrawTokenSwap = 'withdrawTokenSwap',

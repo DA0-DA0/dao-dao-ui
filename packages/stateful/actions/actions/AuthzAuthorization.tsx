@@ -51,10 +51,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
     [msg]
   )
 
-export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({ t }) => {
-  const useTransformToCosmos: UseTransformToCosmos<AuthzData> = (
-    coreAddress: string
-  ) =>
+export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
+  t,
+  address,
+}) => {
+  const useTransformToCosmos: UseTransformToCosmos<AuthzData> = () =>
     useCallback(
       (data: AuthzData) =>
         makeStargateMessage({
@@ -62,11 +63,11 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({ t }) => {
             type_url: data.type_url,
             value: {
               ...data.value,
-              granter: coreAddress,
+              granter: address,
             },
           },
         }),
-      [coreAddress]
+      [address]
     )
 
   return {
