@@ -255,6 +255,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
   const counterpartyAddress: string | undefined = watch(
     props.fieldNamePrefix + 'counterparty.address'
   )
+
   // Load balances as loadables since they refresh automatically on a timer.
   const counterpartyNativeBalances = loadableToLoadingData(
     useCachedLoadable(
