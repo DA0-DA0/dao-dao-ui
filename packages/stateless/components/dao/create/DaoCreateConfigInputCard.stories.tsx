@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
-import { DefaultNewDao, SuspenseLoader } from '@dao-dao/stateful'
+import { SuspenseLoader, makeDefaultNewDao } from '@dao-dao/stateful'
 import { VotingDurationInput } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
 import { NewDao } from '@dao-dao/types'
 
@@ -17,7 +17,7 @@ export default {
 
 const Template: ComponentStory<typeof DaoCreateConfigInputCard> = (args) => {
   const { register, watch, setValue } = useForm<NewDao>({
-    defaultValues: DefaultNewDao,
+    defaultValues: makeDefaultNewDao(),
     mode: 'onChange',
   })
 
