@@ -63,11 +63,11 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
     return {
       // Fields
       fields: {
-        defaultNewProposalForm: {
+        makeDefaultNewProposalForm: () => ({
           title: '',
           description: '',
           actionData: [],
-        },
+        }),
         newProposalFormTitleKey: 'title',
       },
 

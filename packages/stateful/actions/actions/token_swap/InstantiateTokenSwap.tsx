@@ -18,6 +18,7 @@ import {
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   isValidAddress,
+  isValidContractAddress,
   loadableToLoadingData,
   nativeTokenDecimals,
   processError,
@@ -254,16 +255,11 @@ const InnerInstantiateTokenSwap: ActionComponent<
   const counterpartyAddress: string | undefined = watch(
     props.fieldNamePrefix + 'counterparty.address'
   )
-
-  //! Try to get CW20s assuming it's a DAO.
-  const counterpartyAddressIsContract =
-    counterpartyAddress &&
-    isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
-
   // Load balances as loadables since they refresh automatically on a timer.
   const counterpartyNativeBalances = loadableToLoadingData(
     useCachedLoadable(
-      counterpartyAddressIsContract
+      counterpartyAddress &&
+        isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
         ? nativeBalancesSelector({
             address: counterpartyAddress,
             chainId,
@@ -272,6 +268,11 @@ const InnerInstantiateTokenSwap: ActionComponent<
     ),
     []
   )
+
+  //! Try to get CW20s assuming it's a DAO.
+  const counterpartyAddressIsContract =
+    counterpartyAddress &&
+    isValidContractAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
 
   // Try to retrieve governance token address, failing if not a cw20-based DAO.
   const counterpartyDaoGovernanceTokenAddress = useRecoilValueLoadable(
@@ -309,19 +310,25 @@ const InnerInstantiateTokenSwap: ActionComponent<
       {...props}
       options={{
         ...props.options,
-        counterpartyCw20Balances:
-          counterpartyDaoCw20Balances.loading || !counterpartyAddressIsContract
-            ? { loading: true }
-            : {
-                loading: false,
-                data: counterpartyDaoCw20Balances.data.map(
-                  ({ addr, balance, info }) => ({
-                    address: addr,
-                    balance,
-                    info,
-                  })
-                ),
-              },
+        // Can only get balances for DAO contract, not wallet. Non-DAO contracts
+        // will error which defaults to empty array.
+        counterpartyCw20Balances: !counterpartyAddressIsContract
+          ? {
+              loading: false,
+              data: [],
+            }
+          : counterpartyDaoCw20Balances.loading
+          ? { loading: true }
+          : {
+              loading: false,
+              data: counterpartyDaoCw20Balances.data.map(
+                ({ addr, balance, info }) => ({
+                  address: addr,
+                  balance,
+                  info,
+                })
+              ),
+            },
         counterpartyNativeBalances,
       }}
     />

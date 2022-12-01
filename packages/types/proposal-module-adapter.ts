@@ -26,7 +26,9 @@ export interface IProposalModuleAdapterCommon<
 > {
   // Fields
   fields: {
-    defaultNewProposalForm: FormData
+    // Make this a function so it doesn't return the same instance of the form
+    // data each time.
+    makeDefaultNewProposalForm: () => FormData
     newProposalFormTitleKey: FieldPath<FormData>
   }
 

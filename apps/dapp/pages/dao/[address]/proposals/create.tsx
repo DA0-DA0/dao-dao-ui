@@ -86,13 +86,13 @@ const InnerProposalCreate = () => {
   )
 
   const {
-    fields: { defaultNewProposalForm, newProposalFormTitleKey },
+    fields: { makeDefaultNewProposalForm, newProposalFormTitleKey },
     components: { NewProposal },
   } = proposalModuleAdapterCommon
 
   const formMethods = useForm({
     mode: 'onChange',
-    defaultValues: defaultNewProposalForm,
+    defaultValues: makeDefaultNewProposalForm(),
   })
 
   const loadPrefill = useCallback(

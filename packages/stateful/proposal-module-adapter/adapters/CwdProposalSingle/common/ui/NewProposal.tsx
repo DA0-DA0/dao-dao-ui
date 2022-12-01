@@ -6,6 +6,7 @@ import {
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
+import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useState } from 'react'
 import {
   SubmitErrorHandler,
@@ -221,7 +222,8 @@ export const NewProposal = ({
         onSelectAction={({ key }) => {
           append({
             key,
-            data: actionsWithData[key]?.defaults ?? {},
+            // Clone to prevent the form from mutating the original object.
+            data: cloneDeep(actionsWithData[key]?.defaults ?? {}),
           })
         }}
       />

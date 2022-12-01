@@ -14,7 +14,7 @@ export const useCachedLoadable = <T extends unknown>(
   const loadable = useRecoilValueLoadable(
     recoilValue ?? constSelector(undefined)
   )
-  const loadableLoading = loadable.state === 'loading' || !recoilValue
+  const loadableLoadingOrNotReady = loadable.state === 'loading' || !recoilValue
 
   // Since `contents` is set in a `useEffect`, it will take 1 extra render once
   // the loadable has data ready before the cached `contents` state will contain
@@ -30,12 +30,16 @@ export const useCachedLoadable = <T extends unknown>(
     // If the loadable is ready on first render, just set it right away.
     loadable.state === 'hasValue' ? loadable.contents : undefined
   )
-  const [initialLoading, setInitialLoading] = useState(loadableLoading)
-  const [updating, setUpdating] = useState(loadable.state === 'loading')
+  const [initialLoading, setInitialLoading] = useState(
+    loadableLoadingOrNotReady
+  )
+  const [updating, setUpdating] = useState(loadableLoadingOrNotReady)
 
   useEffect(() => {
-    if (loadableLoading) {
+    if (loadableLoadingOrNotReady) {
       setUpdating(true)
+      setContents(undefined)
+      setContentsHasValue(false)
     } else if (loadable.state === 'hasValue') {
       setInitialLoading(false)
       setUpdating(false)
@@ -45,11 +49,12 @@ export const useCachedLoadable = <T extends unknown>(
       setInitialLoading(false)
       setUpdating(false)
     }
-  }, [loadable, loadableLoading, recoilValue])
+  }, [loadable, loadableLoadingOrNotReady, recoilValue])
 
   return initialLoading ||
+    !recoilValue ||
     // Keep loading until contents has first value set. However if an error is
-    // present, just display the error.
+    // present, override and return the error.
     (loadable.state !== 'hasError' && !contentsHasValue)
     ? {
         state: 'loading',
