@@ -38,8 +38,15 @@ export const useCachedLoadable = <T extends unknown>(
   useEffect(() => {
     if (loadableLoadingOrNotReady) {
       setUpdating(true)
-      setContents(undefined)
-      setContentsHasValue(false)
+      // Reset state if recoilValue becomes undefined. This may happen if a
+      // query depends on form input state, like an address, that may toggle
+      // between valid and invalid. This ensures that old data is not shown
+      // for a moment while waiting for a new query.
+      if (!recoilValue) {
+        setInitialLoading(true)
+        setContents(undefined)
+        setContentsHasValue(false)
+      }
     } else if (loadable.state === 'hasValue') {
       setInitialLoading(false)
       setUpdating(false)
