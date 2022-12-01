@@ -11,6 +11,7 @@ import { makeRemoveCw20Action } from './RemoveCw20'
 import { makeRemoveCw721Action } from './RemoveCw721'
 import { makeSpendAction } from './Spend'
 import { makeStakeAction } from './Stake'
+import { makeTransferNftAction } from './TransferNft'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
 
@@ -23,6 +24,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeAddCw20Action,
     makeRemoveCw20Action,
     makeAddCw721Action,
+    makeTransferNftAction,
     makeRemoveCw721Action,
     makeInstantiateAction,
     makeExecuteAction,

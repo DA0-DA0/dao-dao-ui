@@ -19,5 +19,11 @@ export const normalizeNftImageUrl = (url: string) => {
     }
   }
 
+  // If this is not an IPFS image, we can't enforce that it is coming from one
+  // of our nextJS allowed image sources.
+  if (!url.includes('ipfs')) {
+    url = `https://img-proxy.ekez.workers.dev/${url}`
+  }
+
   return url
 }
