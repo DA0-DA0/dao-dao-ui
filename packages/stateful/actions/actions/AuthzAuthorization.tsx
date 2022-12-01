@@ -73,9 +73,8 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
   return {
     key: CoreActionKey.AuthzAuthorization,
     Icon: KeyEmoji,
-    label: 'Authz Grant / Revoke',
-    description:
-      'Grant / revoke authorizations that allow other accounts to perform actions on behalf of the DAO.',
+    label: t('title.authzAuthorization'),
+    description: t('info.authzAuthorizationDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

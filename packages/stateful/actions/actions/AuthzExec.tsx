@@ -70,8 +70,8 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
   return {
     key: CoreActionKey.AuthzExec,
     Icon: LockWithKeyEmoji,
-    label: 'Authz Exec',
-    description: 'Perform an action on behalf of another account.',
+    label: t('title.authzExec'),
+    description: t('info.authzExecDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

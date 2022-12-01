@@ -162,8 +162,8 @@ export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
   return {
     key: CoreActionKey.ValidatorActions,
     Icon: PickEmoji,
-    label: 'Validator actions',
-    description: 'Make transactions related to DAO run validators.',
+    label: t('title.validatorActions'),
+    description: t('info.validatorActionsDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

@@ -54,7 +54,7 @@ export const ValidatorActionsComponent: ActionComponent<
   ValidatorActionData
 > = ({ fieldNamePrefix, onRemove, errors, isCreating }) => {
   const { t } = useTranslation()
-  const { register, watch, control } = useFormContext()
+  const { control, register, watch } = useFormContext()
   const validatorActions = useValidatorActions()
 
   const validatorActionType = watch(fieldNamePrefix + 'validatorActionType')
@@ -63,15 +63,14 @@ export const ValidatorActionsComponent: ActionComponent<
     <ActionCard
       Icon={PickEmoji}
       onRemove={onRemove}
-      title={'Validator actions'}
+      title={t('title.validatorActions')}
     >
       <div className="flex flex-col gap-2 xs:flex-row">
-        {/* Choose type of stake operation. */}
         <SelectInput
           containerClassName="grow"
           defaultValue={validatorActions[0].type}
           disabled={!isCreating}
-          error={errors?.stakeType}
+          error={errors?.validatorActionType}
           fieldName={fieldNamePrefix + 'validatorActionType'}
           register={register}
         >
@@ -138,7 +137,7 @@ export const ValidatorActionsComponent: ActionComponent<
       {validatorActionType === ValidatorActionType.UnjailValidator && (
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel
-            name={'Validator address'}
+            name={t('form.validatorAddress')}
             tooltip={'The address for the validator run by your DAO.'}
           />
           <TextInput
@@ -157,8 +156,8 @@ export const ValidatorActionsComponent: ActionComponent<
         ValidatorActionType.WithdrawValidatorCommission && (
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel
-            name={'Validator address'}
-            tooltip={'The address for the validator run by your DAO.'}
+            name={t('form.validatorAddress')}
+            tooltip={t('form.validatorAddressTooltip')}
           />
           <TextInput
             disabled={!isCreating}
