@@ -1,4 +1,8 @@
-import { Refresh, WhereToVoteOutlined } from '@mui/icons-material'
+import {
+  PushPinOutlined,
+  Refresh,
+  WhereToVoteOutlined,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -96,9 +100,11 @@ export const Inbox = <T extends {}>({
         {daosWithProposals.loading ? (
           <Loader fill={false} />
         ) : daosWithProposals?.data?.length === 0 ? (
+          <NoContent Icon={PushPinOutlined} body={t('info.noPinnedDaos')} />
+        ) : numOpenProposals === 0 ? (
           <NoContent
             Icon={WhereToVoteOutlined}
-            body={t('info.noProposalsYet')}
+            body={t('info.noProposalsAndAllCaughtUp')}
           />
         ) : (
           <>
