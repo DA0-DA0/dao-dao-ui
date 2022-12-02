@@ -2,11 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import {
-  ImageEmoji,
-  useCachedLoadable,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { ImageEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -58,31 +54,27 @@ const useTransformToCosmos: UseTransformToCosmos<TransferCw721Data> = () =>
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferCw721Data> = (
   msg: Record<string, any>
 ) =>
-  useMemo(
-    () =>
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'transfer_nft' in msg.wasm.execute.msg &&
-      'recipient' in msg.wasm.execute.msg.transfer_nft &&
-      'token_id' in msg.wasm.execute.msg.transfer_nft
-        ? {
-            match: true,
-            data: {
-              collection: msg.wasm.execute.contract_addr,
-              tokenId: msg.wasm.execute.msg.transfer_nft.token_id,
-              recipient: msg.wasm.execute.msg.transfer_nft.recipient,
-            },
-          }
-        : { match: false },
-    [msg]
-  )
+  'wasm' in msg &&
+  'execute' in msg.wasm &&
+  'transfer_nft' in msg.wasm.execute.msg &&
+  'recipient' in msg.wasm.execute.msg.transfer_nft &&
+  'token_id' in msg.wasm.execute.msg.transfer_nft
+    ? {
+        match: true,
+        data: {
+          collection: msg.wasm.execute.contract_addr,
+          tokenId: msg.wasm.execute.msg.transfer_nft.token_id,
+          recipient: msg.wasm.execute.msg.transfer_nft.recipient,
+        },
+      }
+    : { match: false }
 
 export const makeTransferNftAction: ActionMaker<TransferCw721Data> = ({
   t,
   address,
+  chainId,
 }) => {
   const Component: ActionComponent = (props) => {
-    const { chainId } = useDaoInfoContext()
     const { watch } = useFormContext()
 
     const tokenId = watch(props.fieldNamePrefix + 'tokenId')

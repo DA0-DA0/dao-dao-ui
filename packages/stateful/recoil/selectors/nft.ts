@@ -19,7 +19,7 @@ import {
   STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_URL_BASE,
   getNftName,
-  transformIpfsUrlToHttpsIfNecessary,
+  parseNftUriResponse,
 } from '@dao-dao/utils'
 
 export const walletStargazeNftCardInfosSelector = selectorFamily<
@@ -65,50 +65,6 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
       return nftCardInfos
     },
 })
-
-// Tries to parse NFT metadata out of the data at it's metadata pointer.
-const parseNftUriResponse = (
-  uriDataResponse: string,
-  collectionName: string
-): {
-  name: string | undefined
-  imageUrl: string | undefined
-  externalLink: { href: string; name: string } | undefined
-} => {
-  let name
-  let imageUrl
-  let externalLink
-  // Only try to parse if there's a good chance this is JSON, the
-  // heuristic being the first non-whitespace character is a "{".
-  if (uriDataResponse.trimStart().startsWith('{')) {
-    try {
-      const json = JSON.parse(uriDataResponse)
-
-      if (typeof json.name === 'string' && !!json.name.trim()) {
-        name = getNftName(collectionName, json.name)
-      }
-
-      if (typeof json.image === 'string' && !!json.image) {
-        imageUrl = transformIpfsUrlToHttpsIfNecessary(json.image)
-      }
-
-      if (typeof json.external_url === 'string' && !!json.external_url.trim()) {
-        const externalUrl = transformIpfsUrlToHttpsIfNecessary(
-          json.external_url
-        )
-        const externalUrlDomain = new URL(externalUrl).hostname
-        externalLink = {
-          href: externalUrl,
-          name: HostnameMap[externalUrlDomain] ?? externalUrlDomain,
-        }
-      }
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  return { name, imageUrl, externalLink }
-}
 
 export const nftCardInfoSelector = selectorFamily<
   NftCardInfo,
@@ -314,7 +270,3 @@ export const nftCardInfosSelector = selectorFamily<
       return infos
     },
 })
-
-const HostnameMap: Record<string, string | undefined> = {
-  'stargaze.zone': 'Stargaze',
-}

@@ -157,6 +157,7 @@
     "noClaimsAvailable": "No claims available.",
     "noCw20Tokens": "There are no CW20 tokens in the treasury.",
     "noMembers": "You haven't added any members to your DAO.",
+    "noNftSelected": "No NFT selected",
     "noNftsSelected": "No NFTs selected.",
     "noValidatorFound": "No validator found.",
     "noVotingPower": "You have not given anyone voting power. Add some members to your DAO.",

@@ -142,7 +142,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
         </div>
 
         <p className="primary-text min-h-[5.5rem] py-4 px-6">
-          {name || tokenId}
+          {collection.name} {name || tokenId}
         </p>
       </div>
     )
