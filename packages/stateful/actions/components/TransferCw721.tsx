@@ -56,7 +56,7 @@ export const TransferCw721Component: ActionComponent<TransferCw721Options> = ({
     } else {
       clearErrors(fieldNamePrefix + 'collection')
     }
-  }, [selected, setError, clearErrors, t])
+  }, [selected, setError, clearErrors, t, fieldNamePrefix])
 
   const [showModal, setShowModal] = useState<boolean>(isCreating)
 
