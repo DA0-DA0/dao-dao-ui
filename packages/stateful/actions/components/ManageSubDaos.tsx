@@ -1,4 +1,5 @@
 import { Add, Close } from '@mui/icons-material'
+import { ComponentType } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -11,6 +12,7 @@ import {
   InputErrorMessage,
   InputLabel,
 } from '@dao-dao/stateless'
+import { StatefulProfileDisplayProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { SubDao } from '@dao-dao/types/contracts/CwdCore.v2'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
@@ -27,6 +29,8 @@ export interface ManageSubDaosOptions {
     name: string
     address: string
   }[]
+  // Used to render pfpk or DAO profiles when selecting addresses.
+  ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
 }
 
 export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
@@ -34,7 +38,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { currentSubDaos },
+  options: { currentSubDaos, ProfileDisplay },
 }) => {
   const { t } = useTranslation()
   const { register, watch, control } = useFormContext<ManageSubDaosData>()
@@ -68,6 +72,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
           <div key={id} className="flex flex-row items-center gap-2">
             <div className="grow">
               <AddressInput
+                ProfileDisplay={ProfileDisplay}
                 disabled={!isCreating}
                 error={errors?.toAdd?.[index]?.addr}
                 fieldName={
