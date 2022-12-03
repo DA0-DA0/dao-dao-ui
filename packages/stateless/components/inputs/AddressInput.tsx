@@ -63,6 +63,8 @@ export const AddressInput = <
   const { watch } = useFormContext()
   const self = watch(fieldName)
 
+  const showProfile = ProfileDisplay && !!self && validateAddress(self) === true
+
   return (
     <div
       className={clsx(
@@ -73,7 +75,7 @@ export const AddressInput = <
         containerClassName
       )}
     >
-      {disabled || (
+      {(disabled && showProfile) || (
         <>
           <Icon className="!h-5 !w-5" />
           <input
@@ -93,7 +95,7 @@ export const AddressInput = <
           />
         </>
       )}
-      {ProfileDisplay && self && validateAddress(self) === true && (
+      {showProfile && (
         <div className={clsx(disabled || 'pl-4')}>
           <ProfileDisplay address={self} />
         </div>
