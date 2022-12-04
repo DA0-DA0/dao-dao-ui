@@ -21,8 +21,9 @@ export const queryIndexerSelector = selectorFamily<
         formulaName,
         blockHeight
       )
+        // If JSON decoding fails, return undefined.
+        .catch(() => undefined)
 
-      // If JSON decoding fails, return undefined.
-      return response.json().catch(() => undefined)
+      return response
     },
 })
