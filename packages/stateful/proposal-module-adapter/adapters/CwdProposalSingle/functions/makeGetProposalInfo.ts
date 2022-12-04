@@ -1,5 +1,3 @@
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-
 import {
   GET_PROPOSAL,
   GetProposal,
@@ -10,32 +8,39 @@ import {
 import {
   CommonProposalInfo,
   ContractVersion,
+  ContractVersionInfo,
   IProposalModuleAdapterOptions,
 } from '@dao-dao/types'
 import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
-import {
-  InfoResponse,
-  ProposalResponse as ProposalV2Response,
-} from '@dao-dao/types/contracts/CwdProposalSingle.v2'
+import { ProposalResponse as ProposalV2Response } from '@dao-dao/types/contracts/CwdProposalSingle.v2'
 import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
-import { parseContractVersion, processError } from '@dao-dao/utils'
+import {
+  cosmWasmClientRouter,
+  getRpcForChainId,
+  parseContractVersion,
+  processError,
+  queryIndexer,
+} from '@dao-dao/utils'
 
 import { CwdProposalSingleV2QueryClient as CwdProposalSingleV2QueryClient } from '../contracts/CwdProposalSingle.v2.client'
 import { CwProposalSingleV1QueryClient as CwProposalSingleV1QueryClient } from '../contracts/CwProposalSingle.v1.client'
 
 export const makeGetProposalInfo =
-  ({ proposalModule, proposalNumber }: IProposalModuleAdapterOptions) =>
-  async (
-    cosmWasmClient: CosmWasmClient
-  ): Promise<CommonProposalInfo | undefined> => {
+  ({
+    proposalModule,
+    proposalNumber,
+    chainId,
+  }: IProposalModuleAdapterOptions) =>
+  async (): Promise<CommonProposalInfo | undefined> => {
+    const cosmWasmClient = await cosmWasmClientRouter.connect(
+      getRpcForChainId(chainId)
+    )
+
     let proposalResponse: ProposalV1Response | ProposalV2Response | undefined
     try {
-      // All info queries are the same.
-      const { info }: InfoResponse = await cosmWasmClient.queryContractSmart(
+      const info = await queryIndexer<ContractVersionInfo>(
         proposalModule.address,
-        {
-          info: {},
-        }
+        'info'
       )
       const version = parseContractVersion(info.version)
 

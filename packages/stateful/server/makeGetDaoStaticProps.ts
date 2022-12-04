@@ -1,4 +1,3 @@
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBech32 } from '@cosmjs/encoding'
 import axios from 'axios'
 import type { GetStaticProps, Redirect } from 'next'
@@ -6,7 +5,6 @@ import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
-import { CwdCoreV2QueryClient } from '@dao-dao/state'
 import { getDaoCreated } from '@dao-dao/state/subquery/daos/created'
 import {
   CommonProposalInfo,
@@ -22,11 +20,10 @@ import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
-  cosmWasmClientRouter,
-  getRpcForChainId,
   isValidWalletAddress,
   parseContractVersion,
   processError,
+  queryIndexer,
   validateContractAddress,
 } from '@dao-dao/utils'
 
@@ -52,8 +49,6 @@ interface GetDaoStaticPropsMakerOptions {
   getProps?: (options: {
     context: Parameters<GetStaticProps>[0]
     t: TFunction
-    cwClient: CosmWasmClient
-    coreClient: CwdCoreV2QueryClient
     config: ConfigV1Response | ConfigV2Response
     chainId: string
     coreAddress: string
@@ -121,17 +116,12 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     // Add to Sentry error tags if error occurs.
     let coreVersion: ContractVersion | undefined
     try {
-      const cwClient = await cosmWasmClientRouter.connect(
-        getRpcForChainId(chainId)
-      )
-      const coreClient = new CwdCoreV2QueryClient(cwClient, coreAddress)
-
       const {
         admin,
         config,
         version: { version },
-        voting_module: votingModuleAddress,
-      } = await coreClient.dumpState()
+        votingModule: { address: votingModuleAddress, info: votingModuleInfo },
+      } = await queryIndexer(coreAddress, 'dao/dumpState')
 
       coreVersion = parseContractVersion(version)
       if (!coreVersion) {
@@ -139,39 +129,14 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       }
 
       // If no contract name, will display fallback voting module adapter.
-      let votingModuleContractName = 'fallback'
-      try {
-        // All info queries are the same for DAO DAO contracts. If not a valid
-        // DAO DAO contract, this may fail.
-        const infoResponse = await cwClient.queryContractSmart(
-          votingModuleAddress,
-          {
-            info: {},
-          }
-        )
-
-        // Manually verify structure of info response, in case a different info
-        // query exists for this contract.
-        if (
-          'info' in infoResponse &&
-          'contract' in infoResponse.info &&
-          typeof infoResponse.info.contract === 'string'
-        ) {
-          votingModuleContractName = infoResponse.info.contract
-        }
-      } catch (err) {
-        // Report to Sentry and console.
-        console.error(
-          processError(err, {
-            tags: { coreAddress, votingModuleAddress },
-            forceCapture: true,
-          })
-        )
-      }
+      const votingModuleContractName =
+        (votingModuleInfo &&
+          'contract' in votingModuleInfo &&
+          votingModuleInfo.contract) ||
+        'fallback'
 
       // Get DAO proposal modules.
       const proposalModules = await fetchProposalModules(
-        cwClient,
         coreAddress,
         coreVersion
       )
@@ -190,8 +155,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         (await getProps?.({
           context,
           t: serverT,
-          cwClient,
-          coreClient,
           config,
           chainId,
           coreAddress,
@@ -201,10 +164,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
       // Get DAO accent color.
       let accentColor: string | null = null
-      if (config.image_url) {
+      if (config.imageUrl) {
         try {
           const response = await axios.get(
-            `https://fac.withoutdoing.com/${config.image_url}`,
+            `https://fac.withoutdoing.com/${config.imageUrl}`,
             { responseType: 'text' }
           )
 
@@ -239,10 +202,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             proposalModules,
             name: config.name,
             description: config.description,
-            imageUrl: overrideImageUrl ?? config.image_url ?? null,
+            imageUrl: overrideImageUrl ?? config.imageUrl ?? null,
             created: created?.toJSON() ?? null,
             parentDao: await loadParentDaoInfo(
-              cwClient,
               bech32Prefix,
               coreAddress,
               admin
@@ -284,7 +246,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         error instanceof Error &&
         (error.message.includes('contract: not found') ||
           error.message.includes('Error parsing into type') ||
-          error.message.includes('decoding bech32 failed'))
+          error.message.includes('decoding bech32 failed') ||
+          error.message.includes('/dao/dumpState reason: Unexpected token'))
       ) {
         // Excluding `info` will render DAONotFound.
         return {
@@ -342,7 +305,6 @@ export const makeGetDaoProposalStaticProps = ({
     getProps: async ({
       context: { params = {} },
       t,
-      cwClient,
       chainId,
       coreAddress,
       proposalModules,
@@ -382,7 +344,7 @@ export const makeGetDaoProposalStaticProps = ({
         }
 
         // undefined if proposal does not exist.
-        proposalInfo = (await getProposalInfo(cwClient)) ?? null
+        proposalInfo = (await getProposalInfo()) ?? null
       } catch (error) {
         // Rethrow.
         if (error instanceof RedirectError) {
@@ -422,7 +384,6 @@ export class RedirectError {
 }
 
 const loadParentDaoInfo = async (
-  cwClient: CosmWasmClient,
   bech32Prefix: string,
   subDaoAddress: string,
   subDaoAdmin: string | null | undefined,
@@ -434,34 +395,35 @@ const loadParentDaoInfo = async (
   if (
     !subDaoAdmin ||
     subDaoAdmin === subDaoAddress ||
-    isValidWalletAddress(subDaoAddress, bech32Prefix)
+    isValidWalletAddress(subDaoAdmin, bech32Prefix)
   ) {
     return null
   }
 
   try {
-    const parentClient = new CwdCoreV2QueryClient(cwClient, subDaoAdmin)
+    const dumpedState = await queryIndexer(subDaoAdmin, 'dao/dumpState')
+    if (!dumpedState) {
+      return null
+    }
+
     const {
       admin,
-      config: { name, image_url },
-    } = await parentClient.dumpState()
+      config: { name, imageUrl },
+    } = dumpedState
 
     return {
       coreAddress: subDaoAdmin,
       name: name,
-      imageUrl: image_url ?? null,
+      imageUrl: imageUrl ?? null,
       parentDao:
         // If parent has already been loaded, do not recurse, to prevent
         // infinite cycles of parent DAOs.
         admin && previousParentAddresses?.includes(admin)
           ? null
-          : await loadParentDaoInfo(
-              cwClient,
-              bech32Prefix,
+          : await loadParentDaoInfo(bech32Prefix, subDaoAdmin, admin, [
+              ...(previousParentAddresses ?? []),
               subDaoAdmin,
-              admin,
-              [...(previousParentAddresses ?? []), subDaoAdmin]
-            ),
+            ]),
     }
   } catch (err) {
     // If contract not found, ignore error.
@@ -469,6 +431,7 @@ const loadParentDaoInfo = async (
       !(err instanceof Error) ||
       !err.message.includes('contract: not found')
     ) {
+      console.error(err)
       console.error(
         `Error loading parent DAO (${subDaoAdmin}) of ${subDaoAddress}`,
         processError(err)

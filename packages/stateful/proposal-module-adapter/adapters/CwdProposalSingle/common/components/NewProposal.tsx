@@ -353,7 +353,7 @@ export const NewProposal = ({
             ...options,
             proposalNumber,
             proposalId,
-          })(cosmWasmClient)
+          })()
           const expirationDate =
             proposalInfo &&
             convertExpirationToDate(

@@ -1,4 +1,3 @@
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ComponentType } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
@@ -51,9 +50,7 @@ export interface IProposalModuleAdapterCommon<
 export interface IProposalModuleAdapter<Vote extends unknown = any> {
   // Functions
   functions: {
-    getProposalInfo: (
-      cosmWasmClient: CosmWasmClient
-    ) => Promise<CommonProposalInfo | undefined>
+    getProposalInfo: () => Promise<CommonProposalInfo | undefined>
   }
 
   // Hooks
@@ -144,7 +141,6 @@ export interface IProposalModuleContext {
 // Internal Adapter Types
 
 export type FetchPreProposeAddressFunction = (
-  cosmWasmClient: CosmWasmClient,
   proposalModuleAddress: string,
   version: ContractVersion | null
 ) => Promise<string | null>

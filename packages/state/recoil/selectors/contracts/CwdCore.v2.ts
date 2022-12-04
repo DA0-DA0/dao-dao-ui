@@ -33,6 +33,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryIndexerSelector } from '../indexer'
 import * as Cw20BaseSelectors from './Cw20Base'
 
 type QueryClientParams = WithChainId<{
@@ -318,6 +319,9 @@ export const totalPowerAtHeightSelector = selectorFamily<
       return await client.totalPowerAtHeight(...params)
     },
 })
+
+///! Custom selectors
+
 export const infoSelector = selectorFamily<
   InfoResponse,
   QueryClientParams & {
@@ -328,12 +332,24 @@ export const infoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-      return await client.info(...params)
+      let response = {
+        info: get(
+          queryIndexerSelector({
+            ...queryClientParams,
+            formulaName: 'info',
+          })
+        ),
+      }
+
+      // If indexer query fails, fallback to contract query.
+      if (!response.info) {
+        const client = get(queryClient(queryClientParams))
+        response = await client.info(...params)
+      }
+
+      return response
     },
 })
-
-///! Custom selectors
 
 const CW20_TOKEN_LIST_LIMIT = 30
 export const allCw20TokenListSelector = selectorFamily<

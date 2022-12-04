@@ -1,9 +1,7 @@
 import { ContractVersion, FetchPreProposeAddressFunction } from '@dao-dao/types'
-
-import { CwdProposalSingleV2QueryClient } from '../contracts/CwdProposalSingle.v2.client'
+import { queryIndexer } from '@dao-dao/utils'
 
 export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
-  cwClient,
   proposalModuleAddress,
   version
 ) => {
@@ -14,12 +12,10 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
 
   let preProposeAddress: string | null = null
 
-  const client = new CwdProposalSingleV2QueryClient(
-    cwClient,
-    proposalModuleAddress
+  const creationPolicy = await queryIndexer(
+    proposalModuleAddress,
+    'daoProposalSingle/creationPolicy'
   )
-
-  const creationPolicy = await client.proposalCreationPolicy()
   if ('Module' in creationPolicy && creationPolicy.Module.addr) {
     preProposeAddress = creationPolicy.Module.addr
   }

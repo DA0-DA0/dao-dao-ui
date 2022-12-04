@@ -4,7 +4,6 @@ import {
   CwdCoreV2Selectors,
   CwdVotingCw20StakedSelectors,
   contractVersionSelector,
-  cosmWasmClientForChainSelector,
 } from '@dao-dao/state'
 import { ProposalModule, WithChainId } from '@dao-dao/types'
 
@@ -20,7 +19,6 @@ export const cwCoreProposalModulesSelector = selectorFamily<
   get:
     ({ coreAddress, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientForChainSelector(chainId))
       const coreVersion = get(
         contractVersionSelector({
           contractAddress: coreAddress,
@@ -28,7 +26,7 @@ export const cwCoreProposalModulesSelector = selectorFamily<
         })
       )
 
-      return await fetchProposalModules(client, coreAddress, coreVersion)
+      return await fetchProposalModules(coreAddress, coreVersion)
     },
 })
 
