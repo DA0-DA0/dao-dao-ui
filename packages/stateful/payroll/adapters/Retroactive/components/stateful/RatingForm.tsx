@@ -1,11 +1,13 @@
+import { fromBase64, toHex } from '@cosmjs/encoding'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState, waitForAll } from 'recoil'
+import { useRecoilValue, useSetRecoilState, waitForAll } from 'recoil'
 
 import {
   Cw20BaseSelectors,
+  cosmWasmClientForChainSelector,
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state/recoil'
 import {
@@ -19,7 +21,7 @@ import {
   secp256k1PublicKeyToBech32Address,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../../components'
+import { ProfileDisplay, SuspenseLoader } from '../../../../../components'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
@@ -31,6 +33,7 @@ import {
 } from '../../types'
 import {
   ContributionRatingData,
+  NominationForm,
   RatingForm as StatelessRatingForm,
 } from '../stateless/RatingForm'
 import { IdentityProfileDisplay } from './IdentityProfileDisplay'
@@ -40,6 +43,7 @@ export const RatingForm = () => {
   const { coreAddress, chainId, bech32Prefix } = useDaoInfoContext()
   const { publicKey: walletPublicKey } = useWallet(chainId)
 
+  const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))
   const postRequest = usePostRequest()
 
   const statusLoadable = useCachedLoadable(
@@ -169,6 +173,39 @@ export const RatingForm = () => {
       : undefined
   )
 
+  const onNominate = useCallback(
+    async (formData: NominationForm) => {
+      setLoading(true)
+
+      try {
+        // Get public key from address.
+        const account = await client.getAccount(formData.contributor)
+        if (!account?.pubkey?.value) {
+          throw new Error(t('error.addressNotFoundOnChain'))
+        }
+        const contributorPublicKey = toHex(fromBase64(account.pubkey.value))
+
+        // Nominate.
+        await postRequest(`/${coreAddress}/nominate`, {
+          ...formData,
+          contributor: contributorPublicKey,
+        })
+        toast.success(t('success.nominationSubmitted'))
+
+        // Reload data so nomination appears if data already loaded.
+        if (data) {
+          await loadData()
+        }
+      } catch (err) {
+        console.error(err)
+        toast.error(err instanceof Error ? err.message : JSON.stringify(err))
+      } finally {
+        setLoading(false)
+      }
+    },
+    [client, coreAddress, data, loadData, postRequest, t]
+  )
+
   return (
     <SuspenseLoader
       fallback={<Loader />}
@@ -184,10 +221,12 @@ export const RatingForm = () => {
         prices.state === 'hasValue' && (
           <StatelessRatingForm
             IdentityProfileDisplay={IdentityProfileDisplay}
+            ProfileDisplay={ProfileDisplay}
             cw20TokenInfos={loadingCw20TokenInfos.contents}
             data={data}
             loadData={loadData}
             loading={loading || statusLoadable.updating}
+            onNominate={onNominate}
             onSubmit={onSubmit}
             prices={
               prices.contents.filter(Boolean) as AmountWithTimestampAndDenom[]

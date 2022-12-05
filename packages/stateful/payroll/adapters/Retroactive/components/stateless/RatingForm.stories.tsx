@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProfileDisplay } from '../../../../../components'
 import { IdentityProfileDisplay } from '../stateful/IdentityProfileDisplay'
 import { makeSurvey } from './ContributionForm.stories'
 import { RatingForm } from './RatingForm'
@@ -50,6 +51,7 @@ Default.args = {
     alert('submit: ' + JSON.stringify(data, undefined, 2)),
   loading: false,
   IdentityProfileDisplay,
+  ProfileDisplay,
   cw20TokenInfos: [
     {
       address: 'usdc',
