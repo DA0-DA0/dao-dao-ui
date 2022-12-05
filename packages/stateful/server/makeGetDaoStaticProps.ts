@@ -465,7 +465,7 @@ const daoCoreDumpState = async (
   try {
     dumpedState = await queryIndexer(contractAddress, 'daoCore/dumpState')
     votingModuleInfo = dumpedState?.voting_module
-      ? await queryIndexer(dumpedState?.voting_module, 'info')
+      ? await queryIndexer(dumpedState.voting_module, 'info')
       : undefined
   } catch (error) {
     // If contract not found, no parent DAO. Rethrow.
