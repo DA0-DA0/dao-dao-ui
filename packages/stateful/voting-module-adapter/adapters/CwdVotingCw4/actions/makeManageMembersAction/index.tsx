@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/types/actions'
 import { makeWasmMessage } from '@dao-dao/utils'
 
+import { ProfileDisplay } from '../../../../../components'
 import { useVotingModule as useCw4VotingModule } from '../../hooks/useVotingModule'
 import {
   ManageMembersData,
@@ -95,6 +96,7 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
         {...props}
         options={{
           currentMembers: members.map(({ addr }) => addr),
+          ProfileDisplay: ProfileDisplay,
         }}
       />
     )

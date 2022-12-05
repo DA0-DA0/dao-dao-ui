@@ -1,6 +1,10 @@
 import { Code, Wallet } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ChangeEventHandler, ComponentPropsWithoutRef, ReactNode } from 'react'
+import {
+  ChangeEventHandler,
+  ComponentPropsWithoutRef,
+  ComponentType,
+} from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -8,8 +12,12 @@ import {
   Path,
   UseFormRegister,
   Validate,
+  useFormContext,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+
+import { StatefulProfileDisplayProps } from '@dao-dao/types'
+import { validateAddress } from '@dao-dao/utils'
 
 export interface AddressInputProps<
   FV extends FieldValues,
@@ -24,7 +32,7 @@ export interface AddressInputProps<
   required?: boolean
   containerClassName?: string
   iconType?: 'wallet' | 'contract'
-  rightNode?: ReactNode
+  ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
 }
 
 export const AddressInput = <
@@ -41,7 +49,7 @@ export const AddressInput = <
   className,
   containerClassName,
   iconType = 'wallet',
-  rightNode,
+  ProfileDisplay,
   ...rest
 }: AddressInputProps<FV, FieldName>) => {
   const { t } = useTranslation()
@@ -51,6 +59,11 @@ export const AddressInput = <
   )
 
   const Icon = iconType === 'wallet' ? Wallet : Code
+
+  const { watch } = useFormContext()
+  const self = watch(fieldName)
+
+  const showProfile = ProfileDisplay && !!self && validateAddress(self) === true
 
   return (
     <div
@@ -62,23 +75,31 @@ export const AddressInput = <
         containerClassName
       )}
     >
-      <Icon className="!h-5 !w-5" />
-      <input
-        className={clsx(
-          'ring-none body-text w-full border-none bg-transparent outline-none',
-          className
-        )}
-        disabled={disabled}
-        placeholder={t('form.address')}
-        type="text"
-        {...rest}
-        {...register(fieldName, {
-          required: required && 'Required',
-          validate,
-          onChange,
-        })}
-      />
-      {rightNode}
+      {(disabled && showProfile) || (
+        <>
+          <Icon className="!h-5 !w-5" />
+          <input
+            className={clsx(
+              'ring-none body-text w-full border-none bg-transparent outline-none',
+              className
+            )}
+            disabled={disabled}
+            placeholder={t('form.address')}
+            type="text"
+            {...rest}
+            {...register(fieldName, {
+              required: required && 'Required',
+              validate,
+              onChange,
+            })}
+          />
+        </>
+      )}
+      {showProfile && (
+        <div className={clsx(disabled || 'pl-4')}>
+          <ProfileDisplay address={self} />
+        </div>
+      )}
     </div>
   )
 }

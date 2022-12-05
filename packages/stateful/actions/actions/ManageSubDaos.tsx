@@ -15,6 +15,7 @@ import {
 } from '@dao-dao/types'
 import { makeWasmMessage } from '@dao-dao/utils'
 
+import { ProfileDisplay } from '../../components'
 import {
   ManageSubDaosData,
   ManageSubDaosComponent as StatelessManageSubDaosComponent,
@@ -106,6 +107,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
             address,
             name,
           })),
+          ProfileDisplay,
         }}
       />
     )

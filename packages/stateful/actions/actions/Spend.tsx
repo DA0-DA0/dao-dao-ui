@@ -31,7 +31,7 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../components'
+import { ProfileDisplay, SuspenseLoader } from '../../components'
 import { useCw20GovernanceTokenInfoResponseIfExists } from '../../voting-module-adapter'
 import {
   SpendData,
@@ -113,6 +113,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
               ? []
               : nativeBalancesLoadable.data,
             cw20Balances: cw20LoadingBalances ?? [],
+            ProfileDisplay: ProfileDisplay,
           }}
         />
       </SuspenseLoader>

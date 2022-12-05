@@ -182,16 +182,10 @@ export const InstantiateTokenSwap: ActionComponent<
         <InputLabel name={t('form.counterparty')} />
 
         <AddressInput
+          ProfileDisplay={ProfileDisplay}
           error={errors?.counterparty?.address}
           fieldName={fieldNamePrefix + 'counterparty.address'}
           register={register}
-          rightNode={
-            counterpartyAddressValid ? (
-              <div className="pl-4">
-                <ProfileDisplay address={counterparty.address} />
-              </div>
-            ) : undefined
-          }
           validation={[validateRequired, validateAddress]}
         />
 
