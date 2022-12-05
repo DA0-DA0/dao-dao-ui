@@ -134,7 +134,10 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
 
   queries: {
     proposalCount: {
-      proposal_count: {},
+      indexerFormula: 'daoProposalSingle/proposalCount',
+      cosmWasmQuery: {
+        proposal_count: {},
+      },
     },
   },
 

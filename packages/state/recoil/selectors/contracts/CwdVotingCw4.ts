@@ -15,6 +15,7 @@ import {
 } from '../../../contracts/CwdVotingCw4'
 import { signingCosmWasmClientAtom } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -63,6 +64,18 @@ export const groupContractSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const groupContract = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw4/groupContract',
+        })
+      )
+      // Null when indexer fails.
+      if (groupContract !== null) {
+        return groupContract
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.groupContract(...params)
     },

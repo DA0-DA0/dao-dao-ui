@@ -94,7 +94,10 @@ export type ProposalModuleAdapter<
   load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter<Vote>
 
   queries: {
-    proposalCount: Record<string, unknown>
+    proposalCount: {
+      indexerFormula?: string
+      cosmWasmQuery: Record<string, unknown>
+    }
   }
 
   functions: {

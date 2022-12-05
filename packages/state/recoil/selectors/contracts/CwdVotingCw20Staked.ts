@@ -15,6 +15,7 @@ import {
 import { CwdVotingCw20StakedQueryClient } from '../../../contracts/CwdVotingCw20Staked'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -43,6 +44,18 @@ export const stakingContractSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const stakingContract = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw20Staked/stakingContract',
+        })
+      )
+      // Null when indexer fails.
+      if (stakingContract !== null) {
+        return stakingContract
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.stakingContract(...params)
     },
@@ -129,6 +142,18 @@ export const tokenContractSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const tokenContract = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw20Staked/tokenContract',
+        })
+      )
+      // Null when indexer fails.
+      if (tokenContract !== null) {
+        return tokenContract
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.tokenContract(...params)
     },
