@@ -89,7 +89,7 @@ export const adminSelector = selectorFamily<
       const admin = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/admin',
+          formulaName: 'daoCore/admin',
         })
       )
       // Null when indexer fails.
@@ -115,7 +115,7 @@ export const adminNominationSelector = selectorFamily<
       const nomination = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/adminNomination',
+          formulaName: 'daoCore/adminNomination',
         })
       )
       // Null when indexer fails.
@@ -141,7 +141,7 @@ export const configSelector = selectorFamily<
       const config = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/config',
+          formulaName: 'daoCore/config',
         })
       )
       // Null when indexer fails.
@@ -219,7 +219,7 @@ export const reducedDumpStateSelector = selectorFamily<
       const state = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/dumpState',
+          formulaName: 'daoCore/dumpState',
         })
       )
       // Null when indexer fails.
@@ -249,7 +249,7 @@ export const getItemSelector = selectorFamily<
       const item = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/item',
+          formulaName: 'daoCore/item',
           args: {
             key: params[0].key,
           },
@@ -278,7 +278,7 @@ export const listItemsSelector = selectorFamily<
       const list = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/listItems',
+          formulaName: 'daoCore/listItems',
         })
       )
       // Null when indexer fails.
@@ -304,7 +304,7 @@ export const proposalModulesSelector = selectorFamily<
       const proposalModules = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/proposalModules',
+          formulaName: 'daoCore/proposalModules',
         })
       )
       // Null when indexer fails.
@@ -330,7 +330,7 @@ export const activeProposalModulesSelector = selectorFamily<
       const activeProposalModules = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/activeProposalModules',
+          formulaName: 'daoCore/activeProposalModules',
         })
       )
       // Null when indexer fails.
@@ -399,7 +399,7 @@ export const votingModuleSelector = selectorFamily<
       const votingModule = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/votingModule',
+          formulaName: 'daoCore/votingModule',
         })
       )
       // Null when indexer fails.
@@ -441,7 +441,7 @@ export const daoURISelector = selectorFamily<
       const daoUri = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/daoUri',
+          formulaName: 'daoCore/daoUri',
         })
       )
       // Null when indexer fails.
@@ -525,7 +525,7 @@ export const allCw20TokenListSelector = selectorFamily<
       const list = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/cw20List',
+          formulaName: 'daoCore/cw20List',
         })
       )
       // Null when indexer fails.
@@ -595,7 +595,7 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
       let balances: Cw20BalancesResponse | null = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/cw20Balances',
+          formulaName: 'daoCore/cw20Balances',
         })
       )
       // If indexer query fails (null), fallback to contract query.
@@ -685,7 +685,7 @@ export const allCw721TokenListSelector = selectorFamily<
       const list = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/cw721List',
+          formulaName: 'daoCore/cw721List',
         })
       )
       // Null when indexer fails.
@@ -734,7 +734,7 @@ export const listAllSubDaosSelector = selectorFamily<
       const list = get(
         queryIndexerSelector({
           ...queryClientParams,
-          formulaName: 'dao/listSubDaos',
+          formulaName: 'daoCore/listSubDaos',
         })
       )
       // Null when indexer fails.

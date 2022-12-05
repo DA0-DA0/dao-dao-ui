@@ -463,7 +463,7 @@ const daoCoreDumpState = async (
   let dumpedState: ReducedDumpState | undefined
   let votingModuleInfo: ContractVersionInfo | undefined
   try {
-    dumpedState = await queryIndexer(contractAddress, 'dao/dumpState')
+    dumpedState = await queryIndexer(contractAddress, 'daoCore/dumpState')
     votingModuleInfo = dumpedState?.voting_module
       ? await queryIndexer(dumpedState?.voting_module, 'info')
       : undefined

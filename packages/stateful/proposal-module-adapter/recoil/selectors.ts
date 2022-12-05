@@ -70,7 +70,7 @@ export const proposalModuleAdapterProposalCountSelector = selectorFamily<
       try {
         return await client.queryContractSmart(
           params.proposalModuleAddress,
-          adapter.queries.proposalCount
+          adapter.queries.proposalCount.cosmWasmQuery
         )
       } catch (err) {
         // v1 core throws error if no proposals have been made, so return 0 for

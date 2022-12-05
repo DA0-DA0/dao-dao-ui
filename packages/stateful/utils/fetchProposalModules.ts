@@ -36,7 +36,7 @@ export const fetchProposalModules = async (
   try {
     activeProposalModules = await queryIndexer(
       coreAddress,
-      'dao/activeProposalModules'
+      'daoCore/activeProposalModules'
     )
   } catch (err) {
     // Ignore error.
