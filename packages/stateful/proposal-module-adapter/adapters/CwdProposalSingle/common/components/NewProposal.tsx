@@ -15,7 +15,7 @@ import {
 
 import {
   Cw20BaseSelectors,
-  CwCoreV1Selectors,
+  CwdCoreV2Selectors,
   blockHeightSelector,
   blocksPerYearSelector,
   cosmWasmClientForChainSelector,
@@ -80,13 +80,17 @@ export const NewProposal = ({
   })
   const [loading, setLoading] = useState(false)
 
-  // Info about if the DAO is paused.
-  const pauseInfo = useRecoilValue(
-    CwCoreV1Selectors.pauseInfoSelector({
+  // Info about if the DAO is paused. This selector depends on blockHeight,
+  // which is refreshed periodically, so use a loadable to avoid unnecessary
+  // re-renders.
+  const pauseInfo = useCachedLoadable(
+    CwdCoreV2Selectors.pauseInfoSelector({
       contractAddress: coreAddress,
+      params: [],
     })
   )
-  const isPaused = 'Paused' in pauseInfo
+  const isPaused =
+    pauseInfo.state === 'hasValue' && 'Paused' in pauseInfo.contents
 
   const {
     hooks: { useActions: useVotingModuleActions },

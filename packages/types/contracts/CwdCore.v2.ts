@@ -346,3 +346,8 @@ export interface VotingPowerAtHeightResponse {
   power: Uint128
   [k: string]: unknown
 }
+
+export type ReducedDumpState = Pick<
+  DumpStateResponse,
+  'admin' | 'config' | 'version' | 'voting_module' | 'proposal_modules'
+>

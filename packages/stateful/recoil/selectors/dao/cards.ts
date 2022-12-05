@@ -1,7 +1,6 @@
 import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
 import {
-  CwCoreV1Selectors,
   CwdCoreV2Selectors,
   contractInstantiateTimeSelector,
   contractVersionSelector,
@@ -15,14 +14,8 @@ import {
   DaoDropdownInfo,
   WithChainId,
 } from '@dao-dao/types'
-import {
-  ConfigResponse as CwCoreV1ConfigResponse,
-  DumpStateResponse as CwCoreV1DumpStateResponse,
-} from '@dao-dao/types/contracts/CwCore.v1'
-import {
-  ConfigResponse as CwdCoreV2ConfigResponse,
-  DumpStateResponse as CwdCoreV2DumpStateResponse,
-} from '@dao-dao/types/contracts/CwdCore.v2'
+import { ConfigResponse as CwCoreV1ConfigResponse } from '@dao-dao/types/contracts/CwCore.v1'
+import { ConfigResponse as CwdCoreV2ConfigResponse } from '@dao-dao/types/contracts/CwdCore.v2'
 import {
   CHAIN_ID,
   CWCOREV1_CONTRACT_NAME,
@@ -44,12 +37,9 @@ export const daoCardInfoSelector = selectorFamily<
   get:
     ({ coreAddress, chainId = CHAIN_ID }) =>
     ({ get }) => {
-      const dumpedState:
-        | CwCoreV1DumpStateResponse
-        | CwdCoreV2DumpStateResponse
-        | undefined = get(
+      const dumpedState = get(
         // Both v1 and v2 have a dump_state query.
-        CwdCoreV2Selectors.dumpStateSelector({
+        CwdCoreV2Selectors.reducedDumpStateSelector({
           chainId,
           contractAddress: coreAddress,
           params: [],
@@ -60,18 +50,11 @@ export const daoCardInfoSelector = selectorFamily<
         return
       }
 
-      const {
-        config,
-        created_timestamp, // Only present for v2.
-        admin,
-      } = dumpedState
+      const { config, admin } = dumpedState
 
-      const established =
-        typeof created_timestamp === 'number'
-          ? new Date(created_timestamp)
-          : get(
-              contractInstantiateTimeSelector({ address: coreAddress, chainId })
-            )
+      const established = get(
+        contractInstantiateTimeSelector({ address: coreAddress, chainId })
+      )
 
       // Get parent DAO if exists.
       let parentDao: DaoCardInfo['parentDao']
@@ -237,21 +220,13 @@ export const daoDropdownInfoSelector: (
           chainId,
         })
       )
-      const config =
-        version === ContractVersion.V1
-          ? get(
-              CwCoreV1Selectors.configSelector({
-                contractAddress: coreAddress,
-                chainId,
-              })
-            )
-          : get(
-              CwdCoreV2Selectors.configSelector({
-                contractAddress: coreAddress,
-                chainId,
-                params: [],
-              })
-            )
+      const config = get(
+        CwdCoreV2Selectors.configSelector({
+          contractAddress: coreAddress,
+          chainId,
+          params: [],
+        })
+      )
 
       const subDaoAddresses: string[] =
         version === ContractVersion.V1

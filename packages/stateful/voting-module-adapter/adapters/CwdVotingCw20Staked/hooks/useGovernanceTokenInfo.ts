@@ -43,12 +43,6 @@ export const useGovernanceTokenInfo = ({
       params: [],
     })
   )
-  const governanceTokenMarketingInfo = useRecoilValue(
-    Cw20BaseSelectors.marketingInfoSelector({
-      contractAddress: governanceTokenAddress,
-      params: [],
-    })
-  )
 
   /// Optional
 
@@ -97,7 +91,6 @@ export const useGovernanceTokenInfo = ({
     stakingContractAddress,
     governanceTokenAddress,
     governanceTokenInfo,
-    governanceTokenMarketingInfo,
     /// Optional
     // Wallet balance
     walletBalance: walletBalance ? Number(walletBalance) : undefined,

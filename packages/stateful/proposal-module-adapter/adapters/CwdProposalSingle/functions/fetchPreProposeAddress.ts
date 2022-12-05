@@ -1,7 +1,14 @@
 import { ContractVersion, FetchPreProposeAddressFunction } from '@dao-dao/types'
-import { queryIndexer } from '@dao-dao/utils'
+import {
+  cosmWasmClientRouter,
+  getRpcForChainId,
+  queryIndexer,
+} from '@dao-dao/utils'
+
+import { CwdProposalSingleV2QueryClient } from '../contracts/CwdProposalSingle.v2.client'
 
 export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
+  chainId,
   proposalModuleAddress,
   version
 ) => {
@@ -10,15 +17,31 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
     return null
   }
 
-  let preProposeAddress: string | null = null
+  // Try indexer first.
+  let creationPolicy
+  try {
+    creationPolicy = await queryIndexer(
+      proposalModuleAddress,
+      'daoProposalSingle/creationPolicy'
+    )
+  } catch (err) {
+    // Ignore error.
+    console.error(err)
 
-  const creationPolicy = await queryIndexer(
-    proposalModuleAddress,
-    'daoProposalSingle/creationPolicy'
-  )
-  if ('Module' in creationPolicy && creationPolicy.Module.addr) {
-    preProposeAddress = creationPolicy.Module.addr
+    // If indexer fails, fallback to querying chain.
+    if (!creationPolicy) {
+      const client = new CwdProposalSingleV2QueryClient(
+        await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+        proposalModuleAddress
+      )
+
+      creationPolicy = await client.proposalCreationPolicy()
+    }
   }
 
-  return preProposeAddress
+  return creationPolicy &&
+    'Module' in creationPolicy &&
+    creationPolicy.Module.addr
+    ? creationPolicy.Module.addr
+    : null
 }

@@ -13,15 +13,11 @@ import {
   UseGovernanceTokenInfoOptions,
   UseGovernanceTokenInfoResponse,
 } from '@dao-dao/types'
-import {
-  MarketingInfoResponse,
-  TokenInfoResponse,
-} from '@dao-dao/types/contracts/Cw20Base'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   loadableToLoadingData,
   nativeTokenDecimals,
   nativeTokenLabel,
-  nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -54,14 +50,6 @@ export const useGovernanceTokenInfo = ({
     name: nativeTokenLabel(denom),
     symbol: nativeTokenLabel(denom),
     total_supply: supply.toString(),
-  }
-
-  const tokenUri = nativeTokenLogoURI(denom)
-  const governanceTokenMarketingInfo: MarketingInfoResponse = {
-    description: null,
-    logo: tokenUri ? { url: tokenUri } : null,
-    marketing: null,
-    project: null,
   }
 
   /// Optional
@@ -111,7 +99,6 @@ export const useGovernanceTokenInfo = ({
     stakingContractAddress: '',
     governanceTokenAddress: denom,
     governanceTokenInfo,
-    governanceTokenMarketingInfo,
     /// Optional
     // Wallet balance
     walletBalance: walletBalance ? Number(walletBalance) : undefined,

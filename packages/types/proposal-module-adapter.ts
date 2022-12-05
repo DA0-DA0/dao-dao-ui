@@ -141,6 +141,7 @@ export interface IProposalModuleContext {
 // Internal Adapter Types
 
 export type FetchPreProposeAddressFunction = (
+  chainId: string,
   proposalModuleAddress: string,
   version: ContractVersion | null
 ) => Promise<string | null>

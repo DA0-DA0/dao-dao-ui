@@ -9,17 +9,25 @@ import { getDaoCreated } from '@dao-dao/state/subquery/daos/created'
 import {
   CommonProposalInfo,
   ContractVersion,
+  ContractVersionInfo,
   DaoParentInfo,
+  InfoResponse,
   ProposalModule,
 } from '@dao-dao/types'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
-import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/CwdCore.v2'
+import {
+  Config,
+  ConfigResponse as ConfigV2Response,
+  ReducedDumpState,
+} from '@dao-dao/types/contracts/CwdCore.v2'
 import {
   CHAIN_PREFIX_ID_MAP,
   CI,
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
+  cosmWasmClientRouter,
+  getRpcForChainId,
   isValidWalletAddress,
   parseContractVersion,
   processError,
@@ -121,7 +129,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         config,
         version: { version },
         votingModule: { address: votingModuleAddress, info: votingModuleInfo },
-      } = await queryIndexer(coreAddress, 'dao/dumpState')
+      } = await daoCoreDumpState(chainId, coreAddress)
 
       coreVersion = parseContractVersion(version)
       if (!coreVersion) {
@@ -137,6 +145,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
       // Get DAO proposal modules.
       const proposalModules = await fetchProposalModules(
+        chainId,
         coreAddress,
         coreVersion
       )
@@ -202,9 +211,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             proposalModules,
             name: config.name,
             description: config.description,
-            imageUrl: overrideImageUrl ?? config.imageUrl ?? null,
+            imageUrl: overrideImageUrl ?? config.image_url ?? null,
             created: created?.toJSON() ?? null,
             parentDao: await loadParentDaoInfo(
+              chainId,
               bech32Prefix,
               coreAddress,
               admin
@@ -384,6 +394,7 @@ export class RedirectError {
 }
 
 const loadParentDaoInfo = async (
+  chainId: string,
   bech32Prefix: string,
   subDaoAddress: string,
   subDaoAdmin: string | null | undefined,
@@ -401,36 +412,28 @@ const loadParentDaoInfo = async (
   }
 
   try {
-    const dumpedState = await queryIndexer(subDaoAdmin, 'dao/dumpState')
-    if (!dumpedState) {
-      return null
-    }
-
     const {
       admin,
-      config: { name, imageUrl },
-    } = dumpedState
+      config: { name, image_url },
+    } = await daoCoreDumpState(chainId, subDaoAdmin)
 
     return {
       coreAddress: subDaoAdmin,
       name: name,
-      imageUrl: imageUrl ?? null,
+      imageUrl: image_url ?? null,
       parentDao:
         // If parent has already been loaded, do not recurse, to prevent
         // infinite cycles of parent DAOs.
         admin && previousParentAddresses?.includes(admin)
           ? null
-          : await loadParentDaoInfo(bech32Prefix, subDaoAdmin, admin, [
+          : await loadParentDaoInfo(chainId, bech32Prefix, subDaoAdmin, admin, [
               ...(previousParentAddresses ?? []),
               subDaoAdmin,
             ]),
     }
   } catch (err) {
-    // If contract not found, ignore error.
-    if (
-      !(err instanceof Error) ||
-      !err.message.includes('contract: not found')
-    ) {
+    // If contract not found, ignore error. Otherwise, log it.
+    if (!(err instanceof Error) || !err.message.includes('not found')) {
       console.error(err)
       console.error(
         `Error loading parent DAO (${subDaoAdmin}) of ${subDaoAddress}`,
@@ -440,5 +443,89 @@ const loadParentDaoInfo = async (
 
     // Don't prevent page render if failed to load parent DAO info.
     return null
+  }
+}
+
+interface DaoCardDumpState {
+  admin: string
+  config: Config
+  version: ContractVersionInfo
+  votingModule: {
+    address: string
+    info: ContractVersionInfo
+  }
+}
+
+const daoCoreDumpState = async (
+  chainId: string,
+  contractAddress: string
+): Promise<DaoCardDumpState> => {
+  let dumpedState: ReducedDumpState | undefined
+  let votingModuleInfo: ContractVersionInfo | undefined
+  try {
+    dumpedState = await queryIndexer(contractAddress, 'dao/dumpState')
+    votingModuleInfo = dumpedState?.voting_module
+      ? await queryIndexer(dumpedState?.voting_module, 'info')
+      : undefined
+  } catch (error) {
+    // If contract not found, no parent DAO. Rethrow.
+    if (
+      error instanceof Error &&
+      error.message.includes('contract not found')
+    ) {
+      throw error
+    }
+  }
+
+  // If indexer failed for some other reason, fallback to querying chain.
+  if (!dumpedState) {
+    const cwClient = await cosmWasmClientRouter.connect(
+      getRpcForChainId(chainId)
+    )
+
+    // DAO core contract.
+    const dumpStateResponse = await cwClient.queryContractSmart(
+      contractAddress,
+      {
+        dump_state: {},
+      }
+    )
+    const { info }: InfoResponse = await cwClient.queryContractSmart(
+      contractAddress,
+      {
+        info: {},
+      }
+    )
+
+    dumpedState = {
+      ...dumpStateResponse,
+      version: info,
+    }
+  }
+
+  if (!dumpedState) {
+    throw new Error('Failed to dump DAO state')
+  }
+
+  // If indexer failed for some other reason, fallback to querying chain.
+  if (!votingModuleInfo) {
+    const cwClient = await cosmWasmClientRouter.connect(
+      getRpcForChainId(chainId)
+    )
+
+    // Voting module contract.
+    votingModuleInfo = (
+      (await cwClient.queryContractSmart(dumpedState.voting_module, {
+        info: {},
+      })) as InfoResponse
+    ).info
+  }
+
+  return {
+    ...dumpedState,
+    votingModule: {
+      address: dumpedState.voting_module,
+      info: votingModuleInfo,
+    },
   }
 }

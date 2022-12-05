@@ -21,6 +21,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -66,8 +67,24 @@ export const balanceSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
       get(refreshWalletBalancesIdAtom(params[0].address))
+
+      const balance = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/balance',
+          args: {
+            address: params[0].address,
+          },
+        })
+      )
+      // Null when indexer fails.
+      if (balance !== null) {
+        return { balance }
+      }
+
+      // If indexer query fails, fallback to contract query.
+      const client = get(queryClient(queryClientParams))
       return await client.balance(...params)
     },
 })
@@ -81,6 +98,18 @@ export const tokenInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const tokenInfo = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/tokenInfo',
+        })
+      )
+      // Null when indexer fails.
+      if (tokenInfo !== null) {
+        return tokenInfo
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.tokenInfo(...params)
     },
@@ -157,6 +186,18 @@ export const marketingInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const marketingInfo = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/marketingInfo',
+        })
+      )
+      // Null when indexer fails.
+      if (marketingInfo !== null) {
+        return marketingInfo
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.marketingInfo(...params)
     },
@@ -194,5 +235,39 @@ export const balanceWithTimestampSelector = selectorFamily<
         amount,
         timestamp: new Date(),
       }
+    },
+})
+
+export const logoUrlSelector = selectorFamily<
+  string | undefined,
+  QueryClientParams
+>({
+  key: 'cw20BaseLogoUrl',
+  get:
+    ({ contractAddress, chainId }) =>
+    ({ get }) => {
+      const logoUrl = get(
+        queryIndexerSelector({
+          contractAddress,
+          chainId,
+          formulaName: 'cw20/logoUrl',
+        })
+      )
+      // Null when indexer fails.
+      if (logoUrl !== null) {
+        return logoUrl
+      }
+
+      // If indexer query fails, fallback to contract query.
+      const logoInfo = get(
+        marketingInfoSelector({
+          contractAddress,
+          chainId,
+          params: [],
+        })
+      ).logo
+      return !!logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
+        ? logoInfo.url
+        : undefined
     },
 })

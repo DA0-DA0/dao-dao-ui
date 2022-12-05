@@ -3,7 +3,7 @@ import { FieldValues } from 'react-hook-form'
 
 import { Action } from './actions'
 import { Duration } from './contracts/common'
-import { MarketingInfoResponse, TokenInfoResponse } from './contracts/Cw20Base'
+import { TokenInfoResponse } from './contracts/Cw20Base'
 import { Claim } from './contracts/stake-cw20'
 import {
   DaoCreationGetInstantiateInfo,
@@ -37,7 +37,6 @@ export interface UseGovernanceTokenInfoResponse {
   stakingContractAddress: string
   governanceTokenAddress: string
   governanceTokenInfo: TokenInfoResponse
-  governanceTokenMarketingInfo: MarketingInfoResponse
   /// Optional
   // Wallet balance
   walletBalance?: number

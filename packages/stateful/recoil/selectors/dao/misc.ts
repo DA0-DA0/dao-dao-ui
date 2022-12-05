@@ -6,6 +6,7 @@ import {
   contractVersionSelector,
 } from '@dao-dao/state'
 import { ProposalModule, WithChainId } from '@dao-dao/types'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
@@ -26,7 +27,11 @@ export const cwCoreProposalModulesSelector = selectorFamily<
         })
       )
 
-      return await fetchProposalModules(coreAddress, coreVersion)
+      return await fetchProposalModules(
+        chainId ?? CHAIN_ID,
+        coreAddress,
+        coreVersion
+      )
     },
 })
 

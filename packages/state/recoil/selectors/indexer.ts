@@ -1,29 +1,21 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/types'
-import { queryIndexer } from '@dao-dao/utils'
+import { QueryIndexerOptions, queryIndexer } from '@dao-dao/utils'
 
-// TODO(multichain): Switch indexer on chainId.
 export const queryIndexerSelector = selectorFamily<
   any,
-  WithChainId<{
-    contractAddress: string
-    formulaName: string
-    blockHeight?: number
-  }>
+  { contractAddress: string; formulaName: string } & QueryIndexerOptions
 >({
   key: 'queryIndexer',
   get:
-    ({ contractAddress, formulaName, blockHeight }) =>
+    ({ contractAddress, formulaName, ...options }) =>
     async () => {
-      const response = await queryIndexer(
-        contractAddress,
-        formulaName,
-        blockHeight
-      )
-        // If JSON decoding fails, return undefined.
-        .catch(() => undefined)
-
-      return response
+      try {
+        return await queryIndexer(contractAddress, formulaName, options)
+      } catch (err) {
+        // If the indexer fails, return null.
+        console.error(err)
+        return null
+      }
     },
 })

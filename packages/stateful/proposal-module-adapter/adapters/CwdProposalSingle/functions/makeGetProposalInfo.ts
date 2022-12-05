@@ -10,6 +10,7 @@ import {
   ContractVersion,
   ContractVersionInfo,
   IProposalModuleAdapterOptions,
+  InfoResponse,
 } from '@dao-dao/types'
 import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import { ProposalResponse as ProposalV2Response } from '@dao-dao/types/contracts/CwdProposalSingle.v2'
@@ -38,10 +39,26 @@ export const makeGetProposalInfo =
 
     let proposalResponse: ProposalV1Response | ProposalV2Response | undefined
     try {
-      const info = await queryIndexer<ContractVersionInfo>(
-        proposalModule.address,
-        'info'
-      )
+      let info: ContractVersionInfo | undefined
+      // Try indexer first.
+      try {
+        info = await queryIndexer<ContractVersionInfo>(
+          proposalModule.address,
+          'info'
+        )
+      } catch (err) {
+        // Ignore error.
+        console.error(err)
+      }
+      // If indexer fails, query from contract on chain.
+      if (!info) {
+        info = (
+          (await cosmWasmClient.queryContractSmart(proposalModule.address, {
+            info: {},
+          })) as InfoResponse
+        ).info
+      }
+
       const version = parseContractVersion(info.version)
 
       const queryClient =

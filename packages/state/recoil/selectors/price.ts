@@ -136,7 +136,7 @@ export const daoTvlSelector = selectorFamily<
         nativeBalancesSelector({ address: coreAddress, chainId })
       )
       const cw20Balances = get(
-        CwdCoreV2Selectors.cw20BalancesInfoSelector({
+        CwdCoreV2Selectors.allCw20BalancesAndInfosSelector({
           contractAddress: coreAddress,
           chainId,
           governanceTokenAddress: cw20GovernanceTokenAddress,
@@ -149,9 +149,9 @@ export const daoTvlSelector = selectorFamily<
           denom,
           decimals,
         })),
-        ...cw20Balances.map(({ amount, denom, decimals }) => ({
-          amount,
-          denom,
+        ...cw20Balances.map(({ addr, balance, info: { decimals } }) => ({
+          amount: balance,
+          denom: addr,
           decimals,
         })),
       ]
