@@ -250,9 +250,7 @@ export const getItemSelector = selectorFamily<
         queryIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/item',
-          args: {
-            key: params[0].key,
-          },
+          args: params[0],
         })
       )
       // Null when indexer fails.

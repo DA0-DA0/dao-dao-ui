@@ -73,9 +73,7 @@ export const balanceSelector = selectorFamily<
         queryIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20/balance',
-          args: {
-            address: params[0].address,
-          },
+          args: params[0],
         })
       )
       // Null when indexer fails.
