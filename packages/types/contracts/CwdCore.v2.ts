@@ -351,3 +351,7 @@ export type ReducedDumpState = Pick<
   DumpStateResponse,
   'admin' | 'config' | 'version' | 'voting_module' | 'proposal_modules'
 >
+
+export interface ProposalModuleWithInfo extends ProposalModule {
+  info: ContractVersionInfo
+}

@@ -7,11 +7,8 @@ import {
   FetchPreProposeAddressFunction,
   ProposalModule,
 } from '@dao-dao/types'
-import {
-  ContractVersionInfo,
-  InfoResponse,
-} from '@dao-dao/types/contracts/common'
-import { ProposalModule as ProposalModuleRespose } from '@dao-dao/types/contracts/CwdCore.v2'
+import { InfoResponse } from '@dao-dao/types/contracts/common'
+import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/CwdCore.v2'
 import {
   cosmWasmClientRouter,
   getRpcForChainId,
@@ -22,29 +19,28 @@ import {
 
 import { matchAdapter } from '../proposal-module-adapter'
 
-type ProposalModuleWithInfo = ProposalModuleRespose & {
-  info: ContractVersionInfo
-}
-
 export const fetchProposalModules = async (
   chainId: string,
   coreAddress: string,
-  coreVersion: ContractVersion
+  coreVersion: ContractVersion,
+  // If already fetched (from indexer), use that.
+  activeProposalModules?: ProposalModuleWithInfo[]
 ): Promise<ProposalModule[]> => {
-  let activeProposalModules: ProposalModuleWithInfo[] | undefined
   // Try indexer first.
-  try {
-    activeProposalModules = await queryIndexer(
-      coreAddress,
-      'daoCore/activeProposalModules'
-    )
-  } catch (err) {
-    // Ignore error.
-    console.error(err)
+  if (!activeProposalModules) {
+    try {
+      activeProposalModules = await queryIndexer(
+        coreAddress,
+        'daoCore/activeProposalModules'
+      )
+    } catch (err) {
+      // Ignore error.
+      console.error(err)
+    }
   }
   // If indexer fails, fallback to querying chain.
   if (!activeProposalModules) {
-    activeProposalModules = await getProposalModulesFromChain(
+    activeProposalModules = await fetchProposalModulesWithInfoFromChain(
       chainId,
       coreAddress,
       coreVersion
@@ -91,7 +87,7 @@ const getFetchPreProposeAddress = (
 }
 
 const LIMIT = 10
-const getProposalModulesFromChain = async (
+export const fetchProposalModulesWithInfoFromChain = async (
   chainId: string,
   coreAddress: string,
   coreVersion: ContractVersion
