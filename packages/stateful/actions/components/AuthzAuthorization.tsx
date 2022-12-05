@@ -16,6 +16,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { AuthzExecActionTypes } from '../actions/AuthzExec'
 import { ActionCard } from './ActionCard'
 
 export interface AuthzOptions {}
@@ -76,16 +77,16 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
             fieldName={fieldNamePrefix + 'value.msgTypeUrl'}
             register={register}
           >
-            <option value="/cosmos.staking.v1beta1.MsgDelegate">
+            <option value={AuthzExecActionTypes.Delegate}>
               {t('info.stake')}
             </option>
-            <option value="/cosmos.staking.v1beta1.MsgUndelegate">
+            <option value={AuthzExecActionTypes.Undelegate}>
               {t('info.unstake')}
             </option>
-            <option value="/cosmos.staking.v1beta1.MsgBeginRedelegate">
+            <option value={AuthzExecActionTypes.Redelegate}>
               {t('info.redelegate')}
             </option>
-            <option value="/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward">
+            <option value={AuthzExecActionTypes.ClaimRewards}>
               {t('info.withdrawStakingRewards')}
             </option>
           </SelectInput>

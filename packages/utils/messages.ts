@@ -6,11 +6,17 @@ import {
   MsgRevoke,
 } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
-import { MsgWithdrawValidatorCommission } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
+import {
+  MsgWithdrawDelegatorReward,
+  MsgWithdrawValidatorCommission,
+} from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
 import {
+  MsgBeginRedelegate,
   MsgCreateValidator,
+  MsgDelegate,
   MsgEditValidator,
+  MsgUndelegate,
 } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
 import {
@@ -114,62 +120,9 @@ export function decodeMessages(
         }
       }
     } else if (isStargateMsg(msgObj)) {
-      let msg = {
-        stargate: {
-          type_url: msgObj.stargate.type_url as string,
-        },
-      } as {
-        stargate: { type_url: string; value?: any }
-      }
-
-      switch (msgObj.stargate.type_url) {
-        case '/cosmos.authz.v1beta1.MsgGrant':
-          msg.stargate.value = MsgGrant.decode(
-            fromBase64(msgObj.stargate.value)
-          )
-          if (msg.stargate.value.grant?.authorization) {
-            msg.stargate.value.grant.authorization.value =
-              GenericAuthorization.decode(
-                msg.stargate.value.grant.authorization.value
-              )
-          }
-          decodedMessageArray.push(msg)
-          break
-        case '/cosmos.authz.v1beta1.MsgRevoke':
-          msg.stargate.value = MsgRevoke.decode(
-            fromBase64(msgObj.stargate.value)
-          )
-          decodedMessageArray.push(msg)
-          break
-        case '/cosmos.authz.v1beta1.MsgExec':
-          msg.stargate.value = MsgExec.decode(fromBase64(msgObj.stargate.value))
-          decodedMessageArray.push(msg)
-          break
-        case '/cosmos.staking.v1beta1.MsgCreateValidator':
-          msg.stargate.value = MsgCreateValidator.decode(
-            fromBase64(msgObj.stargate.value)
-          )
-          decodedMessageArray.push(msg)
-          break
-        case '/cosmos.staking.v1beta1.MsgEditValidator':
-          msg.stargate.value = MsgEditValidator.decode(
-            fromBase64(msgObj.stargate.value)
-          )
-          decodedMessageArray.push(msg)
-          break
-        case '/cosmos.slashing.v1beta1.MsgUnjail':
-          msg.stargate.value = MsgUnjail.decode(
-            fromBase64(msgObj.stargate.value)
-          )
-          decodedMessageArray.push(msg)
-          break
-        case '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission':
-          msg.stargate.value = MsgWithdrawValidatorCommission.decode(
-            fromBase64(msgObj.stargate.value)
-          )
-          decodedMessageArray.push(msg)
-          break
-      }
+      // Decode Stargate protobuf message
+      msgObj.stargate = decodeProtobuf(msgObj.stargate)
+      decodedMessageArray.push(msgObj)
     } else {
       decodedMessageArray.push(msgObj)
     }
@@ -212,37 +165,88 @@ export const makeWasmMessage = (message: {
   return msg
 }
 
-export const makeStargateMessage = (message: {
-  stargate: { type_url: string; value: any }
-}): CosmWasmStargateMsg => {
-  let msg = message
-  switch (message.stargate.type_url) {
+// Takes an encode proto messagne and attempts to decode it.
+export const decodeProtobuf = (msg: {
+  type_url: string
+  value: any
+}): { type_url: string; value: any } => {
+  switch (msg.type_url) {
+    case '/cosmos.authz.v1beta1.MsgGrant':
+      msg.value = MsgGrant.decode(fromBase64(msg.value))
+      if (msg.value?.grant?.authorization) {
+        msg.value.grant.authorization.value = GenericAuthorization.decode(
+          msg.value.grant.authorization?.value
+        )
+      }
+      break
+    case '/cosmos.authz.v1beta1.MsgRevoke':
+      msg.value = MsgRevoke.decode(fromBase64(msg.value))
+      break
     case '/cosmos.authz.v1beta1.MsgExec':
-      msg.stargate.value = toBase64(
+      msg.value = MsgExec.decode(fromBase64(msg.value))
+      break
+    case '/cosmos.staking.v1beta1.MsgDelegate':
+      msg.value = MsgDelegate.decode(fromBase64(msg.value))
+      break
+    case '/cosmos.staking.v1beta1.MsgUndelegate':
+      msg.value = MsgUndelegate.decode(fromBase64(msg.value))
+      break
+    case '/cosmos.staking.v1beta1.MsgBeginRedelegate':
+      msg.value = MsgBeginRedelegate.decode(fromBase64(msg.value))
+      break
+    case '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward':
+      msg.value = MsgWithdrawDelegatorReward.decode(fromBase64(msg.value))
+      break
+    case '/cosmos.staking.v1beta1.MsgCreateValidator':
+      msg.value = MsgCreateValidator.decode(fromBase64(msg.value))
+      break
+    case '/cosmos.staking.v1beta1.MsgEditValidator':
+      msg.value = MsgEditValidator.decode(fromBase64(msg.value))
+      break
+    case '/cosmos.slashing.v1beta1.MsgUnjail':
+      msg.value = MsgUnjail.decode(fromBase64(msg.value))
+      break
+    case '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission':
+      msg.value = MsgWithdrawValidatorCommission.decode(fromBase64(msg.value))
+      break
+  }
+
+  return msg
+}
+
+// Takes an unencoded protobuf message value and
+// attemps to encode it based on type_url
+export const encodeProtobufValue = (
+  type_url: string,
+  value: any
+): Uint8Array => {
+  switch (type_url) {
+    case '/cosmos.authz.v1beta1.MsgExec':
+      value = toBase64(
         Uint8Array.from(
           MsgExec.encode(
             MsgExec.fromPartial({
-              grantee: message.stargate.value.grantee,
-              msgs: message.stargate.value.msgs,
+              grantee: value.grantee,
+              msgs: value.msgs,
             })
           ).finish()
         )
       )
       break
     case '/cosmos.authz.v1beta1.MsgGrant':
-      msg.stargate.value = toBase64(
+      value = toBase64(
         Uint8Array.from(
           MsgGrant.encode(
             MsgGrant.fromPartial({
-              grantee: message.stargate.value.grantee,
-              granter: message.stargate.value.granter,
+              grantee: value.grantee,
+              granter: value.granter,
               grant: {
                 authorization: {
                   typeUrl: '/cosmos.authz.v1beta1.GenericAuthorization',
                   value: Uint8Array.from(
                     GenericAuthorization.encode(
                       GenericAuthorization.fromPartial({
-                        msg: message.stargate.value.msgTypeUrl,
+                        msg: value.msgTypeUrl,
                       })
                     ).finish()
                   ),
@@ -254,21 +258,57 @@ export const makeStargateMessage = (message: {
       )
       break
     case '/cosmos.authz.v1beta1.MsgRevoke':
-      msg.stargate.value = toBase64(
+      value = toBase64(
         Uint8Array.from(
           MsgRevoke.encode(
             MsgRevoke.fromPartial({
-              grantee: message.stargate.value.grantee,
-              granter: message.stargate.value.granter,
-              msgTypeUrl: message.stargate.value.msgTypeUrl,
+              grantee: value.grantee,
+              granter: value.granter,
+              msgTypeUrl: value.msgTypeUrl,
             })
           ).finish()
         )
       )
       break
+    case '/cosmos.staking.v1beta1.MsgDelegate':
+      value = toBase64(
+        MsgDelegate.encode(
+          MsgDelegate.fromPartial({
+            ...value,
+          })
+        ).finish()
+      )
+      break
+    case '/cosmos.staking.v1beta1.MsgUndelegate':
+      value = toBase64(
+        MsgUndelegate.encode(
+          MsgUndelegate.fromPartial({
+            ...value,
+          })
+        ).finish()
+      )
+      break
+    case '/cosmos.staking.v1beta1.MsgBeginRedelegate':
+      value = toBase64(
+        MsgBeginRedelegate.encode(
+          MsgBeginRedelegate.fromPartial({
+            ...value,
+          })
+        ).finish()
+      )
+      break
+    case '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward':
+      value = toBase64(
+        MsgWithdrawDelegatorReward.encode(
+          MsgWithdrawDelegatorReward.fromPartial({
+            ...value,
+          })
+        ).finish()
+      )
+      break
     case '/cosmos.staking.v1beta1.MsgCreateValidator':
-      let msgValue = msg.stargate.value
-      msg.stargate.value = toBase64(
+      let msgValue = value
+      value = toBase64(
         MsgCreateValidator.encode({
           ...msgValue,
           pubkey: {
@@ -281,37 +321,59 @@ export const makeStargateMessage = (message: {
       )
       break
     case '/cosmos.staking.v1beta1.MsgEditValidator':
-      msg.stargate.value = toBase64(
+      value = toBase64(
         MsgEditValidator.encode(
           MsgEditValidator.fromPartial({
-            ...msg.stargate.value,
+            ...value,
           })
         ).finish()
       )
       break
     case '/cosmos.slashing.v1beta1.MsgUnjail':
-      msg.stargate.value = toBase64(
+      value = toBase64(
         MsgUnjail.encode(
           MsgUnjail.fromPartial({
-            ...msg.stargate.value,
+            ...value,
           })
         ).finish()
       )
       break
     case '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission':
-      msg.stargate.value = toBase64(
+      value = toBase64(
         MsgWithdrawValidatorCommission.encode({
-          validatorAddress: msg.stargate.value.validatorAddress,
+          ...value,
         }).finish()
       )
       break
     default:
-      console.log(msg)
-      throw Error('Unrecognized CosmWasm Stargate message')
+      console.error(type_url, value)
+      throw Error('Unrecognized type url')
   }
 
-  return msg
+  return value
 }
+
+// Expects typeUrl
+export const makeRawProtobufMsg = (msg: {
+  typeUrl: string
+  value: any
+}): { typeUrl: string; value: Uint8Array } => ({
+  typeUrl: msg.typeUrl,
+  value: encodeProtobufValue(msg.typeUrl, msg.value),
+})
+
+// CosmWasm expects type_url to be in snake_case format
+export const makeStargateMessage = (message: {
+  stargate: { type_url: string; value: any }
+}): CosmWasmStargateMsg => ({
+  stargate: {
+    type_url: message.stargate.type_url,
+    value: encodeProtobufValue(
+      message.stargate.type_url,
+      message.stargate.value
+    ),
+  },
+})
 
 export const makeExecutableMintMessage = (
   msg: MintMsg,

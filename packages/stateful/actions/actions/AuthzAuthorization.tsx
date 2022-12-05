@@ -67,7 +67,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
             },
           },
         }),
-      [address]
+      []
     )
 
   return {
