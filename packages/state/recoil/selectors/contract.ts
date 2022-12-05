@@ -8,6 +8,7 @@ import {
   cosmWasmClientForChainSelector,
 } from './chain'
 import { CwdCoreV2Selectors } from './contracts'
+import { queryIndexerSelector } from './indexer'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
@@ -17,12 +18,28 @@ export const contractInstantiateTimeSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientForChainSelector(chainId))
+      const instantiatedAt = get(
+        queryIndexerSelector({
+          contractAddress: address,
+          chainId,
+          formulaName: 'instantiatedAt',
+        })
+      )
+      // Null when indexer fails.
+      if (instantiatedAt) {
+        return new Date(instantiatedAt)
+      }
 
+      // If indexer fails, fallback to querying chain.
+
+      const client = get(cosmWasmClientForChainSelector(chainId))
       const events = await client.searchTx({
         tags: [{ key: 'instantiate._contract_address', value: address }],
       })
-      if (events.length === 0) return
+
+      if (events.length === 0) {
+        return
+      }
 
       return get(
         blockHeightTimestampSafeSelector({
