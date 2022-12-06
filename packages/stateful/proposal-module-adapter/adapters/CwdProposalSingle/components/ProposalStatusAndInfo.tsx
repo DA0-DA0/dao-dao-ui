@@ -37,7 +37,7 @@ import {
 
 import { ButtonLink } from '../../../../components/ButtonLink'
 import { ProfileDisplay } from '../../../../components/ProfileDisplay'
-import { useVotingModule } from '../../../../hooks'
+import { useMembership } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { configSelector } from '../contracts/CwdProposalSingle.common.recoil'
 import {
@@ -62,11 +62,12 @@ export const ProposalStatusAndInfo = ({
   ...props
 }: BaseProposalStatusAndInfoProps) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
+  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { connected, address: walletAddress = '' } = useWallet()
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false } = useMembership({
+    coreAddress,
+    chainId,
   })
 
   const config = useRecoilValue(

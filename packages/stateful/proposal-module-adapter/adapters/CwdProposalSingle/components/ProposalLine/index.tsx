@@ -2,7 +2,7 @@ import { ProposalLine as StatelessProposalLine } from '@dao-dao/stateless'
 import { BaseProposalLineProps } from '@dao-dao/types'
 import { Status } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 
-import { useVotingModule } from '../../../../../hooks'
+import { useMembership } from '../../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../../react'
 import {
   useProposal,
@@ -20,8 +20,8 @@ export const ProposalLine = (props: BaseProposalLineProps) => {
   } = useProposalModuleAdapterOptions()
 
   const proposal = useProposal()
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false } = useMembership({
+    coreAddress,
   })
   const { couldVote, canVote, vote } = useWalletVoteInfo()
   const timestampDisplay = useTimestampDisplay()

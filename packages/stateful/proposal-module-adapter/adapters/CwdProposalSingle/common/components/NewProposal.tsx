@@ -44,7 +44,7 @@ import { useCoreActions } from '../../../../../actions'
 import {
   Cw20BaseHooks,
   useAwaitNextBlock,
-  useVotingModule,
+  useMembership,
 } from '../../../../../hooks'
 import { useVotingModuleAdapter } from '../../../../../voting-module-adapter'
 import { usePropose as useProposePrePropose } from '../../contracts/CwdPreProposeSingle.hooks'
@@ -75,8 +75,9 @@ export const NewProposal = ({
   const { imageUrl: daoImageUrl } = useDaoInfoContext()
   const { chainId, coreAddress, proposalModule } = options
   const { connected, address: walletAddress } = useWallet()
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false } = useMembership({
+    coreAddress,
+    chainId,
   })
   const [loading, setLoading] = useState(false)
 

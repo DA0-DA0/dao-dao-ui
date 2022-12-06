@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
@@ -11,7 +10,7 @@ import {
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 
-import { useVotingModule, useWalletProfile } from '../../hooks'
+import { useMembership, useWalletProfile } from '../../hooks'
 import {
   matchAndLoadCommon,
   useProposalModuleAdapter,
@@ -25,7 +24,6 @@ export interface ProfileProposalCardProps {
 export const ProfileProposalCard = ({
   onVoteSuccess,
 }: ProfileProposalCardProps) => {
-  const { t } = useTranslation()
   const {
     chainId,
     coreAddress,
@@ -65,16 +63,10 @@ export const ProfileProposalCard = ({
 
   // If wallet is a member right now as opposed to when the proposal was open.
   // Relevant for showing them membership join info or not.
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false } = useMembership({
+    coreAddress,
+    chainId,
   })
-
-  const { totalVotingWeight } = useVotingModule(coreAddress, {
-    fetchMembership: true,
-  })
-  if (totalVotingWeight === undefined) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const options = useProfileVoteCardOptions()
   const { vote, couldVote, canVote, votingPowerPercent } = useWalletVoteInfo()

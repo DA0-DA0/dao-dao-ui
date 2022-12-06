@@ -641,8 +641,11 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
           id: generalId + specificId,
         })
       )
-      // If indexer query fails (null), fallback to contract query.
-      if (balances === null) {
+      if (balances) {
+        // Copy to new array so we can mutate it below.
+        balances = [...balances]
+        // If indexer query fails, fallback to contract query.
+      } else {
         balances = []
         while (true) {
           const response = await get(

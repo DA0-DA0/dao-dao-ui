@@ -1,38 +1,30 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { constSelector, useRecoilValue } from 'recoil'
 
 import { CwdCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 
-interface UseVotingModuleOptions {
+interface UseMembershipOptions {
+  coreAddress: string
   chainId?: string
-  fetchMembership?: boolean
 }
 
-interface UseVotingModuleResponse {
+interface UseMembershipResponse {
+  loading: boolean
   isMember: boolean | undefined
-  votingModuleAddress: string
   walletVotingWeight: number | undefined
   totalVotingWeight: number | undefined
 }
 
-export const useVotingModule = (
-  coreAddress: string,
-  { chainId, fetchMembership }: UseVotingModuleOptions = {}
-): UseVotingModuleResponse => {
+export const useMembership = ({
+  coreAddress,
+  chainId,
+}: UseMembershipOptions): UseMembershipResponse => {
   const { address: walletAddress } = useWallet(chainId)
 
-  const votingModuleAddress = useRecoilValue(
-    CwdCoreV2Selectors.votingModuleSelector({
-      contractAddress: coreAddress,
-      chainId,
-      params: [],
-    })
-  )
   // Use loadable to prevent flickering loading states when wallet address
   // changes and on initial load if wallet is connecting.
   const _walletVotingWeight = useCachedLoadable(
-    fetchMembership && walletAddress
+    walletAddress
       ? CwdCoreV2Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           chainId,
@@ -40,31 +32,33 @@ export const useVotingModule = (
         })
       : undefined
   )
-  const _totalVotingWeight = useRecoilValue(
-    fetchMembership
-      ? CwdCoreV2Selectors.totalPowerAtHeightSelector({
-          contractAddress: coreAddress,
-          chainId,
-          params: [{}],
-        })
-      : constSelector(undefined)
-  )?.power
+  const _totalVotingWeight = useCachedLoadable(
+    CwdCoreV2Selectors.totalPowerAtHeightSelector({
+      contractAddress: coreAddress,
+      chainId,
+      params: [{}],
+    })
+  )
 
   const walletVotingWeight =
     _walletVotingWeight.state === 'hasValue' &&
     !isNaN(Number(_walletVotingWeight.contents.power))
       ? Number(_walletVotingWeight.contents.power)
       : undefined
-  const totalVotingWeight = !isNaN(Number(_totalVotingWeight))
-    ? Number(_totalVotingWeight)
-    : undefined
+  const totalVotingWeight =
+    _totalVotingWeight.state === 'hasValue' &&
+    !isNaN(Number(_totalVotingWeight.contents.power))
+      ? Number(_totalVotingWeight.contents.power)
+      : undefined
   const isMember =
     walletVotingWeight !== undefined ? walletVotingWeight > 0 : undefined
 
   return {
     isMember,
-    votingModuleAddress,
     walletVotingWeight,
     totalVotingWeight,
+    loading:
+      _walletVotingWeight.state === 'loading' ||
+      _totalVotingWeight.state === 'loading',
   }
 }

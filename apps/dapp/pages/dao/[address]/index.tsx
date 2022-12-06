@@ -7,12 +7,7 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import {
-  constSelector,
-  useRecoilValue,
-  useRecoilValueLoadable,
-  waitForAll,
-} from 'recoil'
+import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
 
 import { CwdCoreV2Selectors } from '@dao-dao/state'
 import {
@@ -25,8 +20,8 @@ import {
   SuspenseLoader,
   TreasuryAndNftsTab,
   useEncodedCwdProposalSinglePrefill,
+  useMembership,
   usePinnedDaos,
-  useVotingModule,
   useWalletProfile,
 } from '@dao-dao/stateful'
 import { useCoreActionForKey } from '@dao-dao/stateful/actions'
@@ -39,6 +34,7 @@ import {
   ProfileMemberCard,
   ProfileNotMemberCard,
   useAppLayoutContext,
+  useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { CoreActionKey } from '@dao-dao/types'
@@ -56,18 +52,13 @@ const InnerDaoHome = () => {
   const {
     components: { MembersTab, ProfileCardMemberInfo },
   } = useVotingModuleAdapter()
-  const { isMember } = useVotingModule(daoInfo.coreAddress, {
-    fetchMembership: true,
-  })
+  const { isMember } = useMembership(daoInfo)
 
   // If no parent, fallback to current address since it's already loaded from
   // the above hook. We won't use this value unless there's a parent. It's
   // redundant but has no effect.
-  const { isMember: isMemberOfParent } = useVotingModule(
-    daoInfo.parentDao?.coreAddress ?? daoInfo.coreAddress,
-    {
-      fetchMembership: true,
-    }
+  const { isMember: isMemberOfParent } = useMembership(
+    daoInfo.parentDao ?? daoInfo
   )
   const parentDaosSubDaosLoadable = useRecoilValueLoadable(
     daoInfo.parentDao
@@ -172,14 +163,21 @@ const InnerDaoHome = () => {
       ),
     [daoInfo.chainId, daoInfo.coreAddress, daoInfo.proposalModules]
   )
-  const proposalModuleDepositInfos = useRecoilValue(
+  const proposalModuleDepositInfosLoadable = useCachedLoadable(
     waitForAll(depositInfoSelectors)
-  ).filter(Boolean) as CheckedDepositInfo[]
-
-  const maxProposalModuleDeposit = Math.max(
-    ...proposalModuleDepositInfos.map(({ amount }) => Number(amount)),
-    0
   )
+
+  const maxProposalModuleDeposit =
+    proposalModuleDepositInfosLoadable.state !== 'hasValue'
+      ? 0
+      : Math.max(
+          ...(
+            proposalModuleDepositInfosLoadable.contents.filter(
+              Boolean
+            ) as CheckedDepositInfo[]
+          ).map(({ amount }) => Number(amount)),
+          0
+        )
 
   const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
   const pinned = isPinned(daoInfo.coreAddress)

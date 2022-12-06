@@ -20,7 +20,7 @@ import {
 } from '@dao-dao/types/command'
 import { CHAIN_ID, getUrlBaseForChainId } from '@dao-dao/utils'
 
-import { usePinnedDaos, useVotingModule } from '../../../hooks'
+import { useMembership, usePinnedDaos } from '../../../hooks'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo
@@ -30,9 +30,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const router = useRouter()
 
     const { status } = useWallet(chainId)
-    const { isMember } = useVotingModule(coreAddress, {
+    const { isMember } = useMembership({
+      coreAddress,
       chainId,
-      fetchMembership: true,
     })
 
     const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
