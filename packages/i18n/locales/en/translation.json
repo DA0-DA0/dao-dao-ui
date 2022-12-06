@@ -304,7 +304,7 @@
     "tokenDefinition": "Token definition",
     "tokenInfo": "Token info",
     "tokenSwapCreateInstructions": "In this step, you will create the token swap. This creation step describes how many funds each party needs to send for the swap to complete. <2>No funds will be transferred at this time.</2>",
-    "tokenSwapExistingInstructions": "In this step, you will fund a token swap that you (or the counterparty) has already initiated. After you fund a swap, you can withdraw the tokens you funded unless (or until) the counterparty has paid. Likewise, the counterparty can withdraw the tokens they funded until you pay.",
+    "tokenSwapExistingInstructions": "In this step, you will choose a token swap that you (or the counterparty) has already initiated. After you fund a swap, you can withdraw the tokens you funded unless (or until) the counterparty has paid. Likewise, the counterparty can withdraw the tokens they funded until you pay.",
     "unstakingDurationDescription": "In order to vote, members must stake their tokens with the DAO. Members who would like to leave the DAO or trade their governance tokens must first unstake them. This setting configures how long members have to wait after unstaking their tokens for those tokens to become available. The longer you set this duration, the more sure you can be sure that people who register their tokens are keen to participate in your DAO's governance.",
     "unstakingDurationTitle": "Unstaking period",
     "updateAdminDescription": "This will update the admin for the selected contract. The new admin will have complete control over the contract. Take care.",

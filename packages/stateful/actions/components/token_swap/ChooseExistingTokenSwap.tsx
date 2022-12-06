@@ -27,7 +27,7 @@ export const ChooseExistingTokenSwap: ActionComponent<
     <div className="flex flex-col gap-4">
       <p className="max-w-prose">
         <Trans i18nKey="form.tokenSwapExistingInstructions">
-          In this step, you will fund a token swap that you (or the
+          In this step, you will choose a token swap that you (or the
           counterparty) has already initiated. After you fund a swap, you can
           withdraw the tokens you funded unless (or until) the counterparty has
           paid. Likewise, the counterparty can withdraw the tokens they funded
