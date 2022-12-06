@@ -13,6 +13,7 @@ export interface CheckboxProps {
   // the normal modifiers. This lets the parent component appear to serve as a
   // checkbox as well.
   styleWithGroup?: boolean
+  size?: 'sm' | 'default'
 }
 
 export const Checkbox = ({
@@ -21,6 +22,7 @@ export const Checkbox = ({
   className,
   readOnly,
   styleWithGroup = true,
+  size = 'default',
 }: CheckboxProps) => (
   <div
     className={clsx(
@@ -41,8 +43,12 @@ export const Checkbox = ({
   >
     <Check
       className={clsx(
-        '!h-5 !w-5 text-icon-primary transition-all group-hover:text-icon-button-primary',
-        checked ? 'opacity-100' : 'opacity-0'
+        'text-icon-primary transition-all group-hover:text-icon-button-primary',
+        checked ? 'opacity-100' : 'opacity-0',
+        {
+          '!h-4 !w-4': size === 'sm',
+          '!h-5 !w-5': size === 'default',
+        }
       )}
     />
   </div>

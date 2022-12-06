@@ -1,6 +1,8 @@
 import {
   ActionKeyAndData,
+  DepositInfoSelector,
   DurationWithUnits,
+  IProposalModuleAdapterCommonOptions,
   ProcessedTQ,
 } from '@dao-dao/types'
 import {
@@ -63,4 +65,26 @@ export interface VotesInfo {
   // Meta
   thresholdReached: boolean
   quorumReached: boolean
+}
+
+export interface PublishProposalOptions {
+  bypassSimulation?: boolean
+}
+
+export type PublishProposal = (
+  newProposalData: NewProposalData,
+  options?: PublishProposalOptions
+) => Promise<{
+  proposalNumber: number
+  proposalId: string
+}>
+
+export interface MakeUsePublishProposalOptions {
+  options: IProposalModuleAdapterCommonOptions
+  depositInfoSelector: DepositInfoSelector
+}
+
+export type UsePublishProposal = () => {
+  publishProposal: PublishProposal
+  depositUnsatisfied: boolean
 }

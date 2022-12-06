@@ -30,6 +30,7 @@ import {
   useWalletInfo,
 } from '@dao-dao/stateful'
 import { useCoreActionForKey } from '@dao-dao/stateful/actions'
+import { usePayrollAdapter } from '@dao-dao/stateful/payroll'
 import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
@@ -184,6 +185,9 @@ const InnerDaoHome = () => {
   const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
   const pinned = isPinned(daoInfo.coreAddress)
 
+  // Get payroll tab component, if exists.
+  const PayrollTab = usePayrollAdapter()?.PayrollTab
+
   return (
     <DaoHome
       LinkWrapper={LinkWrapper}
@@ -196,6 +200,7 @@ const InnerDaoHome = () => {
           ? setUnpinned(daoInfo.coreAddress)
           : setPinned(daoInfo.coreAddress)
       }
+      payrollTab={PayrollTab && <PayrollTab />}
       pinned={pinned}
       proposalsTab={<ProposalsTab />}
       rightSidebarContent={

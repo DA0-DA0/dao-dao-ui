@@ -25,6 +25,8 @@ export enum CoreActionKey {
   Custom = 'custom',
   PerformTokenSwap = 'performTokenSwap',
   WithdrawTokenSwap = 'withdrawTokenSwap',
+  SetItem = 'setItem',
+  RemoveItem = 'removeItem',
 }
 
 // Actions defined in voting or proposal module adapters.

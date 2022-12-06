@@ -19,7 +19,8 @@
     "next-i18next": "^11.0.0",
     "react": "18.1.0",
     "react-hot-toast": "^2.1.1",
-    "react-i18next": "^11.0.0"
+    "react-i18next": "^11.0.0",
+    "ripemd160": "^2.0.2"
   },
   "devDependencies": {
     "@cosmjs/proto-signing": "0.29.3",
@@ -28,6 +29,7 @@
     "@keplr-wallet/types": "^0.10.2",
     "@noahsaso/cosmodal": "^0.8.0",
     "@types/jest": "^29.1.0",
+    "@types/ripemd160": "^2.0.0",
     "jest": "^29.1.1",
     "interchain-rpc": "^1.5.0",
     "recoil": "^0.7.2",

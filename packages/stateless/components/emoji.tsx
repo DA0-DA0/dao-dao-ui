@@ -104,3 +104,7 @@ export const HandshakeEmoji = () => (
 export const BrokenHeartEmoji = () => (
   <EmojiWrapper emoji="💔" labelI18nKey="emoji.brokenHeart" />
 )
+
+export const WrenchEmoji = () => (
+  <EmojiWrapper emoji="🔧" labelI18nKey="emoji.wrench" />
+)

@@ -7,18 +7,18 @@ export interface InputLabelProps
   extends Omit<ComponentProps<'span'>, 'children'> {
   mono?: boolean
   name?: string
-  children?: ReactNode
   tooltip?: ReactNode
   containerProps?: Omit<ComponentProps<'label'>, 'children'>
+  children?: ReactNode | ReactNode[]
 }
 
 export const InputLabel = ({
   className,
   mono,
   name,
-  children,
   tooltip,
   containerProps: { className: labelClassName, ...containerProps } = {},
+  children,
   ...rest
 }: InputLabelProps) => (
   <label

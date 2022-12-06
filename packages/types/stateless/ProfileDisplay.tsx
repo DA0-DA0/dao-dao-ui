@@ -9,6 +9,7 @@ export interface ProfileDisplayProps {
   hideImage?: boolean
   copyToClipboardProps?: Partial<Omit<CopyToClipboardProps, 'label' | 'value'>>
   size?: 'default' | 'lg'
+  className?: string
 }
 
 export type StatefulProfileDisplayProps = Omit<

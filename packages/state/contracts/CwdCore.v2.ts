@@ -380,11 +380,11 @@ export interface CwdCoreV2Interface extends CwdCoreV2ReadOnlyInterface {
   ) => Promise<ExecuteResult>
   setItem: (
     {
-      addr,
       key,
+      value,
     }: {
-      addr: string
       key: string
+      value: string
     },
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -666,11 +666,11 @@ export class CwdCoreV2Client
   }
   setItem = async (
     {
-      addr,
       key,
+      value,
     }: {
-      addr: string
       key: string
+      value: string
     },
     fee: number | StdFee | 'auto' = 'auto',
     memo?: string,
@@ -681,8 +681,8 @@ export class CwdCoreV2Client
       this.contractAddress,
       {
         set_item: {
-          addr,
           key,
+          value,
         },
       },
       fee,
