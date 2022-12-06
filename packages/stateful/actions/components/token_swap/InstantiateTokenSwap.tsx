@@ -174,7 +174,7 @@ export const InstantiateTokenSwap: ActionComponent<
               }
 
               const foundCw20 = counterpartyCw20Balances.data.find(
-                ({ address }) => counterparty.denomOrAddress === address
+                ({ address }) => denomOrAddress === address
               )
               // Update type and decimals.
               setValue(
@@ -273,7 +273,7 @@ export const InstantiateTokenSwap: ActionComponent<
             fieldName={fieldNamePrefix + 'selfParty.denomOrAddress'}
             onChange={(denomOrAddress) => {
               const foundCw20 = selfPartyCw20Balances.find(
-                ({ address }) => counterparty.denomOrAddress === address
+                ({ address }) => denomOrAddress === address
               )
               // Update type and decimals.
               setValue(
