@@ -155,7 +155,7 @@ export const InstantiateTokenSwap: ActionComponent<
         walletAddress,
         CODE_ID_CONFIG.CwTokenSwap,
         instantiateMsg,
-        `TokenSwap_${selfParty.denomOrAddress}_${counterparty.denomOrAddress}`,
+        `TokenSwap_${selfAddress}_${counterparty.address}`,
         'auto'
       )
 
