@@ -25,7 +25,7 @@ export const GovernanceConfigurationReview = ({
   },
 }: DaoCreationGovernanceConfigReviewProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
-  const treasuryColor = `rgba(${useNamedThemeColor('v2-light')}, 0.45)`
+  const treasuryColor = `rgba(${useNamedThemeColor('light')}, 0.45)`
 
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
     tokenType === GovernanceTokenType.Existing && existingGovernanceTokenAddress

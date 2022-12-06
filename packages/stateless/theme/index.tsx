@@ -52,13 +52,11 @@ export const ThemeProvider = ({
   // This is the same as the `useNamedThemeColor` hook, but that hook assumes it
   // is wrapped in this ThemeProvider, so let's just get the brand manually.
   const [accentColor, _setAccentColor] = useState(
-    `rgb(${getNamedColorFromDOM('v2-brand') || '123, 97, 255'})`
+    `rgb(${getNamedColorFromDOM('brand') || '123, 97, 255'})`
   )
   const setAccentColor = useCallback(
     (accentColor: string | undefined) =>
-      _setAccentColor(
-        accentColor || `rgb(${getNamedColorFromDOM('v2-brand')})`
-      ),
+      _setAccentColor(accentColor || `rgb(${getNamedColorFromDOM('brand')})`),
     []
   )
 
