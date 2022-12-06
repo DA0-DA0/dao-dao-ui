@@ -22,6 +22,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -98,8 +99,22 @@ export const stakedValueSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].address))
+
+      const value = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/stakedValue',
+          args: params[0],
+          id,
+        })
+      )
+      if (value) {
+        return { value }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshWalletBalancesIdAtom(params[0].address))
       return await client.stakedValue(...params)
     },
 })
@@ -113,8 +128,21 @@ export const totalValueSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(undefined))
+
+      const total = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/totalValue',
+          id,
+        })
+      )
+      if (total) {
+        return { total }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshWalletBalancesIdAtom(undefined))
       return await client.totalValue(...params)
     },
 })
@@ -128,6 +156,17 @@ export const getConfigSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const config = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/config',
+        })
+      )
+      if (config) {
+        return config
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.getConfig(...params)
     },
@@ -142,8 +181,22 @@ export const claimsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshClaimsIdAtom(params[0].address))
+
+      const claims = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/claims',
+          args: params[0],
+          id,
+        })
+      )
+      if (claims && Array.isArray(claims)) {
+        return { claims }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshClaimsIdAtom(params[0].address))
       return await client.claims(...params)
     },
 })
