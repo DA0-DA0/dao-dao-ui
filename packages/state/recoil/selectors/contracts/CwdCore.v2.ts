@@ -462,8 +462,30 @@ export const votingPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(
+        refreshDaoVotingPowerAtom(queryClientParams.contractAddress)
+      )
+
+      const votingPower = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/votingPower',
+          args: {
+            address: params[0].address,
+          },
+          blockHeight: params[0].height,
+          id,
+        })
+      )
+      if (votingPower && !isNaN(votingPower)) {
+        return {
+          power: votingPower,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
       return await client.votingPowerAtHeight(...params)
     },
 })
@@ -477,8 +499,27 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(
+        refreshDaoVotingPowerAtom(queryClientParams.contractAddress)
+      )
+
+      const totalPower = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/totalPower',
+          blockHeight: params[0].height,
+          id,
+        })
+      )
+      if (totalPower && !isNaN(totalPower)) {
+        return {
+          power: totalPower,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
       return await client.totalPowerAtHeight(...params)
     },
 })
@@ -575,8 +616,10 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
   get:
     ({ governanceTokenAddress, ...queryClientParams }) =>
     async ({ get }) => {
-      get(refreshWalletBalancesIdAtom(undefined))
-      get(refreshWalletBalancesIdAtom(queryClientParams.contractAddress))
+      const generalId = get(refreshWalletBalancesIdAtom(undefined))
+      const specificId = get(
+        refreshWalletBalancesIdAtom(queryClientParams.contractAddress)
+      )
 
       const governanceTokenBalance = governanceTokenAddress
         ? get(
@@ -594,6 +637,8 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
         queryIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/cw20Balances',
+          // Update each time one of these changes.
+          id: generalId + specificId,
         })
       )
       // If indexer query fails (null), fallback to contract query.

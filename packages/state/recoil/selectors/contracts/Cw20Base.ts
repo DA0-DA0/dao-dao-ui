@@ -67,13 +67,14 @@ export const balanceSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      get(refreshWalletBalancesIdAtom(params[0].address))
+      const id = get(refreshWalletBalancesIdAtom(params[0].address))
 
       const balance = get(
         queryIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20/balance',
           args: params[0],
+          id,
         })
       )
       // Null when indexer fails.

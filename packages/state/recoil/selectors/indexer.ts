@@ -4,7 +4,12 @@ import { QueryIndexerOptions, queryIndexer } from '@dao-dao/utils'
 
 export const queryIndexerSelector = selectorFamily<
   any,
-  { contractAddress: string; formulaName: string } & QueryIndexerOptions
+  {
+    contractAddress: string
+    formulaName: string
+    // Refresh by changing this value.
+    id?: number
+  } & QueryIndexerOptions
 >({
   key: 'queryIndexer',
   get:
