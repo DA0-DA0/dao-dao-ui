@@ -2,6 +2,7 @@ import { selectorFamily } from 'recoil'
 
 import {
   cosmWasmClientForChainSelector,
+  queryIndexerSelector,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
 import { WithChainId } from '@dao-dao/types'
@@ -93,6 +94,18 @@ export const configSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      // Try indexer first.
+      const config = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoPreProposeSingle/config',
+        })
+      )
+      if (config) {
+        return config
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.config(...params)
     },
@@ -107,6 +120,21 @@ export const depositInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      // Try indexer first.
+      const depositInfo = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoPreProposeSingle/depositInfo',
+          args: {
+            id: params[0].proposalId,
+          },
+        })
+      )
+      if (depositInfo) {
+        return depositInfo
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.depositInfo(...params)
     },

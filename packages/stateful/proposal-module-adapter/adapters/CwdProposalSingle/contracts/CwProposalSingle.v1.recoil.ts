@@ -2,6 +2,7 @@ import { selectorFamily } from 'recoil'
 
 import {
   cosmWasmClientForChainSelector,
+  queryIndexerSelector,
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
   signingCosmWasmClientAtom,
@@ -69,6 +70,18 @@ export const configSelector = selectorFamily<ConfigResponse, QueryClientParams>(
     get:
       (queryClientParams) =>
       async ({ get }) => {
+        // Try indexer first.
+        const config = get(
+          queryIndexerSelector({
+            ...queryClientParams,
+            formulaName: 'daoProposalSingle/config',
+          })
+        )
+        if (config) {
+          return config
+        }
+
+        // If indexer query fails, fallback to contract query.
         const client = get(queryClient(queryClientParams))
         return await client.config()
       },
@@ -84,13 +97,30 @@ export const proposalSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const client = get(queryClient(queryClientParams))
-      get(
+      const id = get(
         refreshProposalIdAtom({
           address: queryClientParams.contractAddress,
           proposalId: params[0].proposalId,
         })
       )
+
+      // Try indexer first.
+      const proposalResponse = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoProposalSingle/proposal',
+          args: {
+            id: params[0].proposalId,
+          },
+          id,
+        })
+      )
+      if (proposalResponse) {
+        return proposalResponse
+      }
+
+      // If indexer query fails, fallback to contract query.
+      const client = get(queryClient(queryClientParams))
       return await client.proposal(...params)
     },
 })
