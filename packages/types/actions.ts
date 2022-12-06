@@ -15,6 +15,7 @@ export enum CoreActionKey {
   RemoveCw20 = 'removeCw20',
   AddCw721 = 'addCw721',
   RemoveCw721 = 'removeCw721',
+  TransferCw721 = 'transferCw721',
   ManageSubDaos = 'manageSubDaos',
   UpdateInfo = 'updateInfo',
   Instantiate = 'instantiate',
