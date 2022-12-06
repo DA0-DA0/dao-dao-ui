@@ -1,21 +1,37 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
-  ReactHookFormDecorator,
   makeActionsProviderDecorator,
+  makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../../../components'
+import { ProfileDisplay, Trans } from '../../../components'
 import { InstantiateTokenSwap } from './InstantiateTokenSwap'
+import { PerformTokenSwapData } from './types'
 
 export default {
   title:
     'DAO DAO / packages / stateful / actions / components / token_swap / InstantiateTokenSwap',
   component: InstantiateTokenSwap,
   decorators: [
-    ReactHookFormDecorator,
+    makeReactHookFormDecorator<PerformTokenSwapData>({
+      contractChosen: false,
+      selfParty: {
+        type: 'cw20',
+        denomOrAddress: 'cw20_1',
+        amount: 0,
+        decimals: 6,
+      },
+      counterparty: {
+        address: '',
+        type: 'native',
+        denomOrAddress: NATIVE_DENOM,
+        amount: 0,
+        decimals: 6,
+      },
+    }),
     makeActionsProviderDecorator({
       address: 'junoWalletAddress',
       chainId: 'juno-1',
@@ -109,5 +125,6 @@ Default.args = {
     onInstantiate: async () => alert('instantiate'),
     instantiating: false,
     ProfileDisplay,
+    Trans,
   },
 }

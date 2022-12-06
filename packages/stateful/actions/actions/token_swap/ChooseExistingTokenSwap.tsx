@@ -6,6 +6,7 @@ import { CwTokenSwapSelectors } from '@dao-dao/state/recoil'
 import { ActionComponent } from '@dao-dao/types'
 import { objectMatchesStructure, processError } from '@dao-dao/utils'
 
+import { Trans } from '../../../components'
 import { ChooseExistingTokenSwap as StatelessChooseExistingTokenSwap } from '../../components/token_swap'
 import { useActionOptions } from '../../react'
 
@@ -155,6 +156,7 @@ export const ChooseExistingTokenSwap: ActionComponent<
       options={{
         chooseLoading,
         onChooseExistingContract,
+        Trans,
       }}
     />
   )

@@ -1,6 +1,6 @@
 import { ComponentType } from 'react'
 
-import { ProfileDisplayProps } from './ProfileDisplay'
+import { StatefulProfileDisplayProps } from './ProfileDisplay'
 
 export interface TokenSwapStatusProps {
   selfParty: {
@@ -20,6 +20,6 @@ export interface TokenSwapStatusProps {
     provided: boolean
   }
 
-  ProfileDisplay: ComponentType<Omit<ProfileDisplayProps, 'loadingProfile'>>
+  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
   className?: string
 }

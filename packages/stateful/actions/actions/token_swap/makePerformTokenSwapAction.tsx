@@ -93,7 +93,7 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
       <ActionCard
         Icon={HandshakeEmoji}
         onRemove={props.onRemove}
-        title={t('title.performTokenSwap')}
+        title={t('title.tokenSwap')}
       >
         <SuspenseLoader fallback={<Loader />} forceFallback={!mounted}>
           {contractChosen ? (
@@ -114,6 +114,8 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
                   },
                 ]}
               />
+
+              <p className="max-w-prose">{t('info.tokenSwapExplanation')}</p>
 
               {creatingNew ? (
                 <InstantiateTokenSwap {...props} />
@@ -259,8 +261,8 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
   return {
     key: CoreActionKey.PerformTokenSwap,
     Icon: HandshakeEmoji,
-    label: t('title.performTokenSwap'),
-    description: t('info.performTokenSwapDescription'),
+    label: t('title.tokenSwap'),
+    description: t('info.tokenSwapDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

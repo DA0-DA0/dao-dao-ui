@@ -6,7 +6,6 @@ import {
   Button,
   InputErrorMessage,
   InputLabel,
-  Loader,
   NumberInput,
   SelectInput,
 } from '@dao-dao/stateless'
@@ -38,6 +37,7 @@ export const InstantiateTokenSwap: ActionComponent<
     onInstantiate,
     instantiating,
     ProfileDisplay,
+    Trans,
   },
 }) => {
   const { t } = useTranslation()
@@ -98,11 +98,140 @@ export const InstantiateTokenSwap: ActionComponent<
   return (
     <div className="flex flex-col gap-4">
       <p className="max-w-prose">
-        {t('form.tokenSwapInstantiateInstructions')}
+        <Trans i18nKey="form.tokenSwapCreateInstructions">
+          In this step, you will create the token swap. This creation step
+          describes how many funds each party needs to send for the swap to
+          complete.{' '}
+          <span className="font-bold underline">
+            No funds will be transferred at this time.
+          </span>
+        </Trans>
       </p>
 
       <div className="space-y-2">
-        <InputLabel name={t('form.whatSendCounterpartyQuestion')} />
+        <InputLabel name={t('form.whoIsCounterparty')} />
+
+        <AddressInput
+          ProfileDisplay={ProfileDisplay}
+          error={errors?.counterparty?.address}
+          fieldName={fieldNamePrefix + 'counterparty.address'}
+          register={register}
+          validation={[validateRequired, validateAddress]}
+        />
+
+        <InputErrorMessage error={errors?.counterparty?.address} />
+      </div>
+
+      <div className="space-y-2">
+        <InputLabel>
+          <Trans i18nKey="form.whatReceiveCounterpartyQuestion">
+            What do you need to{' '}
+            <span className="font-bold underline">receive</span> from the
+            counterparty for the token swap to complete?
+          </Trans>
+        </InputLabel>
+
+        <div className="flex flex-row items-stretch gap-2">
+          <NumberInput
+            containerClassName="grow"
+            error={errors?.counterparty?.amount}
+            fieldName={fieldNamePrefix + 'counterparty.amount'}
+            onMinus={() =>
+              setValue(
+                fieldNamePrefix + 'counterparty.amount',
+                Math.max(counterparty.amount - 1, counterpartyMin)
+              )
+            }
+            onPlus={() =>
+              setValue(
+                fieldNamePrefix + 'counterparty.amount',
+                Math.max(counterparty.amount + 1, counterpartyMin)
+              )
+            }
+            register={register}
+            sizing="auto"
+            step={counterpartyMin}
+            validation={[validateRequired, validatePositive]}
+          />
+
+          <SelectInput
+            className={
+              counterpartyCw20Balances.loading ||
+              counterpartyNativeBalances.loading
+                ? 'animate-pulse'
+                : undefined
+            }
+            disabled={
+              !counterpartyAddressValid ||
+              counterpartyCw20Balances.loading ||
+              counterpartyNativeBalances.loading
+            }
+            error={errors?.counterparty?.denomOrAddress}
+            fieldName={fieldNamePrefix + 'counterparty.denomOrAddress'}
+            onChange={(denomOrAddress) => {
+              if (counterpartyCw20Balances.loading) {
+                return
+              }
+
+              const foundCw20 = counterpartyCw20Balances.data.find(
+                ({ address }) => counterparty.denomOrAddress === address
+              )
+              // Update type and decimals.
+              setValue(
+                fieldNamePrefix + 'counterparty.type',
+                foundCw20 ? 'cw20' : 'native'
+              )
+              setValue(
+                fieldNamePrefix + 'counterparty.decimals',
+                foundCw20
+                  ? foundCw20.info.decimals
+                  : nativeTokenDecimals(denomOrAddress) ?? 0
+              )
+            }}
+            register={register}
+            style={{ maxWidth: '8.2rem' }}
+          >
+            {!counterpartyNativeBalances.loading &&
+              counterpartyNativeBalances.data.map(({ denom }) => (
+                <option key={denom} value={denom}>
+                  ${nativeTokenLabel(denom)}
+                </option>
+              ))}
+            {!counterpartyCw20Balances.loading &&
+              counterpartyCw20Balances.data.map(
+                ({ address, info: { symbol } }) => (
+                  <option key={address} value={address}>
+                    ${symbol}
+                  </option>
+                )
+              )}
+          </SelectInput>
+        </div>
+
+        {/* Warn if counterparty does not have the requested amount. */}
+        {counterparty.amount > counterpartyMax && (
+          <p className="caption-text text-text-interactive-warning-body">
+            {t('error.counterpartyBalanceInsufficient', {
+              amount: counterpartyMax.toLocaleString(undefined, {
+                maximumFractionDigits: counterpartyDecimals,
+              }),
+              tokenSymbol: counterpartySymbol,
+            })}
+          </p>
+        )}
+
+        <InputErrorMessage error={errors?.counterparty?.amount} />
+        <InputErrorMessage error={errors?.counterparty?.denomOrAddress} />
+      </div>
+
+      <div className="space-y-2">
+        <InputLabel>
+          <Trans i18nKey="form.whatSendCounterpartyQuestion">
+            What do you need to{' '}
+            <span className="font-bold underline">send</span> to the
+            counterparty for the token swap to complete?
+          </Trans>
+        </InputLabel>
 
         <div className="flex flex-row items-stretch gap-2">
           <NumberInput
@@ -178,128 +307,21 @@ export const InstantiateTokenSwap: ActionComponent<
         <InputErrorMessage error={errors?.selfParty?.denomOrAddress} />
       </div>
 
-      <div className="space-y-2">
-        <InputLabel name={t('form.counterparty')} />
-
-        <AddressInput
-          ProfileDisplay={ProfileDisplay}
-          error={errors?.counterparty?.address}
-          fieldName={fieldNamePrefix + 'counterparty.address'}
-          register={register}
-          validation={[validateRequired, validateAddress]}
-        />
-
-        <InputErrorMessage error={errors?.counterparty?.address} />
-      </div>
-
-      {/* If address invalid, show nothing. */}
-      {counterpartyAddressValid &&
-        (counterpartyNativeBalances.loading ||
-        counterpartyCw20Balances.loading ? (
-          <Loader fill={false} size={32} />
-        ) : (
-          <>
-            <div className="space-y-2">
-              <InputLabel name={t('form.whatReceiveCounterpartyQuestion')} />
-
-              <div className="flex flex-row items-stretch gap-2">
-                <NumberInput
-                  containerClassName="grow"
-                  error={errors?.counterparty?.amount}
-                  fieldName={fieldNamePrefix + 'counterparty.amount'}
-                  onMinus={() =>
-                    setValue(
-                      fieldNamePrefix + 'counterparty.amount',
-                      Math.max(counterparty.amount - 1, counterpartyMin)
-                    )
-                  }
-                  onPlus={() =>
-                    setValue(
-                      fieldNamePrefix + 'counterparty.amount',
-                      Math.max(counterparty.amount + 1, counterpartyMin)
-                    )
-                  }
-                  register={register}
-                  sizing="auto"
-                  step={counterpartyMin}
-                  validation={[validateRequired, validatePositive]}
-                />
-
-                <SelectInput
-                  error={errors?.counterparty?.denomOrAddress}
-                  fieldName={fieldNamePrefix + 'counterparty.denomOrAddress'}
-                  onChange={(denomOrAddress) => {
-                    const foundCw20 = counterpartyCw20Balances.data.find(
-                      ({ address }) => counterparty.denomOrAddress === address
-                    )
-                    // Update type and decimals.
-                    setValue(
-                      fieldNamePrefix + 'counterparty.type',
-                      foundCw20 ? 'cw20' : 'native'
-                    )
-                    setValue(
-                      fieldNamePrefix + 'counterparty.decimals',
-                      foundCw20
-                        ? foundCw20.info.decimals
-                        : nativeTokenDecimals(denomOrAddress) ?? 0
-                    )
-                  }}
-                  register={register}
-                  style={{ maxWidth: '8.2rem' }}
-                >
-                  {counterpartyNativeBalances.data.map(({ denom }) => (
-                    <option key={denom} value={denom}>
-                      ${nativeTokenLabel(denom)}
-                    </option>
-                  ))}
-                  {counterpartyCw20Balances.data.map(
-                    ({ address, info: { symbol } }) => (
-                      <option key={address} value={address}>
-                        ${symbol}
-                      </option>
-                    )
-                  )}
-                </SelectInput>
-              </div>
-
-              {/* Warn if counterparty does not have the requested amount. */}
-              {counterparty.amount > counterpartyMax && (
-                <p className="caption-text text-text-interactive-warning-body">
-                  {t('error.counterpartyBalanceInsufficient', {
-                    amount: counterpartyMax.toLocaleString(undefined, {
-                      maximumFractionDigits: counterpartyDecimals,
-                    }),
-                    tokenSymbol: counterpartySymbol,
-                  })}
-                </p>
-              )}
-
-              <InputErrorMessage error={errors?.counterparty?.amount} />
-              <InputErrorMessage error={errors?.counterparty?.denomOrAddress} />
-            </div>
-          </>
-        ))}
-
-      <div className="flex flex-col items-end gap-2 self-end">
-        <Button
-          loading={instantiating}
-          onClick={async () => {
-            // Manually validate just the instantiation fields.
-            const valid = await trigger([
-              fieldNamePrefix + 'selfParty',
-              fieldNamePrefix + 'counterparty',
-            ])
-            valid && onInstantiate()
-          }}
-          size="lg"
-        >
-          {t('button.instantiate')}
-        </Button>
-
-        <p className="caption-text text-right">
-          {t('info.noFundsDuringInstantiation')}
-        </p>
-      </div>
+      <Button
+        className="self-end"
+        loading={instantiating}
+        onClick={async () => {
+          // Manually validate just the instantiation fields.
+          const valid = await trigger([
+            fieldNamePrefix + 'selfParty',
+            fieldNamePrefix + 'counterparty',
+          ])
+          valid && onInstantiate()
+        }}
+        size="lg"
+      >
+        {t('button.create')}
+      </Button>
     </div>
   )
 }

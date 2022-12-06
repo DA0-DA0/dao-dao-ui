@@ -24,7 +24,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../../../components'
+import { ProfileDisplay, Trans } from '../../../components'
 import { useCw20GovernanceTokenInfoResponseIfExists } from '../../../voting-module-adapter/react/hooks/useCw20GovernanceTokenInfoResponseIfExists'
 import {
   InstantiateTokenSwapOptions,
@@ -201,6 +201,7 @@ export const InstantiateTokenSwap: ActionComponent<
         instantiating,
         onInstantiate,
         ProfileDisplay,
+        Trans,
       }}
     />
   )
@@ -215,9 +216,17 @@ const InnerInstantiateTokenSwap: ActionComponent<
   const { chainId } = useActionOptions()
   const { resetField, watch } = useFormContext()
 
-  const [defaultsSet, setDefaultsSet] = useState(false)
-  // Set form defaults on load.
+  // Only set defaults once.
+  const selfParty = watch(props.fieldNamePrefix + 'selfParty')
+  const counterparty = watch(props.fieldNamePrefix + 'counterparty')
+  const [defaultsSet, setDefaultsSet] = useState(!!selfParty && !!counterparty)
+
+  // Set form defaults on load if necessary.
   useEffect(() => {
+    if (defaultsSet) {
+      return
+    }
+
     // Default selfParty to first CW20 if present. Otherwise, native.
     const selfPartyDefaultCw20 =
       props.options.selfPartyCw20Balances &&
@@ -330,7 +339,18 @@ const InnerInstantiateTokenSwap: ActionComponent<
                 })
               ),
             },
-        counterpartyNativeBalances,
+        counterpartyNativeBalances: counterpartyNativeBalances.loading
+          ? // When loading, show native token placeholder. This prevents the denom select input from appearing empty.
+            {
+              loading: false,
+              data: [
+                {
+                  amount: '0',
+                  denom: NATIVE_DENOM,
+                },
+              ],
+            }
+          : counterpartyNativeBalances,
       }}
     />
   ) : (

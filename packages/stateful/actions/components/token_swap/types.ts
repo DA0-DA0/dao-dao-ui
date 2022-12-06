@@ -5,6 +5,7 @@ import {
   LoadingData,
   StatefulProfileDisplayProps,
   TokenSwapStatusProps,
+  TransProps,
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 
@@ -60,6 +61,7 @@ export interface InstantiateTokenSwapOptions {
     }[]
   >
 
+  Trans: ComponentType<TransProps>
   ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
 }
 
@@ -71,4 +73,5 @@ export interface ExistingTokenSwapOptions {
 export interface ChooseExistingTokenSwapOptions {
   chooseLoading: boolean
   onChooseExistingContract: () => Promise<void>
+  Trans: ComponentType<TransProps>
 }
