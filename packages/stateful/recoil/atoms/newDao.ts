@@ -6,7 +6,9 @@ import { DaoCreatedCardProps, NewDao } from '@dao-dao/types'
 import { CwdProposalSingleAdapter } from '../../proposal-module-adapter/adapters/CwdProposalSingle'
 import { CwdVotingCw4Adapter } from '../../voting-module-adapter'
 
-export const DefaultNewDao: NewDao = {
+// Avoid cyclic dependencies issues with the adapter modules by using a lazy
+// maker function.
+export const makeDefaultNewDao = (): NewDao => ({
   name: '',
   description: '',
   imageUrl: undefined,
@@ -22,13 +24,13 @@ export const DefaultNewDao: NewDao = {
     },
   ],
   advancedVotingConfigEnabled: false,
-}
+})
 
 // Store each subDAO creation state separately. Main DAO creation state uses an
 // empty string.
 export const newDaoAtom = atomFamily<NewDao, string>({
   key: 'newDao',
-  default: DefaultNewDao,
+  default: makeDefaultNewDao,
   effects: [localStorageEffectJSON],
 })
 

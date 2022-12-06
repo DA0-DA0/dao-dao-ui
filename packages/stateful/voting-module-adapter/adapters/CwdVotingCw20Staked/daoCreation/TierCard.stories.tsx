@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 
 import { NewDao } from '@dao-dao/types'
 
-import { DefaultNewDao } from '../../../../recoil/atoms'
+import { makeDefaultNewDao } from '../../../../recoil/atoms'
 import { CwdVotingCw20StakedAdapter } from '../../../index'
 import { DaoCreationConfig } from '../types'
 import { TierCard } from './TierCard'
@@ -23,7 +23,7 @@ const Template: ComponentStory<typeof TierCard> = (args) => {
     watch,
   } = useForm<NewDao<DaoCreationConfig>>({
     defaultValues: {
-      ...DefaultNewDao,
+      ...makeDefaultNewDao(),
       votingModuleAdapter: {
         id: CwdVotingCw20StakedAdapter.id,
         data: CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig,
