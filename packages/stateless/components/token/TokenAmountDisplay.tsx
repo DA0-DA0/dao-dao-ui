@@ -212,7 +212,7 @@ export const TokenAmountDisplay = ({
           {/* Icon */}
           <div
             className={clsx(
-              'h-5 w-5 rounded-full bg-cover bg-center',
+              'h-5 w-5 shrink-0 rounded-full bg-cover bg-center',
               iconClassName
             )}
             style={{

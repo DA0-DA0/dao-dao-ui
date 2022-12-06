@@ -6,9 +6,16 @@ import { useProfile } from '../hooks'
 export const ProfileDisplay = (
   props: Omit<ProfileDisplayProps, 'loadingProfile'>
 ) => {
-  const { profile } = useProfile({
-    walletAddress: props.address,
-  })
+  // Public key is faster because it's already loaded. Use it if present.
+  const { profile } = useProfile(
+    props.hexPublicKey
+      ? {
+          hexPublicKey: props.hexPublicKey,
+        }
+      : {
+          walletAddress: props.address,
+        }
+  )
 
   return <StatelessProfileDisplay {...props} loadingProfile={profile} />
 }
