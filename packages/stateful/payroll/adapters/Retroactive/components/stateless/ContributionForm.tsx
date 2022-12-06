@@ -50,13 +50,13 @@ export const ContributionForm = ({
 
   const dateText =
     survey.status === SurveyStatus.Inactive
-      ? t('info.surveyOpensAtAndClosesAt', {
+      ? t('info.intakeOpensAtAndClosesAt', {
           openDate: formatDateTimeTz(new Date(survey.contributionsOpenAt)),
           closeDate: formatDateTimeTz(
             new Date(survey.contributionsCloseRatingsOpenAt)
           ),
         })
-      : t('info.surveyClosesAt', {
+      : t('info.intakeClosesAt', {
           date: formatDateTimeTz(
             new Date(survey.contributionsCloseRatingsOpenAt)
           ),
@@ -92,12 +92,12 @@ export const ContributionForm = ({
             <ProfileDisplay />
 
             <p className="caption-text italic">
-              {t('info.surveyProfileExplanation')}
+              {t('info.profileExplanation')}
             </p>
 
             {!walletProfile.name && (
               <p className="caption-text text-text-interactive-error">
-                {t('error.surveyNeedsProfileName')}
+                {t('error.compensationCycleNeedsProfileName')}
               </p>
             )}
           </div>
@@ -122,7 +122,7 @@ export const ContributionForm = ({
 
           {survey.status === SurveyStatus.Inactive && (
             <p className="caption-text self-end text-right text-text-interactive-error">
-              {t('info.surveyOpensAt', {
+              {t('info.intakeOpensAt', {
                 date: formatDateTimeTz(new Date(survey.contributionsOpenAt)),
               })}
             </p>
@@ -131,13 +131,13 @@ export const ContributionForm = ({
           <Tooltip
             title={
               survey.status === SurveyStatus.Inactive
-                ? t('info.surveyOpensAt', {
+                ? t('info.intakeOpensAt', {
                     date: formatDateTimeTz(
                       new Date(survey.contributionsOpenAt)
                     ),
                   })
                 : !walletProfile.name
-                ? t('error.surveyNeedsProfileName')
+                ? t('error.compensationCycleNeedsProfileName')
                 : undefined
             }
           >

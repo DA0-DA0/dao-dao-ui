@@ -214,11 +214,11 @@ export const ProposalCreationForm = () => {
         }
 
         const { proposalId } = await publishProposal(data)
-        toast.success(t('success.proposalCreatedCompleteSurvey'))
+        toast.success(t('success.proposalCreatedCompleteCompensationCycle'))
 
         // Complete with proposal ID.
         await postRequest(`/${coreAddress}/complete`, { proposalId })
-        toast.success(t('success.surveyCompleted'))
+        toast.success(t('success.compensationCycleCompleted'))
 
         // Reload status on success.
         setRefreshStatus((id) => id + 1)

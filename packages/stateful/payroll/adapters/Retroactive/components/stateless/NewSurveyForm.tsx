@@ -23,7 +23,7 @@ import { NewAttribute, NewAttributeProps } from './NewAttribute'
 
 export interface NewSurveyFormProps
   extends Pick<NewAttributeProps, 'nativeDenoms' | 'cw20TokenInfos'> {
-  onCreate: (newSurvey: NewSurveyFormData) => Promise<void>
+  onCreate: (newCompensationCycle: NewSurveyFormData) => Promise<void>
   loading: boolean
 }
 
@@ -84,17 +84,19 @@ export const NewSurveyForm = ({
         onSubmit={handleSubmit(onCreate)}
         ref={onFormRef}
       >
-        <p className="title-text text-text-body">{t('title.newSurvey')}</p>
+        <p className="title-text text-text-body">
+          {t('title.newCompensationCycle')}
+        </p>
 
         {/* Survey Name */}
         <div className="space-y-2">
-          <InputLabel name={t('form.surveyName')} />
+          <InputLabel name={t('form.compensationCycleName')} />
 
           <div>
             <TextInput
               error={errors.name}
               fieldName="name"
-              placeholder={t('form.surveyNamePlaceholder')}
+              placeholder={t('form.compensationCycleNamePlaceholder')}
               register={register}
               validation={[validateRequired]}
             />

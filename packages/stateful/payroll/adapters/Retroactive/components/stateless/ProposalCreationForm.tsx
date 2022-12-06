@@ -109,7 +109,9 @@ export const ProposalCreationForm = ({
     <div className="grow space-y-6 pb-10">
       <p className="hero-text max-w-prose break-words">{survey.name}</p>
 
-      <MarkdownPreview markdown={t('info.surveyClosedAwaitingCompletion')} />
+      <MarkdownPreview
+        markdown={t('info.compensationCycleClosedAwaitingCompletion')}
+      />
 
       {completeRatings ? (
         <div className="flex flex-col gap-8">

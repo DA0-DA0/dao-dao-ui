@@ -55,7 +55,7 @@ export const PayrollTab = ({
   // Subtitle status.
   const subtitleStatus =
     !loadingStatus.loading && !loadingStatus.data
-      ? t('info.noActiveSurvey')
+      ? t('info.noActiveCompensationCycle')
       : null
 
   return (
@@ -74,7 +74,7 @@ export const PayrollTab = ({
             !isMember
               ? t('error.mustBeMemberToCreateSurvey')
               : !loadingStatus.loading && loadingStatus.data
-              ? t('error.cannotCreateSurveyAlreadyActive')
+              ? t('error.cannotCreateCompensationCycleAlreadyActive')
               : undefined
           }
         >
@@ -86,12 +86,12 @@ export const PayrollTab = ({
             {canCreateSurvey && showCreate ? (
               <>
                 <Remove className="!h-4 !w-4" />
-                {t('button.cancelNewSurvey')}
+                {t('button.cancel')}
               </>
             ) : (
               <>
                 <Add className="!h-4 !w-4" />
-                {t('button.newSurvey')}
+                {t('button.newCompensationCycle')}
               </>
             )}
           </Button>
@@ -149,7 +149,9 @@ export const PayrollTab = ({
                 {loadingStatus.data.survey.name}
               </p>
 
-              <MarkdownPreview markdown={t('info.surveyPendingCompletion')} />
+              <MarkdownPreview
+                markdown={t('info.compensationCyclePendingCompletion')}
+              />
             </>
           )}
         </div>
@@ -161,13 +163,13 @@ export const PayrollTab = ({
         <>
           <div className="space-y-1">
             <p className="title-text text-text-body">
-              {t('title.completedSurveys')}
+              {t('title.completedCompensationCycles')}
             </p>
 
             <p className="secondary-text max-w-prose italic">
               {isMember
-                ? t('info.selectingSurveyDownloadsCsv')
-                : t('info.selectingSurveyOpensProposal')}
+                ? t('info.selectingCycleDownloadsCsv')
+                : t('info.selectingCycleOpensProposal')}
             </p>
           </div>
 
@@ -204,8 +206,8 @@ export const PayrollTab = ({
             <NoContent
               Icon={Ballot}
               actionNudge={t('info.createFirstOneQuestion')}
-              body={t('info.noCompletedSurveysYet')}
-              buttonLabel={t('button.newSurvey')}
+              body={t('info.noCompletedCyclesYet')}
+              buttonLabel={t('button.newCompensationCycle')}
               onClick={
                 canCreateSurvey && !showCreate
                   ? () => setShowCreate(true)
