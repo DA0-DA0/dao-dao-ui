@@ -125,9 +125,7 @@ export const depositInfoSelector = selectorFamily<
         queryIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoPreProposeSingle/depositInfo',
-          args: {
-            id: params[0].proposalId,
-          },
+          args: params[0],
         })
       )
       if (depositInfo) {
