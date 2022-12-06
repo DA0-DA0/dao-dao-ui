@@ -17,7 +17,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   AmountWithTimestampAndDenom,
-  ProfileDisplayProps,
+  StatefulProfileDisplayProps,
   TokenInfoResponseWithAddressAndLogo,
 } from '@dao-dao/types'
 import {
@@ -41,7 +41,6 @@ import {
   Status,
 } from '../../types'
 import { computeCompensation } from '../../utils'
-import { IdentityProfileDisplayProps } from '../stateful/IdentityProfileDisplay'
 
 export interface ContributionRatingData {
   contributions: Contribution[]
@@ -62,8 +61,7 @@ export interface RatingFormProps {
   loadData: () => Promise<void>
   onSubmit: (data: RatingsFormData) => Promise<void>
   loading: boolean
-  IdentityProfileDisplay: ComponentType<IdentityProfileDisplayProps>
-  ProfileDisplay: ComponentType<Omit<ProfileDisplayProps, 'loadingProfile'>>
+  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
   cw20TokenInfos: TokenInfoResponseWithAddressAndLogo[]
   prices: AmountWithTimestampAndDenom[]
   onNominate: (data: NominationForm) => Promise<void>
@@ -75,7 +73,6 @@ export const RatingForm = ({
   loadData,
   onSubmit,
   loading,
-  IdentityProfileDisplay,
   ProfileDisplay,
   cw20TokenInfos,
   prices,
@@ -279,8 +276,9 @@ export const RatingForm = ({
                         'rounded-bl-md'
                     )}
                   >
-                    <IdentityProfileDisplay
-                      identity={contribution.contributor}
+                    <ProfileDisplay
+                      address={contribution.contributor.address}
+                      walletHexPublicKey={contribution.contributor.publicKey}
                     />
 
                     <MarkdownPreview

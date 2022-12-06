@@ -6,6 +6,7 @@ import { useProfile } from '../hooks'
 export const ProfileDisplay = (props: StatefulProfileDisplayProps) => {
   const profile = useProfile({
     address: props.address,
+    walletHexPublicKey: props.walletHexPublicKey,
   })
 
   return <StatelessProfileDisplay {...props} loadingProfile={profile} />

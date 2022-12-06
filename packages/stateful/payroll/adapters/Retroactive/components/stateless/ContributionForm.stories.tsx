@@ -59,10 +59,9 @@ Default.args = {
   },
   onSubmit: async (contribution) => alert('submit: ' + contribution),
   loading: false,
-  walletProfile: {
+  profile: {
+    address: 'walletPerson',
     name: 'wallet Person!',
-    nft: null,
-    nonce: 1,
     imageUrl: '/placeholders/1.svg',
   },
   ProfileDisplay: () => (
@@ -71,9 +70,8 @@ Default.args = {
       loadingProfile={{
         loading: false,
         data: {
+          address: 'walletPerson',
           name: 'wallet Person!',
-          nft: null,
-          nonce: 1,
           imageUrl: '/placeholders/1.svg',
         },
       }}

@@ -106,6 +106,7 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
 
   // Get PFPK profile from API.
   const { profile: pfpkProfile, backupProfileImage } = useWalletProfile({
+    walletAddress: address ?? '',
     hexPublicKey: publicKey?.hex,
     chainId,
   })

@@ -22,10 +22,10 @@ import {
   secp256k1PublicKeyToBech32Address,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../../components'
+import { ProfileDisplay, SuspenseLoader } from '../../../../../components'
 import {
   useCwdProposalSinglePublishProposal,
-  useWalletProfile,
+  useProfile,
 } from '../../../../../hooks'
 import { NewProposalData } from '../../../../../proposal-module-adapter/adapters/CwdProposalSingle/types'
 import { refreshStatusAtom } from '../../atoms'
@@ -42,13 +42,13 @@ import {
   ProposalCreationFormData,
   ProposalCreationForm as StatelessProposalCreationForm,
 } from '../stateless/ProposalCreationForm'
-import { IdentityProfileDisplay } from './IdentityProfileDisplay'
 
 export const ProposalCreationForm = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { coreAddress, chainId, bech32Prefix } = useDaoInfoContext()
-  const { publicKey: walletPublicKey } = useWallet(chainId)
+  const { address: walletAddress = '', publicKey: walletPublicKey } =
+    useWallet(chainId)
 
   const postRequest = usePostRequest()
 
@@ -290,7 +290,10 @@ export const ProposalCreationForm = () => {
       : undefined
   )
 
-  const { walletAddress = '', walletProfile } = useWalletProfile()
+  const profile = useProfile({
+    address: walletAddress,
+    chainId,
+  })
 
   return (
     <SuspenseLoader
@@ -306,7 +309,7 @@ export const ProposalCreationForm = () => {
         loadingCw20TokenInfos.state === 'hasValue' &&
         prices.state === 'hasValue' && (
           <StatelessProposalCreationForm
-            IdentityProfileDisplay={IdentityProfileDisplay}
+            ProfileDisplay={ProfileDisplay}
             completeRatings={completeRatings}
             cw20TokenInfos={loadingCw20TokenInfos.contents}
             loadRatings={loadRatings}
@@ -315,9 +318,9 @@ export const ProposalCreationForm = () => {
             prices={
               prices.contents.filter(Boolean) as AmountWithTimestampAndDenom[]
             }
+            profile={profile}
             status={statusLoadable.contents}
             walletAddress={walletAddress}
-            walletProfile={walletProfile}
           />
         )}
     </SuspenseLoader>

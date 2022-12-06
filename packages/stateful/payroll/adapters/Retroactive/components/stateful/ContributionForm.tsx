@@ -12,7 +12,7 @@ import {
 } from '@dao-dao/stateless'
 
 import { SuspenseLoader } from '../../../../../components'
-import { useWalletProfile } from '../../../../../hooks'
+import { useProfile } from '../../../../../hooks'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
@@ -23,7 +23,10 @@ export const ContributionForm = () => {
   const { coreAddress, chainId } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet(chainId)
-  const { walletProfile } = useWalletProfile(chainId)
+  const walletProfile = useProfile({
+    address: walletAddress,
+    chainId,
+  })
 
   const postRequest = usePostRequest()
 
@@ -75,14 +78,13 @@ export const ContributionForm = () => {
             ProfileDisplay={() => (
               <ProfileDisplay
                 address={walletAddress}
-                hexPublicKey={walletPublicKey?.hex}
                 loadingProfile={walletProfile}
               />
             )}
             loading={loading || statusLoadable.updating}
             onSubmit={onSubmit}
+            profile={walletProfile.data}
             status={statusLoadable.contents}
-            walletProfile={walletProfile.data}
           />
         )}
     </SuspenseLoader>

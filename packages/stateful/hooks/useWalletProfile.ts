@@ -9,14 +9,10 @@ import { useCachedLoadable } from '@dao-dao/stateless'
 import { LoadingData, WalletProfile, WithChainId } from '@dao-dao/types'
 import { getFallbackImage, loadableToLoadingData } from '@dao-dao/utils'
 
-export type UseWalletProfileOptions = WithChainId<
-  | {
-      walletAddress: string
-    }
-  | {
-      hexPublicKey?: string
-    }
->
+export type UseWalletProfileOptions = WithChainId<{
+  walletAddress: string
+  hexPublicKey?: string
+}>
 
 export interface UseWalletProfileReturn {
   profile: LoadingData<WalletProfile>
@@ -27,12 +23,12 @@ export const useWalletProfile = (
   options: UseWalletProfileOptions
 ): UseWalletProfileReturn => {
   const publicKeyLoadable = useRecoilValueLoadable(
-    'walletAddress' in options
-      ? walletHexPublicKeySelector({
+    'hexPublicKey' in options
+      ? constSelector(options.hexPublicKey)
+      : walletHexPublicKeySelector({
           walletAddress: options.walletAddress,
           chainId: options.chainId,
         })
-      : constSelector(options.hexPublicKey)
   )
   const publicKey =
     publicKeyLoadable.state === 'hasValue'
