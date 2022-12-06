@@ -1,4 +1,9 @@
-import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
+import {
+  RecoilValueReadOnly,
+  constSelector,
+  selectorFamily,
+  waitForAll,
+} from 'recoil'
 
 import { blockHeightTimestampSafeSelector } from '@dao-dao/state'
 import {
@@ -50,11 +55,15 @@ export const reverseProposalInfosSelector: (
 
       const timestamps = get(
         waitForAll(
-          proposalResponses.map(({ proposal: { start_height } }) =>
-            blockHeightTimestampSafeSelector({
-              blockHeight: start_height,
-              chainId,
-            })
+          proposalResponses.map(({ proposal: { start_height }, ...response }) =>
+            // Indexer returns createdAt, so check its existence and fetch from
+            // chain if not present.
+            typeof response.createdAt === 'string'
+              ? constSelector(new Date(response.createdAt))
+              : blockHeightTimestampSafeSelector({
+                  blockHeight: start_height,
+                  chainId,
+                })
           )
         )
       )

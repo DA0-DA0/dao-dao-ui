@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { contractVersionSelector } from '@dao-dao/state'
+import { contractVersionSelector, queryIndexerSelector } from '@dao-dao/state'
 import { ContractVersion, WithChainId } from '@dao-dao/types'
 import {
   ConfigResponse as ConfigV2Response,
@@ -111,6 +111,22 @@ export const proposalSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
+      // Try indexer first.
+      const proposalResponse = get(
+        queryIndexerSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+          formulaName: 'daoProposalSingle/proposal',
+          args: {
+            id: params.params[0].proposalId,
+          },
+        })
+      )
+      if (proposalResponse) {
+        return proposalResponse
+      }
+
+      // If indexer query fails, fallback to contract query.
       const proposalModuleVersion = get(
         contractVersionSelector({
           contractAddress: params.contractAddress,
@@ -134,6 +150,19 @@ export const configSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
+      // Try indexer first.
+      const config = get(
+        queryIndexerSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+          formulaName: 'daoProposalSingle/config',
+        })
+      )
+      if (config) {
+        return config
+      }
+
+      // If indexer query fails, fallback to contract query.
       const proposalModuleVersion = get(
         contractVersionSelector({
           contractAddress: params.contractAddress,
@@ -164,6 +193,20 @@ export const reverseProposalsSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
+      // Try indexer first.
+      const proposals = get(
+        queryIndexerSelector({
+          contractAddress: params.contractAddress,
+          chainId: params.chainId,
+          formulaName: 'daoProposalSingle/reverseProposals',
+          args: params.params[0],
+        })
+      )
+      if (proposals) {
+        return { proposals }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const proposalModuleVersion = get(
         contractVersionSelector({
           contractAddress: params.contractAddress,

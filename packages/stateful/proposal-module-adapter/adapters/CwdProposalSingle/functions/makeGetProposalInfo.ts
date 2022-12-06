@@ -1,10 +1,5 @@
-import {
-  GET_PROPOSAL,
-  GetProposal,
-  GetProposalOperationVariables,
-  getGetProposalSubqueryId,
-  client as subqueryClient,
-} from '@dao-dao/state/subquery'
+import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+
 import {
   CommonProposalInfo,
   ContractVersion,
@@ -19,7 +14,6 @@ import {
   cosmWasmClientRouter,
   getRpcForChainId,
   parseContractVersion,
-  processError,
   queryIndexer,
 } from '@dao-dao/utils'
 
@@ -33,9 +27,16 @@ export const makeGetProposalInfo =
     chainId,
   }: IProposalModuleAdapterOptions) =>
   async (): Promise<CommonProposalInfo | undefined> => {
-    const cosmWasmClient = await cosmWasmClientRouter.connect(
-      getRpcForChainId(chainId)
-    )
+    // Lazily connect if necessary.
+    let _cosmWasmClient: CosmWasmClient
+    const getCosmWasmClient = async () => {
+      if (!_cosmWasmClient) {
+        _cosmWasmClient = await cosmWasmClientRouter.connect(
+          getRpcForChainId(chainId)
+        )
+      }
+      return _cosmWasmClient
+    }
 
     let proposalResponse: ProposalV1Response | ProposalV2Response | undefined
     try {
@@ -50,31 +51,51 @@ export const makeGetProposalInfo =
         // Ignore error.
         console.error(err)
       }
-      // If indexer fails, query from contract on chain.
+      // If indexer fails, fallback to querying chain.
       if (!info) {
         info = (
-          (await cosmWasmClient.queryContractSmart(proposalModule.address, {
+          (await (
+            await getCosmWasmClient()
+          ).queryContractSmart(proposalModule.address, {
             info: {},
           })) as InfoResponse
         ).info
       }
 
-      const version = parseContractVersion(info.version)
+      // Try indexer first.
+      try {
+        proposalResponse = await queryIndexer(
+          proposalModule.address,
+          'daoProposalSingle/proposal',
+          {
+            args: {
+              id: proposalNumber,
+            },
+          }
+        )
+      } catch (err) {
+        // Ignore error.
+        console.error(err)
+      }
+      // If indexer fails, fallback to querying chain.
+      if (!proposalResponse) {
+        const cosmWasmClient = await getCosmWasmClient()
+        const version = parseContractVersion(info.version)
+        const queryClient =
+          version === ContractVersion.V1
+            ? new CwProposalSingleV1QueryClient(
+                cosmWasmClient,
+                proposalModule.address
+              )
+            : new CwdProposalSingleV2QueryClient(
+                cosmWasmClient,
+                proposalModule.address
+              )
 
-      const queryClient =
-        version === ContractVersion.V1
-          ? new CwProposalSingleV1QueryClient(
-              cosmWasmClient,
-              proposalModule.address
-            )
-          : new CwdProposalSingleV2QueryClient(
-              cosmWasmClient,
-              proposalModule.address
-            )
-
-      proposalResponse = await queryClient.proposal({
-        proposalId: proposalNumber,
-      })
+        proposalResponse = await queryClient.proposal({
+          proposalId: proposalNumber,
+        })
+      }
     } catch (err) {
       // If proposal doesn't exist, handle just return undefined instead of
       // throwing an error. Rethrow all other errors.
@@ -94,24 +115,33 @@ export const makeGetProposalInfo =
 
     const { id, proposal } = proposalResponse
 
-    // Use timestamp if available, or block height otherwise.
+    // Try indexer first.
     let createdAtEpoch: number | null = null
     try {
-      const proposalSubquery = await subqueryClient.query<
-        GetProposal,
-        GetProposalOperationVariables
-      >({
-        query: GET_PROPOSAL,
-        variables: { id: getGetProposalSubqueryId(proposalModule.address, id) },
-      })
-
-      createdAtEpoch = new Date(
-        proposalSubquery.data?.proposal?.createdAt
-          ? proposalSubquery.data?.proposal?.createdAt
-          : (await cosmWasmClient.getBlock(proposal.start_height)).header.time
-      ).getTime()
+      const createdAt = await queryIndexer<string>(
+        proposalModule.address,
+        'daoProposalSingle/proposalCreatedAt',
+        {
+          args: {
+            id,
+          },
+        }
+      )
+      // If indexer returned a value, assume it's a date.
+      if (createdAt) {
+        createdAtEpoch = new Date(createdAt).getTime()
+      }
     } catch (err) {
-      console.error(processError(err))
+      // Ignore error.
+      console.error(err)
+    }
+    // If indexer fails, fallback to querying block info from chain.
+    if (!createdAtEpoch) {
+      createdAtEpoch = new Date(
+        (
+          await (await getCosmWasmClient()).getBlock(proposal.start_height)
+        ).header.time
+      ).getTime()
     }
 
     return {
