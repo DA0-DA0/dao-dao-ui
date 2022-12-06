@@ -73,7 +73,7 @@ export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
     // `contractChosen` so the user has to confirm the contract. This may be
     // used to quickly perform a token swap with an existing contract.
     useEffect(() => {
-      if (contractChosen && props.isCreating) {
+      if (!mounted && contractChosen && props.isCreating) {
         setValue(props.fieldNamePrefix + 'contractChosen', false)
         setCreatingNew(false)
       }
