@@ -15,6 +15,7 @@ import {
   makePerformTokenSwapAction,
   makeWithdrawTokenSwapAction,
 } from './token_swap'
+import { makeTransferNftAction } from './TransferNft'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
 
@@ -27,6 +28,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeAddCw20Action,
     makeRemoveCw20Action,
     makeAddCw721Action,
+    makeTransferNftAction,
     makeRemoveCw721Action,
     makeInstantiateAction,
     makeExecuteAction,

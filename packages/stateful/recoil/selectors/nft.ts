@@ -1,4 +1,9 @@
-import { constSelector, selectorFamily, waitForAll } from 'recoil'
+import {
+  constSelector,
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+} from 'recoil'
 
 import {
   Cw721BaseSelectors,
@@ -14,7 +19,7 @@ import {
   STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_URL_BASE,
   getNftName,
-  transformIpfsUrlToHttpsIfNecessary,
+  parseNftUriResponse,
 } from '@dao-dao/utils'
 
 export const walletStargazeNftCardInfosSelector = selectorFamily<
@@ -61,6 +66,61 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
     },
 })
 
+export const nftCardInfoSelector = selectorFamily<
+  NftCardInfo,
+  WithChainId<{ tokenId: string; collection: string }>
+>({
+  key: 'nftCardInfo',
+  get:
+    ({ tokenId, collection, chainId }) =>
+    async ({ get }) => {
+      const { native, stargaze } = get(
+        nativeAndStargazeCollectionInfoSelector({
+          nativeCollectionAddress: collection,
+          chainId,
+        })
+      )
+      const tokenInfo = get(
+        Cw721BaseSelectors.nftInfoSelector({
+          contractAddress: collection,
+          chainId,
+          params: [{ tokenId }],
+        })
+      )
+      const tokenData = get(
+        tokenInfo.token_uri
+          ? nftTokenUriDataSelector(tokenInfo.token_uri)
+          : constSelector(undefined)
+      )
+
+      const info: NftCardInfo = {
+        collection: {
+          address: stargaze?.address ?? native.address,
+          name: stargaze?.info.name ?? native.info.name,
+        },
+        tokenId,
+        externalLink: stargaze?.address.startsWith('stars')
+          ? {
+              href: `${STARGAZE_URL_BASE}/media/${stargaze.address}/${tokenId}`,
+              name: 'Stargaze',
+            }
+          : undefined,
+        imageUrl: tokenInfo.token_uri ?? '',
+        name: '',
+      }
+
+      const { name, imageUrl, externalLink } = parseNftUriResponse(
+        tokenData || '',
+        info.collection.name
+      )
+      info.name = name || info.name
+      info.imageUrl = imageUrl || info.imageUrl
+      info.externalLink = externalLink || info.externalLink
+
+      return info
+    },
+})
+
 export const nftCardInfosSelector = selectorFamily<
   NftCardInfo[],
   WithChainId<{ coreAddress: string }>
@@ -76,8 +136,10 @@ export const nftCardInfosSelector = selectorFamily<
         })
       )
 
+      // Ignore errors by waiting for all to settle, and then ignoring any that
+      // do not have a value.
       const nftCollectionInfos = get(
-        waitForAll(
+        waitForAllSettled(
           nftCollectionAddresses.map((collectionAddress) =>
             nativeAndStargazeCollectionInfoSelector({
               nativeCollectionAddress: collectionAddress,
@@ -100,10 +162,11 @@ export const nftCardInfosSelector = selectorFamily<
       )
 
       const collectionsWithTokens = nftCollectionInfos
-        .map((collectionInfo, index) => {
+        .map((collectionInfoLoadable, index) => {
           // Don't filter undefined infos out until inside this map so we can
           // use the index to zip with token IDs.
-          if (!collectionInfo) {
+
+          if (collectionInfoLoadable.state !== 'hasValue') {
             return
           }
 
@@ -113,7 +176,8 @@ export const nftCardInfosSelector = selectorFamily<
             waitForAll(
               tokenIds.map((tokenId) =>
                 Cw721BaseSelectors.nftInfoSelector({
-                  contractAddress: collectionInfo.native.address,
+                  contractAddress:
+                    collectionInfoLoadable.contents.native.address,
                   chainId,
                   params: [{ tokenId }],
                 })
@@ -132,7 +196,7 @@ export const nftCardInfosSelector = selectorFamily<
           )
 
           return {
-            collectionInfo,
+            collectionInfo: collectionInfoLoadable.contents,
             tokens: tokenIds
               .map((tokenId, index) => ({
                 tokenId,
@@ -189,40 +253,13 @@ export const nftCardInfosSelector = selectorFamily<
                   name: '',
                 }
 
-                // Only try to parse if there's a good chance this is JSON, the
-                // heuristic being the first non-whitespace character is a "{".
-                if (uriDataResponse.trimStart().startsWith('{')) {
-                  try {
-                    const json = JSON.parse(uriDataResponse)
-
-                    if (typeof json.name === 'string' && !!json.name.trim()) {
-                      info.name = getNftName(info.collection.name, json.name)
-                    }
-
-                    if (typeof json.image === 'string' && !!json.image) {
-                      info.imageUrl = transformIpfsUrlToHttpsIfNecessary(
-                        json.image
-                      )
-                    }
-
-                    if (
-                      typeof json.external_url === 'string' &&
-                      !!json.external_url.trim()
-                    ) {
-                      const externalUrl = transformIpfsUrlToHttpsIfNecessary(
-                        json.external_url
-                      )
-                      const externalUrlDomain = new URL(externalUrl).hostname
-                      info.externalLink = {
-                        href: externalUrl,
-                        name:
-                          HostnameMap[externalUrlDomain] ?? externalUrlDomain,
-                      }
-                    }
-                  } catch (err) {
-                    console.error(err)
-                  }
-                }
+                const { name, imageUrl, externalLink } = parseNftUriResponse(
+                  uriDataResponse,
+                  info.collection.name
+                )
+                info.name = name || info.name
+                info.imageUrl = imageUrl || info.imageUrl
+                info.externalLink = externalLink || info.externalLink
 
                 return info
               }
@@ -233,7 +270,3 @@ export const nftCardInfosSelector = selectorFamily<
       return infos
     },
 })
-
-const HostnameMap: Record<string, string | undefined> = {
-  'stargaze.zone': 'Stargaze',
-}
