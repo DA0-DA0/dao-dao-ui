@@ -23,7 +23,7 @@ export const useWalletProfile = (
   options: UseWalletProfileOptions
 ): UseWalletProfileReturn => {
   const publicKeyLoadable = useRecoilValueLoadable(
-    'hexPublicKey' in options
+    options.hexPublicKey
       ? constSelector(options.hexPublicKey)
       : walletHexPublicKeySelector({
           walletAddress: options.walletAddress,

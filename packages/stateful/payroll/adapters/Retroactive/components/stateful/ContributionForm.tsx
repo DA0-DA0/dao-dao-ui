@@ -25,6 +25,7 @@ export const ContributionForm = () => {
     useWallet(chainId)
   const walletProfile = useProfile({
     address: walletAddress,
+    walletHexPublicKey: walletPublicKey?.hex,
     chainId,
   })
 

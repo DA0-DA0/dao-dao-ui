@@ -60,17 +60,17 @@ export const PayrollTab = () => {
 
 export const InnerPayrollTab = () => {
   const { chainId, coreAddress, bech32Prefix } = useDaoInfoContext()
-  const { address: walletPublicKey = '' } = useWallet(chainId)
+  const { publicKey: walletPublicKey } = useWallet(chainId)
   const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,
   })
 
   const loadingStatus = loadableToLoadingData(
     useCachedLoadable(
-      walletPublicKey
+      walletPublicKey?.hex
         ? statusSelector({
             daoAddress: coreAddress,
-            walletPublicKey: walletPublicKey,
+            walletPublicKey: walletPublicKey.hex,
           })
         : undefined
     ),

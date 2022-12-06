@@ -292,6 +292,7 @@ export const ProposalCreationForm = () => {
 
   const profile = useProfile({
     address: walletAddress,
+    walletHexPublicKey: walletPublicKey?.hex,
     chainId,
   })
 
