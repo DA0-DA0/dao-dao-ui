@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import {
-  BrokenHeartEmoji,
-  HandshakeEmoji,
-  InputErrorMessage,
-  Loader,
-} from '@dao-dao/stateless'
+import { BrokenHeartEmoji, InputErrorMessage, Loader } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -59,7 +54,7 @@ export const makeWithdrawTokenSwapAction: ActionMaker<
 
     return (
       <ActionCard
-        Icon={HandshakeEmoji}
+        Icon={BrokenHeartEmoji}
         onRemove={props.onRemove}
         title={t('title.withdrawTokenSwap')}
       >
