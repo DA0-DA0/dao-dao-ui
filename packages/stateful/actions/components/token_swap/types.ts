@@ -3,7 +3,7 @@ import { ComponentType } from 'react'
 import {
   Coin,
   LoadingData,
-  ProfileDisplayProps,
+  StatefulProfileDisplayProps,
   TokenSwapStatusProps,
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
@@ -60,7 +60,7 @@ export interface InstantiateTokenSwapOptions {
     }[]
   >
 
-  ProfileDisplay: ComponentType<Omit<ProfileDisplayProps, 'loadingProfile'>>
+  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
 }
 
 export interface ExistingTokenSwapOptions {
