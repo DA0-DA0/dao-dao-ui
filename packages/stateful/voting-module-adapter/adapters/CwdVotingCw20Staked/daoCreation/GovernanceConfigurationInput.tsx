@@ -443,6 +443,7 @@ export const GovernanceConfigurationInput = ({
                 setValue={setValue}
                 showColorDotOnMember={tierFields.length === 1}
                 tierIndex={idx}
+                watch={watch}
               />
             ))}
 

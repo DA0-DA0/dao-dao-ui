@@ -4,6 +4,7 @@ import {
   FormState,
   UseFormRegister,
   UseFormSetValue,
+  UseFormWatch,
   useFieldArray,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -39,6 +40,7 @@ export interface TierCardProps {
   showColorDotOnMember: boolean
   control: Control<NewDao<DaoCreationConfig>>
   register: UseFormRegister<NewDao<DaoCreationConfig>>
+  watch: UseFormWatch<NewDao<DaoCreationConfig>>
   errors: FormState<NewDao<DaoCreationConfig>>['errors']
   setValue: UseFormSetValue<NewDao<DaoCreationConfig>>
   remove?: () => void
@@ -56,6 +58,7 @@ export const TierCard = ({
     tierIndex,
     control,
     register,
+    watch,
     errors,
     setValue,
     showColorDotOnMember,
@@ -210,6 +213,7 @@ export const TierCard = ({
                     placeholder={t('form.membersAddress')}
                     register={register}
                     validation={[validateAddress, validateRequired]}
+                    watch={watch}
                   />
                 </div>
 
