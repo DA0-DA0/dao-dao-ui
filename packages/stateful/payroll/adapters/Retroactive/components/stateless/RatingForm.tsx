@@ -21,11 +21,9 @@ import {
   TokenInfoResponseWithAddressAndLogo,
 } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   getFallbackImage,
-  isValidAddress,
   nativeTokenDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
@@ -147,7 +145,6 @@ export const RatingForm = ({
     handleSubmit: nominationHandleSubmit,
     formState: { errors: nominationErrors },
   } = useForm<NominationForm>()
-  const nominationContributor = nominationWatch('contributor')
 
   return (
     <div className="flex grow flex-col gap-6">
@@ -411,20 +408,16 @@ export const RatingForm = ({
           <div className="space-y-1">
             <InputLabel name={t('form.contributorAddress')} />
             <AddressInput
+              ProfileDisplay={ProfileDisplay}
               containerClassName="grow"
               error={nominationErrors?.contributor}
               fieldName="contributor"
               register={nominationRegister}
               validation={[validateRequired, validateAddress]}
+              watch={nominationWatch}
             />
             <InputErrorMessage error={nominationErrors?.contributor} />
           </div>
-
-          {/* TODO: Add ProfileDisplay to AddressInput above once merged with that change. */}
-          {!!nominationContributor &&
-            isValidAddress(nominationContributor, CHAIN_BECH32_PREFIX) && (
-              <ProfileDisplay address={nominationContributor} />
-            )}
 
           <div className="space-y-1">
             <InputLabel name={t('form.contribution')} />

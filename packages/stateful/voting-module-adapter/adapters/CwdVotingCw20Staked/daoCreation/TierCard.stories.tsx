@@ -41,6 +41,7 @@ const Template: ComponentStory<typeof TierCard> = (args) => {
         register={register}
         remove={() => alert('remove')}
         setValue={setValue}
+        watch={watch}
       />
     </div>
   )
