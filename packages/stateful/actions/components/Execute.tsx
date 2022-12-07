@@ -62,7 +62,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
           register={register}
           validation={[validateRequired, validateContractAddress]}
         />
-        <InputErrorMessage error={errors?.codeId} />
+        <InputErrorMessage error={errors?.address} />
       </div>
 
       <InputLabel className="-mb-1" name={t('form.message')} />

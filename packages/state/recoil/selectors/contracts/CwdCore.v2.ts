@@ -23,6 +23,7 @@ import {
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/CwdCore.v2'
 
+import { CwdVotingCw20StakedSelectors } from '.'
 import {
   CwdCoreV2Client,
   CwdCoreV2QueryClient,
@@ -678,6 +679,29 @@ export const allSubDaoConfigsSelector = selectorFamily<
         address: addr,
         ...subDaoConfigs[index],
       }))
+    },
+})
+
+// Will fail if cannot fetch governance token address.
+export const tryFetchGovernanceTokenAddressSelector = selectorFamily<
+  string,
+  QueryClientParams
+>({
+  key: 'cwdCoreV2TryFetchGovernanceTokenAddress',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const votingModuleAddress = get(
+        votingModuleSelector({ ...queryClientParams, params: [] })
+      )
+      const governanceTokenAddress = get(
+        CwdVotingCw20StakedSelectors.tokenContractSelector({
+          ...queryClientParams,
+          contractAddress: votingModuleAddress,
+          params: [],
+        })
+      )
+      return governanceTokenAddress
     },
 })
 

@@ -13,12 +13,9 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
-  Action,
-  ActionKey,
+  ActionsWithData,
   BaseNewProposalProps,
   IProposalModuleAdapterCommonOptions,
-  UseDefaults,
-  UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
   convertExpirationToDate,
@@ -84,16 +81,7 @@ export const NewProposal = ({
   )
 
   // Call relevant action hooks in the same order every time.
-  const actionsWithData: Partial<
-    Record<
-      ActionKey,
-      {
-        action: Action
-        transform: ReturnType<UseTransformToCosmos>
-        defaults: ReturnType<UseDefaults>
-      }
-    >
-  > = actions.reduce(
+  const actionsWithData: ActionsWithData = actions.reduce(
     (acc, action) => ({
       ...acc,
       [action.key]: {

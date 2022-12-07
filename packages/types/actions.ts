@@ -23,6 +23,8 @@ export enum CoreActionKey {
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',
   Custom = 'custom',
+  PerformTokenSwap = 'performTokenSwap',
+  WithdrawTokenSwap = 'withdrawTokenSwap',
   SetItem = 'setItem',
   RemoveItem = 'removeItem',
 }
@@ -138,3 +140,14 @@ export interface IActionsContext {
   options: ActionOptions
   actions: Action[]
 }
+
+export type ActionsWithData = Partial<
+  Record<
+    ActionKey,
+    {
+      action: Action
+      transform: ReturnType<UseTransformToCosmos>
+      defaults: ReturnType<UseDefaults>
+    }
+  >
+>

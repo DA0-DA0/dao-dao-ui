@@ -6,6 +6,7 @@ import {
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
+import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useState } from 'react'
 import {
   SubmitErrorHandler,
@@ -29,13 +30,7 @@ import {
   TextInput,
   Tooltip,
 } from '@dao-dao/stateless'
-import {
-  Action,
-  ActionKey,
-  BaseNewProposalProps,
-  UseDefaults,
-  UseTransformToCosmos,
-} from '@dao-dao/types'
+import { Action, ActionsWithData, BaseNewProposalProps } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import {
   decodedMessagesString,
@@ -45,7 +40,7 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components/SuspenseLoader'
-import { useWalletProfile } from '../../../../../hooks'
+import { useWalletInfo } from '../../../../../hooks'
 import { NewProposalData, NewProposalForm } from '../../types'
 
 enum ProposeSubmitValue {
@@ -71,16 +66,7 @@ export interface NewProposalProps
   depositUnsatisfied: boolean
   connected: boolean
   actions: Action[]
-  actionsWithData: Partial<
-    Record<
-      ActionKey,
-      {
-        action: Action
-        transform: ReturnType<UseTransformToCosmos>
-        defaults: ReturnType<UseDefaults>
-      }
-    >
-  >
+  actionsWithData: ActionsWithData
 }
 
 export const NewProposal = ({
@@ -110,18 +96,22 @@ export const NewProposal = ({
     handleSubmit,
     watch,
     formState: { errors },
+    resetField,
   } = useFormContext<NewProposalForm>()
 
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
 
-  const { walletAddress = '', walletProfile } = useWalletProfile()
+  const { walletAddress = '', walletProfile } = useWalletInfo()
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
-  const proposalActionData = watch('actionData')
 
-  const { append, remove } = useFieldArray({
+  const {
+    fields: actionDataFields,
+    append: appendAction,
+    remove: removeAction,
+  } = useFieldArray({
     name: 'actionData',
     control,
     shouldUnregister: true,
@@ -201,12 +191,12 @@ export const NewProposal = ({
       </div>
 
       <p className="title-text my-6 text-text-body">
-        {t('title.actions', { count: proposalActionData.length })}
+        {t('title.actions', { count: actionDataFields.length })}
       </p>
 
-      {proposalActionData.length > 0 && (
+      {actionDataFields.length > 0 && (
         <div className="mb-4 flex flex-col gap-2">
-          {proposalActionData.map((actionData, index) => {
+          {actionDataFields.map(({ id, ...actionData }, index) => {
             const Component = actionsWithData[actionData.key]?.action?.Component
             if (!Component) {
               throw new Error(
@@ -215,15 +205,26 @@ export const NewProposal = ({
             }
 
             return (
-              <SuspenseLoader key={index} fallback={<ActionCardLoader />}>
+              <SuspenseLoader key={id} fallback={<ActionCardLoader />}>
                 <Component
-                  allActionsWithData={proposalActionData}
+                  allActionsWithData={actionDataFields}
                   data={actionData.data}
                   errors={errors.actionData?.[index]?.data || {}}
                   fieldNamePrefix={`actionData.${index}.data.`}
                   index={index}
                   isCreating
-                  onRemove={() => remove(index)}
+                  onRemove={() => {
+                    // Reset the data field to avoid stale data. Honestly not
+                    // sure why this has to happen; I figured the `remove` call
+                    // would do this automatically. Some actions, like Execute
+                    // Smart Contract, don't seem to need this, while others,
+                    // like the Token Swap actions, do.
+                    resetField(`actionData.${index}.data`, {
+                      defaultValue: {},
+                    })
+                    // Remove the action.
+                    removeAction(index)
+                  }}
                 />
               </SuspenseLoader>
             )
@@ -234,9 +235,10 @@ export const NewProposal = ({
       <ActionSelector
         actions={actions}
         onSelectAction={({ key }) => {
-          append({
+          appendAction({
             key,
-            data: actionsWithData[key]?.defaults ?? {},
+            // Clone to prevent the form from mutating the original object.
+            data: cloneDeep(actionsWithData[key]?.defaults ?? {}),
           })
         }}
       />
@@ -305,10 +307,10 @@ export const NewProposal = ({
           <div className="mt-4 rounded-md border border-border-secondary p-6">
             <ProposalContentDisplay
               actionDisplay={
-                proposalActionData.length ? (
+                actionDataFields.length ? (
                   <CosmosMessageDisplay
                     value={decodedMessagesString(
-                      proposalActionData
+                      actionDataFields
                         .map(({ key, data }) =>
                           actionsWithData[key]?.transform(data)
                         )

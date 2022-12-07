@@ -14,3 +14,4 @@ export {
   CwdVotingNativeStakedClient,
   CwdVotingNativeStakedQueryClient,
 } from './CwdVotingNativeStaked'
+export { CwTokenSwapClient, CwTokenSwapQueryClient } from './CwTokenSwap'

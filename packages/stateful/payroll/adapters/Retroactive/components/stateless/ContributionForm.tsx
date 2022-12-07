@@ -10,7 +10,7 @@ import {
   TextAreaInput,
   Tooltip,
 } from '@dao-dao/stateless'
-import { WalletProfile } from '@dao-dao/types'
+import { Profile } from '@dao-dao/types'
 import { formatDateTimeTz, validateRequired } from '@dao-dao/utils'
 
 import { Status, SurveyStatus } from '../../types'
@@ -23,7 +23,7 @@ export interface ContributionFormProps {
   status: Status
   onSubmit: (contribution: string) => Promise<void>
   loading: boolean
-  walletProfile: WalletProfile
+  profile: Profile
   ProfileDisplay: ComponentType
 }
 
@@ -31,7 +31,7 @@ export const ContributionForm = ({
   status: { survey, contribution: existingContribution },
   onSubmit,
   loading,
-  walletProfile,
+  profile,
   ProfileDisplay,
 }: ContributionFormProps) => {
   const { t } = useTranslation()
@@ -95,7 +95,7 @@ export const ContributionForm = ({
               {t('info.profileExplanation')}
             </p>
 
-            {!walletProfile.name && (
+            {!profile.name && (
               <p className="caption-text text-text-interactive-error">
                 {t('error.compensationCycleNeedsProfileName')}
               </p>
@@ -136,7 +136,7 @@ export const ContributionForm = ({
                       new Date(survey.contributionsOpenAt)
                     ),
                   })
-                : !walletProfile.name
+                : !profile.name
                 ? t('error.compensationCycleNeedsProfileName')
                 : undefined
             }
@@ -144,7 +144,7 @@ export const ContributionForm = ({
             <Button
               className="self-end"
               disabled={
-                survey.status === SurveyStatus.Inactive || !walletProfile.name
+                survey.status === SurveyStatus.Inactive || !profile.name
               }
               loading={loading}
               type="submit"

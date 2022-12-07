@@ -17,8 +17,9 @@ import {
 import {
   AmountWithTimestampAndDenom,
   LoadingData,
+  Profile,
+  StatefulProfileDisplayProps,
   TokenInfoResponseWithAddressAndLogo,
-  WalletProfile,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -32,7 +33,6 @@ import {
 
 import { NewProposalData } from '../../../../../proposal-module-adapter/adapters/CwdProposalSingle/types'
 import { CompleteRatings, Status } from '../../types'
-import { IdentityProfileDisplayProps } from '../stateful/IdentityProfileDisplay'
 
 export type ProposalCreationFormData = Omit<NewProposalData, 'msgs'>
 
@@ -43,11 +43,11 @@ export interface ProposalCreationFormProps {
   loadRatings: () => Promise<void>
   onComplete: (data: ProposalCreationFormData) => Promise<void>
   loading: boolean
-  IdentityProfileDisplay: ComponentType<IdentityProfileDisplayProps>
+  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
   cw20TokenInfos: TokenInfoResponseWithAddressAndLogo[]
   prices: AmountWithTimestampAndDenom[]
   walletAddress: string
-  walletProfile: LoadingData<WalletProfile>
+  profile: LoadingData<Profile>
 }
 
 export const ProposalCreationForm = ({
@@ -56,11 +56,11 @@ export const ProposalCreationForm = ({
   loadRatings,
   onComplete,
   loading,
-  IdentityProfileDisplay,
+  ProfileDisplay,
   cw20TokenInfos,
   prices,
   walletAddress,
-  walletProfile,
+  profile,
 }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
 
@@ -133,14 +133,15 @@ export const ProposalCreationForm = ({
                   {t('title.contributor')}
                 </p>
                 {completeRatings.ratings.map(({ rater }, ratingIndex) => (
-                  <IdentityProfileDisplay
+                  <ProfileDisplay
                     key={rater.publicKey}
+                    address={rater.address}
                     className={clsx(
                       'justify-self-end border-l border-border-secondary bg-background-primary p-4',
                       ratingIndex === completeRatings.ratings.length - 1 &&
                         'rounded-tr-md'
                     )}
-                    identity={rater}
+                    walletHexPublicKey={rater.publicKey}
                   />
                 ))}
 
@@ -153,7 +154,8 @@ export const ProposalCreationForm = ({
 
                     return (
                       <Fragment key={contribution.id}>
-                        <IdentityProfileDisplay
+                        <ProfileDisplay
+                          address={contribution.contributor.address}
                           className={clsx(
                             'p-4',
                             backgroundClassName,
@@ -161,7 +163,9 @@ export const ProposalCreationForm = ({
                               completeRatings.contributions.length - 1 &&
                               'rounded-bl-md'
                           )}
-                          identity={contribution.contributor}
+                          walletHexPublicKey={
+                            contribution.contributor.publicKey
+                          }
                         />
 
                         {completeRatings.ratings.map(
@@ -323,7 +327,8 @@ export const ProposalCreationForm = ({
                   return (
                     <Fragment key={id}>
                       {/* Profile display */}
-                      <IdentityProfileDisplay
+                      <ProfileDisplay
+                        address={contributor.address}
                         className={clsx(
                           'p-4',
                           backgroundClassName,
@@ -331,7 +336,7 @@ export const ProposalCreationForm = ({
                             completeRatings.contributions.length - 1 &&
                             'rounded-bl-md'
                         )}
-                        identity={contributor}
+                        walletHexPublicKey={contributor.publicKey}
                       />
 
                       {/* Attribute averages */}
@@ -448,9 +453,9 @@ export const ProposalCreationForm = ({
                   createdAt={new Date()}
                   creator={{
                     address: walletAddress,
-                    name: walletProfile.loading
-                      ? walletProfile
-                      : { loading: false, data: walletProfile.data.name },
+                    name: profile.loading
+                      ? profile
+                      : { loading: false, data: profile.data.name },
                   }}
                   description={proposalDescription}
                   title={proposalTitle}

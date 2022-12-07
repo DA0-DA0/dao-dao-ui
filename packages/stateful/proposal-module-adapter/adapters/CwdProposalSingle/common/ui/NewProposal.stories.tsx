@@ -7,12 +7,7 @@ import {
   DaoPageWrapperDecorator,
   WalletProviderDecorator,
 } from '@dao-dao/storybook/decorators'
-import {
-  Action,
-  ActionKey,
-  UseDefaults,
-  UseTransformToCosmos,
-} from '@dao-dao/types'
+import { ActionsWithData } from '@dao-dao/types'
 
 import { useCoreActions } from '../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../voting-module-adapter'
@@ -55,16 +50,7 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
   )
 
   // Call relevant action hooks in the same order every time.
-  const actionsWithData: Partial<
-    Record<
-      ActionKey,
-      {
-        action: Action
-        transform: ReturnType<UseTransformToCosmos>
-        defaults: ReturnType<UseDefaults>
-      }
-    >
-  > = actions.reduce(
+  const actionsWithData: ActionsWithData = actions.reduce(
     (acc, action) => ({
       ...acc,
       [action.key]: {

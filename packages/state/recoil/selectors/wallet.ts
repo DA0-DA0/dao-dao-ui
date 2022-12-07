@@ -33,8 +33,8 @@ export const walletHexPublicKeySelector = selectorFamily<
     },
 })
 
-export const walletProfileSelector = selectorFamily<WalletProfile, string>({
-  key: 'walletProfile',
+export const pfpkProfileSelector = selectorFamily<WalletProfile, string>({
+  key: 'pfpkProfile',
   get:
     (publicKey) =>
     async ({ get }) => {

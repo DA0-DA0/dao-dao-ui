@@ -27,7 +27,7 @@ import {
   useEncodedCwdProposalSinglePrefill,
   usePinnedDaos,
   useVotingModule,
-  useWalletProfile,
+  useWalletInfo,
 } from '@dao-dao/stateful'
 import { useCoreActionForKey } from '@dao-dao/stateful/actions'
 import { usePayrollAdapter } from '@dao-dao/stateful/payroll'
@@ -50,7 +50,7 @@ const InnerDaoHome = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { connected } = useWallet()
-  const { walletProfile, updateProfileName } = useWalletProfile()
+  const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
 
   const daoInfo = useDaoInfoContext()

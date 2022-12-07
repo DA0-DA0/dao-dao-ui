@@ -13,6 +13,10 @@ import { makeRemoveItemAction } from './RemoveItem'
 import { makeSetItemAction } from './SetItem'
 import { makeSpendAction } from './Spend'
 import { makeStakeAction } from './Stake'
+import {
+  makePerformTokenSwapAction,
+  makeWithdrawTokenSwapAction,
+} from './token_swap'
 import { makeTransferNftAction } from './TransferNft'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
@@ -34,6 +38,8 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeUpdateAdminAction,
     makeCustomAction,
     makeManageSubDaosAction,
+    makePerformTokenSwapAction,
+    makeWithdrawTokenSwapAction,
     makeSetItemAction,
     makeRemoveItemAction,
   ]

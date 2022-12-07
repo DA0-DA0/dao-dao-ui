@@ -36,7 +36,6 @@ import {
   NominationForm,
   RatingForm as StatelessRatingForm,
 } from '../stateless/RatingForm'
-import { IdentityProfileDisplay } from './IdentityProfileDisplay'
 
 export const RatingForm = () => {
   const { t } = useTranslation()
@@ -220,7 +219,6 @@ export const RatingForm = () => {
         loadingCw20TokenInfos.state === 'hasValue' &&
         prices.state === 'hasValue' && (
           <StatelessRatingForm
-            IdentityProfileDisplay={IdentityProfileDisplay}
             ProfileDisplay={ProfileDisplay}
             cw20TokenInfos={loadingCw20TokenInfos.contents}
             data={data}

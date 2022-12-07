@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { IdentityProfileDisplay } from '../stateful/IdentityProfileDisplay'
+import { ProfileDisplay } from '../../../../../components'
 import { makeSurvey } from './ContributionForm.stories'
 import { ProposalCreationForm } from './ProposalCreationForm'
 
@@ -133,7 +133,7 @@ Default.args = {
   },
   onComplete: async (data) => alert('complete: ' + JSON.stringify(data)),
   loading: false,
-  IdentityProfileDisplay,
+  ProfileDisplay,
   cw20TokenInfos: [
     {
       address: 'usdc',
@@ -155,4 +155,12 @@ Default.args = {
       timestamp: new Date(),
     },
   ],
+  profile: {
+    loading: false,
+    data: {
+      address: 'walletPerson',
+      name: 'wallet Person!',
+      imageUrl: '/placeholders/1.svg',
+    },
+  },
 }

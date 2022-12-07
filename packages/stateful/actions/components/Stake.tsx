@@ -157,7 +157,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
           ? t('error.treasuryNoTokensCannotStake', {
               tokenSymbol: nativeTokenLabel(denom),
             })
-          : t('error.treasuryInsufficientCannotStake', {
+          : t('error.treasuryInsufficient', {
               amount: humanReadableAmount,
               tokenSymbol: nativeTokenLabel(denom),
             }))
