@@ -18,7 +18,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { StatefulProfileDisplayProps } from '@dao-dao/types'
-import { validateAddress } from '@dao-dao/utils'
+import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
 export interface AddressInputProps<
   FV extends FieldValues,
@@ -69,7 +69,9 @@ export const AddressInput = <
   const formValue = watch?.(fieldName)
 
   const showProfile =
-    ProfileDisplay && !!formValue && validateAddress(formValue) === true
+    ProfileDisplay &&
+    !!formValue &&
+    isValidAddress(formValue, CHAIN_BECH32_PREFIX)
 
   return (
     <div
