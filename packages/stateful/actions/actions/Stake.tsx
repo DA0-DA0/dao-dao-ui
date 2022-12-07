@@ -214,14 +214,25 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
     const {
       hooks: { useProposalExecutionTxHash },
     } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
-    const executionTxHash = useProposalExecutionTxHash?.()
-    const executed = !!executionTxHash
+    const loadingExecutionTxHash = useProposalExecutionTxHash?.()
 
-    const txEvents = useRecoilValue(
-      executionTxHash
-        ? transactionEventsSelector({ txHash: executionTxHash })
-        : constSelector(undefined)
+    const txEventsLoadable = useCachedLoadable(
+      loadingExecutionTxHash
+        ? loadingExecutionTxHash.loading
+          ? // If still loading, return undefined to indicate loading.
+            undefined
+          : loadingExecutionTxHash.data
+          ? transactionEventsSelector({ txHash: loadingExecutionTxHash.data })
+          : // If no data, return undefined.
+            constSelector(undefined)
+        : // If loading value undefined, return undefined.
+          constSelector(undefined)
     )
+    const txEvents =
+      txEventsLoadable.state === 'hasValue'
+        ? txEventsLoadable.contents
+        : undefined
+    const executed = !!txEvents
 
     const { watch } = useFormContext()
     let claimedRewards: number | undefined
@@ -294,7 +305,8 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
           loadingNativeBalances.loading ||
           loadingNativeDelegationInfo.loading ||
           !loadingNativeDelegationInfo.data ||
-          loadingValidators.loading
+          loadingValidators.loading ||
+          txEventsLoadable.state === 'loading'
         }
       >
         <StatelessStakeComponent

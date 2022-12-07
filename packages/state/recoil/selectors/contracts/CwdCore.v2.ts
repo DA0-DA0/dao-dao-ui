@@ -93,9 +93,9 @@ export const adminSelector = selectorFamily<
           formulaName: 'daoCore/admin',
         })
       )
-      // Null when indexer fails.
+      // Null when indexer fails. Undefined if no admin.
       if (admin !== null) {
-        return admin ?? null
+        return admin || null
       }
 
       // If indexer query fails, fallback to contract query.
@@ -119,9 +119,9 @@ export const adminNominationSelector = selectorFamily<
           formulaName: 'daoCore/adminNomination',
         })
       )
-      // Null when indexer fails.
+      // Null when indexer fails. Undefined if no nomination.
       if (nomination !== null) {
-        return { nomination }
+        return { nomination: nomination || null }
       }
 
       // If indexer query fails, fallback to contract query.
@@ -145,8 +145,7 @@ export const configSelector = selectorFamily<
           formulaName: 'daoCore/config',
         })
       )
-      // Null when indexer fails.
-      if (config !== null) {
+      if (config) {
         return config
       }
 
@@ -223,8 +222,7 @@ export const reducedDumpStateSelector = selectorFamily<
           formulaName: 'daoCore/dumpState',
         })
       )
-      // Null when indexer fails.
-      if (state !== null) {
+      if (state) {
         return state
       }
 
@@ -233,6 +231,8 @@ export const reducedDumpStateSelector = selectorFamily<
       try {
         return await client.dumpState(...params)
       } catch (err) {
+        // Ignore errors. An undefined response is sometimes used to indicate
+        // that this contract is not a DAO.
         console.error(err)
       }
     },
@@ -254,9 +254,9 @@ export const getItemSelector = selectorFamily<
           args: params[0],
         })
       )
-      // Null when indexer fails.
+      // Null when indexer fails. Undefined if no item.
       if (item !== null) {
-        return { item }
+        return { item: item || null }
       }
 
       // If indexer query fails, fallback to contract query.
@@ -264,28 +264,18 @@ export const getItemSelector = selectorFamily<
       return await client.getItem(...params)
     },
 })
-export const listItemsSelector = selectorFamily<
+// Use listAllItemsSelector as it uses the indexer and implements pagination for
+// chain queries.
+export const _listItemsSelector = selectorFamily<
   ListItemsResponse,
   QueryClientParams & {
     params: Parameters<CwdCoreV2QueryClient['listItems']>
   }
 >({
-  key: 'cwdCoreV2ListItems',
+  key: 'cwdCoreV2_ListItems',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const list = get(
-        queryIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'daoCore/listItems',
-        })
-      )
-      // Null when indexer fails.
-      if (list !== null) {
-        return list
-      }
-
-      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.listItems(...params)
     },
@@ -306,8 +296,7 @@ export const proposalModulesSelector = selectorFamily<
           formulaName: 'daoCore/proposalModules',
         })
       )
-      // Null when indexer fails.
-      if (proposalModules !== null) {
+      if (proposalModules) {
         return proposalModules
       }
 
@@ -332,8 +321,7 @@ export const activeProposalModulesSelector = selectorFamily<
           formulaName: 'daoCore/activeProposalModules',
         })
       )
-      // Null when indexer fails.
-      if (activeProposalModules !== null) {
+      if (activeProposalModules) {
         return activeProposalModules
       }
 
@@ -401,9 +389,8 @@ export const votingModuleSelector = selectorFamily<
           formulaName: 'daoCore/votingModule',
         })
       )
-      // Null when indexer fails.
-      if (votingModule !== null) {
-        return votingModule ?? null
+      if (votingModule) {
+        return votingModule
       }
 
       // If indexer query fails, fallback to contract query.
@@ -443,9 +430,9 @@ export const daoURISelector = selectorFamily<
           formulaName: 'daoCore/daoUri',
         })
       )
-      // Null when indexer fails.
+      // Null when indexer fails. Undefined if no URI.
       if (daoUri !== null) {
-        return daoUri ?? null
+        return daoUri || null
       }
 
       // If indexer query fails, fallback to contract query.
@@ -541,8 +528,7 @@ export const infoSelector = selectorFamily<
           formulaName: 'info',
         })
       )
-      // Null when indexer fails.
-      if (info !== null) {
+      if (info) {
         return { info }
       }
 
@@ -568,8 +554,7 @@ export const allCw20TokenListSelector = selectorFamily<
           formulaName: 'daoCore/cw20List',
         })
       )
-      // Null when indexer fails.
-      if (list !== null) {
+      if (list) {
         return list
       }
 
@@ -781,8 +766,7 @@ export const allCw721TokenListSelector = selectorFamily<
           formulaName: 'daoCore/cw721List',
         })
       )
-      // Null when indexer fails.
-      if (list !== null) {
+      if (list) {
         return list
       }
 
@@ -830,9 +814,8 @@ export const listAllSubDaosSelector = selectorFamily<
           formulaName: 'daoCore/listSubDaos',
         })
       )
-      // Null when indexer fails.
-      if (list !== null) {
-        return list ?? null
+      if (list) {
+        return list
       }
 
       // If indexer query fails, fallback to contract query.
@@ -927,11 +910,23 @@ export const listAllItemsSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
+      const list = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/listItems',
+        })
+      )
+      if (list) {
+        return list
+      }
+
+      // If indexer query fails, fallback to contract query.
+
       const items: ListItemsResponse = []
 
       while (true) {
         const response = await get(
-          listItemsSelector({
+          _listItemsSelector({
             ...queryClientParams,
             params: [
               {

@@ -81,8 +81,7 @@ export const balanceSelector = selectorFamily<
           id,
         })
       )
-      // Null when indexer fails.
-      if (balance !== null) {
+      if (balance) {
         return { balance }
       }
 
@@ -107,8 +106,7 @@ export const tokenInfoSelector = selectorFamily<
           formulaName: 'cw20/tokenInfo',
         })
       )
-      // Null when indexer fails.
-      if (tokenInfo !== null) {
+      if (tokenInfo) {
         return tokenInfo
       }
 
@@ -127,6 +125,17 @@ export const minterSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const minter = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/minter',
+        })
+      )
+      if (minter) {
+        return minter
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.minter(...params)
     },
@@ -141,10 +150,22 @@ export const allowanceSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].owner))
+
+      const allowance = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/allowance',
+          args: params[0],
+          id,
+        })
+      )
+      if (allowance) {
+        return allowance
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-
-      get(refreshWalletBalancesIdAtom(params[0].owner))
-
       return await client.allowance(...params)
     },
 })
@@ -158,10 +179,22 @@ export const allAllowancesSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].owner))
+
+      const allowances = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/ownerAllowances',
+          args: params[0],
+          id,
+        })
+      )
+      if (allowances) {
+        return { allowances }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-
-      get(refreshWalletBalancesIdAtom(params[0].owner))
-
       return await client.allAllowances(...params)
     },
 })
@@ -175,6 +208,18 @@ export const allAccountsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const accounts = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/allAccounts',
+          args: params[0],
+        })
+      )
+      if (accounts) {
+        return { accounts }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.allAccounts(...params)
     },
@@ -195,8 +240,7 @@ export const marketingInfoSelector = selectorFamily<
           formulaName: 'cw20/marketingInfo',
         })
       )
-      // Null when indexer fails.
-      if (marketingInfo !== null) {
+      if (marketingInfo) {
         return marketingInfo
       }
 
@@ -297,4 +341,27 @@ export const tokenInfoWithAddressAndLogoSelector = selectorFamily<
             : undefined,
       }
     },
+})
+
+export const topAccountBalancesSelector = selectorFamily<
+  | {
+      address: string
+      balance: string
+    }[]
+  | undefined,
+  QueryClientParams & { limit?: number }
+>({
+  key: 'cw20BaseListTopAccountBalances',
+  get:
+    ({ limit, ...queryClientParams }) =>
+    ({ get }) =>
+      get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/topAccountBalances',
+          args: {
+            limit,
+          },
+        })
+      ) ?? undefined,
 })

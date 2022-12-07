@@ -10,7 +10,7 @@ import {
 } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { useCallback, useState } from 'react'
+import { ComponentType, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
@@ -35,6 +35,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
 import { ProfileDisplay } from '../../../../components/ProfileDisplay'
 import { useMembership } from '../../../../hooks'
@@ -56,7 +57,15 @@ import {
   useVotesInfo,
 } from '../hooks'
 
-export const ProposalStatusAndInfo = ({
+export const ProposalStatusAndInfo = (
+  props: BaseProposalStatusAndInfoProps
+) => (
+  <SuspenseLoader fallback={<InnerProposalStatusAndInfoLoader {...props} />}>
+    <InnerProposalStatusAndInfo {...props} />
+  </SuspenseLoader>
+)
+
+export const InnerProposalStatusAndInfo = ({
   onExecuteSuccess,
   onCloseSuccess,
   ...props
@@ -78,7 +87,7 @@ export const ProposalStatusAndInfo = ({
 
   const proposal = useProposal()
   const depositInfo = useDepositInfo()
-  const executionTxHash = useProposalExecutionTxHash()
+  const loadingExecutionTxHash = useProposalExecutionTxHash()
   const timestampDisplay = useTimestampDisplay()
 
   const info: ProposalStatusAndInfoProps['info'] = [
@@ -131,28 +140,31 @@ export const ProposalStatusAndInfo = ({
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
-    ...(executionTxHash
+    ...(loadingExecutionTxHash.loading || loadingExecutionTxHash.data
       ? ([
           {
             Icon: Tag,
             label: t('info.txAbbr'),
-            Value: (props) => (
-              <div className="flex flex-row items-center gap-1">
-                <CopyToClipboardUnderline
-                  // Will truncate automatically.
-                  takeAll
-                  value={executionTxHash}
-                  {...props}
-                />
-                {!!CHAIN_TXN_URL_PREFIX && (
-                  <IconButtonLink
-                    Icon={ArrowOutward}
-                    href={CHAIN_TXN_URL_PREFIX + executionTxHash}
-                    variant="ghost"
+            Value: (props) =>
+              loadingExecutionTxHash.loading ? (
+                <p className={clsx('animate-pulse', props.className)}>...</p>
+              ) : loadingExecutionTxHash.data ? (
+                <div className="flex flex-row items-center gap-1">
+                  <CopyToClipboardUnderline
+                    // Will truncate automatically.
+                    takeAll
+                    value={loadingExecutionTxHash.data}
+                    {...props}
                   />
-                )}
-              </div>
-            ),
+                  {!!CHAIN_TXN_URL_PREFIX && (
+                    <IconButtonLink
+                      Icon={ArrowOutward}
+                      href={CHAIN_TXN_URL_PREFIX + loadingExecutionTxHash}
+                      variant="ghost"
+                    />
+                  )}
+                </div>
+              ) : null,
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
@@ -264,6 +276,53 @@ export const ProposalStatusAndInfo = ({
       }
       info={info}
       status={status}
+    />
+  )
+}
+
+export const InnerProposalStatusAndInfoLoader = (
+  props: BaseProposalStatusAndInfoProps
+) => {
+  const { t } = useTranslation()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
+
+  const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
+    <p className={clsx('animate-pulse', className)}>...</p>
+  )
+  const info: ProposalStatusAndInfoProps['info'] = [
+    {
+      Icon: ({ className }) => (
+        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
+      ),
+      label: t('title.dao'),
+      Value: (props) => (
+        <ButtonLink href={`/dao/${coreAddress}`} variant="underline" {...props}>
+          {daoName}
+        </ButtonLink>
+      ),
+    },
+    {
+      Icon: AccountCircleOutlined,
+      label: t('title.creator'),
+      Value: LoaderP,
+    },
+    {
+      Icon: RotateRightOutlined,
+      label: t('title.status'),
+      Value: LoaderP,
+    },
+    {
+      Icon: HourglassTopRounded,
+      label: t('title.date'),
+      Value: LoaderP,
+    },
+  ]
+
+  return (
+    <StatelessProposalStatusAndInfo
+      {...props}
+      info={info}
+      status={t('info.loadingProposalStatus')}
     />
   )
 }

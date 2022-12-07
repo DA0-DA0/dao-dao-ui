@@ -1,11 +1,12 @@
 import { useMemo } from 'react'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { waitForAll } from 'recoil'
 
 import {
   ProfileCantVoteCard,
   ProfileVoteCard,
   ProfileVotedCard,
   useAppLayoutContext,
+  useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
@@ -52,14 +53,21 @@ export const ProfileProposalCard = ({
       ),
     [chainId, coreAddress, proposalModules]
   )
-  const proposalModuleDepositInfos = useRecoilValue(
+  const proposalModuleDepositInfosLoadable = useCachedLoadable(
     waitForAll(depositInfoSelectors)
-  ).filter(Boolean) as CheckedDepositInfo[]
-
-  const maxProposalModuleDeposit = Math.max(
-    ...proposalModuleDepositInfos.map(({ amount }) => Number(amount)),
-    0
   )
+
+  const maxProposalModuleDeposit =
+    proposalModuleDepositInfosLoadable.state !== 'hasValue'
+      ? 0
+      : Math.max(
+          ...(
+            proposalModuleDepositInfosLoadable.contents.filter(
+              Boolean
+            ) as CheckedDepositInfo[]
+          ).map(({ amount }) => Number(amount)),
+          0
+        )
 
   // If wallet is a member right now as opposed to when the proposal was open.
   // Relevant for showing them membership join info or not.

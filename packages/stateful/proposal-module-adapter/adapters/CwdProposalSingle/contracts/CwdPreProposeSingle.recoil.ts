@@ -66,6 +66,17 @@ export const proposalModuleSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const proposalModule = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoPreProposeSingle/proposalModule',
+        })
+      )
+      if (proposalModule) {
+        return proposalModule
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.proposalModule(...params)
     },
@@ -80,6 +91,17 @@ export const daoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const dao = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoPreProposeSingle/dao',
+        })
+      )
+      if (dao) {
+        return dao
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.dao(...params)
     },
@@ -94,7 +116,6 @@ export const configSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      // Try indexer first.
       const config = get(
         queryIndexerSelector({
           ...queryClientParams,
@@ -120,7 +141,6 @@ export const depositInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      // Try indexer first.
       const depositInfo = get(
         queryIndexerSelector({
           ...queryClientParams,

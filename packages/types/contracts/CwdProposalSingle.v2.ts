@@ -9,13 +9,7 @@ import {
   Timestamp,
   Uint128,
 } from './common'
-import {
-  Status,
-  Threshold,
-  Vote,
-  VoteInfo,
-  Votes,
-} from './CwdProposalSingle.common'
+import { Status, Threshold, Vote, Votes } from './CwdProposalSingle.common'
 
 export interface ConfigResponse {
   allow_revoting: boolean
@@ -111,10 +105,6 @@ export type PreProposeInfo =
         [k: string]: unknown
       }
     }
-export interface GetVoteResponse {
-  vote?: VoteInfo | null
-  [k: string]: unknown
-}
 export type GovernanceModulesResponse = Addr[]
 export type ExtensionResponse = Binary
 export interface InfoResponse {
@@ -155,10 +145,6 @@ export interface SingleChoiceProposal {
   title: string
   total_power: Uint128
   votes: Votes
-  [k: string]: unknown
-}
-export interface ListVotesResponse {
-  votes: VoteInfo[]
   [k: string]: unknown
 }
 export type MigrateMsg =
@@ -268,9 +254,5 @@ export interface ReverseProposalsResponse {
 }
 export interface VoteHooksResponse {
   hooks: string[]
-  [k: string]: unknown
-}
-export interface VoteResponse {
-  vote?: VoteInfo | null
   [k: string]: unknown
 }

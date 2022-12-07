@@ -11,21 +11,21 @@ import {
   Duration,
 } from '@dao-dao/types/contracts/common'
 import {
+  ListVotesResponse,
   Threshold,
   Vote,
+  VoteResponse,
 } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   ConfigResponse,
   DepositInfo,
   InfoResponse,
   ListProposalsResponse,
-  ListVotesResponse,
   ProposalCountResponse,
   ProposalHooksResponse,
   ProposalResponse,
   ReverseProposalsResponse,
   VoteHooksResponse,
-  VoteResponse,
 } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 
 export interface CwProposalSingleV1ReadOnlyInterface {

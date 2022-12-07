@@ -70,8 +70,7 @@ export const groupContractSelector = selectorFamily<
           formulaName: 'daoVotingCw4/groupContract',
         })
       )
-      // Null when indexer fails.
-      if (groupContract !== null) {
+      if (groupContract) {
         return groupContract
       }
 
@@ -90,6 +89,17 @@ export const daoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const dao = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw4/dao',
+        })
+      )
+      if (dao) {
+        return dao
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.dao(...params)
     },
@@ -104,6 +114,24 @@ export const votingPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const votingPower = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw4/votingPower',
+          args: {
+            address: params[0].address,
+          },
+          blockHeight: params[0].height,
+        })
+      )
+      if (votingPower && !isNaN(votingPower)) {
+        return {
+          power: votingPower,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.votingPowerAtHeight(...params)
     },
@@ -118,6 +146,21 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const totalPower = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw4/totalPower',
+          blockHeight: params[0].height,
+        })
+      )
+      if (totalPower && !isNaN(totalPower)) {
+        return {
+          power: totalPower,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.totalPowerAtHeight(...params)
     },
@@ -132,6 +175,17 @@ export const infoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const info = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'info',
+        })
+      )
+      if (info) {
+        return { info }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.info(...params)
     },

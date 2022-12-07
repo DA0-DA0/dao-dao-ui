@@ -8,7 +8,7 @@ import {
   nativeBalancesSelector,
   transactionEventsSelector,
 } from '@dao-dao/state'
-import { BabyEmoji } from '@dao-dao/stateless'
+import { BabyEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -115,12 +115,19 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
     const {
       hooks: { useProposalExecutionTxHash },
     } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
-    const executionTxHash = useProposalExecutionTxHash?.()
+    const loadingExecutionTxHash = useProposalExecutionTxHash?.()
 
-    const txEvents = useRecoilValue(
-      executionTxHash
-        ? transactionEventsSelector({ txHash: executionTxHash })
-        : constSelector(undefined)
+    const txEventsLoadable = useCachedLoadable(
+      loadingExecutionTxHash
+        ? loadingExecutionTxHash.loading
+          ? // If still loading, return undefined to indicate loading.
+            undefined
+          : loadingExecutionTxHash.data
+          ? transactionEventsSelector({ txHash: loadingExecutionTxHash.data })
+          : // If no data, return undefined.
+            constSelector(undefined)
+        : // If loading value undefined, return undefined.
+          constSelector(undefined)
     )
 
     const { watch } = useFormContext()
@@ -135,9 +142,10 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
     // can use the index of this action in all instantiation actions to
     // select the correct address.
     const instantiatedAddress = useMemo(() => {
-      if (!txEvents) {
+      if (txEventsLoadable.state !== 'hasValue' || !txEventsLoadable.contents) {
         return
       }
+      const txEvents = txEventsLoadable.contents
 
       // All instantiate actions' data that instantiate the same code ID.
       const instantiateActionsData = props.allActionsWithData
@@ -184,7 +192,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
       }
 
       return codeIdInstantiations[innerIndex]
-    }, [txEvents, props, codeId])
+    }, [txEventsLoadable, props, codeId])
 
     return (
       <StatelessInstantiateComponent

@@ -130,12 +130,14 @@ export type QueryMsg =
       }
     }
 export interface TotalPowerAtHeightResponse {
-  height: number
+  // Optional because the indexer does not provide this.
+  height?: number
   power: Uint128
   [k: string]: unknown
 }
 export interface VotingPowerAtHeightResponse {
-  height: number
+  // Optional because the indexer does not provide this.
+  height?: number
   power: Uint128
   [k: string]: unknown
 }

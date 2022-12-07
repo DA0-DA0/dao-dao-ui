@@ -15,11 +15,12 @@ export interface ProposalVote<Vote extends unknown = any> {
   voterAddress: string
   vote: Vote
   votingPowerPercent: number
+  rationale?: string | null
+  votedAt?: Date
 }
 
 export interface ProposalVotesProps<Vote extends unknown = any> {
   votes: ProposalVote<Vote>[]
-  getDateVoted?: (voterAddress: string) => Date | undefined
   canLoadMore: boolean
   loadMore: () => void
   loadingMore: boolean
@@ -29,7 +30,6 @@ export interface ProposalVotesProps<Vote extends unknown = any> {
 
 export const ProposalVotes = <Vote extends unknown = any>({
   votes,
-  getDateVoted,
   canLoadMore,
   loadMore,
   loadingMore,
@@ -40,16 +40,11 @@ export const ProposalVotes = <Vote extends unknown = any>({
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
 
-  const votesWithDate = votes
-    .map((vote) => ({
-      ...vote,
-      when: getDateVoted?.(vote.voterAddress),
-    }))
-    .sort(
-      (a, b) =>
-        // Sort those without a date last.
-        (b.when?.getTime() ?? -Infinity) - (a.when?.getTime() ?? -Infinity)
-    )
+  const dateSortedVotes = votes.sort(
+    (a, b) =>
+      // Sort those without a date last.
+      (b.votedAt?.getTime() ?? -Infinity) - (a.votedAt?.getTime() ?? -Infinity)
+  )
 
   return (
     <>
@@ -70,17 +65,20 @@ export const ProposalVotes = <Vote extends unknown = any>({
           </p>
 
           {/* Votes */}
-          {votesWithDate.map(
-            ({ when, voterAddress, vote, votingPowerPercent }, index) => (
+          {dateSortedVotes.map(
+            (
+              { votedAt, rationale, voterAddress, vote, votingPowerPercent },
+              index
+            ) => (
               <Fragment key={index}>
                 <p
                   className={clsx(
                     'caption-text hidden sm:block',
-                    when ? 'text-text-body' : 'text-text-tertiary'
+                    votedAt ? 'text-text-body' : 'text-text-tertiary'
                   )}
                 >
-                  {when ? (
-                    <TimeAgo date={when} formatter={timeAgoFormatter} />
+                  {votedAt ? (
+                    <TimeAgo date={votedAt} formatter={timeAgoFormatter} />
                   ) : (
                     '?'
                   )}
@@ -93,13 +91,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
                     takeStartEnd: undefined,
                   }}
                 />
-                <Tooltip
-                  title={
-                    when ? (
-                      <TimeAgo date={when} formatter={timeAgoFormatter} />
-                    ) : undefined
-                  }
-                >
+                <Tooltip title={rationale || undefined}>
                   <div>
                     <VoteDisplay vote={vote} />
                   </div>

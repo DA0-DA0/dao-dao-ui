@@ -11,16 +11,16 @@ import {
   Duration,
 } from '@dao-dao/types/contracts/common'
 import {
+  ListVotesResponse,
   Threshold,
   Vote,
+  VoteResponse,
 } from '@dao-dao/types/contracts/CwdProposalSingle.common'
 import {
   ConfigResponse,
   DaoResponse,
-  GetVoteResponse,
   InfoResponse,
   ListProposalsResponse,
-  ListVotesResponse,
   PreProposeInfo,
   ProposalCountResponse,
   ProposalCreationPolicyResponse,
@@ -58,7 +58,7 @@ export interface CwdProposalSingleV2ReadOnlyInterface {
   }: {
     proposalId: number
     voter: string
-  }) => Promise<GetVoteResponse>
+  }) => Promise<VoteResponse>
   listVotes: ({
     limit,
     proposalId,
@@ -152,7 +152,7 @@ export class CwdProposalSingleV2QueryClient
   }: {
     proposalId: number
     voter: string
-  }): Promise<GetVoteResponse> => {
+  }): Promise<VoteResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       get_vote: {
         proposal_id: proposalId,

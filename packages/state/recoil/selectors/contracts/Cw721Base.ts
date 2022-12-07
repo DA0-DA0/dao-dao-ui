@@ -17,6 +17,7 @@ import {
 
 import { Cw721BaseQueryClient } from '../../../contracts/Cw721Base'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -45,6 +46,18 @@ export const ownerOfSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const ownerOf = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw721/ownerOf',
+          args: params[0],
+        })
+      )
+      if (ownerOf) {
+        return ownerOf
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.ownerOf(...params)
     },
@@ -73,6 +86,18 @@ export const approvalsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const approvals = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw721/approvals',
+          args: params[0],
+        })
+      )
+      if (approvals) {
+        return { approvals }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.approvals(...params)
     },
@@ -87,6 +112,18 @@ export const allOperatorsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const operators = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw721/allOperators',
+          args: params[0],
+        })
+      )
+      if (operators) {
+        return { operators }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.allOperators(...params)
     },
@@ -101,6 +138,17 @@ export const numTokensSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const count = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw721/numTokens',
+        })
+      )
+      if (count) {
+        return { count }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.numTokens(...params)
     },
@@ -115,6 +163,17 @@ export const contractInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const contractInfo = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw721/contractInfo',
+        })
+      )
+      if (contractInfo) {
+        return contractInfo
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.contractInfo(...params)
     },
@@ -129,6 +188,18 @@ export const nftInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const nftInfo = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw721/nftInfo',
+          args: params[0],
+        })
+      )
+      if (nftInfo) {
+        return nftInfo
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.nftInfo(...params)
     },
@@ -143,17 +214,32 @@ export const allNftInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const allNftInfo = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw721/allNftInfo',
+          args: params[0],
+        })
+      )
+      if (allNftInfo) {
+        return allNftInfo
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.allNftInfo(...params)
     },
 })
-export const tokensSelector = selectorFamily<
+
+// Use allTokensForOwnerSelector as it uses the indexer and implements
+// pagination for chain queries.
+export const _tokensSelector = selectorFamily<
   TokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['tokens']>
   }
 >({
-  key: 'cw721BaseTokens',
+  key: 'cw721Base_Tokens',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -171,6 +257,18 @@ export const allTokensSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const tokens = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw721/allTokens',
+          args: params[0],
+        })
+      )
+      if (tokens) {
+        return { tokens }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.allTokens(...params)
     },
@@ -185,13 +283,24 @@ export const minterSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const minter = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw721/tokens',
+        })
+      )
+      if (minter) {
+        return { minter }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.minter(...params)
     },
 })
 
 const ALL_TOKENS_FOR_OWNER_LIMIT = 30
-export const cw721BaseAllTokensForOwnerSelector = selectorFamily<
+export const allTokensForOwnerSelector = selectorFamily<
   TokensResponse['tokens'],
   QueryClientParams & {
     owner: string
@@ -201,10 +310,25 @@ export const cw721BaseAllTokensForOwnerSelector = selectorFamily<
   get:
     ({ owner, ...queryClientParams }) =>
     async ({ get }) => {
+      const list = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw721/tokens',
+          args: {
+            owner,
+          },
+        })
+      )
+      if (list) {
+        return list
+      }
+
+      // If indexer query fails, fallback to contract query.
+
       const tokens: TokensResponse['tokens'] = []
       while (true) {
         const response = await get(
-          tokensSelector({
+          _tokensSelector({
             ...queryClientParams,
             params: [
               {

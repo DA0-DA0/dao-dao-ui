@@ -11,6 +11,7 @@ import {
 
 import { Cw4GroupQueryClient } from '../../../contracts/Cw4Group'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -39,6 +40,18 @@ export const adminSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const admin = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw4Group/admin',
+        })
+      )
+      // Null when indexer fails. Undefined if no admin.
+      if (admin !== null) {
+        return { admin: admin || null }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.admin(...params)
     },
@@ -53,17 +66,29 @@ export const totalWeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const weight = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw4Group/totalWeight',
+        })
+      )
+      if (typeof weight === 'number') {
+        return { weight }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.totalWeight(...params)
     },
 })
-export const listMembersSelector = selectorFamily<
+// Used by listAllMembersSelector as an indexer fallback.
+export const _listMembersSelector = selectorFamily<
   ListMembersResponse,
   QueryClientParams & {
     params: Parameters<Cw4GroupQueryClient['listMembers']>
   }
 >({
-  key: 'cw4GroupListMembers',
+  key: 'cw4Group_ListMembers',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -81,6 +106,20 @@ export const memberSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const weight = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw4Group/member',
+          args: {
+            address: params[0].addr,
+          },
+        })
+      )
+      if (typeof weight === 'number') {
+        return { weight }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.member(...params)
     },
@@ -111,12 +150,24 @@ export const listAllMembersSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
+      const membersList = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw4Group/listMembers',
+        })
+      )
+      if (membersList) {
+        return { members: membersList }
+      }
+
+      // If indexer query fails, fallback to contract query.
+
       let startAfter: string | undefined
 
       const members: ListMembersResponse['members'] = []
       while (true) {
         const response = await get(
-          listMembersSelector({
+          _listMembersSelector({
             ...queryClientParams,
             params: [{ startAfter, limit: LIST_MEMBERS_LIMIT }],
           })

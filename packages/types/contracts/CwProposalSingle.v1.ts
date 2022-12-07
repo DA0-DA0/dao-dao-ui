@@ -7,7 +7,7 @@ import {
   Timestamp,
   Uint128,
 } from './common'
-import { Status, Threshold, VoteInfo, Votes } from './CwdProposalSingle.common'
+import { Status, Threshold, Votes } from './CwdProposalSingle.common'
 
 export interface ConfigResponse {
   allow_revoting: boolean
@@ -82,10 +82,6 @@ export interface Proposal {
   last_updated?: Timestamp
   [k: string]: unknown
 }
-export interface ListVotesResponse {
-  votes: VoteInfo[]
-  [k: string]: unknown
-}
 export type ProposalCountResponse = number
 export interface ProposalHooksResponse {
   hooks: string[]
@@ -97,9 +93,5 @@ export interface ReverseProposalsResponse {
 }
 export interface VoteHooksResponse {
   hooks: string[]
-  [k: string]: unknown
-}
-export interface VoteResponse {
-  vote?: VoteInfo | null
   [k: string]: unknown
 }

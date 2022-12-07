@@ -152,7 +152,7 @@ export const nftCardInfosSelector = selectorFamily<
       const nftCollectionTokenIds = get(
         waitForAll(
           nftCollectionAddresses.map((collectionAddress) =>
-            Cw721BaseSelectors.cw721BaseAllTokensForOwnerSelector({
+            Cw721BaseSelectors.allTokensForOwnerSelector({
               contractAddress: collectionAddress,
               chainId,
               owner: coreAddress,

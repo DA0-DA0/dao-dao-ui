@@ -50,8 +50,7 @@ export const stakingContractSelector = selectorFamily<
           formulaName: 'daoVotingCw20Staked/stakingContract',
         })
       )
-      // Null when indexer fails.
-      if (stakingContract !== null) {
+      if (stakingContract) {
         return stakingContract
       }
 
@@ -70,6 +69,17 @@ export const daoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const dao = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw20Staked/dao',
+        })
+      )
+      if (dao) {
+        return dao
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.dao(...params)
     },
@@ -84,6 +94,18 @@ export const activeThresholdSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const activeThreshold = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw20Staked/activeThreshold',
+        })
+      )
+      // Null when indexer fails. Undefined if no active threshold.
+      if (activeThreshold !== null) {
+        return { active_threshold: activeThreshold || null }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.activeThreshold(...params)
     },
@@ -98,8 +120,28 @@ export const votingPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].address))
+
+      const votingPower = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw20Staked/votingPower',
+          args: {
+            address: params[0].address,
+          },
+          blockHeight: params[0].height,
+          id,
+        })
+      )
+      if (votingPower && !isNaN(votingPower)) {
+        return {
+          power: votingPower,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshWalletBalancesIdAtom(params[0].address))
       return await client.votingPowerAtHeight(...params)
     },
 })
@@ -113,8 +155,25 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(undefined))
+
+      const totalPower = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw20Staked/totalPower',
+          blockHeight: params[0].height,
+          id,
+        })
+      )
+      if (totalPower && !isNaN(totalPower)) {
+        return {
+          power: totalPower,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshWalletBalancesIdAtom(undefined))
       return await client.totalPowerAtHeight(...params)
     },
 })
@@ -128,6 +187,17 @@ export const infoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const info = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'info',
+        })
+      )
+      if (info) {
+        return { info }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.info(...params)
     },
@@ -148,8 +218,7 @@ export const tokenContractSelector = selectorFamily<
           formulaName: 'daoVotingCw20Staked/tokenContract',
         })
       )
-      // Null when indexer fails.
-      if (tokenContract !== null) {
+      if (tokenContract) {
         return tokenContract
       }
 

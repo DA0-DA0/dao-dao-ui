@@ -16,6 +16,7 @@ import {
 import { ProposalCreatedCardProps } from './proposal'
 import {
   LinkWrapperProps,
+  LoadingData,
   ProfileNewProposalCardInfoLine,
   ProfileVoteCardOption,
 } from './stateless'
@@ -61,7 +62,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
       refreshProposal: () => void
       refreshProposalAndAll: () => void
     }
-    useProposalExecutionTxHash: () => string | undefined
+    useProposalExecutionTxHash: () => LoadingData<string | undefined>
     useProfileVoteCardOptions: () => ProfileVoteCardOption<Vote>[]
     useWalletVoteInfo: () => WalletVoteInfo<Vote>
     useCastVote: (onSuccess?: () => void | Promise<void>) => {

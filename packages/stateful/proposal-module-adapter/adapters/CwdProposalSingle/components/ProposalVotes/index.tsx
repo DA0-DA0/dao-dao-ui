@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
-import { refreshProposalIdAtom, useProposalVotesQuery } from '@dao-dao/state'
+import { refreshProposalIdAtom } from '@dao-dao/state'
 import {
   ProposalVote,
   ProposalVotes as StatelessProposalVotes,
@@ -22,13 +22,6 @@ export const ProposalVotes = () => {
   } = useProposalModuleAdapterOptions()
 
   const proposal = useProposal()
-
-  // Get proposal vote timestamps from subquery.
-  const proposalVotesSubquery = useProposalVotesQuery(
-    proposalModuleAddress,
-    proposalNumber
-  )
-
   const totalPower = Number(proposal.total_power)
 
   const [votes, setVotes] = useState<ProposalVote[]>([])
@@ -65,10 +58,12 @@ export const ProposalVotes = () => {
             // If resetting, don't include old votes.
             ...(reset ? [] : votes),
             ...newVotes.map(
-              ({ vote, voter, power }): ProposalVote => ({
+              ({ vote, voter, power, rationale, votedAt }): ProposalVote => ({
                 voterAddress: voter,
                 vote,
                 votingPowerPercent: (Number(power) / totalPower) * 100,
+                rationale,
+                votedAt,
               })
             ),
           ])
@@ -106,20 +101,6 @@ export const ProposalVotes = () => {
       ProfileDisplay={ProfileDisplay}
       VoteDisplay={VoteDisplay}
       canLoadMore={canLoadMore}
-      getDateVoted={
-        proposalVotesSubquery.loading || !proposalVotesSubquery.data?.proposal
-          ? undefined
-          : (voterAddress) => {
-              const votedAt =
-                proposalVotesSubquery.data?.proposal?.votes.nodes.find(
-                  ({ walletId }) => walletId === voterAddress
-                )?.votedAt
-              return votedAt
-                ? // Interpret as UTC.
-                  new Date(votedAt + 'Z')
-                : undefined
-            }
-      }
       // Only return dates once subquery data has loaded.
       loadMore={loadMore}
       loadingMore={loading}
