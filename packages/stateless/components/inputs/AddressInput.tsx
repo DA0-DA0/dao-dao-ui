@@ -11,6 +11,7 @@ import {
   FieldValues,
   Path,
   UseFormRegister,
+  UseFormWatch,
   Validate,
   useFormContext,
 } from 'react-hook-form'
@@ -25,6 +26,7 @@ export interface AddressInputProps<
 > extends Omit<ComponentPropsWithoutRef<'input'>, 'required'> {
   fieldName: FieldName
   register: UseFormRegister<FV>
+  watch?: UseFormWatch<FV>
   onChange?: ChangeEventHandler<HTMLInputElement>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
   error?: FieldError | string
@@ -41,6 +43,7 @@ export const AddressInput = <
 >({
   fieldName,
   register,
+  watch: _watch,
   error,
   validation,
   onChange,
@@ -60,10 +63,13 @@ export const AddressInput = <
 
   const Icon = iconType === 'wallet' ? Wallet : Code
 
-  const { watch } = useFormContext()
-  const self = watch(fieldName)
+  // Null if not within a FormProvider.
+  const formContext = useFormContext<FV>()
+  const watch = _watch || formContext?.watch
+  const formValue = watch?.(fieldName)
 
-  const showProfile = ProfileDisplay && !!self && validateAddress(self) === true
+  const showProfile =
+    ProfileDisplay && !!formValue && validateAddress(formValue) === true
 
   return (
     <div
@@ -97,7 +103,7 @@ export const AddressInput = <
       )}
       {showProfile && (
         <div className={clsx(disabled || 'pl-4')}>
-          <ProfileDisplay address={self} />
+          <ProfileDisplay address={formValue} />
         </div>
       )}
     </div>
