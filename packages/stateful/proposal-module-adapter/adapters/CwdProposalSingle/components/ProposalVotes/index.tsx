@@ -63,7 +63,7 @@ export const ProposalVotes = () => {
                 vote,
                 votingPowerPercent: (Number(power) / totalPower) * 100,
                 rationale,
-                votedAt,
+                votedAt: votedAt ? new Date(votedAt) : undefined,
               })
             ),
           ])

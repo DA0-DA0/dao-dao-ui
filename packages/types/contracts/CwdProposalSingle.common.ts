@@ -52,7 +52,7 @@ export interface VoteInfo {
   vote: Vote
   voter: Addr
   rationale?: string | null
-  votedAt?: Date
+  votedAt?: string
 }
 
 export interface ListVotesResponse {
