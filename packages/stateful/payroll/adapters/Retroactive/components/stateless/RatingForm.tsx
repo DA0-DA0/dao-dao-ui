@@ -416,6 +416,7 @@ export const RatingForm = ({
               fieldName="contributor"
               register={nominationRegister}
               validation={[validateRequired, validateAddress]}
+              watch={nominationWatch}
             />
             <InputErrorMessage error={nominationErrors?.contributor} />
           </div>
