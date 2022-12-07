@@ -10,6 +10,7 @@ import {
   makeDepositInfoSelector,
   makeUseActions,
   makeUseProfileNewProposalCardInfoLines,
+  makeUsePublishProposal,
   reverseProposalInfosSelector,
 } from './common'
 import {
@@ -60,14 +61,19 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
       preProposeAddress: options.proposalModule.preProposeAddress,
     })
 
+    const usePublishProposal = makeUsePublishProposal({
+      options,
+      depositInfoSelector,
+    })
+
     return {
       // Fields
       fields: {
-        defaultNewProposalForm: {
+        makeDefaultNewProposalForm: () => ({
           title: '',
           description: '',
           actionData: [],
-        },
+        }),
         newProposalFormTitleKey: 'title',
       },
 
@@ -97,8 +103,8 @@ export const CwdProposalSingleAdapter: ProposalModuleAdapter<
       components: {
         NewProposal: (props) => (
           <NewProposal
-            depositInfoSelector={depositInfoSelector}
             options={options}
+            usePublishProposal={usePublishProposal}
             {...props}
           />
         ),

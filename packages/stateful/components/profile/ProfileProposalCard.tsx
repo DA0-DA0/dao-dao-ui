@@ -10,7 +10,7 @@ import {
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 
-import { useMembership, useWalletProfile } from '../../hooks'
+import { useMembership, useWalletInfo } from '../../hooks'
 import {
   matchAndLoadCommon,
   useProposalModuleAdapter,
@@ -30,7 +30,7 @@ export const ProfileProposalCard = ({
     name: daoName,
     proposalModules,
   } = useDaoInfoContext()
-  const { walletProfile, updateProfileName } = useWalletProfile()
+  const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
 
   const {

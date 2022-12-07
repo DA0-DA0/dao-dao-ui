@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "prettier:write": "prettier --write .",
     "start": "next start",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "ts --watch"
@@ -26,7 +26,6 @@
     "@mui/icons-material": "^5.10.3",
     "@noahsaso/cosmodal": "^0.8.0",
     "@sentry/nextjs": "^7.7.0",
-    "interchain-rpc": "^1.5.0",
     "lodash.clonedeep": "^4.5.0",
     "react": "18.1.0",
     "react-dom": "18.1.0",

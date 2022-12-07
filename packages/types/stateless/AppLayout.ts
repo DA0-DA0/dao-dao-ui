@@ -2,7 +2,7 @@ import { ComponentType, ReactNode } from 'react'
 
 import { CommandModalContextMaker } from '../command'
 import { UseInboxReturn } from '../inbox'
-import { WalletProfile } from '../wallet'
+import { WalletProfile } from '../profile'
 import { LoadingData } from './common'
 import { NavigationProps } from './Navigation'
 import { PageHeaderProps } from './PageHeader'

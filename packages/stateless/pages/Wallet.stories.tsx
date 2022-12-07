@@ -9,11 +9,8 @@ import {
   makeAppLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 import {
-  Action,
-  ActionKey,
   ActionOptionsContextType,
-  UseDefaults,
-  UseTransformToCosmos,
+  ActionsWithData,
   WalletTransactionForm,
 } from '@dao-dao/types'
 
@@ -41,16 +38,7 @@ export default {
 const Template: ComponentStory<typeof Wallet> = (args) => {
   const actions = useCoreActions()
   // Call relevant action hooks in the same order every time.
-  const actionsWithData: Partial<
-    Record<
-      ActionKey,
-      {
-        action: Action
-        transform: ReturnType<UseTransformToCosmos>
-        defaults: ReturnType<UseDefaults>
-      }
-    >
-  > = actions.reduce(
+  const actionsWithData: ActionsWithData = actions.reduce(
     (acc, action) => ({
       ...acc,
       [action.key]: {

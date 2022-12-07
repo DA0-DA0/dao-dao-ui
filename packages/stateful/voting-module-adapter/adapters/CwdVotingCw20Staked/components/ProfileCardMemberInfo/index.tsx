@@ -28,7 +28,7 @@ import {
 import {
   Cw20StakeHooks,
   useAwaitNextBlock,
-  useWalletProfile,
+  useWalletInfo,
 } from '../../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../../components'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
@@ -41,7 +41,7 @@ export const ProfileCardMemberInfo = ({
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
-  const { refreshBalances } = useWalletProfile()
+  const { refreshBalances } = useWalletInfo()
 
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [claimingLoading, setClaimingLoading] = useState(false)

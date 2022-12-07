@@ -28,6 +28,7 @@ export interface CodeIdConfig {
   CwdVotingCw4: number
   CwdVotingCw721Staked: number
   CwdVotingNativeStaked: number
+  CwTokenSwap: number
 }
 
 export interface ChainPrefixIdMap {

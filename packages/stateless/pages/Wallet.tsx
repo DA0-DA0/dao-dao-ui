@@ -16,10 +16,8 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Action,
-  ActionKey,
+  ActionsWithData,
   SuspenseLoaderProps,
-  UseDefaults,
-  UseTransformToCosmos,
   WalletTransactionForm,
 } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
@@ -39,16 +37,7 @@ import {
 export interface WalletProps {
   connected: boolean
   actions: Action[]
-  actionsWithData: Partial<
-    Record<
-      ActionKey,
-      {
-        action: Action
-        transform: ReturnType<UseTransformToCosmos>
-        defaults: ReturnType<UseDefaults>
-      }
-    >
-  >
+  actionsWithData: ActionsWithData
   formMethods: UseFormReturn<WalletTransactionForm, object>
   execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
   loading: boolean

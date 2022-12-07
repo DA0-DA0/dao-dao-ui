@@ -1,4 +1,4 @@
-import { WalletProfile } from '../wallet'
+import { WalletProfile } from '../profile'
 import { LoadingData } from './common'
 
 export interface DaoMemberCardProps {

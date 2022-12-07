@@ -22,9 +22,9 @@ import {
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import { useProfile } from './useProfile'
+import { useWalletProfile } from './useWalletProfile'
 
-export interface UseWalletProfileReturn {
+export interface UseWalletReturn {
   walletAddress: string | undefined
   walletBalance: number | undefined
   walletStakedBalance: number | undefined
@@ -41,7 +41,7 @@ export interface UseWalletProfileReturn {
   backupProfileImage: string | undefined
 }
 
-export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
+export const useWalletInfo = (chainId?: string): UseWalletReturn => {
   const { address, connected, publicKey } = useWallet(chainId)
   const connectWalletToChain = useConnectWalletToChain()
 
@@ -104,8 +104,9 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
     [setRefreshWalletProfile]
   )
 
-  // Get wallet profile from API.
-  const { profile: walletProfile, backupProfileImage } = useProfile({
+  // Get PFPK profile from API.
+  const { profile: pfpkProfile, backupProfileImage } = useWalletProfile({
+    walletAddress: address ?? '',
     hexPublicKey: publicKey?.hex,
     chainId,
   })
@@ -120,9 +121,9 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
       if (
         !connected ||
         !publicKey ||
-        walletProfile.loading ||
+        pfpkProfile.loading ||
         // Disallow editing if we don't have correct nonce from server.
-        walletProfile.data.nonce < 0
+        pfpkProfile.data.nonce < 0
       ) {
         return
       }
@@ -134,11 +135,11 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
 
       // Set onUpdate handler.
       onUpdateRef.current = onUpdate
-      setUpdatingNonce(walletProfile.data.nonce)
+      setUpdatingNonce(pfpkProfile.data.nonce)
       try {
         const profileUpdate: WalletProfileUpdate = {
           ...profile,
-          nonce: walletProfile.data.nonce,
+          nonce: pfpkProfile.data.nonce,
         }
 
         const offlineSignerAmino =
@@ -204,25 +205,25 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
       connected,
       publicKey,
       refreshWalletProfile,
-      walletProfile,
+      pfpkProfile,
     ]
   )
   // Listen for nonce to incremenent to clear updating state, since we want the
   // new profile to be ready on the same render that we stop loading.
   useEffect(() => {
-    if (updatingNonce === undefined || walletProfile.loading) {
+    if (updatingNonce === undefined || pfpkProfile.loading) {
       return
     }
 
     // If nonce incremented, clear updating state and call onUpdate handler if
     // exists.
-    if (walletProfile.data.nonce > updatingNonce) {
+    if (pfpkProfile.data.nonce > updatingNonce) {
       onUpdateRef.current?.()
       onUpdateRef.current = undefined
 
       setUpdatingNonce(undefined)
     }
-  }, [updatingNonce, walletProfile])
+  }, [updatingNonce, pfpkProfile])
 
   // Promisified updateProfile.
   const updateProfile = useCallback(
@@ -249,7 +250,7 @@ export const useWalletProfile = (chainId?: string): UseWalletProfileReturn => {
     dateBalancesFetched,
     refreshBalances,
 
-    walletProfile,
+    walletProfile: pfpkProfile,
     updateProfile,
     updateProfileName,
     updateProfileNft,

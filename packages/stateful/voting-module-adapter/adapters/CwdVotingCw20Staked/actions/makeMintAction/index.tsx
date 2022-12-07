@@ -16,6 +16,7 @@ import {
   makeMintMessage,
 } from '@dao-dao/utils'
 
+import { ProfileDisplay } from '../../../../../components'
 import { useGovernanceTokenInfo } from '../../hooks'
 import { MintComponent as StatelessMintComponent } from './MintComponent'
 
@@ -85,6 +86,7 @@ const Component: ActionComponent = (props) => {
       {...props}
       options={{
         govTokenSymbol: governanceTokenInfo.symbol ?? 'gov tokens',
+        ProfileDisplay: ProfileDisplay,
       }}
     />
   )

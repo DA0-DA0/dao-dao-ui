@@ -5,7 +5,7 @@ import { RecoilValueReadOnly } from 'recoil'
 import { Action } from './actions'
 import { ContractVersion } from './chain'
 import { Expiration } from './contracts'
-import { CheckedDepositInfo, CosmosMsgFor_Empty } from './contracts/common'
+import { CheckedDepositInfo } from './contracts/common'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
@@ -25,7 +25,9 @@ export interface IProposalModuleAdapterCommon<
 > {
   // Fields
   fields: {
-    defaultNewProposalForm: FormData
+    // Make this a function so it doesn't return the same instance of the form
+    // data each time.
+    makeDefaultNewProposalForm: () => FormData
     newProposalFormTitleKey: FieldPath<FormData>
   }
 
@@ -198,7 +200,6 @@ export interface BaseProposalLineProps {
 
 export interface BaseNewProposalProps<FormData extends FieldValues = any> {
   onCreateSuccess: (props: ProposalCreatedCardProps) => void
-  simulateMsgs: (msgs: CosmosMsgFor_Empty[]) => Promise<void>
   draft?: ProposalDraft<FormData>
   saveDraft: () => void
   drafts: ProposalDraft[]

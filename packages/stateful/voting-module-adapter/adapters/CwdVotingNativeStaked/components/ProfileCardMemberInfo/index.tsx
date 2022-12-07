@@ -28,7 +28,7 @@ import {
 import {
   CwdVotingNativeStakedHooks,
   useAwaitNextBlock,
-  useWalletProfile,
+  useWalletInfo,
 } from '../../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../../components'
 import { useVotingModuleAdapterOptions } from '../../../../react/context'
@@ -42,7 +42,7 @@ export const ProfileCardMemberInfo = ({
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
-  const { refreshBalances } = useWalletProfile()
+  const { refreshBalances } = useWalletInfo()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const [showStakingModal, setShowStakingModal] = useState(false)

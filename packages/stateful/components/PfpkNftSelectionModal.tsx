@@ -22,7 +22,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useWalletProfile } from '../hooks'
+import { useWalletInfo } from '../hooks'
 import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
 
@@ -103,7 +103,7 @@ export const InnerPfpkNftSelectionModal = ({
     updateProfileNft,
     updatingProfile,
     backupProfileImage,
-  } = useWalletProfile()
+  } = useWalletInfo()
   // Initialize to selected NFT.
   const [selected, setSelected] = useState<string | undefined>(
     !walletProfile.loading && walletProfile.data.nft

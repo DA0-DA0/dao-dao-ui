@@ -11,11 +11,14 @@ import { IconButton } from './icon_buttons/IconButton'
 
 export interface MarkdownPreviewProps {
   markdown: string
+  // Adds buttons to copy anchor URLs to the clipboard.
+  addAnchors?: boolean
   className?: string
 }
 
 export const MarkdownPreview = ({
   markdown,
+  addAnchors,
   className,
 }: MarkdownPreviewProps) => (
   <ReactMarkdown
@@ -23,14 +26,18 @@ export const MarkdownPreview = ({
       'prose prose-sm overflow-auto break-words dark:prose-invert',
       className
     )}
-    components={{
-      h1: HeadingRenderer,
-      h2: HeadingRenderer,
-      h3: HeadingRenderer,
-      h4: HeadingRenderer,
-      h5: HeadingRenderer,
-      h6: HeadingRenderer,
-    }}
+    components={
+      addAnchors
+        ? {
+            h1: HeadingRenderer,
+            h2: HeadingRenderer,
+            h3: HeadingRenderer,
+            h4: HeadingRenderer,
+            h5: HeadingRenderer,
+            h6: HeadingRenderer,
+          }
+        : undefined
+    }
     linkTarget="_blank"
     rawSourcePos
     remarkPlugins={[remarkGfm]}

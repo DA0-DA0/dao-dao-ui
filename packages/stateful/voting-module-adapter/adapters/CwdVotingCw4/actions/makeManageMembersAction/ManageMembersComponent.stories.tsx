@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
 
+import { ProfileDisplay } from '../../../../../components'
 import {
   ManageMembersComponent,
   ManageMembersData,
@@ -32,5 +33,6 @@ Default.args = {
   isCreating: true,
   options: {
     currentMembers: ['member1', 'member2'],
+    ProfileDisplay: ProfileDisplay,
   },
 }

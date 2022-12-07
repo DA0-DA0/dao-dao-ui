@@ -3,7 +3,7 @@ import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import { SidebarWallet as OriginalSidebarWallet } from '@dao-dao/stateless'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
-import { useWalletProfile } from '../hooks'
+import { useWalletInfo } from '../hooks'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const SidebarWallet = () => {
@@ -15,7 +15,7 @@ export const SidebarWallet = () => {
     connectedWallet,
     status,
   } = useWalletManager()
-  const { walletBalance } = useWalletProfile()
+  const { walletBalance } = useWalletInfo()
 
   return (
     <SuspenseLoader

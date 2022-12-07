@@ -49,12 +49,12 @@ import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
   usePinnedDaos,
-  useWalletProfile,
+  useWalletInfo,
 } from '../../hooks'
 import { getAdapterById as getProposalModuleAdapterById } from '../../proposal-module-adapter'
 import {
-  DefaultNewDao,
   daoCreatedCardPropsAtom,
+  makeDefaultNewDao,
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
 import {
@@ -131,7 +131,7 @@ export const CreateDaoForm = ({
     // If created DAO, clear saved data and don't update.
     if (daoCreatedCardProps) {
       // Clear saved form data.
-      setNewDaoAtom(DefaultNewDao)
+      setNewDaoAtom(makeDefaultNewDao())
       return
     }
 
@@ -278,7 +278,7 @@ export const CreateDaoForm = ({
 
   const [creating, setCreating] = useState(false)
   const { connected, address: walletAddress } = useWallet()
-  const { refreshBalances } = useWalletProfile()
+  const { refreshBalances } = useWalletInfo()
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
@@ -436,7 +436,7 @@ export const CreateDaoForm = ({
             })
 
             // Clear saved form data.
-            setNewDaoAtom(DefaultNewDao)
+            setNewDaoAtom(makeDefaultNewDao())
 
             // Navigate to DAO page (underneath the creation modal).
             router.push(`/dao/${coreAddress}`)

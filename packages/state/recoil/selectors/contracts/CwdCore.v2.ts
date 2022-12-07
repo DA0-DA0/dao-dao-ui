@@ -25,6 +25,7 @@ import {
 } from '@dao-dao/types/contracts/CwdCore.v2'
 import { expirationExpired } from '@dao-dao/utils'
 
+import { CwdVotingCw20StakedSelectors } from '.'
 import {
   CwdCoreV2Client,
   CwdCoreV2QueryClient,
@@ -601,6 +602,52 @@ export const allCw20TokenListSelector = selectorFamily<
     },
 })
 
+export const allCw20InfosSelector = selectorFamily<
+  {
+    address: string
+    info: TokenInfoResponse
+  }[],
+  QueryClientParams & {
+    governanceTokenAddress?: string
+  }
+>({
+  key: 'cwdCoreV2AllCw20Infos',
+  get:
+    ({ governanceTokenAddress, ...queryClientParams }) =>
+    async ({ get }) => {
+      //! Get all addresses.
+      const addresses = [...get(allCw20TokenListSelector(queryClientParams))]
+
+      //! Add governance token balance if exists but missing from list.
+      if (
+        governanceTokenAddress &&
+        !addresses.includes(governanceTokenAddress)
+      ) {
+        // Add to beginning of list.
+        addresses.splice(0, 0, governanceTokenAddress)
+      }
+
+      const infos = get(
+        waitForAll(
+          addresses.map((contractAddress) =>
+            Cw20BaseSelectors.tokenInfoSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
+              contractAddress,
+              params: [],
+            })
+          )
+        )
+      )
+
+      return addresses.map((address, index) => ({
+        address,
+        info: infos[index],
+      }))
+    },
+})
+
 const CW20_BALANCES_LIMIT = 10
 export const allCw20BalancesAndInfosSelector = selectorFamily<
   (Cw20BalanceResponse & {
@@ -845,5 +892,65 @@ export const allSubDaoConfigsSelector = selectorFamily<
         address: addr,
         ...subDaoConfigs[index],
       }))
+    },
+})
+
+// Will fail if cannot fetch governance token address.
+export const tryFetchGovernanceTokenAddressSelector = selectorFamily<
+  string,
+  QueryClientParams
+>({
+  key: 'cwdCoreV2TryFetchGovernanceTokenAddress',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const votingModuleAddress = get(
+        votingModuleSelector({ ...queryClientParams, params: [] })
+      )
+      const governanceTokenAddress = get(
+        CwdVotingCw20StakedSelectors.tokenContractSelector({
+          ...queryClientParams,
+          contractAddress: votingModuleAddress,
+          params: [],
+        })
+      )
+      return governanceTokenAddress
+    },
+})
+
+const ITEM_LIST_LIMIT = 30
+export const listAllItemsSelector = selectorFamily<
+  ListItemsResponse,
+  QueryClientParams
+>({
+  key: 'cwdCoreV2ListAllItems',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const items: ListItemsResponse = []
+
+      while (true) {
+        const response = await get(
+          listItemsSelector({
+            ...queryClientParams,
+            params: [
+              {
+                startAfter: items[items.length - 1],
+                limit: ITEM_LIST_LIMIT,
+              },
+            ],
+          })
+        )
+        if (!response?.length) break
+
+        items.push(...response)
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < ITEM_LIST_LIMIT) {
+          break
+        }
+      }
+
+      return items
     },
 })
