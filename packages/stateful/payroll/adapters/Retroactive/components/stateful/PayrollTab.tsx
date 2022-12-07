@@ -21,7 +21,7 @@ import {
 } from '@dao-dao/utils'
 
 import { IconButtonLink, SuspenseLoader } from '../../../../../components'
-import { useVotingModule } from '../../../../../hooks/useVotingModule'
+import { useMembership } from '../../../../../hooks'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { listCompletedSurveysSelector, statusSelector } from '../../selectors'
 import { CompletedSurvey, CompletedSurveyListing } from '../../types'
@@ -61,8 +61,9 @@ export const PayrollTab = () => {
 export const InnerPayrollTab = () => {
   const { chainId, coreAddress, bech32Prefix } = useDaoInfoContext()
   const { publicKey: walletPublicKey } = useWallet(chainId)
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false } = useMembership({
+    coreAddress,
+    chainId,
   })
 
   const loadingStatus = loadableToLoadingData(
