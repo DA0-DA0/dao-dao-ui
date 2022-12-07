@@ -157,7 +157,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
           ? t('error.treasuryNoTokensCannotStake', {
               tokenSymbol: nativeTokenLabel(denom),
             })
-          : t('error.treasuryInsufficient', {
+          : t('error.treasuryInsufficientCannotStake', {
               amount: humanReadableAmount,
               tokenSymbol: nativeTokenLabel(denom),
             }))
@@ -231,7 +231,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
     <ActionCard
       Icon={DepositEmoji}
       onRemove={onRemove}
-      title={t('title.stake')}
+      title={t('title.stakingActions')}
     >
       <div className="flex flex-col gap-2 xs:flex-row">
         {/* Choose type of stake operation. */}
