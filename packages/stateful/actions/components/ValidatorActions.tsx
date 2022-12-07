@@ -11,12 +11,9 @@ import {
   TextInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  ValidatorActionType,
-  validateJSON,
-  validateValidatorAddress,
-} from '@dao-dao/utils'
+import { validateJSON, validateValidatorAddress } from '@dao-dao/utils'
 
+import { ValidatorActionType } from '../actions/ValidatorActions'
 import { ActionCard } from './ActionCard'
 
 export const useValidatorActions = (): {
@@ -90,15 +87,15 @@ export const ValidatorActionsComponent: ActionComponent<
           />
           <CodeMirrorInput
             control={control}
-            error={errors?.createMsg?.value}
-            fieldName={fieldNamePrefix + 'createMsg.value'}
+            error={errors?.createMsg}
+            fieldName={fieldNamePrefix + 'createMsg'}
             readOnly={!isCreating}
             validation={[validateJSON]}
           />
-          {errors?.createMsg?.value?.message ? (
+          {errors?.createMsg?.message ? (
             <p className="text-error flex items-center gap-1 text-sm">
               <Close className="inline w-5" />{' '}
-              <span>{errors.createMsg?.value?.message}</span>
+              <span>{errors.createMsg?.message}</span>
             </p>
           ) : (
             <p className="text-success flex items-center gap-1 text-sm">
@@ -116,15 +113,15 @@ export const ValidatorActionsComponent: ActionComponent<
           />
           <CodeMirrorInput
             control={control}
-            error={errors?.editMsg?.value}
-            fieldName={fieldNamePrefix + 'editMsg.value'}
+            error={errors?.editMsg}
+            fieldName={fieldNamePrefix + 'editMsg'}
             readOnly={!isCreating}
             validation={[validateJSON]}
           />
-          {errors?.editMsg?.value?.message ? (
+          {errors?.editMsg?.message ? (
             <p className="text-error flex items-center gap-1 text-sm">
               <Close className="inline w-5" />{' '}
-              <span>{errors.editMsg?.value?.message}</span>
+              <span>{errors.editMsg?.message}</span>
             </p>
           ) : (
             <p className="text-success flex items-center gap-1 text-sm">
@@ -142,13 +139,13 @@ export const ValidatorActionsComponent: ActionComponent<
           />
           <TextInput
             disabled={!isCreating}
-            error={errors?.unjailMsg?.value?.validatorAddr}
-            fieldName={fieldNamePrefix + 'unjailMsg.value.validatorAddr'}
+            error={errors?.unjailMsg?.validatorAddr}
+            fieldName={fieldNamePrefix + 'unjailMsg.validatorAddr'}
             placeholder="junovaloper..."
             register={register}
             validation={[(v: string) => validateValidatorAddress(v)]}
           />
-          <InputErrorMessage error={errors?.unjailMsg?.value?.validatorAddr} />
+          <InputErrorMessage error={errors?.unjailMsg?.validatorAddr} />
         </div>
       )}
 
@@ -161,16 +158,16 @@ export const ValidatorActionsComponent: ActionComponent<
           />
           <TextInput
             disabled={!isCreating}
-            error={errors?.withdrawCommissionMsg?.value?.validatorAddress}
+            error={errors?.withdrawCommissionMsg?.validatorAddress}
             fieldName={
-              fieldNamePrefix + 'withdrawCommissionMsg.value.validatorAddress'
+              fieldNamePrefix + 'withdrawCommissionMsg.validatorAddress'
             }
             placeholder="junovaloper..."
             register={register}
             validation={[(v: string) => validateValidatorAddress(v)]}
           />
           <InputErrorMessage
-            error={errors?.withdrawCommissionMsg?.value.validatorAddress}
+            error={errors?.withdrawCommissionMsg?.validatorAddress}
           />
         </div>
       )}

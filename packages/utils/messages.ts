@@ -414,13 +414,6 @@ export const makeBankMessage = (
   },
 })
 
-export enum ValidatorActionType {
-  CreateValidator = 'create_validator',
-  EditValidator = 'edit_validator',
-  UnjailValidator = 'unjail_validator',
-  WithdrawValidatorCommission = 'withdraw_validator_commission',
-}
-
 export enum StakeType {
   Delegate = 'delegate',
   Undelegate = 'undelegate',

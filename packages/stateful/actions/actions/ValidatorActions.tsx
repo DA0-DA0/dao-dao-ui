@@ -12,33 +12,29 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import {
-  NATIVE_DENOM,
-  ValidatorActionType,
-  makeStargateMessage,
-} from '@dao-dao/utils'
+import { NATIVE_DENOM, makeStargateMessage } from '@dao-dao/utils'
 
 import { ValidatorActionsComponent as StatelessValidatorActionsComponent } from '../components'
 
-interface GenericUnencodedProtbuf {
-  type_url: string
-  value: string | MsgUnjail | MsgWithdrawValidatorCommission
+export enum ValidatorActionType {
+  CreateValidator = '/cosmos.staking.v1beta1.MsgCreateValidator',
+  EditValidator = '/cosmos.staking.v1beta1.MsgEditValidator',
+  UnjailValidator = '/cosmos.slashing.v1beta1.MsgUnjail',
+  WithdrawValidatorCommission = '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission',
 }
 
 interface ValidatorActionsData {
-  createMsg: GenericUnencodedProtbuf
-  editMsg: GenericUnencodedProtbuf
-  unjailMsg: GenericUnencodedProtbuf
+  createMsg: string
+  editMsg: string
+  unjailMsg: MsgUnjail
   validatorActionType: ValidatorActionType
-  withdrawCommissionMsg: GenericUnencodedProtbuf
+  withdrawCommissionMsg: MsgWithdrawValidatorCommission
 }
 
 const useDefaults: UseDefaults<ValidatorActionsData> = () => {
   return {
     validatorActionType: ValidatorActionType.WithdrawValidatorCommission,
-    createMsg: {
-      type_url: '/cosmos.staking.v1beta1.MsgCreateValidator',
-      value: `{
+    createMsg: `{
    "description": {
      "moniker": "<validator name>",
      "identity": "<optional identity signature (ex. UPort or Keybase)>",
@@ -65,10 +61,7 @@ const useDefaults: UseDefaults<ValidatorActionsData> = () => {
      "amount": "1000000"
    }
  }`,
-    },
-    editMsg: {
-      type_url: '/cosmos.staking.v1beta1.MsgEditValidator',
-      value: `{
+    editMsg: `{
    "description": {
      "moniker": "<validator name>",
      "identity": "<optional identity signature (ex. UPort or Keybase)>",
@@ -80,18 +73,11 @@ const useDefaults: UseDefaults<ValidatorActionsData> = () => {
    "minSelfDelegation": "1",
    "validatorAddress": "<your validator address>"
  }`,
-    },
     unjailMsg: {
-      type_url: '/cosmos.slashing.v1beta1.MsgUnjail',
-      value: {
-        validatorAddr: '',
-      },
+      validatorAddr: '',
     },
     withdrawCommissionMsg: {
-      type_url: '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission',
-      value: {
-        validatorAddress: '',
-      },
+      validatorAddress: '',
     },
   }
 }
@@ -129,29 +115,29 @@ export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
         case ValidatorActionType.WithdrawValidatorCommission:
           return makeStargateMessage({
             stargate: {
-              type_url: data.withdrawCommissionMsg.type_url,
-              value: data.withdrawCommissionMsg.value,
+              type_url: ValidatorActionType.WithdrawValidatorCommission,
+              value: data.withdrawCommissionMsg,
             },
           })
         case ValidatorActionType.CreateValidator:
           return makeStargateMessage({
             stargate: {
-              type_url: data.createMsg.type_url,
-              value: data.createMsg.value,
+              type_url: ValidatorActionType.CreateValidator,
+              value: data.createMsg,
             },
           })
         case ValidatorActionType.EditValidator:
           return makeStargateMessage({
             stargate: {
-              type_url: data.editMsg.type_url,
-              value: data.editMsg.value,
+              type_url: ValidatorActionType.EditValidator,
+              value: data.editMsg,
             },
           })
         case ValidatorActionType.UnjailValidator:
           return makeStargateMessage({
             stargate: {
-              type_url: data.unjailMsg.type_url,
-              value: data.unjailMsg.value,
+              type_url: ValidatorActionType.UnjailValidator,
+              value: data.unjailMsg,
             },
           })
         default:

@@ -278,15 +278,15 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
           />
           <CodeMirrorInput
             control={control}
-            error={errors?.value?.value}
-            fieldName={fieldNamePrefix + 'value.value'}
+            error={errors?.custom}
+            fieldName={fieldNamePrefix + 'custom'}
             readOnly={!isCreating}
             validation={[validateJSON]}
           />
-          {errors?.value?.value?.message ? (
+          {errors?.custom?.message ? (
             <p className="text-error flex items-center gap-1 text-sm">
               <Close className="inline w-5" />{' '}
-              <span>{errors.value?.value?.message}</span>
+              <span>{errors.custom?.message}</span>
             </p>
           ) : (
             <p className="text-success flex items-center gap-1 text-sm">
