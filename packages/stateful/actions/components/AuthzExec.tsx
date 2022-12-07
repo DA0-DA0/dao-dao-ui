@@ -120,7 +120,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
             <InputErrorMessage error={errors?.delegate?.validatorAddress} />
           </div>
           <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('form.amount')} />
+            <InputLabel name={t('title.chooseTokenAmount')} />
             <TextInput
               disabled={!isCreating}
               error={errors?.delegate?.amount?.amount}
@@ -163,7 +163,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
             <InputErrorMessage error={errors?.undelegate?.validatorAddress} />
           </div>
           <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('form.amount')} />
+            <InputLabel name={t('title.chooseTokenAmount')} />
             <TextInput
               disabled={!isCreating}
               error={errors?.undelegate?.amount?.amount}
@@ -225,7 +225,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
             />
           </div>
           <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('form.amount')} />
+            <InputLabel name={t('title.chooseTokenAmount')} />
             <TextInput
               disabled={!isCreating}
               error={errors?.redelegate?.amount?.amount}
