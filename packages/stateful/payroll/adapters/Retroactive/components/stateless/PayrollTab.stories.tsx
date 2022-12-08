@@ -32,6 +32,7 @@ Default.args = {
         contributionCount: 10,
         contributionsOpenedAt: '2022-10-01T12:00:00.000Z',
         proposalId: 'A1',
+        createdAtBlockHeight: 1,
       },
       {
         id: 2,
@@ -39,6 +40,7 @@ Default.args = {
         contributionCount: 7,
         contributionsOpenedAt: '2022-11-01T12:00:00.000Z',
         proposalId: 'A2',
+        createdAtBlockHeight: 2,
       },
       {
         id: 3,
@@ -46,6 +48,24 @@ Default.args = {
         contributionCount: 14,
         contributionsOpenedAt: '2022-12-01T12:00:00.000Z',
         proposalId: 'A3',
+        createdAtBlockHeight: 3,
+      },
+    ],
+  },
+  loadingMembershipDuringCompletedSurveys: {
+    loading: false,
+    data: [
+      {
+        height: 1,
+        power: '0',
+      },
+      {
+        height: 2,
+        power: '5',
+      },
+      {
+        height: 3,
+        power: '10',
       },
     ],
   },

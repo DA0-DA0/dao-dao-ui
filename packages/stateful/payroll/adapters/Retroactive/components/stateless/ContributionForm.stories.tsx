@@ -48,6 +48,7 @@ export const makeSurvey = (): Survey => ({
       cw20Tokens: [],
     },
   ],
+  createdAtBlockHeight: 1,
 })
 
 export const Default = Template.bind({})

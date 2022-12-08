@@ -7,6 +7,7 @@ import { useCachedLoadable } from '@dao-dao/stateless'
 interface UseVotingModuleOptions {
   chainId?: string
   fetchMembership?: boolean
+  blockHeight?: number
 }
 
 interface UseVotingModuleResponse {
@@ -18,7 +19,7 @@ interface UseVotingModuleResponse {
 
 export const useVotingModule = (
   coreAddress: string,
-  { chainId, fetchMembership }: UseVotingModuleOptions = {}
+  { chainId, fetchMembership, blockHeight }: UseVotingModuleOptions = {}
 ): UseVotingModuleResponse => {
   const { address: walletAddress } = useWallet(chainId)
 
@@ -36,7 +37,12 @@ export const useVotingModule = (
       ? CwdCoreV2Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           chainId,
-          params: [{ address: walletAddress }],
+          params: [
+            {
+              address: walletAddress,
+              height: blockHeight,
+            },
+          ],
         })
       : undefined
   )
@@ -45,7 +51,11 @@ export const useVotingModule = (
       ? CwdCoreV2Selectors.totalPowerAtHeightSelector({
           contractAddress: coreAddress,
           chainId,
-          params: [{}],
+          params: [
+            {
+              height: blockHeight,
+            },
+          ],
         })
       : constSelector(undefined)
   )?.power

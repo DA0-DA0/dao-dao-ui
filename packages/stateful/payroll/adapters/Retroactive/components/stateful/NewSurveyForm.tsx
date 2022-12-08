@@ -135,7 +135,7 @@ export const NewSurveyForm = () => {
         }
 
         await postRequest(`/${coreAddress}`, { survey })
-        toast.success(t('success.surveyCreated'))
+        toast.success(t('success.compensationCycleCreated'))
 
         // Reload status on success.
         setRefreshStatus((id) => id + 1)
