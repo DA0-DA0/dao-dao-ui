@@ -48,7 +48,7 @@ Default.args = {
   },
   onSubmit: async (data) =>
     alert('submit: ' + JSON.stringify(data, undefined, 2)),
-  loading: false,
+  loadingSubmit: false,
   ProfileDisplay,
   cw20TokenInfos: [
     {

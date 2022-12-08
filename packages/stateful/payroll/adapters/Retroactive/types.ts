@@ -135,3 +135,7 @@ export type CompletedSurvey = Omit<Survey, 'status'> & {
   contributions: ContributionResponse[]
   ratings: RatingResponse[]
 }
+
+export interface StatefulOpenSurveySectionProps {
+  status: Status
+}

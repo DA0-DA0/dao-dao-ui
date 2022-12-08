@@ -1,4 +1,4 @@
-import { Add, Ballot, Remove } from '@mui/icons-material'
+import { Add, ArrowDropDown, Ballot, Remove } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -6,16 +6,18 @@ import { useTranslation } from 'react-i18next'
 import {
   Button,
   Loader,
-  MarkdownPreview,
   NoContent,
   Tooltip,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
-import { formatDateTimeTz } from '@dao-dao/utils'
 
-import { CompletedSurveyListing, Status, SurveyStatus } from '../../types'
+import {
+  CompletedSurveyListing,
+  StatefulOpenSurveySectionProps,
+  Status,
+} from '../../types'
 import { CompletedSurveyRow } from './CompletedSurveyRow'
 
 export interface PayrollTabProps {
@@ -23,9 +25,9 @@ export interface PayrollTabProps {
   loadingCompletedSurveys: LoadingData<CompletedSurveyListing[]>
   isMember: boolean
   NewSurveyForm: ComponentType
-  ContributionForm: ComponentType
-  RatingForm: ComponentType
-  ProposalCreationForm: ComponentType
+  OpenSurveySection: ComponentType<
+    Pick<StatefulOpenSurveySectionProps, 'status'>
+  >
   downloadCompletedSurvey: (pastSurvey: CompletedSurveyListing) => void
   loadingCompletedSurveyId: number | undefined
   IconButtonLink: ComponentType<IconButtonLinkProps>
@@ -36,9 +38,7 @@ export const PayrollTab = ({
   loadingCompletedSurveys,
   isMember,
   NewSurveyForm,
-  ContributionForm,
-  ProposalCreationForm,
-  RatingForm,
+  OpenSurveySection,
   downloadCompletedSurvey,
   loadingCompletedSurveyId,
   IconButtonLink,
@@ -72,7 +72,7 @@ export const PayrollTab = ({
         <Tooltip
           title={
             !isMember
-              ? t('error.mustBeMemberToCreateSurvey')
+              ? t('error.mustBeMemberToCreateCompensationCycle')
               : !loadingStatus.loading && loadingStatus.data
               ? t('error.cannotCreateCompensationCycleAlreadyActive')
               : undefined
@@ -101,76 +101,17 @@ export const PayrollTab = ({
       {loadingStatus.loading ? (
         <Loader fill={false} />
       ) : // If no active survey, text is shown at the top. No need to render anything here.
-      !loadingStatus.data ? null : loadingStatus.data.survey.status ===
-          SurveyStatus.Inactive ||
-        loadingStatus.data.survey.status ===
-          SurveyStatus.AcceptingContributions ? (
-        <div className="border-b border-border-primary pb-6">
-          <ContributionForm />
-        </div>
-      ) : loadingStatus.data.survey.status === SurveyStatus.AcceptingRatings ? (
-        <div
-          className={clsx(
-            'border-b border-border-primary',
-            isMember ? 'pb-6' : 'pb-40'
-          )}
-        >
-          {isMember ? (
-            <RatingForm />
-          ) : (
-            <>
-              <p className="hero-text mb-4 max-w-prose break-words">
-                {loadingStatus.data.survey.name}
-              </p>
-
-              <MarkdownPreview
-                markdown={t('info.contributionsBeingRated', {
-                  date: formatDateTimeTz(
-                    new Date(loadingStatus.data.survey.ratingsCloseAt)
-                  ),
-                })}
-              />
-            </>
-          )}
-        </div>
-      ) : loadingStatus.data.survey.status ===
-        SurveyStatus.AwaitingCompletion ? (
-        <div
-          className={clsx(
-            'border-b border-border-primary',
-            isMember ? 'pb-6' : 'pb-40'
-          )}
-        >
-          {isMember ? (
-            <ProposalCreationForm />
-          ) : (
-            <>
-              <p className="hero-text mb-4 max-w-prose break-words">
-                {loadingStatus.data.survey.name}
-              </p>
-
-              <MarkdownPreview
-                markdown={t('info.compensationCyclePendingCompletion')}
-              />
-            </>
-          )}
-        </div>
-      ) : null}
+      !loadingStatus.data ? null : (
+        <OpenSurveySection status={loadingStatus.data} />
+      )}
 
       {canCreateSurvey && showCreate ? (
         <NewSurveyForm />
       ) : (
         <>
-          <div className="space-y-1">
-            <p className="title-text text-text-body">
-              {t('title.completedCompensationCycles')}
-            </p>
-
-            <p className="secondary-text max-w-prose italic">
-              {isMember
-                ? t('info.selectingCycleDownloadsCsv')
-                : t('info.selectingCycleOpensProposal')}
-            </p>
+          <div className="link-text ml-2 flex flex-row items-center gap-3">
+            <ArrowDropDown className="!h-4 !w-4 text-icon-primary" />
+            <p className="text-text-secondary">{t('title.history')}</p>
           </div>
 
           {loadingCompletedSurveys.loading ? (

@@ -14,13 +14,8 @@ import {
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { AmountWithTimestampAndDenom, CosmosMsgFor_Empty } from '@dao-dao/types'
-import {
-  makeBankMessage,
-  makeWasmMessage,
-  nativeTokenDecimals,
-  secp256k1PublicKeyToBech32Address,
-} from '@dao-dao/utils'
+import { AmountWithTimestampAndDenom } from '@dao-dao/types'
+import { nativeTokenDecimals } from '@dao-dao/utils'
 
 import { ProfileDisplay, SuspenseLoader } from '../../../../../components'
 import {
@@ -31,22 +26,20 @@ import { NewProposalData } from '../../../../../proposal-module-adapter/adapters
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
-import {
-  CompleteRatings,
-  ContributionWithCompensation,
-  Rating,
-  RatingsResponse,
-} from '../../types'
-import { computeCompensation } from '../../utils'
+import { CompleteRatings } from '../../types'
 import {
   ProposalCreationFormData,
   ProposalCreationForm as StatelessProposalCreationForm,
 } from '../stateless/ProposalCreationForm'
 
-export const ProposalCreationForm = () => {
+interface ProposalCreationFormProps {
+  data: CompleteRatings
+}
+
+export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, chainId, bech32Prefix } = useDaoInfoContext()
+  const { coreAddress, chainId } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet(chainId)
 
@@ -66,136 +59,12 @@ export const ProposalCreationForm = () => {
     })
   )
 
-  const [loading, setLoading] = useState(false)
-
-  const [completeRatings, setCompleteRatings] = useState<CompleteRatings>()
-  const loadRatings = useCallback(async () => {
-    // Need survey status to be loaded to compute compensation.
-    if (statusLoadable.state !== 'hasValue' || !statusLoadable.contents) {
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      // Fetch ratings.
-      const response: RatingsResponse = await postRequest(
-        `/${coreAddress}/ratings`
-      )
-
-      // Compute compensation.
-      const compensationPerContribution = computeCompensation(
-        response.contributions.map(({ id }) => id),
-        response.ratings.flatMap((rating) =>
-          rating.contributions.map(({ id, attributes }) => ({
-            contributionId: id,
-            attributes,
-          }))
-        ),
-        statusLoadable.contents.survey.attributes
-      )
-
-      // Get addresses for contributor public keys, and compute compensation.
-      const contributions = await Promise.all(
-        response.contributions.map(
-          async (
-            { contributor: publicKey, ...contribution },
-            contributionIndex
-          ): Promise<ContributionWithCompensation> => {
-            const address = await secp256k1PublicKeyToBech32Address(
-              publicKey,
-              bech32Prefix
-            )
-
-            const compensation = compensationPerContribution[contributionIndex]
-
-            return {
-              ...contribution,
-              contributor: {
-                publicKey,
-                address,
-              },
-              compensation,
-            }
-          }
-        )
-      )
-
-      const ratings = await Promise.all(
-        response.ratings.map(
-          async ({ rater: publicKey, ...rating }): Promise<Rating> => {
-            const address = await secp256k1PublicKeyToBech32Address(
-              publicKey,
-              bech32Prefix
-            )
-
-            return {
-              ...rating,
-              rater: {
-                publicKey,
-                address,
-              },
-            }
-          }
-        )
-      )
-
-      const cosmosMsgs: CosmosMsgFor_Empty[] = contributions.flatMap(
-        ({ contributor, compensation }) =>
-          compensation.compensationPerAttribute.flatMap(
-            ({ nativeTokens, cw20Tokens }): CosmosMsgFor_Empty[] => [
-              ...nativeTokens.map(
-                ({ amount, denom }): CosmosMsgFor_Empty => ({
-                  bank: makeBankMessage(amount, contributor.address, denom),
-                })
-              ),
-              ...cw20Tokens.map(
-                ({ amount, address }): CosmosMsgFor_Empty =>
-                  makeWasmMessage({
-                    wasm: {
-                      execute: {
-                        contract_addr: address,
-                        funds: [],
-                        msg: {
-                          transfer: {
-                            recipient: contributor.address,
-                            amount,
-                          },
-                        },
-                      },
-                    },
-                  })
-              ),
-            ]
-          )
-      )
-
-      const completeRatings: CompleteRatings = {
-        contributions,
-        ratings,
-        cosmosMsgs,
-      }
-
-      setCompleteRatings(completeRatings)
-    } catch (err) {
-      console.error(err)
-      toast.error(err instanceof Error ? err.message : JSON.stringify(err))
-    } finally {
-      setLoading(false)
-    }
-  }, [
-    bech32Prefix,
-    coreAddress,
-    postRequest,
-    statusLoadable.contents,
-    statusLoadable.state,
-  ])
-
   const publishProposal = useCwdProposalSinglePublishProposal()
 
+  const [loading, setLoading] = useState(false)
   const onComplete = useCallback(
     async (formData: ProposalCreationFormData) => {
-      if (!completeRatings) {
+      if (!data) {
         toast.error(t('error.loadingData'))
         return
       }
@@ -208,12 +77,12 @@ export const ProposalCreationForm = () => {
 
       try {
         // Propose.
-        const data: NewProposalData = {
+        const proposalData: NewProposalData = {
           ...formData,
-          msgs: completeRatings.cosmosMsgs,
+          msgs: data.cosmosMsgs,
         }
 
-        const { proposalId } = await publishProposal(data)
+        const { proposalId } = await publishProposal(proposalData)
         toast.success(t('success.proposalCreatedCompleteCompensationCycle'))
 
         // Complete with proposal ID.
@@ -234,7 +103,7 @@ export const ProposalCreationForm = () => {
       }
     },
     [
-      completeRatings,
+      data,
       coreAddress,
       postRequest,
       publishProposal,
@@ -311,9 +180,8 @@ export const ProposalCreationForm = () => {
         prices.state === 'hasValue' && (
           <StatelessProposalCreationForm
             ProfileDisplay={ProfileDisplay}
-            completeRatings={completeRatings}
+            completeRatings={data}
             cw20TokenInfos={loadingCw20TokenInfos.contents}
-            loadRatings={loadRatings}
             loading={loading || statusLoadable.updating}
             onComplete={onComplete}
             prices={

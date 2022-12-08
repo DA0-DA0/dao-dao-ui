@@ -16,30 +16,27 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { AmountWithTimestampAndDenom } from '@dao-dao/types'
-import {
-  nativeTokenDecimals,
-  secp256k1PublicKeyToBech32Address,
-} from '@dao-dao/utils'
+import { nativeTokenDecimals } from '@dao-dao/utils'
 
 import { ProfileDisplay, SuspenseLoader } from '../../../../../components'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
-import {
-  Contribution,
-  ContributionRating,
-  ContributionResponse,
-  RatingsFormData,
-} from '../../types'
+import { RatingsFormData } from '../../types'
 import {
   ContributionRatingData,
   NominationForm,
   RatingForm as StatelessRatingForm,
 } from '../stateless/RatingForm'
 
-export const RatingForm = () => {
+interface RatingFormProps {
+  data: ContributionRatingData
+  reloadData: () => Promise<void>
+}
+
+export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
   const { t } = useTranslation()
-  const { coreAddress, chainId, bech32Prefix } = useDaoInfoContext()
+  const { coreAddress, chainId } = useDaoInfoContext()
   const { publicKey: walletPublicKey } = useWallet(chainId)
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))
@@ -59,57 +56,10 @@ export const RatingForm = () => {
     })
   )
 
-  const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<ContributionRatingData>()
-
-  const loadData = useCallback(async () => {
-    setLoading(true)
-
-    try {
-      // Fetch contributions.
-      const response: {
-        contributions: ContributionResponse[]
-        ratings: ContributionRating[]
-      } = await postRequest(`/${coreAddress}/contributions`)
-
-      // Get addresses for contributor public keys.
-      const contributions = await Promise.all(
-        response.contributions.map(
-          async ({
-            contributor: publicKey,
-            ...contribution
-          }): Promise<Contribution> => {
-            const address = await secp256k1PublicKeyToBech32Address(
-              publicKey,
-              bech32Prefix
-            )
-
-            return {
-              ...contribution,
-              contributor: {
-                publicKey,
-                address,
-              },
-            }
-          }
-        )
-      )
-
-      setData({
-        contributions,
-        existingRatings: response.ratings,
-      })
-    } catch (err) {
-      console.error(err)
-      toast.error(err instanceof Error ? err.message : JSON.stringify(err))
-    } finally {
-      setLoading(false)
-    }
-  }, [bech32Prefix, coreAddress, postRequest])
-
+  const [loadingSubmit, setLoadingSubmit] = useState(false)
   const onSubmit = useCallback(
     async (data: RatingsFormData) => {
-      setLoading(true)
+      setLoadingSubmit(true)
 
       try {
         await postRequest(`/${coreAddress}/rate`, { ...data })
@@ -120,7 +70,7 @@ export const RatingForm = () => {
         console.error(err)
         toast.error(err instanceof Error ? err.message : JSON.stringify(err))
       } finally {
-        setLoading(false)
+        setLoadingSubmit(false)
       }
     },
     [coreAddress, postRequest, setRefreshStatus, t]
@@ -172,9 +122,10 @@ export const RatingForm = () => {
       : undefined
   )
 
+  const [loadingNominate, setLoadingNominate] = useState(false)
   const onNominate = useCallback(
     async (formData: NominationForm) => {
-      setLoading(true)
+      setLoadingNominate(true)
 
       try {
         // Get public key from address.
@@ -193,16 +144,16 @@ export const RatingForm = () => {
 
         // Reload data so nomination appears if data already loaded.
         if (data) {
-          await loadData()
+          await reloadData()
         }
       } catch (err) {
         console.error(err)
         toast.error(err instanceof Error ? err.message : JSON.stringify(err))
       } finally {
-        setLoading(false)
+        setLoadingNominate(false)
       }
     },
-    [client, coreAddress, data, loadData, postRequest, t]
+    [client, coreAddress, data, postRequest, reloadData, t]
   )
 
   return (
@@ -222,8 +173,8 @@ export const RatingForm = () => {
             ProfileDisplay={ProfileDisplay}
             cw20TokenInfos={loadingCw20TokenInfos.contents}
             data={data}
-            loadData={loadData}
-            loading={loading || statusLoadable.updating}
+            loadingNominate={loadingNominate}
+            loadingSubmit={loadingSubmit || statusLoadable.updating}
             onNominate={onNominate}
             onSubmit={onSubmit}
             prices={
