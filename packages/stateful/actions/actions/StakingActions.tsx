@@ -42,7 +42,7 @@ import {
   StakeData,
   StakeComponent as StatelessStakeComponent,
   useStakeActions,
-} from '../components/Stake'
+} from '../components/StakingActions'
 
 const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
   useCallback((data: StakeData) => {
@@ -245,7 +245,7 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
       const claimValidatorRewardsActionData = props.allActionsWithData
         .filter(
           ({ key, data }) =>
-            key === CoreActionKey.Stake &&
+            key === CoreActionKey.StakingActions &&
             'stakeType' in data &&
             data.stakeType === StakeType.WithdrawDelegatorReward &&
             'validator' in data &&
@@ -334,10 +334,10 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
   }
 
   return {
-    key: CoreActionKey.Stake,
+    key: CoreActionKey.StakingActions,
     Icon: DepositEmoji,
-    label: t('title.stake'),
-    description: t('info.stakeActionDescription'),
+    label: t('title.stakingActions'),
+    description: t('info.stakingActionsDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

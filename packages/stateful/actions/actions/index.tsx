@@ -12,7 +12,7 @@ import { makeRemoveCw721Action } from './RemoveCw721'
 import { makeRemoveItemAction } from './RemoveItem'
 import { makeSetItemAction } from './SetItem'
 import { makeSpendAction } from './Spend'
-import { makeStakeAction } from './Stake'
+import { makeStakeAction } from './StakingActions'
 import {
   makePerformTokenSwapAction,
   makeWithdrawTokenSwapAction,

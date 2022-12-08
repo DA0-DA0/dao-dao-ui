@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { NATIVE_DENOM, StakeType } from '@dao-dao/utils'
 
-import { StakeComponent, StakeData } from './Stake'
+import { StakeComponent, StakeData } from './StakingActions'
 
 export default {
   title: 'DAO DAO / packages / stateful / actions / components / Stake',

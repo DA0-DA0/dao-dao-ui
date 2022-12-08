@@ -56,7 +56,8 @@ export const TokenCard = (props: TokenCardInfo) => {
 
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
-  const stakeAction = useCoreActionForKey(CoreActionKey.Stake)
+  const stakeAction = useCoreActionForKey(CoreActionKey.StakingActions)
+
   // Prefill URLs only valid if action exists.
   const prefillValid = !!stakeAction
   const encodedProposalPrefillClaim = useEncodedCwdProposalSinglePrefill({

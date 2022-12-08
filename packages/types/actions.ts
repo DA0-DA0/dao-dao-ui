@@ -10,7 +10,7 @@ import { CosmosMsgFor_Empty } from './contracts/common'
 // are provided in the top-level ActionsProvider.
 export enum CoreActionKey {
   Spend = 'spend',
-  Stake = 'stake',
+  StakingActions = 'stakingActions',
   AddCw20 = 'addCw20',
   RemoveCw20 = 'removeCw20',
   AddCw721 = 'addCw721',
