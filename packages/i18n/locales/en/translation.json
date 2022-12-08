@@ -696,7 +696,6 @@
     "numSubDaos_other": "{{count}} SubDAOs",
     "numTasks_one": "{{count}} task",
     "numTasks_other": "{{count}} tasks",
-    "open": "Open",
     "openProposals": "Open proposals",
     "passingThreshold": "Passing threshold",
     "payroll": "Payroll",
