@@ -11,6 +11,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
+import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/CwdCore.v2'
 import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
 
 import {
@@ -30,6 +31,9 @@ export interface PayrollTabProps {
   >
   downloadCompletedSurvey: (pastSurvey: CompletedSurveyListing) => void
   loadingCompletedSurveyId: number | undefined
+  loadingMembershipDuringCompletedSurveys: LoadingData<
+    VotingPowerAtHeightResponse[]
+  >
   IconButtonLink: ComponentType<IconButtonLinkProps>
 }
 
@@ -41,6 +45,7 @@ export const PayrollTab = ({
   OpenSurveySection,
   downloadCompletedSurvey,
   loadingCompletedSurveyId,
+  loadingMembershipDuringCompletedSurveys,
   IconButtonLink,
 }: PayrollTabProps) => {
   const { t } = useTranslation()
@@ -118,30 +123,40 @@ export const PayrollTab = ({
             <Loader fill={false} />
           ) : loadingCompletedSurveys.data.length > 0 ? (
             <div className="flex flex-col gap-1">
-              {loadingCompletedSurveys.data.map((survey) => (
-                <CompletedSurveyRow
-                  key={survey.id}
-                  IconButtonLink={IconButtonLink}
-                  className={clsx(
-                    // If survey is loading, animate pulse.
-                    loadingCompletedSurveyId === survey.id && 'animate-pulse',
-                    // If not a member and no proposal, disable pointer events
-                    // since we can't go anywhere.
-                    !isMember && !survey.proposalId && 'pointer-events-none'
-                  )}
-                  onClick={() =>
-                    isMember
-                      ? // If member, prompt for authentication before downloading CSV.
-                        downloadCompletedSurvey(survey)
-                      : // If not a member but proposal exists, open survey in new tab on select.
-                        survey.proposalId &&
-                        window.open(
-                          `/dao/${coreAddress}/proposals/${survey.proposalId}`
-                        )
-                  }
-                  survey={survey}
-                />
-              ))}
+              {loadingCompletedSurveys.data.map((survey, index) => {
+                const wasMemberDuringSurvey =
+                  !loadingMembershipDuringCompletedSurveys.loading &&
+                  Number(
+                    loadingMembershipDuringCompletedSurveys.data[index].power
+                  ) > 0
+
+                return (
+                  <CompletedSurveyRow
+                    key={survey.id}
+                    IconButtonLink={IconButtonLink}
+                    className={clsx(
+                      // If survey is loading, animate pulse.
+                      loadingCompletedSurveyId === survey.id && 'animate-pulse',
+                      // If was not a member and no proposal, disable pointer
+                      // events since we can't do anything.
+                      !wasMemberDuringSurvey &&
+                        !survey.proposalId &&
+                        'pointer-events-none'
+                    )}
+                    onClick={() =>
+                      wasMemberDuringSurvey
+                        ? // If was a member, prompt for authentication before downloading CSV.
+                          downloadCompletedSurvey(survey)
+                        : // If was not a member but proposal exists, open survey in new tab on select.
+                          survey.proposalId &&
+                          window.open(
+                            `/dao/${coreAddress}/proposals/${survey.proposalId}`
+                          )
+                    }
+                    survey={survey}
+                  />
+                )
+              })}
             </div>
           ) : (
             <NoContent

@@ -38,9 +38,10 @@ export interface Survey {
   contributionInstructions: string
   ratingInstructions: string
   attributes: Attribute[]
+  createdAtBlockHeight: number
 }
 
-export type NewSurveyRequest = Omit<Survey, 'status'>
+export type NewSurveyRequest = Omit<Survey, 'status' | 'createdAtBlockHeight'>
 
 export interface NewSurveyFormData
   extends Omit<NewSurveyRequest, 'attributes'> {
@@ -63,6 +64,7 @@ export interface CompletedSurveyListing {
   contributionCount: number
   contributionsOpenedAt: string
   proposalId: string
+  createdAtBlockHeight: number
 }
 
 export interface ContributionRating {

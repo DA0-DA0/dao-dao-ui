@@ -38,6 +38,7 @@ export const OpenSurveySection = ({
 
   const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,
+    blockHeight: status.survey.createdAtBlockHeight,
   })
 
   const [loading, setLoading] = useState(false)

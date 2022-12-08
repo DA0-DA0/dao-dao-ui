@@ -3,7 +3,9 @@ import { saveAs } from 'file-saver'
 import { parse as parseJsonToCsv } from 'json2csv'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
+import { waitForAll } from 'recoil'
 
+import { CwdCoreV2Selectors } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   loadableToLoadingData,
@@ -21,7 +23,8 @@ import { OpenSurveySection } from './OpenSurveySection'
 
 export const PayrollTab = () => {
   const { chainId, coreAddress, bech32Prefix } = useDaoInfoContext()
-  const { publicKey: walletPublicKey } = useWallet(chainId)
+  const { address: walletAddress = '', publicKey: walletPublicKey } =
+    useWallet(chainId)
   const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,
   })
@@ -40,6 +43,29 @@ export const PayrollTab = () => {
       listCompletedSurveysSelector({
         daoAddress: coreAddress,
       })
+    ),
+    []
+  )
+  // Get voting power at time of each completed survey creation to determine if
+  // we can download the CSV or not.
+  const loadingMembershipDuringCompletedSurveys = loadableToLoadingData(
+    useCachedLoadable(
+      loadingCompletedSurveys.loading || !walletAddress
+        ? undefined
+        : waitForAll(
+            loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
+              CwdCoreV2Selectors.votingPowerAtHeightSelector({
+                contractAddress: coreAddress,
+                chainId,
+                params: [
+                  {
+                    address: walletAddress,
+                    height: createdAtBlockHeight,
+                  },
+                ],
+              })
+            )
+          )
     ),
     []
   )
@@ -123,6 +149,9 @@ export const PayrollTab = () => {
       isMember={isMember}
       loadingCompletedSurveyId={loadingCompletedSurveyId}
       loadingCompletedSurveys={loadingCompletedSurveys}
+      loadingMembershipDuringCompletedSurveys={
+        loadingMembershipDuringCompletedSurveys
+      }
       loadingStatus={loadingStatus}
     />
   )
