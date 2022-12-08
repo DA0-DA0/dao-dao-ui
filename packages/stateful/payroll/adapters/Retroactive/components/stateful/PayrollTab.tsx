@@ -1,66 +1,30 @@
-import {
-  WalletConnectionStatus,
-  useWallet,
-  useWalletManager,
-} from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal'
 import { saveAs } from 'file-saver'
 import { parse as parseJsonToCsv } from 'json2csv'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useTranslation } from 'react-i18next'
+import { waitForAll } from 'recoil'
 
-import {
-  ConnectWallet,
-  Loader,
-  useCachedLoadable,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { CwdCoreV2Selectors } from '@dao-dao/state/recoil'
+import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   loadableToLoadingData,
   secp256k1PublicKeyToBech32Address,
 } from '@dao-dao/utils'
 
-import { IconButtonLink, SuspenseLoader } from '../../../../../components'
+import { IconButtonLink } from '../../../../../components'
 import { useMembership } from '../../../../../hooks'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { listCompletedSurveysSelector, statusSelector } from '../../selectors'
 import { CompletedSurvey, CompletedSurveyListing } from '../../types'
 import { PayrollTab as StatelessPayrollTab } from '../stateless/PayrollTab'
-import { ContributionForm } from './ContributionForm'
 import { NewSurveyForm } from './NewSurveyForm'
-import { ProposalCreationForm } from './ProposalCreationForm'
-import { RatingForm } from './RatingForm'
+import { OpenSurveySection } from './OpenSurveySection'
 
 export const PayrollTab = () => {
-  const { t } = useTranslation()
-  const { chainId } = useDaoInfoContext()
-  const { connect } = useWalletManager()
-  const { connected, status } = useWallet(chainId)
-
-  // Show loader while connecting instead of blinking the connect wallet button.
-  const connecting =
-    status === WalletConnectionStatus.Initializing ||
-    status === WalletConnectionStatus.AttemptingAutoConnection ||
-    status === WalletConnectionStatus.Connecting
-
-  return connecting || connected ? (
-    <SuspenseLoader fallback={<Loader />} forceFallback={connecting}>
-      <InnerPayrollTab />
-    </SuspenseLoader>
-  ) : (
-    <>
-      <p className="title-text mb-6 text-text-body">
-        {t('title.retroactiveCompensation')}
-      </p>
-
-      <ConnectWallet onConnect={connect} />
-    </>
-  )
-}
-
-export const InnerPayrollTab = () => {
   const { chainId, coreAddress, bech32Prefix } = useDaoInfoContext()
-  const { publicKey: walletPublicKey } = useWallet(chainId)
+  const { address: walletAddress = '', publicKey: walletPublicKey } =
+    useWallet(chainId)
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,
@@ -68,12 +32,10 @@ export const InnerPayrollTab = () => {
 
   const loadingStatus = loadableToLoadingData(
     useCachedLoadable(
-      walletPublicKey?.hex
-        ? statusSelector({
-            daoAddress: coreAddress,
-            walletPublicKey: walletPublicKey.hex,
-          })
-        : undefined
+      statusSelector({
+        daoAddress: coreAddress,
+        walletPublicKey: walletPublicKey?.hex ?? '_',
+      })
     ),
     undefined
   )
@@ -82,6 +44,29 @@ export const InnerPayrollTab = () => {
       listCompletedSurveysSelector({
         daoAddress: coreAddress,
       })
+    ),
+    []
+  )
+  // Get voting power at time of each completed survey creation to determine if
+  // we can download the CSV or not.
+  const loadingMembershipDuringCompletedSurveys = loadableToLoadingData(
+    useCachedLoadable(
+      loadingCompletedSurveys.loading || !walletAddress
+        ? undefined
+        : waitForAll(
+            loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
+              CwdCoreV2Selectors.votingPowerAtHeightSelector({
+                contractAddress: coreAddress,
+                chainId,
+                params: [
+                  {
+                    address: walletAddress,
+                    height: createdAtBlockHeight,
+                  },
+                ],
+              })
+            )
+          )
     ),
     []
   )
@@ -158,15 +143,16 @@ export const InnerPayrollTab = () => {
 
   return (
     <StatelessPayrollTab
-      ContributionForm={ContributionForm}
       IconButtonLink={IconButtonLink}
       NewSurveyForm={NewSurveyForm}
-      ProposalCreationForm={ProposalCreationForm}
-      RatingForm={RatingForm}
+      OpenSurveySection={OpenSurveySection}
       downloadCompletedSurvey={downloadCompletedSurvey}
       isMember={isMember}
       loadingCompletedSurveyId={loadingCompletedSurveyId}
       loadingCompletedSurveys={loadingCompletedSurveys}
+      loadingMembershipDuringCompletedSurveys={
+        loadingMembershipDuringCompletedSurveys
+      }
       loadingStatus={loadingStatus}
     />
   )

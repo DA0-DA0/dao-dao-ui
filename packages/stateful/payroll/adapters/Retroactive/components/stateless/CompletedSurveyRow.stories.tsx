@@ -24,6 +24,7 @@ Default.args = {
     contributionCount: 10,
     contributionsOpenedAt: new Date().toISOString(),
     proposalId: 'A1',
+    createdAtBlockHeight: 1,
   },
   IconButtonLink,
 }

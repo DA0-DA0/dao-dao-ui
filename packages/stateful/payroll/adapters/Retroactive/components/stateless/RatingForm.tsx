@@ -52,29 +52,26 @@ export interface NominationForm {
 
 export interface RatingFormProps {
   status: Status
-  data:
-    | ContributionRatingData
-    // If undefined, needs to be loaded.
-    | undefined
-  loadData: () => Promise<void>
+  data: ContributionRatingData
   onSubmit: (data: RatingsFormData) => Promise<void>
-  loading: boolean
+  loadingSubmit: boolean
   ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
   cw20TokenInfos: TokenInfoResponseWithAddressAndLogo[]
   prices: AmountWithTimestampAndDenom[]
   onNominate: (data: NominationForm) => Promise<void>
+  loadingNominate: boolean
 }
 
 export const RatingForm = ({
   status: { survey, rated },
   data,
-  loadData,
   onSubmit,
-  loading,
+  loadingSubmit,
   ProfileDisplay,
   cw20TokenInfos,
   prices,
   onNominate,
+  loadingNominate,
 }: RatingFormProps) => {
   const { t } = useTranslation()
 
@@ -87,7 +84,7 @@ export const RatingForm = ({
   // When contributions load, set the default form values.
   const ratings = watch('ratings')
   useEffect(() => {
-    if (data && !ratings.length) {
+    if (data && ratings.length !== data.contributions.length) {
       reset({
         ratings: data.contributions.map(({ id }) => ({
           contributionId: id,
@@ -159,245 +156,237 @@ export const RatingForm = ({
 
       <MarkdownPreview markdown={survey.ratingInstructions} />
 
-      {!data ? (
-        <Button
-          className="self-start"
-          loading={loading}
-          onClick={loadData}
-          variant="primary"
+      <form
+        className="flex flex-col gap-4 pb-10"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div
+          className="grid-rows-auto -mb-2 grid items-stretch justify-items-stretch overflow-x-auto pb-4"
+          // Column for contributor, each attribute, and projected
+          // compenstaion.
+          style={{
+            gridTemplateColumns: `1fr ${survey.attributes
+              .map(() => 'auto')
+              .join(' ')} auto`,
+          }}
         >
-          {t('button.rateContributions')}
-        </Button>
-      ) : (
-        <form
-          className="flex flex-col gap-4 pb-10"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div
-            className="grid-rows-auto -mb-2 grid items-stretch justify-items-stretch overflow-x-auto pb-4"
-            // Column for contributor, each attribute, and projected
-            // compenstaion.
-            style={{
-              gridTemplateColumns: `1fr ${survey.attributes
-                .map(() => 'auto')
-                .join(' ')} auto`,
-            }}
-          >
-            {/* Row for titles, which are mostly attribute names. */}
-            <p className="rounded-tl-md bg-background-primary p-6">
-              {t('title.contributor')}
+          {/* Row for titles, which are mostly attribute names. */}
+          <p className="rounded-tl-md bg-background-primary p-6">
+            {t('title.contributor')}
+          </p>
+          {/* Attribute labels */}
+          {survey.attributes.map(({ name }, attributeIndex) => (
+            <p
+              key={attributeIndex}
+              className="border-l border-border-secondary bg-background-primary p-6"
+            >
+              {name}
             </p>
-            {/* Attribute labels */}
-            {survey.attributes.map(({ name }, attributeIndex) => (
-              <p
-                key={attributeIndex}
-                className="border-l border-border-secondary bg-background-primary p-6"
-              >
-                {name}
-              </p>
-            ))}
-            {/* Projected compensation */}
-            <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-6 text-right">
-              {t('title.projectedCompensation')}
-            </p>
+          ))}
+          {/* Projected compensation */}
+          <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-6 text-right">
+            {t('title.projectedCompensation')}
+          </p>
 
-            {data.contributions.map((contribution, contributionIndex) => {
-              // Every other row.
-              const backgroundClassName =
-                contributionIndex % 2 !== 0 && 'bg-background-tertiary'
+          {data.contributions.map((contribution, contributionIndex) => {
+            // Every other row.
+            const backgroundClassName =
+              contributionIndex % 2 !== 0 && 'bg-background-tertiary'
 
-              const compensationForContribution =
-                compensation[contributionIndex].compensationPerAttribute
-              const nativeTokens = compensationForContribution
-                .flatMap(({ nativeTokens }) => nativeTokens)
-                .reduce(
-                  (acc, { denom, amount }) => ({
-                    ...acc,
-                    [denom]:
-                      (acc[denom] ?? 0) +
-                      convertMicroDenomToDenomWithDecimals(
-                        amount,
-                        nativeTokenDecimals(denom) ?? 0
-                      ),
-                  }),
-                  {} as Record<string, number>
-                )
-              const cw20Tokens = compensationForContribution
-                .flatMap(({ cw20Tokens }) => cw20Tokens)
-                .reduce(
-                  (acc, { address, amount }) => ({
-                    ...acc,
-                    [address]:
-                      (acc[address] ?? 0) +
-                      convertMicroDenomToDenomWithDecimals(
-                        amount,
-                        cw20TokenInfosMap[address]?.decimals ?? 0
-                      ),
-                  }),
-                  {} as Record<string, number>
-                )
-              const totalUsdc = [
-                ...Object.entries(nativeTokens).map(
-                  ([denom, amount]) => (pricesMap[denom]?.amount ?? 0) * amount
-                ),
-                ...Object.entries(cw20Tokens).map(
-                  ([address, amount]) =>
-                    (pricesMap[address]?.amount ?? 0) * amount
-                ),
-              ].reduce((acc, amount) => acc + amount, 0)
-
-              const attributeRatingsFieldName =
-                `ratings.${contributionIndex}.attributes` as const
-              const attributeRatings = watch(attributeRatingsFieldName) || []
-              const allRatingsAbstain = attributeRatings.every(
-                (rating) => rating === null
+            const compensationForContribution =
+              compensation[contributionIndex].compensationPerAttribute
+            const nativeTokens = compensationForContribution
+              .flatMap(({ nativeTokens }) => nativeTokens)
+              .reduce(
+                (acc, { denom, amount }) => ({
+                  ...acc,
+                  [denom]:
+                    (acc[denom] ?? 0) +
+                    convertMicroDenomToDenomWithDecimals(
+                      amount,
+                      nativeTokenDecimals(denom) ?? 0
+                    ),
+                }),
+                {} as Record<string, number>
               )
-              const toggleAbstain = () =>
-                allRatingsAbstain
-                  ? setValue(
-                      attributeRatingsFieldName,
-                      [...Array(survey.attributes.length)].map(() => 0)
-                    )
-                  : setValue(
-                      attributeRatingsFieldName,
-                      [...Array(survey.attributes.length)].map(() => null)
-                    )
+            const cw20Tokens = compensationForContribution
+              .flatMap(({ cw20Tokens }) => cw20Tokens)
+              .reduce(
+                (acc, { address, amount }) => ({
+                  ...acc,
+                  [address]:
+                    (acc[address] ?? 0) +
+                    convertMicroDenomToDenomWithDecimals(
+                      amount,
+                      cw20TokenInfosMap[address]?.decimals ?? 0
+                    ),
+                }),
+                {} as Record<string, number>
+              )
+            const totalUsdc = [
+              ...Object.entries(nativeTokens).map(
+                ([denom, amount]) => (pricesMap[denom]?.amount ?? 0) * amount
+              ),
+              ...Object.entries(cw20Tokens).map(
+                ([address, amount]) =>
+                  (pricesMap[address]?.amount ?? 0) * amount
+              ),
+            ].reduce((acc, amount) => acc + amount, 0)
 
-              return (
-                <Fragment key={contribution.id}>
-                  <div
-                    className={clsx(
-                      'min-w-[14rem] space-y-2 border-border-secondary p-6',
-                      backgroundClassName,
-                      contributionIndex === data.contributions.length - 1 &&
-                        'rounded-bl-md'
-                    )}
-                  >
-                    <ProfileDisplay
-                      address={contribution.contributor.address}
-                      walletHexPublicKey={contribution.contributor.publicKey}
+            const attributeRatingsFieldName =
+              `ratings.${contributionIndex}.attributes` as const
+            const attributeRatings = watch(attributeRatingsFieldName) || []
+            const allRatingsAbstain = attributeRatings.every(
+              (rating) => rating === null
+            )
+            const toggleAbstain = () =>
+              allRatingsAbstain
+                ? setValue(
+                    attributeRatingsFieldName,
+                    [...Array(survey.attributes.length)].map(() => 0)
+                  )
+                : setValue(
+                    attributeRatingsFieldName,
+                    [...Array(survey.attributes.length)].map(() => null)
+                  )
+
+            return (
+              <Fragment key={contribution.id}>
+                <div
+                  className={clsx(
+                    'min-w-[14rem] space-y-2 border-border-secondary p-6',
+                    backgroundClassName,
+                    contributionIndex === data.contributions.length - 1 &&
+                      'rounded-bl-md'
+                  )}
+                >
+                  <ProfileDisplay
+                    address={contribution.contributor.address}
+                    walletHexPublicKey={contribution.contributor.publicKey}
+                  />
+
+                  <MarkdownPreview
+                    className="styled-scrollbar max-h-40 overflow-y-auto py-2 pr-2"
+                    markdown={contribution.content}
+                  />
+
+                  <div className="!mt-4 flex flex-row items-center gap-2">
+                    <Checkbox
+                      checked={allRatingsAbstain}
+                      onClick={toggleAbstain}
+                      size="sm"
                     />
 
-                    <MarkdownPreview
-                      className="styled-scrollbar max-h-40 overflow-y-auto py-2 pr-2"
-                      markdown={contribution.content}
-                    />
-
-                    <div className="!mt-4 flex flex-row items-center gap-2">
-                      <Checkbox
-                        checked={allRatingsAbstain}
-                        onClick={toggleAbstain}
-                        size="sm"
-                      />
-
-                      <p
-                        className="body-text cursor-pointer text-xs"
-                        onClick={toggleAbstain}
-                      >
-                        {t('info.dontKnowNotSure')}
-                      </p>
-                    </div>
-                  </div>
-
-                  {survey.attributes.map((_, attributeIndex) => (
-                    <div
-                      key={attributeIndex}
-                      className={clsx(
-                        'flex flex-col justify-center border-l border-border-secondary p-6',
-                        backgroundClassName
-                      )}
+                    <p
+                      className="body-text cursor-pointer text-xs"
+                      onClick={toggleAbstain}
                     >
-                      <RangeInput
-                        className="!h-20 w-40"
-                        fieldName={`ratings.${contributionIndex}.attributes.${attributeIndex}`}
-                        max={100}
-                        min={0}
-                        onStartChange={
-                          // If starting to change, unset abstaining for
-                          // all.
-                          allRatingsAbstain ? toggleAbstain : undefined
-                        }
-                        setValue={setValue}
-                        watch={watch}
-                      />
-                    </div>
-                  ))}
+                      {t('info.dontKnowNotSure')}
+                    </p>
+                  </div>
+                </div>
 
-                  {/* Projected compensation */}
+                {survey.attributes.map((_, attributeIndex) => (
                   <div
+                    key={attributeIndex}
                     className={clsx(
-                      'flex flex-col items-end justify-center gap-1 border-l border-border-secondary p-6',
-                      backgroundClassName,
-                      contributionIndex === data.contributions.length - 1 &&
-                        'rounded-br-md'
+                      'flex flex-col justify-center border-l border-border-secondary p-6',
+                      backgroundClassName
                     )}
                   >
-                    {!allRatingsAbstain && (
-                      <>
-                        {Object.entries(nativeTokens).map(
-                          ([denom, amount], index) => (
-                            <TokenAmountDisplay
-                              key={index}
-                              amount={amount}
-                              className="text-right"
-                              decimals={nativeTokenDecimals(denom) ?? 0}
-                              iconUrl={nativeTokenLogoURI(denom)}
-                              symbol={nativeTokenLabel(denom)}
-                            />
-                          )
-                        )}
-                        {Object.entries(cw20Tokens).map(
-                          ([address, amount], index) => (
-                            <TokenAmountDisplay
-                              key={index}
-                              amount={amount}
-                              className="text-right"
-                              decimals={
-                                cw20TokenInfosMap[address]?.decimals ?? 0
-                              }
-                              iconUrl={
-                                cw20TokenInfosMap[address]?.logoUrl ||
-                                getFallbackImage(address)
-                              }
-                              symbol={
-                                cw20TokenInfosMap[address]?.symbol ?? address
-                              }
-                            />
-                          )
-                        )}
-
-                        <div className="mt-4">
-                          <TokenAmountDisplay
-                            amount={totalUsdc}
-                            className="caption-text text-right"
-                            dateFetched={prices[0]?.timestamp}
-                            hideApprox
-                            prefix="= "
-                            usdcConversion
-                          />
-                        </div>
-                      </>
-                    )}
+                    <RangeInput
+                      className="!h-20 w-40"
+                      fieldName={`ratings.${contributionIndex}.attributes.${attributeIndex}`}
+                      max={100}
+                      min={0}
+                      onStartChange={
+                        // If starting to change, unset abstaining for
+                        // all.
+                        allRatingsAbstain ? toggleAbstain : undefined
+                      }
+                      setValue={setValue}
+                      watch={watch}
+                    />
                   </div>
-                </Fragment>
-              )
-            })}
-          </div>
+                ))}
 
-          {rated && (
-            <p className="caption-text self-end text-right text-text-interactive-valid">
-              {t('form.ratingsSubmitted')}
-            </p>
-          )}
+                {/* Projected compensation */}
+                <div
+                  className={clsx(
+                    'flex flex-col items-end justify-center gap-1 border-l border-border-secondary p-6',
+                    backgroundClassName,
+                    contributionIndex === data.contributions.length - 1 &&
+                      'rounded-br-md'
+                  )}
+                >
+                  {!allRatingsAbstain && (
+                    <>
+                      {Object.entries(nativeTokens).map(
+                        ([denom, amount], index) => (
+                          <TokenAmountDisplay
+                            key={index}
+                            amount={amount}
+                            className="text-right"
+                            decimals={nativeTokenDecimals(denom) ?? 0}
+                            iconUrl={nativeTokenLogoURI(denom)}
+                            symbol={nativeTokenLabel(denom)}
+                          />
+                        )
+                      )}
+                      {Object.entries(cw20Tokens).map(
+                        ([address, amount], index) => (
+                          <TokenAmountDisplay
+                            key={index}
+                            amount={amount}
+                            className="text-right"
+                            decimals={cw20TokenInfosMap[address]?.decimals ?? 0}
+                            iconUrl={
+                              cw20TokenInfosMap[address]?.logoUrl ||
+                              getFallbackImage(address)
+                            }
+                            symbol={
+                              cw20TokenInfosMap[address]?.symbol ?? address
+                            }
+                          />
+                        )
+                      )}
 
-          <Button className="self-end" loading={loading} type="submit">
-            <p>{rated ? t('button.update') : t('button.submit')}</p>
-            <Publish className="!h-4 !w-4" />
-          </Button>
-        </form>
-      )}
+                      <div className="mt-4">
+                        <TokenAmountDisplay
+                          amount={totalUsdc}
+                          className="caption-text text-right"
+                          dateFetched={prices[0]?.timestamp}
+                          hideApprox
+                          prefix="= "
+                          usdcConversion
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </Fragment>
+            )
+          })}
+        </div>
 
-      <div className="mt-4 flex flex-col">
+        {rated && (
+          <p className="caption-text self-end text-right text-text-interactive-valid">
+            {t('form.ratingsSubmitted')}
+          </p>
+        )}
+
+        <Button
+          className="self-end"
+          disabled={loadingNominate}
+          loading={loadingSubmit}
+          type="submit"
+        >
+          <p>{rated ? t('button.update') : t('button.submit')}</p>
+          <Publish className="!h-4 !w-4" />
+        </Button>
+      </form>
+
+      <div className="flex flex-col rounded-lg bg-background-tertiary p-6">
         <p className="title-text mb-2">{t('title.nominateContributor')}</p>
         <MarkdownPreview markdown={t('info.nominateContributorDescription')} />
 
@@ -431,7 +420,12 @@ export const RatingForm = ({
             <InputErrorMessage error={nominationErrors?.contribution} />
           </div>
 
-          <Button className="self-end" loading={loading} type="submit">
+          <Button
+            className="self-end"
+            disabled={loadingSubmit}
+            loading={loadingNominate}
+            type="submit"
+          >
             {t('button.nominate')}
             <Publish className="!h-4 !w-4" />
           </Button>

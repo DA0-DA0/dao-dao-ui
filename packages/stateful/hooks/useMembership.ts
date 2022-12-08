@@ -6,6 +6,7 @@ import { useCachedLoadable } from '@dao-dao/stateless'
 interface UseMembershipOptions {
   coreAddress: string
   chainId?: string
+  blockHeight?: number
 }
 
 interface UseMembershipResponse {
@@ -18,6 +19,7 @@ interface UseMembershipResponse {
 export const useMembership = ({
   coreAddress,
   chainId,
+  blockHeight,
 }: UseMembershipOptions): UseMembershipResponse => {
   const { address: walletAddress } = useWallet(chainId)
 
@@ -28,7 +30,12 @@ export const useMembership = ({
       ? CwdCoreV2Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           chainId,
-          params: [{ address: walletAddress }],
+          params: [
+            {
+              address: walletAddress,
+              height: blockHeight,
+            },
+          ],
         })
       : undefined
   )
@@ -36,7 +43,11 @@ export const useMembership = ({
     CwdCoreV2Selectors.totalPowerAtHeightSelector({
       contractAddress: coreAddress,
       chainId,
-      params: [{}],
+      params: [
+        {
+          height: blockHeight,
+        },
+      ],
     })
   )
 

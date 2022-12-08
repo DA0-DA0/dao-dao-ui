@@ -32,12 +32,10 @@ export const CompletedSurveyRow = ({
         'cursor-pointer rounded-md bg-background-secondary transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
         className
       )}
+      onClick={onClick}
     >
       {/* Desktop */}
-      <div
-        className="hidden h-12 flex-row items-center gap-6 p-3 sm:flex"
-        onClick={onClick}
-      >
+      <div className="hidden h-12 flex-row items-center gap-6 p-3 sm:flex">
         <p className="body-text grow truncate">{name}</p>
 
         {!!proposalId && (
