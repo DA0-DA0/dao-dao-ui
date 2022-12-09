@@ -10,7 +10,12 @@ import {
 } from '@dao-dao/stateless'
 import { CoreActionKey } from '@dao-dao/types'
 import { TokenCardInfo } from '@dao-dao/types/dao'
-import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
+import {
+  NATIVE_DENOM,
+  StakeType,
+  loadableToLoadingData,
+  useAddToken,
+} from '@dao-dao/utils'
 
 import { useCoreActionForKey } from '../../actions'
 import { useEncodedDaoProposalSinglePrefill } from '../../hooks'
@@ -105,14 +110,18 @@ export const TokenCard = (props: TokenCardInfo) => {
   )
 
   const proposeClaimHref =
-    prefillValid && stakesWithRewards.length > 0 && encodedProposalPrefillClaim
+    prefillValid &&
+    stakesWithRewards.length > 0 &&
+    encodedProposalPrefillClaim &&
+    props.tokenDenom === NATIVE_DENOM
       ? `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillClaim}`
       : undefined
 
   const proposeStakeUnstakeHref =
     prefillValid &&
     (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
-    encodedProposalPrefillStakeUnstake
+    encodedProposalPrefillStakeUnstake &&
+    props.tokenDenom === NATIVE_DENOM
       ? `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillStakeUnstake}`
       : undefined
 
