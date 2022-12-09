@@ -66,7 +66,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               validateAddress(v) || validateContractAddress(v, false),
           ]}
         />
-        <InputErrorMessage error={errors?.admin} />
+        <InputErrorMessage error={errors?.value?.grantee} />
       </div>
 
       {!data.custom ? (
@@ -106,9 +106,9 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         </div>
       )}
 
-      <div className="bg-card flex grow flex-row items-center justify-between gap-4 rounded-md py-2">
+      <div className="flex grow flex-row items-center justify-between gap-4 rounded-md py-2">
         <FormSwitchCard
-          containerClassName="grow"
+          containerClassName="grow mt-2"
           fieldName={fieldNamePrefix + 'custom'}
           label={t('form.authzUseCustomMessageType')}
           readOnly={!isCreating}

@@ -25,6 +25,7 @@ import {
   DistributionMsg,
   MintMsg,
   StakingMsg,
+  StargateMsg,
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
 
@@ -53,8 +54,6 @@ const WASM_TYPES: WasmMsgType[] = [
   'clear_admin',
 ]
 
-export type CosmWasmStargateMsg = { stargate: { type_url: string; value: any } }
-
 const BINARY_WASM_TYPES: { [key: string]: boolean } = {
   execute: true,
   instantiate: true,
@@ -77,9 +76,7 @@ function getWasmMsgType(wasm: WasmMsg): WasmMsgType | undefined {
   return undefined
 }
 
-export function isStargateMsg(
-  msg?: CosmWasmStargateMsg
-): msg is CosmWasmStargateMsg {
+export function isStargateMsg(msg?: CosmosMsgFor_Empty): boolean {
   if (msg) {
     return (msg as any).stargate !== undefined
   }
@@ -94,11 +91,10 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
 }
 
 export function decodeMessages(
-  msgs: CosmosMsgFor_Empty[] | CosmWasmStargateMsg[]
+  msgs: CosmosMsgFor_Empty[]
 ): { [key: string]: any }[] {
   const decodedMessageArray: any[] = []
-  const proposalMsgs = Object.values(msgs)
-  for (const msgObj of proposalMsgs) {
+  for (const msgObj of msgs) {
     if (isWasmMsg(msgObj)) {
       const msgType = getWasmMsgType(msgObj.wasm)
       if (msgType && isBinaryType(msgType)) {
@@ -120,8 +116,9 @@ export function decodeMessages(
         }
       }
     } else if (isStargateMsg(msgObj)) {
+      let msg = msgObj as StargateMsg
       // Decode Stargate protobuf message
-      msgObj.stargate = decodeProtobuf(msgObj.stargate)
+      msg.stargate = decodeProtobuf(msg.stargate)
       decodedMessageArray.push(msgObj)
     } else {
       decodedMessageArray.push(msgObj)
@@ -130,7 +127,7 @@ export function decodeMessages(
 
   const decodedMessages = decodedMessageArray.length
     ? decodedMessageArray
-    : proposalMsgs
+    : msgs
 
   return decodedMessages
 }
@@ -365,7 +362,7 @@ export const makeRawProtobufMsg = (msg: {
 // CosmWasm expects type_url to be in snake_case format
 export const makeStargateMessage = (message: {
   stargate: { type_url: string; value: any }
-}): CosmWasmStargateMsg => ({
+}): CosmosMsgFor_Empty => ({
   stargate: {
     type_url: message.stargate.type_url,
     value: encodeProtobufValue(
@@ -469,12 +466,10 @@ export const makeStakingMessage = (
 
 export const makeDistributeMessage = (
   validator: string
-): CosmosMsgFor_Empty => {
-  return {
-    distribution: {
-      withdraw_delegator_reward: {
-        validator,
-      },
-    } as DistributionMsg,
-  }
-}
+): CosmosMsgFor_Empty => ({
+  distribution: {
+    withdraw_delegator_reward: {
+      validator,
+    },
+  } as DistributionMsg,
+})

@@ -39,7 +39,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
 ) =>
   useMemo(
     () =>
-      'stargate' in msg && msg.stargate.typeUrl && msg.stargate.value
+      'stargate' in msg &&
+      msg.stargate.value &&
+      (msg.stargate.type_url === '/cosmos.authz.v1beta1.MsgGrant' ||
+        msg.stargate.type_url === '/cosmos.authz.v1beta1.MsgRevoke')
         ? {
             match: true,
             data: {

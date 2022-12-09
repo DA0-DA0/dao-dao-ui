@@ -230,7 +230,7 @@
     "attributeNamePlaceholder": "Community impact",
     "authzCustomMessageTypeTooltip": "Use a custom protobuf message type. WARNING: do not use this feature unless you know what you're doing.",
     "authzExecActionType": "Authz Exec Action Type",
-    "authzExecActionTypeTooltip": "The type of action to be executed on behalf of another account.",
+    "authzExecActionTypeTooltip": "This is the type of action that will be executed on behalf of another account.",
     "authzUseCustomMessageType": "Use custom message type",
     "automaticallyAddNFTsTitle": "Automatically add NFTs",
     "automaticallyAddNFTsTooltip": "Should NFTs sent to the DAO get added to the treasury?",

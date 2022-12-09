@@ -81,7 +81,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
 ) =>
   useMemo(
     () =>
-      'stargate' in msg && msg.stargate.typeUrl && msg.stargate.value
+      'stargate' in msg &&
+      msg.stargate.type_url === '/cosmos.authz.v1beta1.MsgExec' &&
+      msg.stargate.value
         ? {
             match: true,
             data: msg as AuthzExecData,

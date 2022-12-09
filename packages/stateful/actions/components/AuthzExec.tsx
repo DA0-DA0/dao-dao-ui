@@ -7,13 +7,19 @@ import {
   InputErrorMessage,
   InputLabel,
   LockWithKeyEmoji,
+  NumberInput,
   SelectInput,
   TextInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
+  NATIVE_DECIMALS,
+  NATIVE_DENOM,
+  nativeTokenLabel,
   validateAddress,
   validateJSON,
+  validatePositive,
+  validateRequired,
   validateValidatorAddress,
 } from '@dao-dao/utils'
 
@@ -57,11 +63,17 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
 ) => {
   const { t } = useTranslation()
   const { fieldNamePrefix, onRemove, errors, isCreating } = props
-  const { control, register, watch } = useFormContext()
+  const { control, register, setValue, watch } = useFormContext()
 
   const authzExecActions = useAuthzExecActionTypes()
 
   const authzExecActionType = watch(fieldNamePrefix + 'authzExecActionType')
+
+  const minAmount = 1 / Math.pow(10, NATIVE_DECIMALS)
+
+  const delegateAmount = watch(fieldNamePrefix + 'delegate.amount.amount')
+  const redelegateAmount = watch(fieldNamePrefix + 'redelegate.amount.amount')
+  const undelegateAmount = watch(fieldNamePrefix + 'undelegate.amount.amount')
 
   return (
     <ActionCard
@@ -121,12 +133,27 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
           </div>
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('title.chooseTokenAmount')} />
-            <TextInput
+            <NumberInput
               disabled={!isCreating}
               error={errors?.delegate?.amount?.amount}
               fieldName={fieldNamePrefix + 'delegate.amount.amount'}
-              placeholder="0"
+              min={minAmount}
+              onMinus={() =>
+                setValue(
+                  fieldNamePrefix + 'amount',
+                  Math.max(delegateAmount - 1, minAmount)
+                )
+              }
+              onPlus={() =>
+                setValue(
+                  fieldNamePrefix + 'amount',
+                  Math.max(delegateAmount + 1, minAmount)
+                )
+              }
               register={register}
+              step={minAmount}
+              unit={'$' + nativeTokenLabel(NATIVE_DENOM)}
+              validation={[validatePositive, validateRequired]}
             />
             <InputErrorMessage error={errors?.delegate?.amount?.amount} />
           </div>
@@ -164,12 +191,27 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
           </div>
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('title.chooseTokenAmount')} />
-            <TextInput
+            <NumberInput
               disabled={!isCreating}
               error={errors?.undelegate?.amount?.amount}
               fieldName={fieldNamePrefix + 'undelegate.amount.amount'}
-              placeholder="0"
+              min={minAmount}
+              onMinus={() =>
+                setValue(
+                  fieldNamePrefix + 'amount',
+                  Math.max(undelegateAmount - 1, minAmount)
+                )
+              }
+              onPlus={() =>
+                setValue(
+                  fieldNamePrefix + 'amount',
+                  Math.max(undelegateAmount + 1, minAmount)
+                )
+              }
               register={register}
+              step={minAmount}
+              unit={'$' + nativeTokenLabel(NATIVE_DENOM)}
+              validation={[validatePositive, validateRequired]}
             />
             <InputErrorMessage error={errors?.undelegate?.amount?.amount} />
           </div>
@@ -226,12 +268,27 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
           </div>
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('title.chooseTokenAmount')} />
-            <TextInput
+            <NumberInput
               disabled={!isCreating}
               error={errors?.redelegate?.amount?.amount}
               fieldName={fieldNamePrefix + 'redelegate.amount.amount'}
-              placeholder="0"
+              min={minAmount}
+              onMinus={() =>
+                setValue(
+                  fieldNamePrefix + 'amount',
+                  Math.max(redelegateAmount - 1, minAmount)
+                )
+              }
+              onPlus={() =>
+                setValue(
+                  fieldNamePrefix + 'amount',
+                  Math.max(redelegateAmount + 1, minAmount)
+                )
+              }
               register={register}
+              step={minAmount}
+              unit={'$' + nativeTokenLabel(NATIVE_DENOM)}
+              validation={[validatePositive, validateRequired]}
             />
             <InputErrorMessage error={errors?.redelegate?.amount?.amount} />
           </div>
