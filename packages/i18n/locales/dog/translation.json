@@ -81,16 +81,16 @@
     "withDecodedModuleMessages": "wif dekodded modul messajez"
   },
   "daoCreationAdapter": {
-    "CwdProposalSingle": {
+    "DaoProposalSingle": {
       "advancedWarning": "deez iz advancd fitchurz. threshhold n kwurum kan interact in counterintuitev wayz. if u configure dem wifout fullie understanding how dey werk, u kan lock yer da0, makin it impossibul 4 puppozalz 2 passs."
     },
-    "CwdVotingCw20Staked": {
+    "DaoVotingCw20Staked": {
       "description": "fluud organizashon wif manie memberz hoo can joinn n leev az dey wish. memberz can alter der goobernanz powa n particippashon by exchangin tokenz.",
       "membership": "bi steakin tokkenz",
       "name": "tokken-based da0",
       "supplies": "tokkenz"
     },
-    "CwdVotingCw4": {
+    "DaoVotingCw4": {
       "description": "smol organizashon wif a few membberz hoo are likely 2 stick aroun. membberz can b addd n remoovd by a voat ov existin membberz",
       "membership": "by invitashon",
       "name": "membarship da0 (mullteesig)",
@@ -432,10 +432,8 @@
     "title": "da0 da0"
   },
   "proposalModuleLabel": {
-    "cw-govmod-single": "singgle choic",
-    "cw-proposal-single": "singgle choic",
-    "cwd-proposal-multiple": "multipl choize",
-    "cwd-proposal-single": "singgle choic"
+    "DaoProposalMultiple": "multipl choize",
+    "DaoProposalSingle": "singgle choic"
   },
   "proposalStatusTitle": {
     "closed": "clozd",

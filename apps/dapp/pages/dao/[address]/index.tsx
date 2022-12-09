@@ -14,7 +14,7 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { CwdCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
   DaoInfoBar,
   DaoPageWrapper,
@@ -24,7 +24,7 @@ import {
   SubDaosTab,
   SuspenseLoader,
   TreasuryAndNftsTab,
-  useEncodedCwdProposalSinglePrefill,
+  useEncodedDaoProposalSinglePrefill,
   usePinnedDaos,
   useVotingModule,
   useWalletInfo,
@@ -72,7 +72,7 @@ const InnerDaoHome = () => {
   )
   const parentDaosSubDaosLoadable = useRecoilValueLoadable(
     daoInfo.parentDao
-      ? CwdCoreV2Selectors.listAllSubDaosSelector({
+      ? DaoCoreV2Selectors.listAllSubDaosSelector({
           contractAddress: daoInfo.parentDao.coreAddress,
         })
       : constSelector(undefined)
@@ -80,7 +80,7 @@ const InnerDaoHome = () => {
   const manageSubDaosAction = useCoreActionForKey(CoreActionKey.ManageSubDaos)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageSubDaosAction
-  const encodedAddSubDaoProposalPrefill = useEncodedCwdProposalSinglePrefill(
+  const encodedAddSubDaoProposalPrefill = useEncodedDaoProposalSinglePrefill(
     manageSubDaosAction
       ? {
           title: t('title.recognizeSubDao', {

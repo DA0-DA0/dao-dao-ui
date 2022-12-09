@@ -14,7 +14,7 @@ import {
 
 import { refreshTokenUsdcPriceAtom } from '../atoms/refresh'
 import { cosmWasmClientForChainSelector, nativeBalancesSelector } from './chain'
-import { CwdCoreV2Selectors } from './contracts'
+import { DaoCoreV2Selectors } from './contracts'
 import { junoswapPoolsListSelector } from './pools'
 
 // TODO(multichain): Figure out how to match CW20s on other chains to CW20s in
@@ -140,7 +140,7 @@ export const daoTvlSelector = selectorFamily<
         nativeBalancesSelector({ address: coreAddress, chainId })
       )
       const cw20Balances = get(
-        CwdCoreV2Selectors.cw20BalancesInfoSelector({
+        DaoCoreV2Selectors.cw20BalancesInfoSelector({
           contractAddress: coreAddress,
           chainId,
           governanceTokenAddress: cw20GovernanceTokenAddress,

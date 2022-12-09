@@ -1,7 +1,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { CwdCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 
 interface UseVotingModuleOptions {
@@ -24,7 +24,7 @@ export const useVotingModule = (
   const { address: walletAddress } = useWallet(chainId)
 
   const votingModuleAddress = useRecoilValue(
-    CwdCoreV2Selectors.votingModuleSelector({
+    DaoCoreV2Selectors.votingModuleSelector({
       contractAddress: coreAddress,
       chainId,
       params: [],
@@ -34,7 +34,7 @@ export const useVotingModule = (
   // changes and on initial load if wallet is connecting.
   const _walletVotingWeight = useCachedLoadable(
     fetchMembership && walletAddress
-      ? CwdCoreV2Selectors.votingPowerAtHeightSelector({
+      ? DaoCoreV2Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           chainId,
           params: [
@@ -48,7 +48,7 @@ export const useVotingModule = (
   )
   const _totalVotingWeight = useRecoilValue(
     fetchMembership
-      ? CwdCoreV2Selectors.totalPowerAtHeightSelector({
+      ? DaoCoreV2Selectors.totalPowerAtHeightSelector({
           contractAddress: coreAddress,
           chainId,
           params: [

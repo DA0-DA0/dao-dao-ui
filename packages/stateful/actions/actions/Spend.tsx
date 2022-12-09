@@ -4,7 +4,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  CwdCoreV2Selectors,
+  DaoCoreV2Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
 import {
@@ -55,7 +55,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
     const cw20BalancesAndInfosLoadable = useCachedLoadable(
       context.type === ActionOptionsContextType.Dao
         ? // Get DAO's cw20 balances and infos.
-          CwdCoreV2Selectors.allCw20BalancesAndInfosSelector({
+          DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
             contractAddress: address,
             governanceTokenAddress,
           })

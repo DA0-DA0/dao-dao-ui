@@ -1,6 +1,6 @@
 import { UseGovernanceTokenInfoResponse } from '@dao-dao/types'
 
-import { CwdVotingNativeStakedAdapter } from '../../adapters/CwdVotingNativeStaked'
+import { DaoVotingNativeStakedAdapter } from '../../adapters/DaoVotingNativeStaked'
 import { useVotingModuleAdapterContextIfAvailable } from '../context'
 
 // Returns the useGovernanceTokenInfo hook response if using the native-staked
@@ -21,7 +21,7 @@ export const useNativeGovernanceTokenInfoResponseIfExists = ():
 
   const governanceTokenInfoResponse = useGovernanceTokenInfo?.()
 
-  return id === CwdVotingNativeStakedAdapter.id
+  return id === DaoVotingNativeStakedAdapter.id
     ? governanceTokenInfoResponse
     : undefined
 }

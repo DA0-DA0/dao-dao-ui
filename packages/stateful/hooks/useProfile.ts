@@ -1,4 +1,4 @@
-import { CwdCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { LoadingData, Profile, WithChainId } from '@dao-dao/types'
 import {
@@ -27,7 +27,7 @@ export const useProfile = ({
     !walletHexPublicKey &&
       address &&
       isValidContractAddress(address, CHAIN_BECH32_PREFIX)
-      ? CwdCoreV2Selectors.configSelector({
+      ? DaoCoreV2Selectors.configSelector({
           contractAddress: address,
           chainId,
           params: [],

@@ -11,7 +11,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
-import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/CwdCore.v2'
+import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
 
 import {

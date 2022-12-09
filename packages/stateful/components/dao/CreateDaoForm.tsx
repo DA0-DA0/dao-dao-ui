@@ -27,8 +27,8 @@ import {
   NewDao,
   ProposalModuleAdapter,
 } from '@dao-dao/types'
-import { InstantiateMsg as CwdCoreV2InstantiateMsg } from '@dao-dao/types/contracts/CwdCore.v2'
-import instantiateSchema from '@dao-dao/types/contracts/CwdCore.v2.instantiate_schema.json'
+import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
+import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_schema.json'
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,
@@ -58,14 +58,14 @@ import {
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
 import {
-  CwdVotingCw20StakedAdapter,
+  DaoVotingCw20StakedAdapter,
   getAdapterById as getVotingModuleAdapterById,
   getAdapters as getVotingModuleAdapters,
 } from '../../voting-module-adapter'
 import {
-  DaoCreationConfig as CwdVotingCw20StakedCreationConfig,
+  DaoCreationConfig as DaoVotingCw20StakedCreationConfig,
   GovernanceTokenType,
-} from '../../voting-module-adapter/adapters/CwdVotingCw20Staked/types'
+} from '../../voting-module-adapter/adapters/DaoVotingCw20Staked/types'
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 
@@ -224,7 +224,7 @@ export const CreateDaoForm = ({
   )
 
   const validateInstantiateMsg = useMemo(
-    () => makeValidateMsg<CwdCoreV2InstantiateMsg>(instantiateSchema, t),
+    () => makeValidateMsg<DaoCoreV2InstantiateMsg>(instantiateSchema, t),
     [t]
   )
 
@@ -244,7 +244,7 @@ export const CreateDaoForm = ({
         getInstantiateInfo(newDao, proposalModuleAdapters[index].data, t)
       )
 
-    const instantiateMsg: CwdCoreV2InstantiateMsg = {
+    const instantiateMsg: DaoCoreV2InstantiateMsg = {
       // If parentDao exists, let's make a subDAO :D
       admin: parentDao?.coreAddress ?? null,
       automatically_add_cw20s: true,
@@ -290,7 +290,7 @@ export const CreateDaoForm = ({
     const cwCoreInstantiateMsg = generateInstantiateMsg()
 
     const { logs } = await instantiateWithFactory({
-      codeId: CODE_ID_CONFIG.CwdCore,
+      codeId: CODE_ID_CONFIG.DaoCore,
       instantiateMsg: Buffer.from(
         JSON.stringify(cwCoreInstantiateMsg),
         'utf8'
@@ -325,8 +325,8 @@ export const CreateDaoForm = ({
     useState<CreateDaoCustomValidator>()
 
   const cw20StakedBalanceVotingData =
-    votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id
-      ? (votingModuleAdapter.data as CwdVotingCw20StakedCreationConfig)
+    votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id
+      ? (votingModuleAdapter.data as DaoVotingCw20StakedCreationConfig)
       : undefined
 
   const awaitNextBlock = useAwaitNextBlock()
@@ -362,7 +362,7 @@ export const CreateDaoForm = ({
 
             // Get tokenSymbol and tokenBalance for DAO card.
             const { tokenSymbol, tokenBalance, tokenDecimals } =
-              votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
+              votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id &&
               cw20StakedBalanceVotingData
                 ? //! Display governance token supply if using governance tokens.
                   {

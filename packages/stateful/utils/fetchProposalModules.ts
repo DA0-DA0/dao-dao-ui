@@ -1,6 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
-import { CwCoreV1QueryClient, CwdCoreV2QueryClient } from '@dao-dao/state'
+import { CwCoreV1QueryClient, DaoCoreV2QueryClient } from '@dao-dao/state'
 import {
   ContractVersion,
   FetchPreProposeAddressFunction,
@@ -58,7 +58,7 @@ export const fetchProposalModules = async (
 
   const getV2ProposalModules = async () =>
     (
-      await new CwdCoreV2QueryClient(
+      await new DaoCoreV2QueryClient(
         cwClient,
         coreAddress
       ).activeProposalModules({

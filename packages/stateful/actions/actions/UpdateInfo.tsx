@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { CwCoreV1Selectors, CwdCoreV2Selectors } from '@dao-dao/state'
+import { CwCoreV1Selectors, DaoCoreV2Selectors } from '@dao-dao/state'
 import { InfoEmoji } from '@dao-dao/stateless'
 import {
   ActionMaker,
@@ -80,7 +80,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
       ? CwCoreV1Selectors.configSelector({
           contractAddress: address,
         })
-      : CwdCoreV2Selectors.configSelector({
+      : DaoCoreV2Selectors.configSelector({
           contractAddress: address,
           params: [],
         })

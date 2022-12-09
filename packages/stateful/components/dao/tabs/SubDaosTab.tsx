@@ -34,7 +34,7 @@ export const SubDaosTab = () => {
   }, [subDaoCardInfosLoadable.contents, subDaoCardInfosLoadable.state])
 
   // TODO(v2): Add v1 to v2 migrate action.
-  // const encodedProposalPrefillUpgrade = useEncodedCwdProposalSinglePrefill({
+  // const encodedProposalPrefillUpgrade = useEncodedDaoProposalSinglePrefill({
   //   actions: [],
   // })
 

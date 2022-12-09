@@ -1,8 +1,8 @@
 import { selectorFamily } from 'recoil'
 
 import {
-  CwdCoreV2Selectors,
-  CwdVotingCw20StakedSelectors,
+  DaoCoreV2Selectors,
+  DaoVotingCw20StakedSelectors,
   contractVersionSelector,
   cosmWasmClientForChainSelector,
 } from '@dao-dao/state'
@@ -10,7 +10,7 @@ import { ProposalModule, WithChainId } from '@dao-dao/types'
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
-import { CwdVotingCw20StakedAdapter } from '../../../voting-module-adapter/adapters/CwdVotingCw20Staked'
+import { DaoVotingCw20StakedAdapter } from '../../../voting-module-adapter/adapters/DaoVotingCw20Staked'
 
 export const cwCoreProposalModulesSelector = selectorFamily<
   ProposalModule[],
@@ -45,7 +45,7 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
     ({ coreAddress, chainId }) =>
     ({ get }) => {
       const votingModuleAddress = get(
-        CwdCoreV2Selectors.votingModuleSelector({
+        DaoCoreV2Selectors.votingModuleSelector({
           contractAddress: coreAddress,
           chainId,
           params: [],
@@ -54,7 +54,7 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
       // All `info` queries are the same, so just use core's info query.
       const votingModuleInfo = votingModuleAddress
         ? get(
-            CwdCoreV2Selectors.infoSelector({
+            DaoCoreV2Selectors.infoSelector({
               contractAddress: votingModuleAddress,
               chainId,
               params: [],
@@ -67,7 +67,7 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
         usesCw20VotingModule =
           !!votingModuleInfo &&
           matchVotingModuleAdapter(votingModuleInfo.info.contract)?.id ===
-            CwdVotingCw20StakedAdapter.id
+            DaoVotingCw20StakedAdapter.id
       } catch {
         usesCw20VotingModule = false
       }
@@ -75,7 +75,7 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
       const cw20GovernanceTokenAddress =
         votingModuleAddress && usesCw20VotingModule
           ? get(
-              CwdVotingCw20StakedSelectors.tokenContractSelector({
+              DaoVotingCw20StakedSelectors.tokenContractSelector({
                 contractAddress: votingModuleAddress,
                 chainId,
                 params: [],

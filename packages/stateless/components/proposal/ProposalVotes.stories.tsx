@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { VoteDisplay } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/components/ProposalVotes/VoteDisplay'
-import { Vote } from '@dao-dao/types/contracts/CwdProposalSingle.common'
+import { VoteDisplay } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ProposalVotes/VoteDisplay'
+import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { getFallbackImage } from '@dao-dao/utils'
 
 import { ProfileDisplay } from '../profile/ProfileDisplay'

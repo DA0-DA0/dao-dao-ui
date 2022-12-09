@@ -14,7 +14,7 @@ import {
 
 import { ContractVersion, Validator } from './chain'
 import { ModuleInstantiateInfo } from './contracts/common'
-import { InstantiateMsg as CwdCoreV2InstantiateMsg } from './contracts/CwdCore.v2'
+import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
 import { AmountWithTimestamp } from './state'
 import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './stateless'
@@ -162,7 +162,7 @@ export interface CreateDaoContext<
   >[]
   votingModuleDaoCreationAdapter: Required<VotingModuleAdapter>['daoCreation']
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
-  generateInstantiateMsg: () => CwdCoreV2InstantiateMsg
+  generateInstantiateMsg: () => DaoCoreV2InstantiateMsg
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }

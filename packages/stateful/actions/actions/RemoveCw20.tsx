@@ -8,7 +8,7 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { Cw20BaseSelectors, CwdCoreV2Selectors } from '@dao-dao/state'
+import { Cw20BaseSelectors, DaoCoreV2Selectors } from '@dao-dao/state'
 import { XEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -81,7 +81,7 @@ export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
     )
 
     const existingTokenAddresses = useRecoilValue(
-      CwdCoreV2Selectors.allCw20TokenListSelector({
+      DaoCoreV2Selectors.allCw20TokenListSelector({
         contractAddress: address,
       })
     )

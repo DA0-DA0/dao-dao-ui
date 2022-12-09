@@ -1,8 +1,9 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfo, ProposalModule } from '@dao-dao/types'
-import { getParentDaoBreadcrumbs, normalizeContractName } from '@dao-dao/utils'
+import { matchAdapter } from '@dao-dao/stateful/proposal-module-adapter'
+import { DaoInfo, ProposalModule, ProposalModuleAdapter } from '@dao-dao/types'
+import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import { Dropdown, useAppLayoutContext } from '../components'
 
@@ -28,15 +29,15 @@ export const CreateProposal = ({
 
   const proposalModuleItems = useMemo(
     () =>
-      daoInfo.proposalModules.map((proposalModule) => ({
-        label: t(
-          `proposalModuleLabel.${normalizeContractName(
-            proposalModule.contractName
-          )}`
-        ),
+      (
+        daoInfo.proposalModules
+          .map((proposalModule) => matchAdapter(proposalModule.contractName))
+          .filter(Boolean) as ProposalModuleAdapter[]
+      ).map((adapter) => ({
+        label: t(`proposalModuleLabel.${adapter.id}`),
         value: proposalModule,
       })),
-    [daoInfo.proposalModules, t]
+    [daoInfo.proposalModules, proposalModule, t]
   )
 
   return (

@@ -8,7 +8,7 @@ import {
 } from '@dao-dao/types'
 import { normalizeContractName } from '@dao-dao/utils'
 
-import { CwdProposalSingleAdapter } from './adapters'
+import { DaoProposalSingleAdapter } from './adapters'
 
 // Adapters need to be loaded lazily like this, as opposed to just defining a
 // global array, due to cyclic dependencies. The adapter defintion files include
@@ -19,7 +19,7 @@ import { CwdProposalSingleAdapter } from './adapters'
 // below, except the react provider, which we should only be used externally.
 // This is a problem to solve later.
 export const getAdapters = (): readonly ProposalModuleAdapter[] => [
-  CwdProposalSingleAdapter,
+  DaoProposalSingleAdapter,
 ]
 
 export const getAdapterById = (id: string) =>

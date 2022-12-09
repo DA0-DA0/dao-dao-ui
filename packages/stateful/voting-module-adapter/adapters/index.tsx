@@ -1,4 +1,4 @@
-export * from './CwdVotingCw4'
-export * from './CwdVotingCw20Staked'
-export * from './CwdVotingNativeStaked'
+export * from './DaoVotingCw4'
+export * from './DaoVotingCw20Staked'
+export * from './DaoVotingNativeStaked'
 export * from './Fallback'
