@@ -11,6 +11,7 @@ export interface OpenSurveySectionProps {
   status: Status
   onClick?: () => void
   loading: boolean
+  connected: boolean
   isMember: boolean
   tooltip?: string
 }
@@ -28,6 +29,7 @@ export const OpenSurveySection = ({
   },
   onClick,
   loading,
+  connected,
   isMember,
   tooltip,
 }: OpenSurveySectionProps) => {
@@ -38,7 +40,7 @@ export const OpenSurveySection = ({
       ? 'title.upcoming'
       : status === SurveyStatus.AcceptingContributions
       ? 'title.acceptingSubmissions'
-      : 'title.processing'
+      : 'info.waitingForRateAndPropose'
 
   // Display upcoming date first, then date when contributions close. Even
   // during processing, show the date when contributions closed.
@@ -56,21 +58,23 @@ export const OpenSurveySection = ({
         })
 
   const submitted =
-    (!isMember && !!contribution) ||
-    (isMember &&
-      (status === SurveyStatus.AcceptingContributions
-        ? !!contribution
-        : status === SurveyStatus.AcceptingRatings
-        ? !!rated
-        : // Always display pending/badge when awaiting completion.
-          false))
+    connected &&
+    ((!isMember && !!contribution) ||
+      (isMember &&
+        (status === SurveyStatus.AcceptingContributions
+          ? !!contribution
+          : status === SurveyStatus.AcceptingRatings
+          ? rated
+          : // Always display pending/badge when awaiting completion.
+            false)))
   const canPerformAction =
-    status === SurveyStatus.AcceptingContributions ||
-    (isMember &&
-      (status === SurveyStatus.AcceptingRatings ||
-        status === SurveyStatus.AwaitingCompletion))
-  // Don't show if inactive (upcoming).
-  const statusDisplay = status !== SurveyStatus.Inactive && (
+    connected &&
+    (status === SurveyStatus.AcceptingContributions ||
+      (isMember &&
+        (status === SurveyStatus.AcceptingRatings ||
+          status === SurveyStatus.AwaitingCompletion)))
+  // Don't show if wallet not connected or inactive (upcoming).
+  const statusDisplay = connected && status !== SurveyStatus.Inactive && (
     <ProposalWalletVote
       className={clsx(
         '!w-auto ring-2 ring-inset',

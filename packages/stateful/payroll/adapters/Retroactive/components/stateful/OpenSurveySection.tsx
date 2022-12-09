@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -36,6 +37,7 @@ export const OpenSurveySection = ({
   const { t } = useTranslation()
   const { coreAddress, bech32Prefix } = useDaoInfoContext()
 
+  const { connected } = useWallet()
   const { isMember = false } = useVotingModule(coreAddress, {
     fetchMembership: true,
     blockHeight: status.survey.createdAtBlockHeight,
@@ -244,6 +246,7 @@ export const OpenSurveySection = ({
     </div>
   ) : (
     <StatelessOpenSurveySection
+      connected={connected}
       isMember={isMember}
       loading={loading}
       onClick={onClick}
