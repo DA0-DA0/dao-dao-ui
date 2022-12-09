@@ -95,16 +95,16 @@
     "withDecodedModuleMessages": "with Decoded Module Messages"
   },
   "daoCreationAdapter": {
-    "CwdProposalSingle": {
+    "DaoProposalSingle": {
       "advancedWarning": "These are advanced features. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass."
     },
-    "CwdVotingCw20Staked": {
+    "DaoVotingCw20Staked": {
       "description": "Fluid organization with many members who can join and leave as they wish. Members can alter their governance power and participation by exchanging tokens.",
       "membership": "By staking tokens",
       "name": "Token-based DAO",
       "supplies": "Tokens"
     },
-    "CwdVotingCw4": {
+    "DaoVotingCw4": {
       "description": "Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members.",
       "membership": "By invitation",
       "name": "Membership DAO (Multisig)",
@@ -538,10 +538,8 @@
     "title": "DAO DAO"
   },
   "proposalModuleLabel": {
-    "cw-govmod-single": "Single Choice",
-    "cw-proposal-single": "Single Choice",
-    "cwd-proposal-multiple": "Multiple Choice",
-    "cwd-proposal-single": "Single Choice"
+    "DaoProposalMultiple": "Multiple Choice",
+    "DaoProposalSingle": "Single Choice"
   },
   "proposalStatusTitle": {
     "closed": "Closed",

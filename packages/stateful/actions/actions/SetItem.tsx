@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
-import { CwdCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { WrenchEmoji } from '@dao-dao/stateless'
 import { ContractVersion } from '@dao-dao/types'
 import {
@@ -42,7 +42,7 @@ export const makeSetItemAction: ActionMaker<SetItemData> = ({
     const key = watch(props.fieldNamePrefix + 'key')
 
     const existingKeys = useRecoilValue(
-      CwdCoreV2Selectors.listAllItemsSelector({
+      DaoCoreV2Selectors.listAllItemsSelector({
         contractAddress: address,
         chainId,
       })
@@ -51,7 +51,7 @@ export const makeSetItemAction: ActionMaker<SetItemData> = ({
     const currentValue = loadableToLoadingData(
       useRecoilValueLoadable(
         key
-          ? CwdCoreV2Selectors.getItemSelector({
+          ? DaoCoreV2Selectors.getItemSelector({
               contractAddress: address,
               chainId,
               params: [{ key }],

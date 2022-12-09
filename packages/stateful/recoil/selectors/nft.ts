@@ -7,7 +7,7 @@ import {
 
 import {
   Cw721BaseSelectors,
-  CwdCoreV2Selectors,
+  DaoCoreV2Selectors,
   nativeAndStargazeCollectionInfoSelector,
   nftTokenUriDataSelector,
   refreshWalletStargazeNftsAtom,
@@ -130,7 +130,7 @@ export const nftCardInfosSelector = selectorFamily<
     ({ coreAddress, chainId }) =>
     async ({ get }) => {
       const nftCollectionAddresses = get(
-        CwdCoreV2Selectors.allCw721TokenListSelector({
+        DaoCoreV2Selectors.allCw721TokenListSelector({
           contractAddress: coreAddress,
           chainId,
         })

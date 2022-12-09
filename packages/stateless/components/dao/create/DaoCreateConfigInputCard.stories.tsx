@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader, makeDefaultNewDao } from '@dao-dao/stateful'
-import { VotingDurationInput } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
+import { VotingDurationInput } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/daoCreation'
 import { NewDao } from '@dao-dao/types'
 
 import { HourglassEmoji } from '../../emoji'

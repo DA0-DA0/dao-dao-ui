@@ -1,8 +1,8 @@
 export * from './contracts'
 
 export * from './useAwaitNextBlock'
-export * from './useCwdProposalSinglePublishProposal'
-export * from './useEncodedCwdProposalSinglePrefill'
+export * from './useDaoProposalSinglePublishProposal'
+export * from './useEncodedDaoProposalSinglePrefill'
 export * from './useInbox'
 export * from './useLoadingDaoCardInfos'
 export * from './usePinnedDaos'

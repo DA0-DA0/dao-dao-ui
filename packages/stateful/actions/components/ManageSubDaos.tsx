@@ -14,7 +14,7 @@ import {
 } from '@dao-dao/stateless'
 import { StatefulProfileDisplayProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { SubDao } from '@dao-dao/types/contracts/CwdCore.v2'
+import { SubDao } from '@dao-dao/types/contracts/DaoCore.v2'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
 import { ActionCard } from './ActionCard'

@@ -19,10 +19,10 @@ import { nativeTokenDecimals } from '@dao-dao/utils'
 
 import { ProfileDisplay, SuspenseLoader } from '../../../../../components'
 import {
-  useCwdProposalSinglePublishProposal,
+  useDaoProposalSinglePublishProposal,
   useProfile,
 } from '../../../../../hooks'
-import { NewProposalData } from '../../../../../proposal-module-adapter/adapters/CwdProposalSingle/types'
+import { NewProposalData } from '../../../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
@@ -59,7 +59,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
     })
   )
 
-  const publishProposal = useCwdProposalSinglePublishProposal()
+  const publishProposal = useDaoProposalSinglePublishProposal()
 
   const [loading, setLoading] = useState(false)
   const onComplete = useCallback(

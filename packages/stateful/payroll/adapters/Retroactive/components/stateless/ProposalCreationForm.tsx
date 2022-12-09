@@ -31,7 +31,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { NewProposalData } from '../../../../../proposal-module-adapter/adapters/CwdProposalSingle/types'
+import { NewProposalData } from '../../../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { CompleteRatings, Status } from '../../types'
 
 export type ProposalCreationFormData = Omit<NewProposalData, 'msgs'>

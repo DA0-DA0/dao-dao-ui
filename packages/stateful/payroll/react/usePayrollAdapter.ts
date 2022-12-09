@@ -2,7 +2,7 @@
 
 import { useRecoilValue } from 'recoil'
 
-import { CwdCoreV2Selectors } from '@dao-dao/state/recoil'
+import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { useDaoInfoContext } from '@dao-dao/stateless'
 import { PayrollAdapter } from '@dao-dao/types'
 
@@ -14,7 +14,7 @@ export const usePayrollAdapter = (): PayrollAdapter | undefined => {
   const { chainId, coreAddress } = useDaoInfoContext()
 
   const payrollItem = useRecoilValue(
-    CwdCoreV2Selectors.getItemSelector({
+    DaoCoreV2Selectors.getItemSelector({
       chainId,
       contractAddress: coreAddress,
       params: [

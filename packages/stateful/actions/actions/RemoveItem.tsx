@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { CwdCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { WrenchEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -36,7 +36,7 @@ export const makeRemoveItemAction: ActionMaker<RemoveItemData> = ({
 
   const Component: ActionComponent<undefined, RemoveItemData> = (props) => {
     const existingKeys = useRecoilValue(
-      CwdCoreV2Selectors.listAllItemsSelector({
+      DaoCoreV2Selectors.listAllItemsSelector({
         contractAddress: address,
         chainId,
       })

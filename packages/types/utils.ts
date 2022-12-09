@@ -19,15 +19,15 @@ export interface CodeIdConfig {
   Cw20Stake: number
   Cw4Group: number
   CwAdminFactory: number
-  CwdCore: number
-  CwdPreProposeMultiple: number
-  CwdPreProposeSingle: number
-  CwdProposalMultiple: number
-  CwdProposalSingle: number
-  CwdVotingCw20Staked: number
-  CwdVotingCw4: number
-  CwdVotingCw721Staked: number
-  CwdVotingNativeStaked: number
+  DaoCore: number
+  DaoPreProposeMultiple: number
+  DaoPreProposeSingle: number
+  DaoProposalMultiple: number
+  DaoProposalSingle: number
+  DaoVotingCw20Staked: number
+  DaoVotingCw4: number
+  DaoVotingCw721Staked: number
+  DaoVotingNativeStaked: number
   CwTokenSwap: number
 }
 

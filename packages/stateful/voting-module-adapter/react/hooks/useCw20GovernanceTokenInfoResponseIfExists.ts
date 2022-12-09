@@ -1,6 +1,6 @@
 import { UseGovernanceTokenInfoResponse } from '@dao-dao/types'
 
-import { CwdVotingCw20StakedAdapter } from '../../adapters/CwdVotingCw20Staked'
+import { DaoVotingCw20StakedAdapter } from '../../adapters/DaoVotingCw20Staked'
 import { useVotingModuleAdapterContextIfAvailable } from '../context'
 
 // Returns the useGovernanceTokenInfo hook response if using the cw20-staked
@@ -21,7 +21,7 @@ export const useCw20GovernanceTokenInfoResponseIfExists = ():
 
   const governanceTokenInfoResponse = useGovernanceTokenInfo?.()
 
-  return id === CwdVotingCw20StakedAdapter.id
+  return id === DaoVotingCw20StakedAdapter.id
     ? governanceTokenInfoResponse
     : undefined
 }
