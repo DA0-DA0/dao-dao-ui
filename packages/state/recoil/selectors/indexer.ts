@@ -1,6 +1,11 @@
 import { selectorFamily } from 'recoil'
 
-import { QueryIndexerOptions, queryIndexer } from '@dao-dao/utils'
+import {
+  DaoSearchResult,
+  QueryIndexerOptions,
+  queryIndexer,
+  searchDaos,
+} from '../../indexer'
 
 export const queryIndexerSelector = selectorFamily<
   any,
@@ -23,4 +28,19 @@ export const queryIndexerSelector = selectorFamily<
         return null
       }
     },
+})
+
+export const searchDaosSelector = selectorFamily<
+  DaoSearchResult[],
+  {
+    query: string
+    limit?: number
+    exclude?: string[]
+  }
+>({
+  key: 'searchDaos',
+  get:
+    ({ query, limit, exclude }) =>
+    async () =>
+      await searchDaos(query, limit, exclude),
 })

@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
 
-import { useSearchDaos } from '@dao-dao/state/subquery/daos'
 import {
   CommandModalContextSection,
   CommandModalContextUseSectionsOptions,
@@ -12,6 +11,7 @@ import {
   useLoadingFeaturedDaoCardInfos,
   useLoadingPinnedDaoCardInfos,
 } from '../../hooks'
+import { useSearchDaos } from '../../hooks/useSearchDaos'
 
 export interface UseFilteredDaosSectionOptions {
   options: CommandModalContextUseSectionsOptions
@@ -42,17 +42,16 @@ export const usePinnedAndFilteredDaosSections = ({
 
   // Use query results if filter is present.
   const daos = options.filter
-    ? (
-        queryResults.data?.daos.nodes ??
-        queryResults.previousData?.daos.nodes ??
-        []
-      ).map(
-        ({ coreAddress, name, imageUrl }): CommandModalDaoInfo => ({
+    ? (queryResults.state !== 'hasValue' ? [] : queryResults.contents).map(
+        ({
+          contractAddress,
+          value: { name, image_url },
+        }): CommandModalDaoInfo => ({
           // Nothing specific to set here yet, just uses default.
           chainId: undefined,
-          coreAddress,
+          coreAddress: contractAddress,
           name,
-          imageUrl: imageUrl || getFallbackImage(coreAddress),
+          imageUrl: image_url || getFallbackImage(contractAddress),
         })
       )
     : // Otherwise when filter is empty, display featured DAOs.

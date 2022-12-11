@@ -1,9 +1,6 @@
+import { queryIndexer } from '@dao-dao/state/indexer'
 import { ContractVersion, FetchPreProposeAddressFunction } from '@dao-dao/types'
-import {
-  cosmWasmClientRouter,
-  getRpcForChainId,
-  queryIndexer,
-} from '@dao-dao/utils'
+import { cosmWasmClientRouter, getRpcForChainId } from '@dao-dao/utils'
 
 import { CwdProposalSingleV2QueryClient } from '../contracts/CwdProposalSingle.v2.client'
 

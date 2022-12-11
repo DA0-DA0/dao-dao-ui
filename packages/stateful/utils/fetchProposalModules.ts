@@ -2,6 +2,7 @@ import {
   CwCoreV1QueryClient,
   CwdCoreV2QueryClient,
 } from '@dao-dao/state/contracts'
+import { queryIndexer } from '@dao-dao/state/indexer'
 import {
   ContractVersion,
   FetchPreProposeAddressFunction,
@@ -14,7 +15,6 @@ import {
   getRpcForChainId,
   indexToProposalModulePrefix,
   parseContractVersion,
-  queryIndexer,
 } from '@dao-dao/utils'
 
 import { matchAdapter } from '../proposal-module-adapter'

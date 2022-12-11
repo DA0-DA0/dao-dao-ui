@@ -1,5 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
+import { queryIndexer } from '@dao-dao/state/indexer'
 import {
   CommonProposalInfo,
   ContractVersion,
@@ -14,7 +15,6 @@ import {
   cosmWasmClientRouter,
   getRpcForChainId,
   parseContractVersion,
-  queryIndexer,
 } from '@dao-dao/utils'
 
 import { CwdProposalSingleV2QueryClient as CwdProposalSingleV2QueryClient } from '../contracts/CwdProposalSingle.v2.client'

@@ -1,8 +1,7 @@
 import queryString from 'query-string'
 
 import { WithChainId } from '@dao-dao/types'
-
-import { INDEXER_BASE } from './constants'
+import { INDEXER_BASE } from '@dao-dao/utils'
 
 export type QueryIndexerOptions = WithChainId<{
   args?: Record<string, any>
