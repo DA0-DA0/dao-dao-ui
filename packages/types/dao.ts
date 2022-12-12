@@ -121,9 +121,8 @@ export interface NftCardInfo {
     denom: string
   }
   name: string
+  chainId: string
 }
-
-export type NftCardInfoWithChainId = NftCardInfo & { chainId: string }
 
 export interface ProposalModule {
   contractName: string

@@ -1,9 +1,14 @@
 import { transformIpfsUrlToHttpsIfNecessary } from './conversion'
 
-// If name is only a number, prefix with collection name.
-export const getNftName = (collectionName: string, tokenName: string) =>
-  /^[0-9]+$/.test(tokenName.trim())
-    ? `${collectionName} ${tokenName.trim()}`
+// If name is only a number, prefix with collection name. Fallback to token ID
+// if name does not exist.
+export const getNftName = (
+  collectionName: string,
+  tokenId: string,
+  tokenName?: string
+) =>
+  !tokenName || /^[0-9]+$/.test(tokenName.trim())
+    ? `${collectionName} ${(tokenName || tokenId).trim()}`.trim()
     : tokenName
 
 // Normalize NFT image URLs by ensuring they are from a valid IPFS provider.

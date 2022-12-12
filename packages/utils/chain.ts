@@ -55,3 +55,10 @@ export const cosmosValidatorToValidator = ({
   status: bondStatusToJSON(status),
   tokens: Number(tokens),
 })
+
+export const getImageUrlForChainId = (chainId: string) =>
+  chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni5
+    ? '/juno.png'
+    : chainId === ChainInfoID.Stargaze1
+    ? '/stargaze.png'
+    : undefined

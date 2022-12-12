@@ -52,6 +52,7 @@ export const makeProps = (): NftCardProps => {
       href: '/dog_nft.png',
       name: 'Stargaze',
     },
+    chainId: 'stargaze-1',
   }
 }
 

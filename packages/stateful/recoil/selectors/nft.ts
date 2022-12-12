@@ -1,3 +1,4 @@
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import {
   constSelector,
   selectorFamily,
@@ -16,9 +17,9 @@ import { NftCardInfo, WithChainId } from '@dao-dao/types'
 import { NftInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import { NativeStargazeCollectionInfo, StargazeNft } from '@dao-dao/types/nft'
 import {
+  CHAIN_ID,
   STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_URL_BASE,
-  getNftName,
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
@@ -58,7 +59,8 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
           //   amount: 0,
           //   denom: '',
           // }
-          name: getNftName(collection.name, name || tokenId),
+          name,
+          chainId: ChainInfoID.Stargaze1,
         })
       )
 
@@ -196,6 +198,9 @@ export const nftCardInfosSelector = selectorFamily<
                   //   denom: string
                   // }
                   name: '',
+                  chainId: stargazeInfo
+                    ? ChainInfoID.Stargaze1
+                    : chainId ?? CHAIN_ID,
                 }
 
                 // Only try to parse if there's a good chance this is JSON, the
@@ -205,7 +210,7 @@ export const nftCardInfosSelector = selectorFamily<
                     const json = JSON.parse(uriDataResponse)
 
                     if (typeof json.name === 'string' && !!json.name.trim()) {
-                      info.name = getNftName(info.collection.name, json.name)
+                      info.name = json.name
                     }
 
                     if (typeof json.image === 'string' && !!json.image) {
