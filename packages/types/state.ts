@@ -1,3 +1,5 @@
+import { TokenInfoResponse } from './contracts/Cw20Base'
+
 export type CachedLoadable<T> =
   | {
       state: 'loading'
@@ -20,4 +22,13 @@ export type WithChainId<T> = T & {
 export interface AmountWithTimestamp {
   amount: number
   timestamp: Date
+}
+
+export interface AmountWithTimestampAndDenom extends AmountWithTimestamp {
+  denom: string
+}
+
+export interface TokenInfoResponseWithAddressAndLogo extends TokenInfoResponse {
+  address: string
+  logoUrl?: string
 }

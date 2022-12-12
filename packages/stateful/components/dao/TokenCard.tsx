@@ -10,10 +10,15 @@ import {
 } from '@dao-dao/stateless'
 import { CoreActionKey } from '@dao-dao/types'
 import { TokenCardInfo } from '@dao-dao/types/dao'
-import { StakeType, loadableToLoadingData, useAddToken } from '@dao-dao/utils'
+import {
+  NATIVE_DENOM,
+  StakeType,
+  loadableToLoadingData,
+  useAddToken,
+} from '@dao-dao/utils'
 
 import { useCoreActionForKey } from '../../actions'
-import { useEncodedCwdProposalSinglePrefill } from '../../hooks'
+import { useEncodedDaoProposalSinglePrefill } from '../../hooks'
 import { tokenCardLazyInfoSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
 import { DaoTokenDepositModal } from './DaoTokenDepositModal'
@@ -56,10 +61,11 @@ export const TokenCard = (props: TokenCardInfo) => {
 
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
-  const stakeAction = useCoreActionForKey(CoreActionKey.Stake)
+  const stakeAction = useCoreActionForKey(CoreActionKey.StakingActions)
+
   // Prefill URLs only valid if action exists.
   const prefillValid = !!stakeAction
-  const encodedProposalPrefillClaim = useEncodedCwdProposalSinglePrefill({
+  const encodedProposalPrefillClaim = useEncodedDaoProposalSinglePrefill({
     actions: stakeAction
       ? stakesWithRewards.map(({ validator: { address } }) => ({
           action: stakeAction,
@@ -73,7 +79,7 @@ export const TokenCard = (props: TokenCardInfo) => {
         }))
       : [],
   })
-  const encodedProposalPrefillStakeUnstake = useEncodedCwdProposalSinglePrefill(
+  const encodedProposalPrefillStakeUnstake = useEncodedDaoProposalSinglePrefill(
     {
       // If has unstaked, show stake action by default.
       actions: stakeAction
@@ -104,14 +110,18 @@ export const TokenCard = (props: TokenCardInfo) => {
   )
 
   const proposeClaimHref =
-    prefillValid && stakesWithRewards.length > 0 && encodedProposalPrefillClaim
+    prefillValid &&
+    stakesWithRewards.length > 0 &&
+    encodedProposalPrefillClaim &&
+    props.tokenDenom === NATIVE_DENOM
       ? `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillClaim}`
       : undefined
 
   const proposeStakeUnstakeHref =
     prefillValid &&
     (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
-    encodedProposalPrefillStakeUnstake
+    encodedProposalPrefillStakeUnstake &&
+    props.tokenDenom === NATIVE_DENOM
       ? `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillStakeUnstake}`
       : undefined
 

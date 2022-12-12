@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
-import { DefaultNewDao } from '@dao-dao/stateful'
-import { VotingDurationReview } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalSingle/daoCreation'
+import { makeDefaultNewDao } from '@dao-dao/stateful'
+import { VotingDurationReview } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/daoCreation'
 import { NewDao } from '@dao-dao/types'
 
 import { HourglassEmoji } from '../../emoji'
@@ -17,7 +17,7 @@ export default {
 
 const Template: ComponentStory<typeof DaoCreateConfigReviewCard> = (args) => {
   const { watch } = useForm<NewDao>({
-    defaultValues: DefaultNewDao,
+    defaultValues: makeDefaultNewDao(),
     mode: 'onChange',
   })
 

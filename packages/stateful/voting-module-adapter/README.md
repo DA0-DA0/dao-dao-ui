@@ -6,9 +6,9 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 
 | Adapter                                                   | Summary                                                                                         |
 | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| [CwdVotingCw20Staked](./adapters/CwdVotingCw20Staked)     | [CW20](https://docs.cosmwasm.com/cw-plus/0.9.0/cw20/spec) token staked balance voting.          |
-| [CwdVotingCw4](./adapters/CwdVotingCw4)                   | [CW4](https://docs.cosmwasm.com/cw-plus/0.9.0/cw4/cw4-group-spec) group voting, multisig style. |
-| [CwdVotingNativeStaked](./adapters/CwdVotingNativeStaked) | Native token staked balance voting.                                                             |
+| [DaoVotingCw20Staked](./adapters/DaoVotingCw20Staked)     | [CW20](https://docs.cosmwasm.com/cw-plus/0.9.0/cw20/spec) token staked balance voting.          |
+| [DaoVotingCw4](./adapters/DaoVotingCw4)                   | [CW4](https://docs.cosmwasm.com/cw-plus/0.9.0/cw4/cw4-group-spec) group voting, multisig style. |
+| [DaoVotingNativeStaked](./adapters/DaoVotingNativeStaked) | Native token staked balance voting.                                                             |
 | [Fallback](./adapters/Fallback)                           | Fallback to allow for DAO page rendering even with an unsupported voting module.                |
 
 ## Layout
@@ -24,10 +24,10 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 
 This is a voting module adapter package. It creates a common interface for
 various components and pieces of data that apps need to access which change
-based on the voting module used by the DAO. For example, a DAO that uses
-`cwd-voting-cw20-staked` will need to display staking interfaces and wallet
-token balances, whereas `cwd-voting-cw4` will just need to display member voting
-weights.
+based on the voting module used by the DAO. For example, a DAO that uses a CW20
+governance token for voting power will need to display staking interfaces and
+wallet token balances, whereas a CW4 multisig will just need to display member
+voting weights.
 
 ## Why is this necessary?
 
@@ -154,7 +154,7 @@ well as other common info instead of needing to manually pass them around.
 Example:
 
 <details>
-<summary>`CwdVotingCw4/hooks/useDaoInfoBarItems.ts`</summary>
+<summary>`DaoVotingCw4/hooks/useDaoInfoBarItems.ts`</summary>
 
 ```tsx
 import { PeopleAltOutlined } from '@mui/icons-material'

@@ -6,9 +6,10 @@ import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 export interface InputLabelProps
   extends Omit<ComponentProps<'span'>, 'children'> {
   mono?: boolean
-  name: string
+  name?: string
   tooltip?: ReactNode
   containerProps?: Omit<ComponentProps<'label'>, 'children'>
+  children?: ReactNode | ReactNode[]
 }
 
 export const InputLabel = ({
@@ -17,6 +18,7 @@ export const InputLabel = ({
   name,
   tooltip,
   containerProps: { className: labelClassName, ...containerProps } = {},
+  children,
   ...rest
 }: InputLabelProps) => (
   <label
@@ -28,6 +30,7 @@ export const InputLabel = ({
       {...rest}
     >
       {name}
+      {children}
     </span>
 
     {tooltip && <TooltipInfoIcon size="sm" title={tooltip} />}

@@ -1,7 +1,11 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily } from 'recoil'
 
-import { AmountWithTimestamp, WithChainId } from '@dao-dao/types'
+import {
+  AmountWithTimestamp,
+  AmountWithTimestampAndDenom,
+  WithChainId,
+} from '@dao-dao/types'
 import {
   USDC_SWAP_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
@@ -10,7 +14,7 @@ import {
 
 import { refreshTokenUsdcPriceAtom } from '../atoms/refresh'
 import { cosmWasmClientForChainSelector, nativeBalancesSelector } from './chain'
-import { CwdCoreV2Selectors } from './contracts'
+import { DaoCoreV2Selectors } from './contracts'
 import { junoswapPoolsListSelector } from './pools'
 
 // TODO(multichain): Figure out how to match CW20s on other chains to CW20s in
@@ -23,7 +27,7 @@ const BASE_SWAP_DECIMALS = 6
 // denomination or the address of a cw20 token. Price data is only available for
 // tokens that are tradable on Junoswap.
 export const usdcPerMacroTokenSelector = selectorFamily<
-  AmountWithTimestamp | undefined,
+  AmountWithTimestampAndDenom | undefined,
   { denom: string; decimals: number }
 >({
   key: 'usdcPerMacroToken',
@@ -39,7 +43,7 @@ export const usdcPerMacroTokenSelector = selectorFamily<
 
       // If checking price of USDC, just return 1.
       if (isJunoIbcUsdc(denom)) {
-        return { amount: 1, timestamp }
+        return { denom, amount: 1, timestamp }
       }
 
       const tokens = get(junoswapPoolsListSelector)
@@ -77,7 +81,7 @@ export const usdcPerMacroTokenSelector = selectorFamily<
       // Don't need to query again for price of native token.
       if (denom === BASE_SWAP_DENOM) {
         // USDC / JUNO
-        return { amount: Number(nativeUSDC), timestamp }
+        return { denom, amount: Number(nativeUSDC), timestamp }
       }
 
       // Find swap for denom.
@@ -115,7 +119,7 @@ export const usdcPerMacroTokenSelector = selectorFamily<
         // Mutltiply by the number of decimals in TOKEN.
         Math.pow(10, decimals)
 
-      return { amount: price, timestamp }
+      return { denom, amount: price, timestamp }
     },
 })
 
@@ -136,7 +140,7 @@ export const daoTvlSelector = selectorFamily<
         nativeBalancesSelector({ address: coreAddress, chainId })
       )
       const cw20Balances = get(
-        CwdCoreV2Selectors.cw20BalancesInfoSelector({
+        DaoCoreV2Selectors.cw20BalancesInfoSelector({
           contractAddress: coreAddress,
           chainId,
           governanceTokenAddress: cw20GovernanceTokenAddress,

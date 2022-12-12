@@ -4,7 +4,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  CwdCoreV2Selectors,
+  DaoCoreV2Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
 import {
@@ -31,7 +31,7 @@ import {
   nativeTokenDecimals,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../components'
+import { ProfileDisplay, SuspenseLoader } from '../../components'
 import { useCw20GovernanceTokenInfoResponseIfExists } from '../../voting-module-adapter'
 import {
   SpendData,
@@ -55,7 +55,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
     const cw20BalancesAndInfosLoadable = useCachedLoadable(
       context.type === ActionOptionsContextType.Dao
         ? // Get DAO's cw20 balances and infos.
-          CwdCoreV2Selectors.allCw20BalancesAndInfosSelector({
+          DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
             contractAddress: address,
             governanceTokenAddress,
           })
@@ -113,6 +113,7 @@ export const makeSpendAction: ActionMaker<SpendData> = ({
               ? []
               : nativeBalancesLoadable.data,
             cw20Balances: cw20LoadingBalances ?? [],
+            ProfileDisplay: ProfileDisplay,
           }}
         />
       </SuspenseLoader>

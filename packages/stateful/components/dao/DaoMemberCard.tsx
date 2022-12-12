@@ -1,10 +1,10 @@
 import { DaoMemberCard as StatelessDaoMemberCard } from '@dao-dao/stateless'
 import { DaoMemberCardProps } from '@dao-dao/types/stateless/DaoMemberCard'
 
-import { useProfile } from '../../hooks'
+import { useWalletProfile } from '../../hooks'
 
 export const DaoMemberCard = (props: Omit<DaoMemberCardProps, 'profile'>) => {
-  const { profile } = useProfile({ walletAddress: props.address })
+  const { profile } = useWalletProfile({ walletAddress: props.address })
 
   return <StatelessDaoMemberCard {...props} profile={profile} />
 }

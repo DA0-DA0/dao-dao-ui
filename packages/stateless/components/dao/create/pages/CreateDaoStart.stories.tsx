@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { CwdProposalSingleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
-import { CwdVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter'
+import { DaoProposalSingleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
+import { DaoVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   WalletProviderDecorator,
   makeAppLayoutDecorator,
@@ -18,11 +18,11 @@ export default {
     // Direct ancestor of rendered story.
     makeCreateDaoFormDecorator(0, {
       votingModuleAdapter: {
-        id: CwdVotingCw20StakedAdapter.id,
+        id: DaoVotingCw20StakedAdapter.id,
         data: {
-          ...CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig,
+          ...DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig,
           newInfo: {
-            ...CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig.newInfo,
+            ...DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig.newInfo,
             symbol: 'TST',
             name: 'Test Token',
           },
@@ -30,9 +30,9 @@ export default {
       },
       proposalModuleAdapters: [
         {
-          id: CwdProposalSingleAdapter.id,
+          id: DaoProposalSingleAdapter.id,
           data: {
-            ...CwdProposalSingleAdapter.daoCreation.defaultConfig,
+            ...DaoProposalSingleAdapter.daoCreation.defaultConfig,
             proposalDeposit: {
               amount: 5.2,
               refundFailed: false,

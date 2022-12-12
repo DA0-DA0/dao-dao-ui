@@ -9,8 +9,15 @@ import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeMigrateAction } from './MigrateContract'
 import { makeRemoveCw20Action } from './RemoveCw20'
 import { makeRemoveCw721Action } from './RemoveCw721'
+import { makeRemoveItemAction } from './RemoveItem'
+import { makeSetItemAction } from './SetItem'
 import { makeSpendAction } from './Spend'
-import { makeStakeAction } from './Stake'
+import { makeStakeAction } from './StakingActions'
+import {
+  makePerformTokenSwapAction,
+  makeWithdrawTokenSwapAction,
+} from './token_swap'
+import { makeTransferNftAction } from './TransferNft'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
 
@@ -23,6 +30,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeAddCw20Action,
     makeRemoveCw20Action,
     makeAddCw721Action,
+    makeTransferNftAction,
     makeRemoveCw721Action,
     makeInstantiateAction,
     makeExecuteAction,
@@ -30,6 +38,10 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeUpdateAdminAction,
     makeCustomAction,
     makeManageSubDaosAction,
+    makePerformTokenSwapAction,
+    makeWithdrawTokenSwapAction,
+    makeSetItemAction,
+    makeRemoveItemAction,
   ]
 
   return (

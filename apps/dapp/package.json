@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "prettier:write": "prettier --write .",
     "start": "next start",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "ts --watch"
@@ -24,7 +24,7 @@
     "@fontsource/inter": "^4.5.7",
     "@fontsource/jetbrains-mono": "^4.5.5",
     "@mui/icons-material": "^5.10.3",
-    "@noahsaso/cosmodal": "^0.8.0",
+    "@noahsaso/cosmodal": "^0.8.1",
     "@sentry/nextjs": "^7.7.0",
     "@types/formidable": "^2.0.5",
     "formidable": "^2.0.1",

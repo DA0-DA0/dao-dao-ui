@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { CwdVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter/adapters/CwdVotingCw20Staked'
+import { DaoVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter/adapters/DaoVotingCw20Staked'
 import {
   WalletProviderDecorator,
   makeAppLayoutDecorator,
@@ -21,8 +21,8 @@ export default {
       imageUrl:
         'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
       votingModuleAdapter: {
-        id: CwdVotingCw20StakedAdapter.id,
-        data: CwdVotingCw20StakedAdapter.daoCreation!.defaultConfig,
+        id: DaoVotingCw20StakedAdapter.id,
+        data: DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig,
       },
     }),
     makeAppLayoutDecorator(),

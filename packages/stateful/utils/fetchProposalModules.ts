@@ -1,6 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
-import { CwCoreV1QueryClient, CwdCoreV2QueryClient } from '@dao-dao/state'
+import { CwCoreV1QueryClient, DaoCoreV2QueryClient } from '@dao-dao/state'
 import {
   ContractVersion,
   FetchPreProposeAddressFunction,
@@ -23,7 +23,7 @@ export const fetchProposalModules = async (
   let paginationStart: string | undefined
   const limit = 10
 
-  const getV0_1_0ProposalModules = async () =>
+  const getV1ProposalModules = async () =>
     (
       await new CwCoreV1QueryClient(cwClient, coreAddress).proposalModules({
         startAt: paginationStart,
@@ -56,9 +56,9 @@ export const fetchProposalModules = async (
         }
       })
 
-  const getV0_2_0ProposalModules = async () =>
+  const getV2ProposalModules = async () =>
     (
-      await new CwdCoreV2QueryClient(
+      await new DaoCoreV2QueryClient(
         cwClient,
         coreAddress
       ).activeProposalModules({
@@ -92,8 +92,8 @@ export const fetchProposalModules = async (
   while (true) {
     const _proposalModules = await Promise.all(
       coreVersion === ContractVersion.V1
-        ? await getV0_1_0ProposalModules()
-        : await getV0_2_0ProposalModules()
+        ? await getV1ProposalModules()
+        : await getV2ProposalModules()
     )
     if (!_proposalModules.length) {
       break

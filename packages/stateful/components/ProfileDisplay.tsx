@@ -1,13 +1,12 @@
 import { ProfileDisplay as StatelessProfileDisplay } from '@dao-dao/stateless'
-import { ProfileDisplayProps } from '@dao-dao/types'
+import { StatefulProfileDisplayProps } from '@dao-dao/types'
 
 import { useProfile } from '../hooks'
 
-export const ProfileDisplay = (
-  props: Omit<ProfileDisplayProps, 'loadingProfile'>
-) => {
-  const { profile } = useProfile({
-    walletAddress: props.address,
+export const ProfileDisplay = (props: StatefulProfileDisplayProps) => {
+  const profile = useProfile({
+    address: props.address,
+    walletHexPublicKey: props.walletHexPublicKey,
   })
 
   return <StatelessProfileDisplay {...props} loadingProfile={profile} />

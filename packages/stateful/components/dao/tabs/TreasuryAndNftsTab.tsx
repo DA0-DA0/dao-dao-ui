@@ -11,7 +11,7 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { useCoreActionForKey } from '../../../actions'
 import {
-  useEncodedCwdProposalSinglePrefill,
+  useEncodedDaoProposalSinglePrefill,
   useVotingModule,
 } from '../../../hooks'
 import {
@@ -69,7 +69,7 @@ export const TreasuryAndNftsTab = () => {
   const addCw721Action = useCoreActionForKey(CoreActionKey.AddCw721)
   // Prefill URL only valid if action exists.
   const prefillValid = !!addCw721Action
-  const encodedProposalPrefill = useEncodedCwdProposalSinglePrefill({
+  const encodedProposalPrefill = useEncodedDaoProposalSinglePrefill({
     actions: addCw721Action
       ? [
           {

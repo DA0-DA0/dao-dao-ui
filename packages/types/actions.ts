@@ -10,11 +10,12 @@ import { CosmosMsgFor_Empty } from './contracts/common'
 // are provided in the top-level ActionsProvider.
 export enum CoreActionKey {
   Spend = 'spend',
-  Stake = 'stake',
+  StakingActions = 'stakingActions',
   AddCw20 = 'addCw20',
   RemoveCw20 = 'removeCw20',
   AddCw721 = 'addCw721',
   RemoveCw721 = 'removeCw721',
+  TransferCw721 = 'transferCw721',
   ManageSubDaos = 'manageSubDaos',
   UpdateInfo = 'updateInfo',
   Instantiate = 'instantiate',
@@ -22,6 +23,10 @@ export enum CoreActionKey {
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',
   Custom = 'custom',
+  PerformTokenSwap = 'performTokenSwap',
+  WithdrawTokenSwap = 'withdrawTokenSwap',
+  SetItem = 'setItem',
+  RemoveItem = 'removeItem',
 }
 
 // Actions defined in voting or proposal module adapters.
@@ -135,3 +140,14 @@ export interface IActionsContext {
   options: ActionOptions
   actions: Action[]
 }
+
+export type ActionsWithData = Partial<
+  Record<
+    ActionKey,
+    {
+      action: Action
+      transform: ReturnType<UseTransformToCosmos>
+      defaults: ReturnType<UseDefaults>
+    }
+  >
+>

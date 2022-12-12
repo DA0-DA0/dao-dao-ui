@@ -1,6 +1,10 @@
 import { selectorFamily } from 'recoil'
 
-import { AmountWithTimestamp, WithChainId } from '@dao-dao/types'
+import {
+  AmountWithTimestamp,
+  TokenInfoResponseWithAddressAndLogo,
+  WithChainId,
+} from '@dao-dao/types'
 import {
   AllAccountsResponse,
   AllAllowancesResponse,
@@ -193,6 +197,30 @@ export const balanceWithTimestampSelector = selectorFamily<
       return {
         amount,
         timestamp: new Date(),
+      }
+    },
+})
+
+export const tokenInfoWithAddressAndLogoSelector = selectorFamily<
+  TokenInfoResponseWithAddressAndLogo,
+  QueryClientParams & {
+    params: Parameters<Cw20BaseQueryClient['tokenInfo']>
+  }
+>({
+  key: 'cw20BaseTokenInfoWithAddressAndLogo',
+  get:
+    (params) =>
+    async ({ get }) => {
+      const tokenInfo = get(tokenInfoSelector(params))
+      const logoInfo = get(marketingInfoSelector(params)).logo
+
+      return {
+        address: params.contractAddress,
+        ...tokenInfo,
+        logoUrl:
+          !!logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
+            ? logoInfo.url
+            : undefined,
       }
     },
 })
