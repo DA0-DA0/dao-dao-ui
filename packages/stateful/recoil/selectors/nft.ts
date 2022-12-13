@@ -154,16 +154,11 @@ export const nftCardInfoSelector = selectorFamily<
 
 export const nftCardInfosSelector = selectorFamily<
   NftCardInfo[],
-  WithChainId<{
-    coreAddress: string
-    // If 'owned', only return NFTs owned by the DAO. If 'minter', only return
-    // NFTs for collections that the DAO is the minter of.
-    filter?: 'owned' | 'minter'
-  }>
+  WithChainId<{ coreAddress: string }>
 >({
   key: 'nftCardInfos',
   get:
-    ({ coreAddress, filter = 'owned', chainId }) =>
+    ({ coreAddress, chainId }) =>
     async ({ get }) => {
       const nftCollectionAddresses = get(
         DaoCoreV2Selectors.allCw721TokenListSelector({
@@ -172,8 +167,8 @@ export const nftCardInfosSelector = selectorFamily<
         })
       )
 
-      // Ignore errors by waiting for all to settle, and then ignoring any that
-      // do not have a value.
+      // Wait for all to settle so we can filter out any that failed. These may
+      // fail if weird IBC cross-chain stuff happens.
       const nftCollectionInfos = get(
         waitForAllSettled(
           nftCollectionAddresses.map((collectionAddress) =>
@@ -184,20 +179,13 @@ export const nftCardInfosSelector = selectorFamily<
           )
         )
       )
-        .filter(
-          (info) =>
-            info.state === 'hasValue' &&
-            // If filter === 'minter', ensure `coreAddress` is the minter.
-            (filter !== 'minter' || info.contents.native.minter === coreAddress)
-        )
+        .filter((info) => info.state === 'hasValue')
         .map((info) => info.contents) as NativeStargazeCollectionInfo[]
 
       const nftCollectionTokenIds = get(
         waitForAll(
           nftCollectionAddresses.map((collectionAddress) =>
-            (filter === 'owned'
-              ? Cw721BaseSelectors.cw721BaseAllTokensForOwnerSelector
-              : Cw721BaseSelectors.allTokensSelector)({
+            Cw721BaseSelectors.cw721BaseAllTokensForOwnerSelector({
               contractAddress: collectionAddress,
               chainId,
               owner: coreAddress,

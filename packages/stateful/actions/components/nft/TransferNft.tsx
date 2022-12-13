@@ -64,8 +64,8 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
       onRemove={onRemove}
       title={t('title.transferNft')}
     >
-      <div className="flex flex-col gap-y-4 gap-x-12 lg:flex-row">
-        <div className="flex grow basis-0 flex-col gap-4">
+      <div className="flex flex-col gap-y-4 gap-x-12 lg:flex-row lg:flex-wrap">
+        <div className="flex grow flex-col gap-4">
           <div className="flex flex-col gap-1">
             <p className="primary-text mb-3">
               {isCreating
@@ -95,6 +95,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
           {(isCreating || executeSmartContract) && (
             <div className="flex flex-col gap-1">
               <FormSwitchCard
+                containerClassName="self-start"
                 fieldName={fieldNamePrefix + 'executeSmartContract'}
                 label={t('form.executeSmartContract')}
                 onToggle={() => {
@@ -107,6 +108,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
                     shouldValidate: true,
                   })
                 }}
+                readOnly={!isCreating}
                 setValue={setValue}
                 sizing="sm"
                 tooltip={t('form.executeSmartContractTooltip')}
@@ -142,7 +144,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
           )}
         </div>
 
-        <div className="flex grow basis-0 flex-col gap-2">
+        <div className="flex grow flex-col gap-2">
           {nftInfo && <HorizontalNftCard {...nftInfo} />}
 
           {isCreating && (

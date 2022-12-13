@@ -33,11 +33,9 @@ export interface NativeStargazeCollectionInfo {
   native: {
     address: string
     info: ContractInfoResponse
-    minter: string
   }
   stargaze?: {
     address: string
     info: ContractInfoResponse
-    minter: string
   }
 }

@@ -34,13 +34,6 @@ export const nativeAndStargazeCollectionInfoSelector = selectorFamily<
           params: [],
         })
       )
-      const nativeMinter = get(
-        Cw721BaseSelectors.minterSelector({
-          contractAddress: nativeCollectionAddress,
-          chainId,
-          params: [],
-        })
-      ).minter
 
       // TODO(ICS721): Identify IBC'd Stargaze NFT collections better.
       const stargazeCollectionAddress = nativeCollectionInfo.name.startsWith(
@@ -57,28 +50,17 @@ export const nativeAndStargazeCollectionInfoSelector = selectorFamily<
             })
           )
         : undefined
-      const stargazeMinter = stargazeCollectionAddress
-        ? get(
-            Cw721BaseSelectors.minterSelector({
-              contractAddress: stargazeCollectionAddress,
-              chainId: ChainInfoID.Stargaze1,
-              params: [],
-            })
-          ).minter
-        : undefined
 
       return {
         native: {
           address: nativeCollectionAddress,
           info: nativeCollectionInfo,
-          minter: nativeMinter,
         },
         stargaze:
           stargazeCollectionAddress && stargazeCollectionInfo
             ? {
                 address: stargazeCollectionAddress,
                 info: stargazeCollectionInfo,
-                minter: stargazeMinter ?? '',
               }
             : undefined,
       }

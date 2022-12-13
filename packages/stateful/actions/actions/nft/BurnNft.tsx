@@ -89,7 +89,6 @@ export const makeBurnNftAction: ActionMaker<BurnNftData> = ({
           ? nftCardInfosSelector({
               coreAddress: address,
               chainId,
-              filter: 'minter',
             })
           : constSelector([])
       )
