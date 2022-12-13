@@ -4,28 +4,26 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   Button,
+  FireEmoji,
   HorizontalNftCard,
-  ImageEmoji,
   InputErrorMessage,
   NftSelectionModal,
 } from '@dao-dao/stateless'
 import { ActionComponent, NftCardInfo } from '@dao-dao/types'
-import { validateAddress, validateRequired } from '@dao-dao/utils'
 
 import { ActionCard } from '../ActionCard'
-import { TransferNftOptions } from './types'
+import { BurnNftOptions } from './types'
 
-export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
+export const BurnNft: ActionComponent<BurnNftOptions> = ({
   fieldNamePrefix,
   onRemove,
   isCreating,
   errors,
-  options: { options, nftInfo, ProfileDisplay },
+  options: { options, nftInfo },
 }) => {
   const { t } = useTranslation()
-  const { watch, setValue, setError, register, clearErrors } = useFormContext()
+  const { watch, setValue, setError, clearErrors } = useFormContext()
 
   const tokenId = watch(fieldNamePrefix + 'tokenId')
   const collection = watch(fieldNamePrefix + 'collection')
@@ -48,48 +46,24 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
   const [showModal, setShowModal] = useState<boolean>(isCreating)
 
   return (
-    <ActionCard
-      Icon={ImageEmoji}
-      onRemove={onRemove}
-      title={t('title.transferNft')}
-    >
-      <div className="flex flex-col gap-y-4 gap-x-12 lg:flex-row">
-        <div className="flex grow basis-0 flex-col gap-1">
-          <p className="primary-text mb-3">
-            {isCreating
-              ? t('form.whoTransferNftQuestion')
-              : t('form.recipient')}
-          </p>
+    <ActionCard Icon={FireEmoji} onRemove={onRemove} title={t('title.burnNft')}>
+      <div className="flex flex-col gap-2">
+        {nftInfo && <HorizontalNftCard {...nftInfo} />}
 
-          <AddressInput
-            ProfileDisplay={ProfileDisplay}
-            disabled={!isCreating}
-            error={errors?.to}
-            fieldName={fieldNamePrefix + 'recipient'}
-            register={register}
-            validation={[validateRequired, validateAddress]}
-          />
-          <InputErrorMessage error={errors?.recipient} />
-        </div>
+        {isCreating && (
+          <Button
+            className={clsx(
+              'text-text-tertiary',
+              nftInfo ? 'self-end' : 'self-start'
+            )}
+            onClick={() => setShowModal(true)}
+            variant="secondary"
+          >
+            {t('button.selectNft')}
+          </Button>
+        )}
 
-        <div className="flex grow basis-0 flex-col gap-2">
-          {nftInfo && <HorizontalNftCard {...nftInfo} />}
-
-          {isCreating && (
-            <Button
-              className={clsx(
-                'text-text-tertiary',
-                nftInfo ? 'self-end' : 'self-start'
-              )}
-              onClick={() => setShowModal(true)}
-              variant="secondary"
-            >
-              {t('button.selectNft')}
-            </Button>
-          )}
-
-          <InputErrorMessage error={errors?.collection} />
-        </div>
+        <InputErrorMessage error={errors?.collection} />
       </div>
 
       <NftSelectionModal
@@ -97,7 +71,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
         actionLoading={false}
         getIdForNft={getIdForNft}
         header={{
-          title: t('title.selectNftToTransfer'),
+          title: t('title.selectNftToBurn'),
         }}
         nfts={options}
         onAction={() => setShowModal(false)}

@@ -154,11 +154,16 @@ export const nftCardInfoSelector = selectorFamily<
 
 export const nftCardInfosSelector = selectorFamily<
   NftCardInfo[],
-  WithChainId<{ coreAddress: string }>
+  WithChainId<{
+    coreAddress: string
+    // If 'owned', only return NFTs owned by the DAO. If 'minter', only return
+    // NFTs for collections that the DAO is the minter of.
+    filter?: 'owned' | 'minter'
+  }>
 >({
   key: 'nftCardInfos',
   get:
-    ({ coreAddress, chainId }) =>
+    ({ coreAddress, filter = 'owned', chainId }) =>
     async ({ get }) => {
       const nftCollectionAddresses = get(
         DaoCoreV2Selectors.allCw721TokenListSelector({
@@ -179,11 +184,20 @@ export const nftCardInfosSelector = selectorFamily<
           )
         )
       )
+        .filter(
+          (info) =>
+            info.state === 'hasValue' &&
+            // If filter === 'minter', ensure `coreAddress` is the minter.
+            (filter !== 'minter' || info.contents.native.minter === coreAddress)
+        )
+        .map((info) => info.contents) as NativeStargazeCollectionInfo[]
 
       const nftCollectionTokenIds = get(
         waitForAll(
           nftCollectionAddresses.map((collectionAddress) =>
-            Cw721BaseSelectors.cw721BaseAllTokensForOwnerSelector({
+            (filter === 'owned'
+              ? Cw721BaseSelectors.cw721BaseAllTokensForOwnerSelector
+              : Cw721BaseSelectors.allTokensSelector)({
               contractAddress: collectionAddress,
               chainId,
               owner: coreAddress,
@@ -193,22 +207,14 @@ export const nftCardInfosSelector = selectorFamily<
       )
 
       const collectionsWithTokens = nftCollectionInfos
-        .map((collectionInfoLoadable, index) => {
-          // Don't filter undefined infos out until inside this map so we can
-          // use the index to zip with token IDs.
-
-          if (collectionInfoLoadable.state !== 'hasValue') {
-            return
-          }
-
+        .map((collectionInfo, index) => {
           const tokenIds = nftCollectionTokenIds[index]
 
           const infos = get(
             waitForAll(
               tokenIds.map((tokenId) =>
                 Cw721BaseSelectors.nftInfoSelector({
-                  contractAddress:
-                    collectionInfoLoadable.contents.native.address,
+                  contractAddress: collectionInfo.native.address,
                   chainId,
                   params: [{ tokenId }],
                 })
@@ -227,7 +233,7 @@ export const nftCardInfosSelector = selectorFamily<
           )
 
           return {
-            collectionInfo: collectionInfoLoadable.contents,
+            collectionInfo,
             tokens: tokenIds
               .map((tokenId, index) => ({
                 tokenId,

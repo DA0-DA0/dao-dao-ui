@@ -7,7 +7,11 @@ import { makeExecuteAction } from './Execute'
 import { makeInstantiateAction } from './Instantiate'
 import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeMigrateAction } from './MigrateContract'
-import { makeMintNftAction, makeTransferNftAction } from './nft'
+import {
+  makeBurnNftAction,
+  makeMintNftAction,
+  makeTransferNftAction,
+} from './nft'
 import { makeRemoveCw20Action } from './RemoveCw20'
 import { makeRemoveCw721Action } from './RemoveCw721'
 import { makeRemoveItemAction } from './RemoveItem'
@@ -33,6 +37,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeRemoveCw721Action,
     makeMintNftAction,
     makeTransferNftAction,
+    makeBurnNftAction,
     makeInstantiateAction,
     makeExecuteAction,
     makeMigrateAction,

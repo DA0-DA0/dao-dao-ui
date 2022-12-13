@@ -84,12 +84,6 @@ export const HorizontalNftCard = forwardRef<
 
             <p className="primary-text truncate font-normal">
               {collection.name}
-              {collection.name}
-              {collection.name}
-              {collection.name}
-              {collection.name}
-              {collection.name}
-              {collection.name}
             </p>
           </div>
 

@@ -17,6 +17,7 @@ export enum CoreActionKey {
   RemoveCw721 = 'removeCw721',
   TransferNft = 'transferNft',
   MintNft = 'mintNft',
+  BurnNft = 'burnNft',
   ManageSubDaos = 'manageSubDaos',
   UpdateInfo = 'updateInfo',
   Instantiate = 'instantiate',

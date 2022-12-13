@@ -1,3 +1,4 @@
+export * from './BurnNft'
 export * from './ChooseExistingNftCollection'
 export * from './MintNft'
 export * from './InstantiateNftCollection'

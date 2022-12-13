@@ -39,6 +39,11 @@ export interface TransferNftData {
   recipient: string
 }
 
+export interface BurnNftData {
+  collection: string
+  tokenId: string
+}
+
 //! Stateless component options
 
 export interface TransferNftOptions {
@@ -48,6 +53,13 @@ export interface TransferNftOptions {
   nftInfo: NftCardInfo | undefined
 
   ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+}
+
+export interface BurnNftOptions {
+  // The set of NFTs that may be burned as part of this action.
+  options: LoadingDataWithError<NftCardInfo[]>
+  // Information about the NFT currently selected.
+  nftInfo: NftCardInfo | undefined
 }
 
 export interface InstantiateNftCollectionOptions {
