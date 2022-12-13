@@ -15,7 +15,8 @@ export enum CoreActionKey {
   RemoveCw20 = 'removeCw20',
   AddCw721 = 'addCw721',
   RemoveCw721 = 'removeCw721',
-  TransferCw721 = 'transferCw721',
+  TransferNft = 'transferNft',
+  MintNft = 'mintNft',
   ManageSubDaos = 'manageSubDaos',
   UpdateInfo = 'updateInfo',
   Instantiate = 'instantiate',
@@ -60,11 +61,13 @@ export type ActionComponentProps<O = undefined, D = any> = {
       isCreating: true
       onRemove: () => void
       errors: FieldErrors
+      addAction: (action: ActionKeyAndData) => void
     }
   | {
       isCreating: false
       onRemove?: undefined
       errors?: undefined
+      addAction?: undefined
     }
 ) &
   (O extends undefined ? {} : { options: O })

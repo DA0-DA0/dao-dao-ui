@@ -21,16 +21,16 @@ import {
 } from '@dao-dao/types'
 import { validateAddress, validateRequired } from '@dao-dao/utils'
 
-import { ActionCard } from './ActionCard'
+import { ActionCard } from '../ActionCard'
 
-export interface TransferCw721Options {
+export interface TransferNftOptions {
   // The set of NFTs that may be transfered as part of this action.
   options: LoadingDataWithError<NftCardInfo[]>
   // Information about the NFT currently selected.
   nftInfo: NftCardInfo | undefined
 }
 
-export const TransferCw721Component: ActionComponent<TransferCw721Options> = ({
+export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
   fieldNamePrefix,
   onRemove,
   isCreating,

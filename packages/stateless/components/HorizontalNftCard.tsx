@@ -43,7 +43,7 @@ export const HorizontalNftCard = forwardRef<
   return (
     <div
       className={clsx(
-        'grid grid-cols-[auto_1fr] grid-rows-1 overflow-hidden rounded-lg bg-background-primary',
+        'flex flex-col items-stretch overflow-hidden rounded-lg bg-background-primary sm:grid sm:grid-cols-[auto_1fr] sm:grid-rows-1',
         imageLoading && imageUrl && 'animate-pulse',
         className
       )}
@@ -66,7 +66,7 @@ export const HorizontalNftCard = forwardRef<
       )}
 
       <div className="grow">
-        <p className="title-text border-b border-border-secondary py-4 px-6 text-xl">
+        <p className="title-text border-b border-border-secondary py-4 px-6">
           {/* Don't include collection name since we show it below. */}
           {getNftName('', tokenId, name)}
         </p>
@@ -82,7 +82,7 @@ export const HorizontalNftCard = forwardRef<
               value={collection.address}
             />
 
-            <p className="title-text text-lg">{collection.name}</p>
+            <p className="primary-text font-normal">{collection.name}</p>
           </div>
 
           {/* Source chain */}

@@ -1,23 +1,27 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { makeProps as makeNftInfoProps } from '@dao-dao/stateless/components/NftCard.stories'
 import {
   makeActionsProviderDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 
-import { ChooseExistingTokenSwap } from './ChooseExistingTokenSwap'
-import { PerformTokenSwapData } from './types'
+import { ProfileDisplay } from '../../../components'
+import { MintNft } from './MintNft'
+import { MintNftData } from './types'
 
 export default {
-  title:
-    'DAO DAO / packages / stateful / actions / components / token_swap / ChooseExistingTokenSwap',
-  component: ChooseExistingTokenSwap,
-
+  title: 'DAO DAO / packages / stateful / actions / components / nft / MintNft',
+  component: MintNft,
   decorators: [
-    makeReactHookFormDecorator<PerformTokenSwapData>({
-      contractChosen: false,
-      tokenSwapContractAddress: undefined,
+    makeReactHookFormDecorator<MintNftData>({
+      contractChosen: true,
+      collectionAddress: 'junoNftCollection',
+      mintMsg: {
+        owner: '',
+        token_id: '',
+      },
     }),
     makeActionsProviderDecorator({
       address: 'junoWalletAddress',
@@ -29,11 +33,11 @@ export default {
       },
     }),
   ],
-} as ComponentMeta<typeof ChooseExistingTokenSwap>
+} as ComponentMeta<typeof MintNft>
 
-const Template: ComponentStory<typeof ChooseExistingTokenSwap> = (args) => (
+const Template: ComponentStory<typeof MintNft> = (args) => (
   <div className="max-w-xl">
-    <ChooseExistingTokenSwap {...args} />
+    <MintNft {...args} />
   </div>
 )
 
@@ -47,7 +51,7 @@ Default.args = {
   onRemove: () => alert('remove'),
   errors: {},
   options: {
-    chooseLoading: false,
-    onChooseExistingContract: async () => alert('choose'),
+    nftInfo: makeNftInfoProps(),
+    ProfileDisplay,
   },
 }

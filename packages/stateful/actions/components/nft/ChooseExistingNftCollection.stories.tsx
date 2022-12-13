@@ -6,18 +6,26 @@ import {
 } from '@dao-dao/storybook'
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 
-import { ChooseExistingTokenSwap } from './ChooseExistingTokenSwap'
-import { PerformTokenSwapData } from './types'
+import { MintNftData } from '.'
+import { ChooseExistingNftCollection } from './ChooseExistingNftCollection'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / components / token_swap / ChooseExistingTokenSwap',
-  component: ChooseExistingTokenSwap,
+    'DAO DAO / packages / stateful / actions / components / nft / ChooseExistingNftCollection',
+  component: ChooseExistingNftCollection,
 
   decorators: [
-    makeReactHookFormDecorator<PerformTokenSwapData>({
+    makeReactHookFormDecorator<MintNftData>({
       contractChosen: false,
-      tokenSwapContractAddress: undefined,
+      collectionAddress: undefined,
+      mintMsg: {
+        owner: '',
+        token_id: '',
+      },
+      metadata: {
+        name: '',
+        description: '',
+      },
     }),
     makeActionsProviderDecorator({
       address: 'junoWalletAddress',
@@ -29,11 +37,11 @@ export default {
       },
     }),
   ],
-} as ComponentMeta<typeof ChooseExistingTokenSwap>
+} as ComponentMeta<typeof ChooseExistingNftCollection>
 
-const Template: ComponentStory<typeof ChooseExistingTokenSwap> = (args) => (
+const Template: ComponentStory<typeof ChooseExistingNftCollection> = (args) => (
   <div className="max-w-xl">
-    <ChooseExistingTokenSwap {...args} />
+    <ChooseExistingNftCollection {...args} />
   </div>
 )
 

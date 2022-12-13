@@ -16,24 +16,24 @@ import { loadableToLoadingDataWithError, makeWasmMessage } from '@dao-dao/utils'
 import {
   nftCardInfoSelector,
   nftCardInfosSelector,
-} from '../../recoil/selectors/nft'
-import { TransferCw721Component } from '../components/TransferCw721'
+} from '../../../recoil/selectors/nft'
+import { TransferNftComponent } from '../../components/nft/TransferNft'
 
-interface TransferCw721Data {
+interface TransferNftData {
   collection: string
   tokenId: string
   recipient: string
 }
 
-const useDefaults: UseDefaults<TransferCw721Data> = () => ({
+const useDefaults: UseDefaults<TransferNftData> = () => ({
   collection: '',
   tokenId: '',
   recipient: '',
 })
 
-const useTransformToCosmos: UseTransformToCosmos<TransferCw721Data> = () =>
+const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () =>
   useCallback(
-    ({ collection, tokenId, recipient }: TransferCw721Data) =>
+    ({ collection, tokenId, recipient }: TransferNftData) =>
       makeWasmMessage({
         wasm: {
           execute: {
@@ -51,7 +51,7 @@ const useTransformToCosmos: UseTransformToCosmos<TransferCw721Data> = () =>
     []
   )
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferCw721Data> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
   msg: Record<string, any>
 ) =>
   'wasm' in msg &&
@@ -69,7 +69,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferCw721Data> = (
       }
     : { match: false }
 
-export const makeTransferNftAction: ActionMaker<TransferCw721Data> = ({
+export const makeTransferNftAction: ActionMaker<TransferNftData> = ({
   t,
   address,
   chainId,
@@ -96,11 +96,11 @@ export const makeTransferNftAction: ActionMaker<TransferCw721Data> = ({
         : constSelector(undefined)
     )
 
-    return <TransferCw721Component {...props} options={{ options, nftInfo }} />
+    return <TransferNftComponent {...props} options={{ options, nftInfo }} />
   }
 
   return {
-    key: CoreActionKey.TransferCw721,
+    key: CoreActionKey.TransferNft,
     Icon: ImageEmoji,
     label: t('title.transferNft'),
     description: t('info.transferNftDescription'),

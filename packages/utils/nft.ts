@@ -13,6 +13,11 @@ export const getNftName = (
 
 // Normalize NFT image URLs by ensuring they are from a valid IPFS provider.
 export const normalizeNftImageUrl = (url: string) => {
+  // If hosted locally, passthrough (probably development/test env).
+  if (url.startsWith('/')) {
+    return url
+  }
+
   url = transformIpfsUrlToHttpsIfNecessary(url)
 
   // Convert `https://CID.ipfs.nftstorage.link` to
@@ -83,4 +88,35 @@ export const parseNftUriResponse = (
   }
 
   return { name, imageUrl, externalLink }
+}
+
+// Uploads an NFT to NFT Storage and returns the metadata.
+export const uploadNft = async (
+  name: string,
+  description: string,
+  file: File
+): Promise<{
+  metadataUrl: string
+  imageUrl: string
+}> => {
+  const form = new FormData()
+  form.append('name', name)
+  form.append('description', description)
+  form.append('image', file)
+
+  // Next.js API route.
+  const response = await fetch('/api/uploadNft', {
+    method: 'POST',
+    body: form,
+  })
+
+  if (response.ok) {
+    const data = await response.json()
+    return data
+  } else {
+    const { error } = await response
+      .json()
+      .catch(() => ({ error: 'Unknown error' }))
+    throw new Error(error)
+  }
 }

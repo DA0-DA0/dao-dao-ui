@@ -18,6 +18,7 @@ export interface CodeIdConfig {
   Cw20Base: number
   Cw20Stake: number
   Cw4Group: number
+  Cw721Base: number
   CwAdminFactory: number
   DaoCore: number
   DaoPreProposeMultiple: number

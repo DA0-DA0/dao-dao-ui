@@ -68,13 +68,22 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
     },
 })
 
-export const nftCardInfoSelector = selectorFamily<
+// Used to construct token info without querying the contract for the token URI.
+// This is used by the selector below that fetches token URI from the contract,
+// it is also used by the mint NFT action which has a token URI but is not
+// guaranteed to be on-chain yet (before a proposal is executed, the token URI
+// can be found in the Cosmos msg, but the contract hasn't yet stored it).
+export const nftCardInfoWithUriSelector = selectorFamily<
   NftCardInfo,
-  WithChainId<{ tokenId: string; collection: string }>
+  WithChainId<{
+    collection: string
+    tokenId: string
+    tokenUri?: string | null | undefined
+  }>
 >({
   key: 'nftCardInfo',
   get:
-    ({ tokenId, collection, chainId }) =>
+    ({ tokenId, collection, tokenUri, chainId }) =>
     async ({ get }) => {
       const { native, stargaze } = get(
         nativeAndStargazeCollectionInfoSelector({
@@ -82,17 +91,8 @@ export const nftCardInfoSelector = selectorFamily<
           chainId,
         })
       )
-      const tokenInfo = get(
-        Cw721BaseSelectors.nftInfoSelector({
-          contractAddress: collection,
-          chainId,
-          params: [{ tokenId }],
-        })
-      )
       const tokenData = get(
-        tokenInfo.token_uri
-          ? nftTokenUriDataSelector(tokenInfo.token_uri)
-          : constSelector(undefined)
+        tokenUri ? nftTokenUriDataSelector(tokenUri) : constSelector(undefined)
       )
 
       const info: NftCardInfo = {
@@ -107,8 +107,11 @@ export const nftCardInfoSelector = selectorFamily<
               name: 'Stargaze',
             }
           : undefined,
-        imageUrl: tokenInfo.token_uri ?? '',
+        // Default to tokenUri; this gets overwritten if tokenUri contains valid
+        // metadata and has an image.
+        imageUrl: tokenUri ?? '',
         name: '',
+        chainId: stargaze ? ChainInfoID.Stargaze1 : chainId ?? CHAIN_ID,
       }
 
       const { name, imageUrl, externalLink } = parseNftUriResponse(
@@ -119,6 +122,33 @@ export const nftCardInfoSelector = selectorFamily<
       info.externalLink = externalLink || info.externalLink
 
       return info
+    },
+})
+
+export const nftCardInfoSelector = selectorFamily<
+  NftCardInfo,
+  WithChainId<{ tokenId: string; collection: string }>
+>({
+  key: 'nftCardInfo',
+  get:
+    ({ tokenId, collection, chainId }) =>
+    async ({ get }) => {
+      const tokenInfo = get(
+        Cw721BaseSelectors.nftInfoSelector({
+          contractAddress: collection,
+          chainId,
+          params: [{ tokenId }],
+        })
+      )
+
+      return get(
+        nftCardInfoWithUriSelector({
+          tokenId,
+          collection,
+          tokenUri: tokenInfo.token_uri,
+          chainId,
+        })
+      )
     },
 })
 

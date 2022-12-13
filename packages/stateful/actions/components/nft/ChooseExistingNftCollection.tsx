@@ -10,11 +10,11 @@ import {
 import { ActionComponent } from '@dao-dao/types'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
-import { ChooseExistingTokenSwapOptions } from './types'
+import { ChooseExistingNftCollectionOptions } from './types'
 
-// Displayed when entering an existing token swap.
-export const ChooseExistingTokenSwap: ActionComponent<
-  ChooseExistingTokenSwapOptions
+// Displayed when entering an existing NFT collection address.
+export const ChooseExistingNftCollection: ActionComponent<
+  ChooseExistingNftCollectionOptions
 > = ({
   fieldNamePrefix,
   errors,
@@ -25,20 +25,22 @@ export const ChooseExistingTokenSwap: ActionComponent<
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="max-w-prose">{t('form.tokenSwapExistingInstructions')}</p>
+      <p className="max-w-prose">
+        {t('form.nftCollectionExistingInstructions')}
+      </p>
 
       <div className="space-y-2">
-        <InputLabel name={t('form.existingTokenSwapContract')} />
+        <InputLabel name={t('form.existingNftCollection')} />
 
         <AddressInput
-          error={errors?.tokenSwapContractAddress}
-          fieldName={fieldNamePrefix + 'tokenSwapContractAddress'}
+          error={errors?.collectionAddress}
+          fieldName={fieldNamePrefix + 'collectionAddress'}
           iconType="contract"
           register={register}
           validation={[validateRequired, validateContractAddress]}
         />
 
-        <InputErrorMessage error={errors?.tokenSwapContractAddress} />
+        <InputErrorMessage error={errors?.collectionAddress} />
       </div>
 
       <Button
