@@ -25,10 +25,6 @@ export const ChooseExistingNftCollection: ActionComponent<
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="max-w-prose">
-        {t('form.nftCollectionExistingInstructions')}
-      </p>
-
       <div className="space-y-2">
         <InputLabel name={t('form.existingNftCollection')} />
 
