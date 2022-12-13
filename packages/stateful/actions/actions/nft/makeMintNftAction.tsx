@@ -75,10 +75,14 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({ t, address }) => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // Manually validate to ensure contract has been chosen.
+    // Manually validate to ensure contract has been chosen and token URI has
+    // been set.
     useEffect(() => {
       register(props.fieldNamePrefix + 'contractChosen', {
         validate: (value) => value || t('error.nftCollectionNotChosen'),
+      })
+      register(props.fieldNamePrefix + 'mintMsg.token_uri', {
+        validate: (value) => value || t('error.nftMetadataNotUploaded'),
       })
     }, [props.fieldNamePrefix, register])
 

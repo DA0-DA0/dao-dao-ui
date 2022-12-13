@@ -50,7 +50,7 @@ export const HorizontalNftCard = forwardRef<
       ref={ref}
     >
       {imageUrl ? (
-        <div className="relative aspect-square">
+        <div className="relative aspect-square sm:h-36 sm:w-36">
           <Image
             alt={t('info.nftImage')}
             layout="fill"
@@ -65,15 +65,15 @@ export const HorizontalNftCard = forwardRef<
         </div>
       )}
 
-      <div className="grow">
+      <div className="flex min-w-0 grow flex-col">
         <p className="title-text border-b border-border-secondary py-4 px-6">
           {/* Don't include collection name since we show it below. */}
           {getNftName('', tokenId, name)}
         </p>
 
-        <div className="flex flex-row items-center justify-between gap-12 py-4 px-6">
+        <div className="flex grow flex-row items-center justify-between gap-8 py-4 px-6">
           {/* Collection */}
-          <div className="flex shrink-0 flex-col items-start justify-center">
+          <div className="flex flex-col items-stretch justify-between gap-1 overflow-hidden">
             <CopyToClipboard
               className="text-xs"
               label={t('title.collection')}
@@ -82,13 +82,26 @@ export const HorizontalNftCard = forwardRef<
               value={collection.address}
             />
 
-            <p className="primary-text font-normal">{collection.name}</p>
+            <p className="primary-text truncate font-normal">
+              {collection.name}
+              {collection.name}
+              {collection.name}
+              {collection.name}
+              {collection.name}
+              {collection.name}
+              {collection.name}
+            </p>
           </div>
 
           {/* Source chain */}
           {chainImageNode ? (
             externalLink ? (
-              <a href={externalLink?.href} rel="noreferrer" target="_blank">
+              <a
+                className="shrink-0"
+                href={externalLink?.href}
+                rel="noreferrer"
+                target="_blank"
+              >
                 {chainImageNode}
               </a>
             ) : (

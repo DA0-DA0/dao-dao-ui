@@ -1,6 +1,10 @@
 import { ComponentType } from 'react'
 
-import { NftCardInfo, StatefulProfileDisplayProps } from '@dao-dao/types'
+import {
+  LoadingDataWithError,
+  NftCardInfo,
+  StatefulProfileDisplayProps,
+} from '@dao-dao/types'
 import {
   InstantiateMsg as Cw721InstantiateMsg,
   MintMsgForNullable_Empty,
@@ -29,7 +33,22 @@ export interface MintNftData {
   mintMsg: MintMsgForNullable_Empty
 }
 
+export interface TransferNftData {
+  collection: string
+  tokenId: string
+  recipient: string
+}
+
 //! Stateless component options
+
+export interface TransferNftOptions {
+  // The set of NFTs that may be transfered as part of this action.
+  options: LoadingDataWithError<NftCardInfo[]>
+  // Information about the NFT currently selected.
+  nftInfo: NftCardInfo | undefined
+
+  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+}
 
 export interface InstantiateNftCollectionOptions {
   instantiating: boolean

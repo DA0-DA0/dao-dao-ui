@@ -13,17 +13,12 @@ import {
 } from '@dao-dao/types'
 import { loadableToLoadingDataWithError, makeWasmMessage } from '@dao-dao/utils'
 
+import { ProfileDisplay } from '../../../components'
 import {
   nftCardInfoSelector,
   nftCardInfosSelector,
 } from '../../../recoil/selectors/nft'
-import { TransferNftComponent } from '../../components/nft/TransferNft'
-
-interface TransferNftData {
-  collection: string
-  tokenId: string
-  recipient: string
-}
+import { TransferNftComponent, TransferNftData } from '../../components/nft'
 
 const useDefaults: UseDefaults<TransferNftData> = () => ({
   collection: '',
@@ -96,7 +91,12 @@ export const makeTransferNftAction: ActionMaker<TransferNftData> = ({
         : constSelector(undefined)
     )
 
-    return <TransferNftComponent {...props} options={{ options, nftInfo }} />
+    return (
+      <TransferNftComponent
+        {...props}
+        options={{ options, nftInfo, ProfileDisplay }}
+      />
+    )
   }
 
   return {

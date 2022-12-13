@@ -1,7 +1,3 @@
-import {
-  ArrowRightAltRounded,
-  SubdirectoryArrowRightRounded,
-} from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -9,33 +5,23 @@ import { useTranslation } from 'react-i18next'
 import {
   AddressInput,
   Button,
+  HorizontalNftCard,
   ImageEmoji,
   InputErrorMessage,
-  NftCard,
   NftSelectionModal,
 } from '@dao-dao/stateless'
-import {
-  ActionComponent,
-  LoadingDataWithError,
-  NftCardInfo,
-} from '@dao-dao/types'
+import { ActionComponent, NftCardInfo } from '@dao-dao/types'
 import { validateAddress, validateRequired } from '@dao-dao/utils'
 
 import { ActionCard } from '../ActionCard'
-
-export interface TransferNftOptions {
-  // The set of NFTs that may be transfered as part of this action.
-  options: LoadingDataWithError<NftCardInfo[]>
-  // Information about the NFT currently selected.
-  nftInfo: NftCardInfo | undefined
-}
+import { TransferNftOptions } from './types'
 
 export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
   fieldNamePrefix,
   onRemove,
   isCreating,
   errors,
-  options: { options, nftInfo },
+  options: { options, nftInfo, ProfileDisplay },
 }) => {
   const { t } = useTranslation()
   const { watch, setValue, setError, register, clearErrors } = useFormContext()
@@ -58,7 +44,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
     }
   }, [selected, setError, clearErrors, t, fieldNamePrefix])
 
-  const [showModal, setShowModal] = useState<boolean>(isCreating)
+  const [showModal, setShowModal] = useState<boolean>(false)
 
   return (
     <ActionCard
@@ -66,36 +52,39 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
       onRemove={onRemove}
       title={t('title.transferNft')}
     >
-      <div className="flex flex-row flex-wrap items-center gap-2">
-        <div className="flex flex-col gap-1">
-          {nftInfo && <NftCard {...nftInfo} className="max-w-xs" />}
+      <div className="flex flex-col gap-y-4 gap-x-12 lg:flex-row">
+        <div className="flex grow basis-0 flex-col gap-1">
+          <p className="primary-text mb-3">
+            {isCreating
+              ? t('form.whoTransferNftQuestion')
+              : t('form.recipient')}
+          </p>
+
+          <AddressInput
+            ProfileDisplay={ProfileDisplay}
+            disabled={!isCreating}
+            error={errors?.to}
+            fieldName={fieldNamePrefix + 'recipient'}
+            register={register}
+            validation={[validateRequired, validateAddress]}
+          />
+          <InputErrorMessage error={errors?.recipient} />
+        </div>
+
+        <div className="flex grow basis-0 flex-col gap-2">
+          {nftInfo && <HorizontalNftCard {...nftInfo} />}
+
           {isCreating && (
             <Button
-              className="text-text-tertiary"
+              className="self-end text-text-tertiary"
               onClick={() => setShowModal(true)}
-              variant="underline"
+              variant="secondary"
             >
-              ({t('button.selectNft')})
+              {t('button.selectNft')}
             </Button>
           )}
+
           <InputErrorMessage error={errors?.collection} />
-        </div>
-        <div className="flex grow flex-row items-center justify-center gap-2 sm:gap-3">
-          <div className="flex flex-row items-center pl-1 sm:pl-0">
-            <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
-            <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
-          </div>
-          <div className="flex flex-col gap-1">
-            <AddressInput
-              containerClassName="grow"
-              disabled={!isCreating}
-              error={errors?.to}
-              fieldName={fieldNamePrefix + 'recipient'}
-              register={register}
-              validation={[validateRequired, validateAddress]}
-            />
-            <InputErrorMessage error={errors?.recipient} />
-          </div>
         </div>
       </div>
 
@@ -110,15 +99,11 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
         onAction={() => setShowModal(false)}
         onNftClick={(nft) => {
           if (getIdForNft(nft) === selected) {
-            setValue(fieldNamePrefix, {
-              tokenId: '',
-              collection: '',
-            })
+            setValue(fieldNamePrefix + 'tokenId', '')
+            setValue(fieldNamePrefix + 'collection', '')
           } else {
-            setValue(fieldNamePrefix, {
-              tokenId: nft.tokenId,
-              collection: nft.collection.address,
-            })
+            setValue(fieldNamePrefix + 'tokenId', nft.tokenId)
+            setValue(fieldNamePrefix + 'collection', nft.collection.address)
           }
         }}
         selectedIds={[selected]}

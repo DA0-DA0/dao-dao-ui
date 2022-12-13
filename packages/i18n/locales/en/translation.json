@@ -182,6 +182,7 @@
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
     "nameIncorrectLength": "A DAO's name must be between {{min}} and {{max}} characters.",
     "nftCollectionNotChosen": "You must create an NFT collection or enter the address of an existing collection before using this action.",
+    "nftMetadataNotUploaded": "You must upload the NFT metadata before you can mint.",
     "noClaimsAvailable": "No claims available.",
     "noCw20Tokens": "There are no CW20 tokens in the treasury.",
     "noImageSelected": "No image selected.",
@@ -299,6 +300,7 @@
     "quorumTitle": "Quorum",
     "ratingInstructionsPlaceholder": "This is what DAO members will see when they are rating the contributions. Explain how they should rate.",
     "ratingsSubmitted": "You submitted ratings for this cycle. Submitting again will overwrite your previous response.",
+    "recipient": "Recipient",
     "refundFailedProposalsTitle": "Refund failed proposals",
     "refundFailedProposalsTooltip": "Should failed proposals have their deposit refunded?",
     "refundPolicyTitle": "Once a proposal completes, when should deposits be refunded?",
@@ -343,7 +345,8 @@
     "whatSendCounterpartyQuestion": "What do you need to <2>send</2> to the counterparty for the token swap to complete?",
     "whoAreYouQuestion": "Who are you?",
     "whoCanMint": "Who can mint an NFT?",
-    "whoIsCounterparty": "Who is the counterparty?"
+    "whoIsCounterparty": "Who is the counterparty?",
+    "whoTransferNftQuestion": "Where would you like to transfer the NFT?"
   },
   "format": {
     "time": "{{value}} {{unit}}",
