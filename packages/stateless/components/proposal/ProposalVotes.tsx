@@ -98,10 +98,13 @@ export const ProposalVotes = <Vote extends unknown = any>({
       return
     }
 
-    const wasScrolledToBottom =
-      parent.scrollHeight - parent.scrollTop === parent.clientHeight
-    if (wasScrolledToBottom && newVoteCount > prevVoteCount) {
-      parent.scrollTop = parent.scrollHeight
+    const wasScrolledNearBottom =
+      parent.scrollHeight - parent.scrollTop - parent.clientHeight < 100
+    if (wasScrolledNearBottom && newVoteCount > prevVoteCount) {
+      parent.scrollTo({
+        top: parent.scrollHeight,
+        behavior: 'smooth',
+      })
     }
 
     setPrevVoteCount(newVoteCount)
