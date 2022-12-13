@@ -7,6 +7,7 @@ import {
   ProposalVotes as StatelessProposalVotes,
   useCachedLoadable,
 } from '@dao-dao/stateless'
+import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { ProfileDisplay } from '../../../../../components/ProfileDisplay'
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
@@ -80,6 +81,7 @@ export const ProposalVotes = () => {
               ),
             }
       }
+      votingOpen={proposal.status === Status.Open}
     />
   )
 }

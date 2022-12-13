@@ -25,6 +25,8 @@ export interface ProposalVotesProps<Vote extends unknown = any> {
   VoteDisplay: ComponentType<{ vote: Vote }>
   onRefresh: () => void
   refreshing: boolean
+  // Only allows refreshing when voting is open.
+  votingOpen: boolean
 }
 
 export const ProposalVotes = <Vote extends unknown = any>({
@@ -34,6 +36,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
   VoteDisplay,
   onRefresh,
   refreshing,
+  votingOpen,
 }: ProposalVotesProps<Vote>) => {
   const { t } = useTranslation()
 
@@ -59,11 +62,15 @@ export const ProposalVotes = <Vote extends unknown = any>({
     refreshing && setRefreshSpinning(true)
   }, [refreshing])
 
-  // Refresh votes every 30 seconds.
+  // Refresh votes every 30 seconds, while voting open.
   useEffect(() => {
+    if (!votingOpen) {
+      return
+    }
+
     const interval = setInterval(onRefresh, 30 * 1000)
     return () => clearInterval(interval)
-  }, [onRefresh])
+  }, [onRefresh, votingOpen])
 
   // If a new vote is added and the window is scrolled to the bottom, scroll to
   // the bottom again to show the new vote.
@@ -106,34 +113,38 @@ export const ProposalVotes = <Vote extends unknown = any>({
         <div className="flex flex-col gap-1">
           <p className="primary-text">{t('title.votesCast')}</p>
 
-          <p className="caption-text italic">
-            {t('info.refreshesEveryNumSeconds', { seconds: 30 })}
-          </p>
+          {votingOpen && (
+            <p className="caption-text italic">
+              {t('info.refreshesEveryNumSeconds', { seconds: 30 })}
+            </p>
+          )}
         </div>
 
         {/* Refresh button that shows up after votes load. */}
-        <IconButton
-          Icon={Refresh}
-          circular
-          className={clsx(
-            'transition-opacity',
-            votes.loading ? 'pointer-events-none opacity-0' : 'opacity-100',
-            refreshSpinning && 'animate-spin-medium'
-          )}
-          // If spinning but no longer refreshing, stop after iteration.
-          onAnimationIteration={
-            refreshSpinning && !refreshing
-              ? () => setRefreshSpinning(false)
-              : undefined
-          }
-          onClick={() => {
-            // Perform one spin even if refresh completes immediately. It will
-            // stop after 1 iteration if `refreshing` does not become true.
-            setRefreshSpinning(true)
-            onRefresh()
-          }}
-          variant="ghost"
-        />
+        {votingOpen && (
+          <IconButton
+            Icon={Refresh}
+            circular
+            className={clsx(
+              'transition-opacity',
+              votes.loading ? 'pointer-events-none opacity-0' : 'opacity-100',
+              refreshSpinning && 'animate-spin-medium'
+            )}
+            // If spinning but no longer refreshing, stop after iteration.
+            onAnimationIteration={
+              refreshSpinning && !refreshing
+                ? () => setRefreshSpinning(false)
+                : undefined
+            }
+            onClick={() => {
+              // Perform one spin even if refresh completes immediately. It will
+              // stop after 1 iteration if `refreshing` does not become true.
+              setRefreshSpinning(true)
+              onRefresh()
+            }}
+            variant="ghost"
+          />
+        )}
       </div>
 
       <div className="grid-rows-auto grid grid-cols-[minmax(5rem,1fr)_auto_auto] items-center gap-x-8 gap-y-6 overflow-x-auto sm:grid-cols-[auto_minmax(5rem,1fr)_auto_auto]">
