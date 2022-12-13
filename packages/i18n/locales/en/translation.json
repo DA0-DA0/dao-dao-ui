@@ -466,6 +466,7 @@
     "ratingClosesAt": "Rating closes at {{date}}.",
     "reached": "Reached",
     "recognizeSubDaoDescription": "Recognizing {{name}} as a SubDAO will display it inside the SubDAOs tab.",
+    "refreshesEveryNumSeconds": "Refreshes every {{seconds}} seconds.",
     "refund": "Refund",
     "removeCw20FromTreasuryActionDescription": "Stop displaying the DAO's balance of a CW20 token in the treasury view.",
     "removeCw721FromTreasuryActionDescription": "Stop displaying the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.",

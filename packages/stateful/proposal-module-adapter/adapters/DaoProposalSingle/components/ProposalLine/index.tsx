@@ -4,11 +4,7 @@ import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { useVotingModule } from '../../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../../react'
-import {
-  useProposal,
-  useTimestampDisplay,
-  useWalletVoteInfo,
-} from '../../hooks'
+import { useProposal, useTimestamps, useWalletVoteInfo } from '../../hooks'
 import { ProposalWalletVote } from '../ProposalWalletVote'
 import { ProposalStatus } from './ProposalStatus'
 
@@ -24,7 +20,7 @@ export const ProposalLine = (props: BaseProposalLineProps) => {
     fetchMembership: true,
   })
   const { couldVote, canVote, vote } = useWalletVoteInfo()
-  const timestampDisplay = useTimestampDisplay()
+  const { display: timestampDisplay } = useTimestamps()
 
   return (
     <StatelessProposalLine

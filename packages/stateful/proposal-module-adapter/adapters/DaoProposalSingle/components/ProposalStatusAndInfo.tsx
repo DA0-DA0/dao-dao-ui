@@ -10,7 +10,7 @@ import {
 } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
@@ -52,7 +52,8 @@ import {
   useDepositInfo,
   useProposal,
   useProposalExecutionTxHash,
-  useTimestampDisplay,
+  useProposalRefreshers,
+  useTimestamps,
   useVotesInfo,
 } from '../hooks'
 
@@ -78,7 +79,8 @@ export const ProposalStatusAndInfo = ({
   const proposal = useProposal()
   const depositInfo = useDepositInfo()
   const executionTxHash = useProposalExecutionTxHash()
-  const timestampDisplay = useTimestampDisplay()
+  const { display: timestampDisplay, expirationDate } = useTimestamps()
+  const { refreshProposal } = useProposalRefreshers()
 
   const info: ProposalStatusAndInfoProps['info'] = [
     {
@@ -238,6 +240,29 @@ export const ProposalStatusAndInfo = ({
       setActionLoading(false)
     }
   }, [connected, closeProposal, proposalNumber, onCloseSuccess])
+
+  // Refresh proposal once voting ends.
+  const [refreshedAtExpiration, setRefreshedAtExpiration] = useState(false)
+  useEffect(() => {
+    if (
+      proposal.status !== Status.Open ||
+      !expirationDate ||
+      refreshedAtExpiration
+    ) {
+      return
+    }
+
+    const msRemaining = expirationDate.getTime() - Date.now()
+    if (msRemaining < 0) {
+      return
+    }
+
+    const timeout = setTimeout(() => {
+      refreshProposal()
+      setRefreshedAtExpiration(true)
+    }, msRemaining)
+    return () => clearTimeout(timeout)
+  }, [expirationDate, proposal.status, refreshProposal, refreshedAtExpiration])
 
   return (
     <StatelessProposalStatusAndInfo

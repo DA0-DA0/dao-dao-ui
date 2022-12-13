@@ -18,7 +18,7 @@ import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
 import { useProposalModuleAdapterOptions } from '../../../react/context'
 import { useProposal } from './useProposal'
 
-export const useTimestampDisplay = () => {
+export const useTimestamps = () => {
   const { t } = useTranslation()
   const {
     proposalModule: { address: proposalModuleAddress },
@@ -91,5 +91,8 @@ export const useTimestampDisplay = () => {
         }
       : undefined
 
-  return dateDisplay
+  return {
+    display: dateDisplay,
+    expirationDate,
+  }
 }

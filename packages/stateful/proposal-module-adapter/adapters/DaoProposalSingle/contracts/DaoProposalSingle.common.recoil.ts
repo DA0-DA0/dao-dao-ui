@@ -9,6 +9,7 @@ import {
   ProposalResponse as ProposalV1Response,
   ReverseProposalsResponse as ReverseProposalsV1Response,
 } from '@dao-dao/types/contracts/CwProposalSingle.v1'
+import { VoteInfo } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   ConfigResponse as ConfigV2Response,
   GetVoteResponse as GetVoteV2Response,
@@ -94,6 +95,46 @@ export const listVotesSelector = selectorFamily<
           : listVotesV2Selector
 
       return get<ListVotesV1Response | ListVotesV2Response>(selector(params))
+    },
+})
+
+const LIST_ALL_VOTES_LIMIT = 30
+export const listAllVotesSelector = selectorFamily<
+  VoteInfo[],
+  QueryClientParams & {
+    proposalId: number
+  }
+>({
+  key: 'daoProposalSingleCommonListAllVotes',
+  get:
+    ({ proposalId, ...queryClientParams }) =>
+    async ({ get }) => {
+      const votes: VoteInfo[] = []
+
+      while (true) {
+        const response = get(
+          listVotesSelector({
+            ...queryClientParams,
+            params: [
+              {
+                startAfter: votes[votes.length - 1]?.voter,
+                proposalId,
+                limit: LIST_ALL_VOTES_LIMIT,
+              },
+            ],
+          })
+        )
+        if (!response?.votes.length) break
+
+        votes.push(...response.votes)
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.votes.length < LIST_ALL_VOTES_LIMIT) {
+          break
+        }
+      }
+
+      return votes
     },
 })
 

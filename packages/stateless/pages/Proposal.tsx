@@ -100,7 +100,7 @@ export const Proposal = ({
 
           <div className="mt-3">{voteTally}</div>
 
-          <div className="mt-10">{votesCast}</div>
+          <div className="mt-10 mb-12">{votesCast}</div>
         </div>
       </div>
     </>

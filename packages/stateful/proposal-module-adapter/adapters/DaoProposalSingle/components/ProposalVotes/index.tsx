@@ -1,19 +1,18 @@
-import { useEffect, useState } from 'react'
-import { useRecoilCallback, useRecoilValue } from 'recoil'
+import { useCallback } from 'react'
+import { useSetRecoilState } from 'recoil'
 
-import { refreshProposalIdAtom, useProposalVotesQuery } from '@dao-dao/state'
+import { refreshProposalVotesAtom, useProposalVotesQuery } from '@dao-dao/state'
 import {
   ProposalVote,
   ProposalVotes as StatelessProposalVotes,
+  useCachedLoadable,
 } from '@dao-dao/stateless'
 
 import { ProfileDisplay } from '../../../../../components/ProfileDisplay'
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
-import { listVotesSelector } from '../../contracts/DaoProposalSingle.common.recoil'
+import { listAllVotesSelector } from '../../contracts/DaoProposalSingle.common.recoil'
 import { useProposal } from '../../hooks'
 import { VoteDisplay } from './VoteDisplay'
-
-const VOTE_LIMIT = 30
 
 export const ProposalVotes = () => {
   const {
@@ -30,82 +29,27 @@ export const ProposalVotes = () => {
   )
 
   const totalPower = Number(proposal.total_power)
-
-  const [votes, setVotes] = useState<ProposalVote[]>([])
-  const [loading, setLoading] = useState(false)
-  const [canLoadMore, setCanLoadMore] = useState(true)
-  const loadMore = useRecoilCallback(
-    ({ snapshot }) =>
-      async (reset = false) => {
-        setLoading(true)
-        try {
-          const newVotes = (
-            await snapshot.getPromise(
-              listVotesSelector({
-                contractAddress: proposalModuleAddress,
-                params: [
-                  {
-                    proposalId: proposalNumber,
-                    // If resetting, start at beginning.
-                    startAfter: reset
-                      ? undefined
-                      : votes[votes.length - 1]?.voterAddress,
-                    limit: VOTE_LIMIT,
-                  },
-                ],
-              })
-            )
-          )?.votes
-
-          // If we loaded the max we asked for, there may be more in another
-          // query.
-          setCanLoadMore(newVotes.length === 30)
-
-          setVotes((votes) => [
-            // If resetting, don't include old votes.
-            ...(reset ? [] : votes),
-            ...newVotes.map(
-              ({ vote, voter, power }): ProposalVote => ({
-                voterAddress: voter,
-                vote,
-                votingPowerPercent: (Number(power) / totalPower) * 100,
-              })
-            ),
-          ])
-        } finally {
-          setLoading(false)
-        }
-      },
-    [
-      votes,
-      setVotes,
-      proposalModuleAddress,
-      proposalNumber,
-      setLoading,
-      totalPower,
-    ]
+  const votesLoadable = useCachedLoadable(
+    listAllVotesSelector({
+      contractAddress: proposalModuleAddress,
+      proposalId: proposalNumber,
+    })
   )
-
-  // When proposal updates, reset loaded votes back to initial.
-  const refreshProposalId = useRecoilValue(
-    refreshProposalIdAtom({
+  const refreshProposalVotes = useSetRecoilState(
+    refreshProposalVotesAtom({
       address: proposalModuleAddress,
       proposalId: proposalNumber,
     })
   )
-
-  // Load more on mount and when refresh ID changes.
-  useEffect(() => {
-    loadMore(true)
-    // Only execute when refresh ID changes, not instance of loadMore function.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshProposalId])
+  const onRefresh = useCallback(
+    () => refreshProposalVotes((id) => id + 1),
+    [refreshProposalVotes]
+  )
 
   return (
     <StatelessProposalVotes
       ProfileDisplay={ProfileDisplay}
       VoteDisplay={VoteDisplay}
-      canLoadMore={canLoadMore}
       getDateVoted={
         proposalVotesSubquery.loading || !proposalVotesSubquery.data?.proposal
           ? undefined
@@ -120,10 +64,22 @@ export const ProposalVotes = () => {
                 : undefined
             }
       }
-      // Only return dates once subquery data has loaded.
-      loadMore={loadMore}
-      loadingMore={loading}
-      votes={votes}
+      onRefresh={onRefresh}
+      refreshing={votesLoadable.state !== 'hasValue' || votesLoadable.updating}
+      votes={
+        votesLoadable.state !== 'hasValue'
+          ? { loading: true }
+          : {
+              loading: false,
+              data: votesLoadable.contents.map(
+                ({ vote, voter, power }): ProposalVote => ({
+                  voterAddress: voter,
+                  vote,
+                  votingPowerPercent: (Number(power) / totalPower) * 100,
+                })
+              ),
+            }
+      }
     />
   )
 }
