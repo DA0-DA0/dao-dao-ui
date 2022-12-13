@@ -37,6 +37,10 @@ export interface TransferNftData {
   collection: string
   tokenId: string
   recipient: string
+
+  // When true, uses `send` instead of `transfer_nft` to transfer the NFT.
+  executeSmartContract: boolean
+  smartContractMsg: string
 }
 
 export interface BurnNftData {

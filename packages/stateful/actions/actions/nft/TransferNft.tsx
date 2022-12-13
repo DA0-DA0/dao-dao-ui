@@ -1,3 +1,4 @@
+import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -11,7 +12,12 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { loadableToLoadingDataWithError, makeWasmMessage } from '@dao-dao/utils'
+import {
+  loadableToLoadingDataWithError,
+  makeWasmMessage,
+  objectMatchesStructure,
+  parseEncodedMessage,
+} from '@dao-dao/utils'
 
 import { ProfileDisplay } from '../../../components'
 import {
@@ -24,22 +30,39 @@ const useDefaults: UseDefaults<TransferNftData> = () => ({
   collection: '',
   tokenId: '',
   recipient: '',
+
+  executeSmartContract: false,
+  smartContractMsg: '{}',
 })
 
 const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () =>
   useCallback(
-    ({ collection, tokenId, recipient }: TransferNftData) =>
+    ({
+      collection,
+      tokenId,
+      recipient,
+      executeSmartContract,
+      smartContractMsg,
+    }: TransferNftData) =>
       makeWasmMessage({
         wasm: {
           execute: {
             contract_addr: collection,
             funds: [],
-            msg: {
-              transfer_nft: {
-                recipient,
-                token_id: tokenId,
-              },
-            },
+            msg: executeSmartContract
+              ? {
+                  send_nft: {
+                    contract: recipient,
+                    msg: toBase64(toUtf8(JSON.stringify(smartContractMsg))),
+                    token_id: tokenId,
+                  },
+                }
+              : {
+                  transfer_nft: {
+                    recipient,
+                    token_id: tokenId,
+                  },
+                },
           },
         },
       }),
@@ -49,17 +72,57 @@ const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () =>
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
   msg: Record<string, any>
 ) =>
-  'wasm' in msg &&
-  'execute' in msg.wasm &&
-  'transfer_nft' in msg.wasm.execute.msg &&
-  'recipient' in msg.wasm.execute.msg.transfer_nft &&
-  'token_id' in msg.wasm.execute.msg.transfer_nft
+  objectMatchesStructure(msg, {
+    wasm: {
+      execute: {
+        contract_addr: {},
+        funds: {},
+        msg: {
+          transfer_nft: {
+            recipient: {},
+            token_id: {},
+          },
+        },
+      },
+    },
+  })
     ? {
         match: true,
         data: {
           collection: msg.wasm.execute.contract_addr,
           tokenId: msg.wasm.execute.msg.transfer_nft.token_id,
           recipient: msg.wasm.execute.msg.transfer_nft.recipient,
+
+          executeSmartContract: false,
+          smartContractMsg: '{}',
+        },
+      }
+    : objectMatchesStructure(msg, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            funds: {},
+            msg: {
+              send_nft: {
+                contract: {},
+                msg: {},
+                token_id: {},
+              },
+            },
+          },
+        },
+      })
+    ? {
+        match: true,
+        data: {
+          collection: msg.wasm.execute.contract_addr,
+          tokenId: msg.wasm.execute.msg.send_nft.token_id,
+          recipient: msg.wasm.execute.msg.send_nft.contract,
+
+          executeSmartContract: true,
+          smartContractMsg: parseEncodedMessage(
+            msg.wasm.execute.msg.send_nft.msg
+          ),
         },
       }
     : { match: false }

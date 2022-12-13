@@ -1,3 +1,4 @@
+import { Check, Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
@@ -6,13 +7,21 @@ import { useTranslation } from 'react-i18next'
 import {
   AddressInput,
   Button,
+  CodeMirrorInput,
+  FormSwitchCard,
   HorizontalNftCard,
   ImageEmoji,
   InputErrorMessage,
+  InputLabel,
   NftSelectionModal,
 } from '@dao-dao/stateless'
 import { ActionComponent, NftCardInfo } from '@dao-dao/types'
-import { validateAddress, validateRequired } from '@dao-dao/utils'
+import {
+  validateAddress,
+  validateContractAddress,
+  validateJSON,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import { ActionCard } from '../ActionCard'
 import { TransferNftOptions } from './types'
@@ -25,10 +34,12 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
   options: { options, nftInfo, ProfileDisplay },
 }) => {
   const { t } = useTranslation()
-  const { watch, setValue, setError, register, clearErrors } = useFormContext()
+  const { control, watch, setValue, setError, register, clearErrors } =
+    useFormContext()
 
   const tokenId = watch(fieldNamePrefix + 'tokenId')
   const collection = watch(fieldNamePrefix + 'collection')
+  const executeSmartContract = watch(fieldNamePrefix + 'executeSmartContract')
 
   const selected = `${collection}${tokenId}`
   const getIdForNft = (nft: NftCardInfo) =>
@@ -54,22 +65,81 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
       title={t('title.transferNft')}
     >
       <div className="flex flex-col gap-y-4 gap-x-12 lg:flex-row">
-        <div className="flex grow basis-0 flex-col gap-1">
-          <p className="primary-text mb-3">
-            {isCreating
-              ? t('form.whoTransferNftQuestion')
-              : t('form.recipient')}
-          </p>
+        <div className="flex grow basis-0 flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <p className="primary-text mb-3">
+              {isCreating
+                ? t('form.whoTransferNftQuestion')
+                : t('form.recipient')}
+            </p>
 
-          <AddressInput
-            ProfileDisplay={ProfileDisplay}
-            disabled={!isCreating}
-            error={errors?.to}
-            fieldName={fieldNamePrefix + 'recipient'}
-            register={register}
-            validation={[validateRequired, validateAddress]}
-          />
-          <InputErrorMessage error={errors?.recipient} />
+            <AddressInput
+              ProfileDisplay={ProfileDisplay}
+              disabled={!isCreating}
+              error={errors?.to}
+              fieldName={fieldNamePrefix + 'recipient'}
+              register={register}
+              validation={[
+                validateRequired,
+                // If executing smart contract, ensure recipient is smart
+                // contract.
+                executeSmartContract
+                  ? validateContractAddress
+                  : validateAddress,
+              ]}
+            />
+            <InputErrorMessage error={errors?.recipient} />
+          </div>
+
+          {/* Don't show if not creating and not executing smart contract. */}
+          {(isCreating || executeSmartContract) && (
+            <div className="flex flex-col gap-1">
+              <FormSwitchCard
+                fieldName={fieldNamePrefix + 'executeSmartContract'}
+                label={t('form.executeSmartContract')}
+                onToggle={() => {
+                  // Recipient validation changes as a function of this value,
+                  // so reset errors on change and they will get revalidated
+                  // later.
+                  clearErrors(fieldNamePrefix + 'recipient')
+                  // Reset to valid empty JSON object.
+                  setValue(fieldNamePrefix + 'smartContractMsg', '{}', {
+                    shouldValidate: true,
+                  })
+                }}
+                setValue={setValue}
+                sizing="sm"
+                tooltip={t('form.executeSmartContractTooltip')}
+                tooltipIconSize="sm"
+                value={executeSmartContract}
+              />
+
+              {executeSmartContract && (
+                <div className="mt-2 flex flex-col gap-1">
+                  <InputLabel name={t('form.smartContractMessage')} />
+
+                  <CodeMirrorInput
+                    control={control}
+                    error={errors?.smartContractMsg}
+                    fieldName={fieldNamePrefix + 'smartContractMsg'}
+                    readOnly={!isCreating}
+                    validation={[validateJSON]}
+                  />
+
+                  {errors?.smartContractMsg?.message ? (
+                    <p className="flex items-center gap-1 text-sm text-text-interactive-error">
+                      <Close className="!h-5 !w-5" />{' '}
+                      <span>{errors.smartContractMsg.message}</span>
+                    </p>
+                  ) : (
+                    <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
+                      <Check className="!h-5 !w-5" /> {t('info.jsonIsValid')}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex grow basis-0 flex-col gap-2">
