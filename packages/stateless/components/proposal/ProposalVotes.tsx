@@ -118,7 +118,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
 
           {votingOpen && (
             <p className="caption-text italic">
-              {t('info.refreshesEveryNumSeconds', { seconds: 30 })}
+              {t('info.voteTallyRefreshesSeconds', { seconds: 30 })}
             </p>
           )}
         </div>
