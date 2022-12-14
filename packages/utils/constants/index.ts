@@ -111,3 +111,6 @@ export const STARGAZE_URL_BASE = process.env
 
 // Wallet profiles
 export const PFPK_API_BASE = process.env.NEXT_PUBLIC_PFPK_API_BASE as string
+
+export const FAST_AVERAGE_COLOR_API_TEMPLATE = process.env
+  .NEXT_PUBLIC_FAST_AVERAGE_COLOR_API_TEMPLATE as string
