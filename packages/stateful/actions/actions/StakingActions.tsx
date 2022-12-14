@@ -212,28 +212,40 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
     // If in DAO context, use proposal execution hash to find claimed rewards.
     // If in wallet context, proposal module adapter will not be available.
     const {
-      hooks: { useProposalExecutionTxHash },
+      hooks: { useLoadingProposalExecutionTxHash },
     } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
-    const executionTxHash = useProposalExecutionTxHash?.()
-    const executed = !!executionTxHash
+    const loadingExecutionTxHash = useLoadingProposalExecutionTxHash?.()
+    const executed =
+      !!loadingExecutionTxHash &&
+      !loadingExecutionTxHash.loading &&
+      !!loadingExecutionTxHash.data
 
-    const txEvents = useRecoilValue(
-      executionTxHash
-        ? transactionEventsSelector({ txHash: executionTxHash })
-        : constSelector(undefined)
+    const txEventsLoadable = useCachedLoadable(
+      // If no hook is available, no execution hash to load.
+      !loadingExecutionTxHash
+        ? constSelector(undefined)
+        : // If still loading, make this cached loadable load as well by returning
+        // no selector.
+        loadingExecutionTxHash.loading
+        ? undefined
+        : // If loaded no data, no execution hash.
+        !loadingExecutionTxHash.data
+        ? constSelector(undefined)
+        : transactionEventsSelector({ txHash: loadingExecutionTxHash.data })
     )
 
     const { watch } = useFormContext()
     let claimedRewards: number | undefined
     if (
       executed &&
-      txEvents &&
+      txEventsLoadable.state === 'hasValue' &&
+      txEventsLoadable.contents &&
       watch(props.fieldNamePrefix + 'stakeType') ===
         StakeType.WithdrawDelegatorReward
     ) {
       const validator = watch(props.fieldNamePrefix + 'validator')
 
-      const claimValidatorRewardsEvents = txEvents.filter(
+      const claimValidatorRewardsEvents = txEventsLoadable.contents.filter(
         ({ type, attributes }) =>
           type === 'withdraw_rewards' &&
           attributes.some(

@@ -10,7 +10,7 @@ import {
 } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { useCallback, useEffect, useState } from 'react'
+import { ComponentType, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
@@ -25,19 +25,23 @@ import {
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
+  CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
 } from '@dao-dao/types'
+import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   CHAIN_TXN_URL_PREFIX,
   formatPercentOf100,
   processError,
 } from '@dao-dao/utils'
 
+import { SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
 import { ProfileDisplay } from '../../../../components/ProfileDisplay'
-import { useVotingModule } from '../../../../hooks'
+import { useAwaitNextBlock, useVotingModule } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
   useClose as useCloseV1,
@@ -49,19 +53,69 @@ import {
   useExecute as useExecuteV2,
 } from '../contracts/DaoProposalSingle.v2.hooks'
 import {
-  useDepositInfo,
-  useProposal,
-  useProposalExecutionTxHash,
+  useLoadingDepositInfo,
+  useLoadingProposal,
+  useLoadingProposalExecutionTxHash,
+  useLoadingTimestampInfo,
+  useLoadingVotesInfo,
   useProposalRefreshers,
-  useTimestamps,
-  useVotesInfo,
 } from '../hooks'
+import { TimestampInfo, VotesInfo } from '../types'
 
-export const ProposalStatusAndInfo = ({
+export const ProposalStatusAndInfo = (
+  props: BaseProposalStatusAndInfoProps
+) => {
+  const loadingProposal = useLoadingProposal()
+  const loadingVotesInfo = useLoadingVotesInfo()
+  const loadingTimestampInfo = useLoadingTimestampInfo()
+  const loadingDepositInfo = useLoadingDepositInfo()
+
+  return (
+    <SuspenseLoader
+      fallback={<InnerProposalStatusAndInfoLoader {...props} />}
+      forceFallback={
+        loadingProposal.loading ||
+        loadingVotesInfo.loading ||
+        loadingTimestampInfo.loading ||
+        loadingDepositInfo.loading
+      }
+    >
+      {!loadingProposal.loading &&
+        !loadingVotesInfo.loading &&
+        !loadingTimestampInfo.loading &&
+        !loadingDepositInfo.loading && (
+          <InnerProposalStatusAndInfo
+            {...props}
+            depositInfo={loadingDepositInfo.data}
+            proposal={loadingProposal.data}
+            timestampInfo={loadingTimestampInfo.data}
+            votesInfo={loadingVotesInfo.data}
+          />
+        )}
+    </SuspenseLoader>
+  )
+}
+
+const InnerProposalStatusAndInfo = ({
+  proposal,
+  votesInfo: {
+    quorum,
+    thresholdReached,
+    quorumReached,
+    turnoutPercent,
+    turnoutYesPercent,
+  },
+  timestampInfo,
+  depositInfo,
   onExecuteSuccess,
   onCloseSuccess,
   ...props
-}: BaseProposalStatusAndInfoProps) => {
+}: BaseProposalStatusAndInfoProps & {
+  proposal: Proposal | SingleChoiceProposal
+  votesInfo: VotesInfo
+  timestampInfo: TimestampInfo | undefined
+  depositInfo: CheckedDepositInfo | undefined
+}) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
@@ -76,11 +130,8 @@ export const ProposalStatusAndInfo = ({
     })
   )
 
-  const proposal = useProposal()
-  const depositInfo = useDepositInfo()
-  const executionTxHash = useProposalExecutionTxHash()
-  const { display: timestampDisplay, expirationDate } = useTimestamps()
-  const { refreshProposal } = useProposalRefreshers()
+  const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
+  const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
   const info: ProposalStatusAndInfoProps['info'] = [
     {
@@ -123,16 +174,18 @@ export const ProposalStatusAndInfo = ({
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
-    ...(timestampDisplay
+    ...(timestampInfo
       ? ([
           {
             Icon: HourglassTopRounded,
-            label: timestampDisplay.label,
-            Value: (props) => <p {...props}>{timestampDisplay.content}</p>,
+            label: timestampInfo.display.label,
+            Value: (props) => <p {...props}>{timestampInfo.display.content}</p>,
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
-    ...(executionTxHash
+    ...(loadingExecutionTxHash &&
+    !loadingExecutionTxHash.loading &&
+    loadingExecutionTxHash.data
       ? ([
           {
             Icon: Tag,
@@ -142,13 +195,13 @@ export const ProposalStatusAndInfo = ({
                 <CopyToClipboardUnderline
                   // Will truncate automatically.
                   takeAll
-                  value={executionTxHash}
+                  value={loadingExecutionTxHash.data!}
                   {...props}
                 />
                 {!!CHAIN_TXN_URL_PREFIX && (
                   <IconButtonLink
                     Icon={ArrowOutward}
-                    href={CHAIN_TXN_URL_PREFIX + executionTxHash}
+                    href={CHAIN_TXN_URL_PREFIX + loadingExecutionTxHash.data}
                     variant="ghost"
                   />
                 )}
@@ -158,14 +211,6 @@ export const ProposalStatusAndInfo = ({
         ] as ProposalStatusAndInfoProps['info'])
       : []),
   ]
-
-  const {
-    quorum,
-    thresholdReached,
-    quorumReached,
-    turnoutPercent,
-    turnoutYesPercent,
-  } = useVotesInfo()
 
   const status =
     proposal.status === Status.Open
@@ -241,28 +286,35 @@ export const ProposalStatusAndInfo = ({
     }
   }, [connected, closeProposal, proposalNumber, onCloseSuccess])
 
-  // Refresh proposal once voting ends.
-  const [refreshedAtExpiration, setRefreshedAtExpiration] = useState(false)
+  const awaitNextBlock = useAwaitNextBlock()
+  // Refresh proposal and list of proposals (for list status) once voting ends.
   useEffect(() => {
-    if (
-      proposal.status !== Status.Open ||
-      !expirationDate ||
-      refreshedAtExpiration
-    ) {
+    if (proposal.status !== Status.Open || !timestampInfo?.expirationDate) {
       return
     }
 
-    const msRemaining = expirationDate.getTime() - Date.now()
+    const msRemaining = timestampInfo?.expirationDate.getTime() - Date.now()
     if (msRemaining < 0) {
       return
     }
 
     const timeout = setTimeout(() => {
+      // Refresh immediately so that the timestamp countdown re-renders and
+      // hides itself.
       refreshProposal()
-      setRefreshedAtExpiration(true)
+      // Refresh again after a block to make sure the status has been updated,
+      // and refresh the list of all proposals so the status gets updated there
+      // as well.
+      awaitNextBlock().then(refreshProposalAndAll)
     }, msRemaining)
     return () => clearTimeout(timeout)
-  }, [expirationDate, proposal.status, refreshProposal, refreshedAtExpiration])
+  }, [
+    timestampInfo?.expirationDate,
+    proposal.status,
+    refreshProposal,
+    refreshProposalAndAll,
+    awaitNextBlock,
+  ])
 
   return (
     <StatelessProposalStatusAndInfo
@@ -288,6 +340,53 @@ export const ProposalStatusAndInfo = ({
       }
       info={info}
       status={status}
+    />
+  )
+}
+
+const InnerProposalStatusAndInfoLoader = (
+  props: BaseProposalStatusAndInfoProps
+) => {
+  const { t } = useTranslation()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
+
+  const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
+    <p className={clsx('animate-pulse', className)}>...</p>
+  )
+  const info: ProposalStatusAndInfoProps['info'] = [
+    {
+      Icon: ({ className }) => (
+        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
+      ),
+      label: t('title.dao'),
+      Value: (props) => (
+        <ButtonLink href={`/dao/${coreAddress}`} variant="underline" {...props}>
+          {daoName}
+        </ButtonLink>
+      ),
+    },
+    {
+      Icon: AccountCircleOutlined,
+      label: t('title.creator'),
+      Value: LoaderP,
+    },
+    {
+      Icon: RotateRightOutlined,
+      label: t('title.status'),
+      Value: LoaderP,
+    },
+    {
+      Icon: HourglassTopRounded,
+      label: t('title.date'),
+      Value: LoaderP,
+    },
+  ]
+
+  return (
+    <StatelessProposalStatusAndInfo
+      {...props}
+      info={info}
+      status={t('info.loading')}
     />
   )
 }

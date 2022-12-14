@@ -1,19 +1,25 @@
-import { ProcessedTQType } from '@dao-dao/types'
+import { LoadingData, ProcessedTQType } from '@dao-dao/types'
 
+import { useProcessTQ } from '../common/hooks/useProcessTQ'
 import { VotesInfo } from '../types'
-import { useProposal } from './useProposal'
-import { useProposalProcessedTQ } from './useProposalProcessedTQ'
+import { useLoadingProposal } from './useLoadingProposal'
 
-export const useVotesInfo = (): VotesInfo => {
-  const proposal = useProposal()
+export const useLoadingVotesInfo = (): LoadingData<VotesInfo> => {
+  const loadingProposal = useLoadingProposal()
+  const processTQ = useProcessTQ()
+
+  if (loadingProposal.loading) {
+    return { loading: true }
+  }
+
+  const proposal = loadingProposal.data
+  const { threshold, quorum } = processTQ(proposal.threshold)
 
   const yesVotes = Number(proposal.votes.yes)
   const noVotes = Number(proposal.votes.no)
   const abstainVotes = Number(proposal.votes.abstain)
   const turnoutTotal = yesVotes + noVotes + abstainVotes
   const totalVotingPower = Number(proposal.total_power)
-
-  const { threshold, quorum } = useProposalProcessedTQ()
 
   const turnoutPercent = (turnoutTotal / totalVotingPower) * 100
   const turnoutYesPercent = turnoutTotal ? (yesVotes / turnoutTotal) * 100 : 0
@@ -48,25 +54,28 @@ export const useVotesInfo = (): VotesInfo => {
         turnoutPercent >= quorum.value)
 
   return {
-    threshold,
-    quorum,
-    // Raw info
-    yesVotes,
-    noVotes,
-    abstainVotes,
-    totalVotingPower,
-    turnoutTotal,
-    // Turnout percents
-    turnoutPercent,
-    turnoutYesPercent,
-    turnoutNoPercent,
-    turnoutAbstainPercent,
-    // Total percents
-    totalYesPercent,
-    totalNoPercent,
-    totalAbstainPercent,
-    // Meta
-    thresholdReached,
-    quorumReached,
+    loading: false,
+    data: {
+      threshold,
+      quorum,
+      // Raw info
+      yesVotes,
+      noVotes,
+      abstainVotes,
+      totalVotingPower,
+      turnoutTotal,
+      // Turnout percents
+      turnoutPercent,
+      turnoutYesPercent,
+      turnoutNoPercent,
+      turnoutAbstainPercent,
+      // Total percents
+      totalYesPercent,
+      totalNoPercent,
+      totalAbstainPercent,
+      // Meta
+      thresholdReached,
+      quorumReached,
+    },
   }
 }

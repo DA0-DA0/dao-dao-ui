@@ -25,6 +25,8 @@ export interface ProposalProps {
     name: LoadingData<string | null>
   }
   rightSidebarContent: ReactNode
+  onRefresh: () => void
+  refreshing: boolean
 }
 
 export const Proposal = ({
@@ -36,6 +38,8 @@ export const Proposal = ({
   daoInfo,
   creator,
   rightSidebarContent,
+  onRefresh,
+  refreshing,
 }: ProposalProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
@@ -90,6 +94,8 @@ export const Proposal = ({
               }
               creator={creator}
               description={description}
+              onRefresh={onRefresh}
+              refreshing={refreshing}
               title={title}
             />
           </div>

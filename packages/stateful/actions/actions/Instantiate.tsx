@@ -8,7 +8,7 @@ import {
   nativeBalancesSelector,
   transactionEventsSelector,
 } from '@dao-dao/state'
-import { BabyEmoji } from '@dao-dao/stateless'
+import { BabyEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -113,14 +113,22 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
     // address if already instantiated. If in wallet context, proposal module
     // adapter will not be available.
     const {
-      hooks: { useProposalExecutionTxHash },
+      hooks: { useLoadingProposalExecutionTxHash },
     } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
-    const executionTxHash = useProposalExecutionTxHash?.()
+    const loadingExecutionTxHash = useLoadingProposalExecutionTxHash?.()
 
-    const txEvents = useRecoilValue(
-      executionTxHash
-        ? transactionEventsSelector({ txHash: executionTxHash })
-        : constSelector(undefined)
+    const txEventsLoadable = useCachedLoadable(
+      // If no hook is available, no execution hash to load.
+      !loadingExecutionTxHash
+        ? constSelector(undefined)
+        : // If still loading, make this cached loadable load as well by returning
+        // no selector.
+        loadingExecutionTxHash.loading
+        ? undefined
+        : // If loaded no data, no execution hash.
+        !loadingExecutionTxHash.data
+        ? constSelector(undefined)
+        : transactionEventsSelector({ txHash: loadingExecutionTxHash.data })
     )
 
     const { watch } = useFormContext()
@@ -135,7 +143,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
     // can use the index of this action in all instantiation actions to
     // select the correct address.
     const instantiatedAddress = useMemo(() => {
-      if (!txEvents) {
+      if (txEventsLoadable.state !== 'hasValue' || !txEventsLoadable.contents) {
         return
       }
 
@@ -161,7 +169,8 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
 
       // Instantiation events from the transaction data.
       const instantiationAttributes =
-        txEvents.find(({ type }) => type === 'instantiate')?.attributes ?? []
+        txEventsLoadable.contents.find(({ type }) => type === 'instantiate')
+          ?.attributes ?? []
       // Instantiated addresses for the code ID this action instantiated.
       const codeIdInstantiations = instantiationAttributes.reduce(
         (acc, { key, value }, index) => [
@@ -184,7 +193,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
       }
 
       return codeIdInstantiations[innerIndex]
-    }, [txEvents, props, codeId])
+    }, [txEventsLoadable.state, txEventsLoadable.contents, props, codeId])
 
     return (
       <StatelessInstantiateComponent

@@ -34,9 +34,7 @@ export const makeProps = (): ProposalVotesProps<Vote> => ({
   // Within the past 5 days.
   getDateVoted: () =>
     new Date(Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000),
-  refreshing: false,
   votingOpen: true,
-  onRefresh: () => {},
   ProfileDisplay: (props) => (
     <ProfileDisplay
       loadingProfile={{

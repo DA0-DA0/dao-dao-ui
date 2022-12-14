@@ -25,16 +25,6 @@ export const refreshProposalIdAtom = atomFamily<
   default: 0,
 })
 
-// Change this to refresh votes information for the given proposal from the
-// given proposal module.
-export const refreshProposalVotesAtom = atomFamily<
-  number,
-  { address: string; proposalId: number }
->({
-  key: 'refreshProposalVotes',
-  default: 0,
-})
-
 // Change this to refresh all proposals.
 export const refreshProposalsIdAtom = atom<number>({
   key: 'refreshProposalsId',

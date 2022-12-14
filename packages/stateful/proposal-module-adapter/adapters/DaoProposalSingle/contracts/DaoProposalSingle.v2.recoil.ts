@@ -3,7 +3,6 @@ import { selectorFamily } from 'recoil'
 import {
   cosmWasmClientForChainSelector,
   refreshProposalIdAtom,
-  refreshProposalVotesAtom,
   refreshProposalsIdAtom,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
@@ -179,12 +178,6 @@ export const listVotesSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       get(
         refreshProposalIdAtom({
-          address: queryClientParams.contractAddress,
-          proposalId: params[0].proposalId,
-        })
-      )
-      get(
-        refreshProposalVotesAtom({
           address: queryClientParams.contractAddress,
           proposalId: params[0].proposalId,
         })

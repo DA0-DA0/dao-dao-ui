@@ -1,4 +1,3 @@
-import { Refresh } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, Fragment, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,8 +7,6 @@ import { LoadingData, StatefulProfileDisplayProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
-import { IconButton } from '../icon_buttons'
-import { Loader } from '../logo/Loader'
 import { Tooltip } from '../tooltip/Tooltip'
 
 export interface ProposalVote<Vote extends unknown = any> {
@@ -23,8 +20,6 @@ export interface ProposalVotesProps<Vote extends unknown = any> {
   getDateVoted?: (voterAddress: string) => Date | undefined
   ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
   VoteDisplay: ComponentType<{ vote: Vote }>
-  onRefresh: () => void
-  refreshing: boolean
   // Only allows refreshing when voting is open.
   votingOpen: boolean
 }
@@ -34,8 +29,6 @@ export const ProposalVotes = <Vote extends unknown = any>({
   getDateVoted,
   ProfileDisplay,
   VoteDisplay,
-  onRefresh,
-  refreshing,
   votingOpen,
 }: ProposalVotesProps<Vote>) => {
   const { t } = useTranslation()
@@ -54,23 +47,6 @@ export const ProposalVotes = <Vote extends unknown = any>({
             // Sort descending by date, and those without a date last.
             (b.when?.getTime() ?? -Infinity) - (a.when?.getTime() ?? -Infinity)
         )
-
-  const [refreshSpinning, setRefreshSpinning] = useState(false)
-  // Start spinning refresh icon if refreshing sets to true. Turn off once the
-  // iteration completes (in `onAnimationIteration` below).
-  useEffect(() => {
-    refreshing && setRefreshSpinning(true)
-  }, [refreshing])
-
-  // Refresh votes every 30 seconds, while voting open.
-  useEffect(() => {
-    if (!votingOpen) {
-      return
-    }
-
-    const interval = setInterval(onRefresh, 30 * 1000)
-    return () => clearInterval(interval)
-  }, [onRefresh, votingOpen])
 
   // If a new vote is added and the window is scrolled to the bottom, scroll to
   // the bottom again to show the new vote.
@@ -112,41 +88,13 @@ export const ProposalVotes = <Vote extends unknown = any>({
 
   return (
     <div className="flex flex-col gap-2" ref={containerRef}>
-      <div className="mb-4 flex flex-row items-start justify-between">
-        <div className="flex flex-col gap-1">
-          <p className="primary-text">{t('title.votesCast')}</p>
+      <div className="mb-4 flex flex-col gap-1">
+        <p className="primary-text">{t('title.votesCast')}</p>
 
-          {votingOpen && (
-            <p className="caption-text italic">
-              {t('info.voteTallyRefreshesSeconds', { seconds: 30 })}
-            </p>
-          )}
-        </div>
-
-        {/* Refresh button that shows up after votes load. */}
         {votingOpen && (
-          <IconButton
-            Icon={Refresh}
-            circular
-            className={clsx(
-              'transition-opacity',
-              votes.loading ? 'pointer-events-none opacity-0' : 'opacity-100',
-              refreshSpinning && 'animate-spin-medium'
-            )}
-            // If spinning but no longer refreshing, stop after iteration.
-            onAnimationIteration={
-              refreshSpinning && !refreshing
-                ? () => setRefreshSpinning(false)
-                : undefined
-            }
-            onClick={() => {
-              // Perform one spin even if refresh completes immediately. It will
-              // stop after 1 iteration if `refreshing` does not become true.
-              setRefreshSpinning(true)
-              onRefresh()
-            }}
-            variant="ghost"
-          />
+          <p className="caption-text italic">
+            {t('info.voteTallyRefreshesSeconds', { seconds: 30 })}
+          </p>
         )}
       </div>
 
@@ -207,9 +155,6 @@ export const ProposalVotes = <Vote extends unknown = any>({
           )
         )}
       </div>
-
-      {/* If loading votes, display loader. */}
-      {votes.loading && <Loader fill={false} />}
     </div>
   )
 }

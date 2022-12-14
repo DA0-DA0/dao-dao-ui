@@ -4,6 +4,7 @@ export type LoadingData<D> =
     }
   | {
       loading: false
+      updating?: boolean
       data: D
     }
 

@@ -1,7 +1,4 @@
-import { useCallback } from 'react'
-import { useSetRecoilState } from 'recoil'
-
-import { refreshProposalVotesAtom, useProposalVotesQuery } from '@dao-dao/state'
+import { useProposalVotesQuery } from '@dao-dao/state'
 import {
   ProposalVote,
   ProposalVotes as StatelessProposalVotes,
@@ -12,16 +9,17 @@ import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { ProfileDisplay } from '../../../../../components/ProfileDisplay'
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
 import { listAllVotesSelector } from '../../contracts/DaoProposalSingle.common.recoil'
-import { useProposal } from '../../hooks'
+import { useLoadingProposal } from '../../hooks'
 import { VoteDisplay } from './VoteDisplay'
 
 export const ProposalVotes = () => {
   const {
     proposalModule: { address: proposalModuleAddress },
     proposalNumber,
+    chainId,
   } = useProposalModuleAdapterOptions()
 
-  const proposal = useProposal()
+  const loadingProposal = useLoadingProposal()
 
   // Get proposal vote timestamps from subquery.
   const proposalVotesSubquery = useProposalVotesQuery(
@@ -29,22 +27,15 @@ export const ProposalVotes = () => {
     proposalNumber
   )
 
-  const totalPower = Number(proposal.total_power)
+  const totalPower = loadingProposal.loading
+    ? 0
+    : Number(loadingProposal.data.total_power)
   const votesLoadable = useCachedLoadable(
     listAllVotesSelector({
       contractAddress: proposalModuleAddress,
+      chainId,
       proposalId: proposalNumber,
     })
-  )
-  const refreshProposalVotes = useSetRecoilState(
-    refreshProposalVotesAtom({
-      address: proposalModuleAddress,
-      proposalId: proposalNumber,
-    })
-  )
-  const onRefresh = useCallback(
-    () => refreshProposalVotes((id) => id + 1),
-    [refreshProposalVotes]
   )
 
   return (
@@ -65,8 +56,6 @@ export const ProposalVotes = () => {
                 : undefined
             }
       }
-      onRefresh={onRefresh}
-      refreshing={votesLoadable.state !== 'hasValue' || votesLoadable.updating}
       votes={
         votesLoadable.state !== 'hasValue'
           ? { loading: true }
@@ -76,12 +65,15 @@ export const ProposalVotes = () => {
                 ({ vote, voter, power }): ProposalVote => ({
                   voterAddress: voter,
                   vote,
-                  votingPowerPercent: (Number(power) / totalPower) * 100,
+                  votingPowerPercent:
+                    totalPower === 0 ? 0 : (Number(power) / totalPower) * 100,
                 })
               ),
             }
       }
-      votingOpen={proposal.status === Status.Open}
+      votingOpen={
+        !loadingProposal.loading && loadingProposal.data.status === Status.Open
+      }
     />
   )
 }

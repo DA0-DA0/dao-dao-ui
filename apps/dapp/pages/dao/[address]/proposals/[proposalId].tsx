@@ -4,7 +4,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -86,7 +86,8 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     })
   }, [actions])
 
-  const { refreshProposalAndAll } = useProposalRefreshers()
+  const { refreshProposal, refreshProposalAndAll, refreshing } =
+    useProposalRefreshers()
 
   const onVoteSuccess = useCallback(() => {
     refreshProposalAndAll()
@@ -110,15 +111,35 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     toast.success(t('success.proposalClosed'))
   }, [refreshProposalAndAll, t])
 
+  // Memoize ProposalStatusAndInfo so it doesn't re-render when the proposal
+  // refreshes. The cached loadable it uses internally depends on the
+  // component's consistency. If we inline the component definition in the props
+  // below, it gets redefined on every render, and the hook cache is reset.
+  const CachedProposalStatusAndInfo = useCallback(
+    (props) => (
+      <ProposalStatusAndInfo
+        {...props}
+        onCloseSuccess={onCloseSuccess}
+        onExecuteSuccess={onExecuteSuccess}
+      />
+    ),
+    [ProposalStatusAndInfo, onCloseSuccess, onExecuteSuccess]
+  )
+
+  // Refresh proposal every 30 seconds, while voting open. Refreshes status and
+  // votes.
+  useEffect(() => {
+    if (!proposalInfo.votingOpen) {
+      return
+    }
+
+    const interval = setInterval(refreshProposal, 30 * 1000)
+    return () => clearInterval(interval)
+  }, [refreshProposal, proposalInfo.votingOpen])
+
   return (
     <Proposal
-      ProposalStatusAndInfo={(props) => (
-        <ProposalStatusAndInfo
-          {...props}
-          onCloseSuccess={onCloseSuccess}
-          onExecuteSuccess={onExecuteSuccess}
-        />
-      )}
+      ProposalStatusAndInfo={CachedProposalStatusAndInfo}
       actionDisplay={
         <ProposalActionDisplay
           availableActions={orderedActions}
@@ -143,7 +164,9 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
         address: proposalInfo.createdByAddress,
       }}
       daoInfo={daoInfo}
+      onRefresh={refreshProposal}
       proposalInfo={proposalInfo}
+      refreshing={refreshing}
       rightSidebarContent={
         connected ? (
           <ProfileProposalCard onVoteSuccess={onVoteSuccess} />
