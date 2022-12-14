@@ -3,7 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProposalVoteTally } from './ProposalVoteTally'
 
 export default {
-  title: 'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / components / ProposalVoteTally',
+  title:
+    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / components / ProposalVoteTally',
   component: ProposalVoteTally,
 } as ComponentMeta<typeof ProposalVoteTally>
 
