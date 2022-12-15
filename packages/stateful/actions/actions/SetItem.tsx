@@ -20,61 +20,63 @@ import {
   SetItemData,
   SetItemComponent as StatelessSetItemComponent,
 } from '../components/SetItem'
+import { useActionOptions } from '../react'
 
 const useDefaults: UseDefaults<SetItemData> = () => ({
   key: '',
   value: '',
 })
 
+const Component: ActionComponent<undefined, SetItemData> = (props) => {
+  const { address, chainId } = useActionOptions()
+
+  const { watch } = useFormContext()
+  const key = watch(props.fieldNamePrefix + 'key')
+
+  const existingKeys = useRecoilValue(
+    DaoCoreV2Selectors.listAllItemsSelector({
+      contractAddress: address,
+      chainId,
+    })
+  )
+
+  const currentValue = loadableToLoadingData(
+    useRecoilValueLoadable(
+      key
+        ? DaoCoreV2Selectors.getItemSelector({
+            contractAddress: address,
+            chainId,
+            params: [{ key }],
+          })
+        : constSelector(undefined)
+    ),
+    { item: null }
+  )
+
+  return (
+    <StatelessSetItemComponent
+      {...props}
+      options={{
+        existingKeys,
+        currentValue: currentValue.loading
+          ? { loading: true }
+          : {
+              loading: false,
+              data: currentValue.data?.item ?? null,
+            },
+      }}
+    />
+  )
+}
+
 export const makeSetItemAction: ActionMaker<SetItemData> = ({
   t,
   address,
-  chainId,
   context,
 }) => {
   // Can only set items in a DAO.
   if (context.type !== ActionOptionsContextType.Dao) {
     return null
-  }
-
-  const Component: ActionComponent<undefined, SetItemData> = (props) => {
-    const { watch } = useFormContext()
-    const key = watch(props.fieldNamePrefix + 'key')
-
-    const existingKeys = useRecoilValue(
-      DaoCoreV2Selectors.listAllItemsSelector({
-        contractAddress: address,
-        chainId,
-      })
-    )
-
-    const currentValue = loadableToLoadingData(
-      useRecoilValueLoadable(
-        key
-          ? DaoCoreV2Selectors.getItemSelector({
-              contractAddress: address,
-              chainId,
-              params: [{ key }],
-            })
-          : constSelector(undefined)
-      ),
-      { item: null }
-    )
-
-    return (
-      <StatelessSetItemComponent
-        {...props}
-        options={{
-          existingKeys,
-          currentValue: currentValue.loading
-            ? { loading: true }
-            : {
-                loading: false,
-                data: currentValue.data?.item ?? null,
-              },
-        }}
-      />
-    )
   }
 
   // V1 DAOs and V2-alpha DAOs use a value key of `addr`, V2-beta uses `value`.

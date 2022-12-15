@@ -25,6 +25,7 @@ import {
   nftCardInfosSelector,
 } from '../../../recoil/selectors/nft'
 import { TransferNftComponent, TransferNftData } from '../../components/nft'
+import { useActionOptions } from '../../react'
 
 const useDefaults: UseDefaults<TransferNftData> = () => ({
   collection: '',
@@ -127,49 +128,44 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
       }
     : { match: false }
 
-export const makeTransferNftAction: ActionMaker<TransferNftData> = ({
-  t,
-  address,
-  chainId,
-}) => {
-  const Component: ActionComponent = (props) => {
-    const { watch } = useFormContext()
+const Component: ActionComponent = (props) => {
+  const { address, chainId } = useActionOptions()
+  const { watch } = useFormContext()
 
-    const tokenId = watch(props.fieldNamePrefix + 'tokenId')
-    const collection = watch(props.fieldNamePrefix + 'collection')
+  const tokenId = watch(props.fieldNamePrefix + 'tokenId')
+  const collection = watch(props.fieldNamePrefix + 'collection')
 
-    const options = loadableToLoadingDataWithError(
-      useCachedLoadable(
-        props.isCreating
-          ? nftCardInfosSelector({
-              coreAddress: address,
-              chainId,
-            })
-          : constSelector([])
-      )
+  const options = loadableToLoadingDataWithError(
+    useCachedLoadable(
+      props.isCreating
+        ? nftCardInfosSelector({
+            coreAddress: address,
+            chainId,
+          })
+        : constSelector([])
     )
-    const nftInfo = useRecoilValue(
-      !!tokenId && !!collection
-        ? nftCardInfoSelector({ chainId, collection, tokenId })
-        : constSelector(undefined)
-    )
+  )
+  const nftInfo = useRecoilValue(
+    !!tokenId && !!collection
+      ? nftCardInfoSelector({ chainId, collection, tokenId })
+      : constSelector(undefined)
+  )
 
-    return (
-      <TransferNftComponent
-        {...props}
-        options={{ options, nftInfo, ProfileDisplay }}
-      />
-    )
-  }
-
-  return {
-    key: CoreActionKey.TransferNft,
-    Icon: ImageEmoji,
-    label: t('title.transferNft'),
-    description: t('info.transferNftDescription'),
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
-  }
+  return (
+    <TransferNftComponent
+      {...props}
+      options={{ options, nftInfo, ProfileDisplay }}
+    />
+  )
 }
+
+export const makeTransferNftAction: ActionMaker<TransferNftData> = ({ t }) => ({
+  key: CoreActionKey.TransferNft,
+  Icon: ImageEmoji,
+  label: t('title.transferNft'),
+  description: t('info.transferNftDescription'),
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodedCosmosMsg,
+})

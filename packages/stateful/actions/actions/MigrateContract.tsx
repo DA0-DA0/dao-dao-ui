@@ -73,35 +73,32 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
         : { match: false },
     [msg]
   )
+const Component: ActionComponent = (props) => {
+  const [contract, setContract] = useState('')
 
-export const makeMigrateAction: ActionMaker<MigrateData> = ({ t }) => {
-  const Component: ActionComponent = (props) => {
-    const [contract, setContract] = useState('')
+  const admin = useRecoilValueLoadable(
+    contractAdminSelector({ contractAddress: contract })
+  )
 
-    const admin = useRecoilValueLoadable(
-      contractAdminSelector({ contractAddress: contract })
-    )
-
-    return (
-      <StatelessMigrateContractComponent
-        {...props}
-        options={{
-          contractAdmin:
-            admin.state === 'hasValue' ? admin.getValue() : undefined,
-          onContractChange: (contract: string) => setContract(contract),
-        }}
-      />
-    )
-  }
-
-  return {
-    key: CoreActionKey.Migrate,
-    Icon: WhaleEmoji,
-    label: t('title.migrateSmartContract'),
-    description: t('info.migrateSmartContractActionDescription'),
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
-  }
+  return (
+    <StatelessMigrateContractComponent
+      {...props}
+      options={{
+        contractAdmin:
+          admin.state === 'hasValue' ? admin.getValue() : undefined,
+        onContractChange: (contract: string) => setContract(contract),
+      }}
+    />
+  )
 }
+
+export const makeMigrateAction: ActionMaker<MigrateData> = ({ t }) => ({
+  key: CoreActionKey.Migrate,
+  Icon: WhaleEmoji,
+  label: t('title.migrateSmartContract'),
+  description: t('info.migrateSmartContractActionDescription'),
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodedCosmosMsg,
+})

@@ -23,6 +23,7 @@ import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { makeWasmMessage } from '@dao-dao/utils'
 
 import { RemoveCw20Component as StatelessRemoveCw20Component } from '../components/RemoveCw20'
+import { useActionOptions } from '../react'
 
 interface RemoveCw20Data {
   address: string
@@ -54,6 +55,97 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw20Data> = (
     [msg]
   )
 
+const Component: ActionComponent = (props) => {
+  const { address, chainId } = useActionOptions()
+
+  const { t } = useTranslation()
+  const { fieldNamePrefix } = props
+
+  const { watch } = useFormContext()
+
+  const tokenAddress = watch(fieldNamePrefix + 'address')
+  const tokenInfoLoadable = useRecoilValueLoadable(
+    tokenAddress
+      ? Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: tokenAddress,
+          chainId,
+          params: [],
+        })
+      : constSelector(undefined)
+  )
+
+  const existingTokenAddresses = useRecoilValue(
+    DaoCoreV2Selectors.allCw20TokenListSelector({
+      contractAddress: address,
+      chainId,
+    })
+  )
+  const existingTokenInfos = useRecoilValue(
+    waitForAll(
+      existingTokenAddresses?.map((token) =>
+        Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: token,
+          chainId,
+          params: [],
+        })
+      ) ?? []
+    )
+  )
+  const existingTokens = useMemo(
+    () =>
+      (existingTokenAddresses
+        ?.map((address, idx) => ({
+          address,
+          info: existingTokenInfos[idx],
+        }))
+        // If undefined token info response, ignore the token.
+        .filter(({ info }) => !!info) ?? []) as {
+        address: string
+        info: TokenInfoResponse
+      }[],
+    [existingTokenAddresses, existingTokenInfos]
+  )
+
+  const [additionalAddressError, setAdditionalAddressError] = useState<string>()
+  useEffect(() => {
+    if (tokenInfoLoadable.state !== 'hasError' && existingTokens.length > 0) {
+      if (additionalAddressError) {
+        setAdditionalAddressError(undefined)
+      }
+      return
+    }
+
+    if (!additionalAddressError) {
+      setAdditionalAddressError(
+        tokenInfoLoadable.state === 'hasError'
+          ? t('error.notCw20Address')
+          : existingTokens.length === 0
+          ? t('error.noCw20Tokens')
+          : // Should never happen.
+            t('error.unexpectedError')
+      )
+    }
+  }, [
+    tokenInfoLoadable.state,
+    existingTokens.length,
+    t,
+    additionalAddressError,
+  ])
+
+  return (
+    <StatelessRemoveCw20Component
+      {...props}
+      options={{
+        additionalAddressError,
+        existingTokens,
+        formattedJsonDisplayProps: {
+          jsonLoadable: tokenInfoLoadable,
+        },
+      }}
+    />
+  )
+}
+
 export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
   t,
   address,
@@ -62,93 +154,6 @@ export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
   // Only DAOs.
   if (context.type !== ActionOptionsContextType.Dao) {
     return null
-  }
-
-  const Component: ActionComponent = (props) => {
-    const { t } = useTranslation()
-    const { fieldNamePrefix } = props
-
-    const { watch } = useFormContext()
-
-    const tokenAddress = watch(fieldNamePrefix + 'address')
-    const tokenInfoLoadable = useRecoilValueLoadable(
-      tokenAddress
-        ? Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: tokenAddress,
-            params: [],
-          })
-        : constSelector(undefined)
-    )
-
-    const existingTokenAddresses = useRecoilValue(
-      DaoCoreV2Selectors.allCw20TokenListSelector({
-        contractAddress: address,
-      })
-    )
-    const existingTokenInfos = useRecoilValue(
-      waitForAll(
-        existingTokenAddresses?.map((token) =>
-          Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: token,
-            params: [],
-          })
-        ) ?? []
-      )
-    )
-    const existingTokens = useMemo(
-      () =>
-        (existingTokenAddresses
-          ?.map((address, idx) => ({
-            address,
-            info: existingTokenInfos[idx],
-          }))
-          // If undefined token info response, ignore the token.
-          .filter(({ info }) => !!info) ?? []) as {
-          address: string
-          info: TokenInfoResponse
-        }[],
-      [existingTokenAddresses, existingTokenInfos]
-    )
-
-    const [additionalAddressError, setAdditionalAddressError] =
-      useState<string>()
-    useEffect(() => {
-      if (tokenInfoLoadable.state !== 'hasError' && existingTokens.length > 0) {
-        if (additionalAddressError) {
-          setAdditionalAddressError(undefined)
-        }
-        return
-      }
-
-      if (!additionalAddressError) {
-        setAdditionalAddressError(
-          tokenInfoLoadable.state === 'hasError'
-            ? t('error.notCw20Address')
-            : existingTokens.length === 0
-            ? t('error.noCw20Tokens')
-            : // Should never happen.
-              t('error.unexpectedError')
-        )
-      }
-    }, [
-      tokenInfoLoadable.state,
-      existingTokens.length,
-      t,
-      additionalAddressError,
-    ])
-
-    return (
-      <StatelessRemoveCw20Component
-        {...props}
-        options={{
-          additionalAddressError,
-          existingTokens,
-          formattedJsonDisplayProps: {
-            jsonLoadable: tokenInfoLoadable,
-          },
-        }}
-      />
-    )
   }
 
   const useTransformToCosmos: UseTransformToCosmos<RemoveCw20Data> = () =>

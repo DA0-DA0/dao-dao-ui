@@ -14,6 +14,7 @@ import {
 import { isValidContractAddress } from '@dao-dao/utils'
 
 import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components/UpdateAdmin'
+import { useActionOptions } from '../react'
 
 interface UpdateAdminData {
   contract: string
@@ -55,43 +56,37 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
     [msg]
   )
 
-export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = ({
-  t,
-  chainId,
-  bech32Prefix,
-}) => {
-  const Component: ActionComponent = (props) => {
-    const [contract, setContract] = useState('')
+const Component: ActionComponent = (props) => {
+  const { chainId, bech32Prefix } = useActionOptions()
+  const [contract, setContract] = useState('')
 
-    const admin = useRecoilValueLoadable(
-      contract && isValidContractAddress(contract, bech32Prefix)
-        ? contractAdminSelector({
-            contractAddress: contract,
-            chainId,
-          })
-        : constSelector(undefined)
-    )
+  const admin = useRecoilValueLoadable(
+    contract && isValidContractAddress(contract, bech32Prefix)
+      ? contractAdminSelector({
+          contractAddress: contract,
+          chainId,
+        })
+      : constSelector(undefined)
+  )
 
-    return (
-      <StatelessUpdateAdminComponent
-        {...props}
-        options={{
-          contractAdmin:
-            admin.state === 'hasValue' ? admin.contents : undefined,
-          onContractChange: (contract: string) => setContract(contract),
-        }}
-      />
-    )
-  }
-
-  return {
-    key: CoreActionKey.UpdateAdmin,
-    Icon: MushroomEmoji,
-    label: t('title.updateContractAdmin'),
-    description: t('info.updateContractAdminActionDescription'),
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
-  }
+  return (
+    <StatelessUpdateAdminComponent
+      {...props}
+      options={{
+        contractAdmin: admin.state === 'hasValue' ? admin.contents : undefined,
+        onContractChange: (contract: string) => setContract(contract),
+      }}
+    />
+  )
 }
+
+export const makeUpdateAdminAction: ActionMaker<UpdateAdminData> = ({ t }) => ({
+  key: CoreActionKey.UpdateAdmin,
+  Icon: MushroomEmoji,
+  label: t('title.updateContractAdmin'),
+  description: t('info.updateContractAdminActionDescription'),
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodedCosmosMsg,
+})

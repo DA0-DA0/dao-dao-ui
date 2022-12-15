@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import {
   ImageEmoji,
@@ -20,9 +21,105 @@ import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 import { SuspenseLoader } from '../../../components'
 import { ActionCard } from '../../components/ActionCard'
 import { MintNftData, UploadNftMetadata } from '../../components/nft'
+import { useActionOptions } from '../../react'
 import { ChooseExistingNftCollection } from './ChooseExistingNftCollection'
 import { InstantiateNftCollection } from './InstantiateNftCollection'
 import { MintNft } from './MintNft'
+
+const Component: ActionComponent<undefined, MintNftData> = (props) => {
+  const { t } = useTranslation()
+  const { address } = useActionOptions()
+  const { watch, setValue, register } = useFormContext()
+
+  const contractChosen = watch(props.fieldNamePrefix + 'contractChosen')
+  const tokenUri = watch(props.fieldNamePrefix + 'mintMsg.token_uri')
+
+  const [creatingNew, setCreatingNew] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  // If `contractChosen` is true on mount during creation, this must have been
+  // set by duplicating an existing action. In this case, we want to default
+  // to using the existing contract since the address is filled in, and clear
+  // `contractChosen` so the user has to confirm the contract. We also need to
+  // clear the `mintMsg` since the user may want to mint a different NFT, and
+  // set `instantiateMsg.minter` to the default value in case the user wants
+  // to create a new collection instead. Duplicating from an existing action
+  // will yield `instantiateMsg` being undefined.
+  useEffect(() => {
+    if (!mounted && contractChosen && props.isCreating) {
+      setValue(props.fieldNamePrefix + 'contractChosen', false)
+      setValue(props.fieldNamePrefix + 'instantiateMsg.minter', address)
+      setValue(props.fieldNamePrefix + 'mintMsg', {
+        token_id: '',
+        token_uri: '',
+      })
+      setCreatingNew(false)
+    }
+    setMounted(true)
+    // Only run on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Manually validate to ensure contract has been chosen and token URI has
+  // been set.
+  useEffect(() => {
+    register(props.fieldNamePrefix + 'contractChosen', {
+      validate: (value) => value || t('error.nftCollectionNotChosen'),
+    })
+    register(props.fieldNamePrefix + 'mintMsg.token_uri', {
+      validate: (value) => value || t('error.nftMetadataNotUploaded'),
+    })
+  }, [props.fieldNamePrefix, register, t])
+
+  return (
+    <ActionCard
+      Icon={ImageEmoji}
+      onRemove={props.onRemove}
+      title={t('title.mintNft')}
+    >
+      <SuspenseLoader fallback={<Loader />} forceFallback={!mounted}>
+        {contractChosen ? (
+          // If token URI is set, we don't need to upload metadata. If
+          // viewing a created proposal, this is decoded from the cosmos
+          // message. If creating a new proposal, this is set by the
+          // `UploadNftMetadata` component once the metadata is uploaded.
+          tokenUri ? (
+            <MintNft {...props} />
+          ) : (
+            <UploadNftMetadata {...props} />
+          )
+        ) : (
+          <div className="flex flex-col gap-4">
+            <SegmentedControls<boolean>
+              onSelect={setCreatingNew}
+              selected={creatingNew}
+              tabs={[
+                {
+                  label: t('form.useExistingCollection'),
+                  value: false,
+                },
+                {
+                  label: t('form.createNewCollection'),
+                  value: true,
+                },
+              ]}
+            />
+
+            {creatingNew ? (
+              <InstantiateNftCollection {...props} />
+            ) : (
+              <ChooseExistingNftCollection {...props} />
+            )}
+          </div>
+        )}
+
+        <InputErrorMessage
+          className="self-end text-right"
+          error={props.errors?.contractChosen}
+        />
+      </SuspenseLoader>
+    </ActionCard>
+  )
+}
 
 export const makeMintNftAction: ActionMaker<MintNftData> = ({ t, address }) => {
   const useDefaults: UseDefaults<MintNftData> = () => ({
@@ -44,98 +141,6 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({ t, address }) => {
       description: '',
     },
   })
-
-  const Component: ActionComponent<undefined, MintNftData> = (props) => {
-    const { watch, setValue, register } = useFormContext()
-    const contractChosen = watch(props.fieldNamePrefix + 'contractChosen')
-    const tokenUri = watch(props.fieldNamePrefix + 'mintMsg.token_uri')
-
-    const [creatingNew, setCreatingNew] = useState(false)
-    const [mounted, setMounted] = useState(false)
-    // If `contractChosen` is true on mount during creation, this must have been
-    // set by duplicating an existing action. In this case, we want to default
-    // to using the existing contract since the address is filled in, and clear
-    // `contractChosen` so the user has to confirm the contract. We also need to
-    // clear the `mintMsg` since the user may want to mint a different NFT, and
-    // set `instantiateMsg.minter` to the default value in case the user wants
-    // to create a new collection instead. Duplicating from an existing action
-    // will yield `instantiateMsg` being undefined.
-    useEffect(() => {
-      if (!mounted && contractChosen && props.isCreating) {
-        setValue(props.fieldNamePrefix + 'contractChosen', false)
-        setValue(props.fieldNamePrefix + 'instantiateMsg.minter', address)
-        setValue(props.fieldNamePrefix + 'mintMsg', {
-          token_id: '',
-          token_uri: '',
-        })
-        setCreatingNew(false)
-      }
-      setMounted(true)
-      // Only run on mount.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    // Manually validate to ensure contract has been chosen and token URI has
-    // been set.
-    useEffect(() => {
-      register(props.fieldNamePrefix + 'contractChosen', {
-        validate: (value) => value || t('error.nftCollectionNotChosen'),
-      })
-      register(props.fieldNamePrefix + 'mintMsg.token_uri', {
-        validate: (value) => value || t('error.nftMetadataNotUploaded'),
-      })
-    }, [props.fieldNamePrefix, register])
-
-    return (
-      <ActionCard
-        Icon={ImageEmoji}
-        onRemove={props.onRemove}
-        title={t('title.mintNft')}
-      >
-        <SuspenseLoader fallback={<Loader />} forceFallback={!mounted}>
-          {contractChosen ? (
-            // If token URI is set, we don't need to upload metadata. If
-            // viewing a created proposal, this is decoded from the cosmos
-            // message. If creating a new proposal, this is set by the
-            // `UploadNftMetadata` component once the metadata is uploaded.
-            tokenUri ? (
-              <MintNft {...props} />
-            ) : (
-              <UploadNftMetadata {...props} />
-            )
-          ) : (
-            <div className="flex flex-col gap-4">
-              <SegmentedControls<boolean>
-                onSelect={setCreatingNew}
-                selected={creatingNew}
-                tabs={[
-                  {
-                    label: t('form.useExistingCollection'),
-                    value: false,
-                  },
-                  {
-                    label: t('form.createNewCollection'),
-                    value: true,
-                  },
-                ]}
-              />
-
-              {creatingNew ? (
-                <InstantiateNftCollection {...props} />
-              ) : (
-                <ChooseExistingNftCollection {...props} />
-              )}
-            </div>
-          )}
-
-          <InputErrorMessage
-            className="self-end text-right"
-            error={props.errors?.contractChosen}
-          />
-        </SuspenseLoader>
-      </ActionCard>
-    )
-  }
 
   const useTransformToCosmos: UseTransformToCosmos<MintNftData> = () =>
     useCallback(({ collectionAddress, mintMsg }: MintNftData) => {

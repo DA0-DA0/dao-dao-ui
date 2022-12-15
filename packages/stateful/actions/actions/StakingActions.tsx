@@ -43,6 +43,7 @@ import {
   StakeComponent as StatelessStakeComponent,
   useStakeActions,
 } from '../components/StakingActions'
+import { useActionOptions } from '../react'
 
 const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
   useCallback((data: StakeData) => {
@@ -125,6 +126,179 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
   return { match: false }
 }
 
+const Component: ActionComponent<undefined, StakeData> = (props) => {
+  const { chainId, address } = useActionOptions()
+
+  // These need to be loaded via cached loadables to avoid displaying a loader
+  // when this data updates on a schedule. Manually trigger a suspense loader
+  // the first time when the initial data is still loading.
+
+  const loadingNativeBalances = loadableToLoadingData(
+    useCachedLoadable(
+      address
+        ? nativeBalancesSelector({
+            chainId,
+            address,
+          })
+        : undefined
+    ),
+    []
+  )
+
+  const loadingNativeDelegationInfo = loadableToLoadingData(
+    useCachedLoadable(
+      address
+        ? nativeDelegationInfoSelector({
+            chainId,
+            address,
+          })
+        : undefined
+    ),
+    {
+      delegations: [],
+      unbondingDelegations: [],
+    }
+  )
+
+  const loadingValidators = loadableToLoadingData(
+    useCachedLoadable(
+      validatorsSelector({
+        chainId,
+      })
+    ),
+    []
+  )
+
+  const nativeUnstakingDurationSeconds = useRecoilValue(
+    nativeUnstakingDurationSecondsSelector({
+      chainId,
+    })
+  )
+
+  // If in DAO context, use proposal execution hash to find claimed rewards.
+  // If in wallet context, proposal module adapter will not be available.
+  const {
+    hooks: { useProposalExecutionTxHash },
+  } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
+  const executionTxHash = useProposalExecutionTxHash?.()
+  const executed = !!executionTxHash
+
+  const txEvents = useRecoilValue(
+    executionTxHash
+      ? transactionEventsSelector({ txHash: executionTxHash })
+      : constSelector(undefined)
+  )
+
+  const { watch } = useFormContext()
+  let claimedRewards: number | undefined
+  if (
+    executed &&
+    txEvents &&
+    watch(props.fieldNamePrefix + 'stakeType') ===
+      StakeType.WithdrawDelegatorReward
+  ) {
+    const validator = watch(props.fieldNamePrefix + 'validator')
+
+    const claimValidatorRewardsEvents = txEvents.filter(
+      ({ type, attributes }) =>
+        type === 'withdraw_rewards' &&
+        attributes.some(
+          ({ key, value }) => key === 'validator' && value === validator
+        )
+    )
+
+    // All action data that claims rewards from the same validator.
+    const claimValidatorRewardsActionData = props.allActionsWithData
+      .filter(
+        ({ key, data }) =>
+          key === CoreActionKey.StakingActions &&
+          'stakeType' in data &&
+          data.stakeType === StakeType.WithdrawDelegatorReward &&
+          'validator' in data &&
+          data.validator === validator
+      )
+      .map(({ data }) => data)
+    // Index of this action in the list of all claim rewards actions.
+    const innerIndex = claimValidatorRewardsActionData.indexOf(
+      props.allActionsWithData[props.index].data
+    )
+    // Should never happen since this action is part of all actions.
+    if (innerIndex === -1) {
+      throw new Error(
+        'internal error: could not find inner claim rewards action index'
+      )
+    }
+
+    // If the claim rewards action length does not match the actual claim
+    // rewards events from the chain, then another message must've claimed
+    // some rewards, so we cannot definitively locate the claimed rewards from
+    // this action.
+    if (
+      claimValidatorRewardsActionData.length ===
+      claimValidatorRewardsEvents.length
+    ) {
+      const coin = parseCoins(
+        claimValidatorRewardsEvents[innerIndex].attributes.find(
+          ({ key }) => key === 'amount'
+        )?.value ?? '0' + NATIVE_DENOM
+      )[0]
+
+      if (coin) {
+        claimedRewards = convertMicroDenomToDenomWithDecimals(
+          coin.amount ?? 0,
+          nativeTokenDecimals(coin.denom) ?? NATIVE_DECIMALS
+        )
+      }
+    }
+  }
+
+  return (
+    <SuspenseLoader
+      fallback={<ActionCardLoader />}
+      forceFallback={
+        // Manually trigger loader.
+        loadingNativeBalances.loading ||
+        loadingNativeDelegationInfo.loading ||
+        !loadingNativeDelegationInfo.data ||
+        loadingValidators.loading
+      }
+    >
+      <StatelessStakeComponent
+        {...props}
+        options={{
+          nativeBalances: loadingNativeBalances.loading
+            ? []
+            : loadingNativeBalances.data,
+          stakes:
+            loadingNativeDelegationInfo.loading ||
+            !loadingNativeDelegationInfo.data
+              ? []
+              : loadingNativeDelegationInfo.data.delegations.map(
+                  ({ validator, delegated, pendingReward }) => ({
+                    validator,
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      delegated.amount,
+                      NATIVE_DECIMALS
+                    ),
+                    rewards: convertMicroDenomToDenomWithDecimals(
+                      pendingReward.amount,
+                      NATIVE_DECIMALS
+                    ),
+                    denom: NATIVE_DENOM,
+                    symbol: nativeTokenLabel(NATIVE_DENOM),
+                    decimals: NATIVE_DECIMALS,
+                  })
+                ),
+          validators: loadingValidators.loading ? [] : loadingValidators.data,
+          executed,
+          claimedRewards,
+          nativeUnstakingDurationSeconds,
+        }}
+      />
+    </SuspenseLoader>
+  )
+}
+
 export const makeStakeAction: ActionMaker<StakeData> = ({
   t,
   chainId,
@@ -160,177 +334,6 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
       amount: 1,
       denom: NATIVE_DENOM,
     }
-  }
-
-  const Component: ActionComponent<undefined, StakeData> = (props) => {
-    // These need to be loaded via cached loadables to avoid displaying a loader
-    // when this data updates on a schedule. Manually trigger a suspense loader
-    // the first time when the initial data is still loading.
-
-    const loadingNativeBalances = loadableToLoadingData(
-      useCachedLoadable(
-        address
-          ? nativeBalancesSelector({
-              chainId,
-              address,
-            })
-          : undefined
-      ),
-      []
-    )
-
-    const loadingNativeDelegationInfo = loadableToLoadingData(
-      useCachedLoadable(
-        address
-          ? nativeDelegationInfoSelector({
-              chainId,
-              address,
-            })
-          : undefined
-      ),
-      {
-        delegations: [],
-        unbondingDelegations: [],
-      }
-    )
-
-    const loadingValidators = loadableToLoadingData(
-      useCachedLoadable(
-        validatorsSelector({
-          chainId,
-        })
-      ),
-      []
-    )
-
-    const nativeUnstakingDurationSeconds = useRecoilValue(
-      nativeUnstakingDurationSecondsSelector({
-        chainId,
-      })
-    )
-
-    // If in DAO context, use proposal execution hash to find claimed rewards.
-    // If in wallet context, proposal module adapter will not be available.
-    const {
-      hooks: { useProposalExecutionTxHash },
-    } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
-    const executionTxHash = useProposalExecutionTxHash?.()
-    const executed = !!executionTxHash
-
-    const txEvents = useRecoilValue(
-      executionTxHash
-        ? transactionEventsSelector({ txHash: executionTxHash })
-        : constSelector(undefined)
-    )
-
-    const { watch } = useFormContext()
-    let claimedRewards: number | undefined
-    if (
-      executed &&
-      txEvents &&
-      watch(props.fieldNamePrefix + 'stakeType') ===
-        StakeType.WithdrawDelegatorReward
-    ) {
-      const validator = watch(props.fieldNamePrefix + 'validator')
-
-      const claimValidatorRewardsEvents = txEvents.filter(
-        ({ type, attributes }) =>
-          type === 'withdraw_rewards' &&
-          attributes.some(
-            ({ key, value }) => key === 'validator' && value === validator
-          )
-      )
-
-      // All action data that claims rewards from the same validator.
-      const claimValidatorRewardsActionData = props.allActionsWithData
-        .filter(
-          ({ key, data }) =>
-            key === CoreActionKey.StakingActions &&
-            'stakeType' in data &&
-            data.stakeType === StakeType.WithdrawDelegatorReward &&
-            'validator' in data &&
-            data.validator === validator
-        )
-        .map(({ data }) => data)
-      // Index of this action in the list of all claim rewards actions.
-      const innerIndex = claimValidatorRewardsActionData.indexOf(
-        props.allActionsWithData[props.index].data
-      )
-      // Should never happen since this action is part of all actions.
-      if (innerIndex === -1) {
-        throw new Error(
-          'internal error: could not find inner claim rewards action index'
-        )
-      }
-
-      // If the claim rewards action length does not match the actual claim
-      // rewards events from the chain, then another message must've claimed
-      // some rewards, so we cannot definitively locate the claimed rewards from
-      // this action.
-      if (
-        claimValidatorRewardsActionData.length ===
-        claimValidatorRewardsEvents.length
-      ) {
-        const coin = parseCoins(
-          claimValidatorRewardsEvents[innerIndex].attributes.find(
-            ({ key }) => key === 'amount'
-          )?.value ?? '0' + NATIVE_DENOM
-        )[0]
-
-        if (coin) {
-          claimedRewards = convertMicroDenomToDenomWithDecimals(
-            coin.amount ?? 0,
-            nativeTokenDecimals(coin.denom) ?? NATIVE_DECIMALS
-          )
-        }
-      }
-    }
-
-    return (
-      <SuspenseLoader
-        fallback={<ActionCardLoader />}
-        forceFallback={
-          // Manually trigger loader.
-          loadingNativeBalances.loading ||
-          loadingNativeDelegationInfo.loading ||
-          !loadingNativeDelegationInfo.data ||
-          loadingValidators.loading
-        }
-      >
-        <StatelessStakeComponent
-          {...props}
-          options={{
-            nativeBalances: loadingNativeBalances.loading
-              ? []
-              : loadingNativeBalances.data,
-            stakes:
-              loadingNativeDelegationInfo.loading ||
-              !loadingNativeDelegationInfo.data
-                ? []
-                : loadingNativeDelegationInfo.data.delegations.map(
-                    ({ validator, delegated, pendingReward }) => ({
-                      validator,
-                      amount: convertMicroDenomToDenomWithDecimals(
-                        delegated.amount,
-                        NATIVE_DECIMALS
-                      ),
-                      rewards: convertMicroDenomToDenomWithDecimals(
-                        pendingReward.amount,
-                        NATIVE_DECIMALS
-                      ),
-                      denom: NATIVE_DENOM,
-                      symbol: nativeTokenLabel(NATIVE_DENOM),
-                      decimals: NATIVE_DECIMALS,
-                    })
-                  ),
-            validators: loadingValidators.loading ? [] : loadingValidators.data,
-            executed,
-            claimedRewards,
-            nativeUnstakingDurationSeconds,
-          }}
-        />
-      </SuspenseLoader>
-    )
   }
 
   return {

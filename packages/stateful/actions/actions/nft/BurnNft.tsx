@@ -22,6 +22,7 @@ import {
   nftCardInfosSelector,
 } from '../../../recoil/selectors/nft'
 import { BurnNft, BurnNftData } from '../../components/nft'
+import { useActionOptions } from '../../react'
 
 const useDefaults: UseDefaults<BurnNftData> = () => ({
   collection: '',
@@ -72,44 +73,39 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<BurnNftData> = (
       }
     : { match: false }
 
-export const makeBurnNftAction: ActionMaker<BurnNftData> = ({
-  t,
-  address,
-  chainId,
-}) => {
-  const Component: ActionComponent = (props) => {
-    const { watch } = useFormContext()
+const Component: ActionComponent = (props) => {
+  const { address, chainId } = useActionOptions()
+  const { watch } = useFormContext()
 
-    const tokenId = watch(props.fieldNamePrefix + 'tokenId')
-    const collection = watch(props.fieldNamePrefix + 'collection')
+  const tokenId = watch(props.fieldNamePrefix + 'tokenId')
+  const collection = watch(props.fieldNamePrefix + 'collection')
 
-    const options = loadableToLoadingDataWithError(
-      useCachedLoadable(
-        props.isCreating
-          ? nftCardInfosSelector({
-              coreAddress: address,
-              chainId,
-            })
-          : constSelector([])
-      )
+  const options = loadableToLoadingDataWithError(
+    useCachedLoadable(
+      props.isCreating
+        ? nftCardInfosSelector({
+            coreAddress: address,
+            chainId,
+          })
+        : constSelector([])
     )
-    const nftInfo = useRecoilValue(
-      !!tokenId && !!collection
-        ? nftCardInfoSelector({ chainId, collection, tokenId })
-        : constSelector(undefined)
-    )
+  )
+  const nftInfo = useRecoilValue(
+    !!tokenId && !!collection
+      ? nftCardInfoSelector({ chainId, collection, tokenId })
+      : constSelector(undefined)
+  )
 
-    return <BurnNft {...props} options={{ options, nftInfo }} />
-  }
-
-  return {
-    key: CoreActionKey.BurnNft,
-    Icon: FireEmoji,
-    label: t('title.burnNft'),
-    description: t('info.burnNftDescription'),
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
-  }
+  return <BurnNft {...props} options={{ options, nftInfo }} />
 }
+
+export const makeBurnNftAction: ActionMaker<BurnNftData> = ({ t }) => ({
+  key: CoreActionKey.BurnNft,
+  Icon: FireEmoji,
+  label: t('title.burnNft'),
+  description: t('info.burnNftDescription'),
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodedCosmosMsg,
+})
