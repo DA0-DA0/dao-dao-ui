@@ -1,64 +1,39 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { promises as fs } from 'fs'
-
-import { File, IncomingForm } from 'formidable'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Blob, NFTStorage } from 'nft.storage'
 
+import { parseFormWithImage } from '@dao-dao/stateful/server'
 import { NFT_STORAGE_API_KEY } from '@dao-dao/utils'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // Get files from form.
-  const parsedFiles = await new Promise<File[]>((resolve, reject) => {
-    const form = new IncomingForm()
+  try {
+    // Parse image from form.
+    const { imageData, mimetype } = await parseFormWithImage(req)
 
-    const files: File[] = []
-    form.on('file', function (_, file) {
-      files.push(file)
+    // Upload to IPFS via NFT.Storage's API: https://nft.storage/docs/.
+    const client = new NFTStorage({
+      token: NFT_STORAGE_API_KEY,
     })
+    const cid = await client.storeBlob(
+      new Blob([imageData], { type: mimetype ?? undefined })
+    )
 
-    form.on('end', () => resolve(files))
-    form.on('error', (err) => reject(err))
-
-    // Parse form, which begins firing the handlers above.
-    form.parse(req)
-  })
-
-  // Make sure there is only one file.
-  if (parsedFiles.length === 0) {
-    return res.status(400).json({ error: 'No files found.' })
-  } else if (parsedFiles.length > 1) {
-    return res.status(400).json({ error: 'Too many files found.' })
+    return res.status(200).json({
+      cid,
+    })
+  } catch (err) {
+    return res
+      .status(400)
+      .json({ error: err instanceof Error ? err.message : err })
   }
-
-  const parsedFile = parsedFiles[0]
-
-  // Makes sure file is an image.
-  if (!parsedFile.mimetype?.startsWith('image')) {
-    return res.status(400).json({ error: 'Only images are supported.' })
-  }
-
-  const imageData = await fs.readFile(parsedFile.filepath)
-
-  // Upload to IPFS via NFT.Storage's API: https://nft.storage/docs/.
-  const client = new NFTStorage({
-    token: NFT_STORAGE_API_KEY,
-  })
-  const cid = await client.storeBlob(
-    new Blob([imageData], { type: parsedFile.mimetype ?? undefined })
-  )
-
-  return res.status(200).json({
-    cid,
-  })
 }
 
-// Disable default body parser.
+// Disable default body parser since Formidable parses for us.
 export const config = {
   api: {
     bodyParser: false,
