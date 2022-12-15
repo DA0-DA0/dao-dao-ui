@@ -25,7 +25,7 @@ export default async function handler(
     form.on('end', () => resolve(files))
     form.on('error', (err) => reject(err))
 
-    // Parse form.
+    // Parse form, which begins firing the handlers above.
     form.parse(req)
   })
 
@@ -45,7 +45,7 @@ export default async function handler(
 
   const imageData = await fs.readFile(parsedFile.filepath)
 
-  // Upload.
+  // Upload to IPFS via NFT.Storage's API: https://nft.storage/docs/.
   const client = new NFTStorage({
     token: NFT_STORAGE_API_KEY,
   })

@@ -78,10 +78,19 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
     >
       <SuspenseLoader fallback={<Loader />} forceFallback={!mounted}>
         {contractChosen ? (
-          // If token URI is set, we don't need to upload metadata. If
-          // viewing a created proposal, this is decoded from the cosmos
-          // message. If creating a new proposal, this is set by the
-          // `UploadNftMetadata` component once the metadata is uploaded.
+          // The steps are:
+          // 1. Choose existing collection or create new collection.
+          // 2. Upload NFT metadata.
+          // 3. Display final Mint NFT action details.
+          //
+          // The first two steps are only relevant when creating a new proposal.
+          // When viewing an existing proposal, the first two steps are skipped
+          // and the user is taken directly to the final step. Specifically,
+          // once token URI is set, we don't need to upload metadata, so display
+          // the final `MintNft` action. When viewing an already-created
+          // proposal, this value is decoded from the cosmos message and is
+          // ready right away. When creating a new proposal, this value is set
+          // by the `UploadNftMetadata` component once the metadata is uploaded.
           tokenUri ? (
             <MintNft {...props} />
           ) : (
