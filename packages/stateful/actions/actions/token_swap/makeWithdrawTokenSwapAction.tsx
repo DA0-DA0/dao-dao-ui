@@ -47,7 +47,7 @@ const Component: ActionComponent<undefined, WithdrawTokenSwapData> = (
   // Manually validate to ensure contract has been chosen.
   useEffect(() => {
     register(props.fieldNamePrefix + 'contractChosen', {
-      validate: (value) => value || t('error.tokenSwapContractNotChosen'),
+      validate: (value) => !!value || t('error.tokenSwapContractNotChosen'),
     })
   }, [props.fieldNamePrefix, register, t])
 

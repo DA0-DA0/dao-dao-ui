@@ -63,10 +63,10 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
   // been set.
   useEffect(() => {
     register(props.fieldNamePrefix + 'contractChosen', {
-      validate: (value) => value || t('error.nftCollectionNotChosen'),
+      validate: (value) => !!value || t('error.nftCollectionNotChosen'),
     })
     register(props.fieldNamePrefix + 'mintMsg.token_uri', {
-      validate: (value) => value || t('error.nftMetadataNotUploaded'),
+      validate: (value) => !!value || t('error.nftMetadataNotUploaded'),
     })
   }, [props.fieldNamePrefix, register, t])
 
@@ -115,6 +115,10 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
         <InputErrorMessage
           className="self-end text-right"
           error={props.errors?.contractChosen}
+        />
+        <InputErrorMessage
+          className="self-end text-right"
+          error={props.errors?.mintMsg?.token_uri}
         />
       </SuspenseLoader>
     </ActionCard>
