@@ -39,7 +39,7 @@ export const daoCardInfoSelector = selectorFamily<
     ({ get }) => {
       const dumpedState = get(
         // Both v1 and v2 have a dump_state query.
-        CwdCoreV2Selectors.reducedDumpStateSelector({
+        CwdCoreV2Selectors.dumpStateSelector({
           chainId,
           contractAddress: coreAddress,
           params: [],
