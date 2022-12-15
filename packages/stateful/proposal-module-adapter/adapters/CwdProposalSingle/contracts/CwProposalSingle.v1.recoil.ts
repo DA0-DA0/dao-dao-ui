@@ -98,30 +98,26 @@ export const proposalSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      get(
+      const id = get(
         refreshProposalIdAtom({
           address: queryClientParams.contractAddress,
           proposalId: params[0].proposalId,
         })
       )
 
-      // Indexer currently cannot accurately compute status of proposals since
-      // the contract performs extra logic on the query based on the latest
-      // votes. For now, just get from chain.
-
-      // const proposalResponse = get(
-      //   queryIndexerSelector({
-      //     ...queryClientParams,
-      //     formulaName: 'daoProposalSingle/proposal',
-      //     args: {
-      //       id: params[0].proposalId,
-      //     },
-      //     id,
-      //   })
-      // )
-      // if (proposalResponse) {
-      //   return proposalResponse
-      // }
+      const proposalResponse = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoProposalSingle/proposal',
+          args: {
+            id: params[0].proposalId,
+          },
+          id,
+        })
+      )
+      if (proposalResponse) {
+        return proposalResponse
+      }
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
@@ -138,23 +134,19 @@ export const listProposalsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      get(refreshProposalsIdAtom)
+      const id = get(refreshProposalsIdAtom)
 
-      // Indexer currently cannot accurately compute status of proposals since
-      // the contract performs extra logic on the query based on the latest
-      // votes. For now, just get from chain.
-
-      // const proposals = get(
-      //   queryIndexerSelector({
-      //     ...queryClientParams,
-      //     formulaName: 'daoProposalSingle/listProposals',
-      //     args: params[0],
-      //     id,
-      //   })
-      // )
-      // if (proposals) {
-      //   return { proposals }
-      // }
+      const proposals = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoProposalSingle/listProposals',
+          args: params[0],
+          id,
+        })
+      )
+      if (proposals) {
+        return { proposals }
+      }
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
@@ -171,23 +163,19 @@ export const reverseProposalsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      get(refreshProposalsIdAtom)
+      const id = get(refreshProposalsIdAtom)
 
-      // Indexer currently cannot accurately compute status of proposals since
-      // the contract performs extra logic on the query based on the latest
-      // votes. For now, just get from chain.
-
-      // const proposals = get(
-      //   queryIndexerSelector({
-      //     ...queryClientParams,
-      //     formulaName: 'daoProposalSingle/reverseProposals',
-      //     args: params[0],
-      //     id,
-      //   })
-      // )
-      // if (proposals) {
-      //   return { proposals }
-      // }
+      const proposals = get(
+        queryIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoProposalSingle/reverseProposals',
+          args: params[0],
+          id,
+        })
+      )
+      if (proposals) {
+        return { proposals }
+      }
 
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
