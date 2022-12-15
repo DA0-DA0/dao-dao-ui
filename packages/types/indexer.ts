@@ -1,10 +1,10 @@
 import { ContractVersionInfo } from './contracts'
 import {
+  DumpStateResponse,
   ProposalModuleWithInfo,
-  ReducedDumpState,
 } from './contracts/CwdCore.v2'
 
-export interface IndexerDumpState extends ReducedDumpState {
+export interface IndexerDumpState extends DumpStateResponse {
   proposalModules: ProposalModuleWithInfo[]
   votingModuleInfo: ContractVersionInfo
   createdAt: string // UTC string

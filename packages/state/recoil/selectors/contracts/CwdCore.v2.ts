@@ -1,6 +1,6 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { Expiration, WithChainId } from '@dao-dao/types'
+import { WithChainId } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   ActiveProposalModulesResponse,
@@ -12,18 +12,17 @@ import {
   Cw20TokenListResponse,
   Cw721TokenListResponse,
   DaoURIResponse,
+  DumpStateResponse,
   GetItemResponse,
   InfoResponse,
   ListItemsResponse,
   ListSubDaosResponse,
   PauseInfoResponse,
   ProposalModulesResponse,
-  ReducedDumpState,
   TotalPowerAtHeightResponse,
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/CwdCore.v2'
-import { expirationExpired } from '@dao-dao/utils'
 
 import { CwdVotingCw20StakedSelectors } from '.'
 import {
@@ -35,7 +34,7 @@ import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
-import { blockHeightSelector, cosmWasmClientForChainSelector } from '../chain'
+import { cosmWasmClientForChainSelector } from '../chain'
 import { queryIndexerSelector } from '../indexer'
 import * as Cw20BaseSelectors from './Cw20Base'
 
@@ -206,13 +205,13 @@ export const _cw721TokenListSelector = selectorFamily<
 })
 // Reduced to only the necessary subset which can be provided by both the
 // indexer and chain.
-export const reducedDumpStateSelector = selectorFamily<
-  ReducedDumpState | undefined,
+export const dumpStateSelector = selectorFamily<
+  DumpStateResponse | undefined,
   QueryClientParams & {
     params: Parameters<CwdCoreV2QueryClient['dumpState']>
   }
 >({
-  key: 'cwdCoreV2ReducedDumpState',
+  key: 'cwdCoreV2DumpState',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -340,37 +339,19 @@ export const pauseInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const blockHeight = get(
-        blockHeightSelector({
-          chainId: queryClientParams.chainId,
-        })
-      )
-      const pausedExpiration: Expiration | false | null = get(
+      const paused = get(
         queryIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/paused',
         })
       )
-
-      // If indexer fails, fallback to contract query.
-      if (pausedExpiration === null) {
-        const client = get(queryClient(queryClientParams))
-        return await client.pauseInfo(...params)
+      if (paused) {
+        return paused
       }
 
-      const isPaused =
-        pausedExpiration !== false &&
-        !expirationExpired(pausedExpiration, blockHeight)
-
-      return isPaused
-        ? {
-            Paused: {
-              expiration: pausedExpiration,
-            },
-          }
-        : {
-            Unpaused: {},
-          }
+      // If indexer fails, fallback to contract query.
+      const client = get(queryClient(queryClientParams))
+      return await client.pauseInfo(...params)
     },
 })
 export const votingModuleSelector = selectorFamily<

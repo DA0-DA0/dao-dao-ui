@@ -5,6 +5,7 @@ import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
+import { queryIndexer } from '@dao-dao/state'
 import {
   CommonProposalInfo,
   ContractVersion,
@@ -18,8 +19,8 @@ import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwC
 import {
   Config,
   ConfigResponse as ConfigV2Response,
+  DumpStateResponse,
   ProposalModuleWithInfo,
-  ReducedDumpState,
 } from '@dao-dao/types/contracts/CwdCore.v2'
 import {
   CHAIN_PREFIX_ID_MAP,
@@ -32,7 +33,6 @@ import {
   isValidWalletAddress,
   parseContractVersion,
   processError,
-  queryIndexer,
   validateContractAddress,
 } from '@dao-dao/utils'
 
@@ -473,7 +473,7 @@ const daoCoreDumpState = async (
   coreAddress: string,
   serverT: TFunction
 ): Promise<DaoCoreDumpState> => {
-  let dumpedState: ReducedDumpState | undefined
+  let dumpedState: DumpStateResponse | undefined
   let votingModuleInfo: ContractVersionInfo | undefined
   let proposalModules: ProposalModuleWithInfo[] | undefined
   let created: Date | undefined
