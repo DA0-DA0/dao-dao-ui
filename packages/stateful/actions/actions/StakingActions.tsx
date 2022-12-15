@@ -1,13 +1,12 @@
 import { parseCoins } from '@cosmjs/amino'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValue } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
 import {
   nativeBalancesSelector,
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
-  transactionEventsSelector,
   validatorsSelector,
 } from '@dao-dao/state'
 import {
@@ -37,7 +36,7 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
-import { useProposalModuleAdapterIfAvailable } from '../../proposal-module-adapter/react/context'
+import { useExecutedProposalTxEventsLoadable } from '../../hooks'
 import {
   StakeData,
   StakeComponent as StatelessStakeComponent,
@@ -209,49 +208,28 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
       })
     )
 
-    // If in DAO context, use proposal execution hash to find claimed rewards.
-    // If in wallet context, proposal module adapter will not be available.
-    const {
-      hooks: { useLoadingProposalExecutionTxHash },
-    } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
-    const loadingExecutionTxHash = useLoadingProposalExecutionTxHash?.()
-    const executed =
-      !!loadingExecutionTxHash &&
-      !loadingExecutionTxHash.loading &&
-      !!loadingExecutionTxHash.data
-
-    const txEventsLoadable = useCachedLoadable(
-      // If no hook is available, no execution hash to load.
-      !loadingExecutionTxHash
-        ? constSelector(undefined)
-        : // If still loading, make this cached loadable load as well by returning
-        // no selector.
-        loadingExecutionTxHash.loading
-        ? undefined
-        : // If loaded no data, no execution hash.
-        !loadingExecutionTxHash.data
-        ? constSelector(undefined)
-        : transactionEventsSelector({ txHash: loadingExecutionTxHash.data })
-    )
+    // If in DAO context, use executed proposal TX events to find claimed
+    // rewards. If in wallet context, events will be undefined.
+    const executedTxEventsLoadable = useExecutedProposalTxEventsLoadable()
 
     const { watch } = useFormContext()
     let claimedRewards: number | undefined
     if (
-      executed &&
-      txEventsLoadable.state === 'hasValue' &&
-      txEventsLoadable.contents &&
+      executedTxEventsLoadable.state === 'hasValue' &&
+      executedTxEventsLoadable.contents &&
       watch(props.fieldNamePrefix + 'stakeType') ===
         StakeType.WithdrawDelegatorReward
     ) {
       const validator = watch(props.fieldNamePrefix + 'validator')
 
-      const claimValidatorRewardsEvents = txEventsLoadable.contents.filter(
-        ({ type, attributes }) =>
-          type === 'withdraw_rewards' &&
-          attributes.some(
-            ({ key, value }) => key === 'validator' && value === validator
-          )
-      )
+      const claimValidatorRewardsEvents =
+        executedTxEventsLoadable.contents.filter(
+          ({ type, attributes }) =>
+            type === 'withdraw_rewards' &&
+            attributes.some(
+              ({ key, value }) => key === 'validator' && value === validator
+            )
+        )
 
       // All action data that claims rewards from the same validator.
       const claimValidatorRewardsActionData = props.allActionsWithData
@@ -336,7 +314,9 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
                     })
                   ),
             validators: loadingValidators.loading ? [] : loadingValidators.data,
-            executed,
+            executed:
+              executedTxEventsLoadable.state === 'hasValue' &&
+              !!executedTxEventsLoadable.contents,
             claimedRewards,
             nativeUnstakingDurationSeconds,
           }}

@@ -2,13 +2,10 @@ import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValue } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
-import {
-  nativeBalancesSelector,
-  transactionEventsSelector,
-} from '@dao-dao/state'
-import { BabyEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import { nativeBalancesSelector } from '@dao-dao/state'
+import { BabyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -24,7 +21,7 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import { useProposalModuleAdapterIfAvailable } from '../../proposal-module-adapter/react/context'
+import { useExecutedProposalTxEventsLoadable } from '../../hooks/useExecutedProposalTxEvents'
 import { InstantiateComponent as StatelessInstantiateComponent } from '../components/Instantiate'
 
 interface InstantiateData {
@@ -109,27 +106,10 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
   const Component: ActionComponent = (props) => {
     const nativeBalances = useRecoilValue(nativeBalancesSelector({ address }))
 
-    // If in DAO context, use proposal execution hash to find instantiated
-    // address if already instantiated. If in wallet context, proposal module
-    // adapter will not be available.
-    const {
-      hooks: { useLoadingProposalExecutionTxHash },
-    } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
-    const loadingExecutionTxHash = useLoadingProposalExecutionTxHash?.()
-
-    const txEventsLoadable = useCachedLoadable(
-      // If no hook is available, no execution hash to load.
-      !loadingExecutionTxHash
-        ? constSelector(undefined)
-        : // If still loading, make this cached loadable load as well by returning
-        // no selector.
-        loadingExecutionTxHash.loading
-        ? undefined
-        : // If loaded no data, no execution hash.
-        !loadingExecutionTxHash.data
-        ? constSelector(undefined)
-        : transactionEventsSelector({ txHash: loadingExecutionTxHash.data })
-    )
+    // If in DAO context, use executed proposal TX events to find instantiated
+    // address if already instantiated. If in wallet context, there will be no
+    // events.
+    const executedTxEventsLoadable = useExecutedProposalTxEventsLoadable()
 
     const { watch } = useFormContext()
     const codeId: number = watch(props.fieldNamePrefix + 'codeId')
@@ -143,7 +123,10 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
     // can use the index of this action in all instantiation actions to
     // select the correct address.
     const instantiatedAddress = useMemo(() => {
-      if (txEventsLoadable.state !== 'hasValue' || !txEventsLoadable.contents) {
+      if (
+        executedTxEventsLoadable.state !== 'hasValue' ||
+        !executedTxEventsLoadable.contents
+      ) {
         return
       }
 
@@ -169,8 +152,9 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
 
       // Instantiation events from the transaction data.
       const instantiationAttributes =
-        txEventsLoadable.contents.find(({ type }) => type === 'instantiate')
-          ?.attributes ?? []
+        executedTxEventsLoadable.contents.find(
+          ({ type }) => type === 'instantiate'
+        )?.attributes ?? []
       // Instantiated addresses for the code ID this action instantiated.
       const codeIdInstantiations = instantiationAttributes.reduce(
         (acc, { key, value }, index) => [
@@ -193,7 +177,12 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
       }
 
       return codeIdInstantiations[innerIndex]
-    }, [txEventsLoadable.state, txEventsLoadable.contents, props, codeId])
+    }, [
+      executedTxEventsLoadable.state,
+      executedTxEventsLoadable.contents,
+      props,
+      codeId,
+    ])
 
     return (
       <StatelessInstantiateComponent

@@ -9,6 +9,8 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { proposalSelector } from '../contracts/DaoProposalSingle.common.recoil'
 
+// Returns a proposal wrapped in a LoadingData object to allow the UI to respond
+// to its loading state.
 export const useLoadingProposal = (): LoadingData<
   Proposal | SingleChoiceProposal
 > => {
