@@ -13,6 +13,7 @@ import {
   DaoProposalPageWrapperProps,
   ProfileProposalCard,
   Trans,
+  useAwaitNextBlock,
   useWalletProfile,
 } from '@dao-dao/stateful'
 import { useCoreActions } from '@dao-dao/stateful/actions'
@@ -88,14 +89,21 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
 
   const { refreshProposalAndAll } = useProposalRefreshers()
 
-  const onVoteSuccess = useCallback(() => {
+  const awaitNextBlock = useAwaitNextBlock()
+
+  const onVoteSuccess = useCallback(async () => {
+    // Wait a block for indexer to catch up.
+    await awaitNextBlock()
+
     refreshProposalAndAll()
     toast.success(t('success.voteCast'))
-  }, [refreshProposalAndAll, t])
+  }, [awaitNextBlock, refreshProposalAndAll, t])
 
   const onExecuteSuccess = useCallback(async () => {
-    refreshProposalAndAll()
     toast.loading(t('success.proposalExecuted'))
+
+    // Wait a block for indexer to catch up.
+    await awaitNextBlock()
 
     // Manually revalidate DAO static props. Don't await this promise since we
     // just want to tell the server to do it, and we're about to reload anyway.
@@ -103,12 +111,15 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
 
     // Refresh entire app since any DAO config may have changed.
     window.location.reload()
-  }, [daoInfo.coreAddress, proposalInfo.id, refreshProposalAndAll, t])
+  }, [awaitNextBlock, daoInfo.coreAddress, proposalInfo.id, t])
 
-  const onCloseSuccess = useCallback(() => {
+  const onCloseSuccess = useCallback(async () => {
+    // Wait a block for indexer to catch up.
+    await awaitNextBlock()
+
     refreshProposalAndAll()
     toast.success(t('success.proposalClosed'))
-  }, [refreshProposalAndAll, t])
+  }, [awaitNextBlock, refreshProposalAndAll, t])
 
   return (
     <Proposal
