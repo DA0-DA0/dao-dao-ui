@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
-import { useRecoilValue } from 'recoil'
 
 import {
   blockHeightSelector,
@@ -12,36 +11,62 @@ import {
   useCachedLoadable,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
+import { LoadingData } from '@dao-dao/types'
 import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
-import { useProposal } from './useProposal'
+import { TimestampInfo } from '../types'
+import { useLoadingProposal } from './useLoadingProposal'
 
-export const useTimestampDisplay = () => {
+export const useLoadingTimestampInfo = (): LoadingData<
+  TimestampInfo | undefined
+> => {
   const { t } = useTranslation()
   const {
     proposalModule: { address: proposalModuleAddress },
     proposalNumber,
+    chainId,
   } = useProposalModuleAdapterOptions()
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: false })
 
-  const proposal = useProposal()
-
+  const loadingProposal = useLoadingProposal()
+  const blocksPerYearLoadable = useCachedLoadable(
+    blocksPerYearSelector({
+      chainId,
+    })
+  )
+  const blockHeightLoadable = useCachedLoadable(
+    blockHeightSelector({
+      chainId,
+    })
+  )
   const proposalSubquery = useGetProposalQuery(
     proposalModuleAddress,
     proposalNumber
   )
+
+  if (
+    loadingProposal.loading ||
+    blocksPerYearLoadable.state !== 'hasValue' ||
+    blockHeightLoadable.state !== 'hasValue'
+  ) {
+    return {
+      loading: true,
+    }
+  }
+
+  const proposal = loadingProposal.data
+
   const proposalSubqueryData =
     proposalSubquery.data?.proposal ??
     proposalSubquery.previousData?.proposal ??
     undefined
 
-  const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
   const expirationDate = convertExpirationToDate(
-    blocksPerYear,
+    blocksPerYearLoadable.contents,
     proposal.expiration,
-    blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
+    blockHeightLoadable.contents
   )
 
   const completionDate =
@@ -56,8 +81,6 @@ export const useTimestampDisplay = () => {
     proposalSubqueryData?.closedAt &&
     // Interpret as UTC.
     new Date(proposalSubqueryData.closedAt + 'Z')
-
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: false })
 
   const dateDisplay: { label: string; content: ReactNode } | undefined =
     proposal.status === Status.Open
@@ -91,5 +114,12 @@ export const useTimestampDisplay = () => {
         }
       : undefined
 
-  return dateDisplay
+  return {
+    loading: false,
+    data: dateDisplay &&
+      expirationDate && {
+        display: dateDisplay,
+        expirationDate,
+      },
+  }
 }

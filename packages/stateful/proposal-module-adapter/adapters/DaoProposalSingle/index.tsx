@@ -32,10 +32,10 @@ import {
 import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
+  useLoadingProposalExecutionTxHash,
+  useLoadingWalletVoteInfo,
   useProfileVoteCardOptions,
-  useProposalExecutionTxHash,
   useProposalRefreshers,
-  useWalletVoteInfo,
 } from './hooks'
 import { DaoCreationConfig, NewProposalForm } from './types'
 
@@ -124,9 +124,9 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
     hooks: {
       useCastVote,
       useProposalRefreshers,
-      useProposalExecutionTxHash,
+      useLoadingProposalExecutionTxHash,
       useProfileVoteCardOptions,
-      useWalletVoteInfo,
+      useLoadingWalletVoteInfo,
     },
 
     // Components

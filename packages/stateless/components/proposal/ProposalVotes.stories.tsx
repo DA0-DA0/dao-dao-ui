@@ -22,18 +22,19 @@ const Template: ComponentStory<typeof ProposalVotes<Vote>> = (args) => (
 )
 
 export const makeProps = (): ProposalVotesProps<Vote> => ({
-  votes: [...Array(10)].map(() => ({
-    voterAddress: 'juno123ihuprfiuosdjfiu98349fi0ewjgui',
-    // 25% chance of No, 75% chance of Yes
-    vote: Math.random() < 0.25 ? Vote.No : Vote.Yes,
-    votingPowerPercent: 0.0432,
-  })),
+  votes: {
+    loading: false,
+    data: [...Array(10)].map(() => ({
+      voterAddress: 'juno123ihuprfiuosdjfiu98349fi0ewjgui',
+      // 25% chance of No, 75% chance of Yes
+      vote: Math.random() < 0.25 ? Vote.No : Vote.Yes,
+      votingPowerPercent: 0.0432,
+    })),
+  },
   // Within the past 5 days.
   getDateVoted: () =>
     new Date(Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000),
-  canLoadMore: true,
-  loadingMore: false,
-  loadMore: () => alert('load'),
+  votingOpen: true,
   ProfileDisplay: (props) => (
     <ProfileDisplay
       loadingProfile={{
@@ -62,12 +63,5 @@ Default.parameters = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...makeProps(),
-  loadingMore: true,
-}
-
-export const LoadingNone = Template.bind({})
-LoadingNone.args = {
-  votes: [],
-  canLoadMore: true,
-  loadingMore: true,
+  votes: { loading: true },
 }

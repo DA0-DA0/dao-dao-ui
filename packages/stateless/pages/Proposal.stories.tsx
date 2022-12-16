@@ -4,7 +4,7 @@ import {
   ProposalVoteTally,
   ProposalVoteTallyProps,
 } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ui/ProposalVoteTally'
-import { Default as ProposalVoteTallyStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ui/ProposalVoteTally.stories'
+import { Default as ProposalVoteTallyStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ui/ProposalVoteTally.ProposalVoteTally.stories'
 import {
   DaoPageWrapperDecorator,
   makeAppLayoutDecorator,
@@ -88,6 +88,8 @@ Default.args = {
       {...(ProfileVoteCardStory.args as ProfileVoteCardProps<string>)}
     />
   ),
+  onRefresh: () => alert('refresh'),
+  refreshing: false,
 }
 Default.parameters = {
   design: {

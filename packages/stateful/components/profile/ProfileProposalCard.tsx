@@ -1,12 +1,14 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { waitForAll } from 'recoil'
 
 import {
+  Loader,
   ProfileCantVoteCard,
   ProfileVoteCard,
   ProfileVotedCard,
   useAppLayoutContext,
+  useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
@@ -36,7 +38,7 @@ export const ProfileProposalCard = ({
   const { updateProfileNft } = useAppLayoutContext()
 
   const {
-    hooks: { useProfileVoteCardOptions, useWalletVoteInfo, useCastVote },
+    hooks: { useProfileVoteCardOptions, useLoadingWalletVoteInfo, useCastVote },
     components: { ProposalWalletVote },
   } = useProposalModuleAdapter()
   const {
@@ -54,14 +56,21 @@ export const ProfileProposalCard = ({
       ),
     [chainId, coreAddress, proposalModules]
   )
-  const proposalModuleDepositInfos = useRecoilValue(
+  const proposalModuleDepositInfosLoadable = useCachedLoadable(
     waitForAll(depositInfoSelectors)
-  ).filter(Boolean) as CheckedDepositInfo[]
-
-  const maxProposalModuleDeposit = Math.max(
-    ...proposalModuleDepositInfos.map(({ amount }) => Number(amount)),
-    0
   )
+
+  const maxProposalModuleDeposit =
+    proposalModuleDepositInfosLoadable.state !== 'hasValue'
+      ? 0
+      : Math.max(
+          ...(
+            proposalModuleDepositInfosLoadable.contents.filter(
+              Boolean
+            ) as CheckedDepositInfo[]
+          ).map(({ amount }) => Number(amount)),
+          0
+        )
 
   // If wallet is a member right now as opposed to when the proposal was open.
   // Relevant for showing them membership join info or not.
@@ -77,7 +86,19 @@ export const ProfileProposalCard = ({
   }
 
   const options = useProfileVoteCardOptions()
-  const { vote, couldVote, canVote, votingPowerPercent } = useWalletVoteInfo()
+  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
+  const { castVote, castingVote } = useCastVote(onVoteSuccess)
+
+  // This card should only display when a wallet is connected. The wallet vote
+  // info hook returns undefined when there is no wallet connected. If we are
+  // here and there is no wallet connected, something is probably just loading,
+  // maybe the wallet is reconnecting. It is safe to return a loader.
+  if (!loadingWalletVoteInfo || loadingWalletVoteInfo.loading) {
+    return <Loader />
+  }
+
+  const { vote, couldVote, canVote, votingPowerPercent } =
+    loadingWalletVoteInfo.data
 
   const commonProps = {
     votingPower: votingPowerPercent,
@@ -86,8 +107,6 @@ export const ProfileProposalCard = ({
     showUpdateProfileNft: updateProfileNft.toggle,
     updateProfileName,
   }
-
-  const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
   return canVote ? (
     <ProfileVoteCard

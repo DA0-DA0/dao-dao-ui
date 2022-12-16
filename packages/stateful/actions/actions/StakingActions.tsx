@@ -1,13 +1,12 @@
 import { parseCoins } from '@cosmjs/amino'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValue } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
 import {
   nativeBalancesSelector,
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
-  transactionEventsSelector,
   validatorsSelector,
 } from '@dao-dao/state'
 import {
@@ -37,7 +36,7 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
-import { useProposalModuleAdapterIfAvailable } from '../../proposal-module-adapter/react/context'
+import { useExecutedProposalTxEventsLoadable } from '../../hooks'
 import {
   StakeData,
   StakeComponent as StatelessStakeComponent,
@@ -175,37 +174,28 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
     })
   )
 
-  // If in DAO context, use proposal execution hash to find claimed rewards.
-  // If in wallet context, proposal module adapter will not be available.
-  const {
-    hooks: { useProposalExecutionTxHash },
-  } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
-  const executionTxHash = useProposalExecutionTxHash?.()
-  const executed = !!executionTxHash
-
-  const txEvents = useRecoilValue(
-    executionTxHash
-      ? transactionEventsSelector({ txHash: executionTxHash })
-      : constSelector(undefined)
-  )
+  // If in DAO context, use executed proposal TX events to find claimed
+  // rewards. If in wallet context, events will be undefined.
+  const executedTxEventsLoadable = useExecutedProposalTxEventsLoadable()
 
   const { watch } = useFormContext()
   let claimedRewards: number | undefined
   if (
-    executed &&
-    txEvents &&
+    executedTxEventsLoadable.state === 'hasValue' &&
+    executedTxEventsLoadable.contents &&
     watch(props.fieldNamePrefix + 'stakeType') ===
       StakeType.WithdrawDelegatorReward
   ) {
     const validator = watch(props.fieldNamePrefix + 'validator')
 
-    const claimValidatorRewardsEvents = txEvents.filter(
-      ({ type, attributes }) =>
-        type === 'withdraw_rewards' &&
-        attributes.some(
-          ({ key, value }) => key === 'validator' && value === validator
-        )
-    )
+    const claimValidatorRewardsEvents =
+      executedTxEventsLoadable.contents.filter(
+        ({ type, attributes }) =>
+          type === 'withdraw_rewards' &&
+          attributes.some(
+            ({ key, value }) => key === 'validator' && value === validator
+          )
+      )
 
     // All action data that claims rewards from the same validator.
     const claimValidatorRewardsActionData = props.allActionsWithData
@@ -290,7 +280,9 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
                   })
                 ),
           validators: loadingValidators.loading ? [] : loadingValidators.data,
-          executed,
+          executed:
+            executedTxEventsLoadable.state === 'hasValue' &&
+            !!executedTxEventsLoadable.contents,
           claimedRewards,
           nativeUnstakingDurationSeconds,
         }}

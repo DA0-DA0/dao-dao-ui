@@ -1,15 +1,27 @@
 import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
-import { useProposal, useVotesInfo } from '../hooks'
-import { ProposalVoteTally as StatelessProposalVoteTally } from './ui/ProposalVoteTally'
+import { SuspenseLoader } from '../../../../components'
+import { useLoadingProposal, useLoadingVotesInfo } from '../hooks'
+import {
+  ProposalVoteTallyLoader,
+  ProposalVoteTally as StatelessProposalVoteTally,
+} from './ui/ProposalVoteTally'
 
 export const ProposalVoteTally = () => {
-  const proposal = useProposal()
+  const loadingProposal = useLoadingProposal()
+  const loadingVotesInfo = useLoadingVotesInfo()
 
   return (
-    <StatelessProposalVoteTally
-      open={proposal.status === Status.Open}
-      votesInfo={useVotesInfo()}
-    />
+    <SuspenseLoader
+      fallback={<ProposalVoteTallyLoader />}
+      forceFallback={loadingProposal.loading || loadingVotesInfo.loading}
+    >
+      {!loadingProposal.loading && !loadingVotesInfo.loading && (
+        <StatelessProposalVoteTally
+          open={loadingProposal.data.status === Status.Open}
+          votesInfo={loadingVotesInfo.data}
+        />
+      )}
+    </SuspenseLoader>
   )
 }

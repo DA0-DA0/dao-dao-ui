@@ -547,6 +547,7 @@
     "updateProposalSubmissionConfigActionDescription": "Update the proposal submission paramaters for your DAO.",
     "updateVotingConfigActionDescription": "Update the voting parameters for your DAO.",
     "verifyingGovernanceToken": "Verifying CW20 token...",
+    "voteTallyRefreshesSeconds": "Vote tally refreshes every {{seconds}} seconds.",
     "votingModuleAdapterCreationDiscord": "Want to help us support this voting module? Join the <2><0>DAO DAO Discord</0><1/></2> and post in #dao-help.",
     "votingModuleNotYetSupported": "This DAO uses a voting module that our UI does not yet support. Functionality may be limited.",
     "votingPowerAtCreationTooltip": "This was your voting power at the time of proposal creation.",
