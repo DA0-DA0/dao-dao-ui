@@ -1,20 +1,32 @@
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useRecoilCallback } from 'recoil'
+import { constSelector, useRecoilCallback } from 'recoil'
 
-import { Cw721BaseSelectors } from '@dao-dao/state/recoil'
-import { ActionComponent } from '@dao-dao/types'
+import { Cw721BaseSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { useCachedLoadable } from '@dao-dao/stateless'
+import { ActionComponent, ActionOptionsContextType } from '@dao-dao/types'
 import { objectMatchesStructure, processError } from '@dao-dao/utils'
 
 import { ChooseExistingNftCollection as StatelessChooseExistingNftCollection } from '../../components/nft'
 import { useActionOptions } from '../../react'
 
 export const ChooseExistingNftCollection: ActionComponent = (props) => {
-  const { chainId, t } = useActionOptions()
+  const { context, address, chainId, t } = useActionOptions()
   const { watch, setValue, setError, clearErrors, trigger } = useFormContext()
 
   const collectionAddress: string | undefined = watch(
     props.fieldNamePrefix + 'collectionAddress'
+  )
+
+  // If in DAO context, get cw721 collections for which the DAO is the minter.
+  // If in wallet context, can't check so use empty array.
+  const existingCollectionsLoadable = useCachedLoadable(
+    context.type === ActionOptionsContextType.Dao
+      ? DaoCoreV2Selectors.allCw721CollectionsWithDaoAsMinterSelector({
+          contractAddress: address,
+          chainId,
+        })
+      : constSelector([])
   )
 
   const [chooseLoading, setChooseLoading] = useState(false)
@@ -112,6 +124,10 @@ export const ChooseExistingNftCollection: ActionComponent = (props) => {
       options={{
         chooseLoading,
         onChooseExistingContract,
+        existingCollections:
+          existingCollectionsLoadable.state === 'hasValue'
+            ? existingCollectionsLoadable.contents
+            : [],
       }}
     />
   )

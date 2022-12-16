@@ -11,6 +11,8 @@ import {
 } from '@dao-dao/types'
 import { Expiration } from '@dao-dao/types/contracts/common'
 
+import { IPFS_GATEWAY_TEMPLATE } from './constants'
+
 export function convertMicroDenomToDenomWithDecimals(
   amount: number | string,
   decimals: number
@@ -173,5 +175,5 @@ export const durationToSeconds = (blocksPerYear: number, duration: Duration) =>
 // Use Stargaze's IPFS gateway.
 export const transformIpfsUrlToHttpsIfNecessary = (ipfsUrl: string) =>
   ipfsUrl.startsWith('ipfs://')
-    ? ipfsUrl.replace('ipfs://', 'https://ipfs.stargaze.zone/ipfs/')
+    ? IPFS_GATEWAY_TEMPLATE.replace('PATH', ipfsUrl.replace('ipfs://', ''))
     : ipfsUrl

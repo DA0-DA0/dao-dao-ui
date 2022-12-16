@@ -1,6 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
+import JSON5 from 'json5'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Blob, NFTStorage } from 'nft.storage'
 
@@ -14,7 +15,7 @@ export default async function handler(
   try {
     // Parse form fields and image.
     const {
-      fields: { name, description = '' },
+      fields: { name, description = '', extra: _extra },
       imageData,
       mimetype,
     } = await parseFormWithImage(req)
@@ -24,6 +25,16 @@ export default async function handler(
       return res.status(400).json({ error: 'Name cannot be empty.' })
     }
 
+    // Parse additional metadata if present.
+    let extra: Record<string, any> = {}
+    if (_extra) {
+      try {
+        extra = JSON5.parse(_extra)
+      } catch (err) {
+        return res.status(400).json({ error: 'Invalid extra metadata.' })
+      }
+    }
+
     // Upload to IPFS via NFT.Storage's API: https://nft.storage/docs/. This
     // automatically uploads the image and creates/uploads a metadata.json file
     // conforming to the ERC-1155 NFT standard.
@@ -31,8 +42,12 @@ export default async function handler(
       token: NFT_STORAGE_API_KEY,
     })
     const metadata = await client.store({
+      ...extra,
+
+      // Ensure name, description, and image are set by their fields.
       name,
-      description,
+      // In case description is empty, use extra.description if present.
+      description: description || extra.description || '',
       image: new Blob([imageData], { type: mimetype }),
     })
 

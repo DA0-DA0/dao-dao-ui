@@ -94,7 +94,8 @@ export const parseNftUriResponse = (
 export const uploadNft = async (
   name: string,
   description: string,
-  file: File
+  file: File,
+  extra?: string
 ): Promise<{
   metadataUrl: string
   imageUrl: string
@@ -103,6 +104,9 @@ export const uploadNft = async (
   form.append('name', name)
   form.append('description', description)
   form.append('image', file)
+  if (extra) {
+    form.append('extra', extra)
+  }
 
   // Next.js API route.
   const response = await fetch('/api/uploadNft', {

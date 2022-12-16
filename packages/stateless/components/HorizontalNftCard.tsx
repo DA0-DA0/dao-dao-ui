@@ -1,7 +1,7 @@
 import { ImageNotSupported } from '@mui/icons-material'
 import clsx from 'clsx'
-import Image from 'next/image'
-import { forwardRef, useState } from 'react'
+import NextImage from 'next/image'
+import { forwardRef, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { NftCardInfo } from '@dao-dao/types'
@@ -26,12 +26,9 @@ export const HorizontalNftCard = forwardRef<
 ) {
   const { t } = useTranslation()
 
-  // Loading if imageUrl is present.
-  const [imageLoading, setImageLoading] = useState(!!imageUrl)
-
   const chainImage = getImageUrlForChainId(chainId)
   const chainImageNode = chainImage && (
-    <Image
+    <NextImage
       alt=""
       className="shrink-0"
       height={36}
@@ -40,27 +37,52 @@ export const HorizontalNftCard = forwardRef<
     />
   )
 
+  const [imageLoading, setImageLoading] = useState(!!imageUrl)
+  const [imageLoadErrored, setImageLoadErrored] = useState(false)
+  // Load image in background so we can listen for loading complete.
+  const [loadedImageSrc, setLoadedImgSrc] = useState<string>()
+  useEffect(() => {
+    if (!imageUrl || loadedImageSrc === normalizeNftImageUrl(imageUrl)) {
+      return
+    }
+
+    setImageLoading(true)
+
+    const img = new Image()
+    img.onload = () => {
+      setLoadedImgSrc(img.src)
+      setImageLoading(false)
+      setImageLoadErrored(false)
+    }
+    img.onerror = () => {
+      setLoadedImgSrc(undefined)
+      setImageLoading(false)
+      setImageLoadErrored(true)
+    }
+    img.src = normalizeNftImageUrl(imageUrl)
+  }, [imageUrl, loadedImageSrc])
+
   return (
     <div
       className={clsx(
         'flex flex-col items-stretch overflow-hidden rounded-lg bg-background-primary sm:grid sm:grid-cols-[auto_1fr] sm:grid-rows-1',
-        imageLoading && imageUrl && 'animate-pulse',
+        imageLoading && 'animate-pulse',
         className
       )}
       ref={ref}
     >
-      {imageUrl ? (
-        <div className="relative aspect-square sm:h-36 sm:w-36">
-          <Image
-            alt={t('info.nftImage')}
-            layout="fill"
-            objectFit="cover"
-            onLoadingComplete={() => setImageLoading(false)}
-            src={normalizeNftImageUrl(imageUrl)}
-          />
-        </div>
+      {imageUrl && !imageLoadErrored ? (
+        <div
+          className={clsx(
+            'relative aspect-square bg-cover bg-center transition-opacity sm:h-36 sm:w-36',
+            loadedImageSrc ? 'opacity-100' : 'opacity-0'
+          )}
+          style={{
+            backgroundImage: loadedImageSrc && `url(${loadedImageSrc})`,
+          }}
+        ></div>
       ) : (
-        <div className="flex aspect-square items-center justify-center">
+        <div className="flex aspect-square items-center justify-center sm:h-36 sm:w-36">
           <ImageNotSupported className="!h-14 !w-14 text-icon-tertiary" />
         </div>
       )}

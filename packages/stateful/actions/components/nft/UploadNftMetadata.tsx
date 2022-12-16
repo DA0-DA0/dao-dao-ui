@@ -1,3 +1,4 @@
+import { Check, Close } from '@mui/icons-material'
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -5,14 +6,23 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  CodeMirrorInput,
   CopyToClipboard,
+  FormSwitchCard,
   ImageDropInput,
   InputErrorMessage,
   InputLabel,
   TextInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
-import { processError, uploadNft, validateRequired } from '@dao-dao/utils'
+import {
+  processError,
+  uploadNft,
+  validateJSON,
+  validateRequired,
+} from '@dao-dao/utils'
+
+import { Trans } from '../../../components/Trans'
 
 // Form displayed when the user is uploading NFT metadata.
 export const UploadNftMetadata: ActionComponent = ({
@@ -21,9 +31,11 @@ export const UploadNftMetadata: ActionComponent = ({
 }) => {
   const { t } = useTranslation()
 
-  const { register, watch, setValue, trigger } = useFormContext()
+  const { register, watch, setValue, trigger, control } = useFormContext()
+
   const collectionAddress = watch(fieldNamePrefix + 'collectionAddress')
   const watchMetadata = watch(fieldNamePrefix + 'metadata')
+  const includeExtraMetadata = !!watchMetadata?.includeExtra
 
   const [uploading, setUploading] = useState(false)
   const [file, setFile] = useState<File>()
@@ -39,7 +51,14 @@ export const UploadNftMetadata: ActionComponent = ({
       const { metadataUrl, imageUrl } = await uploadNft(
         watchMetadata.name,
         watchMetadata.description,
-        file
+        file,
+        // Only submit extra metadata if switch is on and it's not empty.
+        !includeExtraMetadata ||
+          !watchMetadata.extra ||
+          // No need to submit an empty object.
+          watchMetadata.extra === '{}'
+          ? undefined
+          : watchMetadata.extra
       )
 
       setValue(fieldNamePrefix + 'mintMsg.token_uri', metadataUrl)
@@ -58,6 +77,7 @@ export const UploadNftMetadata: ActionComponent = ({
 
       <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
         <ImageDropInput
+          Trans={Trans}
           className="aspect-square w-full shrink-0 sm:h-40 sm:w-40"
           onSelect={setFile}
         />
@@ -88,6 +108,41 @@ export const UploadNftMetadata: ActionComponent = ({
             <InputErrorMessage error={errors?.metadata?.description} />
           </div>
         </div>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <FormSwitchCard
+          containerClassName="self-start"
+          fieldName={fieldNamePrefix + 'metadata.includeExtra'}
+          label={t('form.includeExtraMetadata')}
+          setValue={setValue}
+          sizing="sm"
+          tooltip={t('form.includeExtraMetadataTooltip')}
+          tooltipIconSize="sm"
+          value={includeExtraMetadata}
+        />
+
+        {includeExtraMetadata && (
+          <div className="mt-2 flex flex-col gap-1">
+            <CodeMirrorInput
+              control={control}
+              error={errors?.metadata?.extra}
+              fieldName={fieldNamePrefix + 'metadata.extra'}
+              validation={[validateJSON]}
+            />
+
+            {errors?.metadata?.extra?.message ? (
+              <p className="flex items-center gap-1 text-sm text-text-interactive-error">
+                <Close className="!h-5 !w-5" />{' '}
+                <span>{errors.metadata.extra.message}</span>
+              </p>
+            ) : (
+              <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
+                <Check className="!h-5 !w-5" /> {t('info.jsonIsValid')}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="mt-2 flex min-w-0 flex-col gap-x-6 gap-y-2 overflow-hidden sm:flex-row sm:items-end sm:justify-between">

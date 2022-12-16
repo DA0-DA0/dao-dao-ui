@@ -1,20 +1,24 @@
+import { CloudDownloadRounded, CloudUploadRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useRef, useState } from 'react'
+import { ComponentType, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '../buttons/Button'
+import { TransProps } from '@dao-dao/types'
+
 import { Loader } from '../logo'
 
 export interface ImageDropInputProps {
   onSelect: (file: File) => void | Promise<void>
   className?: string
   loading?: boolean
+  Trans: ComponentType<TransProps>
 }
 
 export const ImageDropInput = ({
   onSelect,
   className,
   loading,
+  Trans,
 }: ImageDropInputProps) => {
   const { t } = useTranslation()
 
@@ -87,31 +91,31 @@ export const ImageDropInput = ({
 
       {imageData ? (
         loading && (
-          <div className="flex flex-col items-center rounded-lg bg-background-overlay p-4">
+          <div className="pointer-events-none flex flex-col items-center rounded-lg bg-background-overlay p-4">
             <Loader size={24} />
           </div>
         )
       ) : (
-        <div
-          className={clsx(
-            'flex flex-col items-center gap-2 rounded-lg p-2 transition md:p-4',
-            imageData && 'bg-background-overlay'
+        <div className="pointer-events-none flex flex-col items-center gap-2 rounded-lg p-2 transition">
+          {dragHovering ? (
+            <CloudDownloadRounded className="!h-10 !w-10" />
+          ) : (
+            <CloudUploadRounded className="!h-10 !w-10" />
           )}
-        >
+
           <p className="secondary-text text-center">
-            {dragHovering ? t('form.dropImageHere') : t('form.dragImageHere')}
+            {dragHovering ? (
+              t('form.dropImageHere')
+            ) : (
+              <Trans i18nKey="form.dragImageHereOrClick">
+                Drag image here or{' '}
+                <span className="pointer-events-auto underline transition-opacity hover:opacity-80 active:opacity-70">
+                  click
+                </span>{' '}
+                to select one.
+              </Trans>
+            )}
           </p>
-          <Button
-            loading={loading}
-            onClick={(e) => {
-              // Don't click on parent which also opens file dialog.
-              e.stopPropagation()
-              inputRef.current?.click()
-            }}
-            variant="secondary"
-          >
-            {t('button.chooseImage')}
-          </Button>
         </div>
       )}
     </div>
