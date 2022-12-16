@@ -3,28 +3,52 @@ import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { Button, CosmosMessageDisplay } from '@dao-dao/stateless'
+import { Button, CosmosMessageDisplay, Loader } from '@dao-dao/stateless'
 import { ActionAndData, BaseProposalActionDisplayProps } from '@dao-dao/types'
+import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
+import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import { decodeMessages } from '@dao-dao/utils'
 
 import { ActionsRenderer } from '../../../../actions'
+import { SuspenseLoader } from '../../../../components'
 import { useProposalModuleAdapterContext } from '../../../react'
-import { useProposal } from '../hooks'
+import { useLoadingProposal } from '../hooks'
 import { NewProposalForm } from '../types'
 
-export const ProposalActionDisplay = ({
+export const ProposalActionDisplay = (
+  props: BaseProposalActionDisplayProps<NewProposalForm>
+) => {
+  const loadingProposal = useLoadingProposal()
+
+  return (
+    <SuspenseLoader
+      fallback={<Loader />}
+      forceFallback={loadingProposal.loading}
+    >
+      {!loadingProposal.loading && (
+        <InnerProposalActionDisplay
+          {...props}
+          proposal={loadingProposal.data}
+        />
+      )}
+    </SuspenseLoader>
+  )
+}
+
+const InnerProposalActionDisplay = ({
   onDuplicate,
   availableActions,
-}: BaseProposalActionDisplayProps<NewProposalForm>) => {
+  proposal,
+}: BaseProposalActionDisplayProps<NewProposalForm> & {
+  proposal: Proposal | SingleChoiceProposal
+}) => {
   const { t } = useTranslation()
   const [showRaw, setShowRaw] = useState(false)
   const { id: proposalModuleAdapterId } = useProposalModuleAdapterContext()
 
-  const proposal = useProposal()
-
   const decodedMessages = useMemo(
     () => decodeMessages(proposal.msgs),
-    [proposal.msgs]
+    [proposal]
   )
 
   // Call relevant action hooks in the same order every time.

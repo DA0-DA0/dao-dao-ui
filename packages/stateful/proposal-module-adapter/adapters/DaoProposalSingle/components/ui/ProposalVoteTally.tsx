@@ -260,3 +260,91 @@ export const ProposalVoteTally = ({
     </div>
   )
 }
+
+export const ProposalVoteTallyLoader = () => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="animate-pulse rounded-lg border border-border-secondary bg-component-widget">
+      <div className="space-y-4 py-4 px-6">
+        {/* Threshold title */}
+        <p className="link-text text-text-body">{t('title.ratioOfVotes')}</p>
+
+        {/* Vote percentage stats */}
+        <div className="caption-text flex flex-row items-center gap-4">
+          <p key="yes" className="text-text-interactive-valid">
+            ... {t('info.yesVote')}
+          </p>
+          <p key="no" className="text-text-interactive-error">
+            ... {t('info.noVote')}
+          </p>
+          <p className="text-text-tertiary">... {t('info.abstainVote')}</p>
+        </div>
+
+        {/* Threshold progress bar */}
+        <div className="my-2">
+          <ProgressBar
+            rows={[
+              {
+                thickness: 10,
+              },
+            ]}
+          />
+        </div>
+
+        <div className="secondary-text flex flex-row items-center justify-between gap-2">
+          <div className="flex flex-row items-center gap-1">
+            <p className="text-text-tertiary">{t('title.passingThreshold')}</p>
+            <TooltipInfoIcon
+              iconClassName="text-icon-tertiary"
+              size="sm"
+              title={t('info.proposalThresholdTooltip')}
+            />
+          </div>
+
+          {/* Threshold config display */}
+          <p className="flex flex-row items-center">
+            <Tooltip title={t('info.proposalThresholdTooltip')}>
+              <p className="text-text-body">...</p>
+            </Tooltip>
+          </p>
+        </div>
+      </div>
+
+      {/* Quorum, if present */}
+      <div className="space-y-4 border-t border-border-secondary py-4 px-6">
+        {/* Quorum title */}
+        <p className="link-text text-text-body">{t('title.turnout')}</p>
+
+        {/* Quorum progress bar */}
+        <div className="my-2">
+          <ProgressBar
+            rows={[
+              {
+                thickness: 10,
+              },
+            ]}
+          />
+        </div>
+
+        {/* Quorum config display */}
+        <div className="secondary-text flex flex-row items-center justify-between gap-2">
+          <div className="flex flex-row items-center gap-1">
+            <p className="text-text-tertiary">{t('title.quorum')}</p>
+            <TooltipInfoIcon
+              iconClassName="text-icon-tertiary"
+              size="sm"
+              title={t('info.proposalQuorumTooltip')}
+            />
+          </div>
+
+          <p className="flex flex-row items-center">
+            <Tooltip title={t('info.proposalQuorumTooltip')}>
+              <p className="text-text-body">...</p>
+            </Tooltip>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}

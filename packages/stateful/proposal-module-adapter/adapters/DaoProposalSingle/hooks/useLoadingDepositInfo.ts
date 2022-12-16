@@ -1,9 +1,11 @@
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector } from 'recoil'
 
+import { useCachedLoadable } from '@dao-dao/stateless'
 import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
+  LoadingData,
 } from '@dao-dao/types'
 import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { DepositInfoResponse as DepositInfoPreProposeResponse } from '@dao-dao/types/contracts/DaoPreProposeSingle'
@@ -12,13 +14,15 @@ import { useProposalModuleAdapterOptions } from '../../../react/context'
 import { proposalSelector as proposalV1Selector } from '../contracts/CwProposalSingle.v1.recoil'
 import { depositInfoSelector as depositInfoV2Selector } from '../contracts/DaoPreProposeSingle.recoil'
 
-export const useDepositInfo = (): CheckedDepositInfo | undefined => {
+export const useLoadingDepositInfo = (): LoadingData<
+  CheckedDepositInfo | undefined
+> => {
   const {
     proposalModule: { address, version, preProposeAddress },
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const selectorValue = useRecoilValue<
+  const selectorValue = useCachedLoadable<
     ProposalV1Response | DepositInfoPreProposeResponse | undefined
   >(
     //! V1
@@ -44,9 +48,15 @@ export const useDepositInfo = (): CheckedDepositInfo | undefined => {
       : constSelector(undefined)
   )
 
+  if (selectorValue.state !== 'hasValue') {
+    return { loading: true }
+  }
+
   // Type-checked below.
-  const proposalResponse = selectorValue as ProposalV1Response | undefined
-  const depositInfoResponse = selectorValue as
+  const proposalResponse = selectorValue.contents as
+    | ProposalV1Response
+    | undefined
+  const depositInfoResponse = selectorValue.contents as
     | DepositInfoPreProposeResponse
     | undefined
 
@@ -66,5 +76,8 @@ export const useDepositInfo = (): CheckedDepositInfo | undefined => {
       : //! V2
         depositInfoResponse?.deposit_info ?? undefined
 
-  return depositInfo
+  return {
+    loading: false,
+    data: depositInfo,
+  }
 }

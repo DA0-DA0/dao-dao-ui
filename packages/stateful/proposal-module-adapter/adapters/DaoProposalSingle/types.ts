@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import {
   ActionKeyAndData,
   DepositInfoSelector,
@@ -87,4 +89,12 @@ export interface MakeUsePublishProposalOptions {
 export type UsePublishProposal = () => {
   publishProposal: PublishProposal
   depositUnsatisfied: boolean
+}
+
+export interface TimestampInfo {
+  display: {
+    label: string
+    content: ReactNode
+  }
+  expirationDate: Date
 }
