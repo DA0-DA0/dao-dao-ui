@@ -268,6 +268,8 @@
     "image": "Image",
     "imageURLTitle": "Image URL",
     "imageURLTooltip": "A link to an image. For example: https://moonphase.is/image.svg",
+    "includeExtraMetadata": "Include extra metadata?",
+    "includeExtraMetadataTooltip": "The form above only allows setting name and description in the metadata object attached to the image. Turn this on to input additional fields.",
     "initialSupply": "Total token supply",
     "instantiatedAddress": "Instantiated Address",
     "instructions": "Instructions",

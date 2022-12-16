@@ -77,7 +77,6 @@ export function CodeMirrorInput<T extends FieldValues, U extends Path<T>>({
         />
       )}
       rules={{ required: required && 'Required', validate: validate }}
-      shouldUnregister
     />
   )
 }

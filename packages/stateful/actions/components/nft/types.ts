@@ -25,6 +25,8 @@ export interface MintNftData {
   metadata?: {
     name: string
     description: string
+    includeExtra: boolean
+    extra: string
   }
   // Set after uploading metadata to IPFS by UploadNftMetadata component, for
   // displaying during final step by MintNft component.
