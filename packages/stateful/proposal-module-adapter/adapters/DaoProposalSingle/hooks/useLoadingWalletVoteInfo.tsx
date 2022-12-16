@@ -80,18 +80,18 @@ export const useLoadingWalletVoteInfo = ():
     totalVotingPowerWhenProposalCreatedLoadable.contents.power
   )
 
+  const proposalCompleted =
+    proposal.status !== Status.Open && proposal.status !== Status.Passed
+  const canVote =
+    couldVote && !proposalCompleted && (!walletVote || proposal.allow_revoting)
+
   return {
     loading: false,
     data: {
       vote: walletVote,
       // If wallet could vote when this was open.
       couldVote,
-      // Can vote if proposal is open, has not already voted, or revoting is
-      // allowed, and had voting power when proposal was created.
-      canVote:
-        proposal.status === Status.Open &&
-        (proposal.allow_revoting || !walletVote) &&
-        couldVote,
+      canVote,
       votingPowerPercent:
         (totalVotingPowerWhenProposalCreated === 0
           ? 0

@@ -212,6 +212,9 @@ const InnerProposalStatusAndInfo = ({
       : []),
   ]
 
+  const proposalCompleted =
+    proposal.status !== Status.Open && proposal.status !== Status.Passed
+
   const status =
     proposal.status === Status.Open
       ? thresholdReached && (!quorum || quorumReached)
@@ -221,7 +224,8 @@ const InnerProposalStatusAndInfo = ({
         : thresholdReached && quorum && !quorumReached
         ? t('info.proposalStatus.willFailBadQuorum')
         : t('info.proposalStatus.willFail')
-      : t('info.proposalStatus.notOpen', {
+      : proposalCompleted
+      ? t('info.proposalStatus.notOpen', {
           turnoutPercent: formatPercentOf100(turnoutPercent),
           turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
           extra:
@@ -232,6 +236,7 @@ const InnerProposalStatusAndInfo = ({
               ? ` ${t('info.proposalDepositWillBeRefunded')}`
               : '',
         })
+      : t('info.proposalStatus.completedAndOpen')
 
   const executeProposal = (
     proposalModule.version === ContractVersion.V1 ? useExecuteV1 : useExecuteV2
