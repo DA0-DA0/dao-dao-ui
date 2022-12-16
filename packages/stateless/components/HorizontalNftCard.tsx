@@ -42,7 +42,7 @@ export const HorizontalNftCard = forwardRef<
   // Load image in background so we can listen for loading complete.
   const [loadedImageSrc, setLoadedImgSrc] = useState<string>()
   useEffect(() => {
-    if (!imageUrl || imageUrl === loadedImageSrc) {
+    if (!imageUrl || loadedImageSrc === normalizeNftImageUrl(imageUrl)) {
       return
     }
 
