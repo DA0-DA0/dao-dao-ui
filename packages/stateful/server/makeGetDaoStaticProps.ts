@@ -29,6 +29,7 @@ import {
   processError,
   validateContractAddress,
 } from '@dao-dao/utils'
+import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -204,7 +205,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       if (config.image_url) {
         try {
           const response = await axios.get(
-            `https://fac.withoutdoing.com/${config.image_url}`,
+            FAST_AVERAGE_COLOR_API_TEMPLATE.replace('URL', config.image_url),
             { responseType: 'text' }
           )
 
