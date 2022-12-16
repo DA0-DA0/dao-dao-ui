@@ -76,6 +76,10 @@ export interface InstantiateNftCollectionOptions {
 export interface ChooseExistingNftCollectionOptions {
   chooseLoading: boolean
   onChooseExistingContract: () => Promise<void>
+  existingCollections: {
+    address: string
+    name: string
+  }[]
 }
 
 export interface MintNftOptions {

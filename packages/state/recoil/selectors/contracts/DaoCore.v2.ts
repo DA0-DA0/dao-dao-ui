@@ -2,6 +2,7 @@ import { selectorFamily, waitForAll } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
+import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
   ActiveProposalModulesResponse,
   AdminNominationResponse,
@@ -23,7 +24,7 @@ import {
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 
-import { DaoVotingCw20StakedSelectors } from '.'
+import { Cw721BaseSelectors, DaoVotingCw20StakedSelectors } from '.'
 import {
   DaoCoreV2Client,
   DaoCoreV2QueryClient,
@@ -613,6 +614,60 @@ export const allCw721TokenListSelector = selectorFamily<
       }
 
       return tokenList
+    },
+})
+
+// Get all CW721 collections in the DAO's list, filtered by the DAO being the
+// minter.
+export const allCw721CollectionsWithDaoAsMinterSelector = selectorFamily<
+  ({ address: string } & ContractInfoResponse)[],
+  QueryClientParams
+>({
+  key: 'daoCoreV2AllCw721CollectionsWithDaoAsMinter',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const tokenList: Cw721TokenListResponse = get(
+        allCw721TokenListSelector(queryClientParams)
+      )
+      const minterResponses = get(
+        waitForAll(
+          tokenList.map((token) =>
+            Cw721BaseSelectors.minterSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
+              contractAddress: token,
+              params: [],
+            })
+          )
+        )
+      )
+
+      // Filter out collections that don't have the DAO as the minter.
+      const collectionsWithDaoAsMinter = tokenList.filter(
+        (_, idx) =>
+          minterResponses[idx].minter === queryClientParams.contractAddress
+      )
+
+      const collectionInfos = get(
+        waitForAll(
+          collectionsWithDaoAsMinter.map((collection) =>
+            Cw721BaseSelectors.contractInfoSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+
+              contractAddress: collection,
+              params: [],
+            })
+          )
+        )
+      )
+
+      return collectionsWithDaoAsMinter.map((collection, idx) => ({
+        address: collection,
+        ...collectionInfos[idx],
+      }))
     },
 })
 
