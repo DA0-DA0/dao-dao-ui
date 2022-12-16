@@ -6,7 +6,6 @@ import {
 } from '@dao-dao/storybook'
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 
-import { Trans } from '../../../components'
 import { ChooseExistingTokenSwap } from './ChooseExistingTokenSwap'
 import { PerformTokenSwapData } from './types'
 
@@ -50,6 +49,5 @@ Default.args = {
   options: {
     chooseLoading: false,
     onChooseExistingContract: async () => alert('choose'),
-    Trans,
   },
 }

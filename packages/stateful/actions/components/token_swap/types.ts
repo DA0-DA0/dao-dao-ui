@@ -73,5 +73,4 @@ export interface ExistingTokenSwapOptions {
 export interface ChooseExistingTokenSwapOptions {
   chooseLoading: boolean
   onChooseExistingContract: () => Promise<void>
-  Trans: ComponentType<TransProps>
 }

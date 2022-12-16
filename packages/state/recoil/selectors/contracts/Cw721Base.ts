@@ -161,13 +161,13 @@ export const tokensSelector = selectorFamily<
       return await client.tokens(...params)
     },
 })
-export const allTokensSelector = selectorFamily<
+export const _allTokensSelector = selectorFamily<
   AllTokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allTokens']>
   }
 >({
-  key: 'cw721BaseAllTokens',
+  key: 'cw721Base_AllTokens',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -224,6 +224,45 @@ export const cw721BaseAllTokensForOwnerSelector = selectorFamily<
 
         // If we have less than the limit of items, we've exhausted them.
         if (response.length < ALL_TOKENS_FOR_OWNER_LIMIT) {
+          break
+        }
+      }
+
+      return tokens
+    },
+})
+
+const ALL_TOKENS_LIMIT = 30
+export const allTokensSelector = selectorFamily<
+  AllTokensResponse['tokens'],
+  QueryClientParams
+>({
+  key: 'cw721BaseAllTokens',
+  get:
+    ({ ...queryClientParams }) =>
+    async ({ get }) => {
+      const tokens: AllTokensResponse['tokens'] = []
+      while (true) {
+        const response = await get(
+          _allTokensSelector({
+            ...queryClientParams,
+            params: [
+              {
+                startAfter: tokens[tokens.length - 1],
+                limit: ALL_TOKENS_LIMIT,
+              },
+            ],
+          })
+        )?.tokens
+
+        if (!response?.length) {
+          break
+        }
+
+        tokens.push(...response)
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < ALL_TOKENS_LIMIT) {
           break
         }
       }

@@ -185,6 +185,7 @@ export const Wallet = ({
                   return (
                     <SuspenseLoader key={index} fallback={<ActionCardLoader />}>
                       <Component
+                        addAction={append}
                         allActionsWithData={proposalActionData}
                         data={actionData.data}
                         errors={errors.actionData?.[index]?.data || {}}

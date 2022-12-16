@@ -18,22 +18,14 @@ export const ChooseExistingTokenSwap: ActionComponent<
 > = ({
   fieldNamePrefix,
   errors,
-  options: { chooseLoading, onChooseExistingContract, Trans },
+  options: { chooseLoading, onChooseExistingContract },
 }) => {
   const { t } = useTranslation()
   const { register } = useFormContext()
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="max-w-prose">
-        <Trans i18nKey="form.tokenSwapExistingInstructions">
-          In this step, you will choose a token swap that you (or the
-          counterparty) has already initiated. After you fund a swap, you can
-          withdraw the tokens you funded unless (or until) the counterparty has
-          paid. Likewise, the counterparty can withdraw the tokens they funded
-          until you pay.
-        </Trans>
-      </p>
+      <p className="max-w-prose">{t('form.tokenSwapExistingInstructions')}</p>
 
       <div className="space-y-2">
         <InputLabel name={t('form.existingTokenSwapContract')} />

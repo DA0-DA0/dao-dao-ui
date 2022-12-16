@@ -2,11 +2,17 @@ import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useRecoilCallback } from 'recoil'
 
-import { CwTokenSwapSelectors } from '@dao-dao/state/recoil'
+import {
+  CwTokenSwapSelectors,
+  eitherTokenInfoSelector,
+} from '@dao-dao/state/recoil'
 import { ActionComponent } from '@dao-dao/types'
-import { objectMatchesStructure, processError } from '@dao-dao/utils'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  objectMatchesStructure,
+  processError,
+} from '@dao-dao/utils'
 
-import { Trans } from '../../../components'
 import { ChooseExistingTokenSwap as StatelessChooseExistingTokenSwap } from '../../components/token_swap'
 import { useActionOptions } from '../../react'
 
@@ -122,6 +128,31 @@ export const ChooseExistingTokenSwap: ActionComponent<
             )
           }
 
+          // Get token info so we can get decimals.
+          const selfPartyTokenInfo = await snapshot.getPromise(
+            eitherTokenInfoSelector({
+              chainId,
+              type: 'cw20' in selfParty.promise ? 'cw20' : 'native',
+              denomOrAddress:
+                'cw20' in selfParty.promise
+                  ? selfParty.promise.cw20.contract_addr
+                  : selfParty.promise.native.denom,
+            })
+          )
+
+          // Set self party info based on status.
+          setValue(props.fieldNamePrefix + 'selfParty', {
+            type: 'cw20' in selfParty.promise ? 'cw20' : 'native',
+            denomOrAddress: selfPartyTokenInfo.denomOrAddress,
+            amount: convertMicroDenomToDenomWithDecimals(
+              'cw20' in selfParty.promise
+                ? selfParty.promise.cw20.amount
+                : selfParty.promise.native.amount,
+              selfPartyTokenInfo.decimals
+            ),
+            decimals: selfPartyTokenInfo.decimals,
+          })
+
           // Indicate contract is ready.
           setValue(props.fieldNamePrefix + 'contractChosen', true, {
             shouldValidate: true,
@@ -139,14 +170,17 @@ export const ChooseExistingTokenSwap: ActionComponent<
         }
       },
     [
-      trigger,
-      props.fieldNamePrefix,
-      setValue,
-      tokenSwapContractAddress,
-      setError,
       clearErrors,
-      setChooseLoading,
+      props.fieldNamePrefix,
+      trigger,
+      tokenSwapContractAddress,
+      address,
       action,
+      chainId,
+      setValue,
+      t,
+      context.type,
+      setError,
     ]
   )
 
@@ -156,7 +190,6 @@ export const ChooseExistingTokenSwap: ActionComponent<
       options={{
         chooseLoading,
         onChooseExistingContract,
-        Trans,
       }}
     />
   )

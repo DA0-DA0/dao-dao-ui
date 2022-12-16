@@ -207,6 +207,7 @@ export const NewProposal = ({
             return (
               <SuspenseLoader key={id} fallback={<ActionCardLoader />}>
                 <Component
+                  addAction={appendAction}
                   allActionsWithData={actionDataFields}
                   data={actionData.data}
                   errors={errors.actionData?.[index]?.data || {}}

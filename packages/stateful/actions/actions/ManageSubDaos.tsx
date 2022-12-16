@@ -20,6 +20,7 @@ import {
   ManageSubDaosData,
   ManageSubDaosComponent as StatelessManageSubDaosComponent,
 } from '../components/ManageSubDaos'
+import { useActionOptions } from '../react'
 
 const useDefaults: UseDefaults<ManageSubDaosData> = () => ({
   toAdd: [
@@ -29,6 +30,29 @@ const useDefaults: UseDefaults<ManageSubDaosData> = () => ({
   ],
   toRemove: [],
 })
+
+const Component: ActionComponent = (props) => {
+  const { address } = useActionOptions()
+
+  const subDaos = useRecoilValue(
+    DaoCoreV2Selectors.allSubDaoConfigsSelector({
+      contractAddress: address,
+    })
+  )
+
+  return (
+    <StatelessManageSubDaosComponent
+      {...props}
+      options={{
+        currentSubDaos: subDaos.map(({ address, name }) => ({
+          address,
+          name,
+        })),
+        ProfileDisplay,
+      }}
+    />
+  )
+}
 
 export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
   t,
@@ -91,27 +115,6 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
 
       return { match: false }
     }, [msg])
-
-  const Component: ActionComponent = (props) => {
-    const subDaos = useRecoilValue(
-      DaoCoreV2Selectors.allSubDaoConfigsSelector({
-        contractAddress: address,
-      })
-    )
-
-    return (
-      <StatelessManageSubDaosComponent
-        {...props}
-        options={{
-          currentSubDaos: subDaos.map(({ address, name }) => ({
-            address,
-            name,
-          })),
-          ProfileDisplay,
-        }}
-      />
-    )
-  }
 
   return {
     key: CoreActionKey.ManageSubDaos,
