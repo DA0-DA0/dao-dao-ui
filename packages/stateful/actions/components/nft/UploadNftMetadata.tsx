@@ -14,6 +14,8 @@ import {
 import { ActionComponent } from '@dao-dao/types'
 import { processError, uploadNft, validateRequired } from '@dao-dao/utils'
 
+import { Trans } from '../../../components/Trans'
+
 // Form displayed when the user is uploading NFT metadata.
 export const UploadNftMetadata: ActionComponent = ({
   fieldNamePrefix,
@@ -58,6 +60,7 @@ export const UploadNftMetadata: ActionComponent = ({
 
       <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
         <ImageDropInput
+          Trans={Trans}
           className="aspect-square w-full shrink-0 sm:h-40 sm:w-40"
           onSelect={setFile}
         />

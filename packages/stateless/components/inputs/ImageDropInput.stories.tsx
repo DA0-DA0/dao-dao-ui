@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { Trans } from '@dao-dao/stateful'
+
 import { ImageDropInput } from './ImageDropInput'
 
 export default {
@@ -15,4 +17,5 @@ const Template: ComponentStory<typeof ImageDropInput> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   onSelect: (file) => alert('onSelect: ' + file.name),
+  Trans,
 }
