@@ -82,7 +82,7 @@ export const HorizontalNftCard = forwardRef<
           }}
         ></div>
       ) : (
-        <div className="flex aspect-square items-center justify-center">
+        <div className="flex aspect-square items-center justify-center sm:h-36 sm:w-36">
           <ImageNotSupported className="!h-14 !w-14 text-icon-tertiary" />
         </div>
       )}
