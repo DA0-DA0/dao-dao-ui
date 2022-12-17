@@ -10,7 +10,7 @@ import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
 import { SuspenseLoader } from '../../../../../components'
-import { useVotingModule } from '../../../../../hooks'
+import { useMembership } from '../../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../../react'
 import {
   useLoadingProposal,
@@ -50,12 +50,14 @@ const InnerProposalLine = ({
 }) => {
   const {
     coreAddress,
+    chainId,
     proposalModule: { prefix: proposalPrefix },
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false } = useMembership({
+    coreAddress,
+    chainId,
   })
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 

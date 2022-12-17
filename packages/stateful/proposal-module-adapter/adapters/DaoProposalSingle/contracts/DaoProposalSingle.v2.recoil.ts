@@ -11,7 +11,7 @@ import { WithChainId } from '@dao-dao/types'
 import {
   ListVotesResponse,
   VoteResponse,
-} from '@dao-dao/types/contracts/CwdProposalSingle.common'
+} from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   ConfigResponse,
   DaoResponse,

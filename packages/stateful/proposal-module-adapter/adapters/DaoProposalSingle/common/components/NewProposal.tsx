@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
 import {
-  CwdCoreV2Selectors,
+  DaoCoreV2Selectors,
   blockHeightSelector,
   blocksPerYearSelector,
   cosmWasmClientForChainSelector,
@@ -65,7 +65,7 @@ export const NewProposal = ({
   // which is refreshed periodically, so use a loadable to avoid unnecessary
   // re-renders.
   const pauseInfo = useCachedLoadable(
-    CwdCoreV2Selectors.pauseInfoSelector({
+    DaoCoreV2Selectors.pauseInfoSelector({
       contractAddress: coreAddress,
       params: [],
     })

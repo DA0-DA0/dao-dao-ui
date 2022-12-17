@@ -9,10 +9,6 @@ import {
 } from '@dao-dao/state'
 import { WithChainId } from '@dao-dao/types'
 import {
-  ListVotesResponse,
-  VoteResponse,
-} from '@dao-dao/types/contracts/CwdProposalSingle.common'
-import {
   ConfigResponse,
   InfoResponse,
   ListProposalsResponse,
@@ -22,6 +18,10 @@ import {
   ReverseProposalsResponse,
   VoteHooksResponse,
 } from '@dao-dao/types/contracts/CwProposalSingle.v1'
+import {
+  ListVotesResponse,
+  VoteResponse,
+} from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import {
   CwProposalSingleV1Client,
