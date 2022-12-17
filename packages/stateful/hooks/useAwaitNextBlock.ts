@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
 
 import {
   cosmWasmClientForChainSelector,
@@ -9,10 +9,17 @@ import {
 // Returns a function that polls the chain's block height and resolves once it
 // increments.
 export const useAwaitNextBlock = (chainId?: string) => {
-  const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))
+  const clientLoadable = useRecoilValueLoadable(
+    cosmWasmClientForChainSelector(chainId)
+  )
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
 
   const doAfterNextBlock = useCallback(async () => {
+    if (clientLoadable.state !== 'hasValue') {
+      return
+    }
+    const client = clientLoadable.contents
+
     let currentBlockHeight = await client.getHeight()
     // Store what block height we want to wait for. Wait for one past next block
     // to ensure one whole block starts and finishes. If we wait for the next
@@ -27,7 +34,7 @@ export const useAwaitNextBlock = (chainId?: string) => {
 
     // Refresh global block height.
     setRefreshBlockHeight((id) => id + 1)
-  }, [client, setRefreshBlockHeight])
+  }, [clientLoadable, setRefreshBlockHeight])
 
   return doAfterNextBlock
 }

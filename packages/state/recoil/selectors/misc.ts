@@ -14,7 +14,8 @@ export const averageColorSelector = selectorFamily({
       const response = await fetch(
         FAST_AVERAGE_COLOR_API_TEMPLATE.replace('URL', url)
       )
-      const color = await response.text()
+      // Trim newline at the end.
+      const color = (await response.text()).trim()
       // Validate color format.
       if (!color.startsWith('#')) {
         return undefined

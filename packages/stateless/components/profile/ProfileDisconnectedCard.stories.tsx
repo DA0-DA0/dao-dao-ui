@@ -8,13 +8,14 @@ export default {
   component: ProfileDisconnectedCard,
 } as ComponentMeta<typeof ProfileDisconnectedCard>
 
-const Template: ComponentStory<typeof ProfileDisconnectedCard> = (_args) => (
+const Template: ComponentStory<typeof ProfileDisconnectedCard> = (args) => (
   <div className="max-w-xs">
-    <ProfileDisconnectedCard />
+    <ProfileDisconnectedCard {...args} />
   </div>
 )
 
 export const Default = Template.bind({})
+Default.args = {}
 Default.parameters = {
   design: {
     type: 'figma',

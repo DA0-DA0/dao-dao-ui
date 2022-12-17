@@ -3,17 +3,29 @@ import {
   PaymentsOutlined,
   SensorsOff,
 } from '@mui/icons-material'
+import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProfileImage } from './ProfileImage'
 
-export const ProfileDisconnectedCard = () => {
+export interface ProfileDisconnectedCardProps {
+  className?: string
+}
+
+export const ProfileDisconnectedCard = ({
+  className,
+}: ProfileDisconnectedCardProps) => {
   const { t } = useTranslation()
   const [cyclopsMode, setCyclopsMode] = useState(false)
 
   return (
-    <div className="relative rounded-lg border border-border-primary">
+    <div
+      className={clsx(
+        'relative rounded-lg border border-border-primary',
+        className
+      )}
+    >
       <div className="p-6">
         <div className="flex flex-col items-center justify-center pt-4">
           {cyclopsMode ? (

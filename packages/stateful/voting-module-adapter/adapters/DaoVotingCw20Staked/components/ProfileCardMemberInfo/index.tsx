@@ -39,7 +39,7 @@ export const ProfileCardMemberInfo = ({
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
-  const { name: daoName } = useDaoInfoContext()
+  const { name: daoName, chainId } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletInfo()
 
@@ -142,8 +142,16 @@ export const ProfileCardMemberInfo = ({
     t,
   ])
 
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
-  const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
+  const blockHeightLoadable = useCachedLoadable(
+    blockHeightSelector({
+      chainId,
+    })
+  )
+  const blocksPerYearLoadable = useCachedLoadable(
+    blocksPerYearSelector({
+      chainId,
+    })
+  )
 
   const unstakingTasks: UnstakingTask[] = [
     ...claimsPending.map(({ amount, release_at }) => ({
@@ -154,13 +162,16 @@ export const ProfileCardMemberInfo = ({
       ),
       tokenSymbol: governanceTokenInfo.symbol,
       tokenDecimals: governanceTokenInfo.decimals,
-      date: convertExpirationToDate(
-        blocksPerYear,
-        release_at,
-        blockHeightLoadable.state === 'hasValue'
-          ? blockHeightLoadable.contents
-          : 0
-      ),
+      date:
+        blocksPerYearLoadable.state === 'hasValue'
+          ? convertExpirationToDate(
+              blocksPerYearLoadable.contents,
+              release_at,
+              blockHeightLoadable.state === 'hasValue'
+                ? blockHeightLoadable.contents
+                : 0
+            )
+          : undefined,
     })),
     ...claimsAvailable.map(({ amount, release_at }) => ({
       status: UnstakingTaskStatus.ReadyToClaim,
@@ -170,13 +181,16 @@ export const ProfileCardMemberInfo = ({
       ),
       tokenSymbol: governanceTokenInfo.symbol,
       tokenDecimals: governanceTokenInfo.decimals,
-      date: convertExpirationToDate(
-        blocksPerYear,
-        release_at,
-        blockHeightLoadable.state === 'hasValue'
-          ? blockHeightLoadable.contents
-          : 0
-      ),
+      date:
+        blocksPerYearLoadable.state === 'hasValue'
+          ? convertExpirationToDate(
+              blocksPerYearLoadable.contents,
+              release_at,
+              blockHeightLoadable.state === 'hasValue'
+                ? blockHeightLoadable.contents
+                : 0
+            )
+          : undefined,
     })),
   ]
 
@@ -236,8 +250,12 @@ export const ProfileCardMemberInfo = ({
         tokenDecimals={governanceTokenInfo.decimals}
         tokenSymbol={governanceTokenInfo.symbol}
         unstakingDurationSeconds={
-          (unstakingDuration &&
-            durationToSeconds(blocksPerYear, unstakingDuration)) ||
+          (blocksPerYearLoadable.state === 'hasValue' &&
+            unstakingDuration &&
+            durationToSeconds(
+              blocksPerYearLoadable.contents,
+              unstakingDuration
+            )) ||
           undefined
         }
         unstakingTasks={unstakingTasks}

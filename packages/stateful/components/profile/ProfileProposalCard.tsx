@@ -4,6 +4,7 @@ import { waitForAll } from 'recoil'
 import {
   Loader,
   ProfileCantVoteCard,
+  ProfileDisconnectedCard,
   ProfileVoteCard,
   ProfileVotedCard,
   useAppLayoutContext,
@@ -18,6 +19,7 @@ import {
   useProposalModuleAdapter,
 } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
+import { SuspenseLoader } from '../SuspenseLoader'
 
 export interface ProfileProposalCardProps {
   onVoteSuccess: () => void | Promise<void>
@@ -86,7 +88,7 @@ export const ProfileProposalCard = ({
   // here and there is no wallet connected, something is probably just loading,
   // maybe the wallet is reconnecting. It is safe to return a loader.
   if (!loadingWalletVoteInfo || loadingWalletVoteInfo.loading) {
-    return <Loader />
+    return <ProfileDisconnectedCard className="animate-pulse" />
   }
 
   const { vote, couldVote, canVote, votingPowerPercent } =
@@ -125,14 +127,16 @@ export const ProfileProposalCard = ({
       {...commonProps}
       isMember={isMember}
       membershipInfo={
-        <ProfileCardMemberInfo
-          cantVoteOnProposal
-          deposit={
-            maxProposalModuleDeposit > 0
-              ? maxProposalModuleDeposit.toString()
-              : undefined
-          }
-        />
+        <SuspenseLoader fallback={<Loader size={24} />}>
+          <ProfileCardMemberInfo
+            cantVoteOnProposal
+            deposit={
+              maxProposalModuleDeposit > 0
+                ? maxProposalModuleDeposit.toString()
+                : undefined
+            }
+          />
+        </SuspenseLoader>
       }
     />
   )

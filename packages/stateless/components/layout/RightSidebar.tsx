@@ -54,6 +54,7 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
         {wallet}
 
         <div className="mt-1">
+          {/* Content gets inserted here when the portal <RightSidebarContent> below is used. */}
           <div ref={setContentRef}></div>
 
           <div className="mt-7">
