@@ -28,9 +28,10 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
+  WalletVoteInfo,
 } from '@dao-dao/types'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
-import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { Status, Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   CHAIN_TXN_URL_PREFIX,
@@ -53,12 +54,15 @@ import {
   useExecute as useExecuteV2,
 } from '../contracts/DaoProposalSingle.v2.hooks'
 import {
+  useCastVote,
   useLoadingDepositInfo,
   useLoadingProposal,
   useLoadingProposalExecutionTxHash,
   useLoadingTimestampInfo,
   useLoadingVotesInfo,
+  useLoadingWalletVoteInfo,
   useProposalRefreshers,
+  useVoteOptions,
 } from '../hooks'
 import { TimestampInfo, VotesInfo } from '../types'
 
@@ -69,6 +73,7 @@ export const ProposalStatusAndInfo = (
   const loadingVotesInfo = useLoadingVotesInfo()
   const loadingTimestampInfo = useLoadingTimestampInfo()
   const loadingDepositInfo = useLoadingDepositInfo()
+  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
   return (
     <SuspenseLoader
@@ -77,19 +82,22 @@ export const ProposalStatusAndInfo = (
         loadingProposal.loading ||
         loadingVotesInfo.loading ||
         loadingTimestampInfo.loading ||
-        loadingDepositInfo.loading
+        loadingDepositInfo.loading ||
+        loadingWalletVoteInfo?.loading
       }
     >
       {!loadingProposal.loading &&
         !loadingVotesInfo.loading &&
         !loadingTimestampInfo.loading &&
-        !loadingDepositInfo.loading && (
+        !loadingDepositInfo.loading &&
+        !loadingWalletVoteInfo?.loading && (
           <InnerProposalStatusAndInfo
             {...props}
             depositInfo={loadingDepositInfo.data}
             proposal={loadingProposal.data}
             timestampInfo={loadingTimestampInfo.data}
             votesInfo={loadingVotesInfo.data}
+            walletVoteInfo={loadingWalletVoteInfo?.data}
           />
         )}
     </SuspenseLoader>
@@ -107,6 +115,8 @@ const InnerProposalStatusAndInfo = ({
   },
   timestampInfo,
   depositInfo,
+  walletVoteInfo,
+  onVoteSuccess,
   onExecuteSuccess,
   onCloseSuccess,
   ...props
@@ -115,6 +125,7 @@ const InnerProposalStatusAndInfo = ({
   votesInfo: VotesInfo
   timestampInfo: TimestampInfo | undefined
   depositInfo: CheckedDepositInfo | undefined
+  walletVoteInfo: WalletVoteInfo<Vote> | undefined
 }) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress } = useDaoInfoContext()
@@ -133,7 +144,7 @@ const InnerProposalStatusAndInfo = ({
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
-  const info: ProposalStatusAndInfoProps['info'] = [
+  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
     {
       Icon: ({ className }) => (
         <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
@@ -172,7 +183,7 @@ const InnerProposalStatusAndInfo = ({
             label: t('title.revoting'),
             Value: (props) => <p {...props}>{t('info.enabled')}</p>,
           },
-        ] as ProposalStatusAndInfoProps['info'])
+        ] as ProposalStatusAndInfoProps<Vote>['info'])
       : []),
     ...(timestampInfo
       ? ([
@@ -181,7 +192,7 @@ const InnerProposalStatusAndInfo = ({
             label: timestampInfo.display.label,
             Value: (props) => <p {...props}>{timestampInfo.display.content}</p>,
           },
-        ] as ProposalStatusAndInfoProps['info'])
+        ] as ProposalStatusAndInfoProps<Vote>['info'])
       : []),
     ...(loadingExecutionTxHash &&
     !loadingExecutionTxHash.loading &&
@@ -208,7 +219,7 @@ const InnerProposalStatusAndInfo = ({
               </div>
             ),
           },
-        ] as ProposalStatusAndInfoProps['info'])
+        ] as ProposalStatusAndInfoProps<Vote>['info'])
       : []),
   ]
 
@@ -232,6 +243,9 @@ const InnerProposalStatusAndInfo = ({
               ? ` ${t('info.proposalDepositWillBeRefunded')}`
               : '',
         })
+
+  const voteOptions = useVoteOptions()
+  const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
   const executeProposal = (
     proposalModule.version === ContractVersion.V1 ? useExecuteV1 : useExecuteV2
@@ -340,6 +354,16 @@ const InnerProposalStatusAndInfo = ({
       }
       info={info}
       status={status}
+      vote={
+        walletVoteInfo?.canVote
+          ? {
+              loading: castingVote,
+              currentVote: walletVoteInfo.vote,
+              onCastVote: castVote,
+              options: voteOptions,
+            }
+          : undefined
+      }
     />
   )
 }
@@ -353,7 +377,7 @@ const InnerProposalStatusAndInfoLoader = (
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
     <p className={clsx('animate-pulse', className)}>...</p>
   )
-  const info: ProposalStatusAndInfoProps['info'] = [
+  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
     {
       Icon: ({ className }) => (
         <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />

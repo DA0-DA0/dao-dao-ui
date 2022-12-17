@@ -63,6 +63,7 @@
     "numProposalsInInbox_zero": "Proposal Inbox",
     "openInChainExplorer": "Open in chain explorer",
     "openInDestination": "Open in {{destination}}",
+    "openSidebarToVote": "Open sidebar to vote",
     "preview": "Preview",
     "proposeUpgrade": "Propose upgrade",
     "publish": "Publish",
