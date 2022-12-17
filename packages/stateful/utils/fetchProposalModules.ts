@@ -1,6 +1,6 @@
 import {
   CwCoreV1QueryClient,
-  CwdCoreV2QueryClient,
+  DaoCoreV2QueryClient,
 } from '@dao-dao/state/contracts'
 import { queryIndexer } from '@dao-dao/state/indexer'
 import {
@@ -9,7 +9,7 @@ import {
   ProposalModule,
 } from '@dao-dao/types'
 import { InfoResponse } from '@dao-dao/types/contracts/common'
-import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/CwdCore.v2'
+import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   cosmWasmClientRouter,
   getRpcForChainId,
@@ -126,7 +126,7 @@ export const fetchProposalModulesWithInfoFromChain = async (
 
   const getV2ProposalModules = async () =>
     (
-      await new CwdCoreV2QueryClient(
+      await new DaoCoreV2QueryClient(
         cwClient,
         coreAddress
       ).activeProposalModules({

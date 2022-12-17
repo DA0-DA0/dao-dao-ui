@@ -3,7 +3,7 @@ import { IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily, waitForAll } from 'recoil'
 
 import {
-  CwdCoreV2Selectors,
+  DaoCoreV2Selectors,
   blockHeightTimestampSafeSelector,
   cosmWasmClientForChainSelector,
   nativeBalancesSelector,
@@ -47,7 +47,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
         nativeBalancesSelector({ address: coreAddress, chainId })
       )
       const cw20s = get(
-        CwdCoreV2Selectors.allCw20BalancesAndInfosSelector({
+        DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
           contractAddress: coreAddress,
           chainId,
           governanceTokenAddress: cw20GovernanceTokenAddress,

@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { waitForAll } from 'recoil'
 
 import {
+  Loader,
   ProfileCantVoteCard,
   ProfileVoteCard,
   ProfileVotedCard,
@@ -35,7 +36,7 @@ export const ProfileProposalCard = ({
   const { updateProfileNft } = useAppLayoutContext()
 
   const {
-    hooks: { useProfileVoteCardOptions, useWalletVoteInfo, useCastVote },
+    hooks: { useProfileVoteCardOptions, useLoadingWalletVoteInfo, useCastVote },
     components: { ProposalWalletVote },
   } = useProposalModuleAdapter()
   const {
@@ -77,7 +78,19 @@ export const ProfileProposalCard = ({
   })
 
   const options = useProfileVoteCardOptions()
-  const { vote, couldVote, canVote, votingPowerPercent } = useWalletVoteInfo()
+  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
+  const { castVote, castingVote } = useCastVote(onVoteSuccess)
+
+  // This card should only display when a wallet is connected. The wallet vote
+  // info hook returns undefined when there is no wallet connected. If we are
+  // here and there is no wallet connected, something is probably just loading,
+  // maybe the wallet is reconnecting. It is safe to return a loader.
+  if (!loadingWalletVoteInfo || loadingWalletVoteInfo.loading) {
+    return <Loader />
+  }
+
+  const { vote, couldVote, canVote, votingPowerPercent } =
+    loadingWalletVoteInfo.data
 
   const commonProps = {
     votingPower: votingPowerPercent,
@@ -86,8 +99,6 @@ export const ProfileProposalCard = ({
     showUpdateProfileNft: updateProfileNft.toggle,
     updateProfileName,
   }
-
-  const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
   return canVote ? (
     <ProfileVoteCard

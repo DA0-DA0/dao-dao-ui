@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { waitForAll } from 'recoil'
 
-import { CwdCoreV2Selectors } from '@dao-dao/state/recoil'
+import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   loadableToLoadingData,
@@ -55,7 +55,7 @@ export const PayrollTab = () => {
         ? undefined
         : waitForAll(
             loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
-              CwdCoreV2Selectors.votingPowerAtHeightSelector({
+              DaoCoreV2Selectors.votingPowerAtHeightSelector({
                 contractAddress: coreAddress,
                 chainId,
                 params: [

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
-  CwdCoreV2Selectors,
+  DaoCoreV2Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state/recoil'
 import {
@@ -40,7 +40,7 @@ export const NewSurveyForm = () => {
     useCw20GovernanceTokenInfoResponseIfExists() ?? {}
 
   const cw20TokenInfos = useRecoilValue(
-    CwdCoreV2Selectors.allCw20InfosSelector({
+    DaoCoreV2Selectors.allCw20InfosSelector({
       contractAddress: coreAddress,
       chainId,
       governanceTokenAddress,

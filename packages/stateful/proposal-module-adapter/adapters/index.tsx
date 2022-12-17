@@ -1,1 +1,1 @@
-export * from './CwdProposalSingle'
+export * from './DaoProposalSingle'

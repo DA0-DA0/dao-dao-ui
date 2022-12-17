@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { CwdCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { WrenchEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -18,38 +18,40 @@ import {
   RemoveItemData,
   RemoveItemComponent as StatelessRemoveItemComponent,
 } from '../components/RemoveItem'
+import { useActionOptions } from '../react'
 
 const useDefaults: UseDefaults<RemoveItemData> = () => ({
   key: '',
 })
 
+const Component: ActionComponent<undefined, RemoveItemData> = (props) => {
+  const { address, chainId } = useActionOptions()
+
+  const existingKeys = useRecoilValue(
+    DaoCoreV2Selectors.listAllItemsSelector({
+      contractAddress: address,
+      chainId,
+    })
+  )
+
+  return (
+    <StatelessRemoveItemComponent
+      {...props}
+      options={{
+        existingKeys,
+      }}
+    />
+  )
+}
+
 export const makeRemoveItemAction: ActionMaker<RemoveItemData> = ({
   t,
   address,
-  chainId,
   context,
 }) => {
   // Can only remove items in a DAO.
   if (context.type !== ActionOptionsContextType.Dao) {
     return null
-  }
-
-  const Component: ActionComponent<undefined, RemoveItemData> = (props) => {
-    const existingKeys = useRecoilValue(
-      CwdCoreV2Selectors.listAllItemsSelector({
-        contractAddress: address,
-        chainId,
-      })
-    )
-
-    return (
-      <StatelessRemoveItemComponent
-        {...props}
-        options={{
-          existingKeys,
-        }}
-      />
-    )
   }
 
   const useTransformToCosmos: UseTransformToCosmos<RemoveItemData> = () =>

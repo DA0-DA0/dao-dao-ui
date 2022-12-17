@@ -21,7 +21,7 @@ import {
   ConfigResponse as ConfigV2Response,
   DumpStateResponse,
   ProposalModuleWithInfo,
-} from '@dao-dao/types/contracts/CwdCore.v2'
+} from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CHAIN_PREFIX_ID_MAP,
   CI,
@@ -35,6 +35,7 @@ import {
   processError,
   validateContractAddress,
 } from '@dao-dao/utils'
+import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -176,10 +177,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
       // Get DAO accent color.
       let accentColor: string | null = null
-      if (config.imageUrl) {
+      if (config.image_url) {
         try {
           const response = await axios.get(
-            `https://fac.withoutdoing.com/${config.imageUrl}`,
+            FAST_AVERAGE_COLOR_API_TEMPLATE.replace('URL', config.image_url),
             { responseType: 'text' }
           )
 

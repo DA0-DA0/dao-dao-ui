@@ -4,7 +4,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  CwdCoreV2Selectors,
+  DaoCoreV2Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state'
 import {
@@ -37,89 +37,88 @@ import {
   SpendData,
   SpendComponent as StatelessSpendComponent,
 } from '../components/Spend'
+import { useActionOptions } from '../react'
 
-export const makeSpendAction: ActionMaker<SpendData> = ({
-  t,
-  address,
-  context,
-}) => {
-  // Reused selectors in Component and useTransformToCosmos. Undefined when
-  // loading.
-  const useCw20BalancesAndInfos = () => {
-    // Get CW20 governance token address from voting module adapter if exists,
-    // so we can make sure to load it with all cw20 balances, even if it has not
-    // been explicitly added to the DAO.
-    const { governanceTokenAddress } =
-      useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+// Reused selectors in Component and useTransformToCosmos. Undefined when
+// loading.
+const useCw20BalancesAndInfos = () => {
+  const { context, address } = useActionOptions()
 
-    const cw20BalancesAndInfosLoadable = useCachedLoadable(
+  // Get CW20 governance token address from voting module adapter if exists,
+  // so we can make sure to load it with all cw20 balances, even if it has not
+  // been explicitly added to the DAO.
+  const { governanceTokenAddress } =
+    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+
+  const cw20BalancesAndInfosLoadable = useCachedLoadable(
+    context.type === ActionOptionsContextType.Dao
+      ? // Get DAO's cw20 balances and infos.
+        DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
+          contractAddress: address,
+          governanceTokenAddress,
+        })
+      : undefined
+  )
+
+  const cw20BalancesAndInfos = useMemo(
+    () =>
       context.type === ActionOptionsContextType.Dao
-        ? // Get DAO's cw20 balances and infos.
-          CwdCoreV2Selectors.allCw20BalancesAndInfosSelector({
-            contractAddress: address,
-            governanceTokenAddress,
-          })
-        : undefined
-    )
+        ? cw20BalancesAndInfosLoadable.state === 'hasValue'
+          ? cw20BalancesAndInfosLoadable.contents.map(({ addr, ...rest }) => ({
+              address: addr,
+              ...rest,
+            }))
+          : undefined
+        : // If not a DAO, just return empty array.
+          [],
+    [
+      context.type,
+      cw20BalancesAndInfosLoadable.contents,
+      cw20BalancesAndInfosLoadable.state,
+    ]
+  )
 
-    const cw20BalancesAndInfos = useMemo(
-      () =>
-        context.type === ActionOptionsContextType.Dao
-          ? cw20BalancesAndInfosLoadable.state === 'hasValue'
-            ? cw20BalancesAndInfosLoadable.contents.map(
-                ({ addr, ...rest }) => ({
-                  address: addr,
-                  ...rest,
-                })
-              )
-            : undefined
-          : // If not a DAO, just return empty array.
-            [],
-      [
-        cw20BalancesAndInfosLoadable.contents,
-        cw20BalancesAndInfosLoadable.state,
-      ]
-    )
+  return cw20BalancesAndInfos
+}
 
-    return cw20BalancesAndInfos
-  }
+const Component: ActionComponent<undefined, SpendData> = (props) => {
+  const { address } = useActionOptions()
 
-  const Component: ActionComponent<undefined, SpendData> = (props) => {
-    // This needs to be loaded via a cached loadable to avoid displaying a
-    // loader when this data updates on a schedule. Manually trigger a suspense
-    // loader the first time when the initial data is still loading.
-    const nativeBalancesLoadable = loadableToLoadingData(
-      useCachedLoadable(
-        address ? nativeBalancesSelector({ address }) : undefined
-      ),
-      []
-    )
+  // This needs to be loaded via a cached loadable to avoid displaying a
+  // loader when this data updates on a schedule. Manually trigger a suspense
+  // loader the first time when the initial data is still loading.
+  const nativeBalancesLoadable = loadableToLoadingData(
+    useCachedLoadable(
+      address ? nativeBalancesSelector({ address }) : undefined
+    ),
+    []
+  )
 
-    // Undefined when loading.
-    const cw20LoadingBalances = useCw20BalancesAndInfos()
+  // Undefined when loading.
+  const cw20LoadingBalances = useCw20BalancesAndInfos()
 
-    return (
-      <SuspenseLoader
-        fallback={<ActionCardLoader />}
-        forceFallback={
-          // Manually trigger loader.
-          nativeBalancesLoadable.loading || cw20LoadingBalances === undefined
-        }
-      >
-        <StatelessSpendComponent
-          {...props}
-          options={{
-            nativeBalances: nativeBalancesLoadable.loading
-              ? []
-              : nativeBalancesLoadable.data,
-            cw20Balances: cw20LoadingBalances ?? [],
-            ProfileDisplay: ProfileDisplay,
-          }}
-        />
-      </SuspenseLoader>
-    )
-  }
-
+  return (
+    <SuspenseLoader
+      fallback={<ActionCardLoader />}
+      forceFallback={
+        // Manually trigger loader.
+        nativeBalancesLoadable.loading || cw20LoadingBalances === undefined
+      }
+    >
+      <StatelessSpendComponent
+        {...props}
+        options={{
+          nativeBalances: nativeBalancesLoadable.loading
+            ? []
+            : nativeBalancesLoadable.data,
+          cw20Balances: cw20LoadingBalances ?? [],
+          ProfileDisplay: ProfileDisplay,
+        }}
+      />
+    </SuspenseLoader>
+  )
+}
+export const makeSpendAction: ActionMaker<SpendData> = ({ t, context }) => {
   const useDefaults: UseDefaults<SpendData> = () => {
     const { address: walletAddress = '' } = useWallet()
 

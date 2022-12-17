@@ -1,6 +1,6 @@
 import { useWallet } from '@noahsaso/cosmodal'
 
-import { CwdCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 
 interface UseMembershipOptions {
@@ -27,7 +27,7 @@ export const useMembership = ({
   // changes and on initial load if wallet is connecting.
   const _walletVotingWeight = useCachedLoadable(
     walletAddress
-      ? CwdCoreV2Selectors.votingPowerAtHeightSelector({
+      ? DaoCoreV2Selectors.votingPowerAtHeightSelector({
           contractAddress: coreAddress,
           chainId,
           params: [
@@ -40,7 +40,7 @@ export const useMembership = ({
       : undefined
   )
   const _totalVotingWeight = useCachedLoadable(
-    CwdCoreV2Selectors.totalPowerAtHeightSelector({
+    DaoCoreV2Selectors.totalPowerAtHeightSelector({
       contractAddress: coreAddress,
       chainId,
       params: [

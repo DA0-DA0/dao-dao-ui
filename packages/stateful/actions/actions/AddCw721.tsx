@@ -22,7 +22,7 @@ interface AddCw721Data {
   address: string
 }
 
-const useDefaults: UseDefaults<AddCw721Data> = () => ({
+export const useDefaults: UseDefaults<AddCw721Data> = () => ({
   address: '',
 })
 

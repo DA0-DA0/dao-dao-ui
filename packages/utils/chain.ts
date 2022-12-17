@@ -60,6 +60,13 @@ export const cosmosValidatorToValidator = ({
   tokens: Number(tokens),
 })
 
+export const getImageUrlForChainId = (chainId: string) =>
+  chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni5
+    ? '/juno.png'
+    : chainId === ChainInfoID.Stargaze1
+    ? '/stargaze.png'
+    : undefined
+
 // Convert public key in hex format to a bech32 address.
 // https://github.com/cosmos/cosmos-sdk/blob/e09516f4795c637ab12b30bf732ce5d86da78424/crypto/keys/secp256k1/secp256k1.go#L152-L162
 // Keplr implementation:

@@ -58,13 +58,13 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
 
   // Hooks
   hooks: {
-    useProposalRefreshers: () => {
-      refreshProposal: () => void
-      refreshProposalAndAll: () => void
-    }
-    useProposalExecutionTxHash: () => LoadingData<string | undefined>
+    useProposalRefreshers: () => ProposalRefreshers
+    useLoadingProposalExecutionTxHash: () => LoadingData<string | undefined>
     useProfileVoteCardOptions: () => ProfileVoteCardOption<Vote>[]
-    useWalletVoteInfo: () => WalletVoteInfo<Vote>
+    // Return when no wallet connected.
+    useLoadingWalletVoteInfo: () =>
+      | undefined
+      | LoadingData<WalletVoteInfo<Vote>>
     useCastVote: (onSuccess?: () => void | Promise<void>) => {
       castVote: (vote: Vote) => Promise<void>
       castingVote: boolean
@@ -216,4 +216,10 @@ export interface WalletVoteInfo<T> {
   couldVote: boolean
   canVote: boolean
   votingPowerPercent: number
+}
+
+export interface ProposalRefreshers {
+  refreshProposal: () => void
+  refreshProposalAndAll: () => void
+  refreshing: boolean
 }

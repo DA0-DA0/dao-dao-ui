@@ -1,7 +1,7 @@
 import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
 import {
-  CwdCoreV2Selectors,
+  DaoCoreV2Selectors,
   contractInstantiateTimeSelector,
   contractVersionSelector,
   daoTvlSelector,
@@ -14,14 +14,15 @@ import {
   DaoDropdownInfo,
   WithChainId,
 } from '@dao-dao/types'
-import { ConfigResponse as CwCoreV1ConfigResponse } from '@dao-dao/types/contracts/CwCore.v1'
-import { ConfigResponse as CwdCoreV2ConfigResponse } from '@dao-dao/types/contracts/CwdCore.v2'
 import {
-  CHAIN_ID,
-  CWCOREV1_CONTRACT_NAME,
-  CWDCOREV2_CONTRACT_NAME,
-  getFallbackImage,
-} from '@dao-dao/utils'
+  ConfigResponse as CwCoreV1ConfigResponse,
+  DumpStateResponse as CwCoreV1DumpStateResponse,
+} from '@dao-dao/types/contracts/CwCore.v1'
+import {
+  ConfigResponse as DaoCoreV2ConfigResponse,
+  DumpStateResponse as DaoCoreV2DumpStateResponse,
+} from '@dao-dao/types/contracts/DaoCore.v2'
+import { CHAIN_ID, getFallbackImage } from '@dao-dao/utils'
 
 import { proposalModuleAdapterProposalCountSelector } from '../../../proposal-module-adapter'
 import {
@@ -37,9 +38,12 @@ export const daoCardInfoSelector = selectorFamily<
   get:
     ({ coreAddress, chainId = CHAIN_ID }) =>
     ({ get }) => {
-      const dumpedState = get(
+      const dumpedState:
+        | CwCoreV1DumpStateResponse
+        | DaoCoreV2DumpStateResponse
+        | undefined = get(
         // Both v1 and v2 have a dump_state query.
-        CwdCoreV2Selectors.dumpStateSelector({
+        DaoCoreV2Selectors.dumpStateSelector({
           chainId,
           contractAddress: coreAddress,
           params: [],
@@ -66,23 +70,33 @@ export const daoCardInfoSelector = selectorFamily<
           isContractSelector({
             contractAddress: admin,
             chainId,
-            name: CWCOREV1_CONTRACT_NAME,
+            // V1
+            name: 'cw-core',
           })
         ) ||
           get(
             isContractSelector({
               contractAddress: admin,
               chainId,
-              name: CWDCOREV2_CONTRACT_NAME,
+              // V2
+              name: 'cwd-core',
+            })
+          ) ||
+          get(
+            isContractSelector({
+              contractAddress: admin,
+              chainId,
+              // V2
+              name: 'dao-core',
             })
           ))
       ) {
         const {
           name,
           image_url,
-        }: CwCoreV1ConfigResponse | CwdCoreV2ConfigResponse = get(
+        }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
           // Both v1 and v2 have a config query.
-          CwdCoreV2Selectors.configSelector({
+          DaoCoreV2Selectors.configSelector({
             contractAddress: admin,
             chainId,
             params: [],
@@ -140,7 +154,7 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
       const walletVotingWeight = walletAddress
         ? Number(
             get(
-              CwdCoreV2Selectors.votingPowerAtHeightSelector({
+              DaoCoreV2Selectors.votingPowerAtHeightSelector({
                 contractAddress: coreAddress,
                 chainId,
                 params: [{ address: walletAddress }],
@@ -186,7 +200,7 @@ export const subDaoCardInfosSelector = selectorFamily<
     ({ coreAddress: contractAddress, chainId }) =>
     ({ get }) => {
       const subdaos = get(
-        CwdCoreV2Selectors.listAllSubDaosSelector({
+        DaoCoreV2Selectors.listAllSubDaosSelector({
           contractAddress,
           chainId,
         })
@@ -221,7 +235,7 @@ export const daoDropdownInfoSelector: (
         })
       )
       const config = get(
-        CwdCoreV2Selectors.configSelector({
+        DaoCoreV2Selectors.configSelector({
           contractAddress: coreAddress,
           chainId,
           params: [],
@@ -232,7 +246,7 @@ export const daoDropdownInfoSelector: (
         version === ContractVersion.V1
           ? []
           : get(
-              CwdCoreV2Selectors.listAllSubDaosSelector({
+              DaoCoreV2Selectors.listAllSubDaosSelector({
                 contractAddress: coreAddress,
                 chainId,
               })

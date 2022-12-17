@@ -1,13 +1,23 @@
 import { transformIpfsUrlToHttpsIfNecessary } from './conversion'
 
-// If name is only a number, prefix with collection name.
-export const getNftName = (collectionName: string, tokenName: string) =>
-  /^[0-9]+$/.test(tokenName.trim())
-    ? `${collectionName} ${tokenName.trim()}`
+// If name is only a number, prefix with collection name. Fallback to token ID
+// if name does not exist.
+export const getNftName = (
+  collectionName: string,
+  tokenId: string,
+  tokenName?: string
+) =>
+  !tokenName || /^[0-9]+$/.test(tokenName.trim())
+    ? `${collectionName} ${(tokenName || tokenId).trim()}`.trim()
     : tokenName
 
 // Normalize NFT image URLs by ensuring they are from a valid IPFS provider.
 export const normalizeNftImageUrl = (url: string) => {
+  // If hosted locally, passthrough (probably development/test env).
+  if (url.startsWith('/')) {
+    return url
+  }
+
   url = transformIpfsUrlToHttpsIfNecessary(url)
 
   // Convert `https://CID.ipfs.nftstorage.link` to
@@ -32,8 +42,7 @@ export const normalizeNftImageUrl = (url: string) => {
 //
 // [EIP-721]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
 export const parseNftUriResponse = (
-  uriDataResponse: string,
-  collectionName: string
+  uriDataResponse: string
 ): {
   name: string | undefined
   imageUrl: string | undefined
@@ -56,7 +65,7 @@ export const parseNftUriResponse = (
       const json = JSON.parse(uriDataResponse)
 
       if (typeof json.name === 'string' && !!json.name.trim()) {
-        name = getNftName(collectionName, json.name)
+        name = json.name
       }
 
       if (typeof json.image === 'string' && !!json.image) {
@@ -79,4 +88,39 @@ export const parseNftUriResponse = (
   }
 
   return { name, imageUrl, externalLink }
+}
+
+// Uploads an NFT to NFT Storage and returns the metadata.
+export const uploadNft = async (
+  name: string,
+  description: string,
+  file: File,
+  extra?: string
+): Promise<{
+  metadataUrl: string
+  imageUrl: string
+}> => {
+  const form = new FormData()
+  form.append('name', name)
+  form.append('description', description)
+  form.append('image', file)
+  if (extra) {
+    form.append('extra', extra)
+  }
+
+  // Next.js API route.
+  const response = await fetch('/api/uploadNft', {
+    method: 'POST',
+    body: form,
+  })
+
+  if (response.ok) {
+    const data = await response.json()
+    return data
+  } else {
+    const { error } = await response
+      .json()
+      .catch(() => ({ error: 'Unknown error' }))
+    throw new Error(error)
+  }
 }

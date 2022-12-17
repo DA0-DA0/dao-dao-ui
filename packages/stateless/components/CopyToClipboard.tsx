@@ -42,7 +42,7 @@ export const CopyToClipboard = ({
     <Tooltip title={tooltip}>
       <button
         className={clsx(
-          'flex flex-row items-center gap-1 overflow-hidden',
+          'flex flex-row items-center justify-start gap-1 overflow-hidden',
           className
         )}
         onClick={() => {
@@ -58,7 +58,7 @@ export const CopyToClipboard = ({
 
         <span
           className={clsx(
-            'flex-1 truncate rounded-md p-1 transition hover:bg-background-button-secondary-default',
+            'flex-1 truncate rounded-md p-1 text-left transition hover:bg-background-button-secondary-default',
             textClassName
           )}
         >

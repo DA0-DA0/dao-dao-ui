@@ -4,7 +4,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { Vote as VoteChoice } from '@dao-dao/types/contracts/CwdProposalSingle.common'
+import { Vote as VoteChoice } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'

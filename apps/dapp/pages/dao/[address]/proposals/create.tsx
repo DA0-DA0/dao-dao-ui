@@ -24,7 +24,7 @@ import {
   useMembership,
 } from '@dao-dao/stateful'
 import {
-  CwdProposalSingleAdapter,
+  DaoProposalSingleAdapter,
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
 } from '@dao-dao/stateful/proposal-module-adapter'
@@ -58,7 +58,7 @@ const InnerProposalCreate = () => {
     daoInfo.proposalModules.find(
       ({ contractName }) =>
         matchProposalModuleAdapter(contractName)?.id ===
-        CwdProposalSingleAdapter.id
+        DaoProposalSingleAdapter.id
     ) ?? daoInfo.proposalModules[0]
   )
   // Set once prefill has been assessed, indicating NewProposal can load now.

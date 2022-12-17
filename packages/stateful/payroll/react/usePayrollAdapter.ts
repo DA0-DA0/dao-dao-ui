@@ -1,9 +1,7 @@
 // External API
 
-import { useRecoilValueLoadable } from 'recoil'
-
-import { CwdCoreV2Selectors } from '@dao-dao/state/recoil'
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import { PayrollAdapter } from '@dao-dao/types'
 
 import { DAO_PAYROLL_ITEM_KEY, getAdapterById } from '../core'
@@ -13,8 +11,8 @@ import { DAO_PAYROLL_ITEM_KEY, getAdapterById } from '../core'
 export const usePayrollAdapter = (): PayrollAdapter | undefined => {
   const { chainId, coreAddress } = useDaoInfoContext()
 
-  const payrollItem = useRecoilValueLoadable(
-    CwdCoreV2Selectors.getItemSelector({
+  const payrollItem = useCachedLoadable(
+    DaoCoreV2Selectors.getItemSelector({
       chainId,
       contractAddress: coreAddress,
       params: [

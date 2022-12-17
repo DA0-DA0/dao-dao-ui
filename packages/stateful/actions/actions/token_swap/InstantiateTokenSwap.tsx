@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
-  CwdCoreV2Selectors,
+  DaoCoreV2Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state/recoil'
 import { Loader } from '@dao-dao/stateless'
@@ -64,7 +64,7 @@ export const InstantiateTokenSwap: ActionComponent<
   const selfPartyCw20BalancesLoadable = useCachedLoadable(
     context.type === ActionOptionsContextType.Dao
       ? // Get DAO's cw20 balances and infos.
-        CwdCoreV2Selectors.allCw20BalancesAndInfosSelector({
+        DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
           contractAddress: selfAddress,
           chainId,
           governanceTokenAddress,
@@ -287,7 +287,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
   // Try to retrieve governance token address, failing if not a cw20-based DAO.
   const counterpartyDaoGovernanceTokenAddress = useRecoilValueLoadable(
     counterpartyAddressIsContract
-      ? CwdCoreV2Selectors.tryFetchGovernanceTokenAddressSelector({
+      ? DaoCoreV2Selectors.tryFetchGovernanceTokenAddressSelector({
           contractAddress: counterpartyAddress,
           chainId,
         })
@@ -299,7 +299,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
       counterpartyAddressIsContract &&
         counterpartyDaoGovernanceTokenAddress.state !== 'loading'
         ? // Get DAO's cw20 balances and infos.
-          CwdCoreV2Selectors.allCw20BalancesAndInfosSelector({
+          DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
             contractAddress: counterpartyAddress,
             chainId,
             governanceTokenAddress:

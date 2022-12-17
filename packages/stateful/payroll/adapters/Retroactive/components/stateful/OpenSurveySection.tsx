@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -36,6 +37,7 @@ export const OpenSurveySection = ({
   const { t } = useTranslation()
   const { coreAddress, chainId, bech32Prefix } = useDaoInfoContext()
 
+  const { connected } = useWallet()
   // Voting power at time of survey creation, which determines what access level
   // this wallet has.
   const { isMember = false } = useMembership({
@@ -247,6 +249,7 @@ export const OpenSurveySection = ({
     </div>
   ) : (
     <StatelessOpenSurveySection
+      connected={connected}
       isMember={isMember}
       loading={loading}
       onClick={onClick}
