@@ -1,14 +1,17 @@
 import {
   AccountCircleOutlined,
   Cancel,
+  Check,
+  Close as CloseIcon,
   HourglassTopRounded,
   Key,
   RotateRightOutlined,
+  Texture,
 } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import clsx from 'clsx'
 
-import { makeAppLayoutDecorator } from '@dao-dao/storybook'
+import { Vote as VoteType } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { ButtonLink } from '../buttons'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
@@ -19,10 +22,11 @@ export default {
   title:
     'DAO DAO / packages / stateless / components / proposal / ProposalStatusAndInfo',
   component: ProposalStatusAndInfo,
-  decorators: [makeAppLayoutDecorator()],
 } as ComponentMeta<typeof ProposalStatusAndInfo>
 
-const Template: ComponentStory<typeof ProposalStatusAndInfo> = (args) => (
+const Template: ComponentStory<typeof ProposalStatusAndInfo<VoteType>> = (
+  args
+) => (
   <div className="max-w-sm">
     <ProposalStatusAndInfo {...args} />
   </div>
@@ -72,7 +76,6 @@ Default.args = {
       Value: (props) => <p {...props}>4 days</p>,
     },
   ],
-  canVote: false,
   inline: true,
 }
 Default.parameters = {
@@ -113,5 +116,14 @@ Close.args = {
 export const Vote = Template.bind({})
 Vote.args = {
   ...Default.args,
-  canVote: true,
+  vote: {
+    loading: false,
+    initialVote: VoteType.Yes,
+    onCastVote: (vote) => alert('vote: ' + vote),
+    options: [
+      { Icon: Check, label: 'Yes', value: VoteType.Yes },
+      { Icon: CloseIcon, label: 'No', value: VoteType.No },
+      { Icon: Texture, label: 'Abstain', value: VoteType.Abstain },
+    ],
+  },
 }

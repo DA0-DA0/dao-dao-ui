@@ -10,6 +10,7 @@ import {
   makeAppLayoutDecorator,
   makeProposalModuleAdapterDecorator,
 } from '@dao-dao/storybook/decorators'
+import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import {
   ProfileVoteCard,
@@ -45,7 +46,7 @@ export const Default = Template.bind({})
 Default.args = {
   ProposalStatusAndInfo: (props) => (
     <ProposalStatusAndInfo
-      {...(ProposalStatusAndInfoVoteStory.args as ProposalStatusAndInfoProps)}
+      {...(ProposalStatusAndInfoVoteStory.args as ProposalStatusAndInfoProps<Vote>)}
       {...props}
     />
   ),
@@ -85,9 +86,7 @@ Default.args = {
     </p>
   ),
   rightSidebarContent: (
-    <ProfileVoteCard
-      {...(ProfileVoteCardStory.args as ProfileVoteCardProps<string>)}
-    />
+    <ProfileVoteCard {...(ProfileVoteCardStory.args as ProfileVoteCardProps)} />
   ),
   onRefresh: () => alert('refresh'),
   refreshing: false,

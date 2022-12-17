@@ -1,8 +1,8 @@
-import { Check, Close, PanToolOutlined, Texture } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalWalletVote, ProposalWalletVoteProps } from '../proposal'
-import { Pending as ProposalWalletVoteStory } from '../proposal/ProposalWalletVote.stories'
+import { ProposalWalletVote } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ProposalWalletVote'
+import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+
 import { ProfileVoteCard } from './ProfileVoteCard'
 
 export default {
@@ -19,11 +19,6 @@ const Template: ComponentStory<typeof ProfileVoteCard> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  currentVoteDisplay: (
-    <ProposalWalletVote
-      {...(ProposalWalletVoteStory.args as ProposalWalletVoteProps)}
-    />
-  ),
   votingPower: 32.4,
   daoName: 'Dog Dao',
   walletProfile: {
@@ -35,17 +30,12 @@ Default.args = {
       nft: null,
     },
   },
-  loading: false,
-  options: [
-    { Icon: Check, label: 'Yes', value: 'yes' },
-    { Icon: Close, label: 'No', value: 'no' },
-    { Icon: PanToolOutlined, label: 'No with veto', value: 'noWithVeto' },
-    { Icon: Texture, label: 'Abstain', value: 'abstain' },
-  ],
+  vote: <ProposalWalletVote fallback="none" vote={Vote.Yes} />,
 }
+
 Default.parameters = {
   design: {
     type: 'figma',
-    url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=94%3A16292',
+    url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=317%3A31004',
   },
 }

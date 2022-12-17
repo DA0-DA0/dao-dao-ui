@@ -1,13 +1,14 @@
-import { AnalyticsOutlined, HowToVoteRounded } from '@mui/icons-material'
+import { AnalyticsOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, Fragment } from 'react'
+import { ComponentType, Fragment, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '../buttons'
-import { useAppLayoutContext } from '../layout/AppLayoutContext'
-import { NoContent } from '../NoContent'
+import { ProposalVoteOption } from '@dao-dao/types'
 
-export interface ProposalStatusAndInfoProps {
+import { Button } from '../buttons'
+import { ProposalVoteButton } from './ProposalVoteButton'
+
+export interface ProposalStatusAndInfoProps<Vote> {
   status: string
   info: {
     Icon: ComponentType<{ className: string }>
@@ -21,19 +22,27 @@ export interface ProposalStatusAndInfoProps {
     loading: boolean
     doAction: () => void
   }
-  canVote: boolean
+  // Present if can vote.
+  vote?: {
+    loading: boolean
+    initialVote?: Vote
+    onCastVote: (vote: Vote) => void | Promise<void>
+    options: ProposalVoteOption<Vote>[]
+  }
 }
 
-export const ProposalStatusAndInfo = ({
+export const ProposalStatusAndInfo = <Vote extends unknown>({
   status,
   info,
   inline = false,
   action,
-  canVote,
-}: ProposalStatusAndInfoProps) => {
+  vote,
+}: ProposalStatusAndInfoProps<Vote>) => {
   const { t } = useTranslation()
 
-  const toggleRightSidebar = useAppLayoutContext().responsiveRightSidebar.toggle
+  const [selectedVote, setSelectedVote] = useState<Vote | undefined>(
+    vote?.initialVote
+  )
 
   return (
     <div
@@ -56,8 +65,9 @@ export const ProposalStatusAndInfo = ({
         className={clsx(
           'grid grid-cols-2 items-center gap-3 border-t border-border-secondary',
           inline ? 'p-6' : 'py-8',
-          // If not inline, or an action button is present, add bottom border.
-          (!inline || (inline && (!!action || canVote))) && 'border-b'
+          // If not inline, or an action/vote button is present, add bottom
+          // border.
+          (!inline || (inline && (!!action || vote))) && 'border-b'
         )}
       >
         {info.map(({ Icon, label, Value }, index) => (
@@ -72,30 +82,36 @@ export const ProposalStatusAndInfo = ({
         ))}
       </div>
 
-      {canVote && (
+      {vote && (
         <div
           className={clsx(
-            'flex flex-col items-stretch gap-2',
+            'flex flex-col items-stretch',
             inline ? 'm-6' : 'mt-8'
           )}
         >
-          {/* Large screens, sidebar showing */}
-          <NoContent
-            Icon={HowToVoteRounded}
-            body={t('info.voteInSidebarLarge')}
-            className="hidden xl:flex"
-            small
-          />
-          {/* Responsive, sidebar collapsed */}
-          <NoContent
-            Icon={HowToVoteRounded}
-            actionNudge={t('info.voteInSidebarResponsiveNudge')}
-            body={t('info.voteInSidebarResponsiveBody')}
-            buttonLabel={t('button.openSidebarToVote')}
-            className="xl:hidden"
-            onClick={toggleRightSidebar}
-            small
-          />
+          {vote.options.map((option, index) => (
+            <ProposalVoteButton
+              key={index}
+              disabled={vote.loading}
+              onClick={() => setSelectedVote(option.value)}
+              option={option}
+              pressed={option.value === selectedVote}
+            />
+          ))}
+
+          <Button
+            className="mt-4"
+            contentContainerClassName={clsx('justify-center', {
+              'primary-text': !selectedVote,
+            })}
+            disabled={!selectedVote}
+            loading={vote.loading}
+            onClick={() => selectedVote && vote.onCastVote(selectedVote)}
+            size="lg"
+            variant={!selectedVote || vote.loading ? 'secondary' : 'primary'}
+          >
+            {t('button.castYourVote')}
+          </Button>
         </div>
       )}
 

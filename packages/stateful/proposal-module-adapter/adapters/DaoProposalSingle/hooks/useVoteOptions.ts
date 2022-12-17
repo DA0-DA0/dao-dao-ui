@@ -1,10 +1,10 @@
 import { Check, Close, Texture } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { ProfileVoteCardOption } from '@dao-dao/stateless'
+import { ProposalVoteOption } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
-export const useProfileVoteCardOptions = (): ProfileVoteCardOption<Vote>[] => {
+export const useVoteOptions = (): ProposalVoteOption<Vote>[] => {
   const { t } = useTranslation()
 
   return [

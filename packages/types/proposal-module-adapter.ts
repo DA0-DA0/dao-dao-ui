@@ -15,12 +15,7 @@ import {
   ProposalPrefill,
 } from './dao'
 import { ProposalCreatedCardProps } from './proposal'
-import {
-  LinkWrapperProps,
-  LoadingData,
-  ProfileNewProposalCardInfoLine,
-  ProfileVoteCardOption,
-} from './stateless'
+import { LinkWrapperProps, LoadingData } from './stateless'
 
 export interface IProposalModuleAdapterCommon<
   FormData extends FieldValues = any
@@ -63,7 +58,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
   hooks: {
     useProposalRefreshers: () => ProposalRefreshers
     useLoadingProposalExecutionTxHash: () => LoadingData<string | undefined>
-    useProfileVoteCardOptions: () => ProfileVoteCardOption<Vote>[]
+    useVoteOptions: () => ProposalVoteOption<Vote>[]
     // Return when no wallet connected.
     useLoadingWalletVoteInfo: () =>
       | undefined
@@ -180,6 +175,7 @@ export interface CommonProposalInfo {
 
 export interface BaseProposalStatusAndInfoProps {
   inline?: boolean
+  onVoteSuccess: () => void | Promise<void>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
 }
@@ -222,4 +218,17 @@ export interface ProposalRefreshers {
   refreshProposal: () => void
   refreshProposalAndAll: () => void
   refreshing: boolean
+}
+
+export interface ProposalVoteOption<Vote> {
+  Icon: ComponentType<{ className: string }>
+  label: string
+  value: Vote
+}
+
+export interface ProfileNewProposalCardInfoLine {
+  Icon: ComponentType<{ className: string }>
+  label: string
+  value: string
+  valueClassName?: string
 }
