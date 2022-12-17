@@ -25,7 +25,7 @@ export interface ProposalStatusAndInfoProps<Vote> {
   // Present if can vote.
   vote?: {
     loading: boolean
-    initialVote?: Vote
+    currentVote?: Vote
     onCastVote: (vote: Vote) => void | Promise<void>
     options: ProposalVoteOption<Vote>[]
   }
@@ -41,7 +41,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown>({
   const { t } = useTranslation()
 
   const [selectedVote, setSelectedVote] = useState<Vote | undefined>(
-    vote?.initialVote
+    vote?.currentVote
   )
 
   return (
@@ -64,10 +64,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown>({
       <div
         className={clsx(
           'grid grid-cols-2 items-center gap-3 border-t border-border-secondary',
-          inline ? 'p-6' : 'py-8',
-          // If not inline, or an action/vote button is present, add bottom
-          // border.
-          (!inline || (inline && (!!action || vote))) && 'border-b'
+          inline ? 'p-6' : action ? 'pt-8 pb-6' : 'py-8'
         )}
       >
         {info.map(({ Icon, label, Value }, index) => (
@@ -82,11 +79,30 @@ export const ProposalStatusAndInfo = <Vote extends unknown>({
         ))}
       </div>
 
+      {action && (
+        <Button
+          center
+          className={inline ? 'm-6 mt-0' : 'mb-8'}
+          loading={action.loading}
+          onClick={action.doAction}
+          size="lg"
+          variant={
+            // If voting is not displaying, or voting is displaying but they
+            // already voted (i.e. they can revote), show primary variant to
+            // draw attention to this action. Otherwise, show dimmer secondary
+            // variant to encourage them to vote first.
+            !vote || vote.currentVote ? 'primary' : 'secondary'
+          }
+        >
+          <action.Icon className="!h-5 !w-5" /> {action.label}
+        </Button>
+      )}
+
       {vote && (
         <div
           className={clsx(
-            'flex flex-col items-stretch',
-            inline ? 'm-6' : 'mt-8'
+            'flex flex-col items-stretch gap-1 border-t border-border-secondary',
+            inline ? 'p-6' : 'pt-8'
           )}
         >
           {vote.options.map((option, index) => (
@@ -100,7 +116,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown>({
           ))}
 
           <Button
-            className="mt-4"
+            className="mt-3"
             contentContainerClassName={clsx('justify-center', {
               'primary-text': !selectedVote,
             })}
@@ -108,23 +124,15 @@ export const ProposalStatusAndInfo = <Vote extends unknown>({
             loading={vote.loading}
             onClick={() => selectedVote && vote.onCastVote(selectedVote)}
             size="lg"
-            variant={!selectedVote || vote.loading ? 'secondary' : 'primary'}
+            variant={
+              // If already voted, show dimmer secondary variant. If needs to
+              // vote, show primary to draw attention to it.
+              vote.currentVote ? 'secondary' : 'primary'
+            }
           >
             {t('button.castYourVote')}
           </Button>
         </div>
-      )}
-
-      {action && (
-        <Button
-          center
-          className={inline ? 'm-6' : 'mt-8'}
-          loading={action.loading}
-          onClick={action.doAction}
-          size="lg"
-        >
-          <action.Icon className="!h-5 !w-5" /> {action.label}
-        </Button>
       )}
     </div>
   )

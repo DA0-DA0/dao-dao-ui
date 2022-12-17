@@ -118,7 +118,7 @@ Vote.args = {
   ...Default.args,
   vote: {
     loading: false,
-    initialVote: VoteType.Yes,
+    currentVote: VoteType.Yes,
     onCastVote: (vote) => alert('vote: ' + vote),
     options: [
       { Icon: Check, label: 'Yes', value: VoteType.Yes },

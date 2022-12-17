@@ -358,7 +358,7 @@ const InnerProposalStatusAndInfo = ({
         walletVoteInfo?.canVote
           ? {
               loading: castingVote,
-              initialVote: walletVoteInfo.vote,
+              currentVote: walletVoteInfo.vote,
               onCastVote: castVote,
               options: voteOptions,
             }

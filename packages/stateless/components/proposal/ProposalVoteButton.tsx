@@ -18,7 +18,7 @@ export const ProposalVoteButton = <Vote extends unknown>({
   disabled = false,
 }: ProposalVoteButtonProps<Vote>) => (
   <Button
-    className={clsx('mb-2 w-full border-2 border-transparent pl-4', {
+    className={clsx('border-2 border-transparent', {
       'border-border-primary': pressed,
     })}
     contentContainerClassName={clsx('justify-between text-sm', {
@@ -31,6 +31,6 @@ export const ProposalVoteButton = <Vote extends unknown>({
     variant="secondary"
   >
     <p>{label}</p>
-    <Icon className="h-6 w-6" />
+    <Icon className="!h-6 !w-6" />
   </Button>
 )
