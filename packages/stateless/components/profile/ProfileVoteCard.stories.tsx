@@ -30,7 +30,7 @@ Default.args = {
       nft: null,
     },
   },
-  vote: <ProposalWalletVote fallback="none" vote={Vote.Yes} />,
+  vote: <ProposalWalletVote fallback="hasNoVote" vote={Vote.Yes} />,
 }
 
 Default.parameters = {

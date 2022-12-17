@@ -187,7 +187,7 @@ export interface BaseProposalActionDisplayProps<D extends any = any> {
 
 export interface BaseProposalWalletVoteProps<T> {
   vote: T | undefined
-  fallback: 'pending' | 'none'
+  fallback: 'pending' | 'hasNoVote'
 }
 
 export interface BaseProposalLineProps {

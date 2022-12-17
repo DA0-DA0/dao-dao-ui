@@ -112,7 +112,7 @@ export const ProfileProposalCard = () => {
           fallback={
             // If they can vote, fallback to pending to indicate that they still
             // have to vote.
-            canVote ? 'pending' : 'none'
+            canVote ? 'pending' : 'hasNoVote'
           }
           vote={vote}
         />
