@@ -1,9 +1,11 @@
-import { AnalyticsOutlined } from '@mui/icons-material'
+import { AnalyticsOutlined, HowToVoteRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '../buttons'
+import { useAppLayoutContext } from '../layout/AppLayoutContext'
+import { NoContent } from '../NoContent'
 
 export interface ProposalStatusAndInfoProps {
   status: string
@@ -19,6 +21,7 @@ export interface ProposalStatusAndInfoProps {
     loading: boolean
     doAction: () => void
   }
+  canVote: boolean
 }
 
 export const ProposalStatusAndInfo = ({
@@ -26,8 +29,11 @@ export const ProposalStatusAndInfo = ({
   info,
   inline = false,
   action,
+  canVote,
 }: ProposalStatusAndInfoProps) => {
   const { t } = useTranslation()
+
+  const toggleRightSidebar = useAppLayoutContext().responsiveRightSidebar.toggle
 
   return (
     <div
@@ -51,7 +57,7 @@ export const ProposalStatusAndInfo = ({
           'grid grid-cols-2 items-center gap-3 border-t border-border-secondary',
           inline ? 'p-6' : 'py-8',
           // If not inline, or an action button is present, add bottom border.
-          (!inline || (inline && action)) && 'border-b'
+          (!inline || (inline && (!!action || canVote))) && 'border-b'
         )}
       >
         {info.map(({ Icon, label, Value }, index) => (
@@ -65,6 +71,33 @@ export const ProposalStatusAndInfo = ({
           </Fragment>
         ))}
       </div>
+
+      {canVote && (
+        <div
+          className={clsx(
+            'flex flex-col items-stretch gap-2',
+            inline ? 'm-6' : 'mt-8'
+          )}
+        >
+          {/* Large screens, sidebar showing */}
+          <NoContent
+            Icon={HowToVoteRounded}
+            body={t('info.voteInSidebarLarge')}
+            className="hidden xl:flex"
+            small
+          />
+          {/* Responsive, sidebar collapsed */}
+          <NoContent
+            Icon={HowToVoteRounded}
+            actionNudge={t('info.voteInSidebarResponsiveNudge')}
+            body={t('info.voteInSidebarResponsiveBody')}
+            buttonLabel={t('button.openSidebarToVote')}
+            className="xl:hidden"
+            onClick={toggleRightSidebar}
+            small
+          />
+        </div>
+      )}
 
       {action && (
         <Button

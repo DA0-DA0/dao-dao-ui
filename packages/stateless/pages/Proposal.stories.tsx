@@ -14,10 +14,11 @@ import {
 import {
   ProfileVoteCard,
   ProfileVoteCardProps,
+  ProposalStatusAndInfo,
   ProposalStatusAndInfoProps,
 } from '../components'
 import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVoteCard.stories'
-import { Default as ProposalStatusAndInfoStory } from '../components/proposal/ProposalStatusAndInfo.stories'
+import { Vote as ProposalStatusAndInfoVoteStory } from '../components/proposal/ProposalStatusAndInfo.stories'
 import { ProposalVotes } from '../components/proposal/ProposalVotes'
 import { makeProps as makeProposalVotesProps } from '../components/proposal/ProposalVotes.stories'
 import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
@@ -43,8 +44,8 @@ const Template: ComponentStory<typeof Proposal> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   ProposalStatusAndInfo: (props) => (
-    <ProposalStatusAndInfoStory
-      {...(ProposalStatusAndInfoStory.args as ProposalStatusAndInfoProps)}
+    <ProposalStatusAndInfo
+      {...(ProposalStatusAndInfoVoteStory.args as ProposalStatusAndInfoProps)}
       {...props}
     />
   ),
