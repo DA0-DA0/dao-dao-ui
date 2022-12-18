@@ -31,7 +31,6 @@ import { makeGetProposalInfo } from '../../functions'
 import {
   NewProposalData,
   NewProposalForm,
-  PublishProposalOptions,
   UsePublishProposal,
 } from '../../types'
 import {
@@ -109,14 +108,12 @@ export const NewProposal = ({
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
   const cosmWasmClient = useRecoilValue(cosmWasmClientForChainSelector(chainId))
 
-  const { publishProposal, depositUnsatisfied } = usePublishProposal()
+  const { publishProposal, depositUnsatisfied, simulationBypassExpiration } =
+    usePublishProposal()
 
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
-      async (
-        newProposalData: NewProposalData,
-        publishOptions?: PublishProposalOptions
-      ) => {
+      async (newProposalData: NewProposalData) => {
         if (blockHeight === undefined) {
           toast.error(t('error.loadingData'))
           return
@@ -126,7 +123,11 @@ export const NewProposal = ({
         try {
           const { proposalNumber, proposalId } = await publishProposal(
             newProposalData,
-            publishOptions
+            {
+              // On failed simulation, allow the user to bypass the simulation
+              // and create the proposal anyway for 10 seconds.
+              failedSimulationBypassSeconds: 10,
+            }
           )
 
           // Get proposal info to display card.
@@ -234,6 +235,7 @@ export const NewProposal = ({
       isMember={isMember}
       isPaused={isPaused}
       loading={loading}
+      simulationBypassExpiration={simulationBypassExpiration}
       {...props}
     />
   )

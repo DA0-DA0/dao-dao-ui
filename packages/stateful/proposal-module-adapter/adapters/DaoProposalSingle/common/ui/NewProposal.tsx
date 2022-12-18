@@ -15,6 +15,7 @@ import {
   useFormContext,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 
 import {
   ActionCardLoader,
@@ -67,6 +68,7 @@ export interface NewProposalProps
   connected: boolean
   actions: Action[]
   actionsWithData: ActionsWithData
+  simulationBypassExpiration?: Date
 }
 
 export const NewProposal = ({
@@ -85,6 +87,7 @@ export const NewProposal = ({
   unloadDraft,
   draftSaving,
   deleteDraft,
+  simulationBypassExpiration,
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
@@ -291,15 +294,40 @@ export const NewProposal = ({
                 type="submit"
                 value={ProposeSubmitValue.Submit}
               >
-                <p>{t('button.publish')}</p>
+                <p>
+                  {simulationBypassExpiration ? (
+                    // If bypassing simulation, change button label and show a
+                    // countdown until simulation bypass expires.
+                    <TimeAgo
+                      date={simulationBypassExpiration}
+                      formatter={(value, _, suffix) =>
+                        suffix === 'from now'
+                          ? t('button.publishAnywayWithCountdown', {
+                              secondsRemaining: value,
+                            })
+                          : // In case the countdown expires before the re-render,
+                            // just show the original button label.
+                            t('button.publish')
+                      }
+                    />
+                  ) : (
+                    t('button.publish')
+                  )}
+                </p>
                 <GavelRounded className="!h-4 !w-4" />
               </Button>
             </Tooltip>
           </div>
         </div>
 
+        {simulationBypassExpiration && (
+          <p className="secondary-text max-w-prose self-end text-right text-text-interactive-warning-body">
+            {t('info.bypassSimulationExplanation')}
+          </p>
+        )}
+
         {showSubmitErrorNote && (
-          <p className="secondary-text text-right text-text-interactive-error">
+          <p className="secondary-text self-end text-right text-text-interactive-error">
             {t('error.createProposalSubmitInvalid')}
           </p>
         )}

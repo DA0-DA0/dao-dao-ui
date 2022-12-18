@@ -70,7 +70,12 @@ export interface VotesInfo {
 }
 
 export interface PublishProposalOptions {
-  bypassSimulation?: boolean
+  // If set, a failed simulation will make future attempts to publish a
+  // proposal bypass the simulation check for the specified duration. This
+  // allows the user to confirm they want to publish a proposal even if the
+  // simulation fails, in case the actions will be valid at the some point in
+  // the future but are not yet.
+  failedSimulationBypassSeconds?: number
 }
 
 export type PublishProposal = (
@@ -89,6 +94,7 @@ export interface MakeUsePublishProposalOptions {
 export type UsePublishProposal = () => {
   publishProposal: PublishProposal
   depositUnsatisfied: boolean
+  simulationBypassExpiration: Date | undefined
 }
 
 export interface TimestampInfo {

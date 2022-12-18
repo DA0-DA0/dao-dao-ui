@@ -1,7 +1,7 @@
 import { coins } from '@cosmjs/stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { useWallet } from '@noahsaso/cosmodal'
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -155,8 +155,24 @@ export const makeUsePublishProposal =
       chainId,
     })
 
+    // If simulation fails and `failedSimulationBypassDuration` is defined,
+    // allow bypassing for a period of time by setting this to a date in the
+    // future.
+    const [simulationBypassExpiration, setSimulationBypassExpiration] =
+      useState<Date>()
+    // Clear bypass expiration when it expires to trigger re-renders.
+    useEffect(() => {
+      if (simulationBypassExpiration) {
+        const timeout = setTimeout(
+          () => setSimulationBypassExpiration(undefined),
+          simulationBypassExpiration.getTime() - Date.now()
+        )
+        return () => clearTimeout(timeout)
+      }
+    }, [simulationBypassExpiration])
+
     const publishProposal: PublishProposal = useCallback(
-      async (newProposalData, { bypassSimulation = false } = {}) => {
+      async (newProposalData, { failedSimulationBypassSeconds = 0 } = {}) => {
         if (!connected) {
           throw new Error(t('error.connectWalletToContinue'))
         }
@@ -171,12 +187,24 @@ export const makeUsePublishProposal =
         }
 
         // Only simulate messages if any exist. Allow proposals without
-        // messages. Also allow bypassing simulation check.
-        if (newProposalData.msgs.length > 0 && !bypassSimulation) {
+        // messages. Also allow bypassing simulation check for a period of time.
+        if (
+          newProposalData.msgs.length > 0 &&
+          (!simulationBypassExpiration ||
+            simulationBypassExpiration < new Date())
+        ) {
           try {
             // Throws error if simulation fails, indicating invalid message.
             await simulateMsgs(newProposalData.msgs)
           } catch (err) {
+            // If failed simulation bypass duration is set, allow bypassing
+            // simulation check for a period of time.
+            if (failedSimulationBypassSeconds > 0) {
+              setSimulationBypassExpiration(
+                new Date(Date.now() + failedSimulationBypassSeconds * 1000)
+              )
+            }
+
             throw new Error(
               `${t('error.simulationFailedInvalidProposalActions')} ${
                 // Don't send to Sentry, but still format SDK errors nicely.
@@ -284,6 +312,7 @@ export const makeUsePublishProposal =
         blockHeight,
         isMember,
         depositUnsatisfied,
+        simulationBypassExpiration,
         requiredProposalDeposit,
         depositInfoCw20TokenAddress,
         depositInfoNativeTokenDenom,
@@ -302,5 +331,6 @@ export const makeUsePublishProposal =
     return {
       publishProposal,
       depositUnsatisfied,
+      simulationBypassExpiration,
     }
   }
