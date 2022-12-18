@@ -1,17 +1,19 @@
 import { Texture } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileVoteButton } from './ProfileVoteButton'
+import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+
+import { ProposalVoteButton } from './ProposalVoteButton'
 
 export default {
   title:
-    'DAO DAO / packages / stateless / components / profile / ProfileVoteButton',
-  component: ProfileVoteButton,
-} as ComponentMeta<typeof ProfileVoteButton>
+    'DAO DAO / packages / stateless / components / proposal / ProposalVoteButton',
+  component: ProposalVoteButton,
+} as ComponentMeta<typeof ProposalVoteButton>
 
-const Template: ComponentStory<typeof ProfileVoteButton> = (args) => (
+const Template: ComponentStory<typeof ProposalVoteButton<Vote>> = (args) => (
   <div className="max-w-xs">
-    <ProfileVoteButton {...args} />
+    <ProposalVoteButton {...args} />
   </div>
 )
 
@@ -20,7 +22,7 @@ Default.args = {
   option: {
     Icon: Texture,
     label: 'Abstain',
-    value: 'abstain',
+    value: Vote.Abstain,
   },
 }
 Default.parameters = {

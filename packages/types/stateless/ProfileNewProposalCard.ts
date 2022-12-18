@@ -1,14 +1,6 @@
-import { ComponentType } from 'react'
-
+import { ProfileNewProposalCardInfoLine } from '../proposal-module-adapter'
 import { LoadingData } from './common'
 import { ProfileCardWrapperProps } from './ProfileCardWrapper'
-
-export interface ProfileNewProposalCardInfoLine {
-  Icon: ComponentType<{ className: string }>
-  label: string
-  value: string
-  valueClassName?: string
-}
 
 export interface ProfileNewProposalCardAddress {
   label: string

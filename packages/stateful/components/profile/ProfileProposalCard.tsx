@@ -6,7 +6,6 @@ import {
   ProfileCantVoteCard,
   ProfileDisconnectedCard,
   ProfileVoteCard,
-  ProfileVotedCard,
   useAppLayoutContext,
   useCachedLoadable,
   useDaoInfoContext,
@@ -25,9 +24,7 @@ export interface ProfileProposalCardProps {
   onVoteSuccess: () => void | Promise<void>
 }
 
-export const ProfileProposalCard = ({
-  onVoteSuccess,
-}: ProfileProposalCardProps) => {
+export const ProfileProposalCard = () => {
   const {
     chainId,
     coreAddress,
@@ -38,9 +35,10 @@ export const ProfileProposalCard = ({
   const { updateProfileNft } = useAppLayoutContext()
 
   const {
-    hooks: { useProfileVoteCardOptions, useLoadingWalletVoteInfo, useCastVote },
+    hooks: { useLoadingWalletVoteInfo },
     components: { ProposalWalletVote },
   } = useProposalModuleAdapter()
+
   const {
     components: { ProfileCardMemberInfo },
   } = useVotingModuleAdapter()
@@ -79,9 +77,7 @@ export const ProfileProposalCard = ({
     chainId,
   })
 
-  const options = useProfileVoteCardOptions()
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
-  const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
   // This card should only display when a wallet is connected. The wallet vote
   // info hook returns undefined when there is no wallet connected. If we are
@@ -102,24 +98,18 @@ export const ProfileProposalCard = ({
     updateProfileName,
   }
 
-  return canVote ? (
+  return couldVote ? (
     <ProfileVoteCard
-      currentVote={vote}
-      currentVoteDisplay={
-        // Fallback to pending since they can vote.
-        <ProposalWalletVote fallback="pending" vote={vote} />
-      }
-      loading={castingVote}
-      onCastVote={castVote}
-      options={options}
-      {...commonProps}
-    />
-  ) : couldVote ? (
-    <ProfileVotedCard
       {...commonProps}
       vote={
-        // Fallback to none since they can no longer vote.
-        <ProposalWalletVote fallback="none" vote={vote} />
+        <ProposalWalletVote
+          fallback={
+            // If they can vote, fallback to pending to indicate that they still
+            // have to vote.
+            canVote ? 'pending' : 'hasNoVote'
+          }
+          vote={vote}
+        />
       }
     />
   ) : (

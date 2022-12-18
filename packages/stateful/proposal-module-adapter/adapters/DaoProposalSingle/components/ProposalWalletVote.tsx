@@ -12,18 +12,19 @@ export const ProposalWalletVote = ({
   const className = ProposalWalletVoteClassNameMap[key]
 
   const { t } = useTranslation()
+  const label = t(`proposalVoteTitle.${key === 'hasNoVote' ? 'none' : key}`)
 
   return (
     <StatelessProposalWalletVote
       className={className}
-      label={t(`proposalVoteTitle.${key}`)}
+      label={label}
       showBadge={key === 'pending'}
     />
   )
 }
 
 export const ProposalWalletVoteClassNameMap: Record<
-  Vote | 'pending' | 'none',
+  Vote | 'pending' | 'hasNoVote',
   string
 > = {
   [Vote.Yes]: 'text-text-body ring-2 ring-inset ring-component-badge-valid',
@@ -31,5 +32,5 @@ export const ProposalWalletVoteClassNameMap: Record<
   [Vote.Abstain]:
     'text-text-body ring-2 ring-inset ring-component-badge-primary',
   pending: 'text-text-body ring-2 ring-inset ring-component-badge-brand',
-  none: 'text-text-tertiary ring-2 ring-inset ring-border-secondary',
+  hasNoVote: 'text-text-tertiary ring-2 ring-inset ring-border-secondary',
 }

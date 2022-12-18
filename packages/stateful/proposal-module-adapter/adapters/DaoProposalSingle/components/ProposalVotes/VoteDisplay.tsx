@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
-import { useProfileVoteCardOptions } from '../../hooks/useProfileVoteCardOptions'
+import { useVoteOptions } from '../../hooks/useVoteOptions'
 
 interface VoteDisplayProps {
   vote: Vote
@@ -12,7 +12,7 @@ interface VoteDisplayProps {
 export const VoteDisplay = ({ vote }: VoteDisplayProps) => {
   const { t } = useTranslation()
 
-  const voteOptions = useProfileVoteCardOptions()
+  const voteOptions = useVoteOptions()
   const voteOption = voteOptions.find(({ value }) => value === vote)
 
   if (!voteOption) {

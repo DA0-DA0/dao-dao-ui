@@ -1,14 +1,8 @@
-import { ComponentType, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { ProfileCardWrapperProps } from './ProfileCardWrapper'
 
-export interface ProfileVoteCardOption<T> {
-  Icon: ComponentType<{ className: string }>
-  label: string
-  value: T
-}
-
-export interface ProfileVoteCardProps<T>
+export interface ProfileVoteCardProps
   extends Omit<
     ProfileCardWrapperProps,
     | 'children'
@@ -17,12 +11,7 @@ export interface ProfileVoteCardProps<T>
     | 'established'
     | 'compact'
   > {
-  options: ProfileVoteCardOption<T>[]
-  // Initial selected vote if present.
-  currentVote?: T
   currentVoteDisplay: ReactNode
-  loading?: boolean
   votingPower: number
   daoName: string
-  onCastVote: (vote: T) => void | Promise<void>
 }
