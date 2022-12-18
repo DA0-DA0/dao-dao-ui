@@ -224,7 +224,6 @@ const InnerDaoHome = () => {
           ) : (
             <ProfileNotMemberCard
               daoName={daoInfo.name}
-              established={new Date()}
               membershipInfo={
                 <ProfileCardMemberInfo
                   deposit={

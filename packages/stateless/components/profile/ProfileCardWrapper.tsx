@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import { averageColorSelector } from '@dao-dao/state/recoil'
 import { ProfileCardWrapperProps } from '@dao-dao/types/stateless/ProfileCardWrapper'
-import { formatDate, processError } from '@dao-dao/utils'
+import { processError } from '@dao-dao/utils'
 
 import { useCachedLoadable } from '../../hooks'
 import { Button } from '../buttons'
@@ -23,13 +23,10 @@ export const ProfileCardWrapper = ({
   walletProfile,
   showUpdateProfileNft,
   updateProfileName,
-  established,
-  compact,
+  compact = false,
   underHeaderComponent,
   childContainerClassName,
 }: ProfileCardWrapperProps) => {
-  const { t } = useTranslation()
-
   // Get average color of image URL if in compact mode.
   const averageImgColorLoadable = useCachedLoadable(
     !compact || walletProfile.loading
@@ -93,11 +90,6 @@ export const ProfileCardWrapper = ({
               updateProfileName={updateProfileName}
               walletProfile={walletProfile}
             />
-            {established && (
-              <div className="caption-text -mt-3 mb-5 font-mono">
-                {t('info.establishedAbbr')} {formatDate(established)}
-              </div>
-            )}
             {underHeaderComponent}
           </div>
         )}
