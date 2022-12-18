@@ -10,13 +10,5 @@ export type ProfileCardWrapperProps = {
   updateProfileName: (name: string | null) => Promise<void>
   underHeaderComponent: ReactNode
   childContainerClassName?: string
-} & (
-  | {
-      established?: Date
-      compact?: false
-    }
-  | {
-      established?: never
-      compact: true
-    }
-)
+  compact?: boolean
+}

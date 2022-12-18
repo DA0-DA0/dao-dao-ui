@@ -27,7 +27,6 @@ Default.args = {
       nft: null,
     },
   },
-  established: new Date(),
   tokenSymbol: 'JUNO',
   inboxProposalCount: 5,
   lazyData: {
