@@ -266,25 +266,24 @@ export const TokenCard = ({
                 symbol={tokenSymbol}
               />
 
-              {!isJunoIbcUsdc(tokenDenom) && (
-                <TokenAmountDisplay
-                  amount={
-                    // If staking info has not finished loading, don't show
-                    // until it is loaded so this is accurate.
-                    waitingForStakingInfo ||
-                    lazyInfo.loading ||
-                    !lazyInfo.data.usdcUnitPrice
-                      ? { loading: true }
-                      : totalBalance * lazyInfo.data.usdcUnitPrice.amount
-                  }
-                  dateFetched={
-                    lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
-                      ? undefined
-                      : lazyInfo.data.usdcUnitPrice.timestamp
-                  }
-                  usdcConversion
-                />
-              )}
+              {!isJunoIbcUsdc(tokenDenom) &&
+                (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                  <TokenAmountDisplay
+                    amount={
+                      // If staking info has not finished loading, don't show
+                      // until it is loaded so this is accurate.
+                      waitingForStakingInfo || lazyInfo.loading
+                        ? { loading: true }
+                        : totalBalance * lazyInfo.data.usdcUnitPrice!.amount
+                    }
+                    dateFetched={
+                      lazyInfo.loading
+                        ? undefined
+                        : lazyInfo.data.usdcUnitPrice!.timestamp
+                    }
+                    usdcConversion
+                  />
+                )}
             </div>
           </div>
 

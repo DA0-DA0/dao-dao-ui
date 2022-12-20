@@ -25,6 +25,7 @@ import {
   cosmWasmClientRouter,
   getRpcForChainId,
   isValidWalletAddress,
+  normalizeImageUrl,
   parseContractVersion,
   processError,
   validateContractAddress,
@@ -205,7 +206,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       if (config.image_url) {
         try {
           const response = await axios.get(
-            FAST_AVERAGE_COLOR_API_TEMPLATE.replace('URL', config.image_url),
+            FAST_AVERAGE_COLOR_API_TEMPLATE.replace(
+              'URL',
+              normalizeImageUrl(config.image_url)
+            ),
             { responseType: 'text' }
           )
 
