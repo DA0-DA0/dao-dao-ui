@@ -1,25 +1,32 @@
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import queryString from 'query-string'
 
 import { WithChainId } from '@dao-dao/types'
-import { INDEXER_BASE } from '@dao-dao/utils'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 export type QueryIndexerOptions = WithChainId<{
   args?: Record<string, any>
   blockHeight?: number
 }>
 
-// TODO(multichain): Switch indexer on chainId.
 export const queryIndexer = async <T = any>(
   contractAddress: string,
   formulaName: string,
-  { args, blockHeight }: QueryIndexerOptions = {}
+  { args, blockHeight, chainId }: QueryIndexerOptions = {}
 ): Promise<T | undefined> => {
+  const indexerApiBase = CHAIN_INDEXER_MAP[chainId ?? CHAIN_ID]
+  if (!indexerApiBase) {
+    throw new Error(
+      `No indexer configured for chain ID ${chainId ?? CHAIN_ID}.`
+    )
+  }
+
   const query = queryString.stringify({
     ...args,
     blockHeight,
   })
   const response = await fetch(
-    `${INDEXER_BASE}/${contractAddress}/${formulaName}` +
+    `${indexerApiBase}/${contractAddress}/${formulaName}` +
       (query ? `?${query}` : '')
   )
 
@@ -35,4 +42,9 @@ export const queryIndexer = async <T = any>(
   }
 
   return response.json()
+}
+
+const CHAIN_INDEXER_MAP: Record<string, string | undefined> = {
+  [ChainInfoID.Uni5]: 'https://indexer-testnet.daodao.zone',
+  [ChainInfoID.Juno1]: 'https://indexer-mainnet.daodao.zone',
 }

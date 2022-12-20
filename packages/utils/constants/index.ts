@@ -112,8 +112,6 @@ export const STARGAZE_URL_BASE = process.env
 // Wallet profiles
 export const PFPK_API_BASE = process.env.NEXT_PUBLIC_PFPK_API_BASE as string
 
-// Indexer
-export const INDEXER_BASE = process.env.NEXT_PUBLIC_INDEXER_BASE as string
 // Search
 export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string
 export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
