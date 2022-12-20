@@ -61,9 +61,15 @@ export const daoCardInfoSelector = selectorFamily<
 
       const { config, admin } = dumpedState
 
-      const established = get(
-        contractInstantiateTimeSelector({ address: coreAddress, chainId })
-      )
+      let established: Date | undefined
+      // Indexer may return a createdAt string, in which case don't query again.
+      if (typeof dumpedState.createdAt === 'string' && dumpedState.createdAt) {
+        established = new Date(dumpedState.createdAt)
+      } else {
+        established = get(
+          contractInstantiateTimeSelector({ address: coreAddress, chainId })
+        )
+      }
 
       // Get parent DAO if exists.
       let parentDao: DaoCardInfo['parentDao']
