@@ -44,7 +44,11 @@ Default.args = {
   onRemove: () => alert('remove'),
   errors: {},
   options: {
-    nftInfo: selected,
+    nftInfo: {
+      loading: false,
+      errored: false,
+      data: selected,
+    },
     options: {
       loading: false,
       errored: false,
