@@ -13,7 +13,7 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { normalizeImageUrl } from '@dao-dao/utils'
+import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import { Modal } from '../modals/Modal'
@@ -69,7 +69,7 @@ export const ImageSelectorModal = <
         style={
           imageUrl
             ? {
-                backgroundImage: `url(${normalizeImageUrl(imageUrl)})`,
+                backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
               }
             : {}
         }
@@ -153,7 +153,7 @@ export const ImageSelector = <
         onClick={() => setShowImageSelect(true)}
         style={{
           backgroundImage: imageUrl
-            ? `url(${normalizeImageUrl(imageUrl)})`
+            ? `url(${toAccessibleImageUrl(imageUrl)})`
             : undefined,
           ...(size !== undefined && { width: size, height: size }),
         }}

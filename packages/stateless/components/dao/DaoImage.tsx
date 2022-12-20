@@ -3,7 +3,7 @@ import { ComponentType, ReactNode } from 'react'
 
 import { LinkWrapperProps } from '@dao-dao/types'
 import { DaoParentInfo } from '@dao-dao/types/dao'
-import { getFallbackImage, normalizeImageUrl } from '@dao-dao/utils'
+import { getFallbackImage, toAccessibleImageUrl } from '@dao-dao/utils'
 
 export interface DaoImageProps {
   size: 'sm' | 'lg'
@@ -55,7 +55,7 @@ export const DaoImage = ({
         style={{
           backgroundImage: `url(${
             imageUrl
-              ? normalizeImageUrl(imageUrl)
+              ? toAccessibleImageUrl(imageUrl)
               : getFallbackImage(coreAddress || '')
           })`,
         }}
@@ -83,7 +83,7 @@ export const DaoImage = ({
           style={{
             backgroundImage: `url(${
               parentDao.imageUrl
-                ? normalizeImageUrl(parentDao.imageUrl)
+                ? toAccessibleImageUrl(parentDao.imageUrl)
                 : getFallbackImage(parentDao.coreAddress)
             })`,
           }}

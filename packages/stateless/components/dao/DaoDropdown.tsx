@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
 import { DaoDropdownProps } from '@dao-dao/types/stateless/DaoDropdown'
-import { normalizeImageUrl } from '@dao-dao/utils'
+import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { DropdownIconButton } from '../icon_buttons'
 import { Tooltip } from '../tooltip/Tooltip'
@@ -46,7 +46,7 @@ export const DaoDropdown = ({
       <Tooltip title={name}>
         <div
           className="h-7 w-7 overflow-hidden rounded-full bg-cover bg-center"
-          style={{ backgroundImage: `url(${normalizeImageUrl(imageUrl)})` }}
+          style={{ backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})` }}
         />
       </Tooltip>
     </LinkWrapper>
@@ -88,7 +88,9 @@ export const DaoDropdown = ({
           >
             <div
               className="h-5 w-5 overflow-hidden rounded-full bg-cover bg-center"
-              style={{ backgroundImage: `url(${normalizeImageUrl(imageUrl)})` }}
+              style={{
+                backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
+              }}
             />
 
             <p className="link-text truncate text-text-body">{name}</p>

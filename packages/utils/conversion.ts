@@ -178,9 +178,15 @@ export const transformIpfsUrlToHttpsIfNecessary = (ipfsUrl: string) =>
     ? IPFS_GATEWAY_TEMPLATE.replace('PATH', ipfsUrl.replace('ipfs://', ''))
     : ipfsUrl
 
-// Normalize image URLs by ensuring they are from a valid IPFS provider or not
-// an IPFS URL.
-export const normalizeImageUrl = (url: string) => {
+// Transform image URLs to ensure they can be accessed. They need to be using
+// https protocol, not ipfs, and potentially from a whitelisted IPFS gateway.
+// They only need to be from a whitelisted IPFS gateway if being used in a
+// NextJS Image component (in which case proxy should also be set to true so
+// that non-IPFS images are proxied through our whitelisted proxy domain).
+export const toAccessibleImageUrl = (
+  url: string,
+  { proxy }: { proxy?: boolean } = { proxy: false }
+) => {
   // If hosted locally, passthrough (probably development/test env).
   if (url.startsWith('/')) {
     return url
@@ -189,17 +195,21 @@ export const normalizeImageUrl = (url: string) => {
   url = transformIpfsUrlToHttpsIfNecessary(url)
 
   // Convert `https://CID.ipfs.nftstorage.link` to
-  // `https://nftstorage.link/ipfs/CID`
+  // `https://nftstorage.link/ipfs/CID` because we have to explicitly whitelist
+  // domains, and the CID is the part that changes.
   if (url.includes('.ipfs.nftstorage.link')) {
     const matches = url.match(/([a-zA-Z0-9]+)\.ipfs\.nftstorage\.link(.*)$/)
     if (matches?.length === 3) {
       url = `https://nftstorage.link/ipfs/${matches[1]}${matches[2]}`
+      return url
     }
   }
 
   // If this is not an IPFS image, we can't enforce that it is coming from one
-  // of our nextJS allowed image sources.
-  if (!url.includes('ipfs')) {
+  // of our NextJS allowed image sources. Thus proxy it through a whitelisted
+  // domain. This only needs to be used for images that are displayed in the
+  // NextJS Image component, which is why it is optional and off by default.
+  if (proxy && !url.includes('ipfs')) {
     url = `https://img-proxy.ekez.workers.dev/${url}`
   }
 

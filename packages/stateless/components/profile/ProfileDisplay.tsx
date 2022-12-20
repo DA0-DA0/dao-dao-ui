@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { ProfileDisplayProps } from '@dao-dao/types'
-import { getFallbackImage, normalizeImageUrl } from '@dao-dao/utils'
+import { getFallbackImage, toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Tooltip } from '../tooltip/Tooltip'
@@ -37,7 +37,7 @@ export const ProfileDisplay = ({
               backgroundImage: `url(${
                 loadingProfile.loading
                   ? getFallbackImage(address)
-                  : normalizeImageUrl(loadingProfile.data.imageUrl)
+                  : toAccessibleImageUrl(loadingProfile.data.imageUrl)
               })`,
               width: imageSize,
               height: imageSize,

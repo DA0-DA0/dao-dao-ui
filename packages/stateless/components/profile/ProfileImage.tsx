@@ -2,7 +2,7 @@ import { Edit, PersonOutline } from '@mui/icons-material'
 import clsx from 'clsx'
 import { forwardRef, useEffect, useState } from 'react'
 
-import { normalizeImageUrl } from '@dao-dao/utils'
+import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 export interface ProfileImageProps {
   imageUrl?: string
@@ -83,7 +83,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
           )}
           style={
             imageUrl
-              ? { backgroundImage: `url(${normalizeImageUrl(imageUrl)})` }
+              ? { backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})` }
               : undefined
           }
         ></div>

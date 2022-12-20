@@ -2,7 +2,7 @@ import { selectorFamily } from 'recoil'
 
 import {
   FAST_AVERAGE_COLOR_API_TEMPLATE,
-  normalizeImageUrl,
+  toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
 export const averageColorSelector = selectorFamily({
@@ -15,7 +15,10 @@ export const averageColorSelector = selectorFamily({
 
     try {
       const response = await fetch(
-        FAST_AVERAGE_COLOR_API_TEMPLATE.replace('URL', normalizeImageUrl(url))
+        FAST_AVERAGE_COLOR_API_TEMPLATE.replace(
+          'URL',
+          toAccessibleImageUrl(url)
+        )
       )
       // Trim newline at the end.
       const color = (await response.text()).trim()

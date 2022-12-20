@@ -6,7 +6,7 @@ import { LoadingData } from '@dao-dao/types'
 import {
   USDC_DECIMALS,
   formatTime,
-  normalizeImageUrl,
+  toAccessibleImageUrl,
   toFixedDown,
 } from '@dao-dao/utils'
 
@@ -221,7 +221,7 @@ export const TokenAmountDisplay = ({
               iconClassName
             )}
             style={{
-              backgroundImage: `url(${normalizeImageUrl(iconUrl)})`,
+              backgroundImage: `url(${toAccessibleImageUrl(iconUrl)})`,
             }}
           ></div>
 
