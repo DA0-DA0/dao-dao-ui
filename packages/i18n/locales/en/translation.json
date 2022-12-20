@@ -36,7 +36,7 @@
     "deposit": "Deposit",
     "deselectAllNfts": "Deselect all {{count}} NFTs",
     "done": "Done",
-    "downloadVotesCsv": "Download CSV of votes",
+    "downloadVotesCsv": "Download voting data (.csv)",
     "duplicate": "Duplicate",
     "execute": "Execute",
     "follow": "Follow",
