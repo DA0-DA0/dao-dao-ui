@@ -1,6 +1,8 @@
 import { Close } from '@mui/icons-material'
 import clsx from 'clsx'
 
+import { normalizeImageUrl } from '@dao-dao/utils'
+
 import { IconButton } from '../icon_buttons/IconButton'
 
 export interface ContextPillProps {
@@ -21,7 +23,7 @@ export const ContextPill = ({ imageUrl, name, onClose }: ContextPillProps) => (
       <div
         className="h-6 w-6 shrink-0 overflow-hidden rounded-full bg-cover bg-center"
         style={{
-          backgroundImage: `url(${imageUrl})`,
+          backgroundImage: `url(${normalizeImageUrl(imageUrl)})`,
         }}
       ></div>
     )}

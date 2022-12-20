@@ -3,7 +3,12 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
-import { USDC_DECIMALS, formatTime, toFixedDown } from '@dao-dao/utils'
+import {
+  USDC_DECIMALS,
+  formatTime,
+  normalizeImageUrl,
+  toFixedDown,
+} from '@dao-dao/utils'
 
 import { Tooltip } from '../tooltip/Tooltip'
 
@@ -216,7 +221,7 @@ export const TokenAmountDisplay = ({
               iconClassName
             )}
             style={{
-              backgroundImage: `url(${iconUrl})`,
+              backgroundImage: `url(${normalizeImageUrl(iconUrl)})`,
             }}
           ></div>
 

@@ -11,7 +11,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { TokenCardInfo } from '@dao-dao/types'
-import { isJunoIbcUsdc, secondsToWdhms } from '@dao-dao/utils'
+import {
+  isJunoIbcUsdc,
+  normalizeImageUrl,
+  secondsToWdhms,
+} from '@dao-dao/utils'
 
 import { ButtonLinkProps } from '../buttons'
 import { Button } from '../buttons/Button'
@@ -190,7 +194,7 @@ export const TokenCard = ({
               <div
                 className="h-10 w-10 rounded-full bg-cover bg-center"
                 style={{
-                  backgroundImage: `url(${imageUrl})`,
+                  backgroundImage: `url(${normalizeImageUrl(imageUrl)})`,
                 }}
               ></div>
 

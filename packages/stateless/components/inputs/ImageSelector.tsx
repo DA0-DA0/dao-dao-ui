@@ -13,6 +13,8 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { normalizeImageUrl } from '@dao-dao/utils'
+
 import { Button } from '../buttons/Button'
 import { Modal } from '../modals/Modal'
 import { InputErrorMessage } from './InputErrorMessage'
@@ -64,7 +66,13 @@ export const ImageSelectorModal = <
         aria-label={t('info.daosLogo')}
         className="h-[95px] w-[95px] rounded-full border border-border-secondary bg-cover bg-center"
         role="img"
-        style={{ backgroundImage: `url(${imageUrl})` }}
+        style={
+          imageUrl
+            ? {
+                backgroundImage: `url(${normalizeImageUrl(imageUrl)})`,
+              }
+            : {}
+        }
       />
       <div className="flex flex-col gap-1">
         <InputLabel
@@ -144,7 +152,9 @@ export const ImageSelector = <
         disabled={disabled}
         onClick={() => setShowImageSelect(true)}
         style={{
-          backgroundImage: `url(${imageUrl})`,
+          backgroundImage: imageUrl
+            ? `url(${normalizeImageUrl(imageUrl)})`
+            : undefined,
           ...(size !== undefined && { width: size, height: size }),
         }}
         type="button"
