@@ -20,7 +20,6 @@ const HomePage: NextPage = () => {
 
   const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
 
-  // Load from indexer.
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
   const pinnedDaosLoading = useLoadingPinnedDaoCardInfos()
 

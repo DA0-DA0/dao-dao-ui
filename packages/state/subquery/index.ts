@@ -1,5 +1,4 @@
 export * from './client'
-export * from './daos'
 export * from './loop'
 export * from './proposal'
 export * from './walletProposals'
