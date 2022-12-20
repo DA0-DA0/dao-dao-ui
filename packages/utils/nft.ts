@@ -11,33 +11,6 @@ export const getNftName = (
     ? `${collectionName} ${(tokenName || tokenId).trim()}`.trim()
     : tokenName
 
-// Normalize NFT image URLs by ensuring they are from a valid IPFS provider.
-export const normalizeNftImageUrl = (url: string) => {
-  // If hosted locally, passthrough (probably development/test env).
-  if (url.startsWith('/')) {
-    return url
-  }
-
-  url = transformIpfsUrlToHttpsIfNecessary(url)
-
-  // Convert `https://CID.ipfs.nftstorage.link` to
-  // `https://nftstorage.link/ipfs/CID`
-  if (url.includes('.ipfs.nftstorage.link')) {
-    const matches = url.match(/([a-zA-Z0-9]+)\.ipfs\.nftstorage\.link(.*)$/)
-    if (matches?.length === 3) {
-      url = `https://nftstorage.link/ipfs/${matches[1]}${matches[2]}`
-    }
-  }
-
-  // If this is not an IPFS image, we can't enforce that it is coming from one
-  // of our nextJS allowed image sources.
-  if (!url.includes('ipfs')) {
-    url = `https://img-proxy.ekez.workers.dev/${url}`
-  }
-
-  return url
-}
-
 // Tries to parse [EIP-721] metadata out of the data at it's metadata pointer.
 //
 // [EIP-721]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md

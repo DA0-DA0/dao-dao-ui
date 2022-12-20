@@ -44,7 +44,7 @@ import {
   makeValidateMsg,
   nativeTokenLabel,
   processError,
-  validateUrl,
+  validateUrlWithIpfs,
 } from '@dao-dao/utils'
 
 import {
@@ -576,7 +576,7 @@ export const CreateDaoForm = ({
               error={form.formState.errors.imageUrl}
               fieldName="imageUrl"
               register={form.register}
-              validation={[validateUrl]}
+              validation={[validateUrlWithIpfs]}
               watch={form.watch}
             />
 

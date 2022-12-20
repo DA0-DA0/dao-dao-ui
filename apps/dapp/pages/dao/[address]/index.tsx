@@ -225,7 +225,6 @@ const InnerDaoHome = () => {
           ) : (
             <ProfileNotMemberCard
               daoName={daoInfo.name}
-              established={new Date()}
               membershipInfo={
                 <SuspenseLoader fallback={<Loader size={24} />}>
                   <ProfileCardMemberInfo

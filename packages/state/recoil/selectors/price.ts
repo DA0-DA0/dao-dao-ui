@@ -51,6 +51,20 @@ export const usdcPerMacroTokenSelector = selectorFamily<
         return
       }
 
+      // Find swap for denom.
+      const denomSwap = tokens.pools.find(
+        ({ pool_assets }) =>
+          pool_assets.find(
+            ({ denom: pool_denom, token_address }) =>
+              pool_denom === denom || token_address === denom
+          ) !== undefined
+      )
+
+      // No price information available.
+      if (!denomSwap) {
+        return
+      }
+
       // Find JUNO-USDC swap by USDC_SWAP_ADDRESS.
       const usdcSwap = tokens.pools.find(
         ({ swap_address }) => swap_address === USDC_SWAP_ADDRESS
@@ -82,20 +96,6 @@ export const usdcPerMacroTokenSelector = selectorFamily<
       if (denom === BASE_SWAP_DENOM) {
         // USDC / JUNO
         return { denom, amount: Number(nativeUSDC), timestamp }
-      }
-
-      // Find swap for denom.
-      const denomSwap = tokens.pools.find(
-        ({ pool_assets }) =>
-          pool_assets.find(
-            ({ denom: pool_denom, token_address }) =>
-              pool_denom === denom || token_address === denom
-          ) !== undefined
-      )
-
-      // No price information available.
-      if (!denomSwap) {
-        return
       }
 
       // Get juno price in terms of the token.

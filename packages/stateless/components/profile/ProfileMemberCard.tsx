@@ -33,7 +33,6 @@ export const ProfileMemberCard = ({
   loadingManaging,
   daoName,
   openProposals,
-  established,
   membershipInfo,
   ...wrapperProps
 }: ProfileMemberCardProps) => {
@@ -42,7 +41,6 @@ export const ProfileMemberCard = ({
   return (
     <ProfileCardWrapper
       childContainerClassName="p-0 border-t-0"
-      established={established}
       underHeaderComponent={<MembershipPill daoName={daoName} isMember />}
       {...wrapperProps}
     >
