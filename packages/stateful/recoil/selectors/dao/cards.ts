@@ -22,7 +22,12 @@ import {
   ConfigResponse as DaoCoreV2ConfigResponse,
   DumpStateResponse as DaoCoreV2DumpStateResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
-import { CHAIN_ID, getFallbackImage } from '@dao-dao/utils'
+import {
+  CHAIN_BECH32_PREFIX,
+  CHAIN_ID,
+  getFallbackImage,
+  isValidContractAddress,
+} from '@dao-dao/utils'
 
 import { proposalModuleAdapterProposalCountSelector } from '../../../proposal-module-adapter'
 import {
@@ -66,6 +71,8 @@ export const daoCardInfoSelector = selectorFamily<
         admin &&
         // A DAO without a parent DAO may be its own admin.
         admin !== coreAddress &&
+        // Ensure address is a contract.
+        isValidContractAddress(admin, CHAIN_BECH32_PREFIX) &&
         (get(
           isContractSelector({
             contractAddress: admin,
