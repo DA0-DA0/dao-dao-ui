@@ -12,11 +12,11 @@ import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
 import { DaoVotingCw20StakedAdapter } from '../../../voting-module-adapter/adapters/DaoVotingCw20Staked'
 
-export const cwCoreProposalModulesSelector = selectorFamily<
+export const daoCoreProposalModulesSelector = selectorFamily<
   ProposalModule[],
   WithChainId<{ coreAddress: string }>
 >({
-  key: 'cwCoreProposalModules',
+  key: 'daoCoreProposalModules',
   get:
     ({ coreAddress, chainId }) =>
     async ({ get }) => {

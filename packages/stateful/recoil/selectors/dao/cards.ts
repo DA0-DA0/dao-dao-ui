@@ -26,7 +26,7 @@ import { CHAIN_ID, getFallbackImage } from '@dao-dao/utils'
 
 import { proposalModuleAdapterProposalCountSelector } from '../../../proposal-module-adapter'
 import {
-  cwCoreProposalModulesSelector,
+  daoCoreProposalModulesSelector,
   daoCw20GovernanceTokenAddressSelector,
 } from './misc'
 
@@ -164,7 +164,7 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
         : 0
 
       const proposalModules = get(
-        cwCoreProposalModulesSelector({
+        daoCoreProposalModulesSelector({
           coreAddress,
           chainId,
         })

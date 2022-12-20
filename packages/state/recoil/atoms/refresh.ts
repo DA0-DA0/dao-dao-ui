@@ -70,3 +70,9 @@ export const refreshDaoVotingPowerAtom = atomFamily<number, string>({
   key: 'refreshDaoVotingPower',
   default: 0,
 })
+
+// Change this to refresh open proposals.
+export const refreshOpenProposalsAtom = atom({
+  key: 'refreshOpenProposals',
+  default: 0,
+})

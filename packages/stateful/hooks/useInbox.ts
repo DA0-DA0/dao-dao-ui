@@ -1,102 +1,79 @@
-import { NetworkStatus } from '@apollo/client/core'
-import { useWallet } from '@noahsaso/cosmodal'
-import { useEffect, useMemo } from 'react'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
+import { useCallback, useEffect } from 'react'
+import { useSetRecoilState, waitForAll } from 'recoil'
 
-import {
-  GetOpenProposalsWithWalletVotesVariables,
-  blockHeightSelector,
-  useGetOpenProposalsWithWalletVotesVariables,
-} from '@dao-dao/state'
+import { openProposalsSelector, refreshOpenProposalsAtom } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { DaoWithOpenUnvotedProposals, UseInboxReturn } from '@dao-dao/types'
 
-import { pinnedDaosWithProposalModulesSelector } from '../recoil/selectors'
+import { pinnedDaosWithProposalModulesSelector } from '../recoil'
 
 export const useInbox = (): UseInboxReturn => {
-  const { address: walletAddress } = useWallet()
-
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
-  const blockHeight =
-    blockHeightLoadable.state === 'hasValue'
-      ? blockHeightLoadable.contents
-      : undefined
+  const { address: walletAddress, status: walletConnectionStatus } = useWallet()
 
   const pinnedDaosWithProposalModulesLoadable = useCachedLoadable(
     pinnedDaosWithProposalModulesSelector
   )
 
-  const queryVariables: GetOpenProposalsWithWalletVotesVariables = useMemo(
-    () => ({
-      proposalModuleAddresses:
-        pinnedDaosWithProposalModulesLoadable.state === 'hasValue'
-          ? pinnedDaosWithProposalModulesLoadable.contents.flatMap(
-              ({ proposalModules }) =>
-                proposalModules.map(({ address }) => address)
-            )
-          : [],
-      walletAddress,
-      currentDate: new Date(),
-      currentHeight: blockHeight ?? 0,
-    }),
-    [
-      blockHeight,
-      pinnedDaosWithProposalModulesLoadable.state,
-      pinnedDaosWithProposalModulesLoadable.contents,
-      walletAddress,
-    ]
+  const setRefreshOpenProposals = useSetRecoilState(refreshOpenProposalsAtom)
+  const refreshOpenProposals = useCallback(
+    () => setRefreshOpenProposals((id) => id + 1),
+    [setRefreshOpenProposals]
   )
 
-  // Automatically refetches when the variables change. blockHeight updates
-  // once per minute, so this query will also update once per minute.
-  const query = useGetOpenProposalsWithWalletVotesVariables(queryVariables)
-  const { error, previousData, refetch, networkStatus } = query
-  const data = query.data || previousData
+  const openProposalsLoadable = useCachedLoadable(
+    pinnedDaosWithProposalModulesLoadable.state !== 'hasValue' ||
+      // Don't load without a wallet until we're no longer initializing. This
+      // prevents duplicate queries when the page is first loading.
+      walletConnectionStatus === WalletConnectionStatus.Initializing ||
+      walletConnectionStatus === WalletConnectionStatus.AttemptingAutoConnection
+      ? undefined
+      : waitForAll(
+          pinnedDaosWithProposalModulesLoadable.contents.map(
+            ({ coreAddress }) =>
+              openProposalsSelector({
+                coreAddress,
+                address: walletAddress,
+              })
+          )
+        )
+  )
 
-  //! Errors.
+  // Automatically update once per minute.
   useEffect(() => {
-    if (blockHeightLoadable.state === 'hasError') {
-      console.error(blockHeightLoadable.contents)
-    }
-    if (pinnedDaosWithProposalModulesLoadable.state === 'hasError') {
-      console.error(pinnedDaosWithProposalModulesLoadable.contents)
-    }
-    if (error) {
-      console.error(error)
-    }
-  }, [
-    blockHeightLoadable.contents,
-    blockHeightLoadable.state,
-    pinnedDaosWithProposalModulesLoadable.contents,
-    pinnedDaosWithProposalModulesLoadable.state,
-    error,
-  ])
+    const interval = setInterval(refreshOpenProposals, 60 * 1000)
+    return () => clearInterval(interval)
+  }, [refreshOpenProposals])
 
   const daosWithOpenUnvotedProposals: DaoWithOpenUnvotedProposals[] =
     pinnedDaosWithProposalModulesLoadable.state === 'hasValue'
       ? pinnedDaosWithProposalModulesLoadable.contents.map(
-          ({ coreAddress, proposalModules }): DaoWithOpenUnvotedProposals => ({
-            coreAddress,
-            proposalModules,
-            // Undefined if data not yet loaded.
-            openUnvotedProposals:
-              data &&
-              proposalModules.flatMap(
+          (
+            { coreAddress, proposalModules },
+            index
+          ): DaoWithOpenUnvotedProposals => {
+            const proposalModulesWithOpenProposals =
+              openProposalsLoadable.state === 'hasValue'
+                ? openProposalsLoadable.contents[index]
+                : []
+
+            return {
+              coreAddress,
+              proposalModules,
+              openUnvotedProposals: proposalModules.flatMap(
                 (proposalModule) =>
-                  data.proposalModules.nodes
-                    .find(({ id }) => id === proposalModule.address)
-                    // Only select proposals not voted on by the current wallet.
-                    // Wallet filter performed in the query. If no wallet connected,
-                    // searches for empty walletAddress, which doesn't exist, so there
-                    // will be no votes. Thus we display all open proposals.
-                    ?.proposals.nodes.filter(
-                      ({ votes }) => votes.nodes.length === 0
+                  proposalModulesWithOpenProposals
+                    .find(
+                      ({ proposalModuleAddress }) =>
+                        proposalModuleAddress === proposalModule.address
                     )
-                    .map(({ num }) => ({
+                    ?.proposals.map(({ id }) => ({
                       proposalModule,
-                      proposalNumber: num,
+                      proposalNumber: id,
                     })) ?? []
               ),
-          })
+            }
+          }
         )
       : []
 
@@ -108,18 +85,15 @@ export const useInbox = (): UseInboxReturn => {
 
   return {
     loading:
-      blockHeightLoadable.state === 'loading' ||
-      pinnedDaosWithProposalModulesLoadable.state === 'loading',
+      pinnedDaosWithProposalModulesLoadable.state === 'loading' ||
+      openProposalsLoadable.state === 'loading',
     refetching:
-      (blockHeightLoadable.state === 'hasValue' &&
-        blockHeightLoadable.updating) ||
       (pinnedDaosWithProposalModulesLoadable.state === 'hasValue' &&
         pinnedDaosWithProposalModulesLoadable.updating) ||
-      networkStatus === NetworkStatus.refetch,
-    error,
+      (openProposalsLoadable.state === 'hasValue' &&
+        openProposalsLoadable.updating),
     daosWithOpenUnvotedProposals,
     proposalCount,
-    // Force no arguments.
-    refetch: () => refetch(),
+    refetch: refreshOpenProposals,
   }
 }

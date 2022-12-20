@@ -1,11 +1,14 @@
 import { selectorFamily } from 'recoil'
 
+import { WithChainId } from '@dao-dao/types'
+
 import {
   DaoSearchResult,
   QueryIndexerOptions,
   queryIndexer,
   searchDaos,
 } from '../../indexer'
+import { refreshOpenProposalsAtom } from '../atoms'
 
 export const queryIndexerSelector = selectorFamily<
   any,
@@ -43,4 +46,28 @@ export const searchDaosSelector = selectorFamily<
     ({ query, limit, exclude }) =>
     async () =>
       await searchDaos(query, limit, exclude),
+})
+
+export const openProposalsSelector = selectorFamily<
+  {
+    proposalModuleAddress: string
+    proposals: { id: number }[]
+  }[],
+  WithChainId<{ coreAddress: string; address?: string }>
+>({
+  key: 'openProposals',
+  get:
+    ({ coreAddress, chainId, address }) =>
+    ({ get }) => {
+      const id = get(refreshOpenProposalsAtom)
+      return get(
+        queryIndexerSelector({
+          contractAddress: coreAddress,
+          formulaName: 'daoCore/openProposals',
+          chainId,
+          id,
+          args: { address },
+        })
+      )
+    },
 })

@@ -4,7 +4,7 @@ import { pinnedAddressesAtom } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
 
 import { daoDropdownInfoSelector } from './cards'
-import { cwCoreProposalModulesSelector } from './misc'
+import { daoCoreProposalModulesSelector } from './misc'
 
 export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
   key: 'pinnedDaoDropdownInfo',
@@ -27,7 +27,7 @@ export const pinnedDaosWithProposalModulesSelector = selector({
     const proposalModules = get(
       waitForAll(
         daoAddresses.map((coreAddress) =>
-          cwCoreProposalModulesSelector({ coreAddress })
+          daoCoreProposalModulesSelector({ coreAddress })
         )
       )
     )
