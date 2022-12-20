@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector } from 'recoil'
 
 import { FireEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
@@ -90,13 +90,21 @@ const Component: ActionComponent = (props) => {
         : constSelector([])
     )
   )
-  const nftInfo = useRecoilValue(
+  const nftInfoLoadable = useCachedLoadable(
     !!tokenId && !!collection
       ? nftCardInfoSelector({ chainId, collection, tokenId })
       : constSelector(undefined)
   )
 
-  return <BurnNft {...props} options={{ options, nftInfo }} />
+  return (
+    <BurnNft
+      {...props}
+      options={{
+        options,
+        nftInfo: loadableToLoadingDataWithError(nftInfoLoadable),
+      }}
+    />
+  )
 }
 
 export const makeBurnNftAction: ActionMaker<BurnNftData> = ({ t }) => ({

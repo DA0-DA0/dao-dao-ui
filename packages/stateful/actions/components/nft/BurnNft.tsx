@@ -8,6 +8,7 @@ import {
   FireEmoji,
   HorizontalNftCard,
   InputErrorMessage,
+  Loader,
   NftSelectionModal,
 } from '@dao-dao/stateless'
 import { ActionComponent, NftCardInfo } from '@dao-dao/types'
@@ -33,7 +34,13 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
     `${nft.collection.address}${nft.tokenId}`
 
   useEffect(() => {
-    if (!selected) {
+    if (
+      !selected ||
+      // If selected, make sure it exists in options.
+      (!options.loading &&
+        !options.errored &&
+        !options.data.some((nft) => getIdForNft(nft) === selected))
+    ) {
       setError(fieldNamePrefix + 'collection', {
         type: 'required',
         message: t('error.noNftSelected'),
@@ -41,20 +48,32 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
     } else {
       clearErrors(fieldNamePrefix + 'collection')
     }
-  }, [selected, setError, clearErrors, t, fieldNamePrefix])
+  }, [selected, setError, clearErrors, t, fieldNamePrefix, options])
 
   const [showModal, setShowModal] = useState<boolean>(isCreating)
 
   return (
     <ActionCard Icon={FireEmoji} onRemove={onRemove} title={t('title.burnNft')}>
       <div className="flex flex-col gap-2">
-        {nftInfo && <HorizontalNftCard {...nftInfo} />}
+        {nftInfo.loading ? (
+          <Loader size={24} />
+        ) : !nftInfo.errored && nftInfo.data ? (
+          <HorizontalNftCard {...nftInfo.data} />
+        ) : (
+          // If errored loading NFT and not creating, token likely burned.
+          nftInfo.errored &&
+          !isCreating && (
+            <p className="primary-text">{t('info.tokenBurned', { tokenId })}</p>
+          )
+        )}
 
         {isCreating && (
           <Button
             className={clsx(
               'text-text-tertiary',
-              nftInfo ? 'self-end' : 'self-start'
+              !nftInfo.loading && !nftInfo.errored && nftInfo.data
+                ? 'self-end'
+                : 'self-start'
             )}
             onClick={() => setShowModal(true)}
             variant="secondary"
