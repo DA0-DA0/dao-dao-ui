@@ -1,11 +1,10 @@
 import { LayersOutlined, PaymentsOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
 
-import { ButtonLinkProps } from '../buttons'
+import { ButtonLink } from '../buttons'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import {
   ProfileCardWrapper,
@@ -27,7 +26,6 @@ export interface ProfileHomeCardProps
     proposalsCreated: number
     votesCast: number
   }>
-  ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const ProfileHomeCard = ({
@@ -36,7 +34,6 @@ export const ProfileHomeCard = ({
   tokenDecimals,
   inboxProposalCount,
   lazyData,
-  ButtonLink,
   ...wrapperProps
 }: ProfileHomeCardProps) => {
   const { t } = useTranslation()
@@ -119,6 +116,7 @@ export const ProfileHomeCard = ({
       </div>
 
       <div className="border-t border-t-border-primary p-6">
+        {/* Use stateless ButtonLink. No need to use stateful version that displays a loader when navigating, since the Inbox page is static and loads instantly. Displaying a loader here just causes an unnecessary flicker. */}
         <ButtonLink
           className="w-full"
           contentContainerClassName="justify-center"
