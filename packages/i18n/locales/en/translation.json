@@ -528,6 +528,7 @@
     "tierMemberGovTokenAllocationTooltip": "This member will receive {{tokens}} ${{tokenSymbol}} when the DAO is created.",
     "today": "today",
     "token": "token",
+    "tokenBurned": "NFT with ID {{tokenId}} has been burned.",
     "tokenDaoNotMemberInfoProposal": "You were not a member of {{daoName}} when this proposal was created, so you cannot vote on it. You will be able to vote on future proposals as long as you have ${{tokenSymbol}} staked at the time those proposals are created.",
     "tokenSwapDescription": "Create a new token swap that completes when both parties have paid their tokens or fund an existing one.",
     "tokenSwapExplanation": "To perform a token swap, one DAO must first create it, configuring the number of tokens each party must contribute. Then, both DAOs must add their funds. Once both DAOs have added their funds to the swap, the swap will be performed immediately.",

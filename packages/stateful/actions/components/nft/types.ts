@@ -64,8 +64,8 @@ export interface TransferNftOptions {
 export interface BurnNftOptions {
   // The set of NFTs that may be burned as part of this action.
   options: LoadingDataWithError<NftCardInfo[]>
-  // Information about the NFT currently selected.
-  nftInfo: NftCardInfo | undefined
+  // Information about the NFT currently selected. If errored, it may be burnt.
+  nftInfo: LoadingDataWithError<NftCardInfo | undefined>
 }
 
 export interface InstantiateNftCollectionOptions {
