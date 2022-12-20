@@ -3,6 +3,7 @@ import { forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CommandModalContextSectionItem } from '@dao-dao/types/command'
+import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 export interface ItemRowProps {
   item: CommandModalContextSectionItem
@@ -36,9 +37,15 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
               item.disabled ? 'opacity-50' : 'opacity-100'
             )}
             role="img"
-            style={{
-              backgroundImage: `url(${item.imageUrl})`,
-            }}
+            style={
+              item.imageUrl
+                ? {
+                    backgroundImage: `url(${toAccessibleImageUrl(
+                      item.imageUrl
+                    )})`,
+                  }
+                : undefined
+            }
           ></div>
         ) : (
           <item.Icon

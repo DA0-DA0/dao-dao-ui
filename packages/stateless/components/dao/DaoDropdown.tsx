@@ -1,9 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
 import { DaoDropdownProps } from '@dao-dao/types/stateless/DaoDropdown'
+import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { DropdownIconButton } from '../icon_buttons'
 import { Tooltip } from '../tooltip/Tooltip'
@@ -44,7 +44,10 @@ export const DaoDropdown = ({
       href={`/dao/${coreAddress}`}
     >
       <Tooltip title={name}>
-        <img alt="" className="h-7 w-7 rounded-full" src={imageUrl} />
+        <div
+          className="h-7 w-7 overflow-hidden rounded-full bg-cover bg-center"
+          style={{ backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})` }}
+        />
       </Tooltip>
     </LinkWrapper>
   ) : (
@@ -83,7 +86,12 @@ export const DaoDropdown = ({
             className="flex grow flex-row items-center gap-2 overflow-hidden py-2 transition-opacity hover:opacity-70 active:opacity-60"
             href={`/dao/${coreAddress}`}
           >
-            <img alt="" className="h-5 w-5 rounded-full" src={imageUrl} />
+            <div
+              className="h-5 w-5 overflow-hidden rounded-full bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
+              }}
+            />
 
             <p className="link-text truncate text-text-body">{name}</p>
           </LinkWrapper>

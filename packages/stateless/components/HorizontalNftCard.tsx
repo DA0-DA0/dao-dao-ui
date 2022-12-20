@@ -8,7 +8,7 @@ import { NftCardInfo } from '@dao-dao/types'
 import {
   getImageUrlForChainId,
   getNftName,
-  normalizeNftImageUrl,
+  toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
 import { CopyToClipboard } from './CopyToClipboard'
@@ -42,7 +42,7 @@ export const HorizontalNftCard = forwardRef<
   // Load image in background so we can listen for loading complete.
   const [loadedImageSrc, setLoadedImgSrc] = useState<string>()
   useEffect(() => {
-    if (!imageUrl || loadedImageSrc === normalizeNftImageUrl(imageUrl)) {
+    if (!imageUrl || loadedImageSrc === toAccessibleImageUrl(imageUrl)) {
       return
     }
 
@@ -59,7 +59,7 @@ export const HorizontalNftCard = forwardRef<
       setImageLoading(false)
       setImageLoadErrored(true)
     }
-    img.src = normalizeNftImageUrl(imageUrl)
+    img.src = toAccessibleImageUrl(imageUrl)
   }, [imageUrl, loadedImageSrc])
 
   return (
