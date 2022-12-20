@@ -72,9 +72,6 @@ export const ProfileCardMemberInfo = ({
   })
 
   if (
-    claimsPending === undefined ||
-    claimsAvailable === undefined ||
-    sumClaimsAvailable === undefined ||
     loadingUnstakedBalance === undefined ||
     loadingWalletStakedValue === undefined ||
     totalStakedValue === undefined
@@ -117,7 +114,7 @@ export const ProfileCardMemberInfo = ({
 
       toast.success(
         `Claimed ${convertMicroDenomToDenomWithDecimals(
-          sumClaimsAvailable,
+          sumClaimsAvailable ?? 0,
           governanceTokenInfo.decimals
         ).toLocaleString(undefined, {
           maximumFractionDigits: governanceTokenInfo.decimals,
@@ -154,7 +151,7 @@ export const ProfileCardMemberInfo = ({
   )
 
   const unstakingTasks: UnstakingTask[] = [
-    ...claimsPending.map(({ amount, release_at }) => ({
+    ...(claimsPending ?? []).map(({ amount, release_at }) => ({
       status: UnstakingTaskStatus.Unstaking,
       amount: convertMicroDenomToDenomWithDecimals(
         amount,
@@ -173,7 +170,7 @@ export const ProfileCardMemberInfo = ({
             )
           : undefined,
     })),
-    ...claimsAvailable.map(({ amount, release_at }) => ({
+    ...(claimsAvailable ?? []).map(({ amount, release_at }) => ({
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: convertMicroDenomToDenomWithDecimals(
         amount,
