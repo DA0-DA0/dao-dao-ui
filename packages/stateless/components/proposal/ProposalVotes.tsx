@@ -155,7 +155,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
         </div>
 
         <Button
-          className="caption-text mt-6 self-end pr-1 text-right hover:underline"
+          className="caption-text mt-6 self-end pr-1 text-right italic"
           disabled={!csvLinkRef.current || votes.loading}
           onClick={() => csvLinkRef.current?.click()}
           variant="none"
