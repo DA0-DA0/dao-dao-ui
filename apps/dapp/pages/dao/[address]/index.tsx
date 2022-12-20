@@ -31,6 +31,7 @@ import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   DaoHome,
+  Loader,
   ProfileDisconnectedCard,
   ProfileMemberCard,
   ProfileNotMemberCard,
@@ -207,13 +208,15 @@ const InnerDaoHome = () => {
             <ProfileMemberCard
               daoName={daoInfo.name}
               membershipInfo={
-                <ProfileCardMemberInfo
-                  deposit={
-                    maxProposalModuleDeposit > 0
-                      ? maxProposalModuleDeposit.toString()
-                      : undefined
-                  }
-                />
+                <SuspenseLoader fallback={<Loader size={24} />}>
+                  <ProfileCardMemberInfo
+                    deposit={
+                      maxProposalModuleDeposit > 0
+                        ? maxProposalModuleDeposit.toString()
+                        : undefined
+                    }
+                  />
+                </SuspenseLoader>
               }
               showUpdateProfileNft={updateProfileNft.toggle}
               updateProfileName={updateProfileName}
@@ -224,13 +227,15 @@ const InnerDaoHome = () => {
               daoName={daoInfo.name}
               established={new Date()}
               membershipInfo={
-                <ProfileCardMemberInfo
-                  deposit={
-                    maxProposalModuleDeposit > 0
-                      ? maxProposalModuleDeposit.toString()
-                      : undefined
-                  }
-                />
+                <SuspenseLoader fallback={<Loader size={24} />}>
+                  <ProfileCardMemberInfo
+                    deposit={
+                      maxProposalModuleDeposit > 0
+                        ? maxProposalModuleDeposit.toString()
+                        : undefined
+                    }
+                  />
+                </SuspenseLoader>
               }
               showUpdateProfileNft={updateProfileNft.toggle}
               updateProfileName={updateProfileName}
