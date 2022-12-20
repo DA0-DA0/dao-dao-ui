@@ -18,7 +18,7 @@ import {
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
-import { AppLayout, SubQueryProvider, WalletProvider } from '@dao-dao/stateful'
+import { ApolloGqlProvider, AppLayout, WalletProvider } from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
@@ -65,7 +65,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <SubQueryProvider>
+      <ApolloGqlProvider>
         {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
         {router.isFallback ? (
           <LayoutLoading>
@@ -82,7 +82,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
         )}
 
         <ToastNotifications />
-      </SubQueryProvider>
+      </ApolloGqlProvider>
     </ThemeProvider>
   )
 }
