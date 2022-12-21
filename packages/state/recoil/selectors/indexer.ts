@@ -60,7 +60,7 @@ export const openProposalsSelector = selectorFamily<
     ({ coreAddress, chainId, address }) =>
     ({ get }) => {
       const id = get(refreshOpenProposalsAtom)
-      return get(
+      const openProposals = get(
         queryIndexerSelector({
           contractAddress: coreAddress,
           formulaName: 'daoCore/openProposals',
@@ -69,5 +69,6 @@ export const openProposalsSelector = selectorFamily<
           args: { address },
         })
       )
+      return openProposals ?? []
     },
 })
