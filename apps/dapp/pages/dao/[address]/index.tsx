@@ -204,7 +204,10 @@ const InnerDaoHome = () => {
       proposalsTab={<ProposalsTab />}
       rightSidebarContent={
         connected ? (
-          isMember ? (
+          // If membership not yet loaded, show loading skeleton.
+          isMember === undefined ? (
+            <ProfileDisconnectedCard className="animate-pulse" />
+          ) : isMember ? (
             <ProfileMemberCard
               daoName={daoInfo.name}
               membershipInfo={
