@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { Trans } from '@dao-dao/stateful'
+
 import { ImageUploadInput } from './ImageUploadInput'
 
 export default {
@@ -15,4 +17,5 @@ const Template: ComponentStory<typeof ImageUploadInput> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   onChange: (url) => alert('onChange: ' + url),
+  Trans,
 }

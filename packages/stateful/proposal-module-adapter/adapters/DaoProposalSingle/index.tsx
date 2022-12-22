@@ -34,8 +34,8 @@ import {
   useCastVote,
   useLoadingProposalExecutionTxHash,
   useLoadingWalletVoteInfo,
-  useProfileVoteCardOptions,
   useProposalRefreshers,
+  useVoteOptions,
 } from './hooks'
 import { DaoCreationConfig, NewProposalForm } from './types'
 
@@ -125,7 +125,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       useCastVote,
       useProposalRefreshers,
       useLoadingProposalExecutionTxHash,
-      useProfileVoteCardOptions,
+      useVoteOptions,
       useLoadingWalletVoteInfo,
     },
 

@@ -27,6 +27,7 @@ import {
   isValidWalletAddress,
   parseContractVersion,
   processError,
+  toAccessibleImageUrl,
   validateContractAddress,
 } from '@dao-dao/utils'
 import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
@@ -205,7 +206,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       if (config.image_url) {
         try {
           const response = await axios.get(
-            FAST_AVERAGE_COLOR_API_TEMPLATE.replace('URL', config.image_url),
+            FAST_AVERAGE_COLOR_API_TEMPLATE.replace(
+              'URL',
+              toAccessibleImageUrl(config.image_url)
+            ),
             { responseType: 'text' }
           )
 

@@ -24,6 +24,8 @@ export default {
       metadata: {
         name: '',
         description: '',
+        includeExtra: false,
+        extra: '',
       },
     }),
     makeActionsProviderDecorator({

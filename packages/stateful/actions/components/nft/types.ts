@@ -25,6 +25,8 @@ export interface MintNftData {
   metadata?: {
     name: string
     description: string
+    includeExtra: boolean
+    extra: string
   }
   // Set after uploading metadata to IPFS by UploadNftMetadata component, for
   // displaying during final step by MintNft component.
@@ -62,8 +64,8 @@ export interface TransferNftOptions {
 export interface BurnNftOptions {
   // The set of NFTs that may be burned as part of this action.
   options: LoadingDataWithError<NftCardInfo[]>
-  // Information about the NFT currently selected.
-  nftInfo: NftCardInfo | undefined
+  // Information about the NFT currently selected. If errored, it may be burnt.
+  nftInfo: LoadingDataWithError<NftCardInfo | undefined>
 }
 
 export interface InstantiateNftCollectionOptions {
@@ -76,6 +78,10 @@ export interface InstantiateNftCollectionOptions {
 export interface ChooseExistingNftCollectionOptions {
   chooseLoading: boolean
   onChooseExistingContract: () => Promise<void>
+  existingCollections: {
+    address: string
+    name: string
+  }[]
 }
 
 export interface MintNftOptions {

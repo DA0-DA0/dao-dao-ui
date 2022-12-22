@@ -4,7 +4,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useMemo } from 'react'
+import { ComponentProps, useCallback, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -26,6 +26,7 @@ import {
   ProfileDisconnectedCard,
   Proposal,
   ProposalNotFound,
+  ProposalProps,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { ActionKey, CommonProposalInfo, CoreActionKey } from '@dao-dao/types'
@@ -116,14 +117,15 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
   // component's consistency. If we inline the component definition in the props
   // below, it gets redefined on every render, and the hook cache is reset.
   const CachedProposalStatusAndInfo = useCallback(
-    (props) => (
+    (props: ComponentProps<ProposalProps['ProposalStatusAndInfo']>) => (
       <ProposalStatusAndInfo
         {...props}
         onCloseSuccess={onCloseSuccess}
         onExecuteSuccess={onExecuteSuccess}
+        onVoteSuccess={onVoteSuccess}
       />
     ),
-    [ProposalStatusAndInfo, onCloseSuccess, onExecuteSuccess]
+    [ProposalStatusAndInfo, onCloseSuccess, onExecuteSuccess, onVoteSuccess]
   )
 
   // Refresh proposal every 30 seconds, while voting open. Refreshes status and
@@ -168,11 +170,7 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
       proposalInfo={proposalInfo}
       refreshing={refreshing}
       rightSidebarContent={
-        connected ? (
-          <ProfileProposalCard onVoteSuccess={onVoteSuccess} />
-        ) : (
-          <ProfileDisconnectedCard />
-        )
+        connected ? <ProfileProposalCard /> : <ProfileDisconnectedCard />
       }
       voteTally={<ProposalVoteTally />}
       votesCast={<ProposalVotes />}

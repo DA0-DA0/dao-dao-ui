@@ -11,7 +11,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { TokenCardInfo } from '@dao-dao/types'
-import { isJunoIbcUsdc, secondsToWdhms } from '@dao-dao/utils'
+import {
+  isJunoIbcUsdc,
+  secondsToWdhms,
+  toAccessibleImageUrl,
+} from '@dao-dao/utils'
 
 import { ButtonLinkProps } from '../buttons'
 import { Button } from '../buttons/Button'
@@ -190,7 +194,7 @@ export const TokenCard = ({
               <div
                 className="h-10 w-10 rounded-full bg-cover bg-center"
                 style={{
-                  backgroundImage: `url(${imageUrl})`,
+                  backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
                 }}
               ></div>
 
@@ -262,25 +266,24 @@ export const TokenCard = ({
                 symbol={tokenSymbol}
               />
 
-              {!isJunoIbcUsdc(tokenDenom) && (
-                <TokenAmountDisplay
-                  amount={
-                    // If staking info has not finished loading, don't show
-                    // until it is loaded so this is accurate.
-                    waitingForStakingInfo ||
-                    lazyInfo.loading ||
-                    !lazyInfo.data.usdcUnitPrice
-                      ? { loading: true }
-                      : totalBalance * lazyInfo.data.usdcUnitPrice.amount
-                  }
-                  dateFetched={
-                    lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
-                      ? undefined
-                      : lazyInfo.data.usdcUnitPrice.timestamp
-                  }
-                  usdcConversion
-                />
-              )}
+              {!isJunoIbcUsdc(tokenDenom) &&
+                (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                  <TokenAmountDisplay
+                    amount={
+                      // If staking info has not finished loading, don't show
+                      // until it is loaded so this is accurate.
+                      waitingForStakingInfo || lazyInfo.loading
+                        ? { loading: true }
+                        : totalBalance * lazyInfo.data.usdcUnitPrice!.amount
+                    }
+                    dateFetched={
+                      lazyInfo.loading
+                        ? undefined
+                        : lazyInfo.data.usdcUnitPrice!.timestamp
+                    }
+                    usdcConversion
+                  />
+                )}
             </div>
           </div>
 

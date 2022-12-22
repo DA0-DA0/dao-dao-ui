@@ -25,6 +25,8 @@ export default {
       metadata: {
         name: '',
         description: '',
+        includeExtra: false,
+        extra: '',
       },
     }),
     makeActionsProviderDecorator({
@@ -57,5 +59,35 @@ Default.args = {
   options: {
     chooseLoading: false,
     onChooseExistingContract: async () => alert('choose'),
+    existingCollections: [
+      {
+        address: 'junoNftCollection1',
+        name: 'Collection 1',
+      },
+      {
+        address: 'junoNftCollection2',
+        name: 'Collection 2',
+      },
+      {
+        address: 'junoNftCollection3',
+        name: 'Collection 3',
+      },
+      {
+        address: 'junoNftCollection4',
+        name: 'Collection 4',
+      },
+      {
+        address: 'junoNftCollection5',
+        name: 'Collection 5',
+      },
+      {
+        address: 'junoNftCollection6',
+        name: 'Collection 6',
+      },
+      {
+        address: 'junoNftCollection7',
+        name: 'Collection 7',
+      },
+    ],
   },
 }

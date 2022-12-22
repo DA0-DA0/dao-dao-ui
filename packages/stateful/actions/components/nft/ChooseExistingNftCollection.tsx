@@ -18,15 +18,17 @@ export const ChooseExistingNftCollection: ActionComponent<
 > = ({
   fieldNamePrefix,
   errors,
-  options: { chooseLoading, onChooseExistingContract },
+  options: { chooseLoading, onChooseExistingContract, existingCollections },
 }) => {
   const { t } = useTranslation()
-  const { register } = useFormContext()
+  const { register, watch, setValue } = useFormContext()
+
+  const collectionAddress = watch(fieldNamePrefix + 'collectionAddress')
 
   return (
     <div className="flex flex-col gap-4">
       <div className="space-y-2">
-        <InputLabel name={t('form.existingNftCollection')} />
+        <InputLabel name={t('form.existingCollectionAddress')} />
 
         <AddressInput
           error={errors?.collectionAddress}
@@ -37,6 +39,30 @@ export const ChooseExistingNftCollection: ActionComponent<
         />
 
         <InputErrorMessage error={errors?.collectionAddress} />
+
+        {existingCollections.length > 0 && (
+          <div className="!mt-4 space-y-2">
+            <InputLabel name={t('title.suggestions')} />
+
+            <div className="flex flex-row flex-wrap gap-1">
+              {existingCollections.map(({ address, name }) => (
+                <Button
+                  key={address}
+                  center
+                  onClick={() =>
+                    setValue(fieldNamePrefix + 'collectionAddress', address)
+                  }
+                  pressed={collectionAddress === address}
+                  size="sm"
+                  type="button"
+                  variant="secondary"
+                >
+                  {name}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <Button

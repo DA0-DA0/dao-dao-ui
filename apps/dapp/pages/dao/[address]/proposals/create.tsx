@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
+  latestProposalSaveAtom,
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
   refreshProposalsIdAtom,
@@ -42,7 +43,6 @@ import {
 } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
 
-// TODO(v2): Save latest proposal to localStorage, separate from drafts.
 // TODO(v2): Fix errors getting stuck when removing components with errors (I
 // think this is when it happens). Can't click preview or submit sometimes even
 // tho there are no visible errors.
@@ -80,10 +80,39 @@ const InnerProposalCreate = () => {
     components: { NewProposal },
   } = proposalModuleAdapterCommon
 
+  const [latestProposalSave, setLatestProposalSave] = useRecoilState(
+    latestProposalSaveAtom(daoInfo.coreAddress)
+  )
   const formMethods = useForm({
     mode: 'onChange',
-    defaultValues: makeDefaultNewProposalForm(),
+    // Don't clone every render.
+    defaultValues: useMemo(
+      () => ({
+        ...makeDefaultNewProposalForm(),
+        ...cloneDeep(latestProposalSave),
+      }),
+      [latestProposalSave, makeDefaultNewProposalForm]
+    ),
   })
+
+  const [proposalCreatedCardProps, setProposalCreatedCardProps] =
+    useRecoilState(proposalCreatedCardPropsAtom)
+
+  const proposalData = formMethods.watch()
+  // Save latest data to atom and thus localStorage every 10 seconds.
+  useEffect(() => {
+    // If created proposal, don't save.
+    if (proposalCreatedCardProps) {
+      return
+    }
+
+    // Deep clone to prevent values from becoming readOnly.
+    const timeout = setTimeout(
+      () => setLatestProposalSave(cloneDeep(proposalData)),
+      10000
+    )
+    return () => clearTimeout(timeout)
+  }, [proposalCreatedCardProps, setLatestProposalSave, proposalData])
 
   const loadPrefill = useCallback(
     ({ id, data }: ProposalPrefill<any>) => {
@@ -136,10 +165,6 @@ const InnerProposalCreate = () => {
     loadPrefill,
   ])
 
-  const setProposalCreatedCardProps = useSetRecoilState(
-    proposalCreatedCardPropsAtom
-  )
-
   const [drafts, setDrafts] = useRecoilState(
     proposalDraftsAtom(daoInfo.coreAddress)
   )
@@ -174,7 +199,6 @@ const InnerProposalCreate = () => {
   )
   const unloadDraft = () => setDraftIndex(undefined)
 
-  const proposalData = formMethods.watch()
   const proposalName = formMethods.watch(newProposalFormTitleKey)
   const saveDraft = useCallback(() => {
     // Already saving to a selected draft.
@@ -263,6 +287,9 @@ const InnerProposalCreate = () => {
       // Refresh proposals state.
       refreshProposals()
 
+      // Clear saved form data.
+      setLatestProposalSave({})
+
       // Navigate to proposal (underneath the creation modal).
       router.push(`/dao/${info.dao.coreAddress}/proposals/${info.id}`)
     },
@@ -271,6 +298,7 @@ const InnerProposalCreate = () => {
       draftIndex,
       refreshProposals,
       router,
+      setLatestProposalSave,
       setProposalCreatedCardProps,
     ]
   )

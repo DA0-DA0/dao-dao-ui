@@ -33,7 +33,6 @@ const makeProps = (
     },
   },
   openProposals: true,
-  established: new Date(),
   membershipInfo: (
     <ProfileCardMemberInfoTokens
       {...makeProfileCardMemberInfoTokensProps(...args)}

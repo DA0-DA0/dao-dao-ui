@@ -31,7 +31,6 @@ export interface ProfileHomeCardProps
 }
 
 export const ProfileHomeCard = ({
-  established,
   tokenSymbol,
   tokenDecimals,
   inboxProposalCount,
@@ -44,7 +43,6 @@ export const ProfileHomeCard = ({
   return (
     <ProfileCardWrapper
       childContainerClassName="p-0"
-      established={established}
       underHeaderComponent={
         <div className="mt-3 grid grid-cols-[1fr_1px_1fr] items-center justify-items-center gap-2 self-stretch">
           <div className="flex flex-col items-stretch text-center">

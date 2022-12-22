@@ -69,9 +69,9 @@ const InnerProposalLine = ({
             (isMember || loadingWalletVoteInfo.data.couldVote) && (
               <ProposalWalletVote
                 fallback={
-                  // If did not vote, display pending or none based on if they are
-                  // currently able to vote.
-                  loadingWalletVoteInfo.data.canVote ? 'pending' : 'none'
+                  // If did not vote, display pending or none based on if they
+                  // are currently able to vote.
+                  loadingWalletVoteInfo.data.canVote ? 'pending' : 'hasNoVote'
                 }
                 vote={loadingWalletVoteInfo.data.vote}
               />
