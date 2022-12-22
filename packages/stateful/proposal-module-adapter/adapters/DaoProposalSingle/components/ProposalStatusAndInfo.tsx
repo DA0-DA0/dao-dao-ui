@@ -28,7 +28,6 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
-  WalletVoteInfo,
 } from '@dao-dao/types'
 import { Status, Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
@@ -69,7 +68,6 @@ export const ProposalStatusAndInfo = (
   const loadingProposal = useLoadingProposal()
   const loadingVotesInfo = useLoadingVotesInfo()
   const loadingDepositInfo = useLoadingDepositInfo()
-  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
   return (
     <SuspenseLoader
@@ -77,20 +75,17 @@ export const ProposalStatusAndInfo = (
       forceFallback={
         loadingProposal.loading ||
         loadingVotesInfo.loading ||
-        loadingDepositInfo.loading ||
-        loadingWalletVoteInfo?.loading
+        loadingDepositInfo.loading
       }
     >
       {!loadingProposal.loading &&
         !loadingVotesInfo.loading &&
-        !loadingDepositInfo.loading &&
-        !loadingWalletVoteInfo?.loading && (
+        !loadingDepositInfo.loading && (
           <InnerProposalStatusAndInfo
             {...props}
             depositInfo={loadingDepositInfo.data}
             proposal={loadingProposal.data}
             votesInfo={loadingVotesInfo.data}
-            walletVoteInfo={loadingWalletVoteInfo?.data}
           />
         )}
     </SuspenseLoader>
@@ -107,7 +102,6 @@ const InnerProposalStatusAndInfo = ({
     turnoutYesPercent,
   },
   depositInfo,
-  walletVoteInfo,
   onVoteSuccess,
   onExecuteSuccess,
   onCloseSuccess,
@@ -116,7 +110,6 @@ const InnerProposalStatusAndInfo = ({
   proposal: ProposalWithMetadata
   votesInfo: VotesInfo
   depositInfo: CheckedDepositInfo | undefined
-  walletVoteInfo: WalletVoteInfo<Vote> | undefined
 }) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress } = useDaoInfoContext()
@@ -132,6 +125,7 @@ const InnerProposalStatusAndInfo = ({
     })
   )
 
+  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
@@ -348,10 +342,12 @@ const InnerProposalStatusAndInfo = ({
       info={info}
       status={status}
       vote={
-        walletVoteInfo?.canVote
+        loadingWalletVoteInfo &&
+        !loadingWalletVoteInfo.loading &&
+        loadingWalletVoteInfo.data.canVote
           ? {
               loading: castingVote,
-              currentVote: walletVoteInfo.vote,
+              currentVote: loadingWalletVoteInfo.data.vote,
               onCastVote: castVote,
               options: voteOptions,
             }
