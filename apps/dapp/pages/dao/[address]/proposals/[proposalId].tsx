@@ -4,7 +4,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { ComponentProps, useCallback, useEffect, useMemo } from 'react'
+import { ComponentProps, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -138,17 +138,6 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     ),
     [ProposalStatusAndInfo, onCloseSuccess, onExecuteSuccess, onVoteSuccess]
   )
-
-  // Refresh proposal every 30 seconds, while voting open. Refreshes status and
-  // votes.
-  useEffect(() => {
-    if (!proposalInfo.votingOpen) {
-      return
-    }
-
-    const interval = setInterval(refreshProposal, 30 * 1000)
-    return () => clearInterval(interval)
-  }, [refreshProposal, proposalInfo.votingOpen])
 
   return (
     <Proposal

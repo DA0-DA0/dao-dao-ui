@@ -9,7 +9,6 @@ import {
   InfoResponse,
 } from '@dao-dao/types'
 import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
-import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { ProposalResponse as ProposalV2Response } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   cosmWasmClientRouter,
@@ -148,7 +147,6 @@ export const makeGetProposalInfo =
       id: `${proposalModule.prefix}${id}`,
       title: proposal.title,
       description: proposal.description,
-      votingOpen: proposal.status === Status.Open,
       expiration: proposal.expiration,
       createdAtEpoch,
       createdByAddress: proposal.proposer,

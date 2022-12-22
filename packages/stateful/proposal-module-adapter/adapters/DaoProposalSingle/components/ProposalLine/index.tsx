@@ -3,7 +3,6 @@ import {
   ProposalLine as StatelessProposalLine,
 } from '@dao-dao/stateless'
 import { BaseProposalLineProps } from '@dao-dao/types'
-import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { SuspenseLoader } from '../../../../../components'
 import { useMembership } from '../../../../../hooks'
@@ -79,7 +78,7 @@ const InnerProposalLine = ({
               />
             )
       }
-      votingOpen={proposal.status === Status.Open}
+      votingOpen={proposal.votingOpen}
       {...props}
     />
   )
