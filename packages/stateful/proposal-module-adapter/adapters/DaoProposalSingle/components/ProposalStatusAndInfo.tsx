@@ -28,11 +28,8 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
-  WalletVoteInfo,
 } from '@dao-dao/types'
-import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { Status, Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   CHAIN_TXN_URL_PREFIX,
   formatPercentOf100,
@@ -58,22 +55,19 @@ import {
   useLoadingDepositInfo,
   useLoadingProposal,
   useLoadingProposalExecutionTxHash,
-  useLoadingTimestampInfo,
   useLoadingVotesInfo,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
   useVoteOptions,
 } from '../hooks'
-import { TimestampInfo, VotesInfo } from '../types'
+import { ProposalWithMetadata, VotesInfo } from '../types'
 
 export const ProposalStatusAndInfo = (
   props: BaseProposalStatusAndInfoProps
 ) => {
   const loadingProposal = useLoadingProposal()
   const loadingVotesInfo = useLoadingVotesInfo()
-  const loadingTimestampInfo = useLoadingTimestampInfo()
   const loadingDepositInfo = useLoadingDepositInfo()
-  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
   return (
     <SuspenseLoader
@@ -81,23 +75,17 @@ export const ProposalStatusAndInfo = (
       forceFallback={
         loadingProposal.loading ||
         loadingVotesInfo.loading ||
-        loadingTimestampInfo.loading ||
-        loadingDepositInfo.loading ||
-        loadingWalletVoteInfo?.loading
+        loadingDepositInfo.loading
       }
     >
       {!loadingProposal.loading &&
         !loadingVotesInfo.loading &&
-        !loadingTimestampInfo.loading &&
-        !loadingDepositInfo.loading &&
-        !loadingWalletVoteInfo?.loading && (
+        !loadingDepositInfo.loading && (
           <InnerProposalStatusAndInfo
             {...props}
             depositInfo={loadingDepositInfo.data}
             proposal={loadingProposal.data}
-            timestampInfo={loadingTimestampInfo.data}
             votesInfo={loadingVotesInfo.data}
-            walletVoteInfo={loadingWalletVoteInfo?.data}
           />
         )}
     </SuspenseLoader>
@@ -105,7 +93,7 @@ export const ProposalStatusAndInfo = (
 }
 
 const InnerProposalStatusAndInfo = ({
-  proposal,
+  proposal: { timestampInfo, votingOpen, ...proposal },
   votesInfo: {
     quorum,
     thresholdReached,
@@ -113,19 +101,15 @@ const InnerProposalStatusAndInfo = ({
     turnoutPercent,
     turnoutYesPercent,
   },
-  timestampInfo,
   depositInfo,
-  walletVoteInfo,
   onVoteSuccess,
   onExecuteSuccess,
   onCloseSuccess,
   ...props
 }: BaseProposalStatusAndInfoProps & {
-  proposal: Proposal | SingleChoiceProposal
+  proposal: ProposalWithMetadata
   votesInfo: VotesInfo
-  timestampInfo: TimestampInfo | undefined
   depositInfo: CheckedDepositInfo | undefined
-  walletVoteInfo: WalletVoteInfo<Vote> | undefined
 }) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress } = useDaoInfoContext()
@@ -141,6 +125,7 @@ const InnerProposalStatusAndInfo = ({
     })
   )
 
+  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
@@ -232,6 +217,8 @@ const InnerProposalStatusAndInfo = ({
         : thresholdReached && quorum && !quorumReached
         ? t('info.proposalStatus.willFailBadQuorum')
         : t('info.proposalStatus.willFail')
+      : votingOpen
+      ? t('info.proposalStatus.completedAndOpen')
       : t('info.proposalStatus.notOpen', {
           turnoutPercent: formatPercentOf100(turnoutPercent),
           turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
@@ -355,10 +342,12 @@ const InnerProposalStatusAndInfo = ({
       info={info}
       status={status}
       vote={
-        walletVoteInfo?.canVote
+        loadingWalletVoteInfo &&
+        !loadingWalletVoteInfo.loading &&
+        loadingWalletVoteInfo.data.canVote
           ? {
               loading: castingVote,
-              currentVote: walletVoteInfo.vote,
+              currentVote: loadingWalletVoteInfo.data.vote,
               onCastVote: castVote,
               options: voteOptions,
             }
