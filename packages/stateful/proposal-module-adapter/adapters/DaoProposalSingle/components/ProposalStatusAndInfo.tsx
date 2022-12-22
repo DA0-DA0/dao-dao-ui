@@ -29,9 +29,7 @@ import {
   ContractVersion,
   DepositRefundPolicy,
 } from '@dao-dao/types'
-import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   CHAIN_TXN_URL_PREFIX,
   formatPercentOf100,
@@ -56,18 +54,16 @@ import {
   useLoadingDepositInfo,
   useLoadingProposal,
   useLoadingProposalExecutionTxHash,
-  useLoadingTimestampInfo,
   useLoadingVotesInfo,
   useProposalRefreshers,
 } from '../hooks'
-import { TimestampInfo, VotesInfo } from '../types'
+import { ProposalWithMetadata, VotesInfo } from '../types'
 
 export const ProposalStatusAndInfo = (
   props: BaseProposalStatusAndInfoProps
 ) => {
   const loadingProposal = useLoadingProposal()
   const loadingVotesInfo = useLoadingVotesInfo()
-  const loadingTimestampInfo = useLoadingTimestampInfo()
   const loadingDepositInfo = useLoadingDepositInfo()
 
   return (
@@ -76,19 +72,16 @@ export const ProposalStatusAndInfo = (
       forceFallback={
         loadingProposal.loading ||
         loadingVotesInfo.loading ||
-        loadingTimestampInfo.loading ||
         loadingDepositInfo.loading
       }
     >
       {!loadingProposal.loading &&
         !loadingVotesInfo.loading &&
-        !loadingTimestampInfo.loading &&
         !loadingDepositInfo.loading && (
           <InnerProposalStatusAndInfo
             {...props}
             depositInfo={loadingDepositInfo.data}
             proposal={loadingProposal.data}
-            timestampInfo={loadingTimestampInfo.data}
             votesInfo={loadingVotesInfo.data}
           />
         )}
@@ -97,7 +90,7 @@ export const ProposalStatusAndInfo = (
 }
 
 const InnerProposalStatusAndInfo = ({
-  proposal,
+  proposal: { timestampInfo, votingOpen, ...proposal },
   votesInfo: {
     quorum,
     thresholdReached,
@@ -105,15 +98,13 @@ const InnerProposalStatusAndInfo = ({
     turnoutPercent,
     turnoutYesPercent,
   },
-  timestampInfo,
   depositInfo,
   onExecuteSuccess,
   onCloseSuccess,
   ...props
 }: BaseProposalStatusAndInfoProps & {
-  proposal: Proposal | SingleChoiceProposal
+  proposal: ProposalWithMetadata
   votesInfo: VotesInfo
-  timestampInfo: TimestampInfo | undefined
   depositInfo: CheckedDepositInfo | undefined
 }) => {
   const { t } = useTranslation()
@@ -212,9 +203,6 @@ const InnerProposalStatusAndInfo = ({
       : []),
   ]
 
-  const proposalCompleted =
-    proposal.status !== Status.Open && proposal.status !== Status.Passed
-
   const status =
     proposal.status === Status.Open
       ? thresholdReached && (!quorum || quorumReached)
@@ -224,8 +212,9 @@ const InnerProposalStatusAndInfo = ({
         : thresholdReached && quorum && !quorumReached
         ? t('info.proposalStatus.willFailBadQuorum')
         : t('info.proposalStatus.willFail')
-      : proposalCompleted
-      ? t('info.proposalStatus.notOpen', {
+      : votingOpen
+      ? t('info.proposalStatus.completedAndOpen')
+      : t('info.proposalStatus.notOpen', {
           turnoutPercent: formatPercentOf100(turnoutPercent),
           turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
           extra:
@@ -236,7 +225,6 @@ const InnerProposalStatusAndInfo = ({
               ? ` ${t('info.proposalDepositWillBeRefunded')}`
               : '',
         })
-      : t('info.proposalStatus.completedAndOpen')
 
   const executeProposal = (
     proposalModule.version === ContractVersion.V1 ? useExecuteV1 : useExecuteV2

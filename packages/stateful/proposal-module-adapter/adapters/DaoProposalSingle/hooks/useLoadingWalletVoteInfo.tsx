@@ -3,7 +3,7 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
-import { Status, Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { getVoteSelector } from '../contracts/DaoProposalSingle.common.recoil'
@@ -80,10 +80,8 @@ export const useLoadingWalletVoteInfo = ():
     totalVotingPowerWhenProposalCreatedLoadable.contents.power
   )
 
-  const proposalCompleted =
-    proposal.status !== Status.Open && proposal.status !== Status.Passed
   const canVote =
-    couldVote && !proposalCompleted && (!walletVote || proposal.allow_revoting)
+    couldVote && proposal.votingOpen && (!walletVote || proposal.allow_revoting)
 
   return {
     loading: false,
@@ -91,6 +89,7 @@ export const useLoadingWalletVoteInfo = ():
       vote: walletVote,
       // If wallet could vote when this was open.
       couldVote,
+      // If wallet can vote now.
       canVote,
       votingPowerPercent:
         (totalVotingPowerWhenProposalCreated === 0
