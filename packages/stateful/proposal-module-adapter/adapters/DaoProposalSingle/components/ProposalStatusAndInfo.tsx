@@ -171,12 +171,14 @@ const InnerProposalStatusAndInfo = ({
           },
         ] as ProposalStatusAndInfoProps<Vote>['info'])
       : []),
-    ...(timestampInfo
+    ...(timestampInfo?.display
       ? ([
           {
             Icon: HourglassTopRounded,
             label: timestampInfo.display.label,
-            Value: (props) => <p {...props}>{timestampInfo.display.content}</p>,
+            Value: (props) => (
+              <p {...props}>{timestampInfo.display!.content}</p>
+            ),
           },
         ] as ProposalStatusAndInfoProps<Vote>['info'])
       : []),

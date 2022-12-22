@@ -100,7 +100,7 @@ export type UsePublishProposal = () => {
 }
 
 export interface TimestampInfo {
-  display: {
+  display?: {
     label: string
     content: ReactNode
   }
