@@ -12,6 +12,8 @@ import {
   DepositRefundPolicy,
 } from '@dao-dao/types/contracts/common'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
+import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
+import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
 export interface NewProposalForm {
   title: string
@@ -103,4 +105,9 @@ export interface TimestampInfo {
     content: ReactNode
   }
   expirationDate: Date
+}
+
+export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
+  timestampInfo: TimestampInfo | undefined
+  votingOpen: boolean
 }

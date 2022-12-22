@@ -1,40 +1,28 @@
-import { ReactNode } from 'react'
-
 import {
   ProposalLineLoader,
   ProposalLine as StatelessProposalLine,
 } from '@dao-dao/stateless'
 import { BaseProposalLineProps } from '@dao-dao/types'
-import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
 import { SuspenseLoader } from '../../../../../components'
 import { useMembership } from '../../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../../react'
-import {
-  useLoadingProposal,
-  useLoadingTimestampInfo,
-  useLoadingWalletVoteInfo,
-} from '../../hooks'
+import { useLoadingProposal, useLoadingWalletVoteInfo } from '../../hooks'
+import { ProposalWithMetadata } from '../../types'
 import { ProposalWalletVote } from '../ProposalWalletVote'
 import { ProposalStatus } from './ProposalStatus'
 
 export const ProposalLine = (props: BaseProposalLineProps) => {
   const loadingProposal = useLoadingProposal()
-  const loadingTimestampInfo = useLoadingTimestampInfo()
 
   return (
     <SuspenseLoader
       fallback={<ProposalLineLoader />}
-      forceFallback={loadingProposal.loading || loadingTimestampInfo.loading}
+      forceFallback={loadingProposal.loading}
     >
-      {!loadingProposal.loading && !loadingTimestampInfo.loading && (
-        <InnerProposalLine
-          {...props}
-          proposal={loadingProposal.data}
-          timestampDisplay={loadingTimestampInfo.data?.display.content}
-        />
+      {!loadingProposal.loading && (
+        <InnerProposalLine {...props} proposal={loadingProposal.data} />
       )}
     </SuspenseLoader>
   )
@@ -42,11 +30,9 @@ export const ProposalLine = (props: BaseProposalLineProps) => {
 
 const InnerProposalLine = ({
   proposal,
-  timestampDisplay,
   ...props
 }: BaseProposalLineProps & {
-  proposal: Proposal | SingleChoiceProposal
-  timestampDisplay: ReactNode | undefined
+  proposal: ProposalWithMetadata
 }) => {
   const {
     coreAddress,
@@ -68,7 +54,7 @@ const InnerProposalLine = ({
       )}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
-      timestampDisplay={timestampDisplay}
+      timestampDisplay={proposal.timestampInfo?.display.content}
       title={proposal.title}
       vote={
         // If no wallet connected, show nothing. If loading, also show nothing

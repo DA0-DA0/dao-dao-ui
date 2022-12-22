@@ -489,6 +489,7 @@
     "proposalDepositWillBeRefunded": "Proposal deposit will be refunded once closed.",
     "proposalQuorumTooltip": "This proportion of voting power must vote on a proposal for it to pass.",
     "proposalStatus": {
+      "completedAndOpen": "This proposal's outcome is determined. Votes may still be cast until expiration.",
       "notOpen": "This proposal is no longer open for voting. {{turnoutPercent}} of all votes were cast, and {{turnoutYesPercent}} of them were 'Yes'.{{extra}}",
       "willFail": "If the current vote stands, this proposal will fail.",
       "willFailBadQuorum": "If the current vote stands, this proposal will fail due to a lack of voter participation.",
