@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
+import { searchDaosSelector } from '@dao-dao/state/recoil'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import {
   CommandModalContextSection,
   CommandModalContextUseSectionsOptions,
@@ -11,7 +13,6 @@ import {
   useLoadingFeaturedDaoCardInfos,
   useLoadingPinnedDaoCardInfos,
 } from '../../hooks'
-import { useSearchDaos } from '../../hooks/useSearchDaos'
 
 export interface UseFilteredDaosSectionOptions {
   options: CommandModalContextUseSectionsOptions
@@ -31,14 +32,18 @@ export const usePinnedAndFilteredDaosSections = ({
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
   const pinnedDaosLoading = useLoadingPinnedDaoCardInfos()
 
-  const queryResults = useSearchDaos({
-    query: options.filter,
-    limit,
-    // Exclude pinned DAOs from search since they show in a separate section.
-    exclude: pinnedDaosLoading.loading
-      ? undefined
-      : pinnedDaosLoading.data.map(({ coreAddress }) => coreAddress),
-  })
+  const queryResults = useCachedLoadable(
+    options.filter
+      ? searchDaosSelector({
+          query: options.filter,
+          limit,
+          // Exclude pinned DAOs from search since they show in a separate section.
+          exclude: pinnedDaosLoading.loading
+            ? undefined
+            : pinnedDaosLoading.data.map(({ coreAddress }) => coreAddress),
+        })
+      : undefined
+  )
 
   // Use query results if filter is present.
   const daos = options.filter
