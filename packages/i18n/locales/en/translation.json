@@ -483,7 +483,6 @@
     "percentVotingPower": "{{percent}} voting power",
     "preReleaseExplanation": "This is a pre-release version of DAO DAO running on the {{chain}} chain.",
     "productVersion": "DAO DAO v{{versionNumber}}",
-    "profileExplanation": "This is how your profile appears to others.",
     "proposalAllAbstainClarification": "When all voters abstain, a proposal will fail.",
     "proposalDepositWillBeRefunded": "Proposal deposit will be refunded once closed.",
     "proposalQuorumTooltip": "This proportion of voting power must vote on a proposal for it to pass.",
@@ -805,8 +804,8 @@
     "watchOut": "Watch out!",
     "when": "When",
     "withdrawTokenSwap": "Withdraw Token Swap",
-    "you": "You",
-    "yourMembership": "Your membership"
+    "yourMembership": "Your membership",
+    "yourSubmission": "Your submission"
   },
   "unit": {
     "days": "Days",

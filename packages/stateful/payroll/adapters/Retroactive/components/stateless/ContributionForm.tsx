@@ -87,13 +87,11 @@ export const ContributionForm = ({
 
         <div className="flex grow flex-col gap-4 pb-10">
           <div className="flex flex-col gap-2">
-            <p className="primary-text text-text-body">{t('title.you')}</p>
+            <p className="primary-text text-text-body">
+              {t('title.yourSubmission')}
+            </p>
 
             <ProfileDisplay />
-
-            <p className="caption-text italic">
-              {t('info.profileExplanation')}
-            </p>
 
             {!profile.name && (
               <p className="caption-text text-text-interactive-error">
