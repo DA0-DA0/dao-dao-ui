@@ -37,7 +37,7 @@ export const searchDaos = async (
 
   const results = await index.search<DaoSearchResult>(query, {
     limit,
-    filter: exclude?.length > 0
+    filter: exclude?.length
       ? `NOT contractAddress IN ["${exclude.join('", "')}"]`
       : undefined,
     // Most recent at the top.
