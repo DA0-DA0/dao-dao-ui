@@ -47,18 +47,20 @@ export const usePinnedAndFilteredDaosSections = ({
 
   // Use query results if filter is present.
   const daos = options.filter
-    ? (queryResults.state !== 'hasValue' ? [] : queryResults.contents).map(
-        ({
-          contractAddress,
-          value: { name, image_url },
-        }): CommandModalDaoInfo => ({
-          // Nothing specific to set here yet, just uses default.
-          chainId: undefined,
-          coreAddress: contractAddress,
-          name,
-          imageUrl: image_url || getFallbackImage(contractAddress),
-        })
-      )
+    ? (queryResults.state !== 'hasValue' ? [] : queryResults.contents)
+        .filter(({ value }) => !!value)
+        .map(
+          ({
+            contractAddress,
+            value: { name, image_url },
+          }): CommandModalDaoInfo => ({
+            // Nothing specific to set here yet, just uses default.
+            chainId: undefined,
+            coreAddress: contractAddress,
+            name,
+            imageUrl: image_url || getFallbackImage(contractAddress),
+          })
+        )
     : // Otherwise when filter is empty, display featured DAOs.
     featuredDaosLoading.loading
     ? []
