@@ -1,4 +1,5 @@
 import { Action, ActionOptions } from '@dao-dao/types/actions'
+import { DISABLED_ACTIONS } from '@dao-dao/utils'
 
 import { makeAddCw20Action } from './AddCw20'
 import { makeAddCw721Action } from './AddCw721'
@@ -50,11 +51,15 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeRemoveItemAction,
   ]
 
-  return (
-    actionMakers
-      .map((makeAction) => makeAction(options))
-      // Remove null values, since maker functions return null if they don't
-      // make sense in the context (like a DAO-only action in a wallet context).
-      .filter(Boolean) as Action[]
-  )
+  return actionMakers
+    .map((makeAction) => makeAction(options))
+    .filter(
+      (action): action is Action =>
+        // Remove null values, since maker functions return null if they don't
+        // make sense in the context (like a DAO-only action in a wallet
+        // context).
+        action !== null &&
+        // Remove disabled actions.
+        !DISABLED_ACTIONS.includes(action.key)
+    )
 }
