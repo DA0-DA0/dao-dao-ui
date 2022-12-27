@@ -6,7 +6,7 @@ import type {
 } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
-import { LockWithKeyEmoji } from '@dao-dao/stateless'
+import { ActionCardLoader, LockWithKeyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -21,6 +21,7 @@ import {
   makeStargateMessage,
 } from '@dao-dao/utils'
 
+import { ProfileDisplay, SuspenseLoader } from '../../components'
 import { AuthzExecComponent as StatelessAuthzComponent } from '../components'
 
 export enum AuthzExecActionTypes {
@@ -73,7 +74,14 @@ const useDefaults: UseDefaults<AuthzExecData> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  return <StatelessAuthzComponent {...props} options={{}} />
+  return (
+    <SuspenseLoader fallback={<ActionCardLoader />}>
+      <StatelessAuthzComponent
+        {...props}
+        options={{ ProfileDisplay: ProfileDisplay }}
+      />
+    </SuspenseLoader>
+  )
 }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (

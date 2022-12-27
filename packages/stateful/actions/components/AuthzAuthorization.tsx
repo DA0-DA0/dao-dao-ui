@@ -1,7 +1,9 @@
+import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  AddressInput,
   FormSwitchCard,
   InputErrorMessage,
   InputLabel,
@@ -9,6 +11,7 @@ import {
   SelectInput,
   TextInput,
 } from '@dao-dao/stateless'
+import { StatefulProfileDisplayProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   validateAddress,
@@ -19,13 +22,23 @@ import {
 import { AuthzExecActionTypes } from '../actions/AuthzExec'
 import { ActionCard } from './ActionCard'
 
-export interface AuthzOptions {}
+export interface AuthzOptions {
+  // Used to render pfpk or DAO profiles when selecting addresses.
+  ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
+}
 
 export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
   props
 ) => {
   const { t } = useTranslation()
-  const { data, fieldNamePrefix, onRemove, errors, isCreating } = props
+  const {
+    data,
+    fieldNamePrefix,
+    onRemove,
+    errors,
+    isCreating,
+    options: { ProfileDisplay },
+  } = props
   const { register, setValue, watch } = useFormContext()
 
   return (
@@ -55,7 +68,8 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
           name={t('form.granteeAddress')}
           tooltip={t('form.granteeAddressTooltip')}
         />
-        <TextInput
+        <AddressInput
+          ProfileDisplay={ProfileDisplay}
           disabled={!isCreating}
           error={errors?.value?.grantee}
           fieldName={fieldNamePrefix + 'value.grantee'}

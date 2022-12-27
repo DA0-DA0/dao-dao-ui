@@ -1,7 +1,7 @@
 import type { MsgGrant, MsgRevoke } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
-import { KeyEmoji } from '@dao-dao/stateless'
+import { ActionCardLoader, KeyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/types/actions'
 import { makeStargateMessage } from '@dao-dao/utils'
 
+import { ProfileDisplay, SuspenseLoader } from '../../components'
 import { AuthzAuthorizationComponent as StatelessAuthzComponent } from '../components/AuthzAuthorization'
 
 interface AuthzData {
@@ -31,7 +32,16 @@ const useDefaults: UseDefaults<AuthzData> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  return <StatelessAuthzComponent {...props} options={{}} />
+  return (
+    <SuspenseLoader fallback={<ActionCardLoader />}>
+      <StatelessAuthzComponent
+        {...props}
+        options={{
+          ProfileDisplay: ProfileDisplay,
+        }}
+      />
+    </SuspenseLoader>
+  )
 }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (

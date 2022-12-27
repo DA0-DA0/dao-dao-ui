@@ -1,8 +1,10 @@
 import { Check, Close } from '@mui/icons-material'
+import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  AddressInput,
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
@@ -11,6 +13,7 @@ import {
   SelectInput,
   TextInput,
 } from '@dao-dao/stateless'
+import { StatefulProfileDisplayProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DECIMALS,
@@ -26,7 +29,10 @@ import {
 import { AuthzExecActionTypes } from '../actions/AuthzExec'
 import { ActionCard } from './ActionCard'
 
-export interface AuthzExecOptions {}
+export interface AuthzExecOptions {
+  // Used to render pfpk or DAO profiles when selecting addresses.
+  ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
+}
 
 export const useAuthzExecActionTypes = (): {
   type: AuthzExecActionTypes
@@ -58,11 +64,14 @@ export const useAuthzExecActionTypes = (): {
   ]
 }
 
-export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
-  props
-) => {
+export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
+  fieldNamePrefix,
+  onRemove,
+  errors,
+  isCreating,
+  options: { ProfileDisplay },
+}) => {
   const { t } = useTranslation()
-  const { fieldNamePrefix, onRemove, errors, isCreating } = props
   const { control, register, setValue, watch } = useFormContext()
 
   const authzExecActions = useAuthzExecActionTypes()
@@ -106,9 +115,10 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
         <>
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('form.delegatorAddress')} />
-            <TextInput
+            <AddressInput
+              ProfileDisplay={ProfileDisplay}
               disabled={!isCreating}
-              error={errors?.delegate?.deleatorAddress}
+              error={errors?.delegate?.delegatorAddress}
               fieldName={fieldNamePrefix + 'delegate.delegatorAddress'}
               placeholder="juno..."
               register={register}
@@ -164,9 +174,10 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
         <>
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('form.delegatorAddress')} />
-            <TextInput
+            <AddressInput
+              ProfileDisplay={ProfileDisplay}
               disabled={!isCreating}
-              error={errors?.undelegate?.deleatorAddress}
+              error={errors?.undelegate?.delegatorAddress}
               fieldName={fieldNamePrefix + 'undelegate.delegatorAddress'}
               placeholder="juno..."
               register={register}
@@ -222,9 +233,10 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
         <>
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('form.delegatorAddress')} />
-            <TextInput
+            <AddressInput
+              ProfileDisplay={ProfileDisplay}
               disabled={!isCreating}
-              error={errors?.redelegate?.deleatorAddress}
+              error={errors?.redelegate?.delegatorAddress}
               fieldName={fieldNamePrefix + 'redelegate.delegatorAddress'}
               placeholder="juno..."
               register={register}
@@ -299,9 +311,10 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
         <>
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('form.delegatorAddress')} />
-            <TextInput
+            <AddressInput
+              ProfileDisplay={ProfileDisplay}
               disabled={!isCreating}
-              error={errors?.claimRewards?.deleatorAddress}
+              error={errors?.claimRewards?.delegatorAddress}
               fieldName={fieldNamePrefix + 'claimRewards.delegatorAddress'}
               placeholder="juno..."
               register={register}
