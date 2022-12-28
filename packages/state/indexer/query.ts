@@ -26,7 +26,7 @@ export const queryIndexer = async <T = any>(
     blockHeight,
   })
   const response = await fetch(
-    `${indexerApiBase}/${contractAddress}/${formulaName}` +
+    `${indexerApiBase}/contract/${contractAddress}/${formulaName}` +
       (query ? `?${query}` : '')
   )
 
