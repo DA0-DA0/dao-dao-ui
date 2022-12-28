@@ -13,7 +13,7 @@ import {
   SelectInput,
   TextInput,
 } from '@dao-dao/stateless'
-import { StatefulProfileDisplayProps } from '@dao-dao/types'
+import { StatefulProfileDisplayProps, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DECIMALS,
@@ -28,10 +28,12 @@ import {
 
 import { AuthzExecActionTypes } from '../actions/AuthzExec'
 import { ActionCard } from './ActionCard'
+import { ValidatorPicker } from './ValidatorPicker'
 
 export interface AuthzExecOptions {
   // Used to render pfpk or DAO profiles when selecting addresses.
   ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
+  validators: Validator[]
 }
 
 export const useAuthzExecActionTypes = (): {
@@ -69,7 +71,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { ProfileDisplay },
+  options: { ProfileDisplay, validators },
 }) => {
   const { t } = useTranslation()
   const { control, register, setValue, watch } = useFormContext()
@@ -83,6 +85,20 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
   const delegateAmount = watch(fieldNamePrefix + 'delegate.amount.amount')
   const redelegateAmount = watch(fieldNamePrefix + 'redelegate.amount.amount')
   const undelegateAmount = watch(fieldNamePrefix + 'undelegate.amount.amount')
+
+  const claimRewardsValidator = watch(
+    fieldNamePrefix + 'claimRewards.validatorAddress'
+  )
+  const delegateValidator = watch(fieldNamePrefix + 'delegate.validatorAddress')
+  const redelegateDstValidator = watch(
+    fieldNamePrefix + 'redelegate.validatorDstAddress'
+  )
+  const redelegateSrcValidator = watch(
+    fieldNamePrefix + 'redelegate.validatorSrcAddress'
+  )
+  const undelegateValidator = watch(
+    fieldNamePrefix + 'undelegate.validatorAddress'
+  )
 
   return (
     <ActionCard
@@ -131,15 +147,17 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               name={t('form.validatorAddress')}
               tooltip={t('form.validatorAddressTooltip')}
             />
-            <TextInput
-              disabled={!isCreating}
-              error={errors?.delegate?.validatorAddress}
-              fieldName={fieldNamePrefix + 'delegate.validatorAddress'}
-              placeholder="junovaloper..."
-              register={register}
-              validation={[(v: string) => validateValidatorAddress(v)]}
+            <ValidatorPicker
+              displayClassName="grow min-w-0"
+              nativeDecimals={NATIVE_DECIMALS}
+              nativeDenom={NATIVE_DENOM}
+              onSelect={({ address }) =>
+                setValue(fieldNamePrefix + 'delegate.validatorAddress', address)
+              }
+              readOnly={!isCreating}
+              selectedAddress={delegateValidator}
+              validators={validators}
             />
-            <InputErrorMessage error={errors?.delegate?.validatorAddress} />
           </div>
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('title.chooseTokenAmount')} />
@@ -190,15 +208,20 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               name={t('form.validatorAddress')}
               tooltip={t('form.validatorAddressTooltip')}
             />
-            <TextInput
-              disabled={!isCreating}
-              error={errors?.undelegate?.validatorAddress}
-              fieldName={fieldNamePrefix + 'undelegate.validatorAddress'}
-              placeholder="junovaloper..."
-              register={register}
-              validation={[(v: string) => validateValidatorAddress(v)]}
+            <ValidatorPicker
+              displayClassName="grow min-w-0"
+              nativeDecimals={NATIVE_DECIMALS}
+              nativeDenom={NATIVE_DENOM}
+              onSelect={({ address }) =>
+                setValue(
+                  fieldNamePrefix + 'undelegate.validatorAddress',
+                  address
+                )
+              }
+              readOnly={!isCreating}
+              selectedAddress={undelegateValidator}
+              validators={validators}
             />
-            <InputErrorMessage error={errors?.undelegate?.validatorAddress} />
           </div>
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('title.chooseTokenAmount')} />
@@ -249,16 +272,19 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               name={t('form.redelegateSourceValidator')}
               tooltip={t('form.redelegateSourceValidatorTooltip')}
             />
-            <TextInput
-              disabled={!isCreating}
-              error={errors?.redelegate?.validatorSrcAddress}
-              fieldName={fieldNamePrefix + 'redelegate.validatorSrcAddress'}
-              placeholder="junovaloper..."
-              register={register}
-              validation={[(v: string) => validateValidatorAddress(v)]}
-            />
-            <InputErrorMessage
-              error={errors?.redelegate?.validatorSrcAddress}
+            <ValidatorPicker
+              displayClassName="grow min-w-0"
+              nativeDecimals={NATIVE_DECIMALS}
+              nativeDenom={NATIVE_DENOM}
+              onSelect={({ address }) =>
+                setValue(
+                  fieldNamePrefix + 'redelegate.validatorSrcAddress',
+                  address
+                )
+              }
+              readOnly={!isCreating}
+              selectedAddress={redelegateSrcValidator}
+              validators={validators}
             />
           </div>
           <div className="flex flex-col items-stretch gap-1">
@@ -266,16 +292,19 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               name={t('form.redelegateDestinationValidator')}
               tooltip={t('form.redelegateDestinationValidatorTooltip')}
             />
-            <TextInput
-              disabled={!isCreating}
-              error={errors?.redelegate?.validatorDstAddress}
-              fieldName={fieldNamePrefix + 'redelegate.validatorDstAddress'}
-              placeholder="junovaloper..."
-              register={register}
-              validation={[(v: string) => validateValidatorAddress(v)]}
-            />
-            <InputErrorMessage
-              error={errors?.redelegate?.validatorDstAddress}
+            <ValidatorPicker
+              displayClassName="grow min-w-0"
+              nativeDecimals={NATIVE_DECIMALS}
+              nativeDenom={NATIVE_DENOM}
+              onSelect={({ address }) =>
+                setValue(
+                  fieldNamePrefix + 'redelegate.validatorDstAddress',
+                  address
+                )
+              }
+              readOnly={!isCreating}
+              selectedAddress={redelegateDstValidator}
+              validators={validators}
             />
           </div>
           <div className="flex flex-col items-stretch gap-1">
@@ -327,15 +356,20 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               name={t('form.validatorAddress')}
               tooltip={t('form.validatorAddressTooltip')}
             />
-            <TextInput
-              disabled={!isCreating}
-              error={errors?.claimRewards?.validatorAddress}
-              fieldName={fieldNamePrefix + 'claimRewards.validatorAddress'}
-              placeholder="junovaloper..."
-              register={register}
-              validation={[(v: string) => validateValidatorAddress(v)]}
+            <ValidatorPicker
+              displayClassName="grow min-w-0"
+              nativeDecimals={NATIVE_DECIMALS}
+              nativeDenom={NATIVE_DENOM}
+              onSelect={({ address }) =>
+                setValue(
+                  fieldNamePrefix + 'claimRewards.validatorAddress',
+                  address
+                )
+              }
+              readOnly={!isCreating}
+              selectedAddress={claimRewardsValidator}
+              validators={validators}
             />
-            <InputErrorMessage error={errors?.claimRewards?.validatorAddress} />
           </div>
         </>
       )}

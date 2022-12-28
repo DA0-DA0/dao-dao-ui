@@ -6,7 +6,11 @@ import type {
 } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
-import { ActionCardLoader, LockWithKeyEmoji } from '@dao-dao/stateless'
+import {
+  ActionCardLoader,
+  LockWithKeyEmoji,
+  useCachedLoadable,
+} from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -19,10 +23,13 @@ import {
   NATIVE_DENOM,
   makeRawProtobufMsg,
   makeStargateMessage,
+  loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import { ProfileDisplay, SuspenseLoader } from '../../components'
 import { AuthzExecComponent as StatelessAuthzComponent } from '../components'
+import { useActionOptions } from '../react'
+import { validatorsSelector } from '@dao-dao/state/recoil'
 
 export enum AuthzExecActionTypes {
   Delegate = '/cosmos.staking.v1beta1.MsgDelegate',
@@ -74,11 +81,25 @@ const useDefaults: UseDefaults<AuthzExecData> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
+  const { chainId, address } = useActionOptions()
+
+  const loadingValidators = loadableToLoadingData(
+    useCachedLoadable(
+      validatorsSelector({
+        chainId,
+      })
+    ),
+    []
+  )
+
   return (
     <SuspenseLoader fallback={<ActionCardLoader />}>
       <StatelessAuthzComponent
         {...props}
-        options={{ ProfileDisplay: ProfileDisplay }}
+        options={{
+          ProfileDisplay: ProfileDisplay,
+          validators: loadingValidators.loading ? [] : loadingValidators.data,
+        }}
       />
     </SuspenseLoader>
   )
