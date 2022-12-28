@@ -11,7 +11,7 @@ import {
 
 import { Cw4GroupQueryClient } from '../../../contracts/Cw4Group'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryIndexerSelector } from '../indexer'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -41,7 +41,7 @@ export const adminSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const admin = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw4Group/admin',
         })
@@ -67,7 +67,7 @@ export const totalWeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const weight = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw4Group/totalWeight',
         })
@@ -107,7 +107,7 @@ export const memberSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const weight = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw4Group/member',
           args: {
@@ -151,7 +151,7 @@ export const listAllMembersSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const membersList = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw4Group/listMembers',
         })

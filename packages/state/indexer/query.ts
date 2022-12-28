@@ -10,7 +10,8 @@ export type QueryIndexerOptions = WithChainId<{
 }>
 
 export const queryIndexer = async <T = any>(
-  contractAddress: string,
+  type: 'contract' | 'wallet',
+  address: string,
   formulaName: string,
   { args, blockHeight, chainId }: QueryIndexerOptions = {}
 ): Promise<T | undefined> => {
@@ -26,14 +27,14 @@ export const queryIndexer = async <T = any>(
     blockHeight,
   })
   const response = await fetch(
-    `${indexerApiBase}/contract/${contractAddress}/${formulaName}` +
+    `${indexerApiBase}/${type}/${address}/${formulaName}` +
       (query ? `?${query}` : '')
   )
 
   if (!response.ok) {
     const errorResponse = await response.text().catch(() => undefined)
     throw new Error(
-      `Error querying indexer for ${contractAddress}/${formulaName}: ${response.status} ${errorResponse}`
+      `Error querying indexer for ${type}/${address}/${formulaName}: ${response.status} ${errorResponse}`
     )
   } else if (response.status === 204) {
     // If no content is returned, return undefined. This will happen if the

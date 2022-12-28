@@ -2,7 +2,7 @@ import { selectorFamily } from 'recoil'
 
 import {
   cosmWasmClientForChainSelector,
-  queryIndexerSelector,
+  queryContractIndexerSelector,
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
   signingCosmWasmClientAtom,
@@ -75,7 +75,7 @@ export const configSelector = selectorFamily<ConfigResponse, QueryClientParams>(
       (queryClientParams) =>
       async ({ get }) => {
         const config = get(
-          queryIndexerSelector({
+          queryContractIndexerSelector({
             ...queryClientParams,
             formulaName: 'daoProposalSingle/config',
           })
@@ -108,7 +108,7 @@ export const proposalSelector = selectorFamily<
       )
 
       const proposalResponse = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoProposalSingle/proposal',
           args: {
@@ -139,7 +139,7 @@ export const listProposalsSelector = selectorFamily<
       const id = get(refreshProposalsIdAtom)
 
       const proposals = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoProposalSingle/listProposals',
           args: params[0],
@@ -168,7 +168,7 @@ export const reverseProposalsSelector = selectorFamily<
       const id = get(refreshProposalsIdAtom)
 
       const proposals = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoProposalSingle/reverseProposals',
           args: params[0],
@@ -195,7 +195,7 @@ export const proposalCountSelector = selectorFamily<
       const id = get(refreshProposalsIdAtom)
 
       const count = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoProposalSingle/proposalCount',
           id,
@@ -228,7 +228,7 @@ export const getVoteSelector = selectorFamily<
       )
 
       const vote = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoProposalSingle/vote',
           args: params[0],
@@ -263,7 +263,7 @@ export const listVotesSelector = selectorFamily<
       )
 
       const votes = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoProposalSingle/listVotes',
           args: params[0],
@@ -290,7 +290,7 @@ export const proposalCreationPolicySelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const creationPolicy = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoProposalSingle/creationPolicy',
         })
@@ -343,7 +343,7 @@ export const daoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const dao = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoProposalSingle/dao',
         })
@@ -368,7 +368,7 @@ export const infoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const info = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'info',
         })

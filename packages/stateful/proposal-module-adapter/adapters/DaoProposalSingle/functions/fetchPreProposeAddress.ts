@@ -18,6 +18,7 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
   let creationPolicy
   try {
     creationPolicy = await queryIndexer(
+      'contract',
       proposalModuleAddress,
       'daoProposalSingle/creationPolicy'
     )

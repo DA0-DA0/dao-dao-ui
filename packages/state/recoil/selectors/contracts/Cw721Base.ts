@@ -17,7 +17,7 @@ import {
 
 import { Cw721BaseQueryClient } from '../../../contracts/Cw721Base'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryIndexerSelector } from '../indexer'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -47,7 +47,7 @@ export const ownerOfSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const ownerOf = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw721/ownerOf',
           args: params[0],
@@ -87,7 +87,7 @@ export const approvalsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const approvals = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw721/approvals',
           args: params[0],
@@ -113,7 +113,7 @@ export const allOperatorsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const operators = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw721/allOperators',
           args: params[0],
@@ -139,7 +139,7 @@ export const numTokensSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const count = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw721/numTokens',
         })
@@ -164,7 +164,7 @@ export const contractInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const contractInfo = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw721/contractInfo',
         })
@@ -189,7 +189,7 @@ export const nftInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const nftInfo = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw721/nftInfo',
           args: params[0],
@@ -215,7 +215,7 @@ export const allNftInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const allNftInfo = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw721/allNftInfo',
           args: params[0],
@@ -258,7 +258,7 @@ export const _allTokensSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const tokens = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw721/allTokens',
           args: params[0],
@@ -284,7 +284,7 @@ export const minterSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const minter = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw721/tokens',
         })
@@ -311,7 +311,7 @@ export const allTokensForOwnerSelector = selectorFamily<
     ({ owner, ...queryClientParams }) =>
     async ({ get }) => {
       const list = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw721/tokens',
           args: {

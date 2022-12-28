@@ -111,9 +111,8 @@ for internationalization and an `openContext` function for opening new contexts.
 The `useSections` hook takes an options parameter (typed
 `CommandModalContextUseSectionsOptions`) that (as of right now) only contains
 the `filter` string from the command modal input. This may be useful for
-filtering some remote data, such as asking [some search
-indexer](https://github.com/DA0-DA0/subquery-indexers/tree/main/indexers/daos)
-for the top similarly named DAOs.
+filtering some remote data, such as asking an indexer for the top similarly
+named DAOs.
 
 Sections contain a `name` string, `items` list, and `onChoose` function that
 performs an action when an item is chosen. Since sections will often have

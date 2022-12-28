@@ -23,9 +23,14 @@ export interface ProfileHomeCardProps
     unstakedBalance: number
     stakedBalance: number
     dateBalancesFetched: Date
-    proposalsCreated: number
-    votesCast: number
   }>
+  loadingStats: LoadingData<
+    | {
+        proposalsCreated: number
+        votesCast: number
+      }
+    | undefined
+  >
 }
 
 export const ProfileHomeCard = ({
@@ -33,6 +38,7 @@ export const ProfileHomeCard = ({
   tokenDecimals,
   inboxProposalCount,
   lazyData,
+  loadingStats,
   ...wrapperProps
 }: ProfileHomeCardProps) => {
   const { t } = useTranslation()
@@ -92,10 +98,12 @@ export const ProfileHomeCard = ({
           <p
             className={clsx(
               'font-mono text-text-primary',
-              lazyData.loading && 'animate-pulse'
+              loadingStats.loading && 'animate-pulse'
             )}
           >
-            {lazyData.loading ? '...' : lazyData.data.proposalsCreated}
+            {loadingStats.loading
+              ? '...'
+              : loadingStats.data?.proposalsCreated ?? '-'}
           </p>
         </div>
 
@@ -105,10 +113,10 @@ export const ProfileHomeCard = ({
           <p
             className={clsx(
               'font-mono text-text-primary',
-              lazyData.loading && 'animate-pulse'
+              loadingStats.loading && 'animate-pulse'
             )}
           >
-            {lazyData.loading ? '...' : lazyData.data.votesCast}
+            {loadingStats.loading ? '...' : loadingStats.data?.votesCast ?? '-'}
           </p>
         </div>
       </div>

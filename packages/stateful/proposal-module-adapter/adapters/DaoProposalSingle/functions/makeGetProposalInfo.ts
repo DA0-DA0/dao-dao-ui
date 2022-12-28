@@ -43,6 +43,7 @@ export const makeGetProposalInfo =
       // Try indexer first.
       try {
         info = await queryIndexer<ContractVersionInfo>(
+          'contract',
           proposalModule.address,
           'info'
         )
@@ -64,6 +65,7 @@ export const makeGetProposalInfo =
       // Try indexer first.
       try {
         proposalResponse = await queryIndexer(
+          'contract',
           proposalModule.address,
           'daoProposalSingle/proposal',
           {
@@ -118,6 +120,7 @@ export const makeGetProposalInfo =
     let createdAtEpoch: number | null = null
     try {
       const createdAt = await queryIndexer<string>(
+        'contract',
         proposalModule.address,
         'daoProposalSingle/proposalCreatedAt',
         {

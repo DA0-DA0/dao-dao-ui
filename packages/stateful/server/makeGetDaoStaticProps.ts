@@ -484,6 +484,7 @@ const daoCoreDumpState = async (
   let created: Date | undefined
   try {
     const indexerDumpedState = await queryIndexer<IndexerDumpState>(
+      'contract',
       coreAddress,
       'daoCore/dumpState'
     )

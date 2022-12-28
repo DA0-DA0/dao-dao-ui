@@ -36,7 +36,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryIndexerSelector } from '../indexer'
+import { queryContractIndexerSelector } from '../indexer'
 import * as Cw20BaseSelectors from './Cw20Base'
 
 type QueryClientParams = WithChainId<{
@@ -88,7 +88,7 @@ export const adminSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const admin = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/admin',
         })
@@ -114,7 +114,7 @@ export const adminNominationSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const nomination = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/adminNomination',
         })
@@ -140,7 +140,7 @@ export const configSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const config = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/config',
         })
@@ -217,7 +217,7 @@ export const dumpStateSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const state = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/dumpState',
         })
@@ -248,7 +248,7 @@ export const getItemSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const item = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/item',
           args: params[0],
@@ -291,7 +291,7 @@ export const proposalModulesSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const proposalModules = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/proposalModules',
         })
@@ -316,7 +316,7 @@ export const activeProposalModulesSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const activeProposalModules = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/activeProposalModules',
         })
@@ -341,7 +341,7 @@ export const pauseInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const paused = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/paused',
         })
@@ -366,7 +366,7 @@ export const votingModuleSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const votingModule = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/votingModule',
         })
@@ -407,7 +407,7 @@ export const daoURISelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const daoUri = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/daoUri',
         })
@@ -437,7 +437,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
       )
 
       const votingPower = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/votingPower',
           args: {
@@ -474,7 +474,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
       )
 
       const totalPower = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/totalPower',
           blockHeight: params[0].height,
@@ -505,7 +505,7 @@ export const infoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const info = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'info',
         })
@@ -531,7 +531,7 @@ export const allCw20TokenListSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const list = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/cw20List',
         })
@@ -648,7 +648,7 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
         : undefined
 
       let balances: Cw20BalancesResponse | null = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/cw20Balances',
           // Update each time one of these changes.
@@ -743,7 +743,7 @@ export const allCw721TokenListSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const list = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/cw721List',
         })
@@ -845,7 +845,7 @@ export const listAllSubDaosSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const list = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/listSubDaos',
         })
@@ -947,7 +947,7 @@ export const listAllItemsSelector = selectorFamily<
     (queryClientParams) =>
     async ({ get }) => {
       const list = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/listItems',
         })

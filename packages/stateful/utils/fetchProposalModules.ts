@@ -30,6 +30,7 @@ export const fetchProposalModules = async (
   if (!activeProposalModules) {
     try {
       activeProposalModules = await queryIndexer(
+        'contract',
         coreAddress,
         'daoCore/activeProposalModules'
       )

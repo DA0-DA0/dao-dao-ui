@@ -2,7 +2,7 @@ import { selectorFamily } from 'recoil'
 
 import {
   cosmWasmClientForChainSelector,
-  queryIndexerSelector,
+  queryContractIndexerSelector,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
 import { WithChainId } from '@dao-dao/types'
@@ -67,7 +67,7 @@ export const proposalModuleSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const proposalModule = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoPreProposeSingle/proposalModule',
         })
@@ -92,7 +92,7 @@ export const daoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const dao = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoPreProposeSingle/dao',
         })
@@ -117,7 +117,7 @@ export const configSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const config = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoPreProposeSingle/config',
         })
@@ -142,7 +142,7 @@ export const depositInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const depositInfo = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoPreProposeSingle/depositInfo',
           args: params[0],

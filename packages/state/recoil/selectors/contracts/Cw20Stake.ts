@@ -22,7 +22,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryIndexerSelector } from '../indexer'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -72,7 +72,7 @@ export const stakedBalanceAtHeightSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(params[0].address))
 
       const balance = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20Stake/stakedBalance',
           args: {
@@ -107,7 +107,7 @@ export const totalStakedAtHeightSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(undefined))
 
       const total = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20Stake/totalStaked',
           blockHeight: params[0].height,
@@ -139,7 +139,7 @@ export const stakedValueSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(params[0].address))
 
       const value = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20Stake/stakedValue',
           args: params[0],
@@ -168,7 +168,7 @@ export const totalValueSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(undefined))
 
       const total = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20Stake/totalValue',
           id,
@@ -194,7 +194,7 @@ export const getConfigSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const config = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20Stake/config',
         })
@@ -221,7 +221,7 @@ export const claimsSelector = selectorFamily<
       const id = get(refreshClaimsIdAtom(params[0].address))
 
       const claims = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20Stake/claims',
           args: params[0],
@@ -262,7 +262,7 @@ export const listStakersSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const list = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20Stake/listStakers',
           args: params[0],
@@ -293,7 +293,7 @@ export const topStakersSelector = selectorFamily<
     ({ limit, ...queryClientParams }) =>
     ({ get }) =>
       get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20Stake/topStakers',
           args: {

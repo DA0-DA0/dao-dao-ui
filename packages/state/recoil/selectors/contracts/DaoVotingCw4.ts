@@ -15,7 +15,7 @@ import {
 } from '../../../contracts/DaoVotingCw4'
 import { signingCosmWasmClientAtom } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryIndexerSelector } from '../indexer'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -65,7 +65,7 @@ export const groupContractSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const groupContract = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingCw4/groupContract',
         })
@@ -90,7 +90,7 @@ export const daoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const dao = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingCw4/dao',
         })
@@ -115,7 +115,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const votingPower = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingCw4/votingPower',
           args: {
@@ -147,7 +147,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const totalPower = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingCw4/totalPower',
           blockHeight: params[0].height,
@@ -176,7 +176,7 @@ export const infoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const info = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'info',
         })

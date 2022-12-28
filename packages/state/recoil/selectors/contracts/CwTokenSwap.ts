@@ -5,7 +5,7 @@ import { StatusResponse } from '@dao-dao/types/contracts/CwTokenSwap'
 
 import { CwTokenSwapQueryClient } from '../../../contracts/CwTokenSwap'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryIndexerSelector } from '../indexer'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -34,7 +34,7 @@ export const statusSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const status = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cwTokenSwap/status',
         })

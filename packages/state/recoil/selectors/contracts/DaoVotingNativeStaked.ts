@@ -18,7 +18,7 @@ import {
 import { signingCosmWasmClientAtom } from '../../atoms'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryIndexerSelector } from '../indexer'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -68,7 +68,7 @@ export const daoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const dao = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingNativeStaked/dao',
         })
@@ -93,7 +93,7 @@ export const getConfigSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const config = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingNativeStaked/config',
         })
@@ -118,7 +118,7 @@ export const claimsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const claims = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingNativeStaked/claims',
           args: params[0],
@@ -145,7 +145,7 @@ export const listStakersSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const stakers = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingNativeStaked/listStakers',
           args: params[0],
@@ -173,7 +173,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(params[0].address))
 
       const votingPower = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingNativeStaked/votingPower',
           args: {
@@ -208,7 +208,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(undefined))
 
       const totalPower = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingNativeStaked/totalPower',
           blockHeight: params[0].height,
@@ -238,7 +238,7 @@ export const infoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const info = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'info',
         })

@@ -8,9 +8,12 @@ import {
   queryIndexer,
   searchDaos,
 } from '../../indexer'
-import { refreshOpenProposalsAtom } from '../atoms'
+import {
+  refreshOpenProposalsAtom,
+  refreshWalletProposalStatsAtom,
+} from '../atoms'
 
-export const queryIndexerSelector = selectorFamily<
+export const queryContractIndexerSelector = selectorFamily<
   any,
   {
     contractAddress: string
@@ -19,12 +22,40 @@ export const queryIndexerSelector = selectorFamily<
     id?: number
   } & QueryIndexerOptions
 >({
-  key: 'queryIndexer',
+  key: 'queryContractIndexer',
   get:
     ({ contractAddress, formulaName, ...options }) =>
     async () => {
       try {
-        return await queryIndexer(contractAddress, formulaName, options)
+        return await queryIndexer(
+          'contract',
+          contractAddress,
+          formulaName,
+          options
+        )
+      } catch (err) {
+        // If the indexer fails, return null.
+        console.error(err)
+        return null
+      }
+    },
+})
+
+export const queryWalletIndexerSelector = selectorFamily<
+  any,
+  {
+    walletAddress: string
+    formulaName: string
+    // Refresh by changing this value.
+    id?: number
+  } & QueryIndexerOptions
+>({
+  key: 'queryWalletIndexer',
+  get:
+    ({ walletAddress, formulaName, ...options }) =>
+    async () => {
+      try {
+        return await queryIndexer('wallet', walletAddress, formulaName, options)
       } catch (err) {
         // If the indexer fails, return null.
         console.error(err)
@@ -61,7 +92,7 @@ export const openProposalsSelector = selectorFamily<
     ({ get }) => {
       const id = get(refreshOpenProposalsAtom)
       const openProposals = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           contractAddress: coreAddress,
           formulaName: 'daoCore/openProposals',
           chainId,
@@ -70,5 +101,30 @@ export const openProposalsSelector = selectorFamily<
         })
       )
       return openProposals ?? []
+    },
+})
+
+export const walletProposalStatsSelector = selectorFamily<
+  | {
+      created: number
+      votesCast: number
+    }
+  | undefined,
+  WithChainId<{ address: string }>
+>({
+  key: 'walletProposalStats',
+  get:
+    ({ address, chainId }) =>
+    ({ get }) => {
+      const id = get(refreshWalletProposalStatsAtom)
+      const stats = get(
+        queryWalletIndexerSelector({
+          walletAddress: address,
+          formulaName: 'proposals/stats',
+          chainId,
+          id,
+        })
+      )
+      return stats ?? undefined
     },
 })

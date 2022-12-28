@@ -76,3 +76,9 @@ export const refreshOpenProposalsAtom = atom({
   key: 'refreshOpenProposals',
   default: 0,
 })
+
+// Change this to refresh wallet proposal stats.
+export const refreshWalletProposalStatsAtom = atom({
+  key: 'refreshWalletProposalStats',
+  default: 0,
+})

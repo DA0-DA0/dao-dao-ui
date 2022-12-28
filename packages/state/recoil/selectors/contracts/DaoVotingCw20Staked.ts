@@ -15,7 +15,7 @@ import {
 import { DaoVotingCw20StakedQueryClient } from '../../../contracts/DaoVotingCw20Staked'
 import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryIndexerSelector } from '../indexer'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -45,7 +45,7 @@ export const stakingContractSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const stakingContract = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingCw20Staked/stakingContract',
         })
@@ -70,7 +70,7 @@ export const daoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const dao = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingCw20Staked/dao',
         })
@@ -95,7 +95,7 @@ export const activeThresholdSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const activeThreshold = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingCw20Staked/activeThreshold',
         })
@@ -123,7 +123,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(params[0].address))
 
       const votingPower = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingCw20Staked/votingPower',
           args: {
@@ -158,7 +158,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(undefined))
 
       const totalPower = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingCw20Staked/totalPower',
           blockHeight: params[0].height,
@@ -188,7 +188,7 @@ export const infoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const info = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'info',
         })
@@ -213,7 +213,7 @@ export const tokenContractSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const tokenContract = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingCw20Staked/tokenContract',
         })

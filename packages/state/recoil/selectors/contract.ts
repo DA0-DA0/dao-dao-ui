@@ -8,7 +8,7 @@ import {
   cosmWasmClientForChainSelector,
 } from './chain'
 import { DaoCoreV2Selectors } from './contracts'
-import { queryIndexerSelector } from './indexer'
+import { queryContractIndexerSelector } from './indexer'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
@@ -19,7 +19,7 @@ export const contractInstantiateTimeSelector = selectorFamily<
     ({ address, chainId }) =>
     async ({ get }) => {
       const instantiatedAt = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           contractAddress: address,
           chainId,
           formulaName: 'instantiatedAt',

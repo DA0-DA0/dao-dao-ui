@@ -25,7 +25,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryIndexerSelector } from '../indexer'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -74,7 +74,7 @@ export const balanceSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(params[0].address))
 
       const balance = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20/balance',
           args: params[0],
@@ -101,7 +101,7 @@ export const tokenInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const tokenInfo = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20/tokenInfo',
         })
@@ -126,7 +126,7 @@ export const minterSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const minter = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20/minter',
         })
@@ -153,7 +153,7 @@ export const allowanceSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(params[0].owner))
 
       const allowance = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20/allowance',
           args: params[0],
@@ -182,7 +182,7 @@ export const allAllowancesSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(params[0].owner))
 
       const allowances = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20/ownerAllowances',
           args: params[0],
@@ -209,7 +209,7 @@ export const allAccountsSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const accounts = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20/allAccounts',
           args: params[0],
@@ -235,7 +235,7 @@ export const marketingInfoSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const marketingInfo = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20/marketingInfo',
         })
@@ -294,7 +294,7 @@ export const logoUrlSelector = selectorFamily<
     ({ contractAddress, chainId }) =>
     ({ get }) => {
       const logoUrl = get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           contractAddress,
           chainId,
           formulaName: 'cw20/logoUrl',
@@ -356,7 +356,7 @@ export const topAccountBalancesSelector = selectorFamily<
     ({ limit, ...queryClientParams }) =>
     ({ get }) =>
       get(
-        queryIndexerSelector({
+        queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20/topAccountBalances',
           args: {
