@@ -21,14 +21,6 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   data: {},
-  isCreating: true,
-  onRemove: () => alert('remove'),
-  errors: {},
-  options: {
-    formattedJsonDisplayProps: {
-      jsonLoadable: {
-        state: 'loading',
-      } as any,
-    },
-  },
+  isCreating: false,
+  options: {},
 }

@@ -10,13 +10,11 @@ import {
   SelectInput,
   TextInput,
 } from '@dao-dao/stateless'
-import { TokenStake, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { validateJSON, validateValidatorAddress } from '@dao-dao/utils'
 
 import { ValidatorActionType } from '../actions/ValidatorActions'
 import { ActionCard } from './ActionCard'
-import { ValidatorPicker } from './ValidatorPicker'
 
 export const useValidatorActions = (): {
   type: ValidatorActionType
@@ -44,9 +42,7 @@ export const useValidatorActions = (): {
   ]
 }
 
-export interface ValidatorActionOptions {
-  validators: Validator[]
-}
+export interface ValidatorActionOptions {}
 
 export interface ValidatorActionData {}
 

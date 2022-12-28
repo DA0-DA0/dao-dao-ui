@@ -11,7 +11,6 @@ import {
   LockWithKeyEmoji,
   NumberInput,
   SelectInput,
-  TextInput,
 } from '@dao-dao/stateless'
 import { StatefulProfileDisplayProps, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -23,7 +22,6 @@ import {
   validateJSON,
   validatePositive,
   validateRequired,
-  validateValidatorAddress,
 } from '@dao-dao/utils'
 
 import { AuthzExecActionTypes } from '../actions/AuthzExec'

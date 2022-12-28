@@ -20,14 +20,18 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   data: {},
-  isCreating: true,
-  onRemove: () => alert('remove'),
-  errors: {},
+  isCreating: false,
   options: {
-    formattedJsonDisplayProps: {
-      jsonLoadable: {
-        state: 'loading',
-      } as any,
-    },
+    validators: [
+      {
+        address: 'aDifferentOne',
+        moniker: 'A different one',
+        website: '',
+        details: '',
+        commission: 0.05,
+        status: 'BOND_STATUS_BONDED',
+        tokens: 9,
+      },
+    ],
   },
 }
