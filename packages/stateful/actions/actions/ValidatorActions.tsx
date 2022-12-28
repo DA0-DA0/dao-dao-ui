@@ -91,7 +91,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ValidatorActionsData> = (
 ) =>
   useMemo(
     () =>
-      msg
+      msg &&
+      msg.validatorActionType &&
+      msg.createMsg &&
+      msg.editMsg &&
+      msg.unjailMsg &&
+      msg.withdrawCommissionMsg
         ? {
             match: true,
             data: msg as ValidatorActionsData,
@@ -99,6 +104,42 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ValidatorActionsData> = (
         : { match: false },
     [msg]
   )
+
+const useTransformToCosmos: UseTransformToCosmos<ValidatorActionsData> = () =>
+  useCallback((data: ValidatorActionsData) => {
+    switch (data.validatorActionType) {
+      case ValidatorActionType.WithdrawValidatorCommission:
+        return makeStargateMessage({
+          stargate: {
+            type_url: ValidatorActionType.WithdrawValidatorCommission,
+            value: data.withdrawCommissionMsg,
+          },
+        })
+      case ValidatorActionType.CreateValidator:
+        return makeStargateMessage({
+          stargate: {
+            type_url: ValidatorActionType.CreateValidator,
+            value: data.createMsg,
+          },
+        })
+      case ValidatorActionType.EditValidator:
+        return makeStargateMessage({
+          stargate: {
+            type_url: ValidatorActionType.EditValidator,
+            value: data.editMsg,
+          },
+        })
+      case ValidatorActionType.UnjailValidator:
+        return makeStargateMessage({
+          stargate: {
+            type_url: ValidatorActionType.UnjailValidator,
+            value: data.unjailMsg,
+          },
+        })
+      default:
+        throw Error('Unrecogonized validator action type')
+    }
+  }, [])
 
 export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
   t,
@@ -108,42 +149,6 @@ export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
   if (context.type !== ActionOptionsContextType.Dao) {
     return null
   }
-
-  const useTransformToCosmos: UseTransformToCosmos<ValidatorActionsData> = () =>
-    useCallback((data: ValidatorActionsData) => {
-      switch (data.validatorActionType) {
-        case ValidatorActionType.WithdrawValidatorCommission:
-          return makeStargateMessage({
-            stargate: {
-              type_url: ValidatorActionType.WithdrawValidatorCommission,
-              value: data.withdrawCommissionMsg,
-            },
-          })
-        case ValidatorActionType.CreateValidator:
-          return makeStargateMessage({
-            stargate: {
-              type_url: ValidatorActionType.CreateValidator,
-              value: data.createMsg,
-            },
-          })
-        case ValidatorActionType.EditValidator:
-          return makeStargateMessage({
-            stargate: {
-              type_url: ValidatorActionType.EditValidator,
-              value: data.editMsg,
-            },
-          })
-        case ValidatorActionType.UnjailValidator:
-          return makeStargateMessage({
-            stargate: {
-              type_url: ValidatorActionType.UnjailValidator,
-              value: data.unjailMsg,
-            },
-          })
-        default:
-          throw Error('Unrecogonized validator action type')
-      }
-    }, [])
 
   return {
     key: CoreActionKey.ValidatorActions,
