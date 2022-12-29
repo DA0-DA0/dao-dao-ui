@@ -5,21 +5,11 @@ import Fuse from 'fuse.js'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  LoadingDataWithError,
-  ModalProps,
-  NftCardInfo,
-  StakingMode,
-} from '@dao-dao/types'
+import { LoadingDataWithError, ModalProps, NftCardInfo } from '@dao-dao/types'
 
 import { SortFn, useDropdownSorter, useSearchFilter } from '../../hooks'
 import { Button } from '../buttons/Button'
-import {
-  Dropdown,
-  DropdownOption,
-  SearchBar,
-  SegmentedControls,
-} from '../inputs'
+import { Dropdown, DropdownOption, SearchBar } from '../inputs'
 import { Loader } from '../logo/Loader'
 import { NftCard } from '../NftCard'
 import { NoContent } from '../NoContent'
@@ -39,9 +29,7 @@ export interface NftSelectionModalProps<T extends NftCardInfo>
   actionLabel: string
   allowSelectingNone?: boolean
   selectedDisplay?: ReactNode
-  mode?: StakingMode
-  setMode?: (mode: StakingMode) => void
-  hasStake?: boolean
+  headerDisplay?: ReactNode
 }
 
 export const NftSelectionModal = <T extends NftCardInfo>({
@@ -57,9 +45,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   containerClassName,
   allowSelectingNone,
   selectedDisplay,
-  mode,
-  setMode,
-  hasStake,
+  headerDisplay,
   ...modalProps
 }: NftSelectionModalProps<T>) => {
   const { t } = useTranslation()
@@ -146,28 +132,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
       }
       headerContent={
         <div className="mt-4 flex flex-col gap-4">
-          {!hasStake ||
-          mode === undefined ||
-          setMode === undefined ||
-          mode === StakingMode.Claim ? (
-            <></>
-          ) : (
-            <SegmentedControls
-              className="mt-5"
-              onSelect={setMode}
-              selected={mode}
-              tabs={[
-                {
-                  label: t(`title.stakingModeNfts.stake`),
-                  value: StakingMode.Stake,
-                },
-                {
-                  label: t(`title.stakingModeNfts.unstake`),
-                  value: StakingMode.Unstake,
-                },
-              ]}
-            />
-          )}
+          {headerDisplay}
           <SearchBar
             autoFocus
             placeholder={t('info.searchNftsPlaceholder')}

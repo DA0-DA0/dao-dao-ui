@@ -16,11 +16,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationConfig
 > = (
   { name: daoName },
-  {
-    //newInfo: { initialSupply, imageUrl, symbol, name },
-    existingGovernanceTokenAddress,
-    unstakingDuration,
-  },
+  { existingGovernanceTokenAddress, unstakingDuration },
   t
 ) => {
   if (!existingGovernanceTokenAddress) {

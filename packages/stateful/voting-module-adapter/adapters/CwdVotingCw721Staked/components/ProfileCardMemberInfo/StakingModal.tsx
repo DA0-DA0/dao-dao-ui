@@ -1,13 +1,8 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import {
-  constSelector,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil'
+import { constSelector, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   CwdVotingCw721StakedSelectors,
@@ -17,6 +12,7 @@ import {
 import {
   ModalLoader,
   NftSelectionModal,
+  SegmentedControls,
   StakingMode,
   useCachedLoadable,
 } from '@dao-dao/stateless'
@@ -50,16 +46,8 @@ const InnerStakingModal = ({
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletProfile()
 
-  const [actionLabel, setActionLabel] = useState(t('button.stake') as string)
-  const [header, setHeader] = useState<{ title: string; subtitle?: string }>({
-    title: '',
-    subtitle: '',
-  })
   const [mode, setMode] = useState<StakingMode | undefined>(undefined)
-  const [nfts, setNfts] = useState({
-    loading: true,
-    errored: false,
-  } as LoadingDataWithError<NftCardInfo[]>)
+
   const [tokenIds, setTokenIds] = useState([] as string[])
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
@@ -88,14 +76,7 @@ const InnerStakingModal = ({
     fetchLoadingWalletUnstakedValue: true,
   })
 
-  const totalStakedBalance = useRecoilValue(
-    walletAddress
-      ? CwdVotingCw721StakedSelectors.votingPowerAtHeightSelector({
-          contractAddress: stakingContractAddress,
-          params: [{ address: walletAddress }],
-        })
-      : constSelector(undefined)
-  )
+  const hasStake = walletStakedValue !== undefined && walletStakedValue > 0
 
   const walletStakedBalanceLoadable = useCachedLoadable(
     walletAddress
@@ -110,13 +91,6 @@ const InnerStakingModal = ({
     walletStakedBalanceLoadable.contents
       ? Number(walletStakedBalanceLoadable.contents.power)
       : undefined
-
-  const totalValue = useRecoilValue(
-    CwdVotingCw721StakedSelectors.totalPowerAtHeightSelector({
-      contractAddress: stakingContractAddress,
-      params: [{}],
-    })
-  )
 
   if (
     sumClaimsAvailable === undefined ||
@@ -141,129 +115,6 @@ const InnerStakingModal = ({
   const refreshDaoVotingPower = () => setRefreshDaoVotingPower((id) => id + 1)
 
   const awaitNextBlock = useAwaitNextBlock()
-  /*
-  const onAction = useCallback(async () => {
-    if (!connected) {
-      toast.error(t('error.connectWalletToContinue'))
-      return
-    }
-
-    setStakingLoading(true)
-
-    switch (mode) {
-      case StakingMode.Stake: {
-        setStakingLoading(true)
-
-        try {
-          await doStakeMultiple({
-            contract: stakingContractAddress,
-            msg: btoa('{"stake": {}}'),
-            tokenIds,
-          })
-
-          // New balances will not appear until the next block.
-          await awaitNextBlock()
-
-          refreshBalances()
-          refreshTotals()
-          refreshDaoVotingPower()
-
-          setTokenIds([])
-          toast.success(
-            `Staked ${tokenIds.length} $${governanceTokenInfo.symbol}`
-          )
-
-          // Close once done.
-          onClose()
-        } catch (err) {
-          console.error(err)
-          toast.error(processError(err))
-        } finally {
-          setStakingLoading(false)
-        }
-
-        break
-      }
-      case StakingMode.Unstake: {
-        if (walletStakedBalance === undefined) {
-          toast.error(t('error.loadingData'))
-          return
-        }
-
-        setStakingLoading(true)
-
-        // In the UI we display staked value as `amount_staked +
-        // rewards` and is the value used to compute voting power. When we actually
-        // process an unstake call, the contract expects this value in terms of
-        // amount_staked.
-        //
-        // value = amount_staked * total_value / staked_total
-        //
-        // => amount_staked = staked_total * value / total_value
-        let amountToUnstake =
-          (Number(totalStakedBalance?.power) * tokenIds.length) /
-          Number(totalValue.power)
-
-        // We have limited precision and on the contract side division rounds
-        // down, so division and multiplication don't commute. Handle the common
-        // case here where someone is attempting to unstake all of their funds.
-        if (Math.abs(walletStakedBalance - amountToUnstake) <= 1) {
-          amountToUnstake = walletStakedBalance
-        }
-
-        try {
-          await doUnstake({
-            tokenIds,
-          })
-
-          // New balances will not appear until the next block.
-          await awaitNextBlock()
-
-          refreshBalances()
-          refreshTotals()
-          refreshClaims?.()
-          refreshDaoVotingPower()
-
-          setTokenIds([])
-          toast.success(
-            `Unstaked ${tokenIds.length} $${governanceTokenInfo.symbol}`
-          )
-
-          // Close once done.
-          onClose()
-        } catch (err) {
-          console.error(err)
-          toast.error(processError(err))
-        } finally {
-          setStakingLoading(false)
-        }
-
-        break
-      }
-      default:
-        toast.error('Internal error while staking. Unrecognized mode.')
-    }
-  }, [
-    awaitNextBlock,
-    connected,
-    doStakeMultiple,
-    doUnstake,
-    governanceTokenInfo.symbol,
-    mode,
-    onClose,
-    refreshBalances,
-    refreshClaims,
-    refreshDaoVotingPower,
-    refreshTotals,
-    setStakingLoading,
-    stakingContractAddress,
-    t,
-    tokenIds,
-    totalStakedBalance?.power,
-    totalValue.power,
-    walletStakedBalance,
-  ])
-  */
 
   const onAction = async () => {
     if (!connected) {
@@ -314,25 +165,6 @@ const InnerStakingModal = ({
         }
 
         setStakingLoading(true)
-
-        // In the UI we display staked value as `amount_staked +
-        // rewards` and is the value used to compute voting power. When we actually
-        // process an unstake call, the contract expects this value in terms of
-        // amount_staked.
-        //
-        // value = amount_staked * total_value / staked_total
-        //
-        // => amount_staked = staked_total * value / total_value
-        let amountToUnstake =
-          (Number(totalStakedBalance?.power) * tokenIds.length) /
-          Number(totalValue.power)
-
-        // We have limited precision and on the contract side division rounds
-        // down, so division and multiplication don't commute. Handle the common
-        // case here where someone is attempting to unstake all of their funds.
-        if (Math.abs(walletStakedBalance - amountToUnstake) <= 1) {
-          amountToUnstake = walletStakedBalance
-        }
 
         try {
           await doUnstake({
@@ -402,71 +234,66 @@ const InnerStakingModal = ({
     return nft.tokenId
   }
 
-  const updateStakingMode = useCallback(
-    (newMode: StakingMode) => {
-      setTokenIds([])
-
-      let _header = Object.assign({}, header)
-
-      if (walletStakedValue !== undefined && walletStakedValue > 0) {
-        _header.title = t('title.manageStaking')
-      } else {
-        _header.title = t('title.stakingModeNfts.stake')
-      }
-
-      switch (newMode) {
-        case StakingMode.Stake:
-          setActionLabel(t('button.stake'))
-          _header.subtitle = t('title.stakingModeNfts.stakeHeaderSubtitle')
-          setHeader(_header)
-          setNfts(
-            loadingWalletUnstakedNfts ??
-              ({ loading: false, errored: true } as LoadingDataWithError<
-                NftCardInfo[]
-              >)
-          )
-          break
-        case StakingMode.Unstake:
-          setActionLabel(t('title.unstake'))
-          _header.subtitle = t('title.stakingModeNfts.unstakeHeaderSubtitle')
-          setHeader(_header)
-          setNfts(
-            loadingWalletStakedNfts ??
-              ({ loading: false, errored: true } as LoadingDataWithError<
-                NftCardInfo[]
-              >)
-          )
-          break
-        default:
-          break
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  )
+  const nfts =
+    (mode === StakingMode.Stake
+      ? loadingWalletUnstakedNfts
+      : mode === StakingMode.Unstake
+      ? loadingWalletStakedNfts
+      : undefined) ??
+    ({ loading: false, errored: true } as LoadingDataWithError<NftCardInfo[]>)
 
   useEffect(() => {
     if (mode === undefined) {
       setMode(initialMode)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    if (mode !== undefined) {
-      updateStakingMode(mode)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode])
+  }, [initialMode, mode])
 
   return (
     <NftSelectionModal
-      actionLabel={actionLabel}
+      actionLabel={
+        mode === StakingMode.Stake
+          ? t('button.stake')
+          : mode === StakingMode.Unstake
+          ? t('title.unstake')
+          : ''
+      }
       actionLoading={stakingLoading}
       getIdForNft={getIdForNft}
-      hasStake={walletStakedValue !== undefined && walletStakedValue > 0}
-      header={header}
-      mode={mode}
+      header={{
+        title: hasStake
+          ? t('title.manageStaking')
+          : t('title.stakingModeNfts.stake'),
+        subtitle:
+          mode === StakingMode.Stake
+            ? t('title.stakingModeNfts.stakeHeaderSubtitle')
+            : mode === StakingMode.Unstake
+            ? t('title.stakingModeNfts.unstakeHeaderSubtitle')
+            : '',
+      }}
+      headerDisplay={
+        !(
+          !hasStake ||
+          mode === undefined ||
+          setMode === undefined ||
+          mode === StakingMode.Claim
+        ) ? (
+          <SegmentedControls
+            className="mt-5"
+            onSelect={setMode}
+            selected={mode}
+            tabs={[
+              {
+                label: t(`title.stakingModeNfts.stake`),
+                value: StakingMode.Stake,
+              },
+              {
+                label: t(`title.stakingModeNfts.unstake`),
+                value: StakingMode.Unstake,
+              },
+            ]}
+          />
+        ) : undefined
+      }
       nfts={nfts}
       onAction={onAction}
       onClose={onClose}
@@ -474,7 +301,6 @@ const InnerStakingModal = ({
       onNftClick={onNftClick}
       onSelectAll={onSelectAll}
       selectedIds={tokenIds}
-      setMode={setMode}
       visible={true}
     />
   )

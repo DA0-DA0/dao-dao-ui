@@ -1,5 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
@@ -32,14 +31,6 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
-  const { address: walletAddress } = useWallet()
-
-  // Fill in default first tier info if tiers not yet edited.
-  const [loadedPage, setLoadedPage] = useState(false)
-  useEffect(() => {
-    if (loadedPage) return
-    setLoadedPage(true)
-  }, [loadedPage, setValue, t, walletAddress])
 
   //! Validate existing governance token.
   const existingGovernanceTokenAddress =
@@ -102,17 +93,6 @@ export const GovernanceConfigurationInput = ({
     setValue,
     t,
   ])
-
-  /*
-  useEffect(() => {
-    setValue(
-      'votingModuleAdapter.data.existingGovernanceTokenInfo.total_supply',
-      numOfTokensLoadable.state === 'hasValue'
-        ? numOfTokensLoadable.contents?.count?.toString()
-        : undefined
-    )
-  }, [numOfTokensLoadable, setValue])
-  */
 
   return (
     <>

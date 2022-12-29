@@ -7,13 +7,6 @@ export enum GovernanceTokenType {
 
 export interface DaoCreationConfig {
   tokenType: GovernanceTokenType
-  newInfo?: {
-    initialSupply: number
-    initialTreasuryPercent: number
-    imageUrl?: string
-    symbol: string
-    name: string
-  }
   existingGovernanceTokenAddress: string
   // TokenInfoResponse
   existingGovernanceTokenInfo?: {

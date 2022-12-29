@@ -4,6 +4,7 @@ import { FieldValues } from 'react-hook-form'
 import { Action } from './actions'
 import { Duration } from './contracts/common'
 import { MarketingInfoResponse, TokenInfoResponse } from './contracts/Cw20Base'
+import { NftClaim } from './contracts/CwdVotingCw721Staked'
 import { Claim } from './contracts/stake-cw20'
 import {
   DaoCreationGetInstantiateInfo,
@@ -70,9 +71,9 @@ export interface UseStakingInfoResponse {
   // Claims
   blockHeight?: number
   refreshClaims?: () => void
-  claims?: Claim[]
-  claimsPending?: Claim[]
-  claimsAvailable?: Claim[]
+  claims?: Claim[] | NftClaim[]
+  claimsPending?: Claim[] | NftClaim[]
+  claimsAvailable?: Claim[] | NftClaim[]
   sumClaimsAvailable?: number
   // Total staked value
   totalStakedValue?: number

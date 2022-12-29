@@ -109,7 +109,7 @@ export const useGovernanceTokenInfo = ({
   */
 
   return {
-    stakingContractAddress: governanceTokenAddress,
+    stakingContractAddress: votingModuleAddress,
     governanceTokenAddress,
     governanceTokenInfo,
     governanceTokenMarketingInfo,

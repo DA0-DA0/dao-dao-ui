@@ -15,7 +15,7 @@ import {
   UseStakingInfoOptions,
   UseStakingInfoResponse,
 } from '@dao-dao/types'
-import { Claim } from '@dao-dao/types/contracts/stake-cw20'
+import { NftClaim } from '@dao-dao/types/contracts/CwdVotingCw721Staked'
 import { claimAvailable, loadableToLoadingDataWithError } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -75,13 +75,12 @@ export const useStakingInfo = ({
       : constSelector(undefined)
   )?.nft_claims
 
-  const nftClaims: Claim[] = claims
+  const nftClaims: NftClaim[] = claims
     ? claims.map(({ token_id, release_at }) => {
         return {
           release_at,
           token_id,
-          amount: '1',
-        } as Claim
+        } as NftClaim
       })
     : []
 
