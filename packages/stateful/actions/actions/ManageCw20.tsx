@@ -8,8 +8,9 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { Cw20BaseSelectors, DaoCoreV2Selectors } from '@dao-dao/state'
-import { XEmoji } from '@dao-dao/stateless'
+import { Cw20BaseSelectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { TokenEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -22,38 +23,18 @@ import {
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import { RemoveCw20Component as StatelessRemoveCw20Component } from '../components/RemoveCw20'
+import { ManageCw20Component as StatelessManageCw20Component } from '../components/ManageCw20'
 import { useActionOptions } from '../react'
 
-interface RemoveCw20Data {
+interface ManageCw20Data {
+  adding: boolean
   address: string
 }
 
-const useDefaults: UseDefaults<RemoveCw20Data> = () => ({
+const useDefaults: UseDefaults<ManageCw20Data> = () => ({
+  adding: true,
   address: '',
 })
-
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<RemoveCw20Data> = (
-  msg: Record<string, any>
-) =>
-  useMemo(
-    () =>
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'update_cw20_token_list' in msg.wasm.execute.msg &&
-      'to_add' in msg.wasm.execute.msg.update_cw20_token_list &&
-      msg.wasm.execute.msg.update_cw20_token_list.to_add.length === 0 &&
-      'to_remove' in msg.wasm.execute.msg.update_cw20_token_list &&
-      msg.wasm.execute.msg.update_cw20_token_list.to_remove.length === 1
-        ? {
-            match: true,
-            data: {
-              address: msg.wasm.execute.msg.update_cw20_token_list.to_remove[0],
-            },
-          }
-        : { match: false },
-    [msg]
-  )
 
 const Component: ActionComponent = (props) => {
   const { address, chainId } = useActionOptions()
@@ -68,7 +49,6 @@ const Component: ActionComponent = (props) => {
     tokenAddress
       ? Cw20BaseSelectors.tokenInfoSelector({
           contractAddress: tokenAddress,
-          chainId,
           params: [],
         })
       : constSelector(undefined)
@@ -133,7 +113,7 @@ const Component: ActionComponent = (props) => {
   ])
 
   return (
-    <StatelessRemoveCw20Component
+    <StatelessManageCw20Component
       {...props}
       options={{
         additionalAddressError,
@@ -146,7 +126,28 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageCw20Data> = (
+  msg: Record<string, any>
+) =>
+  useMemo(
+    () =>
+      'wasm' in msg &&
+      'execute' in msg.wasm &&
+      'update_cw20_list' in msg.wasm.execute.msg &&
+      'to_add' in msg.wasm.execute.msg.update_cw20_list &&
+      'to_remove' in msg.wasm.execute.msg.update_cw20_list
+        ? {
+            match: true,
+            data: {
+              adding: msg.wasm.execute.msg.update_cw20_list.to_add.length === 1,
+              address: msg.wasm.execute.msg.update_cw20_list.to_add[0],
+            },
+          }
+        : { match: false },
+    [msg]
+  )
+
+export const makeManageCw20Action: ActionMaker<ManageCw20Data> = ({
   t,
   address,
   context,
@@ -156,18 +157,18 @@ export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
     return null
   }
 
-  const useTransformToCosmos: UseTransformToCosmos<RemoveCw20Data> = () =>
+  const useTransformToCosmos: UseTransformToCosmos<ManageCw20Data> = () =>
     useCallback(
-      (data: RemoveCw20Data) =>
+      (data: ManageCw20Data) =>
         makeWasmMessage({
           wasm: {
             execute: {
               contract_addr: address,
               funds: [],
               msg: {
-                update_cw20_token_list: {
-                  to_add: [],
-                  to_remove: [data.address],
+                update_cw20_list: {
+                  to_add: data.adding ? [data.address] : [],
+                  to_remove: !data.adding ? [data.address] : [],
                 },
               },
             },
@@ -177,10 +178,10 @@ export const makeRemoveCw20Action: ActionMaker<RemoveCw20Data> = ({
     )
 
   return {
-    key: CoreActionKey.RemoveCw20,
-    Icon: XEmoji,
-    label: t('title.removeCw20FromTreasury'),
-    description: t('info.removeCw20FromTreasuryActionDescription'),
+    key: CoreActionKey.ManageCw20,
+    Icon: TokenEmoji,
+    label: t('title.manageTreasuryTokens'),
+    description: t('info.manageTreasuryTokensDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

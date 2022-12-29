@@ -11,8 +11,7 @@ import { CosmosMsgFor_Empty } from './contracts/common'
 export enum CoreActionKey {
   Spend = 'spend',
   StakingActions = 'stakingActions',
-  AddCw20 = 'addCw20',
-  RemoveCw20 = 'removeCw20',
+  ManageCw20 = 'manageCw20',
   ManageCw721 = 'manageCw721',
   TransferNft = 'transferNft',
   MintNft = 'mintNft',
