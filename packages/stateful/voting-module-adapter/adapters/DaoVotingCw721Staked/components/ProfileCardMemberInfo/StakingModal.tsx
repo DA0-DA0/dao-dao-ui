@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
-  CwdVotingCw721StakedSelectors,
+  DaoVotingCw721StakedSelectors,
   refreshDaoVotingPowerAtom,
   stakingLoadingAtom,
 } from '@dao-dao/state'
@@ -26,9 +26,9 @@ import { processError } from '@dao-dao/utils'
 import { SuspenseLoader } from '../../../../../components'
 import {
   Cw721BaseHooks,
-  CwdVotingCw721StakedHooks,
+  DaoVotingCw721StakedHooks,
   useAwaitNextBlock,
-  useWalletProfile,
+  useWalletInfo,
 } from '../../../../../hooks'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 
@@ -44,7 +44,7 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
-  const { refreshBalances } = useWalletProfile()
+  const { refreshBalances } = useWalletInfo()
 
   const [mode, setMode] = useState<StakingMode | undefined>(undefined)
 
@@ -80,7 +80,7 @@ const InnerStakingModal = ({
 
   const walletStakedBalanceLoadable = useCachedLoadable(
     walletAddress
-      ? CwdVotingCw721StakedSelectors.votingPowerAtHeightSelector({
+      ? DaoVotingCw721StakedSelectors.votingPowerAtHeightSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -104,7 +104,7 @@ const InnerStakingModal = ({
     contractAddress: governanceTokenAddress,
     sender: walletAddress ?? '',
   })
-  const doUnstake = CwdVotingCw721StakedHooks.useUnstake({
+  const doUnstake = DaoVotingCw721StakedHooks.useUnstake({
     contractAddress: stakingContractAddress,
     sender: walletAddress ?? '',
   })

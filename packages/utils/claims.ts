@@ -1,4 +1,4 @@
-import { NftClaim } from '@dao-dao/types/contracts/CwdVotingCw721Staked'
+import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import { Claim } from '@dao-dao/types/contracts/stake-cw20'
 
 export function claimAvailable(claim: Claim | NftClaim, blockHeight: number) {

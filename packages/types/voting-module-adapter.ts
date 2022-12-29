@@ -4,7 +4,7 @@ import { FieldValues } from 'react-hook-form'
 import { Action } from './actions'
 import { Duration } from './contracts/common'
 import { MarketingInfoResponse, TokenInfoResponse } from './contracts/Cw20Base'
-import { NftClaim } from './contracts/CwdVotingCw721Staked'
+import { NftClaim } from './contracts/DaoVotingCw721Staked'
 import { Claim } from './contracts/stake-cw20'
 import {
   DaoCreationGetInstantiateInfo,

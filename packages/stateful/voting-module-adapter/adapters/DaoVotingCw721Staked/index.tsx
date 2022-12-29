@@ -17,15 +17,15 @@ import {
 } from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
 
-export const CwdVotingCw721StakedAdapter: VotingModuleAdapter<DaoCreationConfig> =
+export const DaoVotingCw721StakedAdapter: VotingModuleAdapter<DaoCreationConfig> =
   {
-    id: 'CwdVotingCw721Staked',
+    id: 'DaoVotingCw721Staked',
     contractNames: [
       // V1
       //'Cw721-staked-balance-voting',
       // V2
       'cw721_stake', //temporary while testing
-      'cwd-voting-cw721-staked',
+      'dao-voting-cw721-staked',
     ],
 
     load: () => ({
@@ -47,11 +47,11 @@ export const CwdVotingCw721StakedAdapter: VotingModuleAdapter<DaoCreationConfig>
     daoCreation: {
       displayInfo: {
         Icon: ImageEmoji,
-        nameI18nKey: 'daoCreationAdapter.CwdVotingCw721Staked.name',
+        nameI18nKey: 'daoCreationAdapter.DaoVotingCw721Staked.name',
         descriptionI18nKey:
-          'daoCreationAdapter.CwdVotingCw721Staked.description',
-        suppliesI18nKey: 'daoCreationAdapter.CwdVotingCw721Staked.supplies',
-        membershipI18nKey: 'daoCreationAdapter.CwdVotingCw721Staked.membership',
+          'daoCreationAdapter.DaoVotingCw721Staked.description',
+        suppliesI18nKey: 'daoCreationAdapter.DaoVotingCw721Staked.supplies',
+        membershipI18nKey: 'daoCreationAdapter.DaoVotingCw721Staked.membership',
       },
       defaultConfig: {
         tokenType: GovernanceTokenType.Existing,

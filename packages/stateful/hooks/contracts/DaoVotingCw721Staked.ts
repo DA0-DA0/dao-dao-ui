@@ -4,11 +4,11 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { CwdVotingCw721StakedClient as ExecuteClient } from '@dao-dao/state/contracts/CwdVotingCw721Staked'
+import { DaoVotingCw721StakedClient as ExecuteClient } from '@dao-dao/state/contracts/DaoVotingCw721Staked'
 import {
   ExecuteClientParams,
   executeClient,
-} from '@dao-dao/state/recoil/selectors/contracts/CwdVotingCw721Staked'
+} from '@dao-dao/state/recoil/selectors/contracts/DaoVotingCw721Staked'
 import { FunctionKeyOf } from '@dao-dao/types'
 
 // This hook wrapper lets us easily make hooks out of all execution functions on

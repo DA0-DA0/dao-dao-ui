@@ -22,9 +22,9 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  CwdVotingCw721StakedHooks,
+  DaoVotingCw721StakedHooks,
   useAwaitNextBlock,
-  useWalletProfile,
+  useWalletInfo,
 } from '../../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../../components'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
@@ -37,7 +37,7 @@ export const ProfileCardMemberInfo = ({
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
-  const { refreshBalances } = useWalletProfile()
+  const { refreshBalances } = useWalletInfo()
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [claimingLoading, setClaimingLoading] = useState(false)
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
@@ -83,7 +83,7 @@ export const ProfileCardMemberInfo = ({
       ({ token_address }) => governanceTokenAddress === token_address
     )?.symbol
 */
-  const doClaim = CwdVotingCw721StakedHooks.useClaimNfts({
+  const doClaim = DaoVotingCw721StakedHooks.useClaimNfts({
     contractAddress: stakingContractAddress,
     sender: walletAddress ?? '',
   })

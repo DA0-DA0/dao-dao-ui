@@ -7,12 +7,12 @@ import {
   NftClaimsResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/CwdVotingCw721Staked'
+} from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 
 import {
-  CwdVotingCw721StakedClient,
-  CwdVotingCw721StakedQueryClient,
-} from '../../../contracts/CwdVotingCw721Staked'
+  DaoVotingCw721StakedClient,
+  DaoVotingCw721StakedQueryClient,
+} from '../../../contracts/DaoVotingCw721Staked'
 import {
   refreshClaimsIdAtom,
   refreshDaoVotingPowerAtom,
@@ -26,15 +26,15 @@ type QueryClientParams = WithChainId<{
 }>
 
 const queryClient = selectorFamily<
-  CwdVotingCw721StakedQueryClient,
+  DaoVotingCw721StakedQueryClient,
   QueryClientParams
 >({
-  key: 'cwdVotingCw721StakedQueryClient',
+  key: 'daoVotingCw721StakedQueryClient',
   get:
     ({ contractAddress, chainId }) =>
     ({ get }) => {
       const client = get(cosmWasmClientForChainSelector(chainId))
-      return new CwdVotingCw721StakedQueryClient(client, contractAddress)
+      return new DaoVotingCw721StakedQueryClient(client, contractAddress)
     },
 })
 
@@ -44,7 +44,7 @@ export type ExecuteClientParams = {
 }
 
 export const executeClient = selectorFamily<
-  CwdVotingCw721StakedClient | undefined,
+  DaoVotingCw721StakedClient | undefined,
   ExecuteClientParams
 >({
   key: 'cw721StakeExecuteClient',
@@ -54,7 +54,7 @@ export const executeClient = selectorFamily<
       const client = get(signingCosmWasmClientAtom)
       if (!client) return
 
-      return new CwdVotingCw721StakedClient(client, sender, contractAddress)
+      return new DaoVotingCw721StakedClient(client, sender, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
@@ -62,10 +62,10 @@ export const executeClient = selectorFamily<
 export const configSelector = selectorFamily<
   Config,
   QueryClientParams & {
-    params: Parameters<CwdVotingCw721StakedQueryClient['config']>
+    params: Parameters<DaoVotingCw721StakedQueryClient['config']>
   }
 >({
-  key: 'cwdVotingCw721Config',
+  key: 'daoVotingCw721Config',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -76,10 +76,10 @@ export const configSelector = selectorFamily<
 export const nftClaimsSelector = selectorFamily<
   NftClaimsResponse,
   QueryClientParams & {
-    params: Parameters<CwdVotingCw721StakedQueryClient['nftClaims']>
+    params: Parameters<DaoVotingCw721StakedQueryClient['nftClaims']>
   }
 >({
-  key: 'cwdVotingCw721StakedNftClaims',
+  key: 'daoVotingCw721StakedNftClaims',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -91,10 +91,10 @@ export const nftClaimsSelector = selectorFamily<
 export const stakedNftsSelector = selectorFamily<
   ArrayOfString,
   QueryClientParams & {
-    params: Parameters<CwdVotingCw721StakedQueryClient['stakedNfts']>
+    params: Parameters<DaoVotingCw721StakedQueryClient['stakedNfts']>
   }
 >({
-  key: 'cwdVotingCw721StakedStakedNfts',
+  key: 'daoVotingCw721StakedStakedNfts',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -106,10 +106,10 @@ export const stakedNftsSelector = selectorFamily<
 export const totalPowerAtHeightSelector = selectorFamily<
   TotalPowerAtHeightResponse,
   QueryClientParams & {
-    params: Parameters<CwdVotingCw721StakedQueryClient['totalPowerAtHeight']>
+    params: Parameters<DaoVotingCw721StakedQueryClient['totalPowerAtHeight']>
   }
 >({
-  key: 'cwdVotingCw721TotalPowerAtHeight',
+  key: 'daoVotingCw721TotalPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -122,10 +122,10 @@ export const totalPowerAtHeightSelector = selectorFamily<
 export const votingPowerAtHeightSelector = selectorFamily<
   VotingPowerAtHeightResponse,
   QueryClientParams & {
-    params: Parameters<CwdVotingCw721StakedQueryClient['votingPowerAtHeight']>
+    params: Parameters<DaoVotingCw721StakedQueryClient['votingPowerAtHeight']>
   }
 >({
-  key: 'cwdVotingCw721VotingPowerAtHeight',
+  key: 'daoVotingCw721VotingPowerAtHeight',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {

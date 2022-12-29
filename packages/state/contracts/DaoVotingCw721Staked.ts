@@ -21,8 +21,8 @@ import {
   NftClaimsResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
-} from '@dao-dao/types/contracts/CwdVotingCw721Staked'
-export interface CwdVotingCw721StakedReadOnlyInterface {
+} from '@dao-dao/types/contracts/DaoVotingCw721Staked'
+export interface DaoVotingCw721StakedReadOnlyInterface {
   contractAddress: string
   config: () => Promise<Config>
   nftClaims: ({ address }: { address: string }) => Promise<NftClaimsResponse>
@@ -50,8 +50,8 @@ export interface CwdVotingCw721StakedReadOnlyInterface {
   }) => Promise<TotalPowerAtHeightResponse>
   info: () => Promise<InfoResponse>
 }
-export class CwdVotingCw721StakedQueryClient
-  implements CwdVotingCw721StakedReadOnlyInterface
+export class DaoVotingCw721StakedQueryClient
+  implements DaoVotingCw721StakedReadOnlyInterface
 {
   client: CosmWasmClient
   contractAddress: string
@@ -137,8 +137,8 @@ export class CwdVotingCw721StakedQueryClient
     })
   }
 }
-export interface CwdVotingCw721StakedInterface
-  extends CwdVotingCw721StakedReadOnlyInterface {
+export interface DaoVotingCw721StakedInterface
+  extends DaoVotingCw721StakedReadOnlyInterface {
   contractAddress: string
   sender: string
   receiveNft: (
@@ -203,9 +203,9 @@ export interface CwdVotingCw721StakedInterface
     funds?: Coin[]
   ) => Promise<ExecuteResult>
 }
-export class CwdVotingCw721StakedClient
-  extends CwdVotingCw721StakedQueryClient
-  implements CwdVotingCw721StakedInterface
+export class DaoVotingCw721StakedClient
+  extends DaoVotingCw721StakedQueryClient
+  implements DaoVotingCw721StakedInterface
 {
   client: SigningCosmWasmClient
   sender: string

@@ -3,7 +3,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   Cw721BaseSelectors,
-  CwdVotingCw721StakedSelectors,
+  DaoVotingCw721StakedSelectors,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import {
@@ -27,7 +27,7 @@ export const useGovernanceTokenInfo = ({
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { nft_address: governanceTokenAddress } = useRecoilValue(
-    CwdVotingCw721StakedSelectors.configSelector({
+    DaoVotingCw721StakedSelectors.configSelector({
       contractAddress: votingModuleAddress,
       params: [],
     })

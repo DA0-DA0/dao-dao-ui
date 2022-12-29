@@ -4,7 +4,7 @@ import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
   Cw721BaseSelectors,
-  CwdVotingCw721StakedSelectors,
+  DaoVotingCw721StakedSelectors,
   blockHeightSelector,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
@@ -15,7 +15,7 @@ import {
   UseStakingInfoOptions,
   UseStakingInfoResponse,
 } from '@dao-dao/types'
-import { NftClaim } from '@dao-dao/types/contracts/CwdVotingCw721Staked'
+import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import { claimAvailable, loadableToLoadingDataWithError } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -36,7 +36,7 @@ export const useStakingInfo = ({
   const stakingContractAddress = votingModuleAddress
   const unstakingDuration =
     useRecoilValue(
-      CwdVotingCw721StakedSelectors.configSelector({
+      DaoVotingCw721StakedSelectors.configSelector({
         contractAddress: stakingContractAddress,
         params: [],
       })
@@ -68,7 +68,7 @@ export const useStakingInfo = ({
 
   const claims = useRecoilValue(
     fetchClaims && walletAddress
-      ? CwdVotingCw721StakedSelectors.nftClaimsSelector({
+      ? DaoVotingCw721StakedSelectors.nftClaimsSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -95,7 +95,7 @@ export const useStakingInfo = ({
   // Total staked value
   const totalStakedValue = useRecoilValue(
     fetchTotalStakedValue
-      ? CwdVotingCw721StakedSelectors.totalPowerAtHeightSelector({
+      ? DaoVotingCw721StakedSelectors.totalPowerAtHeightSelector({
           contractAddress: stakingContractAddress,
           params: [{}],
         })
@@ -105,7 +105,7 @@ export const useStakingInfo = ({
   // Wallet staked value
   const walletStakedNfts = useRecoilValue(
     fetchWalletStakedValue && walletAddress
-      ? CwdVotingCw721StakedSelectors.votingPowerAtHeightSelector({
+      ? DaoVotingCw721StakedSelectors.votingPowerAtHeightSelector({
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -115,7 +115,7 @@ export const useStakingInfo = ({
   const loadingWalletStakedNfts = loadableToLoadingDataWithError(
     useCachedLoadable(
       fetchLoadingWalletStakedValue && walletAddress
-        ? CwdVotingCw721StakedSelectors.stakedNftsSelector({
+        ? DaoVotingCw721StakedSelectors.stakedNftsSelector({
             contractAddress: stakingContractAddress,
             params: [{ address: walletAddress }],
           })

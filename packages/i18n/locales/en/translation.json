@@ -115,7 +115,7 @@
       "name": "Membership DAO (Multisig)",
       "supplies": "None"
     },
-    "CwdVotingCw721Staked": {
+    "DaoVotingCw721Staked": {
       "description": "Fluid organization with many members who can join and leave as they wish. Members can alter their governance power and participation by exchanging non-fungible tokens.",
       "membership": "By staking NFTs",
       "name": "Non-Fungible Token (NFT)-based DAO",
