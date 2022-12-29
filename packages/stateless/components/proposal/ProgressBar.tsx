@@ -1,4 +1,5 @@
 import { ArrowDropUp } from '@mui/icons-material'
+import clsx from 'clsx'
 
 import { Tooltip } from '../tooltip/Tooltip'
 
@@ -6,7 +7,7 @@ export interface ProgressBarProps {
   rows: {
     backgroundColor?: string
     thickness: number
-    data: {
+    data?: {
       value: number
       color: string
     }[]
@@ -29,15 +30,17 @@ export const ProgressBar = ({
       {rows.map(({ backgroundColor, data, thickness }, rowIndex) => (
         <div
           key={rowIndex}
-          className={`flex flex-row items-stretch ${
-            !backgroundColor ? 'bg-background-secondary' : ''
-          } ${alignEnd ? 'justify-end' : ''}`}
+          className={clsx(
+            'flex flex-row items-stretch',
+            !backgroundColor && 'bg-background-secondary',
+            alignEnd && 'justify-end'
+          )}
           style={{
             backgroundColor,
             height: thickness,
           }}
         >
-          {data.map(({ value, color }, index) => (
+          {data?.map(({ value, color }, index) => (
             <div
               key={index}
               className="h-full"
@@ -48,13 +51,15 @@ export const ProgressBar = ({
       ))}
     </div>
 
-    <Tooltip title={caretTooltip}>
-      <ArrowDropUp
-        className="absolute bottom-[-0.825rem] z-10 !h-6 !w-6 text-icon-primary"
-        style={{
-          left: `${caretPosition}%`,
-        }}
-      />
-    </Tooltip>
+    {caretPosition !== undefined && (
+      <Tooltip title={caretTooltip}>
+        <ArrowDropUp
+          className="absolute bottom-[-0.825rem] z-10 !h-6 !w-6 text-icon-primary"
+          style={{
+            left: `${caretPosition}%`,
+          }}
+        />
+      </Tooltip>
+    )}
   </div>
 )

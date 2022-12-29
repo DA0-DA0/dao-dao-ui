@@ -21,6 +21,7 @@ import {
 } from '@dao-dao/utils'
 
 import { ExecuteComponent as StatelessExecuteComponent } from '../components/Execute'
+import { useActionOptions } from '../react'
 
 interface ExecuteData {
   address: string
@@ -89,28 +90,33 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
     [msg]
   )
 
-export const makeExecuteAction: ActionMaker<ExecuteData> = ({ t, address }) => {
-  const Component: ActionComponent = (props) => {
-    const nativeBalances = useRecoilValue(nativeBalancesSelector({ address }))
+const Component: ActionComponent = (props) => {
+  const { address, chainId } = useActionOptions()
 
-    return (
-      <StatelessExecuteComponent
-        {...props}
-        options={{
-          nativeBalances,
-        }}
-      />
-    )
-  }
+  const nativeBalances = useRecoilValue(
+    nativeBalancesSelector({
+      address,
+      chainId,
+    })
+  )
 
-  return {
-    key: CoreActionKey.Execute,
-    Icon: SwordsEmoji,
-    label: t('title.executeSmartContract'),
-    description: t('info.executeSmartContractActionDescription'),
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
-  }
+  return (
+    <StatelessExecuteComponent
+      {...props}
+      options={{
+        nativeBalances,
+      }}
+    />
+  )
 }
+
+export const makeExecuteAction: ActionMaker<ExecuteData> = ({ t }) => ({
+  key: CoreActionKey.Execute,
+  Icon: SwordsEmoji,
+  label: t('title.executeSmartContract'),
+  description: t('info.executeSmartContractActionDescription'),
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodedCosmosMsg,
+})

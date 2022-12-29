@@ -15,14 +15,10 @@ import {
   ProfileImage,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { LoadingDataWithError, NftCardInfoWithChainId } from '@dao-dao/types'
-import {
-  getNftName,
-  loadableToLoadingDataWithError,
-  processError,
-} from '@dao-dao/utils'
+import { LoadingDataWithError, NftCardInfo } from '@dao-dao/types'
+import { loadableToLoadingDataWithError, processError } from '@dao-dao/utils'
 
-import { useWalletProfile } from '../hooks'
+import { useWalletInfo } from '../hooks'
 import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
 
@@ -43,7 +39,7 @@ export const InnerPfpkNftSelectionModal = ({
     error: stargazeConnectionError,
   } = useWallet(ChainInfoID.Stargaze1)
 
-  const getIdForNft = (nft: NftCardInfoWithChainId) =>
+  const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
 
   const stargazeNfts = loadableToLoadingDataWithError(
@@ -60,7 +56,7 @@ export const InnerPfpkNftSelectionModal = ({
   const loopNfts =
     loopNftsQuery.data?.nfts.nodes ?? loopNftsQuery.previousData?.nfts.nodes
 
-  const nfts: LoadingDataWithError<NftCardInfoWithChainId[]> = useMemo(
+  const nfts: LoadingDataWithError<NftCardInfo[]> = useMemo(
     () =>
       stargazeNfts.loading || stargazeNfts.errored
         ? stargazeNfts
@@ -73,12 +69,7 @@ export const InnerPfpkNftSelectionModal = ({
                 chainId: ChainInfoID.Stargaze1,
               })),
               ...(loopNfts?.map(
-                ({
-                  tokenID,
-                  image,
-                  name,
-                  contract,
-                }): NftCardInfoWithChainId => ({
+                ({ tokenID, image, name, contract }): NftCardInfo => ({
                   chainId: ChainInfoID.Juno1,
                   collection: {
                     address: contract.id,
@@ -90,7 +81,7 @@ export const InnerPfpkNftSelectionModal = ({
                     name: 'Loop',
                   },
                   imageUrl: image,
-                  name: getNftName(contract.name, name || tokenID),
+                  name: name ?? '',
                 })
               ) ?? []),
             ],
@@ -103,7 +94,7 @@ export const InnerPfpkNftSelectionModal = ({
     updateProfileNft,
     updatingProfile,
     backupProfileImage,
-  } = useWalletProfile()
+  } = useWalletInfo()
   // Initialize to selected NFT.
   const [selected, setSelected] = useState<string | undefined>(
     !walletProfile.loading && walletProfile.data.nft

@@ -3,7 +3,12 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
-import { USDC_DECIMALS, formatTime, toFixedDown } from '@dao-dao/utils'
+import {
+  USDC_DECIMALS,
+  formatTime,
+  toAccessibleImageUrl,
+  toFixedDown,
+} from '@dao-dao/utils'
 
 import { Tooltip } from '../tooltip/Tooltip'
 
@@ -212,11 +217,11 @@ export const TokenAmountDisplay = ({
           {/* Icon */}
           <div
             className={clsx(
-              'h-5 w-5 rounded-full bg-cover bg-center',
+              'h-5 w-5 shrink-0 rounded-full bg-cover bg-center',
               iconClassName
             )}
             style={{
-              backgroundImage: `url(${iconUrl})`,
+              backgroundImage: `url(${toAccessibleImageUrl(iconUrl)})`,
             }}
           ></div>
 

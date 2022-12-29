@@ -86,7 +86,11 @@ const config = {
       process.env.CI !== 'true' || !process.env.SENTRY_AUTH_TOKEN,
   },
   images: {
-    domains: ['ipfs.stargaze.zone', 'nftstorage.link', 'nft-api.loop.markets'], // TODO: whiskey remove
+    domains: [
+      'ipfs.stargaze.zone',
+      'nftstorage.link', 'nft-api.loop.markets',
+      'img-proxy.ekez.workers.dev',
+    ], // TODO: whiskey remove
   },
 }
 

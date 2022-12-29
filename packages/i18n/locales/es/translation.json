@@ -323,7 +323,7 @@
     "title": "DAO DAO"
   },
   "proposalModuleLabel": {
-    "cw-govmod-single": "Opción simple"
+    "DaoProposalSingle": "Opción simple"
   },
   "splash": {
     "anyoneCanParticipate": "Cualquiera de tu comunidad puede participar.",

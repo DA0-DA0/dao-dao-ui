@@ -6,7 +6,7 @@ import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
-import { CwdCoreV2QueryClient } from '@dao-dao/state'
+import { DaoCoreV2QueryClient } from '@dao-dao/state'
 import { getDaoCreated } from '@dao-dao/state/subquery/daos/created'
 import {
   CommonProposalInfo,
@@ -15,7 +15,7 @@ import {
   ProposalModule,
 } from '@dao-dao/types'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
-import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/CwdCore.v2'
+import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CHAIN_PREFIX_ID_MAP,
   CI,
@@ -27,8 +27,10 @@ import {
   isValidWalletAddress,
   parseContractVersion,
   processError,
+  toAccessibleImageUrl,
   validateContractAddress,
 } from '@dao-dao/utils'
+import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -53,7 +55,7 @@ interface GetDaoStaticPropsMakerOptions {
     context: Parameters<GetStaticProps>[0]
     t: TFunction
     cwClient: CosmWasmClient
-    coreClient: CwdCoreV2QueryClient
+    coreClient: DaoCoreV2QueryClient
     config: ConfigV1Response | ConfigV2Response
     chainId: string
     coreAddress: string
@@ -124,7 +126,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       const cwClient = await cosmWasmClientRouter.connect(
         getRpcForChainId(chainId)
       )
-      const coreClient = new CwdCoreV2QueryClient(cwClient, coreAddress)
+      const coreClient = new DaoCoreV2QueryClient(cwClient, coreAddress)
 
       const {
         admin,
@@ -204,7 +206,10 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       if (config.image_url) {
         try {
           const response = await axios.get(
-            `https://fac.withoutdoing.com/${config.image_url}`,
+            FAST_AVERAGE_COLOR_API_TEMPLATE.replace(
+              'URL',
+              toAccessibleImageUrl(config.image_url)
+            ),
             { responseType: 'text' }
           )
 
@@ -440,7 +445,7 @@ const loadParentDaoInfo = async (
   }
 
   try {
-    const parentClient = new CwdCoreV2QueryClient(cwClient, subDaoAdmin)
+    const parentClient = new DaoCoreV2QueryClient(cwClient, subDaoAdmin)
     const {
       admin,
       config: { name, image_url },

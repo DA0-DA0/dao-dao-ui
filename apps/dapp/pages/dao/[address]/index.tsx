@@ -14,21 +14,23 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { CwdCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
+  LinkWrapper,
   ProposalsTab,
   SubDaosTab,
   SuspenseLoader,
   TreasuryAndNftsTab,
-  useEncodedCwdProposalSinglePrefill,
+  useEncodedDaoProposalSinglePrefill,
   usePinnedDaos,
   useVotingModule,
-  useWalletProfile,
+  useWalletInfo,
 } from '@dao-dao/stateful'
 import { useCoreActionForKey } from '@dao-dao/stateful/actions'
+import { usePayrollAdapter } from '@dao-dao/stateful/payroll'
 import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
@@ -48,7 +50,7 @@ const InnerDaoHome = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { connected } = useWallet()
-  const { walletProfile, updateProfileName } = useWalletProfile()
+  const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
 
   const daoInfo = useDaoInfoContext()
@@ -70,7 +72,7 @@ const InnerDaoHome = () => {
   )
   const parentDaosSubDaosLoadable = useRecoilValueLoadable(
     daoInfo.parentDao
-      ? CwdCoreV2Selectors.listAllSubDaosSelector({
+      ? DaoCoreV2Selectors.listAllSubDaosSelector({
           contractAddress: daoInfo.parentDao.coreAddress,
         })
       : constSelector(undefined)
@@ -78,7 +80,7 @@ const InnerDaoHome = () => {
   const manageSubDaosAction = useCoreActionForKey(CoreActionKey.ManageSubDaos)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageSubDaosAction
-  const encodedAddSubDaoProposalPrefill = useEncodedCwdProposalSinglePrefill(
+  const encodedAddSubDaoProposalPrefill = useEncodedDaoProposalSinglePrefill(
     manageSubDaosAction
       ? {
           title: t('title.recognizeSubDao', {
@@ -183,8 +185,12 @@ const InnerDaoHome = () => {
   const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
   const pinned = isPinned(daoInfo.coreAddress)
 
+  // Get payroll tab component, if exists.
+  const PayrollTab = usePayrollAdapter()?.PayrollTab
+
   return (
     <DaoHome
+      LinkWrapper={LinkWrapper}
       SuspenseLoader={SuspenseLoader}
       daoInfo={daoInfo}
       daoInfoBar={<DaoInfoBar />}
@@ -194,6 +200,7 @@ const InnerDaoHome = () => {
           ? setUnpinned(daoInfo.coreAddress)
           : setPinned(daoInfo.coreAddress)
       }
+      payrollTab={PayrollTab && <PayrollTab />}
       pinned={pinned}
       proposalsTab={<ProposalsTab />}
       rightSidebarContent={
@@ -217,7 +224,6 @@ const InnerDaoHome = () => {
           ) : (
             <ProfileNotMemberCard
               daoName={daoInfo.name}
-              established={new Date()}
               membershipInfo={
                 <ProfileCardMemberInfo
                   deposit={

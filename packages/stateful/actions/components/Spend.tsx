@@ -3,7 +3,7 @@ import {
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
-import { useCallback, useEffect, useMemo } from 'react'
+import { ComponentType, useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -14,6 +14,7 @@ import {
   NumberInput,
   SelectInput,
 } from '@dao-dao/stateless'
+import { StatefulProfileDisplayProps } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionOptionsContextType,
@@ -46,6 +47,8 @@ export interface SpendOptions {
     balance: string
     info: TokenInfoResponse
   }[]
+  // Used to render pfpk or DAO profiles when selecting addresses.
+  ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
 }
 
 export const SpendComponent: ActionComponent<SpendOptions> = ({
@@ -53,7 +56,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { nativeBalances, cw20Balances },
+  options: { nativeBalances, cw20Balances, ProfileDisplay },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue, setError, clearErrors } = useFormContext()
@@ -228,6 +231,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           </div>
 
           <AddressInput
+            ProfileDisplay={ProfileDisplay}
             containerClassName="grow"
             disabled={!isCreating}
             error={errors?.to}

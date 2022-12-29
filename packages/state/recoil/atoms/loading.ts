@@ -13,8 +13,12 @@ export const navigatingToHrefAtom = atom<string | undefined>({
   effects: [
     ({ onSet, setSelf }) => {
       onSet((href) => {
-        // Do not show loading when opening a remote URL.
-        if (href?.startsWith('http')) {
+        if (
+          // Do not show loading when opening a remote URL.
+          href?.startsWith('http') ||
+          // Do not show loading for hashes.
+          href === '#'
+        ) {
           setSelf(undefined)
         }
       })

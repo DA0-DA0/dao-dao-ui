@@ -10,7 +10,7 @@ export const InputThemedText = ({
 }: InputThemedTextProps) => (
   <div
     className={clsx(
-      'rounded-md py-3 px-4 ring-1 ring-border-primary',
+      'secondary-text rounded-md py-3 px-4 text-text-body ring-1 ring-border-primary',
       className
     )}
     {...props}

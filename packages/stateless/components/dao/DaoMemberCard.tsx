@@ -17,7 +17,7 @@ export const DaoMemberCard = ({
 
   return (
     <div className="flex flex-col justify-between rounded-md border border-border-primary">
-      <div className="flex flex-col items-center px-4 pt-10 pb-8">
+      <div className="flex flex-col items-center px-6 pt-10 pb-8">
         {/* Image */}
         <ProfileImage
           imageUrl={profile.loading ? undefined : profile.data.imageUrl}
@@ -34,15 +34,12 @@ export const DaoMemberCard = ({
           {profile.loading ? '...' : profile.data.name}
         </p>
         {/* Address */}
-        <div className="flex flex-row items-center gap-1">
+        <div className="flex w-full min-w-0 flex-row items-center justify-center gap-1">
           <Tag className="!h-5 !w-5 text-icon-tertiary" />
 
           <CopyToClipboardUnderline
             className="text-sm !text-text-tertiary"
-            takeStartEnd={{
-              start: 12,
-              end: 8,
-            }}
+            takeAll
             value={address}
           />
         </div>

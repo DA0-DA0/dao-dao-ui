@@ -20,7 +20,7 @@ Default.args = {
   visible: true,
   tokenSymbol: 'JUNO',
   tokenDecimals: 6,
-  tokenImageUrl: '/juno-symbol.png',
+  tokenImageUrl: '/juno.png',
   loadingBalance: {
     loading: false,
     data: {

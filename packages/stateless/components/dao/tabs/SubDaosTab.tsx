@@ -48,7 +48,7 @@ export const SubDaosTab = ({
         <ButtonLink
           className="shrink-0"
           // Disabled for v1 DAOs, not supported.
-          disabled={!isMember || daoInfo.coreVersion === ContractVersion.V0_1_0}
+          disabled={!isMember || daoInfo.coreVersion === ContractVersion.V1}
           href={`/dao/${daoInfo.coreAddress}/create`}
         >
           <Add className="!h-4 !w-4" />
@@ -56,7 +56,7 @@ export const SubDaosTab = ({
         </ButtonLink>
       </div>
 
-      {daoInfo.coreVersion === ContractVersion.V0_1_0 ? (
+      {daoInfo.coreVersion === ContractVersion.V1 ? (
         <NoContent
           Icon={Upgrade}
           actionNudge={t('info.submitUpgradeProposal')}

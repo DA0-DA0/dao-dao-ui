@@ -32,6 +32,13 @@ export const proposalDraftsAtom = atomFamily<ProposalDraft[], string>({
   effects: [localStorageEffectJSON],
 })
 
+// Store latest proposal form state per DAO.
+export const latestProposalSaveAtom = atomFamily<any, string>({
+  key: 'latestProposalSave',
+  default: {},
+  effects: [localStorageEffectJSON],
+})
+
 // When set, shows proposal created modal with these props for the ProposalCard
 // shown.
 export const proposalCreatedCardPropsAtom = atom<

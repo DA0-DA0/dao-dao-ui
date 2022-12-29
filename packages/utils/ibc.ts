@@ -1,4 +1,5 @@
 import { NATIVE_DECIMALS, NATIVE_DENOM } from './constants'
+import { getFallbackImage } from './getFallbackImage'
 import ibcAssets from './ibc_assets.json'
 
 export function nativeTokenLabel(denom: string): string {
@@ -16,13 +17,14 @@ export function nativeTokenLabel(denom: string): string {
 
 export function nativeTokenLogoURI(denom: string): string | undefined {
   if (denom === 'ujuno' || denom === 'ujunox') {
-    return '/juno-symbol.png'
+    return '/juno.png'
   }
 
   const asset = denom.startsWith('ibc')
     ? ibcAssets.tokens.find(({ juno_denom }) => juno_denom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)
-  return asset?.logoURI
+
+  return asset?.logoURI || getFallbackImage(denom)
 }
 
 export function nativeTokenDecimals(denom: string): number | undefined {

@@ -61,12 +61,6 @@ export const CHAIN_PREFIX_ID_MAP =
 export const V1_FACTORY_CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_V1_FACTORY_CONTRACT_ADDRESS as string
 
-// Contract Names
-export const CWCOREV1_CONTRACT_NAME = process.env
-  .NEXT_PUBLIC_CWCOREV1_CONTRACT_NAME as string
-export const CWDCOREV2_CONTRACT_NAME = process.env
-  .NEXT_PUBLIC_CWDCOREV2_CONTRACT_NAME as string
-
 // DAO name min/max and description max defined in core.
 export const MIN_DAO_NAME_LENGTH = parseInt(
   process.env.NEXT_PUBLIC_MIN_DAO_NAME_LENGTH || '3',
@@ -117,3 +111,15 @@ export const STARGAZE_URL_BASE = process.env
 
 // Wallet profiles
 export const PFPK_API_BASE = process.env.NEXT_PUBLIC_PFPK_API_BASE as string
+
+export const NFT_STORAGE_API_KEY = process.env
+  .NEXT_PUBLIC_NFT_STORAGE_API_KEY as string
+
+export const FAST_AVERAGE_COLOR_API_TEMPLATE = process.env
+  .NEXT_PUBLIC_FAST_AVERAGE_COLOR_API_TEMPLATE as string
+export const IPFS_GATEWAY_TEMPLATE = process.env
+  .NEXT_PUBLIC_IPFS_GATEWAY_TEMPLATE as string
+
+export const DISABLED_ACTIONS = (
+  process.env.NEXT_PUBLIC_DISABLED_ACTIONS || ''
+).split(',')

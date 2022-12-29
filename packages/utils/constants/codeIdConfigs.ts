@@ -2,19 +2,21 @@ import { CodeIdConfig } from '@dao-dao/types'
 
 // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.0-beta
 const junoTestnet: CodeIdConfig = {
-  Cw20Base: 870,
-  Cw20Stake: 871,
-  Cw4Group: 872,
-  CwAdminFactory: 873,
-  CwdCore: 875,
-  CwdPreProposeMultiple: 876,
-  CwdPreProposeSingle: 877,
-  CwdProposalMultiple: 878,
-  CwdProposalSingle: 879,
-  CwdVotingCw20Staked: 880,
-  CwdVotingCw4: 881,
-  CwdVotingCw721Staked: 882,
-  CwdVotingNativeStaked: 883,
+  Cw20Base: 3471, // v0.16
+  Cw20Stake: 3454,
+  Cw4Group: 3472, // v0.16
+  Cw721Base: 3356,
+  CwAdminFactory: 3455,
+  DaoCore: 3457,
+  DaoPreProposeMultiple: 3460,
+  DaoPreProposeSingle: 3461,
+  DaoProposalMultiple: 3462,
+  DaoProposalSingle: 3463,
+  DaoVotingCw20Staked: 3464,
+  DaoVotingCw4: 3465,
+  DaoVotingCw721Staked: 3466,
+  DaoVotingNativeStaked: 3467,
+  CwTokenSwap: 3456,
 }
 
 // TODO(v2): Fill in code IDs once v2 contracts on mainnet.
@@ -22,16 +24,18 @@ const junoMainnet: CodeIdConfig = {
   Cw20Base: 435,
   Cw20Stake: 430,
   Cw4Group: 434,
+  Cw721Base: 1554,
   CwAdminFactory: -1,
-  CwdCore: -1,
-  CwdPreProposeMultiple: -1,
-  CwdPreProposeSingle: -1,
-  CwdProposalMultiple: -1,
-  CwdProposalSingle: -1,
-  CwdVotingCw20Staked: -1,
-  CwdVotingCw4: -1,
-  CwdVotingCw721Staked: -1,
-  CwdVotingNativeStaked: -1,
+  DaoCore: -1,
+  DaoPreProposeMultiple: -1,
+  DaoPreProposeSingle: -1,
+  DaoProposalMultiple: -1,
+  DaoProposalSingle: -1,
+  DaoVotingCw20Staked: -1,
+  DaoVotingCw4: -1,
+  DaoVotingCw721Staked: -1,
+  DaoVotingNativeStaked: -1,
+  CwTokenSwap: -1,
 }
 
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {

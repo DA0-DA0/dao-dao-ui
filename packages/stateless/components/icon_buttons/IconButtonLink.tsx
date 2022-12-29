@@ -1,34 +1,26 @@
 import clsx from 'clsx'
-import { ComponentPropsWithoutRef, forwardRef } from 'react'
+import { forwardRef } from 'react'
+
+import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
 
 import { LinkWrapper } from '../LinkWrapper'
 import {
   IconButtonifiedChildren,
-  IconButtonifierProps,
   getIconButtonifiedClassNames,
-  getNonIconButtonifierProps,
+  getPassthroughProps,
 } from './IconButtonifier'
 
-export type IconButtonLinkProps = ComponentPropsWithoutRef<'a'> &
-  IconButtonifierProps
-
-export const IconButtonLink = forwardRef<
-  HTMLAnchorElement,
-  IconButtonLinkProps
->(function IconButtonLink(props, ref) {
-  const className = clsx(
-    getIconButtonifiedClassNames(props),
-    'inline-block',
-    props.disabled && 'pointer-events-none'
-  )
-
-  return (
-    <LinkWrapper
-      {...getNonIconButtonifierProps(props)}
-      className={className}
-      ref={ref}
-    >
-      <IconButtonifiedChildren {...props} />
-    </LinkWrapper>
-  )
-})
+export const IconButtonLink = forwardRef<HTMLDivElement, IconButtonLinkProps>(
+  function IconButtonLink({ containerClassName, ...props }, ref) {
+    return (
+      <LinkWrapper
+        {...getPassthroughProps(props)}
+        className={getIconButtonifiedClassNames(props)}
+        containerClassName={clsx('inline-block', containerClassName)}
+        ref={ref}
+      >
+        <IconButtonifiedChildren {...props} />
+      </LinkWrapper>
+    )
+  }
+)

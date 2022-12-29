@@ -1,5 +1,6 @@
-import clsx from 'clsx'
-import { ComponentPropsWithoutRef, forwardRef } from 'react'
+import { forwardRef } from 'react'
+
+import { LinkWrapperProps } from '@dao-dao/types'
 
 import { LinkWrapper } from '../LinkWrapper'
 import {
@@ -9,21 +10,15 @@ import {
   getPassthroughProps,
 } from './Buttonifier'
 
-export type ButtonLinkProps = ComponentPropsWithoutRef<'a'> & ButtonifierProps
+export type ButtonLinkProps = ButtonifierProps & LinkWrapperProps
 
 // Forward ref so we can use Tooltip with this element.
-export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
+export const ButtonLink = forwardRef<HTMLDivElement, ButtonLinkProps>(
   function ButtonLink({ children, ...props }, ref) {
-    const className = clsx(
-      getButtonifiedClassNames(props),
-      'inline-block',
-      props.disabled && 'pointer-events-none'
-    )
-
     return (
       <LinkWrapper
         {...getPassthroughProps(props)}
-        className={className}
+        className={getButtonifiedClassNames(props)}
         ref={ref}
       >
         <ButtonifiedChildren {...props}>{children}</ButtonifiedChildren>

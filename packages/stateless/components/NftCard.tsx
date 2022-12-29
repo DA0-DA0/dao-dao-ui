@@ -5,7 +5,7 @@ import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { NftCardInfo } from '@dao-dao/types'
-import { normalizeNftImageUrl } from '@dao-dao/utils'
+import { getNftName, toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from './CopyToClipboard'
 import { Checkbox } from './inputs'
@@ -28,6 +28,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       imageUrl,
       floorPrice,
       name,
+      tokenId,
       className,
     },
     ref
@@ -66,7 +67,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               className="aspect-square object-cover"
               height={500}
               onLoadingComplete={() => setImageLoading(false)}
-              src={normalizeNftImageUrl(imageUrl)}
+              src={toAccessibleImageUrl(imageUrl, { proxy: true })}
               width={500}
             />
           ) : (
@@ -140,7 +141,9 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           )}
         </div>
 
-        <p className="primary-text min-h-[5.5rem] py-4 px-6">{name}</p>
+        <p className="primary-text min-h-[5.5rem] py-4 px-6">
+          {getNftName(collection.name, tokenId, name)}
+        </p>
       </div>
     )
   }

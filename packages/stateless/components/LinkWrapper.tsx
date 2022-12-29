@@ -4,36 +4,56 @@ import { forwardRef } from 'react'
 
 import { LinkWrapperProps } from '@dao-dao/types'
 
-export const LinkWrapper = forwardRef<HTMLAnchorElement, LinkWrapperProps>(
-  function LinkWrapper({ href, children, loading, ...props }, ref) {
+export const LinkWrapper = forwardRef<HTMLDivElement, LinkWrapperProps>(
+  function LinkWrapper(
+    {
+      href,
+      children,
+      loading,
+      disabled,
+      className,
+      containerClassName,
+      onClick,
+      ...props
+    },
+    ref
+  ) {
+    const contentClassName = clsx(
+      className,
+      // If loading, disabled, or no href, disable touch interaction. Anchor
+      // tags cannot be disabled, so this is a workaround.
+      (loading || disabled || !href) && 'pointer-events-none'
+    )
+
     // Remote link if starts with http (non-relative path).
     const remote = href?.startsWith('http')
 
-    return remote ? (
-      <a
-        href={href}
-        ref={ref}
-        rel="noreferrer"
-        target="_blank"
+    return (
+      // Add div wrapper with ref to allow tooltips even when the link's touch
+      // interaction is disabled.
+      <div
+        className={clsx(containerClassName, loading && 'animate-pulse')}
         {...props}
-        className={clsx(props.className, !href && 'pointer-events-none')}
+        ref={ref}
       >
-        {children}
-      </a>
-    ) : (
-      <Link href={href ?? '#'}>
-        <a
-          ref={ref}
-          {...props}
-          className={clsx(
-            props.className,
-            !href && 'pointer-events-none',
-            loading && 'animate-pulse'
-          )}
-        >
-          {children}
-        </a>
-      </Link>
+        {remote ? (
+          <a
+            className={contentClassName}
+            href={href}
+            onClick={onClick}
+            rel="noreferrer"
+            target="_blank"
+          >
+            {children}
+          </a>
+        ) : (
+          <Link href={href ?? '#'}>
+            <a className={contentClassName} onClick={onClick}>
+              {children}
+            </a>
+          </Link>
+        )}
+      </div>
     )
   }
 )

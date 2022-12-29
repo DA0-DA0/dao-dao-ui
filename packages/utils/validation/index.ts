@@ -1,5 +1,6 @@
 import Ajv from 'ajv'
 import JSON5 from 'json5'
+import { TFunction } from 'react-i18next'
 
 import { CHAIN_BECH32_PREFIX } from '../constants'
 import cosmosMsgSchema from '../cosmos_msg.json'
@@ -40,6 +41,13 @@ export const validateValidatorAddress = (v: string) =>
 
 export const validateUrl = (v: string | undefined) =>
   (v && isValidUrl(v)) || 'Invalid image URL: must start with https.'
+
+export const validateUrlWithIpfs = (v: string | undefined) =>
+  (v && isValidUrl(v, true)) ||
+  'Invalid image URL: must start with https or ipfs.'
+
+export const makeValidateDate = (t: TFunction) => (v: string | undefined) =>
+  (v && !isNaN(Date.parse(v))) || t('error.invalidDate')
 
 export const validateContractAddress = (
   v: string | undefined,

@@ -6,7 +6,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
-import { useWalletProfile } from '../../hooks'
+import { useWalletInfo } from '../../hooks'
 import { matchAndLoadCommon } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -17,7 +17,7 @@ export interface ProfileNewProposalCardProps {
 
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
   const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { walletProfile, updateProfileName } = useWalletProfile()
+  const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
 
   return (
@@ -48,7 +48,7 @@ export const InnerProfileNewProposalCard = ({
 }: ProfileNewProposalCardProps) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { walletProfile, updateProfileName } = useWalletProfile()
+  const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
   const {
     hooks: { useProfileNewProposalCardAddresses },

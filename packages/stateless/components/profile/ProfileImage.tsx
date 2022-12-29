@@ -2,6 +2,8 @@ import { Edit, PersonOutline } from '@mui/icons-material'
 import clsx from 'clsx'
 import { forwardRef, useEffect, useState } from 'react'
 
+import { toAccessibleImageUrl } from '@dao-dao/utils'
+
 export interface ProfileImageProps {
   imageUrl?: string
   loading?: boolean
@@ -79,7 +81,11 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
             onEdit && 'brightness-100 transition group-hover:brightness-[0.35]',
             sizingRoundingClassNames
           )}
-          style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
+          style={
+            imageUrl
+              ? { backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})` }
+              : undefined
+          }
         ></div>
 
         {/* No image (hides underneath image always) */}

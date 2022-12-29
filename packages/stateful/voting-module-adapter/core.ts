@@ -6,10 +6,10 @@ import {
 import { normalizeContractName } from '@dao-dao/utils'
 
 import {
-  CwdVotingCw20StakedAdapter,
-  CwdVotingCw4Adapter,
-  CwdVotingCw721StakedAdapter,
-  CwdVotingNativeStakedAdapter,
+  DaoVotingCw20StakedAdapter,
+  DaoVotingCw4Adapter,
+  DaoVotingCw721StakedAdapter,
+  DaoVotingNativeStakedAdapter,
   FallbackAdapter,
 } from './adapters'
 
@@ -22,11 +22,10 @@ import {
 // below, except the react provider, which we should only be used externally.
 // This is a problem to solve later.
 export const getAdapters = (): readonly VotingModuleAdapter[] => [
-  CwdVotingCw4Adapter,
-  CwdVotingCw20StakedAdapter,
-  CwdVotingNativeStakedAdapter,
-  CwdVotingCw721StakedAdapter,
-
+  DaoVotingCw4Adapter,
+  DaoVotingCw20StakedAdapter,
+  DaoVotingNativeStakedAdapter,
+  DaoVotingCw721StakedAdapter,
   FallbackAdapter,
 ]
 

@@ -29,7 +29,6 @@ Default.args = {
       nft: null,
     },
   },
-  established: new Date(),
   membershipInfo: (
     <ProfileCardMemberInfoTokens {...makeProfileCardMemberInfoTokensProps()} />
   ),

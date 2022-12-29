@@ -12,7 +12,7 @@ import removeMarkdown from 'remove-markdown'
 import { DaoCardProps } from '@dao-dao/types/stateless/DaoCard'
 import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
-import { IconButton, IconButtonLink } from '../icon_buttons'
+import { IconButton } from '../icon_buttons'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import { Tooltip } from '../tooltip/Tooltip'
 import { DaoImage } from './DaoImage'
@@ -38,6 +38,7 @@ export const DaoCard = ({
   onMouseLeave,
   hidePin,
   LinkWrapper,
+  IconButtonLink,
 }: DaoCardProps) => {
   const { t } = useTranslation()
 
@@ -73,7 +74,7 @@ export const DaoCard = ({
               href={`/dao/${parentDao.coreAddress}`}
               onClick={
                 // Don't click on DAO card.
-                (event) => event.preventDefault()
+                (event) => event.stopPropagation()
               }
               size="sm"
               variant="ghost"
@@ -108,6 +109,7 @@ export const DaoCard = ({
 
       <div className="flex flex-col items-center">
         <DaoImage
+          LinkWrapper={LinkWrapper}
           coreAddress={coreAddress}
           imageUrl={imageUrl}
           parentDao={parentDao}

@@ -1,31 +1,36 @@
-import clsx from 'clsx'
-import { useState } from 'react'
+import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProfileVoteCardProps } from '@dao-dao/types/stateless/ProfileVoteCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { Button } from '../buttons'
 import { TooltipInfoIcon } from '../tooltip/TooltipInfoIcon'
 import { MembershipPill } from './MembershipPill'
-import { ProfileCardWrapper } from './ProfileCardWrapper'
-import { ProfileVoteButton } from './ProfileVoteButton'
+import {
+  ProfileCardWrapper,
+  ProfileCardWrapperProps,
+} from './ProfileCardWrapper'
 
-export * from '@dao-dao/types/stateless/ProfileVoteCard'
+export interface ProfileVoteCardProps
+  extends Omit<
+    ProfileCardWrapperProps,
+    | 'children'
+    | 'underHeaderComponent'
+    | 'childContainerClassName'
+    | 'established'
+    | 'compact'
+  > {
+  votingPower: number
+  daoName: string
+  vote: ReactNode
+}
 
-export const ProfileVoteCard = <T extends unknown>({
-  options,
-  currentVote,
-  currentVoteDisplay,
-  loading,
+export const ProfileVoteCard = ({
   votingPower,
   daoName,
-  onCastVote,
+  vote,
   ...wrapperProps
-}: ProfileVoteCardProps<T>) => {
+}: ProfileVoteCardProps) => {
   const { t } = useTranslation()
-
-  const [selected, setSelected] = useState(currentVote)
 
   return (
     <ProfileCardWrapper
@@ -42,39 +47,16 @@ export const ProfileVoteCard = <T extends unknown>({
             title={t('info.votingPowerAtCreationTooltip')}
           />
         </div>
+
         <p className="font-mono text-text-primary">
           {formatPercentOf100(votingPower)}
         </p>
       </div>
 
-      <div className="secondary-text mt-3 mb-4 flex flex-row items-center justify-between">
+      <div className="secondary-text mt-3 flex flex-row items-center justify-between">
         <p>{t('title.vote')}</p>
-        {currentVoteDisplay}
+        {vote}
       </div>
-
-      {options.map((option, index) => (
-        <ProfileVoteButton
-          key={index}
-          disabled={loading}
-          onClick={() => setSelected(option.value)}
-          option={option}
-          pressed={option.value === selected}
-        />
-      ))}
-
-      <Button
-        className="mt-4"
-        contentContainerClassName={clsx('justify-center', {
-          'primary-text': !selected,
-        })}
-        disabled={!selected}
-        loading={loading}
-        onClick={() => selected && onCastVote(selected)}
-        size="lg"
-        variant={!selected || loading ? 'secondary' : 'primary'}
-      >
-        {t('button.castYourVote')}
-      </Button>
     </ProfileCardWrapper>
   )
 }

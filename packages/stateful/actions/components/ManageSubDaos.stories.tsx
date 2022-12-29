@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 
+import { ProfileDisplay } from '../../components'
 import { ManageSubDaosComponent } from './ManageSubDaos'
 
 export default {
@@ -25,5 +26,6 @@ Default.args = {
   errors: {},
   options: {
     currentSubDaos: [],
+    ProfileDisplay: ProfileDisplay,
   },
 }

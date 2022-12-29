@@ -1,12 +1,14 @@
 import { Check, Close, Edit } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { averageColorSelector } from '@dao-dao/state/recoil'
 import { ProfileCardWrapperProps } from '@dao-dao/types/stateless/ProfileCardWrapper'
-import { formatDate, processError } from '@dao-dao/utils'
+import { processError } from '@dao-dao/utils'
 
+import { useCachedLoadable } from '../../hooks'
 import { Button } from '../buttons'
 import { CornerGradient } from '../CornerGradient'
 import { IconButton } from '../icon_buttons'
@@ -21,39 +23,23 @@ export const ProfileCardWrapper = ({
   walletProfile,
   showUpdateProfileNft,
   updateProfileName,
-  established,
-  compact,
+  compact = false,
   underHeaderComponent,
   childContainerClassName,
 }: ProfileCardWrapperProps) => {
-  const { t } = useTranslation()
-
-  const [averageImgColor, setAverageImgColor] = useState<string>()
-  // Get average color of image URL.
-  useEffect(() => {
-    // Only need this in compact mode.
-    if (!compact || walletProfile.loading) {
-      return
-    }
-
-    const absoluteUrl = new URL(walletProfile.data.imageUrl, document.baseURI)
-      .href
-    fetch(`https://fac.withoutdoing.com/${absoluteUrl}`)
-      .then((response) => response.text())
-      // Only set color if appears to be valid color string.
-      .then((value) => {
-        const color = value.trim()
-        if (!color.startsWith('#')) {
-          return
-        }
-
-        setAverageImgColor(
-          color +
-            // If in #RRGGBB format, add ~20% opacity.
-            (color.length === 7 ? '33' : '')
-        )
-      })
-  }, [compact, walletProfile])
+  // Get average color of image URL if in compact mode.
+  const averageImgColorLoadable = useCachedLoadable(
+    !compact || walletProfile.loading
+      ? undefined
+      : averageColorSelector(walletProfile.data.imageUrl)
+  )
+  const averageImgColor =
+    averageImgColorLoadable.state === 'hasValue' &&
+    averageImgColorLoadable.contents
+      ? // If in #RRGGBB format, add ~20% opacity (0x33 = 51, 51/255 = 0.2).
+        averageImgColorLoadable.contents +
+        (averageImgColorLoadable.contents.length === 7 ? '33' : '')
+      : undefined
 
   const canEdit = !walletProfile.loading && walletProfile.data.nonce >= 0
 
@@ -104,11 +90,6 @@ export const ProfileCardWrapper = ({
               updateProfileName={updateProfileName}
               walletProfile={walletProfile}
             />
-            {established && (
-              <div className="caption-text -mt-3 mb-5 font-mono">
-                {t('info.establishedAbbr')} {formatDate(established)}
-              </div>
-            )}
             {underHeaderComponent}
           </div>
         )}

@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
+import { averageColorSelector } from '@dao-dao/state/recoil'
 import {
   Button,
   CreateDaoPages,
@@ -18,6 +19,7 @@ import {
   DaoHeader,
   ImageSelector,
   useAppLayoutContext,
+  useCachedLoadable,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
@@ -27,8 +29,8 @@ import {
   NewDao,
   ProposalModuleAdapter,
 } from '@dao-dao/types'
-import { InstantiateMsg as CwdCoreV2InstantiateMsg } from '@dao-dao/types/contracts/CwdCore.v2'
-import instantiateSchema from '@dao-dao/types/contracts/CwdCore.v2.instantiate_schema.json'
+import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
+import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_schema.json'
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,
@@ -42,30 +44,31 @@ import {
   makeValidateMsg,
   nativeTokenLabel,
   processError,
-  validateUrl,
+  validateUrlWithIpfs,
 } from '@dao-dao/utils'
 
 import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
   usePinnedDaos,
-  useWalletProfile,
+  useWalletInfo,
 } from '../../hooks'
 import { getAdapterById as getProposalModuleAdapterById } from '../../proposal-module-adapter'
 import {
-  DefaultNewDao,
   daoCreatedCardPropsAtom,
+  makeDefaultNewDao,
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
 import {
-  CwdVotingCw20StakedAdapter,
+  DaoVotingCw20StakedAdapter,
   getAdapterById as getVotingModuleAdapterById,
   getAdapters as getVotingModuleAdapters,
 } from '../../voting-module-adapter'
 import {
-  DaoCreationConfig as CwdVotingCw20StakedCreationConfig,
+  DaoCreationConfig as DaoVotingCw20StakedCreationConfig,
   GovernanceTokenType,
-} from '../../voting-module-adapter/adapters/CwdVotingCw20Staked/types'
+} from '../../voting-module-adapter/adapters/DaoVotingCw20Staked/types'
+import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 // i18n keys
@@ -130,7 +133,7 @@ export const CreateDaoForm = ({
     // If created DAO, clear saved data and don't update.
     if (daoCreatedCardProps) {
       // Clear saved form data.
-      setNewDaoAtom(DefaultNewDao)
+      setNewDaoAtom(makeDefaultNewDao())
       return
     }
 
@@ -141,34 +144,21 @@ export const CreateDaoForm = ({
 
   // Set accent color based on image provided.
   const { setAccentColor } = useThemeContext()
+  // Get average color of image URL.
+  const averageImgColorLoadable = useCachedLoadable(
+    !imageUrl ? undefined : averageColorSelector(imageUrl)
+  )
   useEffect(() => {
-    if (!imageUrl) {
+    if (
+      averageImgColorLoadable.state !== 'hasValue' ||
+      !averageImgColorLoadable.contents
+    ) {
       setAccentColor(undefined)
       return
     }
 
-    let absoluteUrl
-    try {
-      absoluteUrl = new URL(imageUrl, document.baseURI).href
-    } catch (err) {
-      // If errored on URL creation, invalid URL, not ready yet.
-      setAccentColor(undefined)
-      return
-    }
-
-    fetch(`https://fac.withoutdoing.com/${absoluteUrl}`)
-      .then((response) => response.text())
-      // Only set color if appears to be valid color string.
-      .then((value) => {
-        const color = value.trim()
-        if (!color.startsWith('#')) {
-          return
-        }
-
-        setAccentColor(color)
-      })
-      .catch(console.error)
-  }, [imageUrl, setAccentColor])
+    setAccentColor(averageImgColorLoadable.contents)
+  }, [averageImgColorLoadable, imageUrl, setAccentColor])
 
   //! Page state
   const [pageIndex, setPageIndex] = useState(initialPageIndex)
@@ -223,7 +213,7 @@ export const CreateDaoForm = ({
   )
 
   const validateInstantiateMsg = useMemo(
-    () => makeValidateMsg<CwdCoreV2InstantiateMsg>(instantiateSchema, t),
+    () => makeValidateMsg<DaoCoreV2InstantiateMsg>(instantiateSchema, t),
     [t]
   )
 
@@ -243,7 +233,7 @@ export const CreateDaoForm = ({
         getInstantiateInfo(newDao, proposalModuleAdapters[index].data, t)
       )
 
-    const instantiateMsg: CwdCoreV2InstantiateMsg = {
+    const instantiateMsg: DaoCoreV2InstantiateMsg = {
       // If parentDao exists, let's make a subDAO :D
       admin: parentDao?.coreAddress ?? null,
       automatically_add_cw20s: true,
@@ -277,7 +267,7 @@ export const CreateDaoForm = ({
 
   const [creating, setCreating] = useState(false)
   const { connected, address: walletAddress } = useWallet()
-  const { refreshBalances } = useWalletProfile()
+  const { refreshBalances } = useWalletInfo()
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
@@ -289,7 +279,7 @@ export const CreateDaoForm = ({
     const cwCoreInstantiateMsg = generateInstantiateMsg()
 
     const { logs } = await instantiateWithFactory({
-      codeId: CODE_ID_CONFIG.CwdCore,
+      codeId: CODE_ID_CONFIG.DaoCore,
       instantiateMsg: Buffer.from(
         JSON.stringify(cwCoreInstantiateMsg),
         'utf8'
@@ -324,8 +314,8 @@ export const CreateDaoForm = ({
     useState<CreateDaoCustomValidator>()
 
   const cw20StakedBalanceVotingData =
-    votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id
-      ? (votingModuleAdapter.data as CwdVotingCw20StakedCreationConfig)
+    votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id
+      ? (votingModuleAdapter.data as DaoVotingCw20StakedCreationConfig)
       : undefined
 
   const awaitNextBlock = useAwaitNextBlock()
@@ -361,7 +351,7 @@ export const CreateDaoForm = ({
 
             // Get tokenSymbol and tokenBalance for DAO card.
             const { tokenSymbol, tokenBalance, tokenDecimals } =
-              votingModuleAdapter.id === CwdVotingCw20StakedAdapter.id &&
+              votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id &&
               cw20StakedBalanceVotingData
                 ? //! Display governance token supply if using governance tokens.
                   {
@@ -435,7 +425,7 @@ export const CreateDaoForm = ({
             })
 
             // Clear saved form data.
-            setNewDaoAtom(DefaultNewDao)
+            setNewDaoAtom(makeDefaultNewDao())
 
             // Navigate to DAO page (underneath the creation modal).
             router.push(`/dao/${coreAddress}`)
@@ -586,7 +576,7 @@ export const CreateDaoForm = ({
               error={form.formState.errors.imageUrl}
               fieldName="imageUrl"
               register={form.register}
-              validation={[validateUrl]}
+              validation={[validateUrlWithIpfs]}
               watch={form.watch}
             />
 
@@ -596,6 +586,7 @@ export const CreateDaoForm = ({
           </div>
         ) : (
           <DaoHeader
+            LinkWrapper={LinkWrapper}
             description={description}
             established={t('info.today')}
             imageUrl={imageUrl}

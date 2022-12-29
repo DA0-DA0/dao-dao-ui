@@ -3,32 +3,34 @@ import { atom, atomFamily } from 'recoil'
 import { localStorageEffectJSON } from '@dao-dao/state/recoil/effects'
 import { DaoCreatedCardProps, NewDao } from '@dao-dao/types'
 
-import { CwdProposalSingleAdapter } from '../../proposal-module-adapter/adapters/CwdProposalSingle'
-import { CwdVotingCw4Adapter } from '../../voting-module-adapter'
+import { DaoProposalSingleAdapter } from '../../proposal-module-adapter/adapters/DaoProposalSingle'
+import { DaoVotingCw4Adapter } from '../../voting-module-adapter'
 
-export const DefaultNewDao: NewDao = {
+// Avoid cyclic dependencies issues with the adapter modules by using a lazy
+// maker function.
+export const makeDefaultNewDao = (): NewDao => ({
   name: '',
   description: '',
   imageUrl: undefined,
   votingModuleAdapter: {
-    id: CwdVotingCw4Adapter.id,
-    data: CwdVotingCw4Adapter.daoCreation!.defaultConfig,
+    id: DaoVotingCw4Adapter.id,
+    data: DaoVotingCw4Adapter.daoCreation!.defaultConfig,
   },
   // Default to single choice proposal configuration.
   proposalModuleAdapters: [
     {
-      id: CwdProposalSingleAdapter.id,
-      data: CwdProposalSingleAdapter.daoCreation.defaultConfig,
+      id: DaoProposalSingleAdapter.id,
+      data: DaoProposalSingleAdapter.daoCreation.defaultConfig,
     },
   ],
   advancedVotingConfigEnabled: false,
-}
+})
 
 // Store each subDAO creation state separately. Main DAO creation state uses an
 // empty string.
 export const newDaoAtom = atomFamily<NewDao, string>({
   key: 'newDao',
-  default: DefaultNewDao,
+  default: makeDefaultNewDao,
   effects: [localStorageEffectJSON],
 })
 

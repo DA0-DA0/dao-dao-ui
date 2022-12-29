@@ -6,6 +6,9 @@ import { Logo } from '../logo/Logo'
 const defaultVariant = 'primary'
 const defaultSize = 'default'
 
+// Pulse for these variants instead of displaying loader.
+const PULSE_LOADING_VARIANTS = 'underline' || 'none'
+
 export interface ButtonifierProps {
   variant?:
     | 'primary'
@@ -26,12 +29,11 @@ export interface ButtonifierProps {
   center?: boolean
 }
 
-// Get props that should pass through the Buttonifier. None of the Buttonifier
-// props should pass through except `disabled`.
+// Get props that should pass through the Buttonifier, such as native button
+// props. Disable button if disabled or loading.
 export const getPassthroughProps = <P extends ButtonifierProps>({
   variant: _variant,
   size: _size,
-  loading: _loading,
   contentContainerClassName: _contentContainerClassName,
   pressed: _pressed,
   hovering: _hovering,
@@ -39,8 +41,13 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   className: _className,
   children: _children,
   center: _center,
+  disabled,
+  loading,
   ...props
-}: P) => props
+}: P) => ({
+  ...props,
+  disabled: disabled || loading,
+})
 
 export const getButtonifiedClassNames = ({
   variant = defaultVariant,
@@ -53,9 +60,14 @@ export const getButtonifiedClassNames = ({
   const disabledOrLoading = disabled || loading
 
   return clsx(
-    'relative rounded-md transition-all focus:outline-2 focus:outline-background-button-disabled',
-    // Ensure cannot click when loading.
-    disabledOrLoading && 'pointer-events-none',
+    'relative block rounded-md transition-all focus:outline-2 focus:outline-background-button-disabled',
+
+    // No cursor pointer if disabled or loading.
+    disabledOrLoading && 'cursor-default',
+
+    // Pulse if loading for a variant that we don't display the loader.
+    loading && variant === PULSE_LOADING_VARIANTS && 'animate-pulse',
+
     // Let variants take color precedence over the text classes used here since
     // the variants are more specific, so just use the font text styling here.
     {
@@ -149,7 +161,7 @@ export const ButtonifiedChildren = ({
         }
       )}
     >
-      {loading && (
+      {loading && variant !== PULSE_LOADING_VARIANTS && (
         <div className="mx-auto inline-block aspect-square h-full animate-spin-medium">
           <Logo invert={variant === 'primary'} size="100%" />
         </div>

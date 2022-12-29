@@ -33,11 +33,12 @@ import { CommandModalContextMaker } from '@dao-dao/types'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import { CommandModal, makeGenericContext } from '../command'
-import { useInbox, usePinnedDaos, useWalletProfile } from '../hooks'
+import { useInbox, usePinnedDaos, useWalletInfo } from '../hooks'
 import {
   daoCreatedCardPropsAtom,
   pinnedDaoDropdownInfosSelector,
 } from '../recoil'
+import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
@@ -72,7 +73,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
     walletAddress,
     walletProfile,
     refreshBalances: refreshWalletBalances,
-  } = useWalletProfile()
+  } = useWalletInfo()
   useEffect(() => {
     setInstallWarningVisible(
       error instanceof Error &&
@@ -247,6 +248,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
                 ? setUnpinned(daoCreatedCardProps.coreAddress)
                 : setPinned(daoCreatedCardProps.coreAddress),
             LinkWrapper,
+            IconButtonLink,
           }}
           modalProps={{
             onClose: () => setDaoCreatedCardProps(undefined),

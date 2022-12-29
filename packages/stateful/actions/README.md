@@ -24,7 +24,7 @@ const App = () => (
     options={{
       chainId: 'juno-1',
       bech32Prefix: 'juno',
-      address: 'cwdCoreAddressGoesHere',
+      address: 'daoCoreAddressGoesHere',
       context: {
         type: ActionOptionsContextType.Dao,
         coreVersion: '0.2.0',

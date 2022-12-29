@@ -10,20 +10,14 @@ import {
 export interface ProfileNotMemberCardProps
   extends Omit<
     ProfileCardWrapperProps,
-    | 'children'
-    | 'underHeaderComponent'
-    | 'childContainerClassName'
-    | 'established'
-    | 'compact'
+    'children' | 'underHeaderComponent' | 'childContainerClassName' | 'compact'
   > {
   daoName: string
-  established: Date
   membershipInfo: ReactNode
 }
 
 export const ProfileNotMemberCard = ({
   daoName,
-  established,
   membershipInfo,
   ...wrapperProps
 }: ProfileNotMemberCardProps) => {
@@ -31,7 +25,6 @@ export const ProfileNotMemberCard = ({
 
   return (
     <ProfileCardWrapper
-      established={established}
       underHeaderComponent={
         <MembershipPill daoName={daoName} isMember={false} />
       }

@@ -1,8 +1,14 @@
-import { constSelector, selectorFamily, waitForAll } from 'recoil'
+import { ChainInfoID } from '@noahsaso/cosmodal'
+import {
+  constSelector,
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+} from 'recoil'
 
 import {
   Cw721BaseSelectors,
-  CwdCoreV2Selectors,
+  DaoCoreV2Selectors,
   nativeAndStargazeCollectionInfoSelector,
   nftTokenUriDataSelector,
   refreshWalletStargazeNftsAtom,
@@ -11,10 +17,10 @@ import { NftCardInfo, WithChainId } from '@dao-dao/types'
 import { NftInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import { NativeStargazeCollectionInfo, StargazeNft } from '@dao-dao/types/nft'
 import {
+  CHAIN_ID,
   STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_URL_BASE,
-  getNftName,
-  transformIpfsUrlToHttpsIfNecessary,
+  parseNftUriResponse,
 } from '@dao-dao/utils'
 
 export const walletStargazeNftCardInfosSelector = selectorFamily<
@@ -53,11 +59,96 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
           //   amount: 0,
           //   denom: '',
           // }
-          name: getNftName(collection.name, name || tokenId),
+          name,
+          chainId: ChainInfoID.Stargaze1,
         })
       )
 
       return nftCardInfos
+    },
+})
+
+// Used to construct token info without querying the contract for the token URI.
+// This is used by the selector below that fetches token URI from the contract,
+// it is also used by the mint NFT action which has a token URI but is not
+// guaranteed to be on-chain yet (before a proposal is executed, the token URI
+// can be found in the Cosmos msg, but the contract hasn't yet stored it).
+export const nftCardInfoWithUriSelector = selectorFamily<
+  NftCardInfo,
+  WithChainId<{
+    collection: string
+    tokenId: string
+    tokenUri?: string | null | undefined
+  }>
+>({
+  key: 'nftCardInfo',
+  get:
+    ({ tokenId, collection, tokenUri, chainId }) =>
+    async ({ get }) => {
+      const { native, stargaze } = get(
+        nativeAndStargazeCollectionInfoSelector({
+          nativeCollectionAddress: collection,
+          chainId,
+        })
+      )
+      const tokenData = get(
+        tokenUri ? nftTokenUriDataSelector(tokenUri) : constSelector(undefined)
+      )
+
+      const info: NftCardInfo = {
+        collection: {
+          address: stargaze?.address ?? native.address,
+          name: stargaze?.info.name ?? native.info.name,
+        },
+        tokenId,
+        externalLink: stargaze?.address.startsWith('stars')
+          ? {
+              href: `${STARGAZE_URL_BASE}/media/${stargaze.address}/${tokenId}`,
+              name: 'Stargaze',
+            }
+          : undefined,
+        // Default to tokenUri; this gets overwritten if tokenUri contains valid
+        // metadata and has an image.
+        imageUrl: tokenUri ?? '',
+        name: '',
+        chainId: stargaze ? ChainInfoID.Stargaze1 : chainId ?? CHAIN_ID,
+      }
+
+      const { name, imageUrl, externalLink } = parseNftUriResponse(
+        tokenData || ''
+      )
+      info.name = name || info.name
+      info.imageUrl = imageUrl || info.imageUrl
+      info.externalLink = externalLink || info.externalLink
+
+      return info
+    },
+})
+
+export const nftCardInfoSelector = selectorFamily<
+  NftCardInfo,
+  WithChainId<{ tokenId: string; collection: string }>
+>({
+  key: 'nftCardInfo',
+  get:
+    ({ tokenId, collection, chainId }) =>
+    async ({ get }) => {
+      const tokenInfo = get(
+        Cw721BaseSelectors.nftInfoSelector({
+          contractAddress: collection,
+          chainId,
+          params: [{ tokenId }],
+        })
+      )
+
+      return get(
+        nftCardInfoWithUriSelector({
+          tokenId,
+          collection,
+          tokenUri: tokenInfo.token_uri,
+          chainId,
+        })
+      )
     },
 })
 
@@ -70,14 +161,16 @@ export const nftCardInfosSelector = selectorFamily<
     ({ coreAddress, chainId }) =>
     async ({ get }) => {
       const nftCollectionAddresses = get(
-        CwdCoreV2Selectors.allCw721TokenListSelector({
+        DaoCoreV2Selectors.allCw721TokenListSelector({
           contractAddress: coreAddress,
           chainId,
         })
       )
 
+      // Wait for all to settle so we can filter out any that failed. These may
+      // fail if weird IBC cross-chain stuff happens.
       const nftCollectionInfos = get(
-        waitForAll(
+        waitForAllSettled(
           nftCollectionAddresses.map((collectionAddress) =>
             nativeAndStargazeCollectionInfoSelector({
               nativeCollectionAddress: collectionAddress,
@@ -86,6 +179,8 @@ export const nftCardInfosSelector = selectorFamily<
           )
         )
       )
+        .filter((info) => info.state === 'hasValue')
+        .map((info) => info.contents) as NativeStargazeCollectionInfo[]
 
       const nftCollectionTokenIds = get(
         waitForAll(
@@ -101,12 +196,6 @@ export const nftCardInfosSelector = selectorFamily<
 
       const collectionsWithTokens = nftCollectionInfos
         .map((collectionInfo, index) => {
-          // Don't filter undefined infos out until inside this map so we can
-          // use the index to zip with token IDs.
-          if (!collectionInfo) {
-            return
-          }
-
           const tokenIds = nftCollectionTokenIds[index]
 
           const infos = get(
@@ -187,42 +276,16 @@ export const nftCardInfosSelector = selectorFamily<
                   //   denom: string
                   // }
                   name: '',
+                  chainId: stargazeInfo
+                    ? ChainInfoID.Stargaze1
+                    : chainId ?? CHAIN_ID,
                 }
 
-                // Only try to parse if there's a good chance this is JSON, the
-                // heuristic being the first non-whitespace character is a "{".
-                if (uriDataResponse.trimStart().startsWith('{')) {
-                  try {
-                    const json = JSON.parse(uriDataResponse)
-
-                    if (typeof json.name === 'string' && !!json.name.trim()) {
-                      info.name = getNftName(info.collection.name, json.name)
-                    }
-
-                    if (typeof json.image === 'string' && !!json.image) {
-                      info.imageUrl = transformIpfsUrlToHttpsIfNecessary(
-                        json.image
-                      )
-                    }
-
-                    if (
-                      typeof json.external_url === 'string' &&
-                      !!json.external_url.trim()
-                    ) {
-                      const externalUrl = transformIpfsUrlToHttpsIfNecessary(
-                        json.external_url
-                      )
-                      const externalUrlDomain = new URL(externalUrl).hostname
-                      info.externalLink = {
-                        href: externalUrl,
-                        name:
-                          HostnameMap[externalUrlDomain] ?? externalUrlDomain,
-                      }
-                    }
-                  } catch (err) {
-                    console.error(err)
-                  }
-                }
+                const { name, imageUrl, externalLink } =
+                  parseNftUriResponse(uriDataResponse)
+                info.name = name || info.name
+                info.imageUrl = imageUrl || info.imageUrl
+                info.externalLink = externalLink || info.externalLink
 
                 return info
               }
@@ -233,7 +296,3 @@ export const nftCardInfosSelector = selectorFamily<
       return infos
     },
 })
-
-const HostnameMap: Record<string, string | undefined> = {
-  'stargaze.zone': 'Stargaze',
-}

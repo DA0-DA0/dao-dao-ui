@@ -33,14 +33,25 @@ export const dateTimeFormatter = new Intl.DateTimeFormat('default', {
   dateStyle: 'short',
   timeStyle: 'short',
 })
-
 export const formatDateTime = (date: Date) => dateTimeFormatter.format(date)
+
+export const dateTimeTzFormatter = new Intl.DateTimeFormat('default', {
+  month: '2-digit',
+  day: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZoneName: 'short',
+})
+export const formatDateTimeTz = (date: Date) => dateTimeTzFormatter.format(date)
 
 export const timeFormatter = new Intl.DateTimeFormat('default', {
   timeStyle: 'short',
 })
-
 export const formatTime = (date: Date) => timeFormatter.format(date)
+
+export const isoStringForLocalDateString = (dateString: string) =>
+  new Date(dateString).toISOString()
 
 // Select number of decimal digits, rounding down / truncating.
 export const toFixedDown = (value: Number, digits: Number) => {

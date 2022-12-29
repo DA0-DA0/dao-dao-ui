@@ -13,13 +13,14 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
-import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/CwdCore.v2'
+import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   validateRequired,
   validateUrl,
 } from '@dao-dao/utils'
 
+import { LinkWrapper } from '../../components'
 import { useActionOptions } from '../react'
 import { ActionCard } from './ActionCard'
 
@@ -53,6 +54,7 @@ export const UpdateInfoComponent: ActionComponent<
           </div>
         ) : (
           <DaoImage
+            LinkWrapper={LinkWrapper}
             className="ml-2"
             coreAddress={address}
             imageUrl={data.image_url}

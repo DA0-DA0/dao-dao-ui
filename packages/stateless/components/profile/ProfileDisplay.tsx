@@ -1,8 +1,9 @@
+/* eslint-disable i18next/no-literal-string */
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { ProfileDisplayProps } from '@dao-dao/types'
-import { getFallbackImage } from '@dao-dao/utils'
+import { getFallbackImage, toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { Tooltip } from '../tooltip/Tooltip'
@@ -10,14 +11,18 @@ import { Tooltip } from '../tooltip/Tooltip'
 export const ProfileDisplay = ({
   address,
   loadingProfile,
-  imageSize = 20,
+  imageSize,
   hideImage,
   copyToClipboardProps,
+  size = 'default',
+  className,
 }: ProfileDisplayProps) => {
   const { t } = useTranslation()
 
+  imageSize ??= size === 'lg' ? 28 : 20
+
   return (
-    <div className="flex flex-row items-center gap-2">
+    <div className={clsx('flex flex-row items-center gap-2', className)}>
       {!hideImage && (
         <Tooltip
           title={
@@ -32,7 +37,7 @@ export const ProfileDisplay = ({
               backgroundImage: `url(${
                 loadingProfile.loading
                   ? getFallbackImage(address)
-                  : loadingProfile.data.imageUrl
+                  : toAccessibleImageUrl(loadingProfile.data.imageUrl)
               })`,
               width: imageSize,
               height: imageSize,
@@ -52,7 +57,16 @@ export const ProfileDisplay = ({
             ? t('button.clickToCopyAddress')
             : undefined
         }
-        {...copyToClipboardProps}
+        {...{
+          ...copyToClipboardProps,
+          textClassName: clsx(
+            {
+              'text-sm': size === 'default',
+              'text-lg': size === 'lg',
+            },
+            copyToClipboardProps?.textClassName
+          ),
+        }}
         className={clsx(
           loadingProfile.loading && 'animate-pulse',
           copyToClipboardProps?.className

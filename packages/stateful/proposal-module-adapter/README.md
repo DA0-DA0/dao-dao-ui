@@ -6,7 +6,7 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 
 | Adapter                                           | Summary                 |
 | ------------------------------------------------- | ----------------------- |
-| [CwdProposalSingle](./adapters/CwdProposalSingle) | Single choice proposals |
+| [DaoProposalSingle](./adapters/DaoProposalSingle) | Single choice proposals |
 
 ## Layout
 
@@ -21,10 +21,9 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 
 This is a proposal module adapter package. It creates a common interface for
 various components and pieces of data that apps need to access which change
-based on the proposal module used by a given proposal. For example, a proposal
-that uses `cwd-proposal-single` will need to display two voting choices, whereas
-`cwd-proposal-multiple` will need to be able to display a variable number of
-choices.
+based on the proposal module used by a given proposal. For example, a single
+choice proposal will need to display two voting choices, whereas a multiple
+choice proposal will need to display a variable number of choices.
 
 ## Why is this necessary?
 
@@ -154,8 +153,8 @@ import { ProposalModuleAdapter } from '@dao-dao/types/proposal-module-adapter'
 const MyProposalModuleAdapter: ProposalModuleAdapter = {
   id: 'my_proposal_module_adapter_id',
   contractNames: [
-    'cwd-my-proposal-module-v1',
-    'cwd-my-proposal-module-v2',
+    'my-proposal-module-v1',
+    'my-proposal-module-v2',
   ],
 
   loadCommon: (options) => ({

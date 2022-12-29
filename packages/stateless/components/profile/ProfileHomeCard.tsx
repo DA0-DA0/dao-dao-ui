@@ -1,10 +1,11 @@
 import { LayersOutlined, PaymentsOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
 
-import { ButtonLink } from '../buttons'
+import { ButtonLinkProps } from '../buttons'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import {
   ProfileCardWrapper,
@@ -26,14 +27,15 @@ export interface ProfileHomeCardProps
     proposalsCreated: number
     votesCast: number
   }>
+  ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const ProfileHomeCard = ({
-  established,
   tokenSymbol,
   tokenDecimals,
   inboxProposalCount,
   lazyData,
+  ButtonLink,
   ...wrapperProps
 }: ProfileHomeCardProps) => {
   const { t } = useTranslation()
@@ -41,7 +43,6 @@ export const ProfileHomeCard = ({
   return (
     <ProfileCardWrapper
       childContainerClassName="p-0"
-      established={established}
       underHeaderComponent={
         <div className="mt-3 grid grid-cols-[1fr_1px_1fr] items-center justify-items-center gap-2 self-stretch">
           <div className="flex flex-col items-stretch text-center">

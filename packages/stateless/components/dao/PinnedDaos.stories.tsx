@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { IconButtonLink } from '../icon_buttons'
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoCard } from './DaoCard'
 import { Default as FeaturedDaosStory } from './FeaturedDaos.stories'
@@ -20,6 +21,7 @@ const Template: ComponentStory<typeof PinnedDaos> = (args) => {
       DaoCard={(props) => (
         <DaoCard
           {...props}
+          IconButtonLink={IconButtonLink}
           LinkWrapper={LinkWrapper}
           onPin={() =>
             setPinned((current) =>
