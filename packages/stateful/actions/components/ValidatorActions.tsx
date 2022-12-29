@@ -3,12 +3,12 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  AddressInput,
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
   PickEmoji,
   SelectInput,
-  TextInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { validateJSON, validateValidatorAddress } from '@dao-dao/utils'
@@ -134,7 +134,7 @@ export const ValidatorActionsComponent: ActionComponent<
       {validatorActionType === ValidatorActionType.UnjailValidator && (
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel name={t('form.validatorAddress')} />
-          <TextInput
+          <AddressInput
             disabled={!isCreating}
             error={errors?.unjailMsg?.validatorAddr}
             fieldName={fieldNamePrefix + 'unjailMsg.validatorAddr'}
@@ -153,7 +153,7 @@ export const ValidatorActionsComponent: ActionComponent<
             name={t('form.validatorAddress')}
             tooltip={t('form.validatorAddressTooltip')}
           />
-          <TextInput
+          <AddressInput
             disabled={!isCreating}
             error={errors?.withdrawCommissionMsg?.validatorAddress}
             fieldName={
