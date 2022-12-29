@@ -16,7 +16,7 @@ export const KeyEmoji = () => (
 )
 
 export const LockWithKeyEmoji = () => (
-  <EmojiWrapper emoji="🔐" labelI18nKey="emoji.closed_lock_with_key" />
+  <EmojiWrapper emoji="🔐" labelI18nKey="emoji.closedLockWithKey" />
 )
 
 export const PickEmoji = () => (
