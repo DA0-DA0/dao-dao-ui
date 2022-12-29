@@ -6,6 +6,7 @@ import { makeExecuteAction } from './Execute'
 import { makeInstantiateAction } from './Instantiate'
 import { makeManageCw20Action } from './ManageCw20'
 import { makeManageCw721Action } from './ManageCw721'
+import { makeManageStorageItemsAction } from './ManageStorageItems'
 import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeMigrateAction } from './MigrateContract'
 import {
@@ -13,8 +14,6 @@ import {
   makeMintNftAction,
   makeTransferNftAction,
 } from './nft'
-import { makeRemoveItemAction } from './RemoveItem'
-import { makeSetItemAction } from './SetItem'
 import { makeSpendAction } from './Spend'
 import { makeStakeAction } from './StakingActions'
 import {
@@ -43,8 +42,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeManageSubDaosAction,
     makePerformTokenSwapAction,
     makeWithdrawTokenSwapAction,
-    makeSetItemAction,
-    makeRemoveItemAction,
+    makeManageStorageItemsAction,
   ]
 
   return actionMakers

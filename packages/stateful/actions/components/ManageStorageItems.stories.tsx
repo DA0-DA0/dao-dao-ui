@@ -2,21 +2,25 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 
-import { SetItemComponent, SetItemData } from './SetItem'
+import {
+  ManageStorageItemsComponent,
+  ManageStorageItemsData,
+} from './ManageStorageItems'
 
 export default {
-  title: 'DAO DAO / packages / stateful / actions / components / SetItem',
-  component: SetItemComponent,
+  title:
+    'DAO DAO / packages / stateful / actions / components / ManageStorageItems',
+  component: ManageStorageItemsComponent,
   decorators: [
-    makeReactHookFormDecorator<SetItemData>({
+    makeReactHookFormDecorator<ManageStorageItemsData>({
       key: 'color',
       value: '',
     }),
   ],
-} as ComponentMeta<typeof SetItemComponent>
+} as ComponentMeta<typeof ManageStorageItemsComponent>
 
-const Template: ComponentStory<typeof SetItemComponent> = (args) => (
-  <SetItemComponent {...args} />
+const Template: ComponentStory<typeof ManageStorageItemsComponent> = (args) => (
+  <ManageStorageItemsComponent {...args} />
 )
 
 export const Default = Template.bind({})

@@ -17,17 +17,25 @@ import {
 import { loadableToLoadingData, makeWasmMessage } from '@dao-dao/utils'
 
 import {
-  SetItemData,
-  SetItemComponent as StatelessSetItemComponent,
-} from '../components/SetItem'
+  ManageStorageItemsData,
+  ManageStorageItemsComponent as StatelessManageStorageItemsComponent,
+} from '../components/ManageStorageItems'
 import { useActionOptions } from '../react'
 
-const useDefaults: UseDefaults<SetItemData> = () => ({
-  key: '',
-  value: '',
+const useDefaults: UseDefaults<ManageStorageItemsData> = () => ({
+  setting: true,
+  remove_item: {
+    key: '',
+  },
+  set_item: {
+    key: '',
+    value: '',
+  },
 })
 
-const Component: ActionComponent<undefined, SetItemData> = (props) => {
+const Component: ActionComponent<undefined, ManageStorageItemsData> = (
+  props
+) => {
   const { address, chainId } = useActionOptions()
 
   const { watch } = useFormContext()
@@ -54,7 +62,7 @@ const Component: ActionComponent<undefined, SetItemData> = (props) => {
   )
 
   return (
-    <StatelessSetItemComponent
+    <StatelessManageStorageItemsComponent
       {...props}
       options={{
         existingKeys,
@@ -69,11 +77,9 @@ const Component: ActionComponent<undefined, SetItemData> = (props) => {
   )
 }
 
-export const makeSetItemAction: ActionMaker<SetItemData> = ({
-  t,
-  address,
-  context,
-}) => {
+export const makeManageStorageItemsAction: ActionMaker<
+  ManageStorageItemsData
+> = ({ t, address, context }) => {
   // Can only set items in a DAO.
   if (context.type !== ActionOptionsContextType.Dao) {
     return null
@@ -86,25 +92,34 @@ export const makeSetItemAction: ActionMaker<SetItemData> = ({
       ? 'addr'
       : 'value'
 
-  const useTransformToCosmos: UseTransformToCosmos<SetItemData> = () =>
-    useCallback(({ key, value }: SetItemData) => {
-      return makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: address,
-            funds: [],
-            msg: {
-              set_item: {
-                key,
-                [valueKey]: value,
-              },
+  const useTransformToCosmos: UseTransformToCosmos<
+    ManageStorageItemsData
+  > = () =>
+    useCallback(
+      ({ setting, remove_item, set_item }: ManageStorageItemsData) => {
+        return makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: address,
+              funds: [],
+              msg: setting
+                ? {
+                    set_item: {
+                      key: set_item.key,
+                      [valueKey]: set_item.value,
+                    },
+                  }
+                : {
+                    remove_item,
+                  },
             },
           },
-        },
-      })
-    }, [])
+        })
+      },
+      []
+    )
 
-  const useDecodedCosmosMsg: UseDecodedCosmosMsg<SetItemData> = (
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStorageItemsData> = (
     msg: Record<string, any>
   ) => {
     if (
@@ -112,15 +127,23 @@ export const makeSetItemAction: ActionMaker<SetItemData> = ({
       'execute' in msg.wasm &&
       'contract_addr' in msg.wasm.execute &&
       msg.wasm.execute.contract_addr === address &&
-      'set_item' in msg.wasm.execute.msg &&
-      'key' in msg.wasm.execute.msg.set_item &&
-      valueKey in msg.wasm.execute.msg.set_item
+      'set_item' in msg.wasm.execute.msg
     ) {
+      const setting =
+        'key' in msg.wasm.execute.msg.set_item &&
+        valueKey in msg.wasm.execute.msg.set_item
+
       return {
         match: true,
         data: {
-          key: msg.wasm.execute.msg.set_item.key,
-          value: msg.wasm.execute.msg.set_item[valueKey],
+          setting,
+          remove_item: {
+            key: msg.wasm.execute.msg?.remove_item?.key,
+          },
+          set_item: {
+            key: msg.wasm.execute.msg?.set_item?.key,
+            value: msg.wasm.execute.msg?.set_item[valueKey],
+          },
         },
       }
     }
@@ -129,10 +152,10 @@ export const makeSetItemAction: ActionMaker<SetItemData> = ({
   }
 
   return {
-    key: CoreActionKey.SetItem,
+    key: CoreActionKey.ManageStorageItems,
     Icon: WrenchEmoji,
-    label: t('title.setItem'),
-    description: t('info.setItemDescription'),
+    label: t('title.manageStorageItems'),
+    description: t('info.manageStorageItemsDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,
