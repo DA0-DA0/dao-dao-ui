@@ -105,7 +105,7 @@ const Component: ActionComponent = (props) => {
             t('error.unexpectedError')
       )
     }
-  }, [tokenInfoLoadable.state, t, additionalAddressError])
+  }, [tokenInfoLoadable.state, t, additionalAddressError, existingTokens])
 
   return (
     <StatelessManageCw721Component
