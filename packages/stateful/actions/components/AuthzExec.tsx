@@ -166,13 +166,13 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               min={minAmount}
               onMinus={() =>
                 setValue(
-                  fieldNamePrefix + 'amount',
+                  fieldNamePrefix + 'delegate.amount.amount',
                   Math.max(delegateAmount - 1, minAmount)
                 )
               }
               onPlus={() =>
                 setValue(
-                  fieldNamePrefix + 'amount',
+                  fieldNamePrefix + 'delegate.amount.amount',
                   Math.max(delegateAmount + 1, minAmount)
                 )
               }
@@ -230,13 +230,13 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               min={minAmount}
               onMinus={() =>
                 setValue(
-                  fieldNamePrefix + 'amount',
+                  fieldNamePrefix + 'undelegate.amount.amount',
                   Math.max(undelegateAmount - 1, minAmount)
                 )
               }
               onPlus={() =>
                 setValue(
-                  fieldNamePrefix + 'amount',
+                  fieldNamePrefix + 'undelegate.amount.amount',
                   Math.max(undelegateAmount + 1, minAmount)
                 )
               }
@@ -314,13 +314,13 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               min={minAmount}
               onMinus={() =>
                 setValue(
-                  fieldNamePrefix + 'amount',
+                  fieldNamePrefix + 'redelegate.amount.amount',
                   Math.max(redelegateAmount - 1, minAmount)
                 )
               }
               onPlus={() =>
                 setValue(
-                  fieldNamePrefix + 'amount',
+                  fieldNamePrefix + 'redelegate.amount.amount',
                   Math.max(redelegateAmount + 1, minAmount)
                 )
               }
