@@ -12,7 +12,11 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { NATIVE_DENOM, makeStargateMessage } from '@dao-dao/utils'
+import {
+  NATIVE_DENOM,
+  decodeProtobuf,
+  makeStargateMessage,
+} from '@dao-dao/utils'
 
 import { ValidatorActionsComponent as StatelessValidatorActionsComponent } from '../components'
 
@@ -88,22 +92,48 @@ const Component: ActionComponent = (props) => {
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<ValidatorActionsData> = (
   msg: Record<string, any>
-) =>
-  useMemo(
-    () =>
-      msg &&
-      msg.validatorActionType &&
-      msg.createMsg &&
-      msg.editMsg &&
-      msg.unjailMsg &&
-      msg.withdrawCommissionMsg
-        ? {
-            match: true,
-            data: msg as ValidatorActionsData,
-          }
-        : { match: false },
-    [msg]
-  )
+) => {
+  let data = useDefaults()
+
+  return useMemo(() => {
+    // Check this is a stargate message
+    if (!msg.stargate) {
+      return { match: false }
+    }
+
+    // Decode the protobuf
+    let decodedMsg = decodeProtobuf(msg.stargate)
+
+    // Check that the type_url is a validator message, set data accordingly
+    switch (decodedMsg.type_url) {
+      case ValidatorActionType.WithdrawValidatorCommission:
+        data.validatorActionType =
+          ValidatorActionType.WithdrawValidatorCommission
+        data.withdrawCommissionMsg = decodedMsg.value
+        break
+      case ValidatorActionType.CreateValidator:
+        data.validatorActionType = ValidatorActionType.CreateValidator
+        data.createMsg = JSON.stringify(decodedMsg.value)
+        break
+      case ValidatorActionType.EditValidator:
+        data.validatorActionType = ValidatorActionType.EditValidator
+        data.editMsg = JSON.stringify(decodedMsg.value)
+        break
+      case ValidatorActionType.UnjailValidator:
+        data.validatorActionType = ValidatorActionType.UnjailValidator
+        data.unjailMsg = decodedMsg.value
+        break
+      default:
+        // No validator action typeUrls so we return a false match
+        return { match: false }
+    }
+
+    return {
+      match: true,
+      data,
+    }
+  }, [msg, data])
+}
 
 const useTransformToCosmos: UseTransformToCosmos<ValidatorActionsData> = () =>
   useCallback((data: ValidatorActionsData) => {

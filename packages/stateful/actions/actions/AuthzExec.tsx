@@ -22,6 +22,7 @@ import {
 } from '@dao-dao/types/actions'
 import {
   NATIVE_DENOM,
+  decodeProtobuf,
   loadableToLoadingData,
   makeRawProtobufMsg,
   makeStargateMessage,
@@ -107,19 +108,55 @@ const Component: ActionComponent = (props) => {
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
   msg: Record<string, any>
-) =>
-  useMemo(
-    () =>
-      'stargate' in msg &&
-      msg.stargate.type_url === '/cosmos.authz.v1beta1.MsgExec' &&
-      msg.stargate.value
-        ? {
-            match: true,
-            data: msg as AuthzExecData,
-          }
-        : { match: false },
-    [msg]
-  )
+) => {
+  let data = useDefaults()
+
+  return useMemo(() => {
+    // Check this is a stargate
+    if (!msg.stargate) {
+      return { match: false }
+    }
+
+    // Decode stargate message
+    let decodedMsg = decodeProtobuf(msg.stargate)
+
+    // Chect this is Authz MsgExec message formatted by this action
+    if (
+      decodedMsg.type_url !== '/cosmos.authz.v1beta1.MsgExec' ||
+      !decodedMsg.value.msgs ||
+      decodedMsg.value.msgs.length !== 1
+    ) {
+      return { match: false }
+    }
+
+    // Decode the message included with Authz MsgExec
+    let decodedExecMsg = decodeProtobuf(decodedMsg.value.msgs[0])
+
+    // Check that the type_url for default Authz messages, set data accordingly
+    switch (decodedExecMsg.type_url) {
+      case AuthzExecActionTypes.Delegate:
+        data.authzExecActionType = AuthzExecActionTypes.Delegate
+        data.delegate = decodedExecMsg.value
+      case AuthzExecActionTypes.Redelegate:
+        data.authzExecActionType = AuthzExecActionTypes.Redelegate
+        data.redelegate = decodedExecMsg.value
+      case AuthzExecActionTypes.Undelegate:
+        data.authzExecActionType = AuthzExecActionTypes.Undelegate
+        data.undelegate = decodedExecMsg.value
+      case AuthzExecActionTypes.ClaimRewards:
+        data.authzExecActionType = AuthzExecActionTypes.ClaimRewards
+        data.claimRewards = decodedExecMsg.value
+      default:
+        data.authzExecActionType = AuthzExecActionTypes.Custom
+        data.custom = decodedExecMsg.value
+    }
+
+    return {
+      match: true,
+      data,
+    }
+  }, [msg, data])
+}
 
 export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
   t,
