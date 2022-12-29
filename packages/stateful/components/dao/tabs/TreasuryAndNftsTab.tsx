@@ -66,7 +66,8 @@ export const TreasuryAndNftsTab = () => {
     treasuryTokenCardInfosLoadable.state,
   ])
 
-  const addCw721Action = useCoreActionForKey(CoreActionKey.AddCw721)
+  // ManageCw721 action defaults to adding
+  const addCw721Action = useCoreActionForKey(CoreActionKey.ManageCw721)
   // Prefill URL only valid if action exists.
   const prefillValid = !!addCw721Action
   const encodedProposalPrefill = useEncodedDaoProposalSinglePrefill({

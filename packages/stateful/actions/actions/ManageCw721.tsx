@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
+import {
+  constSelector,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  waitForAll,
+} from 'recoil'
 
 import { Cw721BaseSelectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { ImageEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -14,19 +20,25 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import { AddCw721Component as StatelessAddCw721Component } from '../components/AddCw721'
+import { ManageCw721Component as StatelessManageCw721Component } from '../components/ManageCw721'
+import { useActionOptions } from '../react'
 
-interface AddCw721Data {
+interface ManageCw721Data {
+  adding: boolean
   address: string
 }
 
-export const useDefaults: UseDefaults<AddCw721Data> = () => ({
+export const useDefaults: UseDefaults<ManageCw721Data> = () => ({
+  adding: true,
   address: '',
 })
 
 const Component: ActionComponent = (props) => {
+  const { address, chainId } = useActionOptions()
+
   const { t } = useTranslation()
   const { fieldNamePrefix } = props
 
@@ -42,6 +54,38 @@ const Component: ActionComponent = (props) => {
       : constSelector(undefined)
   )
 
+  const existingTokenAddresses = useRecoilValue(
+    DaoCoreV2Selectors.allCw721TokenListSelector({
+      contractAddress: address,
+      chainId,
+    })
+  )
+  const existingTokenInfos = useRecoilValue(
+    waitForAll(
+      existingTokenAddresses?.map((token) =>
+        Cw721BaseSelectors.contractInfoSelector({
+          contractAddress: token,
+          chainId,
+          params: [],
+        })
+      ) ?? []
+    )
+  )
+  const existingTokens = useMemo(
+    () =>
+      (existingTokenAddresses
+        ?.map((address, idx) => ({
+          address,
+          info: existingTokenInfos[idx],
+        }))
+        // If undefined token info response, ignore the token.
+        .filter(({ info }) => !!info) ?? []) as {
+        address: string
+        info: ContractInfoResponse
+      }[],
+    [existingTokenAddresses, existingTokenInfos]
+  )
+
   const [additionalAddressError, setAdditionalAddressError] = useState<string>()
   useEffect(() => {
     if (tokenInfoLoadable.state !== 'hasError') {
@@ -52,15 +96,23 @@ const Component: ActionComponent = (props) => {
     }
 
     if (!additionalAddressError) {
-      setAdditionalAddressError(t('error.notCw721Address'))
+      setAdditionalAddressError(
+        tokenInfoLoadable.state === 'hasError'
+          ? t('error.notCw721Address')
+          : existingTokens.length === 0
+          ? t('error.noCw721Tokens')
+          : // Should never happen.
+            t('error.unexpectedError')
+      )
     }
   }, [tokenInfoLoadable.state, t, additionalAddressError])
 
   return (
-    <StatelessAddCw721Component
+    <StatelessManageCw721Component
       {...props}
       options={{
         additionalAddressError,
+        existingTokens,
         formattedJsonDisplayProps: {
           jsonLoadable: tokenInfoLoadable,
         },
@@ -69,7 +121,7 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw721Data> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageCw721Data> = (
   msg: Record<string, any>
 ) =>
   useMemo(
@@ -78,12 +130,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw721Data> = (
       'execute' in msg.wasm &&
       'update_cw721_list' in msg.wasm.execute.msg &&
       'to_add' in msg.wasm.execute.msg.update_cw721_list &&
-      msg.wasm.execute.msg.update_cw721_list.to_add.length === 1 &&
-      'to_remove' in msg.wasm.execute.msg.update_cw721_list &&
-      msg.wasm.execute.msg.update_cw721_list.to_remove.length === 0
+      'to_remove' in msg.wasm.execute.msg.update_cw721_list
         ? {
             match: true,
             data: {
+              adding:
+                msg.wasm.execute.msg.update_cw721_list.to_add.length === 1,
               address: msg.wasm.execute.msg.update_cw721_list.to_add[0],
             },
           }
@@ -91,7 +143,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AddCw721Data> = (
     [msg]
   )
 
-export const makeAddCw721Action: ActionMaker<AddCw721Data> = ({
+export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
   t,
   address,
   context,
@@ -101,9 +153,9 @@ export const makeAddCw721Action: ActionMaker<AddCw721Data> = ({
     return null
   }
 
-  const useTransformToCosmos: UseTransformToCosmos<AddCw721Data> = () =>
+  const useTransformToCosmos: UseTransformToCosmos<ManageCw721Data> = () =>
     useCallback(
-      (data: AddCw721Data) =>
+      (data: ManageCw721Data) =>
         makeWasmMessage({
           wasm: {
             execute: {
@@ -111,8 +163,8 @@ export const makeAddCw721Action: ActionMaker<AddCw721Data> = ({
               funds: [],
               msg: {
                 update_cw721_list: {
-                  to_add: [data.address],
-                  to_remove: [],
+                  to_add: data.adding ? [data.address] : [],
+                  to_remove: !data.adding ? [data.address] : [],
                 },
               },
             },
@@ -122,10 +174,10 @@ export const makeAddCw721Action: ActionMaker<AddCw721Data> = ({
     )
 
   return {
-    key: CoreActionKey.AddCw721,
+    key: CoreActionKey.ManageCw721,
     Icon: ImageEmoji,
-    label: t('title.addCw721ToTreasury'),
-    description: t('info.addCw721ToTreasuryActionDescription'),
+    label: t('title.manageTreasuryNfts'),
+    description: t('info.manageTreasuryNftsDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

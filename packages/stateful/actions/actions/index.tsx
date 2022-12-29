@@ -2,10 +2,10 @@ import { Action, ActionOptions } from '@dao-dao/types/actions'
 import { DISABLED_ACTIONS } from '@dao-dao/utils'
 
 import { makeAddCw20Action } from './AddCw20'
-import { makeAddCw721Action } from './AddCw721'
 import { makeCustomAction } from './Custom'
 import { makeExecuteAction } from './Execute'
 import { makeInstantiateAction } from './Instantiate'
+import { makeManageCw721Action } from './ManageCw721'
 import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeMigrateAction } from './MigrateContract'
 import {
@@ -14,7 +14,6 @@ import {
   makeTransferNftAction,
 } from './nft'
 import { makeRemoveCw20Action } from './RemoveCw20'
-import { makeRemoveCw721Action } from './RemoveCw721'
 import { makeRemoveItemAction } from './RemoveItem'
 import { makeSetItemAction } from './SetItem'
 import { makeSpendAction } from './Spend'
@@ -34,8 +33,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeUpdateInfoAction,
     makeAddCw20Action,
     makeRemoveCw20Action,
-    makeAddCw721Action,
-    makeRemoveCw721Action,
+    makeManageCw721Action,
     makeMintNftAction,
     makeTransferNftAction,
     makeBurnNftAction,

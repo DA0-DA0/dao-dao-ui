@@ -2,16 +2,16 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 
-import { AddCw721Component } from './AddCw721'
+import { ManageCw721Component } from './ManageCw721'
 
 export default {
-  title: 'DAO DAO / packages / stateful / actions / components / AddCw721',
-  component: AddCw721Component,
+  title: 'DAO DAO / packages / stateful / actions / components / ManageCw721',
+  component: ManageCw721Component,
   decorators: [ReactHookFormDecorator],
-} as ComponentMeta<typeof AddCw721Component>
+} as ComponentMeta<typeof ManageCw721Component>
 
-const Template: ComponentStory<typeof AddCw721Component> = (args) => (
-  <AddCw721Component {...args} />
+const Template: ComponentStory<typeof ManageCw721Component> = (args) => (
+  <ManageCw721Component {...args} />
 )
 
 export const Default = Template.bind({})
