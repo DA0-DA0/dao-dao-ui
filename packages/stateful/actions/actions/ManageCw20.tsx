@@ -43,8 +43,9 @@ const Component: ActionComponent = (props) => {
   const { fieldNamePrefix } = props
 
   const { watch } = useFormContext()
-
+  const adding = watch(fieldNamePrefix + 'adding')
   const tokenAddress = watch(fieldNamePrefix + 'address')
+
   const tokenInfoLoadable = useRecoilValueLoadable(
     tokenAddress
       ? Cw20BaseSelectors.tokenInfoSelector({
@@ -89,7 +90,10 @@ const Component: ActionComponent = (props) => {
 
   const [additionalAddressError, setAdditionalAddressError] = useState<string>()
   useEffect(() => {
-    if (tokenInfoLoadable.state !== 'hasError' && existingTokens.length > 0) {
+    const tokenInfoErrored = tokenInfoLoadable.state === 'hasError'
+    const noTokensWhenRemoving = !adding && existingTokens.length === 0
+
+    if (!tokenInfoErrored && !noTokensWhenRemoving) {
       if (additionalAddressError) {
         setAdditionalAddressError(undefined)
       }
@@ -98,9 +102,9 @@ const Component: ActionComponent = (props) => {
 
     if (!additionalAddressError) {
       setAdditionalAddressError(
-        tokenInfoLoadable.state === 'hasError'
+        tokenInfoErrored
           ? t('error.notCw20Address')
-          : existingTokens.length === 0
+          : noTokensWhenRemoving
           ? t('error.noCw20Tokens')
           : // Should never happen.
             t('error.unexpectedError')
@@ -111,6 +115,7 @@ const Component: ActionComponent = (props) => {
     existingTokens.length,
     t,
     additionalAddressError,
+    adding,
   ])
 
   return (

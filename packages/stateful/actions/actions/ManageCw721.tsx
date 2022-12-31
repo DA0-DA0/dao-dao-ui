@@ -43,8 +43,9 @@ const Component: ActionComponent = (props) => {
   const { fieldNamePrefix } = props
 
   const { watch } = useFormContext()
-
+  const adding = watch(fieldNamePrefix + 'adding')
   const tokenAddress = watch(fieldNamePrefix + 'address')
+
   const tokenInfoLoadable = useRecoilValueLoadable(
     tokenAddress
       ? Cw721BaseSelectors.contractInfoSelector({
@@ -89,7 +90,10 @@ const Component: ActionComponent = (props) => {
 
   const [additionalAddressError, setAdditionalAddressError] = useState<string>()
   useEffect(() => {
-    if (tokenInfoLoadable.state !== 'hasError' && existingTokens.length > 0) {
+    const tokenInfoErrored = tokenInfoLoadable.state === 'hasError'
+    const noTokensWhenRemoving = !adding && existingTokens.length === 0
+
+    if (!tokenInfoErrored && !noTokensWhenRemoving) {
       if (additionalAddressError) {
         setAdditionalAddressError(undefined)
       }
@@ -98,15 +102,21 @@ const Component: ActionComponent = (props) => {
 
     if (!additionalAddressError) {
       setAdditionalAddressError(
-        tokenInfoLoadable.state === 'hasError'
+        tokenInfoErrored
           ? t('error.notCw721Address')
-          : existingTokens.length === 0
-          ? t('error.noCw721Tokens')
+          : noTokensWhenRemoving
+          ? t('error.noNftCollections')
           : // Should never happen.
             t('error.unexpectedError')
       )
     }
-  }, [tokenInfoLoadable.state, t, additionalAddressError, existingTokens])
+  }, [
+    tokenInfoLoadable.state,
+    t,
+    additionalAddressError,
+    existingTokens,
+    adding,
+  ])
 
   return (
     <StatelessManageCw721Component
