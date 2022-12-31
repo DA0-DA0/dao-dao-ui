@@ -59,6 +59,7 @@
       ]
     }
   },
+  "additionalProperties": false,
   "definitions": {
     "Admin": {
       "description": "Information about the CosmWasm level admin of a contract. Used in conjunction with `ModuleInstantiateInfo` to instantiate modules.",
@@ -75,7 +76,8 @@
                 "addr": {
                   "type": "string"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -86,7 +88,8 @@
           "required": ["core_module"],
           "properties": {
             "core_module": {
-              "type": "object"
+              "type": "object",
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -162,7 +165,8 @@
             }
           ]
         }
-      }
+      },
+      "additionalProperties": false
     },
     "PercentageThreshold": {
       "description": "A percentage of voting power that must vote yes for a proposal to pass. An example of why this is needed:\n\nIf a user specifies a 60% passing threshold, and there are 10 voters they likely expect that proposal to pass when there are 6 yes votes. This implies that the condition for passing should be `yes_votes >= total_votes * threshold`.\n\nWith this in mind, how should a user specify that they would like proposals to pass if the majority of voters choose yes? Selecting a 50% passing threshold with those rules doesn't properly cover that case as 5 voters voting yes out of 10 would pass the proposal. Selecting 50.0001% or or some variation of that also does not work as a very small yes vote which technically makes the majority yes may not reach that threshold.\n\nTo handle these cases we provide both a majority and percent option for all percentages. If majority is selected passing will be determined by `yes > total_votes * 0.5`. If percent is selected passing is determined by `yes >= total_votes * percent`.\n\nIn both of these cases a proposal with only abstain votes must fail. This requires a special case passing logic.",
@@ -173,7 +177,8 @@
           "required": ["majority"],
           "properties": {
             "majority": {
-              "type": "object"
+              "type": "object",
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -196,10 +201,11 @@
         {
           "description": "Anyone may create a proposal free of charge.",
           "type": "object",
-          "required": ["AnyoneMayPropose"],
+          "required": ["anyone_may_propose"],
           "properties": {
-            "AnyoneMayPropose": {
-              "type": "object"
+            "anyone_may_propose": {
+              "type": "object",
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -207,16 +213,17 @@
         {
           "description": "The module specified in INFO has exclusive rights to proposal creation.",
           "type": "object",
-          "required": ["ModuleMayPropose"],
+          "required": ["module_may_propose"],
           "properties": {
-            "ModuleMayPropose": {
+            "module_may_propose": {
               "type": "object",
               "required": ["info"],
               "properties": {
                 "info": {
                   "$ref": "#/definitions/ModuleInstantiateInfo"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -238,7 +245,8 @@
                 "percentage": {
                   "$ref": "#/definitions/PercentageThreshold"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -258,7 +266,8 @@
                 "threshold": {
                   "$ref": "#/definitions/PercentageThreshold"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -275,7 +284,8 @@
                 "threshold": {
                   "$ref": "#/definitions/Uint128"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
