@@ -14,7 +14,11 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { loadableToLoadingData, makeWasmMessage } from '@dao-dao/utils'
+import {
+  loadableToLoadingData,
+  makeWasmMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import {
   ManageStorageItemsData,
@@ -24,13 +28,8 @@ import { useActionOptions } from '../react'
 
 const useDefaults: UseDefaults<ManageStorageItemsData> = () => ({
   setting: true,
-  remove_item: {
-    key: '',
-  },
-  set_item: {
-    key: '',
-    value: '',
-  },
+  key: '',
+  value: '',
 })
 
 const Component: ActionComponent<undefined, ManageStorageItemsData> = (
@@ -95,55 +94,55 @@ export const makeManageStorageItemsAction: ActionMaker<
   const useTransformToCosmos: UseTransformToCosmos<
     ManageStorageItemsData
   > = () =>
-    useCallback(
-      ({ setting, remove_item, set_item }: ManageStorageItemsData) => {
-        return makeWasmMessage({
-          wasm: {
-            execute: {
-              contract_addr: address,
-              funds: [],
-              msg: setting
-                ? {
-                    set_item: {
-                      key: set_item.key,
-                      [valueKey]: set_item.value,
-                    },
-                  }
-                : {
-                    remove_item,
+    useCallback(({ setting, key, value }: ManageStorageItemsData) => {
+      return makeWasmMessage({
+        wasm: {
+          execute: {
+            contract_addr: address,
+            funds: [],
+            msg: setting
+              ? {
+                  set_item: {
+                    key,
+                    [valueKey]: value,
                   },
-            },
+                }
+              : {
+                  remove_item: value,
+                },
           },
-        })
-      },
-      []
-    )
+        },
+      })
+    }, [])
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStorageItemsData> = (
     msg: Record<string, any>
   ) => {
     if (
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'contract_addr' in msg.wasm.execute &&
+      objectMatchesStructure(msg, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            funds: {},
+            msg: {},
+          },
+        },
+      }) &&
       msg.wasm.execute.contract_addr === address &&
-      'set_item' in msg.wasm.execute.msg
+      ('set_item' in msg.wasm.execute.msg ||
+        'remove_item' in msg.wasm.execute.msg)
     ) {
-      const setting =
-        'key' in msg.wasm.execute.msg.set_item &&
-        valueKey in msg.wasm.execute.msg.set_item
+      const setting = 'set_item' in msg.wasm.execute.msg
 
       return {
         match: true,
         data: {
           setting,
-          remove_item: {
-            key: msg.wasm.execute.msg?.remove_item?.key,
-          },
-          set_item: {
-            key: msg.wasm.execute.msg?.set_item?.key,
-            value: msg.wasm.execute.msg?.set_item[valueKey],
-          },
+          key:
+            (setting
+              ? msg.wasm.execute.msg.set_item.key
+              : msg.wasm.execute.msg.remove_item.key) ?? '',
+          value: setting ? msg.wasm.execute.msg.set_item[valueKey] : '',
         },
       }
     }

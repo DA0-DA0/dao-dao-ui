@@ -13,6 +13,7 @@ export default {
   component: ManageStorageItemsComponent,
   decorators: [
     makeReactHookFormDecorator<ManageStorageItemsData>({
+      setting: true,
       key: 'color',
       value: '',
     }),

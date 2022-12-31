@@ -21,7 +21,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
-import { makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import { ManageCw20Component as StatelessManageCw20Component } from '../components/ManageCw20'
 import { useActionOptions } from '../react'
@@ -49,6 +49,7 @@ const Component: ActionComponent = (props) => {
     tokenAddress
       ? Cw20BaseSelectors.tokenInfoSelector({
           contractAddress: tokenAddress,
+          chainId,
           params: [],
         })
       : constSelector(undefined)
@@ -131,16 +132,35 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageCw20Data> = (
 ) =>
   useMemo(
     () =>
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'update_cw20_list' in msg.wasm.execute.msg &&
-      'to_add' in msg.wasm.execute.msg.update_cw20_list &&
-      'to_remove' in msg.wasm.execute.msg.update_cw20_list
+      objectMatchesStructure(msg, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            funds: {},
+            msg: {
+              update_cw20_list: {
+                to_add: {},
+                to_remove: {},
+              },
+            },
+          },
+        },
+      }) &&
+      // Ensure only one token is being added or removed, but not both, and not
+      // more than one token. Ideally this component lets you add or remove
+      // multiple tokens at once, but that's not supported yet.
+      ((msg.wasm.execute.msg.update_cw20_list.to_add.length === 1 &&
+        msg.wasm.execute.msg.update_cw20_list.to_remove.length === 0) ||
+        (msg.wasm.execute.msg.update_cw20_list.to_add.length === 0 &&
+          msg.wasm.execute.msg.update_cw20_list.to_remove.length === 1))
         ? {
             match: true,
             data: {
               adding: msg.wasm.execute.msg.update_cw20_list.to_add.length === 1,
-              address: msg.wasm.execute.msg.update_cw20_list.to_add[0],
+              address:
+                msg.wasm.execute.msg.update_cw20_list.to_add.length === 1
+                  ? msg.wasm.execute.msg.update_cw20_list.to_add[0]
+                  : msg.wasm.execute.msg.update_cw20_list.to_remove[0],
             },
           }
         : { match: false },

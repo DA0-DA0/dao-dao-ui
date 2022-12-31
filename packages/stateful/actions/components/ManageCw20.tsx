@@ -45,9 +45,8 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
-  const tokenAddress = watch(fieldNamePrefix + 'address')
-
   const addingNew = watch(fieldNamePrefix + 'adding')
+  const tokenAddress = watch(fieldNamePrefix + 'address')
 
   return (
     <ActionCard
@@ -57,7 +56,7 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
     >
       <div className="flex flex-col gap-1">
         <SegmentedControls<boolean>
-          onSelect={() => setValue(fieldNamePrefix + 'adding', !addingNew)}
+          onSelect={(value) => setValue(fieldNamePrefix + 'adding', value)}
           selected={addingNew}
           tabs={[
             {
@@ -71,85 +70,55 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
           ]}
         />
 
-        {addingNew ? (
+        {!addingNew && existingTokens.length > 0 && (
           <>
-            <InputLabel
-              name={t('form.tokenAddress')}
-              tooltip={t('info.addCw20ToTreasuryActionDescription')}
-            />
-            <AddressInput
-              disabled={!isCreating}
-              error={errors?.address}
-              fieldName={fieldNamePrefix + 'address'}
-              register={register}
-              validation={[
-                validateRequired,
-                validateContractAddress,
-                // Invalidate field if additional error is present.
-                () => additionalAddressError || true,
-              ]}
-            />
-            <InputErrorMessage
-              error={
-                errors?.address ||
-                (additionalAddressError && { message: additionalAddressError })
-              }
-            />
-          </>
-        ) : (
-          <>
-            {' '}
-            {existingTokens.length > 0 && (
-              <>
-                <InputLabel name={t('form.existingTokens')} />
-                <div className="mb-2 flex flex-row flex-wrap gap-1">
-                  {existingTokens.map(({ address, info }) => (
-                    <Button
-                      key={address}
-                      center
-                      disabled={!isCreating}
-                      onClick={() =>
-                        setValue(fieldNamePrefix + 'address', address)
-                      }
-                      pressed={address === tokenAddress}
-                      size="sm"
-                      type="button"
-                      variant="secondary"
-                    >
-                      ${info.symbol}
-                    </Button>
-                  ))}
-                </div>
-              </>
-            )}
-            <div className="flex flex-col gap-1">
-              <InputLabel
-                name={t('form.tokenAddress')}
-                tooltip={t('info.removeCw20FromTreasuryActionDescription')}
-              />
-              <AddressInput
-                disabled={!isCreating}
-                error={errors?.address}
-                fieldName={fieldNamePrefix + 'address'}
-                register={register}
-                validation={[
-                  validateRequired,
-                  validateContractAddress,
-                  // Invalidate field if additional error is present.
-                  () => additionalAddressError || true,
-                ]}
-              />
-              <InputErrorMessage
-                error={
-                  errors?.address ||
-                  (additionalAddressError && {
-                    message: additionalAddressError,
-                  })
-                }
-              />
+            <InputLabel name={t('form.existingTokens')} />
+            <div className="mb-2 flex flex-row flex-wrap gap-1">
+              {existingTokens.map(({ address, info }) => (
+                <Button
+                  key={address}
+                  center
+                  disabled={!isCreating}
+                  onClick={() => setValue(fieldNamePrefix + 'address', address)}
+                  pressed={address === tokenAddress}
+                  size="sm"
+                  type="button"
+                  variant="secondary"
+                >
+                  ${info.symbol}
+                </Button>
+              ))}
             </div>
           </>
         )}
+
+        <InputLabel
+          name={t('form.tokenAddress')}
+          tooltip={
+            addingNew
+              ? t('info.addCw20ToTreasuryActionDescription')
+              : t('info.removeCw20FromTreasuryActionDescription')
+          }
+        />
+        <AddressInput
+          disabled={!isCreating}
+          error={errors?.address}
+          fieldName={fieldNamePrefix + 'address'}
+          iconType="contract"
+          register={register}
+          validation={[
+            validateRequired,
+            validateContractAddress,
+            // Invalidate field if additional error is present.
+            () => additionalAddressError || true,
+          ]}
+        />
+        <InputErrorMessage
+          error={
+            errors?.address ||
+            (additionalAddressError && { message: additionalAddressError })
+          }
+        />
       </div>
 
       <FormattedJsonDisplay {...formattedJsonDisplayProps} />

@@ -21,13 +21,8 @@ import { ActionCard } from './ActionCard'
 
 export interface ManageStorageItemsData {
   setting: boolean
-  remove_item: {
-    key: string
-  }
-  set_item: {
-    key: string
-    value: string
-  }
+  key: string
+  value: string
 }
 
 export interface ManageStorageItemsOptions {
@@ -47,15 +42,14 @@ export const ManageStorageItemsComponent: ActionComponent<
   const { t } = useTranslation()
   const { register, watch, setValue, trigger } = useFormContext()
 
-  const watchSetKey = watch(fieldNamePrefix + 'set_item.key')
-  const watchValue = watch(fieldNamePrefix + 'set_item.value')
-
-  const suggestedValues = SUGGESTED_VALUES_FOR_KEYS[watchSetKey]
-
   const setting = watch(fieldNamePrefix + 'setting')
+  const watchKey = watch(fieldNamePrefix + 'key')
+  const watchValue = watch(fieldNamePrefix + 'value')
+
+  const suggestedValues = SUGGESTED_VALUES_FOR_KEYS[watchKey]
 
   useEffect(() => {
-    trigger(fieldNamePrefix + 'remove_item.key')
+    trigger(fieldNamePrefix + 'key')
   }, [fieldNamePrefix, trigger])
 
   return (
@@ -65,7 +59,7 @@ export const ManageStorageItemsComponent: ActionComponent<
       title={t('title.manageStorageItems')}
     >
       <SegmentedControls<boolean>
-        onSelect={() => setValue(fieldNamePrefix + 'setting', !setting)}
+        onSelect={(value) => setValue(fieldNamePrefix + 'setting', value)}
         selected={setting}
         tabs={[
           {
@@ -91,11 +85,11 @@ export const ManageStorageItemsComponent: ActionComponent<
                     center
                     disabled={!isCreating}
                     onClick={() => {
-                      setValue(fieldNamePrefix + 'set_item.key', key, {
+                      setValue(fieldNamePrefix + 'key', key, {
                         shouldValidate: true,
                       })
                     }}
-                    pressed={watchSetKey === key}
+                    pressed={watchKey === key}
                     size="sm"
                     type="button"
                     variant="secondary"
@@ -106,20 +100,21 @@ export const ManageStorageItemsComponent: ActionComponent<
               </div>
             </>
           )}
+
           <div className="flex flex-col gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
             <div className="flex grow basis-0 flex-col gap-1">
               <InputLabel name={t('form.item')} />
               <TextInput
                 disabled={!isCreating}
-                error={errors?.set_item?.key}
-                fieldName={fieldNamePrefix + 'set_item.key'}
+                error={errors?.key}
+                fieldName={fieldNamePrefix + 'key'}
                 register={register}
                 validation={[validateRequired]}
               />
-              <InputErrorMessage error={errors?.set_item?.key} />
+              <InputErrorMessage error={errors?.key} />
 
               {isCreating &&
-                watchSetKey &&
+                watchKey &&
                 (currentValue.loading || currentValue.data ? (
                   <div className="mt-1 flex flex-row items-center gap-2">
                     <InputLabel name={t('form.currentValue') + ':'} />
@@ -131,7 +126,7 @@ export const ManageStorageItemsComponent: ActionComponent<
                         disabled={!isCreating}
                         onClick={() =>
                           setValue(
-                            fieldNamePrefix + 'set_item.value',
+                            fieldNamePrefix + 'value',
                             currentValue.data,
                             {
                               shouldValidate: true,
@@ -160,12 +155,12 @@ export const ManageStorageItemsComponent: ActionComponent<
               <InputLabel name={t('form.value')} />
               <TextInput
                 disabled={!isCreating}
-                error={errors?.set_item?.value}
-                fieldName={fieldNamePrefix + 'set_item.value'}
+                error={errors?.value}
+                fieldName={fieldNamePrefix + 'value'}
                 register={register}
                 validation={[validateRequired]}
               />
-              <InputErrorMessage error={errors?.set_item?.value} />
+              <InputErrorMessage error={errors?.value} />
 
               {isCreating && suggestedValues && (
                 <div className="mt-1 space-y-2">
@@ -177,7 +172,7 @@ export const ManageStorageItemsComponent: ActionComponent<
                         center
                         disabled={!isCreating}
                         onClick={() =>
-                          setValue(fieldNamePrefix + 'set_item.value', value, {
+                          setValue(fieldNamePrefix + 'value', value, {
                             shouldValidate: true,
                           })
                         }
@@ -200,8 +195,8 @@ export const ManageStorageItemsComponent: ActionComponent<
           <InputLabel name={t('form.item')} />
           <SelectInput
             disabled={!isCreating}
-            error={errors?.remove_item?.key}
-            fieldName={fieldNamePrefix + 'remove_item.key'}
+            error={errors?.key}
+            fieldName={fieldNamePrefix + 'key'}
             register={register}
             validation={[
               () =>
@@ -215,7 +210,7 @@ export const ManageStorageItemsComponent: ActionComponent<
               </option>
             ))}
           </SelectInput>
-          <InputErrorMessage error={errors?.remove_item?.key} />
+          <InputErrorMessage error={errors?.key} />
         </>
       )}
     </ActionCard>

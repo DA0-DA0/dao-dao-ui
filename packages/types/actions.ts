@@ -25,8 +25,6 @@ export enum CoreActionKey {
   Custom = 'custom',
   PerformTokenSwap = 'performTokenSwap',
   WithdrawTokenSwap = 'withdrawTokenSwap',
-  SetItem = 'setItem',
-  RemoveItem = 'removeItem',
   ManageStorageItems = 'manageStorageItems',
 }
 

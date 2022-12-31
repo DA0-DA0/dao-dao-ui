@@ -24,6 +24,7 @@ Default.args = {
   onRemove: () => alert('remove'),
   errors: {},
   options: {
+    existingTokens: [],
     formattedJsonDisplayProps: {
       jsonLoadable: {
         state: 'loading',

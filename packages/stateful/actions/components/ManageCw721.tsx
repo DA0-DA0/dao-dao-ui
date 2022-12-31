@@ -27,7 +27,7 @@ interface Token {
 
 export interface ManageCw721Options {
   additionalAddressError?: string
-  existingTokens?: Token[]
+  existingTokens: Token[]
   formattedJsonDisplayProps: FormattedJsonDisplayProps
 }
 
@@ -45,9 +45,8 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
-  const tokenAddress = watch(fieldNamePrefix + 'address')
-
   const addingNew = watch(fieldNamePrefix + 'adding')
+  const tokenAddress = watch(fieldNamePrefix + 'address')
 
   return (
     <ActionCard
@@ -57,7 +56,7 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
     >
       <div className="flex flex-col gap-1">
         <SegmentedControls<boolean>
-          onSelect={() => setValue(fieldNamePrefix + 'adding', !addingNew)}
+          onSelect={(value) => setValue(fieldNamePrefix + 'adding', value)}
           selected={addingNew}
           tabs={[
             {
@@ -71,85 +70,54 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
           ]}
         />
 
-        {addingNew ? (
+        {!addingNew && existingTokens.length > 0 && (
           <>
-            <InputLabel
-              name={t('form.collectionAddress')}
-              tooltip={t('info.addCw721ToTreasuryActionDescription')}
-            />
-            <AddressInput
-              disabled={!isCreating}
-              error={errors?.address}
-              fieldName={fieldNamePrefix + 'address'}
-              register={register}
-              validation={[
-                validateRequired,
-                validateContractAddress,
-                // Invalidate field if additional error is present.
-                () => additionalAddressError || true,
-              ]}
-            />
-            <InputErrorMessage
-              error={
-                errors?.address ||
-                (additionalAddressError && { message: additionalAddressError })
-              }
-            />
-          </>
-        ) : (
-          <>
-            {existingTokens && existingTokens.length > 0 && (
-              <>
-                <InputLabel name={t('form.existingTokens')} />
-                <div className="mb-2 flex flex-row flex-wrap gap-1">
-                  {existingTokens.map(({ address, info }) => (
-                    <Button
-                      key={address}
-                      center
-                      disabled={!isCreating}
-                      onClick={() =>
-                        setValue(fieldNamePrefix + 'address', address)
-                      }
-                      pressed={tokenAddress === address}
-                      size="sm"
-                      type="button"
-                      variant="secondary"
-                    >
-                      ${info.symbol}
-                    </Button>
-                  ))}
-                </div>
-              </>
-            )}
-
-            <div className="flex flex-col gap-1">
-              <InputLabel
-                name={t('form.collectionAddress')}
-                tooltip={t('info.removeCw721FromTreasuryActionDescription')}
-              />
-              <AddressInput
-                disabled={!isCreating}
-                error={errors?.address}
-                fieldName={fieldNamePrefix + 'address'}
-                register={register}
-                validation={[
-                  validateRequired,
-                  validateContractAddress,
-                  // Invalidate field if additional error is present.
-                  () => additionalAddressError || true,
-                ]}
-              />
-              <InputErrorMessage
-                error={
-                  errors?.address ||
-                  (additionalAddressError && {
-                    message: additionalAddressError,
-                  })
-                }
-              />
+            <InputLabel name={t('form.existingTokens')} />
+            <div className="mb-2 flex flex-row flex-wrap gap-1">
+              {existingTokens.map(({ address, info }) => (
+                <Button
+                  key={address}
+                  center
+                  disabled={!isCreating}
+                  onClick={() => setValue(fieldNamePrefix + 'address', address)}
+                  pressed={tokenAddress === address}
+                  size="sm"
+                  type="button"
+                  variant="secondary"
+                >
+                  ${info.symbol}
+                </Button>
+              ))}
             </div>
           </>
         )}
+
+        <InputLabel
+          name={t('form.collectionAddress')}
+          tooltip={
+            addingNew
+              ? t('info.addCw721ToTreasuryActionDescription')
+              : t('info.removeCw721FromTreasuryActionDescription')
+          }
+        />
+        <AddressInput
+          disabled={!isCreating}
+          error={errors?.address}
+          fieldName={fieldNamePrefix + 'address'}
+          register={register}
+          validation={[
+            validateRequired,
+            validateContractAddress,
+            // Invalidate field if additional error is present.
+            () => additionalAddressError || true,
+          ]}
+        />
+        <InputErrorMessage
+          error={
+            errors?.address ||
+            (additionalAddressError && { message: additionalAddressError })
+          }
+        />
       </div>
       <FormattedJsonDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
