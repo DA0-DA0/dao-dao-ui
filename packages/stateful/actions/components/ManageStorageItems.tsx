@@ -7,13 +7,11 @@ import {
   Button,
   InputErrorMessage,
   InputLabel,
-  Loader,
   SegmentedControls,
   SelectInput,
   TextInput,
   WrenchEmoji,
 } from '@dao-dao/stateless'
-import { LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { validateRequired } from '@dao-dao/utils'
 
@@ -26,8 +24,7 @@ export interface ManageStorageItemsData {
 }
 
 export interface ManageStorageItemsOptions {
-  existingKeys: string[]
-  currentValue: LoadingData<string | null>
+  existingItems: [string, string][]
 }
 
 export const ManageStorageItemsComponent: ActionComponent<
@@ -37,7 +34,7 @@ export const ManageStorageItemsComponent: ActionComponent<
   onRemove,
   errors,
   isCreating,
-  options: { existingKeys, currentValue },
+  options: { existingItems },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue, trigger } = useFormContext()
@@ -47,6 +44,8 @@ export const ManageStorageItemsComponent: ActionComponent<
   const watchValue = watch(fieldNamePrefix + 'value')
 
   const suggestedValues = SUGGESTED_VALUES_FOR_KEYS[watchKey]
+
+  const currentValue = existingItems.find(([key]) => key === watchKey)?.[1]
 
   useEffect(() => {
     trigger(fieldNamePrefix + 'key')
@@ -59,6 +58,8 @@ export const ManageStorageItemsComponent: ActionComponent<
       title={t('title.manageStorageItems')}
     >
       <SegmentedControls<boolean>
+        className="mb-4"
+        disabled={!isCreating}
         onSelect={(value) => setValue(fieldNamePrefix + 'setting', value)}
         selected={setting}
         tabs={[
@@ -79,7 +80,10 @@ export const ManageStorageItemsComponent: ActionComponent<
             <>
               <InputLabel name={t('form.suggestedItems')} />
               <div className="mb-2 flex flex-row flex-wrap gap-1">
-                {uniq([...SUGGESTED_KEYS, ...existingKeys]).map((key) => (
+                {uniq([
+                  ...SUGGESTED_KEYS,
+                  ...existingItems.map(([key]) => key),
+                ]).map((key) => (
                   <Button
                     key={key}
                     center
@@ -115,36 +119,28 @@ export const ManageStorageItemsComponent: ActionComponent<
 
               {isCreating &&
                 watchKey &&
-                (currentValue.loading || currentValue.data ? (
+                (currentValue ? (
                   <div className="mt-1 flex flex-row items-center gap-2">
                     <InputLabel name={t('form.currentValue') + ':'} />
-                    {currentValue.loading ? (
-                      <Loader fill={false} size={16} />
-                    ) : (
-                      <Button
-                        center
-                        disabled={!isCreating}
-                        onClick={() =>
-                          setValue(
-                            fieldNamePrefix + 'value',
-                            currentValue.data,
-                            {
-                              shouldValidate: true,
-                            }
-                          )
-                        }
-                        pressed={watchValue === currentValue.data}
-                        size="sm"
-                        type="button"
-                        variant="secondary"
-                      >
-                        {currentValue.data}
-                      </Button>
-                    )}
+                    <Button
+                      center
+                      disabled={!isCreating}
+                      onClick={() =>
+                        setValue(fieldNamePrefix + 'value', currentValue, {
+                          shouldValidate: true,
+                        })
+                      }
+                      pressed={watchValue === currentValue}
+                      size="sm"
+                      type="button"
+                      variant="secondary"
+                    >
+                      {currentValue}
+                    </Button>
                   </div>
                 ) : (
                   <p className="caption-text mt-1">
-                    {currentValue.data === null
+                    {currentValue === undefined
                       ? t('form.itemNoValueSet')
                       : t('form.itemValueEmpty')}
                   </p>
@@ -200,11 +196,11 @@ export const ManageStorageItemsComponent: ActionComponent<
             register={register}
             validation={[
               () =>
-                existingKeys.length > 0 || t('error.noItemsSetUnusableAction'),
+                existingItems.length > 0 || t('error.noItemsSetUnusableAction'),
               validateRequired,
             ]}
           >
-            {existingKeys.map((key) => (
+            {existingItems.map(([key]) => (
               <option key={key} value={key}>
                 {key}
               </option>

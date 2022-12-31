@@ -211,7 +211,7 @@ export interface InitialItem {
   value: string
   [k: string]: unknown
 }
-export type ListItemsResponse = string[]
+export type ListItemsResponse = [string, string][]
 export type ListSubDaosResponse = SubDao[]
 export type MigrateMsg =
   | {

@@ -182,6 +182,7 @@ export interface BaseProposalStatusAndInfoProps {
 
 export interface BaseProposalActionDisplayProps<D extends any = any> {
   onDuplicate: (data: ProposalPrefill<D>) => void
+  duplicateLoading: boolean
   availableActions: Action[]
 }
 

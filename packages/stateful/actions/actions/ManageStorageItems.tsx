@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
-import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { WrenchEmoji } from '@dao-dao/stateless'
@@ -14,11 +13,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import {
-  loadableToLoadingData,
-  makeWasmMessage,
-  objectMatchesStructure,
-} from '@dao-dao/utils'
+import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import {
   ManageStorageItemsData,
@@ -37,40 +32,18 @@ const Component: ActionComponent<undefined, ManageStorageItemsData> = (
 ) => {
   const { address, chainId } = useActionOptions()
 
-  const { watch } = useFormContext()
-  const key = watch(props.fieldNamePrefix + 'key')
-
-  const existingKeys = useRecoilValue(
+  const existingItems = useRecoilValue(
     DaoCoreV2Selectors.listAllItemsSelector({
       contractAddress: address,
       chainId,
     })
   )
 
-  const currentValue = loadableToLoadingData(
-    useRecoilValueLoadable(
-      key
-        ? DaoCoreV2Selectors.getItemSelector({
-            contractAddress: address,
-            chainId,
-            params: [{ key }],
-          })
-        : constSelector(undefined)
-    ),
-    { item: null }
-  )
-
   return (
     <StatelessManageStorageItemsComponent
       {...props}
       options={{
-        existingKeys,
-        currentValue: currentValue.loading
-          ? { loading: true }
-          : {
-              loading: false,
-              data: currentValue.data?.item ?? null,
-            },
+        existingItems,
       }}
     />
   )
@@ -94,26 +67,30 @@ export const makeManageStorageItemsAction: ActionMaker<
   const useTransformToCosmos: UseTransformToCosmos<
     ManageStorageItemsData
   > = () =>
-    useCallback(({ setting, key, value }: ManageStorageItemsData) => {
-      return makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: address,
-            funds: [],
-            msg: setting
-              ? {
-                  set_item: {
-                    key,
-                    [valueKey]: value,
+    useCallback(
+      ({ setting, key, value }: ManageStorageItemsData) =>
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: address,
+              funds: [],
+              msg: setting
+                ? {
+                    set_item: {
+                      key,
+                      [valueKey]: value,
+                    },
+                  }
+                : {
+                    remove_item: {
+                      key,
+                    },
                   },
-                }
-              : {
-                  remove_item: value,
-                },
+            },
           },
-        },
-      })
-    }, [])
+        }),
+      []
+    )
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStorageItemsData> = (
     msg: Record<string, any>

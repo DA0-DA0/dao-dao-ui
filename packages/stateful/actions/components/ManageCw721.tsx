@@ -56,6 +56,8 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
     >
       <div className="flex flex-col gap-1">
         <SegmentedControls<boolean>
+          className="mb-4"
+          disabled={!isCreating}
           onSelect={(value) => setValue(fieldNamePrefix + 'adding', value)}
           selected={addingNew}
           tabs={[

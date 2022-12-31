@@ -30,11 +30,7 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   options: {
-    existingKeys: ['color'],
-    currentValue: {
-      loading: false,
-      data: 'blue',
-    },
+    existingItems: [['color', 'blue']],
   },
   isCreating: true,
   onRemove: () => alert('remove'),
