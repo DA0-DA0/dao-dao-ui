@@ -25,6 +25,7 @@ export const OpenSurveySection = ({
       name,
       contributionsOpenAt,
       contributionsCloseRatingsOpenAt,
+      ratingsCloseAt,
     },
   },
   onClick,
@@ -53,6 +54,15 @@ export const OpenSurveySection = ({
       ? t('info.closesAtDate', {
           date: formatDateTimeTz(new Date(contributionsCloseRatingsOpenAt)),
         })
+      : isMember
+      ? // If member and no longer accepting contributions, use ratings close date instead of contributions close date since that's more relevant.
+        status === SurveyStatus.AcceptingRatings
+        ? t('info.closesAtDate', {
+            date: formatDateTimeTz(new Date(ratingsCloseAt)),
+          })
+        : t('info.closedAtDate', {
+            date: formatDateTimeTz(new Date(ratingsCloseAt)),
+          })
       : t('info.closedAtDate', {
           date: formatDateTimeTz(new Date(contributionsCloseRatingsOpenAt)),
         })
