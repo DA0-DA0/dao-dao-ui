@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { ImageEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import { BoxEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -161,7 +161,7 @@ const Component: ActionComponent = (props) => {
 
 export const makeTransferNftAction: ActionMaker<TransferNftData> = ({ t }) => ({
   key: CoreActionKey.TransferNft,
-  Icon: ImageEmoji,
+  Icon: BoxEmoji,
   label: t('title.transferNft'),
   description: t('info.transferNftDescription'),
   Component,

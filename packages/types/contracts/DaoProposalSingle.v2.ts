@@ -101,14 +101,11 @@ export type ExecuteMsg =
     }
 export type PreProposeInfo =
   | {
-      AnyoneMayPropose: {
-        [k: string]: unknown
-      }
+      anyone_may_propose: {}
     }
   | {
-      ModuleMayPropose: {
+      module_may_propose: {
         info: ModuleInstantiateInfo
-        [k: string]: unknown
       }
     }
 export interface GetVoteResponse {

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { GearEmoji } from '@dao-dao/stateless'
+import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
   ActionMaker,
   AdapterActionKey,
@@ -262,7 +262,7 @@ export const makeUpdateProposalConfigV2Action: ActionMaker<
 
   return {
     key: AdapterActionKey.UpdateProposalConfig,
-    Icon: GearEmoji,
+    Icon: BallotDepositEmoji,
     label: t('form.updateVotingConfigTitle'),
     description: t('info.updateVotingConfigActionDescription'),
     Component,
