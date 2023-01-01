@@ -11,6 +11,14 @@ export const EmojiWrapper = ({ labelI18nKey, emoji }: EmojiWrapperProps) => {
   return <Emoji label={t(labelI18nKey)} symbol={emoji} />
 }
 
+export const CameraWithFlashEmoji = () => (
+  <EmojiWrapper emoji="📸" labelI18nKey="emoji.cameraWithFlash" />
+)
+
+export const BoxEmoji = () => (
+  <EmojiWrapper emoji="📦" labelI18nKey="emoji.box" />
+)
+
 export const MoneyEmoji = () => (
   <EmojiWrapper emoji="💵" labelI18nKey="emoji.money" />
 )

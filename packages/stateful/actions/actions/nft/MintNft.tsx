@@ -77,12 +77,15 @@ export const MintNft: ActionComponent = (props) => {
       // Ensure no action already exists to add this collection.
       !props.allActionsWithData.some(
         ({ key, data }) =>
-          key === CoreActionKey.AddCw721 && data.address === collectionAddress
+          key === CoreActionKey.ManageCw721 &&
+          data.address === collectionAddress &&
+          data.adding
       )
     ) {
       props.addAction({
-        key: CoreActionKey.AddCw721,
+        key: CoreActionKey.ManageCw721,
         data: {
+          adding: true,
           address: collectionAddress,
         },
       })

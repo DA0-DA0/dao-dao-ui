@@ -2,16 +2,16 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 
-import { AddCw721Component } from './AddCw721'
+import { ManageCw20Component } from './ManageCw20'
 
 export default {
-  title: 'DAO DAO / packages / stateful / actions / components / AddCw721',
-  component: AddCw721Component,
+  title: 'DAO DAO / packages / stateful / actions / components / ManageCw20',
+  component: ManageCw20Component,
   decorators: [ReactHookFormDecorator],
-} as ComponentMeta<typeof AddCw721Component>
+} as ComponentMeta<typeof ManageCw20Component>
 
-const Template: ComponentStory<typeof AddCw721Component> = (args) => (
-  <AddCw721Component {...args} />
+const Template: ComponentStory<typeof ManageCw20Component> = (args) => (
+  <ManageCw20Component {...args} />
 )
 
 export const Default = Template.bind({})
@@ -24,6 +24,7 @@ Default.args = {
   onRemove: () => alert('remove'),
   errors: {},
   options: {
+    existingTokens: [],
     formattedJsonDisplayProps: {
       jsonLoadable: {
         state: 'loading',
