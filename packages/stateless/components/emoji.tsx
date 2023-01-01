@@ -29,7 +29,7 @@ export const PencilEmoji = () => (
 
 export const UnlockEmoji = () => (
   <EmojiWrapper emoji="🔓" labelI18nKey="emoji.unlock" />
-}
+)
 
 export const CameraWithFlashEmoji = () => (
   <EmojiWrapper emoji="📸" labelI18nKey="emoji.cameraWithFlash" />
