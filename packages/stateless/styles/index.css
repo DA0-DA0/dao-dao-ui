@@ -69,11 +69,6 @@ input[type='number']::-webkit-outer-spin-button {
   scrollbar-width: none; /* Firefox */
 }
 
-/* Hard code option text color to black to fix issue with dropdowns on linux  */
-option {
-  color: black;
-}
-
 /* COLOR SYSTEM FIGMAS */
 /* https://www.figma.com/file/6M11csIFIi3IwnmDq9ZAB9/%E2%99%A3%EF%B8%8E--Dark-Tokens */
 /* https://www.figma.com/file/k0Qf3UOkEs6lPuezuDbkwN/%E2%99%A3%EF%B8%8E--Light-Tokens */
@@ -249,6 +244,11 @@ option {
     --component-widget: rgba(var(--dark), 0.2);
     --component-badge-primary: rgba(var(--light), 0.25);
     /* --component-badge-* are the same as the light theme */
+  }
+
+  /* Hard code option text color to black to fix issue with dropdowns on linux  */
+  .dark option {
+    color: black;
   }
 
   .hero-text {
