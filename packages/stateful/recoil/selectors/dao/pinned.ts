@@ -1,7 +1,8 @@
-import { selector, waitForAll } from 'recoil'
+import { selector, selectorFamily, waitForAll } from 'recoil'
 
-import { pinnedAddressesAtom } from '@dao-dao/state'
+import { openProposalsSelector, pinnedAddressesAtom } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
+import { DaoWithOpenUnvotedProposals, WithChainId } from '@dao-dao/types'
 
 import { daoDropdownInfoSelector } from './cards'
 import { daoCoreProposalModulesSelector } from './misc'
@@ -36,4 +37,56 @@ export const pinnedDaosWithProposalModulesSelector = selector({
       proposalModules: proposalModules[index],
     }))
   },
+})
+
+export const pinnedDaosWithOpenUnvotedProposalsSelector = selectorFamily<
+  DaoWithOpenUnvotedProposals[],
+  WithChainId<{ walletAddress?: string }>
+>({
+  key: 'pinnedDaosWithOpenUnvotedProposals',
+  get:
+    ({ walletAddress, chainId }) =>
+    ({ get }) => {
+      const pinnedDaosWithProposalModules = get(
+        pinnedDaosWithProposalModulesSelector
+      )
+
+      const openProposalsPerDao = get(
+        waitForAll(
+          pinnedDaosWithProposalModules.map(({ coreAddress }) =>
+            openProposalsSelector({
+              coreAddress,
+              address: walletAddress,
+              chainId,
+            })
+          )
+        )
+      )
+
+      return pinnedDaosWithProposalModules.map(
+        (
+          { coreAddress, proposalModules },
+          index
+        ): DaoWithOpenUnvotedProposals => {
+          const proposalModulesWithOpenProposals = openProposalsPerDao[index]
+
+          return {
+            coreAddress,
+            proposalModules,
+            openUnvotedProposals: proposalModules.flatMap(
+              (proposalModule) =>
+                proposalModulesWithOpenProposals
+                  .find(
+                    ({ proposalModuleAddress }) =>
+                      proposalModuleAddress === proposalModule.address
+                  )
+                  ?.proposals.map(({ id }) => ({
+                    proposalModule,
+                    proposalNumber: id,
+                  })) ?? []
+            ),
+          }
+        }
+      )
+    },
 })
