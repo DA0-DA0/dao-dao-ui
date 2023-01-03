@@ -15,6 +15,7 @@ import {
 import { refreshTokenUsdcPriceAtom } from '../atoms/refresh'
 import { cosmWasmClientForChainSelector, nativeBalancesSelector } from './chain'
 import { DaoCoreV2Selectors } from './contracts'
+import { queryContractIndexerSelector } from './indexer'
 import { junoswapPoolsListSelector } from './pools'
 
 // TODO(multichain): Figure out how to match CW20s on other chains to CW20s in
@@ -70,27 +71,15 @@ export const usdcPerMacroTokenSelector = selectorFamily<
         ({ swap_address }) => swap_address === USDC_SWAP_ADDRESS
       )
 
-      // Junoswap exists on Juno mainnet.
-      const client = get(cosmWasmClientForChainSelector(ChainInfoID.Juno1))
-
-      // Query for price of 1*10^BASE_SWAP_DECIMALS tokens since decimals are
-      // not returned by API. This will give us up to 10^-BASE_SWAP_DECIMALS
-      // precision for calculations.
-      const tokenAmount = Math.pow(10, BASE_SWAP_DECIMALS)
-
       // Query and calculate price for 1 native token.
       // uUSDC / uJUNO
-      const nativeUSDC =
-        Number(
-          (usdcSwap
-            ? await client.queryContractSmart(usdcSwap.swap_address, {
-                token1_for_token2_price: {
-                  token1_amount: tokenAmount.toString(),
-                },
-              })
-            : { token2_amount: '0' }
-          ).token2_amount
-        ) / tokenAmount
+      const nativeUSDC = usdcSwap
+        ? get(
+            wasmswapToken1PriceInToken2Selector({
+              swapAddress: usdcSwap.swap_address,
+            })
+          ).amount
+        : 0
 
       // Don't need to query again for price of native token.
       if (denom === BASE_SWAP_DENOM) {
@@ -98,18 +87,15 @@ export const usdcPerMacroTokenSelector = selectorFamily<
         return { denom, amount: Number(nativeUSDC), timestamp }
       }
 
-      // Get juno price in terms of the token.
+      // Get amount of JUNO per token.
+      // uTOKEN / uJUNO
+      const tokenPerJuno = get(
+        wasmswapToken1PriceInToken2Selector({
+          swapAddress: denomSwap.swap_address,
+        })
+      ).amount
       // uJUNO / uTOKEN
-      const tokenPairPrice =
-        Number(
-          (
-            await client.queryContractSmart(denomSwap.swap_address, {
-              token2_for_token1_price: {
-                token2_amount: tokenAmount.toString(),
-              },
-            })
-          ).token1_amount
-        ) / tokenAmount
+      const tokenPairPrice = tokenPerJuno === 0 ? 0 : 1 / tokenPerJuno
 
       const price =
         // (uUSDC / uJUNO) * (uJUNO / uTOKEN) = uUSDC / uTOKEN
@@ -173,5 +159,47 @@ export const daoTvlSelector = selectorFamily<
         amount: prices.reduce((price, total) => price + total, 0),
         timestamp,
       }
+    },
+})
+
+export const wasmswapToken1PriceInToken2Selector = selectorFamily<
+  AmountWithTimestamp,
+  { swapAddress: string }
+>({
+  key: 'wasmswapToken1PriceInToken2',
+  get:
+    ({ swapAddress }) =>
+    async ({ get }) => {
+      const timestamp = new Date()
+      const prices = get(
+        queryContractIndexerSelector({
+          contractAddress: swapAddress,
+          formulaName: 'wasmswap/price',
+        })
+      )
+      if (prices) {
+        return { amount: prices.token1, timestamp }
+      }
+
+      // If indexer query fails, fallback to contract query.
+
+      // Junoswap exists on Juno mainnet.
+      const client = get(cosmWasmClientForChainSelector(ChainInfoID.Juno1))
+      // Query for price of 1*10^BASE_SWAP_DECIMALS tokens since decimals are
+      // not returned by API. This will give us up to 10^-BASE_SWAP_DECIMALS
+      // precision for calculations.
+      const tokenAmount = Math.pow(10, BASE_SWAP_DECIMALS)
+      const token1 =
+        Number(
+          (
+            await client.queryContractSmart(swapAddress, {
+              token1_for_token2_price: {
+                token1_amount: tokenAmount.toString(),
+              },
+            })
+          ).token2_amount
+        ) / tokenAmount
+
+      return { amount: token1, timestamp }
     },
 })
