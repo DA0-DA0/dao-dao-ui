@@ -37,6 +37,7 @@ export const ProposalActionDisplay = (
 
 const InnerProposalActionDisplay = ({
   onDuplicate,
+  duplicateLoading,
   availableActions,
   proposal,
 }: BaseProposalActionDisplayProps<NewProposalForm> & {
@@ -88,6 +89,7 @@ const InnerProposalActionDisplay = ({
         </Button>
 
         <Button
+          loading={duplicateLoading}
           onClick={() =>
             onDuplicate({
               id: proposalModuleAdapterId,

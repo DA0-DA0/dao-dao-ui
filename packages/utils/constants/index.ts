@@ -125,3 +125,7 @@ export const FAST_AVERAGE_COLOR_API_TEMPLATE = process.env
   .NEXT_PUBLIC_FAST_AVERAGE_COLOR_API_TEMPLATE as string
 export const IPFS_GATEWAY_TEMPLATE = process.env
   .NEXT_PUBLIC_IPFS_GATEWAY_TEMPLATE as string
+
+export const DISABLED_ACTIONS = (
+  process.env.NEXT_PUBLIC_DISABLED_ACTIONS || ''
+).split(',')

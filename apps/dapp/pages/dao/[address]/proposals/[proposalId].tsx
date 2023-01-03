@@ -7,7 +7,9 @@ import { useRouter } from 'next/router'
 import { ComponentProps, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { useRecoilState } from 'recoil'
 
+import { navigatingToHrefAtom } from '@dao-dao/state'
 import {
   DaoPageWrapper,
   DaoProposalPageWrapperProps,
@@ -139,21 +141,24 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     [ProposalStatusAndInfo, onCloseSuccess, onExecuteSuccess, onVoteSuccess]
   )
 
+  const duplicateUrlPrefix = `/dao/${daoInfo.coreAddress}/proposals/create?prefill=`
+  const [navigatingToHref, setNavigatingToHref] =
+    useRecoilState(navigatingToHrefAtom)
+
   return (
     <Proposal
       ProposalStatusAndInfo={CachedProposalStatusAndInfo}
       actionDisplay={
         <ProposalActionDisplay
           availableActions={orderedActions}
-          onDuplicate={(data) =>
-            router.push(
-              `/dao/${
-                daoInfo.coreAddress
-              }/proposals/create?prefill=${encodeURIComponent(
-                JSON.stringify(data)
-              )}`
-            )
-          }
+          duplicateLoading={!!navigatingToHref?.startsWith(duplicateUrlPrefix)}
+          onDuplicate={(data) => {
+            const url =
+              duplicateUrlPrefix + encodeURIComponent(JSON.stringify(data))
+            router.push(url)
+            // Show loading on duplicate button.
+            setNavigatingToHref(url)
+          }}
         />
       }
       creator={{

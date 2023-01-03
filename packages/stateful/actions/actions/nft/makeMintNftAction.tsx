@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ImageEmoji,
+  CameraWithFlashEmoji,
   InputErrorMessage,
   Loader,
   SegmentedControls,
@@ -72,7 +72,7 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
 
   return (
     <ActionCard
-      Icon={ImageEmoji}
+      Icon={CameraWithFlashEmoji}
       onRemove={props.onRemove}
       title={t('title.mintNft')}
     >
@@ -218,7 +218,7 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({ t, address }) => {
 
   return {
     key: CoreActionKey.MintNft,
-    Icon: ImageEmoji,
+    Icon: CameraWithFlashEmoji,
     label: t('title.mintNft'),
     description: t('info.mintNftDescription'),
     Component,

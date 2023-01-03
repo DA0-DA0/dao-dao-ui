@@ -966,7 +966,7 @@ export const listAllItemsSelector = selectorFamily<
             ...queryClientParams,
             params: [
               {
-                startAfter: items[items.length - 1],
+                startAfter: items[items.length - 1]?.[0],
                 limit: ITEM_LIST_LIMIT,
               },
             ],

@@ -103,7 +103,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     min_voting_period: null,
     only_members_execute: true,
     pre_propose_info: {
-      ModuleMayPropose: {
+      module_may_propose: {
         info: {
           admin: { core_module: {} },
           code_id: CODE_ID_CONFIG.DaoPreProposeSingle,

@@ -60,8 +60,9 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
       // Add display NFT action if in a DAO.
       if (props.isCreating && context.type === ActionOptionsContextType.Dao) {
         props.addAction({
-          key: CoreActionKey.AddCw721,
+          key: CoreActionKey.ManageCw721,
           data: {
+            adding: true,
             address: contractAddress,
           },
         })

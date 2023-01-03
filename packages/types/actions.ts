@@ -11,10 +11,8 @@ import { CosmosMsgFor_Empty } from './contracts/common'
 export enum CoreActionKey {
   Spend = 'spend',
   StakingActions = 'stakingActions',
-  AddCw20 = 'addCw20',
-  RemoveCw20 = 'removeCw20',
-  AddCw721 = 'addCw721',
-  RemoveCw721 = 'removeCw721',
+  ManageCw20 = 'manageCw20',
+  ManageCw721 = 'manageCw721',
   TransferNft = 'transferNft',
   MintNft = 'mintNft',
   BurnNft = 'burnNft',
@@ -27,8 +25,7 @@ export enum CoreActionKey {
   Custom = 'custom',
   PerformTokenSwap = 'performTokenSwap',
   WithdrawTokenSwap = 'withdrawTokenSwap',
-  SetItem = 'setItem',
-  RemoveItem = 'removeItem',
+  ManageStorageItems = 'manageStorageItems',
 }
 
 // Actions defined in voting or proposal module adapters.
