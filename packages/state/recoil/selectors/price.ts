@@ -9,11 +9,17 @@ import {
 import {
   USDC_SWAP_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
+  convertSecondsToBlocks,
   isJunoIbcUsdc,
 } from '@dao-dao/utils'
 
 import { refreshTokenUsdcPriceAtom } from '../atoms/refresh'
-import { cosmWasmClientForChainSelector, nativeBalancesSelector } from './chain'
+import {
+  blockHeightSelector,
+  blocksPerYearSelector,
+  cosmWasmClientForChainSelector,
+  nativeBalancesSelector,
+} from './chain'
 import { DaoCoreV2Selectors } from './contracts'
 import { queryContractIndexerSelector } from './indexer'
 import { junoswapPoolsListSelector } from './pools'
@@ -201,5 +207,55 @@ export const wasmswapToken1PriceInToken2Selector = selectorFamily<
         ) / tokenAmount
 
       return { amount: token1, timestamp }
+    },
+})
+
+export const wasmswapToken1PriceInToken2With24HoursAgoSelector = selectorFamily<
+  { price: number; price24HoursAgo: number; timestamp: Date } | undefined,
+  { swapAddress: string }
+>({
+  key: 'wasmswapToken1PriceInToken2With24HoursAgo',
+  get:
+    ({ swapAddress }) =>
+    async ({ get }) => {
+      const timestamp = new Date()
+      const chainId = ChainInfoID.Juno1
+
+      const currentBlockHeight = get(blockHeightSelector({ chainId }))
+      const blocksPerYear = get(blocksPerYearSelector({ chainId }))
+      const blockHeight24HoursAgo =
+        currentBlockHeight - convertSecondsToBlocks(blocksPerYear, 24 * 60 * 60)
+
+      const client = get(cosmWasmClientForChainSelector(chainId))
+      const block24HoursAgo = await client.getBlock(blockHeight24HoursAgo)
+
+      const currentPrice = get(
+        queryContractIndexerSelector({
+          contractAddress: swapAddress,
+          formulaName: 'wasmswap/price',
+          id: currentBlockHeight,
+          chainId,
+        })
+      )?.token1
+      const price24HoursAgo = get(
+        queryContractIndexerSelector({
+          contractAddress: swapAddress,
+          formulaName: 'wasmswap/price',
+          block: {
+            height: block24HoursAgo.header.height,
+            timeUnixMs: new Date(block24HoursAgo.header.time).getTime(),
+          },
+        })
+      )?.token1
+
+      if (!currentPrice || !price24HoursAgo) {
+        return
+      }
+
+      return {
+        price: currentPrice,
+        price24HoursAgo: price24HoursAgo,
+        timestamp,
+      }
     },
 })

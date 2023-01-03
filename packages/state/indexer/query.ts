@@ -6,14 +6,17 @@ import { CHAIN_ID } from '@dao-dao/utils'
 
 export type QueryIndexerOptions = WithChainId<{
   args?: Record<string, any>
-  blockHeight?: number
+  block?: {
+    height: number
+    timeUnixMs: number
+  }
 }>
 
 export const queryIndexer = async <T = any>(
   type: 'contract' | 'wallet',
   address: string,
   formulaName: string,
-  { args, blockHeight, chainId }: QueryIndexerOptions = {}
+  { args, block, chainId }: QueryIndexerOptions = {}
 ): Promise<T | undefined> => {
   const indexerApiBase = CHAIN_INDEXER_MAP[chainId ?? CHAIN_ID]
   if (!indexerApiBase) {
@@ -24,7 +27,7 @@ export const queryIndexer = async <T = any>(
 
   const query = queryString.stringify({
     ...args,
-    blockHeight,
+    ...(block ? { block: `${block.height}:${block.timeUnixMs}` } : {}),
   })
   const response = await fetch(
     `${indexerApiBase}/${type}/${address}/${formulaName}` +
