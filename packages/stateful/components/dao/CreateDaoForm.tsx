@@ -105,15 +105,43 @@ export const CreateDaoForm = ({
   const [_newDaoAtom, setNewDaoAtom] = useRecoilState(
     newDaoAtom(parentDao?.coreAddress ?? '')
   )
+
+  // Verify cached value is still valid, and fix if not.
+  const defaultForm = useMemo(() => {
+    const defaultNewDao = makeDefaultNewDao()
+    const cached = cloneDeep(_newDaoAtom)
+    // Verify that the voting module adapter is still valid, since the IDs have
+    // been renamed a couple times.
+    if (
+      cached &&
+      cached.votingModuleAdapter &&
+      !getVotingModuleAdapterById(cached.votingModuleAdapter.id)
+    ) {
+      cached.votingModuleAdapter = defaultNewDao.votingModuleAdapter
+    }
+    // Verify that the proposal module adapters are still valid, since the IDs
+    // have been renamed a couple times.
+    if (
+      cached &&
+      cached.proposalModuleAdapters &&
+      Array.isArray(cached.proposalModuleAdapters)
+    ) {
+      cached.proposalModuleAdapters = cached.proposalModuleAdapters.filter(
+        (adapter) => adapter && getProposalModuleAdapterById(adapter.id)
+      )
+      if (cached.proposalModuleAdapters.length === 0) {
+        cached.proposalModuleAdapters = defaultNewDao.proposalModuleAdapters
+      }
+    }
+
+    return {
+      ...cached,
+      ...defaults,
+    }
+  }, [_newDaoAtom, defaults])
+
   const form = useForm<NewDao>({
-    // Don't clone every render.
-    defaultValues: useMemo(
-      () => ({
-        ...cloneDeep(_newDaoAtom),
-        ...defaults,
-      }),
-      [_newDaoAtom, defaults]
-    ),
+    defaultValues: defaultForm,
     mode: 'onChange',
   })
 
