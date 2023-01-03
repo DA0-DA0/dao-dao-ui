@@ -247,8 +247,9 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   /* Hard code option text color to black to fix issue with dropdowns on linux  */
-  .dark option {
-    color: black;
+  option {
+    background-color: var(--component-dropdown);
+    color: var(--text-secondary);
   }
 
   .hero-text {
