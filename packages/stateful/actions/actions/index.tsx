@@ -1,6 +1,8 @@
 import { Action, ActionOptions } from '@dao-dao/types/actions'
 import { DISABLED_ACTIONS } from '@dao-dao/utils'
 
+import { makeAuthzAuthorizationAction } from './AuthzAuthorization'
+import { makeAuthzExecAction } from './AuthzExec'
 import { makeCustomAction } from './Custom'
 import { makeExecuteAction } from './Execute'
 import { makeInstantiateAction } from './Instantiate'
@@ -22,6 +24,7 @@ import {
 } from './token_swap'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
+import { makeValidatorActions } from './ValidatorActions'
 
 export const getActions = (options: ActionOptions): Action[] => {
   // Add action makers here to display them.
@@ -41,8 +44,11 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeCustomAction,
     makeManageSubDaosAction,
     makePerformTokenSwapAction,
-    makeWithdrawTokenSwapAction,
     makeManageStorageItemsAction,
+    makeWithdrawTokenSwapAction,
+    makeAuthzAuthorizationAction,
+    makeAuthzExecAction,
+    makeValidatorActions,
   ]
 
   return actionMakers
