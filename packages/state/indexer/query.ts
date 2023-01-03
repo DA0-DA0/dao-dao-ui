@@ -8,7 +8,8 @@ export type QueryIndexerOptions = WithChainId<{
   args?: Record<string, any>
   block?: {
     height: number
-    timeUnixMs: number
+    // Most formulas do not need the time, so make it optional.
+    timeUnixMs?: number
   }
 }>
 
@@ -27,7 +28,7 @@ export const queryIndexer = async <T = any>(
 
   const query = queryString.stringify({
     ...args,
-    ...(block ? { block: `${block.height}:${block.timeUnixMs}` } : {}),
+    ...(block ? { block: `${block.height}:${block.timeUnixMs ?? 1}` } : {}),
   })
   const response = await fetch(
     `${indexerApiBase}/${type}/${address}/${formulaName}` +

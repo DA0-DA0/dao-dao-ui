@@ -179,7 +179,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
           args: {
             address: params[0].address,
           },
-          blockHeight: params[0].height,
+          block: params[0].height ? { height: params[0].height } : undefined,
           id,
         })
       )
@@ -211,7 +211,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
         queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoVotingNativeStaked/totalPower',
-          blockHeight: params[0].height,
+          block: params[0].height ? { height: params[0].height } : undefined,
           id,
         })
       )

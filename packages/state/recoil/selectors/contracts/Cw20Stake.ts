@@ -78,7 +78,7 @@ export const stakedBalanceAtHeightSelector = selectorFamily<
           args: {
             address: params[0].address,
           },
-          blockHeight: params[0].height,
+          block: params[0].height ? { height: params[0].height } : undefined,
           id,
         })
       )
@@ -110,7 +110,7 @@ export const totalStakedAtHeightSelector = selectorFamily<
         queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cw20Stake/totalStaked',
-          blockHeight: params[0].height,
+          block: params[0].height ? { height: params[0].height } : undefined,
           id,
         })
       )
