@@ -14,7 +14,7 @@ export type QueryIndexerOptions = WithChainId<{
 }>
 
 export const queryIndexer = async <T = any>(
-  type: 'contract' | 'wallet',
+  type: 'contract' | 'wallet' | 'generic',
   address: string,
   formulaName: string,
   { args, block, chainId }: QueryIndexerOptions = {}

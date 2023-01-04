@@ -1,6 +1,7 @@
-import { selectorFamily } from 'recoil'
+import { atom, selectorFamily } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
+import { DumpStateResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 
 import {
   DaoSearchResult,
@@ -56,6 +57,28 @@ export const queryWalletIndexerSelector = selectorFamily<
     async () => {
       try {
         return await queryIndexer('wallet', walletAddress, formulaName, options)
+      } catch (err) {
+        // If the indexer fails, return null.
+        console.error(err)
+        return null
+      }
+    },
+})
+
+export const queryGenericIndexerSelector = selectorFamily<
+  any,
+  {
+    formulaName: string
+    // Refresh by changing this value.
+    id?: number
+  } & QueryIndexerOptions
+>({
+  key: 'queryGenericIndexer',
+  get:
+    ({ formulaName, ...options }) =>
+    async () => {
+      try {
+        return await queryIndexer('generic', '_', formulaName, options)
       } catch (err) {
         // If the indexer fails, return null.
         console.error(err)
@@ -127,4 +150,11 @@ export const walletProposalStatsSelector = selectorFamily<
       )
       return stats ?? undefined
     },
+})
+
+export const featuredDaoDumpStatesAtom = atom<
+  (DumpStateResponse & { coreAddress: string })[] | null
+>({
+  key: 'featuredDaoDumpStates',
+  default: null,
 })

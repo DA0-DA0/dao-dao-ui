@@ -15,6 +15,7 @@ import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   activeThemeAtom,
+  featuredDaoDumpStatesAtom,
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
@@ -163,7 +164,19 @@ const DApp = (props: AppProps) => {
         }}
       />
 
-      <RecoilRoot>
+      <RecoilRoot
+        initializeState={(snapshot) => {
+          if (
+            'featuredDaoDumpStates' in props.pageProps &&
+            Array.isArray(props.pageProps.featuredDaoDumpStates)
+          ) {
+            snapshot.set(
+              featuredDaoDumpStatesAtom,
+              props.pageProps.featuredDaoDumpStates
+            )
+          }
+        }}
+      >
         <InnerApp {...props} />
       </RecoilRoot>
     </>

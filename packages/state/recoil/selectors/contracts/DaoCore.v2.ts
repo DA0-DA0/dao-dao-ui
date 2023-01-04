@@ -1,3 +1,4 @@
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily, waitForAll } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
@@ -24,8 +25,10 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { Cw721BaseSelectors, DaoVotingCw20StakedSelectors } from '.'
+import featuredDaos from '../../../../../featured_daos.json'
 import {
   DaoCoreV2Client,
   DaoCoreV2QueryClient,
@@ -36,7 +39,10 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryContractIndexerSelector } from '../indexer'
+import {
+  featuredDaoDumpStatesAtom,
+  queryContractIndexerSelector,
+} from '../indexer'
 import * as Cw20BaseSelectors from './Cw20Base'
 
 type QueryClientParams = WithChainId<{
@@ -216,6 +222,24 @@ export const dumpStateSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      // Try indexer first if loading featured mainnet DAO.
+      if (
+        ((queryClientParams.chainId === undefined &&
+          CHAIN_ID === ChainInfoID.Juno1) ||
+          queryClientParams.chainId === ChainInfoID.Juno1) &&
+        featuredDaos.some(
+          ({ coreAddress }) => coreAddress === queryClientParams.contractAddress
+        )
+      ) {
+        const featuredDaoDumpStates = get(featuredDaoDumpStatesAtom)
+        const dumpedState = featuredDaoDumpStates?.find(
+          ({ coreAddress }) => coreAddress === queryClientParams.contractAddress
+        )
+        if (dumpedState) {
+          return dumpedState
+        }
+      }
+
       const state = get(
         queryContractIndexerSelector({
           ...queryClientParams,

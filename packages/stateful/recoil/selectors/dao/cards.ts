@@ -19,6 +19,7 @@ import {
   DumpStateResponse as CwCoreV1DumpStateResponse,
 } from '@dao-dao/types/contracts/CwCore.v1'
 import {
+  Config,
   ConfigResponse as DaoCoreV2ConfigResponse,
   DumpStateResponse as DaoCoreV2DumpStateResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
@@ -78,15 +79,28 @@ export const daoCardInfoSelector = selectorFamily<
         // A DAO without a parent DAO may be its own admin.
         admin !== coreAddress &&
         // Ensure address is a contract.
-        isValidContractAddress(admin, CHAIN_BECH32_PREFIX) &&
-        (get(
-          isContractSelector({
-            contractAddress: admin,
-            chainId,
-            // V1
-            name: 'cw-core',
-          })
-        ) ||
+        isValidContractAddress(admin, CHAIN_BECH32_PREFIX)
+      ) {
+        // Indexer may return `adminConfig`, in which case don't query again. If
+        // null, there is no admin to load. Otherwise. If not null, query chain.
+        if ('adminConfig' in dumpedState) {
+          if (dumpedState.adminConfig !== null) {
+            const { name, image_url } = dumpedState.adminConfig as Config
+            parentDao = {
+              coreAddress: admin,
+              name,
+              imageUrl: image_url || getFallbackImage(admin),
+            }
+          }
+        } else if (
+          get(
+            isContractSelector({
+              contractAddress: admin,
+              chainId,
+              // V1
+              name: 'cw-core',
+            })
+          ) ||
           get(
             isContractSelector({
               contractAddress: admin,
@@ -102,24 +116,25 @@ export const daoCardInfoSelector = selectorFamily<
               // V2
               name: 'dao-core',
             })
-          ))
-      ) {
-        const {
-          name,
-          image_url,
-        }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
-          // Both v1 and v2 have a config query.
-          DaoCoreV2Selectors.configSelector({
-            contractAddress: admin,
-            chainId,
-            params: [],
-          })
-        )
+          )
+        ) {
+          const {
+            name,
+            image_url,
+          }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
+            // Both v1 and v2 have a config query.
+            DaoCoreV2Selectors.configSelector({
+              contractAddress: admin,
+              chainId,
+              params: [],
+            })
+          )
 
-        parentDao = {
-          coreAddress: admin,
-          name,
-          imageUrl: image_url || getFallbackImage(admin),
+          parentDao = {
+            coreAddress: admin,
+            name,
+            imageUrl: image_url || getFallbackImage(admin),
+          }
         }
       }
 

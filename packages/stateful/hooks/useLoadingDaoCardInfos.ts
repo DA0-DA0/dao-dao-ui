@@ -4,7 +4,7 @@ import { waitForAll } from 'recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 
-import featuredDaos from '../featured_daos.json'
+import featuredDaos from '../../../featured_daos.json'
 import { daoCardInfoSelector } from '../recoil'
 import { usePinnedDaos } from './usePinnedDaos'
 
