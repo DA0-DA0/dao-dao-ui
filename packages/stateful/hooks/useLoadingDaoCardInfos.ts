@@ -1,6 +1,8 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
-import { waitForAll } from 'recoil'
+import { useEffect } from 'react'
+import { useSetRecoilState, waitForAll } from 'recoil'
 
+import { featuredDaoDumpStatesAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 
@@ -31,12 +33,26 @@ export const useLoadingDaoCardInfos = (
       }
 }
 
-export const useLoadingFeaturedDaoCardInfos = (): LoadingData<DaoCardInfo[]> =>
-  useLoadingDaoCardInfos(
+export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
+  DaoCardInfo[]
+> => {
+  const data = useLoadingDaoCardInfos(
     featuredDaos.map(({ coreAddress }) => coreAddress),
     // Featured DAOs only exist on mainnet.
     ChainInfoID.Juno1
   )
+
+  // Once featured DAOs load once, clear cache from page static props so the DAO
+  // cards update.
+  const setFeaturedDaoDumpStates = useSetRecoilState(featuredDaoDumpStatesAtom)
+  useEffect(() => {
+    if (!data.loading) {
+      setFeaturedDaoDumpStates(null)
+    }
+  }, [setFeaturedDaoDumpStates, data.loading])
+
+  return data
+}
 
 export const useLoadingPinnedDaoCardInfos = (): LoadingData<DaoCardInfo[]> => {
   const { pinnedAddresses } = usePinnedDaos()

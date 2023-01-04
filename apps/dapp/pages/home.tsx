@@ -1,12 +1,15 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { ChainInfoID, useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
 import { useSetRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { commandModalVisibleAtom, queryIndexer } from '@dao-dao/state'
+import {
+  commandModalVisibleAtom,
+  queryFeaturedDaoDumpStatesFromIndexer,
+} from '@dao-dao/state'
 import {
   DaoCard,
   ProfileHomeCard,
@@ -46,9 +49,9 @@ export default HomePage
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
-    featuredDaoDumpStates: await queryIndexer('generic', '_', 'featuredDaos', {
-      chainId: ChainInfoID.Juno1,
-    }).catch(() => undefined),
+    featuredDaoDumpStates: await queryFeaturedDaoDumpStatesFromIndexer().catch(
+      () => undefined
+    ),
     ...(await serverSideTranslations(locale, ['translation'])),
   },
 })

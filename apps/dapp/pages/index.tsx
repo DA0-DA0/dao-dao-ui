@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+import { queryFeaturedDaoDumpStatesFromIndexer } from '@dao-dao/state'
 import {
   SplashDaoCard,
   SuspenseLoader,
@@ -168,6 +169,9 @@ export default SplashPage
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
+    featuredDaoDumpStates: await queryFeaturedDaoDumpStatesFromIndexer().catch(
+      () => undefined
+    ),
     ...(await serverSideTranslations(locale, ['translation'])),
   },
 })

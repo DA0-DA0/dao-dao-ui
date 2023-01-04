@@ -53,3 +53,8 @@ const CHAIN_INDEXER_MAP: Record<string, string | undefined> = {
   [ChainInfoID.Uni5]: 'https://indexer-testnet.daodao.zone',
   [ChainInfoID.Juno1]: 'https://indexer-mainnet.daodao.zone',
 }
+
+export const queryFeaturedDaoDumpStatesFromIndexer = () =>
+  queryIndexer('generic', '_', 'featuredDaos', {
+    chainId: ChainInfoID.Juno1,
+  })
