@@ -2,7 +2,7 @@ import { ChainInfoID } from '@noahsaso/cosmodal'
 import queryString from 'query-string'
 
 import { WithChainId } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
+import { CHAIN_ID, fetchWithTimeout } from '@dao-dao/utils'
 
 export type QueryIndexerOptions = WithChainId<{
   args?: Record<string, any>
@@ -30,7 +30,8 @@ export const queryIndexer = async <T = any>(
     ...args,
     ...(block ? { block: `${block.height}:${block.timeUnixMs ?? 1}` } : {}),
   })
-  const response = await fetch(
+  const response = await fetchWithTimeout(
+    3000,
     `${indexerApiBase}/${type}/${address}/${formulaName}` +
       (query ? `?${query}` : '')
   )
