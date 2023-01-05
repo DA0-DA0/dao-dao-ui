@@ -129,3 +129,12 @@ export const IPFS_GATEWAY_TEMPLATE = process.env
 export const DISABLED_ACTIONS = (
   process.env.NEXT_PUBLIC_DISABLED_ACTIONS || ''
 ).split(',')
+
+// Discord notifier
+export const DISCORD_NOTIFIER_CLIENT_ID = process.env
+  .NEXT_PUBLIC_DISCORD_NOTIFIER_CLIENT_ID as string
+export const DISCORD_NOTIFIER_REDIRECT_URI = process.env
+  .NEXT_PUBLIC_DISCORD_NOTIFIER_REDIRECT_URI as string
+export const DISCORD_NOTIFIER_API_BASE = process.env
+  .NEXT_PUBLIC_DISCORD_NOTIFIER_API_BASE as string
+export const DISCORD_NOTIFIER_SIGNATURE_TYPE = 'Discord Notifier'

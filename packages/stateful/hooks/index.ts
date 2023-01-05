@@ -1,6 +1,7 @@
 export * from './contracts'
 
 export * from './useAwaitNextBlock'
+export * from './useCfWorkerAuthPostRequest'
 export * from './useDaoProposalSinglePublishProposal'
 export * from './useEncodedDaoProposalSinglePrefill'
 export * from './useExecutedProposalTxEvents'

@@ -2,6 +2,7 @@ export * from './contracts'
 
 export * from './chain'
 export * from './contract'
+export * from './discord'
 export * from './indexer'
 export * from './misc'
 export * from './nft'
