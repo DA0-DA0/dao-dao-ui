@@ -61,13 +61,13 @@ export const DiscordNotifierConfigureModal = ({
     })
   )
 
-  // Refresh in a loop for 20 seconds.
+  // Refresh in a loop for 60 seconds.
   const [refreshRegistrationsLoop, setRefreshRegistrationsLoop] =
     useState(false)
   const refreshRegistrationLoopNum = useRef(0)
   useEffect(() => {
     if (refreshRegistrationsLoop && refreshRegistrationLoopNum.current === 0) {
-      refreshRegistrationLoopNum.current = 10
+      refreshRegistrationLoopNum.current = 20
       setRefreshRegistrationsLoop(false)
 
       const interval = setInterval(() => {
@@ -75,10 +75,9 @@ export const DiscordNotifierConfigureModal = ({
 
         refreshRegistrationLoopNum.current -= 1
         if (refreshRegistrationLoopNum.current === 0) {
-          setRefreshRegistrationsLoop(false)
           clearInterval(interval)
         }
-      }, 2000)
+      }, 3000)
     }
   }, [refreshRegistrationsLoop, setRefreshRegistrations])
 
