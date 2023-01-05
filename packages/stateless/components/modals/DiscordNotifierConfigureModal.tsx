@@ -60,21 +60,27 @@ export const DiscordNotifierConfigureModal = ({
             </p>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-3">
             {registrations.map(({ id, guild, channel }) => (
               <div
                 key={id}
                 className="flex flex-row items-center justify-between gap-3 pl-2"
               >
-                <div
-                  className="h-7 w-7 rounded-full bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url(https://cdn.discordapp.com/icons/${guild.id}/${guild.iconHash}.png?size=128)`,
-                  }}
-                ></div>
-                <p className="secondary-text grow text-lg">{`${guild.name} • #${channel.name}`}</p>
+                {!!guild.iconHash && (
+                  <div
+                    className="h-7 w-7 shrink-0 rounded-full bg-cover bg-center"
+                    style={{
+                      backgroundImage: `url(https://cdn.discordapp.com/icons/${guild.id}/${guild.iconHash}.png?size=128)`,
+                    }}
+                  ></div>
+                )}
 
-                <div className="flex flex-row items-stretch gap-1">
+                <p className="secondary-text grow text-base">
+                  {/* eslint-disable-next-line i18next/no-literal-string */}
+                  {guild.name} • #{channel.name}
+                </p>
+
+                <div className="flex shrink-0 flex-row items-stretch gap-1">
                   <IconButtonLink
                     Icon={ArrowOutwardRounded}
                     href={`https://discord.com/channels/${guild.id}/${channel.id}`}
@@ -82,6 +88,7 @@ export const DiscordNotifierConfigureModal = ({
                   />
                   <IconButton
                     Icon={DeleteRounded}
+                    disabled={loading}
                     iconClassName="text-icon-interactive-error"
                     onClick={() => onDelete(id)}
                     variant="ghost"

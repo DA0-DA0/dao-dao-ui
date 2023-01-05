@@ -16,12 +16,14 @@ export const useCfWorkerAuthPostRequest = (
     address: walletAddress,
   } = useWallet(chainId)
 
+  const ready = !!walletClient && !!publicKey && !!chainInfo && !!walletAddress
+
   const postRequest = useCallback(
     async <R = any>(
       endpoint: string,
       data?: Record<string, unknown>
     ): Promise<R> => {
-      if (!walletClient || !publicKey || !chainInfo || !walletAddress) {
+      if (!ready) {
         throw new Error(t('error.connectWalletToContinue'))
       }
 
@@ -118,8 +120,9 @@ export const useCfWorkerAuthPostRequest = (
       t,
       walletAddress,
       walletClient,
+      ready,
     ]
   )
 
-  return postRequest
+  return { ready, postRequest }
 }

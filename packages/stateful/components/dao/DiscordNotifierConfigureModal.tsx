@@ -1,13 +1,9 @@
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import {
-  constSelector,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-} from 'recoil'
+import { constSelector, useSetRecoilState } from 'recoil'
 
 import {
   discordNotifierRegistrationsSelector,
@@ -17,6 +13,7 @@ import {
 import {
   DiscordNotifierConfigureModal as StatelessDiscordNotifierConfigureModal,
   DiscordNotifierConfigureModalProps as StatelessDiscordNotifierConfigureModalProps,
+  useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -43,14 +40,14 @@ export const DiscordNotifierConfigureModal = ({
   const { t } = useTranslation()
   const router = useRouter()
   const { chainId, coreAddress } = useDaoInfoContext()
+  const { publicKey } = useWallet(chainId)
 
   // Handle discord notifier code redirect.
-  const postRequest = useCfWorkerAuthPostRequest(
+  const { ready: postRequestReady, postRequest } = useCfWorkerAuthPostRequest(
     DISCORD_NOTIFIER_API_BASE,
     DISCORD_NOTIFIER_SIGNATURE_TYPE,
     chainId
   )
-  const { publicKey, status } = useWallet(chainId)
 
   const setDiscordNotificationSetup = useSetRecoilState(
     discordNotifierSetupAtom
@@ -63,7 +60,29 @@ export const DiscordNotifierConfigureModal = ({
       walletPublicKey: publicKey?.hex ?? '',
     })
   )
-  const registrationsLoadable = useRecoilValueLoadable(
+
+  // Refresh in a loop for 20 seconds.
+  const [refreshRegistrationsLoop, setRefreshRegistrationsLoop] =
+    useState(false)
+  const refreshRegistrationLoopNum = useRef(0)
+  useEffect(() => {
+    if (refreshRegistrationsLoop && refreshRegistrationLoopNum.current === 0) {
+      refreshRegistrationLoopNum.current = 10
+      setRefreshRegistrationsLoop(false)
+
+      const interval = setInterval(() => {
+        setRefreshRegistrations((prev) => prev + 1)
+
+        refreshRegistrationLoopNum.current -= 1
+        if (refreshRegistrationLoopNum.current === 0) {
+          setRefreshRegistrationsLoop(false)
+          clearInterval(interval)
+        }
+      }, 2000)
+    }
+  }, [refreshRegistrationsLoop, setRefreshRegistrations])
+
+  const registrationsLoadable = useCachedLoadable(
     publicKey
       ? discordNotifierRegistrationsSelector({
           chainId,
@@ -103,8 +122,9 @@ export const DiscordNotifierConfigureModal = ({
           code: discordNotifier,
           redirectUri: DISCORD_NOTIFIER_REDIRECT_URI,
         })
+
         toast.success(t('success.discordNotifierEnabled'))
-        setRefreshRegistrations((id) => id + 1)
+        setRefreshRegistrationsLoop(true)
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
@@ -116,7 +136,7 @@ export const DiscordNotifierConfigureModal = ({
         })
       }
     }
-  }, [coreAddress, postRequest, router, setRefreshRegistrations, t])
+  }, [coreAddress, postRequest, router, t])
 
   const redirected = useRef(false)
   useEffect(() => {
@@ -124,8 +144,8 @@ export const DiscordNotifierConfigureModal = ({
       !router.isReady ||
       redirected.current ||
       !router.query.discordNotifier ||
-      // Don't try to register until connected.
-      status !== WalletConnectionStatus.Connected
+      // Don't attempt to auto-register until ready.
+      !postRequestReady
     ) {
       return
     }
@@ -136,7 +156,7 @@ export const DiscordNotifierConfigureModal = ({
     // Only register once.
     redirected.current = true
     register()
-  }, [router.isReady, register, router.query.discordNotifier, open, status])
+  }, [router, register, open, postRequestReady])
 
   const unregister = useCallback(
     async (id: string) => {
@@ -145,8 +165,9 @@ export const DiscordNotifierConfigureModal = ({
         await postRequest(`/${coreAddress}/unregister`, {
           id,
         })
+
         toast.success(t('success.discordNotifierRemoved'))
-        setRefreshRegistrations((id) => id + 1)
+        setRefreshRegistrationsLoop(true)
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
@@ -154,7 +175,7 @@ export const DiscordNotifierConfigureModal = ({
         setLoading(false)
       }
     },
-    [coreAddress, postRequest, setRefreshRegistrations, t]
+    [coreAddress, postRequest, t]
   )
 
   return (

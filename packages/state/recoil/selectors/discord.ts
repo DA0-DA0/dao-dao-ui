@@ -64,7 +64,7 @@ export const discordNotifierRegistrationsSelector = selectorFamily<
           )
         ).json()
 
-        return registrations
+        return Array.isArray(registrations) ? registrations : []
       } catch (err) {
         console.error(err)
         return []

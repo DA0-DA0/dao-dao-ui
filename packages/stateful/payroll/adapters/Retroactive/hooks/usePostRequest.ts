@@ -8,4 +8,4 @@ export const usePostRequest = () =>
     API_BASE,
     SIGNATURE_TYPE,
     useDaoInfoContext().chainId
-  )
+  ).postRequest
