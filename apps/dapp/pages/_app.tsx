@@ -23,7 +23,9 @@ import { ApolloGqlProvider, AppLayout, WalletProvider } from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
-const InnerApp = ({ Component, pageProps }: AppProps) => {
+type DappProps = AppProps<{ featuredDaoDumpStates?: any[] } | {}>
+
+const InnerApp = ({ Component, pageProps }: DappProps) => {
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
@@ -93,7 +95,7 @@ const LayoutLoading = ({ children }: { children: ReactNode }) => (
   <main className="h-full min-h-screen w-full overflow-hidden">{children}</main>
 )
 
-const DApp = (props: AppProps) => {
+const DApp = (props: DappProps) => {
   const { t } = useTranslation()
 
   return (
