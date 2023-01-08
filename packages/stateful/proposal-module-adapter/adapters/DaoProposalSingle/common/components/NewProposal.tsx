@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
 import {
-  CwCoreV1Selectors,
+  DaoCoreV2Selectors,
   blockHeightSelector,
   blocksPerYearSelector,
   cosmWasmClientForChainSelector,
@@ -24,7 +24,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useCoreActions } from '../../../../../actions'
-import { useVotingModule } from '../../../../../hooks'
+import { useMembership } from '../../../../../hooks'
 import { useVotingModuleAdapter } from '../../../../../voting-module-adapter'
 import { proposalSelector } from '../../contracts/DaoProposalSingle.common.recoil'
 import { makeGetProposalInfo } from '../../functions'
@@ -54,18 +54,24 @@ export const NewProposal = ({
   const { imageUrl: daoImageUrl } = useDaoInfoContext()
   const { chainId, coreAddress, proposalModule } = options
   const { connected } = useWallet()
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false } = useMembership({
+    coreAddress,
+    chainId,
   })
   const [loading, setLoading] = useState(false)
 
-  // Info about if the DAO is paused.
-  const pauseInfo = useRecoilValue(
-    CwCoreV1Selectors.pauseInfoSelector({
+  // Info about if the DAO is paused. This selector depends on blockHeight,
+  // which is refreshed periodically, so use a loadable to avoid unnecessary
+  // re-renders.
+  const pauseInfo = useCachedLoadable(
+    DaoCoreV2Selectors.pauseInfoSelector({
       contractAddress: coreAddress,
+      params: [],
     })
   )
-  const isPaused = 'Paused' in pauseInfo
+  const isPaused =
+    pauseInfo.state === 'hasValue' &&
+    ('paused' in pauseInfo.contents || 'Paused' in pauseInfo.contents)
 
   const {
     hooks: { useActions: useVotingModuleActions },
@@ -130,7 +136,7 @@ export const NewProposal = ({
             ...options,
             proposalNumber,
             proposalId,
-          })(cosmWasmClient)
+          })()
           const expirationDate =
             proposalInfo &&
             convertExpirationToDate(

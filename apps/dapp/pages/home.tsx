@@ -6,7 +6,10 @@ import { GetStaticProps, NextPage } from 'next'
 import { useSetRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { commandModalVisibleAtom } from '@dao-dao/state'
+import {
+  commandModalVisibleAtom,
+  queryFeaturedDaoDumpStatesFromIndexer,
+} from '@dao-dao/state'
 import {
   DaoCard,
   ProfileHomeCard,
@@ -20,7 +23,6 @@ const HomePage: NextPage = () => {
 
   const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
 
-  // Load from indexer.
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
   const pinnedDaosLoading = useLoadingPinnedDaoCardInfos()
 
@@ -47,6 +49,9 @@ export default HomePage
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
+    featuredDaoDumpStates: await queryFeaturedDaoDumpStatesFromIndexer().catch(
+      () => undefined
+    ),
     ...(await serverSideTranslations(locale, ['translation'])),
   },
 })

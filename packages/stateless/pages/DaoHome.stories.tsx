@@ -82,6 +82,7 @@ Default.args = {
   ),
   SuspenseLoader,
   LinkWrapper,
+  onConfigure: () => alert('configure'),
 }
 Default.parameters = {
   design: {

@@ -1,3 +1,4 @@
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily, waitForAll } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
@@ -8,6 +9,7 @@ import {
   AdminNominationResponse,
   AdminResponse,
   ConfigResponse,
+  Cw20BalanceResponse,
   Cw20BalancesResponse,
   Cw20TokenListResponse,
   Cw721TokenListResponse,
@@ -23,8 +25,10 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { Cw721BaseSelectors, DaoVotingCw20StakedSelectors } from '.'
+import featuredDaos from '../../../../../featured_daos.json'
 import {
   DaoCoreV2Client,
   DaoCoreV2QueryClient,
@@ -35,6 +39,10 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import {
+  featuredDaoDumpStatesAtom,
+  queryContractIndexerSelector,
+} from '../indexer'
 import * as Cw20BaseSelectors from './Cw20Base'
 
 type QueryClientParams = WithChainId<{
@@ -85,6 +93,18 @@ export const adminSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const admin = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/admin',
+        })
+      )
+      // Null when indexer fails. Undefined if no admin.
+      if (admin !== null) {
+        return admin || null
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.admin(...params)
     },
@@ -99,6 +119,18 @@ export const adminNominationSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const nomination = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/adminNomination',
+        })
+      )
+      // Null when indexer fails. Undefined if no nomination.
+      if (nomination !== null) {
+        return { nomination: nomination || null }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.adminNomination(...params)
     },
@@ -113,32 +145,48 @@ export const configSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const config = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/config',
+        })
+      )
+      if (config) {
+        return config
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.config(...params)
     },
 })
-export const cw20BalancesSelector = selectorFamily<
+// Use allCw20BalancesAndInfosSelector as it uses the indexer and implements
+// pagination for chain queries.
+export const _cw20BalancesSelector = selectorFamily<
   Cw20BalancesResponse,
   QueryClientParams & {
     params: Parameters<DaoCoreV2QueryClient['cw20Balances']>
   }
 >({
-  key: 'daoCoreV2Cw20Balances',
+  key: 'daoCoreV2_Cw20Balances',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       get(refreshWalletBalancesIdAtom(undefined))
+      get(refreshWalletBalancesIdAtom(queryClientParams.contractAddress))
       return await client.cw20Balances(...params)
     },
 })
-export const cw20TokenListSelector = selectorFamily<
+// Use allCw20TokenListSelector as it uses the indexer and implements pagination
+// for chain queries.
+export const _cw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse,
   QueryClientParams & {
     params: Parameters<DaoCoreV2QueryClient['cw20TokenList']>
   }
 >({
-  key: 'daoCoreV2Cw20TokenList',
+  key: 'daoCoreV2_Cw20TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -146,13 +194,15 @@ export const cw20TokenListSelector = selectorFamily<
       return await client.cw20TokenList(...params)
     },
 })
-export const cw721TokenListSelector = selectorFamily<
+// Use allCw721TokenListSelector as it uses the indexer and implements
+// pagination for chain queries.
+export const _cw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse,
   QueryClientParams & {
     params: Parameters<DaoCoreV2QueryClient['cw721TokenList']>
   }
 >({
-  key: 'daoCoreV2Cw721TokenList',
+  key: 'daoCoreV2_Cw721TokenList',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -160,6 +210,8 @@ export const cw721TokenListSelector = selectorFamily<
       return await client.cw721TokenList(...params)
     },
 })
+// Reduced to only the necessary subset which can be provided by both the
+// indexer and chain.
 export const dumpStateSelector = selectorFamily<
   DumpStateResponse | undefined,
   QueryClientParams & {
@@ -170,10 +222,41 @@ export const dumpStateSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      // Try indexer first if loading featured mainnet DAO.
+      if (
+        ((queryClientParams.chainId === undefined &&
+          CHAIN_ID === ChainInfoID.Juno1) ||
+          queryClientParams.chainId === ChainInfoID.Juno1) &&
+        featuredDaos.some(
+          ({ coreAddress }) => coreAddress === queryClientParams.contractAddress
+        )
+      ) {
+        const featuredDaoDumpStates = get(featuredDaoDumpStatesAtom)
+        const dumpedState = featuredDaoDumpStates?.find(
+          ({ coreAddress }) => coreAddress === queryClientParams.contractAddress
+        )
+        if (dumpedState) {
+          return dumpedState
+        }
+      }
+
+      const state = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/dumpState',
+        })
+      )
+      if (state) {
+        return state
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       try {
         return await client.dumpState(...params)
       } catch (err) {
+        // Ignore errors. An undefined response is sometimes used to indicate
+        // that this contract is not a DAO.
         console.error(err)
       }
     },
@@ -188,17 +271,32 @@ export const getItemSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const item = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/item',
+          args: params[0],
+        })
+      )
+      // Null when indexer fails. Undefined if no item.
+      if (item !== null) {
+        return { item: item || null }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.getItem(...params)
     },
 })
-export const listItemsSelector = selectorFamily<
+// Use listAllItemsSelector as it uses the indexer and implements pagination for
+// chain queries.
+export const _listItemsSelector = selectorFamily<
   ListItemsResponse,
   QueryClientParams & {
     params: Parameters<DaoCoreV2QueryClient['listItems']>
   }
 >({
-  key: 'daoCoreV2ListItems',
+  key: 'daoCoreV2_ListItems',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -216,6 +314,17 @@ export const proposalModulesSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const proposalModules = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/proposalModules',
+        })
+      )
+      if (proposalModules) {
+        return proposalModules
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.proposalModules(...params)
     },
@@ -230,6 +339,17 @@ export const activeProposalModulesSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const activeProposalModules = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/activeProposalModules',
+        })
+      )
+      if (activeProposalModules) {
+        return activeProposalModules
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.activeProposalModules(...params)
     },
@@ -244,6 +364,17 @@ export const pauseInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const paused = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/paused',
+        })
+      )
+      if (paused) {
+        return paused
+      }
+
+      // If indexer fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.pauseInfo(...params)
     },
@@ -258,17 +389,30 @@ export const votingModuleSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const votingModule = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/votingModule',
+        })
+      )
+      if (votingModule) {
+        return votingModule
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.votingModule(...params)
     },
 })
-export const listSubDaosSelector = selectorFamily<
+// Use listAllSubDaosSelector as it uses the indexer and implements pagination
+// for chain queries.
+export const _listSubDaosSelector = selectorFamily<
   ListSubDaosResponse,
   QueryClientParams & {
     params: Parameters<DaoCoreV2QueryClient['listSubDaos']>
   }
 >({
-  key: 'daoCoreV2ListSubDaos',
+  key: 'daoCoreV2_ListSubDaos',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -286,6 +430,18 @@ export const daoURISelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const daoUri = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/daoUri',
+        })
+      )
+      // Null when indexer fails. Undefined if no URI.
+      if (daoUri !== null) {
+        return daoUri || null
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.daoURI(...params)
     },
@@ -300,8 +456,30 @@ export const votingPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(
+        refreshDaoVotingPowerAtom(queryClientParams.contractAddress)
+      )
+
+      const votingPower = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/votingPower',
+          args: {
+            address: params[0].address,
+          },
+          block: params[0].height ? { height: params[0].height } : undefined,
+          id,
+        })
+      )
+      if (votingPower && !isNaN(votingPower)) {
+        return {
+          power: votingPower,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
       return await client.votingPowerAtHeight(...params)
     },
 })
@@ -315,11 +493,31 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(
+        refreshDaoVotingPowerAtom(queryClientParams.contractAddress)
+      )
+
+      const totalPower = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/totalPower',
+          block: params[0].height ? { height: params[0].height } : undefined,
+          id,
+        })
+      )
+      if (totalPower && !isNaN(totalPower)) {
+        return {
+          power: totalPower,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
       return await client.totalPowerAtHeight(...params)
     },
 })
+
 export const infoSelector = selectorFamily<
   InfoResponse,
   QueryClientParams & {
@@ -330,6 +528,16 @@ export const infoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const info = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'info',
+        })
+      )
+      if (info) {
+        return { info }
+      }
+
       const client = get(queryClient(queryClientParams))
       return await client.info(...params)
     },
@@ -346,11 +554,22 @@ export const allCw20TokenListSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
-      //! Get all tokens.
+      const list = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/cw20List',
+        })
+      )
+      if (list) {
+        return list
+      }
+
+      // If indexer query fails, fallback to contract query.
+
       const tokenList: Cw20TokenListResponse = []
       while (true) {
         const response = await get(
-          cw20TokenListSelector({
+          _cw20TokenListSelector({
             ...queryClientParams,
             params: [
               {
@@ -422,9 +641,10 @@ export const allCw20InfosSelector = selectorFamily<
 
 const CW20_BALANCES_LIMIT = 10
 export const allCw20BalancesAndInfosSelector = selectorFamily<
-  (Cw20BalancesResponse[number] & {
-    isGovernanceToken: boolean
+  (Cw20BalanceResponse & {
     info: TokenInfoResponse
+    imageUrl: string | undefined
+    isGovernanceToken: boolean
   })[],
   QueryClientParams & {
     governanceTokenAddress?: string
@@ -434,6 +654,11 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
   get:
     ({ governanceTokenAddress, ...queryClientParams }) =>
     async ({ get }) => {
+      const generalId = get(refreshWalletBalancesIdAtom(undefined))
+      const specificId = get(
+        refreshWalletBalancesIdAtom(queryClientParams.contractAddress)
+      )
+
       const governanceTokenBalance = governanceTokenAddress
         ? get(
             Cw20BaseSelectors.balanceSelector({
@@ -446,27 +671,40 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
           ).balance
         : undefined
 
-      //! Get all balances.
-      const balances: Cw20BalancesResponse = []
-      while (true) {
-        const response = await get(
-          cw20BalancesSelector({
-            ...queryClientParams,
-            params: [
-              {
-                startAfter: balances[balances.length - 1]?.addr,
-                limit: CW20_BALANCES_LIMIT,
-              },
-            ],
-          })
-        )
-        if (!response.length) break
+      let balances: Cw20BalancesResponse | null = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/cw20Balances',
+          // Update each time one of these changes.
+          id: generalId + specificId,
+        })
+      )
+      if (balances) {
+        // Copy to new array so we can mutate it below.
+        balances = [...balances]
+        // If indexer query fails, fallback to contract query.
+      } else {
+        balances = []
+        while (true) {
+          const response = await get(
+            _cw20BalancesSelector({
+              ...queryClientParams,
+              params: [
+                {
+                  startAfter: balances[balances.length - 1]?.addr,
+                  limit: CW20_BALANCES_LIMIT,
+                },
+              ],
+            })
+          )
+          if (!response.length) break
 
-        balances.push(...response)
+          balances.push(...response)
 
-        // If we have less than the limit of items, we've exhausted them.
-        if (response.length < CW20_BALANCES_LIMIT) {
-          break
+          // If we have less than the limit of items, we've exhausted them.
+          if (response.length < CW20_BALANCES_LIMIT) {
+            break
+          }
         }
       }
 
@@ -497,87 +735,25 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
         )
       )
 
+      const cw20LogoUrls = get(
+        waitForAll(
+          balances.map(({ addr }) =>
+            Cw20BaseSelectors.logoUrlSelector({
+              // Copies over chainId and any future additions to client params.
+              ...queryClientParams,
+              contractAddress: addr,
+            })
+          )
+        )
+      )
+
       return balances.map((balance, index) => ({
         ...balance,
         info: infos[index],
+        imageUrl: cw20LogoUrls[index],
         isGovernanceToken:
           !!governanceTokenAddress && governanceTokenAddress === balance.addr,
       }))
-    },
-})
-
-export const cw20BalancesInfoSelector = selectorFamily<
-  {
-    symbol: string
-    denom: string
-    amount: string
-    decimals: number
-    imageUrl: string | undefined
-    isGovernanceToken: boolean
-  }[],
-  QueryClientParams & {
-    governanceTokenAddress?: string
-  }
->({
-  key: 'daoCoreV2Cw20BalancesInfo',
-  get:
-    ({ governanceTokenAddress, ...queryClientParams }) =>
-    async ({ get }) => {
-      const cw20List = get(
-        allCw20BalancesAndInfosSelector({
-          ...queryClientParams,
-          governanceTokenAddress,
-        })
-      )
-
-      const cw20Info = get(
-        waitForAll(
-          cw20List.map(({ addr }) =>
-            Cw20BaseSelectors.tokenInfoSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-
-              contractAddress: addr,
-              params: [],
-            })
-          )
-        )
-      ).filter(Boolean) as TokenInfoResponse[]
-
-      const cw20MarketingInfo = get(
-        waitForAll(
-          cw20List.map(({ addr }) =>
-            Cw20BaseSelectors.marketingInfoSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-
-              contractAddress: addr,
-              params: [],
-            })
-          )
-        )
-      )
-
-      return cw20Info.map(({ symbol, decimals }, idx) => {
-        const {
-          addr: denom,
-          balance: amount,
-          isGovernanceToken,
-        } = cw20List[idx]
-        const logoInfo = cw20MarketingInfo[idx].logo
-
-        return {
-          symbol,
-          denom,
-          amount,
-          decimals,
-          imageUrl:
-            !!logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
-              ? logoInfo.url
-              : undefined,
-          isGovernanceToken,
-        }
-      })
     },
 })
 
@@ -590,10 +766,22 @@ export const allCw721TokenListSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
+      const list = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/cw721List',
+        })
+      )
+      if (list) {
+        return list
+      }
+
+      // If indexer query fails, fallback to contract query.
+
       const tokenList: Cw721TokenListResponse = []
       while (true) {
         const response = await get(
-          cw721TokenListSelector({
+          _cw721TokenListSelector({
             ...queryClientParams,
             params: [
               {
@@ -680,11 +868,23 @@ export const listAllSubDaosSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
+      const list = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/listSubDaos',
+        })
+      )
+      if (list) {
+        return list
+      }
+
+      // If indexer query fails, fallback to contract query.
+
       const subdaos: ListSubDaosResponse = []
 
       while (true) {
         const response = await get(
-          listSubDaosSelector({
+          _listSubDaosSelector({
             ...queryClientParams,
             params: [
               {
@@ -707,6 +907,7 @@ export const listAllSubDaosSelector = selectorFamily<
       return subdaos
     },
 })
+
 export const allSubDaoConfigsSelector = selectorFamily<
   ({ address: string } & ConfigResponse)[],
   QueryClientParams
@@ -769,11 +970,23 @@ export const listAllItemsSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
+      const list = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoCore/listItems',
+        })
+      )
+      if (list) {
+        return list
+      }
+
+      // If indexer query fails, fallback to contract query.
+
       const items: ListItemsResponse = []
 
       while (true) {
         const response = await get(
-          listItemsSelector({
+          _listItemsSelector({
             ...queryClientParams,
             params: [
               {

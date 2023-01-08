@@ -2,11 +2,7 @@ import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import {
-  blockHeightSelector,
-  blocksPerYearSelector,
-  useGetProposalQuery,
-} from '@dao-dao/state'
+import { blockHeightSelector, blocksPerYearSelector } from '@dao-dao/state'
 import {
   useCachedLoadable,
   useTranslatedTimeDeltaFormatter,
@@ -65,10 +61,6 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       chainId,
     })
   )
-  const proposalSubquery = useGetProposalQuery(
-    proposalModuleAddress,
-    proposalNumber
-  )
 
   // Since an error will be thrown on a selector error, this .data check is just
   // a typecheck. It will not return loading forever if the selector fails.
@@ -81,12 +73,9 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     return { loading: true }
   }
 
-  const { proposal } = loadingProposalResponse.data
-
-  const proposalSubqueryData =
-    proposalSubquery.data?.proposal ??
-    proposalSubquery.previousData?.proposal ??
-    undefined
+  // Indexer may provide dates.
+  const { proposal, completedAt, executedAt, closedAt } =
+    loadingProposalResponse.data
 
   const expirationDate = convertExpirationToDate(
     blocksPerYearLoadable.contents,
@@ -94,21 +83,22 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     blockHeightLoadable.contents
   )
 
+  // V2 allows voting up to the expiration date, even if the decision has
+  // finalized due to sufficient votes cast.
+  const votingOpen =
+    // `expirationDate` will be undefined if expiration is set to never, which
+    // the contract does not allow, so this is just a typecheck.
+    expirationDate && version !== ContractVersion.V1
+      ? expirationDate.getTime() > Date.now()
+      : proposal.status === Status.Open
+
   const completionDate =
-    proposalSubqueryData?.completedAt &&
-    // Interpret as UTC.
-    new Date(proposalSubqueryData.completedAt + 'Z')
-  const executionDate =
-    proposalSubqueryData?.executedAt &&
-    // Interpret as UTC.
-    new Date(proposalSubqueryData.executedAt + 'Z')
-  const closeDate =
-    proposalSubqueryData?.closedAt &&
-    // Interpret as UTC.
-    new Date(proposalSubqueryData.closedAt + 'Z')
+    typeof completedAt === 'string' && new Date(completedAt)
+  const executionDate = typeof executedAt === 'string' && new Date(executedAt)
+  const closeDate = typeof closedAt === 'string' && new Date(closedAt)
 
   const dateDisplay: { label: string; content: ReactNode } | undefined =
-    proposal.status === Status.Open
+    votingOpen
       ? expirationDate && expirationDate.getTime() > Date.now()
         ? {
             label: t('title.timeLeft'),
@@ -134,7 +124,12 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
         }
       : expirationDate
       ? {
-          label: t('title.expires'),
+          label:
+            // If voting is closed, expiration should not be in the future, but
+            // just in case...
+            expirationDate.getTime() > Date.now()
+              ? t('title.expires')
+              : t('info.completed'),
           content: formatDate(expirationDate),
         }
       : undefined
@@ -143,15 +138,6 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     display: dateDisplay,
     expirationDate,
   }
-
-  // V2 allows voting up to the expiration date, even if the decision has
-  // finalized due to sufficient votes cast.
-  const votingOpen =
-    // `timestampInfo` will be undefined if expiration is set to never, which
-    // the contract does not allow, so this is just a typecheck.
-    timestampInfo && version !== ContractVersion.V1
-      ? timestampInfo.expirationDate.getTime() > Date.now()
-      : proposal.status === Status.Open
 
   return {
     loading: false,

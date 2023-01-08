@@ -35,6 +35,11 @@ Default.args = {
       unstakedBalance: 2400.111111,
       stakedBalance: 1603,
       dateBalancesFetched: new Date(),
+    },
+  },
+  loadingStats: {
+    loading: false,
+    data: {
       proposalsCreated: 23,
       votesCast: 234,
     },
@@ -56,6 +61,9 @@ Loading.args = {
     loading: true,
   },
   lazyData: {
+    loading: true,
+  },
+  loadingStats: {
     loading: true,
   },
 }

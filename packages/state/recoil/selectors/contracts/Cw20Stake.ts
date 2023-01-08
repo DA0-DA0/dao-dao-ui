@@ -22,6 +22,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -68,8 +69,28 @@ export const stakedBalanceAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].address))
+
+      const balance = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/stakedBalance',
+          args: {
+            address: params[0].address,
+          },
+          block: params[0].height ? { height: params[0].height } : undefined,
+          id,
+        })
+      )
+      if (balance && !isNaN(balance)) {
+        return {
+          balance,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshWalletBalancesIdAtom(params[0].address))
       return await client.stakedBalanceAtHeight(...params)
     },
 })
@@ -83,8 +104,25 @@ export const totalStakedAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(undefined))
+
+      const total = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/totalStaked',
+          block: params[0].height ? { height: params[0].height } : undefined,
+          id,
+        })
+      )
+      if (total && !isNaN(total)) {
+        return {
+          total,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshWalletBalancesIdAtom(undefined))
       return await client.totalStakedAtHeight(...params)
     },
 })
@@ -98,8 +136,22 @@ export const stakedValueSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].address))
+
+      const value = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/stakedValue',
+          args: params[0],
+          id,
+        })
+      )
+      if (value && !isNaN(value)) {
+        return { value }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshWalletBalancesIdAtom(params[0].address))
       return await client.stakedValue(...params)
     },
 })
@@ -113,8 +165,21 @@ export const totalValueSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(undefined))
+
+      const total = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/totalValue',
+          id,
+        })
+      )
+      if (total && !isNaN(total)) {
+        return { total }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshWalletBalancesIdAtom(undefined))
       return await client.totalValue(...params)
     },
 })
@@ -128,6 +193,17 @@ export const getConfigSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const config = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/config',
+        })
+      )
+      if (config) {
+        return config
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.getConfig(...params)
     },
@@ -142,8 +218,22 @@ export const claimsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshClaimsIdAtom(params[0].address))
+
+      const claims = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/claims',
+          args: params[0],
+          id,
+        })
+      )
+      if (claims) {
+        return { claims }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshClaimsIdAtom(params[0].address))
       return await client.claims(...params)
     },
 })
@@ -171,7 +261,44 @@ export const listStakersSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const list = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/listStakers',
+          args: params[0],
+        })
+      )
+      if (list) {
+        return { stakers: list }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.listStakers(...params)
     },
+})
+
+///! Custom selectors
+
+export const topStakersSelector = selectorFamily<
+  | {
+      address: string
+      balance: string
+    }[]
+  | undefined,
+  QueryClientParams & { limit?: number }
+>({
+  key: 'cw20StakeTopStakers',
+  get:
+    ({ limit, ...queryClientParams }) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20Stake/topStakers',
+          args: {
+            limit,
+          },
+        })
+      ) ?? undefined,
 })

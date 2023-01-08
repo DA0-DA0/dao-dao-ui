@@ -8,7 +8,7 @@ import {
 import { ContractVersion } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { useVotingModule } from '../../../hooks'
+import { useMembership } from '../../../hooks'
 import { subDaoCardInfosSelector } from '../../../recoil'
 import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
@@ -16,9 +16,7 @@ import { DaoCard } from '../DaoCard'
 export const SubDaosTab = () => {
   const daoInfo = useDaoInfoContext()
 
-  const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
-    fetchMembership: true,
-  })
+  const { isMember = false } = useMembership(daoInfo)
 
   const subDaoCardInfosLoadable = useRecoilValueLoadable(
     daoInfo.coreVersion === ContractVersion.V1

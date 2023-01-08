@@ -18,8 +18,8 @@ import { expirationExpired, processError } from '@dao-dao/utils'
 import {
   Cw20BaseHooks,
   useAwaitNextBlock,
+  useMembership,
   useSimulateCosmosMsgs,
-  useVotingModule,
 } from '../../../../../hooks'
 import { usePropose as useProposeV1 } from '../../contracts/CwProposalSingle.v1.hooks'
 import { usePropose as useProposePrePropose } from '../../contracts/DaoPreProposeSingle.hooks'
@@ -38,8 +38,9 @@ export const makeUsePublishProposal =
   () => {
     const { t } = useTranslation()
     const { connected, address: walletAddress } = useWallet()
-    const { isMember = false } = useVotingModule(coreAddress, {
-      fetchMembership: true,
+    const { isMember = false } = useMembership({
+      coreAddress,
+      chainId,
     })
 
     const depositInfo = useRecoilValue(depositInfoSelector)

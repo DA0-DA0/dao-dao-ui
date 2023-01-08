@@ -426,9 +426,7 @@ export const TokenCard = ({
           unstakingDuration={
             lazyInfo.data.stakingInfo.unstakingDurationSeconds
               ? secondsToWdhms(
-                  lazyInfo.data.stakingInfo.unstakingDurationSeconds,
-                  2,
-                  false
+                  lazyInfo.data.stakingInfo.unstakingDurationSeconds
                 )
               : undefined
           }

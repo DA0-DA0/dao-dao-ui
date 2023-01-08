@@ -12,7 +12,7 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 import { useCoreActionForKey } from '../../../actions'
 import {
   useEncodedDaoProposalSinglePrefill,
-  useVotingModule,
+  useMembership,
 } from '../../../hooks'
 import {
   nftCardInfosSelector,
@@ -27,10 +27,7 @@ import { TokenCard } from '../TokenCard'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
-  const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
-    chainId: daoInfo.chainId,
-    fetchMembership: true,
-  })
+  const { isMember = false } = useMembership(daoInfo)
   const { governanceTokenAddress: cw20GovernanceTokenAddress } =
     useCw20GovernanceTokenInfoResponseIfExists() ?? {}
   const { governanceTokenAddress: nativeGovernanceTokenDenom } =

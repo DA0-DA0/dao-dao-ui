@@ -6,7 +6,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
-import { useVotingModule } from '../hooks'
+import { useMembership } from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
 
@@ -16,8 +16,9 @@ const PROP_LOAD_LIMIT = 20
 
 export const ProposalList = () => {
   const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false } = useMembership({
+    coreAddress,
+    chainId,
   })
 
   const [openProposals, setOpenProposals] = useState<ProposalLineProps[]>([])

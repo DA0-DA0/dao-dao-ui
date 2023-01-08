@@ -52,7 +52,6 @@ export const makeAppLayoutContextDecorator: (
 export const EMPTY_INBOX: UseInboxReturn = {
   loading: false,
   refetching: false,
-  error: undefined,
   daosWithOpenUnvotedProposals: [],
   proposalCount: 0,
   refetch: async () => alert('refetch inbox'),

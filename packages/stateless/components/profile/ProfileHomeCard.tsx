@@ -1,11 +1,10 @@
 import { LayersOutlined, PaymentsOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
 
-import { ButtonLinkProps } from '../buttons'
+import { ButtonLink } from '../buttons'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import {
   ProfileCardWrapper,
@@ -24,10 +23,14 @@ export interface ProfileHomeCardProps
     unstakedBalance: number
     stakedBalance: number
     dateBalancesFetched: Date
-    proposalsCreated: number
-    votesCast: number
   }>
-  ButtonLink: ComponentType<ButtonLinkProps>
+  loadingStats: LoadingData<
+    | {
+        proposalsCreated: number
+        votesCast: number
+      }
+    | undefined
+  >
 }
 
 export const ProfileHomeCard = ({
@@ -35,7 +38,7 @@ export const ProfileHomeCard = ({
   tokenDecimals,
   inboxProposalCount,
   lazyData,
-  ButtonLink,
+  loadingStats,
   ...wrapperProps
 }: ProfileHomeCardProps) => {
   const { t } = useTranslation()
@@ -95,10 +98,12 @@ export const ProfileHomeCard = ({
           <p
             className={clsx(
               'font-mono text-text-primary',
-              lazyData.loading && 'animate-pulse'
+              loadingStats.loading && 'animate-pulse'
             )}
           >
-            {lazyData.loading ? '...' : lazyData.data.proposalsCreated}
+            {loadingStats.loading
+              ? '...'
+              : loadingStats.data?.proposalsCreated ?? '-'}
           </p>
         </div>
 
@@ -108,15 +113,16 @@ export const ProfileHomeCard = ({
           <p
             className={clsx(
               'font-mono text-text-primary',
-              lazyData.loading && 'animate-pulse'
+              loadingStats.loading && 'animate-pulse'
             )}
           >
-            {lazyData.loading ? '...' : lazyData.data.votesCast}
+            {loadingStats.loading ? '...' : loadingStats.data?.votesCast ?? '-'}
           </p>
         </div>
       </div>
 
       <div className="border-t border-t-border-primary p-6">
+        {/* Use stateless ButtonLink. No need to use stateful version that displays a loader when navigating, since the Inbox page is static and loads instantly. Displaying a loader here just causes an unnecessary flicker. */}
         <ButtonLink
           className="w-full"
           contentContainerClassName="justify-center"

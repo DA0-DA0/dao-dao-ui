@@ -1,2 +1,2 @@
-export * from './info'
+export * from './query'
 export * from './search'

@@ -3,15 +3,13 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
-import { useVotingModule } from '../../../hooks'
+import { useMembership } from '../../../hooks'
 import { ButtonLink } from '../../ButtonLink'
 import { ProposalList } from '../../ProposalList'
 
 export const ProposalsTab = () => {
   const daoInfo = useDaoInfoContext()
-  const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
-    fetchMembership: true,
-  })
+  const { isMember = false } = useMembership(daoInfo)
 
   return (
     <StatelessProposalsTab

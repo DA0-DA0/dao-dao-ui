@@ -25,6 +25,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -70,8 +71,22 @@ export const balanceSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].address))
+
+      const balance = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/balance',
+          args: params[0],
+          id,
+        })
+      )
+      if (balance) {
+        return { balance }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-      get(refreshWalletBalancesIdAtom(params[0].address))
       return await client.balance(...params)
     },
 })
@@ -85,6 +100,17 @@ export const tokenInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const tokenInfo = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/tokenInfo',
+        })
+      )
+      if (tokenInfo) {
+        return tokenInfo
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.tokenInfo(...params)
     },
@@ -99,6 +125,17 @@ export const minterSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const minter = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/minter',
+        })
+      )
+      if (minter) {
+        return minter
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.minter(...params)
     },
@@ -113,10 +150,22 @@ export const allowanceSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].owner))
+
+      const allowance = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/allowance',
+          args: params[0],
+          id,
+        })
+      )
+      if (allowance) {
+        return allowance
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-
-      get(refreshWalletBalancesIdAtom(params[0].owner))
-
       return await client.allowance(...params)
     },
 })
@@ -130,10 +179,22 @@ export const allAllowancesSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(params[0].owner))
+
+      const allowances = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/ownerAllowances',
+          args: params[0],
+          id,
+        })
+      )
+      if (allowances) {
+        return { allowances }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
-
-      get(refreshWalletBalancesIdAtom(params[0].owner))
-
       return await client.allAllowances(...params)
     },
 })
@@ -147,6 +208,18 @@ export const allAccountsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const accounts = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/allAccounts',
+          args: params[0],
+        })
+      )
+      if (accounts) {
+        return { accounts }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.allAccounts(...params)
     },
@@ -161,6 +234,17 @@ export const marketingInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const marketingInfo = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/marketingInfo',
+        })
+      )
+      if (marketingInfo) {
+        return marketingInfo
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.marketingInfo(...params)
     },
@@ -201,6 +285,40 @@ export const balanceWithTimestampSelector = selectorFamily<
     },
 })
 
+export const logoUrlSelector = selectorFamily<
+  string | undefined,
+  QueryClientParams
+>({
+  key: 'cw20BaseLogoUrl',
+  get:
+    ({ contractAddress, chainId }) =>
+    ({ get }) => {
+      const logoUrl = get(
+        queryContractIndexerSelector({
+          contractAddress,
+          chainId,
+          formulaName: 'cw20/logoUrl',
+        })
+      )
+      // Null when indexer fails.
+      if (logoUrl !== null) {
+        return logoUrl
+      }
+
+      // If indexer query fails, fallback to contract query.
+      const logoInfo = get(
+        marketingInfoSelector({
+          contractAddress,
+          chainId,
+          params: [],
+        })
+      ).logo
+      return !!logoInfo && logoInfo !== 'embedded' && 'url' in logoInfo
+        ? logoInfo.url
+        : undefined
+    },
+})
+
 export const tokenInfoWithAddressAndLogoSelector = selectorFamily<
   TokenInfoResponseWithAddressAndLogo,
   QueryClientParams & {
@@ -223,4 +341,27 @@ export const tokenInfoWithAddressAndLogoSelector = selectorFamily<
             : undefined,
       }
     },
+})
+
+export const topAccountBalancesSelector = selectorFamily<
+  | {
+      address: string
+      balance: string
+    }[]
+  | undefined,
+  QueryClientParams & { limit?: number }
+>({
+  key: 'cw20BaseListTopAccountBalances',
+  get:
+    ({ limit, ...queryClientParams }) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/topAccountBalances',
+          args: {
+            limit,
+          },
+        })
+      ) ?? undefined,
 })

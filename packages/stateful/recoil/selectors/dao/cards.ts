@@ -1,7 +1,6 @@
 import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
 import {
-  CwCoreV1Selectors,
   DaoCoreV2Selectors,
   contractInstantiateTimeSelector,
   contractVersionSelector,
@@ -13,6 +12,7 @@ import {
   DaoCardInfo,
   DaoCardInfoLazyData,
   DaoDropdownInfo,
+  IndexerDumpState,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -20,14 +20,20 @@ import {
   DumpStateResponse as CwCoreV1DumpStateResponse,
 } from '@dao-dao/types/contracts/CwCore.v1'
 import {
+  Config,
   ConfigResponse as DaoCoreV2ConfigResponse,
   DumpStateResponse as DaoCoreV2DumpStateResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
-import { CHAIN_ID, getFallbackImage } from '@dao-dao/utils'
+import {
+  CHAIN_BECH32_PREFIX,
+  CHAIN_ID,
+  getFallbackImage,
+  isValidContractAddress,
+} from '@dao-dao/utils'
 
 import { proposalModuleAdapterProposalCountSelector } from '../../../proposal-module-adapter'
 import {
-  cwCoreProposalModulesSelector,
+  daoCoreProposalModulesSelector,
   daoCw20GovernanceTokenAddressSelector,
 } from './misc'
 
@@ -41,6 +47,7 @@ export const daoCardInfoSelector = selectorFamily<
     ({ get }) => {
       const dumpedState:
         | CwCoreV1DumpStateResponse
+        | IndexerDumpState
         | DaoCoreV2DumpStateResponse
         | undefined = get(
         // Both v1 and v2 have a dump_state query.
@@ -55,15 +62,13 @@ export const daoCardInfoSelector = selectorFamily<
         return
       }
 
-      const {
-        config,
-        created_timestamp, // Only present for v2.
-        admin,
-      } = dumpedState
+      const { config, admin } = dumpedState
 
-      const established =
-        typeof created_timestamp === 'number'
-          ? new Date(created_timestamp)
+      // Indexer may return a createdAt string, in which case don't query again.
+      const established: Date | undefined =
+        'createdAt' in dumpedState &&
+        (dumpedState as IndexerDumpState).createdAt
+          ? new Date((dumpedState as IndexerDumpState).createdAt)
           : get(
               contractInstantiateTimeSelector({ address: coreAddress, chainId })
             )
@@ -74,14 +79,30 @@ export const daoCardInfoSelector = selectorFamily<
         admin &&
         // A DAO without a parent DAO may be its own admin.
         admin !== coreAddress &&
-        (get(
-          isContractSelector({
-            contractAddress: admin,
-            chainId,
-            // V1
-            name: 'cw-core',
-          })
-        ) ||
+        // Ensure address is a contract.
+        isValidContractAddress(admin, CHAIN_BECH32_PREFIX)
+      ) {
+        // Indexer may return `adminConfig`, in which case don't query again. If
+        // null, there is no admin to load. Otherwise. If not null, query chain.
+        if ('adminConfig' in dumpedState) {
+          if ((dumpedState as IndexerDumpState).adminConfig !== null) {
+            const { name, image_url } = (dumpedState as IndexerDumpState)
+              .adminConfig as Config
+            parentDao = {
+              coreAddress: admin,
+              name,
+              imageUrl: image_url || getFallbackImage(admin),
+            }
+          }
+        } else if (
+          get(
+            isContractSelector({
+              contractAddress: admin,
+              chainId,
+              // V1
+              name: 'cw-core',
+            })
+          ) ||
           get(
             isContractSelector({
               contractAddress: admin,
@@ -97,24 +118,25 @@ export const daoCardInfoSelector = selectorFamily<
               // V2
               name: 'dao-core',
             })
-          ))
-      ) {
-        const {
-          name,
-          image_url,
-        }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
-          // Both v1 and v2 have a config query.
-          DaoCoreV2Selectors.configSelector({
-            contractAddress: admin,
-            chainId,
-            params: [],
-          })
-        )
+          )
+        ) {
+          const {
+            name,
+            image_url,
+          }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
+            // Both v1 and v2 have a config query.
+            DaoCoreV2Selectors.configSelector({
+              contractAddress: admin,
+              chainId,
+              params: [],
+            })
+          )
 
-        parentDao = {
-          coreAddress: admin,
-          name,
-          imageUrl: image_url || getFallbackImage(admin),
+          parentDao = {
+            coreAddress: admin,
+            name,
+            imageUrl: image_url || getFallbackImage(admin),
+          }
         }
       }
 
@@ -172,7 +194,7 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
         : 0
 
       const proposalModules = get(
-        cwCoreProposalModulesSelector({
+        daoCoreProposalModulesSelector({
           coreAddress,
           chainId,
         })
@@ -242,21 +264,13 @@ export const daoDropdownInfoSelector: (
           chainId,
         })
       )
-      const config =
-        version === ContractVersion.V1
-          ? get(
-              CwCoreV1Selectors.configSelector({
-                contractAddress: coreAddress,
-                chainId,
-              })
-            )
-          : get(
-              DaoCoreV2Selectors.configSelector({
-                contractAddress: coreAddress,
-                chainId,
-                params: [],
-              })
-            )
+      const config = get(
+        DaoCoreV2Selectors.configSelector({
+          contractAddress: coreAddress,
+          chainId,
+          params: [],
+        })
+      )
 
       const subDaoAddresses: string[] =
         version === ContractVersion.V1

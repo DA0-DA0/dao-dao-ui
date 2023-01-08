@@ -1,9 +1,7 @@
-import { useTranslation } from 'react-i18next'
-
 import { useDaoInfoContext } from '@dao-dao/stateless'
 import { BaseProfileCardMemberInfoProps } from '@dao-dao/types'
 
-import { useVotingModule } from '../../../../hooks'
+import { useMembership } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { ProfileCardMemberInfo as StatelessProfileCardMemberInfo } from '../ui/ProfileCardMemberInfo'
 
@@ -11,27 +9,20 @@ export const ProfileCardMemberInfo = ({
   deposit: _deposit,
   ...props
 }: BaseProfileCardMemberInfoProps) => {
-  const { t } = useTranslation()
-  const { name: daoName } = useDaoInfoContext()
+  const { name: daoName, chainId } = useDaoInfoContext()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
-  const { walletVotingWeight, totalVotingWeight } = useVotingModule(
+  const { walletVotingWeight, totalVotingWeight } = useMembership({
     coreAddress,
-    {
-      fetchMembership: true,
-    }
-  )
-
-  if (totalVotingWeight === undefined) {
-    throw new Error(t('error.loadingData'))
-  }
+    chainId,
+  })
 
   return (
     <StatelessProfileCardMemberInfo
       {...props}
       daoName={daoName}
       votingPower={
-        walletVotingWeight === undefined
+        walletVotingWeight === undefined || totalVotingWeight === undefined
           ? { loading: true }
           : {
               loading: false,

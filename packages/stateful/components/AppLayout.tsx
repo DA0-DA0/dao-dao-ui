@@ -285,32 +285,6 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
                   data: inbox.proposalCount,
                 },
           setCommandModalVisible: () => setCommandModalVisible(true),
-          tokenPrices: {
-            loading: false,
-            data: [],
-          },
-          // currentNativePrice === undefined
-          //   ? { loading: true }
-          //   : {
-          //       loading: false,
-          //       data: [
-          //         {
-          //           label: nativeTokenLabel(NATIVE_DENOM),
-          //           price: Number(
-          //             currentNativePrice.toLocaleString(undefined, {
-          //               maximumFractionDigits: 3,
-          //             })
-          //           ),
-          //           priceDenom: 'USDC',
-          //           change:
-          //             yesterdayNativePrice !== undefined
-          //               ? ((currentNativePrice - yesterdayNativePrice) /
-          //                   yesterdayNativePrice) *
-          //                 100
-          //               : undefined,
-          //         },
-          //       ],
-          //     },
           version: '2.0',
           pinnedDaos: mountedInBrowser
             ? loadableToLoadingData(pinnedDaoDropdownInfosLoadable, [])

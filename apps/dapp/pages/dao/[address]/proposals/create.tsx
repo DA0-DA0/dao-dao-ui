@@ -22,7 +22,7 @@ import {
   DaoPageWrapperProps,
   ProfileNewProposalCard,
   SuspenseLoader,
-  useVotingModule,
+  useMembership,
 } from '@dao-dao/stateful'
 import {
   DaoProposalSingleAdapter,
@@ -50,9 +50,7 @@ const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const daoInfo = useDaoInfoContext()
-  const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
-    fetchMembership: true,
-  })
+  const { isMember = false } = useMembership(daoInfo)
   const { connected, status } = useWallet()
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(
