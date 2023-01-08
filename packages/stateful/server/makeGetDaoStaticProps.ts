@@ -490,7 +490,7 @@ const daoCoreDumpState = async (
     )
     dumpedState = indexerDumpedState
     votingModuleInfo = indexerDumpedState?.votingModuleInfo
-    proposalModules = indexerDumpedState?.proposalModules
+    proposalModules = indexerDumpedState?.proposal_modules
     created = indexerDumpedState?.createdAt
       ? new Date(indexerDumpedState.createdAt)
       : undefined

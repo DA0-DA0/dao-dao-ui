@@ -63,7 +63,6 @@ export interface DumpStateResponse {
   total_proposal_module_count: number
   version: ContractVersionInfo
   voting_module: Addr
-  [k: string]: unknown
 }
 export interface Config {
   automatically_add_cw20s: boolean
