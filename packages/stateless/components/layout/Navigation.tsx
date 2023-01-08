@@ -277,25 +277,26 @@ export const Navigation = ({
             <div className="caption-text space-y-3 font-mono">
               <p>{t('info.daodaoWithVersion', { version })}</p>
 
-              {tokenPrices.loading ? (
-                <Loader className="!justify-start" size={38} />
-              ) : (
-                tokenPrices.data.map(
-                  ({ label, price, priceDenom, change }, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-row items-end justify-between gap-2"
-                    >
-                      <p className="text-text-primary">
-                        {label} = {price} ${priceDenom}
-                      </p>
-                      {change !== undefined && (
-                        <PricePercentChange value={change} />
-                      )}
-                    </div>
+              {tokenPrices &&
+                (tokenPrices.loading ? (
+                  <Loader className="!justify-start" size={38} />
+                ) : (
+                  tokenPrices.data.map(
+                    ({ label, price, priceDenom, change }, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-row items-end justify-between gap-2"
+                      >
+                        <p className="text-text-primary">
+                          {label} = {price} ${priceDenom}
+                        </p>
+                        {change !== undefined && (
+                          <PricePercentChange value={change} />
+                        )}
+                      </div>
+                    )
                   )
-                )
-              )}
+                ))}
             </div>
           )}
 

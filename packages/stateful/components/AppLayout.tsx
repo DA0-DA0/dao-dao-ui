@@ -1,11 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import {
-  ChainInfoID,
-  WalletConnectionStatus,
-  useWalletManager,
-} from '@noahsaso/cosmodal'
+import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -22,7 +18,6 @@ import {
   proposalCreatedCardPropsAtom,
   refreshBlockHeightAtom,
   refreshTokenUsdcPriceAtom,
-  wasmswapToken1PriceInToken2With24HoursAgoSelector,
 } from '@dao-dao/state'
 import {
   BetaWarningModal,
@@ -35,14 +30,7 @@ import {
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import { CommandModalContextMaker } from '@dao-dao/types'
-import {
-  CHAIN_ID,
-  NATIVE_DENOM,
-  USDC_SWAP_ADDRESS,
-  loadableToLoadingData,
-  nativeTokenLabel,
-  usePlatform,
-} from '@dao-dao/utils'
+import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import { CommandModal, makeGenericContext } from '../command'
 import { useInbox, usePinnedDaos, useWalletInfo } from '../hooks'
@@ -207,15 +195,6 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
     walletAddress,
   ])
 
-  const nativePriceWithHistory = useCachedLoadable(
-    // Only load on mainnet.
-    CHAIN_ID === ChainInfoID.Juno1
-      ? wasmswapToken1PriceInToken2With24HoursAgoSelector({
-          swapAddress: USDC_SWAP_ADDRESS,
-        })
-      : undefined
-  )
-
   //! Pinned DAOs
   const pinnedDaoDropdownInfosLoadable = useCachedLoadable(
     pinnedDaoDropdownInfosSelector
@@ -306,37 +285,6 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
                   data: inbox.proposalCount,
                 },
           setCommandModalVisible: () => setCommandModalVisible(true),
-          tokenPrices:
-            // Only show token price on mainnet.
-            CHAIN_ID !== ChainInfoID.Juno1
-              ? { loading: false, data: [] }
-              : nativePriceWithHistory.state === 'loading'
-              ? { loading: true }
-              : nativePriceWithHistory.state === 'hasError' ||
-                !nativePriceWithHistory.contents
-              ? { loading: false, data: [] }
-              : {
-                  loading: false,
-                  data: [
-                    {
-                      label: nativeTokenLabel(NATIVE_DENOM),
-                      price: Number(
-                        nativePriceWithHistory.contents.price.toLocaleString(
-                          undefined,
-                          {
-                            maximumFractionDigits: 3,
-                          }
-                        )
-                      ),
-                      priceDenom: 'USDC',
-                      change:
-                        ((nativePriceWithHistory.contents.price -
-                          nativePriceWithHistory.contents.price24HoursAgo) /
-                          nativePriceWithHistory.contents.price24HoursAgo) *
-                        100,
-                    },
-                  ],
-                },
           version: '2.0',
           pinnedDaos: mountedInBrowser
             ? loadableToLoadingData(pinnedDaoDropdownInfosLoadable, [])
