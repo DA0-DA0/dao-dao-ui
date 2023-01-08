@@ -12,6 +12,7 @@ import {
   DaoCardInfo,
   DaoCardInfoLazyData,
   DaoDropdownInfo,
+  IndexerDumpState,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -46,6 +47,7 @@ export const daoCardInfoSelector = selectorFamily<
     ({ get }) => {
       const dumpedState:
         | CwCoreV1DumpStateResponse
+        | IndexerDumpState
         | DaoCoreV2DumpStateResponse
         | undefined = get(
         // Both v1 and v2 have a dump_state query.
@@ -62,15 +64,14 @@ export const daoCardInfoSelector = selectorFamily<
 
       const { config, admin } = dumpedState
 
-      let established: Date | undefined
       // Indexer may return a createdAt string, in which case don't query again.
-      if (typeof dumpedState.createdAt === 'string' && dumpedState.createdAt) {
-        established = new Date(dumpedState.createdAt)
-      } else {
-        established = get(
-          contractInstantiateTimeSelector({ address: coreAddress, chainId })
-        )
-      }
+      const established: Date | undefined =
+        'createdAt' in dumpedState &&
+        (dumpedState as IndexerDumpState).createdAt
+          ? new Date((dumpedState as IndexerDumpState).createdAt)
+          : get(
+              contractInstantiateTimeSelector({ address: coreAddress, chainId })
+            )
 
       // Get parent DAO if exists.
       let parentDao: DaoCardInfo['parentDao']
@@ -84,8 +85,9 @@ export const daoCardInfoSelector = selectorFamily<
         // Indexer may return `adminConfig`, in which case don't query again. If
         // null, there is no admin to load. Otherwise. If not null, query chain.
         if ('adminConfig' in dumpedState) {
-          if (dumpedState.adminConfig !== null) {
-            const { name, image_url } = dumpedState.adminConfig as Config
+          if ((dumpedState as IndexerDumpState).adminConfig !== null) {
+            const { name, image_url } = (dumpedState as IndexerDumpState)
+              .adminConfig as Config
             parentDao = {
               coreAddress: admin,
               name,
