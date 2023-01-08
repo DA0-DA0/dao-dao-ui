@@ -370,11 +370,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
         <p className="caption-text mt-2">
           {nativeUnstakingDurationSeconds
             ? t('info.unstakingDurationExplanation', {
-                duration: secondsToWdhms(
-                  nativeUnstakingDurationSeconds,
-                  2,
-                  false
-                ),
+                duration: secondsToWdhms(nativeUnstakingDurationSeconds),
               })
             : t('info.unstakingDurationNoneExplanation')}
         </p>
