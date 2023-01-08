@@ -552,7 +552,7 @@ const daoCoreDumpState = async (
       info: votingModuleInfo,
     },
     activeProposalModules: proposalModules.filter(
-      ({ status }) => status === 'Enabled'
+      ({ status }) => status === 'enabled' || status === 'Enabled'
     ),
     created,
   }

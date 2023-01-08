@@ -10,7 +10,12 @@ import {
   Uint128,
 } from './common'
 
-export type ProposalModuleStatus = 'Enabled' | 'Disabled'
+// v2 changed case.
+export type ProposalModuleStatus =
+  | 'enabled'
+  | 'Enabled'
+  | 'disabled'
+  | 'Disabled'
 export type ActiveProposalModulesResponse = ProposalModule[]
 export interface ProposalModule {
   address: Addr
@@ -41,17 +46,23 @@ export type Cw20BalancesResponse = Cw20BalanceResponse[]
 export type Cw20TokenListResponse = Addr[]
 export type Cw721TokenListResponse = Addr[]
 export type DaoURIResponse = string | null
+// v2 changed case.
 export type PauseInfoResponse =
   | {
       Paused: {
         expiration: Expiration
-        [k: string]: unknown
       }
     }
   | {
-      Unpaused: {
-        [k: string]: unknown
+      paused: {
+        expiration: Expiration
       }
+    }
+  | {
+      Unpaused: {}
+    }
+  | {
+      unpaused: {}
     }
 export interface DumpStateResponse {
   active_proposal_module_count: number

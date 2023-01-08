@@ -41,5 +41,7 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
     'Module' in creationPolicy &&
     creationPolicy.Module.addr
     ? creationPolicy.Module.addr
+    : creationPolicy && 'module' in creationPolicy && creationPolicy.module.addr
+    ? creationPolicy.module.addr
     : null
 }

@@ -70,7 +70,8 @@ export const NewProposal = ({
     })
   )
   const isPaused =
-    pauseInfo.state === 'hasValue' && 'Paused' in pauseInfo.contents
+    pauseInfo.state === 'hasValue' &&
+    ('paused' in pauseInfo.contents || 'Paused' in pauseInfo.contents)
 
   const {
     hooks: { useActions: useVotingModuleActions },

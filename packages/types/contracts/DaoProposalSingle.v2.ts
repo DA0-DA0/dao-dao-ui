@@ -158,16 +158,22 @@ export type MigrateMsg =
       }
     }
 export type ProposalCountResponse = number
+// v2 changed case.
 export type ProposalCreationPolicyResponse =
   | {
-      Anyone: {
-        [k: string]: unknown
-      }
+      Anyone: {}
+    }
+  | {
+      anyone: {}
     }
   | {
       Module: {
         addr: Addr
-        [k: string]: unknown
+      }
+    }
+  | {
+      module: {
+        addr: Addr
       }
     }
 export interface ProposalHooksResponse {
