@@ -32,7 +32,9 @@ export const SidebarWallet = (props: SidebarWalletProps) => (
       />
     ) : (
       <ConnectWallet
-        className="self-end"
+        center
+        className="w-full"
+        variant="secondary"
         {...{
           ...props,
           connectedOrConnecting: undefined,

@@ -7,11 +7,13 @@ import {
   IconButtonLink,
   LinkWrapper,
   ProfileDisconnectedCard,
+  ProfileDisconnectedCardProps,
   ProfileHomeCard,
   ProfileHomeCardProps,
   SidebarWallet,
 } from '../components'
 import { Default as FeaturedDaosStory } from '../components/dao/FeaturedDaos.stories'
+import { Default as ProfileDisconnectedCardStory } from '../components/profile/ProfileDisconnectedCard.stories'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
 import { Home } from './Home'
 
@@ -81,7 +83,11 @@ Disconnected.args = {
     ),
   },
   connected: false,
-  rightSidebarContent: <ProfileDisconnectedCard />,
+  rightSidebarContent: (
+    <ProfileDisconnectedCard
+      {...(ProfileDisconnectedCardStory.args as ProfileDisconnectedCardProps)}
+    />
+  ),
 }
 Disconnected.parameters = {
   ...Connected.parameters,

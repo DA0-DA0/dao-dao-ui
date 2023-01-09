@@ -12,11 +12,12 @@ import {
 } from '@dao-dao/state'
 import {
   DaoCard,
+  ProfileDisconnectedCard,
   ProfileHomeCard,
   useLoadingFeaturedDaoCardInfos,
   useLoadingPinnedDaoCardInfos,
 } from '@dao-dao/stateful'
-import { Home, ProfileDisconnectedCard } from '@dao-dao/stateless'
+import { Home } from '@dao-dao/stateless'
 
 const HomePage: NextPage = () => {
   const { connected } = useWallet()

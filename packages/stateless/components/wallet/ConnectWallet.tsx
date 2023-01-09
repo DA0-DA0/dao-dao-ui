@@ -8,7 +8,7 @@ import { Button, ButtonProps } from '../buttons'
 import { NoMobileWallet } from './NoMobileWallet'
 
 export interface ConnectWalletProps
-  extends Partial<Omit<ButtonProps, 'onClick' | 'size'>> {
+  extends Partial<Omit<ButtonProps, 'onClick'>> {
   onConnect: () => void
   className?: string
 }
@@ -22,7 +22,7 @@ export const ConnectWallet = ({ onConnect, ...props }: ConnectWalletProps) => {
   }
 
   return (
-    <Button {...props} onClick={onConnect} size="lg">
+    <Button onClick={onConnect} size="lg" {...props}>
       <Sensors className="!h-6 !w-6" />
       <p>{t('button.connectWallet')}</p>
     </Button>

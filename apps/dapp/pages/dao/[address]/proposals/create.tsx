@@ -20,6 +20,7 @@ import {
 import {
   DaoPageWrapper,
   DaoPageWrapperProps,
+  ProfileDisconnectedCard,
   ProfileNewProposalCard,
   SuspenseLoader,
   useMembership,
@@ -33,7 +34,6 @@ import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import {
   CreateProposal,
   PageLoader,
-  ProfileDisconnectedCard,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
