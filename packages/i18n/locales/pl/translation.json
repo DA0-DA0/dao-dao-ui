@@ -313,7 +313,7 @@
     "yourTokensUnstaked": "Twoje ${{tokenSymbol}} tokeny zostały wypłacone."
   },
   "proposalModuleLabel": {
-    "cw-govmod-single": "Pojedynczy wybór"
+    "DaoProposalSingle": "Pojedynczy wybór"
   },
   "splash": {
     "anyoneCanParticipate": "Każdy z twojej społeczności może być pełnoprawnym uczestnikiem.",

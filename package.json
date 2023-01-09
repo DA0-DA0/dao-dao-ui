@@ -1,26 +1,25 @@
 {
-  "name": "dao-dao",
-  "version": "0.3.0",
+  "name": "dao-dao-ui",
+  "version": "2.0.0",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo run build --continue",
+    "build": "turbo run build --continue --filter=\"!@dao-dao/storybook\"",
     "dev": "yarn dapp dev",
-    "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue",
-    "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue",
+    "start": "yarn dapp start",
+    "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue --parallel",
+    "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
     "test": "turbo run test",
     "dapp": "yarn workspace @dao-dao/dapp",
-    "raw-sda": "yarn workspace @dao-dao/raw-sda",
-    "sda-base": "yarn workspace @dao-dao/sda-base",
-    "icons": "yarn workspace @dao-dao/icons",
+    "i18n": "yarn workspace @dao-dao/i18n",
     "state": "yarn workspace @dao-dao/state",
-    "ui": "yarn workspace @dao-dao/ui",
-    "utils": "yarn workspace @dao-dao/utils",
-    "actions": "yarn workspace @dao-dao/actions",
-    "common": "yarn workspace @dao-dao/common",
-    "i18n": "yarn workspace @dao-dao/i18n"
+    "stateless": "yarn workspace @dao-dao/stateless",
+    "stateful": "yarn workspace @dao-dao/stateful",
+    "storybook": "yarn workspace @dao-dao/storybook",
+    "types": "yarn workspace @dao-dao/types",
+    "utils": "yarn workspace @dao-dao/utils"
   },
   "devDependencies": {
     "turbo": "latest"

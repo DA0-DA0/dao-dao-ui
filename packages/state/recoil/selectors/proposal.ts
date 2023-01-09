@@ -1,19 +1,18 @@
 import { selectorFamily } from 'recoil'
 
-import { ProposalModule, fetchProposalModules } from '@dao-dao/utils'
+import { WithChainId } from '@dao-dao/types'
 
-import { cosmWasmClientSelector } from './chain'
-import { cwCoreVersionSelector } from './contract'
+import { cosmWasmClientForChainSelector } from './chain'
 
 export const proposalExecutionTXHashSelector = selectorFamily<
   string | undefined,
-  { contractAddress: string; proposalId: number }
+  WithChainId<{ contractAddress: string; proposalId: number }>
 >({
   key: 'proposalExecutionTXHash',
   get:
-    ({ contractAddress, proposalId }) =>
+    ({ contractAddress, proposalId, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
+      const client = get(cosmWasmClientForChainSelector(chainId))
 
       const events = await client.searchTx({
         tags: [
@@ -28,20 +27,5 @@ export const proposalExecutionTXHashSelector = selectorFamily<
       }
 
       return events?.[0]?.hash
-    },
-})
-
-export const cwCoreProposalModulesSelector = selectorFamily<
-  ProposalModule[],
-  string
->({
-  key: 'cwCoreProposalModules',
-  get:
-    (coreAddress) =>
-    async ({ get }) => {
-      const client = get(cosmWasmClientSelector)
-      const coreVersion = get(cwCoreVersionSelector(coreAddress))
-
-      return await fetchProposalModules(client, coreAddress, coreVersion)
     },
 })

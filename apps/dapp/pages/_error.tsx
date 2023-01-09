@@ -25,7 +25,7 @@ import NextErrorComponent from 'next/error'
 import Link from 'next/link'
 import { useEffect } from 'react'
 
-import { ErrorPage } from '@dao-dao/ui'
+import { ErrorPage } from '@dao-dao/stateless'
 import { processError } from '@dao-dao/utils'
 
 interface CustomErrorComponentProps {
@@ -57,7 +57,7 @@ const CustomErrorComponent = ({
       </p>
 
       {error && (
-        <pre className="mt-6 text-xs text-error whitespace-pre-wrap">
+        <pre className="mt-6 whitespace-pre-wrap text-xs text-text-interactive-error">
           {error}
         </pre>
       )}

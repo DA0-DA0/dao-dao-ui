@@ -1,5 +1,6 @@
 import Ajv from 'ajv'
 import JSON5 from 'json5'
+import { TFunction } from 'react-i18next'
 
 import { CHAIN_BECH32_PREFIX } from '../constants'
 import cosmosMsgSchema from '../cosmos_msg.json'
@@ -10,7 +11,7 @@ import {
 } from '../isValidAddress'
 import { isValidUrl } from '../isValidUrl'
 
-export * from './instantiate'
+export * from './makeValidateMsg'
 
 export const validateRequired = (
   v: string | number | boolean | null | undefined
@@ -38,13 +39,22 @@ export const validateAddress = (v: string) =>
 export const validateValidatorAddress = (v: string) =>
   isValidValidatorAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid address'
 
-export const validateUrl = (v: string) =>
-  isValidUrl(v) ||
-  'Invalid URL link, must start with https and end with png/jpeg/gif.'
+export const validateUrl = (v: string | undefined) =>
+  (v && isValidUrl(v)) || 'Invalid image URL: must start with https.'
 
-export const validateContractAddress = (v: string, required = true) =>
+export const validateUrlWithIpfs = (v: string | undefined) =>
+  (v && isValidUrl(v, true)) ||
+  'Invalid image URL: must start with https or ipfs.'
+
+export const makeValidateDate = (t: TFunction) => (v: string | undefined) =>
+  (v && !isNaN(Date.parse(v))) || t('error.invalidDate')
+
+export const validateContractAddress = (
+  v: string | undefined,
+  required = true
+) =>
   (!required && !v) ||
-  isValidContractAddress(v, CHAIN_BECH32_PREFIX) ||
+  (v && isValidContractAddress(v, CHAIN_BECH32_PREFIX)) ||
   'Invalid contract address'
 
 export const validateJSON = (v: string) => {
