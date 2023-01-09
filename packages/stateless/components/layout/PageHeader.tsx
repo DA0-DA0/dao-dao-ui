@@ -75,7 +75,7 @@ export const PageHeader = ({
             // text instead of just its icon. On these larger views, add more
             // padding to compensate.
             (title || breadcrumbs) && {
-              'px-16 sm:px-28': true,
+              'px-24 sm:px-48': true,
               // Centered on small screen or if forceCenter is true. If not
               // centered, no left padding.
               'sm:!pl-0': !forceCenter,
