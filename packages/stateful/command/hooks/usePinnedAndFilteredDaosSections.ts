@@ -67,7 +67,7 @@ export const usePinnedAndFilteredDaosSections = ({
     : featuredDaosLoading.data
 
   const pinnedSection: CommandModalContextSection<CommandModalDaoInfo> = {
-    name: t('title.pinned'),
+    name: t('title.following'),
     onChoose,
     items: pinnedDaosLoading.loading ? [] : pinnedDaosLoading.data,
   }

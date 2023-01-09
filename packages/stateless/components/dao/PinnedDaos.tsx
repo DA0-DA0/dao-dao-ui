@@ -33,7 +33,7 @@ export const PinnedDaos = ({
   return (
     <>
       <div className="mt-2 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
-        <p className="title-text">{t('title.pinned')}</p>
+        <p className="title-text">{t('title.following')}</p>
 
         <div className="flex flex-row items-center justify-between gap-6">
           <p className="primary-text text-text-body">{t('title.sortBy')}</p>
@@ -48,7 +48,7 @@ export const PinnedDaos = ({
         <NoContent
           Icon={PushPinOutlined}
           actionNudge={t('info.wouldYouLikeToSearchQuestion')}
-          body={t('info.noDaosPinnedYet')}
+          body={t('info.noDaosFollowedYet')}
           buttonLabel={t('button.searchDaos')}
           onClick={openSearch}
         />

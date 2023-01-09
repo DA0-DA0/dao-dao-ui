@@ -100,7 +100,7 @@ export const Inbox = <T extends {}>({
         {daosWithProposals.loading ? (
           <Loader fill={false} />
         ) : daosWithProposals?.data?.length === 0 ? (
-          <NoContent Icon={PushPinOutlined} body={t('info.noPinnedDaos')} />
+          <NoContent Icon={PushPinOutlined} body={t('info.noFollowedDaos')} />
         ) : numOpenProposals === 0 ? (
           <NoContent
             Icon={WhereToVoteOutlined}
