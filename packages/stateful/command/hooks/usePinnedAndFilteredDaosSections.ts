@@ -48,11 +48,13 @@ export const usePinnedAndFilteredDaosSections = ({
   // Use query results if filter is present.
   const daos = options.filter
     ? (queryResults.state !== 'hasValue' ? [] : queryResults.contents)
-        .filter(({ value }) => !!value)
+        .filter(({ value }) => !!value?.config)
         .map(
           ({
             contractAddress,
-            value: { name, image_url },
+            value: {
+              config: { name, image_url },
+            },
           }): CommandModalDaoInfo => ({
             // Nothing specific to set here yet, just uses default.
             chainId: undefined,
