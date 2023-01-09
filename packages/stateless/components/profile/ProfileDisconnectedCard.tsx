@@ -4,10 +4,8 @@ import {
   SensorsOff,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ReactNode, useState } from 'react'
+import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { ProfileImage } from './ProfileImage'
 
 export interface ProfileDisconnectedCardProps {
   connectWallet: ReactNode
@@ -19,7 +17,6 @@ export const ProfileDisconnectedCard = ({
   className,
 }: ProfileDisconnectedCardProps) => {
   const { t } = useTranslation()
-  const [cyclopsMode, setCyclopsMode] = useState(false)
 
   return (
     <div
@@ -30,23 +27,12 @@ export const ProfileDisconnectedCard = ({
     >
       <div className="p-6">
         <div className="flex flex-col items-center justify-center pt-4">
-          {cyclopsMode ? (
-            <ProfileImage
-              imageUrl="/odysseus.jpg"
-              onClick={() => setCyclopsMode(false)}
-              size="lg"
-            />
-          ) : (
-            <div
-              className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border-primary bg-component-widget"
-              onClick={() => setCyclopsMode(true)}
-            >
-              <SensorsOff className="!h-5 !w-5 text-icon-interactive-disabled" />
-            </div>
-          )}
-          <div className="title-text mt-6 text-text-body">
-            {/* eslint-disable-next-line i18next/no-literal-string */}
-            {cyclopsMode ? 'Odysseus' : t('title.nobody')}
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border-primary bg-component-widget">
+            <SensorsOff className="!h-5 !w-5 text-icon-interactive-disabled" />
+          </div>
+
+          <div className="title-text mt-6 font-normal text-text-tertiary">
+            {t('title.disconnected')}
           </div>
 
           <div className="my-5">{connectWallet}</div>
