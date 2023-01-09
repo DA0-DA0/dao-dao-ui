@@ -34,12 +34,16 @@ export const searchDaos = async (
 
   const results = await index.search<DaoSearchResult>(query, {
     limit,
-    filter: exclude?.length
-      ? // Only show DAOs with proposals to reduce clutter/spam.
-        `((NOT value.proposalCount EXISTS) OR (value.proposalCount > 0)) AND NOT contractAddress IN ["${exclude.join(
-          '", "'
-        )}"]`
-      : undefined,
+    filter: [
+      // Only show DAOs with proposals to reduce clutter/spam.
+      `(NOT value.proposalCount EXISTS) OR (value.proposalCount > 0)`,
+      ...(exclude?.length
+        ? // Exclude DAOs that are in the exclude list.
+          [`NOT contractAddress IN ["${exclude.join('", "')}"]`]
+        : []),
+    ]
+      .map((filter) => `(${filter})`)
+      .join(' AND '),
     // Most recent at the top.
     sort: ['blockHeight:desc'],
   })
