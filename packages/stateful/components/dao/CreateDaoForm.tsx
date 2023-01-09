@@ -158,10 +158,8 @@ export const CreateDaoForm = ({
 
   // Debounce saving latest data to atom and thus localStorage every 10 seconds.
   useEffect(() => {
-    // If created DAO, clear saved data and don't update.
+    // If created DAO, don't update.
     if (daoCreatedCardProps) {
-      // Clear saved form data.
-      setNewDaoAtom(makeDefaultNewDao())
       return
     }
 
