@@ -4,7 +4,6 @@ import { waitForAll } from 'recoil'
 import {
   Loader,
   ProfileCantVoteCard,
-  ProfileDisconnectedCard,
   ProfileVoteCard,
   useAppLayoutContext,
   useCachedLoadable,
@@ -19,6 +18,7 @@ import {
 } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { ProfileDisconnectedCard } from './ProfileDisconnectedCard'
 
 export interface ProfileProposalCardProps {
   onVoteSuccess: () => void | Promise<void>

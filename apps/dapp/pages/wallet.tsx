@@ -12,14 +12,13 @@ import { useRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { walletTransactionAtom } from '@dao-dao/state'
-import { ProfileHomeCard, SuspenseLoader } from '@dao-dao/stateful'
-import { ActionsProvider, useCoreActions } from '@dao-dao/stateful/actions'
 import {
-  Loader,
   ProfileDisconnectedCard,
-  Wallet,
-  WalletProps,
-} from '@dao-dao/stateless'
+  ProfileHomeCard,
+  SuspenseLoader,
+} from '@dao-dao/stateful'
+import { ActionsProvider, useCoreActions } from '@dao-dao/stateful/actions'
+import { Loader, Wallet, WalletProps } from '@dao-dao/stateless'
 import { WalletTransactionForm } from '@dao-dao/types'
 import {
   ActionOptionsContextType,

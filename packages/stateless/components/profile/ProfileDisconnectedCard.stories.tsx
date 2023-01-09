@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ConnectWallet, ConnectWalletProps } from '../wallet'
+import { Default as ConnectWalletStory } from '../wallet/ConnectWallet.stories'
 import { ProfileDisconnectedCard } from './ProfileDisconnectedCard'
 
 export default {
@@ -15,7 +17,11 @@ const Template: ComponentStory<typeof ProfileDisconnectedCard> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  connectWallet: (
+    <ConnectWallet {...(ConnectWalletStory.args as ConnectWalletProps)} />
+  ),
+}
 Default.parameters = {
   design: {
     type: 'figma',

@@ -13,6 +13,7 @@ import { navigatingToHrefAtom } from '@dao-dao/state'
 import {
   DaoPageWrapper,
   DaoProposalPageWrapperProps,
+  ProfileDisconnectedCard,
   ProfileProposalCard,
   Trans,
   useAwaitNextBlock,
@@ -26,7 +27,6 @@ import {
 import { makeGetDaoProposalStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
-  ProfileDisconnectedCard,
   Proposal,
   ProposalNotFound,
   ProposalProps,

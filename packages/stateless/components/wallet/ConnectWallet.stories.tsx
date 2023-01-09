@@ -12,4 +12,6 @@ const Template: ComponentStory<typeof ConnectWallet> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  onConnect: () => alert('connect'),
+}

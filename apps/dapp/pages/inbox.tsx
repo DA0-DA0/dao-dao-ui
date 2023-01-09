@@ -10,6 +10,7 @@ import { useRecoilValue } from 'recoil'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   LinkWrapper,
+  ProfileDisconnectedCard,
   ProfileHomeCard,
   ProposalLine,
   ProposalLineProps,
@@ -20,7 +21,6 @@ import {
   DaoWithProposals,
   Inbox,
   PageLoader,
-  ProfileDisconnectedCard,
   useAppLayoutContext,
 } from '@dao-dao/stateless'
 import { CHAIN_ID, SITE_URL } from '@dao-dao/utils'

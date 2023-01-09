@@ -16,6 +16,7 @@ import {
   DaoPageWrapperProps,
   DiscordNotifierConfigureModal,
   LinkWrapper,
+  ProfileDisconnectedCard,
   ProposalsTab,
   SubDaosTab,
   SuspenseLoader,
@@ -33,7 +34,6 @@ import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   DaoHome,
   Loader,
-  ProfileDisconnectedCard,
   ProfileMemberCard,
   ProfileNotMemberCard,
   useAppLayoutContext,
