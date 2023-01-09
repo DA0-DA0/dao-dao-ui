@@ -27,6 +27,8 @@ export const CreateProposal = ({
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
+  // List of proposal modules available, using the adapter ID to derive a label
+  // to display in the dropdown.
   const proposalModuleItems = useMemo(
     () =>
       daoInfo.proposalModules
