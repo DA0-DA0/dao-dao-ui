@@ -11,4 +11,5 @@ export interface IndexerDumpState
   votingModuleInfo: ContractVersionInfo
   createdAt: string // UTC string
   adminConfig?: Config | null
+  proposalCount?: number
 }

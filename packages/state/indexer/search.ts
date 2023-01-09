@@ -1,5 +1,6 @@
 import MeiliSearch from 'meilisearch'
 
+import { IndexerDumpState } from '@dao-dao/types'
 import { SEARCH_API_KEY, SEARCH_DAOS_INDEX, SEARCH_HOST } from '@dao-dao/utils'
 
 let _client: MeiliSearch | undefined
@@ -20,11 +21,7 @@ export interface DaoSearchResult {
   codeId: number
   blockHeight: number
   blockTimeUnixMicro: number
-  value: {
-    name: string
-    description: string
-    image_url: string | null
-  }
+  value: IndexerDumpState
 }
 
 export const searchDaos = async (
@@ -38,7 +35,10 @@ export const searchDaos = async (
   const results = await index.search<DaoSearchResult>(query, {
     limit,
     filter: exclude?.length
-      ? `NOT contractAddress IN ["${exclude.join('", "')}"]`
+      ? // Only show DAOs with proposals to reduce clutter/spam.
+        `((NOT value.proposalCount EXISTS) OR (value.proposalCount > 0)) AND NOT contractAddress IN ["${exclude.join(
+          '", "'
+        )}"]`
       : undefined,
     // Most recent at the top.
     sort: ['blockHeight:desc'],
