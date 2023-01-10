@@ -149,14 +149,14 @@ const useTransformToCosmos: UseTransformToCosmos<ValidatorActionsData> = () =>
         return makeStargateMessage({
           stargate: {
             type_url: ValidatorActionType.CreateValidator,
-            value: data.createMsg,
+            value: JSON.parse(data.createMsg),
           },
         })
       case ValidatorActionType.EditValidator:
         return makeStargateMessage({
           stargate: {
             type_url: ValidatorActionType.EditValidator,
-            value: data.editMsg,
+            value: JSON.parse(data.editMsg),
           },
         })
       case ValidatorActionType.UnjailValidator:
