@@ -1,16 +1,24 @@
+import { QuestionMark } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { LinkWrapperProps } from '@dao-dao/types'
 import { DaoParentInfo } from '@dao-dao/types/dao'
 import { getFallbackImage, toAccessibleImageUrl } from '@dao-dao/utils'
 
+import { Tooltip } from '../tooltip'
+
 export interface DaoImageProps {
+  daoName: string
   size: 'sm' | 'lg'
   imageUrl: string | undefined | null
   // Used to get placeholder image if no `imageUrl` present.
   coreAddress?: string
-  parentDao?: Pick<DaoParentInfo, 'coreAddress' | 'imageUrl'> | null
+  parentDao?: Pick<
+    DaoParentInfo,
+    'name' | 'coreAddress' | 'imageUrl' | 'registeredSubDao'
+  > | null
   className?: string
   imageClassName?: string
   children?: ReactNode
@@ -19,6 +27,7 @@ export interface DaoImageProps {
 }
 
 export const DaoImage = ({
+  daoName,
   size,
   imageUrl,
   coreAddress,
@@ -29,6 +38,8 @@ export const DaoImage = ({
   blur,
   LinkWrapper,
 }: DaoImageProps) => {
+  const { t } = useTranslation()
+
   const sizeClassNames = clsx('overflow-hidden rounded-full', {
     // DaoCard
     'h-[4.5rem] w-[4.5rem]': size === 'sm',
@@ -87,7 +98,26 @@ export const DaoImage = ({
                 : getFallbackImage(parentDao.coreAddress)
             })`,
           }}
-        />
+        >
+          {/* Show gray overlay with question mark if parent has not registered this SubDAO. */}
+          {!parentDao.registeredSubDao && (
+            <Tooltip
+              title={t('info.subDaoNeedsAdding', {
+                parent: parentDao.name,
+                child: daoName,
+              })}
+            >
+              <div className="absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full bg-background-overlay">
+                <QuestionMark
+                  className={clsx('text-icon-interactive-error', {
+                    '!h-5 !w-5': size === 'sm',
+                    '!h-6 !w-6': size === 'lg',
+                  })}
+                />
+              </div>
+            </Tooltip>
+          )}
+        </LinkWrapper>
       )}
     </div>
   )

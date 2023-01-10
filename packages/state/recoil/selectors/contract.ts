@@ -98,11 +98,13 @@ export const contractVersionSelector = selectorFamily<
 
 export const isContractSelector = selectorFamily<
   boolean,
-  WithChainId<{ contractAddress: string; name: string }>
+  WithChainId<
+    { contractAddress: string } & ({ name: string } | { names: string[] })
+  >
 >({
   key: 'isContract',
   get:
-    ({ contractAddress, name, chainId }) =>
+    ({ contractAddress, chainId, ...nameOrNames }) =>
     async ({ get }) => {
       try {
         // All InfoResponses are the same, so just use core's.
@@ -116,7 +118,9 @@ export const isContractSelector = selectorFamily<
           })
         )
 
-        return contract.includes(name)
+        return 'name' in nameOrNames
+          ? contract.includes(nameOrNames.name)
+          : nameOrNames.names.some((name) => contract.includes(name))
       } catch (err) {
         // Invalid query enum info variant, different contract.
         if (
