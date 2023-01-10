@@ -635,6 +635,14 @@
     "passed": "Passed",
     "rejected": "Rejected"
   },
+  "proposalStatusTitleShort": {
+    "closed": "Closed",
+    "executed": "Executed",
+    "execution_failed": "Exec. fail",
+    "open": "Open",
+    "passed": "Passed",
+    "rejected": "Rejected"
+  },
   "proposalVoteTitle": {
     "abstain": "Abstain",
     "no": "No",
