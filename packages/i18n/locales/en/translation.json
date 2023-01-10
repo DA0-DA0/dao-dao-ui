@@ -567,6 +567,7 @@
     "stakingAddress": "Staking Contract",
     "subDaoExplanation": "SubDAOs are children DAOs that help manage groups within your DAO.",
     "subDaoNeedsAdding": "{{parent}} has not yet recognized {{child}} as a SubDAO.",
+    "subDaoRegistered": "{{child}} is a SubDAO of {{parent}}.",
     "submissionsBeingRated": "Members of the DAO are rating submissions. After the rating period closes, the DAO will publish a proposal to distribute compensation according to their responses.",
     "submitUpgradeProposal": "Submit a proposal to upgrade the DAO?",
     "submitted": "Submitted",
