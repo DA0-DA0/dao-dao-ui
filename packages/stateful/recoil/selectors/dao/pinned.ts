@@ -2,7 +2,7 @@ import { selector, selectorFamily, waitForAll } from 'recoil'
 
 import { openProposalsSelector, pinnedAddressesAtom } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
-import { DaoWithOpenUnvotedProposals, WithChainId } from '@dao-dao/types'
+import { DaoWithOpenProposals, WithChainId } from '@dao-dao/types'
 
 import { daoDropdownInfoSelector } from './cards'
 import { daoCoreProposalModulesSelector } from './misc'
@@ -39,11 +39,11 @@ export const pinnedDaosWithProposalModulesSelector = selector({
   },
 })
 
-export const pinnedDaosWithOpenUnvotedProposalsSelector = selectorFamily<
-  DaoWithOpenUnvotedProposals[],
+export const pinnedDaosWithOpenProposalsSelector = selectorFamily<
+  DaoWithOpenProposals[],
   WithChainId<{ walletAddress?: string }>
 >({
-  key: 'pinnedDaosWithOpenUnvotedProposals',
+  key: 'pinnedDaosWithOpenProposals',
   get:
     ({ walletAddress, chainId }) =>
     ({ get }) => {
@@ -64,25 +64,23 @@ export const pinnedDaosWithOpenUnvotedProposalsSelector = selectorFamily<
       )
 
       return pinnedDaosWithProposalModules.map(
-        (
-          { coreAddress, proposalModules },
-          index
-        ): DaoWithOpenUnvotedProposals => {
+        ({ coreAddress, proposalModules }, index): DaoWithOpenProposals => {
           const proposalModulesWithOpenProposals = openProposalsPerDao[index]
 
           return {
             coreAddress,
             proposalModules,
-            openUnvotedProposals: proposalModules.flatMap(
+            openProposals: proposalModules.flatMap(
               (proposalModule) =>
                 proposalModulesWithOpenProposals
                   .find(
                     ({ proposalModuleAddress }) =>
                       proposalModuleAddress === proposalModule.address
                   )
-                  ?.proposals.map(({ id }) => ({
+                  ?.proposals.map(({ id, voted }) => ({
                     proposalModule,
                     proposalNumber: id,
+                    voted,
                   })) ?? []
             ),
           }

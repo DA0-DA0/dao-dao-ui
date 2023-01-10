@@ -1,20 +1,19 @@
 import { ProposalModule } from './dao'
 
-export interface DaoWithOpenUnvotedProposals {
+export interface DaoWithOpenProposals {
   coreAddress: string
   proposalModules: ProposalModule[]
-  openUnvotedProposals:
-    | {
-        proposalModule: ProposalModule
-        proposalNumber: number
-      }[]
-    | undefined
+  openProposals: {
+    proposalModule: ProposalModule
+    proposalNumber: number
+    voted?: boolean
+  }[]
 }
 
 export interface UseInboxReturn {
   loading: boolean
   refetching: boolean
-  daosWithOpenUnvotedProposals: DaoWithOpenUnvotedProposals[]
+  daosWithOpenProposals: DaoWithOpenProposals[]
   proposalCount: number
   refetch: () => void
 }
