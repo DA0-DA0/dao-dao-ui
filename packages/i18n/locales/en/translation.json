@@ -677,7 +677,7 @@
     "nominationSubmitted": "Contributor nominated for this compensation cycle.",
     "proposalClosed": "Closed successfully.",
     "proposalCreatedCompleteCompensationCycle": "Proposal published. Complete the compensation cycle by saving the proposal ID.",
-    "proposalExecuted": "Executed successfully. Refreshing page...",
+    "proposalExecuted": "Executed. Refreshing page...",
     "ratingsSubmitted": "Ratings submitted.",
     "tokenSwapContractInstantiated": "Token swap created successfully.",
     "transactionExecuted": "Transaction executed successfully.",

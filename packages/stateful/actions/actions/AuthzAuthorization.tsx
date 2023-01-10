@@ -10,7 +10,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeStargateMessage } from '@dao-dao/utils'
+import { makeStargateMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import { ProfileDisplay, SuspenseLoader } from '../../components'
 import { AuthzAuthorizationComponent as StatelessAuthzComponent } from '../components/AuthzAuthorization'
@@ -49,8 +49,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
 ) =>
   useMemo(
     () =>
-      'stargate' in msg &&
-      msg.stargate.value &&
+      objectMatchesStructure(msg, {
+        stargate: {
+          type_url: {},
+          value: {},
+        },
+      }) &&
       (msg.stargate.type_url === '/cosmos.authz.v1beta1.MsgGrant' ||
         msg.stargate.type_url === '/cosmos.authz.v1beta1.MsgRevoke')
         ? {

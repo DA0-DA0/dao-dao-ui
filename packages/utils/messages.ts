@@ -118,8 +118,9 @@ export function decodeMessages(
     } else if (isStargateMsg(msgObj)) {
       let msg = msgObj as StargateMsg
       // Decode Stargate protobuf message
-      msg.stargate = decodeProtobuf(msg.stargate)
-      decodedMessageArray.push(msgObj)
+      decodedMessageArray.push({
+        stargate: decodeProtobuf(msg.stargate),
+      })
     } else {
       decodedMessageArray.push(msgObj)
     }
@@ -167,48 +168,56 @@ export const decodeProtobuf = (msg: {
   type_url: string
   value: any
 }): { type_url: string; value: any } => {
+  const newMsg = {
+    ...msg,
+  }
   switch (msg.type_url) {
     case '/cosmos.authz.v1beta1.MsgGrant':
-      msg.value = MsgGrant.decode(fromBase64(msg.value))
-      if (msg.value?.grant?.authorization) {
-        msg.value.grant.authorization.value = GenericAuthorization.decode(
-          msg.value.grant.authorization?.value
+      newMsg.value = MsgGrant.decode(fromBase64(msg.value))
+      if (newMsg.value?.grant?.authorization) {
+        newMsg.value.grant.authorization.value = GenericAuthorization.decode(
+          newMsg.value.grant.authorization?.value
         )
       }
       break
     case '/cosmos.authz.v1beta1.MsgRevoke':
-      msg.value = MsgRevoke.decode(fromBase64(msg.value))
+      newMsg.value = MsgRevoke.decode(fromBase64(msg.value))
       break
     case '/cosmos.authz.v1beta1.MsgExec':
-      msg.value = MsgExec.decode(fromBase64(msg.value))
+      newMsg.value = MsgExec.decode(fromBase64(msg.value))
       break
     case '/cosmos.staking.v1beta1.MsgDelegate':
-      msg.value = MsgDelegate.decode(fromBase64(msg.value))
+      newMsg.value = MsgDelegate.decode(fromBase64(msg.value))
       break
     case '/cosmos.staking.v1beta1.MsgUndelegate':
-      msg.value = MsgUndelegate.decode(fromBase64(msg.value))
+      newMsg.value = MsgUndelegate.decode(fromBase64(msg.value))
       break
     case '/cosmos.staking.v1beta1.MsgBeginRedelegate':
-      msg.value = MsgBeginRedelegate.decode(fromBase64(msg.value))
+      newMsg.value = MsgBeginRedelegate.decode(fromBase64(msg.value))
       break
     case '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward':
-      msg.value = MsgWithdrawDelegatorReward.decode(fromBase64(msg.value))
+      newMsg.value = MsgWithdrawDelegatorReward.decode(fromBase64(msg.value))
       break
     case '/cosmos.staking.v1beta1.MsgCreateValidator':
-      msg.value = MsgCreateValidator.decode(fromBase64(msg.value))
+      newMsg.value = MsgCreateValidator.decode(fromBase64(msg.value))
+      newMsg.value.pubkey.value = toBase64(
+        PubKey.decode(newMsg.value.pubkey.value).key
+      )
       break
     case '/cosmos.staking.v1beta1.MsgEditValidator':
-      msg.value = MsgEditValidator.decode(fromBase64(msg.value))
+      newMsg.value = MsgEditValidator.decode(fromBase64(msg.value))
       break
     case '/cosmos.slashing.v1beta1.MsgUnjail':
-      msg.value = MsgUnjail.decode(fromBase64(msg.value))
+      newMsg.value = MsgUnjail.decode(fromBase64(msg.value))
       break
     case '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission':
-      msg.value = MsgWithdrawValidatorCommission.decode(fromBase64(msg.value))
+      newMsg.value = MsgWithdrawValidatorCommission.decode(
+        fromBase64(msg.value)
+      )
       break
   }
 
-  return msg
+  return newMsg
 }
 
 // Takes an unencoded protobuf message value and
@@ -304,27 +313,20 @@ export const encodeProtobufValue = (
       )
       break
     case '/cosmos.staking.v1beta1.MsgCreateValidator':
-      let msgValue = value
       value = toBase64(
         MsgCreateValidator.encode({
-          ...msgValue,
+          ...value,
           pubkey: {
-            typeUrl: msgValue.pubkey.typeUrl,
+            typeUrl: value.pubkey.typeUrl,
             value: PubKey.encode(
-              PubKey.fromJSON(msgValue.pubkey.value)
+              PubKey.fromPartial(value.pubkey.value)
             ).finish(),
           },
         }).finish()
       )
       break
     case '/cosmos.staking.v1beta1.MsgEditValidator':
-      value = toBase64(
-        MsgEditValidator.encode(
-          MsgEditValidator.fromPartial({
-            ...value,
-          })
-        ).finish()
-      )
+      value = toBase64(MsgEditValidator.encode(value).finish())
       break
     case '/cosmos.slashing.v1beta1.MsgUnjail':
       value = toBase64(

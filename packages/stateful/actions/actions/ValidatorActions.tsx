@@ -14,8 +14,8 @@ import {
 } from '@dao-dao/types/actions'
 import {
   NATIVE_DENOM,
-  decodeProtobuf,
   makeStargateMessage,
+  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { ValidatorActionsComponent as StatelessValidatorActionsComponent } from '../components'
@@ -96,32 +96,36 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ValidatorActionsData> = (
   let data = useDefaults()
 
   return useMemo(() => {
-    // Check this is a stargate message
-    if (!msg.stargate) {
+    // Check this is a stargate message.
+    if (
+      !objectMatchesStructure(msg, {
+        stargate: {
+          type_url: {},
+          value: {},
+        },
+      })
+    ) {
       return { match: false }
     }
 
-    // Decode the protobuf
-    let decodedMsg = decodeProtobuf(msg.stargate)
-
     // Check that the type_url is a validator message, set data accordingly
-    switch (decodedMsg.type_url) {
+    switch (msg.stargate.type_url) {
       case ValidatorActionType.WithdrawValidatorCommission:
         data.validatorActionType =
           ValidatorActionType.WithdrawValidatorCommission
-        data.withdrawCommissionMsg = decodedMsg.value
+        data.withdrawCommissionMsg = msg.stargate.value
         break
       case ValidatorActionType.CreateValidator:
         data.validatorActionType = ValidatorActionType.CreateValidator
-        data.createMsg = JSON.stringify(decodedMsg.value)
+        data.createMsg = JSON.stringify(msg.stargate.value, null, 2)
         break
       case ValidatorActionType.EditValidator:
         data.validatorActionType = ValidatorActionType.EditValidator
-        data.editMsg = JSON.stringify(decodedMsg.value)
+        data.editMsg = JSON.stringify(msg.stargate.value, null, 2)
         break
       case ValidatorActionType.UnjailValidator:
         data.validatorActionType = ValidatorActionType.UnjailValidator
-        data.unjailMsg = decodedMsg.value
+        data.unjailMsg = msg.stargate.value
         break
       default:
         // No validator action typeUrls so we return a false match
