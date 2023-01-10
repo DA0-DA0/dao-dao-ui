@@ -114,7 +114,7 @@ export const DaoImage = ({
             {!parentDao.registeredSubDao && (
               <div className="absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full bg-background-overlay">
                 <QuestionMark
-                  className={clsx('text-icon-interactive-warning', {
+                  className={clsx('text-text-secondary', {
                     '!h-5 !w-5': size === 'sm',
                     '!h-6 !w-6': size === 'lg',
                   })}
