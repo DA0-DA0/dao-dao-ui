@@ -1,10 +1,10 @@
+import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { MsgWithdrawValidatorCommission } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
 import { PickEmoji } from '@dao-dao/stateless'
 import {
-  ActionComponent,
   ActionMaker,
   ActionOptionsContextType,
   CoreActionKey,
@@ -13,12 +13,13 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  CHAIN_BECH32_PREFIX,
   NATIVE_DENOM,
   makeStargateMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { ValidatorActionsComponent as StatelessValidatorActionsComponent } from '../components'
+import { ValidatorActionsComponent as Component } from '../components'
 
 export enum ValidatorActionType {
   CreateValidator = '/cosmos.staking.v1beta1.MsgCreateValidator',
@@ -33,110 +34,6 @@ interface ValidatorActionsData {
   unjailMsg: MsgUnjail
   validatorActionType: ValidatorActionType
   withdrawCommissionMsg: MsgWithdrawValidatorCommission
-}
-
-const useDefaults: UseDefaults<ValidatorActionsData> = () => {
-  return {
-    validatorActionType: ValidatorActionType.WithdrawValidatorCommission,
-    createMsg: `{
-   "description": {
-     "moniker": "<validator name>",
-     "identity": "<optional identity signature (ex. UPort or Keybase)>",
-     "website": "<your validator website>",
-     "securityContact": "<optional security contact email>",
-     "details": "<description of your validator>"
-   },
-   "commission": {
-     "rate": "50000000000000000",
-     "maxRate": "200000000000000000",
-     "maxChangeRate": "100000000000000000"
-   },
-   "minSelfDelegation": "1",
-   "delegatorAddress": "<your DAO address>",
-   "validatorAddress": "<your DAO validator address>",
-   "pubkey": {
-     "typeUrl": "/cosmos.crypto.ed25519.PubKey",
-     "value": {
-       "@type":"/cosmos.crypto.ed25519.PubKey",
-       "key":"<the public key of your node (junod tendermint show-validator)>"}
-   },
-   "value": {
-     "denom": "${NATIVE_DENOM}",
-     "amount": "1000000"
-   }
- }`,
-    editMsg: `{
-   "description": {
-     "moniker": "<validator name>",
-     "identity": "<optional identity signature (ex. UPort or Keybase)>",
-     "website": "<your validator website>",
-     "securityContact": "<optional security contact email>",
-     "details": "<description of your validator>"
-   },
-   "commissionRate": "50000000000000000",
-   "minSelfDelegation": "1",
-   "validatorAddress": "<your validator address>"
- }`,
-    unjailMsg: {
-      validatorAddr: '',
-    },
-    withdrawCommissionMsg: {
-      validatorAddress: '',
-    },
-  }
-}
-
-const Component: ActionComponent = (props) => {
-  return <StatelessValidatorActionsComponent {...props} options={{}} />
-}
-
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<ValidatorActionsData> = (
-  msg: Record<string, any>
-) => {
-  let data = useDefaults()
-
-  return useMemo(() => {
-    // Check this is a stargate message.
-    if (
-      !objectMatchesStructure(msg, {
-        stargate: {
-          type_url: {},
-          value: {},
-        },
-      })
-    ) {
-      return { match: false }
-    }
-
-    // Check that the type_url is a validator message, set data accordingly
-    switch (msg.stargate.type_url) {
-      case ValidatorActionType.WithdrawValidatorCommission:
-        data.validatorActionType =
-          ValidatorActionType.WithdrawValidatorCommission
-        data.withdrawCommissionMsg = msg.stargate.value
-        break
-      case ValidatorActionType.CreateValidator:
-        data.validatorActionType = ValidatorActionType.CreateValidator
-        data.createMsg = JSON.stringify(msg.stargate.value, null, 2)
-        break
-      case ValidatorActionType.EditValidator:
-        data.validatorActionType = ValidatorActionType.EditValidator
-        data.editMsg = JSON.stringify(msg.stargate.value, null, 2)
-        break
-      case ValidatorActionType.UnjailValidator:
-        data.validatorActionType = ValidatorActionType.UnjailValidator
-        data.unjailMsg = msg.stargate.value
-        break
-      default:
-        // No validator action typeUrls so we return a false match
-        return { match: false }
-    }
-
-    return {
-      match: true,
-      data,
-    }
-  }, [msg, data])
 }
 
 const useTransformToCosmos: UseTransformToCosmos<ValidatorActionsData> = () =>
@@ -178,10 +75,125 @@ const useTransformToCosmos: UseTransformToCosmos<ValidatorActionsData> = () =>
 export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
   t,
   context,
+  address,
 }) => {
   // Only DAOs.
   if (context.type !== ActionOptionsContextType.Dao) {
     return null
+  }
+
+  const useDefaults: UseDefaults<ValidatorActionsData> = () => {
+    const validatorAddress = toBech32(
+      CHAIN_BECH32_PREFIX + 'valoper',
+      fromBech32(address).data
+    )
+
+    return {
+      validatorActionType: ValidatorActionType.WithdrawValidatorCommission,
+      createMsg: JSON.stringify(
+        {
+          description: {
+            moniker: '<validator name>',
+            identity: '<optional identity signature (ex. UPort or Keybase)>',
+            website: '<your validator website>',
+            securityContact: '<optional security contact email>',
+            details: '<description of your validator>',
+          },
+          commission: {
+            rate: '50000000000000000',
+            maxRate: '200000000000000000',
+            maxChangeRate: '100000000000000000',
+          },
+          minSelfDelegation: '1',
+          delegatorAddress: address,
+          validatorAddress,
+          pubkey: {
+            typeUrl: '/cosmos.crypto.ed25519.PubKey',
+            value: {
+              '@type': '/cosmos.crypto.ed25519.PubKey',
+              key: '<the public key of your node (junod tendermint show-validator)>',
+            },
+          },
+          value: {
+            denom: NATIVE_DENOM,
+            amount: '1000000',
+          },
+        },
+        null,
+        2
+      ),
+      editMsg: JSON.stringify(
+        {
+          description: {
+            moniker: '<validator name>',
+            identity: '<optional identity signature (ex. UPort or Keybase)>',
+            website: '<your validator website>',
+            securityContact: '<optional security contact email>',
+            details: '<description of your validator>',
+          },
+          commissionRate: '50000000000000000',
+          minSelfDelegation: '1',
+          validatorAddress: validatorAddress,
+        },
+        null,
+        2
+      ),
+      unjailMsg: {
+        validatorAddr: validatorAddress,
+      },
+      withdrawCommissionMsg: {
+        validatorAddress: validatorAddress,
+      },
+    }
+  }
+
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<ValidatorActionsData> = (
+    msg: Record<string, any>
+  ) => {
+    let data = useDefaults()
+
+    return useMemo(() => {
+      // Check this is a stargate message.
+      if (
+        !objectMatchesStructure(msg, {
+          stargate: {
+            type_url: {},
+            value: {},
+          },
+        })
+      ) {
+        return { match: false }
+      }
+
+      // Check that the type_url is a validator message, set data accordingly
+      switch (msg.stargate.type_url) {
+        case ValidatorActionType.WithdrawValidatorCommission:
+          data.validatorActionType =
+            ValidatorActionType.WithdrawValidatorCommission
+          data.withdrawCommissionMsg = msg.stargate.value
+          break
+        case ValidatorActionType.CreateValidator:
+          data.validatorActionType = ValidatorActionType.CreateValidator
+          data.createMsg = JSON.stringify(msg.stargate.value, null, 2)
+          break
+        case ValidatorActionType.EditValidator:
+          data.validatorActionType = ValidatorActionType.EditValidator
+          data.editMsg = JSON.stringify(msg.stargate.value, null, 2)
+          break
+        case ValidatorActionType.UnjailValidator:
+          data.validatorActionType = ValidatorActionType.UnjailValidator
+          data.unjailMsg = msg.stargate.value
+          break
+        default:
+          // No validator action typeUrls so we return a false match
+          return { match: false }
+      }
+
+      return {
+        match: true,
+        data,
+      }
+    }, [msg, data])
   }
 
   return {
