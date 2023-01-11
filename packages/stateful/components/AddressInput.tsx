@@ -11,6 +11,7 @@ import {
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import { AddressInputProps } from '@dao-dao/types'
+import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
 import { ProfileDisplay } from './ProfileDisplay'
 
@@ -25,7 +26,11 @@ export const AddressInput = <
   const watch = props.watch || formContext?.watch
   const formValue = watch?.(props.fieldName) as string | undefined
 
-  const hasFormValue = formValue && formValue.length >= 3
+  const hasFormValue =
+    formValue &&
+    formValue.length >= 3 &&
+    // Don't search name if it's an address.
+    !isValidAddress(formValue, CHAIN_BECH32_PREFIX)
   const searchProfilesLoadable = useCachedLoadable(
     hasFormValue
       ? searchProfilesByNamePrefixSelector({
