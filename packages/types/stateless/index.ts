@@ -1,3 +1,4 @@
+export * from './AddressInput'
 export * from './AppLayout'
 export * from './Breadcrumbs'
 export * from './common'

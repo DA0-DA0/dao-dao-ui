@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import { makeProps as makeNftInfoProps } from '@dao-dao/stateless/components/NftCard.stories'
 import {
   makeActionsProviderDecorator,
@@ -7,7 +8,6 @@ import {
 } from '@dao-dao/storybook'
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 
-import { ProfileDisplay } from '../../../components'
 import { MintNft } from './MintNft'
 import { MintNftData } from './types'
 
@@ -52,6 +52,6 @@ Default.args = {
   errors: {},
   options: {
     nftInfo: makeNftInfoProps(),
-    ProfileDisplay,
+    AddressInput,
   },
 }

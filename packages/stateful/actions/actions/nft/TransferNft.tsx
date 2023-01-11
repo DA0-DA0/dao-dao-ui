@@ -19,7 +19,7 @@ import {
   parseEncodedMessage,
 } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../../../components'
+import { AddressInput } from '../../../components'
 import {
   nftCardInfoSelector,
   nftCardInfosSelector,
@@ -154,7 +154,7 @@ const Component: ActionComponent = (props) => {
   return (
     <TransferNftComponent
       {...props}
-      options={{ options, nftInfo, ProfileDisplay }}
+      options={{ options, nftInfo, AddressInput }}
     />
   )
 }

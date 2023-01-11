@@ -9,7 +9,6 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   Button,
   IconButton,
   InputErrorMessage,
@@ -17,8 +16,7 @@ import {
   NumberInput,
   PeopleEmoji,
 } from '@dao-dao/stateless'
-import { StatefulProfileDisplayProps } from '@dao-dao/types'
-import { ActionComponent } from '@dao-dao/types/actions'
+import { ActionComponent, AddressInputProps } from '@dao-dao/types'
 import { Member } from '@dao-dao/types/contracts/Cw4Group'
 import {
   validateAddress,
@@ -36,15 +34,18 @@ export interface ManageMembersData {
 export interface ManageMembersOptions {
   currentMembers: string[]
   // Used to show the profiles of the members being updated.
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps<any>>
 }
 
-export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
+export const ManageMembersComponent: ActionComponent<
+  ManageMembersOptions,
+  ManageMembersData
+> = ({
   fieldNamePrefix,
   onRemove,
   errors,
   isCreating,
-  options: { currentMembers, ProfileDisplay },
+  options: { currentMembers, AddressInput },
 }) => {
   const { t } = useTranslation()
   const { register, setValue, watch, control } =
@@ -120,7 +121,6 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
 
                   <div className="flex grow flex-col">
                     <AddressInput
-                      ProfileDisplay={ProfileDisplay}
                       containerClassName="h-full"
                       disabled={!isCreating}
                       error={errors?.toAdd?.[index]?.addr}
@@ -175,7 +175,6 @@ export const ManageMembersComponent: ActionComponent<ManageMembersOptions> = ({
           >
             <div className="grow">
               <AddressInput
-                ProfileDisplay={ProfileDisplay}
                 disabled={!isCreating}
                 error={errors?.toRemove?.[index]?.addr}
                 fieldName={

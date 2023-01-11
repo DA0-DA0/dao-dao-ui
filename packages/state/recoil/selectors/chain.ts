@@ -1,4 +1,5 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { fromBase64, toHex } from '@cosmjs/encoding'
 import {
   Coin,
   Event,
@@ -497,5 +498,22 @@ export const transactionEventsSelector = selectorFamily<
 
       const tx = await client.getTx(txHash)
       return tx ? tx.events : undefined
+    },
+})
+
+export const walletHexPublicKeySelector = selectorFamily<
+  string | undefined,
+  WithChainId<{ walletAddress: string }>
+>({
+  key: 'walletHexPublicKey',
+  get:
+    ({ walletAddress, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientForChainSelector(chainId))
+      const account = await client.getAccount(walletAddress)
+      if (!account?.pubkey?.value) {
+        return
+      }
+      return toHex(fromBase64(account.pubkey.value))
     },
 })

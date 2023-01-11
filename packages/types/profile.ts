@@ -42,3 +42,18 @@ export interface Profile {
   name: string | null
   imageUrl: string
 }
+
+export interface ProfileSearchHit {
+  publicKey: string
+  address: string
+  profile: {
+    nonce: number
+    name: string | null
+    nft: {
+      chainId: string
+      collectionAddress: string
+      tokenId: string
+      imageUrl: string
+    } | null
+  }
+}

@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
 
-import { ProfileDisplay } from '../../../../../components'
 import {
   ManageMembersComponent,
   ManageMembersData,
@@ -29,10 +29,15 @@ Default.args = {
   fieldNamePrefix: '',
   allActionsWithData: [],
   index: 0,
-  data: {},
+  data: {
+    toAdd: [],
+    toRemove: [],
+  },
   isCreating: true,
+  onRemove: () => alert('remove'),
+  errors: {},
   options: {
     currentMembers: ['member1', 'member2'],
-    ProfileDisplay: ProfileDisplay,
+    AddressInput,
   },
 }

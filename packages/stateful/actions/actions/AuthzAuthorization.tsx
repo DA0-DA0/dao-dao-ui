@@ -12,7 +12,7 @@ import {
 } from '@dao-dao/types/actions'
 import { makeStargateMessage } from '@dao-dao/utils'
 
-import { ProfileDisplay, SuspenseLoader } from '../../components'
+import { AddressInput, SuspenseLoader } from '../../components'
 import { AuthzAuthorizationComponent as StatelessAuthzComponent } from '../components/AuthzAuthorization'
 
 interface AuthzData {
@@ -37,7 +37,7 @@ const Component: ActionComponent = (props) => {
       <StatelessAuthzComponent
         {...props}
         options={{
-          ProfileDisplay: ProfileDisplay,
+          AddressInput,
         }}
       />
     </SuspenseLoader>

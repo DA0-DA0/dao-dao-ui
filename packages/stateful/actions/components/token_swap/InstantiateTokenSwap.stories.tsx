@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import {
   makeActionsProviderDecorator,
   makeReactHookFormDecorator,
@@ -7,7 +8,7 @@ import {
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
-import { ProfileDisplay, Trans } from '../../../components'
+import { Trans } from '../../../components'
 import { InstantiateTokenSwap } from './InstantiateTokenSwap'
 import { PerformTokenSwapData } from './types'
 
@@ -124,7 +125,7 @@ Default.args = {
     },
     onInstantiate: async () => alert('instantiate'),
     instantiating: false,
-    ProfileDisplay,
+    AddressInput,
     Trans,
   },
 }

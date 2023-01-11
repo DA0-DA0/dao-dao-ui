@@ -1,6 +1,7 @@
 export * from './dao'
 export * from './profile'
 
+export * from './AddressInput'
 export * from './ApolloGqlProvider'
 export * from './AppLayout'
 export * from './ButtonLink'

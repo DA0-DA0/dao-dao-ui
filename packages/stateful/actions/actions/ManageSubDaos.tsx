@@ -15,7 +15,7 @@ import {
 } from '@dao-dao/types'
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../../components'
+import { AddressInput } from '../../components'
 import {
   ManageSubDaosData,
   ManageSubDaosComponent as StatelessManageSubDaosComponent,
@@ -48,7 +48,7 @@ const Component: ActionComponent = (props) => {
           address,
           name,
         })),
-        ProfileDisplay,
+        AddressInput,
       }}
     />
   )

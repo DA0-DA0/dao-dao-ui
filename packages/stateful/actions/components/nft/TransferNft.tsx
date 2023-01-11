@@ -5,7 +5,6 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   Button,
   CodeMirrorInput,
   FormSwitchCard,
@@ -31,7 +30,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
   onRemove,
   isCreating,
   errors,
-  options: { options, nftInfo, ProfileDisplay },
+  options: { options, nftInfo, AddressInput },
 }) => {
   const { t } = useTranslation()
   const { control, watch, setValue, setError, register, clearErrors } =
@@ -74,7 +73,6 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
             </p>
 
             <AddressInput
-              ProfileDisplay={ProfileDisplay}
               disabled={!isCreating}
               error={errors?.to}
               fieldName={fieldNamePrefix + 'recipient'}
