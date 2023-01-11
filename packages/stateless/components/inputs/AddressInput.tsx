@@ -168,6 +168,10 @@ export const AddressInput = <
           <input
             className={clsx(
               'ring-none body-text w-full border-none bg-transparent outline-none',
+              // Change font to mono when address is valid.
+              isValidAddress(formValue, CHAIN_BECH32_PREFIX)
+                ? 'font-mono'
+                : 'font-sans',
               className
             )}
             disabled={disabled}
