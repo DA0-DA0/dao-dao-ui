@@ -205,6 +205,7 @@ export const makeUsePublishProposal =
               )
             }
 
+            console.error(err)
             throw new Error(
               `${t('error.simulationFailedInvalidProposalActions')} ${
                 // Don't send to Sentry, but still format SDK errors nicely.
