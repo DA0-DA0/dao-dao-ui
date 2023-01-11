@@ -46,14 +46,12 @@ export const useValidatorActions = (): {
   ]
 }
 
-export interface ValidatorActionOptions {}
-
-export interface ValidatorActionData {}
-
-export const ValidatorActionsComponent: ActionComponent<
-  ValidatorActionOptions,
-  ValidatorActionData
-> = ({ fieldNamePrefix, onRemove, errors, isCreating }) => {
+export const ValidatorActionsComponent: ActionComponent = ({
+  fieldNamePrefix,
+  onRemove,
+  errors,
+  isCreating,
+}) => {
   const { t } = useTranslation()
   const { control, register, watch } = useFormContext()
   const validatorActions = useValidatorActions()

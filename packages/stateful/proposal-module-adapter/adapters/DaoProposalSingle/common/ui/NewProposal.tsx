@@ -37,6 +37,7 @@ import {
   decodedMessagesString,
   formatDateTime,
   formatTime,
+  processError,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -104,6 +105,7 @@ export const NewProposal = ({
 
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const { walletAddress = '', walletProfile } = useWalletInfo()
 
@@ -123,6 +125,7 @@ export const NewProposal = ({
   const onSubmitForm: SubmitHandler<NewProposalForm> = useCallback(
     ({ actionData, ...data }, event) => {
       setShowSubmitErrorNote(false)
+      setSubmitError('')
 
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
@@ -132,12 +135,25 @@ export const NewProposal = ({
         return
       }
 
-      createProposal({
-        ...data,
-        msgs: actionData
+      let msgs
+      try {
+        msgs = actionData
           .map(({ key, data }) => actionsWithData[key]?.transform(data))
           // Filter out undefined messages.
-          .filter(Boolean) as CosmosMsgFor_Empty[],
+          .filter(Boolean) as CosmosMsgFor_Empty[]
+      } catch (err) {
+        console.error(err)
+        setSubmitError(
+          processError(err, {
+            forceCapture: false,
+          })
+        )
+        return
+      }
+
+      createProposal({
+        ...data,
+        msgs,
       })
     },
     [createProposal, actionsWithData]
@@ -332,6 +348,12 @@ export const NewProposal = ({
           </p>
         )}
 
+        {!!submitError && (
+          <p className="secondary-text self-end text-right text-text-interactive-error">
+            {submitError}
+          </p>
+        )}
+
         {showPreview && (
           <div className="mt-4 rounded-md border border-border-secondary p-6">
             <ProposalContentDisplay
@@ -340,9 +362,13 @@ export const NewProposal = ({
                   <CosmosMessageDisplay
                     value={decodedMessagesString(
                       actionDataFields
-                        .map(({ key, data }) =>
-                          actionsWithData[key]?.transform(data)
-                        )
+                        .map(({ key, data }) => {
+                          try {
+                            return actionsWithData[key]?.transform(data)
+                          } catch (err) {
+                            console.error(err)
+                          }
+                        })
                         // Filter out undefined messages.
                         .filter(Boolean) as CosmosMsgFor_Empty[]
                     )}

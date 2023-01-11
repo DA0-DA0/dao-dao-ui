@@ -111,6 +111,7 @@ export const DaoCard = ({
         <DaoImage
           LinkWrapper={LinkWrapper}
           coreAddress={coreAddress}
+          daoName={name}
           imageUrl={imageUrl}
           parentDao={parentDao}
           size="sm"

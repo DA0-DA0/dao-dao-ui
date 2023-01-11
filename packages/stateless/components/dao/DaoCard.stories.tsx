@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ContractVersion } from '@dao-dao/types'
+
 import { IconButtonLink } from '../icon_buttons'
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoCard, DaoCardProps } from './DaoCard'
@@ -32,8 +34,10 @@ export const makeProps = (): DaoCardProps => ({
 
   parentDao: {
     coreAddress: 'parentDaoCoreAddress',
+    coreVersion: ContractVersion.V2Alpha,
     name: 'parent',
     imageUrl: '/placeholders/2.svg',
+    registeredSubDao: true,
   },
 
   lazyData: {

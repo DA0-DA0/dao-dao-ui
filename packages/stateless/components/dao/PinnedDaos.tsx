@@ -32,7 +32,7 @@ export const PinnedDaos = ({
 
   return (
     <>
-      <div className="mt-2 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
+      <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="title-text">{t('title.following')}</p>
 
         <div className="flex flex-row items-center justify-between gap-6">
@@ -66,33 +66,22 @@ export const PinnedDaos = ({
 const getSortOptions = (
   pinnedDaos: DaoCardInfo[]
 ): DropdownOption<SortFn<DaoCardInfo>>[] => [
-  // Order DAOs pinned.
   {
-    label: 'Custom',
+    label: 'Date followed (oldest → newest)',
     value: (a, b) => pinnedDaos.indexOf(a) - pinnedDaos.indexOf(b),
   },
   {
-    label: 'A → Z',
+    label: 'Date followed (newest → oldest)',
+    value: (a, b) => pinnedDaos.indexOf(b) - pinnedDaos.indexOf(a),
+  },
+  {
+    label: 'DAO name (A → Z)',
     value: (a, b) =>
       a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleUpperCase()),
   },
   {
-    label: 'Z → A',
+    label: 'DAO name (Z → A)',
     value: (a, b) =>
       b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleUpperCase()),
-  },
-  {
-    label: 'Newest',
-    value: (a, b) =>
-      // Put empty ones last.
-      (b.established?.getTime() ?? -Infinity) -
-      (a.established?.getTime() ?? -Infinity),
-  },
-  {
-    label: 'Oldest',
-    value: (a, b) =>
-      // Put empty ones last.
-      (a.established?.getTime() ?? Infinity) -
-      (b.established?.getTime() ?? Infinity),
   },
 ]
