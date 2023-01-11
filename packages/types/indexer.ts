@@ -10,6 +10,12 @@ export interface IndexerDumpState
   proposal_modules: ProposalModuleWithInfo[]
   votingModuleInfo: ContractVersionInfo
   createdAt: string // UTC string
-  adminConfig?: Config | null
+  adminInfo?: {
+    admin?: string
+    config: Config
+    info?: ContractVersionInfo
+    // Check if it has this current DAO as a SubDAO.
+    registeredSubDao?: boolean
+  } | null
   proposalCount?: number
 }

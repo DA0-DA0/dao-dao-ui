@@ -5,7 +5,7 @@ import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
-import { queryIndexer } from '@dao-dao/state'
+import { DaoCoreV2QueryClient, queryIndexer } from '@dao-dao/state'
 import {
   CommonProposalInfo,
   ContractVersion,
@@ -19,7 +19,6 @@ import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwC
 import {
   Config,
   ConfigResponse as ConfigV2Response,
-  DumpStateResponse,
   ProposalModuleWithInfo,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
@@ -131,13 +130,13 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     let coreVersion: ContractVersion | undefined
     try {
       const {
-        admin,
         config,
         version,
         votingModule: { address: votingModuleAddress, info: votingModuleInfo },
         activeProposalModules,
         created,
-      } = await daoCoreDumpState(chainId, coreAddress, serverT)
+        parentDao,
+      } = await daoCoreDumpState(chainId, bech32Prefix, coreAddress, serverT)
       coreVersion = version
 
       // If no contract name, will display fallback voting module adapter.
@@ -194,14 +193,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           console.error(error)
         }
       }
-
-      const parentDao = await loadParentDaoInfo(
-        chainId,
-        bech32Prefix,
-        coreAddress,
-        admin,
-        serverT
-      )
 
       const props: DaoPageWrapperProps = {
         ...i18nProps,
@@ -407,51 +398,48 @@ const loadParentDaoInfo = async (
   chainId: string,
   bech32Prefix: string,
   subDaoAddress: string,
-  subDaoAdmin: string | null | undefined,
+  potentialParentAddress: string | null | undefined,
   serverT: TFunction,
   // Prevent cycles by ensuring admin has not already been seen.
-  previousParentAddresses?: string[]
-): Promise<DaoParentInfo | null> => {
+  previousParentAddresses: string[]
+): Promise<Omit<DaoParentInfo, 'registeredSubDao'> | null> => {
   // If no admin, or admin is set to itself, or admin is a wallet, no parent
   // DAO.
   if (
-    !subDaoAdmin ||
-    subDaoAdmin === subDaoAddress ||
-    isValidWalletAddress(subDaoAdmin, bech32Prefix)
+    !potentialParentAddress ||
+    potentialParentAddress === subDaoAddress ||
+    isValidWalletAddress(potentialParentAddress, bech32Prefix) ||
+    previousParentAddresses?.includes(potentialParentAddress)
   ) {
     return null
   }
 
   try {
     const {
-      admin,
+      version,
       config: { name, image_url },
-    } = await daoCoreDumpState(chainId, subDaoAdmin, serverT)
+      parentDao,
+    } = await daoCoreDumpState(
+      chainId,
+      bech32Prefix,
+      potentialParentAddress,
+      serverT,
+      [...(previousParentAddresses ?? []), potentialParentAddress]
+    )
 
     return {
-      coreAddress: subDaoAdmin,
+      coreAddress: potentialParentAddress,
+      coreVersion: version,
       name: name,
       imageUrl: image_url ?? null,
-      parentDao:
-        // If parent has already been loaded, do not recurse, to prevent
-        // infinite cycles of parent DAOs.
-        admin && previousParentAddresses?.includes(admin)
-          ? null
-          : await loadParentDaoInfo(
-              chainId,
-              bech32Prefix,
-              subDaoAdmin,
-              admin,
-              serverT,
-              [...(previousParentAddresses ?? []), subDaoAdmin]
-            ),
+      parentDao,
     }
   } catch (err) {
     // If contract not found, ignore error. Otherwise, log it.
     if (!(err instanceof Error) || !err.message.includes('not found')) {
       console.error(err)
       console.error(
-        `Error loading parent DAO (${subDaoAdmin}) of ${subDaoAddress}`,
+        `Error loading parent DAO (${potentialParentAddress}) of ${subDaoAddress}`,
         processError(err)
       )
     }
@@ -471,77 +459,129 @@ interface DaoCoreDumpState {
   }
   activeProposalModules: ProposalModuleWithInfo[]
   created: Date | undefined
+  parentDao: DaoParentInfo | null
 }
 
 const daoCoreDumpState = async (
   chainId: string,
+  bech32Prefix: string,
   coreAddress: string,
-  serverT: TFunction
+  serverT: TFunction,
+  // Prevent cycles by ensuring admin has not already been seen.
+  previousParentAddresses?: string[]
 ): Promise<DaoCoreDumpState> => {
-  let dumpedState: DumpStateResponse | undefined
-  let votingModuleInfo: ContractVersionInfo | undefined
-  let proposalModules: ProposalModuleWithInfo[] | undefined
-  let created: Date | undefined
+  let indexerDumpedState: IndexerDumpState | undefined
+
   try {
-    const indexerDumpedState = await queryIndexer<IndexerDumpState>(
+    indexerDumpedState = await queryIndexer<IndexerDumpState>(
       'contract',
       coreAddress,
       'daoCore/dumpState'
     )
-    dumpedState = indexerDumpedState
-    votingModuleInfo = indexerDumpedState?.votingModuleInfo
-    proposalModules = indexerDumpedState?.proposal_modules
-    created = indexerDumpedState?.createdAt
-      ? new Date(indexerDumpedState.createdAt)
-      : undefined
   } catch (error) {
     // Ignore error. Fallback to querying chain below.
     console.error(error)
   }
 
-  // If indexer failed, fallback to querying chain.
-  if (!dumpedState) {
-    const cwClient = await cosmWasmClientRouter.connect(
-      getRpcForChainId(chainId)
+  // Use data from indexer if present.
+  if (indexerDumpedState) {
+    const coreVersion = parseContractVersion(indexerDumpedState.version.version)
+    if (!coreVersion) {
+      throw new Error(serverT('error.failedParsingCoreVersion'))
+    }
+
+    const parentDaoInfo = await loadParentDaoInfo(
+      chainId,
+      bech32Prefix,
+      coreAddress,
+      indexerDumpedState.admin,
+      serverT,
+      [...(previousParentAddresses ?? []), coreAddress]
     )
 
-    // DAO core contract.
-    dumpedState = await cwClient.queryContractSmart(coreAddress, {
-      dump_state: {},
-    })
+    return {
+      ...indexerDumpedState,
+      version: coreVersion,
+      votingModule: {
+        address: indexerDumpedState.voting_module,
+        info: indexerDumpedState.votingModuleInfo,
+      },
+      activeProposalModules: indexerDumpedState.proposal_modules.filter(
+        ({ status }) => status === 'enabled' || status === 'Enabled'
+      ),
+      created: indexerDumpedState.createdAt
+        ? new Date(indexerDumpedState.createdAt)
+        : undefined,
+      parentDao: parentDaoInfo
+        ? {
+            ...parentDaoInfo,
+            // Whether or not this parent has registered its child as a SubDAO.
+            registeredSubDao:
+              indexerDumpedState.adminInfo?.registeredSubDao ?? false,
+          }
+        : null,
+    }
   }
 
-  // Should never happen. Typecheck.
-  if (!dumpedState) {
-    throw new Error(serverT('error.loadingData'))
-  }
+  // If indexer failed, fallback to querying chain.
+
+  const cwClient = await cosmWasmClientRouter.connect(getRpcForChainId(chainId))
+  const daoCoreClient = new DaoCoreV2QueryClient(cwClient, coreAddress)
+
+  const dumpedState = await daoCoreClient.dumpState()
 
   const coreVersion = parseContractVersion(dumpedState.version.version)
   if (!coreVersion) {
     throw new Error(serverT('error.failedParsingCoreVersion'))
   }
 
-  // If indexer failed, fallback to querying chain.
-  if (!votingModuleInfo) {
-    const cwClient = await cosmWasmClientRouter.connect(
-      getRpcForChainId(chainId)
+  const votingModuleInfo = (
+    (await cwClient.queryContractSmart(dumpedState.voting_module, {
+      info: {},
+    })) as InfoResponse
+  ).info
+
+  const proposalModules = await fetchProposalModulesWithInfoFromChain(
+    chainId,
+    coreAddress,
+    coreVersion
+  )
+
+  const parentDao = await loadParentDaoInfo(
+    chainId,
+    bech32Prefix,
+    coreAddress,
+    dumpedState.admin,
+    serverT,
+    [...(previousParentAddresses ?? []), coreAddress]
+  )
+  let registeredSubDao = false
+  // If parent DAO exists, check if this DAO is a SubDAO of the parent. Only V2
+  // DAOs have SubDAOs.
+  if (parentDao && parentDao.coreVersion !== ContractVersion.V1) {
+    const parentDaoCoreClient = new DaoCoreV2QueryClient(
+      cwClient,
+      dumpedState.admin
     )
 
-    // Voting module contract.
-    votingModuleInfo = (
-      (await cwClient.queryContractSmart(dumpedState.voting_module, {
-        info: {},
-      })) as InfoResponse
-    ).info
-  }
+    // Get all SubDAOs.
+    const subdaoAddrs: string[] = []
+    while (true) {
+      const response = await parentDaoCoreClient.listSubDaos({
+        startAfter: subdaoAddrs[subdaoAddrs.length - 1],
+        limit: SUBDAO_LIST_LIMIT,
+      })
+      if (!response?.length) break
 
-  // If indexer failed, fallback to querying chain.
-  if (!proposalModules) {
-    proposalModules = await fetchProposalModulesWithInfoFromChain(
-      chainId,
-      coreAddress,
-      coreVersion
-    )
+      subdaoAddrs.push(...response.map(({ addr }) => addr))
+
+      // If we have less than the limit of items, we've exhausted them.
+      if (response.length < SUBDAO_LIST_LIMIT) {
+        break
+      }
+    }
+
+    registeredSubDao = subdaoAddrs.includes(coreAddress)
   }
 
   return {
@@ -554,6 +594,14 @@ const daoCoreDumpState = async (
     activeProposalModules: proposalModules.filter(
       ({ status }) => status === 'enabled' || status === 'Enabled'
     ),
-    created,
+    created: undefined,
+    parentDao: parentDao
+      ? {
+          ...parentDao,
+          registeredSubDao,
+        }
+      : null,
   }
 }
+
+const SUBDAO_LIST_LIMIT = 30
