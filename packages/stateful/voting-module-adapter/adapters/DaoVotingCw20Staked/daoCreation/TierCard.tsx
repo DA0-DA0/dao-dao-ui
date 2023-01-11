@@ -29,6 +29,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { ProfileDisplay } from '../../../../components/ProfileDisplay'
 import { DaoCreationConfig } from '../types'
 
 export interface TierCardProps {
@@ -204,6 +205,7 @@ export const TierCard = ({
                   )}
 
                   <AddressInput
+                    ProfileDisplay={ProfileDisplay}
                     containerClassName="grow"
                     error={
                       errors.votingModuleAdapter?.data?.tiers?.[tierIndex]
