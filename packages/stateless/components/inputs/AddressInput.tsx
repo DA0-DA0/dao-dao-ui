@@ -239,7 +239,7 @@ export const AddressInput = <
                       name: hit.profile.name,
                       imageUrl:
                         hit.profile.nft?.imageUrl ||
-                        getFallbackImage(hit.address),
+                        getFallbackImage(hit.publicKey),
                     },
                   }}
                   noCopy

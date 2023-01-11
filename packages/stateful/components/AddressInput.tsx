@@ -1,10 +1,16 @@
+import { useEffect } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
+import {
+  constSelector,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+  waitForAll,
+} from 'recoil'
 
 import {
   pfpkProfileSelector,
   searchProfilesByNamePrefixSelector,
-  walletHexPublicKeySelector,
+  walletHexPublicKeyOverridesAtom,
 } from '@dao-dao/state/recoil'
 import {
   AddressInput as StatelessAddressInput,
@@ -39,26 +45,40 @@ export const AddressInput = <
       : undefined
   )
 
-  // Load individual profiles in background so they're cached/ready if selected.
-  const publicKeysLoadable = useRecoilValueLoadable(
+  // Cache searched profiles public keys in background so they're ready if
+  // selected. We cannot retrieve the public key for an address without the
+  // account existing on chain. If we're on a chain the user hasn't used before,
+  // their profile won't actually load in the `ProfileDisplay` component.
+  // Profile search uses names and public keys, but `ProfileDisplay` needs to
+  // extract the public key from the address. Thus, we can precache the searched
+  // profiles even if they don't exist on the current chain.
+  const setWalletHexPublicKeyOverrides = useSetRecoilState(
+    walletHexPublicKeyOverridesAtom
+  )
+  useEffect(() => {
+    if (
+      searchProfilesLoadable.state === 'hasValue' &&
+      searchProfilesLoadable.contents.length > 0
+    ) {
+      setWalletHexPublicKeyOverrides((prev) =>
+        searchProfilesLoadable.contents.reduce(
+          (acc, { publicKey, address }) => ({
+            ...acc,
+            [address]: publicKey,
+          }),
+          prev
+        )
+      )
+    }
+  }, [searchProfilesLoadable, setWalletHexPublicKeyOverrides])
+
+  useRecoilValueLoadable(
     searchProfilesLoadable.state === 'hasValue' &&
       searchProfilesLoadable.contents.length > 0
       ? waitForAll(
-          searchProfilesLoadable.contents.map((hit) =>
-            walletHexPublicKeySelector({
-              walletAddress: hit.address,
-            })
+          searchProfilesLoadable.contents.map(({ publicKey }) =>
+            pfpkProfileSelector(publicKey)
           )
-        )
-      : constSelector([])
-  )
-  useRecoilValueLoadable(
-    publicKeysLoadable.state === 'hasValue' &&
-      publicKeysLoadable.contents.length > 0
-      ? waitForAll(
-          publicKeysLoadable.contents
-            .filter((publicKey): publicKey is string => !!publicKey)
-            .map((publicKey) => pfpkProfileSelector(publicKey))
         )
       : constSelector(undefined)
   )
