@@ -170,7 +170,7 @@ export default SplashPage
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
     featuredDaoDumpStates: await queryFeaturedDaoDumpStatesFromIndexer().catch(
-      () => undefined
+      () => null
     ),
     ...(await serverSideTranslations(locale, ['translation'])),
   },
