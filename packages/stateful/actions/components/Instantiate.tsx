@@ -5,6 +5,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  AddressInput,
   BabyEmoji,
   Button,
   CodeMirrorInput,
@@ -174,12 +175,13 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
       <div className="flex flex-col items-stretch gap-1">
         <InputLabel name={`${t('form.admin')} (${t('form.optional')})`} />
-        <TextInput
+        <AddressInput
           disabled={!isCreating}
           error={errors?.admin}
           fieldName={fieldNamePrefix + 'admin'}
-          placeholder={!isCreating ? t('info.none') : 'juno...'}
+          placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
+          type="contract"
           validation={[(v: string) => validateContractAddress(v, false)]}
         />
         <InputErrorMessage error={errors?.admin} />

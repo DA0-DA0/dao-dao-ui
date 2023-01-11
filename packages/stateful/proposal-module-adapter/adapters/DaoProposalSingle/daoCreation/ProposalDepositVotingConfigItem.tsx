@@ -171,9 +171,9 @@ export const ProposalDepositInput = ({
                     errors?.proposalDeposit?.cw20Address ?? cw20AddressError
                   }
                   fieldName="proposalDeposit.cw20Address"
-                  iconType="contract"
                   placeholder={t('form.tokenAddress')}
                   register={register}
+                  type="contract"
                   validation={[validateContractAddress]}
                 />
 

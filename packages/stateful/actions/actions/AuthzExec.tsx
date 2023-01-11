@@ -29,7 +29,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { ProfileDisplay, SuspenseLoader } from '../../components'
+import { AddressInput, SuspenseLoader } from '../../components'
 import { AuthzExecComponent as StatelessAuthzComponent } from '../components'
 import { useActionOptions } from '../react'
 
@@ -99,7 +99,7 @@ const Component: ActionComponent = (props) => {
       <StatelessAuthzComponent
         {...props}
         options={{
-          ProfileDisplay: ProfileDisplay,
+          AddressInput,
           validators: loadingValidators.loading ? [] : loadingValidators.data,
         }}
       />

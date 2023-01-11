@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 
 import { AuthzExecComponent } from './AuthzExec'
@@ -22,6 +23,7 @@ Default.args = {
   data: {},
   isCreating: false,
   options: {
+    AddressInput,
     validators: [
       {
         address: 'aDifferentOne',

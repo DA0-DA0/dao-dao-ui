@@ -33,8 +33,8 @@ export const ChooseExistingNftCollection: ActionComponent<
         <AddressInput
           error={errors?.collectionAddress}
           fieldName={fieldNamePrefix + 'collectionAddress'}
-          iconType="contract"
           register={register}
+          type="contract"
           validation={[validateRequired, validateContractAddress]}
         />
 

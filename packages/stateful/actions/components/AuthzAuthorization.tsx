@@ -3,7 +3,6 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   FormSwitchCard,
   InputErrorMessage,
   InputLabel,
@@ -11,7 +10,7 @@ import {
   SelectInput,
   TextInput,
 } from '@dao-dao/stateless'
-import { StatefulProfileDisplayProps } from '@dao-dao/types'
+import { AddressInputProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   validateAddress,
@@ -23,8 +22,7 @@ import { AuthzExecActionTypes } from '../actions/AuthzExec'
 import { ActionCard } from './ActionCard'
 
 export interface AuthzOptions {
-  // Used to render pfpk or DAO profiles when selecting addresses.
-  ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps>
 }
 
 export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
@@ -37,7 +35,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
     onRemove,
     errors,
     isCreating,
-    options: { ProfileDisplay },
+    options: { AddressInput },
   } = props
   const { register, setValue, watch } = useFormContext()
 
@@ -69,11 +67,10 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
           tooltip={t('form.granteeAddressTooltip')}
         />
         <AddressInput
-          ProfileDisplay={ProfileDisplay}
           disabled={!isCreating}
           error={errors?.value?.grantee}
           fieldName={fieldNamePrefix + 'value.grantee'}
-          placeholder={!isCreating ? t('info.none') : 'juno...'}
+          placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
           validation={[
             (v: string) =>

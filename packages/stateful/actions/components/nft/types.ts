@@ -1,9 +1,9 @@
 import { ComponentType } from 'react'
 
 import {
+  AddressInputProps,
   LoadingDataWithError,
   NftCardInfo,
-  StatefulProfileDisplayProps,
 } from '@dao-dao/types'
 import {
   InstantiateMsg as Cw721InstantiateMsg,
@@ -58,7 +58,7 @@ export interface TransferNftOptions {
   // Information about the NFT currently selected.
   nftInfo: NftCardInfo | undefined
 
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps>
 }
 
 export interface BurnNftOptions {
@@ -72,7 +72,7 @@ export interface InstantiateNftCollectionOptions {
   instantiating: boolean
   onInstantiate: () => Promise<void>
 
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps>
 }
 
 export interface ChooseExistingNftCollectionOptions {
@@ -87,5 +87,5 @@ export interface ChooseExistingNftCollectionOptions {
 export interface MintNftOptions {
   nftInfo: NftCardInfo
   addCollectionToDao?: () => void
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps>
 }

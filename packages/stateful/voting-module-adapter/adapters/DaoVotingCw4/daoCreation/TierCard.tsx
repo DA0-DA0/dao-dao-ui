@@ -10,7 +10,6 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   Button,
   IconButton,
   InputErrorMessage,
@@ -26,7 +25,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../../../../components/ProfileDisplay'
+import { AddressInput } from '../../../../components/AddressInput'
 import { DaoCreationConfig } from '../types'
 
 export interface TierCardProps {
@@ -190,7 +189,6 @@ export const TierCard = ({
                   )}
 
                   <AddressInput
-                    ProfileDisplay={ProfileDisplay}
                     containerClassName="grow"
                     error={
                       errors.votingModuleAdapter?.data?.tiers?.[tierIndex]
@@ -199,6 +197,7 @@ export const TierCard = ({
                     fieldName={`votingModuleAdapter.data.tiers.${tierIndex}.members.${memberIndex}.address`}
                     placeholder={t('form.membersAddress')}
                     register={register}
+                    setValue={setValue}
                     validation={[validateAddress, validateRequired]}
                     watch={watch}
                   />

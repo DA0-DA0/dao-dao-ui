@@ -1,4 +1,5 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { fromBase64, toHex } from '@cosmjs/encoding'
 import {
   Coin,
   Event,
@@ -13,7 +14,7 @@ import {
   UnbondingDelegation as RpcUnbondingDelegation,
   Validator as RpcValidator,
 } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
-import { selector, selectorFamily } from 'recoil'
+import { atom, selector, selectorFamily } from 'recoil'
 
 import {
   AmountWithTimestamp,
@@ -497,5 +498,35 @@ export const transactionEventsSelector = selectorFamily<
 
       const tx = await client.getTx(txHash)
       return tx ? tx.events : undefined
+    },
+})
+
+// See usage in stateful `AddressInput` component.
+export const walletHexPublicKeyOverridesAtom = atom<
+  Record<string, string | undefined>
+>({
+  key: 'walletHexPublicKeyOverrides',
+  default: {},
+})
+
+export const walletHexPublicKeySelector = selectorFamily<
+  string | undefined,
+  WithChainId<{ walletAddress: string }>
+>({
+  key: 'walletHexPublicKey',
+  get:
+    ({ walletAddress, chainId }) =>
+    async ({ get }) => {
+      const override = get(walletHexPublicKeyOverridesAtom)[walletAddress]
+      if (override) {
+        return override
+      }
+
+      const client = get(cosmWasmClientForChainSelector(chainId))
+      const account = await client.getAccount(walletAddress)
+      if (!account?.pubkey?.value) {
+        return
+      }
+      return toHex(fromBase64(account.pubkey.value))
     },
 })

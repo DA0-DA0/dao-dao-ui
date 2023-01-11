@@ -1,12 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import {
   makeActionsProviderDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 
-import { ProfileDisplay } from '../../../components'
 import { InstantiateNftCollection } from './InstantiateNftCollection'
 import { MintNftData } from './types'
 
@@ -58,6 +58,6 @@ Default.args = {
   options: {
     onInstantiate: async () => alert('instantiate'),
     instantiating: false,
-    ProfileDisplay,
+    AddressInput,
   },
 }

@@ -151,7 +151,7 @@ export const InnerPfpkNftSelectionModal = ({
       onClose()
     } catch (err) {
       console.error(err)
-      toast.error(processError(err))
+      toast.error(err instanceof Error ? err.message : processError(err))
     }
   }, [nfts, selected, selectedNft, t, updateProfileNft, onClose])
 

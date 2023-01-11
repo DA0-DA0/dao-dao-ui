@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   Button,
   Checkbox,
   InputErrorMessage,
@@ -16,6 +15,7 @@ import {
   TokenAmountDisplay,
 } from '@dao-dao/stateless'
 import {
+  AddressInputProps,
   AmountWithTimestampAndDenom,
   StatefulProfileDisplayProps,
   TokenInfoResponseWithAddressAndLogo,
@@ -56,6 +56,7 @@ export interface RatingFormProps {
   onSubmit: (data: RatingsFormData) => Promise<void>
   loadingSubmit: boolean
   ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps<NominationForm>>
   cw20TokenInfos: TokenInfoResponseWithAddressAndLogo[]
   prices: AmountWithTimestampAndDenom[]
   onNominate: (data: NominationForm) => Promise<void>
@@ -68,6 +69,7 @@ export const RatingForm = ({
   onSubmit,
   loadingSubmit,
   ProfileDisplay,
+  AddressInput,
   cw20TokenInfos,
   prices,
   onNominate,
@@ -141,6 +143,7 @@ export const RatingForm = ({
     register: nominationRegister,
     handleSubmit: nominationHandleSubmit,
     formState: { errors: nominationErrors },
+    setValue: nominationSetValue,
   } = useForm<NominationForm>()
 
   return (
@@ -397,11 +400,11 @@ export const RatingForm = ({
           <div className="space-y-1">
             <InputLabel name={t('form.contributorAddress')} />
             <AddressInput
-              ProfileDisplay={ProfileDisplay}
               containerClassName="grow"
               error={nominationErrors?.contributor}
               fieldName="contributor"
               register={nominationRegister}
+              setValue={nominationSetValue}
               validation={[validateRequired, validateAddress]}
               watch={nominationWatch}
             />

@@ -1,37 +1,20 @@
-import { fromBase64, toHex } from '@cosmjs/encoding'
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   KeplrWalletProfile,
   PfpkWalletProfile,
+  ProfileSearchHit,
   WalletProfile,
   WithChainId,
 } from '@dao-dao/types'
 import {
+  CHAIN_BECH32_PREFIX,
   PFPK_API_BASE,
   processError,
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
 import { refreshWalletProfileAtom } from '../atoms/refresh'
-import { cosmWasmClientForChainSelector } from './chain'
-
-export const walletHexPublicKeySelector = selectorFamily<
-  string | undefined,
-  WithChainId<{ walletAddress: string }>
->({
-  key: 'walletHexPublicKey',
-  get:
-    ({ walletAddress, chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmWasmClientForChainSelector(chainId))
-      const account = await client.getAccount(walletAddress)
-      if (!account?.pubkey?.value) {
-        return
-      }
-      return toHex(fromBase64(account.pubkey.value))
-    },
-})
 
 export const pfpkProfileSelector = selectorFamily<WalletProfile, string>({
   key: 'pfpkProfile',
@@ -101,4 +84,45 @@ export const keplrProfileImageSelector = selectorFamily<
       return undefined
     }
   },
+})
+
+export const searchProfilesByNamePrefixSelector = selectorFamily<
+  ProfileSearchHit[],
+  WithChainId<{ namePrefix: string }>
+>({
+  key: 'searchProfilesByNamePrefix',
+  get:
+    ({ namePrefix }) =>
+    async ({ get }) => {
+      if (namePrefix.length < 3) {
+        return []
+      }
+
+      // Load hits from PFPK API.
+      let hits: ProfileSearchHit[] = []
+      try {
+        const response = await fetch(
+          PFPK_API_BASE + `/search/${CHAIN_BECH32_PREFIX}/${namePrefix}`
+        )
+        if (response.ok) {
+          const { profiles: _hits } = (await response.json()) as {
+            profiles: ProfileSearchHit[]
+          }
+          hits = _hits
+        } else {
+          console.error(await response.json())
+        }
+      } catch (err) {
+        console.error(processError(err))
+      }
+
+      // Add refresher dependencies.
+      if (hits.length > 0) {
+        get(
+          waitForAll(hits.map((hit) => refreshWalletProfileAtom(hit.publicKey)))
+        )
+      }
+
+      return hits
+    },
 })

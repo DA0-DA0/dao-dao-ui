@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/types'
 import { CODE_ID_CONFIG, processError } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../../../components'
+import { AddressInput } from '../../../components'
 import { InstantiateNftCollection as StatelessInstantiateNftCollection } from '../../components/nft'
 import { useActionOptions } from '../../react'
 
@@ -79,7 +79,7 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
       options={{
         instantiating,
         onInstantiate,
-        ProfileDisplay,
+        AddressInput,
       }}
     />
   )

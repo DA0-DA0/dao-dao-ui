@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 
 import { AuthzAuthorizationComponent } from './AuthzAuthorization'
@@ -22,5 +23,7 @@ Default.args = {
   index: 0,
   data: {},
   isCreating: false,
-  options: {},
+  options: {
+    AddressInput,
+  },
 }

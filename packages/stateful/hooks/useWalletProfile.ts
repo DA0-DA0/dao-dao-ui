@@ -19,16 +19,26 @@ export interface UseWalletProfileReturn {
   backupProfileImage: string
 }
 
+const EMPTY_PFPK_PROFILE: WalletProfile = {
+  // Disallows editing if we don't have correct nonce from server.
+  nonce: -1,
+  name: null,
+  imageUrl: '',
+  nft: null,
+}
+
 export const useWalletProfile = (
   options: UseWalletProfileOptions
 ): UseWalletProfileReturn => {
   const publicKeyLoadable = useRecoilValueLoadable(
     options.hexPublicKey
       ? constSelector(options.hexPublicKey)
-      : walletHexPublicKeySelector({
+      : options.walletAddress
+      ? walletHexPublicKeySelector({
           walletAddress: options.walletAddress,
           chainId: options.chainId,
         })
+      : constSelector(undefined)
   )
   const publicKey =
     publicKeyLoadable.state === 'hasValue'
@@ -36,16 +46,24 @@ export const useWalletProfile = (
       : undefined
 
   // Get PFPK profile from API.
-  const profile = loadableToLoadingData(
-    useCachedLoadable(publicKey ? pfpkProfileSelector(publicKey) : undefined),
-    {
-      // Disallows editing if we don't have correct nonce from server.
-      nonce: -1,
-      name: null,
-      imageUrl: '',
-      nft: null,
-    }
+  let profile = loadableToLoadingData(
+    useCachedLoadable(
+      publicKey
+        ? pfpkProfileSelector(publicKey)
+        : // If the public key is not loaded, it may still be loading. Returning undefined here indicates to `useCachedLoadable` that we're still loading.
+          undefined
+    ),
+    EMPTY_PFPK_PROFILE
   )
+  // If public key loaded undefined, the account does not exist on the chain and
+  // we can't retrieve its public key. Thus return an empty profile.
+  if (profile.loading && publicKeyLoadable.state === 'hasValue') {
+    profile = {
+      loading: false,
+      data: EMPTY_PFPK_PROFILE,
+    }
+  }
+
   // Get Keplr wallet image from API.
   const keplrProfileImageLoadable = useCachedLoadable(
     publicKey ? keplrProfileImageSelector(publicKey) : undefined

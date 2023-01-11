@@ -13,4 +13,5 @@ export interface CopyToClipboardProps {
   textClassName?: string
   onCopy?: () => void
   tooltip?: string
+  noCopy?: boolean
 }

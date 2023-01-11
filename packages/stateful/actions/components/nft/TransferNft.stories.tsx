@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import { makeProps as makeNftCardProps } from '@dao-dao/stateless/components/NftCard.stories'
 import {
   ReactHookFormDecorator,
@@ -7,7 +8,6 @@ import {
 } from '@dao-dao/storybook'
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 
-import { ProfileDisplay } from '../../../components'
 import { TransferNftComponent } from './TransferNft'
 
 export default {
@@ -58,6 +58,6 @@ Default.args = {
         makeNftCardProps(),
       ],
     },
-    ProfileDisplay,
+    AddressInput,
   },
 }

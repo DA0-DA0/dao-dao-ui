@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import {
   makeActionsProviderDecorator,
   makeReactHookFormDecorator,
@@ -7,7 +8,6 @@ import {
 import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../../components'
 import { SpendComponent, SpendData } from './Spend'
 
 export default {
@@ -47,7 +47,7 @@ Default.args = {
         amount: '46252349169321',
       },
     ],
-    ProfileDisplay: ProfileDisplay,
+    AddressInput,
     cw20Balances: [
       {
         address: 'cw20_1',
