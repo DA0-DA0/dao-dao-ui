@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProfileDisplay } from '@dao-dao/stateful/components/ProfileDisplay'
+
 import {
   DaoCreateVotingPowerDistributionReviewCard,
   VOTING_POWER_DISTRIBUTION_COLORS,
@@ -21,6 +23,7 @@ const Template: ComponentStory<
 
 export const Default = Template.bind({})
 Default.args = {
+  ProfileDisplay,
   pieData: [
     {
       value: 15,
