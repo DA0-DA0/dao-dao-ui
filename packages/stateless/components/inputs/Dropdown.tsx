@@ -43,12 +43,6 @@ export const Dropdown = <T extends unknown>({
       ? options.filter(({ value }) => selected.includes(value))
       : options.filter(({ value }) => selected === value)
 
-  // Set width of dropdown to this so it stays constant.
-  const longestLabelLength = Math.max(
-    placeholder?.length ?? 0,
-    ...options.map(({ label }) => label.length)
-  )
-
   // Listen for click not in dropdown bounds, and close if so. Adds listener
   // only when the dropdown is open.
   useEffect(() => {
@@ -105,9 +99,6 @@ export const Dropdown = <T extends unknown>({
               },
               labelClassName
             )}
-            style={{
-              width: `${longestLabelLength}ch`,
-            }}
           >
             {selectedOptions.length === 0
               ? placeholder
