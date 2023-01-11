@@ -3,9 +3,10 @@ import { ReactNode } from 'react'
 import TimeAgo from 'react-timeago'
 
 import { UnstakingTask, UnstakingTaskStatus } from '@dao-dao/types'
-import { formatDate } from '@dao-dao/utils'
+import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
+import { Tooltip } from '../tooltip'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 import { UnstakingStatus } from './UnstakingStatus'
 
@@ -51,9 +52,11 @@ export const UnstakingLine = ({
         />
 
         {dateReplacement || (
-          <p className="caption-text break-words pr-2 text-right font-mono">
-            {dateDisplay}
-          </p>
+          <Tooltip title={date && formatDateTimeTz(date)}>
+            <p className="caption-text break-words pr-2 text-right font-mono">
+              {dateDisplay}
+            </p>
+          </Tooltip>
         )}
       </div>
 
@@ -76,9 +79,11 @@ export const UnstakingLine = ({
 
           {dateReplacement ||
             (dateDisplay && (
-              <p className="caption-text break-words text-right font-mono">
-                {dateDisplay}
-              </p>
+              <Tooltip title={date && formatDateTimeTz(date)}>
+                <p className="caption-text break-words text-right font-mono">
+                  {dateDisplay}
+                </p>
+              </Tooltip>
             ))}
         </div>
       </div>
