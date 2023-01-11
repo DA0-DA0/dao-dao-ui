@@ -6,18 +6,18 @@ import { refreshOpenProposalsAtom } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { UseInboxReturn } from '@dao-dao/types'
 
-import { pinnedDaosWithOpenUnvotedProposalsSelector } from '../recoil'
+import { pinnedDaosWithOpenProposalsSelector } from '../recoil'
 
 export const useInbox = (): UseInboxReturn => {
   const { address: walletAddress, status: walletConnectionStatus } = useWallet()
 
-  const daosWithOpenUnvotedProposalsLoadable = useCachedLoadable(
+  const daosWithOpenProposalsLoadable = useCachedLoadable(
     // Don't load without a wallet until we're no longer initializing. This
     // prevents duplicate queries when the page is first loading.
     walletConnectionStatus === WalletConnectionStatus.Initializing ||
       walletConnectionStatus === WalletConnectionStatus.AttemptingAutoConnection
       ? undefined
-      : pinnedDaosWithOpenUnvotedProposalsSelector({
+      : pinnedDaosWithOpenProposalsSelector({
           walletAddress,
         })
   )
@@ -35,22 +35,22 @@ export const useInbox = (): UseInboxReturn => {
   }, [refreshOpenProposals])
 
   const proposalCount =
-    daosWithOpenUnvotedProposalsLoadable.state === 'hasValue'
-      ? daosWithOpenUnvotedProposalsLoadable.contents.reduce(
-          (acc, { openUnvotedProposals }) =>
+    daosWithOpenProposalsLoadable.state === 'hasValue'
+      ? daosWithOpenProposalsLoadable.contents.reduce(
+          (acc, { openProposals: openUnvotedProposals }) =>
             acc + (openUnvotedProposals?.length ?? 0),
           0
         )
       : 0
 
   return {
-    loading: daosWithOpenUnvotedProposalsLoadable.state === 'loading',
+    loading: daosWithOpenProposalsLoadable.state === 'loading',
     refetching:
-      daosWithOpenUnvotedProposalsLoadable.state === 'hasValue' &&
-      daosWithOpenUnvotedProposalsLoadable.updating,
-    daosWithOpenUnvotedProposals:
-      daosWithOpenUnvotedProposalsLoadable.state === 'hasValue'
-        ? daosWithOpenUnvotedProposalsLoadable.contents
+      daosWithOpenProposalsLoadable.state === 'hasValue' &&
+      daosWithOpenProposalsLoadable.updating,
+    daosWithOpenProposals:
+      daosWithOpenProposalsLoadable.state === 'hasValue'
+        ? daosWithOpenProposalsLoadable.contents
         : [],
     proposalCount,
     refetch: refreshOpenProposals,

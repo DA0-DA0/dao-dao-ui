@@ -105,7 +105,7 @@ export const searchDaosSelector = selectorFamily<
 export const openProposalsSelector = selectorFamily<
   {
     proposalModuleAddress: string
-    proposals: { id: number }[]
+    proposals: { id: number; voted?: boolean }[]
   }[],
   WithChainId<{ coreAddress: string; address?: string }>
 >({
