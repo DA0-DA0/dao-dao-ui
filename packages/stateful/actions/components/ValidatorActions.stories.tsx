@@ -24,11 +24,4 @@ Default.args = {
   isCreating: true,
   onRemove: () => alert('remove'),
   errors: {},
-  options: {
-    formattedJsonDisplayProps: {
-      jsonLoadable: {
-        state: 'loading',
-      } as any,
-    },
-  },
 }
