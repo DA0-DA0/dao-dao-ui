@@ -18,10 +18,9 @@ import { ConfigResponse as ConfigV2Response } from '@dao-dao/types/contracts/Dao
 import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   validateRequired,
-  validateUrl,
 } from '@dao-dao/utils'
 
-import { LinkWrapper } from '../../components'
+import { LinkWrapper, Trans } from '../../components'
 import { useActionOptions } from '../react'
 import { ActionCard } from './ActionCard'
 
@@ -46,10 +45,11 @@ export const UpdateInfoComponent: ActionComponent<
         {isCreating ? (
           <div className="flex flex-col gap-4 pl-2">
             <ImageSelector
+              Trans={Trans}
               error={errors?.name}
               fieldName={fieldNamePrefix + 'image_url'}
               register={register}
-              validation={[validateUrl]}
+              setValue={setValue}
               watch={watch}
             />
             <InputLabel name={t('form.selectAnImage')} />

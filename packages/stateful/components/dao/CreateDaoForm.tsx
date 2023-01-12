@@ -44,7 +44,6 @@ import {
   makeValidateMsg,
   nativeTokenLabel,
   processError,
-  validateUrlWithIpfs,
 } from '@dao-dao/utils'
 
 import {
@@ -70,6 +69,7 @@ import {
 } from '../../voting-module-adapter/adapters/DaoVotingCw20Staked/types'
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { Trans } from '../Trans'
 
 // i18n keys
 export enum CreateDaoSubmitValue {
@@ -599,10 +599,11 @@ export const CreateDaoForm = ({
         {pageIndex === 0 ? (
           <div className="flex flex-col items-center py-10">
             <ImageSelector
+              Trans={Trans}
               error={form.formState.errors.imageUrl}
               fieldName="imageUrl"
               register={form.register}
-              validation={[validateUrlWithIpfs]}
+              setValue={form.setValue}
               watch={form.watch}
             />
 

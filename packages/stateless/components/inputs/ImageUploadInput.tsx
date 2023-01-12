@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { transformIpfsUrlToHttpsIfNecessary, uploadImage } from '@dao-dao/utils'
+import { uploadImage } from '@dao-dao/utils'
 
 import { ImageDropInput, ImageDropInputProps } from './ImageDropInput'
 
@@ -9,10 +9,12 @@ export type ImageUploadInputProps = Omit<
   'onSelect' | 'loading'
 > & {
   onChange: (url: string) => void | Promise<void>
+  onError?: (error: unknown) => void
 }
 
 export const ImageUploadInput = ({
   onChange,
+  onError,
   ...props
 }: ImageUploadInputProps) => {
   const [uploading, setUploading] = useState(false)
@@ -22,9 +24,10 @@ export const ImageUploadInput = ({
 
     try {
       const cid = await uploadImage(file)
-      onChange(transformIpfsUrlToHttpsIfNecessary(`ipfs://${cid}`))
+      onChange(`ipfs://${cid}`)
     } catch (err) {
       console.error(err)
+      onError?.(err)
     } finally {
       setUploading(false)
     }
