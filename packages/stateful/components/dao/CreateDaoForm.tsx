@@ -439,6 +439,7 @@ export const CreateDaoForm = ({
               parentDao,
               tokenDecimals,
               tokenSymbol,
+              showingEstimatedUsdValue: false,
               lazyData: {
                 loading: false,
                 data: {

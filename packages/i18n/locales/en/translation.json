@@ -394,6 +394,7 @@
     "whoTransferNftQuestion": "Where would you like to transfer the NFT?"
   },
   "format": {
+    "estUsdValue": "${{amount}} est. USD value",
     "time": "{{value}} {{unit}}",
     "timeAgo": "{{value}} {{unit}} ago",
     "timeLeft": "{{value}} {{unit}} left",
@@ -462,6 +463,8 @@
     "enabled": "Enabled",
     "enterNameBeforeSavingDraft": "Enter a name before saving a draft",
     "establishedAbbr": "Est.",
+    "estimatedTreasuryUsdValueTooltip": "Estimated value of DAO's treasury in US dollars.",
+    "estimatedUsdValueTooltip": "Estimated value in US dollars.",
     "executeSmartContractActionDescription": "Execute a message on a smart contract.",
     "failing": "Failing",
     "fetchedAtTime": "Fetched at {{time}}",

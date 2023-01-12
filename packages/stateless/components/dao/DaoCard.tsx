@@ -14,6 +14,7 @@ import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
+import { TooltipInfoIcon } from '../tooltip'
 import { Tooltip } from '../tooltip/Tooltip'
 import { DaoImage } from './DaoImage'
 
@@ -30,6 +31,7 @@ export const DaoCard = ({
   onPin,
   parentDao,
   tokenSymbol,
+  showingEstimatedUsdValue,
   tokenDecimals,
   lazyData,
   showIsMember = true,
@@ -129,11 +131,11 @@ export const DaoCard = ({
 
         <div
           className={clsx(
-            'caption-text mb-2 flex flex-row items-center gap-3 font-mono',
+            'caption-text mb-2 flex flex-row items-center gap-2 font-mono',
             lazyData.loading && 'animate-pulse'
           )}
         >
-          <AccountBalanceOutlined className="!h-4 !w-4" />
+          <AccountBalanceOutlined className="mr-1 !h-4 !w-4" />
 
           <TokenAmountDisplay
             amount={
@@ -142,15 +144,22 @@ export const DaoCard = ({
                 : { loading: false, data: lazyData.data.tokenBalance }
             }
             hideApprox
-            {...(tokenSymbol === 'USDC'
+            {...(showingEstimatedUsdValue
               ? {
-                  usdcConversion: true,
+                  estimatedUsdValue: true,
                 }
               : {
                   decimals: tokenDecimals,
                   symbol: tokenSymbol,
                 })}
           />
+
+          {showingEstimatedUsdValue && (
+            <TooltipInfoIcon
+              size="xs"
+              title={t('info.estimatedTreasuryUsdValueTooltip')}
+            />
+          )}
         </div>
 
         <div

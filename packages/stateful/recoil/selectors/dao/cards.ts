@@ -173,7 +173,8 @@ export const daoCardInfoSelector = selectorFamily<
         established,
         parentDao,
         tokenDecimals: 6,
-        tokenSymbol: 'USDC',
+        tokenSymbol: '',
+        showingEstimatedUsdValue: true,
         lazyData: { loading: true },
       }
     },

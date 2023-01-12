@@ -27,7 +27,8 @@ export const makeProps = (): DaoCardProps => ({
   imageUrl: '/placeholders/1.svg',
   established: new Date('May 14, 2022 00:00:00'),
   tokenDecimals: 6,
-  tokenSymbol: 'USDC',
+  tokenSymbol: '',
+  showingEstimatedUsdValue: true,
 
   pinned: false,
   onPin: () => {},
