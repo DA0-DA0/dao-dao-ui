@@ -10,28 +10,33 @@ export type QueryIndexerOptions = WithChainId<{
     // Most formulas do not need the time, so make it optional.
     timeUnixMs?: number
   }
+  baseUrl?: string
 }>
 
 export const queryIndexer = async <T = any>(
   type: 'contract' | 'wallet' | 'generic',
   address: string,
   formula: string,
-  { args, block, chainId }: QueryIndexerOptions = {}
+  { args, block, chainId, baseUrl }: QueryIndexerOptions = {}
 ): Promise<T | undefined> => {
-  const response = await fetchWithTimeout(3000, '/api/indexer', {
-    method: 'POST',
-    body: JSON.stringify({
-      chainId: chainId ?? CHAIN_ID,
-      type,
-      address,
-      formula,
-      args,
-      block: block ? `${block.height}:${block.timeUnixMs ?? 1}` : undefined,
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  const response = await fetchWithTimeout(
+    3000,
+    (baseUrl || '') + '/api/indexer',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        chainId: chainId ?? CHAIN_ID,
+        type,
+        address,
+        formula,
+        args,
+        block: block ? `${block.height}:${block.timeUnixMs ?? 1}` : undefined,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  )
 
   if (!response.ok) {
     const errorResponse = await response.text().catch(() => undefined)
