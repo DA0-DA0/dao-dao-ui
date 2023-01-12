@@ -3,31 +3,34 @@ import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ButtonLink } from '../buttons'
+import { GithubIcon } from '../icons'
 import { DiscordIcon } from '../icons/DiscordIcon'
 
 export const Footer = () => {
   const { t } = useTranslation()
 
   return (
-    <div className="text-text-tertiary">
-      <p className="py-4">{t('splash.footerBeta')}</p>
-      <div className="flex flex-col gap-1">
-        <FooterItem
-          href="https://docs.daodao.zone"
-          icon={<Code className="!h-4 !w-4" />}
-          name={t('title.documentation')}
-        />
-        <FooterItem
-          href="https://twitter.com/DA0_DA0"
-          icon={<Twitter className="!h-4 !w-4" />}
-          name={t('title.twitter')}
-        />
-        <FooterItem
-          href="https://discord.gg/sAaGuyW3D2"
-          icon={<DiscordIcon className="!h-4 !w-4" />}
-          name={t('title.discord')}
-        />
-      </div>
+    <div className="flex flex-col gap-1 text-text-tertiary">
+      <FooterItem
+        href="https://docs.daodao.zone"
+        icon={<Code className="!h-4 !w-4" />}
+        name={t('title.documentation')}
+      />
+      <FooterItem
+        href="https://github.com/DA0-DA0"
+        icon={<GithubIcon className="!h-4 !w-4" />}
+        name={t('title.github')}
+      />
+      <FooterItem
+        href="https://twitter.com/DA0_DA0"
+        icon={<Twitter className="!h-4 !w-4" />}
+        name={t('title.twitter')}
+      />
+      <FooterItem
+        href="https://discord.gg/sAaGuyW3D2"
+        icon={<DiscordIcon className="!h-4 !w-4" />}
+        name={t('title.discord')}
+      />
     </div>
   )
 }

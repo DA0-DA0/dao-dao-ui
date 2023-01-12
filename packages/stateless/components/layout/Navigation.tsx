@@ -23,6 +23,7 @@ import { Logo } from '../logo/Logo'
 import { PricePercentChange } from '../token/PricePercentChange'
 import { Tooltip } from '../tooltip/Tooltip'
 import { useAppLayoutContext } from './AppLayoutContext'
+import { Footer } from './Footer'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
 
@@ -275,7 +276,9 @@ export const Navigation = ({
         <div className={clsx('mt-8 flex grow flex-col justify-end gap-2')}>
           {!compact && (
             <div className="caption-text space-y-3 font-mono">
-              <p>{t('info.daodaoWithVersion', { version })}</p>
+              <p className="pl-[10px]">
+                {t('info.daodaoWithVersion', { version })}
+              </p>
 
               {tokenPrices &&
                 (tokenPrices.loading ? (
@@ -297,12 +300,14 @@ export const Navigation = ({
                     )
                   )
                 ))}
+
+              <Footer />
             </div>
           )}
 
           <div
             className={clsx(
-              'mt-4 flex gap-2',
+              'mt-8 flex gap-2',
               compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >

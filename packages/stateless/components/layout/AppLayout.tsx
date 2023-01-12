@@ -1,12 +1,16 @@
+import { ArrowRightRounded, SensorsRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { RightSidebarProps } from '@dao-dao/types'
 import { AppLayoutProps } from '@dao-dao/types/stateless/AppLayout'
 
 import { ErrorBoundary } from '../error/ErrorBoundary'
+import { IconButton } from '../icon_buttons'
 import { ProfileImage } from '../profile/ProfileImage'
+import { Tooltip } from '../tooltip'
 import { AppLayoutContext } from './AppLayoutContext'
 import { Navigation } from './Navigation'
 import { makePageHeader } from './PageHeader'
@@ -20,7 +24,11 @@ export const AppLayout = ({
   rightSidebarProps,
   walletProfile,
   context,
+  connect,
+  connected,
+  connectWalletButton,
 }: AppLayoutProps) => {
+  const { t } = useTranslation()
   const router = useRouter()
   // See comment on makeRightSidebarContent in RightSidebar.tsx for information
   // on what this is and how it works and why it exists.
@@ -69,6 +77,8 @@ export const AppLayout = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.asPath])
 
+  const [connectHidden, setConnectHidden] = useState(false)
+
   return (
     <AppLayoutContext.Provider
       value={{
@@ -98,20 +108,63 @@ export const AppLayout = ({
           )}
         >
           <div
-            className="fixed right-4 bottom-4 z-10 cursor-pointer rounded-full bg-background-base shadow-dp8 sm:right-6 sm:bottom-6 xl:hidden"
-            onClick={context.responsiveRightSidebar.toggle}
+            className={clsx(
+              'fixed right-4 bottom-4 z-10 cursor-pointer sm:right-6 sm:bottom-6 xl:hidden'
+            )}
+            onClick={
+              connected ? context.responsiveRightSidebar.toggle : undefined
+            }
           >
-            <ProfileImage
-              className="bg-background-primary transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed"
-              fallbackIconClassName="!text-icon-primary !w-3/5 !h-3/5"
-              imageUrl={
-                !walletProfile || walletProfile.loading
-                  ? undefined
-                  : walletProfile.data.imageUrl
-              }
-              loading={!!walletProfile?.loading}
-              size="xs"
-            />
+            {connected ? (
+              <Tooltip title={t('info.openProfileSidebarTooltip')}>
+                <div className="rounded-full bg-background-base shadow-dp8">
+                  <ProfileImage
+                    className="bg-background-primary transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed"
+                    fallbackIconClassName="!text-icon-primary !w-3/5 !h-3/5"
+                    imageUrl={
+                      !walletProfile || walletProfile.loading
+                        ? undefined
+                        : walletProfile.data.imageUrl
+                    }
+                    loading={!!walletProfile?.loading}
+                    size="xs"
+                  />
+                </div>
+              </Tooltip>
+            ) : (
+              <div
+                className={clsx(
+                  'relative flex flex-row items-center transition-all',
+                  connectHidden
+                    ? 'right-[calc(2.5rem_-_100%)] gap-6 sm:gap-8'
+                    : 'right-0 gap-2'
+                )}
+              >
+                <Tooltip
+                  title={
+                    connectHidden
+                      ? t('button.connectWallet')
+                      : t('button.hideConnectButton')
+                  }
+                >
+                  <div className="rounded-md bg-background-base shadow-dp8">
+                    <IconButton
+                      Icon={connectHidden ? SensorsRounded : ArrowRightRounded}
+                      onClick={() => {
+                        connectHidden && connect()
+                        setConnectHidden((hidden) => !hidden)
+                      }}
+                      size="lg"
+                      variant="secondary"
+                    />
+                  </div>
+                </Tooltip>
+
+                <div className="rounded-md bg-background-base shadow-dp8">
+                  {connectWalletButton}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="shrink-0 px-6" ref={setPageHeaderRef}></div>
