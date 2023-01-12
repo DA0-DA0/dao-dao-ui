@@ -5,7 +5,7 @@ export const fetchWithTimeout = async (
   const controller = new AbortController()
 
   const timeoutId = setTimeout(() => {
-    console.log('Aborting request...')
+    console.log('Aborting request due to timeout...')
     controller.abort()
   }, timeout)
 
