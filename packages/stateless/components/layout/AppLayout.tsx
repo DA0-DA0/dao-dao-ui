@@ -140,7 +140,13 @@ export const AppLayout = ({
                     : 'right-0 gap-2'
                 )}
               >
-                <Tooltip title={t('button.connectWallet')}>
+                <Tooltip
+                  title={
+                    connectHidden
+                      ? t('button.connectWallet')
+                      : t('button.hideConnectButton')
+                  }
+                >
                   <div className="rounded-md bg-background-base shadow-dp8">
                     <IconButton
                       Icon={connectHidden ? SensorsRounded : ArrowRightRounded}
