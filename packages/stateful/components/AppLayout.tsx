@@ -21,6 +21,7 @@ import {
 } from '@dao-dao/state'
 import {
   BetaWarningModal,
+  ConnectWallet,
   DaoCreatedModal,
   IAppLayoutContext,
   InstallKeplrModal,
@@ -68,7 +69,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
     useRecoilState(proposalCreatedCardPropsAtom)
 
   //! WALLET CONNECTION ERROR MODALS
-  const { error, status } = useWalletManager()
+  const { connect, connected, error, status } = useWalletManager()
   const {
     walletAddress,
     walletProfile,
@@ -270,6 +271,19 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
       )}
 
       <StatelessAppLayout
+        connect={connect}
+        connectWalletButton={
+          <ConnectWallet
+            loading={
+              status === WalletConnectionStatus.Initializing ||
+              status === WalletConnectionStatus.AttemptingAutoConnection ||
+              status === WalletConnectionStatus.Connecting
+            }
+            onConnect={connect}
+            variant="secondary"
+          />
+        }
+        connected={connected}
         context={appLayoutContext}
         navigationProps={{
           LinkWrapper,
