@@ -113,7 +113,7 @@ export const STARGAZE_URL_BASE = process.env
 export const PFPK_API_BASE = process.env.NEXT_PUBLIC_PFPK_API_BASE as string
 
 // Indexer
-export const INDEXER_API_KEY = process.env.NEXT_PUBLIC_INDEXER_API_KEY
+export const INDEXER_API_KEY = process.env.INDEXER_API_KEY
 
 // Search
 export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string
