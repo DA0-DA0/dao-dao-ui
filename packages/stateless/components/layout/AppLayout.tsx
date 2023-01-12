@@ -140,17 +140,19 @@ export const AppLayout = ({
                     : 'right-0 gap-2'
                 )}
               >
-                <div className="rounded-md bg-background-base shadow-dp8">
-                  <IconButton
-                    Icon={connectHidden ? SensorsRounded : ArrowRightRounded}
-                    onClick={() => {
-                      connectHidden && connect()
-                      setConnectHidden((hidden) => !hidden)
-                    }}
-                    size="lg"
-                    variant="secondary"
-                  />
-                </div>
+                <Tooltip title={t('button.connectWallet')}>
+                  <div className="rounded-md bg-background-base shadow-dp8">
+                    <IconButton
+                      Icon={connectHidden ? SensorsRounded : ArrowRightRounded}
+                      onClick={() => {
+                        connectHidden && connect()
+                        setConnectHidden((hidden) => !hidden)
+                      }}
+                      size="lg"
+                      variant="secondary"
+                    />
+                  </div>
+                </Tooltip>
 
                 <div className="rounded-md bg-background-base shadow-dp8">
                   {connectWalletButton}
