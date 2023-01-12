@@ -7,7 +7,7 @@ export const fetchWithTimeout = async (
 
     let rejected = false
     const timeoutId = setTimeout(() => {
-      console.log('Aborting...')
+      console.log(`Aborting request due to timeout (${params[0]})...`)
       controller.abort()
 
       // In case abort controller does not work, reject manually.

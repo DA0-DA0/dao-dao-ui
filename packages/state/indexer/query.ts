@@ -20,6 +20,7 @@ export const queryIndexer = async <T = any>(
   { args, block, chainId, baseUrl }: QueryIndexerOptions = {}
 ): Promise<T | undefined> => {
   const response = await fetchWithTimeout(
+    // Timeout after 3 seconds.
     3000,
     (baseUrl || '') + '/api/indexer',
     {
