@@ -37,6 +37,7 @@ import {
   validateTokenSymbol,
 } from '@dao-dao/utils'
 
+import { Trans } from '../../../../components/Trans'
 import { DaoVotingCw20StakedAdapter } from '../index'
 import { DaoCreationConfig, GovernanceTokenType } from '../types'
 import { TierCard } from './TierCard'
@@ -278,9 +279,11 @@ export const GovernanceConfigurationInput = ({
                 <div className="flex flex-col items-center gap-5 py-6 px-10">
                   <InputLabel name={t('form.image')} />
                   <ImageSelector
+                    Trans={Trans}
                     error={errors.votingModuleAdapter?.data?.newInfo?.imageUrl}
                     fieldName="votingModuleAdapter.data.newInfo.imageUrl"
                     register={register}
+                    setValue={setValue}
                     size={40}
                     watch={watch}
                   />

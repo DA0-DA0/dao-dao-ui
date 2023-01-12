@@ -7,5 +7,8 @@ export const uploadImage = async (file: File): Promise<string> => {
     body: form,
   })
   const { cid } = await response.json()
+  if (!cid) {
+    throw new Error('Failed to upload image')
+  }
   return cid
 }
