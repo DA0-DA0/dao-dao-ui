@@ -481,6 +481,7 @@ const daoCoreDumpState = async (
       coreAddress,
       'daoCore/dumpState',
       {
+        // Needed for server-side queries.
         baseUrl: SITE_URL,
       }
     )
