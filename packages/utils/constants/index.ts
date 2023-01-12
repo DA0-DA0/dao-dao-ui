@@ -121,8 +121,7 @@ export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
 export const SEARCH_DAOS_INDEX = process.env
   .NEXT_PUBLIC_SEARCH_DAOS_INDEX as string
 
-export const NFT_STORAGE_API_KEY = process.env
-  .NEXT_PUBLIC_NFT_STORAGE_API_KEY as string
+export const NFT_STORAGE_API_KEY = process.env.NFT_STORAGE_API_KEY as string
 
 export const FAST_AVERAGE_COLOR_API_TEMPLATE = process.env
   .NEXT_PUBLIC_FAST_AVERAGE_COLOR_API_TEMPLATE as string
