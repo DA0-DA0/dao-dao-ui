@@ -393,6 +393,7 @@
     "whoTransferNftQuestion": "Where would you like to transfer the NFT?"
   },
   "format": {
+    "estUsdValue": "${{amount}} est. USD value",
     "time": "{{value}} {{unit}}",
     "timeAgo": "{{value}} {{unit}} ago",
     "timeLeft": "{{value}} {{unit}} left",
@@ -605,7 +606,6 @@
     "updateInfoActionDescription": "Update your DAO's name, image, and description.",
     "updateProposalSubmissionConfigActionDescription": "Update the proposal submission paramaters for your DAO.",
     "updateVotingConfigActionDescription": "Update the voting parameters for your DAO.",
-    "usdEst": "USD est.",
     "validatorActionsDescription": "Make transactions related to DAO run validators.",
     "verifyingGovernanceToken": "Verifying CW20 token...",
     "voteTallyRefreshesSeconds": "Vote tally refreshes every {{seconds}} seconds.",

@@ -82,20 +82,22 @@ export const TokenAmountDisplay = ({
   showFullAmount,
   iconUrl,
   iconClassName,
-  symbol: _symbol,
+  symbol,
   estimatedUsdValue,
   ...props
 }: TokenAmountDisplayProps) => {
   const { t } = useTranslation()
 
-  const symbol = estimatedUsdValue ? t('info.usdEst') : _symbol
+  const tokenTranslation = estimatedUsdValue
+    ? 'format.estUsdValue'
+    : 'format.token'
   const decimals = estimatedUsdValue ? USDC_DECIMALS : _decimals
 
   // If loading, display pulsing ellipses.
   if (typeof _amount !== 'number' && 'loading' in _amount && _amount.loading) {
     return (
       <p {...props} className={clsx('animate-pulse', props.className)}>
-        {t('format.token', {
+        {t(tokenTranslation, {
           amount: '...',
           symbol,
         })}
@@ -176,7 +178,7 @@ export const TokenAmountDisplay = ({
       !hideApprox &&
       !estimatedUsdValue
       ? 'format.tokenApprox'
-      : 'format.token',
+      : tokenTranslation,
     {
       amount: showFullAmount ? full : compact,
       symbol,
