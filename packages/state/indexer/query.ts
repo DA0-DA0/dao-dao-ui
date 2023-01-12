@@ -1,7 +1,7 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 
 import { WithChainId } from '@dao-dao/types'
-import { CHAIN_ID, fetchWithTimeout } from '@dao-dao/utils'
+import { CHAIN_ID, SITE_URL, fetchWithTimeout } from '@dao-dao/utils'
 
 export type QueryIndexerOptions = WithChainId<{
   args?: Record<string, any>
@@ -10,28 +10,34 @@ export type QueryIndexerOptions = WithChainId<{
     // Most formulas do not need the time, so make it optional.
     timeUnixMs?: number
   }
+  baseUrl?: string
 }>
 
 export const queryIndexer = async <T = any>(
   type: 'contract' | 'wallet' | 'generic',
   address: string,
   formula: string,
-  { args, block, chainId }: QueryIndexerOptions = {}
+  { args, block, chainId, baseUrl }: QueryIndexerOptions = {}
 ): Promise<T | undefined> => {
-  const response = await fetchWithTimeout(3000, '/api/indexer', {
-    method: 'POST',
-    body: JSON.stringify({
-      chainId: chainId ?? CHAIN_ID,
-      type,
-      address,
-      formula,
-      args,
-      block: block ? `${block.height}:${block.timeUnixMs ?? 1}` : undefined,
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  const response = await fetchWithTimeout(
+    // Timeout after 5 seconds.
+    5000,
+    (baseUrl || '') + '/api/indexer',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        chainId: chainId ?? CHAIN_ID,
+        type,
+        address,
+        formula,
+        args,
+        block: block ? `${block.height}:${block.timeUnixMs ?? 1}` : undefined,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  )
 
   if (!response.ok) {
     const errorResponse = await response.text().catch(() => undefined)
@@ -50,4 +56,6 @@ export const queryIndexer = async <T = any>(
 export const queryFeaturedDaoDumpStatesFromIndexer = () =>
   queryIndexer('generic', '_', 'featuredDaos', {
     chainId: ChainInfoID.Juno1,
+    // Needed for server-side queries.
+    baseUrl: SITE_URL,
   })

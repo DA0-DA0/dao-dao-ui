@@ -35,7 +35,10 @@ import {
   toAccessibleImageUrl,
   validateContractAddress,
 } from '@dao-dao/utils'
-import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
+import {
+  FAST_AVERAGE_COLOR_API_TEMPLATE,
+  SITE_URL,
+} from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -476,7 +479,11 @@ const daoCoreDumpState = async (
     indexerDumpedState = await queryIndexer<IndexerDumpState>(
       'contract',
       coreAddress,
-      'daoCore/dumpState'
+      'daoCore/dumpState',
+      {
+        // Needed for server-side queries.
+        baseUrl: SITE_URL,
+      }
     )
   } catch (error) {
     // Ignore error. Fallback to querying chain below.
@@ -522,8 +529,6 @@ const daoCoreDumpState = async (
         : null,
     }
   }
-
-  // If indexer failed, fallback to querying chain.
 
   const cwClient = await cosmWasmClientRouter.connect(getRpcForChainId(chainId))
   const daoCoreClient = new DaoCoreV2QueryClient(cwClient, coreAddress)

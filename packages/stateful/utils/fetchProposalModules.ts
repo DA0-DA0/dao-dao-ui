@@ -11,6 +11,7 @@ import {
 import { InfoResponse } from '@dao-dao/types/contracts/common'
 import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
+  SITE_URL,
   cosmWasmClientRouter,
   getRpcForChainId,
   indexToProposalModulePrefix,
@@ -32,7 +33,11 @@ export const fetchProposalModules = async (
       activeProposalModules = await queryIndexer(
         'contract',
         coreAddress,
-        'daoCore/activeProposalModules'
+        'daoCore/activeProposalModules',
+        {
+          // Needed for server-side queries.
+          baseUrl: SITE_URL,
+        }
       )
     } catch (err) {
       // Ignore error.

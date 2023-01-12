@@ -11,6 +11,7 @@ import {
 import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { ProposalResponse as ProposalV2Response } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
+  SITE_URL,
   cosmWasmClientRouter,
   getRpcForChainId,
   parseContractVersion,
@@ -45,7 +46,11 @@ export const makeGetProposalInfo =
         info = await queryIndexer<ContractVersionInfo>(
           'contract',
           proposalModule.address,
-          'info'
+          'info',
+          {
+            // Needed for server-side queries.
+            baseUrl: SITE_URL,
+          }
         )
       } catch (err) {
         // Ignore error.
@@ -72,6 +77,8 @@ export const makeGetProposalInfo =
             args: {
               id: proposalNumber,
             },
+            // Needed for server-side queries.
+            baseUrl: SITE_URL,
           }
         )
       } catch (err) {
@@ -127,6 +134,8 @@ export const makeGetProposalInfo =
           args: {
             id,
           },
+          // Needed for server-side queries.
+          baseUrl: SITE_URL,
         }
       )
       // If indexer returned a value, assume it's a date.
