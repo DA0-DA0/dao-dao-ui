@@ -170,7 +170,11 @@ export const TokenAmountDisplay = ({
     // When large, the compact notation (e.g. 1.52K or 23.5M) is enough to
     // indicate that there is missing info, and we don't need the explicit
     // approximation indication.
-    !showFullAmount && wasCompacted && !largeNumber && !hideApprox
+    !showFullAmount &&
+      wasCompacted &&
+      !largeNumber &&
+      !hideApprox &&
+      !estimatedUsdValue
       ? 'format.tokenApprox'
       : 'format.token',
     {

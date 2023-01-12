@@ -157,7 +157,7 @@ export const DaoCard = ({
           {showingEstimatedUsdValue && (
             <TooltipInfoIcon
               size="xs"
-              title={t('info.estTreasuryUsdValueTooltip')}
+              title={t('info.estimatedTreasuryUsdValueTooltip')}
             />
           )}
         </div>
