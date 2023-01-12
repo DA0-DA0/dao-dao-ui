@@ -33,16 +33,16 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
   } catch (err) {
     // Ignore error.
     console.error(err)
+  }
 
-    // If indexer fails, fallback to querying chain.
-    if (!creationPolicy) {
-      const client = new DaoProposalSingleV2QueryClient(
-        await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
-        proposalModuleAddress
-      )
+  // If indexer fails, fallback to querying chain.
+  if (!creationPolicy) {
+    const client = new DaoProposalSingleV2QueryClient(
+      await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+      proposalModuleAddress
+    )
 
-      creationPolicy = await client.proposalCreationPolicy()
-    }
+    creationPolicy = await client.proposalCreationPolicy()
   }
 
   return creationPolicy &&
