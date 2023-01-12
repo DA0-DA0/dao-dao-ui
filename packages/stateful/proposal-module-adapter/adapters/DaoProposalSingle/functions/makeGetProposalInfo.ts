@@ -11,6 +11,7 @@ import {
 import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { ProposalResponse as ProposalV2Response } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
+  SITE_URL,
   cosmWasmClientRouter,
   getRpcForChainId,
   parseContractVersion,
@@ -72,6 +73,8 @@ export const makeGetProposalInfo =
             args: {
               id: proposalNumber,
             },
+            // Needed for server-side queries.
+            baseUrl: SITE_URL,
           }
         )
       } catch (err) {

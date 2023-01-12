@@ -491,6 +491,8 @@ const daoCoreDumpState = async (
 
   // Use data from indexer if present.
   if (indexerDumpedState) {
+    console.log('got le indexer', indexerDumpedState)
+
     const coreVersion = parseContractVersion(indexerDumpedState.version.version)
     if (!coreVersion) {
       throw new Error(serverT('error.failedParsingCoreVersion'))
