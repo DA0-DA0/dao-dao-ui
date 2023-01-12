@@ -281,7 +281,7 @@ export const TokenCard = ({
                         ? undefined
                         : lazyInfo.data.usdcUnitPrice!.timestamp
                     }
-                    usdcConversion
+                    estimatedUsdValue
                   />
                 )}
             </div>
@@ -312,7 +312,7 @@ export const TokenCard = ({
                         ? undefined
                         : lazyInfo.data.usdcUnitPrice.timestamp
                     }
-                    usdcConversion
+                    estimatedUsdValue
                   />
                 )}
               </div>

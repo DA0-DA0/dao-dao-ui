@@ -359,9 +359,9 @@ export const RatingForm = ({
                           amount={totalUsdc}
                           className="caption-text text-right"
                           dateFetched={prices[0]?.timestamp}
+                          estimatedUsdValue
                           hideApprox
                           prefix="= "
-                          usdcConversion
                         />
                       </div>
                     </>

@@ -89,8 +89,8 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
                   ? undefined
                   : treasuryUsdcValueLoading.data.timestamp
               }
+              estimatedUsdValue
               hideApprox
-              usdcConversion
             />
           ),
         },

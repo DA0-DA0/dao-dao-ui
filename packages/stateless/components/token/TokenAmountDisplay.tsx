@@ -25,9 +25,9 @@ import { Tooltip } from '../tooltip/Tooltip'
 //
 // Notes:
 //
-// The only token amounts we intentionally don't show with full decimals are
-// USDC conversions (max 2) and ProfileHomeCard's unstaked and staked balances
-// (max 2).
+// The only token amounts we intentionally don't show with full decimals are USD
+// value estimates (i.e. USDC) (max 2) and ProfileHomeCard's unstaked and staked
+// balances (max 2).
 
 // Default maximum decimals to use in a USDC conversion.
 const USDC_CONVERSION_DEFAULT_MAX_DECIMALS = 2
@@ -54,18 +54,18 @@ export type TokenAmountDisplayProps = Omit<
   // If present, will add a rounded icon to the left.
   iconUrl?: string
   iconClassName?: string
-} & ( // If not USDC conversion, require symbol and decimals.
+} & ( // If not USD estimate, require symbol and decimals.
     | {
         symbol: string
         // Full decimal precision of the value.
         decimals: number
-        usdcConversion?: false
+        estimatedUsdValue?: false
       }
-    // If USDC conversion, disallow symbol and decimals.
+    // If USD estimate, disallow symbol and decimals since we'll use USDC's.
     | {
         symbol?: never
         decimals?: never
-        usdcConversion: true
+        estimatedUsdValue: true
       }
   )
 
@@ -83,13 +83,13 @@ export const TokenAmountDisplay = ({
   iconUrl,
   iconClassName,
   symbol: _symbol,
-  usdcConversion,
+  estimatedUsdValue,
   ...props
 }: TokenAmountDisplayProps) => {
   const { t } = useTranslation()
 
-  const symbol = usdcConversion ? 'USDC' : _symbol
-  const decimals = usdcConversion ? USDC_DECIMALS : _decimals
+  const symbol = estimatedUsdValue ? t('info.usdEst') : _symbol
+  const decimals = estimatedUsdValue ? USDC_DECIMALS : _decimals
 
   // If loading, display pulsing ellipses.
   if (typeof _amount !== 'number' && 'loading' in _amount && _amount.loading) {
@@ -117,7 +117,7 @@ export const TokenAmountDisplay = ({
 
   const maxCompactDecimals =
     maxDecimals ??
-    (usdcConversion ? USDC_CONVERSION_DEFAULT_MAX_DECIMALS : decimals)
+    (estimatedUsdValue ? USDC_CONVERSION_DEFAULT_MAX_DECIMALS : decimals)
   const compactOptions: Intl.NumberFormatOptions & {
     roundingPriority: string
   } = {

@@ -25,6 +25,7 @@ const makeFeaturedDao = (): DaoCardInfo => ({
   imageUrl: `/placeholders/${(id % 5) + 1}.svg`,
   established: new Date('May 14, 2022 00:00:00'),
   tokenSymbol: 'JUNO',
+  showingEstimatedUsdValue: false,
   tokenDecimals: 6,
 
   parentDao: {
