@@ -4,7 +4,6 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
@@ -12,7 +11,7 @@ import {
   NumberInput,
   SelectInput,
 } from '@dao-dao/stateless'
-import { StatefulProfileDisplayProps, Validator } from '@dao-dao/types'
+import { AddressInputProps, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DECIMALS,
@@ -29,8 +28,7 @@ import { ActionCard } from './ActionCard'
 import { ValidatorPicker } from './ValidatorPicker'
 
 export interface AuthzExecOptions {
-  // Used to render pfpk or DAO profiles when selecting addresses.
-  ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps>
   validators: Validator[]
 }
 
@@ -69,7 +67,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { ProfileDisplay, validators },
+  options: { AddressInput, validators },
 }) => {
   const { t } = useTranslation()
   const { control, register, setValue, watch } = useFormContext()
@@ -130,11 +128,9 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('form.delegatorAddress')} />
             <AddressInput
-              ProfileDisplay={ProfileDisplay}
               disabled={!isCreating}
               error={errors?.delegate?.delegatorAddress}
               fieldName={fieldNamePrefix + 'delegate.delegatorAddress'}
-              placeholder="juno..."
               register={register}
               validation={[(v: string) => validateAddress(v)]}
             />
@@ -191,11 +187,9 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('form.delegatorAddress')} />
             <AddressInput
-              ProfileDisplay={ProfileDisplay}
               disabled={!isCreating}
               error={errors?.undelegate?.delegatorAddress}
               fieldName={fieldNamePrefix + 'undelegate.delegatorAddress'}
-              placeholder="juno..."
               register={register}
               validation={[(v: string) => validateAddress(v)]}
             />
@@ -255,11 +249,9 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('form.delegatorAddress')} />
             <AddressInput
-              ProfileDisplay={ProfileDisplay}
               disabled={!isCreating}
               error={errors?.redelegate?.delegatorAddress}
               fieldName={fieldNamePrefix + 'redelegate.delegatorAddress'}
-              placeholder="juno..."
               register={register}
               validation={[(v: string) => validateAddress(v)]}
             />
@@ -339,11 +331,9 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
           <div className="flex flex-col items-stretch gap-1">
             <InputLabel name={t('form.delegatorAddress')} />
             <AddressInput
-              ProfileDisplay={ProfileDisplay}
               disabled={!isCreating}
               error={errors?.claimRewards?.delegatorAddress}
               fieldName={fieldNamePrefix + 'claimRewards.delegatorAddress'}
-              placeholder="juno..."
               register={register}
               validation={[(v: string) => validateAddress(v)]}
             />

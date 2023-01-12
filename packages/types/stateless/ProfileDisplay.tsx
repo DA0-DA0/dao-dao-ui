@@ -10,6 +10,8 @@ export interface ProfileDisplayProps {
   copyToClipboardProps?: Partial<Omit<CopyToClipboardProps, 'label' | 'value'>>
   size?: 'default' | 'lg'
   className?: string
+  noImageTooltip?: boolean
+  noCopy?: boolean
 }
 
 export type StatefulProfileDisplayProps = Omit<

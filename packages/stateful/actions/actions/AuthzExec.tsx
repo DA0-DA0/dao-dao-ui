@@ -26,9 +26,10 @@ import {
   loadableToLoadingData,
   makeRawProtobufMsg,
   makeStargateMessage,
+  objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { ProfileDisplay, SuspenseLoader } from '../../components'
+import { AddressInput, SuspenseLoader } from '../../components'
 import { AuthzExecComponent as StatelessAuthzComponent } from '../components'
 import { useActionOptions } from '../react'
 
@@ -98,7 +99,7 @@ const Component: ActionComponent = (props) => {
       <StatelessAuthzComponent
         {...props}
         options={{
-          ProfileDisplay: ProfileDisplay,
+          AddressInput,
           validators: loadingValidators.loading ? [] : loadingValidators.data,
         }}
       />
@@ -112,25 +113,29 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
   let data = useDefaults()
 
   return useMemo(() => {
-    // Check this is a stargate
-    if (!msg.stargate) {
+    // Check this is a stargate message.
+    if (
+      !objectMatchesStructure(msg, {
+        stargate: {
+          type_url: {},
+          value: {},
+        },
+      })
+    ) {
       return { match: false }
     }
 
-    // Decode stargate message
-    let decodedMsg = decodeProtobuf(msg.stargate)
-
     // Chect this is Authz MsgExec message formatted by this action
     if (
-      decodedMsg.type_url !== '/cosmos.authz.v1beta1.MsgExec' ||
-      !decodedMsg.value.msgs ||
-      decodedMsg.value.msgs.length !== 1
+      msg.stargate.type_url !== '/cosmos.authz.v1beta1.MsgExec' ||
+      !msg.stargate.value.msgs ||
+      msg.stargate.value.msgs.length !== 1
     ) {
       return { match: false }
     }
 
     // Decode the message included with Authz MsgExec
-    let decodedExecMsg = decodeProtobuf(decodedMsg.value.msgs[0])
+    let decodedExecMsg = decodeProtobuf(msg.stargate.value.msgs[0])
 
     // Check that the type_url for default Authz messages, set data accordingly
     switch (decodedExecMsg.type_url) {

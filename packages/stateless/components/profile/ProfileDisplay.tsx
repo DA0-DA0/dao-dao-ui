@@ -16,6 +16,8 @@ export const ProfileDisplay = ({
   copyToClipboardProps,
   size = 'default',
   className,
+  noImageTooltip,
+  noCopy,
 }: ProfileDisplayProps) => {
   const { t } = useTranslation()
 
@@ -26,7 +28,9 @@ export const ProfileDisplay = ({
       {!hideImage && (
         <Tooltip
           title={
-            !loadingProfile.loading && loadingProfile.data.name
+            noImageTooltip
+              ? undefined
+              : !loadingProfile.loading && loadingProfile.data.name
               ? loadingProfile.data.name
               : address
           }
@@ -47,6 +51,7 @@ export const ProfileDisplay = ({
       )}
 
       <CopyToClipboardUnderline
+        noCopy={noCopy}
         takeStartEnd={{
           start: 6,
           end: 4,

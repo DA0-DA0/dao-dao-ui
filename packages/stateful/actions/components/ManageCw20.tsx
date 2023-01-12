@@ -106,8 +106,8 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
           disabled={!isCreating}
           error={errors?.address}
           fieldName={fieldNamePrefix + 'address'}
-          iconType="contract"
           register={register}
+          type="contract"
           validation={[
             validateRequired,
             validateContractAddress,

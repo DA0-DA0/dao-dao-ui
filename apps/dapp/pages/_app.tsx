@@ -170,6 +170,7 @@ const DApp = (props: DappProps) => {
         initializeState={(snapshot) => {
           if (
             'featuredDaoDumpStates' in props.pageProps &&
+            props.pageProps.featuredDaoDumpStates &&
             Array.isArray(props.pageProps.featuredDaoDumpStates)
           ) {
             snapshot.set(

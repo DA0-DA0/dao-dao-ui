@@ -5,12 +5,12 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  AddressInput,
   Button,
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
   SwordsEmoji,
-  TextInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
@@ -54,12 +54,12 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
     >
       <div className="flex flex-col items-stretch gap-1">
         <InputLabel name={t('form.smartContractAddress')} />
-        <TextInput
+        <AddressInput
           disabled={!isCreating}
           error={errors?.address}
           fieldName={fieldNamePrefix + 'address'}
-          placeholder="juno..."
           register={register}
+          type="contract"
           validation={[validateRequired, validateContractAddress]}
         />
         <InputErrorMessage error={errors?.address} />

@@ -51,7 +51,7 @@ export const NewProposal = ({
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
-  const { imageUrl: daoImageUrl } = useDaoInfoContext()
+  const { name: daoName, imageUrl: daoImageUrl } = useDaoInfoContext()
   const { chainId, coreAddress, proposalModule } = options
   const { connected } = useWallet()
   const { isMember = false } = useMembership({
@@ -189,6 +189,7 @@ export const NewProposal = ({
                       : []),
                   ],
                   dao: {
+                    name: daoName,
                     coreAddress,
                     imageUrl: daoImageUrl,
                   },
@@ -199,6 +200,7 @@ export const NewProposal = ({
                   description: newProposalData.description,
                   info: [],
                   dao: {
+                    name: daoName,
                     coreAddress,
                     imageUrl: daoImageUrl,
                   },

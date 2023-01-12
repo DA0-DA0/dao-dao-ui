@@ -11,7 +11,11 @@ import {
   SelectInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { validateJSON, validateValidatorAddress } from '@dao-dao/utils'
+import {
+  CHAIN_BECH32_PREFIX,
+  validateJSON,
+  validateValidatorAddress,
+} from '@dao-dao/utils'
 
 import { ValidatorActionType } from '../actions/ValidatorActions'
 import { ActionCard } from './ActionCard'
@@ -42,14 +46,12 @@ export const useValidatorActions = (): {
   ]
 }
 
-export interface ValidatorActionOptions {}
-
-export interface ValidatorActionData {}
-
-export const ValidatorActionsComponent: ActionComponent<
-  ValidatorActionOptions,
-  ValidatorActionData
-> = ({ fieldNamePrefix, onRemove, errors, isCreating }) => {
+export const ValidatorActionsComponent: ActionComponent = ({
+  fieldNamePrefix,
+  onRemove,
+  errors,
+  isCreating,
+}) => {
   const { t } = useTranslation()
   const { control, register, watch } = useFormContext()
   const validatorActions = useValidatorActions()
@@ -138,7 +140,7 @@ export const ValidatorActionsComponent: ActionComponent<
             disabled={!isCreating}
             error={errors?.unjailMsg?.validatorAddr}
             fieldName={fieldNamePrefix + 'unjailMsg.validatorAddr'}
-            placeholder="junovaloper..."
+            placeholder={`${CHAIN_BECH32_PREFIX}valoper...`}
             register={register}
             validation={[(v: string) => validateValidatorAddress(v)]}
           />
@@ -159,7 +161,7 @@ export const ValidatorActionsComponent: ActionComponent<
             fieldName={
               fieldNamePrefix + 'withdrawCommissionMsg.validatorAddress'
             }
-            placeholder="junovaloper..."
+            placeholder={`${CHAIN_BECH32_PREFIX}valoper...`}
             register={register}
             validation={[(v: string) => validateValidatorAddress(v)]}
           />
