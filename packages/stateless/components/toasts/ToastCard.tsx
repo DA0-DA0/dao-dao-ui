@@ -20,7 +20,7 @@ export const ToastCard = ({
     {({ message }) => (
       <div
         className={clsx(
-          'caption-text flex min-w-0 flex-row items-start gap-4 rounded-lg bg-component-toast p-4 text-sm text-text-body shadow-dp2',
+          'caption-text flex min-w-0 flex-row items-start gap-4 rounded-lg bg-component-toast p-4 text-sm text-text-component-primary shadow-dp2',
           containerClassName
         )}
       >
@@ -37,7 +37,7 @@ export const ToastCard = ({
 
         <IconButton
           Icon={Close}
-          className="!text-icon-secondary"
+          className="!text-icon-component-secondary"
           iconClassName="!w-5 !h-5"
           onClick={() => hotToast.dismiss(toast.id)}
           size="xs"

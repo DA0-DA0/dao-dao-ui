@@ -108,13 +108,17 @@ input[type='number']::-webkit-outer-spin-button {
     --text-tertiary: rgba(var(--dark), 0.5);
     --text-brand: rgba(var(--brand), 0.95);
     --text-interactive-disabled: rgba(var(--dark), 0.2);
-    --text-interactive-active: rgba(var(--active), 0.95);
+    --text-interactive-active: rgba(var(--brand), 0.95);
     --text-interactive-error: rgba(var(--error), 0.95);
     --text-interactive-valid: rgba(var(--valid), 0.95);
     --text-interactive-warning-title: rgba(var(--warning), 0.95);
     --text-interactive-warning-body: rgba(var(--warning), 0.7);
     --text-button-primary: rgba(var(--white), 0.95);
     --text-button-disabled: rgba(var(--light), 0.75);
+    /* dark mode's --text-body */
+    --text-component-primary: rgba(var(--light), 0.95);
+    /* dark mode's --text-secondary */
+    --text-component-secondary: rgba(var(--light), 0.7);
 
     /* Icon */
     --icon-primary: rgba(var(--dark), 0.9);
@@ -122,12 +126,14 @@ input[type='number']::-webkit-outer-spin-button {
     --icon-tertiary: rgba(var(--dark), 0.45);
     --icon-brand: rgba(var(--brand), 0.9);
     --icon-interactive-disabled: rgba(var(--dark), 0.15);
-    --icon-interactive-active: rgba(var(--active), 0.9);
+    --icon-interactive-active: rgba(var(--brand), 0.9);
     --icon-interactive-error: rgba(var(--error), 0.9);
     --icon-interactive-valid: rgba(var(--valid), 0.9);
     --icon-interactive-warning: rgba(var(--warning), 0.9);
     --icon-button-primary: rgba(var(--light), 0.95);
     --icon-button-disabled: rgba(var(--light), 0.7);
+    /* dark mode's --icon-secondary */
+    --icon-component-secondary: rgba(var(--light), 0.6);
 
     /* Border */
     --border-base: rgba(var(--light), 1);
@@ -139,6 +145,8 @@ input[type='number']::-webkit-outer-spin-button {
     --border-interactive-disabled: rgba(var(--dark), 0.05);
     --border-interactive-active: rgba(var(--brand), 0.65);
     --border-interactive-error: rgba(var(--error), 0.65);
+    /* dark mode's --border-primary */
+    --border-component-primary: rgba(var(--light), 0.1);
 
     /* Background */
     --background-primary: rgba(var(--dark), 0.08);
@@ -188,21 +196,23 @@ input[type='number']::-webkit-outer-spin-button {
     --text-body: rgba(var(--light), 0.95);
     --text-secondary: rgba(var(--light), 0.7);
     --text-tertiary: rgba(var(--light), 0.5);
-    /* --text-brand is the same as the light theme */
+    /* --text-brand and --text-interactive-active are the same as the light theme */
     --text-interactive-disabled: rgba(var(--light), 0.2);
     /* remaining --text-interactive-* are the same as the light theme */
     --text-button-primary: rgba(var(--black), 0.95);
     --text-button-disabled: rgba(var(--dark), 0.75);
+    /* --text-component-* are the same as the light theme */
 
     /* Icon */
     --icon-primary: rgba(var(--light), 0.9);
     --icon-secondary: rgba(var(--light), 0.6);
     --icon-tertiary: rgba(var(--light), 0.45);
-    /* --icon-brand is the same as the light theme */
+    /* --icon-brand and --icon-interactive-active are the same as the light theme */
     --icon-interactive-disabled: rgba(var(--light), 0.15);
     /* --text-interactive-* are the same as the light theme */
     --icon-button-primary: rgba(var(--dark), 0.95);
     --icon-button-disabled: rgba(var(--dark), 0.7);
+    /* --icon-component-secondary is the same as the light theme */
 
     /* Border */
     --border-base: rgba(var(--vanta), 1);
@@ -240,7 +250,7 @@ input[type='number']::-webkit-outer-spin-button {
     /* Component */
     --component-modal: rgba(var(--black), 1);
     --component-dropdown: rgba(29, 30, 31, 1);
-    /* --component-tooltip, --component-toast, and --component-pill are the same as the light theme */
+    /* --component-tooltip*, --component-toast*, and --component-pill are the same as the light theme */
     --component-widget: rgba(var(--dark), 0.2);
     --component-badge-primary: rgba(var(--light), 0.25);
     /* --component-badge-* are the same as the light theme */

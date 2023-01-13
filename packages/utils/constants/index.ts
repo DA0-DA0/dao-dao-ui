@@ -14,6 +14,8 @@ export const SITE_IMAGE = process.env.NEXT_PUBLIC_SITE_IMAGE as string
 export const WC_ICON_PATH = process.env.NEXT_PUBLIC_WC_ICON_PATH as string
 export const LEGACY_URL_PREFIX = process.env
   .NEXT_PUBLIC_LEGACY_URL_PREFIX as string
+export const CHAIN_GOV_PROPOSAL_URL_TEMPLATE = process.env
+  .NEXT_PUBLIC_CHAIN_GOV_PROPOSAL_URL_TEMPLATE as string
 
 export const NATIVE_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_NATIVE_DECIMALS || '6',

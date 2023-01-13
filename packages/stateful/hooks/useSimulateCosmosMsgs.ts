@@ -1,12 +1,10 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { cosmos } from 'interchain-rpc'
 import { useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { cosmosRpcClientForChainSelector } from '@dao-dao/state/recoil'
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
-import { cwMsgToEncodeObject } from '@dao-dao/utils'
+import { cwMsgToEncodeObject, typesRegistry } from '@dao-dao/utils'
 
 export interface UseSimulateCosmosMsgsOptions {
   senderAddress: string
@@ -29,9 +27,6 @@ export const useSimulateCosmosMsgs = ({
   senderAddress,
   chainId,
 }: UseSimulateCosmosMsgsOptions) => {
-  const { t } = useTranslation()
-
-  const { signingCosmWasmClient } = useWallet(chainId)
   const cosmosRpcClient = useRecoilValue(
     cosmosRpcClientForChainSelector(chainId)
   )
@@ -43,14 +38,9 @@ export const useSimulateCosmosMsgs = ({
         return
       }
 
-      // Need signing client to access protobuf type registry.
-      if (!signingCosmWasmClient) {
-        throw new Error(t('error.connectWalletToContinue'))
-      }
-
       const encodeObjects = msgs.map((msg) => {
         const encoded = cwMsgToEncodeObject(msg, senderAddress)
-        return signingCosmWasmClient.registry.encodeAsAny(encoded)
+        return typesRegistry.encodeAsAny(encoded)
       })
 
       const tx = Tx.fromPartial({
@@ -79,7 +69,7 @@ export const useSimulateCosmosMsgs = ({
 
       await cosmosRpcClient.tx.v1beta1.simulate(request)
     },
-    [cosmosRpcClient.tx.v1beta1, senderAddress, signingCosmWasmClient, t]
+    [cosmosRpcClient.tx.v1beta1, senderAddress]
   )
 
   return simulate

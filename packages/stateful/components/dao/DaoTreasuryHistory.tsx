@@ -1,4 +1,4 @@
-import { ArrowOutward, East, West } from '@mui/icons-material'
+import { ArrowOutwardRounded, East, West } from '@mui/icons-material'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
@@ -261,7 +261,7 @@ const TransactionRenderer = ({
         rel="noopener noreferrer"
         target="_blank"
       >
-        <ArrowOutward className="!h-4 !w-4" />
+        <ArrowOutwardRounded className="!h-4 !w-4" />
       </a>
     </p>
   </div>

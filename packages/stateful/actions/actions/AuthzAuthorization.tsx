@@ -10,20 +10,20 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeStargateMessage, objectMatchesStructure } from '@dao-dao/utils'
+import { isDecodedStargateMsg, makeStargateMessage } from '@dao-dao/utils'
 
 import { AddressInput, SuspenseLoader } from '../../components'
 import { AuthzAuthorizationComponent as StatelessAuthzComponent } from '../components/AuthzAuthorization'
 
 interface AuthzData {
   custom?: boolean
-  type_url: string
+  typeUrl: string
   value: MsgGrant | MsgRevoke
 }
 
 const useDefaults: UseDefaults<AuthzData> = () => ({
   custom: false,
-  type_url: '/cosmos.authz.v1beta1.MsgGrant',
+  typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
   value: {
     grantee: '',
     granter: '',
@@ -49,20 +49,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
 ) =>
   useMemo(
     () =>
-      objectMatchesStructure(msg, {
-        stargate: {
-          type_url: {},
-          value: {},
-        },
-      }) &&
-      (msg.stargate.type_url === '/cosmos.authz.v1beta1.MsgGrant' ||
-        msg.stargate.type_url === '/cosmos.authz.v1beta1.MsgRevoke')
+      isDecodedStargateMsg(msg) &&
+      (msg.stargate.typeUrl === '/cosmos.authz.v1beta1.MsgGrant' ||
+        msg.stargate.typeUrl === '/cosmos.authz.v1beta1.MsgRevoke')
         ? {
             match: true,
-            data: {
-              type_url: msg.stargate.type_url,
-              value: msg.stargate.value,
-            },
+            data: msg.stargate,
           }
         : { match: false },
     [msg]
@@ -77,7 +69,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
       (data: AuthzData) =>
         makeStargateMessage({
           stargate: {
-            type_url: data.type_url,
+            typeUrl: data.typeUrl,
             value: {
               ...data.value,
               granter: address,

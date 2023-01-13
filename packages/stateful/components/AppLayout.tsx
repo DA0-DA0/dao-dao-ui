@@ -21,7 +21,6 @@ import {
 } from '@dao-dao/state'
 import {
   BetaWarningModal,
-  ConnectWallet,
   DaoCreatedModal,
   IAppLayoutContext,
   InstallKeplrModal,
@@ -39,6 +38,7 @@ import {
   daoCreatedCardPropsAtom,
   pinnedDaoDropdownInfosSelector,
 } from '../recoil'
+import { ConnectWallet } from './ConnectWallet'
 import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
@@ -272,17 +272,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
 
       <StatelessAppLayout
         connect={connect}
-        connectWalletButton={
-          <ConnectWallet
-            loading={
-              status === WalletConnectionStatus.Initializing ||
-              status === WalletConnectionStatus.AttemptingAutoConnection ||
-              status === WalletConnectionStatus.Connecting
-            }
-            onConnect={connect}
-            variant="secondary"
-          />
-        }
+        connectWalletButton={<ConnectWallet variant="secondary" />}
         connected={connected}
         context={appLayoutContext}
         navigationProps={{

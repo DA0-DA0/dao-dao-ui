@@ -8,8 +8,8 @@ import { ProposalVoteOption } from '@dao-dao/types'
 import { Button } from '../buttons'
 import { ProposalVoteButton } from './ProposalVoteButton'
 
-export interface ProposalStatusAndInfoProps<Vote> {
-  status: string
+export interface ProposalStatusAndInfoProps<Vote extends unknown = unknown> {
+  status?: string
   info: {
     Icon: ComponentType<{ className: string }>
     label: string
@@ -29,14 +29,16 @@ export interface ProposalStatusAndInfoProps<Vote> {
     onCastVote: (vote: Vote) => void | Promise<void>
     options: ProposalVoteOption<Vote>[]
   }
+  className?: string
 }
 
-export const ProposalStatusAndInfo = <Vote extends unknown>({
+export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
   status,
   info,
   inline = false,
   action,
   vote,
+  className,
 }: ProposalStatusAndInfoProps<Vote>) => {
   const { t } = useTranslation()
 
@@ -49,21 +51,29 @@ export const ProposalStatusAndInfo = <Vote extends unknown>({
       className={clsx(
         'flex flex-col items-stretch',
         inline &&
-          'rounded-lg border border-border-secondary bg-background-tertiary'
+          'rounded-lg border border-border-secondary bg-background-tertiary',
+        className
       )}
     >
-      <div className={clsx('flex flex-col gap-4', inline ? 'p-6' : 'pb-10')}>
-        <div className="flex flex-row items-center gap-3">
-          <AnalyticsOutlined className="h-6 w-6 text-icon-secondary" />
-          <p className="secondary-text">{t('title.status')}</p>
-        </div>
+      {!!status && (
+        <div
+          className={clsx(
+            'flex flex-col gap-4 border-b border-border-secondary',
+            inline ? 'p-6' : 'pb-10'
+          )}
+        >
+          <div className="flex flex-row items-center gap-3">
+            <AnalyticsOutlined className="h-6 w-6 text-icon-secondary" />
+            <p className="secondary-text">{t('title.status')}</p>
+          </div>
 
-        <p className="body-text text-text-secondary">{status}</p>
-      </div>
+          <p className="body-text text-text-secondary">{status}</p>
+        </div>
+      )}
 
       <div
         className={clsx(
-          'grid grid-cols-2 items-center gap-3 border-t border-border-secondary',
+          'grid grid-cols-2 items-center gap-3',
           inline ? 'p-6' : action ? 'pt-8 pb-6' : 'py-8'
         )}
       >

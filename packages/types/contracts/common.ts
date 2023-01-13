@@ -129,7 +129,7 @@ export type DistributionMsg =
 export type StargateMsg = {
   stargate: {
     type_url: string
-    value: Binary | Uint8Array
+    value: Binary
   }
 }
 /**

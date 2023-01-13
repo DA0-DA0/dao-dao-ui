@@ -151,6 +151,8 @@ export const FormSwitchCard = <
       setValue(fieldName, newValue as any)
       onToggle?.(newValue)
     }}
+    sizing="sm"
+    tooltipIconSize="sm"
     {...props}
   />
 )

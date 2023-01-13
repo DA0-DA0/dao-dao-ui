@@ -3,19 +3,13 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   CodeMirrorInput,
-  InputErrorMessage,
   InputLabel,
   PickEmoji,
   SelectInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  CHAIN_BECH32_PREFIX,
-  validateJSON,
-  validateValidatorAddress,
-} from '@dao-dao/utils'
+import { validateJSON } from '@dao-dao/utils'
 
 import { ValidatorActionType } from '../actions/ValidatorActions'
 import { ActionCard } from './ActionCard'
@@ -64,22 +58,20 @@ export const ValidatorActionsComponent: ActionComponent = ({
       onRemove={onRemove}
       title={t('title.validatorActions')}
     >
-      <div className="flex flex-col gap-2 xs:flex-row">
-        <SelectInput
-          containerClassName="grow"
-          defaultValue={validatorActions[0].type}
-          disabled={!isCreating}
-          error={errors?.validatorActionType}
-          fieldName={fieldNamePrefix + 'validatorActionType'}
-          register={register}
-        >
-          {validatorActions.map(({ name, type }, idx) => (
-            <option key={idx} value={type}>
-              {name}
-            </option>
-          ))}
-        </SelectInput>
-      </div>
+      <SelectInput
+        containerClassName="mb-3"
+        defaultValue={validatorActions[0].type}
+        disabled={!isCreating}
+        error={errors?.validatorActionType}
+        fieldName={fieldNamePrefix + 'validatorActionType'}
+        register={register}
+      >
+        {validatorActions.map(({ name, type }, idx) => (
+          <option key={idx} value={type}>
+            {name}
+          </option>
+        ))}
+      </SelectInput>
 
       {validatorActionType === ValidatorActionType.CreateValidator && (
         <div className="flex flex-col items-stretch gap-1">
@@ -130,44 +122,6 @@ export const ValidatorActionsComponent: ActionComponent = ({
               <Check className="inline w-5" /> {t('info.jsonIsValid')}
             </p>
           )}
-        </div>
-      )}
-
-      {validatorActionType === ValidatorActionType.UnjailValidator && (
-        <div className="flex flex-col items-stretch gap-1">
-          <InputLabel name={t('form.validatorAddress')} />
-          <AddressInput
-            disabled={!isCreating}
-            error={errors?.unjailMsg?.validatorAddr}
-            fieldName={fieldNamePrefix + 'unjailMsg.validatorAddr'}
-            placeholder={`${CHAIN_BECH32_PREFIX}valoper...`}
-            register={register}
-            validation={[(v: string) => validateValidatorAddress(v)]}
-          />
-          <InputErrorMessage error={errors?.unjailMsg?.validatorAddr} />
-        </div>
-      )}
-
-      {validatorActionType ===
-        ValidatorActionType.WithdrawValidatorCommission && (
-        <div className="flex flex-col items-stretch gap-1">
-          <InputLabel
-            name={t('form.validatorAddress')}
-            tooltip={t('form.validatorAddressTooltip')}
-          />
-          <AddressInput
-            disabled={!isCreating}
-            error={errors?.withdrawCommissionMsg?.validatorAddress}
-            fieldName={
-              fieldNamePrefix + 'withdrawCommissionMsg.validatorAddress'
-            }
-            placeholder={`${CHAIN_BECH32_PREFIX}valoper...`}
-            register={register}
-            validation={[(v: string) => validateValidatorAddress(v)]}
-          />
-          <InputErrorMessage
-            error={errors?.withdrawCommissionMsg?.validatorAddress}
-          />
         </div>
       )}
     </ActionCard>

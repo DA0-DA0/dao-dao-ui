@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Button,
   InputErrorMessage,
-  MarkdownPreview,
+  MarkdownRenderer,
   TextAreaInput,
   Tooltip,
 } from '@dao-dao/stateless'
@@ -80,7 +80,7 @@ export const ContributionForm = ({
           <p className="caption-text italic">{dateText}</p>
         </div>
 
-        <MarkdownPreview
+        <MarkdownRenderer
           className="min-w-0"
           markdown={survey.contributionInstructions}
         />

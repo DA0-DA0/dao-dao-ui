@@ -1,4 +1,4 @@
-import { ArrowOutward } from '@mui/icons-material'
+import { ArrowOutwardRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
@@ -194,7 +194,7 @@ export const ValidatorPicker = ({
           rightNode: website ? (
             <Tooltip title={website}>
               <IconButtonLink
-                Icon={ArrowOutward}
+                Icon={ArrowOutwardRounded}
                 href={website}
                 onClick={(event) => {
                   // Don't click on item button.

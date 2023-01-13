@@ -8,7 +8,7 @@ import { formatDate } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons'
-import { MarkdownPreview } from '../MarkdownPreview'
+import { MarkdownRenderer } from '../MarkdownRenderer'
 
 export interface ProposalContentDisplayProps {
   title: string
@@ -97,7 +97,7 @@ export const ProposalContentDisplay = ({
         )}
       </div>
 
-      <MarkdownPreview
+      <MarkdownRenderer
         addAnchors
         className="max-w-full"
         markdown={description}

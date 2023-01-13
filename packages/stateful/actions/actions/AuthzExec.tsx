@@ -22,11 +22,11 @@ import {
 } from '@dao-dao/types/actions'
 import {
   NATIVE_DENOM,
-  decodeProtobuf,
+  decodeStargateMessage,
+  isDecodedStargateMsg,
   loadableToLoadingData,
   makeRawProtobufMsg,
   makeStargateMessage,
-  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { AddressInput, SuspenseLoader } from '../../components'
@@ -114,20 +114,13 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
 
   return useMemo(() => {
     // Check this is a stargate message.
-    if (
-      !objectMatchesStructure(msg, {
-        stargate: {
-          type_url: {},
-          value: {},
-        },
-      })
-    ) {
+    if (!isDecodedStargateMsg(msg)) {
       return { match: false }
     }
 
     // Chect this is Authz MsgExec message formatted by this action
     if (
-      msg.stargate.type_url !== '/cosmos.authz.v1beta1.MsgExec' ||
+      msg.stargate.typeUrl !== '/cosmos.authz.v1beta1.MsgExec' ||
       !msg.stargate.value.msgs ||
       msg.stargate.value.msgs.length !== 1
     ) {
@@ -135,10 +128,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
     }
 
     // Decode the message included with Authz MsgExec
-    let decodedExecMsg = decodeProtobuf(msg.stargate.value.msgs[0])
+    let decodedExecMsg = decodeStargateMessage(
+      msg.stargate.value.msgs[0]
+    ).stargate
 
     // Check that the type_url for default Authz messages, set data accordingly
-    switch (decodedExecMsg.type_url) {
+    switch (decodedExecMsg.typeUrl) {
       case AuthzExecActionTypes.Delegate:
         data.authzExecActionType = AuthzExecActionTypes.Delegate
         data.delegate = decodedExecMsg.value
@@ -173,7 +168,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
         case AuthzExecActionTypes.Delegate:
           return makeStargateMessage({
             stargate: {
-              type_url: '/cosmos.authz.v1beta1.MsgExec',
+              typeUrl: '/cosmos.authz.v1beta1.MsgExec',
               value: {
                 grantee: address,
                 msgs: [
@@ -188,7 +183,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
         case AuthzExecActionTypes.Redelegate:
           return makeStargateMessage({
             stargate: {
-              type_url: '/cosmos.authz.v1beta1.MsgExec',
+              typeUrl: '/cosmos.authz.v1beta1.MsgExec',
               value: {
                 grantee: address,
                 msgs: [
@@ -203,7 +198,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
         case AuthzExecActionTypes.Undelegate:
           return makeStargateMessage({
             stargate: {
-              type_url: '/cosmos.authz.v1beta1.MsgExec',
+              typeUrl: '/cosmos.authz.v1beta1.MsgExec',
               value: {
                 grantee: address,
                 msgs: [
@@ -218,7 +213,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
         case AuthzExecActionTypes.ClaimRewards:
           return makeStargateMessage({
             stargate: {
-              type_url: '/cosmos.authz.v1beta1.MsgExec',
+              typeUrl: '/cosmos.authz.v1beta1.MsgExec',
               value: {
                 grantee: address,
                 msgs: [
@@ -233,7 +228,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
         default:
           return makeStargateMessage({
             stargate: {
-              type_url: '/cosmos.authz.v1beta1.MsgExec',
+              typeUrl: '/cosmos.authz.v1beta1.MsgExec',
               value: {
                 grantee: address,
                 msgs: JSON.parse(data.custom),
