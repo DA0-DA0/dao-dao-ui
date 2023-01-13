@@ -384,7 +384,7 @@ export const govProposalsSelector = selectorFamily<
             decodedContent,
           }
         })
-        .sort((a, b) => b.votingEndTime.getTime() - a.votingEndTime.getTime())
+        .sort((a, b) => a.votingEndTime.getTime() - b.votingEndTime.getTime())
     },
 })
 

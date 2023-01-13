@@ -66,6 +66,5 @@ Default.args = {
   errors: {},
   options: {
     proposals: [makeProposal(), makeProposal(), makeProposal(), makeProposal()],
-    canVoteAsValidator: true,
   },
 }

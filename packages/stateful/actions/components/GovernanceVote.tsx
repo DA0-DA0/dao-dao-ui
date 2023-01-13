@@ -6,16 +6,14 @@ import {
   Close,
   Texture,
 } from '@mui/icons-material'
-import { VoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
+import { ProposalStatus, VoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { WeightedVoteOption } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
   BallotDepositEmoji,
-  FormSwitchCard,
   IconButtonLink,
-  InputErrorMessage,
   MarkdownPreview,
   ProposalVoteButton,
   SelectInput,
@@ -32,7 +30,9 @@ import {
 } from '@dao-dao/types/actions'
 import {
   CHAIN_GOV_PROPOSAL_URL_TEMPLATE,
+  formatDateTimeTz,
   formatPercentOf100,
+  validateRequired,
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../react'
@@ -40,14 +40,12 @@ import { ActionCard } from './ActionCard'
 
 export interface GovernanceVoteOptions {
   proposals: GovProposalWithDecodedContent[]
-  canVoteAsValidator: boolean
   existingVotesLoading?: LoadingData<WeightedVoteOption[] | undefined>
 }
 
 export interface GovernanceVoteData {
-  voteAsValidator: boolean
   proposalId: string
-  vote?: VoteOption
+  vote: VoteOption
 }
 
 export const GovernanceVoteComponent: ActionComponent<
@@ -57,15 +55,12 @@ export const GovernanceVoteComponent: ActionComponent<
   onRemove,
   errors,
   isCreating,
-  options: { proposals, canVoteAsValidator, existingVotesLoading },
+  options: { proposals, existingVotesLoading },
 }) => {
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext<GovernanceVoteData>()
   const { context } = useActionOptions()
 
-  const voteAsValidator = watch(
-    (fieldNamePrefix + 'voteAsValidator') as 'voteAsValidator'
-  )
   const proposalId = watch((fieldNamePrefix + 'proposalId') as 'proposalId')
   const vote = watch((fieldNamePrefix + 'vote') as 'vote')
 
@@ -95,7 +90,7 @@ export const GovernanceVoteComponent: ActionComponent<
       value: VoteOption.VOTE_OPTION_ABSTAIN,
     },
   ]
-  const voteSelected = vote && voteOptions.find((v) => v.value === vote)
+  const voteSelected = voteOptions.find((v) => v.value === vote)
 
   return (
     <ActionCard
@@ -106,8 +101,10 @@ export const GovernanceVoteComponent: ActionComponent<
       {isCreating && (
         <SelectInput
           containerClassName="mb-4"
+          error={errors?.proposalId}
           fieldName={(fieldNamePrefix + 'proposalId') as 'proposalId'}
           register={register}
+          validation={[validateRequired]}
         >
           {proposals.map((proposal) => (
             <option
@@ -124,19 +121,8 @@ export const GovernanceVoteComponent: ActionComponent<
         </SelectInput>
       )}
 
-      {canVoteAsValidator && (
-        <FormSwitchCard
-          containerClassName="self-start mb-4 -mt-2"
-          fieldName={(fieldNamePrefix + 'voteAsValidator') as 'voteAsValidator'}
-          label={t('form.voteAsValidator')}
-          setValue={setValue}
-          tooltip={t('form.voteAsValidatorTooltip')}
-          value={voteAsValidator}
-        />
-      )}
-
       {proposalSelected ? (
-        <div className="space-y-3">
+        <div className="flex flex-col gap-6">
           <div className="flex flex-row items-center gap-4">
             <p className="header-text">
               #{proposalId}{' '}
@@ -154,15 +140,39 @@ export const GovernanceVoteComponent: ActionComponent<
             />
           </div>
 
-          {proposalSelected.decodedContent &&
-            'description' in proposalSelected.decodedContent &&
-            typeof proposalSelected.decodedContent.description === 'string' && (
-              <MarkdownPreview
-                markdown={proposalSelected.decodedContent.description}
-              />
-            )}
+          {proposalSelected.decodedContent && (
+            <>
+              <div className="grid w-max grid-cols-[auto_1fr] gap-x-20 gap-y-2 rounded-md bg-background-tertiary p-6">
+                <p className="primary-text">{t('title.status')}:</p>
 
-          <div className="!mt-8 flex flex-col items-stretch gap-1">
+                <p className="primary-text font-mono">
+                  {t(PROPOSAL_STATUS_I18N_KEY_MAP[proposalSelected.status])}
+                </p>
+
+                <p className="primary-text">{t('title.votingStart')}:</p>
+
+                <p className="primary-text font-mono">
+                  {formatDateTimeTz(proposalSelected.votingStartTime)}
+                </p>
+
+                <p className="primary-text">{t('title.votingEnd')}:</p>
+
+                <p className="primary-text font-mono">
+                  {formatDateTimeTz(proposalSelected.votingEndTime)}
+                </p>
+              </div>
+
+              {'description' in proposalSelected.decodedContent &&
+                typeof proposalSelected.decodedContent.description ===
+                  'string' && (
+                  <MarkdownPreview
+                    markdown={proposalSelected.decodedContent.description}
+                  />
+                )}
+            </>
+          )}
+
+          <div className="flex flex-col items-stretch gap-1">
             {isCreating
               ? voteOptions.map((option) => (
                   <ProposalVoteButton<VoteOption>
@@ -196,8 +206,6 @@ export const GovernanceVoteComponent: ActionComponent<
                   </div>
                 )}
           </div>
-
-          <InputErrorMessage error={errors?.vote} />
         </div>
       ) : (
         // If not creating and no proposal selected, something went wrong.
@@ -266,4 +274,16 @@ export const GovernanceVoteComponent: ActionComponent<
         )}
     </ActionCard>
   )
+}
+
+const PROPOSAL_STATUS_I18N_KEY_MAP: Record<ProposalStatus, string> = {
+  [ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED]: 'govProposalStatus.unspecified',
+  [ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD]:
+    'govProposalStatus.depositPeriod',
+  [ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD]:
+    'govProposalStatus.votingPeriod',
+  [ProposalStatus.PROPOSAL_STATUS_PASSED]: 'govProposalStatus.passed',
+  [ProposalStatus.PROPOSAL_STATUS_REJECTED]: 'govProposalStatus.rejected',
+  [ProposalStatus.PROPOSAL_STATUS_FAILED]: 'govProposalStatus.failed',
+  [ProposalStatus.UNRECOGNIZED]: 'govProposalStatus.unrecognized',
 }

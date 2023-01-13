@@ -1,6 +1,7 @@
+import { VoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { MsgVote } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
 import Long from 'long'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
@@ -8,7 +9,6 @@ import {
   govProposalSelector,
   govProposalVoteSelector,
   govProposalsSelector,
-  validatorSelector,
 } from '@dao-dao/state'
 import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
@@ -23,7 +23,6 @@ import {
   loadableToLoadingData,
   makeStargateMessage,
   objectMatchesStructure,
-  toValidatorAddress,
 } from '@dao-dao/utils'
 
 import {
@@ -35,25 +34,20 @@ import { useActionOptions } from '../react'
 const useDefaults: UseDefaults<GovernanceVoteData> = () => ({
   voteAsValidator: true,
   proposalId: '',
+  vote: VoteOption.VOTE_OPTION_ABSTAIN,
 })
 
 const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
-  const { address, chainId, bech32Prefix } = useActionOptions()
+  const { isCreating, fieldNamePrefix } = props
+  const { address, chainId } = useActionOptions()
+  const { watch, setValue } = useFormContext<GovernanceVoteData>()
 
-  const validatorAddress = toValidatorAddress(address, bech32Prefix)
-  // Check if this address manages a validator to decide if we show the vote as
-  // validator toggle switch. This should error if the validator does not exist.
-  const validator = useRecoilValueLoadable(
-    validatorSelector({
-      address: validatorAddress,
-      chainId,
-    })
+  const proposalId = watch(
+    (props.fieldNamePrefix + 'proposalId') as 'proposalId'
   )
-  // Can vote if validator exists.
-  const canVoteAsValidator = validator.state === 'hasValue'
 
   const openProposals = useRecoilValue(
-    props.isCreating
+    isCreating
       ? govProposalsSelector({
           chainId,
         })
@@ -62,20 +56,12 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
   // If viewing an action where we already selected and voted on a proposal,
   // load just the one we voted on and add it to the list so we can display it.
   const selectedProposal = useRecoilValue(
-    !props.isCreating && props.data.proposalId
+    !isCreating && proposalId
       ? govProposalSelector({
-          proposalId: Number(props.data.proposalId),
+          proposalId: Number(proposalId),
           chainId,
         })
       : constSelector(undefined)
-  )
-
-  const { watch } = useFormContext<GovernanceVoteData>()
-  const proposalId = watch(
-    (props.fieldNamePrefix + 'proposalId') as 'proposalId'
-  )
-  const voteAsValidator = watch(
-    (props.fieldNamePrefix + 'voteAsValidator') as 'voteAsValidator'
   )
 
   const existingVotesLoading = loadableToLoadingData(
@@ -83,16 +69,23 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
       proposalId
         ? govProposalVoteSelector({
             proposalId: Number(proposalId),
-            voter:
-              canVoteAsValidator && voteAsValidator
-                ? validatorAddress
-                : address,
+            voter: address,
             chainId,
           })
         : constSelector(undefined)
     ),
     undefined
   )
+
+  // Select first proposal once loaded if nothing selected.
+  useEffect(() => {
+    if (isCreating && openProposals?.length && !proposalId) {
+      setValue(
+        (fieldNamePrefix + 'proposalId') as 'proposalId',
+        openProposals[0].proposalId.toString()
+      )
+    }
+  }, [isCreating, openProposals, proposalId, setValue, fieldNamePrefix])
 
   return (
     <StatelessGovernanceVoteComponent
@@ -102,7 +95,6 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
           ...(openProposals ?? []),
           ...(selectedProposal ? [selectedProposal] : []),
         ],
-        canVoteAsValidator,
         existingVotesLoading,
       }}
     />
@@ -112,39 +104,22 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
 export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
   t,
   address,
-  chainId,
-  bech32Prefix,
 }) => {
-  const validatorAddress = toValidatorAddress(address, bech32Prefix)
-
-  const useTransformToCosmos: UseTransformToCosmos<GovernanceVoteData> = () => {
-    const validator = useRecoilValueLoadable(
-      validatorSelector({
-        address: validatorAddress,
-        chainId,
-      })
-    )
-    // Can vote if validator exists.
-    const canVoteAsValidator = validator.state === 'hasValue'
-
-    return useCallback(
-      ({ proposalId, vote, voteAsValidator }) =>
+  const useTransformToCosmos: UseTransformToCosmos<GovernanceVoteData> = () =>
+    useCallback(
+      ({ proposalId, vote }) =>
         makeStargateMessage({
           stargate: {
             typeUrl: '/cosmos.gov.v1beta1.MsgVote',
             value: {
               proposalId: Long.fromString(proposalId),
-              voter:
-                canVoteAsValidator && voteAsValidator
-                  ? validatorAddress
-                  : address,
+              voter: address,
               option: vote,
             } as MsgVote,
           },
         }),
-      [canVoteAsValidator]
+      []
     )
-  }
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<GovernanceVoteData> = (
     msg: Record<string, any>
@@ -166,7 +141,6 @@ export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
           data: {
             proposalId: msg.stargate.value.proposalId.toString(),
             vote: msg.stargate.value.option,
-            voteAsValidator: msg.stargate.value.voter === validatorAddress,
           },
         }
       : {
