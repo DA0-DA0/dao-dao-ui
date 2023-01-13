@@ -126,7 +126,7 @@ export const GovernanceVoteComponent: ActionComponent<
 
       {canVoteAsValidator && (
         <FormSwitchCard
-          containerClassName="self-start"
+          containerClassName="self-start mb-4 -mt-2"
           fieldName={(fieldNamePrefix + 'voteAsValidator') as 'voteAsValidator'}
           label={t('form.voteAsValidator')}
           setValue={setValue}
