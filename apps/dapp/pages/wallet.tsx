@@ -116,8 +116,8 @@ const InnerWallet = () => {
         toast.success(t('success.transactionExecuted'))
         setTxHash(tx.transactionHash)
       } catch (err) {
+        console.error(err)
         const error = processError(err)
-        console.error(error)
         setError(error)
       } finally {
         setLoading(false)

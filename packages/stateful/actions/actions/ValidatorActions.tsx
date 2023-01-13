@@ -5,7 +5,6 @@ import { useCallback, useMemo } from 'react'
 import { PickEmoji } from '@dao-dao/stateless'
 import {
   ActionMaker,
-  ActionOptionsContextType,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -41,28 +40,28 @@ const useTransformToCosmos: UseTransformToCosmos<ValidatorActionsData> = () =>
       case ValidatorActionType.WithdrawValidatorCommission:
         return makeStargateMessage({
           stargate: {
-            type_url: ValidatorActionType.WithdrawValidatorCommission,
+            typeUrl: ValidatorActionType.WithdrawValidatorCommission,
             value: data.withdrawCommissionMsg,
           },
         })
       case ValidatorActionType.CreateValidator:
         return makeStargateMessage({
           stargate: {
-            type_url: ValidatorActionType.CreateValidator,
+            typeUrl: ValidatorActionType.CreateValidator,
             value: JSON.parse(data.createMsg),
           },
         })
       case ValidatorActionType.EditValidator:
         return makeStargateMessage({
           stargate: {
-            type_url: ValidatorActionType.EditValidator,
+            typeUrl: ValidatorActionType.EditValidator,
             value: JSON.parse(data.editMsg),
           },
         })
       case ValidatorActionType.UnjailValidator:
         return makeStargateMessage({
           stargate: {
-            type_url: ValidatorActionType.UnjailValidator,
+            typeUrl: ValidatorActionType.UnjailValidator,
             value: data.unjailMsg,
           },
         })
@@ -73,15 +72,9 @@ const useTransformToCosmos: UseTransformToCosmos<ValidatorActionsData> = () =>
 
 export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
   t,
-  context,
   address,
   bech32Prefix,
 }) => {
-  // Only DAOs.
-  if (context.type !== ActionOptionsContextType.Dao) {
-    return null
-  }
-
   const useDefaults: UseDefaults<ValidatorActionsData> = () => {
     const validatorAddress = toValidatorAddress(address, bech32Prefix)
 
@@ -107,8 +100,7 @@ export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
           pubkey: {
             typeUrl: '/cosmos.crypto.ed25519.PubKey',
             value: {
-              '@type': '/cosmos.crypto.ed25519.PubKey',
-              key: '<the public key of your node (junod tendermint show-validator)>',
+              key: '<the base64 public key of your node (junod tendermint show-validator)>',
             },
           },
           value: {

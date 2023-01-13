@@ -49,7 +49,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         <InputLabel name={t('form.grantOrRevokeAuthz')} />
         <SelectInput
           disabled={!isCreating}
-          fieldName={fieldNamePrefix + 'type_url'}
+          fieldName={fieldNamePrefix + 'typeUrl'}
           register={register}
         >
           <option value="/cosmos.authz.v1beta1.MsgGrant">

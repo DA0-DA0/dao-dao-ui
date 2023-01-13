@@ -10,7 +10,10 @@ import { ChainInfoID } from '@noahsaso/cosmodal'
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { cosmos, juno } from 'interchain-rpc'
 import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
-import { Proposal as GovProposal } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
+import {
+  Proposal as GovProposal,
+  WeightedVoteOption,
+} from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
 import {
   DelegationResponse,
   UnbondingDelegation as RpcUnbondingDelegation,
@@ -22,6 +25,7 @@ import { atom, selector, selectorFamily } from 'recoil'
 import {
   AmountWithTimestamp,
   Delegation,
+  GovProposalWithDecodedContent,
   NativeDelegationInfo,
   UnbondingDelegation,
   Validator,
@@ -344,7 +348,7 @@ export const nativeUnstakingDurationSecondsSelector = selectorFamily<
 // Queries the chain for governance proposals, defaulting to those that are
 // currently open for voting.
 export const govProposalsSelector = selectorFamily<
-  GovProposal[],
+  GovProposalWithDecodedContent[],
   WithChainId<{ status?: ProposalStatus }>
 >({
   key: 'govProposals',
@@ -359,6 +363,8 @@ export const govProposalsSelector = selectorFamily<
           client.gov.v1beta1.proposals,
           {
             proposalStatus: status,
+            voter: '',
+            depositor: '',
           },
           'proposals'
         )
@@ -368,25 +374,65 @@ export const govProposalsSelector = selectorFamily<
       }
 
       return proposals
+        .map((proposal) => {
+          const decodedContent = cosmos.gov.v1beta1.TextProposal.decode(
+            proposal.content.value
+          )
+
+          return {
+            ...proposal,
+            decodedContent,
+          }
+        })
+        .sort((a, b) => b.votingEndTime.getTime() - a.votingEndTime.getTime())
     },
 })
 
 // Queries the chain for a specific governance proposal.
 export const govProposalSelector = selectorFamily<
-  GovProposal | undefined,
+  GovProposalWithDecodedContent | undefined,
   WithChainId<{ proposalId: number }>
 >({
-  key: 'govProposals',
+  key: 'govProposal',
   get:
     ({ proposalId, chainId }) =>
     async ({ get }) => {
       const client = get(cosmosRpcClientForChainSelector(chainId))
 
-      return (
+      const proposal = (
         await client.gov.v1beta1.proposal({
           proposalId: Long.fromInt(proposalId),
         })
       )?.proposal
+
+      return (
+        proposal && {
+          ...proposal,
+          decodedContent: cosmos.gov.v1beta1.TextProposal.decode(
+            proposal.content.value
+          ),
+        }
+      )
+    },
+})
+
+// Queries the chain for a vote on a governance proposal.
+export const govProposalVoteSelector = selectorFamily<
+  WeightedVoteOption[] | undefined,
+  WithChainId<{ proposalId: number; voter: string }>
+>({
+  key: 'govProposalVote',
+  get:
+    ({ proposalId, voter, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      return (
+        await client.gov.v1beta1.vote({
+          proposalId: Long.fromInt(proposalId),
+          voter,
+        })
+      )?.vote.options
     },
 })
 

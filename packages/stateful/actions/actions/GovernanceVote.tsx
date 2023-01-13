@@ -1,10 +1,12 @@
 import { MsgVote } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
 import Long from 'long'
 import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import {
   govProposalSelector,
+  govProposalVoteSelector,
   govProposalsSelector,
   validatorSelector,
 } from '@dao-dao/state'
@@ -18,6 +20,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  loadableToLoadingData,
   makeStargateMessage,
   objectMatchesStructure,
   toValidatorAddress,
@@ -46,6 +49,8 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
       chainId,
     })
   )
+  // Can vote if validator exists.
+  const canVoteAsValidator = validator.state === 'hasValue'
 
   const openProposals = useRecoilValue(
     props.isCreating
@@ -65,6 +70,30 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
       : constSelector(undefined)
   )
 
+  const { watch } = useFormContext<GovernanceVoteData>()
+  const proposalId = watch(
+    (props.fieldNamePrefix + 'proposalId') as 'proposalId'
+  )
+  const voteAsValidator = watch(
+    (props.fieldNamePrefix + 'voteAsValidator') as 'voteAsValidator'
+  )
+
+  const existingVotesLoading = loadableToLoadingData(
+    useRecoilValueLoadable(
+      proposalId
+        ? govProposalVoteSelector({
+            proposalId: Number(proposalId),
+            voter:
+              canVoteAsValidator && voteAsValidator
+                ? validatorAddress
+                : address,
+            chainId,
+          })
+        : constSelector(undefined)
+    ),
+    undefined
+  )
+
   return (
     <StatelessGovernanceVoteComponent
       {...props}
@@ -73,7 +102,8 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
           ...(openProposals ?? []),
           ...(selectedProposal ? [selectedProposal] : []),
         ],
-        canVoteAsValidator: validator.state === 'hasValue',
+        canVoteAsValidator,
+        existingVotesLoading,
       }}
     />
   )
@@ -101,7 +131,7 @@ export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
       ({ proposalId, vote, voteAsValidator }) =>
         makeStargateMessage({
           stargate: {
-            type_url: '/cosmos.gov.v1beta1.MsgVote',
+            typeUrl: '/cosmos.gov.v1beta1.MsgVote',
             value: {
               proposalId: Long.fromString(proposalId),
               voter:

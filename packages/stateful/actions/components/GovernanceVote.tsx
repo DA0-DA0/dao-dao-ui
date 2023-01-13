@@ -1,3 +1,4 @@
+import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import {
   ArrowOutwardRounded,
   Block,
@@ -6,7 +7,7 @@ import {
   Texture,
 } from '@mui/icons-material'
 import { VoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
-import { Proposal as GovProposal } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
+import { WeightedVoteOption } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -18,20 +19,29 @@ import {
   MarkdownPreview,
   ProposalVoteButton,
   SelectInput,
+  TooltipInfoIcon,
 } from '@dao-dao/stateless'
-import { ProposalVoteOption } from '@dao-dao/types'
+import {
+  GovProposalWithDecodedContent,
+  LoadingData,
+  ProposalVoteOption,
+} from '@dao-dao/types'
 import {
   ActionComponent,
   ActionOptionsContextType,
 } from '@dao-dao/types/actions'
-import { CHAIN_GOV_PROPOSAL_URL_TEMPLATE } from '@dao-dao/utils'
+import {
+  CHAIN_GOV_PROPOSAL_URL_TEMPLATE,
+  formatPercentOf100,
+} from '@dao-dao/utils'
 
 import { useActionOptions } from '../react'
 import { ActionCard } from './ActionCard'
 
 export interface GovernanceVoteOptions {
-  proposals: GovProposal[]
+  proposals: GovProposalWithDecodedContent[]
   canVoteAsValidator: boolean
+  existingVotesLoading?: LoadingData<WeightedVoteOption[] | undefined>
 }
 
 export interface GovernanceVoteData {
@@ -47,7 +57,7 @@ export const GovernanceVoteComponent: ActionComponent<
   onRemove,
   errors,
   isCreating,
-  options: { proposals, canVoteAsValidator },
+  options: { proposals, canVoteAsValidator, existingVotesLoading },
 }) => {
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext<GovernanceVoteData>()
@@ -105,10 +115,10 @@ export const GovernanceVoteComponent: ActionComponent<
               value={proposal.proposalId.toString()}
             >
               #{proposal.proposalId.toString()}
-              {!!proposal.content &&
-                'title' in proposal.content &&
-                typeof proposal.content.title === 'string' &&
-                ' ' + proposal.content.title}
+              {!!proposal.decodedContent &&
+                'title' in proposal.decodedContent &&
+                typeof proposal.decodedContent.title === 'string' &&
+                ' ' + proposal.decodedContent.title}
             </option>
           ))}
         </SelectInput>
@@ -130,10 +140,10 @@ export const GovernanceVoteComponent: ActionComponent<
           <div className="flex flex-row items-center gap-4">
             <p className="header-text">
               #{proposalId}{' '}
-              {proposalSelected.content &&
-              'title' in proposalSelected.content &&
-              typeof proposalSelected.content.title === 'string'
-                ? proposalSelected.content.title
+              {proposalSelected.decodedContent &&
+              'title' in proposalSelected.decodedContent &&
+              typeof proposalSelected.decodedContent.title === 'string'
+                ? proposalSelected.decodedContent.title
                 : t('title.noTitle')}
             </p>
 
@@ -144,11 +154,11 @@ export const GovernanceVoteComponent: ActionComponent<
             />
           </div>
 
-          {proposalSelected.content &&
-            'description' in proposalSelected.content &&
-            typeof proposalSelected.content.description === 'string' && (
+          {proposalSelected.decodedContent &&
+            'description' in proposalSelected.decodedContent &&
+            typeof proposalSelected.decodedContent.description === 'string' && (
               <MarkdownPreview
-                markdown={proposalSelected.content.description}
+                markdown={proposalSelected.decodedContent.description}
               />
             )}
 
@@ -197,6 +207,63 @@ export const GovernanceVoteComponent: ActionComponent<
           </p>
         )
       )}
+
+      {isCreating &&
+        existingVotesLoading &&
+        !existingVotesLoading.loading &&
+        existingVotesLoading.data && (
+          <div className="mt-4 space-y-2">
+            <div className="flex flex-row items-center gap-2">
+              <p className="primary-text text-text-secondary">
+                {t('info.subjectsCurrentlyCastVote', {
+                  subject:
+                    context.type === ActionOptionsContextType.Dao
+                      ? context.info.name
+                      : t('info.your'),
+                })}
+              </p>
+
+              <TooltipInfoIcon
+                title={t('info.subjectsCurrentlyCastVoteTooltip', {
+                  subject:
+                    context.type === ActionOptionsContextType.Dao
+                      ? context.info.name
+                      : t('info.you'),
+                })}
+              />
+            </div>
+
+            <div className="space-y-1">
+              {existingVotesLoading.data.map((vote) => {
+                const voteOption = voteOptions.find(
+                  ({ value }) => value === vote.option
+                )
+                return (
+                  voteOption && (
+                    <div className="flex flex-row items-center gap-1">
+                      <ProposalVoteButton<VoteOption>
+                        key={vote.option}
+                        disabled
+                        option={voteOption}
+                      />
+
+                      {/* You can cast weighted votes and vote on more than one option if you want, so this lists the weight for each one if there are more than one. Typically there will only be one, so no need to show 100% every time. */}
+                      {existingVotesLoading.data!.length > 1 && (
+                        <p className="text-text-secondary">
+                          {formatPercentOf100(
+                            decodeCosmosSdkDecFromProto(
+                              vote.weight
+                            ).toFloatApproximation() * 100
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  )
+                )
+              })}
+            </div>
+          </div>
+        )}
     </ActionCard>
   )
 }

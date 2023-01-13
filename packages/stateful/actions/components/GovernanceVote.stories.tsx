@@ -1,9 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { cosmos } from 'interchain-rpc'
-import { Proposal } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
 import Long from 'long'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
+import { GovProposalWithDecodedContent } from '@dao-dao/types'
 
 import { GovernanceVoteComponent } from './GovernanceVote'
 
@@ -20,9 +20,10 @@ const Template: ComponentStory<typeof GovernanceVoteComponent> = (args) => (
 
 const { ProposalStatus } = cosmos.gov.v1beta1
 
-const makeProposal = (): Proposal => ({
+const makeProposal = (): GovProposalWithDecodedContent => ({
   proposalId: Long.fromInt(1),
-  content: {
+  content: {} as any,
+  decodedContent: {
     '@type': '/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal',
     title: 'Upgrade to v10 Alpha 1',
     description:
