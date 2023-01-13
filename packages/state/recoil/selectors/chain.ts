@@ -375,6 +375,10 @@ export const govProposalsSelector = selectorFamily<
 
       return proposals
         .map((proposal) => {
+          // It seems as though all proposals can be decoded as a TextProposal,
+          // as they tend to start with `title` and `description` fields. This
+          // successfully decoded the first 80 proposals, so it's probably
+          // intentional.
           const decodedContent = cosmos.gov.v1beta1.TextProposal.decode(
             proposal.content.value
           )
