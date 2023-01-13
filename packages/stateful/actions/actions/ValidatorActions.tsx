@@ -12,8 +12,8 @@ import {
 } from '@dao-dao/types/actions'
 import {
   NATIVE_DENOM,
+  isDecodedStargateMsg,
   makeStargateMessage,
-  objectMatchesStructure,
   toValidatorAddress,
 } from '@dao-dao/utils'
 
@@ -143,19 +143,12 @@ export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
 
     return useMemo(() => {
       // Check this is a stargate message.
-      if (
-        !objectMatchesStructure(msg, {
-          stargate: {
-            type_url: {},
-            value: {},
-          },
-        })
-      ) {
+      if (!isDecodedStargateMsg(msg)) {
         return { match: false }
       }
 
-      // Check that the type_url is a validator message, set data accordingly
-      switch (msg.stargate.type_url) {
+      // Check that the type URL is a validator message, set data accordingly.
+      switch (msg.stargate.typeUrl) {
         case ValidatorActionType.WithdrawValidatorCommission:
           data.validatorActionType =
             ValidatorActionType.WithdrawValidatorCommission

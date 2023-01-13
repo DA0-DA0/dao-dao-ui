@@ -20,6 +20,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  isDecodedStargateMsg,
   loadableToLoadingData,
   makeStargateMessage,
   objectMatchesStructure,
@@ -124,18 +125,14 @@ export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<GovernanceVoteData> = (
     msg: Record<string, any>
   ) =>
-    objectMatchesStructure(msg, {
-      stargate: {
-        type_url: {},
-        value: {
-          proposalId: {},
-          voter: {},
-          option: {},
-        },
-      },
+    isDecodedStargateMsg(msg) &&
+    objectMatchesStructure(msg.stargate.value, {
+      proposalId: {},
+      voter: {},
+      option: {},
     }) &&
     // Make sure this is a vote message.
-    msg.stargate.type_url === '/cosmos.gov.v1beta1.MsgVote'
+    msg.stargate.typeUrl === '/cosmos.gov.v1beta1.MsgVote'
       ? {
           match: true,
           data: {
