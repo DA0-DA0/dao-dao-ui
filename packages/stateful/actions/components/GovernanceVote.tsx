@@ -3,6 +3,7 @@ import {
   ArrowOutwardRounded,
   Block,
   Check,
+  CheckBoxOutlineBlankRounded,
   Close,
   HourglassTopRounded,
   RotateRightOutlined,
@@ -20,6 +21,7 @@ import {
   BallotDepositEmoji,
   IconButtonLink,
   MarkdownRenderer,
+  NoContent,
   ProposalStatusAndInfo,
   ProposalStatusAndInfoProps,
   ProposalVoteButton,
@@ -82,37 +84,46 @@ export const GovernanceVoteComponent: ActionComponent<
     <ActionCard
       Icon={BallotDepositEmoji}
       footer={
-        <VoteFooter
-          existingVotesLoading={existingVotesLoading}
-          fieldNamePrefix={fieldNamePrefix}
-          isCreating={isCreating}
-        />
+        !isCreating || proposals.length > 0 ? (
+          <VoteFooter
+            existingVotesLoading={existingVotesLoading}
+            fieldNamePrefix={fieldNamePrefix}
+            isCreating={isCreating}
+          />
+        ) : undefined
       }
       onRemove={onRemove}
       title={t('title.voteOnGovernanceProposal')}
     >
-      {isCreating && (
-        <SelectInput
-          containerClassName="mb-4"
-          error={errors?.proposalId}
-          fieldName={(fieldNamePrefix + 'proposalId') as 'proposalId'}
-          register={register}
-          validation={[validateRequired]}
-        >
-          {proposals.map((proposal) => (
-            <option
-              key={proposal.proposalId.toString()}
-              value={proposal.proposalId.toString()}
-            >
-              #{proposal.proposalId.toString()}
-              {!!proposal.decodedContent &&
-                'title' in proposal.decodedContent &&
-                typeof proposal.decodedContent.title === 'string' &&
-                ' ' + proposal.decodedContent.title}
-            </option>
-          ))}
-        </SelectInput>
-      )}
+      {isCreating &&
+        (proposals.length === 0 ? (
+          <NoContent
+            Icon={CheckBoxOutlineBlankRounded}
+            body={t('info.noGovernanceProposalsOpenForVoting')}
+            error
+          />
+        ) : (
+          <SelectInput
+            containerClassName="mb-4"
+            error={errors?.proposalId}
+            fieldName={(fieldNamePrefix + 'proposalId') as 'proposalId'}
+            register={register}
+            validation={[validateRequired]}
+          >
+            {proposals.map((proposal) => (
+              <option
+                key={proposal.proposalId.toString()}
+                value={proposal.proposalId.toString()}
+              >
+                #{proposal.proposalId.toString()}
+                {!!proposal.decodedContent &&
+                  'title' in proposal.decodedContent &&
+                  typeof proposal.decodedContent.title === 'string' &&
+                  ' ' + proposal.decodedContent.title}
+              </option>
+            ))}
+          </SelectInput>
+        ))}
 
       {proposalSelected ? (
         <div className="flex flex-col gap-6">

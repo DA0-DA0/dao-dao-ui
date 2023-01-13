@@ -517,6 +517,7 @@
     "noDisplayName": "no display name",
     "noFollowedDaos": "You haven't followed any DAOs. Follow some DAOs to see open proposals in your inbox.",
     "noFundsDuringInstantiation": "No funds will be transferred during instantiation.",
+    "noGovernanceProposalsOpenForVoting": "There are no governance proposals open for voting.",
     "noNftsYet": "No NFTs to appreciate yet.",
     "noProposalsAndAllCaughtUp": "You're all caught up! There are no open proposals in any of the DAOs you follow.",
     "noProposalsYet": "No proposals to vote on yet.",

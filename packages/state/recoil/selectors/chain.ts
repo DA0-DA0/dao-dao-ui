@@ -38,6 +38,7 @@ import {
   NATIVE_DENOM,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
+  decodeGovProposalContent,
   getAllRpcResponse,
   getRpcForChainId,
   nativeTokenDecimals,
@@ -374,20 +375,7 @@ export const govProposalsSelector = selectorFamily<
       }
 
       return proposals
-        .map((proposal) => {
-          // It seems as though all proposals can be decoded as a TextProposal,
-          // as they tend to start with `title` and `description` fields. This
-          // successfully decoded the first 80 proposals, so it's probably
-          // intentional.
-          const decodedContent = cosmos.gov.v1beta1.TextProposal.decode(
-            proposal.content.value
-          )
-
-          return {
-            ...proposal,
-            decodedContent,
-          }
-        })
+        .map((proposal) => decodeGovProposalContent(proposal))
         .sort((a, b) => a.votingEndTime.getTime() - b.votingEndTime.getTime())
     },
 })
@@ -409,14 +397,7 @@ export const govProposalSelector = selectorFamily<
         })
       )?.proposal
 
-      return (
-        proposal && {
-          ...proposal,
-          decodedContent: cosmos.gov.v1beta1.TextProposal.decode(
-            proposal.content.value
-          ),
-        }
-      )
+      return proposal && decodeGovProposalContent(proposal)
     },
 })
 

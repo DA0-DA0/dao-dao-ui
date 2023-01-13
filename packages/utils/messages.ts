@@ -9,7 +9,9 @@ import { MsgVote } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
 import { MsgCreateValidator } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 import { Any } from 'cosmjs-types/google/protobuf/any'
+import { cosmos } from 'interchain-rpc'
 
+import { GovProposal, GovProposalWithDecodedContent } from '@dao-dao/types'
 import {
   BankMsg,
   CosmosMsgFor_Empty,
@@ -399,4 +401,17 @@ export const makeDistributeMessage = (
       validator,
     },
   } as DistributionMsg,
+})
+
+// Decode governance proposal content using a protobuf.
+export const decodeGovProposalContent = (
+  govProposal: GovProposal
+): GovProposalWithDecodedContent => ({
+  ...govProposal,
+  // It seems as though all proposals can be decoded as a TextProposal, as they
+  // tend to start with `title` and `description` fields. This successfully
+  // decoded the first 80 proposals, so it's probably intentional.
+  decodedContent: cosmos.gov.v1beta1.TextProposal.decode(
+    govProposal.content.value
+  ),
 })

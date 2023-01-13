@@ -41,7 +41,8 @@ const useDefaults: UseDefaults<GovernanceVoteData> = () => ({
 const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
   const { isCreating, fieldNamePrefix } = props
   const { address, chainId } = useActionOptions()
-  const { watch, setValue } = useFormContext<GovernanceVoteData>()
+  const { watch, setValue, setError, clearErrors } =
+    useFormContext<GovernanceVoteData>()
 
   const proposalId = watch(
     (props.fieldNamePrefix + 'proposalId') as 'proposalId'
@@ -54,6 +55,18 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
         })
       : constSelector(undefined)
   )
+
+  // Prevent action from being submitted if there are no open proposals.
+  useEffect(() => {
+    if (openProposals && openProposals.length === 0) {
+      setError((fieldNamePrefix + 'proposalId') as 'proposalId', {
+        type: 'manual',
+      })
+    } else {
+      clearErrors((fieldNamePrefix + 'proposalId') as 'proposalId')
+    }
+  }, [openProposals, setError, clearErrors, fieldNamePrefix])
+
   // If viewing an action where we already selected and voted on a proposal,
   // load just the one we voted on and add it to the list so we can display it.
   const selectedProposal = useRecoilValue(
@@ -113,7 +126,7 @@ export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
           stargate: {
             typeUrl: '/cosmos.gov.v1beta1.MsgVote',
             value: {
-              proposalId: Long.fromString(proposalId),
+              proposalId: Long.fromString(proposalId || '-1'),
               voter: address,
               option: vote,
             } as MsgVote,
