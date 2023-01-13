@@ -1,4 +1,4 @@
-import { ArrowOutward, Code, Twitter } from '@mui/icons-material'
+import { ArrowOutwardRounded, Code, Twitter } from '@mui/icons-material'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -52,6 +52,6 @@ const FooterItem = ({ href, icon, name }: FooterItemProps) => (
       <p>{name}</p>
     </div>
 
-    <ArrowOutward className="!h-4 !w-4" />
+    <ArrowOutwardRounded className="!h-4 !w-4" />
   </ButtonLink>
 )

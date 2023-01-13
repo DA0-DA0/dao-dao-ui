@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { MsgWithdrawValidatorCommission } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
@@ -13,10 +12,10 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  CHAIN_BECH32_PREFIX,
   NATIVE_DENOM,
   makeStargateMessage,
   objectMatchesStructure,
+  toValidatorAddress,
 } from '@dao-dao/utils'
 
 import { ValidatorActionsComponent as Component } from '../components'
@@ -76,6 +75,7 @@ export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
   t,
   context,
   address,
+  bech32Prefix,
 }) => {
   // Only DAOs.
   if (context.type !== ActionOptionsContextType.Dao) {
@@ -83,10 +83,7 @@ export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
   }
 
   const useDefaults: UseDefaults<ValidatorActionsData> = () => {
-    const validatorAddress = toBech32(
-      CHAIN_BECH32_PREFIX + 'valoper',
-      fromBech32(address).data
-    )
+    const validatorAddress = toValidatorAddress(address, bech32Prefix)
 
     return {
       validatorActionType: ValidatorActionType.WithdrawValidatorCommission,

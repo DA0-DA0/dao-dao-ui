@@ -7,13 +7,16 @@ import {
   decodeCosmosSdkDecFromProto,
 } from '@cosmjs/stargate'
 import { ChainInfoID } from '@noahsaso/cosmodal'
+import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { cosmos, juno } from 'interchain-rpc'
 import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
+import { Proposal as GovProposal } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
 import {
   DelegationResponse,
   UnbondingDelegation as RpcUnbondingDelegation,
   Validator as RpcValidator,
 } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
+import Long from 'long'
 import { atom, selector, selectorFamily } from 'recoil'
 
 import {
@@ -305,6 +308,7 @@ export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
     },
 })
 
+// Queries the chain for the commission of a given validator address.
 export const validatorSelector = selectorFamily<
   Validator,
   WithChainId<{ address: string }>
@@ -334,6 +338,55 @@ export const nativeUnstakingDurationSecondsSelector = selectorFamily<
       const client = get(cosmosRpcClientForChainSelector(chainId))
       const { params } = await client.staking.v1beta1.params()
       return params.unbondingTime.seconds.toNumber()
+    },
+})
+
+// Queries the chain for governance proposals, defaulting to those that are
+// currently open for voting.
+export const govProposalsSelector = selectorFamily<
+  GovProposal[],
+  WithChainId<{ status?: ProposalStatus }>
+>({
+  key: 'govProposals',
+  get:
+    ({ status = ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      let proposals: GovProposal[]
+      try {
+        proposals = await getAllRpcResponse(
+          client.gov.v1beta1.proposals,
+          {
+            proposalStatus: status,
+          },
+          'proposals'
+        )
+      } catch (err) {
+        console.error(err)
+        proposals = []
+      }
+
+      return proposals
+    },
+})
+
+// Queries the chain for a specific governance proposal.
+export const govProposalSelector = selectorFamily<
+  GovProposal | undefined,
+  WithChainId<{ proposalId: number }>
+>({
+  key: 'govProposals',
+  get:
+    ({ proposalId, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      return (
+        await client.gov.v1beta1.proposal({
+          proposalId: Long.fromInt(proposalId),
+        })
+      )?.proposal
     },
 })
 

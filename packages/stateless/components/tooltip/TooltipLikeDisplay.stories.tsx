@@ -1,4 +1,4 @@
-import { ArrowOutward } from '@mui/icons-material'
+import { ArrowOutwardRounded } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { TooltipLikeDisplay } from './TooltipLikeDisplay'
@@ -15,7 +15,7 @@ const Template: ComponentStory<typeof TooltipLikeDisplay> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  icon: <ArrowOutward className="!h-5 !w-5" />,
+  icon: <ArrowOutwardRounded className="!h-5 !w-5" />,
   label: 'Open in Stargaze',
 }
 Default.parameters = {
@@ -27,7 +27,7 @@ Default.parameters = {
 
 export const WithCaption = Template.bind({})
 WithCaption.args = {
-  icon: <ArrowOutward className="!h-5 !w-5" />,
+  icon: <ArrowOutwardRounded className="!h-5 !w-5" />,
   label: 'Open in Stargaze',
   caption: 'There is more information',
 }

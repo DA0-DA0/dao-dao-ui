@@ -3,9 +3,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { AddressInput } from '@dao-dao/stateless'
 import {
   makeActionsProviderDecorator,
+  makeDaoInfo,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
+import { ActionOptionsContextType } from '@dao-dao/types'
 
 import { InstantiateNftCollection } from './InstantiateNftCollection'
 import { MintNftData } from './types'
@@ -34,7 +35,7 @@ export default {
       bech32Prefix: 'juno',
       context: {
         type: ActionOptionsContextType.Dao,
-        coreVersion: ContractVersion.V2Alpha,
+        info: makeDaoInfo(),
       },
     }),
   ],

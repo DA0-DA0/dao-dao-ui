@@ -6,7 +6,7 @@ import { Button } from '../buttons'
 
 export interface ProposalVoteButtonProps<Vote extends unknown> {
   option: ProposalVoteOption<Vote>
-  onClick: () => void
+  onClick?: () => void
   pressed?: boolean
   disabled?: boolean
 }

@@ -1,6 +1,6 @@
 import {
   AccountCircleOutlined,
-  ArrowOutward,
+  ArrowOutwardRounded,
   CancelOutlined,
   HourglassTopRounded,
   Key,
@@ -200,7 +200,7 @@ const InnerProposalStatusAndInfo = ({
                   />
                   {!!CHAIN_TXN_URL_PREFIX && (
                     <IconButtonLink
-                      Icon={ArrowOutward}
+                      Icon={ArrowOutwardRounded}
                       href={CHAIN_TXN_URL_PREFIX + loadingExecutionTxHash.data}
                       variant="ghost"
                     />

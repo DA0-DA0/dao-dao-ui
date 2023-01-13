@@ -13,7 +13,7 @@
     "@keplr-wallet/stores": "^0.10.5",
     "@sentry/nextjs": "^7.7.0",
     "ajv": "^8.11.0",
-    "cosmjs-types": "^0.4.0",
+    "cosmjs-types": "^0.5.2",
     "json5": "^2.2.0",
     "long": "^5.2.1",
     "next-i18next": "^11.0.0",

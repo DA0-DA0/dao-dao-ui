@@ -1,5 +1,5 @@
 import {
-  ArrowOutward,
+  ArrowOutwardRounded,
   Key,
   Visibility,
   VisibilityOff,
@@ -276,7 +276,7 @@ export const Wallet = ({
                   variant="ghost"
                 >
                   {t('button.openInChainExplorer')}{' '}
-                  <ArrowOutward className="!h-4 !w-4" />
+                  <ArrowOutwardRounded className="!h-4 !w-4" />
                 </ButtonLink>
               </div>
             )}

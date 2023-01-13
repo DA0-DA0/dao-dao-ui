@@ -10,6 +10,7 @@ import {
   MsgWithdrawDelegatorReward,
   MsgWithdrawValidatorCommission,
 } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
+import { MsgVote } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
 import {
   MsgBeginRedelegate,
@@ -215,6 +216,9 @@ export const decodeProtobuf = (msg: {
         fromBase64(msg.value)
       )
       break
+    case '/cosmos.gov.v1beta1.MsgVote':
+      newMsg.value = MsgVote.decode(fromBase64(msg.value))
+      break
   }
 
   return newMsg
@@ -343,6 +347,9 @@ export const encodeProtobufValue = (
           ...value,
         }).finish()
       )
+      break
+    case '/cosmos.gov.v1beta1.MsgVote':
+      value = toBase64(MsgVote.encode(value).finish())
       break
     default:
       console.error(type_url, value)
