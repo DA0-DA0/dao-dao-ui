@@ -9,7 +9,7 @@ import {
   Checkbox,
   InputErrorMessage,
   InputLabel,
-  MarkdownPreview,
+  MarkdownRenderer,
   RangeInput,
   TextAreaInput,
   TokenAmountDisplay,
@@ -157,7 +157,7 @@ export const RatingForm = ({
         </p>
       </div>
 
-      <MarkdownPreview markdown={survey.ratingInstructions} />
+      <MarkdownRenderer markdown={survey.ratingInstructions} />
 
       <form
         className="flex flex-col gap-4 pb-10"
@@ -268,7 +268,7 @@ export const RatingForm = ({
                     walletHexPublicKey={contribution.contributor.publicKey}
                   />
 
-                  <MarkdownPreview
+                  <MarkdownRenderer
                     className="styled-scrollbar max-h-40 overflow-y-auto py-2 pr-2"
                     markdown={contribution.content}
                   />
@@ -391,7 +391,7 @@ export const RatingForm = ({
 
       <div className="flex flex-col rounded-lg bg-background-tertiary p-6">
         <p className="title-text mb-2">{t('title.nominateContributor')}</p>
-        <MarkdownPreview markdown={t('info.nominateContributorDescription')} />
+        <MarkdownRenderer markdown={t('info.nominateContributorDescription')} />
 
         <form
           className="mt-6 flex flex-col gap-4"

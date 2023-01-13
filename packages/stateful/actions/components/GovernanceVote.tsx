@@ -19,7 +19,7 @@ import TimeAgo from 'react-timeago'
 import {
   BallotDepositEmoji,
   IconButtonLink,
-  MarkdownPreview,
+  MarkdownRenderer,
   ProposalStatusAndInfo,
   ProposalStatusAndInfoProps,
   ProposalVoteButton,
@@ -199,7 +199,8 @@ export const GovernanceVoteComponent: ActionComponent<
               {'description' in proposalSelected.decodedContent &&
                 typeof proposalSelected.decodedContent.description ===
                   'string' && (
-                  <MarkdownPreview
+                  <MarkdownRenderer
+                    className="styled-scrollbar -mr-4 max-h-[40vh] overflow-y-auto pr-4"
                     markdown={proposalSelected.decodedContent.description}
                   />
                 )}
