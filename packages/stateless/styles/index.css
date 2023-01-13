@@ -108,7 +108,7 @@ input[type='number']::-webkit-outer-spin-button {
     --text-tertiary: rgba(var(--dark), 0.5);
     --text-brand: rgba(var(--brand), 0.95);
     --text-interactive-disabled: rgba(var(--dark), 0.2);
-    --text-interactive-active: rgba(var(--active), 0.95);
+    --text-interactive-active: rgba(var(--brand), 0.95);
     --text-interactive-error: rgba(var(--error), 0.95);
     --text-interactive-valid: rgba(var(--valid), 0.95);
     --text-interactive-warning-title: rgba(var(--warning), 0.95);
@@ -126,7 +126,7 @@ input[type='number']::-webkit-outer-spin-button {
     --icon-tertiary: rgba(var(--dark), 0.45);
     --icon-brand: rgba(var(--brand), 0.9);
     --icon-interactive-disabled: rgba(var(--dark), 0.15);
-    --icon-interactive-active: rgba(var(--active), 0.9);
+    --icon-interactive-active: rgba(var(--brand), 0.9);
     --icon-interactive-error: rgba(var(--error), 0.9);
     --icon-interactive-valid: rgba(var(--valid), 0.9);
     --icon-interactive-warning: rgba(var(--warning), 0.9);
@@ -196,7 +196,7 @@ input[type='number']::-webkit-outer-spin-button {
     --text-body: rgba(var(--light), 0.95);
     --text-secondary: rgba(var(--light), 0.7);
     --text-tertiary: rgba(var(--light), 0.5);
-    /* --text-brand is the same as the light theme */
+    /* --text-brand and --text-interactive-active are the same as the light theme */
     --text-interactive-disabled: rgba(var(--light), 0.2);
     /* remaining --text-interactive-* are the same as the light theme */
     --text-button-primary: rgba(var(--black), 0.95);
@@ -207,7 +207,7 @@ input[type='number']::-webkit-outer-spin-button {
     --icon-primary: rgba(var(--light), 0.9);
     --icon-secondary: rgba(var(--light), 0.6);
     --icon-tertiary: rgba(var(--light), 0.45);
-    /* --icon-brand is the same as the light theme */
+    /* --icon-brand and --icon-interactive-active are the same as the light theme */
     --icon-interactive-disabled: rgba(var(--light), 0.15);
     /* --text-interactive-* are the same as the light theme */
     --icon-button-primary: rgba(var(--dark), 0.95);
