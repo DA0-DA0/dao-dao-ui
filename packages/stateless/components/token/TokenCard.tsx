@@ -309,21 +309,30 @@ export const TokenCard = ({
                   symbol={tokenSymbol}
                 />
 
-                {!isJunoIbcUsdc(tokenDenom) && (
-                  <TokenAmountDisplay
-                    amount={
-                      lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
-                        ? { loading: true }
-                        : unstakedBalance * lazyInfo.data.usdcUnitPrice.amount
-                    }
-                    dateFetched={
-                      lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
-                        ? undefined
-                        : lazyInfo.data.usdcUnitPrice.timestamp
-                    }
-                    estimatedUsdValue
-                  />
-                )}
+                {!isJunoIbcUsdc(tokenDenom) &&
+                  (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                    <div className="flex flex-row items-center gap-1">
+                      <TokenAmountDisplay
+                        amount={
+                          lazyInfo.loading
+                            ? { loading: true }
+                            : unstakedBalance *
+                              lazyInfo.data.usdcUnitPrice!.amount
+                        }
+                        dateFetched={
+                          lazyInfo.loading
+                            ? undefined
+                            : lazyInfo.data.usdcUnitPrice!.timestamp
+                        }
+                        estimatedUsdValue
+                      />
+
+                      <TooltipInfoIcon
+                        size="xs"
+                        title={t('info.estimatedUsdValueTooltip')}
+                      />
+                    </div>
+                  )}
               </div>
             </div>
           )}

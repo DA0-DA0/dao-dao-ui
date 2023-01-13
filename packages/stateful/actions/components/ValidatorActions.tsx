@@ -55,11 +55,11 @@ export const ValidatorActionsComponent: ActionComponent = ({
   return (
     <ActionCard
       Icon={PickEmoji}
+      childrenContainerClassName="!gap-3"
       onRemove={onRemove}
       title={t('title.validatorActions')}
     >
       <SelectInput
-        containerClassName="mb-3"
         defaultValue={validatorActions[0].type}
         disabled={!isCreating}
         error={errors?.validatorActionType}

@@ -29,8 +29,8 @@ import { Tooltip } from '../tooltip/Tooltip'
 // value estimates (i.e. USDC) (max 2) and ProfileHomeCard's unstaked and staked
 // balances (max 2).
 
-// Default maximum decimals to use in a USDC conversion.
-const USDC_CONVERSION_DEFAULT_MAX_DECIMALS = 2
+// Default maximum decimals to use in a USD estimate.
+const USD_ESTIMATE_DEFAULT_MAX_DECIMALS = 2
 // Maximum decimals to use in a large compacted value.
 const LARGE_COMPACT_MAX_DECIMALS = 2
 
@@ -119,7 +119,7 @@ export const TokenAmountDisplay = ({
 
   const maxCompactDecimals =
     maxDecimals ??
-    (estimatedUsdValue ? USDC_CONVERSION_DEFAULT_MAX_DECIMALS : decimals)
+    (estimatedUsdValue ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS : decimals)
   const compactOptions: Intl.NumberFormatOptions & {
     roundingPriority: string
   } = {
@@ -193,20 +193,25 @@ export const TokenAmountDisplay = ({
     </p>
   )
 
+  // Show full value in tooltip if different from compact and not an
+  // estimated USD value.
+  const shouldShowFullTooltip =
+    !showFullAmount && wasCompacted && !estimatedUsdValue
+
   return (
     <Tooltip
       title={
-        !showFullAmount &&
-        (wasCompacted || dateFetched) && (
+        // Show tooltip with full value and fetch time.
+        shouldShowFullTooltip || dateFetched ? (
           <>
-            {/* Show full in tooltip if different from compact. */}
-            {wasCompacted &&
+            {shouldShowFullTooltip &&
               t('format.token', {
                 amount: full,
                 symbol,
               })}
-            {wasCompacted && dateFetched && <br />}
-            {/* Show date fetched if present. */}
+
+            {shouldShowFullTooltip && dateFetched && <br />}
+
             {dateFetched && (
               <span className="caption-text">
                 {t('info.fetchedAtTime', {
@@ -215,7 +220,7 @@ export const TokenAmountDisplay = ({
               </span>
             )}
           </>
-        )
+        ) : undefined
       }
     >
       {iconUrl ? (
