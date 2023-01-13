@@ -8,6 +8,7 @@ interface ActionCardProps extends Pick<ActionComponentProps, 'onRemove'> {
   children: ReactNode | ReactNode[]
   Icon: ComponentType
   title: string
+  footer?: ReactNode
 }
 
 export const ActionCard = ({
@@ -15,6 +16,7 @@ export const ActionCard = ({
   title,
   onRemove,
   children,
+  footer,
 }: ActionCardProps) => (
   <div className="flex flex-col rounded-lg bg-background-tertiary">
     <div className="primary-text flex flex-row items-start justify-between gap-4 border-b border-border-base p-4 text-text-body">
@@ -31,6 +33,12 @@ export const ActionCard = ({
       )}
     </div>
 
-    <div className="flex flex-col gap-2 p-6 pt-4">{children}</div>
+    <div className="flex flex-col gap-2 px-6 pt-4 pb-5">{children}</div>
+
+    {footer && (
+      <div className="flex flex-col gap-2 border-t border-border-secondary p-6 pt-5">
+        {footer}
+      </div>
+    )}
   </div>
 )

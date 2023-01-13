@@ -4,20 +4,29 @@ import {
   Block,
   Check,
   Close,
+  HourglassTopRounded,
+  RotateRightOutlined,
   Texture,
+  TimelapseRounded,
+  TimerRounded,
 } from '@mui/icons-material'
 import { ProposalStatus, VoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { WeightedVoteOption } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 
 import {
   BallotDepositEmoji,
   IconButtonLink,
   MarkdownPreview,
+  ProposalStatusAndInfo,
+  ProposalStatusAndInfoProps,
   ProposalVoteButton,
   SelectInput,
+  Tooltip,
   TooltipInfoIcon,
+  useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
   GovProposalWithDecodedContent,
@@ -26,6 +35,7 @@ import {
 } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionComponentProps,
   ActionOptionsContextType,
 } from '@dao-dao/types/actions'
 import {
@@ -58,43 +68,26 @@ export const GovernanceVoteComponent: ActionComponent<
   options: { proposals, existingVotesLoading },
 }) => {
   const { t } = useTranslation()
-  const { register, setValue, watch } = useFormContext<GovernanceVoteData>()
-  const { context } = useActionOptions()
+  const { register, watch } = useFormContext<GovernanceVoteData>()
 
   const proposalId = watch((fieldNamePrefix + 'proposalId') as 'proposalId')
-  const vote = watch((fieldNamePrefix + 'vote') as 'vote')
 
   const proposalSelected = proposals.find(
     (p) => p.proposalId.toString() === proposalId
   )
 
-  const voteOptions: ProposalVoteOption<VoteOption>[] = [
-    {
-      Icon: Check,
-      label: t('info.yesVote'),
-      value: VoteOption.VOTE_OPTION_YES,
-    },
-    {
-      Icon: Close,
-      label: t('info.noVote'),
-      value: VoteOption.VOTE_OPTION_NO,
-    },
-    {
-      Icon: Block,
-      label: t('info.noWithVeto'),
-      value: VoteOption.VOTE_OPTION_NO_WITH_VETO,
-    },
-    {
-      Icon: Texture,
-      label: t('info.abstainVote'),
-      value: VoteOption.VOTE_OPTION_ABSTAIN,
-    },
-  ]
-  const voteSelected = voteOptions.find((v) => v.value === vote)
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: false })
 
   return (
     <ActionCard
       Icon={BallotDepositEmoji}
+      footer={
+        <VoteFooter
+          existingVotesLoading={existingVotesLoading}
+          fieldNamePrefix={fieldNamePrefix}
+          isCreating={isCreating}
+        />
+      }
       onRemove={onRemove}
       title={t('title.voteOnGovernanceProposal')}
     >
@@ -142,25 +135,66 @@ export const GovernanceVoteComponent: ActionComponent<
 
           {proposalSelected.decodedContent && (
             <>
-              <div className="grid w-max grid-cols-[auto_1fr] gap-x-20 gap-y-2 rounded-md bg-background-tertiary p-6">
-                <p className="primary-text">{t('title.status')}:</p>
-
-                <p className="primary-text font-mono">
-                  {t(PROPOSAL_STATUS_I18N_KEY_MAP[proposalSelected.status])}
-                </p>
-
-                <p className="primary-text">{t('title.votingStart')}:</p>
-
-                <p className="primary-text font-mono">
-                  {formatDateTimeTz(proposalSelected.votingStartTime)}
-                </p>
-
-                <p className="primary-text">{t('title.votingEnd')}:</p>
-
-                <p className="primary-text font-mono">
-                  {formatDateTimeTz(proposalSelected.votingEndTime)}
-                </p>
-              </div>
+              <ProposalStatusAndInfo
+                className="max-w-max"
+                info={[
+                  {
+                    Icon: RotateRightOutlined,
+                    label: t('title.status'),
+                    Value: (props) => (
+                      <p {...props}>
+                        {t(
+                          PROPOSAL_STATUS_I18N_KEY_MAP[proposalSelected.status]
+                        )}
+                      </p>
+                    ),
+                  },
+                  {
+                    Icon: TimelapseRounded,
+                    label: t('title.votingOpened'),
+                    Value: (props) => (
+                      <p {...props}>
+                        {formatDateTimeTz(proposalSelected.votingStartTime)}
+                      </p>
+                    ),
+                  },
+                  // If open for voting, show relative time until end.
+                  ...(proposalSelected.status ===
+                  ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+                    ? ([
+                        {
+                          Icon: HourglassTopRounded,
+                          label: t('title.timeLeft'),
+                          Value: (props) => (
+                            <Tooltip
+                              title={formatDateTimeTz(
+                                proposalSelected.votingEndTime
+                              )}
+                            >
+                              <p {...props}>
+                                <TimeAgo
+                                  date={proposalSelected.votingEndTime}
+                                  formatter={timeAgoFormatter}
+                                />
+                              </p>
+                            </Tooltip>
+                          ),
+                        },
+                      ] as ProposalStatusAndInfoProps['info'])
+                    : ([
+                        {
+                          Icon: TimerRounded,
+                          label: t('title.votingClosed'),
+                          Value: (props) => (
+                            <p {...props}>
+                              {formatDateTimeTz(proposalSelected.votingEndTime)}
+                            </p>
+                          ),
+                        },
+                      ] as ProposalStatusAndInfoProps['info'])),
+                ]}
+                inline
+              />
 
               {'description' in proposalSelected.decodedContent &&
                 typeof proposalSelected.decodedContent.description ===
@@ -171,41 +205,6 @@ export const GovernanceVoteComponent: ActionComponent<
                 )}
             </>
           )}
-
-          <div className="flex flex-col items-stretch gap-1">
-            {isCreating
-              ? voteOptions.map((option) => (
-                  <ProposalVoteButton<VoteOption>
-                    key={option.value}
-                    disabled={!isCreating}
-                    onClick={() =>
-                      setValue(
-                        (fieldNamePrefix + 'vote') as 'vote',
-                        option.value
-                      )
-                    }
-                    option={option}
-                    pressed={option.value === vote}
-                  />
-                ))
-              : voteSelected && (
-                  <div className="space-y-2">
-                    <p className="primary-text text-text-secondary">
-                      {t('info.subjectsVote', {
-                        subject:
-                          context.type === ActionOptionsContextType.Dao
-                            ? context.info.name
-                            : t('info.your'),
-                      })}
-                    </p>
-
-                    <ProposalVoteButton<VoteOption>
-                      disabled
-                      option={voteSelected}
-                    />
-                  </div>
-                )}
-          </div>
         </div>
       ) : (
         // If not creating and no proposal selected, something went wrong.
@@ -215,6 +214,85 @@ export const GovernanceVoteComponent: ActionComponent<
           </p>
         )
       )}
+    </ActionCard>
+  )
+}
+
+const VoteFooter = ({
+  fieldNamePrefix,
+  isCreating,
+  existingVotesLoading,
+}: Pick<
+  ActionComponentProps<GovernanceVoteOptions>,
+  'fieldNamePrefix' | 'isCreating'
+> & {
+  existingVotesLoading: GovernanceVoteOptions['existingVotesLoading']
+}) => {
+  const { t } = useTranslation()
+  const { context } = useActionOptions()
+  const { watch, setValue } = useFormContext<GovernanceVoteData>()
+
+  const vote = watch((fieldNamePrefix + 'vote') as 'vote')
+
+  const voteOptions: ProposalVoteOption<VoteOption>[] = [
+    {
+      Icon: Check,
+      label: t('info.yesVote'),
+      value: VoteOption.VOTE_OPTION_YES,
+    },
+    {
+      Icon: Close,
+      label: t('info.noVote'),
+      value: VoteOption.VOTE_OPTION_NO,
+    },
+    {
+      Icon: Block,
+      label: t('info.noWithVeto'),
+      value: VoteOption.VOTE_OPTION_NO_WITH_VETO,
+    },
+    {
+      Icon: Texture,
+      label: t('info.abstainVote'),
+      value: VoteOption.VOTE_OPTION_ABSTAIN,
+    },
+  ]
+  const voteOptionSelected = voteOptions.find((v) => v.value === vote)
+
+  return (
+    <>
+      <div className="flex flex-col gap-4">
+        <p className="primary-text text-text-secondary">
+          {t('info.subjectsVote', {
+            subject:
+              context.type === ActionOptionsContextType.Dao
+                ? context.info.name
+                : t('info.your'),
+          })}
+        </p>
+
+        {isCreating ? (
+          <div className="flex flex-col items-stretch gap-1">
+            {voteOptions.map((option) => (
+              <ProposalVoteButton<VoteOption>
+                key={option.value}
+                disabled={!isCreating}
+                onClick={() =>
+                  setValue((fieldNamePrefix + 'vote') as 'vote', option.value)
+                }
+                option={option}
+                pressed={option.value === vote}
+              />
+            ))}
+          </div>
+        ) : (
+          voteOptionSelected && (
+            <ProposalVoteButton<VoteOption>
+              disabled
+              option={voteOptionSelected}
+            />
+          )
+        )}
+      </div>
 
       {isCreating &&
         existingVotesLoading &&
@@ -272,7 +350,7 @@ export const GovernanceVoteComponent: ActionComponent<
             </div>
           </div>
         )}
-    </ActionCard>
+    </>
   )
 }
 

@@ -9,6 +9,7 @@ export interface ProposalVoteButtonProps<Vote extends unknown> {
   onClick?: () => void
   pressed?: boolean
   disabled?: boolean
+  className?: string
 }
 
 export const ProposalVoteButton = <Vote extends unknown>({
@@ -16,11 +17,16 @@ export const ProposalVoteButton = <Vote extends unknown>({
   onClick,
   pressed = false,
   disabled = false,
+  className,
 }: ProposalVoteButtonProps<Vote>) => (
   <Button
-    className={clsx('border-2 border-transparent', {
-      'border-border-primary': pressed,
-    })}
+    className={clsx(
+      'border-2 border-transparent',
+      {
+        'border-border-primary': pressed,
+      },
+      className
+    )}
     contentContainerClassName={clsx('justify-between text-sm', {
       'primary-text': !pressed,
     })}
