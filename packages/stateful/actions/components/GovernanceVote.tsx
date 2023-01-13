@@ -201,7 +201,10 @@ export const GovernanceVoteComponent: ActionComponent<
                   'string' && (
                   <MarkdownRenderer
                     className="styled-scrollbar -mr-4 max-h-[40vh] overflow-y-auto pr-4"
-                    markdown={proposalSelected.decodedContent.description}
+                    markdown={proposalSelected.decodedContent.description.replace(
+                      /\\n/g,
+                      '\n'
+                    )}
                   />
                 )}
             </>
