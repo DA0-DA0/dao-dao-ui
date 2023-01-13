@@ -64,22 +64,20 @@ export const ValidatorActionsComponent: ActionComponent = ({
       onRemove={onRemove}
       title={t('title.validatorActions')}
     >
-      <div className="flex flex-col gap-2 xs:flex-row">
-        <SelectInput
-          containerClassName="grow"
-          defaultValue={validatorActions[0].type}
-          disabled={!isCreating}
-          error={errors?.validatorActionType}
-          fieldName={fieldNamePrefix + 'validatorActionType'}
-          register={register}
-        >
-          {validatorActions.map(({ name, type }, idx) => (
-            <option key={idx} value={type}>
-              {name}
-            </option>
-          ))}
-        </SelectInput>
-      </div>
+      <SelectInput
+        containerClassName="mb-3"
+        defaultValue={validatorActions[0].type}
+        disabled={!isCreating}
+        error={errors?.validatorActionType}
+        fieldName={fieldNamePrefix + 'validatorActionType'}
+        register={register}
+      >
+        {validatorActions.map(({ name, type }, idx) => (
+          <option key={idx} value={type}>
+            {name}
+          </option>
+        ))}
+      </SelectInput>
 
       {validatorActionType === ValidatorActionType.CreateValidator && (
         <div className="flex flex-col items-stretch gap-1">
@@ -135,7 +133,10 @@ export const ValidatorActionsComponent: ActionComponent = ({
 
       {validatorActionType === ValidatorActionType.UnjailValidator && (
         <div className="flex flex-col items-stretch gap-1">
-          <InputLabel name={t('form.validatorAddress')} />
+          <InputLabel
+            name={t('form.validatorAddress')}
+            tooltip={t('form.validatorAddressTooltip')}
+          />
           <AddressInput
             disabled={!isCreating}
             error={errors?.unjailMsg?.validatorAddr}
