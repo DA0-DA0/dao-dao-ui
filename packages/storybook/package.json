@@ -8,10 +8,10 @@
     "generate": "ts-node --esm ./scripts/generate.ts"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.1.0-rc.1",
-    "@dao-dao/i18n": "2.1.0-rc.1",
-    "@dao-dao/types": "2.1.0-rc.1",
-    "@dao-dao/utils": "2.1.0-rc.1",
+    "@dao-dao/config": "^2.1.0-rc.1",
+    "@dao-dao/i18n": "^2.1.0-rc.1",
+    "@dao-dao/types": "^2.1.0-rc.1",
+    "@dao-dao/utils": "^2.1.0-rc.1",
     "@storybook/addon-actions": "^6.5.12",
     "@storybook/addon-essentials": "^6.5.12",
     "@storybook/addon-links": "^6.5.12",

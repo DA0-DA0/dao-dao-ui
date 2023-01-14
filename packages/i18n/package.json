@@ -11,11 +11,11 @@
   },
   "dependencies": {
     "i18next": "^21.8.10",
-    "react-i18next": "^11.0.0",
-    "next-i18next": "^11.0.0"
+    "next-i18next": "^11.0.0",
+    "react-i18next": "^11.0.0"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.1.0-rc.1",
+    "@dao-dao/config": "^2.1.0-rc.1",
     "eslint-plugin-i18n-json": "^3.1.0",
     "i18n-unused": "^0.10.0"
   },
