@@ -55,7 +55,6 @@ export const ValidatorActionsComponent: ActionComponent = ({
   return (
     <ActionCard
       Icon={PickEmoji}
-      childrenContainerClassName="!gap-3"
       onRemove={onRemove}
       title={t('title.validatorActions')}
     >

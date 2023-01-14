@@ -96,7 +96,7 @@ const Component: ActionComponent<undefined, PerformTokenSwapData> = (props) => {
         {contractChosen ? (
           <FundTokenSwap {...props} />
         ) : (
-          <div className="flex flex-col gap-4">
+          <>
             <SegmentedControls<boolean>
               onSelect={setCreatingNew}
               selected={creatingNew}
@@ -122,7 +122,7 @@ const Component: ActionComponent<undefined, PerformTokenSwapData> = (props) => {
                 options={{ action: 'fund' }}
               />
             )}
-          </div>
+          </>
         )}
 
         <InputErrorMessage

@@ -38,91 +38,90 @@ export const UpdateInfoComponent: ActionComponent<
   return (
     <ActionCard
       Icon={InfoEmoji}
+      childrenContainerClassName="flex flex-row flex-wrap items-center justify-center gap-4"
       onRemove={onRemove}
       title={t('title.updateInfo')}
     >
-      <div className="flex flex-row flex-wrap items-center justify-center gap-4">
-        {isCreating ? (
-          <div className="flex flex-col gap-4 pl-2">
-            <ImageSelector
-              Trans={Trans}
-              error={errors?.name}
-              fieldName={fieldNamePrefix + 'image_url'}
-              register={register}
-              setValue={setValue}
-              watch={watch}
-            />
-            <InputLabel name={t('form.selectAnImage')} />
-          </div>
-        ) : (
-          <DaoImage
-            LinkWrapper={LinkWrapper}
-            className="ml-2"
-            coreAddress={address}
-            daoName={name}
-            imageUrl={data.image_url}
-            size="lg"
+      {isCreating ? (
+        <div className="flex flex-col gap-4 pl-2">
+          <ImageSelector
+            Trans={Trans}
+            error={errors?.name}
+            fieldName={fieldNamePrefix + 'image_url'}
+            register={register}
+            setValue={setValue}
+            watch={watch}
           />
-        )}
-
-        <div className="flex grow flex-col gap-2">
-          <div>
-            <TextInput
-              disabled={!isCreating}
-              error={errors?.name}
-              fieldName={fieldNamePrefix + 'name'}
-              placeholder={t('form.name')}
-              register={register}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={errors?.name} />
-          </div>
-
-          <div>
-            <TextAreaInput
-              disabled={!isCreating}
-              error={errors?.description}
-              fieldName={fieldNamePrefix + 'description'}
-              placeholder={t('form.description')}
-              register={register}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={errors?.description} />
-          </div>
-
-          <div className="flex flex-row flex-wrap gap-2">
-            <FormSwitchCard
-              containerClassName="grow"
-              fieldName={fieldNamePrefix + 'automatically_add_cw20s'}
-              label={t('form.automaticallyAddTokensTitle')}
-              readOnly={!isCreating}
-              setValue={setValue}
-              sizing="sm"
-              tooltip={t('form.automaticallyAddTokensTooltip')}
-              tooltipIconSize="sm"
-              value={watch(fieldNamePrefix + 'automatically_add_cw20s')}
-            />
-
-            <FormSwitchCard
-              containerClassName="grow"
-              fieldName={fieldNamePrefix + 'automatically_add_cw721s'}
-              label={t('form.automaticallyAddNFTsTitle')}
-              readOnly={!isCreating}
-              setValue={setValue}
-              sizing="sm"
-              tooltip={t('form.automaticallyAddNFTsTooltip')}
-              tooltipIconSize="sm"
-              value={watch(fieldNamePrefix + 'automatically_add_cw721s')}
-            />
-          </div>
-          {!isCreating && (
-            <p className="text-xs italic text-text-tertiary">
-              {t('info.daoInfoWillRefresh', {
-                minutes: DAO_STATIC_PROPS_CACHE_SECONDS / 60,
-              })}
-            </p>
-          )}
+          <InputLabel name={t('form.selectAnImage')} />
         </div>
+      ) : (
+        <DaoImage
+          LinkWrapper={LinkWrapper}
+          className="ml-2"
+          coreAddress={address}
+          daoName={name}
+          imageUrl={data.image_url}
+          size="lg"
+        />
+      )}
+
+      <div className="flex grow flex-col gap-2">
+        <div>
+          <TextInput
+            disabled={!isCreating}
+            error={errors?.name}
+            fieldName={fieldNamePrefix + 'name'}
+            placeholder={t('form.name')}
+            register={register}
+            validation={[validateRequired]}
+          />
+          <InputErrorMessage error={errors?.name} />
+        </div>
+
+        <div>
+          <TextAreaInput
+            disabled={!isCreating}
+            error={errors?.description}
+            fieldName={fieldNamePrefix + 'description'}
+            placeholder={t('form.description')}
+            register={register}
+            validation={[validateRequired]}
+          />
+          <InputErrorMessage error={errors?.description} />
+        </div>
+
+        <div className="flex flex-row flex-wrap gap-2">
+          <FormSwitchCard
+            containerClassName="grow"
+            fieldName={fieldNamePrefix + 'automatically_add_cw20s'}
+            label={t('form.automaticallyAddTokensTitle')}
+            readOnly={!isCreating}
+            setValue={setValue}
+            sizing="sm"
+            tooltip={t('form.automaticallyAddTokensTooltip')}
+            tooltipIconSize="sm"
+            value={watch(fieldNamePrefix + 'automatically_add_cw20s')}
+          />
+
+          <FormSwitchCard
+            containerClassName="grow"
+            fieldName={fieldNamePrefix + 'automatically_add_cw721s'}
+            label={t('form.automaticallyAddNFTsTitle')}
+            readOnly={!isCreating}
+            setValue={setValue}
+            sizing="sm"
+            tooltip={t('form.automaticallyAddNFTsTooltip')}
+            tooltipIconSize="sm"
+            value={watch(fieldNamePrefix + 'automatically_add_cw721s')}
+          />
+        </div>
+        {!isCreating && (
+          <p className="text-xs italic text-text-tertiary">
+            {t('info.daoInfoWillRefresh', {
+              minutes: DAO_STATIC_PROPS_CACHE_SECONDS / 60,
+            })}
+          </p>
+        )}
       </div>
     </ActionCard>
   )

@@ -38,7 +38,7 @@ export const ActionCard = ({
 
     <div
       className={clsx(
-        'flex flex-col gap-2 px-6 pt-4 pb-5',
+        'flex flex-col gap-4 px-6 pt-4 pb-5',
         childrenContainerClassName
       )}
     >

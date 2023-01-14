@@ -99,7 +99,6 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
   return (
     <ActionCard
       Icon={LockWithKeyEmoji}
-      childrenContainerClassName="!gap-4"
       onRemove={onRemove}
       title={t('title.authzExec')}
     >

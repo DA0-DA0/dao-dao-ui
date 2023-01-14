@@ -42,7 +42,6 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
   return (
     <ActionCard
       Icon={KeyEmoji}
-      childrenContainerClassName="!gap-4"
       onRemove={onRemove}
       title={t('title.authzAuthorization')}
     >
