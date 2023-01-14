@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/types",
-  "version": "2.1.0-rc.1",
+  "version": "2.1.0-rc.2",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "format": "eslint . --fix",
@@ -9,7 +9,7 @@
   "devDependencies": {
     "@apollo/client": "^3.6.9",
     "@cosmjs/cosmwasm-stargate": "0.29.3",
-    "@dao-dao/config": "^2.1.0-rc.1",
+    "@dao-dao/config": "^2.1.0-rc.2",
     "next-i18next": "^11.0.0",
     "react": "18.1.0",
     "react-hook-form": "7.20.4",

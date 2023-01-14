@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/stateless",
-  "version": "2.1.0-rc.1",
+  "version": "2.1.0-rc.2",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "tsc",
@@ -8,8 +8,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@dao-dao/types": "^2.1.0-rc.1",
-    "@dao-dao/utils": "^2.1.0-rc.1",
+    "@dao-dao/types": "^2.1.0-rc.2",
+    "@dao-dao/utils": "^2.1.0-rc.2",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
@@ -35,7 +35,7 @@
     "remark-gfm": "^3.0.1"
   },
   "devDependencies": {
-    "@dao-dao/config": "^2.1.0-rc.1",
+    "@dao-dao/config": "^2.1.0-rc.2",
     "@noahsaso/cosmodal": "^0.8.2",
     "@storybook/react": "^6.5.10",
     "@types/lodash.clonedeep": "^4.5.0",

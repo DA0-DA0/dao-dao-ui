@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/config",
-  "version": "2.1.0-rc.1",
+  "version": "2.1.0-rc.2",
   "license": "BSD-3-Clause-Clear",
   "dependencies": {
     "@tailwindcss/line-clamp": "^0.3.1",
