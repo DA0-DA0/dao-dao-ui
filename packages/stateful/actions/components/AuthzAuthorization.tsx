@@ -118,28 +118,26 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
       )}
 
       {(isCreating || data.custom) && (
-        <div className="flex grow flex-row items-center justify-between gap-4 rounded-md py-2">
-          <FormSwitchCard
-            containerClassName="grow mt-2"
-            fieldName={fieldNamePrefix + 'custom'}
-            label={t('form.authzUseCustomMessageType')}
-            onToggle={
-              // Set message type URL back to delegate if custom is disabled.
-              (custom) =>
-                !custom &&
-                setValue(
-                  fieldNamePrefix + 'value.msgTypeUrl',
-                  AuthzExecActionTypes.Delegate
-                )
-            }
-            readOnly={!isCreating}
-            setValue={setValue}
-            sizing="sm"
-            tooltip={t('form.authzCustomMessageTypeTooltip')}
-            tooltipIconSize="sm"
-            value={watch(fieldNamePrefix + 'custom')}
-          />
-        </div>
+        <FormSwitchCard
+          containerClassName="self-start"
+          fieldName={fieldNamePrefix + 'custom'}
+          label={t('form.authzUseCustomMessageType')}
+          onToggle={
+            // Set message type URL back to delegate if custom is disabled.
+            (custom) =>
+              !custom &&
+              setValue(
+                fieldNamePrefix + 'value.msgTypeUrl',
+                AuthzExecActionTypes.Delegate
+              )
+          }
+          readOnly={!isCreating}
+          setValue={setValue}
+          sizing="sm"
+          tooltip={t('form.authzCustomMessageTypeTooltip')}
+          tooltipIconSize="sm"
+          value={watch(fieldNamePrefix + 'custom')}
+        />
       )}
     </ActionCard>
   )
