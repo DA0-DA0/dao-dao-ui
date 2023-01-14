@@ -12,9 +12,16 @@ export const useCachedLoadable = <T extends unknown>(
   recoilValue: RecoilValue<T> | undefined
 ): CachedLoadable<T> => {
   const loadable = useRecoilValueLoadable(
-    recoilValue ?? constSelector(undefined)
+    // If not on a browser, or recoilValue is undefined, return undefined as we
+    // cannot load yet.
+    typeof window === 'undefined' || !recoilValue
+      ? constSelector(undefined)
+      : recoilValue
   )
-  const loadableLoadingOrNotReady = loadable.state === 'loading' || !recoilValue
+  const loadableLoadingOrNotReady =
+    loadable.state === 'loading' ||
+    typeof window === 'undefined' ||
+    !recoilValue
 
   // Since `contents` is set in a `useEffect`, it will take 1 extra render once
   // the loadable has data ready before the cached `contents` state will contain

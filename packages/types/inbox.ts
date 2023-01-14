@@ -1,23 +1,19 @@
-import { ApolloError } from '@apollo/client/core'
-
 import { ProposalModule } from './dao'
 
-export interface DaoWithOpenUnvotedProposals {
+export interface DaoWithOpenProposals {
   coreAddress: string
   proposalModules: ProposalModule[]
-  openUnvotedProposals:
-    | {
-        proposalModule: ProposalModule
-        proposalNumber: number
-      }[]
-    | undefined
+  openProposals: {
+    proposalModule: ProposalModule
+    proposalNumber: number
+    voted?: boolean
+  }[]
 }
 
 export interface UseInboxReturn {
   loading: boolean
   refetching: boolean
-  error: ApolloError | undefined
-  daosWithOpenUnvotedProposals: DaoWithOpenUnvotedProposals[]
+  daosWithOpenProposals: DaoWithOpenProposals[]
   proposalCount: number
-  refetch: () => Promise<any>
+  refetch: () => void
 }

@@ -38,6 +38,7 @@ import {
   daoCreatedCardPropsAtom,
   pinnedDaoDropdownInfosSelector,
 } from '../recoil'
+import { ConnectWallet } from './ConnectWallet'
 import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
@@ -68,7 +69,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
     useRecoilState(proposalCreatedCardPropsAtom)
 
   //! WALLET CONNECTION ERROR MODALS
-  const { error, status } = useWalletManager()
+  const { connect, connected, error, status } = useWalletManager()
   const {
     walletAddress,
     walletProfile,
@@ -270,6 +271,9 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
       )}
 
       <StatelessAppLayout
+        connect={connect}
+        connectWalletButton={<ConnectWallet variant="secondary" />}
+        connected={connected}
         context={appLayoutContext}
         navigationProps={{
           LinkWrapper,
@@ -285,32 +289,6 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
                   data: inbox.proposalCount,
                 },
           setCommandModalVisible: () => setCommandModalVisible(true),
-          tokenPrices: {
-            loading: false,
-            data: [],
-          },
-          // currentNativePrice === undefined
-          //   ? { loading: true }
-          //   : {
-          //       loading: false,
-          //       data: [
-          //         {
-          //           label: nativeTokenLabel(NATIVE_DENOM),
-          //           price: Number(
-          //             currentNativePrice.toLocaleString(undefined, {
-          //               maximumFractionDigits: 3,
-          //             })
-          //           ),
-          //           priceDenom: 'USDC',
-          //           change:
-          //             yesterdayNativePrice !== undefined
-          //               ? ((currentNativePrice - yesterdayNativePrice) /
-          //                   yesterdayNativePrice) *
-          //                 100
-          //               : undefined,
-          //         },
-          //       ],
-          //     },
           version: '2.0',
           pinnedDaos: mountedInBrowser
             ? loadableToLoadingData(pinnedDaoDropdownInfosLoadable, [])

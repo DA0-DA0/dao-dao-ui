@@ -11,7 +11,7 @@ import {
   secp256k1PublicKeyToBech32Address,
 } from '@dao-dao/utils'
 
-import { useVotingModule } from '../../../../../hooks/useVotingModule'
+import { useMembership } from '../../../../../hooks'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import {
   CompleteRatings,
@@ -35,11 +35,14 @@ export const OpenSurveySection = ({
   status,
 }: StatefulOpenSurveySectionProps) => {
   const { t } = useTranslation()
-  const { coreAddress, bech32Prefix } = useDaoInfoContext()
+  const { coreAddress, chainId, bech32Prefix } = useDaoInfoContext()
 
   const { connected } = useWallet()
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  // Voting power at time of survey creation, which determines what access level
+  // this wallet has.
+  const { isMember = false } = useMembership({
+    coreAddress,
+    chainId,
     blockHeight: status.survey.createdAtBlockHeight,
   })
 

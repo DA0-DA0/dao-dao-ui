@@ -12,7 +12,7 @@ import {
 } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../../../components'
+import { AddressInput } from '../../../components'
 import { nftCardInfoWithUriSelector } from '../../../recoil'
 import { MintNftData, MintNft as StatelessMintNft } from '../../components/nft'
 import { useActionOptions } from '../../react'
@@ -77,12 +77,15 @@ export const MintNft: ActionComponent = (props) => {
       // Ensure no action already exists to add this collection.
       !props.allActionsWithData.some(
         ({ key, data }) =>
-          key === CoreActionKey.AddCw721 && data.address === collectionAddress
+          key === CoreActionKey.ManageCw721 &&
+          data.address === collectionAddress &&
+          data.adding
       )
     ) {
       props.addAction({
-        key: CoreActionKey.AddCw721,
+        key: CoreActionKey.ManageCw721,
         data: {
+          adding: true,
           address: collectionAddress,
         },
       })
@@ -104,7 +107,7 @@ export const MintNft: ActionComponent = (props) => {
       {...props}
       options={{
         nftInfo: nftInfo.data,
-        ProfileDisplay,
+        AddressInput,
       }}
     />
   )

@@ -51,4 +51,14 @@ export interface VoteInfo {
   power: Uint128
   vote: Vote
   voter: Addr
+  rationale?: string | null
+  votedAt?: string
+}
+
+export interface ListVotesResponse {
+  votes: VoteInfo[]
+}
+
+export interface VoteResponse {
+  vote?: VoteInfo | null
 }

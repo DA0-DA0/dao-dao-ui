@@ -1,13 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import { makeProps as makeNftInfoProps } from '@dao-dao/stateless/components/NftCard.stories'
 import {
   makeActionsProviderDecorator,
+  makeDaoInfo,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
+import { ActionOptionsContextType } from '@dao-dao/types'
 
-import { ProfileDisplay } from '../../../components'
 import { MintNft } from './MintNft'
 import { MintNftData } from './types'
 
@@ -29,7 +30,7 @@ export default {
       bech32Prefix: 'juno',
       context: {
         type: ActionOptionsContextType.Dao,
-        coreVersion: ContractVersion.V2Alpha,
+        info: makeDaoInfo(),
       },
     }),
   ],
@@ -52,6 +53,6 @@ Default.args = {
   errors: {},
   options: {
     nftInfo: makeNftInfoProps(),
-    ProfileDisplay,
+    AddressInput,
   },
 }

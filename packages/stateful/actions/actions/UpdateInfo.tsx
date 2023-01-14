@@ -1,13 +1,9 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { CwCoreV1Selectors, DaoCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { InfoEmoji } from '@dao-dao/stateless'
-import {
-  ActionMaker,
-  ActionOptionsContextType,
-  ContractVersion,
-} from '@dao-dao/types'
+import { ActionMaker, ActionOptionsContextType } from '@dao-dao/types'
 import {
   CoreActionKey,
   UseDecodedCosmosMsg,
@@ -75,18 +71,13 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
     return null
   }
 
-  const configSelector =
-    context.coreVersion === ContractVersion.V1
-      ? CwCoreV1Selectors.configSelector({
-          contractAddress: address,
-        })
-      : DaoCoreV2Selectors.configSelector({
-          contractAddress: address,
-          params: [],
-        })
-
   const useDefaults: UseDefaults<UpdateInfoData> = () => {
-    const config = useRecoilValue(configSelector)
+    const config = useRecoilValue(
+      DaoCoreV2Selectors.configSelector({
+        contractAddress: address,
+        params: [],
+      })
+    )
     return { ...config }
   }
 

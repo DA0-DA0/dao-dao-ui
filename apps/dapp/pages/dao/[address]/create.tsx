@@ -13,15 +13,20 @@ import { useDaoInfoContext } from '@dao-dao/stateless'
 import { SITE_URL, getFallbackImage } from '@dao-dao/utils'
 
 const InnerCreateSubDaoPage = () => {
-  const { coreAddress, name, imageUrl, parentDao } = useDaoInfoContext()
+  const { coreAddress, coreVersion, name, imageUrl, parentDao } =
+    useDaoInfoContext()
 
   return (
     <CreateDaoForm
       parentDao={{
         coreAddress,
+        coreVersion,
         name,
         imageUrl: imageUrl || getFallbackImage(coreAddress),
         parentDao,
+
+        // If creating a SubDao, it is not yet registered.
+        registeredSubDao: false,
       }}
     />
   )

@@ -10,6 +10,7 @@ import { useRecoilValue } from 'recoil'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   LinkWrapper,
+  ProfileDisconnectedCard,
   ProfileHomeCard,
   ProposalLine,
   ProposalLineProps,
@@ -20,7 +21,6 @@ import {
   DaoWithProposals,
   Inbox,
   PageLoader,
-  ProfileDisconnectedCard,
   useAppLayoutContext,
 } from '@dao-dao/stateless'
 import { CHAIN_ID, SITE_URL } from '@dao-dao/utils'
@@ -30,26 +30,26 @@ const InnerInbox = () => {
   const pinnedDaoDropdownInfos = useRecoilValue(pinnedDaoDropdownInfosSelector)
 
   const {
-    inbox: { loading, refetching, refetch, daosWithOpenUnvotedProposals },
+    inbox: { loading, refetching, refetch, daosWithOpenProposals },
   } = useAppLayoutContext()
 
-  const daosWithProposals = daosWithOpenUnvotedProposals
+  const daosWithProposals = daosWithOpenProposals
     .map(
       ({
         coreAddress,
         proposalModules,
-        openUnvotedProposals,
+        openProposals,
       }): DaoWithProposals<ProposalLineProps> | undefined => {
         const daoDropdownInfo = pinnedDaoDropdownInfos.find(
           (dao) => dao.coreAddress === coreAddress
         )
-        if (!daoDropdownInfo || !openUnvotedProposals) {
+        if (!daoDropdownInfo || !openProposals) {
           return undefined
         }
 
         return {
           dao: daoDropdownInfo,
-          proposals: openUnvotedProposals.map(
+          proposals: openProposals.map(
             ({ proposalModule: { prefix }, proposalNumber }) => ({
               chainId: CHAIN_ID,
               coreAddress,

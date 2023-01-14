@@ -1,4 +1,5 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { fromBase64, toHex } from '@cosmjs/encoding'
 import {
   Coin,
   Event,
@@ -6,18 +7,25 @@ import {
   decodeCosmosSdkDecFromProto,
 } from '@cosmjs/stargate'
 import { ChainInfoID } from '@noahsaso/cosmodal'
+import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { cosmos, juno } from 'interchain-rpc'
 import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
+import {
+  Proposal as GovProposal,
+  WeightedVoteOption,
+} from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
 import {
   DelegationResponse,
   UnbondingDelegation as RpcUnbondingDelegation,
   Validator as RpcValidator,
 } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
-import { selector, selectorFamily } from 'recoil'
+import Long from 'long'
+import { atom, selector, selectorFamily } from 'recoil'
 
 import {
   AmountWithTimestamp,
   Delegation,
+  GovProposalWithDecodedContent,
   NativeDelegationInfo,
   UnbondingDelegation,
   Validator,
@@ -30,6 +38,7 @@ import {
   NATIVE_DENOM,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
+  decodeGovProposalContent,
   getAllRpcResponse,
   getRpcForChainId,
   nativeTokenDecimals,
@@ -304,6 +313,7 @@ export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
     },
 })
 
+// Queries the chain for the commission of a given validator address.
 export const validatorSelector = selectorFamily<
   Validator,
   WithChainId<{ address: string }>
@@ -333,6 +343,81 @@ export const nativeUnstakingDurationSecondsSelector = selectorFamily<
       const client = get(cosmosRpcClientForChainSelector(chainId))
       const { params } = await client.staking.v1beta1.params()
       return params.unbondingTime.seconds.toNumber()
+    },
+})
+
+// Queries the chain for governance proposals, defaulting to those that are
+// currently open for voting.
+export const govProposalsSelector = selectorFamily<
+  GovProposalWithDecodedContent[],
+  WithChainId<{ status?: ProposalStatus }>
+>({
+  key: 'govProposals',
+  get:
+    ({ status = ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      let proposals: GovProposal[]
+      try {
+        proposals = await getAllRpcResponse(
+          client.gov.v1beta1.proposals,
+          {
+            proposalStatus: status,
+            voter: '',
+            depositor: '',
+          },
+          'proposals'
+        )
+      } catch (err) {
+        console.error(err)
+        proposals = []
+      }
+
+      return proposals
+        .map((proposal) => decodeGovProposalContent(proposal))
+        .sort((a, b) => a.votingEndTime.getTime() - b.votingEndTime.getTime())
+    },
+})
+
+// Queries the chain for a specific governance proposal.
+export const govProposalSelector = selectorFamily<
+  GovProposalWithDecodedContent | undefined,
+  WithChainId<{ proposalId: number }>
+>({
+  key: 'govProposal',
+  get:
+    ({ proposalId, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      const proposal = (
+        await client.gov.v1beta1.proposal({
+          proposalId: Long.fromInt(proposalId),
+        })
+      )?.proposal
+
+      return proposal && decodeGovProposalContent(proposal)
+    },
+})
+
+// Queries the chain for a vote on a governance proposal.
+export const govProposalVoteSelector = selectorFamily<
+  WeightedVoteOption[] | undefined,
+  WithChainId<{ proposalId: number; voter: string }>
+>({
+  key: 'govProposalVote',
+  get:
+    ({ proposalId, voter, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      return (
+        await client.gov.v1beta1.vote({
+          proposalId: Long.fromInt(proposalId),
+          voter,
+        })
+      )?.vote.options
     },
 })
 
@@ -497,5 +582,35 @@ export const transactionEventsSelector = selectorFamily<
 
       const tx = await client.getTx(txHash)
       return tx ? tx.events : undefined
+    },
+})
+
+// See usage in stateful `AddressInput` component.
+export const walletHexPublicKeyOverridesAtom = atom<
+  Record<string, string | undefined>
+>({
+  key: 'walletHexPublicKeyOverrides',
+  default: {},
+})
+
+export const walletHexPublicKeySelector = selectorFamily<
+  string | undefined,
+  WithChainId<{ walletAddress: string }>
+>({
+  key: 'walletHexPublicKey',
+  get:
+    ({ walletAddress, chainId }) =>
+    async ({ get }) => {
+      const override = get(walletHexPublicKeyOverridesAtom)[walletAddress]
+      if (override) {
+        return override
+      }
+
+      const client = get(cosmWasmClientForChainSelector(chainId))
+      const account = await client.getAccount(walletAddress)
+      if (!account?.pubkey?.value) {
+        return
+      }
+      return toHex(fromBase64(account.pubkey.value))
     },
 })

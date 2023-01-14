@@ -1,10 +1,11 @@
-import { selector, waitForAll } from 'recoil'
+import { selector, selectorFamily, waitForAll } from 'recoil'
 
-import { pinnedAddressesAtom } from '@dao-dao/state'
+import { openProposalsSelector, pinnedAddressesAtom } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
+import { DaoWithOpenProposals, WithChainId } from '@dao-dao/types'
 
 import { daoDropdownInfoSelector } from './cards'
-import { cwCoreProposalModulesSelector } from './misc'
+import { daoCoreProposalModulesSelector } from './misc'
 
 export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
   key: 'pinnedDaoDropdownInfo',
@@ -27,7 +28,7 @@ export const pinnedDaosWithProposalModulesSelector = selector({
     const proposalModules = get(
       waitForAll(
         daoAddresses.map((coreAddress) =>
-          cwCoreProposalModulesSelector({ coreAddress })
+          daoCoreProposalModulesSelector({ coreAddress })
         )
       )
     )
@@ -36,4 +37,54 @@ export const pinnedDaosWithProposalModulesSelector = selector({
       proposalModules: proposalModules[index],
     }))
   },
+})
+
+export const pinnedDaosWithOpenProposalsSelector = selectorFamily<
+  DaoWithOpenProposals[],
+  WithChainId<{ walletAddress?: string }>
+>({
+  key: 'pinnedDaosWithOpenProposals',
+  get:
+    ({ walletAddress, chainId }) =>
+    ({ get }) => {
+      const pinnedDaosWithProposalModules = get(
+        pinnedDaosWithProposalModulesSelector
+      )
+
+      const openProposalsPerDao = get(
+        waitForAll(
+          pinnedDaosWithProposalModules.map(({ coreAddress }) =>
+            openProposalsSelector({
+              coreAddress,
+              address: walletAddress,
+              chainId,
+            })
+          )
+        )
+      )
+
+      return pinnedDaosWithProposalModules.map(
+        ({ coreAddress, proposalModules }, index): DaoWithOpenProposals => {
+          const proposalModulesWithOpenProposals = openProposalsPerDao[index]
+
+          return {
+            coreAddress,
+            proposalModules,
+            openProposals: proposalModules.flatMap(
+              (proposalModule) =>
+                proposalModulesWithOpenProposals
+                  .find(
+                    ({ proposalModuleAddress }) =>
+                      proposalModuleAddress === proposalModule.address
+                  )
+                  ?.proposals.map(({ id, voted }) => ({
+                    proposalModule,
+                    proposalNumber: id,
+                    voted,
+                  })) ?? []
+            ),
+          }
+        }
+      )
+    },
 })

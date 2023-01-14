@@ -14,6 +14,7 @@ import {
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
+import { ProfileDisplay } from '../../../../components'
 import { DaoCreationConfig, GovernanceTokenType } from '../types'
 
 export const GovernanceConfigurationReview = ({
@@ -25,7 +26,7 @@ export const GovernanceConfigurationReview = ({
   },
 }: DaoCreationGovernanceConfigReviewProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
-  const treasuryColor = `rgba(${useNamedThemeColor('v2-light')}, 0.45)`
+  const treasuryColor = `rgba(${useNamedThemeColor('light')}, 0.45)`
 
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
     tokenType === GovernanceTokenType.Existing && existingGovernanceTokenAddress
@@ -124,6 +125,7 @@ export const GovernanceConfigurationReview = ({
 
   return (
     <DaoCreateVotingPowerDistributionReviewCard
+      ProfileDisplay={ProfileDisplay}
       distributionPrefix={'$' + symbol + ' '}
       pieData={pieData}
       tierData={tierData}

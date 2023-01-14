@@ -3,18 +3,16 @@ import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
-import { ContractVersion } from './chain'
 import { CosmosMsgFor_Empty } from './contracts/common'
+import { DaoInfo } from './dao'
 
 // Actions defined in the core actions system (@dao-dao/stateful/actions). These
 // are provided in the top-level ActionsProvider.
 export enum CoreActionKey {
   Spend = 'spend',
   StakingActions = 'stakingActions',
-  AddCw20 = 'addCw20',
-  RemoveCw20 = 'removeCw20',
-  AddCw721 = 'addCw721',
-  RemoveCw721 = 'removeCw721',
+  ManageCw20 = 'manageCw20',
+  ManageCw721 = 'manageCw721',
   TransferNft = 'transferNft',
   MintNft = 'mintNft',
   BurnNft = 'burnNft',
@@ -24,11 +22,14 @@ export enum CoreActionKey {
   Execute = 'execute',
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',
+  AuthzAuthorization = 'authzAuthorization',
+  AuthzExec = 'authzExec',
+  ValidatorActions = 'validatorActions',
   Custom = 'custom',
   PerformTokenSwap = 'performTokenSwap',
   WithdrawTokenSwap = 'withdrawTokenSwap',
-  SetItem = 'setItem',
-  RemoveItem = 'removeItem',
+  ManageStorageItems = 'manageStorageItems',
+  GovernanceVote = 'governanceVote',
 }
 
 // Actions defined in voting or proposal module adapters.
@@ -118,7 +119,7 @@ export enum ActionOptionsContextType {
 export type ActionOptionsContext =
   | {
       type: ActionOptionsContextType.Dao
-      coreVersion: ContractVersion
+      info: DaoInfo
     }
   | {
       type: ActionOptionsContextType.Wallet

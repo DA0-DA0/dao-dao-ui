@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import {
   DepositEmoji,
   InputErrorMessage,
+  InputLabel,
   NumberInput,
   SelectInput,
   TokenAmountDisplay,
@@ -233,7 +234,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
       onRemove={onRemove}
       title={t('title.stakingActions')}
     >
-      <div className="flex flex-col gap-2 xs:flex-row">
+      <div className="flex flex-col gap-4 xs:flex-row">
         {/* Choose type of stake operation. */}
         <SelectInput
           containerClassName="shrink-0"
@@ -286,7 +287,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 
       {/* If not claiming (i.e. withdrawing reward), show amount input. */}
       {stakeType !== StakeType.WithdrawDelegatorReward && (
-        <div className="flex flex-col gap-2 xs:flex-row">
+        <div className="flex flex-col gap-4 xs:flex-row">
           <NumberInput
             containerClassName="grow"
             disabled={!isCreating}
@@ -337,7 +338,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
         // claimed rewards if executed.
         (executed && !!claimedRewards) ||
         (!executed && sourceValidatorPendingRewards > 0)) && (
-        <div className="mt-1 flex flex-row items-center gap-4">
+        <div className="flex flex-row items-center gap-4">
           <p className="secondary-text font-semibold">
             {stakeType === StakeType.Delegate
               ? t('title.balance')
@@ -367,14 +368,10 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
       )}
 
       {stakeType === StakeType.Undelegate && isCreating && (
-        <p className="caption-text mt-2">
+        <p className="caption-text">
           {nativeUnstakingDurationSeconds
             ? t('info.unstakingDurationExplanation', {
-                duration: secondsToWdhms(
-                  nativeUnstakingDurationSeconds,
-                  2,
-                  false
-                ),
+                duration: secondsToWdhms(nativeUnstakingDurationSeconds),
               })
             : t('info.unstakingDurationNoneExplanation')}
         </p>
@@ -382,9 +379,8 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
 
       {/* If redelegating, show selection for destination validator. */}
       {stakeType === StakeType.Redelegate && (
-        <div className="mt-2 flex flex-col items-start gap-2">
-          <p>{t('form.toValidator')}</p>
-
+        <div className="flex flex-col items-start gap-1">
+          <InputLabel name={t('form.toValidator')} />
           <ValidatorPicker
             nativeDecimals={NATIVE_DECIMALS}
             nativeDenom={NATIVE_DENOM}
@@ -399,9 +395,13 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
         </div>
       )}
 
-      <InputErrorMessage error={errors?.denom} />
-      <InputErrorMessage error={errors?.amount} />
-      <InputErrorMessage error={errors?._error} />
+      {(errors?.denom || errors?.amount || errors?._error) && (
+        <div className="-mt-2 flex flex-col gap-1">
+          <InputErrorMessage error={errors?.denom} />
+          <InputErrorMessage error={errors?.amount} />
+          <InputErrorMessage error={errors?._error} />
+        </div>
+      )}
     </ActionCard>
   )
 }

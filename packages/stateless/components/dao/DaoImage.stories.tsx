@@ -14,6 +14,7 @@ const Template: ComponentStory<typeof DaoImage> = (args) => (
 
 export const Small = Template.bind({})
 Small.args = {
+  daoName: 'DAO',
   size: 'sm',
   imageUrl: '/placeholders/1.svg',
   LinkWrapper,
@@ -21,17 +22,21 @@ Small.args = {
 
 export const SmallWithParent = Template.bind({})
 SmallWithParent.args = {
+  daoName: 'DAO',
   size: 'sm',
   imageUrl: '/placeholders/1.svg',
   parentDao: {
+    name: 'Parent DAO',
     coreAddress: 'parent',
     imageUrl: '/placeholders/2.svg',
+    registeredSubDao: true,
   },
   LinkWrapper,
 }
 
 export const Large = Template.bind({})
 Large.args = {
+  daoName: 'DAO',
   size: 'lg',
   imageUrl: '/placeholders/1.svg',
   LinkWrapper,
@@ -39,11 +44,14 @@ Large.args = {
 
 export const LargeWithParent = Template.bind({})
 LargeWithParent.args = {
+  daoName: 'DAO',
   size: 'lg',
   imageUrl: '/placeholders/1.svg',
   parentDao: {
+    name: 'Parent DAO',
     coreAddress: 'parent',
     imageUrl: '/placeholders/2.svg',
+    registeredSubDao: true,
   },
   LinkWrapper,
 }

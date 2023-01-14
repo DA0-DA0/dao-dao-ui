@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { LinkWrapperProps } from '@dao-dao/types'
 
-import { MarkdownPreview } from '../MarkdownPreview'
+import { MarkdownRenderer } from '../MarkdownRenderer'
 import { DaoImage, DaoImageProps } from './DaoImage'
 
 export interface DaoHeaderProps {
@@ -32,6 +32,7 @@ export const DaoHeader = ({
       <DaoImage
         LinkWrapper={LinkWrapper}
         coreAddress={coreAddress}
+        daoName={name}
         imageUrl={imageUrl}
         parentDao={parentDao}
         size="lg"
@@ -44,7 +45,7 @@ export const DaoHeader = ({
         </p>
       )}
 
-      <MarkdownPreview
+      <MarkdownRenderer
         className="body-text mt-3 whitespace-pre-wrap"
         markdown={description}
       />

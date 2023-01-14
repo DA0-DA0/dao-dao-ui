@@ -15,17 +15,17 @@ import {
   DepositInfo,
   InfoResponse,
   ListProposalsResponse,
-  ListVotesResponse,
   ProposalCountResponse,
   ProposalHooksResponse,
   ProposalResponse,
   ReverseProposalsResponse,
   VoteHooksResponse,
-  VoteResponse,
 } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import {
+  ListVotesResponse,
   Threshold,
   Vote,
+  VoteResponse,
 } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 export interface CwProposalSingleV1ReadOnlyInterface {

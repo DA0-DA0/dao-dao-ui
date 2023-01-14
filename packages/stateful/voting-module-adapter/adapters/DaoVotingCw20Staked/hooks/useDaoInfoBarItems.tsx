@@ -7,20 +7,16 @@ import {
   formatPercentOf100,
 } from '@dao-dao/utils'
 
-import { useVotingModule } from '../../../../hooks'
+import { useMembership } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
 
 export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
-  const { totalVotingWeight } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { totalVotingWeight } = useMembership({
+    coreAddress,
   })
-
-  if (totalVotingWeight === undefined) {
-    throw new Error(t('error.loadingData'))
-  }
 
   const {
     governanceTokenInfo: { decimals, symbol, total_supply },
@@ -41,9 +37,12 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
     {
       Icon: LayersOutlined,
       label: t('title.totalStaked'),
-      value: formatPercentOf100(
-        (totalVotingWeight / Number(total_supply)) * 100
-      ),
+      value:
+        totalVotingWeight === undefined
+          ? '...'
+          : formatPercentOf100(
+              (totalVotingWeight / Number(total_supply)) * 100
+            ),
     },
   ]
 }

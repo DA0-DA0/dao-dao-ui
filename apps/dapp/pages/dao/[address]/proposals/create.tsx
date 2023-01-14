@@ -20,9 +20,10 @@ import {
 import {
   DaoPageWrapper,
   DaoPageWrapperProps,
+  ProfileDisconnectedCard,
   ProfileNewProposalCard,
   SuspenseLoader,
-  useVotingModule,
+  useMembership,
 } from '@dao-dao/stateful'
 import {
   DaoProposalSingleAdapter,
@@ -33,7 +34,6 @@ import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import {
   CreateProposal,
   PageLoader,
-  ProfileDisconnectedCard,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -50,9 +50,7 @@ const InnerProposalCreate = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const daoInfo = useDaoInfoContext()
-  const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
-    fetchMembership: true,
-  })
+  const { isMember = false } = useMembership(daoInfo)
   const { connected, status } = useWallet()
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(
@@ -307,6 +305,7 @@ const InnerProposalCreate = () => {
     <FormProvider {...formMethods}>
       <CreateProposal
         daoInfo={daoInfo}
+        matchAdapter={matchProposalModuleAdapter}
         newProposal={
           <SuspenseLoader
             fallback={<PageLoader />}

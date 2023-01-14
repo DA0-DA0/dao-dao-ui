@@ -1,12 +1,13 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { ArrowOutward } from '@mui/icons-material'
+import { ArrowOutwardRounded } from '@mui/icons-material'
 import type { GetStaticProps, NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
+import { queryFeaturedDaoDumpStatesFromIndexer } from '@dao-dao/state'
 import {
   SplashDaoCard,
   SuspenseLoader,
@@ -66,7 +67,7 @@ const SplashPage: NextPage = () => {
                 href="https://docs.daodao.zone"
               >
                 {t('splash.documentation')}
-                <ArrowOutward className="!h-4 !w-4" />
+                <ArrowOutwardRounded className="!h-4 !w-4" />
               </a>
               <div className="hidden md:block">
                 <SplashEnterAppButton small />
@@ -154,7 +155,7 @@ const SplashPage: NextPage = () => {
                 target="_blank"
               >
                 {t('splash.poweredByJuno')}
-                <ArrowOutward className="!h-4 !w-4 font-light" />
+                <ArrowOutwardRounded className="!h-4 !w-4 font-light" />
               </a>
             </div>
           </div>
@@ -168,6 +169,9 @@ export default SplashPage
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
+    featuredDaoDumpStates: await queryFeaturedDaoDumpStatesFromIndexer().catch(
+      () => null
+    ),
     ...(await serverSideTranslations(locale, ['translation'])),
   },
 })

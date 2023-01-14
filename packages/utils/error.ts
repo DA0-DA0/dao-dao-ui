@@ -99,6 +99,7 @@ export enum CommonError {
   NodeFailure = 'The blockchain nodes seem to be having problems. Try again later.',
   BlockHeightTooLow = 'Block height is too low.',
   TxPageOutOfRange = 'Transaction page is out of range.',
+  AuthorizationNotFound = 'Authorization does not exist.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -153,6 +154,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
   [CommonError.TxPageOutOfRange]: [
     ['32603', 'page should be within', 'range', 'given'],
   ],
+  [CommonError.AuthorizationNotFound]: ['authorization not found'],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,

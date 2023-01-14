@@ -74,6 +74,7 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
         {
           Icon: AccountBalanceOutlined,
           label: t('title.daoTreasury'),
+          tooltip: t('info.estimatedTreasuryUsdValueTooltip'),
           value: (
             <TokenAmountDisplay
               amount={
@@ -89,8 +90,8 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
                   ? undefined
                   : treasuryUsdcValueLoading.data.timestamp
               }
+              estimatedUsdValue
               hideApprox
-              usdcConversion
             />
           ),
         },

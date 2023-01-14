@@ -7,7 +7,7 @@ import { useActionOptions } from '../../../../actions'
 import { ButtonLink, DaoMemberCard } from '../../../../components'
 import {
   useEncodedDaoProposalSinglePrefill,
-  useVotingModule,
+  useMembership,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { makeManageMembersAction } from '../actions'
@@ -17,12 +17,12 @@ export const MembersTab = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
-  const { isMember = false, totalVotingWeight } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false, totalVotingWeight } = useMembership({
+    coreAddress,
   })
   const { members } = useCw4VotingModule(coreAddress, { fetchMembers: true })
 
-  if (totalVotingWeight === undefined || !members) {
+  if (!members) {
     throw new Error(t('error.loadingData'))
   }
 
@@ -47,7 +47,10 @@ export const MembersTab = () => {
   const memberCards: ComponentPropsWithoutRef<typeof DaoMemberCard>[] =
     members.map(({ addr, weight }) => ({
       address: addr,
-      votingPowerPercent: (weight / totalVotingWeight) * 100,
+      votingPowerPercent:
+        totalVotingWeight === undefined
+          ? { loading: true }
+          : { loading: false, data: (weight / totalVotingWeight) * 100 },
     }))
 
   return (

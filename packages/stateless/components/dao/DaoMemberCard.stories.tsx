@@ -19,7 +19,10 @@ const Template: ComponentStory<typeof DaoMemberCard> = (args) => (
 export const makeProps = (): DaoMemberCardProps => ({
   address: 'juno1abczhsdyechxcjz90y',
   // Random number between 0 and 31 with 2 decimals.
-  votingPowerPercent: Math.floor(Math.random() * (30 * 1e2) + 1e2) / 1e2,
+  votingPowerPercent: {
+    loading: false,
+    data: Math.floor(Math.random() * (30 * 1e2) + 1e2) / 1e2,
+  },
   profile: {
     loading: false,
     data: {
@@ -43,5 +46,6 @@ Default.parameters = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...Default.args,
+  votingPowerPercent: { loading: true },
   profile: { loading: true },
 }

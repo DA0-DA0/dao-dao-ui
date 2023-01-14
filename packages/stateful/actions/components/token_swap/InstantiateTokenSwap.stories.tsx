@@ -1,13 +1,15 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import {
   makeActionsProviderDecorator,
+  makeDaoInfo,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
+import { ActionOptionsContextType } from '@dao-dao/types'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
-import { ProfileDisplay, Trans } from '../../../components'
+import { Trans } from '../../../components'
 import { InstantiateTokenSwap } from './InstantiateTokenSwap'
 import { PerformTokenSwapData } from './types'
 
@@ -38,7 +40,7 @@ export default {
       bech32Prefix: 'juno',
       context: {
         type: ActionOptionsContextType.Dao,
-        coreVersion: ContractVersion.V2Alpha,
+        info: makeDaoInfo(),
       },
     }),
   ],
@@ -124,7 +126,7 @@ Default.args = {
     },
     onInstantiate: async () => alert('instantiate'),
     instantiating: false,
-    ProfileDisplay,
+    AddressInput,
     Trans,
   },
 }

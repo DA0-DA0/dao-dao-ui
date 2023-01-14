@@ -3,8 +3,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import {
   ReactHookFormDecorator,
   makeActionsProviderDecorator,
+  makeDaoInfo,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
+import { ActionOptionsContextType } from '@dao-dao/types'
 
 import { UpdateInfoComponent } from './UpdateInfo'
 
@@ -19,7 +20,7 @@ export default {
       bech32Prefix: 'juno',
       context: {
         type: ActionOptionsContextType.Dao,
-        coreVersion: ContractVersion.V2Alpha,
+        info: makeDaoInfo(),
       },
     }),
   ],

@@ -9,7 +9,6 @@ import {
 
 import { IconButton } from '../icon_buttons'
 import { useAppLayoutContext } from './AppLayoutContext'
-import { Footer } from './Footer'
 
 export * from '@dao-dao/types/stateless/RightSidebar'
 
@@ -54,11 +53,8 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
         {wallet}
 
         <div className="mt-1">
+          {/* Content gets inserted here when the portal <RightSidebarContent> below is used. */}
           <div ref={setContentRef}></div>
-
-          <div className="mt-7">
-            <Footer />
-          </div>
         </div>
       </div>
     </>

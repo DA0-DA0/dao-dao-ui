@@ -90,9 +90,7 @@ export const makeUseProfileNewProposalCardInfoLines =
         Icon: Timelapse,
         label: t('form.votingDurationTitle'),
         value: secondsToWdhms(
-          durationToSeconds(blocksPerYear, config.max_voting_period),
-          2,
-          false
+          durationToSeconds(blocksPerYear, config.max_voting_period)
         ),
       },
       {

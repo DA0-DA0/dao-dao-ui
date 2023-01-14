@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react'
 import { EMPTY_INBOX } from '@dao-dao/storybook/decorators'
 import { PageHeaderProps } from '@dao-dao/types'
 
+import { ConnectWallet, ConnectWalletProps } from '../wallet'
+import { Default as ConnectWalletStory } from '../wallet/ConnectWallet.stories'
 import { AppLayout, AppLayoutProps, IAppLayoutContext } from './AppLayout'
 import { NavigationProps } from './Navigation'
 import { Default as NavigatonStory } from './Navigation.stories'
@@ -54,6 +56,11 @@ export const DefaultArgs: AppLayoutProps = {
     setRootCommandContextMaker: () => {},
     inbox: EMPTY_INBOX,
   },
+  connect: () => alert('connect'),
+  connected: true,
+  connectWalletButton: (
+    <ConnectWallet {...(ConnectWalletStory.args as ConnectWalletProps)} />
+  ),
 }
 
 const Template: ComponentStory<typeof AppLayout> = (args) => {

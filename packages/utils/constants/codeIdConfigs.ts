@@ -19,23 +19,23 @@ const junoTestnet: CodeIdConfig = {
   CwTokenSwap: 3456,
 }
 
-// TODO(v2): Fill in code IDs once v2 contracts on mainnet.
+// ContractVersion.V2: 2.0.1
 const junoMainnet: CodeIdConfig = {
-  Cw20Base: 435,
-  Cw20Stake: 430,
-  Cw4Group: 434,
-  Cw721Base: 1554,
-  CwAdminFactory: -1,
-  DaoCore: -1,
-  DaoPreProposeMultiple: -1,
-  DaoPreProposeSingle: -1,
-  DaoProposalMultiple: -1,
-  DaoProposalSingle: -1,
-  DaoVotingCw20Staked: -1,
-  DaoVotingCw4: -1,
-  DaoVotingCw721Staked: -1,
-  DaoVotingNativeStaked: -1,
-  CwTokenSwap: -1,
+  Cw20Base: 1664, // v0.16
+  Cw20Stake: 1683,
+  Cw4Group: 1668, // v0.16
+  Cw721Base: 1671,
+  CwAdminFactory: 1686,
+  DaoCore: 1688,
+  DaoPreProposeMultiple: 1691,
+  DaoPreProposeSingle: 1692,
+  DaoProposalMultiple: 1693,
+  DaoProposalSingle: 1694,
+  DaoVotingCw20Staked: 1695,
+  DaoVotingCw4: 1696,
+  DaoVotingCw721Staked: 1697,
+  DaoVotingNativeStaked: 1698,
+  CwTokenSwap: 1687,
 }
 
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {

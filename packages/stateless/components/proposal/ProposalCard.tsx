@@ -8,7 +8,7 @@ import { DaoImage } from '../dao/DaoImage'
 export * from '@dao-dao/types/stateless/ProposalCard'
 
 export const ProposalCard = ({
-  dao: { coreAddress, imageUrl },
+  dao: { name, coreAddress, imageUrl },
   id,
   title,
   description,
@@ -33,6 +33,7 @@ export const ProposalCard = ({
         blur
         className="self-center"
         coreAddress={coreAddress}
+        daoName={name}
         imageClassName="!w-full !h-full"
         imageUrl={imageUrl}
         size="sm"

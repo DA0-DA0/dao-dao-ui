@@ -32,6 +32,7 @@ export const CopyToClipboard = ({
   textClassName,
   onCopy,
   tooltip,
+  noCopy,
 }: CopyToClipboardProps) => {
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
@@ -43,15 +44,20 @@ export const CopyToClipboard = ({
       <button
         className={clsx(
           'flex flex-row items-center justify-start gap-1 overflow-hidden',
+          noCopy && 'cursor-default',
           className
         )}
-        onClick={() => {
-          navigator.clipboard.writeText(value)
-          setTimeout(() => setCopied(false), 2000)
-          setCopied(true)
-          toast.success(success || t('info.copiedToClipboard'))
-          onCopy?.()
-        }}
+        onClick={
+          noCopy
+            ? undefined
+            : () => {
+                navigator.clipboard.writeText(value)
+                setTimeout(() => setCopied(false), 2000)
+                setCopied(true)
+                toast.success(success || t('info.copiedToClipboard'))
+                onCopy?.()
+              }
+        }
         type="button"
       >
         <Icon className="!h-[18px] !w-[18px]" />
@@ -88,6 +94,8 @@ export const CopyToClipboardUnderline = ({
   className,
   textClassName,
   tooltip,
+  onCopy,
+  noCopy,
 }: CopyToClipboardProps) => {
   const { t } = useTranslation()
 
@@ -95,14 +103,20 @@ export const CopyToClipboardUnderline = ({
     <Tooltip title={tooltip}>
       <p
         className={clsx(
-          'cursor-pointer truncate font-mono text-xs text-text-body underline transition-opacity hover:opacity-80 active:opacity-70',
+          'truncate font-mono text-xs text-text-body underline transition-opacity hover:opacity-80 active:opacity-70',
+          !noCopy && 'cursor-pointer',
           className,
           textClassName
         )}
-        onClick={() => {
-          navigator.clipboard.writeText(value)
-          toast.success(success || t('info.copiedToClipboard'))
-        }}
+        onClick={
+          noCopy
+            ? undefined
+            : () => {
+                navigator.clipboard.writeText(value)
+                toast.success(success || t('info.copiedToClipboard'))
+                onCopy?.()
+              }
+        }
       >
         {label ??
           (takeStartEnd

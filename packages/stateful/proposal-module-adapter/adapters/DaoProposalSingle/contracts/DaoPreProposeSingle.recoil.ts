@@ -2,6 +2,7 @@ import { selectorFamily } from 'recoil'
 
 import {
   cosmWasmClientForChainSelector,
+  queryContractIndexerSelector,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
 import { WithChainId } from '@dao-dao/types'
@@ -65,6 +66,17 @@ export const proposalModuleSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const proposalModule = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoPreProposeSingle/proposalModule',
+        })
+      )
+      if (proposalModule) {
+        return proposalModule
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.proposalModule(...params)
     },
@@ -79,6 +91,17 @@ export const daoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const dao = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoPreProposeSingle/dao',
+        })
+      )
+      if (dao) {
+        return dao
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.dao(...params)
     },
@@ -93,6 +116,17 @@ export const configSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const config = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoPreProposeSingle/config',
+        })
+      )
+      if (config) {
+        return config
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.config(...params)
     },
@@ -107,6 +141,18 @@ export const depositInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const depositInfo = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoPreProposeSingle/depositInfo',
+          args: params[0],
+        })
+      )
+      if (depositInfo) {
+        return depositInfo
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.depositInfo(...params)
     },

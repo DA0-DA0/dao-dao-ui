@@ -14,6 +14,8 @@ export const SITE_IMAGE = process.env.NEXT_PUBLIC_SITE_IMAGE as string
 export const WC_ICON_PATH = process.env.NEXT_PUBLIC_WC_ICON_PATH as string
 export const LEGACY_URL_PREFIX = process.env
   .NEXT_PUBLIC_LEGACY_URL_PREFIX as string
+export const CHAIN_GOV_PROPOSAL_URL_TEMPLATE = process.env
+  .NEXT_PUBLIC_CHAIN_GOV_PROPOSAL_URL_TEMPLATE as string
 
 export const NATIVE_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_NATIVE_DECIMALS || '6',
@@ -112,10 +114,31 @@ export const STARGAZE_URL_BASE = process.env
 // Wallet profiles
 export const PFPK_API_BASE = process.env.NEXT_PUBLIC_PFPK_API_BASE as string
 
-export const NFT_STORAGE_API_KEY = process.env
-  .NEXT_PUBLIC_NFT_STORAGE_API_KEY as string
+// Indexer
+export const INDEXER_API_KEY = process.env.INDEXER_API_KEY
+
+// Search
+export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string
+export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
+export const SEARCH_DAOS_INDEX = process.env
+  .NEXT_PUBLIC_SEARCH_DAOS_INDEX as string
+
+export const NFT_STORAGE_API_KEY = process.env.NFT_STORAGE_API_KEY as string
 
 export const FAST_AVERAGE_COLOR_API_TEMPLATE = process.env
   .NEXT_PUBLIC_FAST_AVERAGE_COLOR_API_TEMPLATE as string
 export const IPFS_GATEWAY_TEMPLATE = process.env
   .NEXT_PUBLIC_IPFS_GATEWAY_TEMPLATE as string
+
+export const DISABLED_ACTIONS = (
+  process.env.NEXT_PUBLIC_DISABLED_ACTIONS || ''
+).split(',')
+
+// Discord notifier
+export const DISCORD_NOTIFIER_CLIENT_ID = process.env
+  .NEXT_PUBLIC_DISCORD_NOTIFIER_CLIENT_ID as string
+export const DISCORD_NOTIFIER_REDIRECT_URI = process.env
+  .NEXT_PUBLIC_DISCORD_NOTIFIER_REDIRECT_URI as string
+export const DISCORD_NOTIFIER_API_BASE = process.env
+  .NEXT_PUBLIC_DISCORD_NOTIFIER_API_BASE as string
+export const DISCORD_NOTIFIER_SIGNATURE_TYPE = 'Discord Notifier'

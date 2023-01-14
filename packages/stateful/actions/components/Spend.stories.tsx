@@ -1,13 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import {
   makeActionsProviderDecorator,
+  makeDaoInfo,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
-import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
+import { ActionOptionsContextType } from '@dao-dao/types'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../../components'
 import { SpendComponent, SpendData } from './Spend'
 
 export default {
@@ -25,7 +26,7 @@ export default {
       bech32Prefix: 'juno',
       context: {
         type: ActionOptionsContextType.Dao,
-        coreVersion: ContractVersion.V2Alpha,
+        info: makeDaoInfo(),
       },
     }),
   ],
@@ -47,7 +48,7 @@ Default.args = {
         amount: '46252349169321',
       },
     ],
-    ProfileDisplay: ProfileDisplay,
+    AddressInput,
     cw20Balances: [
       {
         address: 'cw20_1',

@@ -7,7 +7,9 @@ import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {
   DaoHeader,
+  DiscordIcon,
   FollowingToggle,
+  IconButton,
   Loader,
   SegmentedControls,
   useAppLayoutContext,
@@ -17,6 +19,7 @@ export interface DaoHomeProps {
   daoInfo: DaoInfo
   pinned: boolean
   onPin: () => void
+  onConfigure: () => void
   daoInfoBar: ReactNode
   // Tabs
   proposalsTab: ReactNode
@@ -33,6 +36,7 @@ export const DaoHome = ({
   daoInfo,
   pinned,
   onPin,
+  onConfigure,
   daoInfoBar,
   proposalsTab,
   treasuryAndNftsTab,
@@ -94,7 +98,17 @@ export const DaoHome = ({
         }}
         className="mx-auto max-w-5xl"
         gradient
-        rightNode={<FollowingToggle following={pinned} onToggle={onPin} />}
+        rightNode={
+          <div className="flex flex-row items-stretch gap-2">
+            <FollowingToggle following={pinned} onToggle={onPin} />
+            <IconButton
+              Icon={DiscordIcon}
+              iconClassName="!w-5 !h-5"
+              onClick={onConfigure}
+              variant="secondary"
+            />
+          </div>
+        }
       />
 
       <div className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch">

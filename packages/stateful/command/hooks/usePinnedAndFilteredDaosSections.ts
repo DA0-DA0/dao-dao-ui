@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
-import { useSearchDaos } from '@dao-dao/state/subquery/daos'
+import { searchDaosSelector } from '@dao-dao/state/recoil'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import {
   CommandModalContextSection,
   CommandModalContextUseSectionsOptions,
@@ -31,37 +32,44 @@ export const usePinnedAndFilteredDaosSections = ({
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
   const pinnedDaosLoading = useLoadingPinnedDaoCardInfos()
 
-  const queryResults = useSearchDaos({
-    query: options.filter,
-    limit,
-    // Exclude pinned DAOs from search since they show in a separate section.
-    exclude: pinnedDaosLoading.loading
-      ? undefined
-      : pinnedDaosLoading.data.map(({ coreAddress }) => coreAddress),
-  })
+  const queryResults = useCachedLoadable(
+    options.filter
+      ? searchDaosSelector({
+          query: options.filter,
+          limit,
+          // Exclude pinned DAOs from search since they show in a separate section.
+          exclude: pinnedDaosLoading.loading
+            ? undefined
+            : pinnedDaosLoading.data.map(({ coreAddress }) => coreAddress),
+        })
+      : undefined
+  )
 
   // Use query results if filter is present.
   const daos = options.filter
-    ? (
-        queryResults.data?.daos.nodes ??
-        queryResults.previousData?.daos.nodes ??
-        []
-      ).map(
-        ({ coreAddress, name, imageUrl }): CommandModalDaoInfo => ({
-          // Nothing specific to set here yet, just uses default.
-          chainId: undefined,
-          coreAddress,
-          name,
-          imageUrl: imageUrl || getFallbackImage(coreAddress),
-        })
-      )
+    ? (queryResults.state !== 'hasValue' ? [] : queryResults.contents)
+        .filter(({ value }) => !!value?.config)
+        .map(
+          ({
+            contractAddress,
+            value: {
+              config: { name, image_url },
+            },
+          }): CommandModalDaoInfo => ({
+            // Nothing specific to set here yet, just uses default.
+            chainId: undefined,
+            coreAddress: contractAddress,
+            name,
+            imageUrl: image_url || getFallbackImage(contractAddress),
+          })
+        )
     : // Otherwise when filter is empty, display featured DAOs.
     featuredDaosLoading.loading
     ? []
     : featuredDaosLoading.data
 
   const pinnedSection: CommandModalContextSection<CommandModalDaoInfo> = {
-    name: t('title.pinned'),
+    name: t('title.following'),
     onChoose,
     items: pinnedDaosLoading.loading ? [] : pinnedDaosLoading.data,
   }

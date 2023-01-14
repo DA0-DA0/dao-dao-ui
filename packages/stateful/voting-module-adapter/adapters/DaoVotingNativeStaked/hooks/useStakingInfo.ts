@@ -46,7 +46,9 @@ export const useStakingInfo = ({
     fetchClaims ? blockHeightSelector({}) : undefined
   )
   const blockHeight =
-    blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0
+    blockHeightLoadable.state === 'hasValue'
+      ? blockHeightLoadable.contents
+      : undefined
 
   const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
   const refreshClaims = () => _setClaimsId((id) => id + 1)

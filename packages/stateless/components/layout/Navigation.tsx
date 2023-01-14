@@ -23,6 +23,7 @@ import { Logo } from '../logo/Logo'
 import { PricePercentChange } from '../token/PricePercentChange'
 import { Tooltip } from '../tooltip/Tooltip'
 import { useAppLayoutContext } from './AppLayoutContext'
+import { Footer } from './Footer'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
 
@@ -275,33 +276,38 @@ export const Navigation = ({
         <div className={clsx('mt-8 flex grow flex-col justify-end gap-2')}>
           {!compact && (
             <div className="caption-text space-y-3 font-mono">
-              <p>{t('info.daodaoWithVersion', { version })}</p>
+              <p className="pl-[10px]">
+                {t('info.daodaoWithVersion', { version })}
+              </p>
 
-              {tokenPrices.loading ? (
-                <Loader className="!justify-start" size={38} />
-              ) : (
-                tokenPrices.data.map(
-                  ({ label, price, priceDenom, change }, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-row items-end justify-between gap-2"
-                    >
-                      <p className="text-text-primary">
-                        {label} = {price} ${priceDenom}
-                      </p>
-                      {change !== undefined && (
-                        <PricePercentChange value={change} />
-                      )}
-                    </div>
+              {tokenPrices &&
+                (tokenPrices.loading ? (
+                  <Loader className="!justify-start" size={38} />
+                ) : (
+                  tokenPrices.data.map(
+                    ({ label, price, priceDenom, change }, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-row items-end justify-between gap-2"
+                      >
+                        <p className="text-text-primary">
+                          {label} = {price} ${priceDenom}
+                        </p>
+                        {change !== undefined && (
+                          <PricePercentChange value={change} />
+                        )}
+                      </div>
+                    )
                   )
-                )
-              )}
+                ))}
+
+              <Footer />
             </div>
           )}
 
           <div
             className={clsx(
-              'mt-4 flex gap-2',
+              'mt-8 flex gap-2',
               compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >

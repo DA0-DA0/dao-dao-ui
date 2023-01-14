@@ -15,7 +15,7 @@ import {
 } from '@dao-dao/types'
 import { makeWasmMessage } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../../components'
+import { AddressInput } from '../../components'
 import {
   ManageSubDaosData,
   ManageSubDaosComponent as StatelessManageSubDaosComponent,
@@ -48,7 +48,7 @@ const Component: ActionComponent = (props) => {
           address,
           name,
         })),
-        ProfileDisplay,
+        AddressInput,
       }}
     />
   )
@@ -62,7 +62,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
   // v1 DAOS don't support SubDAOs.
   if (
     context.type !== ActionOptionsContextType.Dao ||
-    context.coreVersion === ContractVersion.V1
+    context.info.coreVersion === ContractVersion.V1
   ) {
     return null
   }

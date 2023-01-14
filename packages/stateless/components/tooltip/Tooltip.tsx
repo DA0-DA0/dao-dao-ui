@@ -24,7 +24,7 @@ export const Tooltip = ({
         arrow: classes?.arrow ?? '!text-component-tooltip',
         tooltip:
           classes?.tooltip ??
-          '!font-sans !text-xs !font-normal !text-text-body !bg-component-tooltip !rounded-md !border !border-border-primary',
+          '!font-sans !text-xs !font-normal !text-text-component-primary !bg-component-tooltip !rounded-md !border !border-border-component-primary',
       }}
       title={title}
       {...props}

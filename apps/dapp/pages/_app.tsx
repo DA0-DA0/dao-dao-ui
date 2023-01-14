@@ -15,14 +15,17 @@ import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   activeThemeAtom,
+  featuredDaoDumpStatesAtom,
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
-import { AppLayout, SubQueryProvider, WalletProvider } from '@dao-dao/stateful'
+import { ApolloGqlProvider, AppLayout, WalletProvider } from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
-const InnerApp = ({ Component, pageProps }: AppProps) => {
+type DappProps = AppProps<{ featuredDaoDumpStates?: any[] } | {}>
+
+const InnerApp = ({ Component, pageProps }: DappProps) => {
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
@@ -65,7 +68,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <SubQueryProvider>
+      <ApolloGqlProvider>
         {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
         {router.isFallback ? (
           <LayoutLoading>
@@ -82,7 +85,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
         )}
 
         <ToastNotifications />
-      </SubQueryProvider>
+      </ApolloGqlProvider>
     </ThemeProvider>
   )
 }
@@ -92,7 +95,7 @@ const LayoutLoading = ({ children }: { children: ReactNode }) => (
   <main className="h-full min-h-screen w-full overflow-hidden">{children}</main>
 )
 
-const DApp = (props: AppProps) => {
+const DApp = (props: DappProps) => {
   const { t } = useTranslation()
 
   return (
@@ -163,7 +166,20 @@ const DApp = (props: AppProps) => {
         }}
       />
 
-      <RecoilRoot>
+      <RecoilRoot
+        initializeState={(snapshot) => {
+          if (
+            'featuredDaoDumpStates' in props.pageProps &&
+            props.pageProps.featuredDaoDumpStates &&
+            Array.isArray(props.pageProps.featuredDaoDumpStates)
+          ) {
+            snapshot.set(
+              featuredDaoDumpStatesAtom,
+              props.pageProps.featuredDaoDumpStates
+            )
+          }
+        }}
+      >
         <InnerApp {...props} />
       </RecoilRoot>
     </>

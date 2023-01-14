@@ -1,9 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
 
 import { MintData } from '.'
-import { ProfileDisplay } from '../../../../../components'
 import { MintComponent } from './MintComponent'
 
 export default {
@@ -31,6 +31,6 @@ Default.args = {
   isCreating: true,
   options: {
     govTokenSymbol: 'GOV',
-    ProfileDisplay: ProfileDisplay,
+    AddressInput,
   },
 }

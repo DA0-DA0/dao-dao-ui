@@ -50,11 +50,26 @@ Default.args = {
   subDaos: {
     loading: false,
     data: [
-      makeDaoCardProps(),
-      makeDaoCardProps(),
-      makeDaoCardProps(),
-      makeDaoCardProps(),
-      makeDaoCardProps(),
+      {
+        ...makeDaoCardProps(1),
+        name: 'Development Fund',
+        description: 'Manages our development and strategy.',
+      },
+      {
+        ...makeDaoCardProps(2),
+        name: 'Validator',
+        description: 'Runs our validator.',
+      },
+      {
+        ...makeDaoCardProps(3),
+        name: 'Security',
+        description: 'Protects us from those who seek to destroy us.',
+      },
+      {
+        ...makeDaoCardProps(4),
+        name: 'Meme Machine',
+        description: 'Generates memeable content for the sake of the memes.',
+      },
     ],
   },
   createSubDaoHref: '#',

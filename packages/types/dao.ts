@@ -39,9 +39,13 @@ export interface DaoInfo {
 
 export interface DaoParentInfo {
   coreAddress: string
+  coreVersion: ContractVersion
   name: string
   imageUrl?: string | null
   parentDao?: DaoParentInfo | null
+
+  // Whether or not this parent has registered its child as a SubDAO.
+  registeredSubDao: boolean
 }
 
 // Used in @dao-dao/stateful/components/DaoPageWrapper to serialize DaoInfo loaded

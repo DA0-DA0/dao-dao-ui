@@ -4,7 +4,7 @@ import {
   WhereToVoteOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, ReactNode, useEffect, useMemo, useState } from 'react'
+import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LinkWrapperProps, LoadingData } from '@dao-dao/types'
@@ -44,16 +44,12 @@ export const Inbox = <T extends {}>({
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
-  const numOpenProposals = useMemo(
-    () =>
-      daosWithProposals.loading
-        ? 0
-        : daosWithProposals.data.reduce(
-            (acc, { proposals }) => acc + proposals.length,
-            0
-          ),
-    [daosWithProposals]
-  )
+  const numOpenProposals = daosWithProposals.loading
+    ? 0
+    : daosWithProposals.data.reduce(
+        (acc, { proposals }) => acc + proposals.length,
+        0
+      )
 
   const [refreshSpinning, setRefreshSpinning] = useState(false)
   // Start spinning refresh icon if refreshing sets to true. Turn off once the
@@ -100,7 +96,7 @@ export const Inbox = <T extends {}>({
         {daosWithProposals.loading ? (
           <Loader fill={false} />
         ) : daosWithProposals?.data?.length === 0 ? (
-          <NoContent Icon={PushPinOutlined} body={t('info.noPinnedDaos')} />
+          <NoContent Icon={PushPinOutlined} body={t('info.noFollowedDaos')} />
         ) : numOpenProposals === 0 ? (
           <NoContent
             Icon={WhereToVoteOutlined}
@@ -113,24 +109,26 @@ export const Inbox = <T extends {}>({
             </p>
 
             <div className="mt-6 grow space-y-4">
-              {daosWithProposals.data.map(({ dao, proposals }, index) => (
-                <DaoDropdown
-                  key={index}
-                  LinkWrapper={LinkWrapper}
-                  dao={{
-                    ...dao,
-                    content: proposals.length ? (
-                      <ProposalContainer className="mt-4 px-2">
-                        {proposals.map((props, index) => (
-                          <ProposalLine key={index} {...props} />
-                        ))}
-                      </ProposalContainer>
-                    ) : undefined,
-                  }}
-                  defaultExpanded
-                  showSubdaos={false}
-                />
-              ))}
+              {daosWithProposals.data
+                .filter(({ proposals }) => proposals.length > 0)
+                .map(({ dao, proposals }, index) => (
+                  <DaoDropdown
+                    key={index}
+                    LinkWrapper={LinkWrapper}
+                    dao={{
+                      ...dao,
+                      content: proposals.length ? (
+                        <ProposalContainer className="mt-4 px-2">
+                          {proposals.map((props, index) => (
+                            <ProposalLine key={index} {...props} />
+                          ))}
+                        </ProposalContainer>
+                      ) : undefined,
+                    }}
+                    defaultExpanded
+                    showSubdaos={false}
+                  />
+                ))}
             </div>
           </>
         )}

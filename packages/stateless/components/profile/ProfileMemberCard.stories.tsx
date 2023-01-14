@@ -22,17 +22,16 @@ const Template: ComponentStory<typeof ProfileMemberCard> = (args) => (
 const makeProps = (
   ...args: Parameters<typeof makeProfileCardMemberInfoTokensProps>
 ): ProfileMemberCardProps => ({
-  daoName: 'Dog Dao',
+  daoName: 'A Very Real DAO',
   walletProfile: {
     loading: false,
     data: {
       nonce: 0,
       imageUrl: '/noah.jpg',
-      name: '@Modern-Edamame',
+      name: 'A Very Real Person',
       nft: null,
     },
   },
-  openProposals: true,
   membershipInfo: (
     <ProfileCardMemberInfoTokens
       {...makeProfileCardMemberInfoTokensProps(...args)}
