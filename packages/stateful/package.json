@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/stateful",
-  "version": "2.1.0-rc.1",
+  "version": "2.1.0-rc.2",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "tsc",
@@ -13,10 +13,10 @@
     "@cosmjs/encoding": "0.29.3",
     "@cosmjs/proto-signing": "0.29.3",
     "@cosmjs/stargate": "0.29.3",
-    "@dao-dao/i18n": "^2.1.0-rc.1",
-    "@dao-dao/state": "^2.1.0-rc.1",
-    "@dao-dao/stateless": "^2.1.0-rc.1",
-    "@dao-dao/utils": "^2.1.0-rc.1",
+    "@dao-dao/i18n": "^2.1.0-rc.2",
+    "@dao-dao/state": "^2.1.0-rc.2",
+    "@dao-dao/stateless": "^2.1.0-rc.2",
+    "@dao-dao/utils": "^2.1.0-rc.2",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
@@ -47,8 +47,8 @@
   },
   "devDependencies": {
     "@cosmjs/amino": "0.29.3",
-    "@dao-dao/config": "^2.1.0-rc.1",
-    "@dao-dao/types": "^2.1.0-rc.1",
+    "@dao-dao/config": "^2.1.0-rc.2",
+    "@dao-dao/types": "^2.1.0-rc.2",
     "@noahsaso/cosmodal": "^0.8.3",
     "@storybook/react": "^6.5.10",
     "@types/file-saver": "^2.0.5",
@@ -67,7 +67,7 @@
     "typescript": "^4.8.3"
   },
   "peerDependencies": {
-    "@dao-dao/storybook": "2.1.0-rc.1",
+    "@dao-dao/storybook": "2.1.0-rc.2",
     "react": "^17 || ^18"
   },
   "prettier": "@dao-dao/config/prettier"

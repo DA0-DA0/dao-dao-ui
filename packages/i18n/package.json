@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/i18n",
-  "version": "2.1.0-rc.1",
+  "version": "2.1.0-rc.2",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "format": "eslint . --fix",
@@ -15,7 +15,7 @@
     "react-i18next": "^11.0.0"
   },
   "devDependencies": {
-    "@dao-dao/config": "^2.1.0-rc.1",
+    "@dao-dao/config": "^2.1.0-rc.2",
     "eslint-plugin-i18n-json": "^3.1.0",
     "i18n-unused": "^0.10.0"
   },
