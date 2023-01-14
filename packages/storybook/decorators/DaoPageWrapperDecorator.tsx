@@ -23,8 +23,9 @@ export const makeDaoInfo = (): DaoInfo => ({
       preProposeAddress: 'preProposeModuleAddress',
     },
   ],
-  name: 'DAO Name',
-  description: 'DAO Description',
+  name: 'A Very Real DAO',
+  description:
+    'This DAO does really important stuff. And sometimes **things**. But *mostly* stuff.',
   imageUrl: 'https://moonphase.is/image.svg',
   // Random date in the past 12 months.
   created: new Date(
