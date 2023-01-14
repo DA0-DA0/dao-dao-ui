@@ -81,6 +81,13 @@ type GetDaoStaticPropsMaker = (
   options?: GetDaoStaticPropsMakerOptions
 ) => GetStaticProps<DaoPageWrapperProps>
 
+export class LegacyDaoError extends Error {
+  constructor() {
+    super()
+    this.name = 'LegacyDaoError'
+  }
+}
+
 // Computes DaoPageWrapperProps for the DAO with optional alterations.
 export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
   ({ coreAddress: _coreAddress, getProps } = {}) =>
@@ -241,10 +248,11 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       // Redirect legacy DAOs (legacy multisigs redirected in next.config.js
       // redirects list).
       if (
-        error instanceof Error &&
-        error.message.includes(
-          'Query failed with (18): Error parsing into type cw3_dao::msg::QueryMsg: unknown variant `config`'
-        )
+        error instanceof LegacyDaoError ||
+        (error instanceof Error &&
+          error.message.includes(
+            'Query failed with (18): Error parsing into type cw3_dao::msg::QueryMsg: unknown variant `dump_state`'
+          ))
       ) {
         return {
           redirect: {
@@ -452,6 +460,8 @@ const loadParentDaoInfo = async (
   }
 }
 
+const LEGACY_DAO_CONTRACT_NAMES = ['crates.io:sg_dao', 'crates.io:cw3_dao']
+
 interface DaoCoreDumpState {
   admin: string
   config: Config
@@ -492,6 +502,12 @@ const daoCoreDumpState = async (
 
   // Use data from indexer if present.
   if (indexerDumpedState) {
+    if (
+      LEGACY_DAO_CONTRACT_NAMES.includes(indexerDumpedState.version?.contract)
+    ) {
+      throw new LegacyDaoError()
+    }
+
     const coreVersion = parseContractVersion(indexerDumpedState.version.version)
     if (!coreVersion) {
       throw new Error(serverT('error.failedParsingCoreVersion'))
