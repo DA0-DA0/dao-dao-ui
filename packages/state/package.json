@@ -28,6 +28,5 @@
     "@noahsaso/cosmodal": "^0.8.2",
     "typescript": "^4.8.3"
   },
-  "prettier": "@dao-dao/config/prettier",
-  "private": true
+  "prettier": "@dao-dao/config/prettier"
 }

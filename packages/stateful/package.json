@@ -65,6 +65,5 @@
   "peerDependencies": {
     "@dao-dao/storybook": "2.0.1"
   },
-  "prettier": "@dao-dao/config/prettier",
-  "private": true
+  "prettier": "@dao-dao/config/prettier"
 }
