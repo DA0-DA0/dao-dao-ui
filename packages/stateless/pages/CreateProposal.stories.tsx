@@ -63,6 +63,7 @@ Default.args = {
       {...(ProfileNewProposalCardStory.args as ProfileNewProposalCardProps)}
     />
   ),
+  matchAdapter: matchProposalModuleAdapter,
 }
 Default.parameters = {
   design: {

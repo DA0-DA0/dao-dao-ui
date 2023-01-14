@@ -1,6 +1,7 @@
 {
   "name": "@dao-dao/dapp",
-  "version": "2.0.0",
+  "version": "2.1.0-rc.1",
+  "license": "AGPL-3.0-only",
   "scripts": {
     "analyze": "ANALYZE=true next build",
     "build": "next build --debug",
@@ -15,12 +16,12 @@
     "ts:watch": "ts --watch"
   },
   "dependencies": {
-    "@dao-dao/i18n": "2.0.0",
-    "@dao-dao/state": "2.0.0",
-    "@dao-dao/stateful": "2.0.0",
-    "@dao-dao/stateless": "2.0.0",
-    "@dao-dao/types": "2.0.0",
-    "@dao-dao/utils": "2.0.0",
+    "@dao-dao/i18n": "2.1.0-rc.1",
+    "@dao-dao/state": "2.1.0-rc.1",
+    "@dao-dao/stateful": "2.1.0-rc.1",
+    "@dao-dao/stateless": "2.1.0-rc.1",
+    "@dao-dao/types": "2.1.0-rc.1",
+    "@dao-dao/utils": "2.1.0-rc.1",
     "@fontsource/inter": "^4.5.7",
     "@fontsource/jetbrains-mono": "^4.5.5",
     "@mui/icons-material": "^5.10.3",
@@ -43,7 +44,7 @@
     "sharp": "^0.31.1"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.0.0",
+    "@dao-dao/config": "2.1.0-rc.1",
     "@next/bundle-analyzer": "^12.1.0",
     "@sentry/cli": "^2.5.0",
     "@types/jest": "^27.0.2",

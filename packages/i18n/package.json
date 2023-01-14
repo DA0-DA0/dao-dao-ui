@@ -1,6 +1,7 @@
 {
   "name": "@dao-dao/i18n",
-  "version": "2.0.0",
+  "version": "2.1.0-rc.1",
+  "license": "BSD-3-Clause-Clear",
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint .",
@@ -10,14 +11,13 @@
   },
   "dependencies": {
     "i18next": "^21.8.10",
-    "react-i18next": "^11.0.0",
-    "next-i18next": "^11.0.0"
+    "next-i18next": "^11.0.0",
+    "react-i18next": "^11.0.0"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.0.0",
+    "@dao-dao/config": "^2.1.0-rc.1",
     "eslint-plugin-i18n-json": "^3.1.0",
     "i18n-unused": "^0.10.0"
   },
-  "prettier": "@dao-dao/config/prettier",
-  "private": true
+  "prettier": "@dao-dao/config/prettier"
 }

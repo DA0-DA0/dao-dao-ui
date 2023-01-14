@@ -305,6 +305,7 @@ const InnerProposalCreate = () => {
     <FormProvider {...formMethods}>
       <CreateProposal
         daoInfo={daoInfo}
+        matchAdapter={matchProposalModuleAdapter}
         newProposal={
           <SuspenseLoader
             fallback={<PageLoader />}

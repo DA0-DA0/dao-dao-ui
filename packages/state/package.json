@@ -1,6 +1,7 @@
 {
   "name": "@dao-dao/state",
-  "version": "2.0.0",
+  "version": "2.1.0-rc.1",
+  "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "tsc",
     "format": "eslint . --fix",
@@ -13,7 +14,7 @@
     "@cosmjs/encoding": "0.29.3",
     "@cosmjs/proto-signing": "0.29.3",
     "@cosmjs/stargate": "0.29.3",
-    "@dao-dao/utils": "2.0.0",
+    "@dao-dao/utils": "^2.1.0-rc.1",
     "@habx/apollo-multi-endpoint-link": "^2.7.0",
     "cosmjs-types": "^0.5.2",
     "graphql": "^16.6.0",
@@ -23,11 +24,10 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.0.0",
-    "@dao-dao/types": "2.0.0",
+    "@dao-dao/config": "^2.1.0-rc.1",
+    "@dao-dao/types": "^2.1.0-rc.1",
     "@noahsaso/cosmodal": "^0.8.2",
     "typescript": "^4.8.3"
   },
-  "prettier": "@dao-dao/config/prettier",
-  "private": true
+  "prettier": "@dao-dao/config/prettier"
 }

@@ -28,11 +28,11 @@ import {
 import { CHAIN_ID } from '@dao-dao/utils'
 
 import { Cw721BaseSelectors, DaoVotingCw20StakedSelectors } from '.'
-import featuredDaos from '../../../../../featured_daos.json'
 import {
   DaoCoreV2Client,
   DaoCoreV2QueryClient,
 } from '../../../contracts/DaoCore.v2'
+import featuredDaos from '../../../featured_daos.json'
 import {
   refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,
