@@ -99,6 +99,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
   return (
     <ActionCard
       Icon={LockWithKeyEmoji}
+      childrenContainerClassName="!gap-4"
       onRemove={onRemove}
       title={t('title.authzExec')}
     >
@@ -137,10 +138,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
             <InputErrorMessage error={errors?.delegate?.delegatorAddress} />
           </div>
           <div className="flex flex-col items-stretch gap-1">
-            <InputLabel
-              name={t('form.validatorAddress')}
-              tooltip={t('form.validatorAddressTooltip')}
-            />
+            <InputLabel name={t('form.validator')} />
             <ValidatorPicker
               displayClassName="grow min-w-0"
               nativeDecimals={NATIVE_DECIMALS}
@@ -196,10 +194,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
             <InputErrorMessage error={errors?.undelegate?.delegatorAddress} />
           </div>
           <div className="flex flex-col items-stretch gap-1">
-            <InputLabel
-              name={t('form.validatorAddress')}
-              tooltip={t('form.validatorAddressTooltip')}
-            />
+            <InputLabel name={t('form.validator')} />
             <ValidatorPicker
               displayClassName="grow min-w-0"
               nativeDecimals={NATIVE_DECIMALS}
@@ -340,10 +335,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
             <InputErrorMessage error={errors?.claimRewards?.delegatorAddress} />
           </div>
           <div className="flex flex-col items-stretch gap-1">
-            <InputLabel
-              name={t('form.validatorAddress')}
-              tooltip={t('form.validatorAddressTooltip')}
-            />
+            <InputLabel name={t('form.validator')} />
             <ValidatorPicker
               displayClassName="grow min-w-0"
               nativeDecimals={NATIVE_DECIMALS}
