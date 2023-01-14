@@ -19,7 +19,8 @@
     "stateful": "yarn workspace @dao-dao/stateful",
     "storybook": "yarn workspace @dao-dao/storybook",
     "types": "yarn workspace @dao-dao/types",
-    "utils": "yarn workspace @dao-dao/utils"
+    "utils": "yarn workspace @dao-dao/utils",
+    "publish-all": "lerna publish --no-private"
   },
   "devDependencies": {
     "lerna": "^6.4.1",
