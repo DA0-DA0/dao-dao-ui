@@ -1,4 +1,5 @@
 export * from './components'
 export * from './hooks'
 export * from './pages'
+export * from './styles'
 export * from './theme'
