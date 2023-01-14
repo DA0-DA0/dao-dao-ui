@@ -58,7 +58,7 @@ export const ManageStorageItemsComponent: ActionComponent<
       title={t('title.manageStorageItems')}
     >
       <SegmentedControls<boolean>
-        className="mb-4"
+        className="mb-2"
         disabled={!isCreating}
         onSelect={(value) => setValue(fieldNamePrefix + 'setting', value)}
         selected={setting}
@@ -77,9 +77,9 @@ export const ManageStorageItemsComponent: ActionComponent<
       {setting ? (
         <>
           {isCreating && (
-            <>
+            <div className="flex flex-col gap-1">
               <InputLabel name={t('form.suggestedItems')} />
-              <div className="mb-2 flex flex-row flex-wrap gap-1">
+              <div className="flex flex-row flex-wrap gap-1">
                 {uniq([
                   ...SUGGESTED_KEYS,
                   ...existingItems.map(([key]) => key),
@@ -102,7 +102,7 @@ export const ManageStorageItemsComponent: ActionComponent<
                   </Button>
                 ))}
               </div>
-            </>
+            </div>
           )}
 
           <div className="flex flex-col gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
@@ -187,7 +187,7 @@ export const ManageStorageItemsComponent: ActionComponent<
           </div>
         </>
       ) : (
-        <>
+        <div className="flex flex-col gap-1">
           <InputLabel name={t('form.item')} />
           <SelectInput
             disabled={!isCreating}
@@ -207,7 +207,7 @@ export const ManageStorageItemsComponent: ActionComponent<
             ))}
           </SelectInput>
           <InputErrorMessage error={errors?.key} />
-        </>
+        </div>
       )}
     </ActionCard>
   )

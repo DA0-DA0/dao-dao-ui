@@ -121,6 +121,7 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
           }
         />
       </div>
+
       <FormattedJsonDisplay {...formattedJsonDisplayProps} />
     </ActionCard>
   )

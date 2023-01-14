@@ -218,5 +218,12 @@ export const toAccessibleImageUrl = (
 }
 
 // Converts an address to its corresponding validator address.
-export const toValidatorAddress = (address: string, bech32Prefix: string) =>
-  toBech32(bech32Prefix + 'valoper', fromBech32(address).data)
+export const toValidatorAddress = (address: string, bech32Prefix: string) => {
+  try {
+    return toBech32(bech32Prefix + 'valoper', fromBech32(address).data)
+  } catch (err) {
+    // Silently error.
+    console.error(err)
+    return ''
+  }
+}

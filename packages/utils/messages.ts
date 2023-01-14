@@ -3,11 +3,8 @@ import { fromBase64, fromUtf8, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { GeneratedType, Registry } from '@cosmjs/proto-signing'
 import { defaultRegistryTypes } from '@cosmjs/stargate'
 import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
-import { MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
-import { MsgVote } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
-import { MsgCreateValidator } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 import { Any } from 'cosmjs-types/google/protobuf/any'
 import { cosmos } from 'interchain-rpc'
 
@@ -71,10 +68,10 @@ function getWasmMsgType(wasm: WasmMsg): WasmMsgType | undefined {
   return undefined
 }
 
-export type DecodedStargateMsg = {
+export type DecodedStargateMsg<Value = any> = {
   stargate: {
     typeUrl: string
-    value: any
+    value: Value
   }
 }
 
@@ -176,50 +173,19 @@ export const typesRegistry = new Registry([
   ...wasmTypes,
 
   // Custom types not in @cosmjs/stargate default registry.
-  ...([['/cosmos.slashing.v1beta1.MsgUnjail', MsgUnjail]] as ReadonlyArray<
-    [string, GeneratedType]
-  >),
+  ...([
+    ['/cosmos.slashing.v1beta1.MsgUnjail', MsgUnjail],
+    ['/cosmos.authz.v1beta1.GenericAuthorization', GenericAuthorization],
+    ['/cosmos.crypto.ed25519.PubKey', PubKey],
+  ] as ReadonlyArray<[string, GeneratedType]>),
 ])
 
-// Encodes a protobuf message value in its JSON representation into a byte
+// Encodes a protobuf message value from its JSON representation into a byte
 // array.
 export const encodeProtobufValue = (
   typeUrl: string,
   value: any
 ): Uint8Array => {
-  // Overrides.
-  switch (typeUrl) {
-    case '/cosmos.authz.v1beta1.MsgGrant':
-      return MsgGrant.encode(
-        MsgGrant.fromPartial({
-          grantee: value.grantee,
-          granter: value.granter,
-          grant: {
-            authorization: {
-              typeUrl: '/cosmos.authz.v1beta1.GenericAuthorization',
-              value: GenericAuthorization.encode(
-                GenericAuthorization.fromPartial({
-                  msg: value.msgTypeUrl,
-                })
-              ).finish(),
-            },
-          },
-        })
-      ).finish()
-    case '/cosmos.staking.v1beta1.MsgCreateValidator':
-      return MsgCreateValidator.encode(
-        MsgCreateValidator.fromPartial({
-          ...value,
-          pubkey: {
-            typeUrl: value.pubkey.typeUrl,
-            value: PubKey.encode(
-              PubKey.fromPartial(value.pubkey.value)
-            ).finish(),
-          },
-        })
-      ).finish()
-  }
-
   const type = typesRegistry.lookupType(typeUrl)
   if (!type) {
     throw new Error(`Type ${typeUrl} not found in registry.`)
@@ -229,54 +195,39 @@ export const encodeProtobufValue = (
   return encodedValue
 }
 
-// Decodes an encoded protobuf message's value from a base64 string into its
-// JSON representation.
+// Decodes an encoded protobuf message's value from a Uint8Array or base64
+// string into its JSON representation.
 export const decodeProtobufValue = (
   typeUrl: string,
-  encodedValue: string
+  encodedValue: string | Uint8Array
 ): any => {
-  const valueData = fromBase64(encodedValue)
-
-  // Overrides.
-  let value: any
-  switch (typeUrl) {
-    case '/cosmos.authz.v1beta1.MsgGrant':
-      value = MsgGrant.decode(valueData)
-      if (value?.grant?.authorization) {
-        value.grant.authorization.value = GenericAuthorization.decode(
-          value.grant.authorization?.value
-        )
-      }
-      break
-    case '/cosmos.staking.v1beta1.MsgCreateValidator':
-      value = MsgCreateValidator.decode(valueData)
-      value.pubkey.value = toBase64(PubKey.decode(value.pubkey.value).key)
-      break
-    case '/cosmos.gov.v1beta1.MsgVote':
-      value = MsgVote.decode(valueData)
-      value.proposalId = value.proposalId.toString()
-      break
-  }
-  if (value) {
-    return value
-  }
-
   const type = typesRegistry.lookupType(typeUrl)
   if (!type) {
     throw new Error(`Type ${typeUrl} not found in registry.`)
   }
 
-  const decodedValue = type.decode(valueData)
+  const decodedValue = type.decode(
+    typeof encodedValue === 'string' ? fromBase64(encodedValue) : encodedValue
+  )
   return decodedValue
 }
 
 // Encodes a protobuf message in its JSON representation into a protobuf `Any`.
-export const makeRawProtobufMsg = ({
+export const encodeRawProtobufMsg = ({
   typeUrl,
   value,
 }: DecodedStargateMsg['stargate']): Any => ({
   typeUrl,
   value: encodeProtobufValue(typeUrl, value),
+})
+
+// Decodes a protobuf message from `Any` into its JSON representation.
+export const decodeRawProtobufMsg = ({
+  typeUrl,
+  value,
+}: Any): DecodedStargateMsg['stargate'] => ({
+  typeUrl,
+  value: decodeProtobufValue(typeUrl, value),
 })
 
 // Encodes a protobuf message from its JSON representation into a `StargateMsg`

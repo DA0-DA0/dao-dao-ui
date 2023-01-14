@@ -76,8 +76,12 @@ export const MintComponent: ActionComponent<MintOptions> = ({
         </div>
       </div>
 
-      <InputErrorMessage error={errors?.amount} />
-      <InputErrorMessage error={errors?.to} />
+      {(errors?.amount || errors?.to) && (
+        <div className="-mt-2 flex flex-col gap-1">
+          <InputErrorMessage error={errors?.amount} />
+          <InputErrorMessage error={errors?.to} />
+        </div>
+      )}
     </ActionCard>
   )
 }
