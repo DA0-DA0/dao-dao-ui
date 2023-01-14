@@ -1,16 +1,16 @@
 {
   "name": "@dao-dao/storybook",
-  "version": "2.1.0-rc.0",
+  "version": "2.1.0-rc.1",
   "scripts": {
     "build": "build-storybook",
     "start": "start-storybook --ci -p 6006",
     "generate": "ts-node --esm ./scripts/generate.ts"
   },
   "devDependencies": {
-    "@dao-dao/config": "2.1.0-rc.0",
-    "@dao-dao/i18n": "2.1.0-rc.0",
-    "@dao-dao/types": "2.1.0-rc.0",
-    "@dao-dao/utils": "2.1.0-rc.0",
+    "@dao-dao/config": "2.1.0-rc.1",
+    "@dao-dao/i18n": "2.1.0-rc.1",
+    "@dao-dao/types": "2.1.0-rc.1",
+    "@dao-dao/utils": "2.1.0-rc.1",
     "@storybook/addon-actions": "^6.5.12",
     "@storybook/addon-essentials": "^6.5.12",
     "@storybook/addon-links": "^6.5.12",
@@ -44,9 +44,9 @@
     "typescript": "^4.8.3"
   },
   "peerDependencies": {
-    "@dao-dao/state": "2.1.0-rc.0",
-    "@dao-dao/stateful": "2.1.0-rc.0",
-    "@dao-dao/stateless": "2.1.0-rc.0"
+    "@dao-dao/state": "2.1.0-rc.1",
+    "@dao-dao/stateful": "2.1.0-rc.1",
+    "@dao-dao/stateless": "2.1.0-rc.1"
   },
   "prettier": "@dao-dao/config/prettier",
   "license": "MIT"
