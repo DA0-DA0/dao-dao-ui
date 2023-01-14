@@ -1,6 +1,7 @@
 {
   "name": "@dao-dao/state",
   "version": "2.1.0-rc.1",
+  "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "tsc",
     "format": "eslint . --fix",

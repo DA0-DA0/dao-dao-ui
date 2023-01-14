@@ -1,6 +1,7 @@
 {
   "name": "@dao-dao/stateless",
   "version": "2.1.0-rc.1",
+  "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "tsc",
     "format": "eslint . --fix",
@@ -54,6 +55,5 @@
     "@dao-dao/stateful": "2.1.0-rc.1",
     "@dao-dao/storybook": "2.1.0-rc.1"
   },
-  "prettier": "@dao-dao/config/prettier",
-  "license": "MIT"
+  "prettier": "@dao-dao/config/prettier"
 }

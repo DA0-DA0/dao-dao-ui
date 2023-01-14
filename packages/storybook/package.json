@@ -1,6 +1,7 @@
 {
   "name": "@dao-dao/storybook",
   "version": "2.1.0-rc.1",
+  "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "build-storybook",
     "start": "start-storybook --ci -p 6006",
@@ -48,6 +49,5 @@
     "@dao-dao/stateful": "2.1.0-rc.1",
     "@dao-dao/stateless": "2.1.0-rc.1"
   },
-  "prettier": "@dao-dao/config/prettier",
-  "license": "MIT"
+  "prettier": "@dao-dao/config/prettier"
 }
