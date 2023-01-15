@@ -74,152 +74,161 @@ export const ManageMembersComponent: ActionComponent<
       onRemove={onRemove}
       title={t('title.manageMembers')}
     >
-      <InputLabel className="mt-2" name={t('form.membersToAddOrUpdate')} />
-      <div className="flex flex-col items-stretch gap-1">
-        {toAddFields.map(({ id }, index) => {
-          const addrFieldName = (fieldNamePrefix +
-            `toAdd.${index}.addr`) as `toAdd.${number}.addr`
-          const weightFieldName = (fieldNamePrefix +
-            `toAdd.${index}.weight`) as `toAdd.${number}.weight`
+      <div className="flex flex-col gap-1">
+        <InputLabel name={t('form.membersToAddOrUpdate')} />
+        <div className="flex flex-col items-stretch gap-1">
+          {toAddFields.map(({ id }, index) => {
+            const addrFieldName = (fieldNamePrefix +
+              `toAdd.${index}.addr`) as `toAdd.${number}.addr`
+            const weightFieldName = (fieldNamePrefix +
+              `toAdd.${index}.weight`) as `toAdd.${number}.weight`
 
-          return (
+            return (
+              <div
+                key={id}
+                className="flex flex-row items-center gap-3 rounded-lg bg-background-secondary p-4"
+              >
+                <div className="flex grow flex-col items-stretch gap-x-3 gap-y-2 sm:flex-row">
+                  <div className="flex flex-col">
+                    <NumberInput
+                      disabled={!isCreating}
+                      error={errors?.toAdd?.[index]?.weight}
+                      fieldName={weightFieldName}
+                      onMinus={() =>
+                        setValue(
+                          weightFieldName,
+                          Math.max((watch(weightFieldName) || 0) - 1, 0)
+                        )
+                      }
+                      onPlus={() =>
+                        setValue(
+                          weightFieldName,
+                          Math.max((watch(weightFieldName) || 0) + 1, 0)
+                        )
+                      }
+                      placeholder={t('form.votingWeightPlaceholder')}
+                      register={register}
+                      sizing="fill"
+                      validation={[validateRequired, validateNonNegative]}
+                    />
+                    <InputErrorMessage error={errors?.toAdd?.[index]?.weight} />
+                  </div>
+
+                  <div className="flex grow flex-row items-stretch gap-2 sm:gap-3">
+                    <div className="flex flex-row items-center pl-1 sm:pl-0">
+                      <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
+                      <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
+                    </div>
+
+                    <div className="flex grow flex-col">
+                      <AddressInput
+                        containerClassName="h-full"
+                        disabled={!isCreating}
+                        error={errors?.toAdd?.[index]?.addr}
+                        fieldName={addrFieldName}
+                        register={register}
+                        validation={[
+                          validateRequired,
+                          validateAddress,
+                          (value) =>
+                            toRemoveFields.every(
+                              ({ addr }) => addr !== value
+                            ) || t('error.invalidDuplicateFound'),
+                        ]}
+                      />
+                      <InputErrorMessage error={errors?.toAdd?.[index]?.addr} />
+                    </div>
+                  </div>
+                </div>
+
+                {isCreating && (
+                  <IconButton
+                    Icon={Close}
+                    onClick={() => toAddRemove(index)}
+                    size="sm"
+                    variant="ghost"
+                  />
+                )}
+              </div>
+            )
+          })}
+          {!isCreating && toAddFields.length === 0 && (
+            <p className="text-xs italic text-text-tertiary">
+              {t('info.none')}
+            </p>
+          )}
+          {isCreating && (
+            <Button
+              className="mt-1 self-start"
+              onClick={() => toAddAppend({ weight: NaN, addr: '' })}
+              size="sm"
+              variant="secondary"
+            >
+              <Add className="!h-4 !w-4" />
+              {t('button.add')}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <InputLabel name={t('form.membersToRemove')} />
+        <div className="flex flex-col items-stretch gap-1">
+          {toRemoveFields.map(({ id }, index) => (
             <div
               key={id}
               className="flex flex-row items-center gap-3 rounded-lg bg-background-secondary p-4"
             >
-              <div className="flex grow flex-col items-stretch gap-x-3 gap-y-2 sm:flex-row">
-                <div className="flex flex-col">
-                  <NumberInput
-                    disabled={!isCreating}
-                    error={errors?.toAdd?.[index]?.weight}
-                    fieldName={weightFieldName}
-                    onMinus={() =>
-                      setValue(
-                        weightFieldName,
-                        Math.max((watch(weightFieldName) || 0) - 1, 0)
-                      )
-                    }
-                    onPlus={() =>
-                      setValue(
-                        weightFieldName,
-                        Math.max((watch(weightFieldName) || 0) + 1, 0)
-                      )
-                    }
-                    placeholder={t('form.votingWeightPlaceholder')}
-                    register={register}
-                    sizing="fill"
-                    validation={[validateRequired, validateNonNegative]}
-                  />
-                  <InputErrorMessage error={errors?.toAdd?.[index]?.weight} />
-                </div>
-
-                <div className="flex grow flex-row items-stretch gap-2 sm:gap-3">
-                  <div className="flex flex-row items-center pl-1 sm:pl-0">
-                    <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
-                    <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
-                  </div>
-
-                  <div className="flex grow flex-col">
-                    <AddressInput
-                      containerClassName="h-full"
-                      disabled={!isCreating}
-                      error={errors?.toAdd?.[index]?.addr}
-                      fieldName={addrFieldName}
-                      register={register}
-                      validation={[
-                        validateRequired,
-                        validateAddress,
-                        (value) =>
-                          toRemoveFields.every(({ addr }) => addr !== value) ||
-                          t('error.invalidDuplicateFound'),
-                      ]}
-                    />
-                    <InputErrorMessage error={errors?.toAdd?.[index]?.addr} />
-                  </div>
-                </div>
+              <div className="grow">
+                <AddressInput
+                  disabled={!isCreating}
+                  error={errors?.toRemove?.[index]?.addr}
+                  fieldName={
+                    (fieldNamePrefix +
+                      `toRemove.${index}.addr`) as `toRemove.${number}.addr`
+                  }
+                  register={register}
+                  validation={[
+                    validateRequired,
+                    validateAddress,
+                    (value) =>
+                      currentMembers.includes(value) ||
+                      t('error.addressNotAMember'),
+                    (value) =>
+                      toAddFields.every(({ addr }) => addr !== value) ||
+                      t('error.invalidDuplicateFound'),
+                  ]}
+                />
+                <InputErrorMessage error={errors?.toRemove?.[index]?.addr} />
               </div>
 
               {isCreating && (
                 <IconButton
                   Icon={Close}
-                  onClick={() => toAddRemove(index)}
+                  onClick={() => toRemoveRemove(index)}
                   size="sm"
                   variant="ghost"
                 />
               )}
             </div>
-          )
-        })}
-        {!isCreating && toAddFields.length === 0 && (
-          <p className="text-xs italic text-text-tertiary">{t('info.none')}</p>
-        )}
-        {isCreating && (
-          <Button
-            className="mt-1 self-start"
-            onClick={() => toAddAppend({ weight: NaN, addr: '' })}
-            size="sm"
-            variant="secondary"
-          >
-            <Add className="!h-4 !w-4" />
-            {t('button.add')}
-          </Button>
-        )}
-      </div>
-
-      <InputLabel className="mt-4" name={t('form.membersToRemove')} />
-      <div className="flex flex-col items-stretch gap-1">
-        {toRemoveFields.map(({ id }, index) => (
-          <div
-            key={id}
-            className="flex flex-row items-center gap-3 rounded-lg bg-background-secondary p-4"
-          >
-            <div className="grow">
-              <AddressInput
-                disabled={!isCreating}
-                error={errors?.toRemove?.[index]?.addr}
-                fieldName={
-                  (fieldNamePrefix +
-                    `toRemove.${index}.addr`) as `toRemove.${number}.addr`
-                }
-                register={register}
-                validation={[
-                  validateRequired,
-                  validateAddress,
-                  (value) =>
-                    currentMembers.includes(value) ||
-                    t('error.addressNotAMember'),
-                  (value) =>
-                    toAddFields.every(({ addr }) => addr !== value) ||
-                    t('error.invalidDuplicateFound'),
-                ]}
-              />
-              <InputErrorMessage error={errors?.toRemove?.[index]?.addr} />
-            </div>
-
-            {isCreating && (
-              <IconButton
-                Icon={Close}
-                onClick={() => toRemoveRemove(index)}
-                size="sm"
-                variant="ghost"
-              />
-            )}
-          </div>
-        ))}
-        {!isCreating && toRemoveFields.length === 0 && (
-          <p className="text-xs italic text-text-tertiary">{t('info.none')}</p>
-        )}
-        {isCreating && (
-          <Button
-            className="mt-1 self-start"
-            onClick={() => toRemoveAppend({ addr: '' })}
-            size="sm"
-            variant="secondary"
-          >
-            <Add className="!h-4 !w-4" />
-            {t('button.add')}
-          </Button>
-        )}
+          ))}
+          {!isCreating && toRemoveFields.length === 0 && (
+            <p className="text-xs italic text-text-tertiary">
+              {t('info.none')}
+            </p>
+          )}
+          {isCreating && (
+            <Button
+              className="mt-1 self-start"
+              onClick={() => toRemoveAppend({ addr: '' })}
+              size="sm"
+              variant="secondary"
+            >
+              <Add className="!h-4 !w-4" />
+              {t('button.add')}
+            </Button>
+          )}
+        </div>
       </div>
     </ActionCard>
   )

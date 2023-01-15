@@ -1,3 +1,5 @@
+import { cosmos } from 'interchain-rpc'
+
 import { TokenInfoResponse } from './contracts/Cw20Base'
 
 export type CachedLoadable<T> =
@@ -31,4 +33,11 @@ export interface AmountWithTimestampAndDenom extends AmountWithTimestamp {
 export interface TokenInfoResponseWithAddressAndLogo extends TokenInfoResponse {
   address: string
   logoUrl?: string
+}
+
+export type GovProposal = ReturnType<
+  typeof cosmos.gov.v1beta1.Proposal['fromPartial']
+>
+export type GovProposalWithDecodedContent = GovProposal & {
+  decodedContent: any
 }

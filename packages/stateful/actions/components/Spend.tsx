@@ -240,10 +240,14 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         </div>
       </div>
 
-      <InputErrorMessage error={errors?.amount} />
-      <InputErrorMessage error={errors?.denom} />
-      <InputErrorMessage error={errors?.to} />
-      <InputErrorMessage error={errors?._error} />
+      {(errors?.amount || errors?.denom || errors?.to || errors?._error) && (
+        <div className="-mt-2 flex flex-col gap-1">
+          <InputErrorMessage error={errors?.amount} />
+          <InputErrorMessage error={errors?.denom} />
+          <InputErrorMessage error={errors?.to} />
+          <InputErrorMessage error={errors?._error} />
+        </div>
+      )}
     </ActionCard>
   )
 }

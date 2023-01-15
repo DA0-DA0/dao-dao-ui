@@ -8,7 +8,7 @@ import {
   Button,
   CosmosMessageDisplay,
   InputErrorMessage,
-  MarkdownPreview,
+  MarkdownRenderer,
   ProposalContentDisplay,
   TextAreaInput,
   TextInput,
@@ -106,7 +106,7 @@ export const ProposalCreationForm = ({
     <div className="grow space-y-6 pb-10">
       <p className="hero-text max-w-prose break-words">{survey.name}</p>
 
-      <MarkdownPreview
+      <MarkdownRenderer
         markdown={t('info.compensationCycleClosedAwaitingCompletion')}
       />
 
@@ -393,9 +393,9 @@ export const ProposalCreationForm = ({
                           amount={totalUsdc}
                           className="caption-text text-right"
                           dateFetched={prices[0]?.timestamp}
+                          estimatedUsdValue
                           hideApprox
                           prefix="= "
-                          usdcConversion
                         />
                       </div>
                     </div>

@@ -1,7 +1,7 @@
-import type { MsgGrant, MsgRevoke } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
+import { MsgGrant, MsgRevoke } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
-import { ActionCardLoader, KeyEmoji } from '@dao-dao/stateless'
+import { KeyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -10,76 +10,135 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeStargateMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  DecodedStargateMsg,
+  decodeRawProtobufMsg,
+  encodeRawProtobufMsg,
+  isDecodedStargateMsg,
+  makeStargateMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
-import { AddressInput, SuspenseLoader } from '../../components'
+import { AddressInput } from '../../components'
 import { AuthzAuthorizationComponent as StatelessAuthzComponent } from '../components/AuthzAuthorization'
+
+const TYPE_URL_MSG_GRANT = '/cosmos.authz.v1beta1.MsgGrant'
+const TYPE_URL_MSG_REVOKE = '/cosmos.authz.v1beta1.MsgRevoke'
+const TYPE_URL_GENERIC_AUTHORIZATION =
+  '/cosmos.authz.v1beta1.GenericAuthorization'
 
 interface AuthzData {
   custom?: boolean
-  type_url: string
-  value: MsgGrant | MsgRevoke
+  typeUrl: string
+  value: {
+    grantee: string
+    msgTypeUrl: string
+  }
 }
 
 const useDefaults: UseDefaults<AuthzData> = () => ({
   custom: false,
-  type_url: '/cosmos.authz.v1beta1.MsgGrant',
+  typeUrl: TYPE_URL_MSG_GRANT,
   value: {
     grantee: '',
-    granter: '',
     msgTypeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
   },
 })
 
-const Component: ActionComponent = (props) => {
-  return (
-    <SuspenseLoader fallback={<ActionCardLoader />}>
-      <StatelessAuthzComponent
-        {...props}
-        options={{
-          AddressInput,
-        }}
-      />
-    </SuspenseLoader>
-  )
-}
+const Component: ActionComponent = (props) => (
+  <StatelessAuthzComponent
+    {...props}
+    options={{
+      AddressInput,
+    }}
+  />
+)
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
-  msg: Record<string, any>
-) =>
-  useMemo(
-    () =>
-      objectMatchesStructure(msg, {
-        stargate: {
-          type_url: {},
-          value: {},
+const isMsgGrantGenericAuthorization = (
+  msg: DecodedStargateMsg
+): msg is DecodedStargateMsg<MsgGrant> =>
+  objectMatchesStructure(msg, {
+    stargate: {
+      typeUrl: {},
+      value: {
+        grant: {
+          authorization: {},
         },
-      }) &&
-      (msg.stargate.type_url === '/cosmos.authz.v1beta1.MsgGrant' ||
-        msg.stargate.type_url === '/cosmos.authz.v1beta1.MsgRevoke')
-        ? {
-            match: true,
-            data: {
-              type_url: msg.stargate.type_url,
-              value: msg.stargate.value,
-            },
-          }
-        : { match: false },
-    [msg]
-  )
+      },
+    },
+  }) &&
+  !!msg.stargate.value.grant &&
+  !!msg.stargate.value.grant.authorization &&
+  (msg.stargate.value as MsgGrant).grant!.authorization!.typeUrl ===
+    TYPE_URL_GENERIC_AUTHORIZATION
 
 export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
   t,
   address,
 }) => {
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
+    msg: Record<string, any>
+  ) =>
+    useMemo(() => {
+      if (
+        !isDecodedStargateMsg(msg) ||
+        (msg.stargate.typeUrl !== TYPE_URL_MSG_GRANT &&
+          msg.stargate.typeUrl !== TYPE_URL_MSG_REVOKE) ||
+        // Make sure this address is the granter.
+        !('granter' in msg.stargate.value) ||
+        msg.stargate.value.granter !== address
+      ) {
+        return { match: false }
+      }
+
+      return msg.stargate.typeUrl === TYPE_URL_MSG_GRANT &&
+        isMsgGrantGenericAuthorization(msg)
+        ? {
+            match: true,
+            data: {
+              custom: false,
+              typeUrl: msg.stargate.typeUrl,
+              value: {
+                msgTypeUrl: decodeRawProtobufMsg(
+                  msg.stargate.value.grant!.authorization!
+                ).value.msg,
+                grantee: msg.stargate.value.grantee,
+              },
+            },
+          }
+        : msg.stargate.typeUrl === TYPE_URL_MSG_REVOKE
+        ? {
+            match: true,
+            data: {
+              custom: false,
+              ...(msg as DecodedStargateMsg<MsgRevoke>).stargate,
+            },
+          }
+        : { match: false }
+    }, [msg])
+
   const useTransformToCosmos: UseTransformToCosmos<AuthzData> = () =>
     useCallback(
-      (data: AuthzData) =>
+      ({ typeUrl, value: { grantee, msgTypeUrl } }: AuthzData) =>
         makeStargateMessage({
           stargate: {
-            type_url: data.type_url,
+            typeUrl,
             value: {
-              ...data.value,
+              ...(typeUrl === TYPE_URL_MSG_GRANT
+                ? {
+                    grant: {
+                      authorization: encodeRawProtobufMsg({
+                        typeUrl: TYPE_URL_GENERIC_AUTHORIZATION,
+                        value: {
+                          msg: msgTypeUrl,
+                        },
+                      }),
+                    },
+                  }
+                : {
+                    msgTypeUrl,
+                  }),
+              grantee,
               granter: address,
             },
           },

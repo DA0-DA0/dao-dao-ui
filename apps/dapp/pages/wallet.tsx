@@ -1,7 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { useWallet } from '@noahsaso/cosmodal'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import { GetStaticProps, NextPage } from 'next'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -13,12 +13,18 @@ import { useRecoilState } from 'recoil'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { walletTransactionAtom } from '@dao-dao/state'
 import {
+  ConnectWallet,
   ProfileDisconnectedCard,
   ProfileHomeCard,
   SuspenseLoader,
 } from '@dao-dao/stateful'
 import { ActionsProvider, useCoreActions } from '@dao-dao/stateful/actions'
-import { Loader, Wallet, WalletProps } from '@dao-dao/stateless'
+import {
+  Loader,
+  Wallet,
+  WalletDisconnected,
+  WalletProps,
+} from '@dao-dao/stateless'
 import { WalletTransactionForm } from '@dao-dao/types'
 import {
   ActionOptionsContextType,
@@ -110,8 +116,8 @@ const InnerWallet = () => {
         toast.success(t('success.transactionExecuted'))
         setTxHash(tx.transactionHash)
       } catch (err) {
+        console.error(err)
         const error = processError(err)
-        console.error(error)
         setError(error)
       } finally {
         setLoading(false)
@@ -139,9 +145,9 @@ const InnerWallet = () => {
 }
 
 const WalletPage: NextPage = () => {
-  const { address: walletAddress = '' } = useWallet()
+  const { address: walletAddress = '', connected, status } = useWallet()
 
-  return (
+  return connected ? (
     <ActionsProvider
       // If walletAddress changes, refresh actions.
       key={walletAddress}
@@ -159,6 +165,15 @@ const WalletPage: NextPage = () => {
         <InnerWallet />
       </SuspenseLoader>
     </ActionsProvider>
+  ) : (
+    <WalletDisconnected
+      autoConnecting={
+        status === WalletConnectionStatus.Initializing ||
+        status === WalletConnectionStatus.AttemptingAutoConnection
+      }
+      connectWalletButton={<ConnectWallet />}
+      rightSidebarContent={<ProfileDisconnectedCard />}
+    />
   )
 }
 

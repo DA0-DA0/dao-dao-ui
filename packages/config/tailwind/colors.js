@@ -1,4 +1,5 @@
 const colors = [
+  /* Constants */
   'color-vanta',
   'color-black',
   'color-dark',
@@ -24,6 +25,8 @@ const colors = [
   'text-interactive-warning-body',
   'text-button-primary',
   'text-button-disabled',
+  'text-component-primary',
+  'text-component-secondary',
 
   /* Icon */
   'icon-primary',
@@ -37,6 +40,7 @@ const colors = [
   'icon-interactive-warning',
   'icon-button-primary',
   'icon-button-disabled',
+  'icon-component-secondary',
 
   /* Border */
   'border-base',
@@ -48,6 +52,7 @@ const colors = [
   'border-interactive-disabled',
   'border-interactive-active',
   'border-interactive-error',
+  'border-component-primary',
 
   /* Background */
   'background-primary',

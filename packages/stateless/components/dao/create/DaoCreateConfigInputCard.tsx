@@ -5,7 +5,7 @@ import { SuspenseLoaderProps } from '@dao-dao/types'
 
 import { InputErrorMessage } from '../../inputs'
 import { Loader } from '../../logo/Loader'
-import { MarkdownPreview } from '../../MarkdownPreview'
+import { MarkdownRenderer } from '../../MarkdownRenderer'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
 
 export interface DaoCreateConfigInputCardProps {
@@ -40,7 +40,7 @@ export const DaoCreateConfigInputCard = ({
       <div className="space-y-3">
         <p className="primary-text text-text-body">{name}</p>
 
-        <MarkdownPreview
+        <MarkdownRenderer
           className="body-text text-text-secondary"
           markdown={description}
         />

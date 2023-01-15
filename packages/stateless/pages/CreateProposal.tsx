@@ -1,8 +1,7 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { matchAdapter } from '@dao-dao/stateful/proposal-module-adapter'
-import { DaoInfo, ProposalModule } from '@dao-dao/types'
+import { DaoInfo, ProposalModule, ProposalModuleAdapter } from '@dao-dao/types'
 import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import { Dropdown, DropdownOption, useAppLayoutContext } from '../components'
@@ -14,6 +13,7 @@ export interface CreateProposalProps {
   setProposalModule: (proposalModule: ProposalModule) => void
   newProposal: ReactNode
   rightSidebarContent: ReactNode
+  matchAdapter: (contractName: string) => ProposalModuleAdapter | undefined
 }
 
 export const CreateProposal = ({
@@ -23,6 +23,7 @@ export const CreateProposal = ({
   setProposalModule,
   newProposal,
   rightSidebarContent,
+  matchAdapter,
 }: CreateProposalProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
@@ -42,7 +43,7 @@ export const CreateProposal = ({
           )
         })
         .filter((item): item is DropdownOption<ProposalModule> => !!item),
-    [daoInfo.proposalModules, t]
+    [daoInfo.proposalModules, matchAdapter, t]
   )
 
   return (

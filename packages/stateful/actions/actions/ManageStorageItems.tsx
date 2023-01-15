@@ -59,8 +59,8 @@ export const makeManageStorageItemsAction: ActionMaker<
 
   // V1 DAOs and V2-alpha DAOs use a value key of `addr`, V2-beta uses `value`.
   const valueKey =
-    context.coreVersion === ContractVersion.V1 ||
-    context.coreVersion === ContractVersion.V2Alpha
+    context.info.coreVersion === ContractVersion.V1 ||
+    context.info.coreVersion === ContractVersion.V2Alpha
       ? 'addr'
       : 'value'
 

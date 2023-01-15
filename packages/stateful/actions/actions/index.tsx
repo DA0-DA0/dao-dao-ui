@@ -5,6 +5,7 @@ import { makeAuthzAuthorizationAction } from './AuthzAuthorization'
 import { makeAuthzExecAction } from './AuthzExec'
 import { makeCustomAction } from './Custom'
 import { makeExecuteAction } from './Execute'
+import { makeGovernanceVoteAction } from './GovernanceVote'
 import { makeInstantiateAction } from './Instantiate'
 import { makeManageCw20Action } from './ManageCw20'
 import { makeManageCw721Action } from './ManageCw721'
@@ -49,6 +50,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeAuthzAuthorizationAction,
     makeAuthzExecAction,
     makeValidatorActions,
+    makeGovernanceVoteAction,
   ]
 
   return actionMakers

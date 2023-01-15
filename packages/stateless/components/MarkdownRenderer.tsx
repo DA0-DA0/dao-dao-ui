@@ -9,18 +9,18 @@ import remarkGfm from 'remark-gfm'
 
 import { IconButton } from './icon_buttons/IconButton'
 
-export interface MarkdownPreviewProps {
+export interface MarkdownRendererProps {
   markdown: string
   // Adds buttons to copy anchor URLs to the clipboard.
   addAnchors?: boolean
   className?: string
 }
 
-export const MarkdownPreview = ({
+export const MarkdownRenderer = ({
   markdown,
   addAnchors,
   className,
-}: MarkdownPreviewProps) => (
+}: MarkdownRendererProps) => (
   <ReactMarkdown
     className={clsx(
       'prose prose-sm overflow-auto break-words dark:prose-invert',

@@ -25,12 +25,12 @@ import { Tooltip } from '../tooltip/Tooltip'
 //
 // Notes:
 //
-// The only token amounts we intentionally don't show with full decimals are
-// USDC conversions (max 2) and ProfileHomeCard's unstaked and staked balances
-// (max 2).
+// The only token amounts we intentionally don't show with full decimals are USD
+// value estimates (i.e. USDC) (max 2) and ProfileHomeCard's unstaked and staked
+// balances (max 2).
 
-// Default maximum decimals to use in a USDC conversion.
-const USDC_CONVERSION_DEFAULT_MAX_DECIMALS = 2
+// Default maximum decimals to use in a USD estimate.
+const USD_ESTIMATE_DEFAULT_MAX_DECIMALS = 2
 // Maximum decimals to use in a large compacted value.
 const LARGE_COMPACT_MAX_DECIMALS = 2
 
@@ -54,18 +54,18 @@ export type TokenAmountDisplayProps = Omit<
   // If present, will add a rounded icon to the left.
   iconUrl?: string
   iconClassName?: string
-} & ( // If not USDC conversion, require symbol and decimals.
+} & ( // If not USD estimate, require symbol and decimals.
     | {
         symbol: string
         // Full decimal precision of the value.
         decimals: number
-        usdcConversion?: false
+        estimatedUsdValue?: false
       }
-    // If USDC conversion, disallow symbol and decimals.
+    // If USD estimate, disallow symbol and decimals since we'll use USDC's.
     | {
         symbol?: never
         decimals?: never
-        usdcConversion: true
+        estimatedUsdValue: true
       }
   )
 
@@ -82,20 +82,22 @@ export const TokenAmountDisplay = ({
   showFullAmount,
   iconUrl,
   iconClassName,
-  symbol: _symbol,
-  usdcConversion,
+  symbol,
+  estimatedUsdValue,
   ...props
 }: TokenAmountDisplayProps) => {
   const { t } = useTranslation()
 
-  const symbol = usdcConversion ? 'USDC' : _symbol
-  const decimals = usdcConversion ? USDC_DECIMALS : _decimals
+  const tokenTranslation = estimatedUsdValue
+    ? 'format.estUsdValue'
+    : 'format.token'
+  const decimals = estimatedUsdValue ? USDC_DECIMALS : _decimals
 
   // If loading, display pulsing ellipses.
   if (typeof _amount !== 'number' && 'loading' in _amount && _amount.loading) {
     return (
       <p {...props} className={clsx('animate-pulse', props.className)}>
-        {t('format.token', {
+        {t(tokenTranslation, {
           amount: '...',
           symbol,
         })}
@@ -117,7 +119,7 @@ export const TokenAmountDisplay = ({
 
   const maxCompactDecimals =
     maxDecimals ??
-    (usdcConversion ? USDC_CONVERSION_DEFAULT_MAX_DECIMALS : decimals)
+    (estimatedUsdValue ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS : decimals)
   const compactOptions: Intl.NumberFormatOptions & {
     roundingPriority: string
   } = {
@@ -170,9 +172,13 @@ export const TokenAmountDisplay = ({
     // When large, the compact notation (e.g. 1.52K or 23.5M) is enough to
     // indicate that there is missing info, and we don't need the explicit
     // approximation indication.
-    !showFullAmount && wasCompacted && !largeNumber && !hideApprox
+    !showFullAmount &&
+      wasCompacted &&
+      !largeNumber &&
+      !hideApprox &&
+      !estimatedUsdValue
       ? 'format.tokenApprox'
-      : 'format.token',
+      : tokenTranslation,
     {
       amount: showFullAmount ? full : compact,
       symbol,
@@ -187,20 +193,25 @@ export const TokenAmountDisplay = ({
     </p>
   )
 
+  // Show full value in tooltip if different from compact and not an
+  // estimated USD value.
+  const shouldShowFullTooltip =
+    !showFullAmount && wasCompacted && !estimatedUsdValue
+
   return (
     <Tooltip
       title={
-        !showFullAmount &&
-        (wasCompacted || dateFetched) && (
+        // Show tooltip with full value and fetch time.
+        shouldShowFullTooltip || dateFetched ? (
           <>
-            {/* Show full in tooltip if different from compact. */}
-            {wasCompacted &&
+            {shouldShowFullTooltip &&
               t('format.token', {
                 amount: full,
                 symbol,
               })}
-            {wasCompacted && dateFetched && <br />}
-            {/* Show date fetched if present. */}
+
+            {shouldShowFullTooltip && dateFetched && <br />}
+
             {dateFetched && (
               <span className="caption-text">
                 {t('info.fetchedAtTime', {
@@ -209,7 +220,7 @@ export const TokenAmountDisplay = ({
               </span>
             )}
           </>
-        )
+        ) : undefined
       }
     >
       {iconUrl ? (

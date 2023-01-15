@@ -24,6 +24,7 @@ import { DepositEmoji, MoneyEmoji } from '../emoji'
 import { IconButton } from '../icon_buttons/IconButton'
 import { CrownIcon } from '../icons/CrownIcon'
 import { ButtonPopup, ButtonPopupSection } from '../popup'
+import { TooltipInfoIcon } from '../tooltip'
 import { Tooltip } from '../tooltip/Tooltip'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 import { UnstakingModal } from './UnstakingModal'
@@ -252,6 +253,7 @@ export const TokenCard = ({
         <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
           <div className="flex flex-row items-start justify-between gap-8">
             <p className="link-text">{t('info.totalHoldings')}</p>
+
             {/* leading-5 to match link-text's line-height. */}
             <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
               {/* leading-5 to match link-text's line-height. */}
@@ -268,21 +270,28 @@ export const TokenCard = ({
 
               {!isJunoIbcUsdc(tokenDenom) &&
                 (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
-                  <TokenAmountDisplay
-                    amount={
-                      // If staking info has not finished loading, don't show
-                      // until it is loaded so this is accurate.
-                      waitingForStakingInfo || lazyInfo.loading
-                        ? { loading: true }
-                        : totalBalance * lazyInfo.data.usdcUnitPrice!.amount
-                    }
-                    dateFetched={
-                      lazyInfo.loading
-                        ? undefined
-                        : lazyInfo.data.usdcUnitPrice!.timestamp
-                    }
-                    usdcConversion
-                  />
+                  <div className="flex flex-row items-center gap-1">
+                    <TokenAmountDisplay
+                      amount={
+                        // If staking info has not finished loading, don't show
+                        // until it is loaded so this is accurate.
+                        waitingForStakingInfo || lazyInfo.loading
+                          ? { loading: true }
+                          : totalBalance * lazyInfo.data.usdcUnitPrice!.amount
+                      }
+                      dateFetched={
+                        lazyInfo.loading
+                          ? undefined
+                          : lazyInfo.data.usdcUnitPrice!.timestamp
+                      }
+                      estimatedUsdValue
+                    />
+
+                    <TooltipInfoIcon
+                      size="xs"
+                      title={t('info.estimatedUsdValueTooltip')}
+                    />
+                  </div>
                 )}
             </div>
           </div>
@@ -300,21 +309,30 @@ export const TokenCard = ({
                   symbol={tokenSymbol}
                 />
 
-                {!isJunoIbcUsdc(tokenDenom) && (
-                  <TokenAmountDisplay
-                    amount={
-                      lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
-                        ? { loading: true }
-                        : unstakedBalance * lazyInfo.data.usdcUnitPrice.amount
-                    }
-                    dateFetched={
-                      lazyInfo.loading || !lazyInfo.data.usdcUnitPrice
-                        ? undefined
-                        : lazyInfo.data.usdcUnitPrice.timestamp
-                    }
-                    usdcConversion
-                  />
-                )}
+                {!isJunoIbcUsdc(tokenDenom) &&
+                  (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                    <div className="flex flex-row items-center gap-1">
+                      <TokenAmountDisplay
+                        amount={
+                          lazyInfo.loading
+                            ? { loading: true }
+                            : unstakedBalance *
+                              lazyInfo.data.usdcUnitPrice!.amount
+                        }
+                        dateFetched={
+                          lazyInfo.loading
+                            ? undefined
+                            : lazyInfo.data.usdcUnitPrice!.timestamp
+                        }
+                        estimatedUsdValue
+                      />
+
+                      <TooltipInfoIcon
+                        size="xs"
+                        title={t('info.estimatedUsdValueTooltip')}
+                      />
+                    </div>
+                  )}
               </div>
             </div>
           )}

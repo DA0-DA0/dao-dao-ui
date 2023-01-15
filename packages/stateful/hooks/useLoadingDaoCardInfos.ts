@@ -2,11 +2,11 @@ import { ChainInfoID } from '@noahsaso/cosmodal'
 import { useEffect } from 'react'
 import { useSetRecoilState, waitForAll } from 'recoil'
 
+import featuredDaos from '@dao-dao/state/featured_daos.json'
 import { featuredDaoDumpStatesAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 
-import featuredDaos from '../../../featured_daos.json'
 import { daoCardInfoSelector } from '../recoil'
 import { usePinnedDaos } from './usePinnedDaos'
 

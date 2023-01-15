@@ -44,7 +44,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
       onRemove={onRemove}
       title={t('title.migrateSmartContract')}
     >
-      <p className="secondary-text mb-4 max-w-prose">
+      <p className="secondary-text max-w-prose">
         <Trans key="form.migrateDescription">
           This will{' '}
           <a
@@ -58,12 +58,13 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
           the selected contract to a new code ID.
         </Trans>
       </p>
+
       <div className="flex flex-col items-stretch gap-2 xs:flex-row">
         <div className="flex grow flex-col gap-1">
           <InputLabel name={t('form.smartContractAddress')} />
           <AddressInput
             disabled={!isCreating}
-            error={errors?.contract_addr}
+            error={errors?.contract}
             fieldName={fieldNamePrefix + 'contract'}
             onChange={(v) => onContractChange(v.target.value)}
             register={register}
@@ -76,7 +77,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
           <NumberInput
             containerClassName="xs:h-full"
             disabled={!isCreating}
-            error={errors?.code_id}
+            error={errors?.codeId}
             fieldName={fieldNamePrefix + 'codeId'}
             register={register}
             sizing="fill"
@@ -85,9 +86,9 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
           <InputErrorMessage error={errors?.codeId} />
         </div>
       </div>
-      <div className="my-2">
-        <IsAdminWarning admin={contractAdmin} maybeAdmin={address} />
-      </div>
+
+      <IsAdminWarning admin={contractAdmin} maybeAdmin={address} />
+
       <div className="flex flex-col gap-1">
         <InputLabel name={t('form.migrateMessage')} />
         <CodeMirrorInput

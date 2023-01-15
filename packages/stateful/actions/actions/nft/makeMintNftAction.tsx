@@ -97,7 +97,7 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
             <UploadNftMetadata {...props} />
           )
         ) : (
-          <div className="flex flex-col gap-4">
+          <>
             <SegmentedControls<boolean>
               onSelect={setCreatingNew}
               selected={creatingNew}
@@ -118,17 +118,13 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
             ) : (
               <ChooseExistingNftCollection {...props} />
             )}
-          </div>
+          </>
         )}
 
-        <InputErrorMessage
-          className="self-end text-right"
-          error={props.errors?.contractChosen}
-        />
-        <InputErrorMessage
-          className="self-end text-right"
-          error={props.errors?.mintMsg?.token_uri}
-        />
+        <div className="flex flex-col items-end gap-2 self-end text-right">
+          <InputErrorMessage error={props.errors?.contractChosen} />
+          <InputErrorMessage error={props.errors?.mintMsg?.token_uri} />
+        </div>
       </SuspenseLoader>
     </ActionCard>
   )

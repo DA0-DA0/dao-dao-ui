@@ -49,7 +49,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         <InputLabel name={t('form.grantOrRevokeAuthz')} />
         <SelectInput
           disabled={!isCreating}
-          fieldName={fieldNamePrefix + 'type_url'}
+          fieldName={fieldNamePrefix + 'typeUrl'}
           register={register}
         >
           <option value="/cosmos.authz.v1beta1.MsgGrant">
@@ -117,11 +117,20 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         </div>
       )}
 
-      <div className="flex grow flex-row items-center justify-between gap-4 rounded-md py-2">
+      {(isCreating || data.custom) && (
         <FormSwitchCard
-          containerClassName="grow mt-2"
+          containerClassName="self-start"
           fieldName={fieldNamePrefix + 'custom'}
           label={t('form.authzUseCustomMessageType')}
+          onToggle={
+            // Set message type URL back to delegate if custom is disabled.
+            (custom) =>
+              !custom &&
+              setValue(
+                fieldNamePrefix + 'value.msgTypeUrl',
+                AuthzExecActionTypes.Delegate
+              )
+          }
           readOnly={!isCreating}
           setValue={setValue}
           sizing="sm"
@@ -129,7 +138,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
           tooltipIconSize="sm"
           value={watch(fieldNamePrefix + 'custom')}
         />
-      </div>
+      )}
     </ActionCard>
   )
 }

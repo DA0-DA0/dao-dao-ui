@@ -1,6 +1,6 @@
 import { Add, Check } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { ComponentType, useState } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -8,15 +8,22 @@ import {
   Path,
   PathValue,
   UseFormRegister,
+  UseFormSetValue,
   UseFormWatch,
   Validate,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { toAccessibleImageUrl } from '@dao-dao/utils'
+import { TransProps } from '@dao-dao/types'
+import {
+  processError,
+  toAccessibleImageUrl,
+  validateUrlWithIpfs,
+} from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import { Modal } from '../modals/Modal'
+import { ImageUploadInput } from './ImageUploadInput'
 import { InputErrorMessage } from './InputErrorMessage'
 import { InputLabel } from './InputLabel'
 import { TextInput } from './TextInput'
@@ -36,10 +43,11 @@ export interface ImageSelectorModalProps<
 > {
   fieldName: StringFieldName
   register: UseFormRegister<FV>
-  validation?: Validate<FieldPathValue<FV, StringFieldName>>[]
   watch: UseFormWatch<FV>
+  setValue: UseFormSetValue<FV>
   error?: FieldError
   onClose: () => void
+  Trans: ComponentType<TransProps>
 }
 
 export const ImageSelectorModal = <
@@ -49,12 +57,15 @@ export const ImageSelectorModal = <
   fieldName,
   register,
   error,
-  validation,
+  setValue,
   watch,
   onClose,
+  Trans,
 }: ImageSelectorModalProps<FV, StringFieldName>) => {
   const { t } = useTranslation()
   const imageUrl = watch(fieldName) ?? ''
+
+  const [uploadError, setUploadError] = useState<string>()
 
   return (
     <Modal
@@ -74,10 +85,10 @@ export const ImageSelectorModal = <
             : {}
         }
       />
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 self-stretch">
         <InputLabel
           mono
-          name={t('form.imageURLTitle')}
+          name={t('form.enterImageUrl')}
           tooltip={t('form.imageURLTooltip')}
         />
         <TextInput
@@ -94,15 +105,30 @@ export const ImageSelectorModal = <
             }
           }}
           register={register}
-          validation={validation}
+          validation={[validateUrlWithIpfs]}
         />
         <InputErrorMessage error={error} />
       </div>
-      <div className="w-full text-right">
-        <Button onClick={onClose} size="sm" type="button">
-          {t('button.done')} <Check className="!h-4 !w-4" />
-        </Button>
+
+      <div className="flex flex-col gap-2 self-stretch">
+        <InputLabel mono name={t('form.orUploadOne')} />
+        <ImageUploadInput
+          Trans={Trans}
+          className="aspect-square max-w-[14rem]"
+          onChange={(url) => {
+            setUploadError(undefined)
+            setValue(fieldName, url as any)
+          }}
+          onError={(error) =>
+            setUploadError(processError(error, { forceCapture: false }))
+          }
+        />
+        <InputErrorMessage error={uploadError} />
       </div>
+
+      <Button className="self-end" onClick={onClose} size="sm" type="button">
+        {t('button.done')} <Check className="!h-4 !w-4" />
+      </Button>
     </Modal>
   )
 }
@@ -115,6 +141,8 @@ export interface ImageSelectorProps<
   register: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, StringFieldName>>[]
   watch: UseFormWatch<FV>
+  setValue: UseFormSetValue<FV>
+  Trans: ComponentType<TransProps>
   disabled?: boolean
   error?: FieldError
   className?: string
@@ -126,13 +154,12 @@ export const ImageSelector = <
   StringFieldName extends StringFieldNames<FV>
 >({
   fieldName,
-  register,
   error,
-  validation,
   watch,
   className,
   disabled,
   size,
+  ...props
 }: ImageSelectorProps<FV, StringFieldName>) => {
   const [showImageSelect, setShowImageSelect] = useState(false)
   const imageUrl = watch(fieldName) ?? ''
@@ -169,9 +196,8 @@ export const ImageSelector = <
           error={error}
           fieldName={fieldName}
           onClose={() => setShowImageSelect(false)}
-          register={register}
-          validation={validation}
           watch={watch}
+          {...props}
         />
       )}
     </>

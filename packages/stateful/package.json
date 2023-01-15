@@ -1,6 +1,7 @@
 {
   "name": "@dao-dao/stateful",
-  "version": "2.0.0",
+  "version": "2.1.0-rc.1",
+  "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "tsc",
     "format": "eslint . --fix",
@@ -13,10 +14,10 @@
     "@cosmjs/encoding": "0.29.3",
     "@cosmjs/proto-signing": "0.29.3",
     "@cosmjs/stargate": "0.29.3",
-    "@dao-dao/i18n": "2.0.0",
-    "@dao-dao/state": "2.0.0",
-    "@dao-dao/stateless": "2.0.0",
-    "@dao-dao/utils": "2.0.0",
+    "@dao-dao/i18n": "^2.1.0-rc.1",
+    "@dao-dao/state": "^2.1.0-rc.1",
+    "@dao-dao/stateless": "^2.1.0-rc.1",
+    "@dao-dao/utils": "^2.1.0-rc.1",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
@@ -29,7 +30,7 @@
     "file-saver": "^2.0.5",
     "fuse.js": "^6.6.2",
     "i18next": "^21.8.10",
-    "interchain-rpc": "^1.5.0",
+    "interchain-rpc": "1.5.0",
     "json2csv": "^5.0.7",
     "json5": "^2.2.0",
     "lodash.clonedeep": "^4.5.0",
@@ -45,9 +46,9 @@
   },
   "devDependencies": {
     "@cosmjs/amino": "0.29.3",
-    "@dao-dao/config": "2.0.0",
-    "@dao-dao/types": "2.0.0",
-    "@noahsaso/cosmodal": "^0.8.1",
+    "@dao-dao/config": "^2.1.0-rc.1",
+    "@dao-dao/types": "^2.1.0-rc.1",
+    "@noahsaso/cosmodal": "^0.8.2",
     "@storybook/react": "^6.5.10",
     "@types/file-saver": "^2.0.5",
     "@types/jest": "^29.1.0",
@@ -63,8 +64,7 @@
     "typescript": "^4.8.3"
   },
   "peerDependencies": {
-    "@dao-dao/storybook": "2.0.0"
+    "@dao-dao/storybook": "2.1.0-rc.1"
   },
-  "prettier": "@dao-dao/config/prettier",
-  "private": true
+  "prettier": "@dao-dao/config/prettier"
 }

@@ -137,7 +137,7 @@ const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => (
           address: info.coreAddress,
           context: {
             type: ActionOptionsContextType.Dao,
-            coreVersion: info.coreVersion,
+            info,
           },
         }}
       >

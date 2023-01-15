@@ -35,4 +35,7 @@ export interface AppLayoutProps {
   rightSidebarProps: Omit<RightSidebarProps, 'setContentRef'>
   walletProfile?: LoadingData<WalletProfile>
   context: Omit<IAppLayoutContext, 'RightSidebarContent' | 'PageHeader'>
+  connect: () => void
+  connected: boolean
+  connectWalletButton: ReactNode
 }
