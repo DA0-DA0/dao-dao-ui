@@ -17,7 +17,7 @@ export const followedDaosSelector = selector<string[]>({
     const pinnedAddresses = get(pinnedAddressesAtom)
     const walletMemberOfDaos = get(walletMemberOfDaosSelector)
 
-    return [...new Set([...pinnedAddresses, ...walletMemberOfDaos])]
+    return Array.from(new Set([...pinnedAddresses, ...walletMemberOfDaos]))
   },
 })
 
