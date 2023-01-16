@@ -16,3 +16,9 @@ export const walletTransactionAtom = atom<WalletTransactionForm>({
   },
   effects: [localStorageEffectJSON],
 })
+
+// Save signed in wallet so its accessible by selectors.
+export const walletAddressAtom = atom<string | undefined>({
+  key: 'walletAddress',
+  default: undefined,
+})

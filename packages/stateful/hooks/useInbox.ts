@@ -6,7 +6,7 @@ import { refreshOpenProposalsAtom } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { UseInboxReturn } from '@dao-dao/types'
 
-import { pinnedDaosWithOpenProposalsSelector } from '../recoil'
+import { followedDaosWithOpenProposalsSelector } from '../recoil'
 
 export const useInbox = (): UseInboxReturn => {
   const { address: walletAddress, status: walletConnectionStatus } = useWallet()
@@ -17,7 +17,7 @@ export const useInbox = (): UseInboxReturn => {
     walletConnectionStatus === WalletConnectionStatus.Initializing ||
       walletConnectionStatus === WalletConnectionStatus.AttemptingAutoConnection
       ? undefined
-      : pinnedDaosWithOpenProposalsSelector({
+      : followedDaosWithOpenProposalsSelector({
           walletAddress,
         })
   )

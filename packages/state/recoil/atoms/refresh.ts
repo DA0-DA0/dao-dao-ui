@@ -82,3 +82,9 @@ export const refreshWalletProposalStatsAtom = atom({
   key: 'refreshWalletProposalStats',
   default: 0,
 })
+
+// Change this to refresh followed DAOs.
+export const refreshFollowedDaosAtom = atom({
+  key: 'refreshFollowedDaos',
+  default: 0,
+})

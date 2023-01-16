@@ -1,16 +1,30 @@
 import { selector, selectorFamily, waitForAll } from 'recoil'
 
-import { openProposalsSelector, pinnedAddressesAtom } from '@dao-dao/state'
+import {
+  openProposalsSelector,
+  pinnedAddressesAtom,
+  walletMemberOfDaosSelector,
+} from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
 import { DaoWithOpenProposals, WithChainId } from '@dao-dao/types'
 
 import { daoDropdownInfoSelector } from './cards'
 import { daoCoreProposalModulesSelector } from './misc'
 
-export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
-  key: 'pinnedDaoDropdownInfo',
+export const followedDaosSelector = selector<string[]>({
+  key: 'followedDaos',
   get: ({ get }) => {
     const pinnedAddresses = get(pinnedAddressesAtom)
+    const walletMemberOfDaos = get(walletMemberOfDaosSelector)
+
+    return [...new Set([...pinnedAddresses, ...walletMemberOfDaos])]
+  },
+})
+
+export const followedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
+  key: 'followedDaoDropdownInfos',
+  get: ({ get }) => {
+    const pinnedAddresses = get(followedDaosSelector)
     return get(
       waitForAll(
         pinnedAddresses.map((coreAddress) =>
@@ -21,10 +35,10 @@ export const pinnedDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
   },
 })
 
-export const pinnedDaosWithProposalModulesSelector = selector({
-  key: 'pinnedDaosWithProposalModules',
+export const followedDaosWithProposalModulesSelector = selector({
+  key: 'followedDaosWithProposalModules',
   get: ({ get }) => {
-    const daoAddresses = get(pinnedAddressesAtom)
+    const daoAddresses = get(followedDaosSelector)
     const proposalModules = get(
       waitForAll(
         daoAddresses.map((coreAddress) =>
@@ -39,21 +53,21 @@ export const pinnedDaosWithProposalModulesSelector = selector({
   },
 })
 
-export const pinnedDaosWithOpenProposalsSelector = selectorFamily<
+export const followedDaosWithOpenProposalsSelector = selectorFamily<
   DaoWithOpenProposals[],
   WithChainId<{ walletAddress?: string }>
 >({
-  key: 'pinnedDaosWithOpenProposals',
+  key: 'followedDaosWithOpenProposals',
   get:
     ({ walletAddress, chainId }) =>
     ({ get }) => {
-      const pinnedDaosWithProposalModules = get(
-        pinnedDaosWithProposalModulesSelector
+      const followedDaosWithProposalModules = get(
+        followedDaosWithProposalModulesSelector
       )
 
       const openProposalsPerDao = get(
         waitForAll(
-          pinnedDaosWithProposalModules.map(({ coreAddress }) =>
+          followedDaosWithProposalModules.map(({ coreAddress }) =>
             openProposalsSelector({
               coreAddress,
               address: walletAddress,
@@ -63,7 +77,7 @@ export const pinnedDaosWithOpenProposalsSelector = selectorFamily<
         )
       )
 
-      return pinnedDaosWithProposalModules.map(
+      return followedDaosWithProposalModules.map(
         ({ coreAddress, proposalModules }, index): DaoWithOpenProposals => {
           const proposalModulesWithOpenProposals = openProposalsPerDao[index]
 

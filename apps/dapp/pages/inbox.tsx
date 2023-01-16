@@ -15,7 +15,7 @@ import {
   ProposalLine,
   ProposalLineProps,
   SuspenseLoader,
-  pinnedDaoDropdownInfosSelector,
+  followedDaoDropdownInfosSelector,
 } from '@dao-dao/stateful'
 import {
   DaoWithProposals,
@@ -27,7 +27,9 @@ import { CHAIN_ID, SITE_URL } from '@dao-dao/utils'
 
 const InnerInbox = () => {
   const { connected } = useWallet()
-  const pinnedDaoDropdownInfos = useRecoilValue(pinnedDaoDropdownInfosSelector)
+  const followedDaoDropdownInfos = useRecoilValue(
+    followedDaoDropdownInfosSelector
+  )
 
   const {
     inbox: { loading, refetching, refetch, daosWithOpenProposals },
@@ -40,7 +42,7 @@ const InnerInbox = () => {
         proposalModules,
         openProposals,
       }): DaoWithProposals<ProposalLineProps> | undefined => {
-        const daoDropdownInfo = pinnedDaoDropdownInfos.find(
+        const daoDropdownInfo = followedDaoDropdownInfos.find(
           (dao) => dao.coreAddress === coreAddress
         )
         if (!daoDropdownInfo || !openProposals) {

@@ -36,7 +36,7 @@ import { CommandModal, makeGenericContext } from '../command'
 import { useInbox, usePinnedDaos, useWalletInfo } from '../hooks'
 import {
   daoCreatedCardPropsAtom,
-  pinnedDaoDropdownInfosSelector,
+  followedDaoDropdownInfosSelector,
 } from '../recoil'
 import { ConnectWallet } from './ConnectWallet'
 import { IconButtonLink } from './IconButtonLink'
@@ -197,18 +197,18 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
   ])
 
   //! Pinned DAOs
-  const pinnedDaoDropdownInfosLoadable = useCachedLoadable(
-    pinnedDaoDropdownInfosSelector
+  const followedDaoDropdownInfosLoadable = useCachedLoadable(
+    followedDaoDropdownInfosSelector
   )
 
   //! Loadable errors.
   useEffect(() => {
-    if (pinnedDaoDropdownInfosLoadable.state === 'hasError') {
-      console.error(pinnedDaoDropdownInfosLoadable.contents)
+    if (followedDaoDropdownInfosLoadable.state === 'hasError') {
+      console.error(followedDaoDropdownInfosLoadable.contents)
     }
   }, [
-    pinnedDaoDropdownInfosLoadable.contents,
-    pinnedDaoDropdownInfosLoadable.state,
+    followedDaoDropdownInfosLoadable.contents,
+    followedDaoDropdownInfosLoadable.state,
   ])
 
   return (
@@ -291,7 +291,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
           setCommandModalVisible: () => setCommandModalVisible(true),
           version: '2.0',
           pinnedDaos: mountedInBrowser
-            ? loadableToLoadingData(pinnedDaoDropdownInfosLoadable, [])
+            ? loadableToLoadingData(followedDaoDropdownInfosLoadable, [])
             : // Prevent hydration errors by loading until mounted.
               { loading: true },
           compact,

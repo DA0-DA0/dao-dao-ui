@@ -1,4 +1,4 @@
-import { atom, selectorFamily } from 'recoil'
+import { atom, selector, selectorFamily } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
 import { DumpStateResponse } from '@dao-dao/types/contracts/DaoCore.v2'
@@ -10,8 +10,10 @@ import {
   searchDaos,
 } from '../../indexer'
 import {
+  refreshFollowedDaosAtom,
   refreshOpenProposalsAtom,
   refreshWalletProposalStatsAtom,
+  walletAddressAtom,
 } from '../atoms'
 
 export const queryContractIndexerSelector = selectorFamily<
@@ -157,4 +159,29 @@ export const featuredDaoDumpStatesAtom = atom<
 >({
   key: 'featuredDaoDumpStates',
   default: null,
+})
+
+export const walletMemberOfDaosSelector = selector<string[]>({
+  key: 'walletMemberOfDaos',
+  get: ({ get }) => {
+    const walletAddress = get(walletAddressAtom)
+    if (!walletAddress) {
+      return []
+    }
+
+    const refreshFollowedDaos = get(refreshFollowedDaosAtom)
+
+    // TODO(multichain): Query all chain indexers.
+    let walletMemberOfDaos: string[] = get(
+      queryWalletIndexerSelector({
+        walletAddress,
+        formulaName: 'daos/memberOf',
+        id: refreshFollowedDaos,
+      })
+    )
+
+    return walletMemberOfDaos && Array.isArray(walletMemberOfDaos)
+      ? walletMemberOfDaos
+      : []
+  },
 })
