@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileDisplay } from '@dao-dao/stateful/components/ProfileDisplay'
+import { EntityDisplay } from '@dao-dao/stateful/components/EntityDisplay'
 
 import {
   DaoCreateVotingPowerDistributionReviewCard,
@@ -23,7 +23,7 @@ const Template: ComponentStory<
 
 export const Default = Template.bind({})
 Default.args = {
-  ProfileDisplay,
+  EntityDisplay,
   pieData: [
     {
       value: 15,

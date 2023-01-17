@@ -15,7 +15,7 @@ import {
 } from 'react-hook-form'
 
 import { ProfileSearchHit } from '../profile'
-import { StatefulProfileDisplayProps } from './ProfileDisplay'
+import { StatefulEntityDisplayProps } from './EntityDisplay'
 
 export interface AddressInputProps<
   FV extends FieldValues = FieldValues,
@@ -32,7 +32,7 @@ export interface AddressInputProps<
   required?: boolean
   containerClassName?: string
   type?: 'wallet' | 'contract'
-  ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
+  EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
   autofillProfiles?: {
     hits: ProfileSearchHit[]
     loading: boolean

@@ -37,12 +37,6 @@ export interface KeplrWalletProfile {
       }
 }
 
-export interface Profile {
-  address: string
-  name: string | null
-  imageUrl: string
-}
-
 export interface ProfileSearchHit {
   publicKey: string
   address: string

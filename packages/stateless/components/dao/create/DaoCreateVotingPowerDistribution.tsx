@@ -11,7 +11,7 @@ import { ComponentType } from 'react'
 import { Bar, Pie } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 
-import { StatefulProfileDisplayProps } from '@dao-dao/types'
+import { StatefulEntityDisplayProps } from '@dao-dao/types'
 
 import { useNamedThemeColor } from '../../../theme'
 
@@ -57,14 +57,14 @@ export interface DaoCreateVotingPowerDistributionReviewCardProps {
   pieData: ChartDataEntry[]
   tierData: TierDataEntry[]
   distributionPrefix?: string
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
 export const DaoCreateVotingPowerDistributionReviewCard = ({
   pieData,
   tierData,
   distributionPrefix,
-  ProfileDisplay,
+  EntityDisplay,
 }: DaoCreateVotingPowerDistributionReviewCardProps) => {
   const { t } = useTranslation()
 
@@ -117,7 +117,7 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
                       style={{ backgroundColor: color }}
                     ></div>
                   )}
-                  <ProfileDisplay address={address} />
+                  <EntityDisplay address={address} />
                 </div>
 
                 <p className="caption-text text-right font-mono text-text-tertiary">

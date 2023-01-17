@@ -1,6 +1,6 @@
 import { ComponentType } from 'react'
 
-import { StatefulProfileDisplayProps } from './ProfileDisplay'
+import { StatefulEntityDisplayProps } from './EntityDisplay'
 
 export interface TokenSwapStatusProps {
   selfParty: {
@@ -20,6 +20,6 @@ export interface TokenSwapStatusProps {
     provided: boolean
   }
 
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   className?: string
 }

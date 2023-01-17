@@ -4,15 +4,15 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { AddressInputProps } from '@dao-dao/types'
+import { AddressInputProps, EntityType } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
   isValidAddress,
 } from '@dao-dao/utils'
 
+import { EntityDisplay as StatelessEntityDisplay } from '../EntityDisplay'
 import { Loader } from '../logo/Loader'
-import { ProfileDisplay as StatelessProfileDisplay } from '../profile/ProfileDisplay'
 
 export const AddressInput = <
   FV extends FieldValues,
@@ -30,7 +30,7 @@ export const AddressInput = <
   className,
   containerClassName,
   type = 'wallet',
-  ProfileDisplay,
+  EntityDisplay,
   autofillProfiles,
   placeholder,
   ...rest
@@ -50,7 +50,7 @@ export const AddressInput = <
   const formValue = watch?.(fieldName)
 
   const showProfile =
-    ProfileDisplay &&
+    EntityDisplay &&
     !!formValue &&
     isValidAddress(formValue, CHAIN_BECH32_PREFIX)
 
@@ -200,7 +200,7 @@ export const AddressInput = <
       )}
       {showProfile && (
         <div className={clsx(disabled || 'pl-4')}>
-          <ProfileDisplay address={formValue} />
+          <EntityDisplay address={formValue} />
         </div>
       )}
 
@@ -224,7 +224,7 @@ export const AddressInput = <
                 )}
                 onClick={() => selectAutofillProfile(index)}
               >
-                <StatelessProfileDisplay
+                <StatelessEntityDisplay
                   key={hit.publicKey}
                   address={hit.address}
                   className="!gap-3"
@@ -232,9 +232,10 @@ export const AddressInput = <
                     textClassName: 'no-underline',
                     tooltip: hit.address,
                   }}
-                  loadingProfile={{
+                  loadingEntity={{
                     loading: false,
                     data: {
+                      type: EntityType.Wallet,
                       address: hit.address,
                       name: hit.profile.name,
                       imageUrl:

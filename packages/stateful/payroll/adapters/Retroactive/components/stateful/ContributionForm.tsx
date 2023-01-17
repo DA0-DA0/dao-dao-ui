@@ -5,14 +5,14 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import {
+  EntityDisplay,
   Loader,
-  ProfileDisplay,
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
 import { SuspenseLoader } from '../../../../../components'
-import { useProfile } from '../../../../../hooks'
+import { useEntity } from '../../../../../hooks'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
@@ -23,7 +23,7 @@ export const ContributionForm = () => {
   const { coreAddress, chainId } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet(chainId)
-  const walletProfile = useProfile({
+  const walletProfile = useEntity({
     address: walletAddress,
     walletHexPublicKey: walletPublicKey?.hex,
     chainId,
@@ -76,15 +76,15 @@ export const ContributionForm = () => {
         !!statusLoadable.contents &&
         !walletProfile.loading && (
           <StatelessContributionForm
-            ProfileDisplay={() => (
-              <ProfileDisplay
+            EntityDisplay={() => (
+              <EntityDisplay
                 address={walletAddress}
-                loadingProfile={walletProfile}
+                loadingEntity={walletProfile}
               />
             )}
             loading={loading || statusLoadable.updating}
             onSubmit={onSubmit}
-            profile={walletProfile.data}
+            entity={walletProfile.data}
             status={statusLoadable.contents}
           />
         )}

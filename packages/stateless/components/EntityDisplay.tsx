@@ -1,16 +1,18 @@
 /* eslint-disable i18next/no-literal-string */
+import { ArrowOutwardRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { ProfileDisplayProps } from '@dao-dao/types'
+import { EntityDisplayProps, EntityType } from '@dao-dao/types'
 import { getFallbackImage, toAccessibleImageUrl } from '@dao-dao/utils'
 
-import { CopyToClipboardUnderline } from '../CopyToClipboard'
-import { Tooltip } from '../tooltip/Tooltip'
+import { CopyToClipboardUnderline } from './CopyToClipboard'
+import { IconButtonLink } from './icon_buttons'
+import { Tooltip } from './tooltip/Tooltip'
 
-export const ProfileDisplay = ({
+export const EntityDisplay = ({
   address,
-  loadingProfile,
+  loadingEntity,
   imageSize,
   hideImage,
   copyToClipboardProps,
@@ -18,7 +20,7 @@ export const ProfileDisplay = ({
   className,
   noImageTooltip,
   noCopy,
-}: ProfileDisplayProps) => {
+}: EntityDisplayProps) => {
   const { t } = useTranslation()
 
   imageSize ??= size === 'lg' ? 28 : 20
@@ -30,8 +32,8 @@ export const ProfileDisplay = ({
           title={
             noImageTooltip
               ? undefined
-              : !loadingProfile.loading && loadingProfile.data.name
-              ? loadingProfile.data.name
+              : !loadingEntity.loading && loadingEntity.data.name
+              ? loadingEntity.data.name
               : address
           }
         >
@@ -39,9 +41,9 @@ export const ProfileDisplay = ({
             className="shrink-0 rounded-full bg-cover bg-center"
             style={{
               backgroundImage: `url(${
-                loadingProfile.loading
+                loadingEntity.loading
                   ? getFallbackImage(address)
-                  : toAccessibleImageUrl(loadingProfile.data.imageUrl)
+                  : toAccessibleImageUrl(loadingEntity.data.imageUrl)
               })`,
               width: imageSize,
               height: imageSize,
@@ -58,7 +60,7 @@ export const ProfileDisplay = ({
         }}
         tooltip={
           // If displaying name, show tooltip to copy address.
-          !loadingProfile.loading && loadingProfile.data.name
+          !loadingEntity.loading && loadingEntity.data.name
             ? t('button.clickToCopyAddress')
             : undefined
         }
@@ -73,16 +75,26 @@ export const ProfileDisplay = ({
           ),
         }}
         className={clsx(
-          loadingProfile.loading && 'animate-pulse',
+          loadingEntity.loading && 'animate-pulse',
           copyToClipboardProps?.className
         )}
-        label={
-          (!loadingProfile.loading && loadingProfile.data.name) || undefined
-        }
+        label={(!loadingEntity.loading && loadingEntity.data.name) || undefined}
         // If name exists, use that. Otherwise, will fall back to truncated
         // address display.
         value={address}
       />
+
+      {/* If entity is a DAO, add link to page. */}
+      {!loadingEntity.loading && loadingEntity.data.type === EntityType.Dao && (
+        <IconButtonLink
+          Icon={ArrowOutwardRounded}
+          href={`/dao/${address}`}
+          iconClassName="text-icon-tertiary"
+          openInNewTab
+          size="xs"
+          variant="ghost"
+        />
+      )}
     </div>
   )
 }
