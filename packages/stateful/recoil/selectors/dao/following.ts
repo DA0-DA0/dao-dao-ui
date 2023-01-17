@@ -1,5 +1,4 @@
-import uniq from 'lodash.uniq'
-import { atom, selector, selectorFamily, waitForAll } from 'recoil'
+import { selector, selectorFamily, waitForAll } from 'recoil'
 
 import {
   openProposalsSelector,
@@ -13,17 +12,6 @@ import { CHAIN_ID, FOLLOWING_DAOS_API_BASE } from '@dao-dao/utils'
 import { daoDropdownInfoSelector } from './cards'
 import { daoCoreProposalModulesSelector } from './misc'
 
-// Following API doesn't update right away, so this serves to keep track of all
-// updates for the current session. This will be reset on page refresh. Eagerly
-// update this so the UI reflects the change, and unset on failure.
-export const temporaryFollowingDaosAtom = atom<{
-  following: string[]
-  unfollowing: string[]
-}>({
-  key: 'temporaryFollowingDaos',
-  default: { following: [], unfollowing: [] },
-})
-
 export const followingDaosSelector = selectorFamily<
   { following: string[]; pending: string[] },
   WithChainId<{}>
@@ -34,28 +22,13 @@ export const followingDaosSelector = selectorFamily<
     async ({ get }) => {
       get(refreshFollowingDaosAtom)
 
-      const temporary = get(temporaryFollowingDaosAtom)
-      console.log(temporary)
-
       const walletAddress = get(walletAddressAtom)
       const response = await fetch(
         FOLLOWING_DAOS_API_BASE + `/following/${chainId}/${walletAddress}`
       )
 
       if (response.ok) {
-        const { following, pending } = (await response.json()) as {
-          following: string[]
-          pending: string[]
-        }
-
-        return {
-          following: uniq(
-            [...following, ...temporary.following].filter(
-              (address) => !temporary.unfollowing.includes(address)
-            )
-          ),
-          pending,
-        }
+        return await response.json()
       } else {
         throw new Error(
           `Failed to fetch following daos: ${response.status}/${

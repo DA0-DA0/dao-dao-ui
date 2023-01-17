@@ -12,10 +12,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import {
-  followingDaosSelector,
-  temporaryFollowingDaosAtom,
-} from '../recoil/selectors/dao/following'
+import { followingDaosSelector } from '../recoil/selectors/dao/following'
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 
 export type UseFollowingDaosReturn = {
@@ -31,10 +28,6 @@ export type UseFollowingDaosReturn = {
 }
 
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
-  // Following API doesn't update right away, so just keep track of all updates
-  // for the current session. This will be reset on page refresh. Eagerly update
-  // this so the UI reflects the change, and unset on failure.
-  const setTemporary = useSetRecoilState(temporaryFollowingDaosAtom)
   const followingDaosLoadable = loadableToLoadingData(
     useCachedLoadable(followingDaosSelector({})),
     { following: [], pending: [] }
@@ -66,12 +59,6 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       }
 
       setUpdating(true)
-      setTemporary((prev) => ({
-        following: [...prev.following, coreAddress],
-        unfollowing: prev.unfollowing.filter(
-          (address) => address !== coreAddress
-        ),
-      }))
 
       try {
         await postRequest(`/follow/${CHAIN_ID}/${coreAddress}`)
@@ -79,19 +66,11 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
-
-        // Remove from temporary following since it failed.
-        setTemporary((prev) => ({
-          ...prev,
-          following: prev.following.filter(
-            (address) => address !== coreAddress
-          ),
-        }))
       } finally {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, setTemporary, updating]
+    [postRequest, ready, refreshFollowing, updating]
   )
 
   const setUnfollowing = useCallback(
@@ -101,10 +80,6 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       }
 
       setUpdating(true)
-      setTemporary((prev) => ({
-        following: prev.following.filter((address) => address !== coreAddress),
-        unfollowing: [...prev.unfollowing, coreAddress],
-      }))
 
       try {
         await postRequest(`/unfollow/${CHAIN_ID}/${coreAddress}`)
@@ -112,19 +87,11 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
-
-        // Remove from temporary unfollowing since it failed.
-        setTemporary((prev) => ({
-          ...prev,
-          unfollowing: prev.unfollowing.filter(
-            (address) => address !== coreAddress
-          ),
-        }))
       } finally {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, setTemporary, updating]
+    [postRequest, ready, refreshFollowing, updating]
   )
 
   return {
