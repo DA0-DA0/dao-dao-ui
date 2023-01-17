@@ -33,10 +33,10 @@ import { CommandModalContextMaker } from '@dao-dao/types'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import { CommandModal, makeGenericContext } from '../command'
-import { useInbox, usePinnedDaos, useWalletInfo } from '../hooks'
+import { useFollowingDaos, useInbox, useWalletInfo } from '../hooks'
 import {
   daoCreatedCardPropsAtom,
-  followedDaoDropdownInfosSelector,
+  followingDaoDropdownInfosSelector,
 } from '../recoil'
 import { ConnectWallet } from './ConnectWallet'
 import { IconButtonLink } from './IconButtonLink'
@@ -61,7 +61,8 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
   const [compact, setCompact] = useRecoilState(navigationCompactAtom)
   // DAO creation modal that persists when navigating from create page to DAO
   // page.
-  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
+  const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
+    useFollowingDaos()
   const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
     daoCreatedCardPropsAtom
   )
@@ -196,19 +197,19 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
     walletAddress,
   ])
 
-  //! Pinned DAOs
-  const followedDaoDropdownInfosLoadable = useCachedLoadable(
-    followedDaoDropdownInfosSelector
+  //! Following DAOs
+  const followingDaoDropdownInfosLoadable = useCachedLoadable(
+    followingDaoDropdownInfosSelector
   )
 
   //! Loadable errors.
   useEffect(() => {
-    if (followedDaoDropdownInfosLoadable.state === 'hasError') {
-      console.error(followedDaoDropdownInfosLoadable.contents)
+    if (followingDaoDropdownInfosLoadable.state === 'hasError') {
+      console.error(followingDaoDropdownInfosLoadable.contents)
     }
   }, [
-    followedDaoDropdownInfosLoadable.contents,
-    followedDaoDropdownInfosLoadable.state,
+    followingDaoDropdownInfosLoadable.contents,
+    followingDaoDropdownInfosLoadable.state,
   ])
 
   return (
@@ -243,11 +244,14 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
           itemProps={{
             ...daoCreatedCardProps,
 
-            pinned: isPinned(daoCreatedCardProps.coreAddress),
-            onPin: () =>
-              isPinned(daoCreatedCardProps.coreAddress)
-                ? setUnpinned(daoCreatedCardProps.coreAddress)
-                : setPinned(daoCreatedCardProps.coreAddress),
+            follow: {
+              following: isFollowing(daoCreatedCardProps.coreAddress),
+              updatingFollowing,
+              onFollow: () =>
+                isFollowing(daoCreatedCardProps.coreAddress)
+                  ? setUnfollowing(daoCreatedCardProps.coreAddress)
+                  : setFollowing(daoCreatedCardProps.coreAddress),
+            },
             LinkWrapper,
             IconButtonLink,
           }}
@@ -290,8 +294,8 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
                 },
           setCommandModalVisible: () => setCommandModalVisible(true),
           version: '2.0',
-          pinnedDaos: mountedInBrowser
-            ? loadableToLoadingData(followedDaoDropdownInfosLoadable, [])
+          followingDaos: mountedInBrowser
+            ? loadableToLoadingData(followingDaoDropdownInfosLoadable, [])
             : // Prevent hydration errors by loading until mounted.
               { loading: true },
           compact,

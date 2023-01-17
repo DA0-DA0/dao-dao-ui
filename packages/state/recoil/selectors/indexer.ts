@@ -10,7 +10,6 @@ import {
   searchDaos,
 } from '../../indexer'
 import {
-  refreshFollowedDaosAtom,
   refreshOpenProposalsAtom,
   refreshWalletProposalStatsAtom,
   walletAddressAtom,
@@ -169,14 +168,10 @@ export const walletMemberOfDaosSelector = selector<string[]>({
       return []
     }
 
-    const refreshFollowedDaos = get(refreshFollowedDaosAtom)
-
-    // TODO(multichain): Query all chain indexers.
-    let walletMemberOfDaos: string[] = get(
+    const walletMemberOfDaos: string[] = get(
       queryWalletIndexerSelector({
         walletAddress,
         formulaName: 'daos/memberOf',
-        id: refreshFollowedDaos,
       })
     )
 

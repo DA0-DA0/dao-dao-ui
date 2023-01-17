@@ -7,7 +7,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   refreshDaoVotingPowerAtom,
-  refreshFollowedDaosAtom,
+  refreshFollowingDaosAtom,
   stakingLoadingAtom,
 } from '@dao-dao/state'
 import {
@@ -93,7 +93,7 @@ const InnerStakingModal = ({
   const setRefreshDaoVotingPower = useSetRecoilState(
     refreshDaoVotingPowerAtom(coreAddress)
   )
-  const setRefreshFollowedDaos = useSetRecoilState(refreshFollowedDaosAtom)
+  const setRefreshFollowedDaos = useSetRecoilState(refreshFollowingDaosAtom)
   const refreshDaoVotingPower = () => {
     setRefreshDaoVotingPower((id) => id + 1)
     setRefreshFollowedDaos((id) => id + 1)

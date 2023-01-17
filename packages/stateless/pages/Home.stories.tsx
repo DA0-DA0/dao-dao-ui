@@ -33,21 +33,27 @@ Connected.args = {
         {...props}
         IconButtonLink={IconButtonLink}
         LinkWrapper={LinkWrapper}
-        onPin={() => alert('pin ' + props.coreAddress)}
-        pinned={false}
+        follow={{
+          following: true,
+          updatingFollowing: false,
+          onFollow: () => alert('follow ' + props.coreAddress),
+        }}
       />
     ),
   },
   connected: true,
-  pinnedDaosProps: {
-    pinnedDaos: FeaturedDaosStory.args!.featuredDaos!,
+  followingDaosProps: {
+    followingDaos: FeaturedDaosStory.args!.featuredDaos!,
     DaoCard: (props) => (
       <DaoCard
         {...props}
         IconButtonLink={IconButtonLink}
         LinkWrapper={LinkWrapper}
-        onPin={() => alert('pin ' + props.coreAddress)}
-        pinned={false}
+        follow={{
+          following: true,
+          updatingFollowing: false,
+          onFollow: () => alert('follow ' + props.coreAddress),
+        }}
       />
     ),
     openSearch: () => alert('search'),
@@ -77,8 +83,11 @@ Disconnected.args = {
         {...props}
         IconButtonLink={IconButtonLink}
         LinkWrapper={LinkWrapper}
-        onPin={() => alert('pin ' + props.coreAddress)}
-        pinned={false}
+        follow={{
+          following: true,
+          updatingFollowing: false,
+          onFollow: () => alert('follow ' + props.coreAddress),
+        }}
       />
     ),
   },

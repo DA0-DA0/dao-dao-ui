@@ -10,7 +10,7 @@ import { DaoCard, DaoCardProps } from '../DaoCard'
 
 export type DaoCreatedModalProps = Omit<
   ItemCreatedModalProps<DaoCardProps>,
-  'Item' | 'header' | 'url'
+  'Item' | 'header' | 'url' | ''
 > & {
   subDao: boolean
 }

@@ -5,14 +5,14 @@ import { useTranslation } from 'react-i18next'
 import {
   FeaturedDaos,
   FeaturedDaosProps,
-  PinnedDaos,
-  PinnedDaosProps,
+  FollowingDaos,
+  FollowingDaosProps,
   useAppLayoutContext,
 } from '../components'
 
 export type HomeProps = {
   featuredDaosProps: FeaturedDaosProps
-  pinnedDaosProps: PinnedDaosProps
+  followingDaosProps: FollowingDaosProps
   rightSidebarContent: ReactNode
   connected: boolean
 }
@@ -72,9 +72,9 @@ export const Home = ({
         {/* Divider */}
         <div className={clsx('h-[1px] bg-border-secondary', maxWidth)}></div>
 
-        {/* Pinned DAOs */}
+        {/* Following DAOs */}
         <div className={clsx('flex flex-col gap-8', maxWidth)}>
-          <PinnedDaos {...props.pinnedDaosProps} />
+          <FollowingDaos {...props.followingDaosProps} />
         </div>
       </div>
     </>

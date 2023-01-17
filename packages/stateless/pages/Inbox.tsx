@@ -1,5 +1,5 @@
 import {
-  PushPinOutlined,
+  DoneOutlineRounded,
   Refresh,
   WhereToVoteOutlined,
 } from '@mui/icons-material'
@@ -96,7 +96,10 @@ export const Inbox = <T extends {}>({
         {daosWithProposals.loading ? (
           <Loader fill={false} />
         ) : daosWithProposals?.data?.length === 0 ? (
-          <NoContent Icon={PushPinOutlined} body={t('info.noFollowedDaos')} />
+          <NoContent
+            Icon={DoneOutlineRounded}
+            body={t('info.noFollowedDaos')}
+          />
         ) : numOpenProposals === 0 ? (
           <NoContent
             Icon={WhereToVoteOutlined}

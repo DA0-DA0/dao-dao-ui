@@ -41,14 +41,15 @@ export default {
 } as ComponentMeta<typeof DaoHome>
 
 const Template: ComponentStory<typeof DaoHome> = (args) => {
-  const [pinned, setPinned] = useState(false)
+  const [following, setFollowing] = useState(false)
 
   return (
     <DaoHome
       {...args}
       daoInfo={useDaoInfoContext()}
-      onPin={() => setPinned((p) => !p)}
-      pinned={pinned}
+      following={following}
+      onFollow={() => setFollowing((p) => !p)}
+      updatingFollowing={false}
     />
   )
 }

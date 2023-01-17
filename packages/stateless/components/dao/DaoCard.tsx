@@ -1,8 +1,8 @@
 import {
   AccountBalanceOutlined,
-  Check,
+  CheckRounded,
   DescriptionOutlined,
-  PushPin,
+  PersonRounded,
   ShortcutOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
@@ -27,8 +27,6 @@ export const DaoCard = ({
   description,
   imageUrl,
   established,
-  pinned,
-  onPin,
   parentDao,
   tokenSymbol,
   showingEstimatedUsdValue,
@@ -38,9 +36,9 @@ export const DaoCard = ({
   className,
   onMouseOver,
   onMouseLeave,
-  hidePin,
   LinkWrapper,
   IconButtonLink,
+  follow,
 }: DaoCardProps) => {
   const { t } = useTranslation()
 
@@ -86,21 +84,24 @@ export const DaoCard = ({
         <div className="flex flex-row items-center gap-3">
           {showIsMember && !lazyData.loading && lazyData.data.isMember && (
             <Tooltip title={t('info.youAreMember')}>
-              <Check className="!h-4 !w-4 text-icon-secondary" />
+              <PersonRounded className="!h-4 !w-4 text-icon-secondary" />
             </Tooltip>
           )}
 
-          {!hidePin && (
+          {!follow.hide && (
             <IconButton
-              Icon={PushPin}
-              className={clsx({
-                'text-icon-secondary': !pinned,
-                'text-icon-interactive-active': pinned,
-              })}
+              Icon={CheckRounded}
+              className={
+                follow.following
+                  ? 'text-icon-interactive-active'
+                  : 'text-icon-secondary'
+              }
+              disabled={follow.updatingFollowing}
               onClick={(event) => {
                 // Don't click on DAO card.
                 event.preventDefault()
-                onPin()
+                event.stopPropagation()
+                follow.onFollow()
               }}
               size="sm"
               variant="ghost"

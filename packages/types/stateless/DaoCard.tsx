@@ -31,11 +31,16 @@ export interface DaoCardInfo {
 }
 
 export interface DaoCardProps extends DaoCardInfo {
-  pinned: boolean
-  onPin: () => void
-  hidePin?: boolean
   onMouseOver?: () => void
   onMouseLeave?: () => void
   LinkWrapper: ComponentType<LinkWrapperProps>
   IconButtonLink: ComponentType<IconButtonLinkProps>
+  follow:
+    | { hide: true }
+    | {
+        hide?: false
+        following: boolean
+        updatingFollowing: boolean
+        onFollow: () => void
+      }
 }

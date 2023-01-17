@@ -142,3 +142,7 @@ export const DISCORD_NOTIFIER_REDIRECT_URI = process.env
 export const DISCORD_NOTIFIER_API_BASE = process.env
   .NEXT_PUBLIC_DISCORD_NOTIFIER_API_BASE as string
 export const DISCORD_NOTIFIER_SIGNATURE_TYPE = 'Discord Notifier'
+
+// Following API
+export const FOLLOWING_DAOS_API_BASE = process.env
+  .NEXT_PUBLIC_FOLLOWING_DAOS_API_BASE as string

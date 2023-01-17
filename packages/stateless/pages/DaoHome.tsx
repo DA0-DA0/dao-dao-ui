@@ -17,8 +17,9 @@ import {
 
 export interface DaoHomeProps {
   daoInfo: DaoInfo
-  pinned: boolean
-  onPin: () => void
+  following: boolean
+  updatingFollowing: boolean
+  onFollow: () => void
   onConfigure: () => void
   daoInfoBar: ReactNode
   // Tabs
@@ -34,8 +35,9 @@ export interface DaoHomeProps {
 
 export const DaoHome = ({
   daoInfo,
-  pinned,
-  onPin,
+  following,
+  updatingFollowing,
+  onFollow,
   onConfigure,
   daoInfoBar,
   proposalsTab,
@@ -100,7 +102,11 @@ export const DaoHome = ({
         gradient
         rightNode={
           <div className="flex flex-row items-stretch gap-2">
-            <FollowingToggle following={pinned} onToggle={onPin} />
+            <FollowingToggle
+              following={following}
+              onToggle={onFollow}
+              updating={updatingFollowing}
+            />
             <IconButton
               Icon={DiscordIcon}
               iconClassName="!w-5 !h-5"

@@ -22,8 +22,8 @@ import {
   SuspenseLoader,
   TreasuryAndNftsTab,
   useEncodedDaoProposalSinglePrefill,
+  useFollowingDaos,
   useMembership,
-  usePinnedDaos,
   useWalletInfo,
 } from '@dao-dao/stateful'
 import { useCoreActionForKey } from '@dao-dao/stateful/actions'
@@ -182,8 +182,9 @@ const InnerDaoHome = () => {
           0
         )
 
-  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
-  const pinned = isPinned(daoInfo.coreAddress)
+  const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
+    useFollowingDaos()
+  const following = isFollowing(daoInfo.coreAddress)
 
   // Get payroll tab component, if exists.
   const PayrollTab = usePayrollAdapter()?.PayrollTab
@@ -197,15 +198,15 @@ const InnerDaoHome = () => {
         SuspenseLoader={SuspenseLoader}
         daoInfo={daoInfo}
         daoInfoBar={<DaoInfoBar />}
+        following={following}
         membersTab={MembersTab && <MembersTab />}
         onConfigure={() => setShowConfigureModal(true)}
-        onPin={() =>
-          pinned
-            ? setUnpinned(daoInfo.coreAddress)
-            : setPinned(daoInfo.coreAddress)
+        onFollow={() =>
+          following
+            ? setUnfollowing(daoInfo.coreAddress)
+            : setFollowing(daoInfo.coreAddress)
         }
         payrollTab={PayrollTab && <PayrollTab />}
-        pinned={pinned}
         proposalsTab={<ProposalsTab />}
         rightSidebarContent={
           connected ? (
@@ -255,6 +256,7 @@ const InnerDaoHome = () => {
         }
         subDaosTab={<SubDaosTab />}
         treasuryAndNftsTab={<TreasuryAndNftsTab />}
+        updatingFollowing={updatingFollowing}
       />
 
       <DiscordNotifierConfigureModal

@@ -49,7 +49,7 @@ import {
 import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
-  usePinnedDaos,
+  useFollowingDaos,
   useWalletInfo,
 } from '../../hooks'
 import { getAdapterById as getProposalModuleAdapterById } from '../../proposal-module-adapter'
@@ -94,7 +94,7 @@ export const CreateDaoForm = ({
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { setPinned } = usePinnedDaos()
+  const { setFollowing } = useFollowingDaos()
 
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
@@ -370,7 +370,7 @@ export const CreateDaoForm = ({
               }
             )
 
-            setPinned(coreAddress)
+            setFollowing(coreAddress)
             refreshBalances()
 
             //! Show DAO created modal.
@@ -495,7 +495,7 @@ export const CreateDaoForm = ({
       connected,
       createDaoWithFactory,
       t,
-      setPinned,
+      setFollowing,
       refreshBalances,
       votingModuleAdapter.id,
       cw20StakedBalanceVotingData,

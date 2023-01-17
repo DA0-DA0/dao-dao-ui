@@ -33,8 +33,11 @@ export const makeProps = (id = 1): DaoCardProps => ({
   tokenSymbol: '',
   showingEstimatedUsdValue: true,
 
-  pinned: false,
-  onPin: () => {},
+  follow: {
+    following: false,
+    onFollow: () => alert('follow'),
+    updatingFollowing: false,
+  },
 
   parentDao: {
     coreAddress: 'parentDaoCoreAddress',

@@ -27,9 +27,9 @@ export const Default = Template.bind({})
 Default.args = {
   daosWithProposals: {
     loading: false,
-    data: NavigationStoryArgs.pinnedDaos.loading
+    data: NavigationStoryArgs.followingDaos.loading
       ? []
-      : NavigationStoryArgs.pinnedDaos.data.map((dao) => ({
+      : NavigationStoryArgs.followingDaos.data.map((dao) => ({
           dao,
           // Generate between 1 and 3 proposals.
           proposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {

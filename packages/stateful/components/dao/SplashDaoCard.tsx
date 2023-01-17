@@ -11,7 +11,7 @@ import { daoCardInfoLazyDataSelector } from '../../recoil'
 import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 
-// Doesn't load any wallet information or allow pinning.
+// Doesn't load any wallet information or allow following.
 export const SplashDaoCard = (props: DaoCardInfo) => {
   const lazyDataLoadable = useCachedLoadable(
     daoCardInfoLazyDataSelector({
@@ -32,14 +32,12 @@ export const SplashDaoCard = (props: DaoCardInfo) => {
       {...props}
       IconButtonLink={IconButtonLink}
       LinkWrapper={LinkWrapper}
-      hidePin
+      follow={{ hide: true }}
       lazyData={loadableToLoadingData(lazyDataLoadable, {
         isMember: false,
         tokenBalance: NaN,
         proposalCount: NaN,
       })}
-      onPin={() => {}}
-      pinned={false}
     />
   )
 }
