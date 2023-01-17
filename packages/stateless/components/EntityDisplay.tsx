@@ -23,10 +23,12 @@ export const EntityDisplay = ({
 }: EntityDisplayProps) => {
   const { t } = useTranslation()
 
-  imageSize ??= size === 'lg' ? 28 : 20
+  imageSize ??= size === 'lg' ? 28 : 24
 
   return (
-    <div className={clsx('flex flex-row items-center gap-2', className)}>
+    <div
+      className={clsx('flex min-w-0 flex-row items-center gap-2', className)}
+    >
       {!hideImage && (
         <Tooltip
           title={
