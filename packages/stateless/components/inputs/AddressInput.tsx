@@ -49,7 +49,7 @@ export const AddressInput = <
   const setValue = _setValue || formContext?.setValue
   const formValue = watch?.(fieldName)
 
-  const showProfile =
+  const showEntity =
     EntityDisplay &&
     !!formValue &&
     isValidAddress(formValue, CHAIN_BECH32_PREFIX)
@@ -156,7 +156,7 @@ export const AddressInput = <
         containerClassName
       )}
     >
-      {(disabled && showProfile) || (
+      {(disabled && showEntity) || (
         <>
           {/* If profiles are loading, display loader. */}
           {autofillProfiles?.loading ? (
@@ -198,7 +198,7 @@ export const AddressInput = <
           />
         </>
       )}
-      {showProfile && (
+      {showEntity && (
         <div className={clsx(disabled || 'pl-4')}>
           <EntityDisplay address={formValue} />
         </div>
