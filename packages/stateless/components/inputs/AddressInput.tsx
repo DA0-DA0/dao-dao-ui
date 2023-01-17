@@ -145,18 +145,26 @@ export const AddressInput = <
     return () => document.removeEventListener('keydown', handleKeyPress)
   }, [autofillProfiles, selectAutofillProfile, showProfileAutofill])
 
+  // Only display entity if input is disabled and we're showing the entity. This
+  // is probably showing in a readonly form with submitted data.
+  const onlyDisplayEntity = disabled && showEntity
+
   return (
     <div
       className={clsx(
-        'secondary-text group relative flex items-center gap-3 rounded-md bg-transparent py-3 px-4 font-mono text-sm ring-1 transition-all focus-within:ring-2',
-        error && !showProfileAutofill
-          ? 'ring-border-interactive-error'
-          : 'ring-border-primary focus:ring-border-interactive-focus',
+        'secondary-text group relative flex items-center gap-3 bg-transparent font-mono text-sm transition-all',
+        // If not only displaying entity, add padding and border.
+        !onlyDisplayEntity && [
+          'rounded-md py-3 px-4 ring-1 focus-within:ring-2',
+          error && !showProfileAutofill
+            ? 'ring-border-interactive-error'
+            : 'ring-border-primary focus:ring-border-interactive-focus',
+        ],
         showProfileAutofill && 'rounded-b-none',
         containerClassName
       )}
     >
-      {(disabled && showEntity) || (
+      {!onlyDisplayEntity && (
         <>
           {/* If profiles are loading, display loader. */}
           {autofillProfiles?.loading ? (
@@ -198,13 +206,14 @@ export const AddressInput = <
           />
         </>
       )}
+
       {showEntity && (
         <div className={clsx(disabled || 'pl-4')}>
           <EntityDisplay address={formValue} />
         </div>
       )}
 
-      {type === 'wallet' && !!autofillProfiles && (
+      {!disabled && type === 'wallet' && !!autofillProfiles && (
         <div
           className={clsx(
             'absolute top-full -left-[2px] -right-[2px] z-10 mt-[2px] overflow-hidden rounded-b-md border-2 border-t-0 border-border-primary bg-component-dropdown transition-all',
