@@ -219,14 +219,6 @@ export const Navigation = ({
           )}
 
           <Row
-            Icon={Add}
-            LinkWrapper={LinkWrapper}
-            compact={compact}
-            href="/dao/create"
-            label={t('button.create')}
-          />
-
-          <Row
             Icon={CheckRounded}
             LinkWrapper={LinkWrapper}
             compact={compact}
@@ -237,7 +229,7 @@ export const Navigation = ({
             {!followingDaos.loading && (
               <div
                 className={clsx(
-                  'relative sm:max-h-[33vh]',
+                  'relative sm:max-h-[50vh]',
                   !followingDaos.loading && 'no-scrollbar overflow-y-auto',
                   compact && 'mt-1 w-min'
                 )}
@@ -272,6 +264,14 @@ export const Navigation = ({
               </div>
             )}
           </Row>
+
+          <Row
+            Icon={Add}
+            LinkWrapper={LinkWrapper}
+            compact={compact}
+            href="/dao/create"
+            label={t('button.create')}
+          />
         </div>
 
         <div className={clsx('mt-8 flex grow flex-col justify-end gap-2')}>

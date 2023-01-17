@@ -1,28 +1,25 @@
-import { DoneRounded } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
+
+import { FollowState } from '@dao-dao/types'
 
 import { Button } from './Button'
 
-export interface FollowingToggleProps {
-  following: boolean
-  onToggle: () => void
-  updating: boolean
-}
+export type FollowingToggleProps = FollowState
 
 export const FollowingToggle = ({
   following,
-  onToggle,
-  updating,
+  onFollow,
+  updatingFollowing,
 }: FollowingToggleProps) => {
   const { t } = useTranslation()
 
   return (
-    <Button loading={updating} onClick={(_e) => onToggle()} variant="secondary">
-      {/* Don't show text on mobile, header too small. */}
-      <p className="hidden text-text-body sm:block">
-        {following ? t('button.following') : t('button.follow')}
-      </p>
-      <DoneRounded className="!h-4 !w-4 !text-icon-primary" />
+    <Button
+      loading={updatingFollowing}
+      onClick={onFollow}
+      variant={following ? 'secondary' : 'primary'}
+    >
+      {following ? t('button.following') : t('button.follow')}
     </Button>
   )
 }

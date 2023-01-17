@@ -1,8 +1,9 @@
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LinkWrapperProps } from '@dao-dao/types'
+import { FollowState, LinkWrapperProps } from '@dao-dao/types'
 
+import { FollowingToggle } from '../buttons/FollowingToggle'
 import { MarkdownRenderer } from '../MarkdownRenderer'
 import { DaoImage, DaoImageProps } from './DaoImage'
 
@@ -14,6 +15,10 @@ export interface DaoHeaderProps {
   established?: string
   parentDao: DaoImageProps['parentDao']
   LinkWrapper: ComponentType<LinkWrapperProps>
+  actions?: {
+    follow: FollowState
+    DiscordNotifierConfigureModal: ComponentType
+  }
 }
 
 export const DaoHeader = ({
@@ -24,11 +29,12 @@ export const DaoHeader = ({
   established,
   parentDao,
   LinkWrapper,
+  actions,
 }: DaoHeaderProps) => {
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col items-center py-10">
+    <div className="flex flex-col items-center gap-4 py-10">
       <DaoImage
         LinkWrapper={LinkWrapper}
         coreAddress={coreAddress}
@@ -38,17 +44,27 @@ export const DaoHeader = ({
         size="lg"
       />
 
-      <p className="hero-text mt-6 text-center">{name}</p>
-      {established && (
-        <p className="primary-text mt-2 text-text-tertiary">
-          {t('info.establishedAbbr')} {established}
-        </p>
-      )}
+      <div className="flex flex-col items-center gap-1">
+        <p className="hero-text text-center">{name}</p>
+        {established && (
+          <p className="primary-text text-text-tertiary">
+            {t('info.establishedAbbr')} {established}
+          </p>
+        )}
+      </div>
 
       <MarkdownRenderer
-        className="body-text mt-3 whitespace-pre-wrap"
+        className="body-text whitespace-pre-wrap"
         markdown={description}
       />
+
+      {actions && (
+        <div className="mt-2 flex flex-row items-stretch gap-2">
+          <FollowingToggle {...actions.follow} />
+
+          <actions.DiscordNotifierConfigureModal />
+        </div>
+      )}
     </div>
   )
 }

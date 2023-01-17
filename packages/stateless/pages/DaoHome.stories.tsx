@@ -11,6 +11,8 @@ import { DaoMemberCardProps } from '@dao-dao/types'
 import {
   DaoInfoBar,
   DaoInfoBarProps,
+  DiscordNotifierConfigureModal,
+  DiscordNotifierConfigureModalProps,
   LinkWrapper,
   MembersTabProps,
   NftCardProps,
@@ -26,6 +28,7 @@ import { Default as MembersTabStory } from '../components/dao/tabs/MembersTab.st
 import { Default as ProposalsTabStory } from '../components/dao/tabs/ProposalsTab.stories'
 import { Default as SubDaosTabStory } from '../components/dao/tabs/SubDaosTab.stories'
 import { Default as TreasuryAndNftsTabStory } from '../components/dao/tabs/TreasuryAndNftsTab.stories'
+import { Default as DiscordNotifierConfigureModalStory } from '../components/modals/DiscordNotifierConfigureModal.stories'
 import { Default as ProfileMemberCardStory } from '../components/profile/ProfileMemberCard.stories'
 import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { DaoHome } from './DaoHome'
@@ -47,9 +50,11 @@ const Template: ComponentStory<typeof DaoHome> = (args) => {
     <DaoHome
       {...args}
       daoInfo={useDaoInfoContext()}
-      following={following}
-      onFollow={() => setFollowing((p) => !p)}
-      updatingFollowing={false}
+      follow={{
+        following,
+        onFollow: () => setFollowing((p) => !p),
+        updatingFollowing: false,
+      }}
     />
   )
 }
@@ -83,7 +88,11 @@ Default.args = {
   ),
   SuspenseLoader,
   LinkWrapper,
-  onConfigure: () => alert('configure'),
+  DiscordNotifierConfigureModal: () => (
+    <DiscordNotifierConfigureModal
+      {...(DiscordNotifierConfigureModalStory.args as DiscordNotifierConfigureModalProps)}
+    />
+  ),
 }
 Default.parameters = {
   design: {

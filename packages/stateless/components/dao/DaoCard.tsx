@@ -89,23 +89,31 @@ export const DaoCard = ({
           )}
 
           {!follow.hide && (
-            <IconButton
-              Icon={CheckRounded}
-              className={
+            <Tooltip
+              title={
                 follow.following
-                  ? 'text-icon-interactive-active'
-                  : 'text-icon-secondary'
+                  ? t('button.clickToUnfollow')
+                  : t('button.clickToFollow')
               }
-              loading={follow.updatingFollowing}
-              onClick={(event) => {
-                // Don't click on DAO card.
-                event.preventDefault()
-                event.stopPropagation()
-                follow.onFollow()
-              }}
-              size="sm"
-              variant="ghost"
-            />
+            >
+              <IconButton
+                Icon={CheckRounded}
+                className={
+                  follow.following
+                    ? 'text-icon-interactive-active'
+                    : 'text-icon-secondary'
+                }
+                loading={follow.updatingFollowing}
+                onClick={(event) => {
+                  // Don't click on DAO card.
+                  event.preventDefault()
+                  event.stopPropagation()
+                  follow.onFollow()
+                }}
+                size="sm"
+                variant="ghost"
+              />
+            </Tooltip>
           )}
         </div>
       </div>

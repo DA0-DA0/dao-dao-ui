@@ -20,6 +20,8 @@
     "claimNumTokens": "Claim your {{amount}} ${{tokenSymbol}}",
     "clickHereToProposeAdding": "Click here to propose adding it.",
     "clickToCopyAddress": "Click to copy address",
+    "clickToFollow": "Click to follow",
+    "clickToUnfollow": "Click to unfollow",
     "close": "Close",
     "connectWallet": "Connect wallet",
     "continue": "Continue",
