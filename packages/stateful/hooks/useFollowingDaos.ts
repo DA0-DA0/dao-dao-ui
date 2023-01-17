@@ -12,7 +12,10 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { followingDaosSelector } from '../recoil/selectors/dao/following'
+import {
+  followingDaosSelector,
+  temporaryFollowingDaosAtom,
+} from '../recoil/selectors/dao/following'
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 
 export type UseFollowingDaosReturn = {
@@ -28,6 +31,10 @@ export type UseFollowingDaosReturn = {
 }
 
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
+  // Following API doesn't update right away, so this serves to keep track of
+  // all successful updates for the current session. This will be reset on page
+  // refresh.
+  const setTemporary = useSetRecoilState(temporaryFollowingDaosAtom)
   const followingDaosLoadable = loadableToLoadingData(
     useCachedLoadable(followingDaosSelector({})),
     { following: [], pending: [] }
@@ -62,6 +69,13 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
       try {
         await postRequest(`/follow/${CHAIN_ID}/${coreAddress}`)
+
+        setTemporary((prev) => ({
+          following: [...prev.following, coreAddress],
+          unfollowing: prev.unfollowing.filter(
+            (address) => address !== coreAddress
+          ),
+        }))
         refreshFollowing()
       } catch (err) {
         console.error(err)
@@ -70,7 +84,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, updating]
+    [postRequest, ready, refreshFollowing, setTemporary, updating]
   )
 
   const setUnfollowing = useCallback(
@@ -83,6 +97,13 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
       try {
         await postRequest(`/unfollow/${CHAIN_ID}/${coreAddress}`)
+
+        setTemporary((prev) => ({
+          following: prev.following.filter(
+            (address) => address !== coreAddress
+          ),
+          unfollowing: [...prev.unfollowing, coreAddress],
+        }))
         refreshFollowing()
       } catch (err) {
         console.error(err)
@@ -91,7 +112,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, updating]
+    [postRequest, ready, refreshFollowing, setTemporary, updating]
   )
 
   return {

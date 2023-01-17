@@ -96,7 +96,7 @@ export const DaoCard = ({
                   ? 'text-icon-interactive-active'
                   : 'text-icon-secondary'
               }
-              disabled={follow.updatingFollowing}
+              loading={follow.updatingFollowing}
               onClick={(event) => {
                 // Don't click on DAO card.
                 event.preventDefault()

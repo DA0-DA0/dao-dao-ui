@@ -17,11 +17,7 @@ export const FollowingToggle = ({
   const { t } = useTranslation()
 
   return (
-    <Button
-      disabled={updating}
-      onClick={(_e) => onToggle()}
-      variant="secondary"
-    >
+    <Button loading={updating} onClick={(_e) => onToggle()} variant="secondary">
       {/* Don't show text on mobile, header too small. */}
       <p className="hidden text-text-body sm:block">
         {following ? t('button.following') : t('button.follow')}
