@@ -152,14 +152,16 @@ export const AddressInput = <
   return (
     <div
       className={clsx(
-        'secondary-text group relative flex items-center gap-3 bg-transparent font-mono text-sm transition-all',
-        // If not only displaying entity, add padding and border.
-        !onlyDisplayEntity && [
-          'rounded-md py-3 px-4 ring-1 focus-within:ring-2',
-          error && !showProfileAutofill
-            ? 'ring-border-interactive-error'
-            : 'ring-border-primary focus:ring-border-interactive-focus',
-        ],
+        'secondary-text group relative flex min-w-0 items-center gap-3 bg-transparent font-mono text-sm transition-all',
+        // If not only displaying entity, add more border.
+        onlyDisplayEntity
+          ? 'p-2'
+          : [
+              'rounded-md py-3 px-4 ring-1 focus-within:ring-2 ',
+              error && !showProfileAutofill
+                ? 'ring-border-interactive-error'
+                : 'ring-border-primary focus:ring-border-interactive-focus',
+            ],
         showProfileAutofill && 'rounded-b-none',
         containerClassName
       )}
@@ -208,9 +210,10 @@ export const AddressInput = <
       )}
 
       {showEntity && (
-        <div className={clsx(disabled || 'pl-4')}>
-          <EntityDisplay address={formValue} />
-        </div>
+        <EntityDisplay
+          address={formValue}
+          className={clsx(disabled || 'pl-4')}
+        />
       )}
 
       {!disabled && type === 'wallet' && !!autofillProfiles && (
