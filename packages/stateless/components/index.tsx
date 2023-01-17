@@ -19,6 +19,7 @@ export * from './token'
 export * from './tooltip'
 export * from './wallet'
 
+export * from './Collapsible'
 export * from './CopyToClipboard'
 export * from './CornerGradient'
 export * from './CosmosMessageDisplay'

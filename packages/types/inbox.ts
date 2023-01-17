@@ -1,19 +1,24 @@
-import { ProposalModule } from './dao'
+import { ComponentType } from 'react'
 
-export interface DaoWithOpenProposals {
-  coreAddress: string
-  proposalModules: ProposalModule[]
-  openProposals: {
-    proposalModule: ProposalModule
-    proposalNumber: number
-    voted?: boolean
-  }[]
+import { DaoDropdownInfo } from './stateless'
+
+export type InboxItem<T extends unknown = any> = {
+  Renderer: ComponentType<T>
+  props: T
+  order?: number
 }
 
-export interface UseInboxReturn {
+export type InboxDao = Omit<DaoDropdownInfo, 'content' | 'subdaos'>
+
+export interface InboxDaoWithItems {
+  dao: InboxDao
+  items: InboxItem[]
+}
+
+export interface InboxState {
   loading: boolean
-  refetching: boolean
-  daosWithOpenProposals: DaoWithOpenProposals[]
-  proposalCount: number
-  refetch: () => void
+  refreshing: boolean
+  daosWithItems: InboxDaoWithItems[]
+  itemCount: number
+  refresh: () => void
 }

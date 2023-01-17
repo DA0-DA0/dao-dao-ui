@@ -1,6 +1,6 @@
 import { atom, selector, selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/types'
+import { Expiration, WithChainId } from '@dao-dao/types'
 import { DumpStateResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 
 import {
@@ -106,7 +106,11 @@ export const searchDaosSelector = selectorFamily<
 export const openProposalsSelector = selectorFamily<
   {
     proposalModuleAddress: string
-    proposals: { id: number; voted?: boolean }[]
+    proposals: {
+      id: number
+      proposal: { expiration: Expiration }
+      voted?: boolean
+    }[]
   }[],
   WithChainId<{ coreAddress: string; address?: string }>
 >({

@@ -250,7 +250,6 @@ export const Navigation = ({
                     LinkWrapper={LinkWrapper}
                     compact={compact}
                     dao={dao}
-                    defaultExpanded
                   />
                 ))}
 

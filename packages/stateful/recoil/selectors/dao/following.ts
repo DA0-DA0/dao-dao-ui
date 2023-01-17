@@ -7,7 +7,7 @@ import {
   walletAddressAtom,
 } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
-import { DaoWithOpenProposals, WithChainId } from '@dao-dao/types'
+import { Expiration, ProposalModule, WithChainId } from '@dao-dao/types'
 import { CHAIN_ID, FOLLOWING_DAOS_API_BASE } from '@dao-dao/utils'
 
 import { daoDropdownInfoSelector } from './cards'
@@ -96,6 +96,17 @@ export const followingDaosWithProposalModulesSelector = selector({
   },
 })
 
+interface DaoWithOpenProposals {
+  coreAddress: string
+  proposalModules: ProposalModule[]
+  openProposals: {
+    proposalModule: ProposalModule
+    proposalNumber: number
+    expiration: Expiration
+    voted?: boolean
+  }[]
+}
+
 export const followingDaosWithOpenProposalsSelector = selectorFamily<
   DaoWithOpenProposals[],
   WithChainId<{ walletAddress?: string }>
@@ -134,11 +145,14 @@ export const followingDaosWithOpenProposalsSelector = selectorFamily<
                     ({ proposalModuleAddress }) =>
                       proposalModuleAddress === proposalModule.address
                   )
-                  ?.proposals.map(({ id, voted }) => ({
-                    proposalModule,
-                    proposalNumber: id,
-                    voted,
-                  })) ?? []
+                  ?.proposals.map(
+                    ({ id, proposal: { expiration }, voted }) => ({
+                      proposalModule,
+                      proposalNumber: id,
+                      expiration,
+                      voted,
+                    })
+                  ) ?? []
             ),
           }
         }

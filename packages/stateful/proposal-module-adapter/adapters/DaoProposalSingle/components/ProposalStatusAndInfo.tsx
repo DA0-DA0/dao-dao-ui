@@ -21,6 +21,7 @@ import {
   Logo,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
+  Tooltip,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -177,7 +178,9 @@ const InnerProposalStatusAndInfo = ({
             Icon: HourglassTopRounded,
             label: timestampInfo.display.label,
             Value: (props) => (
-              <p {...props}>{timestampInfo.display!.content}</p>
+              <Tooltip title={timestampInfo.display!.tooltip}>
+                <p {...props}>{timestampInfo.display!.content}</p>
+              </Tooltip>
             ),
           },
         ] as ProposalStatusAndInfoProps<Vote>['info'])

@@ -1,7 +1,7 @@
 import { ComponentType } from 'react'
 import { TFunction } from 'react-i18next'
 
-export interface CommandModalProps {
+export interface StatefulCommandModalProps {
   visible: boolean
   setVisible: (visible: boolean) => void
   // Root context maker can take no extra options.

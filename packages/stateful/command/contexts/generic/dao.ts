@@ -2,7 +2,6 @@ import {
   Check,
   CheckRounded,
   CopyAll,
-  DoneOutlineRounded,
   HomeOutlined,
   InboxOutlined,
 } from '@mui/icons-material'
@@ -116,7 +115,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           ? [
               {
                 name: following ? t('button.unfollow') : t('button.follow'),
-                Icon: following ? CheckRounded : DoneOutlineRounded,
+                Icon: CheckRounded,
                 onChoose: () =>
                   following
                     ? setUnfollowing(coreAddress)

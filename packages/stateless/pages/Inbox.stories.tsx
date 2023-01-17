@@ -3,10 +3,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
 
 import {
+  LinkWrapper,
   ProfileHomeCard,
   ProfileHomeCardProps,
   ProposalLine,
-  ProposalLineProps,
 } from '../components'
 import { DefaultArgs as NavigationStoryArgs } from '../components/layout/Navigation.stories'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
@@ -19,32 +19,38 @@ export default {
   decorators: [makeAppLayoutDecorator()],
 } as ComponentMeta<typeof Inbox>
 
-const Template: ComponentStory<typeof Inbox<ProposalLineProps>> = (args) => (
-  <Inbox {...args} />
-)
+const Template: ComponentStory<typeof Inbox> = (args) => <Inbox {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  daosWithProposals: {
+  state: {
     loading: false,
-    data: NavigationStoryArgs.followingDaos.loading
+    refreshing: false,
+    daosWithItems: NavigationStoryArgs.followingDaos.loading
       ? []
       : NavigationStoryArgs.followingDaos.data.map((dao) => ({
           dao,
           // Generate between 1 and 3 proposals.
-          proposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
+          items: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
             // Random time in the next 3 days.
             const secondsRemaining = Math.floor(
               Math.random() * 3 * 24 * 60 * 60
             )
-            return makeProposalLineProps(secondsRemaining)
+
+            return {
+              Renderer: ProposalLine,
+              props: makeProposalLineProps(secondsRemaining),
+            }
           }),
         })),
+    itemCount: 42,
+    refresh: () => {},
   },
+  noFollowingDaos: false,
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
-  ProposalLine,
+  LinkWrapper,
 }
 Default.parameters = {
   design: {
@@ -58,11 +64,38 @@ Default.parameters = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  daosWithProposals: {
+  ...Default.args,
+  state: {
     loading: true,
+    refreshing: false,
+    daosWithItems: [],
+    itemCount: 0,
+    refresh: () => {},
   },
-  rightSidebarContent: (
-    <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
-  ),
-  ProposalLine,
+}
+
+export const NothingOpen = Template.bind({})
+NothingOpen.args = {
+  ...Default.args,
+  state: {
+    loading: false,
+    refreshing: false,
+    daosWithItems: [],
+    itemCount: 0,
+    refresh: () => {},
+  },
+  noFollowingDaos: false,
+}
+
+export const NothingFollowed = Template.bind({})
+NothingFollowed.args = {
+  ...Default.args,
+  state: {
+    loading: false,
+    refreshing: false,
+    daosWithItems: [],
+    itemCount: 0,
+    refresh: () => {},
+  },
+  noFollowingDaos: true,
 }

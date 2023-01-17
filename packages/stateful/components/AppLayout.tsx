@@ -121,24 +121,22 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
   //! Inbox
   const inbox = useInbox()
   // Inbox notifications
-  const [lastProposalCount, setLastProposalCount] = useState(
-    inbox.proposalCount
-  )
+  const [lastProposalCount, setLastProposalCount] = useState(inbox.itemCount)
   useEffect(() => {
-    if (inbox.proposalCount > lastProposalCount) {
+    if (inbox.itemCount > lastProposalCount) {
       setTimeout(
         () =>
           toast.success(
-            t('info.openProposalsInInbox', {
-              count: inbox.proposalCount,
+            t('info.itemsInInboxNotification', {
+              count: inbox.itemCount,
             })
           ),
         // 3 second delay.
         3 * 1000
       )
     }
-    setLastProposalCount(inbox.proposalCount)
-  }, [inbox.proposalCount, lastProposalCount, t])
+    setLastProposalCount(inbox.itemCount)
+  }, [inbox.itemCount, lastProposalCount, t])
 
   //! AppLayoutContext
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
@@ -290,7 +288,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
                 }
               : {
                   loading: false,
-                  data: inbox.proposalCount,
+                  data: inbox.itemCount,
                 },
           setCommandModalVisible: () => setCommandModalVisible(true),
           version: '2.0',
