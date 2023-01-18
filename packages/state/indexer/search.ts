@@ -42,9 +42,7 @@ export const searchDaos = async (
 
   const exclude = [
     // Exclude DAOs that are hidden from search, only on mainnet.
-    ...(CHAIN_ID === ChainInfoID.Juno1
-      ? daosHiddenFromSearch.map(({ coreAddress }) => coreAddress)
-      : []),
+    ...(CHAIN_ID === ChainInfoID.Juno1 ? daosHiddenFromSearch : []),
     // Exclude DAOs that are in the exclude list.
     ...(_exclude || []),
   ]

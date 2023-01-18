@@ -1,26 +1,10 @@
 [
-  {
-    "coreAddress": "juno1hgu46yeryyhcmjfr30h0607m4a48sd9penvt4sw85nftn5l3lgaqqlc99h"
-  },
-  {
-    "coreAddress": "juno1g325q3ddaxk943s52z9ejac4envfje98y0pnfw7lpnmxxdwdyw2sum2jgg"
-  },
-  {
-    "coreAddress": "juno12djpzq4q80qeywkvh60ym9ngpx2wee4x00uuyaxuqxh3x4skmumsnvth64"
-  },
-  {
-    "coreAddress": "juno1fydtvrjjja6dqpa88306n36u7lwjcz7mp263dzxfrfv4ckasaddqtj0laf"
-  },
-  {
-    "coreAddress": "juno14pugx8tx7zjfmcdknq7dnp3tkll6sq6jr7a0aemnfyhprvv747lqj7gunh"
-  },
-  {
-    "coreAddress": "juno16yfrarxm2u2865t8r4kkw6fzxfyp5pp9hfquqyk2sfqs4uuvreesusgpd7"
-  },
-  {
-    "coreAddress": "juno1fxa0jz3avrjjm6p5vsgrzxrytzfkzxhhpuuf03s53kmxk3nct96q0pjj6t"
-  },
-  {
-    "coreAddress": "juno12ra0ehc2ax93tnhyeqvtjzktnzlh2mnv5raqjeq5vrcfvyfff8ssk5uuce"
-  }
+  "juno1hgu46yeryyhcmjfr30h0607m4a48sd9penvt4sw85nftn5l3lgaqqlc99h",
+  "juno1g325q3ddaxk943s52z9ejac4envfje98y0pnfw7lpnmxxdwdyw2sum2jgg",
+  "juno12djpzq4q80qeywkvh60ym9ngpx2wee4x00uuyaxuqxh3x4skmumsnvth64",
+  "juno1fydtvrjjja6dqpa88306n36u7lwjcz7mp263dzxfrfv4ckasaddqtj0laf",
+  "juno14pugx8tx7zjfmcdknq7dnp3tkll6sq6jr7a0aemnfyhprvv747lqj7gunh",
+  "juno16yfrarxm2u2865t8r4kkw6fzxfyp5pp9hfquqyk2sfqs4uuvreesusgpd7",
+  "juno1fxa0jz3avrjjm6p5vsgrzxrytzfkzxhhpuuf03s53kmxk3nct96q0pjj6t",
+  "juno12ra0ehc2ax93tnhyeqvtjzktnzlh2mnv5raqjeq5vrcfvyfff8ssk5uuce"
 ]
