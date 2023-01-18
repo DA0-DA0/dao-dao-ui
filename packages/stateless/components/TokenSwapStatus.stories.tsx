@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileDisplay } from '@dao-dao/stateful'
+import { EntityDisplay } from '@dao-dao/stateful'
 import { TokenSwapStatusProps } from '@dao-dao/types'
 
 import { TokenSwapStatus } from './TokenSwapStatus'
@@ -33,7 +33,7 @@ export const makeProps = (): TokenSwapStatusProps => ({
     provided: false,
   },
 
-  ProfileDisplay,
+  EntityDisplay,
 })
 
 export const Default = Template.bind({})

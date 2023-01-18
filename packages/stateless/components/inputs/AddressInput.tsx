@@ -4,15 +4,15 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { AddressInputProps } from '@dao-dao/types'
+import { AddressInputProps, EntityType } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
   isValidAddress,
 } from '@dao-dao/utils'
 
+import { EntityDisplay as StatelessEntityDisplay } from '../EntityDisplay'
 import { Loader } from '../logo/Loader'
-import { ProfileDisplay as StatelessProfileDisplay } from '../profile/ProfileDisplay'
 
 export const AddressInput = <
   FV extends FieldValues,
@@ -30,7 +30,7 @@ export const AddressInput = <
   className,
   containerClassName,
   type = 'wallet',
-  ProfileDisplay,
+  EntityDisplay,
   autofillProfiles,
   placeholder,
   ...rest
@@ -49,8 +49,8 @@ export const AddressInput = <
   const setValue = _setValue || formContext?.setValue
   const formValue = watch?.(fieldName)
 
-  const showProfile =
-    ProfileDisplay &&
+  const showEntity =
+    EntityDisplay &&
     !!formValue &&
     isValidAddress(formValue, CHAIN_BECH32_PREFIX)
 
@@ -145,18 +145,28 @@ export const AddressInput = <
     return () => document.removeEventListener('keydown', handleKeyPress)
   }, [autofillProfiles, selectAutofillProfile, showProfileAutofill])
 
+  // Only display entity if input is disabled and we're showing the entity. This
+  // is probably showing in a readonly form with submitted data.
+  const onlyDisplayEntity = disabled && showEntity
+
   return (
     <div
       className={clsx(
-        'secondary-text group relative flex items-center gap-3 rounded-md bg-transparent py-3 px-4 font-mono text-sm ring-1 transition-all focus-within:ring-2',
-        error && !showProfileAutofill
-          ? 'ring-border-interactive-error'
-          : 'ring-border-primary focus:ring-border-interactive-focus',
+        'secondary-text group relative flex min-w-0 items-center gap-3 bg-transparent font-mono text-sm transition-all',
+        // If not only displaying entity, add more border.
+        onlyDisplayEntity
+          ? 'p-2'
+          : [
+              'rounded-md py-3 px-4 ring-1 focus-within:ring-2 ',
+              error && !showProfileAutofill
+                ? 'ring-border-interactive-error'
+                : 'ring-border-primary focus:ring-border-interactive-focus',
+            ],
         showProfileAutofill && 'rounded-b-none',
         containerClassName
       )}
     >
-      {(disabled && showProfile) || (
+      {!onlyDisplayEntity && (
         <>
           {/* If profiles are loading, display loader. */}
           {autofillProfiles?.loading ? (
@@ -198,13 +208,15 @@ export const AddressInput = <
           />
         </>
       )}
-      {showProfile && (
-        <div className={clsx(disabled || 'pl-4')}>
-          <ProfileDisplay address={formValue} />
-        </div>
+
+      {showEntity && (
+        <EntityDisplay
+          address={formValue}
+          className={clsx(disabled || 'pl-4')}
+        />
       )}
 
-      {type === 'wallet' && !!autofillProfiles && (
+      {!disabled && type === 'wallet' && !!autofillProfiles && (
         <div
           className={clsx(
             'absolute top-full -left-[2px] -right-[2px] z-10 mt-[2px] overflow-hidden rounded-b-md border-2 border-t-0 border-border-primary bg-component-dropdown transition-all',
@@ -224,7 +236,7 @@ export const AddressInput = <
                 )}
                 onClick={() => selectAutofillProfile(index)}
               >
-                <StatelessProfileDisplay
+                <StatelessEntityDisplay
                   key={hit.publicKey}
                   address={hit.address}
                   className="!gap-3"
@@ -232,9 +244,10 @@ export const AddressInput = <
                     textClassName: 'no-underline',
                     tooltip: hit.address,
                   }}
-                  loadingProfile={{
+                  loadingEntity={{
                     loading: false,
                     data: {
+                      type: EntityType.Wallet,
                       address: hit.address,
                       name: hit.profile.name,
                       imageUrl:

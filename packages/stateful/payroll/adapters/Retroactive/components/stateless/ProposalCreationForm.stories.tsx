@@ -1,6 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileDisplay } from '../../../../../components'
+import { EntityType } from '@dao-dao/types'
+
+import { EntityDisplay } from '../../../../../components'
 import { makeSurvey } from './ContributionForm.stories'
 import { ProposalCreationForm } from './ProposalCreationForm'
 
@@ -133,7 +135,7 @@ Default.args = {
   },
   onComplete: async (data) => alert('complete: ' + JSON.stringify(data)),
   loading: false,
-  ProfileDisplay,
+  EntityDisplay,
   cw20TokenInfos: [
     {
       address: 'usdc',
@@ -155,9 +157,10 @@ Default.args = {
       timestamp: new Date(),
     },
   ],
-  profile: {
+  entity: {
     loading: false,
     data: {
+      type: EntityType.Wallet,
       address: 'walletPerson',
       name: 'wallet Person!',
       imageUrl: '/placeholders/1.svg',
