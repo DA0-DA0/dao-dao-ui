@@ -21,7 +21,7 @@ export const ActionCard = ({
   footer,
   childrenContainerClassName,
 }: ActionCardProps) => (
-  <div className="flex flex-col rounded-lg bg-background-tertiary">
+  <div className="flex flex-col overflow-x-auto rounded-lg bg-background-tertiary">
     <div className="primary-text flex flex-row items-start justify-between gap-4 border-b border-border-base p-4 text-text-body">
       <div className="flex flex-row items-center gap-3">
         <p className="text-xl">

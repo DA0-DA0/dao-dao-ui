@@ -17,10 +17,10 @@ import {
 import { AmountWithTimestampAndDenom } from '@dao-dao/types'
 import { nativeTokenDecimals } from '@dao-dao/utils'
 
-import { ProfileDisplay, SuspenseLoader } from '../../../../../components'
+import { EntityDisplay, SuspenseLoader } from '../../../../../components'
 import {
   useDaoProposalSinglePublishProposal,
-  useProfile,
+  useEntity,
 } from '../../../../../hooks'
 import { NewProposalData } from '../../../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { refreshStatusAtom } from '../../atoms'
@@ -159,7 +159,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
       : undefined
   )
 
-  const profile = useProfile({
+  const profile = useEntity({
     address: walletAddress,
     walletHexPublicKey: walletPublicKey?.hex,
     chainId,
@@ -179,7 +179,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
         loadingCw20TokenInfos.state === 'hasValue' &&
         prices.state === 'hasValue' && (
           <StatelessProposalCreationForm
-            ProfileDisplay={ProfileDisplay}
+            EntityDisplay={EntityDisplay}
             completeRatings={data}
             cw20TokenInfos={loadingCw20TokenInfos.contents}
             loading={loading || statusLoadable.updating}
@@ -187,7 +187,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
             prices={
               prices.contents.filter(Boolean) as AmountWithTimestampAndDenom[]
             }
-            profile={profile}
+            entity={profile}
             status={statusLoadable.contents}
             walletAddress={walletAddress}
           />

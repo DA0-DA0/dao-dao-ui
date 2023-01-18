@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProfileDisplay } from '@dao-dao/stateless/components/profile/ProfileDisplay'
+import { EntityDisplay } from '@dao-dao/stateless/components/EntityDisplay'
+import { EntityType } from '@dao-dao/types'
 
 import { Survey, SurveyStatus } from '../../types'
 import { ContributionForm } from './ContributionForm'
@@ -60,17 +61,19 @@ Default.args = {
   },
   onSubmit: async (contribution) => alert('submit: ' + contribution),
   loading: false,
-  profile: {
+  entity: {
+    type: EntityType.Wallet,
     address: 'walletPerson',
     name: 'wallet Person!',
     imageUrl: '/placeholders/1.svg',
   },
-  ProfileDisplay: () => (
-    <ProfileDisplay
+  EntityDisplay: () => (
+    <EntityDisplay
       address="juno123"
-      loadingProfile={{
+      loadingEntity={{
         loading: false,
         data: {
+          type: EntityType.Wallet,
           address: 'walletPerson',
           name: 'wallet Person!',
           imageUrl: '/placeholders/1.svg',

@@ -20,7 +20,7 @@ import { nativeTokenDecimals } from '@dao-dao/utils'
 
 import {
   AddressInput,
-  ProfileDisplay,
+  EntityDisplay,
   SuspenseLoader,
 } from '../../../../../components'
 import { refreshStatusAtom } from '../../atoms'
@@ -175,7 +175,7 @@ export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
         prices.state === 'hasValue' && (
           <StatelessRatingForm
             AddressInput={AddressInput}
-            ProfileDisplay={ProfileDisplay}
+            EntityDisplay={EntityDisplay}
             cw20TokenInfos={loadingCw20TokenInfos.contents}
             data={data}
             loadingNominate={loadingNominate}

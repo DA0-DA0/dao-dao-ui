@@ -13,7 +13,7 @@ import { TokenSwapStatusProps } from '@dao-dao/types/stateless/TokenSwapStatus'
 export const TokenSwapStatus = ({
   selfParty,
   counterparty,
-  ProfileDisplay,
+  EntityDisplay,
   className,
 }: TokenSwapStatusProps) => {
   const { t } = useTranslation()
@@ -26,7 +26,7 @@ export const TokenSwapStatus = ({
       )}
     >
       <div className="flex flex-col items-center gap-2">
-        <ProfileDisplay address={selfParty.address} size="lg" />
+        <EntityDisplay address={selfParty.address} size="lg" />
         <TokenAmountDisplay
           amount={selfParty.amount}
           decimals={selfParty.decimals}
@@ -56,7 +56,7 @@ export const TokenSwapStatus = ({
       <SwapHorizRounded className="!hidden !h-8 !w-8 sm:!block" />
 
       <div className="flex flex-col items-center gap-2">
-        <ProfileDisplay address={counterparty.address} size="lg" />
+        <EntityDisplay address={counterparty.address} size="lg" />
         <TokenAmountDisplay
           amount={counterparty.amount}
           decimals={counterparty.decimals}

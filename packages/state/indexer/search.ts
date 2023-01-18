@@ -36,7 +36,10 @@ export const searchDaos = async (
     limit,
     filter: [
       // Only show DAOs with proposals to reduce clutter/spam.
-      `(NOT value.proposalCount EXISTS) OR (value.proposalCount > 0)`,
+      //
+      // UPDATE: Commenting this out for now, since many DAOs have trouble
+      // finding themselves before they've made a proposal.
+      // `(NOT value.proposalCount EXISTS) OR (value.proposalCount > 0)`,
       ...(exclude?.length
         ? // Exclude DAOs that are in the exclude list.
           [`NOT contractAddress IN ["${exclude.join('", "')}"]`]

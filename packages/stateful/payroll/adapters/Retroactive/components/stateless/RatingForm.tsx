@@ -17,7 +17,7 @@ import {
 import {
   AddressInputProps,
   AmountWithTimestampAndDenom,
-  StatefulProfileDisplayProps,
+  StatefulEntityDisplayProps,
   TokenInfoResponseWithAddressAndLogo,
 } from '@dao-dao/types'
 import {
@@ -55,7 +55,7 @@ export interface RatingFormProps {
   data: ContributionRatingData
   onSubmit: (data: RatingsFormData) => Promise<void>
   loadingSubmit: boolean
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   AddressInput: ComponentType<AddressInputProps<NominationForm>>
   cw20TokenInfos: TokenInfoResponseWithAddressAndLogo[]
   prices: AmountWithTimestampAndDenom[]
@@ -68,7 +68,7 @@ export const RatingForm = ({
   data,
   onSubmit,
   loadingSubmit,
-  ProfileDisplay,
+  EntityDisplay,
   AddressInput,
   cw20TokenInfos,
   prices,
@@ -263,7 +263,7 @@ export const RatingForm = ({
                       'rounded-bl-md'
                   )}
                 >
-                  <ProfileDisplay
+                  <EntityDisplay
                     address={contribution.contributor.address}
                     walletHexPublicKey={contribution.contributor.publicKey}
                   />

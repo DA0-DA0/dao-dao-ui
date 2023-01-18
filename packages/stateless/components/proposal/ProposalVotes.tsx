@@ -4,7 +4,7 @@ import { CSVLink } from 'react-csv'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import { LoadingData, StatefulProfileDisplayProps } from '@dao-dao/types'
+import { LoadingData, StatefulEntityDisplayProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
@@ -21,7 +21,7 @@ export interface ProposalVote<Vote extends unknown = any> {
 
 export interface ProposalVotesProps<Vote extends unknown = any> {
   votes: LoadingData<ProposalVote<Vote>[]>
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   VoteDisplay: ComponentType<{ vote: Vote }>
   // Only allows refreshing when voting is open.
   votingOpen: boolean
@@ -29,7 +29,7 @@ export interface ProposalVotesProps<Vote extends unknown = any> {
 
 export const ProposalVotes = <Vote extends unknown = any>({
   votes,
-  ProfileDisplay,
+  EntityDisplay,
   VoteDisplay,
   votingOpen,
 }: ProposalVotesProps<Vote>) => {
@@ -133,7 +133,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
                     '?'
                   )}
                 </p>
-                <ProfileDisplay
+                <EntityDisplay
                   address={voterAddress}
                   copyToClipboardProps={{
                     className: 'caption-text font-mono text-text-body',

@@ -14,6 +14,7 @@ export const LinkWrapper = forwardRef<HTMLDivElement, LinkWrapperProps>(
       className,
       containerClassName,
       onClick,
+      openInNewTab: _openInNewTab,
       ...props
     },
     ref
@@ -25,8 +26,9 @@ export const LinkWrapper = forwardRef<HTMLDivElement, LinkWrapperProps>(
       (loading || disabled || !href) && 'pointer-events-none'
     )
 
-    // Remote link if starts with http (non-relative path).
-    const remote = href?.startsWith('http')
+    // Exteral link if starts with http (non-relative path). Fallback to
+    // checking if external link if `openInNewTab` not defined.
+    const openInNewTab = _openInNewTab ?? href?.startsWith('http') ?? false
 
     return (
       // Add div wrapper with ref to allow tooltips even when the link's touch
@@ -36,7 +38,7 @@ export const LinkWrapper = forwardRef<HTMLDivElement, LinkWrapperProps>(
         {...props}
         ref={ref}
       >
-        {remote ? (
+        {openInNewTab ? (
           <a
             className={contentClassName}
             href={href}

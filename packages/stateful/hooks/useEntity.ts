@@ -1,6 +1,6 @@
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { LoadingData, Profile, WithChainId } from '@dao-dao/types'
+import { Entity, EntityType, LoadingData, WithChainId } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
@@ -9,18 +9,18 @@ import {
 
 import { useWalletProfile } from './useWalletProfile'
 
-export type UseProfileOptions = WithChainId<{
+export type UseEntityOptions = WithChainId<{
   address: string
   // Optionally allow specifying wallet public key if known, since it's faster.
   // With just an address, we have to query the chain for the public key.
   walletHexPublicKey?: string
 }>
 
-export const useProfile = ({
+export const useEntity = ({
   address,
   walletHexPublicKey,
   chainId,
-}: UseProfileOptions): LoadingData<Profile> => {
+}: UseEntityOptions): LoadingData<Entity> => {
   // Try to load config assuming the address is a DAO.
   const daoConfig = useCachedLoadable(
     // If we have a wallet public key, we can skip the contract query.
@@ -47,6 +47,8 @@ export const useProfile = ({
     : {
         loading: false,
         data: {
+          type:
+            daoConfig.state === 'hasValue' ? EntityType.Dao : EntityType.Wallet,
           address,
           name:
             daoConfig.state === 'hasValue'
