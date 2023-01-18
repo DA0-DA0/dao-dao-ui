@@ -15,10 +15,7 @@ export interface DaoHeaderProps {
   established?: string
   parentDao: DaoImageProps['parentDao']
   LinkWrapper: ComponentType<LinkWrapperProps>
-  actions?: {
-    follow: FollowState
-    DiscordNotifierConfigureModal: ComponentType
-  }
+  follow?: FollowState
 }
 
 export const DaoHeader = ({
@@ -29,7 +26,7 @@ export const DaoHeader = ({
   established,
   parentDao,
   LinkWrapper,
-  actions,
+  follow,
 }: DaoHeaderProps) => {
   const { t } = useTranslation()
 
@@ -58,13 +55,7 @@ export const DaoHeader = ({
         markdown={description}
       />
 
-      {actions && (
-        <div className="mt-2 flex flex-row items-stretch gap-2">
-          <FollowingToggle {...actions.follow} />
-
-          <actions.DiscordNotifierConfigureModal />
-        </div>
-      )}
+      {follow && <FollowingToggle className="mt-2" {...follow} />}
     </div>
   )
 }

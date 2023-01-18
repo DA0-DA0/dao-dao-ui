@@ -1,5 +1,7 @@
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { refreshFollowingDaosAtom } from '@dao-dao/state'
@@ -31,6 +33,9 @@ export type UseFollowingDaosReturn = {
 }
 
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
+  const { t } = useTranslation()
+  const { status } = useWallet()
+
   // Following API doesn't update right away, so this serves to keep track of
   // all successful updates for the current session. This will be reset on page
   // refresh.
@@ -61,7 +66,11 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
   const setFollowing = useCallback(
     async (coreAddress: string) => {
-      if (!ready || updating) {
+      if (!ready) {
+        toast.error(t('error.connectWalletToFollow'))
+        return
+      }
+      if (updating) {
         return
       }
 
@@ -84,12 +93,16 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, setTemporary, updating]
+    [postRequest, ready, refreshFollowing, setTemporary, t, updating]
   )
 
   const setUnfollowing = useCallback(
     async (coreAddress: string) => {
-      if (!ready || updating) {
+      if (!ready) {
+        toast.error(t('error.connectWalletToFollow'))
+        return
+      }
+      if (updating) {
         return
       }
 
@@ -112,7 +125,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, setTemporary, updating]
+    [postRequest, ready, refreshFollowing, setTemporary, t, updating]
   )
 
   return {
@@ -121,6 +134,18 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
     isFollowing,
     setFollowing,
     setUnfollowing,
-    updatingFollowing: updating,
+    updatingFollowing:
+      // If wallet connecting, following is not yet loaded.
+      status === WalletConnectionStatus.Initializing ||
+      status === WalletConnectionStatus.AttemptingAutoConnection ||
+      status === WalletConnectionStatus.Connecting ||
+      // Updating if following is loading or update is in progress.
+      followingDaosLoadable.loading ||
+      updating ||
+      // If wallet is connected but following has not yet been loaded, following
+      // cannot yet be loaded. Wallet address atom is probably about to be set
+      // in `WalletProvider`.
+      (status === WalletConnectionStatus.Connected &&
+        !!followingDaosLoadable.data.pendingAddress),
   }
 }

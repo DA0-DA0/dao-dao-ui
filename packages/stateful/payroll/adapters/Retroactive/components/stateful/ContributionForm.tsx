@@ -82,9 +82,9 @@ export const ContributionForm = () => {
                 loadingEntity={walletProfile}
               />
             )}
+            entity={walletProfile.data}
             loading={loading || statusLoadable.updating}
             onSubmit={onSubmit}
-            entity={walletProfile.data}
             status={statusLoadable.contents}
           />
         )}

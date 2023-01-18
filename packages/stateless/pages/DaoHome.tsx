@@ -98,18 +98,16 @@ export const DaoHome = ({
         }}
         className="mx-auto max-w-5xl"
         gradient
+        rightNode={<DiscordNotifierConfigureModal />}
       />
 
       <div className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch">
         <DaoHeader
           LinkWrapper={LinkWrapper}
-          actions={{
-            follow,
-            DiscordNotifierConfigureModal,
-          }}
           coreAddress={daoInfo.coreAddress}
           description={daoInfo.description}
           established={daoInfo.created && formatDate(daoInfo.created)}
+          follow={follow}
           imageUrl={daoInfo.imageUrl}
           name={daoInfo.name}
           parentDao={daoInfo.parentDao}

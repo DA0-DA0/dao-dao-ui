@@ -21,7 +21,7 @@ export const temporaryFollowingDaosAtom = atom<{
 })
 
 export const followingDaosSelector = selectorFamily<
-  { following: string[]; pending: string[] },
+  { following: string[]; pending: string[]; pendingAddress?: boolean },
   WithChainId<{}>
 >({
   key: 'followingDaos',
@@ -30,9 +30,17 @@ export const followingDaosSelector = selectorFamily<
     async ({ get }) => {
       get(refreshFollowingDaosAtom)
 
+      const walletAddress = get(walletAddressAtom)
+      if (!walletAddress) {
+        return {
+          following: [],
+          pending: [],
+          pendingAddress: true,
+        }
+      }
+
       const temporary = get(temporaryFollowingDaosAtom)
 
-      const walletAddress = get(walletAddressAtom)
       const response = await fetch(
         FOLLOWING_DAOS_API_BASE + `/following/${chainId}/${walletAddress}`
       )

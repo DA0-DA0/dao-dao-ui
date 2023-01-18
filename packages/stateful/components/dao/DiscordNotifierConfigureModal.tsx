@@ -17,6 +17,7 @@ import {
 import {
   IconButton,
   DiscordNotifierConfigureModal as StatelessDiscordNotifierConfigureModal,
+  Tooltip,
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
@@ -179,16 +180,18 @@ export const DiscordNotifierConfigureModal = () => {
 
   return (
     <>
-      <IconButton
-        Icon={
-          registrations.length > 0
-            ? NotificationsActiveRounded
-            : NotificationsNoneRounded
-        }
-        iconClassName="!w-5 !h-5"
-        onClick={() => setVisible(true)}
-        variant="secondary"
-      />
+      <Tooltip title={t('info.setupDiscordNotificationsTooltip')}>
+        <IconButton
+          Icon={
+            registrations.length > 0
+              ? NotificationsActiveRounded
+              : NotificationsNoneRounded
+          }
+          iconClassName="!w-5 !h-5"
+          onClick={() => setVisible(true)}
+          variant="secondary"
+        />
+      </Tooltip>
 
       <StatelessDiscordNotifierConfigureModal
         loading={loading}
