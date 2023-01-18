@@ -70,7 +70,24 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
           {item.name}
         </p>
 
-        {!!item.tooltip && <TooltipInfoIcon size="xs" title={item.tooltip} />}
+        {!!item.tooltip && (
+          <TooltipInfoIcon
+            key={
+              // Re-render when selected changes. This is because the underlying
+              // Material UI tooltip uses the initial state of the `open` prop
+              // to determine if the component should be controlled by the
+              // `open` prop or listen to touch events. We want to be able to
+              // force the tooltip open when this item is selected, and also
+              // allow hovering to open the tooltip when this item is not
+              // selected. Thus, we need to re-render this component when
+              // selected changes.
+              selected ? 'selected' : 'unselected'
+            }
+            open={selected || undefined}
+            size="xs"
+            title={item.tooltip}
+          />
+        )}
       </div>
     )
   }
