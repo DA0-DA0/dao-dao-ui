@@ -159,7 +159,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
       : undefined
   )
 
-  const profile = useEntity({
+  const walletEntity = useEntity({
     address: walletAddress,
     walletHexPublicKey: walletPublicKey?.hex,
     chainId,
@@ -182,12 +182,12 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
             EntityDisplay={EntityDisplay}
             completeRatings={data}
             cw20TokenInfos={loadingCw20TokenInfos.contents}
+            entity={walletEntity}
             loading={loading || statusLoadable.updating}
             onComplete={onComplete}
             prices={
               prices.contents.filter(Boolean) as AmountWithTimestampAndDenom[]
             }
-            entity={profile}
             status={statusLoadable.contents}
             walletAddress={walletAddress}
           />

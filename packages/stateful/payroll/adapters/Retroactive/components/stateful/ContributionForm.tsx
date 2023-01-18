@@ -23,7 +23,7 @@ export const ContributionForm = () => {
   const { coreAddress, chainId } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet(chainId)
-  const walletProfile = useEntity({
+  const walletEntity = useEntity({
     address: walletAddress,
     walletHexPublicKey: walletPublicKey?.hex,
     chainId,
@@ -68,23 +68,21 @@ export const ContributionForm = () => {
   return (
     <SuspenseLoader
       fallback={<Loader />}
-      forceFallback={
-        statusLoadable.state === 'loading' || walletProfile.loading
-      }
+      forceFallback={statusLoadable.state === 'loading' || walletEntity.loading}
     >
       {statusLoadable.state === 'hasValue' &&
         !!statusLoadable.contents &&
-        !walletProfile.loading && (
+        !walletEntity.loading && (
           <StatelessContributionForm
             EntityDisplay={() => (
               <EntityDisplay
                 address={walletAddress}
-                loadingEntity={walletProfile}
+                loadingEntity={walletEntity}
               />
             )}
+            entity={walletEntity.data}
             loading={loading || statusLoadable.updating}
             onSubmit={onSubmit}
-            entity={walletProfile.data}
             status={statusLoadable.contents}
           />
         )}
