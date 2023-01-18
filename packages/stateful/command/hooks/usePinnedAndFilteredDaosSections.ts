@@ -79,6 +79,9 @@ export const usePinnedAndFilteredDaosSections = ({
     name: t('title.following'),
     onChoose,
     items: pinnedDaosLoading.loading ? [] : pinnedDaosLoading.data,
+    // When a search is active, show above all other sections. This serves to
+    // prioritize the DAOs you follow over all other DAOs you can search.
+    searchOrder: 1,
   }
 
   const daosSection: CommandModalContextSection<CommandModalDaoInfo> = {

@@ -56,11 +56,24 @@ export const InnerCommandModalContextView = ({
       itemsWithSection = fuse.search(filter).map((o) => o.item)
     }
 
-    // Sections ordered in the order one of their items first appears in list of
-    // all filtered items.
+    // Sections ordered by their `order` field if present, and then in the order
+    // one of their items first appears in list of all filtered items.
     const orderedSections = itemsWithSection.reduce(
       (acc, { section }) => (acc.includes(section) ? acc : [...acc, section]),
-      [] as CommandModalContextSection[]
+      // Start with the sections that have an order field, if a searched item
+      // exists for them.
+      filter
+        ? sections
+            .filter(
+              (section) =>
+                section.searchOrder !== undefined &&
+                itemsWithSection.some((o) => o.section === section)
+            )
+            .sort(
+              (a, b) =>
+                (a.searchOrder ?? Infinity) - (b.searchOrder ?? Infinity)
+            )
+        : []
     )
 
     // For each section, override the items with the sorted and filtered
