@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { SyncFollowingModal as StatelessSyncFollowingModal } from '@dao-dao/stateless'
 import { CHAIN_ID } from '@dao-dao/utils'
@@ -25,7 +25,14 @@ export const SyncFollowingModal = () => {
     [updatePinned]
   )
 
-  return pinned && ready ? (
+  // If pinned is empty array, clear it.
+  useEffect(() => {
+    if (pinned && Array.isArray(pinned) && pinned.length === 0) {
+      clear()
+    }
+  }, [pinned])
+
+  return ready && pinned && Array.isArray(pinned) && pinned.length > 0 ? (
     <StatelessSyncFollowingModal
       EntityDisplay={EntityDisplay}
       followedDaos={pinned}
