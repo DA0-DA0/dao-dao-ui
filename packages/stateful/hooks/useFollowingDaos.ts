@@ -1,4 +1,5 @@
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
+import uniq from 'lodash.uniq'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -27,9 +28,12 @@ export type UseFollowingDaosReturn = {
   }>
   refreshFollowing: () => void
   isFollowing: (coreAddress: string) => any
-  setFollowing: (coreAddress: string) => Promise<void>
-  setUnfollowing: (coreAddress: string) => Promise<void>
+  setFollowing: (coreAddressOrAddresses: string | string[]) => Promise<boolean>
+  setUnfollowing: (
+    coreAddressOrAddresses: string | string[]
+  ) => Promise<boolean>
   updatingFollowing: boolean
+  ready: boolean
 }
 
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
@@ -65,30 +69,37 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   )
 
   const setFollowing = useCallback(
-    async (coreAddress: string) => {
+    async (coreAddressOrAddresses: string | string[]) => {
       if (!ready) {
         toast.error(t('error.connectWalletToFollow'))
-        return
+        return false
       }
       if (updating) {
-        return
+        return false
       }
 
       setUpdating(true)
 
       try {
-        await postRequest(`/follow/${CHAIN_ID}/${coreAddress}`)
+        const daos = [coreAddressOrAddresses].flat()
+        await postRequest(`/follow/${CHAIN_ID}`, {
+          daos,
+        })
 
         setTemporary((prev) => ({
-          following: [...prev.following, coreAddress],
+          following: uniq([...prev.following, ...daos]),
           unfollowing: prev.unfollowing.filter(
-            (address) => address !== coreAddress
+            (address) => !daos.includes(address)
           ),
         }))
         refreshFollowing()
+
+        return true
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
+
+        return false
       } finally {
         setUpdating(false)
       }
@@ -97,30 +108,37 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   )
 
   const setUnfollowing = useCallback(
-    async (coreAddress: string) => {
+    async (coreAddressOrAddresses: string | string[]) => {
       if (!ready) {
         toast.error(t('error.connectWalletToFollow'))
-        return
+        return false
       }
       if (updating) {
-        return
+        return false
       }
 
       setUpdating(true)
 
       try {
-        await postRequest(`/unfollow/${CHAIN_ID}/${coreAddress}`)
+        const daos = [coreAddressOrAddresses].flat()
+        await postRequest(`/unfollow/${CHAIN_ID}`, {
+          daos,
+        })
 
         setTemporary((prev) => ({
           following: prev.following.filter(
-            (address) => address !== coreAddress
+            (address) => !daos.includes(address)
           ),
-          unfollowing: [...prev.unfollowing, coreAddress],
+          unfollowing: uniq([...prev.unfollowing, ...daos]),
         }))
         refreshFollowing()
+
+        return true
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
+
+        return false
       } finally {
         setUpdating(false)
       }
@@ -147,5 +165,6 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       // in `WalletProvider`.
       (status === WalletConnectionStatus.Connected &&
         !!followingDaosLoadable.data.pendingAddress),
+    ready,
   }
 }

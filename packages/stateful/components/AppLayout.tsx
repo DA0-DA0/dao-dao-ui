@@ -44,6 +44,7 @@ import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
+import { SyncFollowingModal } from './SyncFollowingModal'
 
 export const AppLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
@@ -225,12 +226,12 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
         onClose={() => setBetaWarningAccepted(true)}
         visible={mountedInBrowser && !betaWarningAccepted}
       />
-
       <CommandModal
         makeRootContext={rootCommandContextMaker}
         setVisible={setCommandModalVisible}
         visible={commandModalVisible}
       />
+      <SyncFollowingModal />
 
       {updateProfileNftVisible && (
         <PfpkNftSelectionModal
