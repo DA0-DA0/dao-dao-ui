@@ -1,7 +1,15 @@
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import MeiliSearch from 'meilisearch'
 
 import { IndexerDumpState } from '@dao-dao/types'
-import { SEARCH_API_KEY, SEARCH_DAOS_INDEX, SEARCH_HOST } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  SEARCH_API_KEY,
+  SEARCH_DAOS_INDEX,
+  SEARCH_HOST,
+} from '@dao-dao/utils'
+
+import daosHiddenFromSearch from '../daos_hidden_from_search.json'
 
 let _client: MeiliSearch | undefined
 
@@ -27,10 +35,19 @@ export interface DaoSearchResult {
 export const searchDaos = async (
   query: string,
   limit?: number,
-  exclude?: string[]
+  _exclude?: string[]
 ) => {
   const client = await loadClient()
   const index = client.index(SEARCH_DAOS_INDEX)
+
+  const exclude = [
+    // Exclude DAOs that are hidden from search, only on mainnet.
+    ...(CHAIN_ID === ChainInfoID.Juno1
+      ? daosHiddenFromSearch.map(({ coreAddress }) => coreAddress)
+      : []),
+    // Exclude DAOs that are in the exclude list.
+    ...(_exclude || []),
+  ]
 
   const results = await index.search<DaoSearchResult>(query, {
     limit,
@@ -40,7 +57,7 @@ export const searchDaos = async (
       // UPDATE: Commenting this out for now, since many DAOs have trouble
       // finding themselves before they've made a proposal.
       // `(NOT value.proposalCount EXISTS) OR (value.proposalCount > 0)`,
-      ...(exclude?.length
+      ...(exclude.length
         ? // Exclude DAOs that are in the exclude list.
           [`NOT contractAddress IN ["${exclude.join('", "')}"]`]
         : []),
