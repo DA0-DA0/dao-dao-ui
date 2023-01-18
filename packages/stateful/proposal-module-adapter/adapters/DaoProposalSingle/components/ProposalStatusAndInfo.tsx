@@ -39,7 +39,7 @@ import {
 
 import { SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
-import { ProfileDisplay } from '../../../../components/ProfileDisplay'
+import { EntityDisplay } from '../../../../components/EntityDisplay'
 import { useAwaitNextBlock, useMembership } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
@@ -147,7 +147,7 @@ const InnerProposalStatusAndInfo = ({
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
       Value: (props) => (
-        <ProfileDisplay
+        <EntityDisplay
           address={proposal.proposer}
           copyToClipboardProps={{
             ...props,

@@ -4,7 +4,7 @@ import {
   useCachedLoadable,
 } from '@dao-dao/stateless'
 
-import { ProfileDisplay } from '../../../../../components/ProfileDisplay'
+import { EntityDisplay } from '../../../../../components/EntityDisplay'
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
 import { listAllVotesSelector } from '../../contracts/DaoProposalSingle.common.recoil'
 import { useLoadingProposal } from '../../hooks'
@@ -32,7 +32,7 @@ export const ProposalVotes = () => {
 
   return (
     <StatelessProposalVotes
-      ProfileDisplay={ProfileDisplay}
+      EntityDisplay={EntityDisplay}
       VoteDisplay={VoteDisplay}
       votes={
         votesLoadable.state !== 'hasValue'

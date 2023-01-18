@@ -19,7 +19,7 @@ import {
 import { AddressInputProps } from '@dao-dao/types'
 import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
-import { ProfileDisplay } from './ProfileDisplay'
+import { EntityDisplay } from './EntityDisplay'
 
 export const AddressInput = <
   FV extends FieldValues,
@@ -48,8 +48,8 @@ export const AddressInput = <
   // Cache searched profiles public keys in background so they're ready if
   // selected. We cannot retrieve the public key for an address without the
   // account existing on chain. If we're on a chain the user hasn't used before,
-  // their profile won't actually load in the `ProfileDisplay` component.
-  // Profile search uses names and public keys, but `ProfileDisplay` needs to
+  // their profile won't actually load in the `EntityDisplay` component.
+  // Profile search uses names and public keys, but `EntityDisplay` needs to
   // extract the public key from the address. Thus, we can precache the searched
   // profiles even if they don't exist on the current chain.
   const setWalletHexPublicKeyOverrides = useSetRecoilState(
@@ -86,7 +86,7 @@ export const AddressInput = <
   return (
     <StatelessAddressInput<FV, FieldName>
       {...props}
-      ProfileDisplay={props.ProfileDisplay || ProfileDisplay}
+      EntityDisplay={props.EntityDisplay || EntityDisplay}
       autoComplete="off"
       autofillProfiles={
         hasFormValue
