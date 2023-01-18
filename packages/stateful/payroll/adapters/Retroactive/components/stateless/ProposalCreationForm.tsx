@@ -341,10 +341,11 @@ export const ProposalCreationForm = ({
                           backgroundClassName
                         )}
                       >
-                        {
-                          compensation.compensationPerAttribute[attributeIndex]
-                            .averageRating
-                        }
+                        {compensation.compensationPerAttribute[
+                          attributeIndex
+                        ].averageRating.toLocaleString(undefined, {
+                          maximumSignificantDigits: 4,
+                        })}
                       </p>
                     ))}
 
