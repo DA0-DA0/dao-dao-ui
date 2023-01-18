@@ -1,13 +1,9 @@
 import uniq from 'lodash.uniq'
 import { atom, selector, selectorFamily, waitForAll } from 'recoil'
 
-import {
-  openProposalsSelector,
-  refreshFollowingDaosAtom,
-  walletAddressAtom,
-} from '@dao-dao/state'
+import { refreshFollowingDaosAtom, walletAddressAtom } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
-import { Expiration, ProposalModule, WithChainId } from '@dao-dao/types'
+import { WithChainId } from '@dao-dao/types'
 import { CHAIN_ID, FOLLOWING_DAOS_API_BASE } from '@dao-dao/utils'
 
 import { daoDropdownInfoSelector } from './cards'
@@ -94,68 +90,4 @@ export const followingDaosWithProposalModulesSelector = selector({
       proposalModules: proposalModules[index],
     }))
   },
-})
-
-interface DaoWithOpenProposals {
-  coreAddress: string
-  proposalModules: ProposalModule[]
-  openProposals: {
-    proposalModule: ProposalModule
-    proposalNumber: number
-    expiration: Expiration
-    voted?: boolean
-  }[]
-}
-
-export const followingDaosWithOpenProposalsSelector = selectorFamily<
-  DaoWithOpenProposals[],
-  WithChainId<{ walletAddress?: string }>
->({
-  key: 'followingDaosWithOpenProposals',
-  get:
-    ({ walletAddress, chainId }) =>
-    ({ get }) => {
-      const followingDaosWithProposalModules = get(
-        followingDaosWithProposalModulesSelector
-      )
-
-      const openProposalsPerDao = get(
-        waitForAll(
-          followingDaosWithProposalModules.map(({ coreAddress }) =>
-            openProposalsSelector({
-              coreAddress,
-              address: walletAddress,
-              chainId,
-            })
-          )
-        )
-      )
-
-      return followingDaosWithProposalModules.map(
-        ({ coreAddress, proposalModules }, index): DaoWithOpenProposals => {
-          const proposalModulesWithOpenProposals = openProposalsPerDao[index]
-
-          return {
-            coreAddress,
-            proposalModules,
-            openProposals: proposalModules.flatMap(
-              (proposalModule) =>
-                proposalModulesWithOpenProposals
-                  .find(
-                    ({ proposalModuleAddress }) =>
-                      proposalModuleAddress === proposalModule.address
-                  )
-                  ?.proposals.map(
-                    ({ id, proposal: { expiration }, voted }) => ({
-                      proposalModule,
-                      proposalNumber: id,
-                      expiration,
-                      voted,
-                    })
-                  ) ?? []
-            ),
-          }
-        }
-      )
-    },
 })

@@ -33,7 +33,8 @@ import { CommandModalContextMaker } from '@dao-dao/types'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import { CommandModal, makeGenericContext } from '../command'
-import { useFollowingDaos, useInbox, useWalletInfo } from '../hooks'
+import { useFollowingDaos, useWalletInfo } from '../hooks'
+import { useInbox } from '../inbox'
 import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,

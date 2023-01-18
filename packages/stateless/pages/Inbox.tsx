@@ -1,8 +1,4 @@
-import {
-  DoneOutlineRounded,
-  Refresh,
-  WhereToVoteOutlined,
-} from '@mui/icons-material'
+import { Refresh, WhereToVoteOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -19,14 +15,12 @@ import {
 
 export interface InboxProps {
   state: InboxState
-  noFollowingDaos: boolean
   rightSidebarContent: ReactNode
   LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export const Inbox = ({
   state: { loading, refreshing, refresh, daosWithItems, itemCount },
-  noFollowingDaos,
   rightSidebarContent,
   LinkWrapper,
 }: InboxProps) => {
@@ -75,11 +69,6 @@ export const Inbox = ({
       <div className="mx-auto flex max-w-5xl flex-col items-stretch">
         {loading ? (
           <Loader fill={false} />
-        ) : noFollowingDaos ? (
-          <NoContent
-            Icon={DoneOutlineRounded}
-            body={t('info.noFollowedDaos')}
-          />
         ) : itemCount === 0 ? (
           <NoContent
             Icon={WhereToVoteOutlined}

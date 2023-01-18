@@ -46,7 +46,6 @@ Default.args = {
     itemCount: 42,
     refresh: () => {},
   },
-  noFollowingDaos: false,
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
@@ -84,7 +83,6 @@ NothingOpen.args = {
     itemCount: 0,
     refresh: () => {},
   },
-  noFollowingDaos: false,
 }
 
 export const NothingFollowed = Template.bind({})
@@ -97,5 +95,4 @@ NothingFollowed.args = {
     itemCount: 0,
     refresh: () => {},
   },
-  noFollowingDaos: true,
 }

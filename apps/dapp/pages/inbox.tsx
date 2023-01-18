@@ -12,7 +12,6 @@ import {
   ProfileDisconnectedCard,
   ProfileHomeCard,
   SuspenseLoader,
-  useFollowingDaos,
 } from '@dao-dao/stateful'
 import { Inbox, PageLoader, useAppLayoutContext } from '@dao-dao/stateless'
 import { SITE_URL } from '@dao-dao/utils'
@@ -21,12 +20,10 @@ const InnerInbox = () => {
   const { connected } = useWallet()
 
   const { inbox } = useAppLayoutContext()
-  const { daos } = useFollowingDaos()
 
   return (
     <Inbox
       LinkWrapper={LinkWrapper}
-      noFollowingDaos={!daos.loading && daos.data.following.length === 0}
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }

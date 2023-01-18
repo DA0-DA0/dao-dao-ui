@@ -44,8 +44,6 @@ export const Collapsible = ({
     </>
   )
 
-  console.log('TK', children)
-
   return (
     <div className={clsx('flex flex-col gap-4', containerClassName)}>
       <div className={clsx('flex flex-row items-stretch', headerClassName)}>
