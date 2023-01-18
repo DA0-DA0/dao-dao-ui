@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { CommandModalContextSectionItem } from '@dao-dao/types/command'
 import { toAccessibleImageUrl } from '@dao-dao/utils'
 
+import { TooltipInfoIcon } from '../tooltip'
+
 export interface ItemRowProps {
   item: CommandModalContextSectionItem
   selected: boolean
@@ -24,6 +26,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
             'cursor-pointer hover:bg-background-interactive-hover',
           !item.disabled && selected && 'bg-background-interactive-hover',
           item.loading && 'animate-pulse',
+          item.className,
           className
         )}
         onClick={item.disabled ? undefined : onClick}
@@ -60,12 +63,14 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
 
         <p
           className={clsx(
-            'link-text font-medium transition',
+            'link-text grow font-medium transition',
             item.disabled ? 'text-text-interactive-disabled' : 'text-text-body'
           )}
         >
           {item.name}
         </p>
+
+        {!!item.tooltip && <TooltipInfoIcon size="xs" title={item.tooltip} />}
       </div>
     )
   }

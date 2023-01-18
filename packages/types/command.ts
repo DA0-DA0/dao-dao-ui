@@ -12,6 +12,8 @@ export type CommandModalContextSectionItem<
   ExtraItemProperties extends {} = {}
 > = ExtraItemProperties & {
   name: string
+  tooltip?: string
+  className?: string
   disabled?: boolean
   loading?: boolean
 } & (

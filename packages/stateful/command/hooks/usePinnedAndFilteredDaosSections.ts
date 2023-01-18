@@ -4,6 +4,7 @@ import { searchDaosSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import {
   CommandModalContextSection,
+  CommandModalContextSectionItem,
   CommandModalContextUseSectionsOptions,
   CommandModalDaoInfo,
 } from '@dao-dao/types'
@@ -54,13 +55,19 @@ export const usePinnedAndFilteredDaosSections = ({
             contractAddress,
             value: {
               config: { name, image_url },
+              proposalCount,
             },
-          }): CommandModalDaoInfo => ({
+          }): CommandModalContextSectionItem<CommandModalDaoInfo> => ({
             // Nothing specific to set here yet, just uses default.
             chainId: undefined,
             coreAddress: contractAddress,
             name,
             imageUrl: image_url || getFallbackImage(contractAddress),
+            // If DAO has no proposals...
+            ...(proposalCount === 0 && {
+              className: 'opacity-50',
+              tooltip: t('info.noProposalsTooltip'),
+            }),
           })
         )
     : // Otherwise when filter is empty, display featured DAOs.
