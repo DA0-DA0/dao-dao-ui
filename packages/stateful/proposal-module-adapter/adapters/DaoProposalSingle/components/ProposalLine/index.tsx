@@ -1,5 +1,6 @@
 import {
   ProposalLineLoader,
+  ProposalStatus,
   ProposalLine as StatelessProposalLine,
 } from '@dao-dao/stateless'
 import { BaseProposalLineProps } from '@dao-dao/types'
@@ -10,7 +11,6 @@ import { useProposalModuleAdapterOptions } from '../../../../react'
 import { useLoadingProposal, useLoadingWalletVoteInfo } from '../../hooks'
 import { ProposalWithMetadata } from '../../types'
 import { ProposalWalletVote } from '../ProposalWalletVote'
-import { ProposalStatus } from './ProposalStatus'
 
 export const ProposalLine = (props: BaseProposalLineProps) => {
   const loadingProposal = useLoadingProposal()

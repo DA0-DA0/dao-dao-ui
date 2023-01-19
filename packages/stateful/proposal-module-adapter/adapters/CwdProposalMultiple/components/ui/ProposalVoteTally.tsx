@@ -35,10 +35,10 @@ export const ProposalVoteTally = ({
 
   return (
     <div className="flex flex-col">
-      <p className="primary-text text-text-body gap-4 py-4 pt-5">
-        {'Voting Progress'}
+      <p className="primary-text gap-4 py-4 pt-5 text-text-body">
+        {t('title.votingProgress')}
       </p>
-      <div className="border-border-secondary bg-component-widget rounded-lg border">
+      <div className="rounded-lg border border-border-secondary bg-component-widget">
         <div className="space-y-4 py-4 px-6">
           {/* Threshold title */}
           <p className="link-text text-text-body">
@@ -72,13 +72,13 @@ export const ProposalVoteTally = ({
           {turnoutTotal > 0 && (
             <div className="secondary-text flex flex-row items-center justify-between gap-2">
               <div className="flex flex-row items-center gap-1">
-                <p className="text-text-tertiary">{'Current winner'}</p>
+                <p className="text-text-tertiary">{t('title.currentWinner')}</p>
               </div>
 
               {/* Winning option display */}
               <p className="flex flex-row items-center gap-1">
                 <p className="text-text-body">
-                  {isTie ? 'Tied' : winningChoice.title}
+                  {isTie ? t('title.Tied') : winningChoice.title}
                 </p>
               </p>
             </div>
@@ -87,7 +87,7 @@ export const ProposalVoteTally = ({
 
         {/* Quorum, if present */}
         {effectiveQuorum && (
-          <div className="border-border-secondary space-y-4 border-t py-4 px-6">
+          <div className="space-y-4 border-t border-border-secondary py-4 px-6">
             {/* Quorum title */}
             <p className="link-text text-text-body">
               {t('title.percentTurnout', {
@@ -131,11 +131,11 @@ export const ProposalVoteTally = ({
 
                 {quorumReached ? (
                   <Tooltip title={t('info.reached')}>
-                    <Check className="text-icon-primary !h-5 !w-5" />
+                    <Check className="!h-5 !w-5 text-icon-primary" />
                   </Tooltip>
                 ) : (
                   <Tooltip title={t('info.notMet')}>
-                    <Close className="text-icon-primary !h-5 !w-5" />
+                    <Close className="!h-5 !w-5 text-icon-primary" />
                   </Tooltip>
                 )}
               </p>
@@ -151,9 +151,9 @@ export const ProposalVoteTallyLoader = () => {
   const { t } = useTranslation()
 
   return (
-    <div className="border-border-secondary bg-component-widget animate-pulse rounded-lg border">
+    <div className="animate-pulse rounded-lg border border-border-secondary bg-component-widget">
       {/* Quorum, if present */}
-      <div className="border-border-secondary space-y-4 border-t py-4 px-6">
+      <div className="space-y-4 border-t border-border-secondary py-4 px-6">
         {/* Quorum title */}
         <p className="link-text text-text-body">{t('title.turnout')}</p>
 

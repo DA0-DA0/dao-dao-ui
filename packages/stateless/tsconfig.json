@@ -1,6 +1,10 @@
 {
   "extends": "@dao-dao/config/ts/react-library.json",
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../stateful/proposal-module-adapter/adapters/CwdProposalMultiple/components/ui/MultipleChoiceOption.tsx"
+  ],
   "exclude": ["build", "dist", "node_modules"],
   "compilerOptions": {
     "module": "commonjs"

@@ -161,8 +161,8 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                   disabled={!isCreating}
                   error={errors?.depositInfo?.cw20Address}
                   fieldName={fieldNamePrefix + 'depositInfo.cw20Address'}
-                  iconType="contract"
                   register={register}
+                  type="contract"
                   validation={[
                     validateRequired,
                     validateContractAddress,

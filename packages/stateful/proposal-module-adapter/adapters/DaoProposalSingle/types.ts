@@ -49,7 +49,7 @@ export interface DaoCreationConfig {
 }
 
 export interface VotesInfo {
-  threshold?: ProcessedTQ
+  threshold: ProcessedTQ
   quorum?: ProcessedTQ
   // Raw info
   yesVotes: number

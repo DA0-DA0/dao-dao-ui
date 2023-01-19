@@ -1,6 +1,0 @@
-export * from './AllowRevotingVotingConfigItem'
-export * from './getInstantiateInfo'
-export * from './ProposalDepositVotingConfigItem'
-export * from './QuorumVotingConfigItem'
-export * from './ThresholdVotingConfigItem'
-export * from './VotingDurationVotingConfigItem'

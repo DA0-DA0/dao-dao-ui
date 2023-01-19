@@ -5,6 +5,7 @@ import {
 } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/CwdProposalMultiple'
 
+import { getInstantiateInfo } from '../DaoProposalSingle/daoCreation/getInstantiateInfo'
 import {
   NewProposal,
   makeDepositInfoSelector,
@@ -20,14 +21,6 @@ import {
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
-import {
-  AllowRevotingVotingConfigItem,
-  ProposalDepositVotingConfigItem,
-  QuorumVotingConfigItem,
-  ThresholdVotingConfigItem,
-  VotingDurationVotingConfigItem,
-  getInstantiateInfo,
-} from './daoCreation'
 import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
@@ -168,18 +161,12 @@ export const CwdProposalMultipleAdapter: ProposalModuleAdapter<
       allowRevoting: false,
     },
 
+    // TODO: reconcile daoCreation for both adapters
     votingConfig: {
-      items: [VotingDurationVotingConfigItem, ProposalDepositVotingConfigItem],
-      advancedItems: [
-        AllowRevotingVotingConfigItem,
-        ThresholdVotingConfigItem,
-        QuorumVotingConfigItem,
-      ],
-      advancedWarningI18nKeys: [
-        'daoCreationAdapter.DaoProposalSingle.advancedWarning',
-      ],
+      items: [],
+      advancedItems: [],
+      advancedWarningI18nKeys: [],
     },
-
     getInstantiateInfo,
   },
 }

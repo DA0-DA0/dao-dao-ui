@@ -48,7 +48,7 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     adapter: {
       components: {
         ProposalStatusAndInfo,
-        ProposalInnerContentDisplay: ProposalInnerContentDisplay,
+        ProposalInnerContentDisplay,
         ProposalVoteTally,
         ProposalVotes,
       },

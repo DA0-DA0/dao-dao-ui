@@ -27,17 +27,17 @@ import {
   BaseProposalStatusAndInfoProps,
   CheckedDepositInfo,
   DepositRefundPolicy,
+  ProposalStatus,
 } from '@dao-dao/types'
-import { Status, Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { MultipleChoiceVote } from '@dao-dao/types/contracts/CwdProposalMultiple'
 import {
   CHAIN_TXN_URL_PREFIX,
   formatPercentOf100,
   processError,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../components'
+import { EntityDisplay, SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
-import { ProfileDisplay } from '../../../../components/ProfileDisplay'
 import { useAwaitNextBlock, useMembership } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useClose, useExecute } from '../contracts/CwdProposalMultiple.hooks'
@@ -58,7 +58,7 @@ export const ProposalStatusAndInfo = (
   props: BaseProposalStatusAndInfoProps
 ) => {
   const loadingProposal = useLoadingProposal()
-  const loadingVotesInfo = useLoadingVotesInfo()
+  const loadingMultipleChoiceVotesInfo = useLoadingVotesInfo()
   const loadingDepositInfo = useLoadingDepositInfo()
 
   return (
@@ -66,18 +66,18 @@ export const ProposalStatusAndInfo = (
       fallback={<InnerProposalStatusAndInfoLoader {...props} />}
       forceFallback={
         loadingProposal.loading ||
-        loadingVotesInfo.loading ||
+        loadingMultipleChoiceVotesInfo.loading ||
         loadingDepositInfo.loading
       }
     >
       {!loadingProposal.loading &&
-        !loadingVotesInfo.loading &&
+        !loadingMultipleChoiceVotesInfo.loading &&
         !loadingDepositInfo.loading && (
           <InnerProposalStatusAndInfo
             {...props}
             depositInfo={loadingDepositInfo.data}
             proposal={loadingProposal.data}
-            votesInfo={loadingVotesInfo.data}
+            votesInfo={loadingMultipleChoiceVotesInfo.data}
           />
         )}
     </SuspenseLoader>
@@ -116,7 +116,7 @@ const InnerProposalStatusAndInfo = ({
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
-  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
+  const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
     {
       Icon: ({ className }) => (
         <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
@@ -132,7 +132,7 @@ const InnerProposalStatusAndInfo = ({
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
       Value: (props) => (
-        <ProfileDisplay
+        <EntityDisplay
           address={proposal.proposer}
           copyToClipboardProps={{
             ...props,
@@ -155,7 +155,7 @@ const InnerProposalStatusAndInfo = ({
             label: t('title.revoting'),
             Value: (props) => <p {...props}>{t('info.enabled')}</p>,
           },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
+        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
       : []),
     ...(timestampInfo?.display
       ? ([
@@ -166,7 +166,7 @@ const InnerProposalStatusAndInfo = ({
               <p {...props}>{timestampInfo.display!.content}</p>
             ),
           },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
+        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
       : []),
     ...(loadingExecutionTxHash.loading || loadingExecutionTxHash.data
       ? ([
@@ -194,15 +194,15 @@ const InnerProposalStatusAndInfo = ({
                 </div>
               ) : null,
           },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
+        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
       : []),
   ]
 
   let status: string
-  if (proposal.status === Status.Open) {
+  if (proposal.status === ProposalStatus.Open) {
     if (quorumReached) {
       if (isTie) {
-        status = t('info.proposalStatus.willFailTiedVote')
+        status = t('info.proposalStatus.willFailTiedMultipleChoiceVote')
       } else {
         // Will pass
         status = t('info.proposalStatus.willPass')
@@ -221,7 +221,7 @@ const InnerProposalStatusAndInfo = ({
         extra:
           // Add sentence about closing to receive deposit back if it needs to
           // be closed and will refund.
-          proposal.status === Status.Rejected &&
+          proposal.status === ProposalStatus.Rejected &&
           depositInfo?.refund_policy === DepositRefundPolicy.Always
             ? ` ${t('info.proposalDepositWillBeRefunded')}`
             : '',
@@ -284,7 +284,10 @@ const InnerProposalStatusAndInfo = ({
   const awaitNextBlock = useAwaitNextBlock()
   // Refresh proposal and list of proposals (for list status) once voting ends.
   useEffect(() => {
-    if (proposal.status !== Status.Open || !timestampInfo?.expirationDate) {
+    if (
+      proposal.status !== ProposalStatus.Open ||
+      !timestampInfo?.expirationDate
+    ) {
       return
     }
 
@@ -326,7 +329,7 @@ const InnerProposalStatusAndInfo = ({
     <StatelessProposalStatusAndInfo
       {...props}
       action={
-        proposal.status === Status.Passed &&
+        proposal.status === ProposalStatus.Passed &&
         // Show if anyone can execute OR if the wallet is a member.
         (!config.only_members_execute || isMember)
           ? {
@@ -335,7 +338,7 @@ const InnerProposalStatusAndInfo = ({
               loading: actionLoading,
               doAction: onExecute,
             }
-          : proposal.status === Status.Rejected
+          : proposal.status === ProposalStatus.Rejected
           ? {
               label: t('button.close'),
               Icon: CancelOutlined,
@@ -371,7 +374,7 @@ const InnerProposalStatusAndInfoLoader = (
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
     <p className={clsx('animate-pulse', className)}>...</p>
   )
-  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
+  const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
     {
       Icon: ({ className }) => (
         <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />

@@ -279,7 +279,7 @@ export const listAllVotesSelector = selectorFamily<
     proposalId: number
   }
 >({
-  key: 'daoProposalSingleCommonListAllVotes',
+  key: 'daoProposalMultipleCommonListAllVotes',
   get:
     ({ proposalId, ...queryClientParams }) =>
     async ({ get }) => {
@@ -325,7 +325,7 @@ export const proposalCreationPolicySelector = selectorFamily<
       const creationPolicy = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoProposalSingle/creationPolicy',
+          formulaName: 'daoProposalMultiple/creationPolicy',
         })
       )
       if (creationPolicy) {
@@ -378,7 +378,7 @@ export const daoSelector = selectorFamily<
       const dao = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoProposalSingle/dao',
+          formulaName: 'daoProposalMultiple/dao',
         })
       )
       if (dao) {

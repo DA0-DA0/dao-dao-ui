@@ -2,12 +2,13 @@
 import CircleIcon from '@mui/icons-material/Circle'
 import PanToolOutlinedIcon from '@mui/icons-material/PanToolOutlined'
 
-import { MULTIPLE_CHOICE_OPTION_COLORS } from '@dao-dao/stateless'
 import { ProposalVoteOption } from '@dao-dao/types'
 import {
   MultipleChoiceProposal,
   MultipleChoiceVote,
 } from '@dao-dao/types/contracts/CwdProposalMultiple'
+
+import { MULTIPLE_CHOICE_OPTION_COLORS } from '../components/ui/MultipleChoiceOption'
 
 export const useVoteOptions = (
   proposal: MultipleChoiceProposal

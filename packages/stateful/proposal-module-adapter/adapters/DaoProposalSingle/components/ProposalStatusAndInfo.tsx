@@ -29,8 +29,9 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
+  ProposalStatus,
 } from '@dao-dao/types'
-import { Status, Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   CHAIN_TXN_URL_PREFIX,
   formatPercentOf100,
@@ -216,7 +217,7 @@ const InnerProposalStatusAndInfo = ({
   ]
 
   const status =
-    proposal.status === Status.Open
+    proposal.status === ProposalStatus.Open
       ? thresholdReached && (!quorum || quorumReached)
         ? t('info.proposalStatus.willPass')
         : !thresholdReached && (!quorum || quorumReached)
@@ -232,7 +233,7 @@ const InnerProposalStatusAndInfo = ({
           extra:
             // Add sentence about closing to receive deposit back if it needs to
             // be closed and will refund.
-            proposal.status === Status.Rejected &&
+            proposal.status === ProposalStatus.Rejected &&
             depositInfo?.refund_policy === DepositRefundPolicy.Always
               ? ` ${t('info.proposalDepositWillBeRefunded')}`
               : '',
@@ -297,7 +298,10 @@ const InnerProposalStatusAndInfo = ({
   const awaitNextBlock = useAwaitNextBlock()
   // Refresh proposal and list of proposals (for list status) once voting ends.
   useEffect(() => {
-    if (proposal.status !== Status.Open || !timestampInfo?.expirationDate) {
+    if (
+      proposal.status !== ProposalStatus.Open ||
+      !timestampInfo?.expirationDate
+    ) {
       return
     }
 
@@ -339,7 +343,7 @@ const InnerProposalStatusAndInfo = ({
     <StatelessProposalStatusAndInfo
       {...props}
       action={
-        proposal.status === Status.Passed &&
+        proposal.status === ProposalStatus.Passed &&
         // Show if anyone can execute OR if the wallet is a member.
         (!config.only_members_execute || isMember)
           ? {
@@ -348,7 +352,7 @@ const InnerProposalStatusAndInfo = ({
               loading: actionLoading,
               doAction: onExecute,
             }
-          : proposal.status === Status.Rejected
+          : proposal.status === ProposalStatus.Rejected
           ? {
               label: t('button.close'),
               Icon: CancelOutlined,

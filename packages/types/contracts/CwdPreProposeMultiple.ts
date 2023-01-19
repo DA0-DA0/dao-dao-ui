@@ -1,3 +1,5 @@
+import { ProposalStatus } from './common'
+
 export interface ConfigResponse {
   deposit_info?: CheckedDepositInfo | null
   open_proposal_submission: boolean
@@ -70,7 +72,7 @@ export type ExecuteMsg =
     }
   | {
       proposal_completed_hook: {
-        new_status: Status
+        new_status: ProposalStatus
         proposal_id: number
       }
     }
@@ -235,13 +237,7 @@ export type GovMsg = {
   }
 }
 export type VoteOption = 'yes' | 'no' | 'abstain' | 'no_with_veto'
-export type Status =
-  | 'open'
-  | 'rejected'
-  | 'passed'
-  | 'executed'
-  | 'closed'
-  | 'execution_failed'
+
 export interface MultipleChoiceOptions {
   options: MultipleChoiceOption[]
 }

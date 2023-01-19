@@ -1,21 +1,21 @@
-import { MULTIPLE_CHOICE_OPTION_COLORS } from '@dao-dao/stateless'
 import { LoadingData, ProcessedTQType } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/CwdProposalMultiple'
 
-import { useProcessTQ } from '../common/hooks'
+import { useProcessQ } from '../common/hooks/useProcessQ'
+import { MULTIPLE_CHOICE_OPTION_COLORS } from '../components/ui/MultipleChoiceOption'
 import { VotesInfo } from '../types'
 import { useLoadingProposal } from './useLoadingProposal'
 
 export const useLoadingVotesInfo = (): LoadingData<VotesInfo> => {
   const loadingProposal = useLoadingProposal()
-  const processTQ = useProcessTQ()
+  const processQ = useProcessQ()
 
   if (loadingProposal.loading) {
     return { loading: true }
   }
 
   const proposal = loadingProposal.data
-  const { quorum } = processTQ(proposal.voting_strategy)
+  const { quorum } = processQ(proposal.voting_strategy)
 
   const vote_weights = [...proposal.votes.vote_weights]
 

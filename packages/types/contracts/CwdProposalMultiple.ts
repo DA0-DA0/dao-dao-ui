@@ -1,3 +1,5 @@
+import { ProposalStatus } from './common'
+
 export type Duration =
   | {
       height: number
@@ -400,15 +402,6 @@ export type Expiration =
       never: {}
     }
 
-export enum Status {
-  Open = 'open',
-  Rejected = 'rejected',
-  Passed = 'passed',
-  Executed = 'executed',
-  ExecutionFailed = 'execution_failed',
-  Closed = 'closed',
-}
-
 export interface ProposalListResponse {
   proposals: ProposalResponse[]
 }
@@ -425,7 +418,7 @@ export interface MultipleChoiceProposal {
   min_voting_period?: Expiration | null
   proposer: Addr
   start_height: number
-  status: Status
+  status: ProposalStatus
   title: string
   total_power: Uint128
   votes: MultipleChoiceVotes

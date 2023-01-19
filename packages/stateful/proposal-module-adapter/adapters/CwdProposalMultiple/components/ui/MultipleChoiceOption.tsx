@@ -16,6 +16,14 @@ import { useTranslation } from 'react-i18next'
 import { SuspenseLoader } from '@dao-dao/stateful'
 import { NewProposalForm } from '@dao-dao/stateful/proposal-module-adapter/adapters/CwdProposalMultiple/types'
 import {
+  ActionCardLoader,
+  ActionSelector,
+  Button,
+  InputErrorMessage,
+  TextAreaInput,
+  TextInput,
+} from '@dao-dao/stateless'
+import {
   Action,
   ActionKey,
   ActionKeyAndData,
@@ -23,12 +31,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'
-
-import { ActionCardLoader, ActionSelector } from '../actions'
-import { Button } from '../buttons/Button'
-import { InputErrorMessage } from '../inputs/InputErrorMessage'
-import { TextAreaInput } from '../inputs/TextAreaInput'
-import { TextInput } from '../inputs/TextInput'
 
 export interface MultipleChoiceOptionData {
   title: string
@@ -101,15 +103,9 @@ export const MultipleChoiceOption = <
         <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
           <div className="flex grow flex-col">
             <div className="flex flex-row items-center gap-3">
-              <div
-                style={{
-                  paddingTop: '10px',
-                  width: '50px',
-                  height: 'auto',
-                }}
-              >
+              <div className="h-auto w-12 pt-2">
                 <CircleIcon
-                  className="h-3 w-3 align-middle"
+                  className="!h-3 !w-3 align-middle"
                   style={{
                     color:
                       MULTIPLE_CHOICE_OPTION_COLORS[
@@ -154,7 +150,7 @@ export const MultipleChoiceOption = <
             <TextAreaInput
               error={errors.choices?.[optionIndex]?.description}
               fieldName={description}
-              placeholder={'Give your choice a description...'}
+              placeholder={t('form.multipleChoiceOptionDescriptionPlaceholder')}
               register={registerOption}
               rows={5}
               validation={[validateRequired]}

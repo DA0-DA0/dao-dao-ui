@@ -4,10 +4,11 @@ import {
   CosmosMsgFor_Empty,
   Duration,
   Expiration,
+  ProposalStatus,
   Timestamp,
   Uint128,
 } from './common'
-import { Status, Threshold, Votes } from './DaoProposalSingle.common'
+import { Threshold, Votes } from './DaoProposalSingle.common'
 
 export interface ConfigResponse {
   allow_revoting: boolean
@@ -72,7 +73,7 @@ export interface Proposal {
   msgs: CosmosMsgFor_Empty[]
   proposer: Addr
   start_height: number
-  status: Status
+  status: ProposalStatus
   threshold: Threshold
   title: string
   total_power: Uint128

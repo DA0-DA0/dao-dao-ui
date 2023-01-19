@@ -1,12 +1,7 @@
 {
   "extends": "@dao-dao/config/ts/react-library.json",
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "../../stateless/ProposalStatus.tsx"],
+  "exclude": ["node_modules"],
   "compilerOptions": {
     "forceConsistentCasingInFileNames": false
   }

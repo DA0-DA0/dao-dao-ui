@@ -4,7 +4,7 @@ import { ProposalInnerContentDisplay } from './ProposalInnerContentDisplay'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / components / ui / ProposalInnerContentDisplay',
+    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / CwdProposalMultiple / components / ui / ProposalInnerContentDisplay',
   component: ProposalInnerContentDisplay,
 } as ComponentMeta<typeof ProposalInnerContentDisplay>
 

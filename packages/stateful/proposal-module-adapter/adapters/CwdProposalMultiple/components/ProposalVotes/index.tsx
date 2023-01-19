@@ -1,10 +1,10 @@
 import {
-  EntityDisplay,
   ProposalVote,
   ProposalVotes as StatelessProposalVotes,
   useCachedLoadable,
 } from '@dao-dao/stateless'
 
+import { EntityDisplay } from '../../../../../components'
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
 import { listAllVotesSelector } from '../../contracts/CwdProposalMultiple.recoil'
 import { useLoadingProposal } from '../../hooks'

@@ -23,7 +23,7 @@ import {
 } from '@dao-dao/utils'
 
 import { configSelector } from '../../contracts/CwdProposalMultiple.recoil'
-import { useProcessTQ } from './useProcessTQ'
+import { useProcessQ } from './useProcessQ'
 
 export const makeUseProfileNewProposalCardInfoLines =
   ({
@@ -44,8 +44,8 @@ export const makeUseProfileNewProposalCardInfoLines =
     )
     const depositInfo = useRecoilValue(depositInfoSelector)
 
-    const processTQ = useProcessTQ()
-    const { quorum } = processTQ(config.voting_strategy)
+    const processQ = useProcessQ()
+    const { quorum } = processQ(config.voting_strategy)
 
     const cw20DepositTokenInfo = useRecoilValue(
       depositInfo?.denom && 'cw20' in depositInfo.denom

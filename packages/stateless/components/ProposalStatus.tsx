@@ -11,7 +11,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { StatusDisplay } from '@dao-dao/stateless'
-import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { ProposalStatus as Status } from '@dao-dao/types'
 
 export interface ProposalStatusProps {
   status: Status
@@ -43,7 +43,7 @@ export const ProposalStatus = ({
             dimmed ? 'text-text-tertiary' : textClassName
           )}
         >
-          {t(`proposalStatusTitleShort.${status}`)}
+          {t(`proposalStatusTitle.${status}`)}
         </p>
       }
     />

@@ -1,26 +1,20 @@
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ProcessedTQ,
-  ProcessedTQType,
-  ProcessedThresholdQuorum,
-} from '@dao-dao/types'
+import { ProcessedQuorum, ProcessedTQ, ProcessedTQType } from '@dao-dao/types'
 import { VotingStrategy } from '@dao-dao/types/contracts/CwdProposalMultiple'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-export const useProcessTQ = () => {
+export const useProcessQ = () => {
   const { t } = useTranslation()
 
   return useCallback(
-    (data: VotingStrategy): ProcessedThresholdQuorum => {
+    (data: VotingStrategy): ProcessedQuorum => {
       if (!('single_choice' in data)) {
         console.error('unrecognized voting_strategy')
       }
 
-      //! Threshold
       // Multiple choice does not have thresholds
-      let threshold: undefined
       //! Quorum
       let quorum: ProcessedTQ
       const quorumSource = data.single_choice.quorum
@@ -40,7 +34,6 @@ export const useProcessTQ = () => {
       }
 
       return {
-        threshold,
         quorum,
       }
     },

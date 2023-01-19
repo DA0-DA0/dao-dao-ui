@@ -16,6 +16,7 @@ import {
   useFormContext,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 
 import {
   Button,
@@ -24,8 +25,6 @@ import {
   FilterableItemPopup,
   IconButton,
   InputErrorMessage,
-  MULTIPLE_CHOICE_OPTION_COLORS,
-  MultipleChoiceOption,
   ProposalContentDisplay,
   TextAreaInput,
   TextInput,
@@ -46,6 +45,10 @@ import {
 } from '@dao-dao/utils'
 
 import { useWalletInfo } from '../../../../../hooks'
+import {
+  MULTIPLE_CHOICE_OPTION_COLORS,
+  MultipleChoiceOption,
+} from '../../components/ui/MultipleChoiceOption'
 import { NewProposalData, NewProposalForm } from '../../types'
 
 enum ProposeSubmitValue {
@@ -279,7 +282,26 @@ export const NewProposal = ({
                 type="submit"
                 value={ProposeSubmitValue.Submit}
               >
-                <p>{t('button.publish')}</p>
+                <p>
+                  {simulationBypassExpiration ? (
+                    // If bypassing simulation, change button label and show a
+                    // countdown until simulation bypass expires.
+                    <TimeAgo
+                      date={simulationBypassExpiration}
+                      formatter={(value, _, suffix) =>
+                        suffix === 'from now'
+                          ? t('button.publishAnywayWithCountdown', {
+                              secondsRemaining: value,
+                            })
+                          : // In case the countdown expires before the re-render,
+                            // just show the original button label.
+                            t('button.publish')
+                      }
+                    />
+                  ) : (
+                    t('button.publish')
+                  )}
+                </p>
                 <GavelRounded className="!h-4 !w-4" />
               </Button>
             </Tooltip>
@@ -317,7 +339,7 @@ export const NewProposal = ({
                         <div className="flex flex-row items-center">
                           <div>
                             <CircleIcon
-                              className="h-3 w-3 align-middle"
+                              className="!h-3 !w-3 align-middle"
                               style={{
                                 color:
                                   MULTIPLE_CHOICE_OPTION_COLORS[
@@ -327,10 +349,10 @@ export const NewProposal = ({
                             />
                           </div>
                           <p className="primary-text px-2 text-text-body">
-                            {choice.title}
+                            choice.title
                           </p>
                         </div>
-                        <p className="secondary-text">{choice.description}</p>
+                        <p className="secondary-text">choice.description</p>
                         {
                           <CosmosMessageDisplay
                             value={decodedMessagesString(

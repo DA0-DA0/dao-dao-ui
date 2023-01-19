@@ -50,22 +50,19 @@ export const ProposalVoteTally = ({
     ? turnoutAbstainPercent
     : totalAbstainPercent
 
-  // Single choice proposals must have a threshold.
-  const prop_threshold = threshold!
-
   // Convert various threshold types to a relevant percent to use in UI
   // elements.
   const effectiveThresholdValue =
-    prop_threshold.type === ProcessedTQType.Majority
+    threshold.type === ProcessedTQType.Majority
       ? // If there are no abstain votes, this should be 50.
         // If there are 4% abstain votes, this should be 48, since 48%+1 of the 96% non-abstain votes need to be in favor.
         50 -
         (abstainVotes / 2 / ((quorum ? turnoutTotal : totalVotingPower) || 1)) *
           100
-      : prop_threshold.type === ProcessedTQType.Percent
-      ? prop_threshold.value
+      : threshold.type === ProcessedTQType.Percent
+      ? threshold.value
       : // If absolute, compute percent of total.
-        (prop_threshold.value / totalVotingPower) * 100
+        (threshold.value / totalVotingPower) * 100
   // Quorum does not have an absolute setting.
   const effectiveQuorum = quorum && {
     display: quorum.display,
@@ -73,7 +70,7 @@ export const ProposalVoteTally = ({
   }
 
   return (
-    <div className="border-border-secondary bg-component-widget rounded-lg border">
+    <div className="rounded-lg border border-border-secondary bg-component-widget">
       <div className="space-y-4 py-4 px-6">
         {/* Threshold title */}
         <p className="link-text text-text-body">
@@ -148,17 +145,17 @@ export const ProposalVoteTally = ({
           {/* Threshold config display */}
           <p className="flex flex-row items-center gap-1">
             <Tooltip title={t('info.proposalThresholdTooltip')}>
-              <p className="text-text-body">{prop_threshold.display}</p>
+              <p className="text-text-body">{threshold.display}</p>
             </Tooltip>
 
             {/* A proposal will automatically close once no more votes can affect the outcome, not waiting for the expiration time. This means we can simply check if the proposal is open to know whether the threshold being reached indicates a final verdict or just the current state of the turnout. We could, more verbosely, always display the final verdict (reached/not met) when there is no quorum (i.e. if using an absolute threshold config), but once the final verdict is set, the status will change. Thus, we don't need to check if a quorum exists to choose this status indicator. */}
             {thresholdReached ? (
               <Tooltip title={open ? t('info.passing') : t('info.reached')}>
-                <Check className="text-icon-primary !h-5 !w-5" />
+                <Check className="!h-5 !w-5 text-icon-primary" />
               </Tooltip>
             ) : (
               <Tooltip title={open ? t('info.failing') : t('info.notMet')}>
-                <Close className="text-icon-primary !h-5 !w-5" />
+                <Close className="!h-5 !w-5 text-icon-primary" />
               </Tooltip>
             )}
           </p>
@@ -167,7 +164,7 @@ export const ProposalVoteTally = ({
 
       {/* Quorum, if present */}
       {effectiveQuorum && (
-        <div className="border-border-secondary space-y-4 border-t py-4 px-6">
+        <div className="space-y-4 border-t border-border-secondary py-4 px-6">
           {/* Quorum title */}
           <p className="link-text text-text-body">
             {t('title.percentTurnout', {
@@ -211,11 +208,11 @@ export const ProposalVoteTally = ({
 
               {quorumReached ? (
                 <Tooltip title={t('info.reached')}>
-                  <Check className="text-icon-primary !h-5 !w-5" />
+                  <Check className="!h-5 !w-5 text-icon-primary" />
                 </Tooltip>
               ) : (
                 <Tooltip title={t('info.notMet')}>
-                  <Close className="text-icon-primary !h-5 !w-5" />
+                  <Close className="!h-5 !w-5 text-icon-primary" />
                 </Tooltip>
               )}
             </p>
@@ -227,11 +224,11 @@ export const ProposalVoteTally = ({
       {
         // effectiveThresholdValue is set to 50 when the type is majority, but
         // there are no ties in the majority case, so we can ignore it.
-        prop_threshold.type !== ProcessedTQType.Majority &&
+        threshold.type !== ProcessedTQType.Majority &&
           effectiveThresholdValue === 50 &&
           turnoutTotal > 0 &&
           yesVotes === noVotes && (
-            <div className="border-border-secondary space-y-2 border-t py-4 px-6">
+            <div className="space-y-2 border-t border-border-secondary py-4 px-6">
               <p className="secondary-text text-text-tertiary">
                 {t('title.proposalTieClarification')}
               </p>
@@ -245,7 +242,7 @@ export const ProposalVoteTally = ({
 
       {/* Provide clarification for what happens in the event that all voters abstain. */}
       {turnoutTotal > 0 && abstainVotes === turnoutTotal && (
-        <div className="border-border-secondary space-y-2 border-t py-4 px-6">
+        <div className="space-y-2 border-t border-border-secondary py-4 px-6">
           <p className="secondary-text text-text-tertiary">
             {t('title.proposalAllAbstain')}
           </p>
@@ -263,7 +260,7 @@ export const ProposalVoteTallyLoader = () => {
   const { t } = useTranslation()
 
   return (
-    <div className="border-border-secondary bg-component-widget animate-pulse rounded-lg border">
+    <div className="animate-pulse rounded-lg border border-border-secondary bg-component-widget">
       <div className="space-y-4 py-4 px-6">
         {/* Threshold title */}
         <p className="link-text text-text-body">{t('title.ratioOfVotes')}</p>
@@ -310,7 +307,7 @@ export const ProposalVoteTallyLoader = () => {
       </div>
 
       {/* Quorum, if present */}
-      <div className="border-border-secondary space-y-4 border-t py-4 px-6">
+      <div className="space-y-4 border-t border-border-secondary py-4 px-6">
         {/* Quorum title */}
         <p className="link-text text-text-body">{t('title.turnout')}</p>
 

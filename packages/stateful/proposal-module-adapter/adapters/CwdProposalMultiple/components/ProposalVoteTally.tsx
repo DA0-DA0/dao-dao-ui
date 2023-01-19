@@ -1,4 +1,4 @@
-import { Status } from '@dao-dao/types/contracts/CwdProposalMultiple'
+import { ProposalStatus } from '@dao-dao/types'
 
 import { SuspenseLoader } from '../../../../components'
 import { useLoadingProposal, useLoadingVotesInfo } from '../hooks'
@@ -18,7 +18,7 @@ export const ProposalVoteTally = () => {
     >
       {!loadingProposal.loading && !loadingVotesInfo.loading && (
         <StatelessProposalVoteTally
-          open={loadingProposal.data.status === Status.Open}
+          open={loadingProposal.data.status === ProposalStatus.Open}
           votesInfo={loadingVotesInfo.data}
         />
       )}

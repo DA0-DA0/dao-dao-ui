@@ -53,7 +53,7 @@ import { makeGetProposalInfo } from '../../functions'
 import { NewProposalData, NewProposalForm } from '../../types'
 import {
   makeUseActions as makeUseProposalModuleActions,
-  useProcessTQ,
+  useProcessQ,
 } from '../hooks'
 import { NewProposal as StatelessNewProposal } from '../ui/NewProposal'
 
@@ -70,7 +70,7 @@ export const NewProposal = ({
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
-  const { imageUrl: daoImageUrl } = useDaoInfoContext()
+  const { name: daoName, imageUrl: daoImageUrl } = useDaoInfoContext()
   const { chainId, coreAddress, proposalModule } = options
   const { connected, address: walletAddress } = useWallet()
   const { isMember = false } = useMembership({
@@ -210,7 +210,7 @@ export const NewProposal = ({
     [setRefreshWalletBalancesId]
   )
 
-  const processTQ = useProcessTQ()
+  const processQ = useProcessQ()
 
   const increaseCw20DepositAllowance = Cw20BaseHooks.useIncreaseAllowance({
     contractAddress: depositInfoCw20TokenAddress ?? '',
@@ -361,7 +361,7 @@ export const NewProposal = ({
             )
           ).proposal
 
-          const { quorum } = processTQ(proposal.voting_strategy)
+          const { quorum } = processQ(proposal.voting_strategy)
 
           onCreateSuccess(
             proposalInfo
@@ -388,6 +388,7 @@ export const NewProposal = ({
                       : []),
                   ],
                   dao: {
+                    name: daoName,
                     coreAddress,
                     imageUrl: daoImageUrl,
                   },
@@ -398,6 +399,7 @@ export const NewProposal = ({
                   description: formMethods.getValues('description'),
                   info: [],
                   dao: {
+                    name: daoName,
                     coreAddress,
                     imageUrl: daoImageUrl,
                   },
@@ -426,7 +428,7 @@ export const NewProposal = ({
       options,
       cosmWasmClient,
       blocksPerYear,
-      processTQ,
+      processQ,
       onCreateSuccess,
       formMethods,
       coreAddress,

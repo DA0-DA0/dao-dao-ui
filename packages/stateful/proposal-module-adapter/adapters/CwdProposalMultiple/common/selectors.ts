@@ -9,9 +9,9 @@ import { blockHeightTimestampSafeSelector } from '@dao-dao/state'
 import {
   CheckedDepositInfo,
   ContractVersion,
+  ProposalStatus,
   WithChainId,
 } from '@dao-dao/types'
-import { Status } from '@dao-dao/types/contracts/CwdProposalMultiple'
 import {
   CommonProposalListInfo,
   DepositInfoSelector,
@@ -71,7 +71,7 @@ export const reverseProposalInfosSelector: (
           id: `${proposalModulePrefix}${id}`,
           proposalNumber: id,
           timestamp: timestamps[index],
-          isOpen: status === Status.Open,
+          isOpen: status === ProposalStatus.Open,
         })
       )
 
@@ -86,7 +86,7 @@ export const makeDepositInfoSelector: (
     preProposeAddress: string | null
   }>
 ) => DepositInfoSelector = selectorFamily({
-  key: 'cwdProposalSingleDepositInfo',
+  key: 'cwdProposalMultipleDepositInfo',
   get:
     ({ chainId, preProposeAddress }) =>
     ({ get }) => {

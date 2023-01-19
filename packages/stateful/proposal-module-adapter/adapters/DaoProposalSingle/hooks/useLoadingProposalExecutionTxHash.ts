@@ -2,7 +2,7 @@ import { constSelector } from 'recoil'
 
 import { proposalExecutionTXHashSelector } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { ProposalStatus } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
@@ -19,8 +19,8 @@ export const useLoadingProposalExecutionTxHash = () => {
   const executionTxHashLoadable = useCachedLoadable(
     loadingProposal.loading
       ? undefined
-      : loadingProposal.data.status === Status.Executed ||
-        loadingProposal.data.status === Status.ExecutionFailed
+      : loadingProposal.data.status === ProposalStatus.Executed ||
+        loadingProposal.data.status === ProposalStatus.ExecutionFailed
       ? proposalExecutionTXHashSelector({
           contractAddress: proposalModuleAddress,
           proposalId: proposalNumber,

@@ -41,18 +41,8 @@ export const ProgressBar = ({
             height: thickness,
           }}
         >
-          {data?.map(({ value, color, tooltipTitle }, index) =>
-            tooltipTitle ? (
-              <Tooltip title={tooltipTitle}>
-                <div
-                  key={index}
-                  className="h-full"
-                  style={{ width: `${value}%`, backgroundColor: color }}
-                >
-                  {' '}
-                </div>
-              </Tooltip>
-            ) : (
+          {data?.map(({ value, color, tooltipTitle }, index) => (
+            <Tooltip key={index} title={tooltipTitle}>
               <div
                 key={index}
                 className="h-full"
@@ -60,8 +50,8 @@ export const ProgressBar = ({
               >
                 {' '}
               </div>
-            )
-          )}
+            </Tooltip>
+          ))}
         </div>
       ))}
     </div>

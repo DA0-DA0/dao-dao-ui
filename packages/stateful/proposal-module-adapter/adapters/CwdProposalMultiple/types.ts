@@ -1,6 +1,5 @@
 import { ReactNode } from 'react'
 
-import { MultipleChoiceOptionData } from '@dao-dao/stateless'
 import {
   DepositInfoSelector,
   DurationWithUnits,
@@ -16,6 +15,8 @@ import {
   MultipleChoiceProposal,
   Uint128,
 } from '@dao-dao/types/contracts/CwdProposalMultiple'
+
+import { MultipleChoiceOptionData } from './components/ui/MultipleChoiceOption'
 
 export interface NewProposalForm {
   title: string

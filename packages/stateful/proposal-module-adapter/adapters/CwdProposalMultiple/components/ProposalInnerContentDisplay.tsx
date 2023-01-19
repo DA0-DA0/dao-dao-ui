@@ -3,11 +3,7 @@ import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import {
-  CosmosMessageDisplay,
-  Loader,
-  MULTIPLE_CHOICE_OPTION_COLORS,
-} from '@dao-dao/stateless'
+import { CosmosMessageDisplay, Loader } from '@dao-dao/stateless'
 import {
   ActionAndData,
   BaseProposalInnerContentDisplayProps,
@@ -23,6 +19,7 @@ import { SuspenseLoader } from '../../../../components'
 import { useProposalModuleAdapterContext } from '../../../react'
 import { useLoadingProposal } from '../hooks'
 import { NewProposalForm } from '../types'
+import { MULTIPLE_CHOICE_OPTION_COLORS } from './ui/MultipleChoiceOption'
 import { ProposalInnerContentDisplay as StatelessProposalInnerContentDisplay } from './ui/ProposalInnerContentDisplay'
 
 export const ProposalInnerContentDisplay = (
@@ -122,7 +119,7 @@ export const InnerProposalInnerContentDisplay = ({
         <div className="flex flex-row items-center">
           <div>
             <CircleIcon
-              className="h-3 w-3 align-middle"
+              className="!h-3 !w-3 align-middle"
               style={{
                 color:
                   MULTIPLE_CHOICE_OPTION_COLORS[

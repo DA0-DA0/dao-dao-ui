@@ -270,3 +270,12 @@ export interface MintMsg {
     recipient: string
   }
 }
+
+export enum ProposalStatus {
+  Open = 'open',
+  Rejected = 'rejected',
+  Passed = 'passed',
+  Executed = 'executed',
+  ExecutionFailed = 'execution_failed',
+  Closed = 'closed',
+}

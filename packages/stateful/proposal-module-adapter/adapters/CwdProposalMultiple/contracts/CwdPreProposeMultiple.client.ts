@@ -5,7 +5,7 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Coin } from '@dao-dao/types/contracts/common'
+import { Coin, ProposalStatus } from '@dao-dao/types/contracts/common'
 import {
   Addr,
   Binary,
@@ -13,7 +13,6 @@ import {
   DepositInfoResponse,
   Empty,
   ProposeMessage,
-  Status,
   UncheckedDenom,
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/CwdPreProposeMultiple'
@@ -142,7 +141,7 @@ export interface CwdPreProposeMultipleInterface
       newStatus,
       proposalId,
     }: {
-      newStatus: Status
+      newStatus: ProposalStatus
       proposalId: number
     },
     fee?: number | StdFee | 'auto',
@@ -301,7 +300,7 @@ export class CwdPreProposeMultipleClient
       newStatus,
       proposalId,
     }: {
-      newStatus: Status
+      newStatus: ProposalStatus
       proposalId: number
     },
     fee: number | StdFee | 'auto' = 'auto',
