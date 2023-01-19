@@ -1,4 +1,4 @@
-import { PushPinOutlined } from '@mui/icons-material'
+import { DoneOutlineRounded } from '@mui/icons-material'
 import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -10,25 +10,28 @@ import { Dropdown, DropdownOption } from '../inputs/Dropdown'
 import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
 
-export interface PinnedDaosProps {
+export interface FollowingDaosProps {
   DaoCard: ComponentType<DaoCardInfo>
-  pinnedDaos: LoadingData<DaoCardInfo[]>
+  followingDaos: LoadingData<DaoCardInfo[]>
   openSearch: () => void
 }
 
-export const PinnedDaos = ({
+export const FollowingDaos = ({
   DaoCard,
-  pinnedDaos,
+  followingDaos,
   openSearch,
-}: PinnedDaosProps) => {
+}: FollowingDaosProps) => {
   const { t } = useTranslation()
 
   const sortOptions = useMemo(
-    () => getSortOptions(pinnedDaos.loading ? [] : pinnedDaos.data),
-    [pinnedDaos]
+    () => getSortOptions(followingDaos.loading ? [] : followingDaos.data),
+    [followingDaos]
   )
-  const { sortedData: sortedPinnedDaos, dropdownProps: sortDropdownProps } =
-    useDropdownSorter(pinnedDaos.loading ? [] : pinnedDaos.data, sortOptions)
+  const { sortedData: sortedFollowingDaos, dropdownProps: sortDropdownProps } =
+    useDropdownSorter(
+      followingDaos.loading ? [] : followingDaos.data,
+      sortOptions
+    )
 
   return (
     <>
@@ -42,11 +45,11 @@ export const PinnedDaos = ({
         </div>
       </div>
 
-      {pinnedDaos.loading ? (
+      {followingDaos.loading ? (
         <Loader />
-      ) : pinnedDaos.data.length === 0 ? (
+      ) : followingDaos.data.length === 0 ? (
         <NoContent
-          Icon={PushPinOutlined}
+          Icon={DoneOutlineRounded}
           actionNudge={t('info.wouldYouLikeToSearchQuestion')}
           body={t('info.noDaosFollowedYet')}
           buttonLabel={t('button.searchDaos')}
@@ -54,7 +57,7 @@ export const PinnedDaos = ({
         />
       ) : (
         <GridCardContainer>
-          {sortedPinnedDaos.map((props) => (
+          {sortedFollowingDaos.map((props) => (
             <DaoCard key={props.coreAddress} {...props} />
           ))}
         </GridCardContainer>
@@ -64,15 +67,15 @@ export const PinnedDaos = ({
 }
 
 const getSortOptions = (
-  pinnedDaos: DaoCardInfo[]
+  followingDaos: DaoCardInfo[]
 ): DropdownOption<SortFn<DaoCardInfo>>[] => [
   {
     label: 'Date followed (oldest → newest)',
-    value: (a, b) => pinnedDaos.indexOf(a) - pinnedDaos.indexOf(b),
+    value: (a, b) => followingDaos.indexOf(a) - followingDaos.indexOf(b),
   },
   {
     label: 'Date followed (newest → oldest)',
-    value: (a, b) => pinnedDaos.indexOf(b) - pinnedDaos.indexOf(a),
+    value: (a, b) => followingDaos.indexOf(b) - followingDaos.indexOf(a),
   },
   {
     label: 'DAO name (A → Z)',

@@ -10,7 +10,7 @@ import {
   TextAreaInput,
   Tooltip,
 } from '@dao-dao/stateless'
-import { Profile } from '@dao-dao/types'
+import { Entity } from '@dao-dao/types'
 import { formatDateTimeTz, validateRequired } from '@dao-dao/utils'
 
 import { Status, SurveyStatus } from '../../types'
@@ -23,16 +23,16 @@ export interface ContributionFormProps {
   status: Status
   onSubmit: (contribution: string) => Promise<void>
   loading: boolean
-  profile: Profile
-  ProfileDisplay: ComponentType
+  entity: Entity
+  EntityDisplay: ComponentType
 }
 
 export const ContributionForm = ({
   status: { survey, contribution: existingContribution },
   onSubmit,
   loading,
-  profile,
-  ProfileDisplay,
+  entity,
+  EntityDisplay,
 }: ContributionFormProps) => {
   const { t } = useTranslation()
 
@@ -87,15 +87,13 @@ export const ContributionForm = ({
 
         <div className="flex grow flex-col gap-4 pb-10">
           <div className="flex flex-col gap-2">
-            <p className="primary-text text-text-body">{t('title.you')}</p>
-
-            <ProfileDisplay />
-
-            <p className="caption-text italic">
-              {t('info.profileExplanation')}
+            <p className="primary-text text-text-body">
+              {t('title.yourSubmission')}
             </p>
 
-            {!profile.name && (
+            <EntityDisplay />
+
+            {!entity.name && (
               <p className="caption-text text-text-interactive-error">
                 {t('error.compensationCycleNeedsProfileName')}
               </p>
@@ -136,16 +134,14 @@ export const ContributionForm = ({
                       new Date(survey.contributionsOpenAt)
                     ),
                   })
-                : !profile.name
+                : !entity.name
                 ? t('error.compensationCycleNeedsProfileName')
                 : undefined
             }
           >
             <Button
               className="self-end"
-              disabled={
-                survey.status === SurveyStatus.Inactive || !profile.name
-              }
+              disabled={survey.status === SurveyStatus.Inactive || !entity.name}
               loading={loading}
               type="submit"
             >

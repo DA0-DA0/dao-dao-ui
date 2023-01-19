@@ -171,7 +171,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   return (
     <ActionCard Icon={MoneyEmoji} onRemove={onRemove} title={t('title.spend')}>
-      <div className="flex flex-col gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
+      <div className="flex min-w-0 flex-col flex-wrap gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
         <div className="flex grow flex-row items-stretch gap-2">
           <NumberInput
             containerClassName="grow"
@@ -223,7 +223,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           </SelectInput>
         </div>
 
-        <div className="flex grow flex-row items-stretch gap-2 sm:gap-3">
+        <div className="flex min-w-0 grow flex-row items-stretch gap-2 sm:gap-3">
           <div className="flex flex-row items-center pl-1 sm:pl-0">
             <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
             <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />

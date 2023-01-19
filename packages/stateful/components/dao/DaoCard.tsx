@@ -8,14 +8,15 @@ import {
 import { DaoCardInfo } from '@dao-dao/types/stateless/DaoCard'
 import { CHAIN_ID, loadableToLoadingData } from '@dao-dao/utils'
 
-import { usePinnedDaos } from '../../hooks'
+import { useFollowingDaos } from '../../hooks'
 import { daoCardInfoLazyDataSelector } from '../../recoil'
 import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 
 export const DaoCard = (props: DaoCardInfo) => {
   const { address: walletAddress } = useWallet()
-  const { isPinned: isDaoPinned, setPinned, setUnpinned } = usePinnedDaos()
+  const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
+    useFollowingDaos()
 
   const lazyDataLoadable = useCachedLoadable(
     daoCardInfoLazyDataSelector({
@@ -37,22 +38,27 @@ export const DaoCard = (props: DaoCardInfo) => {
       {...props}
       IconButtonLink={IconButtonLink}
       LinkWrapper={LinkWrapper}
-      hidePin={
-        // Don't allow pinning if on different chain. This prevents pinning
-        // featured mainnet DAOs on testnet.
-        props.chainId !== CHAIN_ID
+      follow={
+        // Only allow following on same chain. This prevents following featured
+        // mainnet DAOs on testnet.
+        props.chainId === CHAIN_ID
+          ? {
+              following: isFollowing(props.coreAddress),
+              updatingFollowing,
+              onFollow: () =>
+                isFollowing(props.coreAddress)
+                  ? setUnfollowing(props.coreAddress)
+                  : setFollowing(props.coreAddress),
+            }
+          : {
+              hide: true,
+            }
       }
       lazyData={loadableToLoadingData(lazyDataLoadable, {
         isMember: false,
         tokenBalance: NaN,
         proposalCount: NaN,
       })}
-      onPin={() =>
-        isDaoPinned(props.coreAddress)
-          ? setUnpinned(props.coreAddress)
-          : setPinned(props.coreAddress)
-      }
-      pinned={isDaoPinned(props.coreAddress)}
     />
   )
 }

@@ -53,7 +53,7 @@ const InnerProposalLine = ({
       )}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
-      timestampDisplay={proposal.timestampInfo?.display?.content}
+      timestampDisplay={proposal.timestampInfo?.display}
       title={proposal.title}
       vote={
         // If no wallet connected, show nothing. If loading, also show nothing

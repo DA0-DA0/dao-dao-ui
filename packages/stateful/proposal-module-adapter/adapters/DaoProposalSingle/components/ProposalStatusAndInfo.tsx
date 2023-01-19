@@ -21,6 +21,7 @@ import {
   Logo,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
+  Tooltip,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -38,7 +39,7 @@ import {
 
 import { SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
-import { ProfileDisplay } from '../../../../components/ProfileDisplay'
+import { EntityDisplay } from '../../../../components/EntityDisplay'
 import { useAwaitNextBlock, useMembership } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
@@ -146,7 +147,7 @@ const InnerProposalStatusAndInfo = ({
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
       Value: (props) => (
-        <ProfileDisplay
+        <EntityDisplay
           address={proposal.proposer}
           copyToClipboardProps={{
             ...props,
@@ -177,7 +178,9 @@ const InnerProposalStatusAndInfo = ({
             Icon: HourglassTopRounded,
             label: timestampInfo.display.label,
             Value: (props) => (
-              <p {...props}>{timestampInfo.display!.content}</p>
+              <Tooltip title={timestampInfo.display!.tooltip}>
+                <p {...props}>{timestampInfo.display!.content}</p>
+              </Tooltip>
             ),
           },
         ] as ProposalStatusAndInfoProps<Vote>['info'])

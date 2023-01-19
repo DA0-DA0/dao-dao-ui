@@ -48,7 +48,7 @@ export const DiscordNotifierConfigureModal = ({
         variant="secondary"
       >
         <DiscordIcon className="!h-5 !w-5" />
-        <p>{t('button.setupDiscordNotifier')}</p>
+        <p>{t('button.setUpDiscordNotifier')}</p>
       </Button>
 
       {registrations.length > 0 && (

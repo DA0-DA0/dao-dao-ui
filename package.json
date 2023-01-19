@@ -7,6 +7,7 @@
   ],
   "scripts": {
     "build": "turbo run build --continue --filter=\"!@dao-dao/storybook\"",
+    "build:no-dapp": "turbo run build --continue --filter=\"!@dao-dao/storybook\" --filter=\"!@dao-dao/dapp\"",
     "dev": "yarn dapp dev",
     "start": "yarn dapp start",
     "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue --parallel",

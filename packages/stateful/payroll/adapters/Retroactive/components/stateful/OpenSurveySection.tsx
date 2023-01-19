@@ -169,28 +169,32 @@ export const OpenSurveySection = ({
         ({ contributor, compensation }) =>
           compensation.compensationPerAttribute.flatMap(
             ({ nativeTokens, cw20Tokens }): CosmosMsgFor_Empty[] => [
-              ...nativeTokens.map(
-                ({ amount, denom }): CosmosMsgFor_Empty => ({
-                  bank: makeBankMessage(amount, contributor.address, denom),
-                })
-              ),
-              ...cw20Tokens.map(
-                ({ amount, address }): CosmosMsgFor_Empty =>
-                  makeWasmMessage({
-                    wasm: {
-                      execute: {
-                        contract_addr: address,
-                        funds: [],
-                        msg: {
-                          transfer: {
-                            recipient: contributor.address,
-                            amount,
+              ...nativeTokens
+                .filter(({ amount }) => amount !== '0')
+                .map(
+                  ({ amount, denom }): CosmosMsgFor_Empty => ({
+                    bank: makeBankMessage(amount, contributor.address, denom),
+                  })
+                ),
+              ...cw20Tokens
+                .filter(({ amount }) => amount !== '0')
+                .map(
+                  ({ amount, address }): CosmosMsgFor_Empty =>
+                    makeWasmMessage({
+                      wasm: {
+                        execute: {
+                          contract_addr: address,
+                          funds: [],
+                          msg: {
+                            transfer: {
+                              recipient: contributor.address,
+                              amount,
+                            },
                           },
                         },
                       },
-                    },
-                  })
-              ),
+                    })
+                ),
             ]
           )
       )

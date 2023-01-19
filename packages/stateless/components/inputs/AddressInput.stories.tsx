@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useFormContext } from 'react-hook-form'
 
-import { ProfileDisplay } from '@dao-dao/stateful'
+import { EntityDisplay } from '@dao-dao/stateful'
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 
 import { AddressInput } from './AddressInput'
@@ -21,7 +21,7 @@ export const Default = Template.bind({})
 Default.args = {
   fieldName: 'fieldName' as any,
   placeholder: 'juno...',
-  ProfileDisplay,
+  EntityDisplay,
 }
 
 export const AutofillProfile = Template.bind({})
@@ -29,7 +29,7 @@ AutofillProfile.args = {
   fieldName: 'fieldName' as any,
   placeholder: 'juno...',
   type: 'wallet',
-  ProfileDisplay,
+  EntityDisplay,
   autofillProfiles: {
     loading: false,
     hits: [

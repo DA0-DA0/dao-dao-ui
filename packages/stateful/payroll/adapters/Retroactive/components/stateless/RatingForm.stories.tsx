@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { AddressInput, ProfileDisplay } from '../../../../../components'
+import { AddressInput, EntityDisplay } from '../../../../../components'
 import { makeSurvey } from './ContributionForm.stories'
 import { RatingForm } from './RatingForm'
 
@@ -49,7 +49,7 @@ Default.args = {
   onSubmit: async (data) =>
     alert('submit: ' + JSON.stringify(data, undefined, 2)),
   loadingSubmit: false,
-  ProfileDisplay,
+  EntityDisplay,
   AddressInput,
   cw20TokenInfos: [
     {

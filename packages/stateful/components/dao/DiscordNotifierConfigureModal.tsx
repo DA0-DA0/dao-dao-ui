@@ -1,3 +1,7 @@
+import {
+  NotificationsActiveRounded,
+  NotificationsNoneRounded,
+} from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -11,8 +15,9 @@ import {
   refreshDiscordNotifierRegistrationsAtom,
 } from '@dao-dao/state/recoil'
 import {
+  IconButton,
   DiscordNotifierConfigureModal as StatelessDiscordNotifierConfigureModal,
-  DiscordNotifierConfigureModalProps as StatelessDiscordNotifierConfigureModalProps,
+  Tooltip,
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
@@ -26,21 +31,13 @@ import {
 
 import { useCfWorkerAuthPostRequest } from '../../hooks/useCfWorkerAuthPostRequest'
 
-type DiscordNotifierConfigureModalProps = Pick<
-  StatelessDiscordNotifierConfigureModalProps,
-  'onClose' | 'visible'
-> & {
-  open: () => void
-}
-
-export const DiscordNotifierConfigureModal = ({
-  open,
-  ...props
-}: DiscordNotifierConfigureModalProps) => {
+export const DiscordNotifierConfigureModal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { chainId, coreAddress } = useDaoInfoContext()
   const { publicKey } = useWallet(chainId)
+
+  const [visible, setVisible] = useState(false)
 
   // Handle discord notifier code redirect.
   const { ready: postRequestReady, postRequest } = useCfWorkerAuthPostRequest(
@@ -90,6 +87,10 @@ export const DiscordNotifierConfigureModal = ({
         })
       : undefined
   )
+  const registrations =
+    registrationsLoadable.state === 'hasValue'
+      ? registrationsLoadable.contents
+      : []
 
   const setup = () => {
     // Nonce to prevent CSRF attacks.
@@ -150,12 +151,12 @@ export const DiscordNotifierConfigureModal = ({
     }
 
     // Open this modal since we're completing registration.
-    open()
+    setVisible(true)
 
     // Only register once.
     redirected.current = true
     register()
-  }, [router, register, open, postRequestReady])
+  }, [router, register, postRequestReady])
 
   const unregister = useCallback(
     async (id: string) => {
@@ -178,16 +179,28 @@ export const DiscordNotifierConfigureModal = ({
   )
 
   return (
-    <StatelessDiscordNotifierConfigureModal
-      {...props}
-      loading={loading}
-      onDelete={unregister}
-      registrations={
-        registrationsLoadable.state === 'hasValue'
-          ? registrationsLoadable.contents
-          : []
-      }
-      setup={setup}
-    />
+    <>
+      <Tooltip title={t('info.setUpDiscordNotificationsTooltip')}>
+        <IconButton
+          Icon={
+            registrations.length > 0
+              ? NotificationsActiveRounded
+              : NotificationsNoneRounded
+          }
+          iconClassName="!w-5 !h-5"
+          onClick={() => setVisible(true)}
+          variant="secondary"
+        />
+      </Tooltip>
+
+      <StatelessDiscordNotifierConfigureModal
+        loading={loading}
+        onClose={() => setVisible(false)}
+        onDelete={unregister}
+        registrations={registrations}
+        setup={setup}
+        visible={visible}
+      />
+    </>
   )
 }

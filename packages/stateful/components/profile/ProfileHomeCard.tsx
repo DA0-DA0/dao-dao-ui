@@ -29,7 +29,7 @@ export const ProfileHomeCard = () => {
 
   return (
     <StatelessProfileHomeCard
-      inboxProposalCount={inbox.proposalCount}
+      inboxProposalCount={inbox.itemCount}
       lazyData={
         walletBalance === undefined ||
         walletStakedBalance === undefined ||

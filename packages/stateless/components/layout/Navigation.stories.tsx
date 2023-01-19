@@ -28,7 +28,7 @@ export const DefaultArgs: NavigationProps = {
   },
   setCommandModalVisible: () => alert('command!'),
   version: '2.0',
-  pinnedDaos: {
+  followingDaos: {
     loading: false,
     data: [
       {
@@ -150,6 +150,6 @@ Loading.args = {
   ...DefaultArgs,
   inboxCount: { loading: true },
   tokenPrices: { loading: true },
-  pinnedDaos: { loading: true },
+  followingDaos: { loading: true },
 }
 Loading.parameters = Default.parameters

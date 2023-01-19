@@ -131,7 +131,7 @@ export const ProfileHomeCard = ({
           size="lg"
           variant="secondary"
         >
-          {t('button.numProposalsInInbox', { count: inboxProposalCount })}
+          {t('button.inboxWithNumItems', { count: inboxProposalCount })}
         </ButtonLink>
       </div>
     </ProfileCardWrapper>

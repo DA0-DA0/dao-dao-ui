@@ -12,8 +12,6 @@ export interface DaoDropdownInfo {
 
 export interface DaoDropdownProps {
   dao: DaoDropdownInfo
-  expandedLocalStorageKey?: string
-  defaultExpanded?: boolean
   showSubdaos?: boolean
   indent?: number
   compact?: boolean

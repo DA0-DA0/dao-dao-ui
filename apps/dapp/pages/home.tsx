@@ -15,7 +15,7 @@ import {
   ProfileDisconnectedCard,
   ProfileHomeCard,
   useLoadingFeaturedDaoCardInfos,
-  useLoadingPinnedDaoCardInfos,
+  useLoadingFollowingDaoCardInfos,
 } from '@dao-dao/stateful'
 import { Home } from '@dao-dao/stateless'
 
@@ -25,7 +25,7 @@ const HomePage: NextPage = () => {
   const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
 
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
-  const pinnedDaosLoading = useLoadingPinnedDaoCardInfos()
+  const followingDaosLoading = useLoadingFollowingDaoCardInfos()
 
   return (
     <Home
@@ -34,10 +34,10 @@ const HomePage: NextPage = () => {
         DaoCard,
         featuredDaos: featuredDaosLoading,
       }}
-      pinnedDaosProps={{
+      followingDaosProps={{
         DaoCard,
         openSearch: () => setCommandModalVisible(true),
-        pinnedDaos: pinnedDaosLoading,
+        followingDaos: followingDaosLoading,
       }}
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />

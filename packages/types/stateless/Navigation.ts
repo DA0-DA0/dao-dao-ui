@@ -16,7 +16,7 @@ export interface NavigationProps {
   inboxCount: LoadingData<number>
   version: string
   tokenPrices?: LoadingData<NavigationTokenPrice[]>
-  pinnedDaos: LoadingData<DaoDropdownInfo[]>
+  followingDaos: LoadingData<DaoDropdownInfo[]>
   hideInbox?: boolean
   compact: boolean
   setCompact: (compact: boolean) => void

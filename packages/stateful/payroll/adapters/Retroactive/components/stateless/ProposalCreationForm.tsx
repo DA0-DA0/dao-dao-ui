@@ -16,9 +16,9 @@ import {
 } from '@dao-dao/stateless'
 import {
   AmountWithTimestampAndDenom,
+  Entity,
   LoadingData,
-  Profile,
-  StatefulProfileDisplayProps,
+  StatefulEntityDisplayProps,
   TokenInfoResponseWithAddressAndLogo,
 } from '@dao-dao/types'
 import {
@@ -41,11 +41,11 @@ export interface ProposalCreationFormProps {
   completeRatings: CompleteRatings
   onComplete: (data: ProposalCreationFormData) => Promise<void>
   loading: boolean
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   cw20TokenInfos: TokenInfoResponseWithAddressAndLogo[]
   prices: AmountWithTimestampAndDenom[]
   walletAddress: string
-  profile: LoadingData<Profile>
+  entity: LoadingData<Entity>
 }
 
 export const ProposalCreationForm = ({
@@ -53,11 +53,11 @@ export const ProposalCreationForm = ({
   completeRatings,
   onComplete,
   loading,
-  ProfileDisplay,
+  EntityDisplay,
   cw20TokenInfos,
   prices,
   walletAddress,
-  profile,
+  entity,
 }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
 
@@ -129,7 +129,7 @@ export const ProposalCreationForm = ({
                 {t('title.contributor')}
               </p>
               {completeRatings.ratings.map(({ rater }, ratingIndex) => (
-                <ProfileDisplay
+                <EntityDisplay
                   key={rater.publicKey}
                   address={rater.address}
                   className={clsx(
@@ -150,7 +150,7 @@ export const ProposalCreationForm = ({
 
                   return (
                     <Fragment key={contribution.id}>
-                      <ProfileDisplay
+                      <EntityDisplay
                         address={contribution.contributor.address}
                         className={clsx(
                           'p-4',
@@ -320,7 +320,7 @@ export const ProposalCreationForm = ({
                 return (
                   <Fragment key={id}>
                     {/* Profile display */}
-                    <ProfileDisplay
+                    <EntityDisplay
                       address={contributor.address}
                       className={clsx(
                         'p-4',
@@ -341,10 +341,11 @@ export const ProposalCreationForm = ({
                           backgroundClassName
                         )}
                       >
-                        {
-                          compensation.compensationPerAttribute[attributeIndex]
-                            .averageRating
-                        }
+                        {compensation.compensationPerAttribute[
+                          attributeIndex
+                        ].averageRating.toLocaleString(undefined, {
+                          maximumSignificantDigits: 4,
+                        })}
                       </p>
                     ))}
 
@@ -443,9 +444,9 @@ export const ProposalCreationForm = ({
                 createdAt={new Date()}
                 creator={{
                   address: walletAddress,
-                  name: profile.loading
-                    ? profile
-                    : { loading: false, data: profile.data.name },
+                  name: entity.loading
+                    ? entity
+                    : { loading: false, data: entity.data.name },
                 }}
                 description={proposalDescription}
                 title={proposalTitle}
