@@ -48,7 +48,7 @@ export const searchDaos = async (
       .map((filter) => `(${filter})`)
       .join(' AND '),
     // Most recent at the top.
-    sort: ['blockHeight:desc'],
+    sort: ['blockHeight:desc', 'value.proposalCount:desc'],
   })
 
   return results.hits

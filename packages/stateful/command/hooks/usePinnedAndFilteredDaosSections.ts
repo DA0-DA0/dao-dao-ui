@@ -4,6 +4,7 @@ import { searchDaosSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import {
   CommandModalContextSection,
+  CommandModalContextSectionItem,
   CommandModalContextUseSectionsOptions,
   CommandModalDaoInfo,
 } from '@dao-dao/types'
@@ -54,13 +55,20 @@ export const usePinnedAndFilteredDaosSections = ({
             contractAddress,
             value: {
               config: { name, image_url },
+              proposalCount,
             },
-          }): CommandModalDaoInfo => ({
+          }): CommandModalContextSectionItem<CommandModalDaoInfo> => ({
             // Nothing specific to set here yet, just uses default.
             chainId: undefined,
             coreAddress: contractAddress,
             name,
             imageUrl: image_url || getFallbackImage(contractAddress),
+            // If DAO has no proposals, make it less visible and give it a
+            // tooltip to indicate that it may not be active.
+            ...(proposalCount === 0 && {
+              className: 'opacity-50',
+              tooltip: t('info.noProposalsTooltip'),
+            }),
           })
         )
     : // Otherwise when filter is empty, display featured DAOs.
@@ -72,6 +80,9 @@ export const usePinnedAndFilteredDaosSections = ({
     name: t('title.following'),
     onChoose,
     items: pinnedDaosLoading.loading ? [] : pinnedDaosLoading.data,
+    // When a search is active, show above all other sections. This serves to
+    // prioritize the DAOs you follow over all other DAOs you can search.
+    searchOrder: 1,
   }
 
   const daosSection: CommandModalContextSection<CommandModalDaoInfo> = {
