@@ -63,7 +63,8 @@ export const usePinnedAndFilteredDaosSections = ({
             coreAddress: contractAddress,
             name,
             imageUrl: image_url || getFallbackImage(contractAddress),
-            // If DAO has no proposals...
+            // If DAO has no proposals, make it less visible and give it a
+            // tooltip to indicate that it may not be active.
             ...(proposalCount === 0 && {
               className: 'opacity-50',
               tooltip: t('info.noProposalsTooltip'),
