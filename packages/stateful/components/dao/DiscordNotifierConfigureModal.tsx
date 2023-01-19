@@ -180,7 +180,7 @@ export const DiscordNotifierConfigureModal = () => {
 
   return (
     <>
-      <Tooltip title={t('info.setupDiscordNotificationsTooltip')}>
+      <Tooltip title={t('info.setUpDiscordNotificationsTooltip')}>
         <IconButton
           Icon={
             registrations.length > 0
