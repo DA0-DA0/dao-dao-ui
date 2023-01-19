@@ -27,29 +27,6 @@ displayed.
 
 This neatly organizations various payroll systems into one place.
 
-## Usage
-
-Now that the library has been setup, we can use the hook anywhere as a
-descendant of the Provider to access the proposal module adapter interface.
-
-```tsx
-import { SuspenseLoader } from '@dao-dao/stateful'
-import { Loader } from '@dao-dao/stateless'
-import { useProposalModuleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
-
-const ProposalVoteInfo = () => {
-  const {
-    ui: { ProposalVoteInfoInternal },
-  } = useProposalModuleAdapter()
-
-  return (
-    <SuspenseLoader fallback={<Loader />}>
-      <ProposalVoteInfoInternal />
-    </SuspenseLoader>
-  )
-}
-```
-
 ## Writing an adapter
 
 A payroll adapter simply exports one component that renders on the DAO page
@@ -73,3 +50,24 @@ You will likely want to take advantage of the `useDaoInfoContext` hook from the
 `@dao-dao/stateless` package to access information about the DAO (such as
 `coreAddress`), as well as the `useWallet` hook to access information and
 clients for the wallet.
+
+## Usage (already implemented)
+
+Now that the system has been setup, we can use the hook anywhere on a DAO page
+to access the payroll tab for the current DAO.
+
+```tsx
+import { SuspenseLoader } from '@dao-dao/stateful'
+import { usePayrollAdapter } from '@dao-dao/stateful/payroll'
+import { Loader } from '@dao-dao/stateless'
+
+const Payroll = () => {
+  const PayrollTab = usePayrollAdapter()?.PayrollTab
+
+  return (
+    <SuspenseLoader fallback={<Loader />}>
+      <PayrollTab />
+    </SuspenseLoader>
+  )
+}
+```

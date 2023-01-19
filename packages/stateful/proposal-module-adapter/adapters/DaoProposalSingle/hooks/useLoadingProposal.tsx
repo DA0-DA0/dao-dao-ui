@@ -1,4 +1,3 @@
-import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
@@ -12,12 +11,13 @@ import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   convertExpirationToDate,
   formatDate,
+  formatDateTimeTz,
   loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { proposalSelector } from '../contracts/DaoProposalSingle.common.recoil'
-import { ProposalWithMetadata } from '../types'
+import { ProposalWithMetadata, TimestampInfo } from '../types'
 
 // Returns a proposal wrapped in a LoadingData object to allow the UI to respond
 // to its loading state.
@@ -97,44 +97,48 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const executionDate = typeof executedAt === 'string' && new Date(executedAt)
   const closeDate = typeof closedAt === 'string' && new Date(closedAt)
 
-  const dateDisplay: { label: string; content: ReactNode } | undefined =
-    votingOpen
-      ? expirationDate && expirationDate.getTime() > Date.now()
-        ? {
-            label: t('title.timeLeft'),
-            content: (
-              <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
-            ),
-          }
-        : undefined
-      : executionDate
+  const dateDisplay: TimestampInfo['display'] | undefined = votingOpen
+    ? expirationDate && expirationDate.getTime() > Date.now()
       ? {
-          label: t('proposalStatusTitle.executed'),
-          content: formatDate(executionDate),
-        }
-      : closeDate
-      ? {
-          label: t('proposalStatusTitle.closed'),
-          content: formatDate(closeDate),
-        }
-      : completionDate
-      ? {
-          label: t('info.completed'),
-          content: formatDate(completionDate),
-        }
-      : expirationDate
-      ? {
-          label:
-            // If voting is closed, expiration should not be in the future, but
-            // just in case...
-            expirationDate.getTime() > Date.now()
-              ? t('title.expires')
-              : t('info.completed'),
-          content: formatDate(expirationDate),
+          label: t('title.timeLeft'),
+          tooltip: formatDateTimeTz(expirationDate),
+          content: (
+            <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
+          ),
         }
       : undefined
+    : executionDate
+    ? {
+        label: t('proposalStatusTitle.executed'),
+        tooltip: formatDateTimeTz(executionDate),
+        content: formatDate(executionDate),
+      }
+    : closeDate
+    ? {
+        label: t('proposalStatusTitle.closed'),
+        tooltip: formatDateTimeTz(closeDate),
+        content: formatDate(closeDate),
+      }
+    : completionDate
+    ? {
+        label: t('info.completed'),
+        tooltip: formatDateTimeTz(completionDate),
+        content: formatDate(completionDate),
+      }
+    : expirationDate
+    ? {
+        label:
+          // If voting is closed, expiration should not be in the future, but
+          // just in case...
+          expirationDate.getTime() > Date.now()
+            ? t('title.expires')
+            : t('info.completed'),
+        tooltip: formatDateTimeTz(expirationDate),
+        content: formatDate(expirationDate),
+      }
+    : undefined
 
-  const timestampInfo = expirationDate && {
+  const timestampInfo: TimestampInfo | undefined = expirationDate && {
     display: dateDisplay,
     expirationDate,
   }

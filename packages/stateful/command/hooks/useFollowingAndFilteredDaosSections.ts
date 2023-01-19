@@ -12,7 +12,7 @@ import { getFallbackImage } from '@dao-dao/utils'
 
 import {
   useLoadingFeaturedDaoCardInfos,
-  useLoadingPinnedDaoCardInfos,
+  useLoadingFollowingDaoCardInfos,
 } from '../../hooks'
 
 export interface UseFilteredDaosSectionOptions {
@@ -23,7 +23,7 @@ export interface UseFilteredDaosSectionOptions {
 
 const DEFAULT_LIMIT = 7
 
-export const usePinnedAndFilteredDaosSections = ({
+export const useFollowingAndFilteredDaosSections = ({
   options,
   onChoose,
   limit = DEFAULT_LIMIT,
@@ -31,17 +31,18 @@ export const usePinnedAndFilteredDaosSections = ({
   const { t } = useTranslation()
 
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
-  const pinnedDaosLoading = useLoadingPinnedDaoCardInfos()
+  const followingDaosLoading = useLoadingFollowingDaoCardInfos()
 
   const queryResults = useCachedLoadable(
     options.filter
       ? searchDaosSelector({
           query: options.filter,
           limit,
-          // Exclude pinned DAOs from search since they show in a separate section.
-          exclude: pinnedDaosLoading.loading
+          // Exclude following DAOs from search since they show in a separate
+          // section.
+          exclude: followingDaosLoading.loading
             ? undefined
-            : pinnedDaosLoading.data.map(({ coreAddress }) => coreAddress),
+            : followingDaosLoading.data.map(({ coreAddress }) => coreAddress),
         })
       : undefined
   )
@@ -76,10 +77,10 @@ export const usePinnedAndFilteredDaosSections = ({
     ? []
     : featuredDaosLoading.data
 
-  const pinnedSection: CommandModalContextSection<CommandModalDaoInfo> = {
+  const followingSection: CommandModalContextSection<CommandModalDaoInfo> = {
     name: t('title.following'),
     onChoose,
-    items: pinnedDaosLoading.loading ? [] : pinnedDaosLoading.data,
+    items: followingDaosLoading.loading ? [] : followingDaosLoading.data,
     // When a search is active, show above all other sections. This serves to
     // prioritize the DAOs you follow over all other DAOs you can search.
     searchOrder: 1,
@@ -91,5 +92,5 @@ export const usePinnedAndFilteredDaosSections = ({
     items: daos,
   }
 
-  return [pinnedSection, daosSection]
+  return [followingSection, daosSection]
 }

@@ -28,7 +28,7 @@ export interface NoContentProps {
 // card. The button ensures the user knows an action can be performed, but the
 // whole card remains clickable to improve UX. It is often used when there is no
 // content to prompt the user to perform an action, such as when there are no
-// pinned DAOs.
+// following DAOs.
 export const NoContent = forwardRef<HTMLDivElement, NoContentProps>(
   function NoContent(
     {

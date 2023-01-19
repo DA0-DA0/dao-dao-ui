@@ -4,7 +4,7 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
@@ -22,8 +22,8 @@ import {
   SuspenseLoader,
   TreasuryAndNftsTab,
   useEncodedDaoProposalSinglePrefill,
+  useFollowingDaos,
   useMembership,
-  usePinnedDaos,
   useWalletInfo,
 } from '@dao-dao/stateful'
 import { useCoreActionForKey } from '@dao-dao/stateful/actions'
@@ -182,87 +182,80 @@ const InnerDaoHome = () => {
           0
         )
 
-  const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
-  const pinned = isPinned(daoInfo.coreAddress)
+  const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
+    useFollowingDaos()
+  const following = isFollowing(daoInfo.coreAddress)
 
   // Get payroll tab component, if exists.
   const PayrollTab = usePayrollAdapter()?.PayrollTab
 
-  const [showConfigureModal, setShowConfigureModal] = useState(false)
-
   return (
-    <>
-      <DaoHome
-        LinkWrapper={LinkWrapper}
-        SuspenseLoader={SuspenseLoader}
-        daoInfo={daoInfo}
-        daoInfoBar={<DaoInfoBar />}
-        membersTab={MembersTab && <MembersTab />}
-        onConfigure={() => setShowConfigureModal(true)}
-        onPin={() =>
-          pinned
-            ? setUnpinned(daoInfo.coreAddress)
-            : setPinned(daoInfo.coreAddress)
-        }
-        payrollTab={PayrollTab && <PayrollTab />}
-        pinned={pinned}
-        proposalsTab={<ProposalsTab />}
-        rightSidebarContent={
-          connected ? (
-            // If membership not yet loaded, show loading skeleton.
-            isMember === undefined ? (
-              <ProfileDisconnectedCard className="animate-pulse" />
-            ) : isMember ? (
-              <ProfileMemberCard
-                daoName={daoInfo.name}
-                membershipInfo={
-                  <SuspenseLoader fallback={<Loader size={24} />}>
-                    <ProfileCardMemberInfo
-                      deposit={
-                        maxProposalModuleDeposit > 0
-                          ? maxProposalModuleDeposit.toString()
-                          : undefined
-                      }
-                    />
-                  </SuspenseLoader>
-                }
-                showUpdateProfileNft={updateProfileNft.toggle}
-                updateProfileName={updateProfileName}
-                walletProfile={walletProfile}
-              />
-            ) : (
-              <ProfileNotMemberCard
-                daoName={daoInfo.name}
-                membershipInfo={
-                  <SuspenseLoader fallback={<Loader size={24} />}>
-                    <ProfileCardMemberInfo
-                      deposit={
-                        maxProposalModuleDeposit > 0
-                          ? maxProposalModuleDeposit.toString()
-                          : undefined
-                      }
-                    />
-                  </SuspenseLoader>
-                }
-                showUpdateProfileNft={updateProfileNft.toggle}
-                updateProfileName={updateProfileName}
-                walletProfile={walletProfile}
-              />
-            )
+    <DaoHome
+      DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
+      LinkWrapper={LinkWrapper}
+      SuspenseLoader={SuspenseLoader}
+      daoInfo={daoInfo}
+      daoInfoBar={<DaoInfoBar />}
+      follow={{
+        following,
+        onFollow: () =>
+          following
+            ? setUnfollowing(daoInfo.coreAddress)
+            : setFollowing(daoInfo.coreAddress),
+        updatingFollowing,
+      }}
+      membersTab={MembersTab && <MembersTab />}
+      payrollTab={PayrollTab && <PayrollTab />}
+      proposalsTab={<ProposalsTab />}
+      rightSidebarContent={
+        connected ? (
+          // If membership not yet loaded, show loading skeleton.
+          isMember === undefined ? (
+            <ProfileDisconnectedCard className="animate-pulse" />
+          ) : isMember ? (
+            <ProfileMemberCard
+              daoName={daoInfo.name}
+              membershipInfo={
+                <SuspenseLoader fallback={<Loader size={24} />}>
+                  <ProfileCardMemberInfo
+                    deposit={
+                      maxProposalModuleDeposit > 0
+                        ? maxProposalModuleDeposit.toString()
+                        : undefined
+                    }
+                  />
+                </SuspenseLoader>
+              }
+              showUpdateProfileNft={updateProfileNft.toggle}
+              updateProfileName={updateProfileName}
+              walletProfile={walletProfile}
+            />
           ) : (
-            <ProfileDisconnectedCard />
+            <ProfileNotMemberCard
+              daoName={daoInfo.name}
+              membershipInfo={
+                <SuspenseLoader fallback={<Loader size={24} />}>
+                  <ProfileCardMemberInfo
+                    deposit={
+                      maxProposalModuleDeposit > 0
+                        ? maxProposalModuleDeposit.toString()
+                        : undefined
+                    }
+                  />
+                </SuspenseLoader>
+              }
+              showUpdateProfileNft={updateProfileNft.toggle}
+              updateProfileName={updateProfileName}
+              walletProfile={walletProfile}
+            />
           )
-        }
-        subDaosTab={<SubDaosTab />}
-        treasuryAndNftsTab={<TreasuryAndNftsTab />}
-      />
-
-      <DiscordNotifierConfigureModal
-        onClose={() => setShowConfigureModal(false)}
-        open={() => setShowConfigureModal(true)}
-        visible={showConfigureModal}
-      />
-    </>
+        ) : (
+          <ProfileDisconnectedCard />
+        )
+      }
+      subDaosTab={<SubDaosTab />}
+      treasuryAndNftsTab={<TreasuryAndNftsTab />}
+    />
   )
 }
 

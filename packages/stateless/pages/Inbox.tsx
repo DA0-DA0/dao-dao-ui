@@ -1,55 +1,31 @@
-import {
-  PushPinOutlined,
-  Refresh,
-  WhereToVoteOutlined,
-} from '@mui/icons-material'
+import { Refresh, WhereToVoteOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LinkWrapperProps, LoadingData } from '@dao-dao/types'
+import { InboxState, LinkWrapperProps } from '@dao-dao/types'
 
 import {
-  DaoDropdown,
-  DaoDropdownInfo,
+  Collapsible,
   IconButton,
   Loader,
   NoContent,
-  ProposalContainer,
   useAppLayoutContext,
 } from '../components'
 
-export interface DaoWithProposals<T> {
-  dao: Omit<DaoDropdownInfo, 'content' | 'subdaos'>
-  proposals: T[]
-}
-
-export interface InboxProps<T> {
-  daosWithProposals: LoadingData<DaoWithProposals<T>[]>
+export interface InboxProps {
+  state: InboxState
   rightSidebarContent: ReactNode
-  ProposalLine: ComponentType<T>
-  onRefresh: () => void
-  refreshing: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
-export const Inbox = <T extends {}>({
-  daosWithProposals,
+export const Inbox = ({
+  state: { loading, refreshing, refresh, daosWithItems, itemCount },
   rightSidebarContent,
-  ProposalLine,
-  onRefresh,
-  refreshing,
   LinkWrapper,
-}: InboxProps<T>) => {
+}: InboxProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
-
-  const numOpenProposals = daosWithProposals.loading
-    ? 0
-    : daosWithProposals.data.reduce(
-        (acc, { proposals }) => acc + proposals.length,
-        0
-      )
 
   const [refreshSpinning, setRefreshSpinning] = useState(false)
   // Start spinning refresh icon if refreshing sets to true. Turn off once the
@@ -69,9 +45,7 @@ export const Inbox = <T extends {}>({
             circular
             className={clsx(
               'transition-opacity',
-              daosWithProposals.loading
-                ? 'pointer-events-none opacity-0'
-                : 'opacity-100',
+              loading ? 'pointer-events-none opacity-0' : 'opacity-100',
               refreshSpinning && 'animate-spin-medium'
             )}
             // If spinning but no longer refreshing, stop after iteration.
@@ -84,7 +58,7 @@ export const Inbox = <T extends {}>({
               // Perform one spin even if refresh completes immediately. It will
               // stop after 1 iteration if `refreshing` does not become true.
               setRefreshSpinning(true)
-              onRefresh()
+              refresh()
             }}
             variant="ghost"
           />
@@ -93,42 +67,40 @@ export const Inbox = <T extends {}>({
       />
 
       <div className="mx-auto flex max-w-5xl flex-col items-stretch">
-        {daosWithProposals.loading ? (
+        {loading ? (
           <Loader fill={false} />
-        ) : daosWithProposals?.data?.length === 0 ? (
-          <NoContent Icon={PushPinOutlined} body={t('info.noFollowedDaos')} />
-        ) : numOpenProposals === 0 ? (
+        ) : itemCount === 0 ? (
           <NoContent
             Icon={WhereToVoteOutlined}
-            body={t('info.noProposalsAndAllCaughtUp')}
+            body={t('info.emptyInboxCaughtUp')}
           />
         ) : (
           <>
             <p className="title-text">
-              {t('title.numOpenProposals', { count: numOpenProposals })}
+              {t('title.numItems', { count: itemCount })}
             </p>
 
             <div className="mt-6 grow space-y-4">
-              {daosWithProposals.data
-                .filter(({ proposals }) => proposals.length > 0)
-                .map(({ dao, proposals }, index) => (
-                  <DaoDropdown
-                    key={index}
-                    LinkWrapper={LinkWrapper}
-                    dao={{
-                      ...dao,
-                      content: proposals.length ? (
-                        <ProposalContainer className="mt-4 px-2">
-                          {proposals.map((props, index) => (
-                            <ProposalLine key={index} {...props} />
-                          ))}
-                        </ProposalContainer>
-                      ) : undefined,
-                    }}
-                    defaultExpanded
-                    showSubdaos={false}
-                  />
-                ))}
+              {daosWithItems.map(({ dao, items }) => (
+                <Collapsible
+                  key={dao.coreAddress}
+                  imageUrl={dao.imageUrl}
+                  label={dao.name}
+                  link={{
+                    href: `/dao/${dao.coreAddress}`,
+                    LinkWrapper,
+                  }}
+                  noContentIndent
+                >
+                  {items.length ? (
+                    <div className="flex flex-col gap-2 px-2 md:gap-1">
+                      {items.map(({ Renderer, props }, index) => (
+                        <Renderer key={index} {...props} />
+                      ))}
+                    </div>
+                  ) : undefined}
+                </Collapsible>
+              ))}
             </div>
           </>
         )}

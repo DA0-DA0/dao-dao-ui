@@ -5,7 +5,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
-import { refreshDaoVotingPowerAtom, stakingLoadingAtom } from '@dao-dao/state'
+import {
+  refreshDaoVotingPowerAtom,
+  refreshFollowingDaosAtom,
+  stakingLoadingAtom,
+} from '@dao-dao/state'
 import {
   ModalLoader,
   StakingMode,
@@ -85,10 +89,15 @@ const InnerStakingModal = ({
     contractAddress: votingModuleAddress,
     sender: walletAddress ?? '',
   })
+
   const setRefreshDaoVotingPower = useSetRecoilState(
     refreshDaoVotingPowerAtom(coreAddress)
   )
-  const refreshDaoVotingPower = () => setRefreshDaoVotingPower((id) => id + 1)
+  const setRefreshFollowedDaos = useSetRecoilState(refreshFollowingDaosAtom)
+  const refreshDaoVotingPower = () => {
+    setRefreshDaoVotingPower((id) => id + 1)
+    setRefreshFollowedDaos((id) => id + 1)
+  }
 
   const awaitNextBlock = useAwaitNextBlock()
   const onAction = async (mode: StakingMode, amount: number) => {

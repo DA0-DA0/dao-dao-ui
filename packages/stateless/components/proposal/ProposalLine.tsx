@@ -1,15 +1,17 @@
 import clsx from 'clsx'
 import { ComponentType, ReactNode } from 'react'
 
+import { TimestampInfo } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { LinkWrapperProps } from '@dao-dao/types'
 
+import { Tooltip } from '../tooltip'
 import { ProposalIdDisplay } from './ProposalIdDisplay'
 
 export interface ProposalLineProps {
   proposalPrefix: string
   proposalNumber: number
   title: string
-  timestampDisplay: ReactNode
+  timestampDisplay: TimestampInfo['display']
   Status: ComponentType<{ dimmed?: boolean }>
   vote: ReactNode
   votingOpen: boolean
@@ -49,9 +51,15 @@ export const ProposalLine = ({
         <Status />
       </div>
       <p className="body-text grow truncate">{title}</p>
-      <p className="caption-text shrink-0 break-words text-right font-mono">
-        {timestampDisplay}
-      </p>
+
+      {timestampDisplay && (
+        <Tooltip title={timestampDisplay.tooltip}>
+          <p className="caption-text shrink-0 break-words text-right font-mono">
+            {timestampDisplay.content}
+          </p>
+        </Tooltip>
+      )}
+
       {vote}
     </div>
 
@@ -72,16 +80,20 @@ export const ProposalLine = ({
         <div className="flex flex-row items-center gap-2">
           <Status dimmed />
 
-          <p
-            className={clsx(
-              'link-text break-words text-center font-mono leading-5 text-text-tertiary',
-              !votingOpen && 'hidden xs:inline-block'
-            )}
-          >
-            {/* eslint-disable-next-line i18next/no-literal-string */}
-            <span className="mr-2 inline-block">–</span>
-            {timestampDisplay}
-          </p>
+          {timestampDisplay && (
+            <Tooltip title={timestampDisplay.tooltip}>
+              <p
+                className={clsx(
+                  'link-text break-words text-center font-mono leading-5 text-text-tertiary',
+                  !votingOpen && 'hidden xs:inline-block'
+                )}
+              >
+                {/* eslint-disable-next-line i18next/no-literal-string */}
+                <span className="mr-2 inline-block">–</span>
+                {timestampDisplay.content}
+              </p>
+            </Tooltip>
+          )}
         </div>
 
         {vote}

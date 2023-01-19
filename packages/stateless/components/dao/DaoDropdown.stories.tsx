@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { LinkWrapper } from '../LinkWrapper'
 import { DaoDropdown } from './DaoDropdown'
 
 export default {
@@ -19,6 +20,7 @@ Default.args = {
     imageUrl: '/placeholders/1.svg',
     subdaos: [],
   },
+  LinkWrapper,
 }
 Default.parameters = {
   design: {
@@ -53,6 +55,6 @@ WithSubdaos.args = {
       },
     ],
   },
-  defaultExpanded: true,
+  LinkWrapper,
 }
 WithSubdaos.parameters = Default.parameters

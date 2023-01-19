@@ -30,12 +30,16 @@ export interface DaoCardInfo {
   lazyData: LoadingData<DaoCardInfoLazyData>
 }
 
+export interface FollowState {
+  following: boolean
+  updatingFollowing: boolean
+  onFollow: () => void
+}
+
 export interface DaoCardProps extends DaoCardInfo {
-  pinned: boolean
-  onPin: () => void
-  hidePin?: boolean
   onMouseOver?: () => void
   onMouseLeave?: () => void
   LinkWrapper: ComponentType<LinkWrapperProps>
   IconButtonLink: ComponentType<IconButtonLinkProps>
+  follow: { hide: true } | ({ hide?: false } & FollowState)
 }

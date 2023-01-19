@@ -2,14 +2,16 @@ import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfo, LinkWrapperProps, SuspenseLoaderProps } from '@dao-dao/types'
+import {
+  DaoInfo,
+  FollowState,
+  LinkWrapperProps,
+  SuspenseLoaderProps,
+} from '@dao-dao/types'
 import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {
   DaoHeader,
-  DiscordIcon,
-  FollowingToggle,
-  IconButton,
   Loader,
   SegmentedControls,
   useAppLayoutContext,
@@ -17,35 +19,33 @@ import {
 
 export interface DaoHomeProps {
   daoInfo: DaoInfo
-  pinned: boolean
-  onPin: () => void
-  onConfigure: () => void
+  follow: FollowState
+  DiscordNotifierConfigureModal: ComponentType
   daoInfoBar: ReactNode
+  rightSidebarContent: ReactNode
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
+  LinkWrapper: ComponentType<LinkWrapperProps>
   // Tabs
   proposalsTab: ReactNode
   treasuryAndNftsTab: ReactNode
   subDaosTab: ReactNode
   membersTab?: ReactNode
   payrollTab?: ReactNode
-  rightSidebarContent: ReactNode
-  SuspenseLoader: ComponentType<SuspenseLoaderProps>
-  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export const DaoHome = ({
   daoInfo,
-  pinned,
-  onPin,
-  onConfigure,
+  follow,
+  DiscordNotifierConfigureModal,
   daoInfoBar,
+  rightSidebarContent,
+  SuspenseLoader,
+  LinkWrapper,
   proposalsTab,
   treasuryAndNftsTab,
   subDaosTab,
   membersTab,
   payrollTab,
-  rightSidebarContent,
-  SuspenseLoader,
-  LinkWrapper,
 }: DaoHomeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
@@ -98,17 +98,7 @@ export const DaoHome = ({
         }}
         className="mx-auto max-w-5xl"
         gradient
-        rightNode={
-          <div className="flex flex-row items-stretch gap-2">
-            <FollowingToggle following={pinned} onToggle={onPin} />
-            <IconButton
-              Icon={DiscordIcon}
-              iconClassName="!w-5 !h-5"
-              onClick={onConfigure}
-              variant="secondary"
-            />
-          </div>
-        }
+        rightNode={<DiscordNotifierConfigureModal />}
       />
 
       <div className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch">
@@ -117,6 +107,7 @@ export const DaoHome = ({
           coreAddress={daoInfo.coreAddress}
           description={daoInfo.description}
           established={daoInfo.created && formatDate(daoInfo.created)}
+          follow={follow}
           imageUrl={daoInfo.imageUrl}
           name={daoInfo.name}
           parentDao={daoInfo.parentDao}

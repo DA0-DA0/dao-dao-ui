@@ -1,2 +1,2 @@
 export * from './useNavigationSection'
-export * from './usePinnedAndFilteredDaosSections'
+export * from './useFollowingAndFilteredDaosSections'

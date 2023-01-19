@@ -12,6 +12,7 @@ import {
 import {
   Cw20StakeSelectors,
   refreshDaoVotingPowerAtom,
+  refreshFollowingDaosAtom,
   stakingLoadingAtom,
 } from '@dao-dao/state'
 import {
@@ -128,7 +129,11 @@ const InnerStakingModal = ({
   const setRefreshDaoVotingPower = useSetRecoilState(
     refreshDaoVotingPowerAtom(coreAddress)
   )
-  const refreshDaoVotingPower = () => setRefreshDaoVotingPower((id) => id + 1)
+  const setRefreshFollowedDaos = useSetRecoilState(refreshFollowingDaosAtom)
+  const refreshDaoVotingPower = () => {
+    setRefreshDaoVotingPower((id) => id + 1)
+    setRefreshFollowedDaos((id) => id + 1)
+  }
 
   const awaitNextBlock = useAwaitNextBlock()
   const onAction = async (mode: StakingMode, amount: number) => {

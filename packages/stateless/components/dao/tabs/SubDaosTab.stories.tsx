@@ -19,7 +19,7 @@ export default {
 } as ComponentMeta<typeof SubDaosTab>
 
 const Template: ComponentStory<typeof SubDaosTab> = (args) => {
-  const [pinned, setPinned] = useState<string[]>([])
+  const [following, setFollowing] = useState<string[]>([])
 
   return (
     <SubDaosTab
@@ -29,14 +29,16 @@ const Template: ComponentStory<typeof SubDaosTab> = (args) => {
           {...props}
           IconButtonLink={IconButtonLink}
           LinkWrapper={LinkWrapper}
-          onPin={() =>
-            setPinned((current) =>
-              current.includes(props.coreAddress)
-                ? current.filter((a) => a !== props.coreAddress)
-                : [...current, props.coreAddress]
-            )
-          }
-          pinned={pinned.includes(props.coreAddress)}
+          follow={{
+            following: following.includes(props.coreAddress),
+            updatingFollowing: false,
+            onFollow: () =>
+              setFollowing((current) =>
+                current.includes(props.coreAddress)
+                  ? current.filter((a) => a !== props.coreAddress)
+                  : [...current, props.coreAddress]
+              ),
+          }}
         />
       )}
       daoInfo={useDaoInfoContext()}

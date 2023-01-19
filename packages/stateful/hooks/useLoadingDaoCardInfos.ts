@@ -8,21 +8,24 @@ import { useCachedLoadable } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 
 import { daoCardInfoSelector } from '../recoil'
-import { usePinnedDaos } from './usePinnedDaos'
+import { useFollowingDaos } from './useFollowingDaos'
 
 export const useLoadingDaoCardInfos = (
-  coreAddresses: string[],
+  coreAddresses?: string[],
   chainId?: string
 ): LoadingData<DaoCardInfo[]> => {
+  // If `coreAddresses` is undefined, we're still loading DAOs.
   const daoCardInfosLoadable = useCachedLoadable(
-    waitForAll(
-      coreAddresses.map((coreAddress) =>
-        daoCardInfoSelector({
-          coreAddress,
-          chainId,
-        })
-      )
-    )
+    coreAddresses
+      ? waitForAll(
+          coreAddresses.map((coreAddress) =>
+            daoCardInfoSelector({
+              coreAddress,
+              chainId,
+            })
+          )
+        )
+      : undefined
   )
 
   return daoCardInfosLoadable.state !== 'hasValue'
@@ -54,7 +57,9 @@ export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
   return data
 }
 
-export const useLoadingPinnedDaoCardInfos = (): LoadingData<DaoCardInfo[]> => {
-  const { pinnedAddresses } = usePinnedDaos()
-  return useLoadingDaoCardInfos(pinnedAddresses)
+export const useLoadingFollowingDaoCardInfos = (): LoadingData<
+  DaoCardInfo[]
+> => {
+  const { daos } = useFollowingDaos()
+  return useLoadingDaoCardInfos(daos.loading ? undefined : daos.data.following)
 }

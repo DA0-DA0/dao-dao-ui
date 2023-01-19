@@ -18,7 +18,7 @@ set of sections and thus items will be displayed, and the user can navigate to
 the previous context with escape or backspace.
 
 Here is a root context with a section that offers app navigation and a section
-that displays pinned DAOs which open new command contexts:
+that displays following DAOs which open new command contexts:
 
 ![](https://bafkreihjxxvuf5esh7dxgqm27kpudvfpgbpbwyz6cxains7eeljjz7yixu.ipfs.nftstorage.link/)
 
