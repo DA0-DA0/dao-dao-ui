@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { CommandModalContextSectionItem } from '@dao-dao/types/command'
 import { toAccessibleImageUrl } from '@dao-dao/utils'
 
+import { TooltipInfoIcon } from '../tooltip'
+
 export interface ItemRowProps {
   item: CommandModalContextSectionItem
   selected: boolean
@@ -24,6 +26,7 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
             'cursor-pointer hover:bg-background-interactive-hover',
           !item.disabled && selected && 'bg-background-interactive-hover',
           item.loading && 'animate-pulse',
+          item.className,
           className
         )}
         onClick={item.disabled ? undefined : onClick}
@@ -60,12 +63,31 @@ export const ItemRow = forwardRef<HTMLDivElement, ItemRowProps>(
 
         <p
           className={clsx(
-            'link-text font-medium transition',
+            'link-text grow font-medium transition',
             item.disabled ? 'text-text-interactive-disabled' : 'text-text-body'
           )}
         >
           {item.name}
         </p>
+
+        {!!item.tooltip && (
+          <TooltipInfoIcon
+            key={
+              // Re-render when selected changes. This is because the underlying
+              // Material UI tooltip uses the initial state of the `open` prop
+              // to determine if the component should be controlled by the
+              // `open` prop or listen to touch events. We want to be able to
+              // force the tooltip open when this item is selected, and also
+              // allow hovering to open the tooltip when this item is not
+              // selected. Thus, we need to re-render this component when
+              // selected changes.
+              selected ? 'selected' : 'unselected'
+            }
+            open={selected || undefined}
+            size="xs"
+            title={item.tooltip}
+          />
+        )}
       </div>
     )
   }
