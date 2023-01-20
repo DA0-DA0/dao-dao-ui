@@ -9,7 +9,7 @@ import {
 import { normalizeContractName } from '@dao-dao/utils'
 
 import {
-  CwdProposalMultipleAdapter,
+  DaoProposalMultipleAdapter,
   DaoProposalSingleAdapter,
 } from './adapters'
 
@@ -23,7 +23,7 @@ import {
 // This is a problem to solve later.
 export const getAdapters = (): readonly ProposalModuleAdapter[] => [
   DaoProposalSingleAdapter,
-  CwdProposalMultipleAdapter,
+  DaoProposalMultipleAdapter,
 ]
 
 export const getAdapterById = (id: string) =>

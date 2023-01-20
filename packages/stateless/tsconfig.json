@@ -3,7 +3,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "../stateful/proposal-module-adapter/adapters/CwdProposalMultiple/components/ui/MultipleChoiceOption.tsx"
+    "../stateful/proposal-module-adapter/adapters/DaoProposalMultiple/components/ui/MultipleChoiceOption.tsx"
   ],
   "exclude": ["build", "dist", "node_modules"],
   "compilerOptions": {

@@ -1,2 +1,2 @@
 export * from './DaoProposalSingle'
-export * from './CwdProposalMultiple'
+export * from './DaoProposalMultiple'
