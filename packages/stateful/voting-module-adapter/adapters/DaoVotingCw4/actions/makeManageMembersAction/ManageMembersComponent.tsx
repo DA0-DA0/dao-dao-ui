@@ -2,7 +2,6 @@ import {
   Add,
   ArrowRightAltRounded,
   Close,
-  Info,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
 import { ComponentType } from 'react'
@@ -16,7 +15,7 @@ import {
   InputLabel,
   NumberInput,
   PeopleEmoji,
-  Tooltip,
+  TooltipInfoIcon,
 } from '@dao-dao/stateless'
 import { ActionComponent, AddressInputProps } from '@dao-dao/types'
 import { Member } from '@dao-dao/types/contracts/Cw4Group'
@@ -79,13 +78,12 @@ export const ManageMembersComponent: ActionComponent<
       <div className="flex flex-col gap-1">
         <div className="flex flex-row gap-2">
           <InputLabel name={t('form.membersToAddOrUpdate')} />
-          <Tooltip
+          <TooltipInfoIcon
             arrow
             placement="top"
+            size="sm"
             title={t('form.membersToAddOrUpdateDescription')}
-          >
-            <Info className="text-text-tertiary" fontSize="small" />
-          </Tooltip>
+          />
         </div>
         <div className="my-2 flex flex-col items-stretch gap-1">
           {toAddFields.map(({ id }, index) => {
@@ -187,13 +185,12 @@ export const ManageMembersComponent: ActionComponent<
       <div className="flex flex-col gap-1">
         <div className="flex flex-row gap-2">
           <InputLabel name={t('form.membersToRemove')} />
-          <Tooltip
+          <TooltipInfoIcon
             arrow
             placement="top"
+            size="sm"
             title={t('form.membersToRemoveDescription')}
-          >
-            <Info className="text-text-tertiary" fontSize="small" />
-          </Tooltip>
+          />
         </div>
 
         <div className="my-2 flex flex-col items-stretch gap-1">
