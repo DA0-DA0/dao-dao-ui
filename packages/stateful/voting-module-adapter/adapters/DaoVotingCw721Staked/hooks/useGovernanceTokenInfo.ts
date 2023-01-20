@@ -10,10 +10,7 @@ import {
   UseGovernanceTokenInfoOptions,
   UseGovernanceTokenInfoResponse,
 } from '@dao-dao/types'
-import {
-  MarketingInfoResponse,
-  TokenInfoResponse,
-} from '@dao-dao/types/contracts/Cw20Base'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -54,19 +51,12 @@ export const useGovernanceTokenInfo = ({
     total_supply: tokenSupplyInfo.count.toString(),
   }
 
-  const governanceTokenMarketingInfo: MarketingInfoResponse = {
-    description: null,
-    logo: null,
-    marketing: null,
-    project: null,
-  }
-
   /// Optional
 
   // Wallet balance
   const walletBalance = useRecoilValue(
     fetchWalletBalance && walletAddress
-      ? Cw721BaseSelectors.tokensSelector({
+      ? Cw721BaseSelectors._tokensSelector({
           contractAddress: governanceTokenAddress,
           params: [{ owner: walletAddress }],
         })
@@ -76,7 +66,7 @@ export const useGovernanceTokenInfo = ({
   const loadingWalletBalance = loadableToLoadingData(
     useCachedLoadable(
       fetchLoadingWalletBalance && walletAddress
-        ? Cw721BaseSelectors.tokensSelector({
+        ? Cw721BaseSelectors._tokensSelector({
             contractAddress: governanceTokenAddress,
             params: [{ owner: walletAddress }],
           })
@@ -88,7 +78,7 @@ export const useGovernanceTokenInfo = ({
   // Treasury balance
   const treasuryBalance = useRecoilValue(
     fetchTreasuryBalance
-      ? Cw721BaseSelectors.tokensSelector({
+      ? Cw721BaseSelectors._tokensSelector({
           contractAddress: governanceTokenAddress,
           params: [{ owner: coreAddress }],
         })
@@ -112,7 +102,6 @@ export const useGovernanceTokenInfo = ({
     stakingContractAddress: votingModuleAddress,
     governanceTokenAddress,
     governanceTokenInfo,
-    governanceTokenMarketingInfo,
     /// Optional
     // Wallet balance
     walletBalance: walletBalance?.tokens

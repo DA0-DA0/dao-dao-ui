@@ -70,7 +70,7 @@ export class DaoVotingCw721StakedQueryClient
 
   config = async (): Promise<Config> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      get_config: {},
+      config: {},
     })
   }
   nftClaims = async ({
