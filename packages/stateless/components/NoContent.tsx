@@ -14,6 +14,7 @@ export interface NoContentProps {
   buttonLabel?: string
   className?: string
   small?: boolean
+  error?: boolean
 }
 
 // This component displays a dashed outline and centers its content in a way
@@ -27,10 +28,20 @@ export interface NoContentProps {
 // card. The button ensures the user knows an action can be performed, but the
 // whole card remains clickable to improve UX. It is often used when there is no
 // content to prompt the user to perform an action, such as when there are no
-// pinned DAOs.
+// following DAOs.
 export const NoContent = forwardRef<HTMLDivElement, NoContentProps>(
   function NoContent(
-    { Icon, body, href, onClick, actionNudge, buttonLabel, className, small },
+    {
+      Icon,
+      body,
+      href,
+      onClick,
+      actionNudge,
+      buttonLabel,
+      className,
+      small,
+      error,
+    },
     ref
   ) {
     const hasAction = !!href || !!onClick
@@ -46,12 +57,17 @@ export const NoContent = forwardRef<HTMLDivElement, NoContentProps>(
       <>
         <Icon
           className={clsx(
-            'text-icon-tertiary',
+            error ? 'text-icon-interactive-error' : 'text-icon-tertiary',
             small ? '!h-8 !w-8' : '!h-14 !w-14'
           )}
         />
 
-        <p className="secondary-text text-center text-text-tertiary">
+        <p
+          className={clsx(
+            'secondary-text text-center',
+            error ? 'text-text-interactive-error' : 'text-text-tertiary'
+          )}
+        >
           {body}
 
           {!!actionNudge && hasAction && (

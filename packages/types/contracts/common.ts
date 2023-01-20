@@ -41,12 +41,6 @@ export type CosmosMsgFor_Empty =
       distribution: DistributionMsg
     }
   | {
-      stargate: {
-        type_url: string
-        value: Binary
-      }
-    }
-  | {
       ibc: IbcMsg
     }
   | {
@@ -55,6 +49,7 @@ export type CosmosMsgFor_Empty =
   | {
       gov: GovMsg
     }
+  | StargateMsg
 export type CosmosMsgForEmpty = CosmosMsgFor_Empty
 
 export type VoteOption = 'yes' | 'no' | 'abstain' | 'no_with_veto'
@@ -128,6 +123,15 @@ export type DistributionMsg =
         validator: string
       }
     }
+/**
+ * The message type representing generic protobuf messages in CosmWasm.
+ */
+export type StargateMsg = {
+  stargate: {
+    type_url: string
+    value: Binary
+  }
+}
 /**
  * The message types of the wasm module.
  *

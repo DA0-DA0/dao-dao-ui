@@ -20,6 +20,8 @@ import Long from 'long'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
 
+import { decodeStargateMessage } from './messages'
+
 export const cwMsgToEncodeObject = (
   msg: CosmosMsgFor_Empty,
   sender: string
@@ -108,13 +110,7 @@ export const cwMsgToEncodeObject = (
   }
 
   if ('stargate' in msg) {
-    const stargateMsg = msg.stargate
-
-    const encodeObject: EncodeObject = {
-      typeUrl: stargateMsg.type_url,
-      value: stargateMsg.value,
-    }
-    return encodeObject
+    return decodeStargateMessage(msg).stargate
   }
 
   if ('wasm' in msg) {

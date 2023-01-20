@@ -7,6 +7,7 @@ import {
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
+import { EntityDisplay } from '../../../../components/EntityDisplay'
 import { DaoCreationConfig } from '../types'
 
 export const GovernanceConfigurationReview = ({
@@ -67,6 +68,7 @@ export const GovernanceConfigurationReview = ({
 
   return (
     <DaoCreateVotingPowerDistributionReviewCard
+      EntityDisplay={EntityDisplay}
       pieData={pieData}
       tierData={tierData}
     />

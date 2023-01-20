@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 
 interface GridCardContainerProps {
   children: ReactNode | ReactNode[]
-  cardType?: 'tall' | 'short'
+  cardType?: 'tall' | 'wide'
   className?: string
 }
 
@@ -17,7 +17,7 @@ export const GridCardContainer = ({
       'grid-rows-auto grid grid-cols-1 gap-4',
       {
         'sm:grid-cols-3': cardType === 'tall',
-        'sm:grid-cols-2 lg:grid-cols-3': cardType === 'short',
+        'sm:grid-cols-2': cardType === 'wide',
       },
       className
     )}

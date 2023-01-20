@@ -15,6 +15,7 @@ import {
 } from '../../../contracts/DaoVotingCw4'
 import { signingCosmWasmClientAtom } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -63,6 +64,17 @@ export const groupContractSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const groupContract = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw4/groupContract',
+        })
+      )
+      if (groupContract) {
+        return groupContract
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.groupContract(...params)
     },
@@ -77,6 +89,17 @@ export const daoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const dao = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw4/dao',
+        })
+      )
+      if (dao) {
+        return dao
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.dao(...params)
     },
@@ -91,6 +114,24 @@ export const votingPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const votingPower = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw4/votingPower',
+          args: {
+            address: params[0].address,
+          },
+          block: params[0].height ? { height: params[0].height } : undefined,
+        })
+      )
+      if (votingPower && !isNaN(votingPower)) {
+        return {
+          power: votingPower,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.votingPowerAtHeight(...params)
     },
@@ -105,6 +146,21 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const totalPower = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw4/totalPower',
+          block: params[0].height ? { height: params[0].height } : undefined,
+        })
+      )
+      if (totalPower && !isNaN(totalPower)) {
+        return {
+          power: totalPower,
+          height: params[0].height,
+        }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.totalPowerAtHeight(...params)
     },
@@ -119,6 +175,17 @@ export const infoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const info = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'info',
+        })
+      )
+      if (info) {
+        return { info }
+      }
+
+      // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.info(...params)
     },

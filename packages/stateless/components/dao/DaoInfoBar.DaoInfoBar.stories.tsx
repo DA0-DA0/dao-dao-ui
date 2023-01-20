@@ -1,9 +1,8 @@
 import {
   AccountBalanceOutlined,
-  CurrencyExchangeOutlined,
   LayersOutlined,
   Link,
-  PaymentsOutlined,
+  PeopleAltOutlined,
 } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
@@ -40,22 +39,19 @@ Default.args = {
     {
       Icon: AccountBalanceOutlined,
       label: 'DAO Treasury',
-      value: '35.12 $USDC',
+      tooltip:
+        'The USD value of treasuries is estimated by summing the value of all tokens held in the treasury that have a known price on JunoSwap.',
+      value: '35.12 est. USD value',
     },
     {
-      Icon: PaymentsOutlined,
+      Icon: PeopleAltOutlined,
       label: 'Total supply',
-      value: '497 $DOG',
+      value: '45.2K $REAL',
     },
     {
       Icon: LayersOutlined,
       label: 'Total staked',
-      value: '8.249%',
-    },
-    {
-      Icon: CurrencyExchangeOutlined,
-      label: 'Staking APR',
-      value: '103.23%',
+      value: '0.003234%',
     },
   ],
 }

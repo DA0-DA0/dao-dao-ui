@@ -37,8 +37,17 @@ export interface KeplrWalletProfile {
       }
 }
 
-export interface Profile {
+export interface ProfileSearchHit {
+  publicKey: string
   address: string
-  name: string | null
-  imageUrl: string
+  profile: {
+    nonce: number
+    name: string | null
+    nft: {
+      chainId: string
+      collectionAddress: string
+      tokenId: string
+      imageUrl: string
+    } | null
+  }
 }

@@ -7,11 +7,13 @@ import {
   Tooltip,
 } from 'chart.js'
 import clsx from 'clsx'
+import { ComponentType } from 'react'
 import { Bar, Pie } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 
+import { StatefulEntityDisplayProps } from '@dao-dao/types'
+
 import { useNamedThemeColor } from '../../../theme'
-import { CopyToClipboard } from '../../CopyToClipboard'
 
 declare module 'chart.js' {
   interface TooltipPositionerMap {
@@ -55,12 +57,14 @@ export interface DaoCreateVotingPowerDistributionReviewCardProps {
   pieData: ChartDataEntry[]
   tierData: TierDataEntry[]
   distributionPrefix?: string
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
 export const DaoCreateVotingPowerDistributionReviewCard = ({
   pieData,
   tierData,
   distributionPrefix,
+  EntityDisplay,
 }: DaoCreateVotingPowerDistributionReviewCardProps) => {
   const { t } = useTranslation()
 
@@ -113,10 +117,7 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
                       style={{ backgroundColor: color }}
                     ></div>
                   )}
-                  <CopyToClipboard
-                    takeStartEnd={{ start: address.length, end: 0 }}
-                    value={address}
-                  />
+                  <EntityDisplay address={address} />
                 </div>
 
                 <p className="caption-text text-right font-mono text-text-tertiary">

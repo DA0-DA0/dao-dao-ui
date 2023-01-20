@@ -30,7 +30,7 @@ export const PricePercentChange = ({
           'rotate-180': negative,
         })}
       />
-      <p>{formatPercentOf100(Math.abs(value))}</p>
+      <p>{formatPercentOf100(Math.abs(value), 2)}</p>
     </div>
   )
 }

@@ -3,10 +3,9 @@ import {
   ProposalLine as StatelessProposalLine,
 } from '@dao-dao/stateless'
 import { BaseProposalLineProps } from '@dao-dao/types'
-import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { SuspenseLoader } from '../../../../../components'
-import { useVotingModule } from '../../../../../hooks'
+import { useMembership } from '../../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../../react'
 import { useLoadingProposal, useLoadingWalletVoteInfo } from '../../hooks'
 import { ProposalWithMetadata } from '../../types'
@@ -36,12 +35,14 @@ const InnerProposalLine = ({
 }) => {
   const {
     coreAddress,
+    chainId,
     proposalModule: { prefix: proposalPrefix },
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false } = useMembership({
+    coreAddress,
+    chainId,
   })
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
@@ -52,7 +53,7 @@ const InnerProposalLine = ({
       )}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
-      timestampDisplay={proposal.timestampInfo?.display?.content}
+      timestampDisplay={proposal.timestampInfo?.display}
       title={proposal.title}
       vote={
         // If no wallet connected, show nothing. If loading, also show nothing
@@ -77,7 +78,7 @@ const InnerProposalLine = ({
               />
             )
       }
-      votingOpen={proposal.status === Status.Open}
+      votingOpen={proposal.votingOpen}
       {...props}
     />
   )

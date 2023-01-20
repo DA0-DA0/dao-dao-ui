@@ -48,8 +48,15 @@ export const DaoMemberCard = ({
       <div className="flex flex-row items-center justify-between gap-4 border-t border-border-interactive-disabled p-4">
         {/* Voting power */}
         <p className="secondary-text">{t('title.votingPower')}</p>
-        <p className="symbol-small-body-text font-mono">
-          {formatPercentOf100(votingPowerPercent)}
+        <p
+          className={clsx(
+            'symbol-small-body-text font-mono',
+            votingPowerPercent.loading && 'animate-pulse'
+          )}
+        >
+          {votingPowerPercent.loading
+            ? '...'
+            : formatPercentOf100(votingPowerPercent.data)}
         </p>
       </div>
     </div>

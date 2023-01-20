@@ -39,7 +39,7 @@ export const ProfileCardMemberInfo = ({
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
-  const { name: daoName } = useDaoInfoContext()
+  const { name: daoName, chainId } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletInfo()
 
@@ -72,9 +72,6 @@ export const ProfileCardMemberInfo = ({
   })
 
   if (
-    claimsPending === undefined ||
-    claimsAvailable === undefined ||
-    sumClaimsAvailable === undefined ||
     loadingUnstakedBalance === undefined ||
     loadingWalletStakedValue === undefined ||
     totalStakedValue === undefined
@@ -117,7 +114,7 @@ export const ProfileCardMemberInfo = ({
 
       toast.success(
         `Claimed ${convertMicroDenomToDenomWithDecimals(
-          sumClaimsAvailable,
+          sumClaimsAvailable ?? 0,
           governanceTokenInfo.decimals
         ).toLocaleString(undefined, {
           maximumFractionDigits: governanceTokenInfo.decimals,
@@ -142,11 +139,19 @@ export const ProfileCardMemberInfo = ({
     t,
   ])
 
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
-  const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
+  const blockHeightLoadable = useCachedLoadable(
+    blockHeightSelector({
+      chainId,
+    })
+  )
+  const blocksPerYearLoadable = useCachedLoadable(
+    blocksPerYearSelector({
+      chainId,
+    })
+  )
 
   const unstakingTasks: UnstakingTask[] = [
-    ...claimsPending.map(({ amount, release_at }) => ({
+    ...(claimsPending ?? []).map(({ amount, release_at }) => ({
       status: UnstakingTaskStatus.Unstaking,
       amount: convertMicroDenomToDenomWithDecimals(
         amount,
@@ -154,15 +159,18 @@ export const ProfileCardMemberInfo = ({
       ),
       tokenSymbol: governanceTokenInfo.symbol,
       tokenDecimals: governanceTokenInfo.decimals,
-      date: convertExpirationToDate(
-        blocksPerYear,
-        release_at,
-        blockHeightLoadable.state === 'hasValue'
-          ? blockHeightLoadable.contents
-          : 0
-      ),
+      date:
+        blocksPerYearLoadable.state === 'hasValue'
+          ? convertExpirationToDate(
+              blocksPerYearLoadable.contents,
+              release_at,
+              blockHeightLoadable.state === 'hasValue'
+                ? blockHeightLoadable.contents
+                : 0
+            )
+          : undefined,
     })),
-    ...claimsAvailable.map(({ amount, release_at }) => ({
+    ...(claimsAvailable ?? []).map(({ amount, release_at }) => ({
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: convertMicroDenomToDenomWithDecimals(
         amount,
@@ -170,13 +178,16 @@ export const ProfileCardMemberInfo = ({
       ),
       tokenSymbol: governanceTokenInfo.symbol,
       tokenDecimals: governanceTokenInfo.decimals,
-      date: convertExpirationToDate(
-        blocksPerYear,
-        release_at,
-        blockHeightLoadable.state === 'hasValue'
-          ? blockHeightLoadable.contents
-          : 0
-      ),
+      date:
+        blocksPerYearLoadable.state === 'hasValue'
+          ? convertExpirationToDate(
+              blocksPerYearLoadable.contents,
+              release_at,
+              blockHeightLoadable.state === 'hasValue'
+                ? blockHeightLoadable.contents
+                : 0
+            )
+          : undefined,
     })),
   ]
 
@@ -236,8 +247,12 @@ export const ProfileCardMemberInfo = ({
         tokenDecimals={governanceTokenInfo.decimals}
         tokenSymbol={governanceTokenInfo.symbol}
         unstakingDurationSeconds={
-          (unstakingDuration &&
-            durationToSeconds(blocksPerYear, unstakingDuration)) ||
+          (blocksPerYearLoadable.state === 'hasValue' &&
+            unstakingDuration &&
+            durationToSeconds(
+              blocksPerYearLoadable.contents,
+              unstakingDuration
+            )) ||
           undefined
         }
         unstakingTasks={unstakingTasks}

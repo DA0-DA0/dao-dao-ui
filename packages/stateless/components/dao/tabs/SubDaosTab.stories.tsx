@@ -19,7 +19,7 @@ export default {
 } as ComponentMeta<typeof SubDaosTab>
 
 const Template: ComponentStory<typeof SubDaosTab> = (args) => {
-  const [pinned, setPinned] = useState<string[]>([])
+  const [following, setFollowing] = useState<string[]>([])
 
   return (
     <SubDaosTab
@@ -29,14 +29,16 @@ const Template: ComponentStory<typeof SubDaosTab> = (args) => {
           {...props}
           IconButtonLink={IconButtonLink}
           LinkWrapper={LinkWrapper}
-          onPin={() =>
-            setPinned((current) =>
-              current.includes(props.coreAddress)
-                ? current.filter((a) => a !== props.coreAddress)
-                : [...current, props.coreAddress]
-            )
-          }
-          pinned={pinned.includes(props.coreAddress)}
+          follow={{
+            following: following.includes(props.coreAddress),
+            updatingFollowing: false,
+            onFollow: () =>
+              setFollowing((current) =>
+                current.includes(props.coreAddress)
+                  ? current.filter((a) => a !== props.coreAddress)
+                  : [...current, props.coreAddress]
+              ),
+          }}
         />
       )}
       daoInfo={useDaoInfoContext()}
@@ -50,11 +52,26 @@ Default.args = {
   subDaos: {
     loading: false,
     data: [
-      makeDaoCardProps(),
-      makeDaoCardProps(),
-      makeDaoCardProps(),
-      makeDaoCardProps(),
-      makeDaoCardProps(),
+      {
+        ...makeDaoCardProps(1),
+        name: 'Development Fund',
+        description: 'Manages our development and strategy.',
+      },
+      {
+        ...makeDaoCardProps(2),
+        name: 'Validator',
+        description: 'Runs our validator.',
+      },
+      {
+        ...makeDaoCardProps(3),
+        name: 'Security',
+        description: 'Protects us from those who seek to destroy us.',
+      },
+      {
+        ...makeDaoCardProps(4),
+        name: 'Meme Machine',
+        description: 'Generates memeable content for the sake of the memes.',
+      },
     ],
   },
   createSubDaoHref: '#',

@@ -1,10 +1,10 @@
 import {
   Add,
+  CheckRounded,
   HomeOutlined,
   InboxOutlined,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
-  PushPinOutlined,
   Search,
 } from '@mui/icons-material'
 import { isMobile } from '@walletconnect/browser-utils'
@@ -23,6 +23,7 @@ import { Logo } from '../logo/Logo'
 import { PricePercentChange } from '../token/PricePercentChange'
 import { Tooltip } from '../tooltip/Tooltip'
 import { useAppLayoutContext } from './AppLayoutContext'
+import { Footer } from './Footer'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
 
@@ -53,7 +54,7 @@ export const Navigation = ({
   inboxCount,
   version,
   tokenPrices,
-  pinnedDaos,
+  followingDaos,
   hideInbox = false,
   compact,
   setCompact,
@@ -97,11 +98,12 @@ export const Navigation = ({
     compact = forceCompact
   }
 
-  const [showPinnedTopBorder, setShowPinnedTopBorder] = useState(false)
-  const [showPinnedBottomBorder, setShowPinnedBottomBorder] = useState(false)
-  const scrollablePinnedContainerRef = useRef<HTMLDivElement>(null)
+  const [showFollowingTopBorder, setShowFollowingTopBorder] = useState(false)
+  const [showFollowingBottomBorder, setShowFollowingBottomBorder] =
+    useState(false)
+  const scrollableFollowingContainerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const ref = scrollablePinnedContainerRef.current
+    const ref = scrollableFollowingContainerRef.current
     if (!ref) {
       return
     }
@@ -112,12 +114,12 @@ export const Navigation = ({
       // 0.5rem (~8px) padding before the top of the first sub DAO image, and a
       // couple extra pixels so the first element actually looks covered.
       const contentHiddenOnTop = scrollTop > 11
-      setShowPinnedTopBorder(contentHiddenOnTop)
+      setShowFollowingTopBorder(contentHiddenOnTop)
 
       // 1rem (~16px) padding before the bottom of the last sub DAO image, and
       // a couple extra pixels so the last element actually looks covered.
       const contentHiddenOnBottom = scrollTop < scrollHeight - clientHeight - 19
-      setShowPinnedBottomBorder(contentHiddenOnBottom)
+      setShowFollowingBottomBorder(contentHiddenOnBottom)
     }
 
     updateBorders()
@@ -126,7 +128,7 @@ export const Navigation = ({
     ref.addEventListener('scroll', updateBorders)
     return () => ref.removeEventListener('scroll', updateBorders)
     // Update when compact is changed since positioning is different.
-  }, [scrollablePinnedContainerRef, compact])
+  }, [scrollableFollowingContainerRef, compact])
 
   return (
     <>
@@ -217,46 +219,37 @@ export const Navigation = ({
           )}
 
           <Row
-            Icon={Add}
-            LinkWrapper={LinkWrapper}
-            compact={compact}
-            href="/dao/create"
-            label={t('button.create')}
-          />
-
-          <Row
-            Icon={PushPinOutlined}
+            Icon={CheckRounded}
             LinkWrapper={LinkWrapper}
             compact={compact}
             defaultExpanded
             label={t('title.following')}
-            loading={pinnedDaos.loading}
+            loading={followingDaos.loading}
           >
-            {!pinnedDaos.loading && (
+            {!followingDaos.loading && (
               <div
                 className={clsx(
-                  'relative sm:max-h-[33vh]',
-                  !pinnedDaos.loading && 'no-scrollbar overflow-y-auto',
+                  'relative sm:max-h-[50vh]',
+                  !followingDaos.loading && 'no-scrollbar overflow-y-auto',
                   compact && 'mt-1 w-min'
                 )}
-                ref={scrollablePinnedContainerRef}
+                ref={scrollableFollowingContainerRef}
               >
                 {/* Top border */}
                 <div
                   className={clsx(
                     'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                    showPinnedTopBorder ? 'opacity-100' : 'opacity-0'
+                    showFollowingTopBorder ? 'opacity-100' : 'opacity-0'
                   )}
                 ></div>
 
                 {/* DAOs */}
-                {pinnedDaos.data.map((dao, index) => (
+                {followingDaos.data.map((dao, index) => (
                   <DaoDropdown
                     key={index}
                     LinkWrapper={LinkWrapper}
                     compact={compact}
                     dao={dao}
-                    defaultExpanded
                   />
                 ))}
 
@@ -264,44 +257,57 @@ export const Navigation = ({
                 <div
                   className={clsx(
                     'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                    showPinnedBottomBorder ? 'opacity-100' : 'opacity-0'
+                    showFollowingBottomBorder ? 'opacity-100' : 'opacity-0'
                   )}
                 ></div>
               </div>
             )}
           </Row>
+
+          <Row
+            Icon={Add}
+            LinkWrapper={LinkWrapper}
+            compact={compact}
+            href="/dao/create"
+            label={t('button.create')}
+          />
         </div>
 
         <div className={clsx('mt-8 flex grow flex-col justify-end gap-2')}>
           {!compact && (
             <div className="caption-text space-y-3 font-mono">
-              <p>{t('info.daodaoWithVersion', { version })}</p>
+              <p className="pl-[10px]">
+                {t('info.daodaoWithVersion', { version })}
+              </p>
 
-              {tokenPrices.loading ? (
-                <Loader className="!justify-start" size={38} />
-              ) : (
-                tokenPrices.data.map(
-                  ({ label, price, priceDenom, change }, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-row items-end justify-between gap-2"
-                    >
-                      <p className="text-text-primary">
-                        {label} = {price} ${priceDenom}
-                      </p>
-                      {change !== undefined && (
-                        <PricePercentChange value={change} />
-                      )}
-                    </div>
+              {tokenPrices &&
+                (tokenPrices.loading ? (
+                  <Loader className="!justify-start" size={38} />
+                ) : (
+                  tokenPrices.data.map(
+                    ({ label, price, priceDenom, change }, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-row items-end justify-between gap-2"
+                      >
+                        <p className="text-text-primary">
+                          {label} = {price} ${priceDenom}
+                        </p>
+                        {change !== undefined && (
+                          <PricePercentChange value={change} />
+                        )}
+                      </div>
+                    )
                   )
-                )
-              )}
+                ))}
+
+              <Footer />
             </div>
           )}
 
           <div
             className={clsx(
-              'mt-4 flex gap-2',
+              'mt-8 flex gap-2',
               compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >

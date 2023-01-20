@@ -4,15 +4,19 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { ComponentProps, useCallback, useEffect, useMemo } from 'react'
+import { ComponentProps, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { useRecoilState } from 'recoil'
 
+import { navigatingToHrefAtom } from '@dao-dao/state'
 import {
   DaoPageWrapper,
   DaoProposalPageWrapperProps,
+  ProfileDisconnectedCard,
   ProfileProposalCard,
   Trans,
+  useAwaitNextBlock,
   useWalletProfile,
 } from '@dao-dao/stateful'
 import { useCoreActions } from '@dao-dao/stateful/actions'
@@ -23,7 +27,6 @@ import {
 import { makeGetDaoProposalStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
-  ProfileDisconnectedCard,
   Proposal,
   ProposalNotFound,
   ProposalProps,
@@ -90,14 +93,21 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
   const { refreshProposal, refreshProposalAndAll, refreshing } =
     useProposalRefreshers()
 
-  const onVoteSuccess = useCallback(() => {
+  const awaitNextBlock = useAwaitNextBlock()
+
+  const onVoteSuccess = useCallback(async () => {
+    // Wait a block for indexer to catch up.
+    await awaitNextBlock()
+
     refreshProposalAndAll()
     toast.success(t('success.voteCast'))
-  }, [refreshProposalAndAll, t])
+  }, [awaitNextBlock, refreshProposalAndAll, t])
 
   const onExecuteSuccess = useCallback(async () => {
-    refreshProposalAndAll()
     toast.loading(t('success.proposalExecuted'))
+
+    // Wait a block for indexer to catch up.
+    await awaitNextBlock()
 
     // Manually revalidate DAO static props. Don't await this promise since we
     // just want to tell the server to do it, and we're about to reload anyway.
@@ -105,12 +115,15 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
 
     // Refresh entire app since any DAO config may have changed.
     window.location.reload()
-  }, [daoInfo.coreAddress, proposalInfo.id, refreshProposalAndAll, t])
+  }, [awaitNextBlock, daoInfo.coreAddress, proposalInfo.id, t])
 
-  const onCloseSuccess = useCallback(() => {
+  const onCloseSuccess = useCallback(async () => {
+    // Wait a block for indexer to catch up.
+    await awaitNextBlock()
+
     refreshProposalAndAll()
     toast.success(t('success.proposalClosed'))
-  }, [refreshProposalAndAll, t])
+  }, [awaitNextBlock, refreshProposalAndAll, t])
 
   // Memoize ProposalStatusAndInfo so it doesn't re-render when the proposal
   // refreshes. The cached loadable it uses internally depends on the
@@ -128,16 +141,9 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     [ProposalStatusAndInfo, onCloseSuccess, onExecuteSuccess, onVoteSuccess]
   )
 
-  // Refresh proposal every 30 seconds, while voting open. Refreshes status and
-  // votes.
-  useEffect(() => {
-    if (!proposalInfo.votingOpen) {
-      return
-    }
-
-    const interval = setInterval(refreshProposal, 30 * 1000)
-    return () => clearInterval(interval)
-  }, [refreshProposal, proposalInfo.votingOpen])
+  const duplicateUrlPrefix = `/dao/${daoInfo.coreAddress}/proposals/create?prefill=`
+  const [navigatingToHref, setNavigatingToHref] =
+    useRecoilState(navigatingToHrefAtom)
 
   return (
     <Proposal
@@ -145,15 +151,14 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
       actionDisplay={
         <ProposalActionDisplay
           availableActions={orderedActions}
-          onDuplicate={(data) =>
-            router.push(
-              `/dao/${
-                daoInfo.coreAddress
-              }/proposals/create?prefill=${encodeURIComponent(
-                JSON.stringify(data)
-              )}`
-            )
-          }
+          duplicateLoading={!!navigatingToHref?.startsWith(duplicateUrlPrefix)}
+          onDuplicate={(data) => {
+            const url =
+              duplicateUrlPrefix + encodeURIComponent(JSON.stringify(data))
+            router.push(url)
+            // Show loading on duplicate button.
+            setNavigatingToHref(url)
+          }}
         />
       }
       creator={{

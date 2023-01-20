@@ -6,9 +6,12 @@
 // 0.15    --> 0.15%
 // 23.4852 --> 23.49%
 // 23.4952 --> 23.5%
-export const formatPercentOf100 = (percentOf100: number) =>
+export const formatPercentOf100 = (
+  percentOf100: number,
+  maximumSignificantDigits = 4
+) =>
   percentOf100.toLocaleString(undefined, {
-    maximumSignificantDigits: 4,
+    maximumSignificantDigits,
   }) + '%'
 
 export const dateFormatterNoDay = new Intl.DateTimeFormat('default', {

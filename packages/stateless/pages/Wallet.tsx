@@ -1,5 +1,5 @@
 import {
-  ArrowOutward,
+  ArrowOutwardRounded,
   Key,
   Visibility,
   VisibilityOff,
@@ -121,7 +121,7 @@ export const Wallet = ({
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeader className="mx-auto max-w-5xl" title={t('title.wallet')} />
 
-      <div className="mx-auto flex max-w-5xl flex-col items-stretch">
+      <div className="mx-auto flex max-w-5xl flex-col items-stretch pb-12">
         <FormProvider {...formMethods}>
           <form
             className="flex flex-col gap-4"
@@ -276,7 +276,7 @@ export const Wallet = ({
                   variant="ghost"
                 >
                   {t('button.openInChainExplorer')}{' '}
-                  <ArrowOutward className="!h-4 !w-4" />
+                  <ArrowOutwardRounded className="!h-4 !w-4" />
                 </ButtonLink>
               </div>
             )}

@@ -4,7 +4,6 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   Button,
   Checkbox,
   FamilyEmoji,
@@ -12,8 +11,7 @@ import {
   InputErrorMessage,
   InputLabel,
 } from '@dao-dao/stateless'
-import { StatefulProfileDisplayProps } from '@dao-dao/types'
-import { ActionComponent } from '@dao-dao/types/actions'
+import { ActionComponent, AddressInputProps } from '@dao-dao/types'
 import { SubDao } from '@dao-dao/types/contracts/DaoCore.v2'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
 
@@ -30,7 +28,7 @@ export interface ManageSubDaosOptions {
     address: string
   }[]
   // Used to render pfpk or DAO profiles when selecting addresses.
-  ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps<any>>
 }
 
 export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
@@ -38,7 +36,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { currentSubDaos, ProfileDisplay },
+  options: { currentSubDaos, AddressInput },
 }) => {
   const { t } = useTranslation()
   const { register, watch, control } = useFormContext<ManageSubDaosData>()
@@ -66,102 +64,110 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
       onRemove={onRemove}
       title={t('title.manageSubDaos')}
     >
-      <InputLabel className="mt-2" name={t('form.subDaosToRecognize')} />
-      <div className="flex flex-col items-stretch gap-2">
-        {toAddFields.map(({ id }, index) => (
-          <div key={id} className="flex flex-row items-center gap-2">
-            <div className="grow">
-              <AddressInput
-                ProfileDisplay={ProfileDisplay}
-                disabled={!isCreating}
-                error={errors?.toAdd?.[index]?.addr}
-                fieldName={
-                  (fieldNamePrefix +
-                    `toAdd.${index}.addr`) as `toAdd.${number}.addr`
-                }
-                register={register}
-                validation={[
-                  validateRequired,
-                  validateContractAddress,
-                  (value) =>
-                    currentSubDaos.every(({ address }) => address !== value) ||
-                    t('error.subDaoAlreadyExists'),
-                ]}
-              />
-              <InputErrorMessage error={errors?.toAdd?.[index]?.addr} />
-            </div>
+      <div className="flex flex-col gap-1">
+        <InputLabel name={t('form.subDaosToRecognize')} />
+        <div className="flex flex-col items-stretch gap-2">
+          {toAddFields.map(({ id }, index) => (
+            <div key={id} className="flex flex-row items-center gap-2">
+              <div className="grow">
+                <AddressInput
+                  disabled={!isCreating}
+                  error={errors?.toAdd?.[index]?.addr}
+                  fieldName={
+                    (fieldNamePrefix +
+                      `toAdd.${index}.addr`) as `toAdd.${number}.addr`
+                  }
+                  register={register}
+                  validation={[
+                    validateRequired,
+                    validateContractAddress,
+                    (value) =>
+                      currentSubDaos.every(
+                        ({ address }) => address !== value
+                      ) || t('error.subDaoAlreadyExists'),
+                  ]}
+                />
+                <InputErrorMessage error={errors?.toAdd?.[index]?.addr} />
+              </div>
 
-            {isCreating && (
-              <IconButton
-                Icon={Close}
-                onClick={() => toAddRemove(index)}
-                size="sm"
-                variant="ghost"
-              />
-            )}
-          </div>
-        ))}
-        {!isCreating && toAddFields.length === 0 && (
-          <p className="text-xs italic text-text-tertiary">{t('info.none')}</p>
-        )}
-        {isCreating && (
-          <Button
-            className="self-start"
-            onClick={() => toAddAppend({ addr: '' })}
-            size="sm"
-            variant="secondary"
-          >
-            <Add className="!h-4 !w-4" />
-            {t('button.add')}
-          </Button>
-        )}
+              {isCreating && (
+                <IconButton
+                  Icon={Close}
+                  onClick={() => toAddRemove(index)}
+                  size="sm"
+                  variant="ghost"
+                />
+              )}
+            </div>
+          ))}
+          {!isCreating && toAddFields.length === 0 && (
+            <p className="text-xs italic text-text-tertiary">
+              {t('info.none')}
+            </p>
+          )}
+          {isCreating && (
+            <Button
+              className="self-start"
+              onClick={() => toAddAppend({ addr: '' })}
+              size="sm"
+              variant="secondary"
+            >
+              <Add className="!h-4 !w-4" />
+              {t('button.add')}
+            </Button>
+          )}
+        </div>
       </div>
 
-      <InputLabel className="mt-4" name={t('form.subDaosToRemove')} />
-      <div className="flex flex-col items-stretch gap-2">
-        {isCreating &&
-          currentSubDaos.map(({ name, address }) => {
-            const index = watch(
-              // eslint-disable-next-line i18next/no-literal-string
-              (fieldNamePrefix + 'toRemove') as 'toRemove'
-            ).findIndex(({ address: a }) => a === address)
+      <div className="flex flex-col gap-1">
+        <InputLabel name={t('form.subDaosToRemove')} />
+        <div className="flex flex-col items-stretch gap-2">
+          {isCreating &&
+            currentSubDaos.map(({ name, address }) => {
+              const index = watch(
+                // eslint-disable-next-line i18next/no-literal-string
+                (fieldNamePrefix + 'toRemove') as 'toRemove'
+              ).findIndex(({ address: a }) => a === address)
 
-            return (
-              <div key={address} className="flex flex-row items-center gap-2">
-                <Checkbox
-                  checked={index > -1}
-                  onClick={
-                    isCreating
-                      ? () =>
-                          index > -1
-                            ? toRemoveRemove(index)
-                            : toRemoveAppend({ address })
-                      : undefined
-                  }
-                  readOnly={!isCreating}
-                />
+              return (
+                <div key={address} className="flex flex-row items-center gap-2">
+                  <Checkbox
+                    checked={index > -1}
+                    onClick={
+                      isCreating
+                        ? () =>
+                            index > -1
+                              ? toRemoveRemove(index)
+                              : toRemoveAppend({ address })
+                        : undefined
+                    }
+                    readOnly={!isCreating}
+                  />
 
-                <p
-                  className="body-text cursor-pointer"
-                  onClick={
-                    isCreating
-                      ? () =>
-                          index > -1
-                            ? toRemoveRemove(index)
-                            : toRemoveAppend({ address })
-                      : undefined
-                  }
-                >
-                  {name}
-                </p>
-              </div>
-            )
-          })}
-        {(isCreating
-          ? currentSubDaos.length === 0
-          : toRemoveFields.length === 0) && (
-          <p className="text-xs italic text-text-tertiary">{t('info.none')}</p>
-        )}
+                  <p
+                    className="body-text cursor-pointer"
+                    onClick={
+                      isCreating
+                        ? () =>
+                            index > -1
+                              ? toRemoveRemove(index)
+                              : toRemoveAppend({ address })
+                        : undefined
+                    }
+                  >
+                    {name}
+                  </p>
+                </div>
+              )
+            })}
+          {(isCreating
+            ? currentSubDaos.length === 0
+            : toRemoveFields.length === 0) && (
+            <p className="text-xs italic text-text-tertiary">
+              {t('info.none')}
+            </p>
+          )}
+        </div>
       </div>
     </ActionCard>
   )

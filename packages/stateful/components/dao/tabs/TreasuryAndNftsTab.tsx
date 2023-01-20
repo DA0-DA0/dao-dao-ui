@@ -12,7 +12,7 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 import { useCoreActionForKey } from '../../../actions'
 import {
   useEncodedDaoProposalSinglePrefill,
-  useVotingModule,
+  useMembership,
 } from '../../../hooks'
 import {
   nftCardInfosSelector,
@@ -27,10 +27,7 @@ import { TokenCard } from '../TokenCard'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
-  const { isMember = false } = useVotingModule(daoInfo.coreAddress, {
-    chainId: daoInfo.chainId,
-    fetchMembership: true,
-  })
+  const { isMember = false } = useMembership(daoInfo)
   const { governanceTokenAddress: cw20GovernanceTokenAddress } =
     useCw20GovernanceTokenInfoResponseIfExists() ?? {}
   const { governanceTokenAddress: nativeGovernanceTokenDenom } =
@@ -66,7 +63,8 @@ export const TreasuryAndNftsTab = () => {
     treasuryTokenCardInfosLoadable.state,
   ])
 
-  const addCw721Action = useCoreActionForKey(CoreActionKey.AddCw721)
+  // ManageCw721 action defaults to adding
+  const addCw721Action = useCoreActionForKey(CoreActionKey.ManageCw721)
   // Prefill URL only valid if action exists.
   const prefillValid = !!addCw721Action
   const encodedProposalPrefill = useEncodedDaoProposalSinglePrefill({

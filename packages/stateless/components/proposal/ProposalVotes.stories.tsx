@@ -1,10 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { VoteDisplay } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ProposalVotes/VoteDisplay'
+import { EntityType } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { getFallbackImage } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../profile/ProfileDisplay'
+import { EntityDisplay } from '../EntityDisplay'
 import { ProposalVotes, ProposalVotesProps } from './ProposalVotes'
 
 export default {
@@ -29,17 +30,17 @@ export const makeProps = (): ProposalVotesProps<Vote> => ({
       // 25% chance of No, 75% chance of Yes
       vote: Math.random() < 0.25 ? Vote.No : Vote.Yes,
       votingPowerPercent: 0.0432,
+      // Within the past 5 days.
+      votedAt: new Date(Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000),
     })),
   },
-  // Within the past 5 days.
-  getDateVoted: () =>
-    new Date(Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000),
   votingOpen: true,
-  ProfileDisplay: (props) => (
-    <ProfileDisplay
-      loadingProfile={{
+  EntityDisplay: (props) => (
+    <EntityDisplay
+      loadingEntity={{
         loading: false,
         data: {
+          type: EntityType.Wallet,
           address: props.address,
           name: null,
           imageUrl: getFallbackImage(props.address),

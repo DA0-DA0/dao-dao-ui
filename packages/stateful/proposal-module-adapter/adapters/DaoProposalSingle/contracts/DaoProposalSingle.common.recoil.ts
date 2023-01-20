@@ -4,16 +4,16 @@ import { contractVersionSelector } from '@dao-dao/state'
 import { ContractVersion, WithChainId } from '@dao-dao/types'
 import {
   ConfigResponse as ConfigV1Response,
-  VoteResponse as GetVoteV1Response,
-  ListVotesResponse as ListVotesV1Response,
   ProposalResponse as ProposalV1Response,
   ReverseProposalsResponse as ReverseProposalsV1Response,
 } from '@dao-dao/types/contracts/CwProposalSingle.v1'
-import { VoteInfo } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import {
+  ListVotesResponse,
+  VoteInfo,
+  VoteResponse,
+} from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   ConfigResponse as ConfigV2Response,
-  GetVoteResponse as GetVoteV2Response,
-  ListVotesResponse as ListVotesV2Response,
   ProposalResponse as ProposalV2Response,
   ReverseProposalsResponse as ReverseProposalsV2Response,
 } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
@@ -38,7 +38,7 @@ type QueryClientParams = WithChainId<{
 }>
 
 export const getVoteSelector = selectorFamily<
-  GetVoteV1Response | GetVoteV2Response,
+  VoteResponse,
   QueryClientParams & {
     params: [
       {
@@ -63,12 +63,12 @@ export const getVoteSelector = selectorFamily<
           ? getVoteV1Selector
           : getVoteV2Selector
 
-      return get<GetVoteV1Response | GetVoteV2Response>(selector(params))
+      return get<VoteResponse>(selector(params))
     },
 })
 
 export const listVotesSelector = selectorFamily<
-  ListVotesV1Response | ListVotesV2Response,
+  ListVotesResponse,
   QueryClientParams & {
     params: [
       {
@@ -94,7 +94,7 @@ export const listVotesSelector = selectorFamily<
           ? listVotesV1Selector
           : listVotesV2Selector
 
-      return get<ListVotesV1Response | ListVotesV2Response>(selector(params))
+      return get<ListVotesResponse>(selector(params))
     },
 })
 

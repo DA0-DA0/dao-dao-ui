@@ -15,8 +15,8 @@ export interface NavigationProps {
   setCommandModalVisible: () => void
   inboxCount: LoadingData<number>
   version: string
-  tokenPrices: LoadingData<NavigationTokenPrice[]>
-  pinnedDaos: LoadingData<DaoDropdownInfo[]>
+  tokenPrices?: LoadingData<NavigationTokenPrice[]>
+  followingDaos: LoadingData<DaoDropdownInfo[]>
   hideInbox?: boolean
   compact: boolean
   setCompact: (compact: boolean) => void

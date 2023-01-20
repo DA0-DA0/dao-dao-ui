@@ -1,6 +1,6 @@
 import {
   AccountCircleOutlined,
-  ArrowOutward,
+  ArrowOutwardRounded,
   CancelOutlined,
   HourglassTopRounded,
   Key,
@@ -21,6 +21,7 @@ import {
   Logo,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
+  Tooltip,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -38,8 +39,8 @@ import {
 
 import { SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
-import { ProfileDisplay } from '../../../../components/ProfileDisplay'
-import { useAwaitNextBlock, useVotingModule } from '../../../../hooks'
+import { EntityDisplay } from '../../../../components/EntityDisplay'
+import { useAwaitNextBlock, useMembership } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
   useClose as useCloseV1,
@@ -112,11 +113,12 @@ const InnerProposalStatusAndInfo = ({
   depositInfo: CheckedDepositInfo | undefined
 }) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
+  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { connected, address: walletAddress = '' } = useWallet()
-  const { isMember = false } = useVotingModule(coreAddress, {
-    fetchMembership: true,
+  const { isMember = false } = useMembership({
+    coreAddress,
+    chainId,
   })
 
   const config = useRecoilValue(
@@ -145,7 +147,7 @@ const InnerProposalStatusAndInfo = ({
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
       Value: (props) => (
-        <ProfileDisplay
+        <EntityDisplay
           address={proposal.proposer}
           copyToClipboardProps={{
             ...props,
@@ -176,35 +178,38 @@ const InnerProposalStatusAndInfo = ({
             Icon: HourglassTopRounded,
             label: timestampInfo.display.label,
             Value: (props) => (
-              <p {...props}>{timestampInfo.display!.content}</p>
+              <Tooltip title={timestampInfo.display!.tooltip}>
+                <p {...props}>{timestampInfo.display!.content}</p>
+              </Tooltip>
             ),
           },
         ] as ProposalStatusAndInfoProps<Vote>['info'])
       : []),
-    ...(loadingExecutionTxHash &&
-    !loadingExecutionTxHash.loading &&
-    loadingExecutionTxHash.data
+    ...(loadingExecutionTxHash.loading || loadingExecutionTxHash.data
       ? ([
           {
             Icon: Tag,
             label: t('info.txAbbr'),
-            Value: (props) => (
-              <div className="flex flex-row items-center gap-1">
-                <CopyToClipboardUnderline
-                  // Will truncate automatically.
-                  takeAll
-                  value={loadingExecutionTxHash.data!}
-                  {...props}
-                />
-                {!!CHAIN_TXN_URL_PREFIX && (
-                  <IconButtonLink
-                    Icon={ArrowOutward}
-                    href={CHAIN_TXN_URL_PREFIX + loadingExecutionTxHash.data}
-                    variant="ghost"
+            Value: (props) =>
+              loadingExecutionTxHash.loading ? (
+                <p className={clsx('animate-pulse', props.className)}>...</p>
+              ) : loadingExecutionTxHash.data ? (
+                <div className="flex flex-row items-center gap-1">
+                  <CopyToClipboardUnderline
+                    // Will truncate automatically.
+                    takeAll
+                    value={loadingExecutionTxHash.data}
+                    {...props}
                   />
-                )}
-              </div>
-            ),
+                  {!!CHAIN_TXN_URL_PREFIX && (
+                    <IconButtonLink
+                      Icon={ArrowOutwardRounded}
+                      href={CHAIN_TXN_URL_PREFIX + loadingExecutionTxHash.data}
+                      variant="ghost"
+                    />
+                  )}
+                </div>
+              ) : null,
           },
         ] as ProposalStatusAndInfoProps<Vote>['info'])
       : []),
@@ -318,6 +323,17 @@ const InnerProposalStatusAndInfo = ({
     refreshProposalAndAll,
     awaitNextBlock,
   ])
+
+  // Refresh proposal every 30 seconds, while voting open. Refreshes status and
+  // votes.
+  useEffect(() => {
+    if (!proposal.votingOpen) {
+      return
+    }
+
+    const interval = setInterval(refreshProposal, 30 * 1000)
+    return () => clearInterval(interval)
+  }, [refreshProposal, proposal.votingOpen])
 
   return (
     <StatelessProposalStatusAndInfo

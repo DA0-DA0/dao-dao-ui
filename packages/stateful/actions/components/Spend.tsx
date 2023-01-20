@@ -8,13 +8,12 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   InputErrorMessage,
   MoneyEmoji,
   NumberInput,
   SelectInput,
 } from '@dao-dao/stateless'
-import { StatefulProfileDisplayProps } from '@dao-dao/types'
+import { AddressInputProps } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionOptionsContextType,
@@ -48,7 +47,7 @@ export interface SpendOptions {
     info: TokenInfoResponse
   }[]
   // Used to render pfpk or DAO profiles when selecting addresses.
-  ProfileDisplay?: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps>
 }
 
 export const SpendComponent: ActionComponent<SpendOptions> = ({
@@ -56,7 +55,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { nativeBalances, cw20Balances, ProfileDisplay },
+  options: { nativeBalances, cw20Balances, AddressInput },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue, setError, clearErrors } = useFormContext()
@@ -172,7 +171,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   return (
     <ActionCard Icon={MoneyEmoji} onRemove={onRemove} title={t('title.spend')}>
-      <div className="flex flex-col gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
+      <div className="flex min-w-0 flex-col flex-wrap gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
         <div className="flex grow flex-row items-stretch gap-2">
           <NumberInput
             containerClassName="grow"
@@ -224,14 +223,13 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           </SelectInput>
         </div>
 
-        <div className="flex grow flex-row items-stretch gap-2 sm:gap-3">
+        <div className="flex min-w-0 grow flex-row items-stretch gap-2 sm:gap-3">
           <div className="flex flex-row items-center pl-1 sm:pl-0">
             <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
             <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
           </div>
 
           <AddressInput
-            ProfileDisplay={ProfileDisplay}
             containerClassName="grow"
             disabled={!isCreating}
             error={errors?.to}
@@ -242,10 +240,14 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         </div>
       </div>
 
-      <InputErrorMessage error={errors?.amount} />
-      <InputErrorMessage error={errors?.denom} />
-      <InputErrorMessage error={errors?.to} />
-      <InputErrorMessage error={errors?._error} />
+      {(errors?.amount || errors?.denom || errors?.to || errors?._error) && (
+        <div className="-mt-2 flex flex-col gap-1">
+          <InputErrorMessage error={errors?.amount} />
+          <InputErrorMessage error={errors?.denom} />
+          <InputErrorMessage error={errors?.to} />
+          <InputErrorMessage error={errors?._error} />
+        </div>
+      )}
     </ActionCard>
   )
 }

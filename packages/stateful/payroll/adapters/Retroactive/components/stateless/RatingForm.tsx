@@ -5,19 +5,19 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   Button,
   Checkbox,
   InputErrorMessage,
   InputLabel,
-  MarkdownPreview,
+  MarkdownRenderer,
   RangeInput,
   TextAreaInput,
   TokenAmountDisplay,
 } from '@dao-dao/stateless'
 import {
+  AddressInputProps,
   AmountWithTimestampAndDenom,
-  StatefulProfileDisplayProps,
+  StatefulEntityDisplayProps,
   TokenInfoResponseWithAddressAndLogo,
 } from '@dao-dao/types'
 import {
@@ -55,7 +55,8 @@ export interface RatingFormProps {
   data: ContributionRatingData
   onSubmit: (data: RatingsFormData) => Promise<void>
   loadingSubmit: boolean
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
+  AddressInput: ComponentType<AddressInputProps<NominationForm>>
   cw20TokenInfos: TokenInfoResponseWithAddressAndLogo[]
   prices: AmountWithTimestampAndDenom[]
   onNominate: (data: NominationForm) => Promise<void>
@@ -67,7 +68,8 @@ export const RatingForm = ({
   data,
   onSubmit,
   loadingSubmit,
-  ProfileDisplay,
+  EntityDisplay,
+  AddressInput,
   cw20TokenInfos,
   prices,
   onNominate,
@@ -141,6 +143,7 @@ export const RatingForm = ({
     register: nominationRegister,
     handleSubmit: nominationHandleSubmit,
     formState: { errors: nominationErrors },
+    setValue: nominationSetValue,
   } = useForm<NominationForm>()
 
   return (
@@ -154,7 +157,7 @@ export const RatingForm = ({
         </p>
       </div>
 
-      <MarkdownPreview markdown={survey.ratingInstructions} />
+      <MarkdownRenderer markdown={survey.ratingInstructions} />
 
       <form
         className="flex flex-col gap-4 pb-10"
@@ -260,12 +263,12 @@ export const RatingForm = ({
                       'rounded-bl-md'
                   )}
                 >
-                  <ProfileDisplay
+                  <EntityDisplay
                     address={contribution.contributor.address}
                     walletHexPublicKey={contribution.contributor.publicKey}
                   />
 
-                  <MarkdownPreview
+                  <MarkdownRenderer
                     className="styled-scrollbar max-h-40 overflow-y-auto py-2 pr-2"
                     markdown={contribution.content}
                   />
@@ -356,9 +359,9 @@ export const RatingForm = ({
                           amount={totalUsdc}
                           className="caption-text text-right"
                           dateFetched={prices[0]?.timestamp}
+                          estimatedUsdValue
                           hideApprox
                           prefix="= "
-                          usdcConversion
                         />
                       </div>
                     </>
@@ -388,7 +391,7 @@ export const RatingForm = ({
 
       <div className="flex flex-col rounded-lg bg-background-tertiary p-6">
         <p className="title-text mb-2">{t('title.nominateContributor')}</p>
-        <MarkdownPreview markdown={t('info.nominateContributorDescription')} />
+        <MarkdownRenderer markdown={t('info.nominateContributorDescription')} />
 
         <form
           className="mt-6 flex flex-col gap-4"
@@ -397,11 +400,11 @@ export const RatingForm = ({
           <div className="space-y-1">
             <InputLabel name={t('form.contributorAddress')} />
             <AddressInput
-              ProfileDisplay={ProfileDisplay}
               containerClassName="grow"
               error={nominationErrors?.contributor}
               fieldName="contributor"
               register={nominationRegister}
+              setValue={nominationSetValue}
               validation={[validateRequired, validateAddress]}
               watch={nominationWatch}
             />

@@ -1,4 +1,3 @@
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { ComponentType } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
@@ -49,9 +48,7 @@ export interface IProposalModuleAdapterCommon<
 export interface IProposalModuleAdapter<Vote extends unknown = any> {
   // Functions
   functions: {
-    getProposalInfo: (
-      cosmWasmClient: CosmWasmClient
-    ) => Promise<CommonProposalInfo | undefined>
+    getProposalInfo: () => Promise<CommonProposalInfo | undefined>
   }
 
   // Hooks
@@ -95,7 +92,10 @@ export type ProposalModuleAdapter<
   load: (options: IProposalModuleAdapterOptions) => IProposalModuleAdapter<Vote>
 
   queries: {
-    proposalCount: Record<string, unknown>
+    proposalCount: {
+      indexerFormula?: string
+      cosmWasmQuery: Record<string, unknown>
+    }
   }
 
   functions: {
@@ -142,7 +142,7 @@ export interface IProposalModuleContext {
 // Internal Adapter Types
 
 export type FetchPreProposeAddressFunction = (
-  cosmWasmClient: CosmWasmClient,
+  chainId: string,
   proposalModuleAddress: string,
   version: ContractVersion | null
 ) => Promise<string | null>
@@ -167,7 +167,6 @@ export interface CommonProposalInfo {
   id: string
   title: string
   description: string
-  votingOpen: boolean
   expiration: Expiration
   createdAtEpoch: number | null
   createdByAddress: string
@@ -182,6 +181,7 @@ export interface BaseProposalStatusAndInfoProps {
 
 export interface BaseProposalActionDisplayProps<D extends any = any> {
   onDuplicate: (data: ProposalPrefill<D>) => void
+  duplicateLoading: boolean
   availableActions: Action[]
 }
 

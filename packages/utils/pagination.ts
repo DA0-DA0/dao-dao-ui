@@ -34,7 +34,7 @@ export const getAllRpcResponse = async <
 
     const results = response[key] as any[]
     // If no results retrieved, stop.
-    if (!results.length) {
+    if (!results?.length) {
       break
     }
 

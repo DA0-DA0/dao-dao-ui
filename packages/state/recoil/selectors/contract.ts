@@ -8,6 +8,7 @@ import {
   cosmWasmClientForChainSelector,
 } from './chain'
 import { DaoCoreV2Selectors } from './contracts'
+import { queryContractIndexerSelector } from './indexer'
 
 export const contractInstantiateTimeSelector = selectorFamily<
   Date | undefined,
@@ -17,12 +18,28 @@ export const contractInstantiateTimeSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     async ({ get }) => {
-      const client = get(cosmWasmClientForChainSelector(chainId))
+      const instantiatedAt = get(
+        queryContractIndexerSelector({
+          contractAddress: address,
+          chainId,
+          formulaName: 'instantiatedAt',
+        })
+      )
+      // Null when indexer fails.
+      if (instantiatedAt) {
+        return new Date(instantiatedAt)
+      }
 
+      // If indexer fails, fallback to querying chain.
+
+      const client = get(cosmWasmClientForChainSelector(chainId))
       const events = await client.searchTx({
         tags: [{ key: 'instantiate._contract_address', value: address }],
       })
-      if (events.length === 0) return
+
+      if (events.length === 0) {
+        return
+      }
 
       return get(
         blockHeightTimestampSafeSelector({
@@ -81,11 +98,13 @@ export const contractVersionSelector = selectorFamily<
 
 export const isContractSelector = selectorFamily<
   boolean,
-  WithChainId<{ contractAddress: string; name: string }>
+  WithChainId<
+    { contractAddress: string } & ({ name: string } | { names: string[] })
+  >
 >({
   key: 'isContract',
   get:
-    ({ contractAddress, name, chainId }) =>
+    ({ contractAddress, chainId, ...nameOrNames }) =>
     async ({ get }) => {
       try {
         // All InfoResponses are the same, so just use core's.
@@ -99,7 +118,9 @@ export const isContractSelector = selectorFamily<
           })
         )
 
-        return contract.includes(name)
+        return 'name' in nameOrNames
+          ? contract.includes(nameOrNames.name)
+          : nameOrNames.names.some((name) => contract.includes(name))
       } catch (err) {
         // Invalid query enum info variant, different contract.
         if (

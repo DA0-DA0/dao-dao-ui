@@ -1,10 +1,9 @@
 import {
   Check,
+  CheckRounded,
   CopyAll,
   HomeOutlined,
   InboxOutlined,
-  PushPin,
-  PushPinOutlined,
 } from '@mui/icons-material'
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
@@ -20,7 +19,7 @@ import {
 } from '@dao-dao/types/command'
 import { CHAIN_ID, getUrlBaseForChainId } from '@dao-dao/utils'
 
-import { usePinnedDaos, useVotingModule } from '../../../hooks'
+import { useFollowingDaos, useMembership } from '../../../hooks'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo
@@ -30,13 +29,14 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const router = useRouter()
 
     const { status } = useWallet(chainId)
-    const { isMember } = useVotingModule(coreAddress, {
+    const { isMember } = useMembership({
+      coreAddress,
       chainId,
-      fetchMembership: true,
     })
 
-    const { isPinned, setPinned, setUnpinned } = usePinnedDaos()
-    const pinned = isPinned(coreAddress)
+    const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
+      useFollowingDaos()
+    const following = isFollowing(coreAddress)
 
     const [copied, setCopied] = useState(false)
     // Debounce clearing copied.
@@ -109,15 +109,18 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             setCopied(true)
           },
         },
-        // Only allow pinning if on same chain. This prevents pinning featured
-        // mainnet DAOs on testnet.
+        // Only allow following if on same chain. This prevents following
+        // featured mainnet DAOs on testnet.
         ...(chainId === CHAIN_ID
           ? [
               {
-                name: pinned ? t('button.unfollow') : t('button.follow'),
-                Icon: pinned ? PushPin : PushPinOutlined,
+                name: following ? t('button.unfollow') : t('button.follow'),
+                Icon: CheckRounded,
                 onChoose: () =>
-                  pinned ? setUnpinned(coreAddress) : setPinned(coreAddress),
+                  following
+                    ? setUnfollowing(coreAddress)
+                    : setFollowing(coreAddress),
+                loading: updatingFollowing,
               },
             ]
           : []),

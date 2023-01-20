@@ -102,6 +102,7 @@ export type UsePublishProposal = () => {
 export interface TimestampInfo {
   display?: {
     label: string
+    tooltip?: string
     content: ReactNode
   }
   expirationDate: Date

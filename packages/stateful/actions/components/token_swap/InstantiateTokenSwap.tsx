@@ -2,7 +2,6 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   Button,
   InputErrorMessage,
   InputLabel,
@@ -36,7 +35,7 @@ export const InstantiateTokenSwap: ActionComponent<
     counterpartyNativeBalances,
     onInstantiate,
     instantiating,
-    ProfileDisplay,
+    AddressInput,
     Trans,
   },
 }) => {
@@ -112,7 +111,6 @@ export const InstantiateTokenSwap: ActionComponent<
         <InputLabel name={t('form.whoIsCounterparty')} />
 
         <AddressInput
-          ProfileDisplay={ProfileDisplay}
           error={errors?.counterparty?.address}
           fieldName={fieldNamePrefix + 'counterparty.address'}
           register={register}

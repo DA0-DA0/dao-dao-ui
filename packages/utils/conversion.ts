@@ -1,3 +1,4 @@
+import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { TFunction } from 'next-i18next'
 import { Loadable } from 'recoil'
 
@@ -214,4 +215,15 @@ export const toAccessibleImageUrl = (
   }
 
   return url
+}
+
+// Converts an address to its corresponding validator address.
+export const toValidatorAddress = (address: string, bech32Prefix: string) => {
+  try {
+    return toBech32(bech32Prefix + 'valoper', fromBech32(address).data)
+  } catch (err) {
+    // Silently error.
+    console.error(err)
+    return ''
+  }
 }

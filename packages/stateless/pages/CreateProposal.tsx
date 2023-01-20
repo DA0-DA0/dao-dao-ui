@@ -1,11 +1,10 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { matchAdapter } from '@dao-dao/stateful/proposal-module-adapter'
 import { DaoInfo, ProposalModule, ProposalModuleAdapter } from '@dao-dao/types'
 import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
-import { Dropdown, useAppLayoutContext } from '../components'
+import { Dropdown, DropdownOption, useAppLayoutContext } from '../components'
 
 export interface CreateProposalProps {
   daoInfo: DaoInfo
@@ -14,6 +13,7 @@ export interface CreateProposalProps {
   setProposalModule: (proposalModule: ProposalModule) => void
   newProposal: ReactNode
   rightSidebarContent: ReactNode
+  matchAdapter: (contractName: string) => ProposalModuleAdapter | undefined
 }
 
 export const CreateProposal = ({
@@ -23,21 +23,27 @@ export const CreateProposal = ({
   setProposalModule,
   newProposal,
   rightSidebarContent,
+  matchAdapter,
 }: CreateProposalProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
+  // List of proposal modules available, using the adapter ID to derive a label
+  // to display in the dropdown.
   const proposalModuleItems = useMemo(
     () =>
-      (
-        daoInfo.proposalModules
-          .map((proposalModule) => matchAdapter(proposalModule.contractName))
-          .filter(Boolean) as ProposalModuleAdapter[]
-      ).map((adapter) => ({
-        label: t(`proposalModuleLabel.${adapter.id}`),
-        value: proposalModule,
-      })),
-    [daoInfo.proposalModules, proposalModule, t]
+      daoInfo.proposalModules
+        .map((proposalModule): DropdownOption<ProposalModule> | undefined => {
+          const adapter = matchAdapter(proposalModule.contractName)
+          return (
+            adapter && {
+              label: t(`proposalModuleLabel.${adapter.id}`),
+              value: proposalModule,
+            }
+          )
+        })
+        .filter((item): item is DropdownOption<ProposalModule> => !!item),
+    [daoInfo.proposalModules, matchAdapter, t]
   )
 
   return (

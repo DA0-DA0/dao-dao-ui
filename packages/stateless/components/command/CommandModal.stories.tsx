@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useRef, useState } from 'react'
 
-import { SubQueryDecorator } from '@dao-dao/storybook/decorators'
+import { ApolloGqlDecorator } from '@dao-dao/storybook/decorators'
 
 import { CommandModal } from './CommandModal'
 import {
@@ -18,7 +18,7 @@ export default {
   title:
     'DAO DAO / packages / stateless / components / CommandModal / CommandModal',
   component: CommandModal,
-  decorators: [SubQueryDecorator],
+  decorators: [ApolloGqlDecorator],
 } as ComponentMeta<typeof CommandModal>
 
 const Template: ComponentStory<typeof CommandModal> = (args) => {

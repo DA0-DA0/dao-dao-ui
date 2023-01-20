@@ -1,27 +1,34 @@
-import { PushPin, PushPinOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
+import { FollowState } from '@dao-dao/types'
+
+import { Tooltip } from '../tooltip'
 import { Button } from './Button'
 
-export interface FollowingToggleProps {
-  following: boolean
-  onToggle: () => void
+export interface FollowingToggleProps extends FollowState {
+  className?: string
 }
 
 export const FollowingToggle = ({
   following,
-  onToggle,
+  onFollow,
+  updatingFollowing,
+  className,
 }: FollowingToggleProps) => {
   const { t } = useTranslation()
-  const Icon = following ? PushPin : PushPinOutlined
 
   return (
-    <Button onClick={(_e) => onToggle()} variant="secondary">
-      {/* Don't show text on mobile, header too small. */}
-      <p className="hidden text-text-body sm:block">
+    <Tooltip
+      title={following ? t('info.unfollowTooltip') : t('info.followTooltip')}
+    >
+      <Button
+        className={className}
+        loading={updatingFollowing}
+        onClick={onFollow}
+        variant={following ? 'secondary' : 'primary'}
+      >
         {following ? t('button.following') : t('button.follow')}
-      </p>
-      <Icon className="!h-4 !w-4 !text-icon-primary" />
-    </Button>
+      </Button>
+    </Tooltip>
   )
 }

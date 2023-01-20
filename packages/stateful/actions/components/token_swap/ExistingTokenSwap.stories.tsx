@@ -3,9 +3,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { makeProps as makeTokenSwapStatusProps } from '@dao-dao/stateless/components/TokenSwapStatus.stories'
 import {
   makeActionsProviderDecorator,
+  makeDaoInfo,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
+import { ActionOptionsContextType } from '@dao-dao/types'
 
 import { ExistingTokenSwap } from './ExistingTokenSwap'
 import { PerformTokenSwapData } from './types'
@@ -26,7 +27,7 @@ export default {
       bech32Prefix: 'juno',
       context: {
         type: ActionOptionsContextType.Dao,
-        coreVersion: ContractVersion.V2Alpha,
+        info: makeDaoInfo(),
       },
     }),
   ],

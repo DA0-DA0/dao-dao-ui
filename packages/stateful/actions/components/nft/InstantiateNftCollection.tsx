@@ -2,7 +2,6 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   Button,
   InputErrorMessage,
   InputLabel,
@@ -19,7 +18,7 @@ export const InstantiateNftCollection: ActionComponent<
 > = ({
   fieldNamePrefix,
   errors,
-  options: { onInstantiate, instantiating, ProfileDisplay },
+  options: { onInstantiate, instantiating, AddressInput },
 }) => {
   const { t } = useTranslation()
 
@@ -31,7 +30,6 @@ export const InstantiateNftCollection: ActionComponent<
         <InputLabel name={t('form.whoCanMint')} />
 
         <AddressInput
-          ProfileDisplay={ProfileDisplay}
           error={errors?.instantiateMsg?.minter}
           fieldName={fieldNamePrefix + 'instantiateMsg.minter'}
           register={register}

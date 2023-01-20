@@ -1,13 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import { makeProps as makeNftCardProps } from '@dao-dao/stateless/components/NftCard.stories'
 import {
   ReactHookFormDecorator,
   makeActionsProviderDecorator,
+  makeDaoInfo,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType, ContractVersion } from '@dao-dao/types'
+import { ActionOptionsContextType } from '@dao-dao/types'
 
-import { ProfileDisplay } from '../../../components'
 import { TransferNftComponent } from './TransferNft'
 
 export default {
@@ -22,7 +23,7 @@ export default {
       bech32Prefix: 'juno',
       context: {
         type: ActionOptionsContextType.Dao,
-        coreVersion: ContractVersion.V2Alpha,
+        info: makeDaoInfo(),
       },
     }),
   ],
@@ -58,6 +59,6 @@ Default.args = {
         makeNftCardProps(),
       ],
     },
-    ProfileDisplay,
+    AddressInput,
   },
 }

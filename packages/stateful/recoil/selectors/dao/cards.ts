@@ -1,7 +1,6 @@
 import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
 import {
-  CwCoreV1Selectors,
   DaoCoreV2Selectors,
   contractInstantiateTimeSelector,
   contractVersionSelector,
@@ -13,6 +12,7 @@ import {
   DaoCardInfo,
   DaoCardInfoLazyData,
   DaoDropdownInfo,
+  IndexerDumpState,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -23,11 +23,17 @@ import {
   ConfigResponse as DaoCoreV2ConfigResponse,
   DumpStateResponse as DaoCoreV2DumpStateResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
-import { CHAIN_ID, getFallbackImage } from '@dao-dao/utils'
+import {
+  CHAIN_BECH32_PREFIX,
+  CHAIN_ID,
+  getFallbackImage,
+  isValidContractAddress,
+  parseContractVersion,
+} from '@dao-dao/utils'
 
 import { proposalModuleAdapterProposalCountSelector } from '../../../proposal-module-adapter'
 import {
-  cwCoreProposalModulesSelector,
+  daoCoreProposalModulesSelector,
   daoCw20GovernanceTokenAddressSelector,
 } from './misc'
 
@@ -41,6 +47,7 @@ export const daoCardInfoSelector = selectorFamily<
     ({ get }) => {
       const dumpedState:
         | CwCoreV1DumpStateResponse
+        | IndexerDumpState
         | DaoCoreV2DumpStateResponse
         | undefined = get(
         // Both v1 and v2 have a dump_state query.
@@ -55,15 +62,13 @@ export const daoCardInfoSelector = selectorFamily<
         return
       }
 
-      const {
-        config,
-        created_timestamp, // Only present for v2.
-        admin,
-      } = dumpedState
+      const { config, admin } = dumpedState
 
-      const established =
-        typeof created_timestamp === 'number'
-          ? new Date(created_timestamp)
+      // Indexer may return a createdAt string, in which case don't query again.
+      const established: Date | undefined =
+        'createdAt' in dumpedState &&
+        (dumpedState as IndexerDumpState).createdAt
+          ? new Date((dumpedState as IndexerDumpState).createdAt)
           : get(
               contractInstantiateTimeSelector({ address: coreAddress, chainId })
             )
@@ -74,47 +79,88 @@ export const daoCardInfoSelector = selectorFamily<
         admin &&
         // A DAO without a parent DAO may be its own admin.
         admin !== coreAddress &&
-        (get(
-          isContractSelector({
-            contractAddress: admin,
-            chainId,
-            // V1
-            name: 'cw-core',
-          })
-        ) ||
-          get(
-            isContractSelector({
-              contractAddress: admin,
-              chainId,
-              // V2
-              name: 'cwd-core',
-            })
-          ) ||
-          get(
-            isContractSelector({
-              contractAddress: admin,
-              chainId,
-              // V2
-              name: 'dao-core',
-            })
-          ))
+        // Ensure address is a contract.
+        isValidContractAddress(admin, CHAIN_BECH32_PREFIX)
       ) {
-        const {
-          name,
-          image_url,
-        }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
-          // Both v1 and v2 have a config query.
-          DaoCoreV2Selectors.configSelector({
-            contractAddress: admin,
-            chainId,
-            params: [],
-          })
-        )
+        // Indexer may return `adminInfo`, in which case don't query again. If
+        // null, there is no admin to load. Otherwise. If not null, query chain.
+        if ('adminInfo' in dumpedState) {
+          const { adminInfo } = dumpedState as IndexerDumpState
+          if (adminInfo) {
+            const {
+              info,
+              config: { name, image_url },
+              registeredSubDao = false,
+            } = adminInfo
+            const coreVersion = info && parseContractVersion(info.version)
 
-        parentDao = {
-          coreAddress: admin,
-          name,
-          imageUrl: image_url || getFallbackImage(admin),
+            if (coreVersion) {
+              parentDao = {
+                coreAddress: admin,
+                coreVersion,
+                name,
+                imageUrl: image_url || getFallbackImage(admin),
+                registeredSubDao,
+              }
+            }
+          }
+        } else if (
+          get(
+            isContractSelector({
+              contractAddress: admin,
+              chainId,
+              names: [
+                // V1
+                'cw-core',
+                // V2
+                'cwd-core',
+                'dao-core',
+              ],
+            })
+          )
+        ) {
+          const { version } = get(
+            DaoCoreV2Selectors.infoSelector({
+              contractAddress: admin,
+              chainId,
+              params: [],
+            })
+          ).info
+          const adminVersion = parseContractVersion(version)
+
+          if (adminVersion) {
+            const {
+              name,
+              image_url,
+            }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
+              // Both v1 and v2 have a config query.
+              DaoCoreV2Selectors.configSelector({
+                contractAddress: admin,
+                chainId,
+                params: [],
+              })
+            )
+
+            // Check if admin has registered the current DAO as a SubDAO.
+            const registeredSubDao =
+              adminVersion !== ContractVersion.V1
+                ? get(
+                    DaoCoreV2Selectors.listAllSubDaosSelector({
+                      contractAddress: admin,
+                      chainId,
+                    })
+                  ).some(({ addr }) => addr === coreAddress)
+                : // V1 cannot have SubDAOs.
+                  false
+
+            parentDao = {
+              coreAddress: admin,
+              coreVersion: adminVersion,
+              name,
+              imageUrl: image_url || getFallbackImage(admin),
+              registeredSubDao,
+            }
+          }
         }
       }
 
@@ -127,7 +173,8 @@ export const daoCardInfoSelector = selectorFamily<
         established,
         parentDao,
         tokenDecimals: 6,
-        tokenSymbol: 'USDC',
+        tokenSymbol: '',
+        showingEstimatedUsdValue: true,
         lazyData: { loading: true },
       }
     },
@@ -172,7 +219,7 @@ export const daoCardInfoLazyDataSelector = selectorFamily<
         : 0
 
       const proposalModules = get(
-        cwCoreProposalModulesSelector({
+        daoCoreProposalModulesSelector({
           coreAddress,
           chainId,
         })
@@ -242,21 +289,13 @@ export const daoDropdownInfoSelector: (
           chainId,
         })
       )
-      const config =
-        version === ContractVersion.V1
-          ? get(
-              CwCoreV1Selectors.configSelector({
-                contractAddress: coreAddress,
-                chainId,
-              })
-            )
-          : get(
-              DaoCoreV2Selectors.configSelector({
-                contractAddress: coreAddress,
-                chainId,
-                params: [],
-              })
-            )
+      const config = get(
+        DaoCoreV2Selectors.configSelector({
+          contractAddress: coreAddress,
+          chainId,
+          params: [],
+        })
+      )
 
       const subDaoAddresses: string[] =
         version === ContractVersion.V1

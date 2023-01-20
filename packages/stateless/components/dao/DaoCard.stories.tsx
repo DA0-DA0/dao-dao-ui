@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ContractVersion } from '@dao-dao/types'
+
 import { IconButtonLink } from '../icon_buttons'
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoCard, DaoCardProps } from './DaoCard'
@@ -16,24 +18,33 @@ const Template: ComponentStory<typeof DaoCard> = (args) => (
   </div>
 )
 
-export const makeProps = (): DaoCardProps => ({
+export const makeProps = (id = 1): DaoCardProps => ({
   chainId: 'uni-5',
   coreAddress: 'daoCoreAddress',
   name: 'Modern DAO',
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
-  imageUrl: '/placeholders/1.svg',
-  established: new Date('May 14, 2022 00:00:00'),
+  imageUrl: `/placeholders/${id % 5}.svg`,
+  // Random date in the past 12 months.
+  established: new Date(
+    Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
+  ),
   tokenDecimals: 6,
-  tokenSymbol: 'USDC',
+  tokenSymbol: '',
+  showingEstimatedUsdValue: true,
 
-  pinned: false,
-  onPin: () => {},
+  follow: {
+    following: false,
+    onFollow: () => alert('follow'),
+    updatingFollowing: false,
+  },
 
   parentDao: {
     coreAddress: 'parentDaoCoreAddress',
+    coreVersion: ContractVersion.V2Alpha,
     name: 'parent',
-    imageUrl: '/placeholders/2.svg',
+    imageUrl: 'https://moonphase.is/image.svg',
+    registeredSubDao: true,
   },
 
   lazyData: {

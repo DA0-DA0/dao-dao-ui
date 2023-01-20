@@ -1,65 +1,65 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
+import { useEffect } from 'react'
+import { useSetRecoilState, waitForAll } from 'recoil'
 
-import { GetDaosApiName, useGetDaos } from '@dao-dao/state'
+import featuredDaos from '@dao-dao/state/featured_daos.json'
+import { featuredDaoDumpStatesAtom } from '@dao-dao/state/recoil'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
-import { CHAIN_ID, getFallbackImage } from '@dao-dao/utils'
 
-import featuredDaos from '../featured_daos.json'
-import { usePinnedDaos } from './usePinnedDaos'
-
-export interface UseLoadingDaoCardInfosOptions {
-  apiName?: GetDaosApiName
-  chainId?: string
-}
+import { daoCardInfoSelector } from '../recoil'
+import { useFollowingDaos } from './useFollowingDaos'
 
 export const useLoadingDaoCardInfos = (
-  coreAddresses: string[],
-  { apiName, chainId = CHAIN_ID }: UseLoadingDaoCardInfosOptions = {
-    apiName: undefined,
-    chainId: undefined,
-  }
+  coreAddresses?: string[],
+  chainId?: string
 ): LoadingData<DaoCardInfo[]> => {
-  const daosQuery = useGetDaos({ coreAddresses }, apiName)
-  const daoQueryInfos =
-    (daosQuery.data || daosQuery.previousData)?.daos.nodes ?? []
+  // If `coreAddresses` is undefined, we're still loading DAOs.
+  const daoCardInfosLoadable = useCachedLoadable(
+    coreAddresses
+      ? waitForAll(
+          coreAddresses.map((coreAddress) =>
+            daoCardInfoSelector({
+              coreAddress,
+              chainId,
+            })
+          )
+        )
+      : undefined
+  )
 
-  return daosQuery.loading
+  return daoCardInfosLoadable.state !== 'hasValue'
     ? { loading: true }
     : {
         loading: false,
-        data: daoQueryInfos.map(
-          ({ created, imageUrl, parentDao, ...info }): DaoCardInfo => ({
-            ...info,
-            established: created ? new Date(created) : undefined,
-            imageUrl: imageUrl || getFallbackImage(info.coreAddress),
-            parentDao: parentDao
-              ? {
-                  ...parentDao,
-                  imageUrl:
-                    parentDao.imageUrl ||
-                    getFallbackImage(parentDao.coreAddress),
-                }
-              : undefined,
-            tokenDecimals: 6,
-            tokenSymbol: 'USDC',
-            lazyData: { loading: true },
-            chainId,
-          })
-        ),
+        data: daoCardInfosLoadable.contents.filter(Boolean) as DaoCardInfo[],
       }
 }
 
-export const useLoadingFeaturedDaoCardInfos = (): LoadingData<DaoCardInfo[]> =>
-  useLoadingDaoCardInfos(
+export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
+  DaoCardInfo[]
+> => {
+  const data = useLoadingDaoCardInfos(
     featuredDaos.map(({ coreAddress }) => coreAddress),
-    // Featured DAOs only exist on mainnet, so use mainnet indexer and chain ID.
-    {
-      apiName: 'mainnetDaos',
-      chainId: ChainInfoID.Juno1,
-    }
+    // Featured DAOs only exist on mainnet.
+    ChainInfoID.Juno1
   )
 
-export const useLoadingPinnedDaoCardInfos = (): LoadingData<DaoCardInfo[]> => {
-  const { pinnedAddresses } = usePinnedDaos()
-  return useLoadingDaoCardInfos(pinnedAddresses)
+  // Once featured DAOs load once, clear cache from page static props so the DAO
+  // cards update.
+  const setFeaturedDaoDumpStates = useSetRecoilState(featuredDaoDumpStatesAtom)
+  useEffect(() => {
+    if (!data.loading) {
+      setFeaturedDaoDumpStates(null)
+    }
+  }, [setFeaturedDaoDumpStates, data.loading])
+
+  return data
+}
+
+export const useLoadingFollowingDaoCardInfos = (): LoadingData<
+  DaoCardInfo[]
+> => {
+  const { daos } = useFollowingDaos()
+  return useLoadingDaoCardInfos(daos.loading ? undefined : daos.data.following)
 }

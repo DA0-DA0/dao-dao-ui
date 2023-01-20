@@ -33,8 +33,8 @@ export const ChooseExistingTokenSwap: ActionComponent<
         <AddressInput
           error={errors?.tokenSwapContractAddress}
           fieldName={fieldNamePrefix + 'tokenSwapContractAddress'}
-          iconType="contract"
           register={register}
+          type="contract"
           validation={[validateRequired, validateContractAddress]}
         />
 

@@ -1,12 +1,12 @@
-import { useWalletProposalsQuery } from '@dao-dao/state'
+import { walletProposalStatsSelector } from '@dao-dao/state/recoil'
 import {
   ProfileHomeCard as StatelessProfileHomeCard,
   useAppLayoutContext,
+  useCachedLoadable,
 } from '@dao-dao/stateless'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
 
 import { useWalletInfo } from '../../hooks'
-import { ButtonLink } from '../ButtonLink'
 
 export const ProfileHomeCard = () => {
   const {
@@ -19,15 +19,18 @@ export const ProfileHomeCard = () => {
   } = useWalletInfo()
   const { updateProfileNft, inbox } = useAppLayoutContext()
 
-  const query = useWalletProposalsQuery(walletAddress)
-  const data = query.data || query.previousData
+  const walletProposalStatsLoadable = useCachedLoadable(
+    walletAddress
+      ? walletProposalStatsSelector({
+          address: walletAddress,
+        })
+      : undefined
+  )
 
   return (
     <StatelessProfileHomeCard
-      ButtonLink={ButtonLink}
-      inboxProposalCount={inbox.proposalCount}
+      inboxProposalCount={inbox.itemCount}
       lazyData={
-        !data ||
         walletBalance === undefined ||
         walletStakedBalance === undefined ||
         dateBalancesFetched === undefined
@@ -38,9 +41,23 @@ export const ProfileHomeCard = () => {
                 unstakedBalance: walletBalance,
                 stakedBalance: walletStakedBalance,
                 dateBalancesFetched,
-                proposalsCreated: data.proposalsCreated.totalCount,
-                votesCast: data.proposalVotes.totalCount,
               },
+            }
+      }
+      loadingStats={
+        walletProposalStatsLoadable.state === 'loading'
+          ? { loading: true }
+          : {
+              loading: false,
+              data:
+                walletProposalStatsLoadable.state === 'hasValue' &&
+                walletProposalStatsLoadable.contents
+                  ? {
+                      proposalsCreated:
+                        walletProposalStatsLoadable.contents.created,
+                      votesCast: walletProposalStatsLoadable.contents.votesCast,
+                    }
+                  : undefined,
             }
       }
       showUpdateProfileNft={updateProfileNft.toggle}

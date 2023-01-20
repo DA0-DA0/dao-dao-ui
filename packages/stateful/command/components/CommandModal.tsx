@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CommandModal as StatelessCommandModal } from '@dao-dao/stateless'
-import { CommandModalContext, CommandModalProps } from '@dao-dao/types/command'
+import {
+  CommandModalContext,
+  StatefulCommandModalProps,
+} from '@dao-dao/types/command'
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
 import { CommandModalContextView } from './CommandModalContextView'
@@ -10,7 +13,7 @@ import { CommandModalContextView } from './CommandModalContextView'
 export const CommandModal = ({
   makeRootContext,
   ...props
-}: CommandModalProps) => {
+}: StatefulCommandModalProps) => {
   const { t } = useTranslation()
   const [filter, setFilter] = useState('')
   const searchBarRef = useRef<HTMLInputElement>(null)

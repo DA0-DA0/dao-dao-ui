@@ -44,13 +44,12 @@ import {
   makeValidateMsg,
   nativeTokenLabel,
   processError,
-  validateUrlWithIpfs,
 } from '@dao-dao/utils'
 
 import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
-  usePinnedDaos,
+  useFollowingDaos,
   useWalletInfo,
 } from '../../hooks'
 import { getAdapterById as getProposalModuleAdapterById } from '../../proposal-module-adapter'
@@ -70,6 +69,7 @@ import {
 } from '../../voting-module-adapter/adapters/DaoVotingCw20Staked/types'
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { Trans } from '../Trans'
 
 // i18n keys
 export enum CreateDaoSubmitValue {
@@ -94,7 +94,7 @@ export const CreateDaoForm = ({
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { setPinned } = usePinnedDaos()
+  const { setFollowing } = useFollowingDaos()
 
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
@@ -105,15 +105,43 @@ export const CreateDaoForm = ({
   const [_newDaoAtom, setNewDaoAtom] = useRecoilState(
     newDaoAtom(parentDao?.coreAddress ?? '')
   )
+
+  // Verify cached value is still valid, and fix if not.
+  const defaultForm = useMemo(() => {
+    const defaultNewDao = makeDefaultNewDao()
+    const cached = cloneDeep(_newDaoAtom)
+    // Verify that the voting module adapter is still valid, since the IDs have
+    // been renamed a couple times.
+    if (
+      cached &&
+      cached.votingModuleAdapter &&
+      !getVotingModuleAdapterById(cached.votingModuleAdapter.id)
+    ) {
+      cached.votingModuleAdapter = defaultNewDao.votingModuleAdapter
+    }
+    // Verify that the proposal module adapters are still valid, since the IDs
+    // have been renamed a couple times.
+    if (
+      cached &&
+      cached.proposalModuleAdapters &&
+      Array.isArray(cached.proposalModuleAdapters)
+    ) {
+      cached.proposalModuleAdapters = cached.proposalModuleAdapters.filter(
+        (adapter) => adapter && getProposalModuleAdapterById(adapter.id)
+      )
+      if (cached.proposalModuleAdapters.length === 0) {
+        cached.proposalModuleAdapters = defaultNewDao.proposalModuleAdapters
+      }
+    }
+
+    return {
+      ...cached,
+      ...defaults,
+    }
+  }, [_newDaoAtom, defaults])
+
   const form = useForm<NewDao>({
-    // Don't clone every render.
-    defaultValues: useMemo(
-      () => ({
-        ...cloneDeep(_newDaoAtom),
-        ...defaults,
-      }),
-      [_newDaoAtom, defaults]
-    ),
+    defaultValues: defaultForm,
     mode: 'onChange',
   })
 
@@ -130,10 +158,8 @@ export const CreateDaoForm = ({
 
   // Debounce saving latest data to atom and thus localStorage every 10 seconds.
   useEffect(() => {
-    // If created DAO, clear saved data and don't update.
+    // If created DAO, don't update.
     if (daoCreatedCardProps) {
-      // Clear saved form data.
-      setNewDaoAtom(makeDefaultNewDao())
       return
     }
 
@@ -344,7 +370,7 @@ export const CreateDaoForm = ({
               }
             )
 
-            setPinned(coreAddress)
+            setFollowing(coreAddress)
             refreshBalances()
 
             //! Show DAO created modal.
@@ -413,6 +439,7 @@ export const CreateDaoForm = ({
               parentDao,
               tokenDecimals,
               tokenSymbol,
+              showingEstimatedUsdValue: false,
               lazyData: {
                 loading: false,
                 data: {
@@ -468,7 +495,7 @@ export const CreateDaoForm = ({
       connected,
       createDaoWithFactory,
       t,
-      setPinned,
+      setFollowing,
       refreshBalances,
       votingModuleAdapter.id,
       cw20StakedBalanceVotingData,
@@ -573,10 +600,11 @@ export const CreateDaoForm = ({
         {pageIndex === 0 ? (
           <div className="flex flex-col items-center py-10">
             <ImageSelector
+              Trans={Trans}
               error={form.formState.errors.imageUrl}
               fieldName="imageUrl"
               register={form.register}
-              validation={[validateUrlWithIpfs]}
+              setValue={form.setValue}
               watch={form.watch}
             />
 

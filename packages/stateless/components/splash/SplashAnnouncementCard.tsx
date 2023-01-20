@@ -1,4 +1,4 @@
-import { ArrowOutward } from '@mui/icons-material'
+import { ArrowOutwardRounded } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 export const SplashAnnouncementCard = () => {
@@ -23,7 +23,7 @@ export const SplashAnnouncementCard = () => {
         target="_blank"
       >
         <p>{t('splash.readMore')}</p>
-        <ArrowOutward className="!h-4 !w-4" />
+        <ArrowOutwardRounded className="!h-4 !w-4" />
       </a>
     </div>
   )

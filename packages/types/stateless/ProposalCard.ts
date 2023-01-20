@@ -4,6 +4,7 @@ import { LinkWrapperProps } from './LinkWrapper'
 
 export interface ProposalCardProps {
   dao: {
+    name: string
     coreAddress: string
     imageUrl: string | undefined | null
   }

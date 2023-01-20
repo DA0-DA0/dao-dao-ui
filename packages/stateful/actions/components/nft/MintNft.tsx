@@ -6,7 +6,6 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  AddressInput,
   HorizontalNftCard,
   InputErrorMessage,
   InputLabel,
@@ -22,7 +21,7 @@ export const MintNft: ActionComponent<MintNftOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { nftInfo, ProfileDisplay },
+  options: { nftInfo, AddressInput },
 }) => {
   const { t } = useTranslation()
   const { register } = useFormContext()
@@ -53,7 +52,6 @@ export const MintNft: ActionComponent<MintNftOptions> = ({
           </div>
 
           <AddressInput
-            ProfileDisplay={ProfileDisplay}
             containerClassName="grow"
             disabled={!isCreating}
             error={errors?.mintMsg?.owner}

@@ -6,13 +6,8 @@ import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  AddressInput,
-  HerbEmoji,
-  InputErrorMessage,
-  NumberInput,
-} from '@dao-dao/stateless'
-import { ActionComponent, StatefulProfileDisplayProps } from '@dao-dao/types'
+import { HerbEmoji, InputErrorMessage, NumberInput } from '@dao-dao/stateless'
+import { ActionComponent, AddressInputProps } from '@dao-dao/types'
 import {
   validateAddress,
   validatePositive,
@@ -24,7 +19,7 @@ import { ActionCard } from '../../../../../actions'
 export interface MintOptions {
   govTokenSymbol: string
   // Used to display the profile of the address receiving minted tokens.
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps>
 }
 
 export const MintComponent: ActionComponent<MintOptions> = ({
@@ -32,7 +27,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { govTokenSymbol, ProfileDisplay },
+  options: { govTokenSymbol, AddressInput },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
@@ -71,7 +66,6 @@ export const MintComponent: ActionComponent<MintOptions> = ({
           </div>
 
           <AddressInput
-            ProfileDisplay={ProfileDisplay}
             containerClassName="grow"
             disabled={!isCreating}
             error={errors?.to}
@@ -82,8 +76,12 @@ export const MintComponent: ActionComponent<MintOptions> = ({
         </div>
       </div>
 
-      <InputErrorMessage error={errors?.amount} />
-      <InputErrorMessage error={errors?.to} />
+      {(errors?.amount || errors?.to) && (
+        <div className="-mt-2 flex flex-col gap-1">
+          <InputErrorMessage error={errors?.amount} />
+          <InputErrorMessage error={errors?.to} />
+        </div>
+      )}
     </ActionCard>
   )
 }

@@ -40,7 +40,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
       onRemove={onRemove}
       title={t('title.updateContractAdmin')}
     >
-      <p className="secondary-text mb-4 max-w-prose">
+      <p className="secondary-text max-w-prose">
         {t('form.updateAdminDescription')}
       </p>
 

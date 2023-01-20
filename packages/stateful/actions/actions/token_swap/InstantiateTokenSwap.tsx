@@ -24,7 +24,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { ProfileDisplay, Trans } from '../../../components'
+import { AddressInput, Trans } from '../../../components'
 import { useCw20GovernanceTokenInfoResponseIfExists } from '../../../voting-module-adapter/react/hooks/useCw20GovernanceTokenInfoResponseIfExists'
 import {
   InstantiateTokenSwapOptions,
@@ -200,7 +200,7 @@ export const InstantiateTokenSwap: ActionComponent<
         selfPartyNativeBalances,
         instantiating,
         onInstantiate,
-        ProfileDisplay,
+        AddressInput,
         Trans,
       }}
     />

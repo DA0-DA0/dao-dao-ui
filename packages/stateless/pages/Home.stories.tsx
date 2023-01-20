@@ -7,11 +7,13 @@ import {
   IconButtonLink,
   LinkWrapper,
   ProfileDisconnectedCard,
+  ProfileDisconnectedCardProps,
   ProfileHomeCard,
   ProfileHomeCardProps,
   SidebarWallet,
 } from '../components'
 import { Default as FeaturedDaosStory } from '../components/dao/FeaturedDaos.stories'
+import { Default as ProfileDisconnectedCardStory } from '../components/profile/ProfileDisconnectedCard.stories'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
 import { Home } from './Home'
 
@@ -31,21 +33,27 @@ Connected.args = {
         {...props}
         IconButtonLink={IconButtonLink}
         LinkWrapper={LinkWrapper}
-        onPin={() => alert('pin ' + props.coreAddress)}
-        pinned={false}
+        follow={{
+          following: true,
+          updatingFollowing: false,
+          onFollow: () => alert('follow ' + props.coreAddress),
+        }}
       />
     ),
   },
   connected: true,
-  pinnedDaosProps: {
-    pinnedDaos: FeaturedDaosStory.args!.featuredDaos!,
+  followingDaosProps: {
+    followingDaos: FeaturedDaosStory.args!.featuredDaos!,
     DaoCard: (props) => (
       <DaoCard
         {...props}
         IconButtonLink={IconButtonLink}
         LinkWrapper={LinkWrapper}
-        onPin={() => alert('pin ' + props.coreAddress)}
-        pinned={false}
+        follow={{
+          following: true,
+          updatingFollowing: false,
+          onFollow: () => alert('follow ' + props.coreAddress),
+        }}
       />
     ),
     openSearch: () => alert('search'),
@@ -75,13 +83,20 @@ Disconnected.args = {
         {...props}
         IconButtonLink={IconButtonLink}
         LinkWrapper={LinkWrapper}
-        onPin={() => alert('pin ' + props.coreAddress)}
-        pinned={false}
+        follow={{
+          following: true,
+          updatingFollowing: false,
+          onFollow: () => alert('follow ' + props.coreAddress),
+        }}
       />
     ),
   },
   connected: false,
-  rightSidebarContent: <ProfileDisconnectedCard />,
+  rightSidebarContent: (
+    <ProfileDisconnectedCard
+      {...(ProfileDisconnectedCardStory.args as ProfileDisconnectedCardProps)}
+    />
+  ),
 }
 Disconnected.parameters = {
   ...Connected.parameters,

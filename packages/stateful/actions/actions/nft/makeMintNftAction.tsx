@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ImageEmoji,
+  CameraWithFlashEmoji,
   InputErrorMessage,
   Loader,
   SegmentedControls,
@@ -72,7 +72,7 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
 
   return (
     <ActionCard
-      Icon={ImageEmoji}
+      Icon={CameraWithFlashEmoji}
       onRemove={props.onRemove}
       title={t('title.mintNft')}
     >
@@ -97,7 +97,7 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
             <UploadNftMetadata {...props} />
           )
         ) : (
-          <div className="flex flex-col gap-4">
+          <>
             <SegmentedControls<boolean>
               onSelect={setCreatingNew}
               selected={creatingNew}
@@ -118,17 +118,13 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
             ) : (
               <ChooseExistingNftCollection {...props} />
             )}
-          </div>
+          </>
         )}
 
-        <InputErrorMessage
-          className="self-end text-right"
-          error={props.errors?.contractChosen}
-        />
-        <InputErrorMessage
-          className="self-end text-right"
-          error={props.errors?.mintMsg?.token_uri}
-        />
+        <div className="flex flex-col items-end gap-2 self-end text-right">
+          <InputErrorMessage error={props.errors?.contractChosen} />
+          <InputErrorMessage error={props.errors?.mintMsg?.token_uri} />
+        </div>
       </SuspenseLoader>
     </ActionCard>
   )
@@ -218,7 +214,7 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({ t, address }) => {
 
   return {
     key: CoreActionKey.MintNft,
-    Icon: ImageEmoji,
+    Icon: CameraWithFlashEmoji,
     label: t('title.mintNft'),
     description: t('info.mintNftDescription'),
     Component,

@@ -1,9 +1,9 @@
 import { ComponentType } from 'react'
 
 import {
+  AddressInputProps,
   Coin,
   LoadingData,
-  StatefulProfileDisplayProps,
   TokenSwapStatusProps,
   TransProps,
 } from '@dao-dao/types'
@@ -62,7 +62,7 @@ export interface InstantiateTokenSwapOptions {
   >
 
   Trans: ComponentType<TransProps>
-  ProfileDisplay: ComponentType<StatefulProfileDisplayProps>
+  AddressInput: ComponentType<AddressInputProps>
 }
 
 export interface ExistingTokenSwapOptions {

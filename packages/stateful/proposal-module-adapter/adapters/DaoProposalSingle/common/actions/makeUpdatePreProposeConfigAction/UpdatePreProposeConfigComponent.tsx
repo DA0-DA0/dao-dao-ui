@@ -64,10 +64,11 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
   return (
     <ActionCard
       Icon={GearEmoji}
+      childrenContainerClassName="!gap-2"
       onRemove={onRemove}
       title={t('form.updateProposalSubmissionConfigTitle')}
     >
-      <p className="secondary-text mb-3 max-w-prose">
+      <p className="secondary-text mb-2 max-w-prose">
         <Trans i18nKey="form.updateProposalSubmissionConfigDescription">
           This will update the proposal submission configuration for this DAO. A
           bad configuration can lock the DAO. Take care. If you have questions,
@@ -84,7 +85,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         </Trans>
       </p>
 
-      <div className="flex flex-col gap-4 rounded-lg border border-border-primary p-3">
+      <div className="flex flex-col gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
         <div className="flex flex-col gap-2">
           <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
             <h3 className="primary-text">
@@ -161,8 +162,8 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                   disabled={!isCreating}
                   error={errors?.depositInfo?.cw20Address}
                   fieldName={fieldNamePrefix + 'depositInfo.cw20Address'}
-                  iconType="contract"
                   register={register}
+                  type="contract"
                   validation={[
                     validateRequired,
                     validateContractAddress,

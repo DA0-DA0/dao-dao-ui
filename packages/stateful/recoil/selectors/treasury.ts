@@ -47,7 +47,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
         nativeBalancesSelector({ address: coreAddress, chainId })
       )
       const cw20s = get(
-        DaoCoreV2Selectors.cw20BalancesInfoSelector({
+        DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
           contractAddress: coreAddress,
           chainId,
           governanceTokenAddress: cw20GovernanceTokenAddress,
@@ -93,15 +93,14 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
         ),
         ...cw20s.map(
           ({
-            symbol,
-            denom,
-            amount,
-            decimals,
+            addr: denom,
+            balance,
+            info: { symbol, decimals },
             imageUrl,
             isGovernanceToken,
           }) => {
             const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-              amount,
+              balance,
               decimals
             )
 

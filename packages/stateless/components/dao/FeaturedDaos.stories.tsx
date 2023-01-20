@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { SplashDaoCard } from '@dao-dao/stateful'
-import { DaoCardInfo } from '@dao-dao/types'
+import { ContractVersion, DaoCardInfo } from '@dao-dao/types'
 import { CHAIN_ID } from '@dao-dao/utils'
 
 import { FeaturedDaos } from './FeaturedDaos'
@@ -25,12 +25,15 @@ const makeFeaturedDao = (): DaoCardInfo => ({
   imageUrl: `/placeholders/${(id % 5) + 1}.svg`,
   established: new Date('May 14, 2022 00:00:00'),
   tokenSymbol: 'JUNO',
+  showingEstimatedUsdValue: false,
   tokenDecimals: 6,
 
   parentDao: {
     coreAddress: 'parent',
+    coreVersion: ContractVersion.V2Alpha,
     name: 'parent',
     imageUrl: `/placeholders/${((id + 1) % 5) + 1}.svg`,
+    registeredSubDao: true,
   },
 
   lazyData: {

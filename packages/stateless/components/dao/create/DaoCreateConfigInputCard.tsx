@@ -5,6 +5,7 @@ import { SuspenseLoaderProps } from '@dao-dao/types'
 
 import { InputErrorMessage } from '../../inputs'
 import { Loader } from '../../logo/Loader'
+import { MarkdownRenderer } from '../../MarkdownRenderer'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
 
 export interface DaoCreateConfigInputCardProps {
@@ -38,7 +39,11 @@ export const DaoCreateConfigInputCard = ({
     <div className="flex grow flex-col justify-between gap-12 p-6">
       <div className="space-y-3">
         <p className="primary-text text-text-body">{name}</p>
-        <p className="body-text text-text-secondary">{description}</p>
+
+        <MarkdownRenderer
+          className="body-text text-text-secondary"
+          markdown={description}
+        />
       </div>
 
       <div className="flex flex-col">

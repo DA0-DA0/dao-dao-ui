@@ -10,7 +10,12 @@ import {
   Uint128,
 } from './common'
 
-export type ProposalModuleStatus = 'Enabled' | 'Disabled'
+// v2 changed case.
+export type ProposalModuleStatus =
+  | 'enabled'
+  | 'Enabled'
+  | 'disabled'
+  | 'Disabled'
 export type ActiveProposalModulesResponse = ProposalModule[]
 export interface ProposalModule {
   address: Addr
@@ -41,17 +46,23 @@ export type Cw20BalancesResponse = Cw20BalanceResponse[]
 export type Cw20TokenListResponse = Addr[]
 export type Cw721TokenListResponse = Addr[]
 export type DaoURIResponse = string | null
+// v2 changed case.
 export type PauseInfoResponse =
   | {
       Paused: {
         expiration: Expiration
-        [k: string]: unknown
       }
     }
   | {
-      Unpaused: {
-        [k: string]: unknown
+      paused: {
+        expiration: Expiration
       }
+    }
+  | {
+      Unpaused: {}
+    }
+  | {
+      unpaused: {}
     }
 export interface DumpStateResponse {
   active_proposal_module_count: number
@@ -63,7 +74,6 @@ export interface DumpStateResponse {
   total_proposal_module_count: number
   version: ContractVersionInfo
   voting_module: Addr
-  [k: string]: unknown
 }
 export interface Config {
   automatically_add_cw20s: boolean
@@ -211,7 +221,7 @@ export interface InitialItem {
   value: string
   [k: string]: unknown
 }
-export type ListItemsResponse = string[]
+export type ListItemsResponse = [string, string][]
 export type ListSubDaosResponse = SubDao[]
 export type MigrateMsg =
   | {
@@ -336,13 +346,19 @@ export type QueryMsg =
       }
     }
 export interface TotalPowerAtHeightResponse {
-  height: number
+  // Optional because the indexer does not provide this.
+  height?: number
   power: Uint128
   [k: string]: unknown
 }
 export type VotingModuleResponse = string
 export interface VotingPowerAtHeightResponse {
-  height: number
+  // Optional because the indexer does not provide this.
+  height?: number
   power: Uint128
   [k: string]: unknown
+}
+
+export interface ProposalModuleWithInfo extends ProposalModule {
+  info: ContractVersionInfo
 }

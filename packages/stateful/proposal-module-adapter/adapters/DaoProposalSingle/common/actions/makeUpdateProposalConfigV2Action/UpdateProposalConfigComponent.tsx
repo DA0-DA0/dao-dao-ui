@@ -46,10 +46,11 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
   return (
     <ActionCard
       Icon={GearEmoji}
+      childrenContainerClassName="!gap-2"
       onRemove={onRemove}
       title={t('form.updateVotingConfigTitle')}
     >
-      <p className="secondary-text mb-3 max-w-prose">
+      <p className="secondary-text mb-2 max-w-prose">
         <Trans i18nKey="form.updateVotingConfigDescription">
           This will update the voting configuration for this DAO. A bad
           configuration can lock the DAO or create unexpected voting outcomes.
@@ -65,6 +66,7 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
           .
         </Trans>
       </p>
+
       <FormSwitchCard
         containerClassName="grow"
         fieldName={fieldNamePrefix + 'onlyMembersExecute'}
@@ -77,7 +79,7 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
         value={watch(fieldNamePrefix + 'onlyMembersExecute')}
       />
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <ChartEmoji /> {t('form.passingThresholdTitle')}
@@ -122,7 +124,8 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
+
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
             <h3 className="primary-text">
@@ -178,7 +181,8 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
           </div>
         )}
       </div>
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
+
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <ClockEmoji /> {t('form.votingDurationTitle')}
@@ -248,7 +252,8 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
           </SelectInput>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary p-3">
+
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <RecycleEmoji /> {t('form.allowRevotingTitle')}

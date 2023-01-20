@@ -7,7 +7,7 @@ import {
 import { TokenSwapStatusProps } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { ProfileDisplay } from '../components'
+import { EntityDisplay } from '../components'
 
 export interface UseTokenSwapStatusInfoForContractOptions {
   contractAddress: string
@@ -92,7 +92,7 @@ export const useTokenSwapStatusInfoForContract = ({
       tokenLogoUrl: counterpartyTokenInfo.imageUrl,
       provided: counterparty.provided,
     },
-    ProfileDisplay,
+    EntityDisplay,
   }
 
   return {

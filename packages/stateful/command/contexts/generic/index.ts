@@ -6,8 +6,8 @@ import {
 } from '@dao-dao/types'
 
 import {
+  useFollowingAndFilteredDaosSections,
   useNavigationSection,
-  usePinnedAndFilteredDaosSections,
 } from '../../hooks'
 import { makeGenericDaoContext } from './dao'
 
@@ -27,12 +27,13 @@ export const makeGenericContext: CommandModalContextMaker = (options) => {
 
     const navigationSection = useNavigationSection()
 
-    const pinnedAndFilteredDaosSections = usePinnedAndFilteredDaosSections({
-      options: sectionOptions,
-      onChoose: onChooseDao,
-    })
+    const followingAndFilteredDaosSections =
+      useFollowingAndFilteredDaosSections({
+        options: sectionOptions,
+        onChoose: onChooseDao,
+      })
 
-    return [navigationSection, ...pinnedAndFilteredDaosSections]
+    return [navigationSection, ...followingAndFilteredDaosSections]
   }
 
   return {

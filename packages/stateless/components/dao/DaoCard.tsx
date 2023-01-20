@@ -1,8 +1,8 @@
 import {
   AccountBalanceOutlined,
-  Check,
+  CheckRounded,
   DescriptionOutlined,
-  PushPin,
+  PersonRounded,
   ShortcutOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
@@ -14,6 +14,7 @@ import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
 import { IconButton } from '../icon_buttons'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
+import { TooltipInfoIcon } from '../tooltip'
 import { Tooltip } from '../tooltip/Tooltip'
 import { DaoImage } from './DaoImage'
 
@@ -26,19 +27,18 @@ export const DaoCard = ({
   description,
   imageUrl,
   established,
-  pinned,
-  onPin,
   parentDao,
   tokenSymbol,
+  showingEstimatedUsdValue,
   tokenDecimals,
   lazyData,
   showIsMember = true,
   className,
   onMouseOver,
   onMouseLeave,
-  hidePin,
   LinkWrapper,
   IconButtonLink,
+  follow,
 }: DaoCardProps) => {
   const { t } = useTranslation()
 
@@ -84,25 +84,36 @@ export const DaoCard = ({
         <div className="flex flex-row items-center gap-3">
           {showIsMember && !lazyData.loading && lazyData.data.isMember && (
             <Tooltip title={t('info.youAreMember')}>
-              <Check className="!h-4 !w-4 text-icon-secondary" />
+              <PersonRounded className="!h-4 !w-4 text-icon-secondary" />
             </Tooltip>
           )}
 
-          {!hidePin && (
-            <IconButton
-              Icon={PushPin}
-              className={clsx({
-                'text-icon-secondary': !pinned,
-                'text-icon-interactive-active': pinned,
-              })}
-              onClick={(event) => {
-                // Don't click on DAO card.
-                event.preventDefault()
-                onPin()
-              }}
-              size="sm"
-              variant="ghost"
-            />
+          {!follow.hide && (
+            <Tooltip
+              title={
+                follow.following
+                  ? t('button.clickToUnfollow')
+                  : t('button.clickToFollow')
+              }
+            >
+              <IconButton
+                Icon={CheckRounded}
+                className={
+                  follow.following
+                    ? 'text-icon-interactive-active'
+                    : 'text-icon-secondary'
+                }
+                loading={follow.updatingFollowing}
+                onClick={(event) => {
+                  // Don't click on DAO card.
+                  event.preventDefault()
+                  event.stopPropagation()
+                  follow.onFollow()
+                }}
+                size="sm"
+                variant="ghost"
+              />
+            </Tooltip>
           )}
         </div>
       </div>
@@ -111,6 +122,7 @@ export const DaoCard = ({
         <DaoImage
           LinkWrapper={LinkWrapper}
           coreAddress={coreAddress}
+          daoName={name}
           imageUrl={imageUrl}
           parentDao={parentDao}
           size="sm"
@@ -128,11 +140,11 @@ export const DaoCard = ({
 
         <div
           className={clsx(
-            'caption-text mb-2 flex flex-row items-center gap-3 font-mono',
+            'caption-text mb-2 flex flex-row items-center gap-2 font-mono',
             lazyData.loading && 'animate-pulse'
           )}
         >
-          <AccountBalanceOutlined className="!h-4 !w-4" />
+          <AccountBalanceOutlined className="mr-1 !h-4 !w-4" />
 
           <TokenAmountDisplay
             amount={
@@ -141,15 +153,22 @@ export const DaoCard = ({
                 : { loading: false, data: lazyData.data.tokenBalance }
             }
             hideApprox
-            {...(tokenSymbol === 'USDC'
+            {...(showingEstimatedUsdValue
               ? {
-                  usdcConversion: true,
+                  estimatedUsdValue: true,
                 }
               : {
                   decimals: tokenDecimals,
                   symbol: tokenSymbol,
                 })}
           />
+
+          {showingEstimatedUsdValue && (
+            <TooltipInfoIcon
+              size="xs"
+              title={t('info.estimatedTreasuryUsdValueTooltip')}
+            />
+          )}
         </div>
 
         <div
