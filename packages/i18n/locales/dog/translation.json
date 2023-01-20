@@ -142,7 +142,7 @@
     "descriptionTooLong": "a da0s descripshon must bee lesss den er eqwal 2 {{max}} cherecterz lonng 🐶",
     "errorOccurredOnPage": "an errr ocoorrd on dis page",
     "failedParsingCoreVersion": "fayld 2 deternmin corr verzion",
-    "failedToGetTokenInfo": "failb 2 git tokken info. pliz enter a valid cw20 contract adress",
+    "failedToGetTokenInfo": "failb 2 git tokken info. pliz enter a valid {{tokenType}} contract adress",
     "govTokenBalancesDoNotSumTo100": "totol token distribushon precentage mus equl 100%, but it currnly sumz 2 {{totalPercent}}",
     "insufficientWalletBalance": "insuffissent wallet balancc (totol: {{amount}} ${{tokenSymbol}})",
     "invalidCosmosMessage": "invalidd <2>cosmoz messej</2>",

@@ -195,7 +195,7 @@
     "errorOccurredOnPage": "An error occurred on this page.",
     "failedParsingCoreVersion": "Failed to determine core version.",
     "failedToFindGovernanceProposal": "Failed to find governance proposal with ID {{id}}.",
-    "failedToGetTokenInfo": "Failed to get token info. Please enter a valid CW20 contract address.",
+    "failedToGetTokenInfo": "Failed to get token info. Please enter a valid {{tokenType}} contract address.",
     "govTokenBalancesDoNotSumTo100": "Total token distribution percentage must equal 100%, but it currently sums to {{totalPercent}}.",
     "insufficientWalletBalance": "Insufficient wallet balance (total: {{amount}} ${{tokenSymbol}}).",
     "invalidCosmosMessage": "Invalid <2>Cosmos message</2>",
