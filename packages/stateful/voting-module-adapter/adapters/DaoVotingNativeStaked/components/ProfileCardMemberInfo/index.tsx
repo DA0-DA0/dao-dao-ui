@@ -16,6 +16,7 @@ import {
   UnstakingTask,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
+import { Claim } from '@dao-dao/types/contracts/stake-cw20'
 import {
   NATIVE_DENOM,
   convertExpirationToDate,
@@ -149,7 +150,7 @@ export const ProfileCardMemberInfo = ({
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
 
   const unstakingTasks: UnstakingTask[] = [
-    ...(claimsPending ?? []).map(({ amount, release_at }) => ({
+    ...((claimsPending as Claim[]) ?? []).map(({ amount, release_at }) => ({
       status: UnstakingTaskStatus.Unstaking,
       amount: convertMicroDenomToDenomWithDecimals(
         amount,
@@ -165,7 +166,7 @@ export const ProfileCardMemberInfo = ({
           : 0
       ),
     })),
-    ...(claimsAvailable ?? []).map(({ amount, release_at }) => ({
+    ...((claimsAvailable as Claim[]) ?? []).map(({ amount, release_at }) => ({
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: convertMicroDenomToDenomWithDecimals(
         amount,

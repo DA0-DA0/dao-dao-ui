@@ -880,6 +880,7 @@
     "stake": "Stake",
     "staked": "Staked",
     "stakedTo": "Staked to...",
+    "stakingActions": "Staking actions",
     "stakingModeNfts": {
       "claim": "Claim NFTs",
       "stake": "Stake NFTs",
@@ -887,7 +888,6 @@
       "unstake": "Unstake NFTs",
       "unstakeHeaderSubtitle": "Select the NFTs you want to unstake from the NFT collection."
     },
-    "stakingActions": "Staking actions",
     "status": "Status",
     "subDaos": "SubDAOs",
     "suggestions": "Suggestions",
