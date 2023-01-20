@@ -79,7 +79,6 @@ export const ManageMembersComponent: ActionComponent<
         <div className="flex flex-row gap-2">
           <InputLabel name={t('form.membersToAddOrUpdate')} />
           <TooltipInfoIcon
-            arrow
             placement="top"
             size="sm"
             title={t('form.membersToAddOrUpdateDescription')}
@@ -186,7 +185,6 @@ export const ManageMembersComponent: ActionComponent<
         <div className="flex flex-row gap-2">
           <InputLabel name={t('form.membersToRemove')} />
           <TooltipInfoIcon
-            arrow
             placement="top"
             size="sm"
             title={t('form.membersToRemoveDescription')}
