@@ -91,9 +91,8 @@ const config = {
     domains: [
       'ipfs.stargaze.zone',
       'nftstorage.link',
-      'nft-api.loop.markets',
       'img-proxy.ekez.workers.dev',
-    ], // TODO: whiskey remove
+    ],
   },
 }
 
