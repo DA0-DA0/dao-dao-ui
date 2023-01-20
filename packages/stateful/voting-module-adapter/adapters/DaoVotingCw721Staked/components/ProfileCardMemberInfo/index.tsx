@@ -15,6 +15,7 @@ import {
   UnstakingTask,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
+import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import {
   convertExpirationToDate,
   durationToSeconds,
@@ -133,7 +134,7 @@ export const ProfileCardMemberInfo = ({
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
 
   const unstakingTasks: UnstakingTask[] = [
-    ...claimsPending.map(({ release_at }) => ({
+    ...(claimsPending as NftClaim[]).map(({ release_at }) => ({
       status: UnstakingTaskStatus.Unstaking,
       amount: Number(1),
       tokenSymbol: governanceTokenInfo.symbol,
@@ -145,7 +146,7 @@ export const ProfileCardMemberInfo = ({
           : 0
       ),
     })),
-    ...claimsAvailable.map(({ release_at }) => ({
+    ...(claimsAvailable as NftClaim[]).map(({ release_at }) => ({
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: Number(1),
       tokenSymbol: governanceTokenInfo.symbol,
