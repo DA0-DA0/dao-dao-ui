@@ -32,9 +32,15 @@ export const PayrollTab = ({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-row items-center justify-between gap-8 border-b border-border-secondary pb-6">
-        <p className="title-text text-text-body">
-          {t('title.vestingPayments')}
-        </p>
+        <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1">
+          <p className="title-text text-text-body">
+            {t('title.vestingPayments')}
+          </p>
+
+          <p className="secondary-text">
+            {t('info.vestingPaymentsRefreshSeconds', { seconds: 30 })}
+          </p>
+        </div>
 
         <Tooltip
           title={

@@ -646,6 +646,7 @@
     "updateVotingConfigActionDescription": "Update the voting parameters for your DAO.",
     "validatorActionsDescription": "Make transactions related to DAO run validators.",
     "verifyingGovernanceToken": "Verifying CW20 token...",
+    "vestingPaymentsRefreshSeconds": "Vesting payments refresh every {{seconds}} seconds.",
     "voteOnGovernanceProposalDescription": "Vote on an open chain governance proposal, as an individual or as a validator.",
     "voteTallyRefreshesSeconds": "Vote tally refreshes every {{seconds}} seconds.",
     "votingModuleAdapterCreationDiscord": "Want to help us support this voting module? Join the <2><0>DAO DAO Discord</0><1/></2> and post in #dao-help.",

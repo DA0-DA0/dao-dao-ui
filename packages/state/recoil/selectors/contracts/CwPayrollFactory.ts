@@ -10,7 +10,7 @@ import {
   CwPayrollFactoryClient,
   CwPayrollFactoryQueryClient,
 } from '../../../contracts/CwPayrollFactory'
-import { signingCosmWasmClientAtom } from '../../atoms'
+import { refreshVestingAtom, signingCosmWasmClientAtom } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
 import { queryContractIndexerSelector } from '../indexer'
 
@@ -62,11 +62,14 @@ export const _listVestingContractsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshVestingAtom(''))
+
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cwPayrollFactory/listVestingContracts',
           args: params[0],
+          id,
         })
       )
       if (list) {
@@ -280,10 +283,13 @@ export const allVestingContractsSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
+      const id = get(refreshVestingAtom(''))
+
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cwPayrollFactory/listVestingContracts',
+          id,
         })
       )
       if (list) {
