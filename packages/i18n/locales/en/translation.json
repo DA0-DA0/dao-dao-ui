@@ -18,6 +18,7 @@
     "chooseImage": "Choose image",
     "claim": "Claim",
     "claimNumTokens": "Claim your {{amount}} ${{tokenSymbol}}",
+    "claimStakingRewards": "Claim staking rewards",
     "clickHereToProposeAdding": "Click here to propose adding it.",
     "clickToCopyAddress": "Click to copy address",
     "clickToFollow": "Click to follow",
@@ -65,6 +66,7 @@
     "newCompensationCycle": "New Compensation Cycle",
     "newProposal": "New proposal",
     "newSubDao": "New SubDAO",
+    "newVestingPayment": "New vesting payment",
     "nominate": "Nominate",
     "openInChainExplorer": "Open in chain explorer",
     "openInDestination": "Open in {{destination}}",
@@ -105,7 +107,8 @@
     "update": "Update",
     "upload": "Upload",
     "useExistingToken": "Use an existing token",
-    "withDecodedModuleMessages": "with Decoded Module Messages"
+    "withDecodedModuleMessages": "with Decoded Module Messages",
+    "withdrawAvailableBalance": "Withdraw available balance"
   },
   "daoCreationAdapter": {
     "DaoProposalSingle": {
@@ -201,6 +204,7 @@
     "missingGovernanceTokenAddress": "Missing governance token address.",
     "mustBeMemberToCreateCompensationCycle": "You must be a member of the DAO to create a compensation cycle.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
+    "mustBeMemberToCreateVestingPayment": "You must be a member of the DAO to create a vesting payment.",
     "nameIncorrectLength": "A DAO's name must be between {{min}} and {{max}} characters.",
     "needsVote": "You must select a vote.",
     "nftCollectionNotChosen": "You must create an NFT collection or enter the address of an existing collection before using this action.",
@@ -496,6 +500,7 @@
     "groupAddress": "CW4 Group",
     "historySinceDate": "History since {{date}}",
     "inboxDescription": "Open proposals and other pending tasks for your DAOs.",
+    "initialVestedBalance": "Initial vested balance",
     "instantiateSmartContractActionDescription": "Instantiate a smart contract.",
     "intakeClosesAt": "Intake closes at {{date}}.",
     "intakeOpensAt": "Intake opens at {{date}}.",
@@ -711,6 +716,7 @@
   },
   "success": {
     "addedToken": "Added token to Keplr.",
+    "claimedRewards": "Claimed rewards.",
     "compensationCycleCompleted": "Compensation cycle completed. Redirecting to proposal...",
     "compensationCycleCreated": "Compensation cycle created.",
     "contributionSubmitted": "Contribution submitted.",
@@ -726,7 +732,8 @@
     "ratingsSubmitted": "Ratings submitted.",
     "tokenSwapContractInstantiated": "Token swap created successfully.",
     "transactionExecuted": "Transaction executed successfully.",
-    "voteCast": "Vote successfully cast."
+    "voteCast": "Vote successfully cast.",
+    "withdrewPayment": "Withdrew payment."
   },
   "title": {
     "404": "404: Not Found",
@@ -844,6 +851,7 @@
     "numTasks_other": "{{count}} tasks",
     "openProposals": "Open proposals",
     "passingThreshold": "Passing threshold",
+    "payout": "Payout",
     "payroll": "Payroll",
     "percentTurnout": "{{value}} turnout",
     "projectedCompensation": "Projected compensation",
@@ -906,6 +914,7 @@
     "updateContractAdmin": "Update Contract Admin",
     "updateInfo": "Update Info",
     "validatorActions": "Validator actions",
+    "vestingPayments": "Vesting Payments",
     "vote": "Vote",
     "voteOnGovernanceProposal": "Vote on Governance Proposal",
     "voter": "Voter",

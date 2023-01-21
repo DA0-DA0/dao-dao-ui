@@ -9,6 +9,7 @@ export interface ButtonPopupSection {
   buttons: ({
     Icon?: ComponentType<{ className?: string }>
     label: string
+    loading?: boolean
   } & (
     | {
         onClick: () => void
@@ -52,7 +53,7 @@ export const ButtonPopup = ({
                     <Icon className="h-5 w-5 text-icon-primary" />
                   </div>
                 )}
-                <p className="link-text text-text-body">{label}</p>
+                <p className="link-text text-left text-text-body">{label}</p>
               </>
             )
 

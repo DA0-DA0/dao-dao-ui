@@ -23,7 +23,19 @@ export const usePayrollAdapter = (): PayrollAdapter | undefined => {
     })
   )
 
-  return payrollItem.state === 'hasValue' && payrollItem.contents.item
-    ? getAdapterById(payrollItem.contents.item)
-    : undefined
+  // If item not yet loaded, return undefined.
+  if (payrollItem.state !== 'hasValue' || !payrollItem.contents.item) {
+    return
+  }
+
+  // Try to parse item as JSON if starts with a "{" and access "value" inside.
+  // If does not start with "{", assume it's an ID string and use it.
+  let itemValue
+  try {
+    itemValue = payrollItem.contents.item.startsWith('{')
+      ? JSON.parse(payrollItem.contents.item)?.value
+      : payrollItem.contents.item
+  } catch {}
+
+  return getAdapterById(itemValue)
 }
