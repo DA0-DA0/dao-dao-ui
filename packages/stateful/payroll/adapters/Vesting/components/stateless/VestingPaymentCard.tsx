@@ -52,14 +52,11 @@ export interface VestingPaymentCardProps {
 
   title: string | undefined | null
   description: string | undefined | null
-  vestingAmount: number
-  withdrawableVestedAmount: number
+  remainingBalanceVesting: number
+  withdrawableAmount: number
 
   // Defined if using a Cw20 token.
   cw20Address?: string
-
-  // Only native tokens load staking info for now, so let's show a nice loader.
-  hasStakingInfo: boolean
 
   onWithdraw: () => void
   withdrawing: boolean
@@ -82,9 +79,8 @@ export const VestingPaymentCard = ({
   tokenInfo,
   title,
   description,
-  vestingAmount,
-  withdrawableVestedAmount,
-  hasStakingInfo,
+  remainingBalanceVesting,
+  withdrawableAmount,
   cw20Address,
   onWithdraw,
   withdrawing,
@@ -223,8 +219,6 @@ export const VestingPaymentCard = ({
     }
   }
 
-  const waitingForStakingInfo = hasStakingInfo && lazyInfo.loading
-
   const [descriptionCollapsible, setDescriptionCollapsible] = useState(false)
   const [descriptionCollapsed, setDescriptionCollapsed] = useState(true)
 
@@ -267,12 +261,7 @@ export const VestingPaymentCard = ({
                 Trigger={({ open, ...props }) => (
                   <IconButton
                     Icon={ExpandCircleDownOutlined}
-                    className={
-                      !waitingForStakingInfo
-                        ? '!text-icon-secondary'
-                        : undefined
-                    }
-                    disabled={waitingForStakingInfo}
+                    className="!text-icon-secondary"
                     focused={open}
                     variant="ghost"
                     {...props}
@@ -337,7 +326,7 @@ export const VestingPaymentCard = ({
             <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
               {/* leading-5 to match link-text's line-height. */}
               <TokenAmountDisplay
-                amount={withdrawableVestedAmount}
+                amount={withdrawableAmount}
                 className="leading-5 text-text-body"
                 decimals={tokenInfo.decimals}
                 symbol={tokenInfo.symbol}
@@ -352,7 +341,7 @@ export const VestingPaymentCard = ({
                         // until it is loaded so this is accurate.
                         lazyInfo.loading
                           ? { loading: true }
-                          : withdrawableVestedAmount *
+                          : withdrawableAmount *
                             lazyInfo.data.usdcUnitPrice!.amount
                       }
                       dateFetched={
@@ -379,7 +368,7 @@ export const VestingPaymentCard = ({
             <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
               {/* leading-5 to match link-text's line-height. */}
               <TokenAmountDisplay
-                amount={vestingAmount}
+                amount={remainingBalanceVesting}
                 className="leading-5 text-text-body"
                 decimals={tokenInfo.decimals}
                 symbol={tokenInfo.symbol}
@@ -394,7 +383,8 @@ export const VestingPaymentCard = ({
                         // until it is loaded so this is accurate.
                         lazyInfo.loading
                           ? { loading: true }
-                          : vestingAmount * lazyInfo.data.usdcUnitPrice!.amount
+                          : remainingBalanceVesting *
+                            lazyInfo.data.usdcUnitPrice!.amount
                       }
                       dateFetched={
                         lazyInfo.loading
@@ -414,7 +404,7 @@ export const VestingPaymentCard = ({
           </div>
         </div>
 
-        {hasStakingInfo && (lazyInfo.loading || lazyInfo.data) && (
+        {!lazyInfo.loading && !!lazyInfo.data.stakingInfo?.stakes?.length && (
           <div className="flex flex-col gap-2 border-t border-border-secondary px-6 pt-4 pb-6">
             <p className="link-text mb-1">{t('info.stakes')}</p>
 

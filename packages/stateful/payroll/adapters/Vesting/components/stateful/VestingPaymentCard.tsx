@@ -134,7 +134,6 @@ export const VestingPaymentCard = ({
         claiming={claiming}
         cw20Address={cw20Address}
         description={vestingPayment.description}
-        hasStakingInfo={false}
         lazyInfo={lazyInfoLoading}
         onAddToken={onAddToken}
         onClaim={onClaim}
@@ -145,14 +144,24 @@ export const VestingPaymentCard = ({
         recipient={vestingPayment.recipient}
         recipientEntity={recipientEntity}
         recipientIsWallet={recipientIsWallet}
-        title={vestingPayment.title}
-        tokenInfo={tokenInfo}
-        vestingAmount={convertMicroDenomToDenomWithDecimals(
-          vestingPayment.amount,
+        remainingBalanceVesting={convertMicroDenomToDenomWithDecimals(
+          vestedAmount,
           tokenInfo.decimals
         )}
-        withdrawableVestedAmount={convertMicroDenomToDenomWithDecimals(
-          vestedAmount,
+        title={vestingPayment.title}
+        tokenInfo={tokenInfo}
+        withdrawableAmount={convertMicroDenomToDenomWithDecimals(
+          // Remaining balance held by vesting contract.
+          Number(vestingPayment.amount) -
+            // Remaining balance to vest.
+            Number(vestedAmount) -
+            // Take into account vested tokens that are staked. If fewer tokens
+            // are staked than have unvested, no vested tokens are staked and
+            // thus all vested tokens can be claimed.
+            Math.max(
+              0,
+              Number(vestingPayment.staked_amount) - Number(vestedAmount)
+            ),
           tokenInfo.decimals
         )}
         withdrawing={withdrawing}
@@ -161,6 +170,11 @@ export const VestingPaymentCard = ({
       {recipientIsWallet && tokenInfo.denomOrAddress === NATIVE_DENOM && (
         <NativeStakingModal
           onClose={() => setShowStakingModal(false)}
+          stakes={
+            lazyInfoLoading.loading
+              ? undefined
+              : lazyInfoLoading.data.stakingInfo?.stakes
+          }
           vestingContractAddress={vestingContractAddress}
           visible={showStakingModal}
         />

@@ -7,6 +7,7 @@ import { useSetRecoilState } from 'recoil'
 import {
   CwVestingSelectors,
   nativeUnstakingDurationSecondsSelector,
+  refreshNativeTokenStakingInfoAtom,
   refreshVestingAtom,
   validatorsSelector,
 } from '@dao-dao/state/recoil'
@@ -17,6 +18,7 @@ import {
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { TokenStake } from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
@@ -37,10 +39,12 @@ export type NativeStakingModalProps = Pick<
   'visible' | 'onClose'
 > & {
   vestingContractAddress: string
+  stakes: TokenStake[] | undefined
 }
 
 export const NativeStakingModal = ({
   vestingContractAddress,
+  stakes,
   ...props
 }: NativeStakingModalProps) => {
   const { t } = useTranslation()
@@ -74,8 +78,11 @@ export const NativeStakingModal = ({
     })
   )
 
-  const setRefresh = useSetRecoilState(
+  const setRefreshVesting = useSetRecoilState(
     refreshVestingAtom(vestingContractAddress)
+  )
+  const setRefreshStaking = useSetRecoilState(
+    refreshNativeTokenStakingInfoAtom(vestingContractAddress)
   )
   const awaitNextBlock = useAwaitNextBlock()
 
@@ -133,7 +140,8 @@ export const NativeStakingModal = ({
 
       // Wait a block for balances to update.
       await awaitNextBlock()
-      setRefresh((id) => id + 1)
+      setRefreshVesting((id) => id + 1)
+      setRefreshStaking((id) => id + 1)
 
       toast.success(
         mode === StakingMode.Stake ? t('success.staked') : t('success.unstaked')
@@ -176,6 +184,7 @@ export const NativeStakingModal = ({
       }
       validatorPicker={{
         validators: validatorsLoadable.contents,
+        stakes,
       }}
       {...props}
     />
