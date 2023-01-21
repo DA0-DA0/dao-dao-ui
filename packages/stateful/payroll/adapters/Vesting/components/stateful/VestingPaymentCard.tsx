@@ -131,6 +131,10 @@ export const VestingPaymentCard = ({
     <>
       <StatelessVestingPaymentCard
         ButtonLink={ButtonLink}
+        claimedAmount={convertMicroDenomToDenomWithDecimals(
+          vestingPayment.claimed_amount,
+          tokenInfo.decimals
+        )}
         claiming={claiming}
         cw20Address={cw20Address}
         description={vestingPayment.description}

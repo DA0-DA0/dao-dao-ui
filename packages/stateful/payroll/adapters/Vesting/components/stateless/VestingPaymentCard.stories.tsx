@@ -49,4 +49,5 @@ Default.args = {
   onAddToken: () => alert('add token'),
   remainingBalanceVesting: 401239.5123,
   withdrawableAmount: 1942.7984,
+  claimedAmount: 39.234,
 }

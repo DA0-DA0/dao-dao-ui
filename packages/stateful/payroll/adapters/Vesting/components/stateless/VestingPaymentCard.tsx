@@ -54,6 +54,7 @@ export interface VestingPaymentCardProps {
   description: string | undefined | null
   remainingBalanceVesting: number
   withdrawableAmount: number
+  claimedAmount: number
 
   // Defined if using a Cw20 token.
   cw20Address?: string
@@ -81,6 +82,7 @@ export const VestingPaymentCard = ({
   description,
   remainingBalanceVesting,
   withdrawableAmount,
+  claimedAmount,
   cw20Address,
   onWithdraw,
   withdrawing,
@@ -337,8 +339,6 @@ export const VestingPaymentCard = ({
                   <div className="flex flex-row items-center gap-1">
                     <TokenAmountDisplay
                       amount={
-                        // If staking info has not finished loading, don't show
-                        // until it is loaded so this is accurate.
                         lazyInfo.loading
                           ? { loading: true }
                           : withdrawableAmount *
@@ -379,12 +379,49 @@ export const VestingPaymentCard = ({
                   <div className="flex flex-row items-center gap-1">
                     <TokenAmountDisplay
                       amount={
-                        // If staking info has not finished loading, don't show
-                        // until it is loaded so this is accurate.
                         lazyInfo.loading
                           ? { loading: true }
                           : remainingBalanceVesting *
                             lazyInfo.data.usdcUnitPrice!.amount
+                      }
+                      dateFetched={
+                        lazyInfo.loading
+                          ? undefined
+                          : lazyInfo.data.usdcUnitPrice!.timestamp
+                      }
+                      estimatedUsdValue
+                    />
+
+                    <TooltipInfoIcon
+                      size="xs"
+                      title={t('info.estimatedUsdValueTooltip')}
+                    />
+                  </div>
+                )}
+            </div>
+          </div>
+
+          <div className="flex flex-row items-start justify-between gap-8">
+            <p className="link-text">{t('title.claimedBalance')}</p>
+
+            {/* leading-5 to match link-text's line-height. */}
+            <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
+              {/* leading-5 to match link-text's line-height. */}
+              <TokenAmountDisplay
+                amount={claimedAmount}
+                className="leading-5 text-text-body"
+                decimals={tokenInfo.decimals}
+                symbol={tokenInfo.symbol}
+              />
+
+              {!isJunoIbcUsdc(tokenInfo.denomOrAddress) &&
+                (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                  <div className="flex flex-row items-center gap-1">
+                    <TokenAmountDisplay
+                      amount={
+                        lazyInfo.loading
+                          ? { loading: true }
+                          : claimedAmount * lazyInfo.data.usdcUnitPrice!.amount
                       }
                       dateFetched={
                         lazyInfo.loading
