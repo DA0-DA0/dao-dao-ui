@@ -221,6 +221,7 @@
     "noNftsSelected": "No NFTs selected.",
     "noSingleChoiceProposalModule": "The DAO does not have a single choice proposal module.",
     "noValidatorFound": "No validator found.",
+    "noValidatorSelected": "No validator selected.",
     "noVotingPower": "You have not given anyone voting power. Add some members to your DAO.",
     "notATokenSwapContractAddress": "This contract is not a token swap contract.",
     "notAnNftCollectionAddress": "This contract is not an NFT collection.",

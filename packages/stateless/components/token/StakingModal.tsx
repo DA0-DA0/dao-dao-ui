@@ -116,7 +116,24 @@ export const StakingModal = ({
       }}
       headerContent={
         mode !== StakingMode.Claim || validatorPicker ? (
-          <>
+          <div className="mt-5 flex w-full flex-col gap-2">
+            {mode !== StakingMode.Claim && (
+              <SegmentedControls
+                onSelect={setMode}
+                selected={mode}
+                tabs={[
+                  {
+                    label: t(`button.stakingMode.stake`),
+                    value: StakingMode.Stake,
+                  },
+                  {
+                    label: t(`button.stakingMode.unstake`),
+                    value: StakingMode.Unstake,
+                  },
+                ]}
+              />
+            )}
+
             {validatorPicker && (
               <ValidatorPicker
                 {...validatorPicker}
@@ -136,25 +153,7 @@ export const StakingModal = ({
                 }
               />
             )}
-
-            {mode !== StakingMode.Claim && (
-              <SegmentedControls
-                className="mt-5"
-                onSelect={setMode}
-                selected={mode}
-                tabs={[
-                  {
-                    label: t(`button.stakingMode.stake`),
-                    value: StakingMode.Stake,
-                  },
-                  {
-                    label: t(`button.stakingMode.unstake`),
-                    value: StakingMode.Unstake,
-                  },
-                ]}
-              />
-            )}
-          </>
+          </div>
         ) : undefined
       }
       onClose={onClose}

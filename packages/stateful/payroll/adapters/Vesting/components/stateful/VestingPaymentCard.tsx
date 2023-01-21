@@ -8,6 +8,7 @@ import { refreshVestingAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   NATIVE_DENOM,
+  convertMicroDenomToDenomWithDecimals,
   loadableToLoadingData,
   processError,
   useAddToken,
@@ -146,8 +147,14 @@ export const VestingPaymentCard = ({
         recipientIsWallet={recipientIsWallet}
         title={vestingPayment.title}
         tokenInfo={tokenInfo}
-        vestingAmount={Number(vestingPayment.amount)}
-        withdrawableVestedAmount={Number(vestedAmount)}
+        vestingAmount={convertMicroDenomToDenomWithDecimals(
+          vestingPayment.amount,
+          tokenInfo.decimals
+        )}
+        withdrawableVestedAmount={convertMicroDenomToDenomWithDecimals(
+          vestedAmount,
+          tokenInfo.decimals
+        )}
         withdrawing={withdrawing}
       />
 

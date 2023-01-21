@@ -216,10 +216,12 @@ export const VestingPaymentCard = ({
   )
 
   // Truncate IBC denominations to prevent overflow.
-  const isIbc = tokenInfo.symbol.toLowerCase().startsWith('ibc')
-  tokenInfo.symbol = isIbc
-    ? concatAddressStartEnd(tokenInfo.symbol, 3, 2)
-    : tokenInfo.symbol
+  if (tokenInfo.symbol.toLowerCase().startsWith('ibc')) {
+    tokenInfo = {
+      ...tokenInfo,
+      symbol: concatAddressStartEnd(tokenInfo.symbol, 3, 2),
+    }
+  }
 
   const waitingForStakingInfo = hasStakingInfo && lazyInfo.loading
 

@@ -8,6 +8,7 @@ import {
   CwVestingSelectors,
   nativeUnstakingDurationSecondsSelector,
   refreshVestingAtom,
+  validatorsSelector,
 } from '@dao-dao/state/recoil'
 import {
   StakingModal,
@@ -20,6 +21,7 @@ import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
   processError,
 } from '@dao-dao/utils'
@@ -60,6 +62,12 @@ export const NativeStakingModal = ({
     })
   )
 
+  const validatorsLoadable = useCachedLoadable(
+    validatorsSelector({
+      chainId,
+    })
+  )
+
   const unstakingDurationLoadable = useCachedLoadable(
     nativeUnstakingDurationSecondsSelector({
       chainId,
@@ -86,7 +94,8 @@ export const NativeStakingModal = ({
 
   if (
     vestingPaymentLoadable.state !== 'hasValue' ||
-    vestedAmountLoadable.state !== 'hasValue'
+    vestedAmountLoadable.state !== 'hasValue' ||
+    validatorsLoadable.state !== 'hasValue'
   ) {
     return null
   }
@@ -98,6 +107,7 @@ export const NativeStakingModal = ({
   ) => {
     // Should never happen.
     if (!validator) {
+      toast.error(t('error.noValidatorSelected'))
       return
     }
 
@@ -148,9 +158,11 @@ export const NativeStakingModal = ({
       loading={loading}
       loadingStakableTokens={{
         loading: false,
-        data:
+        data: convertMicroDenomToDenomWithDecimals(
           Number(vestingPaymentLoadable.contents.amount) -
-          Number(vestingPaymentLoadable.contents.staked_amount),
+            Number(vestingPaymentLoadable.contents.staked_amount),
+          NATIVE_DECIMALS
+        ),
       }}
       onAction={onAction}
       setAmount={setAmount}
@@ -162,6 +174,9 @@ export const NativeStakingModal = ({
           ? { time: unstakingDurationLoadable.contents }
           : null
       }
+      validatorPicker={{
+        validators: validatorsLoadable.contents,
+      }}
       {...props}
     />
   )
