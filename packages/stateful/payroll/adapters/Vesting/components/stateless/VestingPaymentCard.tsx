@@ -14,6 +14,7 @@ import {
   ButtonLinkProps,
   ButtonPopup,
   ButtonPopupSection,
+  ChartEmoji,
   DepositEmoji,
   EntityDisplay,
   IconButton,
@@ -51,7 +52,7 @@ export interface VestingPaymentCardProps {
 
   title: string | undefined | null
   description: string | undefined | null
-  initialVestedAmount: number
+  vestingAmount: number
   withdrawableVestedAmount: number
 
   // Defined if using a Cw20 token.
@@ -66,6 +67,8 @@ export interface VestingPaymentCardProps {
   onClaim?: () => void
   claiming?: boolean
 
+  onManageStake?: () => void
+
   onAddToken?: () => void
   refreshUnstakingTasks?: () => void
 }
@@ -79,14 +82,15 @@ export const VestingPaymentCard = ({
   tokenInfo,
   title,
   description,
-  initialVestedAmount,
+  vestingAmount,
   withdrawableVestedAmount,
   hasStakingInfo,
   cw20Address,
-  onClaim,
-  claiming,
   onWithdraw,
   withdrawing,
+  onClaim,
+  claiming,
+  onManageStake,
   onAddToken,
   refreshUnstakingTasks,
 }: VestingPaymentCardProps) => {
@@ -130,7 +134,7 @@ export const VestingPaymentCard = ({
       ...(recipientIsWallet
         ? [
             {
-              label: t('title.payout'),
+              label: t('title.manage'),
               buttons: [
                 {
                   Icon: MoneyEmoji,
@@ -138,6 +142,15 @@ export const VestingPaymentCard = ({
                   onClick: onWithdraw,
                   loading: withdrawing,
                 },
+                ...(onManageStake
+                  ? [
+                      {
+                        Icon: ChartEmoji,
+                        label: t('button.stakeOrUnstake'),
+                        onClick: onManageStake,
+                      },
+                    ]
+                  : []),
                 ...(onClaim
                   ? [
                       {
@@ -189,15 +202,16 @@ export const VestingPaymentCard = ({
         : []),
     ],
     [
-      claiming,
-      copied,
-      cw20Address,
-      withdrawing,
-      onAddToken,
-      onClaim,
-      onWithdraw,
       recipientIsWallet,
       t,
+      onWithdraw,
+      withdrawing,
+      onManageStake,
+      onClaim,
+      claiming,
+      cw20Address,
+      onAddToken,
+      copied,
     ]
   )
 
@@ -357,13 +371,13 @@ export const VestingPaymentCard = ({
           </div>
 
           <div className="flex flex-row items-start justify-between gap-8">
-            <p className="link-text">{t('info.initialVestedBalance')}</p>
+            <p className="link-text">{t('info.remainingBalanceVesting')}</p>
 
             {/* leading-5 to match link-text's line-height. */}
             <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
               {/* leading-5 to match link-text's line-height. */}
               <TokenAmountDisplay
-                amount={initialVestedAmount}
+                amount={vestingAmount}
                 className="leading-5 text-text-body"
                 decimals={tokenInfo.decimals}
                 symbol={tokenInfo.symbol}
@@ -378,8 +392,7 @@ export const VestingPaymentCard = ({
                         // until it is loaded so this is accurate.
                         lazyInfo.loading
                           ? { loading: true }
-                          : initialVestedAmount *
-                            lazyInfo.data.usdcUnitPrice!.amount
+                          : vestingAmount * lazyInfo.data.usdcUnitPrice!.amount
                       }
                       dateFetched={
                         lazyInfo.loading

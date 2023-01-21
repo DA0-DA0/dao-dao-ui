@@ -46,7 +46,8 @@ Default.args = {
   withdrawing: false,
   onClaim: () => alert('claim'),
   claiming: false,
+  onManageStake: () => alert('manage stake'),
   onAddToken: () => alert('add token'),
-  initialVestedAmount: 401239.5123,
+  vestingAmount: 401239.5123,
   withdrawableVestedAmount: 1942.7984,
 }

@@ -7,6 +7,7 @@ import { useSetRecoilState } from 'recoil'
 import { refreshVestingAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
+  NATIVE_DENOM,
   loadableToLoadingData,
   processError,
   useAddToken,
@@ -21,6 +22,7 @@ import {
 import { tokenCardLazyInfoSelector } from '../../../../../recoil'
 import { VestingPaymentCard as StatelessVestingPaymentCard } from '../stateless/VestingPaymentCard'
 import { StatefulVestingPaymentCardProps } from '../types'
+import { NativeStakingModal } from './NativeStakingModal'
 
 export const VestingPaymentCard = ({
   vestingContractAddress,
@@ -120,25 +122,42 @@ export const VestingPaymentCard = ({
   const onAddToken =
     addToken && cw20Address ? () => addToken(cw20Address) : undefined
 
+  const recipientIsWallet = vestingPayment.recipient === walletAddress
+
+  const [showStakingModal, setShowStakingModal] = useState(false)
+
   return (
-    <StatelessVestingPaymentCard
-      ButtonLink={ButtonLink}
-      claiming={claiming}
-      cw20Address={cw20Address}
-      description={vestingPayment.description}
-      hasStakingInfo={false}
-      initialVestedAmount={Number(vestingPayment.amount)}
-      lazyInfo={lazyInfoLoading}
-      onAddToken={onAddToken}
-      onClaim={onClaim}
-      onWithdraw={onWithdraw}
-      recipient={vestingPayment.recipient}
-      recipientEntity={recipientEntity}
-      recipientIsWallet={vestingPayment.recipient === walletAddress}
-      title={vestingPayment.title}
-      tokenInfo={tokenInfo}
-      withdrawableVestedAmount={Number(vestedAmount)}
-      withdrawing={withdrawing}
-    />
+    <>
+      <StatelessVestingPaymentCard
+        ButtonLink={ButtonLink}
+        claiming={claiming}
+        cw20Address={cw20Address}
+        description={vestingPayment.description}
+        hasStakingInfo={false}
+        lazyInfo={lazyInfoLoading}
+        onAddToken={onAddToken}
+        onClaim={onClaim}
+        onManageStake={
+          recipientIsWallet ? () => setShowStakingModal(true) : undefined
+        }
+        onWithdraw={onWithdraw}
+        recipient={vestingPayment.recipient}
+        recipientEntity={recipientEntity}
+        recipientIsWallet={recipientIsWallet}
+        title={vestingPayment.title}
+        tokenInfo={tokenInfo}
+        vestingAmount={Number(vestingPayment.amount)}
+        withdrawableVestedAmount={Number(vestedAmount)}
+        withdrawing={withdrawing}
+      />
+
+      {recipientIsWallet && tokenInfo.denomOrAddress === NATIVE_DENOM && (
+        <NativeStakingModal
+          onClose={() => setShowStakingModal(false)}
+          vestingContractAddress={vestingContractAddress}
+          visible={showStakingModal}
+        />
+      )}
+    </>
   )
 }

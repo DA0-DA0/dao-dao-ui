@@ -10,6 +10,7 @@ import {
   LockWithKeyEmoji,
   NumberInput,
   SelectInput,
+  ValidatorPicker,
 } from '@dao-dao/stateless'
 import { AddressInputProps, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -25,7 +26,6 @@ import {
 
 import { AuthzExecActionTypes } from '../actions/AuthzExec'
 import { ActionCard } from './ActionCard'
-import { ValidatorPicker } from './ValidatorPicker'
 
 export interface AuthzExecOptions {
   AddressInput: ComponentType<AddressInputProps>

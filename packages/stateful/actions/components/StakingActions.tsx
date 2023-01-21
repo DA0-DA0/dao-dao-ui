@@ -10,6 +10,7 @@ import {
   NumberInput,
   SelectInput,
   TokenAmountDisplay,
+  ValidatorPicker,
 } from '@dao-dao/stateless'
 import { TokenStake, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -30,7 +31,6 @@ import {
 } from '@dao-dao/utils'
 
 import { ActionCard } from './ActionCard'
-import { ValidatorPicker } from './ValidatorPicker'
 
 export const useStakeActions = (): { type: StakeType; name: string }[] => {
   const { t } = useTranslation()
