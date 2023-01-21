@@ -269,6 +269,7 @@ export const VestingPaymentCard = ({
                     {...props}
                   />
                 )}
+                dontCloseOnClick
                 popupClassName="w-[16rem]"
                 position="left"
                 sections={buttonPopupSections}

@@ -24,11 +24,14 @@ export interface ButtonPopupProps
   extends Omit<PopupProps, 'children' | 'setOpenRef'> {
   sections: ButtonPopupSection[]
   ButtonLink: ComponentType<ButtonLinkProps>
+  // If true, clicking on a button will not close the popup.
+  dontCloseOnClick?: boolean
 }
 
 export const ButtonPopup = ({
   sections,
   ButtonLink,
+  dontCloseOnClick = false,
   ...props
 }: ButtonPopupProps) => {
   const setOpenRef = useRef<Dispatch<SetStateAction<boolean>> | null>(null)
@@ -68,17 +71,24 @@ export const ButtonPopup = ({
             return 'onClick' in buttonProps ? (
               <Button
                 {...commonProps}
+                {...buttonProps}
                 onClick={() => {
                   buttonProps.onClick()
                   // Close on click.
-                  setOpenRef.current?.(false)
+                  if (!dontCloseOnClick) {
+                    setOpenRef.current?.(false)
+                  }
                 }}
               >
                 {content}
               </Button>
             ) : (
               //! 'href' in props
-              <ButtonLink {...commonProps} href={buttonProps.href}>
+              <ButtonLink
+                {...commonProps}
+                {...buttonProps}
+                href={buttonProps.href}
+              >
                 {content}
               </ButtonLink>
             )

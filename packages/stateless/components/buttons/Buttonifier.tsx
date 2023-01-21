@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ReactNode } from 'react'
 
-import { Logo } from '../logo/Logo'
+import { Loader } from '../logo'
 
 const defaultVariant = 'primary'
 const defaultSize = 'default'
@@ -161,11 +161,7 @@ export const ButtonifiedChildren = ({
         }
       )}
     >
-      {loading && variant !== PULSE_LOADING_VARIANTS && (
-        <div className="mx-auto inline-block aspect-square h-full animate-spin-medium">
-          <Logo invert={variant === 'primary'} size="100%" />
-        </div>
-      )}
+      {loading && variant !== PULSE_LOADING_VARIANTS && <Loader size={24} />}
     </div>
     <div
       className={clsx(
