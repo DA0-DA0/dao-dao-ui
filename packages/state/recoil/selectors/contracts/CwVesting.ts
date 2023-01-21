@@ -10,7 +10,7 @@ import {
   CwVestingClient,
   CwVestingQueryClient,
 } from '../../../contracts/CwVesting'
-import { signingCosmWasmClientAtom } from '../../atoms'
+import { refreshVestingAtom, signingCosmWasmClientAtom } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
 import { queryContractIndexerSelector } from '../indexer'
 
@@ -58,10 +58,14 @@ export const infoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const anyId = get(refreshVestingAtom(''))
+      const thisId = get(refreshVestingAtom(queryClientParams.contractAddress))
+
       const info = get(
         queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'cwVesting/info',
+          id: anyId + thisId,
         })
       )
       if (info) {
@@ -83,6 +87,8 @@ export const ownershipSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      get(refreshVestingAtom(''))
+      get(refreshVestingAtom(queryClientParams.contractAddress))
       const client = get(queryClient(queryClientParams))
       return await client.ownership(...params)
     },
@@ -97,6 +103,8 @@ export const vestedAmountSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      get(refreshVestingAtom(''))
+      get(refreshVestingAtom(queryClientParams.contractAddress))
       const client = get(queryClient(queryClientParams))
       return await client.vestedAmount(...params)
     },

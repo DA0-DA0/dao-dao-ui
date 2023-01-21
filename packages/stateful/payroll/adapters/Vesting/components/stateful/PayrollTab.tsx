@@ -1,3 +1,7 @@
+import { useEffect } from 'react'
+import { useSetRecoilState } from 'recoil'
+
+import { refreshVestingAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
@@ -13,6 +17,13 @@ export const PayrollTab = () => {
     coreAddress,
     chainId,
   })
+
+  const setRefresh = useSetRecoilState(refreshVestingAtom(''))
+  // Refresh vesting data every 30 seconds.
+  useEffect(() => {
+    const interval = setInterval(() => setRefresh((id) => id + 1), 30000)
+    return () => clearInterval(interval)
+  }, [setRefresh])
 
   const vestingPaymentsLoading = loadableToLoadingData(
     useCachedLoadable(

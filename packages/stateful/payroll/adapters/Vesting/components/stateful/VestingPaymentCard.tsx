@@ -2,7 +2,9 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { useSetRecoilState } from 'recoil'
 
+import { refreshVestingAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   loadableToLoadingData,
@@ -11,7 +13,7 @@ import {
 } from '@dao-dao/utils'
 
 import { ButtonLink } from '../../../../../components'
-import { useEntity } from '../../../../../hooks'
+import { useAwaitNextBlock, useEntity } from '../../../../../hooks'
 import {
   useDistribute,
   useWithdrawDelegatorRewards,
@@ -23,6 +25,7 @@ import { StatefulVestingPaymentCardProps } from '../types'
 export const VestingPaymentCard = ({
   vestingContractAddress,
   vestingPayment,
+  vestedAmount,
   tokenInfo,
 }: StatefulVestingPaymentCardProps) => {
   const { t } = useTranslation()
@@ -52,6 +55,13 @@ export const VestingPaymentCard = ({
     }
   )
 
+  const setRefresh = useSetRecoilState(
+    refreshVestingAtom(vestingContractAddress)
+  )
+  const refresh = () => setRefresh((r) => r + 1)
+
+  const awaitNextBlock = useAwaitNextBlock(chainId)
+
   const { address: walletAddress = '' } = useWallet()
   const distribute = useDistribute({
     contractAddress: vestingContractAddress,
@@ -68,6 +78,9 @@ export const VestingPaymentCard = ({
     try {
       await distribute()
       toast.success(t('success.withdrewPayment'))
+
+      // Give time for indexer to update.
+      awaitNextBlock().then(refresh)
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -90,6 +103,9 @@ export const VestingPaymentCard = ({
           validators,
         })
         toast.success(t('success.claimedRewards'))
+
+        // Give time for indexer to update.
+        awaitNextBlock().then(refresh)
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
@@ -121,8 +137,7 @@ export const VestingPaymentCard = ({
       recipientIsWallet={vestingPayment.recipient === walletAddress}
       title={vestingPayment.title}
       tokenInfo={tokenInfo}
-      withdrawableVestedAmount={0}
-      // withdrawableVestedAmount={Number(vestingPayment.amount)}
+      withdrawableVestedAmount={Number(vestedAmount)}
       withdrawing={withdrawing}
     />
   )

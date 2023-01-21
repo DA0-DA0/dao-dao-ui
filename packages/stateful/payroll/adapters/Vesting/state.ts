@@ -67,6 +67,18 @@ export const vestingPaymentsSelector = selectorFamily<
         )
       )
 
+      const vestedAmounts = get(
+        waitForAll(
+          vestingPaymentContracts.map(({ contract }) =>
+            CwVestingSelectors.vestedAmountSelector({
+              contractAddress: contract,
+              params: [],
+              chainId,
+            })
+          )
+        )
+      )
+
       const tokenInfos = get(
         waitForAll(
           vestingPayments.map(({ denom }) =>
@@ -82,6 +94,7 @@ export const vestingPaymentsSelector = selectorFamily<
       return vestingPaymentContracts.map(({ contract }, index) => ({
         vestingContractAddress: contract,
         vestingPayment: vestingPayments[index],
+        vestedAmount: Number(vestedAmounts[index]),
         tokenInfo: tokenInfos[index],
       }))
     },

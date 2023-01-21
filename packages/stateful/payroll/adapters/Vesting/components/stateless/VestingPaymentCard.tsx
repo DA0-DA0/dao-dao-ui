@@ -18,6 +18,7 @@ import {
   EntityDisplay,
   IconButton,
   Loader,
+  MarkdownRenderer,
   MoneyEmoji,
   TokenAmountDisplay,
   Tooltip,
@@ -208,6 +209,9 @@ export const VestingPaymentCard = ({
 
   const waitingForStakingInfo = hasStakingInfo && lazyInfo.loading
 
+  const [descriptionCollapsible, setDescriptionCollapsible] = useState(false)
+  const [descriptionCollapsed, setDescriptionCollapsed] = useState(true)
+
   return (
     <>
       <div className="rounded-lg bg-background-tertiary">
@@ -237,7 +241,6 @@ export const VestingPaymentCard = ({
               />
 
               {!!title && <p className="secondary-text">{title}</p>}
-              {!!description && <p className="caption-text">{description}</p>}
             </div>
           </div>
 
@@ -266,6 +269,49 @@ export const VestingPaymentCard = ({
             </div>
           )}
         </div>
+
+        {!!description && (
+          <div
+            className="flex flex-col gap-2 border-t border-border-secondary py-4 px-6"
+            ref={
+              // Decide if description should be collapsible based on if text is
+              // being truncated or not.
+              (ref) => {
+                if (!ref || descriptionCollapsible) {
+                  return
+                }
+
+                const descriptionPTag = ref?.children[1]?.children[0]
+                const descriptionOverflowing =
+                  !!descriptionPTag &&
+                  descriptionPTag.scrollHeight > descriptionPTag.clientHeight
+
+                setDescriptionCollapsible(descriptionOverflowing)
+              }
+            }
+          >
+            <p className="link-text">{t('title.description')}</p>
+
+            <MarkdownRenderer
+              className={
+                descriptionCollapsed ? 'break-words line-clamp-2' : undefined
+              }
+              markdown={description}
+            />
+
+            {(descriptionCollapsible || !descriptionCollapsed) && (
+              <Button
+                className="text-text-secondary"
+                onClick={() => setDescriptionCollapsed((c) => !c)}
+                variant="underline"
+              >
+                {descriptionCollapsed
+                  ? t('button.readMore')
+                  : t('button.readLess')}
+              </Button>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
           <div className="flex flex-row items-start justify-between gap-8">

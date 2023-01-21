@@ -22,7 +22,7 @@ export const Default = Template.bind({})
 Default.args = {
   title: 'Vesting Payment',
   description:
-    'A vesting payment for a very real person. They are being paid for being... so real.',
+    'A vesting payment for a very real person. They are being paid for being... so real. And they are really good at being real. So they get paid. A lot. For being real. Too much actually.',
   recipient: 'junoAbc123',
   recipientEntity: {
     loading: false,
