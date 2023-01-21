@@ -45,4 +45,7 @@ export const useSetWithdrawAddress = wrapExecuteHook('setWithdrawAddress')
 export const useWithdrawDelegatorReward = wrapExecuteHook(
   'withdrawDelegatorReward'
 )
+export const useWithdrawDelegatorRewards = wrapExecuteHook(
+  'withdrawDelegatorRewards'
+)
 export const useUpdateOwnership = wrapExecuteHook('updateOwnership')

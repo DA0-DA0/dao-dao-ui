@@ -130,6 +130,16 @@ export interface CwVestingInterface extends CwVestingReadOnlyInterface {
     memo?: string,
     funds?: Coin[]
   ) => Promise<ExecuteResult>
+  // Batch withdraw rewards from multiple validators.
+  withdrawDelegatorRewards: (
+    {
+      validators,
+    }: {
+      validators: string[]
+    },
+    fee?: number | StdFee | 'auto',
+    memo?: string
+  ) => Promise<ExecuteResult>
   updateOwnership: (
     fee?: number | StdFee | 'auto',
     memo?: string,
@@ -161,6 +171,7 @@ export class CwVestingClient
     this.undelegate = this.undelegate.bind(this)
     this.setWithdrawAddress = this.setWithdrawAddress.bind(this)
     this.withdrawDelegatorReward = this.withdrawDelegatorReward.bind(this)
+    this.withdrawDelegatorRewards = this.withdrawDelegatorRewards.bind(this)
     this.updateOwnership = this.updateOwnership.bind(this)
   }
 
@@ -350,6 +361,30 @@ export class CwVestingClient
       fee,
       memo,
       funds
+    )
+  }
+  // Batch withdraw rewards from multiple validators.
+  withdrawDelegatorRewards = async (
+    {
+      validators,
+    }: {
+      validators: string[]
+    },
+    fee: number | StdFee | 'auto' = 'auto',
+    memo?: string
+  ): Promise<ExecuteResult> => {
+    return await this.client.executeMultiple(
+      this.sender,
+      validators.map((validator) => ({
+        contractAddress: this.contractAddress,
+        msg: {
+          withdraw_delegator_reward: {
+            validator,
+          },
+        },
+      })),
+      fee,
+      memo
     )
   }
   updateOwnership = async (
