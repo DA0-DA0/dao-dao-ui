@@ -138,6 +138,7 @@ export const ProfileCardMemberInfo = ({
       status: UnstakingTaskStatus.Unstaking,
       amount: Number(1),
       tokenSymbol: governanceTokenInfo.symbol,
+      tokenDecimals: Number(0),
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,
@@ -150,6 +151,7 @@ export const ProfileCardMemberInfo = ({
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: Number(1),
       tokenSymbol: governanceTokenInfo.symbol,
+      tokenDecimals: Number(0),
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,
