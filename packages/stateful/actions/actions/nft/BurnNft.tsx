@@ -19,7 +19,7 @@ import {
 
 import {
   nftCardInfoSelector,
-  nftCardInfosSelector,
+  nftCardInfosForDaoSelector,
 } from '../../../recoil/selectors/nft'
 import { BurnNft, BurnNftData } from '../../components/nft'
 import { useActionOptions } from '../../react'
@@ -83,7 +83,7 @@ const Component: ActionComponent = (props) => {
   const options = loadableToLoadingDataWithError(
     useCachedLoadable(
       props.isCreating
-        ? nftCardInfosSelector({
+        ? nftCardInfosForDaoSelector({
             coreAddress: address,
             chainId,
           })

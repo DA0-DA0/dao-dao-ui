@@ -2,12 +2,12 @@ import { waitForAll } from 'recoil'
 
 import { Cw721BaseSelectors } from '@dao-dao/state/recoil'
 import {
-  NftCard,
   StakedNftsTab as StatelessStakedNftsTab,
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
+import { NftCard } from '../../../../components'
 import { nftCardInfoSelector } from '../../../../recoil/selectors/nft'
 import { useGovernanceTokenInfo } from '../hooks'
 

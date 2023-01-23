@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 
 import {
-  NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoadable,
   useDaoInfoContext,
@@ -15,13 +14,14 @@ import {
   useMembership,
 } from '../../../hooks'
 import {
-  nftCardInfosSelector,
+  nftCardInfosForDaoSelector,
   treasuryTokenCardInfosSelector,
 } from '../../../recoil'
 import {
   useCw20GovernanceTokenInfoResponseIfExists,
   useNativeGovernanceTokenInfoResponseIfExists,
 } from '../../../voting-module-adapter'
+import { NftCard } from '../../NftCard'
 import { StargazeNftImportModal } from '../../StargazeNftImportModal'
 import { TokenCard } from '../TokenCard'
 
@@ -42,7 +42,7 @@ export const TreasuryAndNftsTab = () => {
     })
   )
   const nftCardInfosLoadable = useCachedLoadable(
-    nftCardInfosSelector({
+    nftCardInfosForDaoSelector({
       coreAddress: daoInfo.coreAddress,
       chainId: daoInfo.chainId,
     })

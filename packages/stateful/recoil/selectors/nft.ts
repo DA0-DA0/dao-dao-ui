@@ -152,11 +152,11 @@ export const nftCardInfoSelector = selectorFamily<
     },
 })
 
-export const nftCardInfosSelector = selectorFamily<
+export const nftCardInfosForDaoSelector = selectorFamily<
   NftCardInfo[],
   WithChainId<{ coreAddress: string }>
 >({
-  key: 'nftCardInfos',
+  key: 'nftCardInfosForDao',
   get:
     ({ coreAddress, chainId }) =>
     async ({ get }) => {

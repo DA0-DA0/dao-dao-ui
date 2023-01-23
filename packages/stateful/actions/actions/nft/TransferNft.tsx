@@ -22,7 +22,7 @@ import {
 import { AddressInput } from '../../../components'
 import {
   nftCardInfoSelector,
-  nftCardInfosSelector,
+  nftCardInfosForDaoSelector,
 } from '../../../recoil/selectors/nft'
 import { TransferNftComponent, TransferNftData } from '../../components/nft'
 import { useActionOptions } from '../../react'
@@ -138,7 +138,7 @@ const Component: ActionComponent = (props) => {
   const options = loadableToLoadingDataWithError(
     useCachedLoadable(
       props.isCreating
-        ? nftCardInfosSelector({
+        ? nftCardInfosForDaoSelector({
             coreAddress: address,
             chainId,
           })

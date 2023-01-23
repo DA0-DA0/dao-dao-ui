@@ -851,6 +851,7 @@
     "numTasks_one": "{{count}} task",
     "numTasks_other": "{{count}} tasks",
     "openProposals": "Open proposals",
+    "owner": "Owner",
     "passingThreshold": "Passing threshold",
     "payroll": "Payroll",
     "percentTurnout": "{{value}} turnout",

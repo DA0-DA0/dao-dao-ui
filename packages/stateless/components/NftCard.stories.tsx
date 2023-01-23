@@ -1,6 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { EntityDisplay } from '@dao-dao/stateful'
+
 import { NftCard, NftCardProps } from './NftCard'
 
 export default {
@@ -42,6 +44,7 @@ export const makeProps = (): NftCardProps => {
     },
     tokenId: `${id}`,
     imageUrl: '/dog_nft.png',
+    owner: 'junoOwnerAddress',
     name: `${id}`,
     floorPrice: {
       // Random price between 0 and 10000 with up to 6 decimals.
@@ -53,6 +56,7 @@ export const makeProps = (): NftCardProps => {
       name: 'Stargaze',
     },
     chainId: 'stargaze-1',
+    EntityDisplay,
   }
 }
 
