@@ -85,8 +85,8 @@ export const useGovernanceTokenInfo = ({
       : constSelector(undefined)
   )
 
+  // TODO(ICS721): get floor info from marketplace
   /*
-  TODO: get floor info from marketplace?
   // Price info
   const price = useRecoilValue(
     fetchUsdcPrice && governanceTokenInfo
