@@ -34,7 +34,6 @@ export interface BaseStakingModalProps {
 }
 
 export interface UseGovernanceTokenInfoOptions {
-  fetchWalletBalance?: boolean
   fetchLoadingWalletBalance?: boolean
   fetchTreasuryBalance?: boolean
   fetchUsdcPrice?: boolean

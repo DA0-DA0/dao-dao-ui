@@ -338,6 +338,8 @@ export const allTokensForOwnerSelector = selectorFamily<
   get:
     ({ owner, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(owner))
+
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
@@ -345,6 +347,7 @@ export const allTokensForOwnerSelector = selectorFamily<
           args: {
             owner,
           },
+          id,
         })
       )
       if (list) {
@@ -391,7 +394,7 @@ export const allTokensSelector = selectorFamily<
 >({
   key: 'cw721BaseAllTokens',
   get:
-    ({ ...queryClientParams }) =>
+    (queryClientParams) =>
     async ({ get }) => {
       const tokens: AllTokensResponse['tokens'] = []
       while (true) {

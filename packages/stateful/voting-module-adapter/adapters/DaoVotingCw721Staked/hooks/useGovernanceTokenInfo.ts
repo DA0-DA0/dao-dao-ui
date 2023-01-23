@@ -16,7 +16,6 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const useGovernanceTokenInfo = ({
-  fetchWalletBalance = false,
   fetchLoadingWalletBalance = false,
   fetchTreasuryBalance = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
@@ -54,15 +53,6 @@ export const useGovernanceTokenInfo = ({
   /// Optional
 
   // Wallet balance
-  const walletBalance = useRecoilValue(
-    fetchWalletBalance && walletAddress
-      ? Cw721BaseSelectors.allTokensForOwnerSelector({
-          contractAddress: governanceTokenAddress,
-          owner: walletAddress,
-        })
-      : constSelector(undefined)
-  )
-
   const loadingWalletBalance = loadableToLoadingData(
     useCachedLoadable(
       fetchLoadingWalletBalance && walletAddress
@@ -104,7 +94,6 @@ export const useGovernanceTokenInfo = ({
     governanceTokenInfo,
     /// Optional
     // Wallet balance
-    walletBalance: walletBalance ? Number(walletBalance.length) : undefined,
     loadingWalletBalance: loadingWalletBalance.loading
       ? { loading: true }
       : !loadingWalletBalance.data

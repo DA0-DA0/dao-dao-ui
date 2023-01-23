@@ -23,7 +23,6 @@ import {
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const useGovernanceTokenInfo = ({
-  fetchWalletBalance = false,
   fetchLoadingWalletBalance = false,
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
@@ -55,14 +54,6 @@ export const useGovernanceTokenInfo = ({
   /// Optional
 
   // Wallet balance
-  const walletBalance = useRecoilValue(
-    fetchWalletBalance && walletAddress
-      ? nativeDenomBalanceSelector({
-          walletAddress,
-          denom,
-        })
-      : constSelector(undefined)
-  )?.amount
   const loadingWalletBalance = loadableToLoadingData(
     useCachedLoadable(
       fetchLoadingWalletBalance && walletAddress
@@ -101,7 +92,6 @@ export const useGovernanceTokenInfo = ({
     governanceTokenInfo,
     /// Optional
     // Wallet balance
-    walletBalance: walletBalance ? Number(walletBalance) : undefined,
     loadingWalletBalance: loadingWalletBalance.loading
       ? { loading: true }
       : !loadingWalletBalance.data

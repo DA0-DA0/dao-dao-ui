@@ -30,6 +30,7 @@ import {
   useAwaitNextBlock,
   useWalletInfo,
 } from '../../../../../hooks'
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
@@ -45,6 +46,7 @@ const InnerStakingModal = ({
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletInfo()
+  const { coreAddress } = useVotingModuleAdapterOptions()
 
   const [mode, setMode] = useState<StakingMode | undefined>(undefined)
 
@@ -110,7 +112,7 @@ const InnerStakingModal = ({
   })
 
   const setRefreshDaoVotingPower = useSetRecoilState(
-    refreshDaoVotingPowerAtom(stakingContractAddress)
+    refreshDaoVotingPowerAtom(coreAddress)
   )
   const refreshDaoVotingPower = () => setRefreshDaoVotingPower((id) => id + 1)
 
