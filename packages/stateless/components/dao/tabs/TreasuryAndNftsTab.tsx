@@ -145,22 +145,22 @@ const sortOptions: DropdownOption<
     value: (a, b) =>
       b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase()),
   },
-  {
-    label: 'Lowest floor',
-    value: (a, b) =>
-      !a.floorPrice
-        ? 1
-        : !b.floorPrice
-        ? -1
-        : a.floorPrice.amount - b.floorPrice.amount,
-  },
-  {
-    label: 'Highest floor',
-    value: (a, b) =>
-      !a.floorPrice
-        ? 1
-        : !b.floorPrice
-        ? -1
-        : b.floorPrice.amount - a.floorPrice.amount,
-  },
+  // {
+  //   label: 'Lowest floor',
+  //   value: (a, b) =>
+  //     !a.floorPrice
+  //       ? 1
+  //       : !b.floorPrice
+  //       ? -1
+  //       : a.floorPrice.amount - b.floorPrice.amount,
+  // },
+  // {
+  //   label: 'Highest floor',
+  //   value: (a, b) =>
+  //     !a.floorPrice
+  //       ? 1
+  //       : !b.floorPrice
+  //       ? -1
+  //       : b.floorPrice.amount - a.floorPrice.amount,
+  // },
 ]

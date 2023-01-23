@@ -26,9 +26,9 @@ import {
   DaoVotingCw721StakedHooks,
   useAwaitNextBlock,
   useWalletInfo,
-} from '../../../../../hooks'
-import { ProfileCardMemberInfoTokens } from '../../../../components'
-import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
+} from '../../../../hooks'
+import { ProfileCardMemberInfoTokens } from '../../../components'
+import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 import { StakingModal } from './StakingModal'
 
 export const ProfileCardMemberInfo = ({

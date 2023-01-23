@@ -23,15 +23,15 @@ import {
 } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../../components'
+import { SuspenseLoader } from '../../../../components'
 import {
   Cw721BaseHooks,
   DaoVotingCw721StakedHooks,
   useAwaitNextBlock,
   useWalletInfo,
-} from '../../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../../react/context'
-import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
+} from '../../../../hooks'
+import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
   <SuspenseLoader fallback={<ModalLoader onClose={props.onClose} />}>

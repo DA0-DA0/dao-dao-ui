@@ -1,7 +1,7 @@
 import { ImageEmoji } from '@dao-dao/stateless'
 import { DurationUnits, VotingModuleAdapter } from '@dao-dao/types'
 
-import { ProfileCardMemberInfo } from './components'
+import { ProfileCardMemberInfo, StakedNftsTab } from './components'
 import {
   GovernanceConfigurationInput,
   GovernanceConfigurationReview,
@@ -40,6 +40,13 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter<DaoCreationConfig>
 
       // Components
       components: {
+        extraTabs: [
+          {
+            id: 'staked',
+            labelI18nKey: 'title.stakedNfts',
+            Component: StakedNftsTab,
+          },
+        ],
         ProfileCardMemberInfo,
       },
     }),
