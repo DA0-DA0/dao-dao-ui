@@ -235,6 +235,8 @@
     "stakeInsufficient": "The DAO has {{amount}} ${{tokenSymbol}} staked, which is insufficient.",
     "subDaoAlreadyExists": "SubDAO already exists.",
     "tokenSwapContractNotChosen": "You must create a token swap or enter the address of an existing token swap before using this action.",
+    "tooFewChoices": "The proposal must have at least two choices.",
+    "tooManyChoices": "The proposal cannot have more than {{count}} choices.",
     "treasuryInsufficient": "The treasury only has {{amount}} ${{tokenSymbol}}, which is insufficient.",
     "treasuryNoTokensCannotStake": "The treasury has no ${{tokenSymbol}}, so you can't stake any tokens.",
     "unexpectedError": "An unexpected error occurred."

@@ -38,6 +38,7 @@ import {
 } from '@dao-dao/types'
 import { CosmosMsgForEmpty } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
+  MAX_NUM_PROPOSAL_CHOICES,
   decodedMessagesString,
   formatDateTime,
   formatTime,
@@ -271,12 +272,23 @@ export const NewProposal = ({
                   ? t('error.notEnoughForDeposit')
                   : isPaused
                   ? t('error.daoIsPaused')
+                  : choices.length < 2
+                  ? t('error.tooFewChoices')
+                  : choices.length > MAX_NUM_PROPOSAL_CHOICES
+                  ? t('error.tooManyChoices', {
+                      count: MAX_NUM_PROPOSAL_CHOICES,
+                    })
                   : undefined
               }
             >
               <Button
                 disabled={
-                  !connected || !isMember || depositUnsatisfied || isPaused
+                  !connected ||
+                  !isMember ||
+                  depositUnsatisfied ||
+                  isPaused ||
+                  choices.length < 2 ||
+                  choices.length > MAX_NUM_PROPOSAL_CHOICES
                 }
                 loading={loading}
                 type="submit"
@@ -330,44 +342,56 @@ export const NewProposal = ({
                   <p className="primary-text pb-5 text-text-body">
                     {t('title.voteOptions')}
                   </p>
-                  {choices.map((choice, index) => {
-                    return (
-                      <div
-                        key={choice.title}
-                        className="flex flex-col justify-between gap-6 border-b border-border-secondary py-4 px-6"
-                      >
-                        <div className="flex flex-row items-center">
-                          <div>
-                            <CircleIcon
-                              className="h-3 w-3 align-middle"
-                              style={{
-                                color:
-                                  MULTIPLE_CHOICE_OPTION_COLORS[
-                                    index % MULTIPLE_CHOICE_OPTION_COLORS.length
-                                  ],
-                              }}
-                            />
+                  {multipleChoiceFields.map(
+                    ({ id, ...multipleChoiceOption }, index) => {
+                      const actionData = multipleChoiceOption.actionData
+                      return (
+                        <div
+                          key={id}
+                          className="flex flex-col justify-between gap-6 border-b border-border-secondary py-4 px-6"
+                        >
+                          <div className="flex flex-row items-center">
+                            <div>
+                              <CircleIcon
+                                className="h-3 w-3 align-middle"
+                                style={{
+                                  color:
+                                    MULTIPLE_CHOICE_OPTION_COLORS[
+                                      index %
+                                        MULTIPLE_CHOICE_OPTION_COLORS.length
+                                    ],
+                                }}
+                              />
+                            </div>
+                            <p className="primary-text px-2 text-text-body">
+                              {multipleChoiceOption.title}
+                            </p>
                           </div>
-                          <p className="primary-text px-2 text-text-body">
-                            {choice.title}
+                          <p className="secondary-text">
+                            {multipleChoiceOption.description}
                           </p>
+                          {actionData.length ? (
+                            <CosmosMessageDisplay
+                              value={decodedMessagesString(
+                                actionData
+                                  .map(({ key, data }) => {
+                                    try {
+                                      return actionsWithData[key]?.transform(
+                                        data
+                                      )
+                                    } catch (err) {
+                                      console.error(err)
+                                    }
+                                  })
+                                  // Filter out undefined messages.
+                                  .filter(Boolean) as CosmosMsgFor_Empty[]
+                              )}
+                            />
+                          ) : undefined}
                         </div>
-                        <p className="secondary-text">{choice.description}</p>
-                        {
-                          <CosmosMessageDisplay
-                            value={decodedMessagesString(
-                              choice.actionData
-                                ?.map(({ key, data }) =>
-                                  actionsWithData[key]?.transform(data)
-                                )
-                                // Filter out undefined messages.
-                                .filter(Boolean) as CosmosMsgFor_Empty[]
-                            )}
-                          />
-                        }
-                      </div>
-                    )
-                  })}
+                      )
+                    }
+                  )}
                 </div>
               }
               title={proposalTitle}

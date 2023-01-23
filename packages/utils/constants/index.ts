@@ -101,6 +101,9 @@ export const NEW_DAO_CW20_DECIMALS = parseInt(
   10
 )
 
+// This will not change with environment.
+export const MAX_NUM_PROPOSAL_CHOICES = 20
+
 // Stargaze
 export const STARGAZE_RPC_ENDPOINT = process.env
   .NEXT_PUBLIC_STARGAZE_RPC_ENDPOINT as string

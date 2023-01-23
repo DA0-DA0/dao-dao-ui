@@ -13,7 +13,11 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { expirationExpired, processError } from '@dao-dao/utils'
+import {
+  MAX_NUM_PROPOSAL_CHOICES,
+  expirationExpired,
+  processError,
+} from '@dao-dao/utils'
 
 import {
   Cw20BaseHooks,
@@ -175,6 +179,16 @@ export const makeUsePublishProposal =
         }
         if (depositUnsatisfied) {
           throw new Error(t('error.notEnoughForDeposit'))
+        }
+
+        if (newProposalData.choices.options.length < 2) {
+          throw new Error(t('error.tooFewChoices'))
+        }
+
+        if (newProposalData.choices.options.length > MAX_NUM_PROPOSAL_CHOICES) {
+          throw new Error(
+            t('error.tooManyChoices', { count: MAX_NUM_PROPOSAL_CHOICES })
+          )
         }
 
         // Only simulate messages if any exist. Allow proposals without
