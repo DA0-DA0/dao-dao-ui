@@ -26,6 +26,7 @@ Default.args = {
   options: {
     existingTokens: [],
     formattedJsonDisplayProps: {
+      title: 'Token info',
       jsonLoadable: {
         state: 'loading',
       } as any,
