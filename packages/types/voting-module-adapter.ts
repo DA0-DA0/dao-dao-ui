@@ -14,6 +14,7 @@ import {
   NftCardInfo,
 } from './dao'
 import {
+  DaoHomeTab,
   DaoInfoBarItem,
   LoadingData,
   LoadingDataWithError,
@@ -96,7 +97,7 @@ export interface IVotingModuleAdapter {
 
   // Components
   components: {
-    MembersTab?: ComponentType
+    extraTabs?: (Omit<DaoHomeTab, 'label'> & { labelI18nKey: string })[]
     ProfileCardMemberInfo: ComponentType<BaseProfileCardMemberInfoProps>
   }
 }
