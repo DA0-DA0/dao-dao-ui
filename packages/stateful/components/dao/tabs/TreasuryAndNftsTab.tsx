@@ -19,6 +19,7 @@ import {
 } from '../../../recoil'
 import {
   useCw20GovernanceTokenInfoResponseIfExists,
+  useCw721GovernanceTokenInfoResponseIfExists,
   useNativeGovernanceTokenInfoResponseIfExists,
 } from '../../../voting-module-adapter'
 import { NftCard } from '../../NftCard'
@@ -32,6 +33,8 @@ export const TreasuryAndNftsTab = () => {
     useCw20GovernanceTokenInfoResponseIfExists() ?? {}
   const { governanceTokenAddress: nativeGovernanceTokenDenom } =
     useNativeGovernanceTokenInfoResponseIfExists() ?? {}
+  const { governanceTokenAddress: cw721GovernanceCollectionAddress } =
+    useCw721GovernanceTokenInfoResponseIfExists() ?? {}
 
   const treasuryTokenCardInfosLoadable = useCachedLoadable(
     treasuryTokenCardInfosSelector({
@@ -45,6 +48,7 @@ export const TreasuryAndNftsTab = () => {
     nftCardInfosForDaoSelector({
       coreAddress: daoInfo.coreAddress,
       chainId: daoInfo.chainId,
+      governanceCollectionAddress: cw721GovernanceCollectionAddress,
     })
   )
 
