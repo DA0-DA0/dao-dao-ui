@@ -498,6 +498,7 @@
     "followTooltip": "Receive updates in your inbox about this DAO.",
     "getTokensOn": "Get tokens on {{name}}.",
     "goToParent": "Go to parent DAO",
+    "govNftCollection": "Governance NFT Collection",
     "govTokenAddress": "Governance Token",
     "groupAddress": "CW4 Group",
     "historySinceDate": "History since {{date}}",

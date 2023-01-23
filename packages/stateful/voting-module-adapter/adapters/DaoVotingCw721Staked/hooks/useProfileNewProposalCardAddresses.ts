@@ -13,7 +13,7 @@ export const useProfileNewProposalCardAddresses =
 
     return [
       {
-        label: t('info.govTokenAddress'),
+        label: t('info.govNftCollection'),
         address: governanceTokenAddress,
       },
       {
