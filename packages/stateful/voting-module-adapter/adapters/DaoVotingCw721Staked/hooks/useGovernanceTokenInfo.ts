@@ -56,9 +56,9 @@ export const useGovernanceTokenInfo = ({
   // Wallet balance
   const walletBalance = useRecoilValue(
     fetchWalletBalance && walletAddress
-      ? Cw721BaseSelectors._tokensSelector({
+      ? Cw721BaseSelectors.allTokensForOwnerSelector({
           contractAddress: governanceTokenAddress,
-          params: [{ owner: walletAddress }],
+          owner: walletAddress,
         })
       : constSelector(undefined)
   )
@@ -66,9 +66,9 @@ export const useGovernanceTokenInfo = ({
   const loadingWalletBalance = loadableToLoadingData(
     useCachedLoadable(
       fetchLoadingWalletBalance && walletAddress
-        ? Cw721BaseSelectors._tokensSelector({
+        ? Cw721BaseSelectors.allTokensForOwnerSelector({
             contractAddress: governanceTokenAddress,
-            params: [{ owner: walletAddress }],
+            owner: walletAddress,
           })
         : constSelector(undefined)
     ),
@@ -78,9 +78,9 @@ export const useGovernanceTokenInfo = ({
   // Treasury balance
   const treasuryBalance = useRecoilValue(
     fetchTreasuryBalance
-      ? Cw721BaseSelectors._tokensSelector({
+      ? Cw721BaseSelectors.allTokensForOwnerSelector({
           contractAddress: governanceTokenAddress,
-          params: [{ owner: coreAddress }],
+          owner: coreAddress,
         })
       : constSelector(undefined)
   )
@@ -104,20 +104,18 @@ export const useGovernanceTokenInfo = ({
     governanceTokenInfo,
     /// Optional
     // Wallet balance
-    walletBalance: walletBalance?.tokens
-      ? Number(walletBalance?.tokens.length)
-      : undefined,
+    walletBalance: walletBalance ? Number(walletBalance.length) : undefined,
     loadingWalletBalance: loadingWalletBalance.loading
       ? { loading: true }
-      : !loadingWalletBalance.data?.tokens
+      : !loadingWalletBalance.data
       ? undefined
       : {
           loading: false,
-          data: Number(loadingWalletBalance.data?.tokens?.length),
+          data: Number(loadingWalletBalance.data?.length),
         },
     // Treasury balance
-    treasuryBalance: treasuryBalance?.tokens
-      ? Number(treasuryBalance?.tokens.length)
+    treasuryBalance: treasuryBalance
+      ? Number(treasuryBalance.length)
       : undefined,
     // Price
     //price,

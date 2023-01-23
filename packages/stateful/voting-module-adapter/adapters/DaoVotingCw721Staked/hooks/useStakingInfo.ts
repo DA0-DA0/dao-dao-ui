@@ -130,9 +130,9 @@ export const useStakingInfo = ({
   const loadingWalletUnstakedNftsLoadable = loadableToLoadingDataWithError(
     useCachedLoadable(
       fetchLoadingWalletUnstakedValue && walletAddress && governanceTokenAddress
-        ? Cw721BaseSelectors._tokensSelector({
+        ? Cw721BaseSelectors.allTokensForOwnerSelector({
             contractAddress: governanceTokenAddress,
-            params: [{ owner: walletAddress }],
+            owner: walletAddress,
           })
         : undefined
     )
@@ -162,7 +162,7 @@ export const useStakingInfo = ({
         !loadingWalletUnstakedNftsLoadable.errored &&
         loadingWalletUnstakedNftsLoadable.data
         ? waitForAll(
-            loadingWalletUnstakedNftsLoadable.data?.tokens?.map((tokenId) =>
+            loadingWalletUnstakedNftsLoadable.data?.map((tokenId) =>
               nftCardInfoSelector({
                 chainId,
                 collection: governanceTokenAddress,
