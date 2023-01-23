@@ -39,6 +39,7 @@ export const GovernanceConfigurationReview = ({
 
         <FormattedJsonDisplay
           jsonLoadable={existingGovernanceTokenInfoLoadable}
+          title={t('form.tokenInfo')}
         />
         <FormattedJsonDisplay
           jsonLoadable={numOfTokensLoadable}

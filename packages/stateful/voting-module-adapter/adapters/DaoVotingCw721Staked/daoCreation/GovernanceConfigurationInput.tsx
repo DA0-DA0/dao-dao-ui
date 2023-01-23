@@ -134,6 +134,7 @@ export const GovernanceConfigurationInput = ({
           </div>
           <FormattedJsonDisplay
             jsonLoadable={existingGovernanceTokenInfoLoadable}
+            title={t('form.tokenInfo')}
           />
           <FormattedJsonDisplay
             jsonLoadable={numOfTokensLoadable}

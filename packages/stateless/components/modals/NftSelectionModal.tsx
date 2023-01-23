@@ -133,6 +133,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
       headerContent={
         <div className="mt-4 flex flex-col gap-4">
           {headerDisplay}
+
           <SearchBar
             autoFocus
             placeholder={t('info.searchNftsPlaceholder')}

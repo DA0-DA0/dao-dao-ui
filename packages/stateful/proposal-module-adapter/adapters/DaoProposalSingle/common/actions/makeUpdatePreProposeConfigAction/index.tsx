@@ -91,6 +91,7 @@ export const Component: ActionComponent = (props) => {
           governanceTokenSymbol: cw20GovernanceTokenInfo?.symbol,
           additionalAddressError,
           formattedJsonDisplayProps: {
+            title: t('form.tokenInfo'),
             jsonLoadable: tokenInfoLoadable,
           },
         },
