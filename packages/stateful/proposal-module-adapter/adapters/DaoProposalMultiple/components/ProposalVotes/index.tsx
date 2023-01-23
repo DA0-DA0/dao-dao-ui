@@ -34,6 +34,7 @@ export const ProposalVotes = () => {
     <StatelessProposalVotes
       EntityDisplay={EntityDisplay}
       VoteDisplay={VoteDisplay}
+      proposal={!loadingProposal.loading && loadingProposal.data}
       votes={
         votesLoadable.state !== 'hasValue'
           ? { loading: true }
