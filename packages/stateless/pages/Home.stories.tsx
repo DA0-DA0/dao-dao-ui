@@ -108,7 +108,7 @@ Disconnected.parameters = {
 Disconnected.decorators = [
   makeAppLayoutDecorator({
     navigationProps: {
-      hideInbox: true,
+      walletConnected: false,
     },
     rightSidebarProps: {
       wallet: (
