@@ -16,7 +16,7 @@ import {
   UnstakingTask,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
-import { Claim } from '@dao-dao/types/contracts/stake-cw20'
+import { Claim } from '@dao-dao/types/contracts/Cw20Stake'
 import {
   NATIVE_DENOM,
   convertExpirationToDate,

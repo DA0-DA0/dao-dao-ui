@@ -1,4 +1,10 @@
-import { DurationWithUnits, NewDaoTier } from '@dao-dao/types'
+import {
+  Duration,
+  DurationWithUnits,
+  LoadingData,
+  NewDaoTier,
+} from '@dao-dao/types'
+import { Claim } from '@dao-dao/types/contracts/Cw20Stake'
 
 export enum GovernanceTokenType {
   New,
@@ -27,4 +33,29 @@ export interface DaoCreationConfig {
     _error?: undefined
   }
   unstakingDuration: DurationWithUnits
+}
+
+export interface UseStakingInfoOptions {
+  fetchClaims?: boolean
+  fetchTotalStakedValue?: boolean
+  fetchWalletStakedValue?: boolean
+  fetchWalletUnstakedValue?: boolean
+}
+
+export interface UseStakingInfoResponse {
+  stakingContractAddress: string
+  unstakingDuration?: Duration
+  refreshTotals: () => void
+  /// Optional
+  // Claims
+  blockHeight?: number
+  refreshClaims?: () => void
+  claims?: Claim[]
+  claimsPending?: Claim[]
+  claimsAvailable?: Claim[]
+  sumClaimsAvailable?: number
+  // Total staked value
+  loadingTotalStakedValue?: LoadingData<number>
+  // Wallet staked value
+  loadingWalletStakedValue?: LoadingData<number>
 }

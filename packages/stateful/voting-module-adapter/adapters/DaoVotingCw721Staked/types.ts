@@ -1,4 +1,11 @@
-import { DurationWithUnits } from '@dao-dao/types'
+import {
+  Duration,
+  DurationWithUnits,
+  LoadingData,
+  LoadingDataWithError,
+  NftCardInfo,
+} from '@dao-dao/types'
+import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 
 export enum GovernanceTokenType {
   New,
@@ -16,4 +23,31 @@ export interface DaoCreationConfig {
     _error?: undefined
   }
   unstakingDuration: DurationWithUnits
+}
+
+export interface UseStakingInfoOptions {
+  fetchClaims?: boolean
+  fetchTotalStakedValue?: boolean
+  fetchWalletStakedValue?: boolean
+  fetchWalletUnstakedValue?: boolean
+}
+
+export interface UseStakingInfoResponse {
+  stakingContractAddress: string
+  unstakingDuration?: Duration
+  refreshTotals: () => void
+  /// Optional
+  // Claims
+  blockHeight?: number
+  refreshClaims?: () => void
+  claims?: NftClaim[]
+  claimsPending?: NftClaim[]
+  claimsAvailable?: NftClaim[]
+  sumClaimsAvailable?: number
+  // Total staked value
+  loadingTotalStakedValue?: LoadingData<number>
+  // Wallet staked value
+  loadingWalletStakedValue?: LoadingData<number>
+  loadingWalletStakedNfts?: LoadingDataWithError<NftCardInfo[]>
+  loadingWalletUnstakedNfts?: LoadingDataWithError<NftCardInfo[]>
 }

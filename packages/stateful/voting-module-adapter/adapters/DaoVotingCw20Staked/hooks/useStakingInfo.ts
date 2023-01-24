@@ -10,10 +10,10 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { UseStakingInfoOptions, UseStakingInfoResponse } from '@dao-dao/types'
 import { claimAvailable, loadableToLoadingData } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 
 export const useStakingInfo = ({
   fetchClaims = false,
@@ -140,7 +140,7 @@ export const useStakingInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingTotalStakedValue.data.value),
+          data: Number(loadingTotalStakedValue.data.total),
         },
     // Wallet staked value
     loadingWalletStakedValue: loadingWalletStakedValue.loading

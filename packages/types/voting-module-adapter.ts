@@ -2,23 +2,18 @@ import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 
 import { Action } from './actions'
-import { Duration } from './contracts/common'
 import { TokenInfoResponse } from './contracts/Cw20Base'
-import { NftClaim } from './contracts/DaoVotingCw721Staked'
-import { Claim } from './contracts/stake-cw20'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationGovernanceConfigInputProps,
   DaoCreationGovernanceConfigReviewProps,
   DaoCreationVotingConfigItem,
-  NftCardInfo,
 } from './dao'
 import { AmountWithTimestampAndDenom } from './state'
 import {
   DaoHomeTab,
   DaoInfoBarItem,
   LoadingData,
-  LoadingDataWithError,
   StakingMode,
 } from './stateless'
 import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
@@ -54,33 +49,6 @@ export interface UseGovernanceTokenInfoResponse {
   loadingPrice?: LoadingData<AmountWithTimestampAndDenom>
 }
 
-export interface UseStakingInfoOptions {
-  fetchClaims?: boolean
-  fetchTotalStakedValue?: boolean
-  fetchWalletStakedValue?: boolean
-  fetchWalletUnstakedValue?: boolean
-}
-
-export interface UseStakingInfoResponse {
-  stakingContractAddress: string
-  unstakingDuration?: Duration
-  refreshTotals: () => void
-  /// Optional
-  // Claims
-  blockHeight?: number
-  refreshClaims?: () => void
-  claims?: Claim[] | NftClaim[]
-  claimsPending?: Claim[] | NftClaim[]
-  claimsAvailable?: Claim[] | NftClaim[]
-  sumClaimsAvailable?: number
-  // Total staked value
-  loadingTotalStakedValue?: LoadingData<number>
-  // Wallet staked value
-  loadingWalletStakedValue?: LoadingData<number>
-  loadingWalletStakedNfts?: LoadingDataWithError<NftCardInfo[]>
-  loadingWalletUnstakedNfts?: LoadingDataWithError<NftCardInfo[]>
-}
-
 export interface IVotingModuleAdapter {
   // Hooks
   hooks: {
@@ -90,7 +58,6 @@ export interface IVotingModuleAdapter {
     useGovernanceTokenInfo?: (
       options?: UseGovernanceTokenInfoOptions
     ) => UseGovernanceTokenInfoResponse
-    useStakingInfo?: (options?: UseStakingInfoOptions) => UseStakingInfoResponse
   }
 
   // Components
