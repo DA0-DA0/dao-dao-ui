@@ -31,12 +31,8 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [navigatingToHref, setNavigatingToHref] =
     useRecoilState(navigatingToHrefAtom)
-  const [_theme, setTheme] = useRecoilState(activeThemeAtom)
+  const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
-
-  const isHomepage = router.pathname === '/'
-  // Always display the homepage with dark theme.
-  const theme = isHomepage ? Theme.Dark : _theme
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -74,8 +70,6 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
           <LayoutLoading>
             <Component {...pageProps} />
           </LayoutLoading>
-        ) : isHomepage ? (
-          <Component {...pageProps} />
         ) : (
           <WalletProvider>
             <AppLayout>
