@@ -79,7 +79,7 @@ export const OptionCard = ({
         />
       </div>
 
-      <div className="mt-10 flex flex-col items-center gap-4 space-y-2 p-6 pt-4">
+      <div className="mt-10 flex flex-col items-center gap-4 p-6 pt-4">
         <div className="text-6xl">
           <Icon />
         </div>
@@ -91,7 +91,11 @@ export const OptionCard = ({
         )}
 
         {readMoreUrl && (
-          <ButtonLink href={readMoreUrl} variant="underline">
+          <ButtonLink
+            containerClassName="self-start"
+            href={readMoreUrl}
+            variant="underline"
+          >
             {t('button.readMore')}
           </ButtonLink>
         )}

@@ -125,7 +125,8 @@ const options: {
     type: 'retroactive',
     nameI18nKey: 'title.retroactive',
     descriptionI18nKey: 'info.retroactivePaymentsDescription',
-    readMoreUrl: '',
+    readMoreUrl:
+      'https://docs.google.com/document/d/e/2PACX-1vT5QQRZTQGUQt1Ikcfiil50xU-VT2tNOnfYapQ6-J1D8KhfmX88B28sqyaLrE-JCV-j-P52ZCUTowZi/pub',
     Icon: BeeEmoji,
   },
   {
