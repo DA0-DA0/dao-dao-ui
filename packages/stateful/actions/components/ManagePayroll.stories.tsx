@@ -2,24 +2,23 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 
-import { ManagePaymentsComponent, ManagePaymentsData } from './ManagePayments'
+import { ManagePayrollComponent, ManagePayrollData } from './ManagePayroll'
 
 export default {
-  title:
-    'DAO DAO / packages / stateful / actions / components / ManagePayments',
-  component: ManagePaymentsComponent,
+  title: 'DAO DAO / packages / stateful / actions / components / ManagePayroll',
+  component: ManagePayrollComponent,
   decorators: [
-    makeReactHookFormDecorator<ManagePaymentsData>({
+    makeReactHookFormDecorator<ManagePayrollData>({
       type: 'vesting',
       data: {
         factory: 'junoPayrollFactoryContract',
       },
     }),
   ],
-} as ComponentMeta<typeof ManagePaymentsComponent>
+} as ComponentMeta<typeof ManagePayrollComponent>
 
-const Template: ComponentStory<typeof ManagePaymentsComponent> = (args) => (
-  <ManagePaymentsComponent {...args} />
+const Template: ComponentStory<typeof ManagePayrollComponent> = (args) => (
+  <ManagePayrollComponent {...args} />
 )
 
 export const Default = Template.bind({})

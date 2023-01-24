@@ -15,16 +15,16 @@ import { ActionComponent, DaoPayrollConfig } from '@dao-dao/types'
 
 import { ActionCard } from './ActionCard'
 
-export type ManagePaymentsData = Partial<DaoPayrollConfig>
+export type ManagePayrollData = Partial<DaoPayrollConfig>
 
-export interface ManagePaymentsOptions {
+export interface ManagePayrollOptions {
   instantiating: boolean
   instantiateVestingFactory: () => Promise<void>
 }
 
-export const ManagePaymentsComponent: ActionComponent<
-  ManagePaymentsOptions,
-  ManagePaymentsData
+export const ManagePayrollComponent: ActionComponent<
+  ManagePayrollOptions,
+  ManagePayrollData
 > = ({
   fieldNamePrefix,
   onRemove,
@@ -33,7 +33,7 @@ export const ManagePaymentsComponent: ActionComponent<
 }) => {
   const { t } = useTranslation()
 
-  const { setValue, watch } = useFormContext<ManagePaymentsData>()
+  const { setValue, watch } = useFormContext<ManagePayrollData>()
   const watchType = watch((fieldNamePrefix + 'type') as 'type')
   const data = watch((fieldNamePrefix + 'data') as 'data')
 
@@ -46,7 +46,7 @@ export const ManagePaymentsComponent: ActionComponent<
     <ActionCard
       Icon={MoneyBagEmoji}
       onRemove={onRemove}
-      title={t('title.managePayments')}
+      title={t('title.managePayroll')}
     >
       {isCreating ? (
         <GridCardContainer cardType="tall">

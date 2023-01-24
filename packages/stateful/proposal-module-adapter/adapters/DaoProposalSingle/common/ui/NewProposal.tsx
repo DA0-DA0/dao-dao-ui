@@ -218,9 +218,7 @@ export const NewProposal = ({
           {actionDataFields.map(({ id, ...actionData }, index) => {
             const Component = actionsWithData[actionData.key]?.action?.Component
             if (!Component) {
-              throw new Error(
-                `Error detecting action type "${actionData.key}".`
-              )
+              return null
             }
 
             return (

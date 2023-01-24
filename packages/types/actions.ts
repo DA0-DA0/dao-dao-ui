@@ -30,7 +30,7 @@ export enum CoreActionKey {
   WithdrawTokenSwap = 'withdrawTokenSwap',
   ManageStorageItems = 'manageStorageItems',
   GovernanceVote = 'governanceVote',
-  ManagePayments = 'managePayments',
+  ManagePayroll = 'managePayroll',
 }
 
 // Actions defined in voting or proposal module adapters.

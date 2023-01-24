@@ -30,12 +30,12 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  ManagePaymentsData,
-  ManagePaymentsComponent as StatelessManageStorageItemsComponent,
-} from '../components/ManagePayments'
+  ManagePayrollData,
+  ManagePayrollComponent as StatelessManageStorageItemsComponent,
+} from '../components/ManagePayroll'
 import { useActionOptions } from '../react'
 
-const useDefaults: UseDefaults<ManagePaymentsData> = () => {
+const useDefaults: UseDefaults<ManagePayrollData> = () => {
   const { address, chainId } = useActionOptions()
   const payrollConfigSelector = useCachedLoadable(
     DaoCoreV2Selectors.payrollConfigSelector({
@@ -53,13 +53,13 @@ const useDefaults: UseDefaults<ManagePaymentsData> = () => {
       }
 }
 
-const Component: ActionComponent<undefined, ManagePaymentsData> = (props) => {
+const Component: ActionComponent<undefined, ManagePayrollData> = (props) => {
   const { name } = useDaoInfoContext()
   const { address, t } = useActionOptions()
   const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
 
   const { setValue, setError, clearErrors, watch } =
-    useFormContext<ManagePaymentsData>()
+    useFormContext<ManagePayrollData>()
   const type = watch((props.fieldNamePrefix + 'type') as 'type')
   const data = watch((props.fieldNamePrefix + 'data') as 'data')
 
@@ -119,7 +119,7 @@ const Component: ActionComponent<undefined, ManagePaymentsData> = (props) => {
   )
 }
 
-export const makeManagePaymentsAction: ActionMaker<ManagePaymentsData> = ({
+export const makeManagePayrollAction: ActionMaker<ManagePayrollData> = ({
   t,
   address,
   context,
@@ -137,9 +137,9 @@ export const makeManagePaymentsAction: ActionMaker<ManagePaymentsData> = ({
       ? 'addr'
       : 'value'
 
-  const useTransformToCosmos: UseTransformToCosmos<ManagePaymentsData> = () =>
+  const useTransformToCosmos: UseTransformToCosmos<ManagePayrollData> = () =>
     useCallback(
-      ({ type, data }: ManagePaymentsData) =>
+      ({ type, data }: ManagePayrollData) =>
         makeWasmMessage({
           wasm: {
             execute: {
@@ -168,7 +168,7 @@ export const makeManagePaymentsAction: ActionMaker<ManagePaymentsData> = ({
       []
     )
 
-  const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManagePaymentsData> = (
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManagePayrollData> = (
     msg: Record<string, any>
   ) => {
     if (
@@ -205,10 +205,10 @@ export const makeManagePaymentsAction: ActionMaker<ManagePaymentsData> = ({
   }
 
   return {
-    key: CoreActionKey.ManagePayments,
+    key: CoreActionKey.ManagePayroll,
     Icon: MoneyBagEmoji,
-    label: t('title.managePayments'),
-    description: t('info.managePaymentsDescription'),
+    label: t('title.managePayroll'),
+    description: t('info.managePayrollDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

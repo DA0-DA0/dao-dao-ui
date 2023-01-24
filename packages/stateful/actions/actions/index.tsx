@@ -9,7 +9,7 @@ import { makeGovernanceVoteAction } from './GovernanceVote'
 import { makeInstantiateAction } from './Instantiate'
 import { makeManageCw20Action } from './ManageCw20'
 import { makeManageCw721Action } from './ManageCw721'
-import { makeManagePaymentsAction } from './ManagePayments'
+import { makeManagePayrollAction } from './ManagePayroll'
 import { makeManageStorageItemsAction } from './ManageStorageItems'
 import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeMigrateAction } from './MigrateContract'
@@ -46,7 +46,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeCustomAction,
     makeManageSubDaosAction,
     makePerformTokenSwapAction,
-    makeManagePaymentsAction,
+    makeManagePayrollAction,
     makeManageStorageItemsAction,
     makeWithdrawTokenSwapAction,
     makeAuthzAuthorizationAction,
