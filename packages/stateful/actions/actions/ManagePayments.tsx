@@ -58,8 +58,10 @@ const Component: ActionComponent<undefined, ManagePaymentsData> = (props) => {
   const { address, t } = useActionOptions()
   const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
 
-  const { setValue, setError, clearErrors } =
+  const { setValue, setError, clearErrors, watch } =
     useFormContext<ManagePaymentsData>()
+  const type = watch((props.fieldNamePrefix + 'type') as 'type')
+  const data = watch((props.fieldNamePrefix + 'data') as 'data')
 
   const [instantiating, setInstantiating] = useState(false)
   const instantiateVestingFactory = async () => {
@@ -97,15 +99,14 @@ const Component: ActionComponent<undefined, ManagePaymentsData> = (props) => {
   // Prevent action from being submitted if the vesting factory contract has not
   // yet been created.
   useEffect(() => {
-    if (props.data.type === 'vesting' && !props.data.data?.factory) {
+    if (type === 'vesting' && !data?.factory) {
       setError((props.fieldNamePrefix + 'data') as 'data', {
         type: 'manual',
-        message: t('error.vestingFactoryNotCreated'),
       })
     } else {
       clearErrors((props.fieldNamePrefix + 'data') as 'data')
     }
-  }, [setError, clearErrors, props.data, props.fieldNamePrefix, t])
+  }, [setError, clearErrors, props.fieldNamePrefix, t, type, data?.factory])
 
   return (
     <StatelessManageStorageItemsComponent

@@ -246,8 +246,7 @@
     "tokenSwapContractNotChosen": "You must create a token swap or enter the address of an existing token swap before using this action.",
     "treasuryInsufficient": "The treasury only has {{amount}} ${{tokenSymbol}}, which is insufficient.",
     "treasuryNoTokensCannotStake": "The treasury has no ${{tokenSymbol}}, so you can't stake any tokens.",
-    "unexpectedError": "An unexpected error occurred.",
-    "vestingFactoryNotCreated": "You must create a vesting contract manager."
+    "unexpectedError": "An unexpected error occurred."
   },
   "form": {
     "addAnImage": "Add an image",
@@ -544,6 +543,7 @@
     "noFundsDuringInstantiation": "No funds will be transferred during instantiation.",
     "noGovernanceProposalsOpenForVoting": "There are no governance proposals open for voting.",
     "noNftsYet": "No NFTs to appreciate yet.",
+    "noPaymentsDescription": "Disable all payment features and hide them from the DAO's home page.",
     "noProposalsTooltip": "This DAO has no proposals and may be inactive or a duplicate.",
     "noProposalsYet": "No proposals to vote on yet.",
     "noSubDaosYet": "No SubDAOs yet.",

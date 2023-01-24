@@ -6,7 +6,6 @@ import {
   BeeEmoji,
   Button,
   GridCardContainer,
-  InputErrorMessage,
   MoneyBagEmoji,
   OptionCard,
   SuitAndTieEmoji,
@@ -30,7 +29,6 @@ export const ManagePaymentsComponent: ActionComponent<
   fieldNamePrefix,
   onRemove,
   isCreating,
-  errors,
   options: { instantiating, instantiateVestingFactory },
 }) => {
   const { t } = useTranslation()
@@ -90,8 +88,6 @@ export const ManagePaymentsComponent: ActionComponent<
                 ? t('info.createdVestingContractManager')
                 : t('info.createVestingContractManager')}
             </p>
-
-            <InputErrorMessage error={errors?.data} />
           </div>
 
           {vestingFactoryCreated ? (
@@ -122,6 +118,7 @@ const options: {
   {
     type: undefined,
     nameI18nKey: 'info.none',
+    descriptionI18nKey: 'info.noPaymentsDescription',
     Icon: XEmoji,
   },
   {
