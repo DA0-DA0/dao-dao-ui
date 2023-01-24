@@ -34,7 +34,13 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
 
     // Components
     components: {
-      MembersTab,
+      extraTabs: [
+        {
+          id: 'members',
+          labelI18nKey: 'title.members',
+          Component: MembersTab,
+        },
+      ],
       ProfileCardMemberInfo,
     },
   }),

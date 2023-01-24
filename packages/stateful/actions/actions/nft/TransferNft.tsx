@@ -1,4 +1,5 @@
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -22,19 +23,24 @@ import {
 import { AddressInput } from '../../../components'
 import {
   nftCardInfoSelector,
-  nftCardInfosSelector,
+  nftCardInfosForDaoSelector,
 } from '../../../recoil/selectors/nft'
+import { useCw721GovernanceTokenInfoResponseIfExists } from '../../../voting-module-adapter'
 import { TransferNftComponent, TransferNftData } from '../../components/nft'
 import { useActionOptions } from '../../react'
 
-const useDefaults: UseDefaults<TransferNftData> = () => ({
-  collection: '',
-  tokenId: '',
-  recipient: '',
+const useDefaults: UseDefaults<TransferNftData> = () => {
+  const { address: walletAddress = '' } = useWallet()
 
-  executeSmartContract: false,
-  smartContractMsg: '{}',
-})
+  return {
+    collection: '',
+    tokenId: '',
+    recipient: walletAddress,
+
+    executeSmartContract: false,
+    smartContractMsg: '{}',
+  }
+}
 
 const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () =>
   useCallback(
@@ -131,6 +137,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
 const Component: ActionComponent = (props) => {
   const { address, chainId } = useActionOptions()
   const { watch } = useFormContext()
+  const { governanceTokenAddress: cw721GovernanceCollectionAddress } =
+    useCw721GovernanceTokenInfoResponseIfExists() ?? {}
 
   const tokenId = watch(props.fieldNamePrefix + 'tokenId')
   const collection = watch(props.fieldNamePrefix + 'collection')
@@ -138,9 +146,10 @@ const Component: ActionComponent = (props) => {
   const options = loadableToLoadingDataWithError(
     useCachedLoadable(
       props.isCreating
-        ? nftCardInfosSelector({
+        ? nftCardInfosForDaoSelector({
             coreAddress: address,
             chainId,
+            governanceCollectionAddress: cw721GovernanceCollectionAddress,
           })
         : constSelector([])
     )

@@ -10,16 +10,15 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { UseStakingInfoOptions, UseStakingInfoResponse } from '@dao-dao/types'
 import { claimAvailable, loadableToLoadingData } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 
 export const useStakingInfo = ({
   fetchClaims = false,
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
-  fetchLoadingWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
@@ -65,14 +64,22 @@ export const useStakingInfo = ({
     [_setClaimsId]
   )
 
-  const claims = useRecoilValue(
-    fetchClaims && walletAddress
-      ? Cw20StakeSelectors.claimsSelector({
-          contractAddress: stakingContractAddress,
-          params: [{ address: walletAddress }],
-        })
-      : constSelector(undefined)
-  )?.claims
+  const loadingClaims = loadableToLoadingData(
+    useCachedLoadable(
+      fetchClaims && walletAddress
+        ? Cw20StakeSelectors.claimsSelector({
+            contractAddress: stakingContractAddress,
+            params: [{ address: walletAddress }],
+          })
+        : constSelector(undefined)
+    ),
+    undefined
+  )
+  const claims = loadingClaims.loading
+    ? []
+    : !loadingClaims.data
+    ? undefined
+    : loadingClaims.data.claims
 
   const claimsPending = blockHeight
     ? claims?.filter((c) => !claimAvailable(c, blockHeight))
@@ -86,27 +93,22 @@ export const useStakingInfo = ({
   )
 
   // Total staked value
-  const totalStakedValue = useRecoilValue(
-    fetchTotalStakedValue
-      ? Cw20StakeSelectors.totalValueSelector({
-          contractAddress: stakingContractAddress,
-          params: [],
-        })
-      : constSelector(undefined)
-  )?.total
+  const loadingTotalStakedValue = loadableToLoadingData(
+    useCachedLoadable(
+      fetchTotalStakedValue
+        ? Cw20StakeSelectors.totalValueSelector({
+            contractAddress: stakingContractAddress,
+            params: [],
+          })
+        : constSelector(undefined)
+    ),
+    undefined
+  )
 
   // Wallet staked value
-  const walletStakedValue = useRecoilValue(
-    fetchWalletStakedValue && walletAddress
-      ? Cw20StakeSelectors.stakedValueSelector({
-          contractAddress: stakingContractAddress,
-          params: [{ address: walletAddress }],
-        })
-      : constSelector(undefined)
-  )?.value
   const loadingWalletStakedValue = loadableToLoadingData(
     useCachedLoadable(
-      fetchLoadingWalletStakedValue && walletAddress
+      fetchWalletStakedValue && walletAddress
         ? Cw20StakeSelectors.stakedValueSelector({
             contractAddress: stakingContractAddress,
             params: [{ address: walletAddress }],
@@ -132,11 +134,15 @@ export const useStakingInfo = ({
     claimsAvailable,
     sumClaimsAvailable,
     // Total staked value
-    totalStakedValue: totalStakedValue ? Number(totalStakedValue) : undefined,
+    loadingTotalStakedValue: loadingTotalStakedValue.loading
+      ? { loading: true }
+      : !loadingTotalStakedValue.data
+      ? undefined
+      : {
+          loading: false,
+          data: Number(loadingTotalStakedValue.data.total),
+        },
     // Wallet staked value
-    walletStakedValue: walletStakedValue
-      ? Number(walletStakedValue)
-      : undefined,
     loadingWalletStakedValue: loadingWalletStakedValue.loading
       ? { loading: true }
       : !loadingWalletStakedValue.data

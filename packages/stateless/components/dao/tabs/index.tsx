@@ -1,4 +1,5 @@
 export * from './MembersTab'
 export * from './ProposalsTab'
+export * from './StakedNftsTab'
 export * from './SubDaosTab'
 export * from './TreasuryAndNftsTab'

@@ -81,7 +81,7 @@
     "createProposalSubmitInvalid": "Correggi la proposta sopra prima di inviarla.",
     "daoIsPaused": "Non puoi creare una proposta quando la DAO è in pausa.",
     "daoNotFound": "DAO non trovata.",
-    "failedToGetTokenInfo": "Impossibile ottenere le informazioni sul token. Inserisci un indirizzo valido di un contratto CW20.",
+    "failedToGetTokenInfo": "Impossibile ottenere le informazioni sul token. Inserisci un indirizzo valido di un contratto {{tokenType}}.",
     "fieldRequired": "Questo campo è obbligatorio.",
     "govTokenBalancesDoNotSumTo100": "La distribuzione totale dei token deve essere del 100%, ad ora equivale a {{totalPercent}}.",
     "internalServerError": "Errore interno del server. Riprova più tardi.",

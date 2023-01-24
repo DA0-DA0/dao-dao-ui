@@ -62,10 +62,10 @@ const Template: ComponentStory<typeof DaoHome> = (args) => {
 export const Default = Template.bind({})
 Default.args = {
   daoInfoBar: <DaoInfoBar {...(DaoInfoBarStory.args as DaoInfoBarProps)} />,
-  proposalsTab: (
+  ProposalsTab: () => (
     <ProposalsTabStory {...(ProposalsTabStory.args as ProposalsTabProps)} />
   ),
-  treasuryAndNftsTab: (
+  TreasuryAndNftsTab: () => (
     <TreasuryAndNftsTabStory
       {...(TreasuryAndNftsTabStory.args as TreasuryAndNftsTabProps<
         TokenCardProps,
@@ -73,14 +73,20 @@ Default.args = {
       >)}
     />
   ),
-  subDaosTab: (
+  SubDaosTab: () => (
     <SubDaosTabStory {...(SubDaosTabStory.args as SubDaosTabProps)} />
   ),
-  membersTab: (
-    <MembersTabStory
-      {...(MembersTabStory.args as MembersTabProps<DaoMemberCardProps>)}
-    />
-  ),
+  extraTabs: [
+    {
+      id: 'members',
+      label: 'Members',
+      Component: () => (
+        <MembersTabStory
+          {...(MembersTabStory.args as MembersTabProps<DaoMemberCardProps>)}
+        />
+      ),
+    },
+  ],
   rightSidebarContent: (
     <ProfileMemberCard
       {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}

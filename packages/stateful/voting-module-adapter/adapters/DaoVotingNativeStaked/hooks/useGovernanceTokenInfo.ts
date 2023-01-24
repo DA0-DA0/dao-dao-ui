@@ -24,7 +24,6 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
-  fetchLoadingWalletBalance = false,
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
@@ -55,17 +54,9 @@ export const useGovernanceTokenInfo = ({
   /// Optional
 
   // Wallet balance
-  const walletBalance = useRecoilValue(
-    fetchWalletBalance && walletAddress
-      ? nativeDenomBalanceSelector({
-          walletAddress,
-          denom,
-        })
-      : constSelector(undefined)
-  )?.amount
   const loadingWalletBalance = loadableToLoadingData(
     useCachedLoadable(
-      fetchLoadingWalletBalance && walletAddress
+      fetchWalletBalance && walletAddress
         ? nativeDenomBalanceSelector({
             walletAddress,
             denom,
@@ -76,24 +67,30 @@ export const useGovernanceTokenInfo = ({
   )
 
   // Treasury balance
-  const treasuryBalance = useRecoilValue(
-    fetchTreasuryBalance
-      ? nativeDenomBalanceSelector({
-          walletAddress: coreAddress,
-          denom,
-        })
-      : constSelector(undefined)
-  )?.amount
+  const loadingTreasuryBalance = loadableToLoadingData(
+    useCachedLoadable(
+      fetchTreasuryBalance
+        ? nativeDenomBalanceSelector({
+            walletAddress: coreAddress,
+            denom,
+          })
+        : constSelector(undefined)
+    ),
+    undefined
+  )
 
   // Price info
-  const price = useRecoilValue(
-    fetchUsdcPrice && governanceTokenInfo
-      ? usdcPerMacroTokenSelector({
-          denom,
-          decimals: governanceTokenInfo.decimals,
-        })
-      : constSelector(undefined)
-  )?.amount
+  const loadingPrice = loadableToLoadingData(
+    useCachedLoadable(
+      fetchUsdcPrice && governanceTokenInfo
+        ? usdcPerMacroTokenSelector({
+            denom,
+            decimals: governanceTokenInfo.decimals,
+          })
+        : constSelector(undefined)
+    ),
+    undefined
+  )
 
   return {
     stakingContractAddress: '',
@@ -101,7 +98,6 @@ export const useGovernanceTokenInfo = ({
     governanceTokenInfo,
     /// Optional
     // Wallet balance
-    walletBalance: walletBalance ? Number(walletBalance) : undefined,
     loadingWalletBalance: loadingWalletBalance.loading
       ? { loading: true }
       : !loadingWalletBalance.data
@@ -111,8 +107,22 @@ export const useGovernanceTokenInfo = ({
           data: Number(loadingWalletBalance.data.amount),
         },
     // Treasury balance
-    treasuryBalance: treasuryBalance ? Number(treasuryBalance) : undefined,
+    loadingTreasuryBalance: loadingTreasuryBalance.loading
+      ? { loading: true }
+      : !loadingTreasuryBalance.data
+      ? undefined
+      : {
+          loading: false,
+          data: Number(loadingTreasuryBalance.data.amount),
+        },
     // Price
-    price,
+    loadingPrice: loadingPrice.loading
+      ? { loading: true }
+      : !loadingPrice.data
+      ? undefined
+      : {
+          loading: false,
+          data: loadingPrice.data,
+        },
   }
 }

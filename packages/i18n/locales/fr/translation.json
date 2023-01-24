@@ -93,7 +93,7 @@
     "daoNotFound": "DAO non trouvé.",
     "errorOccurredOnPage": "Une erreur s'est produite sur cette page.",
     "failedParsingCoreVersion": "Impossible de déterminer la version principale.",
-    "failedToGetTokenInfo": "Impossible d'obtenir les informations du jeton. Veuillez entrer une adresse de contrat CW20 valide.",
+    "failedToGetTokenInfo": "Impossible d'obtenir les informations du jeton. Veuillez entrer une adresse de contrat {{tokenType}} valide.",
     "fieldRequired": "Ce champ est obligatoire.",
     "govTokenBalancesDoNotSumTo100": "Le pourcentage total de distribution de jetons doit être égal à 100%, mais il s'élève actuellement à {{totalPercent}}.",
     "invalidAddress": "Adresse non valide.",

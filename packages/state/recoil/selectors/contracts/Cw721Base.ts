@@ -15,7 +15,14 @@ import {
   TokensResponse,
 } from '@dao-dao/types/contracts/Cw721Base'
 
-import { Cw721BaseQueryClient } from '../../../contracts/Cw721Base'
+import {
+  Cw721BaseClient,
+  Cw721BaseQueryClient,
+} from '../../../contracts/Cw721Base'
+import {
+  refreshWalletBalancesIdAtom,
+  signingCosmWasmClientAtom,
+} from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
 import { queryContractIndexerSelector } from '../indexer'
 
@@ -34,6 +41,26 @@ export const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new Cw721BaseQueryClient(client, contractAddress)
     },
+})
+
+export type ExecuteClientParams = {
+  contractAddress: string
+  sender: string
+}
+
+export const executeClient = selectorFamily<
+  Cw721BaseClient | undefined,
+  ExecuteClientParams
+>({
+  key: 'cw721BaseExecuteClient',
+  get:
+    ({ contractAddress, sender }) =>
+    ({ get }) => {
+      const client = get(signingCosmWasmClientAtom)
+      if (!client) return
+      return new Cw721BaseClient(client, sender, contractAddress)
+    },
+  dangerouslyAllowMutability: true,
 })
 
 export const ownerOfSelector = selectorFamily<
@@ -244,6 +271,7 @@ export const _tokensSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
+      get(refreshWalletBalancesIdAtom(params[0].owner))
       return await client.tokens(...params)
     },
 })
@@ -310,6 +338,8 @@ export const allTokensForOwnerSelector = selectorFamily<
   get:
     ({ owner, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(owner))
+
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
@@ -317,6 +347,7 @@ export const allTokensForOwnerSelector = selectorFamily<
           args: {
             owner,
           },
+          id,
         })
       )
       if (list) {
@@ -363,7 +394,7 @@ export const allTokensSelector = selectorFamily<
 >({
   key: 'cw721BaseAllTokens',
   get:
-    ({ ...queryClientParams }) =>
+    (queryClientParams) =>
     async ({ get }) => {
       const tokens: AllTokensResponse['tokens'] = []
       while (true) {

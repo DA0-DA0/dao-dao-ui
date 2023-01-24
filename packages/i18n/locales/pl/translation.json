@@ -91,7 +91,7 @@
     "daoIsPaused": "Nie możesz utworzyć popozycji ustawy kiedy Organizacja jest zapauzowana.",
     "daoNotFound": "Organizacja nie znaleziona.",
     "failedParsingCoreVersion": "Nie udało się zdeterminować głównej wersji.",
-    "failedToGetTokenInfo": "Nie udał się znaleźć informacji tokenu. Proszę podaj właściwy adres kontraktu CW20.",
+    "failedToGetTokenInfo": "Nie udał się znaleźć informacji tokenu. Proszę podaj właściwy adres kontraktu {{tokenType}}.",
     "fieldRequired": "To pole jest wymagane.",
     "govTokenBalancesDoNotSumTo100": "Całkowita dystrubuje tokenu musi się równać 100%, a obecnie wynosi {{totalPercent}}.",
     "internalServerError": "Wewnętrzny błąd serwera pojawił się na tej stronie.",

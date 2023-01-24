@@ -53,7 +53,7 @@ const InnerDaoHome = () => {
 
   const daoInfo = useDaoInfoContext()
   const {
-    components: { MembersTab, ProfileCardMemberInfo },
+    components: { extraTabs, ProfileCardMemberInfo },
   } = useVotingModuleAdapter()
   const { isMember } = useMembership(daoInfo)
 
@@ -193,9 +193,27 @@ const InnerDaoHome = () => {
     <DaoHome
       DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
       LinkWrapper={LinkWrapper}
+      ProposalsTab={ProposalsTab}
+      SubDaosTab={SubDaosTab}
       SuspenseLoader={SuspenseLoader}
+      TreasuryAndNftsTab={TreasuryAndNftsTab}
       daoInfo={daoInfo}
       daoInfoBar={<DaoInfoBar />}
+      extraTabs={[
+        ...(extraTabs?.map(({ labelI18nKey, ...tab }) => ({
+          label: t(labelI18nKey),
+          ...tab,
+        })) ?? []),
+        ...(PayrollTab
+          ? [
+              {
+                id: 'payroll',
+                label: t('title.payroll'),
+                Component: PayrollTab,
+              },
+            ]
+          : []),
+      ]}
       follow={{
         following,
         onFollow: () =>
@@ -204,9 +222,6 @@ const InnerDaoHome = () => {
             : setFollowing(daoInfo.coreAddress),
         updatingFollowing,
       }}
-      membersTab={MembersTab && <MembersTab />}
-      payrollTab={PayrollTab && <PayrollTab />}
-      proposalsTab={<ProposalsTab />}
       rightSidebarContent={
         connected ? (
           // If membership not yet loaded, show loading skeleton.
@@ -253,8 +268,6 @@ const InnerDaoHome = () => {
           <ProfileDisconnectedCard />
         )
       }
-      subDaosTab={<SubDaosTab />}
-      treasuryAndNftsTab={<TreasuryAndNftsTab />}
     />
   )
 }
