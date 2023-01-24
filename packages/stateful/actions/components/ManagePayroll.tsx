@@ -118,7 +118,7 @@ const options: {
   {
     type: undefined,
     nameI18nKey: 'info.none',
-    descriptionI18nKey: 'info.noPaymentsDescription',
+    descriptionI18nKey: 'info.noPayrollDescription',
     Icon: XEmoji,
   },
   {

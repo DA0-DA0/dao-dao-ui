@@ -543,7 +543,7 @@
     "noFundsDuringInstantiation": "No funds will be transferred during instantiation.",
     "noGovernanceProposalsOpenForVoting": "There are no governance proposals open for voting.",
     "noNftsYet": "No NFTs to appreciate yet.",
-    "noPaymentsDescription": "Disable all payment features and hide them from the DAO's home page.",
+    "noPayrollDescription": "Disable all payroll features and hide them from the DAO's home page.",
     "noProposalsTooltip": "This DAO has no proposals and may be inactive or a duplicate.",
     "noProposalsYet": "No proposals to vote on yet.",
     "noSubDaosYet": "No SubDAOs yet.",
