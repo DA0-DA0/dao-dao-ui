@@ -270,3 +270,8 @@ export type DaoCreatedCardProps = Omit<
   DaoCardProps,
   'follow' | 'LinkWrapper' | 'IconButtonLink'
 >
+
+export type DaoPayrollConfig = {
+  type: string
+  data?: Record<string, unknown>
+}

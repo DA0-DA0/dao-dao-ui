@@ -1,7 +1,7 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { WithChainId } from '@dao-dao/types'
+import { DaoPayrollConfig, WithChainId } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
@@ -25,7 +25,11 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
-import { CHAIN_ID } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  DAO_CORE_PAYROLL_CONFIG_ITEM_KEY,
+  getPayrollConfigFromItemValue,
+} from '@dao-dao/utils'
 
 import { Cw721BaseSelectors, DaoVotingCw20StakedSelectors } from '.'
 import {
@@ -1007,5 +1011,29 @@ export const listAllItemsSelector = selectorFamily<
       }
 
       return items
+    },
+})
+
+export const payrollConfigSelector = selectorFamily<
+  DaoPayrollConfig | undefined,
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'daoCoreV2PayrollConfig',
+  get:
+    ({ coreAddress, chainId }) =>
+    async ({ get }) => {
+      const item = get(
+        getItemSelector({
+          contractAddress: coreAddress,
+          chainId,
+          params: [
+            {
+              key: DAO_CORE_PAYROLL_CONFIG_ITEM_KEY,
+            },
+          ],
+        })
+      )?.item
+
+      return getPayrollConfigFromItemValue(item)
     },
 })

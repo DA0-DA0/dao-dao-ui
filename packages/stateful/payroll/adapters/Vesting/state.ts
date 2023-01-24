@@ -18,35 +18,26 @@ export const vestingPaymentsSelector = selectorFamily<
   get:
     ({ chainId, coreAddress }) =>
     ({ get }) => {
-      const item = get(
-        DaoCoreV2Selectors.getItemSelector({
-          contractAddress: coreAddress,
+      const payrollConfig = get(
+        DaoCoreV2Selectors.payrollConfigSelector({
+          coreAddress,
           chainId,
-          params: [
-            {
-              key: 'payroll',
-            },
-          ],
         })
-      )?.item
+      )
 
-      if (!item) {
+      // Make sure payroll config is set to vesting and factory address exists
+      // inside data.
+      if (
+        !payrollConfig?.data ||
+        payrollConfig.type !== 'vesting' ||
+        !('factory' in payrollConfig.data) ||
+        !payrollConfig.data.factory ||
+        typeof payrollConfig.data.factory !== 'string'
+      ) {
         return []
       }
 
-      let parsedItem
-      try {
-        parsedItem = JSON.parse(item)
-      } catch (err) {
-        console.error(err)
-        return []
-      }
-
-      if (parsedItem?.value !== 'vesting') {
-        return []
-      }
-
-      const factory = parsedItem.data.factory
+      const factory = payrollConfig.data.factory
 
       const vestingPaymentContracts = get(
         CwPayrollFactorySelectors.allVestingContractsSelector({

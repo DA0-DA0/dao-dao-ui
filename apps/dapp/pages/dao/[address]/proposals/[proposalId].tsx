@@ -75,13 +75,19 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     walletAddress: proposalInfo.createdByAddress,
   })
 
-  // Ensure the last two actions are execute smart contract followed by
-  // custom, since a lot of actions are smart contract executions, and custom
-  // is a catch-all that will display any message. Do this by assigning values
-  // and sorting the actions in ascending order.
+  // Ensure the last three actions are manage items, execute smart contract, and
+  // then custom, since a lot of actions are item setters and smart contract
+  // executions, and custom is a catch-all that will display any message. Do
+  // this by assigning values and sorting the actions in ascending order.
   const orderedActions = useMemo(() => {
     const keyToValue = (key: ActionKey) =>
-      key === CoreActionKey.Execute ? 1 : key === CoreActionKey.Custom ? 2 : 0
+      key === CoreActionKey.ManageStorageItems
+        ? 1
+        : key === CoreActionKey.Execute
+        ? 2
+        : key === CoreActionKey.Custom
+        ? 3
+        : 0
 
     return actions.sort((a, b) => {
       const aValue = keyToValue(a.key)

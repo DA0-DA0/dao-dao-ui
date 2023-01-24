@@ -146,3 +146,7 @@ export const DISCORD_NOTIFIER_SIGNATURE_TYPE = 'Discord Notifier'
 // Following API
 export const FOLLOWING_DAOS_API_BASE = process.env
   .NEXT_PUBLIC_FOLLOWING_DAOS_API_BASE as string
+
+// The key for the item in the DAO core contract that contains the payroll
+// config.
+export const DAO_CORE_PAYROLL_CONFIG_ITEM_KEY = 'payroll'
