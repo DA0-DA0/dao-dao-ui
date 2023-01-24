@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { SplashDaoCard } from '@dao-dao/stateful'
+import { DaoCard } from '@dao-dao/stateful'
 import { ContractVersion, DaoCardInfo } from '@dao-dao/types'
 import { CHAIN_ID } from '@dao-dao/utils'
 
@@ -50,7 +50,7 @@ export const Default = Template.bind({})
 // Clone object to prevent comparison issues in pages with sorting (like
 // `HomeConnected`).
 Default.args = {
-  DaoCard: SplashDaoCard,
+  DaoCard,
   featuredDaos: {
     loading: false,
     data: [
@@ -78,7 +78,7 @@ Default.args = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  DaoCard: SplashDaoCard,
+  DaoCard,
   featuredDaos: {
     loading: true,
   },

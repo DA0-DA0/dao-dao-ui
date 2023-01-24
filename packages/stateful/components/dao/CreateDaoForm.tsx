@@ -580,7 +580,7 @@ export const CreateDaoForm = ({
       <PageHeader
         breadcrumbs={{
           crumbs: [
-            { href: '/home', label: 'Home' },
+            { href: '/', label: 'Home' },
             ...getParentDaoBreadcrumbs(parentDao),
           ],
           current:

@@ -23,7 +23,7 @@ export const DaoNotFound = ({ Trans }: DaoNotFoundProps) => {
         <p>
           <Trans i18nKey="error.couldntFindDAO">
             We couldn&apos;t find a DAO with that address. Search DAOs on the{' '}
-            <ButtonLink className="link-text" href="/home" variant="underline">
+            <ButtonLink className="link-text" href="/" variant="underline">
               home page
             </ButtonLink>
             .

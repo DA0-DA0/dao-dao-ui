@@ -162,7 +162,7 @@ export const Navigation = ({
       >
         <PageHeader
           centerNode={
-            <Link href="/home">
+            <Link href="/">
               <a className="flex flex-row items-center gap-2">
                 <Logo size={32} />
                 {!compact && <p className="header-text">{t('meta.title')}</p>}
@@ -178,7 +178,7 @@ export const Navigation = ({
             Icon={HomeOutlined}
             LinkWrapper={LinkWrapper}
             compact={compact}
-            href="/home"
+            href="/"
             label={t('title.home')}
           />
 

@@ -25,7 +25,7 @@ export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
         <p>
           {t('error.errorOccurredOnPage')}
           <br />
-          <Link href="/home">
+          <Link href="/">
             <a className="underline hover:no-underline">
               {t('info.considerReturningHome')}
             </a>

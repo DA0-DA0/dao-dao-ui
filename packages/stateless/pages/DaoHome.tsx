@@ -76,7 +76,7 @@ export const DaoHome = ({
       <PageHeader
         breadcrumbs={{
           crumbs: [
-            { href: '/home', label: 'Home' },
+            { href: '/', label: 'Home' },
             ...getParentDaoBreadcrumbs(daoInfo.parentDao),
           ],
           current: daoInfo.name,

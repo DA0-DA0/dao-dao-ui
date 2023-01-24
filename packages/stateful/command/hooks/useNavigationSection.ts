@@ -17,7 +17,7 @@ export const useNavigationSection = (): CommandModalContextSection => {
       {
         name: t('title.home'),
         Icon: HomeOutlined,
-        href: '/home',
+        href: '/',
       },
       {
         name: t('title.inbox'),
