@@ -315,27 +315,6 @@
   "proposalModuleLabel": {
     "DaoProposalSingle": "Pojedynczy wybór"
   },
-  "splash": {
-    "anyoneCanParticipate": "Każdy z twojej społeczności może być pełnoprawnym uczestnikiem.",
-    "createExploreJoin": "Twórz, przeglądaj i zostań członkiem organizacji",
-    "cta": "Przejdź do aplikacji",
-    "daosCreated": "Utworzone Organizacje",
-    "documentation": "Dokumentacja",
-    "easyToUse": "Prosty do użycia interfejs",
-    "easyToUseExplanation": "Interfejs DAO DAO sprawia że system rządowy jest dostępny dla każdego..",
-    "joinTheCommunity": "Dołącz do społeczności.",
-    "longTagline": "Proste, przemyślane i darmowe zarządzanie Organizacją. Zbudowane z miłością przez DAO DAO, od Juno.",
-    "poweredByJuno": "Zasilane przez Juno",
-    "proposalsCreated": "Utworzone ustawy",
-    "proposeAndVote": "Ustawy & Głosy",
-    "readMore": "Zobacz więcej",
-    "shortTagline": "Organizacje dla wszystkich.",
-    "transparencyExplanation": "Każdy może zobaczyć jakie decyzje twoja ustawa proponuje i kto głosował za lub przeciw.",
-    "transparentGovernanceOnChain": "Przejrzyste zarządzanie, na blockchainie",
-    "usdcTotalValue": "Wartość USDC wszystkich Organizacji",
-    "whatIsADao": "Czym jest DAO?",
-    "whatIsADaoExplanation": "DAO jest organizacją demokratycznie zarządzaną przez swoich członków.."
-  },
   "success": {
     "addedToken": "Dodaj tokeny do Keplr.",
     "daoCreatedPleaseWait": "Utworzono Organizację. Zostaniesz przekierowany do strony kiedy strona Organizacji będzie gotowa...",

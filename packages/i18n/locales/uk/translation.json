@@ -275,27 +275,6 @@
     "yourBalance": "Ваш Баланс",
     "yourTokensUnstaked": "Ваші ${{tokenSymbol}} Акції відкликано."
   },
-  "splash": {
-    "anyoneCanParticipate": "Усі хто є у вашій спільноті матимуть змогу доєднатись до Спілок.",
-    "createExploreJoin": "Створюйте, знаходьте, та доєднуйтесь до Спілок.",
-    "cta": "Увійти",
-    "daosCreated": "Спілок створено",
-    "documentation": "Документація",
-    "easyToUse": "Просто в викогристанні",
-    "easyToUseExplanation": "No more command line wrangling just to vote on a proposal. DAO DAO'ss visual UI makes collective ownership accessible to everyone.",
-    "joinTheCommunity": "Увійти у спільноту",
-    "longTagline": "Просте, потужне, та безкоштовне Dустаткування для Спілок DAO. Побудовано з любов'ю DAO DAO, на Juno.",
-    "poweredByJuno": "Їздить на Juno",
-    "proposalsCreated": "Рад скликано",
-    "proposeAndVote": "Скликайте Ради та голосуйте",
-    "readMore": "Прочитати більше",
-    "shortTagline": "Спілки для Усіх.",
-    "transparencyExplanation": "Рішення вашої Спілки будуть публічно доступні для всіх користувачів, як і усі голоси Присяжних в усіх Радах.",
-    "transparentGovernanceOnChain": "Прозора Влада",
-    "usdcTotalValue": "USDC в усіх Спілках",
-    "whatIsADao": "Спілка? Що це таке?",
-    "whatIsADaoExplanation": "Спілка — це організація, якою Демократично керує Спільнота."
-  },
   "success": {
     "addedToken": "Акція тепер у вашому Гаманці.",
     "daoCreatedPleaseWait": "Спілку створено! Будь-ласка зачекайте...",

@@ -52,7 +52,7 @@ export const CreateProposal = ({
       <PageHeader
         breadcrumbs={{
           crumbs: [
-            { href: '/home', label: 'Home' },
+            { href: '/', label: 'Home' },
             ...getParentDaoBreadcrumbs(daoInfo.parentDao),
             { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
           ],

@@ -450,27 +450,6 @@
     "pending": "peendin",
     "yes": "yezz"
   },
-  "splash": {
-    "anyoneCanParticipate": "enee1 from ur communitea can b a full pawticipant",
-    "createExploreJoin": "cre8, explore, n join da0z",
-    "cta": "eenter da app",
-    "daosCreated": "da0z cre8d",
-    "documentation": "dokumentashon",
-    "easyToUse": "ezee-2-us interfase",
-    "easyToUseExplanation": "da0 da0z vizyool interfas makz gobernanze accessyble 2 ebberie1",
-    "joinTheCommunity": "join da communitea",
-    "longTagline": "simpell, capupil, n free da0 toolin. built wif luv, by da0 da0, on juno",
-    "poweredByJuno": "powared by juno",
-    "proposalsCreated": "puppozalz cre8d",
-    "proposeAndVote": "puppoze & voat",
-    "readMore": "reed moar",
-    "shortTagline": "da0z 4 evribon",
-    "transparencyExplanation": "enibodi kan see wut decishonz ur da0 made, n who voatd 4 and againz dem",
-    "transparentGovernanceOnChain": "transparnt goobernanze enitirelie onchain",
-    "usdcTotalValue": "usdc totul valu in da0z",
-    "whatIsADao": "wot iz a da0¿",
-    "whatIsADaoExplanation": "a da0 iz an organization democraticly contorolled by its memburs"
-  },
   "success": {
     "addedToken": "addedd token 2 keplr hehe",
     "daoCreatedPleaseWait": "da0 cre8ed. u wil b reedirected once teh da0 page iz reddi...",

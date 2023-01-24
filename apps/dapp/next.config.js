@@ -52,7 +52,12 @@ const config = {
   redirects: async () => [
     {
       source: '/starred',
-      destination: '/home',
+      destination: '/',
+      permanent: false,
+    },
+    {
+      source: '/home',
+      destination: '/',
       permanent: false,
     },
     // Redirect legacy multisigs (legacy DAOs redirected in

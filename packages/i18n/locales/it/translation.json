@@ -284,27 +284,6 @@
     "yourBalance": "Il tuo saldo",
     "yourTokensUnstaked": "È stato fatto unstaking dei tuoi ${{tokenSymbol}} token."
   },
-  "splash": {
-    "anyoneCanParticipate": "Chiunque del tuo gruppo può partecipare",
-    "createExploreJoin": "Crea, esplora e unisciti a una DAO",
-    "cta": "Entra nell'app",
-    "daosCreated": "DAO create",
-    "documentation": "Documentazione",
-    "easyToUse": "Interfaccia facile da usare",
-    "easyToUseExplanation": "La fine delle liti con la riga di comando. L'interfaccia grafica è facile da usare.",
-    "joinTheCommunity": "Unisciti alla comunità",
-    "longTagline": "Uno strumento per le DAO facile, potente e gratuito. Creato con amore, da DAO DAO, su Juno. ",
-    "poweredByJuno": "Powered by Juno",
-    "proposalsCreated": "Proposte create",
-    "proposeAndVote": "Proponi & vota",
-    "readMore": "Leggi di più",
-    "shortTagline": "DAO per tutti.",
-    "transparencyExplanation": "Tutti possono vedere quali decisioni la DAO ha preso, chi ha votato a favore o contro.",
-    "transparentGovernanceOnChain": "Amministrazione trasparente sulla blockchain.",
-    "usdcTotalValue": "Valore totale delle DAO in USDC",
-    "whatIsADao": "Cos'è una DAO?",
-    "whatIsADaoExplanation": "Una DAO è una organizzazione democraticamente controllata dai suoi membri."
-  },
   "success": {
     "addedToken": "Token aggiunto su Keplr",
     "daoCreatedPleaseWait": "La DAO è stata creata. Sarai reindirizzato una volta che la pagina sarà pronta...",

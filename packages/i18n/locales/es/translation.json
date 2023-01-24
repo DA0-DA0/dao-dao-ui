@@ -325,27 +325,6 @@
   "proposalModuleLabel": {
     "DaoProposalSingle": "Opción simple"
   },
-  "splash": {
-    "anyoneCanParticipate": "Cualquiera de tu comunidad puede participar.",
-    "createExploreJoin": "Crear, explorar y unir DAOs",
-    "cta": "Entrar a la aplicación",
-    "daosCreated": "DAOs Creadas",
-    "documentation": "Documentación",
-    "easyToUse": "Interfaz fácil de usar",
-    "easyToUseExplanation": "La interaz de DAO DAO hace la governanza accesible para todos.",
-    "joinTheCommunity": "Únete a la comunidad",
-    "longTagline": "Herramientas simples, útiles y gratuitas para crear DAOs. Construido con amor, por DAO DAO, en Juno.",
-    "poweredByJuno": "Powered by Juno",
-    "proposalsCreated": "Propuestas creadas",
-    "proposeAndVote": "Haz tu propuesta y vota",
-    "readMore": "Leer más",
-    "shortTagline": "DAOs para todos.",
-    "transparencyExplanation": "Cualquiera puede ver qué decisiones tomó su DAO y quién votó a favor y en contra de ellas.",
-    "transparentGovernanceOnChain": "Gobernanza transparente, totalmente en cadena",
-    "usdcTotalValue": "Valor total de las DAOs en USDC",
-    "whatIsADao": "Que es una DAO?",
-    "whatIsADaoExplanation": "Una DAO es una organización controlada democráticamente por sus miembros."
-  },
   "success": {
     "addedToken": "Token añadido a Keplr.",
     "daoCreatedPleaseWait": "DAO creado. Será redirigido una vez que la página DAO esté lista...",

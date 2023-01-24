@@ -274,27 +274,6 @@
     "yourBalance": "你的余额",
     "yourTokensUnstaked": "你的 ${{tokenSymbol}} 代币已解除质押"
   },
-  "splash": {
-    "anyoneCanParticipate": "任何社区成员可以参与",
-    "createExploreJoin": "创建, 探索，加入 DAO",
-    "cta": "进入 APP",
-    "daosCreated": "已创建的DAO",
-    "documentation": "文档",
-    "easyToUse": "简单易用的界面",
-    "easyToUseExplanation": "DAO DAO 的可视化界面让所有人都可以参与治理。",
-    "joinTheCommunity": "加入社区",
-    "longTagline": "简单、功能强大且免费的 DAO 工具。 由 DAO DAO 在 Juno 上用爱建造。",
-    "poweredByJuno": "Powered by Juno",
-    "proposalsCreated": "提案已创建",
-    "proposeAndVote": "提案 & 投票",
-    "readMore": "阅读更多",
-    "shortTagline": "全民的DAO",
-    "transparencyExplanation": "任何人都可以查看你的 DAO 的所有决定和提案的投票情况。",
-    "transparentGovernanceOnChain": "完全在链上的透明治理",
-    "usdcTotalValue": "DAO中 USDC 的总价值",
-    "whatIsADao": "DAO 是什么?",
-    "whatIsADaoExplanation": "DAO 是由成员管理的民主机构。"
-  },
   "success": {
     "addedToken": "在Keplr中加入代币成功。",
     "daoCreatedPleaseWait": "DAO 已经创建，一旦DAO页面准备好，你将被重定向...",
