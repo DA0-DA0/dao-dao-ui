@@ -52,11 +52,15 @@ export const useStakingInfo = ({
   const setRefreshTotalBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(undefined)
   )
-  // Refresh totals, mostly for total staked power.
-  const refreshTotals = useCallback(
-    () => setRefreshTotalBalancesId((id) => id + 1),
-    [setRefreshTotalBalancesId]
+  // Refresh NFTs owned by staking contract.
+  const setRefreshStakedNftsId = useSetRecoilState(
+    refreshWalletBalancesIdAtom(stakingContractAddress)
   )
+  // Refresh totals, mostly for total staked power.
+  const refreshTotals = useCallback(() => {
+    setRefreshTotalBalancesId((id) => id + 1)
+    setRefreshStakedNftsId((id) => id + 1)
+  }, [setRefreshStakedNftsId, setRefreshTotalBalancesId])
 
   /// Optional
 

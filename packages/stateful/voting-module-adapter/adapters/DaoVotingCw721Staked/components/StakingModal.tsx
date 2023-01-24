@@ -7,6 +7,7 @@ import { constSelector, useRecoilState, useSetRecoilState } from 'recoil'
 import {
   DaoVotingCw721StakedSelectors,
   refreshDaoVotingPowerAtom,
+  refreshWalletBalancesIdAtom,
   stakingLoadingAtom,
 } from '@dao-dao/state'
 import {
@@ -28,7 +29,6 @@ import {
   Cw721BaseHooks,
   DaoVotingCw721StakedHooks,
   useAwaitNextBlock,
-  useWalletInfo,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
@@ -45,8 +45,11 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { address: walletAddress, connected } = useWallet()
-  const { refreshBalances } = useWalletInfo()
   const { coreAddress } = useVotingModuleAdapterOptions()
+
+  const setRefreshWalletNftsId = useSetRecoilState(
+    refreshWalletBalancesIdAtom(walletAddress)
+  )
 
   const [mode, setMode] = useState<StakingMode>(initialMode)
 
@@ -142,7 +145,7 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
-          refreshBalances()
+          setRefreshWalletNftsId((id) => id + 1)
           refreshTotals()
           refreshDaoVotingPower()
 
@@ -178,7 +181,7 @@ const InnerStakingModal = ({
           // New balances will not appear until the next block.
           await awaitNextBlock()
 
-          refreshBalances()
+          setRefreshWalletNftsId((id) => id + 1)
           refreshTotals()
           refreshClaims?.()
           refreshDaoVotingPower()
