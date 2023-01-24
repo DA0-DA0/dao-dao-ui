@@ -101,18 +101,29 @@ export const Modal = ({
                   'flex shrink-0 flex-col gap-1 p-6',
                   // If children, add bottom border.
                   children && 'border-b border-border-base',
-                  // If close button displaying, add more right padding.
-                  !hideCloseButton && 'pr-12',
                   headerContainerClassName
                 )}
               >
                 {header && (
                   <>
-                    <p className={clsx('header-text mb-1', titleClassName)}>
+                    <p
+                      className={clsx(
+                        'header-text mb-1',
+                        titleClassName,
+                        // If close button displaying, add more right padding.
+                        !hideCloseButton && 'pr-12'
+                      )}
+                    >
                       {header.title}
                     </p>
                     {!!header.subtitle && (
-                      <div className="space-y-1">
+                      <div
+                        className={clsx(
+                          'space-y-1',
+                          // If close button displaying, add more right padding.
+                          !hideCloseButton && 'pr-12'
+                        )}
+                      >
                         {header.subtitle.split('\n').map((line, index) => (
                           <p key={index} className="body-text">
                             {line}

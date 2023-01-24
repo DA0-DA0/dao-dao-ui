@@ -68,7 +68,7 @@ Connected.parameters = {
     url: 'https://www.figma.com/file/ZnQ4SMv8UUgKDZsR5YjVGH/DAO-DAO-2.0?node-id=272%3A64674',
   },
   nextRouter: {
-    asPath: '/home',
+    asPath: '/',
   },
 }
 Connected.decorators = [makeAppLayoutDecorator()]
@@ -108,7 +108,7 @@ Disconnected.parameters = {
 Disconnected.decorators = [
   makeAppLayoutDecorator({
     navigationProps: {
-      hideInbox: true,
+      walletConnected: false,
     },
     rightSidebarProps: {
       wallet: (

@@ -54,7 +54,7 @@ const InnerStakingModal = ({
     governanceTokenInfo,
     loadingWalletBalance: loadingUnstakedBalance,
   } = useGovernanceTokenInfo({
-    fetchLoadingWalletBalance: true,
+    fetchWalletBalance: true,
   })
   const {
     unstakingDuration,
@@ -64,7 +64,7 @@ const InnerStakingModal = ({
     refreshClaims,
   } = useStakingInfo({
     fetchClaims: true,
-    fetchLoadingWalletStakedValue: true,
+    fetchWalletStakedValue: true,
   })
 
   if (

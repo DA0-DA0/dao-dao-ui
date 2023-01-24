@@ -55,7 +55,7 @@ export const Navigation = ({
   version,
   tokenPrices,
   followingDaos,
-  hideInbox = false,
+  walletConnected,
   compact,
   setCompact,
   mountedInBrowser,
@@ -162,7 +162,7 @@ export const Navigation = ({
       >
         <PageHeader
           centerNode={
-            <Link href="/home">
+            <Link href="/">
               <a className="flex flex-row items-center gap-2">
                 <Logo size={32} />
                 {!compact && <p className="header-text">{t('meta.title')}</p>}
@@ -178,7 +178,7 @@ export const Navigation = ({
             Icon={HomeOutlined}
             LinkWrapper={LinkWrapper}
             compact={compact}
-            href="/home"
+            href="/"
             label={t('title.home')}
           />
 
@@ -202,67 +202,70 @@ export const Navigation = ({
             }
           />
 
-          {!hideInbox && (
-            <Row
-              Icon={InboxOutlined}
-              LinkWrapper={LinkWrapper}
-              compact={compact}
-              href="/inbox"
-              label={
-                !inboxCount.loading && inboxCount.data > 0
-                  ? t('title.inboxWithCount', { count: inboxCount.data })
-                  : t('title.inbox')
-              }
-              loading={inboxCount.loading}
-              showBadge={!inboxCount.loading && inboxCount.data > 0}
-            />
-          )}
+          {/* Only show inbox and following when connected. */}
+          {walletConnected && (
+            <>
+              <Row
+                Icon={InboxOutlined}
+                LinkWrapper={LinkWrapper}
+                compact={compact}
+                href="/inbox"
+                label={
+                  !inboxCount.loading && inboxCount.data > 0
+                    ? t('title.inboxWithCount', { count: inboxCount.data })
+                    : t('title.inbox')
+                }
+                loading={inboxCount.loading}
+                showBadge={!inboxCount.loading && inboxCount.data > 0}
+              />
 
-          <Row
-            Icon={CheckRounded}
-            LinkWrapper={LinkWrapper}
-            compact={compact}
-            defaultExpanded
-            label={t('title.following')}
-            loading={followingDaos.loading}
-          >
-            {!followingDaos.loading && (
-              <div
-                className={clsx(
-                  'relative sm:max-h-[50vh]',
-                  !followingDaos.loading && 'no-scrollbar overflow-y-auto',
-                  compact && 'mt-1 w-min'
-                )}
-                ref={scrollableFollowingContainerRef}
+              <Row
+                Icon={CheckRounded}
+                LinkWrapper={LinkWrapper}
+                compact={compact}
+                defaultExpanded
+                label={t('title.following')}
+                loading={followingDaos.loading}
               >
-                {/* Top border */}
-                <div
-                  className={clsx(
-                    'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                    showFollowingTopBorder ? 'opacity-100' : 'opacity-0'
-                  )}
-                ></div>
+                {!followingDaos.loading && (
+                  <div
+                    className={clsx(
+                      'relative sm:max-h-[50vh]',
+                      !followingDaos.loading && 'no-scrollbar overflow-y-auto',
+                      compact && 'mt-1 w-min'
+                    )}
+                    ref={scrollableFollowingContainerRef}
+                  >
+                    {/* Top border */}
+                    <div
+                      className={clsx(
+                        'sticky top-0 right-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                        showFollowingTopBorder ? 'opacity-100' : 'opacity-0'
+                      )}
+                    ></div>
 
-                {/* DAOs */}
-                {followingDaos.data.map((dao, index) => (
-                  <DaoDropdown
-                    key={index}
-                    LinkWrapper={LinkWrapper}
-                    compact={compact}
-                    dao={dao}
-                  />
-                ))}
+                    {/* DAOs */}
+                    {followingDaos.data.map((dao, index) => (
+                      <DaoDropdown
+                        key={index}
+                        LinkWrapper={LinkWrapper}
+                        compact={compact}
+                        dao={dao}
+                      />
+                    ))}
 
-                {/* Bottom border */}
-                <div
-                  className={clsx(
-                    'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
-                    showFollowingBottomBorder ? 'opacity-100' : 'opacity-0'
-                  )}
-                ></div>
-              </div>
-            )}
-          </Row>
+                    {/* Bottom border */}
+                    <div
+                      className={clsx(
+                        'sticky right-0 bottom-0 left-0 h-[1px] bg-border-primary transition-opacity',
+                        showFollowingBottomBorder ? 'opacity-100' : 'opacity-0'
+                      )}
+                    ></div>
+                  </div>
+                )}
+              </Row>
+            </>
+          )}
 
           <Row
             Icon={Add}

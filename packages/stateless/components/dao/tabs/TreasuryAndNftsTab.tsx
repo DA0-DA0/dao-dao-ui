@@ -58,7 +58,10 @@ export const TreasuryAndNftsTab = <
 
   return (
     <>
-      <p className="title-text mb-6 text-text-body">{t('title.treasury')}</p>
+      {/* header min-height of 3.5rem standardized across all tabs */}
+      <div className="flex min-h-[3.5rem] flex-row items-center pb-6">
+        <p className="title-text text-text-body">{t('title.treasury')}</p>
+      </div>
 
       <div className="mb-9">
         {tokens.loading || !tokens.data ? (
@@ -145,22 +148,22 @@ const sortOptions: DropdownOption<
     value: (a, b) =>
       b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase()),
   },
-  {
-    label: 'Lowest floor',
-    value: (a, b) =>
-      !a.floorPrice
-        ? 1
-        : !b.floorPrice
-        ? -1
-        : a.floorPrice.amount - b.floorPrice.amount,
-  },
-  {
-    label: 'Highest floor',
-    value: (a, b) =>
-      !a.floorPrice
-        ? 1
-        : !b.floorPrice
-        ? -1
-        : b.floorPrice.amount - a.floorPrice.amount,
-  },
+  // {
+  //   label: 'Lowest floor',
+  //   value: (a, b) =>
+  //     !a.floorPrice
+  //       ? 1
+  //       : !b.floorPrice
+  //       ? -1
+  //       : a.floorPrice.amount - b.floorPrice.amount,
+  // },
+  // {
+  //   label: 'Highest floor',
+  //   value: (a, b) =>
+  //     !a.floorPrice
+  //       ? 1
+  //       : !b.floorPrice
+  //       ? -1
+  //       : b.floorPrice.amount - a.floorPrice.amount,
+  // },
 ]

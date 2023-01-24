@@ -1,10 +1,10 @@
 import { ArrowOutwardRounded, ImageNotSupported } from '@mui/icons-material'
 import clsx from 'clsx'
 import Image from 'next/image'
-import { forwardRef, useState } from 'react'
+import { ComponentType, forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { NftCardInfo } from '@dao-dao/types'
+import { NftCardInfo, StatefulEntityDisplayProps } from '@dao-dao/types'
 import { getNftName, toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from './CopyToClipboard'
@@ -17,12 +17,15 @@ export interface NftCardProps extends NftCardInfo {
     onClick: () => void
   }
   className?: string
+  // Needs to be defined to show the NFT owner.
+  EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
 }
 
 export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
   function NftCard(
     {
       collection,
+      owner,
       externalLink,
       checkbox,
       imageUrl,
@@ -30,6 +33,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       name,
       tokenId,
       className,
+      EntityDisplay,
     },
     ref
   ) {
@@ -112,12 +116,21 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           )}
         >
           {/* Created by */}
-          <div className="flex flex-col items-start gap-1">
-            <p className="secondary-text">{t('title.collection')}</p>
-            <CopyToClipboardUnderline
-              takeStartEnd={{ start: 7, end: 5 }}
-              value={collection.address}
-            />
+          <div className="space-y-4">
+            {owner && EntityDisplay && (
+              <div className="flex flex-col items-start gap-1">
+                <p className="secondary-text">{t('title.owner')}</p>
+                <EntityDisplay address={owner} />
+              </div>
+            )}
+
+            <div className="flex flex-col items-start gap-1">
+              <p className="secondary-text">{t('title.collection')}</p>
+              <CopyToClipboardUnderline
+                takeStartEnd={{ start: 7, end: 5 }}
+                value={collection.address}
+              />
+            </div>
           </div>
 
           {floorPrice && (

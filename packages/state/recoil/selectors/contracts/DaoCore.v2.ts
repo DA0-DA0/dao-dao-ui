@@ -764,11 +764,13 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
 const CW721_TOKEN_LIST_LIMIT = 30
 export const allCw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse,
-  QueryClientParams
+  QueryClientParams & {
+    governanceCollectionAddress?: string
+  }
 >({
   key: 'daoCoreV2AllCw721TokenList',
   get:
-    (queryClientParams) =>
+    ({ governanceCollectionAddress, ...queryClientParams }) =>
     async ({ get }) => {
       const list = get(
         queryContractIndexerSelector({
@@ -776,7 +778,15 @@ export const allCw721TokenListSelector = selectorFamily<
           formulaName: 'daoCore/cw721List',
         })
       )
-      if (list) {
+      if (list && Array.isArray(list)) {
+        // Add governance collection to beginning of list if not present.
+        if (
+          governanceCollectionAddress &&
+          !list.includes(governanceCollectionAddress)
+        ) {
+          list.splice(0, 0, governanceCollectionAddress)
+        }
+
         return list
       }
 
@@ -803,6 +813,14 @@ export const allCw721TokenListSelector = selectorFamily<
         if (response.length < CW721_TOKEN_LIST_LIMIT) {
           break
         }
+      }
+
+      // Add governance collection to beginning of list if not present.
+      if (
+        governanceCollectionAddress &&
+        !tokenList.includes(governanceCollectionAddress)
+      ) {
+        tokenList.splice(0, 0, governanceCollectionAddress)
       }
 
       return tokenList

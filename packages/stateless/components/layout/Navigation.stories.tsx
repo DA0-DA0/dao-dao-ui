@@ -22,6 +22,7 @@ const Template: ComponentStory<typeof Navigation> = (args) => {
 // Used in `makeAppLayoutDecorator` to provide a default layout for the page
 // stories. Ensure this has all props.
 export const DefaultArgs: NavigationProps = {
+  walletConnected: true,
   inboxCount: {
     loading: false,
     data: 5,

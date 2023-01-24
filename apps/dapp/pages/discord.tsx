@@ -44,7 +44,7 @@ const DiscordPage: NextPage = () => {
     } else {
       // If necessary data is not loaded, just redirect home. We are probably
       // not in a setup flow.
-      router.push('/home')
+      router.push('/')
     }
   }, [discordNotifierSetup, router, setDiscordNotificationSetup, t])
 

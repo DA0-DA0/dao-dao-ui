@@ -152,18 +152,26 @@ export const nftCardInfoSelector = selectorFamily<
     },
 })
 
-export const nftCardInfosSelector = selectorFamily<
+export const nftCardInfosForDaoSelector = selectorFamily<
   NftCardInfo[],
-  WithChainId<{ coreAddress: string }>
+  WithChainId<{
+    coreAddress: string
+    // If DAO is using the cw721-staking voting module adapter, it will have an
+    // NFT governance collection. If this is the case, passing it here makes
+    // sure we include the collection if it is not in the DAO's cw721 token
+    // list.
+    governanceCollectionAddress?: string
+  }>
 >({
-  key: 'nftCardInfos',
+  key: 'nftCardInfosForDao',
   get:
-    ({ coreAddress, chainId }) =>
+    ({ coreAddress, governanceCollectionAddress, chainId }) =>
     async ({ get }) => {
       const nftCollectionAddresses = get(
         DaoCoreV2Selectors.allCw721TokenListSelector({
           contractAddress: coreAddress,
           chainId,
+          governanceCollectionAddress,
         })
       )
 

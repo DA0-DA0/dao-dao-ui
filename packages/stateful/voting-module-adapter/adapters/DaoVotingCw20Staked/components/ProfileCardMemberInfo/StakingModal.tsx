@@ -61,7 +61,7 @@ const InnerStakingModal = ({
     governanceTokenInfo,
     loadingWalletBalance: loadingUnstakedBalance,
   } = useGovernanceTokenInfo({
-    fetchLoadingWalletBalance: true,
+    fetchWalletBalance: true,
   })
   const {
     stakingContractAddress,
@@ -72,7 +72,7 @@ const InnerStakingModal = ({
     refreshClaims,
   } = useStakingInfo({
     fetchClaims: true,
-    fetchLoadingWalletStakedValue: true,
+    fetchWalletStakedValue: true,
   })
 
   const totalStakedBalance = useRecoilValue(

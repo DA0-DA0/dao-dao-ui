@@ -15,7 +15,7 @@ export const Default = Template.bind({})
 Default.args = {
   variant: 'primary',
   children: 'Go home',
-  href: '/home',
+  href: '/',
 }
 
 Default.parameters = {
