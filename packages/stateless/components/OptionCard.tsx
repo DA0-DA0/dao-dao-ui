@@ -36,13 +36,13 @@ export const OptionCard = ({
           <Icon />
         </div>
 
-        <p className="header-text text-text-body">{name}</p>
+        <p className="header-text font-normal text-text-body">{name}</p>
       </div>
 
       {(description || readMoreUrl) && (
         <div className="flex grow flex-col gap-2 self-start sm:self-center">
           {description && (
-            <MarkdownRenderer className="text-lg" markdown={description} />
+            <MarkdownRenderer className="text-base" markdown={description} />
           )}
 
           {readMoreUrl && (
