@@ -24,7 +24,8 @@ const widthOfSidePadding = 'w-[max((100%-64rem)/2,1.5rem)]'
 export const Home = ({
   featuredDaosProps,
   rightSidebarContent,
-  ...props
+  followingDaosProps,
+  connected,
 }: HomeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
@@ -69,13 +70,19 @@ export const Home = ({
           ></div>
         </div>
 
-        {/* Divider */}
-        <div className={clsx('h-[1px] bg-border-secondary', maxWidth)}></div>
-
         {/* Following DAOs */}
-        <div className={clsx('flex flex-col gap-8', maxWidth)}>
-          <FollowingDaos {...props.followingDaosProps} />
-        </div>
+        {connected && (
+          <>
+            {/* Divider */}
+            <div
+              className={clsx('h-[1px] bg-border-secondary', maxWidth)}
+            ></div>
+
+            <div className={clsx('flex flex-col gap-8', maxWidth)}>
+              <FollowingDaos {...followingDaosProps} />
+            </div>
+          </>
+        )}
       </div>
     </>
   )
