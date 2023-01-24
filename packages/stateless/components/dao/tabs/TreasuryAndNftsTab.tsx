@@ -58,7 +58,10 @@ export const TreasuryAndNftsTab = <
 
   return (
     <>
-      <p className="title-text mb-6 text-text-body">{t('title.treasury')}</p>
+      {/* header min-height of 3.5rem standardized across all tabs */}
+      <div className="flex min-h-[3.5rem] flex-row items-center pb-6">
+        <p className="title-text text-text-body">{t('title.treasury')}</p>
+      </div>
 
       <div className="mb-9">
         {tokens.loading || !tokens.data ? (

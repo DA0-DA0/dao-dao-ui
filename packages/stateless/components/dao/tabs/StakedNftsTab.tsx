@@ -26,7 +26,7 @@ export const StakedNftsTab = <N extends NftCardInfo>({
 
   return (
     <>
-      <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1 border-b border-border-secondary pb-6">
+      <div className="flex min-h-[3.5rem] flex-row flex-wrap items-center gap-x-4 gap-y-1 border-b border-border-secondary pb-6">
         <p className="title-text text-text-body">{t('title.stakedNfts')}</p>
         <p className="secondary-text">{t('info.stakedNftsExplanation')}</p>
       </div>

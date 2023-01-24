@@ -46,7 +46,8 @@ export const ProposalsTab = ({
 
   return (
     <>
-      <div className="flex flex-row items-center justify-between gap-8 pb-6">
+      {/* header min-height of 3.5rem standardized across all tabs */}
+      <div className="flex min-h-[3.5rem] flex-row items-center justify-between gap-8 pb-6">
         <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1">
           <p className="title-text text-text-body">
             {t('title.createAProposal')}
