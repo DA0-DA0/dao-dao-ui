@@ -99,7 +99,7 @@ export const GovernanceConfigurationInput = ({
       <div className="rounded-lg bg-background-tertiary">
         <div className="flex h-14 flex-row border-b border-border-base p-4">
           <p className="primary-text text-text-body">
-            {t('form.tokenContractAddressTitle')}
+            {t('form.nftCollectionAddress')}
           </p>
         </div>
 
@@ -134,7 +134,7 @@ export const GovernanceConfigurationInput = ({
           </div>
           <FormattedJsonDisplay
             jsonLoadable={existingGovernanceTokenInfoLoadable}
-            title={t('form.tokenInfo')}
+            title={t('title.collectionInfo')}
           />
           <FormattedJsonDisplay
             jsonLoadable={numOfTokensLoadable}
