@@ -1,5 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilState, useSetRecoilState } from 'recoil'
@@ -48,9 +48,10 @@ const InnerStakingModal = ({
   const { refreshBalances } = useWalletInfo()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
-  const [mode, setMode] = useState<StakingMode | undefined>(undefined)
+  const [mode, setMode] = useState<StakingMode>(initialMode)
 
-  const [tokenIds, setTokenIds] = useState([] as string[])
+  const [stakeTokenIds, setStakeTokenIds] = useState([] as string[])
+  const [unstakeTokenIds, setUnstakeTokenIds] = useState([] as string[])
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
@@ -59,7 +60,7 @@ const InnerStakingModal = ({
     governanceTokenInfo,
     loadingWalletBalance: loadingUnstakedBalance,
   } = useGovernanceTokenInfo({
-    fetchLoadingWalletBalance: true,
+    fetchWalletBalance: true,
   })
   const {
     stakingContractAddress,
@@ -69,16 +70,17 @@ const InnerStakingModal = ({
     refreshClaims,
     loadingWalletStakedNfts,
     loadingWalletUnstakedNfts,
-    walletStakedValue,
   } = useStakingInfo({
     fetchClaims: true,
     fetchTotalStakedValue: false,
     fetchWalletStakedValue: true,
-    fetchLoadingWalletStakedValue: true,
-    fetchLoadingWalletUnstakedValue: true,
+    fetchWalletUnstakedValue: true,
   })
 
-  const hasStake = walletStakedValue !== undefined && walletStakedValue > 0
+  const hasStake =
+    loadingWalletStakedValue !== undefined &&
+    !loadingWalletStakedValue.loading &&
+    loadingWalletStakedValue.data > 0
 
   const walletStakedBalanceLoadable = useCachedLoadable(
     walletAddress
@@ -134,7 +136,7 @@ const InnerStakingModal = ({
           await doStakeMultiple({
             contract: stakingContractAddress,
             msg: btoa('{"stake": {}}'),
-            tokenIds,
+            tokenIds: stakeTokenIds,
           })
 
           // New balances will not appear until the next block.
@@ -144,10 +146,10 @@ const InnerStakingModal = ({
           refreshTotals()
           refreshDaoVotingPower()
 
-          setTokenIds([])
           toast.success(
-            `Staked ${tokenIds.length} $${governanceTokenInfo.symbol}`
+            `Staked ${stakeTokenIds.length} $${governanceTokenInfo.symbol}`
           )
+          setStakeTokenIds([])
 
           // Close once done.
           onClose()
@@ -170,7 +172,7 @@ const InnerStakingModal = ({
 
         try {
           await doUnstake({
-            tokenIds,
+            tokenIds: unstakeTokenIds,
           })
 
           // New balances will not appear until the next block.
@@ -181,10 +183,10 @@ const InnerStakingModal = ({
           refreshClaims?.()
           refreshDaoVotingPower()
 
-          setTokenIds([])
           toast.success(
-            `Unstaked ${tokenIds.length} $${governanceTokenInfo.symbol}`
+            `Unstaked ${unstakeTokenIds.length} $${governanceTokenInfo.symbol}`
           )
+          setUnstakeTokenIds([])
 
           // Close once done.
           onClose()
@@ -202,39 +204,23 @@ const InnerStakingModal = ({
     }
   }
 
-  const onNftClick = (nft: NftCardInfo) => {
-    let tokenId = getIdForNft(nft)
-    let _tokenIds = [...tokenIds]
+  const currentTokenIds =
+    mode === StakingMode.Stake ? stakeTokenIds : unstakeTokenIds
+  const setCurrentTokenIds =
+    mode === StakingMode.Stake ? setStakeTokenIds : setUnstakeTokenIds
 
-    if (_tokenIds.includes(tokenId)) {
-      _tokenIds = _tokenIds.filter((_tokenId) => {
-        return _tokenId !== tokenId
-      })
-    } else {
-      _tokenIds.push(getIdForNft(nft))
-    }
+  const getIdForNft = (nft: NftCardInfo) => nft.tokenId
 
-    setTokenIds(_tokenIds)
-  }
+  // Toggle on/off a token ID selection.
+  const onNftClick = (nft: NftCardInfo) =>
+    setCurrentTokenIds((tokenIds) => {
+      const tokenId = getIdForNft(nft)
+      return tokenIds.includes(tokenId)
+        ? tokenIds.filter((id) => id !== tokenId)
+        : [...tokenIds, tokenId]
+    })
 
-  const onDeselectAll = () => {
-    setTokenIds([])
-  }
-
-  const onSelectAll = () => {
-    let _tokenIds =
-      !nfts.loading && !nfts.errored
-        ? nfts.data.map((nft) => {
-            return getIdForNft(nft)
-          })
-        : []
-
-    setTokenIds(_tokenIds)
-  }
-
-  const getIdForNft = (nft: NftCardInfo) => {
-    return nft.tokenId
-  }
+  const onDeselectAll = () => setCurrentTokenIds([])
 
   const nfts =
     (mode === StakingMode.Stake
@@ -244,11 +230,12 @@ const InnerStakingModal = ({
       : undefined) ??
     ({ loading: false, errored: true } as LoadingDataWithError<NftCardInfo[]>)
 
-  useEffect(() => {
-    if (mode === undefined) {
-      setMode(initialMode)
-    }
-  }, [initialMode, mode])
+  const onSelectAll = () =>
+    setCurrentTokenIds(
+      !nfts.loading && !nfts.errored
+        ? nfts.data.map((nft) => getIdForNft(nft))
+        : []
+    )
 
   return (
     <NftSelectionModal
@@ -280,7 +267,6 @@ const InnerStakingModal = ({
           mode === StakingMode.Claim
         ) ? (
           <SegmentedControls
-            className="mt-5"
             onSelect={setMode}
             selected={mode}
             tabs={[
@@ -302,7 +288,7 @@ const InnerStakingModal = ({
       onDeselectAll={onDeselectAll}
       onNftClick={onNftClick}
       onSelectAll={onSelectAll}
-      selectedIds={tokenIds}
+      selectedIds={currentTokenIds}
       visible={true}
     />
   )

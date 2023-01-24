@@ -10,11 +10,11 @@ import { useStakingInfo } from './useStakingInfo'
 export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
   const { t } = useTranslation()
 
-  const { totalStakedValue } = useStakingInfo({
+  const { loadingTotalStakedValue } = useStakingInfo({
     fetchTotalStakedValue: true,
   })
 
-  if (totalStakedValue === undefined) {
+  if (loadingTotalStakedValue === undefined) {
     throw new Error(t('error.loadingData'))
   }
 
@@ -37,9 +37,11 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
     {
       Icon: LayersOutlined,
       label: t('title.totalStaked'),
-      value: formatPercentOf100(
-        (totalStakedValue / Number(total_supply)) * 100
-      ),
+      value: loadingTotalStakedValue.loading
+        ? '...'
+        : formatPercentOf100(
+            (loadingTotalStakedValue.data / Number(total_supply)) * 100
+          ),
     },
   ]
 }

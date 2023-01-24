@@ -13,6 +13,7 @@ import {
   DaoCreationVotingConfigItem,
   NftCardInfo,
 } from './dao'
+import { AmountWithTimestampAndDenom } from './state'
 import {
   DaoHomeTab,
   DaoInfoBarItem,
@@ -35,7 +36,7 @@ export interface BaseStakingModalProps {
 }
 
 export interface UseGovernanceTokenInfoOptions {
-  fetchLoadingWalletBalance?: boolean
+  fetchWalletBalance?: boolean
   fetchTreasuryBalance?: boolean
   fetchUsdcPrice?: boolean
 }
@@ -46,20 +47,18 @@ export interface UseGovernanceTokenInfoResponse {
   governanceTokenInfo: TokenInfoResponse
   /// Optional
   // Wallet balance
-  walletBalance?: number
   loadingWalletBalance?: LoadingData<number>
   // Treasury balance
-  treasuryBalance?: number
+  loadingTreasuryBalance?: LoadingData<number>
   // Price
-  price?: number
+  loadingPrice?: LoadingData<AmountWithTimestampAndDenom>
 }
 
 export interface UseStakingInfoOptions {
   fetchClaims?: boolean
   fetchTotalStakedValue?: boolean
   fetchWalletStakedValue?: boolean
-  fetchLoadingWalletStakedValue?: boolean
-  fetchLoadingWalletUnstakedValue?: boolean
+  fetchWalletUnstakedValue?: boolean
 }
 
 export interface UseStakingInfoResponse {
@@ -75,9 +74,8 @@ export interface UseStakingInfoResponse {
   claimsAvailable?: Claim[] | NftClaim[]
   sumClaimsAvailable?: number
   // Total staked value
-  totalStakedValue?: number
+  loadingTotalStakedValue?: LoadingData<number>
   // Wallet staked value
-  walletStakedValue?: number
   loadingWalletStakedValue?: LoadingData<number>
   loadingWalletStakedNfts?: LoadingDataWithError<NftCardInfo[]>
   loadingWalletUnstakedNfts?: LoadingDataWithError<NftCardInfo[]>

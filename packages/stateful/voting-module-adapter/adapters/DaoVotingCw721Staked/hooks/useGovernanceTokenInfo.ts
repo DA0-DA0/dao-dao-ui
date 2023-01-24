@@ -16,7 +16,7 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const useGovernanceTokenInfo = ({
-  fetchLoadingWalletBalance = false,
+  fetchWalletBalance = false,
   fetchTreasuryBalance = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { address: walletAddress } = useWallet()
@@ -55,7 +55,7 @@ export const useGovernanceTokenInfo = ({
   // Wallet balance
   const loadingWalletBalance = loadableToLoadingData(
     useCachedLoadable(
-      fetchLoadingWalletBalance && walletAddress
+      fetchWalletBalance && walletAddress
         ? Cw721BaseSelectors.allTokensForOwnerSelector({
             contractAddress: governanceTokenAddress,
             owner: walletAddress,
@@ -66,26 +66,32 @@ export const useGovernanceTokenInfo = ({
   )
 
   // Treasury balance
-  const treasuryBalance = useRecoilValue(
-    fetchTreasuryBalance
-      ? Cw721BaseSelectors.allTokensForOwnerSelector({
-          contractAddress: governanceTokenAddress,
-          owner: coreAddress,
-        })
-      : constSelector(undefined)
+  const loadingTreasuryBalance = loadableToLoadingData(
+    useCachedLoadable(
+      fetchTreasuryBalance
+        ? Cw721BaseSelectors.allTokensForOwnerSelector({
+            contractAddress: governanceTokenAddress,
+            owner: coreAddress,
+          })
+        : constSelector(undefined)
+    ),
+    undefined
   )
 
   // TODO(ICS721): get floor info from marketplace
   /*
   // Price info
-  const price = useRecoilValue(
-    fetchUsdcPrice && governanceTokenInfo
-      ? usdcPerMacroTokenSelector({
-          denom,
-          decimals: governanceTokenInfo.decimals,
-        })
-      : constSelector(undefined)
-  )?.amount
+  const loadingPrice = loadableToLoadingData(
+    useCachedLoadable(
+      fetchUsdcPrice && governanceTokenInfo
+        ? usdcPerMacroTokenSelector({
+            denom,
+            decimals: governanceTokenInfo.decimals,
+          })
+        : constSelector(undefined)
+    ),
+    undefined
+  )
   */
 
   return {
@@ -103,10 +109,22 @@ export const useGovernanceTokenInfo = ({
           data: Number(loadingWalletBalance.data?.length),
         },
     // Treasury balance
-    treasuryBalance: treasuryBalance
-      ? Number(treasuryBalance.length)
-      : undefined,
+    loadingTreasuryBalance: loadingTreasuryBalance.loading
+      ? { loading: true }
+      : !loadingTreasuryBalance.data
+      ? undefined
+      : {
+          loading: false,
+          data: loadingTreasuryBalance.data.length,
+        },
     // Price
-    //price,
+    // loadingPrice: loadingPrice.loading
+    //   ? { loading: true }
+    //   : !loadingPrice.data
+    //   ? undefined
+    //   : {
+    //       loading: false,
+    //       data: loadingPrice.data,
+    //     },
   }
 }
