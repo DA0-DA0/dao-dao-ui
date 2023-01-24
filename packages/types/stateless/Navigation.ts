@@ -17,7 +17,7 @@ export interface NavigationProps {
   version: string
   tokenPrices?: LoadingData<NavigationTokenPrice[]>
   followingDaos: LoadingData<DaoDropdownInfo[]>
-  hideInbox?: boolean
+  walletConnected: boolean
   compact: boolean
   setCompact: (compact: boolean) => void
   mountedInBrowser: boolean
