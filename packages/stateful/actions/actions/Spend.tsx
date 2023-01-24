@@ -39,6 +39,16 @@ import {
 } from '../components/Spend'
 import { useActionOptions } from '../react'
 
+const useDefaults: UseDefaults<SpendData> = () => {
+  const { address: walletAddress = '' } = useWallet()
+
+  return {
+    to: walletAddress,
+    amount: 1,
+    denom: NATIVE_DENOM,
+  }
+}
+
 // Reused selectors in Component and useTransformToCosmos. Undefined when
 // loading.
 const useCw20BalancesAndInfos = () => {
@@ -118,17 +128,8 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
     </SuspenseLoader>
   )
 }
+
 export const makeSpendAction: ActionMaker<SpendData> = ({ t, context }) => {
-  const useDefaults: UseDefaults<SpendData> = () => {
-    const { address: walletAddress = '' } = useWallet()
-
-    return {
-      to: walletAddress,
-      amount: 1,
-      denom: NATIVE_DENOM,
-    }
-  }
-
   const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
     const cw20Tokens = useCw20BalancesAndInfos()
 

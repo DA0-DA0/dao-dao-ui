@@ -1,4 +1,5 @@
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -28,14 +29,18 @@ import { useCw721GovernanceTokenInfoResponseIfExists } from '../../../voting-mod
 import { TransferNftComponent, TransferNftData } from '../../components/nft'
 import { useActionOptions } from '../../react'
 
-const useDefaults: UseDefaults<TransferNftData> = () => ({
-  collection: '',
-  tokenId: '',
-  recipient: '',
+const useDefaults: UseDefaults<TransferNftData> = () => {
+  const { address: walletAddress = '' } = useWallet()
 
-  executeSmartContract: false,
-  smartContractMsg: '{}',
-})
+  return {
+    collection: '',
+    tokenId: '',
+    recipient: walletAddress,
+
+    executeSmartContract: false,
+    smartContractMsg: '{}',
+  }
+}
 
 const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () =>
   useCallback(
