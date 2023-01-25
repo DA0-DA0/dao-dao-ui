@@ -1,10 +1,13 @@
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
-import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
-import { SwordsEmoji } from '@dao-dao/stateless'
+import {
+  ActionCardLoader,
+  SwordsEmoji,
+  useCachedLoadable,
+} from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -17,9 +20,11 @@ import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  loadableToLoadingData,
   makeWasmMessage,
 } from '@dao-dao/utils'
 
+import { SuspenseLoader } from '../../components/SuspenseLoader'
 import { ExecuteComponent as StatelessExecuteComponent } from '../components/Execute'
 import { useActionOptions } from '../react'
 
@@ -93,20 +98,38 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
 const Component: ActionComponent = (props) => {
   const { address, chainId } = useActionOptions()
 
-  const nativeBalances = useRecoilValue(
-    nativeBalancesSelector({
-      address,
-      chainId,
-    })
+  // This needs to be loaded via a cached loadable to avoid displaying a loader
+  // when this data updates on a schedule. Manually trigger a suspense loader
+  // the first time when the initial data is still loading.
+  const nativeBalancesLoadable = loadableToLoadingData(
+    useCachedLoadable(
+      address
+        ? nativeBalancesSelector({
+            address,
+            chainId,
+          })
+        : undefined
+    ),
+    []
   )
 
   return (
-    <StatelessExecuteComponent
-      {...props}
-      options={{
-        nativeBalances,
-      }}
-    />
+    <SuspenseLoader
+      fallback={<ActionCardLoader />}
+      forceFallback={
+        // Manually trigger loader.
+        nativeBalancesLoadable.loading
+      }
+    >
+      <StatelessExecuteComponent
+        {...props}
+        options={{
+          nativeBalances: nativeBalancesLoadable.loading
+            ? []
+            : nativeBalancesLoadable.data,
+        }}
+      />
+    </SuspenseLoader>
   )
 }
 

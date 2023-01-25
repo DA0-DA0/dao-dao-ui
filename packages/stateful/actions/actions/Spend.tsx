@@ -92,14 +92,19 @@ const useCw20BalancesAndInfos = () => {
 }
 
 const Component: ActionComponent<undefined, SpendData> = (props) => {
-  const { address } = useActionOptions()
+  const { address, chainId } = useActionOptions()
 
-  // This needs to be loaded via a cached loadable to avoid displaying a
-  // loader when this data updates on a schedule. Manually trigger a suspense
-  // loader the first time when the initial data is still loading.
+  // This needs to be loaded via a cached loadable to avoid displaying a loader
+  // when this data updates on a schedule. Manually trigger a suspense loader
+  // the first time when the initial data is still loading.
   const nativeBalancesLoadable = loadableToLoadingData(
     useCachedLoadable(
-      address ? nativeBalancesSelector({ address }) : undefined
+      address
+        ? nativeBalancesSelector({
+            address,
+            chainId,
+          })
+        : undefined
     ),
     []
   )
