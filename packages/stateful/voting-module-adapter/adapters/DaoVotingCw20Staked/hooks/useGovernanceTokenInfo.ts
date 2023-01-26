@@ -17,7 +17,6 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
-  fetchLoadingWalletBalance = false,
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
@@ -47,17 +46,9 @@ export const useGovernanceTokenInfo = ({
   /// Optional
 
   // Wallet balance
-  const walletBalance = useRecoilValue(
-    fetchWalletBalance && walletAddress
-      ? Cw20BaseSelectors.balanceSelector({
-          contractAddress: governanceTokenAddress,
-          params: [{ address: walletAddress }],
-        })
-      : constSelector(undefined)
-  )?.balance
   const loadingWalletBalance = loadableToLoadingData(
     useCachedLoadable(
-      fetchLoadingWalletBalance && walletAddress
+      fetchWalletBalance && walletAddress
         ? Cw20BaseSelectors.balanceSelector({
             contractAddress: governanceTokenAddress,
             params: [{ address: walletAddress }],
@@ -68,24 +59,30 @@ export const useGovernanceTokenInfo = ({
   )
 
   // Treasury balance
-  const treasuryBalance = useRecoilValue(
-    fetchTreasuryBalance
-      ? Cw20BaseSelectors.balanceSelector({
-          contractAddress: governanceTokenAddress,
-          params: [{ address: coreAddress }],
-        })
-      : constSelector(undefined)
-  )?.balance
+  const loadingTreasuryBalance = loadableToLoadingData(
+    useCachedLoadable(
+      fetchTreasuryBalance
+        ? Cw20BaseSelectors.balanceSelector({
+            contractAddress: governanceTokenAddress,
+            params: [{ address: coreAddress }],
+          })
+        : constSelector(undefined)
+    ),
+    undefined
+  )
 
   // Price info
-  const price = useRecoilValue(
-    fetchUsdcPrice
-      ? usdcPerMacroTokenSelector({
-          denom: governanceTokenAddress,
-          decimals: governanceTokenInfo.decimals,
-        })
-      : constSelector(undefined)
-  )?.amount
+  const loadingPrice = loadableToLoadingData(
+    useCachedLoadable(
+      fetchUsdcPrice
+        ? usdcPerMacroTokenSelector({
+            denom: governanceTokenAddress,
+            decimals: governanceTokenInfo.decimals,
+          })
+        : constSelector(undefined)
+    ),
+    undefined
+  )
 
   return {
     stakingContractAddress,
@@ -93,7 +90,6 @@ export const useGovernanceTokenInfo = ({
     governanceTokenInfo,
     /// Optional
     // Wallet balance
-    walletBalance: walletBalance ? Number(walletBalance) : undefined,
     loadingWalletBalance: loadingWalletBalance.loading
       ? { loading: true }
       : !loadingWalletBalance.data
@@ -103,8 +99,22 @@ export const useGovernanceTokenInfo = ({
           data: Number(loadingWalletBalance.data.balance),
         },
     // Treasury balance
-    treasuryBalance: treasuryBalance ? Number(treasuryBalance) : undefined,
+    loadingTreasuryBalance: loadingTreasuryBalance.loading
+      ? { loading: true }
+      : !loadingTreasuryBalance.data
+      ? undefined
+      : {
+          loading: false,
+          data: Number(loadingTreasuryBalance.data.balance),
+        },
     // Price
-    price,
+    loadingPrice: loadingPrice.loading
+      ? { loading: true }
+      : !loadingPrice.data
+      ? undefined
+      : {
+          loading: false,
+          data: loadingPrice.data,
+        },
   }
 }

@@ -29,6 +29,7 @@ export interface NftSelectionModalProps<T extends NftCardInfo>
   actionLabel: string
   allowSelectingNone?: boolean
   selectedDisplay?: ReactNode
+  headerDisplay?: ReactNode
 }
 
 export const NftSelectionModal = <T extends NftCardInfo>({
@@ -44,6 +45,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   containerClassName,
   allowSelectingNone,
   selectedDisplay,
+  headerDisplay,
   ...modalProps
 }: NftSelectionModalProps<T>) => {
   const { t } = useTranslation()
@@ -130,6 +132,8 @@ export const NftSelectionModal = <T extends NftCardInfo>({
       }
       headerContent={
         <div className="mt-4 flex flex-col gap-4">
+          {headerDisplay}
+
           <SearchBar
             autoFocus
             placeholder={t('info.searchNftsPlaceholder')}

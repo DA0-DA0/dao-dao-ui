@@ -15,6 +15,7 @@ import {
   InputLabel,
   NumberInput,
   PeopleEmoji,
+  TooltipInfoIcon,
 } from '@dao-dao/stateless'
 import { ActionComponent, AddressInputProps } from '@dao-dao/types'
 import { Member } from '@dao-dao/types/contracts/Cw4Group'
@@ -75,8 +76,15 @@ export const ManageMembersComponent: ActionComponent<
       title={t('title.manageMembers')}
     >
       <div className="flex flex-col gap-1">
-        <InputLabel name={t('form.membersToAddOrUpdate')} />
-        <div className="flex flex-col items-stretch gap-1">
+        <div className="flex flex-row gap-2">
+          <InputLabel name={t('form.membersToAddOrUpdate')} />
+          <TooltipInfoIcon
+            placement="top"
+            size="sm"
+            title={t('form.membersToAddOrUpdateDescription')}
+          />
+        </div>
+        <div className="my-2 flex flex-col items-stretch gap-1">
           {toAddFields.map(({ id }, index) => {
             const addrFieldName = (fieldNamePrefix +
               `toAdd.${index}.addr`) as `toAdd.${number}.addr`
@@ -89,7 +97,8 @@ export const ManageMembersComponent: ActionComponent<
                 className="flex flex-row items-center gap-3 rounded-lg bg-background-secondary p-4"
               >
                 <div className="flex grow flex-col items-stretch gap-x-3 gap-y-2 sm:flex-row">
-                  <div className="flex flex-col">
+                  <div className="flex flex-col gap-1">
+                    <InputLabel name={t('form.votingWeightPlaceholder')} />
                     <NumberInput
                       disabled={!isCreating}
                       error={errors?.toAdd?.[index]?.weight}
@@ -114,13 +123,14 @@ export const ManageMembersComponent: ActionComponent<
                     <InputErrorMessage error={errors?.toAdd?.[index]?.weight} />
                   </div>
 
-                  <div className="flex grow flex-row items-stretch gap-2 sm:gap-3">
+                  <div className="flex grow flex-row items-stretch justify-center gap-2 sm:gap-3">
                     <div className="flex flex-row items-center pl-1 sm:pl-0">
                       <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
                       <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
                     </div>
 
-                    <div className="flex grow flex-col">
+                    <div className="flex grow flex-col gap-1">
+                      <InputLabel name={t('form.address')} />
                       <AddressInput
                         containerClassName="h-full"
                         disabled={!isCreating}
@@ -172,14 +182,23 @@ export const ManageMembersComponent: ActionComponent<
       </div>
 
       <div className="flex flex-col gap-1">
-        <InputLabel name={t('form.membersToRemove')} />
-        <div className="flex flex-col items-stretch gap-1">
+        <div className="flex flex-row gap-2">
+          <InputLabel name={t('form.membersToRemove')} />
+          <TooltipInfoIcon
+            placement="top"
+            size="sm"
+            title={t('form.membersToRemoveDescription')}
+          />
+        </div>
+
+        <div className="my-2 flex flex-col items-stretch gap-1">
           {toRemoveFields.map(({ id }, index) => (
             <div
               key={id}
               className="flex flex-row items-center gap-3 rounded-lg bg-background-secondary p-4"
             >
-              <div className="grow">
+              <div className="flex grow flex-col gap-1">
+                <InputLabel name={t('form.address')} />
                 <AddressInput
                   disabled={!isCreating}
                   error={errors?.toRemove?.[index]?.addr}

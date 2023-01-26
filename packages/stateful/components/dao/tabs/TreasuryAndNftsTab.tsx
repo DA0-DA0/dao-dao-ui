@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 
 import {
-  NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoadable,
   useDaoInfoContext,
@@ -15,13 +14,15 @@ import {
   useMembership,
 } from '../../../hooks'
 import {
-  nftCardInfosSelector,
+  nftCardInfosForDaoSelector,
   treasuryTokenCardInfosSelector,
 } from '../../../recoil'
 import {
   useCw20GovernanceTokenInfoResponseIfExists,
+  useCw721GovernanceTokenInfoResponseIfExists,
   useNativeGovernanceTokenInfoResponseIfExists,
 } from '../../../voting-module-adapter'
+import { NftCard } from '../../NftCard'
 import { StargazeNftImportModal } from '../../StargazeNftImportModal'
 import { TokenCard } from '../TokenCard'
 
@@ -32,6 +33,8 @@ export const TreasuryAndNftsTab = () => {
     useCw20GovernanceTokenInfoResponseIfExists() ?? {}
   const { governanceTokenAddress: nativeGovernanceTokenDenom } =
     useNativeGovernanceTokenInfoResponseIfExists() ?? {}
+  const { governanceTokenAddress: cw721GovernanceCollectionAddress } =
+    useCw721GovernanceTokenInfoResponseIfExists() ?? {}
 
   const treasuryTokenCardInfosLoadable = useCachedLoadable(
     treasuryTokenCardInfosSelector({
@@ -42,9 +45,10 @@ export const TreasuryAndNftsTab = () => {
     })
   )
   const nftCardInfosLoadable = useCachedLoadable(
-    nftCardInfosSelector({
+    nftCardInfosForDaoSelector({
       coreAddress: daoInfo.coreAddress,
       chainId: daoInfo.chainId,
+      governanceCollectionAddress: cw721GovernanceCollectionAddress,
     })
   )
 

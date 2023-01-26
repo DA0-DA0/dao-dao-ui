@@ -2,16 +2,20 @@ import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 
 import { Action } from './actions'
-import { Duration } from './contracts/common'
 import { TokenInfoResponse } from './contracts/Cw20Base'
-import { Claim } from './contracts/stake-cw20'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationGovernanceConfigInputProps,
   DaoCreationGovernanceConfigReviewProps,
   DaoCreationVotingConfigItem,
 } from './dao'
-import { DaoInfoBarItem, LoadingData, StakingMode } from './stateless'
+import { AmountWithTimestampAndDenom } from './state'
+import {
+  DaoHomeTab,
+  DaoInfoBarItem,
+  LoadingData,
+  StakingMode,
+} from './stateless'
 import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
 
 export interface BaseProfileCardMemberInfoProps {
@@ -28,7 +32,6 @@ export interface BaseStakingModalProps {
 
 export interface UseGovernanceTokenInfoOptions {
   fetchWalletBalance?: boolean
-  fetchLoadingWalletBalance?: boolean
   fetchTreasuryBalance?: boolean
   fetchUsdcPrice?: boolean
 }
@@ -39,38 +42,11 @@ export interface UseGovernanceTokenInfoResponse {
   governanceTokenInfo: TokenInfoResponse
   /// Optional
   // Wallet balance
-  walletBalance?: number
   loadingWalletBalance?: LoadingData<number>
   // Treasury balance
-  treasuryBalance?: number
+  loadingTreasuryBalance?: LoadingData<number>
   // Price
-  price?: number
-}
-
-export interface UseStakingInfoOptions {
-  fetchClaims?: boolean
-  fetchTotalStakedValue?: boolean
-  fetchWalletStakedValue?: boolean
-  fetchLoadingWalletStakedValue?: boolean
-}
-
-export interface UseStakingInfoResponse {
-  stakingContractAddress: string
-  unstakingDuration?: Duration
-  refreshTotals: () => void
-  /// Optional
-  // Claims
-  blockHeight?: number
-  refreshClaims?: () => void
-  claims?: Claim[]
-  claimsPending?: Claim[]
-  claimsAvailable?: Claim[]
-  sumClaimsAvailable?: number
-  // Total staked value
-  totalStakedValue?: number
-  // Wallet staked value
-  walletStakedValue?: number
-  loadingWalletStakedValue?: LoadingData<number>
+  loadingPrice?: LoadingData<AmountWithTimestampAndDenom>
 }
 
 export interface IVotingModuleAdapter {
@@ -82,12 +58,11 @@ export interface IVotingModuleAdapter {
     useGovernanceTokenInfo?: (
       options?: UseGovernanceTokenInfoOptions
     ) => UseGovernanceTokenInfoResponse
-    useStakingInfo?: (options?: UseStakingInfoOptions) => UseStakingInfoResponse
   }
 
   // Components
   components: {
-    MembersTab?: ComponentType
+    extraTabs?: (Omit<DaoHomeTab, 'label'> & { labelI18nKey: string })[]
     ProfileCardMemberInfo: ComponentType<BaseProfileCardMemberInfoProps>
   }
 }

@@ -1,13 +1,8 @@
 import clsx from 'clsx'
-import { ComponentType, ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  DaoInfo,
-  FollowState,
-  LinkWrapperProps,
-  SuspenseLoaderProps,
-} from '@dao-dao/types'
+import { DaoHomeProps, DaoHomeTab } from '@dao-dao/types'
 import { formatDate, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {
@@ -17,22 +12,6 @@ import {
   useAppLayoutContext,
 } from '../components'
 
-export interface DaoHomeProps {
-  daoInfo: DaoInfo
-  follow: FollowState
-  DiscordNotifierConfigureModal: ComponentType
-  daoInfoBar: ReactNode
-  rightSidebarContent: ReactNode
-  SuspenseLoader: ComponentType<SuspenseLoaderProps>
-  LinkWrapper: ComponentType<LinkWrapperProps>
-  // Tabs
-  proposalsTab: ReactNode
-  treasuryAndNftsTab: ReactNode
-  subDaosTab: ReactNode
-  membersTab?: ReactNode
-  payrollTab?: ReactNode
-}
-
 export const DaoHome = ({
   daoInfo,
   follow,
@@ -41,38 +20,44 @@ export const DaoHome = ({
   rightSidebarContent,
   SuspenseLoader,
   LinkWrapper,
-  proposalsTab,
-  treasuryAndNftsTab,
-  subDaosTab,
-  membersTab,
-  payrollTab,
+  ProposalsTab,
+  TreasuryAndNftsTab,
+  SubDaosTab,
+  extraTabs,
 }: DaoHomeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
-  const windowHash =
-    typeof window === 'undefined'
-      ? undefined
-      : window.location.hash.replace('#', '')
-  // Default to tab from URL hash if present.
-  const [selectedTab, setSelectedTab] = useState(
-    windowHash && TabValues.includes(windowHash as Tab)
-      ? (windowHash as Tab)
-      : Tab.Proposals
-  )
+  const tabs: DaoHomeTab[] = [
+    {
+      id: 'proposals',
+      label: t('title.proposals'),
+      Component: ProposalsTab,
+    },
+    {
+      id: 'treasury',
+      label: t('title.treasuryAndNfts'),
+      Component: TreasuryAndNftsTab,
+    },
+    {
+      id: 'subdaos',
+      label: t('title.subDaos'),
+      Component: SubDaosTab,
+    },
+    ...extraTabs,
+  ]
 
-  const tabs = [
-    Tab.Proposals,
-    Tab.TreasuryAndNfts,
-    Tab.SubDaos,
-    // Don't include Members if no membersTab.
-    ...(membersTab !== undefined ? [Tab.Members] : []),
-    // Don't include Payroll if no payrollTab.
-    ...(payrollTab !== undefined ? [Tab.Payroll] : []),
-  ].map((tab) => ({
-    label: t(TabTitleI18nKeyMap[tab]),
-    value: tab,
-  }))
+  const [selectedTab, setSelectedTab] = useState(() => {
+    // Default to tab from URL hash if present and valid.
+    const windowHash =
+      typeof window === 'undefined'
+        ? undefined
+        : window.location.hash.replace('#', '')
+
+    return windowHash && tabs.some(({ id }) => id === windowHash)
+      ? windowHash
+      : tabs[0].id
+  })
 
   // Store selected tab in URL hash.
   useEffect(() => {
@@ -91,7 +76,7 @@ export const DaoHome = ({
       <PageHeader
         breadcrumbs={{
           crumbs: [
-            { href: '/home', label: 'Home' },
+            { href: '/', label: 'Home' },
             ...getParentDaoBreadcrumbs(daoInfo.parentDao),
           ],
           current: daoInfo.name,
@@ -120,60 +105,20 @@ export const DaoHome = ({
             className="w-full max-w-2xl shrink"
             onSelect={setSelectedTab}
             selected={selectedTab}
-            tabs={tabs}
+            tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
           />
         </div>
 
         <div className="py-6">
-          <div className={clsx(selectedTab !== Tab.Proposals && 'hidden')}>
-            <SuspenseLoader fallback={<Loader />}>
-              {proposalsTab}
-            </SuspenseLoader>
-          </div>
-          <div
-            className={clsx(selectedTab !== Tab.TreasuryAndNfts && 'hidden')}
-          >
-            <SuspenseLoader fallback={<Loader />}>
-              {treasuryAndNftsTab}
-            </SuspenseLoader>
-          </div>
-          <div className={clsx(selectedTab !== Tab.SubDaos && 'hidden')}>
-            <SuspenseLoader fallback={<Loader />}>{subDaosTab}</SuspenseLoader>
-          </div>
-          {membersTab !== undefined && (
-            <div className={clsx(selectedTab !== Tab.Members && 'hidden')}>
+          {tabs.map(({ id, Component }) => (
+            <div key={id} className={clsx(selectedTab !== id && 'hidden')}>
               <SuspenseLoader fallback={<Loader />}>
-                {membersTab}
+                <Component />
               </SuspenseLoader>
             </div>
-          )}
-          {payrollTab !== undefined && (
-            <div className={clsx(selectedTab !== Tab.Payroll && 'hidden')}>
-              <SuspenseLoader fallback={<Loader />}>
-                {payrollTab}
-              </SuspenseLoader>
-            </div>
-          )}
+          ))}
         </div>
       </div>
     </>
   )
-}
-
-// Value used in URL hash.
-enum Tab {
-  Proposals = 'proposals',
-  TreasuryAndNfts = 'treasury',
-  SubDaos = 'subdaos',
-  Members = 'members',
-  Payroll = 'payroll',
-}
-const TabValues = Object.values(Tab)
-
-export const TabTitleI18nKeyMap: Record<Tab, string> = {
-  [Tab.Proposals]: 'title.proposals',
-  [Tab.TreasuryAndNfts]: 'title.treasuryAndNfts',
-  [Tab.SubDaos]: 'title.subDaos',
-  [Tab.Members]: 'title.members',
-  [Tab.Payroll]: 'title.payroll',
 }

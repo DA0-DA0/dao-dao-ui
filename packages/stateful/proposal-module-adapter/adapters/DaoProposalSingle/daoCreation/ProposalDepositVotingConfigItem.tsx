@@ -187,7 +187,10 @@ export const ProposalDepositInput = ({
                 />
               </div>
 
-              <FormattedJsonDisplay jsonLoadable={cw20TokenInfoLoadable} />
+              <FormattedJsonDisplay
+                jsonLoadable={cw20TokenInfoLoadable}
+                title={t('form.tokenInfo')}
+              />
             </>
           )}
 

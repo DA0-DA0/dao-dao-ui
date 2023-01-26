@@ -280,6 +280,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
         connected={connected}
         context={appLayoutContext}
         navigationProps={{
+          walletConnected: connected,
           LinkWrapper,
           inboxCount:
             inbox.loading ||

@@ -49,7 +49,7 @@ const CustomErrorComponent = ({
     >
       <p>
         An error occured on this page.{' '}
-        <Link href="/home">
+        <Link href="/">
           <a className="underline hover:no-underline">
             Consider returning home.
           </a>

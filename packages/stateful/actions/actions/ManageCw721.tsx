@@ -125,6 +125,7 @@ const Component: ActionComponent = (props) => {
         additionalAddressError,
         existingTokens,
         formattedJsonDisplayProps: {
+          title: t('form.tokenInfo'),
           jsonLoadable: tokenInfoLoadable,
         },
       }}

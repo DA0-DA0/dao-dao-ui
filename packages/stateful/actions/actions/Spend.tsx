@@ -39,6 +39,16 @@ import {
 } from '../components/Spend'
 import { useActionOptions } from '../react'
 
+const useDefaults: UseDefaults<SpendData> = () => {
+  const { address: walletAddress = '' } = useWallet()
+
+  return {
+    to: walletAddress,
+    amount: 1,
+    denom: NATIVE_DENOM,
+  }
+}
+
 // Reused selectors in Component and useTransformToCosmos. Undefined when
 // loading.
 const useCw20BalancesAndInfos = () => {
@@ -82,14 +92,19 @@ const useCw20BalancesAndInfos = () => {
 }
 
 const Component: ActionComponent<undefined, SpendData> = (props) => {
-  const { address } = useActionOptions()
+  const { address, chainId } = useActionOptions()
 
-  // This needs to be loaded via a cached loadable to avoid displaying a
-  // loader when this data updates on a schedule. Manually trigger a suspense
-  // loader the first time when the initial data is still loading.
+  // This needs to be loaded via a cached loadable to avoid displaying a loader
+  // when this data updates on a schedule. Manually trigger a suspense loader
+  // the first time when the initial data is still loading.
   const nativeBalancesLoadable = loadableToLoadingData(
     useCachedLoadable(
-      address ? nativeBalancesSelector({ address }) : undefined
+      address
+        ? nativeBalancesSelector({
+            address,
+            chainId,
+          })
+        : undefined
     ),
     []
   )
@@ -118,17 +133,8 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
     </SuspenseLoader>
   )
 }
+
 export const makeSpendAction: ActionMaker<SpendData> = ({ t, context }) => {
-  const useDefaults: UseDefaults<SpendData> = () => {
-    const { address: walletAddress = '' } = useWallet()
-
-    return {
-      to: walletAddress,
-      amount: 1,
-      denom: NATIVE_DENOM,
-    }
-  }
-
   const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
     const cw20Tokens = useCw20BalancesAndInfos()
 

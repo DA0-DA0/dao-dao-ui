@@ -205,7 +205,7 @@ const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
         homeHref={
           props.serializedInfo
             ? `/dao/${props.serializedInfo.coreAddress}`
-            : '/home'
+            : '/'
         }
       />
     )}
