@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { DaoProposalSingleAdapter } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle'
 import { DaoVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter/adapters/DaoVotingCw20Staked'
 import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
-import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators/makeAppLayoutDecorator'
+import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators/makeDappLayoutDecorator'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
 
 import { CreateDaoReview } from './CreateDaoReview'
@@ -43,7 +43,7 @@ export default {
         },
       ],
     }),
-    makeAppLayoutDecorator(),
+    makeDappLayoutDecorator(),
     WalletProviderDecorator,
   ],
 } as ComponentMeta<typeof CreateDaoReview>

@@ -22,14 +22,13 @@ import {
 import {
   BetaWarningModal,
   DaoCreatedModal,
-  IAppLayoutContext,
   InstallKeplrModal,
   NoKeplrAccountModal,
   ProposalCreatedModal,
-  AppLayout as StatelessAppLayout,
+  DappLayout as StatelessDappLayout,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { CommandModalContextMaker } from '@dao-dao/types'
+import { CommandModalContextMaker, IAppLayoutContext } from '@dao-dao/types'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import { CommandModal, makeGenericContext } from '../command'
@@ -46,7 +45,7 @@ import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
 import { SyncFollowingModal } from './SyncFollowingModal'
 
-export const AppLayout = ({ children }: { children: ReactNode }) => {
+export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
   const router = useRouter()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
@@ -274,7 +273,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
         />
       )}
 
-      <StatelessAppLayout
+      <StatelessDappLayout
         connect={connect}
         connectWalletButton={<ConnectWallet variant="secondary" />}
         connected={connected}
@@ -313,7 +312,7 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
         }
       >
         {children}
-      </StatelessAppLayout>
+      </StatelessDappLayout>
     </>
   )
 }

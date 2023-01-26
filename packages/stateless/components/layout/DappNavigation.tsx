@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { NavigationProps } from '@dao-dao/types/stateless/Navigation'
+import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
 import { usePlatform } from '@dao-dao/utils'
 
 import { DaoDropdown } from '../dao'
@@ -27,7 +27,7 @@ import { Footer } from './Footer'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
 
-export * from '@dao-dao/types/stateless/Navigation'
+export * from '@dao-dao/types/stateless/DappNavigation'
 
 // Width of `lg` tailwind selector. Don't change this without changing the
 // compact button media query class that shows the compact toggle at the very
@@ -49,7 +49,7 @@ const getForceCompact = () =>
     ? true
     : undefined
 
-export const Navigation = ({
+export const DappNavigation = ({
   setCommandModalVisible,
   inboxCount,
   version,
@@ -60,7 +60,7 @@ export const Navigation = ({
   setCompact,
   mountedInBrowser,
   LinkWrapper,
-}: NavigationProps) => {
+}: DappNavigationProps) => {
   const { t } = useTranslation()
   const { isMac } = usePlatform()
   const {

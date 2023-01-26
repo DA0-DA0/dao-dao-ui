@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
+import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
 
 import {
   DaoCard,
@@ -71,7 +71,7 @@ Connected.parameters = {
     asPath: '/',
   },
 }
-Connected.decorators = [makeAppLayoutDecorator()]
+Connected.decorators = [makeDappLayoutDecorator()]
 
 export const Disconnected = Template.bind({})
 Disconnected.args = {
@@ -106,7 +106,7 @@ Disconnected.parameters = {
   },
 }
 Disconnected.decorators = [
-  makeAppLayoutDecorator({
+  makeDappLayoutDecorator({
     navigationProps: {
       walletConnected: false,
     },

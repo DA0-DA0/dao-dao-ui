@@ -1,32 +1,32 @@
 import { DecoratorFn } from '@storybook/react'
 
 import {
-  Default as AppLayoutStory,
-  DefaultArgs as AppLayoutStoryArgs,
-} from '@dao-dao/stateless/components/layout/AppLayout.stories'
-import { NavigationProps } from '@dao-dao/stateless/components/layout/Navigation'
+  Default as DappLayoutStory,
+  DefaultArgs as DappLayoutStoryArgs,
+} from '@dao-dao/stateless/components/layout/DappLayout.stories'
+import { DappNavigationProps } from '@dao-dao/stateless/components/layout/DappNavigation'
 import { RightSidebarProps } from '@dao-dao/stateless/components/layout/RightSidebar'
 
-export const makeAppLayoutDecorator: (props?: {
-  navigationProps?: Partial<NavigationProps>
+export const makeDappLayoutDecorator: (props?: {
+  navigationProps?: Partial<DappNavigationProps>
   rightSidebarProps?: Partial<Omit<RightSidebarProps, 'setContentRef'>>
 }) => DecoratorFn = ({ navigationProps, rightSidebarProps } = {}) =>
   function AppLayoutDecorator(Story) {
     return (
-      <AppLayoutStory
-        {...AppLayoutStoryArgs}
+      <DappLayoutStory
+        {...DappLayoutStoryArgs}
         navigationProps={{
           // Allow overriding default arguments from the AppLayout story.
-          ...AppLayoutStoryArgs.navigationProps,
+          ...DappLayoutStoryArgs.navigationProps,
           ...navigationProps,
         }}
         rightSidebarProps={{
           // Allow overriding default arguments from the AppLayout story.
-          ...AppLayoutStoryArgs.rightSidebarProps,
+          ...DappLayoutStoryArgs.rightSidebarProps,
           ...rightSidebarProps,
         }}
       >
         <Story />
-      </AppLayoutStory>
+      </DappLayoutStory>
     )
   }

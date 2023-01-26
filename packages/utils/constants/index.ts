@@ -146,3 +146,7 @@ export const DISCORD_NOTIFIER_SIGNATURE_TYPE = 'Discord Notifier'
 // Following API
 export const FOLLOWING_DAOS_API_BASE = process.env
   .NEXT_PUBLIC_FOLLOWING_DAOS_API_BASE as string
+
+// Single DAO Mode
+export const SINGLE_DAO_MODE =
+  process.env.NEXT_PUBLIC_SINGLE_DAO_MODE === 'true'

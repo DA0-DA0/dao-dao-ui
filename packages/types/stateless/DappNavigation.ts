@@ -11,7 +11,7 @@ export interface NavigationTokenPrice {
   change?: number
 }
 
-export interface NavigationProps {
+export interface DappNavigationProps {
   setCommandModalVisible: () => void
   inboxCount: LoadingData<number>
   version: string

@@ -4,24 +4,24 @@ import { useState } from 'react'
 import { makeAppLayoutContextDecorator } from '@dao-dao/storybook/decorators'
 
 import { LinkWrapper } from '../LinkWrapper'
-import { Navigation, NavigationProps } from './Navigation'
+import { DappNavigation, DappNavigationProps } from './DappNavigation'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / layout / Navigation',
-  component: Navigation,
+  component: DappNavigation,
   decorators: [makeAppLayoutContextDecorator(true)],
   excludeStories: ['DefaultArgs'],
-} as ComponentMeta<typeof Navigation>
+} as ComponentMeta<typeof DappNavigation>
 
-const Template: ComponentStory<typeof Navigation> = (args) => {
+const Template: ComponentStory<typeof DappNavigation> = (args) => {
   const [compact, setCompact] = useState(false)
 
-  return <Navigation {...args} compact={compact} setCompact={setCompact} />
+  return <DappNavigation {...args} compact={compact} setCompact={setCompact} />
 }
 
-// Used in `makeAppLayoutDecorator` to provide a default layout for the page
+// Used in `makeDappLayoutDecorator` to provide a default layout for the page
 // stories. Ensure this has all props.
-export const DefaultArgs: NavigationProps = {
+export const DefaultArgs: DappNavigationProps = {
   walletConnected: true,
   inboxCount: {
     loading: false,

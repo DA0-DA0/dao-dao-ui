@@ -2,25 +2,29 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
 import { EMPTY_INBOX } from '@dao-dao/storybook/decorators'
-import { PageHeaderProps } from '@dao-dao/types'
+import {
+  DappLayoutProps,
+  IAppLayoutContext,
+  PageHeaderProps,
+} from '@dao-dao/types'
 
 import { ConnectWallet, ConnectWalletProps } from '../wallet'
 import { Default as ConnectWalletStory } from '../wallet/ConnectWallet.stories'
-import { AppLayout, AppLayoutProps, IAppLayoutContext } from './AppLayout'
-import { NavigationProps } from './Navigation'
-import { Default as NavigatonStory } from './Navigation.stories'
+import { DappLayout } from './DappLayout'
+import { DappNavigationProps } from './DappNavigation'
+import { Default as DappNavigatonStory } from './DappNavigation.stories'
 import { PageHeader } from './PageHeader'
 import { Default as PageHeaderStory } from './PageHeader.stories'
 import { DefaultArgs as RightSidebarStoryArgs } from './RightSidebar.stories'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / layout / AppLayout',
-  component: AppLayout,
+  title: 'DAO DAO / packages / stateless / components / layout / DappLayout',
+  component: DappLayout,
   excludeStories: ['DefaultArgs'],
-} as ComponentMeta<typeof AppLayout>
+} as ComponentMeta<typeof DappLayout>
 
-export const DefaultArgs: AppLayoutProps = {
-  navigationProps: NavigatonStory.args as NavigationProps,
+export const DefaultArgs: DappLayoutProps = {
+  navigationProps: DappNavigatonStory.args as DappNavigationProps,
   children: (
     <div className="flex h-full flex-col px-6">
       <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />
@@ -63,7 +67,7 @@ export const DefaultArgs: AppLayoutProps = {
   ),
 }
 
-const Template: ComponentStory<typeof AppLayout> = (args) => {
+const Template: ComponentStory<typeof DappLayout> = (args) => {
   const [compact, setCompact] = useState(false)
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
@@ -99,7 +103,7 @@ const Template: ComponentStory<typeof AppLayout> = (args) => {
   )
 
   return (
-    <AppLayout
+    <DappLayout
       {...args}
       context={appLayoutContext}
       navigationProps={{

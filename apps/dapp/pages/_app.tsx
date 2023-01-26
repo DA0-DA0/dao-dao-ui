@@ -19,7 +19,11 @@ import {
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
-import { ApolloGqlProvider, AppLayout, WalletProvider } from '@dao-dao/stateful'
+import {
+  ApolloGqlProvider,
+  DappLayout,
+  WalletProvider,
+} from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
@@ -72,9 +76,9 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
           </LayoutLoading>
         ) : (
           <WalletProvider>
-            <AppLayout>
+            <DappLayout>
               <Component {...pageProps} />
-            </AppLayout>
+            </DappLayout>
           </WalletProvider>
         )}
 

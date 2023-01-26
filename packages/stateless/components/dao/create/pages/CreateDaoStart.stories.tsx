@@ -4,7 +4,7 @@ import { DaoProposalSingleAdapter } from '@dao-dao/stateful/proposal-module-adap
 import { DaoVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   WalletProviderDecorator,
-  makeAppLayoutDecorator,
+  makeDappLayoutDecorator,
   makeCreateDaoFormDecorator,
 } from '@dao-dao/storybook/decorators'
 
@@ -41,7 +41,7 @@ export default {
         },
       ],
     }),
-    makeAppLayoutDecorator(),
+    makeDappLayoutDecorator(),
     WalletProviderDecorator,
   ],
 } as ComponentMeta<typeof CreateDaoStart>

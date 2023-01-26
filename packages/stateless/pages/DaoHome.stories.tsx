@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { SuspenseLoader } from '@dao-dao/stateful'
 import {
   DaoPageWrapperDecorator,
-  makeAppLayoutDecorator,
+  makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 import { DaoMemberCardProps } from '@dao-dao/types'
 
@@ -39,7 +39,7 @@ export default {
   decorators: [
     // Direct ancestor of rendered story.
     DaoPageWrapperDecorator,
-    makeAppLayoutDecorator(),
+    makeDappLayoutDecorator(),
   ],
 } as ComponentMeta<typeof DaoHome>
 

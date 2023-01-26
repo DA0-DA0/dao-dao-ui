@@ -5,20 +5,20 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { RightSidebarProps } from '@dao-dao/types'
-import { AppLayoutProps } from '@dao-dao/types/stateless/AppLayout'
+import { DappLayoutProps } from '@dao-dao/types/stateless/DappLayout'
 
 import { ErrorBoundary } from '../error/ErrorBoundary'
 import { IconButton } from '../icon_buttons'
 import { ProfileImage } from '../profile/ProfileImage'
 import { Tooltip } from '../tooltip'
 import { AppLayoutContext } from './AppLayoutContext'
-import { Navigation } from './Navigation'
+import { DappNavigation } from './DappNavigation'
 import { makePageHeader } from './PageHeader'
 import { RightSidebar, makeRightSidebarContent } from './RightSidebar'
 
-export * from '@dao-dao/types/stateless/AppLayout'
+export * from '@dao-dao/types/stateless/DappLayout'
 
-export const AppLayout = ({
+export const DappLayout = ({
   navigationProps,
   children,
   rightSidebarProps,
@@ -27,7 +27,7 @@ export const AppLayout = ({
   connect,
   connected,
   connectWalletButton,
-}: AppLayoutProps) => {
+}: DappLayoutProps) => {
   const { t } = useTranslation()
   const router = useRouter()
   // See comment on makeRightSidebarContent in RightSidebar.tsx for information
@@ -91,7 +91,7 @@ export const AppLayout = ({
     >
       <div className="relative z-[1] flex h-full w-full flex-row items-stretch overflow-hidden">
         <ErrorBoundary>
-          <Navigation {...navigationProps} />
+          <DappNavigation {...navigationProps} />
         </ErrorBoundary>
 
         <main
