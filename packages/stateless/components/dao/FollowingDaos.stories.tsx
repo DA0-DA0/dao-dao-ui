@@ -41,8 +41,5 @@ const Template: ComponentStory<typeof FollowingDaos> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  followingDaos: {
-    loading: false,
-    data: FeaturedDaosScrollerStory.args!.items!,
-  },
+  followingDaos: FeaturedDaosScrollerStory.args!.items!,
 }
