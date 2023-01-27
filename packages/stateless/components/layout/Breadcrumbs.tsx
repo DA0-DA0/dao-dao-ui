@@ -51,6 +51,8 @@ export const Breadcrumbs = ({
               ]),
         ]
 
+  const hasCrumbs = crumbs.length > 0
+
   return (
     <>
       <div
@@ -74,7 +76,11 @@ export const Breadcrumbs = ({
           // min-width set to auto by default, which prevents text ellipses
           // since this will overflow its parent. Set min-width to 0 so this
           // cannot overflow its parent, and the child text can truncate.
-          className="min-w-0 text-text-primary sm:pointer-events-none"
+          className={clsx(
+            'min-w-0 text-text-primary sm:pointer-events-none',
+            // Disable touch interaction when no crumbs.
+            !hasCrumbs && 'pointer-events-none'
+          )}
           contentContainerClassName="justify-center"
           onClick={() => setResponsive(true)}
           size="none"
@@ -82,14 +88,17 @@ export const Breadcrumbs = ({
         >
           <p className="truncate">{current}</p>
 
-          <ArrowDropDown className="!h-6 !w-6 shrink-0 text-icon-primary sm:!hidden" />
+          {/* When no crumbs, no dropdown/arrow. */}
+          {hasCrumbs && (
+            <ArrowDropDown className="!h-6 !w-6 shrink-0 text-icon-primary sm:!hidden" />
+          )}
         </Button>
       </div>
 
       <div
         className={clsx(
           'header-text fixed top-0 right-0 bottom-0 left-0 z-20 flex flex-col bg-background-base transition-opacity',
-          responsive
+          responsive && hasCrumbs
             ? 'opacity-100 sm:pointer-events-none sm:opacity-0'
             : 'pointer-events-none opacity-0'
         )}

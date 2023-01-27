@@ -7,6 +7,8 @@ const config = {
     locales: ['dog', 'en', 'es', 'fr', 'it', 'ko', 'pl', 'uk', 'zh', 'zh-tw'],
     defaultLocale: 'en',
     lowerCaseLng: true,
+    // Don't automatically navigate to language subpath.
+    localeDetection: false,
   },
   localePath: path.resolve(__dirname, '../../packages/i18n/locales'),
   defaultNS: 'translation',

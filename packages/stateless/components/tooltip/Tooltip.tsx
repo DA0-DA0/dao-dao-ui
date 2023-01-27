@@ -26,6 +26,10 @@ export const Tooltip = ({
           classes?.tooltip ??
           '!font-sans !text-xs !font-normal !text-text-component-primary !bg-component-tooltip !rounded-md !border !border-border-component-primary',
       }}
+      enterTouchDelay={
+        // Makes it much easier to click on the tooltip on mobile.
+        0
+      }
       title={title}
       {...props}
     >
