@@ -11,7 +11,7 @@ import { DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
 
 import {
   ProposalsTab,
-  SdpDaoSplashHeader,
+  SdpDaoHome,
   SubDaosTab,
   TreasuryAndNftsTab,
 } from '../components'
@@ -40,7 +40,7 @@ export const useDaoTabs = (
           {
             id: DaoTabId.Home,
             label: t('title.home'),
-            Component: SdpDaoSplashHeader,
+            Component: SdpDaoHome,
             Icon: HomeOutlined,
           },
         ]

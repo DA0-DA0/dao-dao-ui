@@ -12,7 +12,7 @@ import {
   ProfileHomeCardProps,
   SidebarWallet,
 } from '../components'
-import { Default as FeaturedDaosStory } from '../components/dao/FeaturedDaos.stories'
+import { FeaturedDaos as FeaturedDaosScrollerStory } from '../components/HorizontalScroller.stories'
 import { Default as ProfileDisconnectedCardStory } from '../components/profile/ProfileDisconnectedCard.stories'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
 import { Home } from './Home'
@@ -27,8 +27,8 @@ const Template: ComponentStory<typeof Home> = (args) => <Home {...args} />
 export const Connected = Template.bind({})
 Connected.args = {
   featuredDaosProps: {
-    featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
-    DaoCard: (props) => (
+    items: FeaturedDaosScrollerStory.args!.items!,
+    Component: (props) => (
       <DaoCard
         {...props}
         IconButtonLink={IconButtonLink}
@@ -43,7 +43,7 @@ Connected.args = {
   },
   connected: true,
   followingDaosProps: {
-    followingDaos: FeaturedDaosStory.args!.featuredDaos!,
+    followingDaos: FeaturedDaosScrollerStory.args!.items!,
     DaoCard: (props) => (
       <DaoCard
         {...props}
@@ -76,21 +76,6 @@ Connected.decorators = [makeDappLayoutDecorator()]
 export const Disconnected = Template.bind({})
 Disconnected.args = {
   ...Connected.args,
-  featuredDaosProps: {
-    featuredDaos: FeaturedDaosStory.args!.featuredDaos!,
-    DaoCard: (props) => (
-      <DaoCard
-        {...props}
-        IconButtonLink={IconButtonLink}
-        LinkWrapper={LinkWrapper}
-        follow={{
-          following: true,
-          updatingFollowing: false,
-          onFollow: () => alert('follow ' + props.coreAddress),
-        }}
-      />
-    ),
-  },
   connected: false,
   rightSidebarContent: (
     <ProfileDisconnectedCard

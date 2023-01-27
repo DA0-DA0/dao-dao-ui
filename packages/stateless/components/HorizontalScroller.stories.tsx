@@ -4,16 +4,16 @@ import { DaoCard } from '@dao-dao/stateful'
 import { ContractVersion, DaoCardInfo } from '@dao-dao/types'
 import { CHAIN_ID } from '@dao-dao/utils'
 
-import { FeaturedDaos } from './FeaturedDaos'
+import { HorizontalScroller } from './HorizontalScroller'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / dao / FeaturedDaos',
-  component: FeaturedDaos,
-} as ComponentMeta<typeof FeaturedDaos>
+  title: 'DAO DAO / packages / stateless / components / HorizontalScroller',
+  component: HorizontalScroller,
+} as ComponentMeta<typeof HorizontalScroller>
 
-const Template: ComponentStory<typeof FeaturedDaos> = (args) => (
-  <FeaturedDaos {...args} />
-)
+const Template: ComponentStory<typeof HorizontalScroller<DaoCardInfo>> = (
+  args
+) => <HorizontalScroller {...args} />
 
 let id = 0
 const makeFeaturedDao = (): DaoCardInfo => ({
@@ -46,12 +46,12 @@ const makeFeaturedDao = (): DaoCardInfo => ({
   },
 })
 
-export const Default = Template.bind({})
+export const FeaturedDaos = Template.bind({})
 // Clone object to prevent comparison issues in pages with sorting (like
 // `HomeConnected`).
-Default.args = {
-  DaoCard,
-  featuredDaos: {
+FeaturedDaos.args = {
+  Component: DaoCard,
+  items: {
     loading: false,
     data: [
       makeFeaturedDao(),
@@ -78,8 +78,8 @@ Default.args = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  DaoCard,
-  featuredDaos: {
+  Component: DaoCard,
+  items: {
     loading: true,
   },
 }

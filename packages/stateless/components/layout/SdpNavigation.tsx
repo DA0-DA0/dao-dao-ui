@@ -154,7 +154,8 @@ export const SdpNavigation = ({
             )
 
             const isCreatingSubDao =
-              tab.id === DaoTabId.Subdaos && asPath.endsWith('/create')
+              tab.id === DaoTabId.Subdaos &&
+              asPath.startsWith(getDaoPath(daoInfo.coreAddress) + '/create')
 
             return (
               <Row

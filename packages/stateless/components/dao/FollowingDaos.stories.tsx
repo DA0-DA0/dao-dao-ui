@@ -1,10 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { FeaturedDaos as FeaturedDaosScrollerStory } from '../HorizontalScroller.stories'
 import { IconButtonLink } from '../icon_buttons'
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoCard } from './DaoCard'
-import { Default as FeaturedDaosStory } from './FeaturedDaos.stories'
 import { FollowingDaos } from './FollowingDaos'
 
 export default {
@@ -41,5 +41,8 @@ const Template: ComponentStory<typeof FollowingDaos> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  followingDaos: FeaturedDaosStory.args!.featuredDaos!,
+  followingDaos: {
+    loading: false,
+    data: FeaturedDaosScrollerStory.args!.items!,
+  },
 }
