@@ -82,7 +82,7 @@ export const Row = ({
             'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
               onClick || href,
             'rounded-md bg-background-interactive-selected':
-              href && href === asPath,
+              selected || (href && href === asPath),
           })}
           onClick={onClick}
         >

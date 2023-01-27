@@ -164,10 +164,11 @@ export const SdpNavigation = ({
                 forceExpanded
                 href={getDaoPath(daoInfo.coreAddress) + `#${tab.id}`}
                 selected={
-                  // When no hash is present, the home tab is selected. This is an
-                  // edge case since the hash can be present or not to show the
-                  // home.
-                  tab.id === DaoTabId.Home && !asPath.includes('#')
+                  // When no hash is present, the home tab is selected. This is
+                  // an edge case since the hash can be present or not to show
+                  // the home.
+                  tab.id === DaoTabId.Home &&
+                  asPath === getDaoPath(daoInfo.coreAddress)
                 }
                 {...tab}
               >
