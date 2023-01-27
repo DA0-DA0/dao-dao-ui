@@ -11,7 +11,7 @@ export const makeDappLayoutDecorator: (props?: {
   navigationProps?: Partial<DappNavigationProps>
   rightSidebarProps?: Partial<Omit<RightSidebarProps, 'setContentRef'>>
 }) => DecoratorFn = ({ navigationProps, rightSidebarProps } = {}) =>
-  function AppLayoutDecorator(Story) {
+  function DappLayoutDecorator(Story) {
     return (
       <DappLayoutStory
         {...DappLayoutStoryArgs}

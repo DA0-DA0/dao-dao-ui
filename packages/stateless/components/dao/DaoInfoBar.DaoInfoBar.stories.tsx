@@ -15,7 +15,9 @@ export default {
 } as ComponentMeta<typeof DaoInfoBar>
 
 const Template: ComponentStory<typeof DaoInfoBar> = (args) => (
-  <DaoInfoBar {...args} className="max-w-2xl" />
+  <div className="max-w-2xl">
+    <DaoInfoBar {...args} />
+  </div>
 )
 
 export const Default = Template.bind({})

@@ -4,10 +4,9 @@ import { useTranslation } from 'react-i18next'
 import {
   BaseProposalStatusAndInfoProps,
   CommonProposalInfo,
-  DaoInfo,
+  DaoTabId,
   LoadingData,
 } from '@dao-dao/types'
-import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import { ProposalContentDisplay, useAppLayoutContext } from '../components'
 
@@ -19,7 +18,6 @@ export interface ProposalProps {
     Pick<BaseProposalStatusAndInfoProps, 'inline'>
   >
   actionDisplay: ReactNode
-  daoInfo: DaoInfo
   creator: {
     address: string
     name: LoadingData<string | null>
@@ -35,7 +33,6 @@ export const Proposal = ({
   votesCast,
   ProposalStatusAndInfo,
   actionDisplay,
-  daoInfo,
   creator,
   rightSidebarContent,
   onRefresh,
@@ -68,11 +65,10 @@ export const Proposal = ({
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeader
         breadcrumbs={{
-          crumbs: [
-            { href: '/', label: 'Home' },
-            ...getParentDaoBreadcrumbs(daoInfo.parentDao),
-            { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
-          ],
+          sdpHomeTab: {
+            id: DaoTabId.Proposals,
+            label: t('title.proposals'),
+          },
           current: `${t('title.proposal')} ${id}`,
         }}
         className="mx-auto max-w-5xl"

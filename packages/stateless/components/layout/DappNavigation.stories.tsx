@@ -7,7 +7,8 @@ import { LinkWrapper } from '../LinkWrapper'
 import { DappNavigation, DappNavigationProps } from './DappNavigation'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / layout / Navigation',
+  title:
+    'DAO DAO / packages / stateless / components / layout / DappNavigation',
   component: DappNavigation,
   decorators: [makeAppLayoutContextDecorator(true)],
   excludeStories: ['DefaultArgs'],

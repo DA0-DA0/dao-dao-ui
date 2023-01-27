@@ -4,7 +4,6 @@ import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { ArrowBack } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
-import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -20,12 +19,15 @@ import {
   ImageSelector,
   useAppLayoutContext,
   useCachedLoadable,
+  useNavHelpers,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
   CreateDaoContext,
   CreateDaoCustomValidator,
+  DaoPageMode,
   DaoParentInfo,
+  DaoTabId,
   NewDao,
   ProposalModuleAdapter,
 } from '@dao-dao/types'
@@ -40,7 +42,6 @@ import {
   V1_FACTORY_CONTRACT_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
-  getParentDaoBreadcrumbs,
   makeValidateMsg,
   nativeTokenLabel,
   processError,
@@ -93,10 +94,10 @@ export const CreateDaoForm = ({
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
-  const router = useRouter()
+  const { goToDao } = useNavHelpers()
   const { setFollowing } = useFollowingDaos()
 
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { mode, RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
     daoCreatedCardPropsAtom
@@ -370,7 +371,11 @@ export const CreateDaoForm = ({
               }
             )
 
-            setFollowing(coreAddress)
+            // Don't set following on SDP. Only dApp.
+            if (mode !== DaoPageMode.Sdp) {
+              setFollowing(coreAddress)
+            }
+
             refreshBalances()
 
             //! Show DAO created modal.
@@ -455,7 +460,7 @@ export const CreateDaoForm = ({
             setNewDaoAtom(makeDefaultNewDao())
 
             // Navigate to DAO page (underneath the creation modal).
-            router.push(`/dao/${coreAddress}`)
+            goToDao(coreAddress)
           } catch (err) {
             // toast.promise above will handle displaying the error
             console.error(err)
@@ -495,7 +500,7 @@ export const CreateDaoForm = ({
       connected,
       createDaoWithFactory,
       t,
-      setFollowing,
+      mode,
       refreshBalances,
       votingModuleAdapter.id,
       cw20StakedBalanceVotingData,
@@ -504,8 +509,9 @@ export const CreateDaoForm = ({
       description,
       imageUrl,
       parentDao,
-      router,
+      goToDao,
       awaitNextBlock,
+      setFollowing,
     ]
   )
 
@@ -579,10 +585,11 @@ export const CreateDaoForm = ({
       </RightSidebarContent>
       <PageHeader
         breadcrumbs={{
-          crumbs: [
-            { href: '/', label: 'Home' },
-            ...getParentDaoBreadcrumbs(parentDao),
-          ],
+          // On SDP, use the SubDAOs tab as the home breadcrumb.
+          sdpHomeTab: {
+            id: DaoTabId.Subdaos,
+            label: t('title.subDaos'),
+          },
           current:
             name.trim() ||
             (makingSubDao ? t('title.newSubDao') : t('title.newDao')),

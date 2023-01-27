@@ -2,21 +2,54 @@ import { ArrowDropDown, ArrowForwardIos, Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
+import { DaoPageMode } from '@dao-dao/types'
 import { BreadcrumbsProps } from '@dao-dao/types/stateless/Breadcrumbs'
+import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
+import { useDaoInfoContext, useNavHelpers } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
 import { TopGradient } from '../TopGradient'
+import { useAppLayoutContext } from './AppLayoutContext'
 
 export * from '@dao-dao/types/stateless/Breadcrumbs'
 
 export const Breadcrumbs = ({
-  crumbs,
+  home = false,
+  sdpHomeTab,
   current,
   className,
 }: BreadcrumbsProps) => {
+  const { t } = useTranslation()
+  const daoInfo = useDaoInfoContext()
+  const { mode } = useAppLayoutContext()
+  const { getDaoPath } = useNavHelpers()
+
   const [responsive, setResponsive] = useState(false)
+
+  const crumbs =
+    mode === DaoPageMode.Dapp
+      ? [
+          { href: '/', label: t('title.home') },
+          ...getParentDaoBreadcrumbs(getDaoPath, daoInfo.parentDao),
+          ...(home
+            ? []
+            : [{ href: getDaoPath(daoInfo.coreAddress), label: daoInfo.name }]),
+        ]
+      : [
+          ...(home
+            ? []
+            : [
+                {
+                  href:
+                    getDaoPath(daoInfo.coreAddress) +
+                    (sdpHomeTab ? '#' + sdpHomeTab.id : ''),
+                  label: sdpHomeTab?.label || t('title.home'),
+                },
+              ]),
+        ]
 
   return (
     <>

@@ -10,7 +10,8 @@ import {
 } from '@dao-dao/stateful'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useDaoInfoContext } from '@dao-dao/stateless'
-import { SITE_URL, getFallbackImage } from '@dao-dao/utils'
+import { DaoPageMode } from '@dao-dao/types'
+import { SITE_URL, getDaoPath, getFallbackImage } from '@dao-dao/utils'
 
 const InnerCreateSubDaoPage = () => {
   const { coreAddress, coreVersion, name, imageUrl, parentDao } =
@@ -51,7 +52,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps = makeGetDaoStaticProps({
   getProps: async ({ t, coreAddress }) => ({
-    url: `${SITE_URL}/dao/${coreAddress}/create`,
+    url: SITE_URL + getDaoPath(DaoPageMode.Dapp, coreAddress) + '/create',
     followingTitle: t('title.createASubDao'),
   }),
 })

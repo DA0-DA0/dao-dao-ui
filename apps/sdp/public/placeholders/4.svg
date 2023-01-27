@@ -1,0 +1,23 @@
+<svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="36" cy="36" r="36" fill="url(#paint0_radial_20_5824)"/>
+<defs>
+<radialGradient id="paint0_radial_20_5824" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(3.05519 16.8162) rotate(30.4154) scale(122.335 195.726)">
+<stop stop-color="#D72DE5"/>
+<stop offset="0.1093" stop-color="#D62EE5"/>
+<stop offset="0.198245" stop-color="#D232E5"/>
+<stop offset="0.269967" stop-color="#CC38E4"/>
+<stop offset="0.327597" stop-color="#C540E3"/>
+<stop offset="0.374267" stop-color="#BC49E2"/>
+<stop offset="0.413108" stop-color="#B154E1"/>
+<stop offset="0.447252" stop-color="#A561E0"/>
+<stop offset="0.479831" stop-color="#996DDF"/>
+<stop offset="0.513975" stop-color="#8C7BDE"/>
+<stop offset="0.552816" stop-color="#7F89DD"/>
+<stop offset="0.599486" stop-color="#7197DC"/>
+<stop offset="0.657117" stop-color="#64A5DA"/>
+<stop offset="0.728839" stop-color="#57B2D9"/>
+<stop offset="0.817784" stop-color="#4BBED8"/>
+<stop offset="0.927083" stop-color="#40CAD7"/>
+</radialGradient>
+</defs>
+</svg>

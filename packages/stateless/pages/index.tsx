@@ -1,5 +1,6 @@
 export * from './CreateProposal'
-export * from './DaoHome'
+export * from './DaoTabbedHome'
+export * from './DaoWrappedTab'
 export * from './Home'
 export * from './Inbox'
 export * from './Proposal'

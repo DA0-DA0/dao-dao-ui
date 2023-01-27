@@ -3,8 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { DaoProposalSingleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
 import { DaoVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
-import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators/makeDappLayoutDecorator'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
+import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators/makeDappLayoutDecorator'
 
 import { CreateDaoVoting } from './CreateDaoVoting'
 

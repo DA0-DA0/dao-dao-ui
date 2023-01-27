@@ -10,6 +10,7 @@ import {
   CommonProposalInfo,
   ContractVersion,
   ContractVersionInfo,
+  DaoPageMode,
   DaoParentInfo,
   IndexerDumpState,
   InfoResponse,
@@ -28,6 +29,7 @@ import {
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   cosmWasmClientRouter,
+  getDaoPath,
   getRpcForChainId,
   isValidWalletAddress,
   parseContractVersion,
@@ -256,7 +258,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       ) {
         return {
           redirect: {
-            destination: LEGACY_URL_PREFIX + `/dao/${coreAddress}`,
+            destination:
+              LEGACY_URL_PREFIX + getDaoPath(DaoPageMode.Dapp, coreAddress),
             permanent: false,
           },
         }
@@ -269,7 +272,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         (error.message.includes('contract: not found') ||
           error.message.includes('Error parsing into type') ||
           error.message.includes('decoding bech32 failed') ||
-          error.message.includes('/dao/dumpState reason: Unexpected token'))
+          error.message.includes('dumpState reason: Unexpected token'))
       ) {
         // Excluding `info` will render DAONotFound.
         return {

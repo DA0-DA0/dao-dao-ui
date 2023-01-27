@@ -12,6 +12,7 @@ import {
   NoContent,
   useAppLayoutContext,
 } from '../components'
+import { useNavHelpers } from '../hooks'
 
 export interface InboxProps {
   state: InboxState
@@ -25,6 +26,7 @@ export const Inbox = ({
   LinkWrapper,
 }: InboxProps) => {
   const { t } = useTranslation()
+  const { getDaoPath } = useNavHelpers()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const [refreshSpinning, setRefreshSpinning] = useState(false)
@@ -87,7 +89,7 @@ export const Inbox = ({
                   imageUrl={dao.imageUrl}
                   label={dao.name}
                   link={{
-                    href: `/dao/${dao.coreAddress}`,
+                    href: getDaoPath(dao.coreAddress),
                     LinkWrapper,
                   }}
                   noContentIndent

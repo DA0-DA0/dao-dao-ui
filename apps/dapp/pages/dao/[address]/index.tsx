@@ -3,7 +3,6 @@
 
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
-import { useRouter } from 'next/router'
 import React, { useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -17,43 +16,41 @@ import {
   DiscordNotifierConfigureModal,
   LinkWrapper,
   ProfileDisconnectedCard,
-  ProposalsTab,
-  SubDaosTab,
   SuspenseLoader,
-  TreasuryAndNftsTab,
+  useDaoTabs,
   useEncodedDaoProposalSinglePrefill,
   useFollowingDaos,
   useMembership,
   useWalletInfo,
 } from '@dao-dao/stateful'
 import { useCoreActionForKey } from '@dao-dao/stateful/actions'
-import { usePayrollAdapter } from '@dao-dao/stateful/payroll'
 import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
-  DaoHome,
+  DaoTabbedHome,
   Loader,
   ProfileMemberCard,
   ProfileNotMemberCard,
   useAppLayoutContext,
   useCachedLoadable,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
-import { CoreActionKey } from '@dao-dao/types'
+import { CoreActionKey, DaoPageMode } from '@dao-dao/types'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
-import { SITE_URL } from '@dao-dao/utils'
+import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const InnerDaoHome = () => {
   const { t } = useTranslation()
-  const router = useRouter()
+  const { getDaoProposalPath, router } = useNavHelpers()
   const { connected } = useWallet()
   const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
 
   const daoInfo = useDaoInfoContext()
   const {
-    components: { extraTabs, ProfileCardMemberInfo },
+    components: { ProfileCardMemberInfo },
   } = useVotingModuleAdapter()
   const { isMember } = useMembership(daoInfo)
 
@@ -100,7 +97,9 @@ const InnerDaoHome = () => {
   )
   const addSubDaoProposalPrefillHref =
     prefillValid && daoInfo.parentDao && encodedAddSubDaoProposalPrefill
-      ? `/dao/${daoInfo.parentDao.coreAddress}/proposals/create?prefill=${encodedAddSubDaoProposalPrefill}`
+      ? getDaoProposalPath(daoInfo.parentDao.coreAddress, 'create', {
+          prefill: encodedAddSubDaoProposalPrefill,
+        })
       : undefined
   useEffect(() => {
     if (!addSubDaoProposalPrefillHref) {
@@ -186,34 +185,15 @@ const InnerDaoHome = () => {
     useFollowingDaos()
   const following = isFollowing(daoInfo.coreAddress)
 
-  // Get payroll tab component, if exists.
-  const PayrollTab = usePayrollAdapter()?.PayrollTab
+  const tabs = useDaoTabs()
 
   return (
-    <DaoHome
+    <DaoTabbedHome
+      DaoInfoBar={DaoInfoBar}
       DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
       LinkWrapper={LinkWrapper}
-      ProposalsTab={ProposalsTab}
-      SubDaosTab={SubDaosTab}
       SuspenseLoader={SuspenseLoader}
-      TreasuryAndNftsTab={TreasuryAndNftsTab}
       daoInfo={daoInfo}
-      daoInfoBar={<DaoInfoBar />}
-      extraTabs={[
-        ...(extraTabs?.map(({ labelI18nKey, ...tab }) => ({
-          label: t(labelI18nKey),
-          ...tab,
-        })) ?? []),
-        ...(PayrollTab
-          ? [
-              {
-                id: 'payroll',
-                label: t('title.payroll'),
-                Component: PayrollTab,
-              },
-            ]
-          : []),
-      ]}
       follow={{
         following,
         onFollow: () =>
@@ -268,6 +248,7 @@ const InnerDaoHome = () => {
           <ProfileDisconnectedCard />
         )
       }
+      tabs={tabs}
     />
   )
 }
@@ -291,6 +272,6 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps = makeGetDaoStaticProps({
   getProps: async ({ coreAddress }) => ({
-    url: `${SITE_URL}/dao/${coreAddress}`,
+    url: SITE_URL + getDaoPath(DaoPageMode.Dapp, coreAddress),
   }),
 })

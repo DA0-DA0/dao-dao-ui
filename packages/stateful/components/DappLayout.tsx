@@ -28,7 +28,11 @@ import {
   DappLayout as StatelessDappLayout,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { CommandModalContextMaker, IAppLayoutContext } from '@dao-dao/types'
+import {
+  CommandModalContextMaker,
+  DaoPageMode,
+  IAppLayoutContext,
+} from '@dao-dao/types'
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import { CommandModal, makeGenericContext } from '../command'
@@ -150,6 +154,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     'RightSidebarContent' | 'PageHeader'
   > = useMemo(
     () => ({
+      mode: DaoPageMode.Dapp,
       responsiveNavigation: {
         enabled: responsiveNavigationEnabled,
         toggle: () => setResponsiveNavigationEnabled((v) => !v),
@@ -212,7 +217,46 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   ])
 
   return (
-    <>
+    <StatelessDappLayout
+      connect={connect}
+      connectWalletButton={<ConnectWallet variant="secondary" />}
+      connected={connected}
+      context={appLayoutContext}
+      navigationProps={{
+        walletConnected: connected,
+        LinkWrapper,
+        inboxCount:
+          inbox.loading ||
+          // Prevent hydration errors by loading until mounted.
+          !mountedInBrowser
+            ? {
+                loading: true,
+              }
+            : {
+                loading: false,
+                data: inbox.itemCount,
+              },
+        setCommandModalVisible: () => setCommandModalVisible(true),
+        version: '2.0',
+        followingDaos: mountedInBrowser
+          ? loadableToLoadingData(followingDaoDropdownInfosLoadable, [])
+          : // Prevent hydration errors by loading until mounted.
+            { loading: true },
+        compact,
+        setCompact,
+        mountedInBrowser,
+      }}
+      rightSidebarProps={{
+        wallet: <SidebarWallet />,
+      }}
+      walletProfile={
+        status === WalletConnectionStatus.Connected ? walletProfile : undefined
+      }
+    >
+      {children}
+
+      {/* Modals */}
+
       <InstallKeplrModal
         onClose={() => setInstallWarningVisible(false)}
         visible={installWarningVisible}
@@ -272,47 +316,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
           }}
         />
       )}
-
-      <StatelessDappLayout
-        connect={connect}
-        connectWalletButton={<ConnectWallet variant="secondary" />}
-        connected={connected}
-        context={appLayoutContext}
-        navigationProps={{
-          walletConnected: connected,
-          LinkWrapper,
-          inboxCount:
-            inbox.loading ||
-            // Prevent hydration errors by loading until mounted.
-            !mountedInBrowser
-              ? {
-                  loading: true,
-                }
-              : {
-                  loading: false,
-                  data: inbox.itemCount,
-                },
-          setCommandModalVisible: () => setCommandModalVisible(true),
-          version: '2.0',
-          followingDaos: mountedInBrowser
-            ? loadableToLoadingData(followingDaoDropdownInfosLoadable, [])
-            : // Prevent hydration errors by loading until mounted.
-              { loading: true },
-          compact,
-          setCompact,
-          mountedInBrowser,
-        }}
-        rightSidebarProps={{
-          wallet: <SidebarWallet />,
-        }}
-        walletProfile={
-          status === WalletConnectionStatus.Connected
-            ? walletProfile
-            : undefined
-        }
-      >
-        {children}
-      </StatelessDappLayout>
-    </>
+    </StatelessDappLayout>
   )
 }

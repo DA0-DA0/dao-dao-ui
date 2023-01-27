@@ -9,7 +9,7 @@ import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
-import { ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
@@ -22,9 +22,15 @@ import {
 import {
   ApolloGqlProvider,
   DappLayout,
+  SuspenseLoader,
   WalletProvider,
 } from '@dao-dao/stateful'
-import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
+import {
+  PageLoader,
+  Theme,
+  ThemeProvider,
+  ToastNotifications,
+} from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 type DappProps = AppProps<{ featuredDaoDumpStates?: any[] } | {}>
@@ -68,30 +74,21 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <ApolloGqlProvider>
-        {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
-        {router.isFallback ? (
-          <LayoutLoading>
-            <Component {...pageProps} />
-          </LayoutLoading>
-        ) : (
+      {/* Show loader until not fallback anymore, since translations aren't loaded until static props are ready (i.e. not fallback). */}
+      <SuspenseLoader fallback={<PageLoader />}>
+        <ApolloGqlProvider>
           <WalletProvider>
             <DappLayout>
               <Component {...pageProps} />
             </DappLayout>
           </WalletProvider>
-        )}
+        </ApolloGqlProvider>
 
         <ToastNotifications />
-      </ApolloGqlProvider>
+      </SuspenseLoader>
     </ThemeProvider>
   )
 }
-
-// Plain layout while layout is loading (fallback page).
-const LayoutLoading = ({ children }: { children: ReactNode }) => (
-  <main className="h-full min-h-screen w-full overflow-hidden">{children}</main>
-)
 
 const DApp = (props: DappProps) => {
   const { t } = useTranslation()

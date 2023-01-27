@@ -4,8 +4,8 @@ import { DaoProposalSingleAdapter } from '@dao-dao/stateful/proposal-module-adap
 import { DaoVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   WalletProviderDecorator,
-  makeDappLayoutDecorator,
   makeCreateDaoFormDecorator,
+  makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 
 import { CreateDaoStart } from './CreateDaoStart'

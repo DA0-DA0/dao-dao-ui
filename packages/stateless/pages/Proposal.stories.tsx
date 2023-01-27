@@ -22,7 +22,6 @@ import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVo
 import { Vote as ProposalStatusAndInfoVoteStory } from '../components/proposal/ProposalStatusAndInfo.stories'
 import { ProposalVotes } from '../components/proposal/ProposalVotes'
 import { makeProps as makeProposalVotesProps } from '../components/proposal/ProposalVotes.stories'
-import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { Proposal } from './Proposal'
 
 const proposalId = 'A72'
@@ -39,7 +38,7 @@ export default {
 } as ComponentMeta<typeof Proposal>
 
 const Template: ComponentStory<typeof Proposal> = (args) => (
-  <Proposal {...args} daoInfo={useDaoInfoContext()} />
+  <Proposal {...args} />
 )
 
 export const Default = Template.bind({})

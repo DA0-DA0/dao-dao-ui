@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 
 import { EMPTY_INBOX } from '@dao-dao/storybook/decorators'
 import {
+  DaoPageMode,
   DappLayoutProps,
   IAppLayoutContext,
   PageHeaderProps,
@@ -45,6 +46,7 @@ export const DefaultArgs: DappLayoutProps = {
     },
   },
   context: {
+    mode: DaoPageMode.Dapp,
     responsiveNavigation: {
       enabled: true,
       toggle: () => alert('toggle nav'),
@@ -80,6 +82,7 @@ const Template: ComponentStory<typeof DappLayout> = (args) => {
     'RightSidebarContent' | 'PageHeader'
   > = useMemo(
     () => ({
+      mode: DaoPageMode.Dapp,
       responsiveNavigation: {
         enabled: responsiveNavigationEnabled,
         toggle: () => setResponsiveNavigationEnabled((v) => !v),

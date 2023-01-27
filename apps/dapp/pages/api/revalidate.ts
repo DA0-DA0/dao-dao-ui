@@ -3,6 +3,9 @@
 
 import { NextApiRequest, NextApiResponse } from 'next'
 
+import { DaoPageMode } from '@dao-dao/types'
+import { getDaoPath, getDaoProposalPath } from '@dao-dao/utils/url'
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -13,10 +16,14 @@ export default async function handler(
   }
 
   try {
-    await res.revalidate(`/dao/${coreAddress}`)
-    await res.revalidate(`/dao/${coreAddress}/proposals/create`)
+    await res.revalidate(getDaoPath(DaoPageMode.Dapp, coreAddress))
+    await res.revalidate(
+      getDaoProposalPath(DaoPageMode.Dapp, coreAddress, 'create')
+    )
     if (typeof proposalId === 'string') {
-      await res.revalidate(`/dao/${coreAddress}/proposals/${proposalId}`)
+      await res.revalidate(
+        getDaoProposalPath(DaoPageMode.Dapp, coreAddress, proposalId)
+      )
     }
 
     return res.status(200).end()

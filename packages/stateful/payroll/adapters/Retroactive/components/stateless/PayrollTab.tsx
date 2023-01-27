@@ -9,6 +9,7 @@ import {
   NoContent,
   Tooltip,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/DaoCore.v2'
@@ -50,6 +51,7 @@ export const PayrollTab = ({
 }: PayrollTabProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
+  const { getDaoProposalPath } = useNavHelpers()
 
   const [showCreate, setShowCreate] = useState(false)
   // Can create survey if member of DAO and there does not exist a current
@@ -150,7 +152,8 @@ export const PayrollTab = ({
                         : // If was not a member but proposal exists, open survey in new tab on select.
                           survey.proposalId &&
                           window.open(
-                            `/dao/${coreAddress}/proposals/${survey.proposalId}`
+                            getDaoProposalPath(coreAddress, survey.proposalId),
+                            '_blank'
                           )
                     }
                     survey={survey}

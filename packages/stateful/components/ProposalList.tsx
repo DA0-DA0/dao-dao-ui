@@ -4,6 +4,7 @@ import { useRecoilCallback } from 'recoil'
 import {
   ProposalList as StatelessProposalList,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
 
 import { useMembership } from '../hooks'
@@ -16,6 +17,7 @@ const PROP_LOAD_LIMIT = 20
 
 export const ProposalList = () => {
   const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
+  const { getDaoProposalPath } = useNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,
@@ -131,7 +133,7 @@ export const ProposalList = () => {
             coreAddress,
             proposalModules,
             proposalId: id,
-            proposalViewUrl: `/dao/${coreAddress}/proposals/${id}`,
+            proposalViewUrl: getDaoProposalPath(coreAddress, id),
           })
 
           setOpenProposals((proposals) => [
@@ -162,7 +164,7 @@ export const ProposalList = () => {
     <StatelessProposalList
       ProposalLine={ProposalLine}
       canLoadMore={canLoadMore}
-      createNewProposalHref={`/dao/${coreAddress}/proposals/create`}
+      createNewProposalHref={getDaoProposalPath(coreAddress, 'create')}
       historyProposals={historyProposals}
       isMember={isMember}
       loadMore={loadMore}

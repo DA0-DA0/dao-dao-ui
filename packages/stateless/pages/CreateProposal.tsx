@@ -1,8 +1,12 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoInfo, ProposalModule, ProposalModuleAdapter } from '@dao-dao/types'
-import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
+import {
+  DaoInfo,
+  DaoTabId,
+  ProposalModule,
+  ProposalModuleAdapter,
+} from '@dao-dao/types'
 
 import { Dropdown, DropdownOption, useAppLayoutContext } from '../components'
 
@@ -51,11 +55,10 @@ export const CreateProposal = ({
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeader
         breadcrumbs={{
-          crumbs: [
-            { href: '/', label: 'Home' },
-            ...getParentDaoBreadcrumbs(daoInfo.parentDao),
-            { href: `/dao/${daoInfo.coreAddress}`, label: daoInfo.name },
-          ],
+          sdpHomeTab: {
+            id: DaoTabId.Proposals,
+            label: t('title.proposals'),
+          },
           current: t('title.createProposal'),
         }}
         className="mx-auto max-w-5xl"

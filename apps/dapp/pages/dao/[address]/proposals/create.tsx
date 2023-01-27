@@ -4,7 +4,6 @@
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import type { GetStaticPaths, NextPage } from 'next'
-import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -35,20 +34,22 @@ import {
   CreateProposal,
   PageLoader,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
 import {
   BaseNewProposalProps,
+  DaoPageMode,
   ProposalDraft,
   ProposalPrefill,
 } from '@dao-dao/types'
-import { SITE_URL } from '@dao-dao/utils'
+import { SITE_URL, getDaoProposalPath } from '@dao-dao/utils'
 
 // TODO(v2): Fix errors getting stuck when removing components with errors (I
 // think this is when it happens). Can't click preview or submit sometimes even
 // tho there are no visible errors.
 const InnerProposalCreate = () => {
   const { t } = useTranslation()
-  const router = useRouter()
+  const { goToDaoProposal, router } = useNavHelpers()
   const daoInfo = useDaoInfoContext()
   const { isMember = false } = useMembership(daoInfo)
   const { connected, status } = useWallet()
@@ -289,13 +290,13 @@ const InnerProposalCreate = () => {
       setLatestProposalSave({})
 
       // Navigate to proposal (underneath the creation modal).
-      router.push(`/dao/${info.dao.coreAddress}/proposals/${info.id}`)
+      goToDaoProposal(info.dao.coreAddress, info.id)
     },
     [
       deleteDraft,
       draftIndex,
+      goToDaoProposal,
       refreshProposals,
-      router,
       setLatestProposalSave,
       setProposalCreatedCardProps,
     ]
@@ -366,7 +367,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps = makeGetDaoStaticProps({
   getProps: ({ t, coreAddress }) => ({
-    url: `${SITE_URL}/dao/${coreAddress}/proposals/create`,
+    url: SITE_URL + getDaoProposalPath(DaoPageMode.Dapp, coreAddress, 'create'),
     followingTitle: t('title.createAProposal'),
   }),
 })

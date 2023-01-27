@@ -7,11 +7,12 @@ import { LinkWrapperProps } from '@dao-dao/types'
 import { DaoParentInfo } from '@dao-dao/types/dao'
 import { getFallbackImage, toAccessibleImageUrl } from '@dao-dao/utils'
 
+import { useNavHelpers } from '../../hooks'
 import { Tooltip } from '../tooltip'
 
 export interface DaoImageProps {
   daoName: string
-  size: 'sm' | 'lg'
+  size: 'sm' | 'md' | 'lg'
   imageUrl: string | undefined | null
   // Used to get placeholder image if no `imageUrl` present.
   coreAddress?: string
@@ -23,6 +24,7 @@ export interface DaoImageProps {
   imageClassName?: string
   children?: ReactNode
   blur?: boolean
+  hideRing?: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
@@ -36,13 +38,17 @@ export const DaoImage = ({
   imageClassName,
   children,
   blur,
+  hideRing = false,
   LinkWrapper,
 }: DaoImageProps) => {
   const { t } = useTranslation()
+  const { getDaoPath } = useNavHelpers()
 
   const sizeClassNames = clsx('overflow-hidden rounded-full', {
     // DaoCard
     'h-[4.5rem] w-[4.5rem]': size === 'sm',
+    // SDP header
+    'h-8 w-8': size === 'md',
     // DAO home page
     'h-24 w-24': size === 'lg',
   })
@@ -53,7 +59,7 @@ export const DaoImage = ({
         'relative inline-block rounded-full',
         blur
           ? `border border-border-secondary ${sizeClassNames}`
-          : 'border-2 border-border-primary p-1',
+          : !hideRing && 'border-2 border-border-primary p-1',
         className
       )}
     >
@@ -100,7 +106,7 @@ export const DaoImage = ({
                 'h-10 w-10': size === 'lg',
               }
             )}
-            href={`/dao/${parentDao.coreAddress}`}
+            href={getDaoPath(parentDao.coreAddress)}
             onClick={(e) => e.stopPropagation()}
             style={{
               backgroundImage: `url(${

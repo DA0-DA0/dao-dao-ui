@@ -271,3 +271,29 @@ export type DaoCreatedCardProps = Omit<
   DaoCardProps,
   'follow' | 'LinkWrapper' | 'IconButtonLink'
 >
+
+export enum DaoTabId {
+  Home = '',
+  Proposals = 'proposals',
+  Treasury = 'treasury',
+  Subdaos = 'subdaos',
+  Members = 'members',
+  Payroll = 'payroll',
+  Staked = 'staked',
+}
+
+export type DaoTab = {
+  // ID used in URL hash.
+  id: DaoTabId
+  label: string
+  Icon: ComponentType<{ className: string }>
+}
+
+export type DaoTabWithComponent = DaoTab & {
+  Component: ComponentType
+}
+
+export enum DaoPageMode {
+  Dapp = 'dapp',
+  Sdp = 'sdp',
+}

@@ -3,7 +3,6 @@
 
 import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
-import { useRouter } from 'next/router'
 import { ComponentProps, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -31,9 +30,15 @@ import {
   ProposalNotFound,
   ProposalProps,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, CommonProposalInfo, CoreActionKey } from '@dao-dao/types'
-import { SITE_URL } from '@dao-dao/utils'
+import {
+  ActionKey,
+  CommonProposalInfo,
+  CoreActionKey,
+  DaoPageMode,
+} from '@dao-dao/types'
+import { SITE_URL, getDaoProposalPath } from '@dao-dao/utils'
 
 interface InnerProposalProps {
   proposalInfo: CommonProposalInfo
@@ -41,8 +46,8 @@ interface InnerProposalProps {
 
 const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
   const { t } = useTranslation()
-  const router = useRouter()
   const daoInfo = useDaoInfoContext()
+  const { getDaoProposalPath, router } = useNavHelpers()
   const { connected } = useWallet()
   const {
     adapter: {
@@ -141,7 +146,9 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
     [ProposalStatusAndInfo, onCloseSuccess, onExecuteSuccess, onVoteSuccess]
   )
 
-  const duplicateUrlPrefix = `/dao/${daoInfo.coreAddress}/proposals/create?prefill=`
+  const duplicateUrlPrefix = getDaoProposalPath(daoInfo.coreAddress, 'create', {
+    prefill: '',
+  })
   const [navigatingToHref, setNavigatingToHref] =
     useRecoilState(navigatingToHrefAtom)
 
@@ -170,7 +177,6 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
             },
         address: proposalInfo.createdByAddress,
       }}
-      daoInfo={daoInfo}
       onRefresh={refreshProposal}
       proposalInfo={proposalInfo}
       refreshing={refreshing}
@@ -186,31 +192,35 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
 const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
   children: _,
   ...props
-}) => (
-  <DaoPageWrapper {...props}>
-    {props.proposalInfo && props.serializedInfo ? (
-      <ProposalModuleAdapterProvider
-        initialOptions={{
-          chainId: props.serializedInfo.chainId,
-          coreAddress: props.serializedInfo.coreAddress,
-        }}
-        proposalId={props.proposalInfo.id}
-        proposalModules={props.serializedInfo.proposalModules}
-      >
-        <InnerProposal proposalInfo={props.proposalInfo} />
-      </ProposalModuleAdapterProvider>
-    ) : (
-      <ProposalNotFound
-        Trans={Trans}
-        homeHref={
-          props.serializedInfo
-            ? `/dao/${props.serializedInfo.coreAddress}`
-            : '/'
-        }
-      />
-    )}
-  </DaoPageWrapper>
-)
+}) => {
+  const { getDaoPath } = useNavHelpers()
+
+  return (
+    <DaoPageWrapper {...props}>
+      {props.proposalInfo && props.serializedInfo ? (
+        <ProposalModuleAdapterProvider
+          initialOptions={{
+            chainId: props.serializedInfo.chainId,
+            coreAddress: props.serializedInfo.coreAddress,
+          }}
+          proposalId={props.proposalInfo.id}
+          proposalModules={props.serializedInfo.proposalModules}
+        >
+          <InnerProposal proposalInfo={props.proposalInfo} />
+        </ProposalModuleAdapterProvider>
+      ) : (
+        <ProposalNotFound
+          Trans={Trans}
+          homeHref={
+            props.serializedInfo
+              ? getDaoPath(props.serializedInfo.coreAddress)
+              : '/'
+          }
+        />
+      )}
+    </DaoPageWrapper>
+  )
+}
 
 export default ProposalPage
 
@@ -223,5 +233,10 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps = makeGetDaoProposalStaticProps({
   getProposalUrlPrefix: ({ address }) =>
-    `${SITE_URL}/dao/${address}/proposals/`,
+    SITE_URL +
+    getDaoProposalPath(
+      DaoPageMode.Dapp,
+      typeof address === 'string' ? address : '',
+      ''
+    ),
 })

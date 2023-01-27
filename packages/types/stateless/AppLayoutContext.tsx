@@ -1,10 +1,12 @@
 import { ComponentType, ReactNode } from 'react'
 
 import { CommandModalContextMaker } from '../command'
+import { DaoPageMode } from '../dao'
 import { InboxState } from '../inbox'
 import { PageHeaderProps } from './PageHeader'
 
 export interface IAppLayoutContext {
+  mode: DaoPageMode
   responsiveNavigation: {
     enabled: boolean
     toggle: () => void

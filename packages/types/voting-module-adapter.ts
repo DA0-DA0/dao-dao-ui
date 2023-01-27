@@ -8,14 +8,10 @@ import {
   DaoCreationGovernanceConfigInputProps,
   DaoCreationGovernanceConfigReviewProps,
   DaoCreationVotingConfigItem,
+  DaoTabWithComponent,
 } from './dao'
 import { AmountWithTimestampAndDenom } from './state'
-import {
-  DaoHomeTab,
-  DaoInfoBarItem,
-  LoadingData,
-  StakingMode,
-} from './stateless'
+import { DaoInfoBarItem, LoadingData, StakingMode } from './stateless'
 import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
 
 export interface BaseProfileCardMemberInfoProps {
@@ -62,7 +58,9 @@ export interface IVotingModuleAdapter {
 
   // Components
   components: {
-    extraTabs?: (Omit<DaoHomeTab, 'label'> & { labelI18nKey: string })[]
+    extraTabs?: (Omit<DaoTabWithComponent, 'label'> & {
+      labelI18nKey: string
+    })[]
     ProfileCardMemberInfo: ComponentType<BaseProfileCardMemberInfoProps>
   }
 }
