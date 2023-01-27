@@ -56,11 +56,15 @@ const config = {
       destination: '/:slug*',
       permanent: true,
     },
-    // Redirect index to DAO DAO DAO.
     {
       source: '/',
       destination:
-        '/juno10h0hc64jv006rr8qy0zhlu4jsxct8qwa0vtaleayh0ujz0zynf2s2r7v8q',
+        process.env.NEXT_PUBLIC_MAINNET === 'true'
+          ? // Redirect to DAO DAO DAO on mainnet.
+            '/juno10h0hc64jv006rr8qy0zhlu4jsxct8qwa0vtaleayh0ujz0zynf2s2r7v8q'
+          : // Redirect to YAMP DAO on testnet.
+            // TODO: Create Example Testnet DAO. Replace YAMP DAO below.
+            'juno14s58s26lpz07v3adfmftncxg8zde07j56jenwtx3l3ggmn0n5yhq8pznw6',
       permanent: false,
     },
   ],
