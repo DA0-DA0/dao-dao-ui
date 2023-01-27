@@ -50,6 +50,13 @@ const config = {
     ],
   },
   redirects: async () => [
+    // Redirect /dao/address to /address.
+    {
+      source: '/dao/:slug*',
+      destination: '/:slug*',
+      permanent: true,
+    },
+    // Redirect index to DAO DAO DAO.
     {
       source: '/',
       destination:

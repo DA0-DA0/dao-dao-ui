@@ -15,6 +15,7 @@ import {
   DaoInfo,
   DaoInfoSerializable,
 } from '@dao-dao/types'
+import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
 import { ActionsProvider } from '../../actions'
 import { VotingModuleAdapterProvider } from '../../voting-module-adapter'
@@ -28,6 +29,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   accentColor?: string | null
   serializedInfo?: DaoInfoSerializable
   error?: string
+  setIcon?: (icon: string | undefined) => void
 }>
 
 export interface DaoProposalPageWrapperProps extends DaoPageWrapperProps {
@@ -41,6 +43,7 @@ export const DaoPageWrapper = ({
   accentColor,
   serializedInfo,
   error,
+  setIcon,
   children,
   ...innerProps
 }: DaoPageWrapperProps) => {
@@ -77,6 +80,17 @@ export const DaoPageWrapper = ({
       : undefined,
   }
 
+  // Set icon for the page from info if setIcon is present.
+  useEffect(() => {
+    if (setIcon) {
+      setIcon(
+        info?.imageUrl
+          ? transformIpfsUrlToHttpsIfNecessary(info.imageUrl)
+          : undefined
+      )
+    }
+  }, [setIcon, info?.imageUrl])
+
   return (
     <>
       <NextSeo
@@ -86,7 +100,11 @@ export const DaoPageWrapper = ({
           type: 'website',
           title,
           description,
-          ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
+          ...(!!info?.imageUrl && {
+            images: [
+              { url: transformIpfsUrlToHttpsIfNecessary(info.imageUrl) },
+            ],
+          }),
         }}
         title={title}
       />

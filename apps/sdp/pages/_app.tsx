@@ -34,7 +34,13 @@ import {
 } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
-const InnerApp = ({ Component, pageProps }: AppProps<DaoPageWrapperProps>) => {
+const InnerApp = ({
+  Component,
+  pageProps,
+  setIcon,
+}: AppProps<DaoPageWrapperProps> & {
+  setIcon: (icon: string | undefined) => void
+}) => {
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
@@ -76,13 +82,21 @@ const InnerApp = ({ Component, pageProps }: AppProps<DaoPageWrapperProps>) => {
       {/* Show loader until not fallback anymore, since translations aren't loaded until static props are ready (i.e. not fallback). */}
       <SuspenseLoader fallback={<PageLoader />}>
         <ApolloGqlProvider>
-          <DaoPageWrapper {...pageProps}>
-            <WalletProvider>
-              <SdpLayout>
-                <Component {...pageProps} />
-              </SdpLayout>
-            </WalletProvider>
-          </DaoPageWrapper>
+          <WalletProvider>
+            {router.pathname === '/404' ||
+            router.pathname === '/500' ||
+            router.pathname === '/_error' ? (
+              <Component {...pageProps} />
+            ) : (
+              // All non-error SDP pages are a DAO page.
+              <DaoPageWrapper setIcon={setIcon} {...pageProps}>
+                {/* SdpLayout needs DaoPageWrapper for navigation tabs. */}
+                <SdpLayout>
+                  <Component {...pageProps} />
+                </SdpLayout>
+              </DaoPageWrapper>
+            )}
+          </WalletProvider>
         </ApolloGqlProvider>
 
         <ToastNotifications />
@@ -93,6 +107,8 @@ const InnerApp = ({ Component, pageProps }: AppProps<DaoPageWrapperProps>) => {
 
 const Sdp = (props: AppProps<DaoPageWrapperProps>) => {
   const { t } = useTranslation()
+
+  const [icon, setIcon] = useState<string>()
 
   return (
     <>
@@ -105,23 +121,11 @@ const Sdp = (props: AppProps<DaoPageWrapperProps>) => {
             type: 'image/png',
           },
           {
-            href: '/favicon-32x32.png',
-            rel: 'icon',
-            sizes: '32x32',
-            type: 'image/png',
-          },
-          {
-            href: '/favicon-16x16.png',
-            rel: 'icon',
-            sizes: '16x16',
-            type: 'image/png',
-          },
-          {
             href: '/site.webmanifest',
             rel: 'manifest',
           },
           {
-            href: '/yin_yang.png',
+            href: icon || '/yin_yang.png',
             rel: 'icon',
           },
         ]}
@@ -163,7 +167,7 @@ const Sdp = (props: AppProps<DaoPageWrapperProps>) => {
       />
 
       <RecoilRoot>
-        <InnerApp {...props} />
+        <InnerApp setIcon={setIcon} {...props} />
       </RecoilRoot>
     </>
   )
