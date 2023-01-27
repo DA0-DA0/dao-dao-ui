@@ -2,20 +2,24 @@ import {
   AddRounded,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
+  LoopRounded,
   TagRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoTabId } from '@dao-dao/types'
+import { DaoPageMode, DaoTabId } from '@dao-dao/types'
 import { SdpNavigationProps } from '@dao-dao/types/stateless/SdpNavigation'
+import {
+  DAO_DAO_URL_PREFIX,
+  getDaoPath as baseGetDaoPath,
+} from '@dao-dao/utils'
 
 import { useDaoInfoContext, useNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
-import { IconButton, ThemeToggle } from '../icon_buttons'
+import { IconButton, IconButtonLink, ThemeToggle } from '../icon_buttons'
 import { Tooltip } from '../tooltip/Tooltip'
 import { useAppLayoutContext } from './AppLayoutContext'
 import { Footer } from './Footer'
@@ -52,7 +56,11 @@ export const SdpNavigation = ({
 }: SdpNavigationProps) => {
   const daoInfo = useDaoInfoContext()
   const { t } = useTranslation()
-  const { getDaoPath, getDaoProposalPath } = useNavHelpers()
+  const {
+    getDaoPath,
+    getDaoProposalPath,
+    router: { asPath },
+  } = useNavHelpers()
   const {
     responsiveNavigation: {
       enabled: responsiveEnabled,
@@ -60,6 +68,11 @@ export const SdpNavigation = ({
     },
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
   } = useAppLayoutContext()
+
+  // Get the path to the DAO page on main DAO DAO.
+  const daoDaoPath = asPath.startsWith(getDaoPath(''))
+    ? asPath.replace(getDaoPath(''), baseGetDaoPath(DaoPageMode.Dapp, ''))
+    : undefined
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
@@ -87,8 +100,6 @@ export const SdpNavigation = ({
   if (forceCompact !== undefined) {
     compact = forceCompact
   }
-
-  const { asPath } = useRouter()
 
   return (
     <>
@@ -122,24 +133,39 @@ export const SdpNavigation = ({
       >
         <PageHeader
           centerNode={
-            <Link href="/">
-              <a className="flex flex-row items-center gap-2 overflow-hidden">
-                <DaoImage
-                  LinkWrapper={LinkWrapper}
-                  coreAddress={daoInfo.coreAddress}
-                  daoName={daoInfo.name}
-                  hideRing
-                  imageUrl={daoInfo.imageUrl}
-                  size="md"
-                />
+            <div className="flex grow flex-row items-center justify-between gap-6">
+              <Link href={getDaoPath(daoInfo.coreAddress)}>
+                <a className="flex flex-row items-center gap-2 overflow-hidden">
+                  <DaoImage
+                    LinkWrapper={LinkWrapper}
+                    coreAddress={daoInfo.coreAddress}
+                    daoName={daoInfo.name}
+                    hideRing
+                    imageUrl={daoInfo.imageUrl}
+                    size="md"
+                  />
 
-                {!compact && (
-                  <Tooltip title={daoInfo.name}>
-                    <p className="header-text truncate">{daoInfo.name}</p>
-                  </Tooltip>
-                )}
-              </a>
-            </Link>
+                  {!compact && (
+                    <Tooltip title={daoInfo.name}>
+                      <p className="header-text truncate">{daoInfo.name}</p>
+                    </Tooltip>
+                  )}
+                </a>
+              </Link>
+
+              {/* Go to DAO DAO Page */}
+              {daoDaoPath && (
+                <Tooltip title={t('info.switchToDaoDaoView')}>
+                  <IconButtonLink
+                    Icon={LoopRounded}
+                    circular
+                    href={DAO_DAO_URL_PREFIX + daoDaoPath}
+                    openInNewTab={false}
+                    variant="ghost"
+                  />
+                </Tooltip>
+              )}
+            </div>
           }
           forceCenter={compact}
           noBorder={compact}
