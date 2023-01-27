@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useAppLayoutContext } from '../layout/AppLayoutContext'
+import { useAppLayoutContextIfAvailable } from '../layout/AppLayoutContext'
 import { ErrorPage } from './ErrorPage'
 
 export interface ErrorPage500Props {
@@ -11,7 +11,7 @@ export interface ErrorPage500Props {
 
 export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
   const { t } = useTranslation()
-  const { PageHeader } = useAppLayoutContext()
+  const PageHeader = useAppLayoutContextIfAvailable()?.PageHeader
 
   useEffect(() => {
     console.error(error)
@@ -19,7 +19,8 @@ export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
 
   return (
     <>
-      <PageHeader title={t('title.500')} />
+      {/* SDP does not have AppLayoutContext here. */}
+      {PageHeader && <PageHeader title={t('title.500')} />}
 
       <ErrorPage>
         <p>

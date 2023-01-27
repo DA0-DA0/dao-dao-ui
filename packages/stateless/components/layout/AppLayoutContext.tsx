@@ -12,3 +12,5 @@ export const useAppLayoutContext = () => {
 
   return context
 }
+
+export const useAppLayoutContextIfAvailable = () => useContext(AppLayoutContext)

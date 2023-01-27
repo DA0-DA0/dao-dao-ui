@@ -5,7 +5,7 @@ import { TransProps } from '@dao-dao/types'
 
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from '../error/ErrorPage'
-import { useAppLayoutContext } from '../layout/AppLayoutContext'
+import { useAppLayoutContextIfAvailable } from '../layout/AppLayoutContext'
 
 export interface DaoNotFoundProps {
   Trans: ComponentType<TransProps>
@@ -13,11 +13,12 @@ export interface DaoNotFoundProps {
 
 export const DaoNotFound = ({ Trans }: DaoNotFoundProps) => {
   const { t } = useTranslation()
-  const { PageHeader } = useAppLayoutContext()
+  const PageHeader = useAppLayoutContextIfAvailable()?.PageHeader
 
   return (
     <>
-      <PageHeader title={t('title.daoNotFound')} />
+      {/* SDP does not have AppLayoutContext here. */}
+      {PageHeader && <PageHeader title={t('title.daoNotFound')} />}
 
       <ErrorPage>
         <p>
