@@ -3,7 +3,7 @@ import { ComponentType } from 'react'
 import { DaoTab } from '../dao'
 import { LinkWrapperProps } from './LinkWrapper'
 
-export interface SdpNavigationProps {
+export interface SdaNavigationProps {
   tabs: DaoTab[]
   version: string
   compact: boolean

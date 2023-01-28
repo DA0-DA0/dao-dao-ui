@@ -4,7 +4,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { SuspenseLoader } from '@dao-dao/stateful'
 import {
   DaoPageWrapperDecorator,
-  makeSdpLayoutDecorator,
+  makeSdaLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 import { DaoSplashHeaderProps, DaoTabId } from '@dao-dao/types'
 
@@ -26,7 +26,7 @@ export default {
   decorators: [
     // Direct ancestor of rendered story.
     DaoPageWrapperDecorator,
-    makeSdpLayoutDecorator(),
+    makeSdaLayoutDecorator(),
   ],
 } as ComponentMeta<typeof DaoWrappedTab>
 

@@ -8,7 +8,7 @@ import { ButtonLink } from '../buttons'
 import { ErrorPage } from './ErrorPage'
 
 export type ErrorPage404Props = {
-  // The SDP 404 page renders outside the app layout context, so we cannot
+  // The SDA 404 page renders outside the app layout context, so we cannot
   // access the mode from the nav helpers. This prop allows us to override the
   // mode for the 404 page so we can use the nav helpers below.
   overrideMode?: DaoPageMode

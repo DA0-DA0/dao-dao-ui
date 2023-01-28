@@ -47,7 +47,7 @@ export const DaoImage = ({
   const sizeClassNames = clsx('overflow-hidden rounded-full', {
     // DaoCard
     'h-[4.5rem] w-[4.5rem]': size === 'sm',
-    // SDP header
+    // SDA header
     'h-8 w-8': size === 'md',
     // DAO home page
     'h-24 w-24': size === 'lg',

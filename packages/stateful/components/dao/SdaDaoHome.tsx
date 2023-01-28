@@ -4,7 +4,7 @@ import { useWidgets } from '../../widgets'
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoInfoBar } from './DaoInfoBar'
 
-export const SdpDaoHome = () => {
+export const SdaDaoHome = () => {
   const daoInfo = useDaoInfoContext()
 
   const loadingWidgets = useWidgets()

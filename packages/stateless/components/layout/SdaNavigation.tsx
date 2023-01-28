@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoPageMode, DaoTabId } from '@dao-dao/types'
-import { SdpNavigationProps } from '@dao-dao/types/stateless/SdpNavigation'
+import { SdaNavigationProps } from '@dao-dao/types/stateless/SdaNavigation'
 import {
   DAO_DAO_URL_PREFIX,
   getDaoPath as baseGetDaoPath,
@@ -46,14 +46,14 @@ const getForceCompact = () =>
     ? true
     : undefined
 
-export const SdpNavigation = ({
+export const SdaNavigation = ({
   tabs,
   version,
   compact,
   setCompact,
   mountedInBrowser,
   LinkWrapper,
-}: SdpNavigationProps) => {
+}: SdaNavigationProps) => {
   const daoInfo = useDaoInfoContext()
   const { t } = useTranslation()
   const {

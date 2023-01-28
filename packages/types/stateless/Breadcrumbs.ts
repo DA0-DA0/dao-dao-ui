@@ -9,10 +9,10 @@ export type BreadcrumbCrumb = {
 
 export interface BreadcrumbsProps {
   home?: boolean
-  // Override the home tab crumb when in the SDP. For example, when viewing a
+  // Override the home tab crumb when in the SDA. For example, when viewing a
   // proposal, we probably want to link back to the proposals tab instead of
   // home.
-  sdpHomeTab?: {
+  sdaHomeTab?: {
     id: DaoTabId
     label: string
   }

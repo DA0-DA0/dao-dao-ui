@@ -8,27 +8,27 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
 import { makeAppLayoutContextDecorator } from '@dao-dao/storybook/decorators'
-import { DaoTabId, SdpNavigationProps } from '@dao-dao/types'
+import { DaoTabId, SdaNavigationProps } from '@dao-dao/types'
 
 import { LinkWrapper } from '../LinkWrapper'
-import { SdpNavigation } from './SdpNavigation'
+import { SdaNavigation } from './SdaNavigation'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / layout / SdpNavigation',
-  component: SdpNavigation,
+  title: 'DAO DAO / packages / stateless / components / layout / SdaNavigation',
+  component: SdaNavigation,
   decorators: [makeAppLayoutContextDecorator(true)],
   excludeStories: ['DefaultArgs'],
-} as ComponentMeta<typeof SdpNavigation>
+} as ComponentMeta<typeof SdaNavigation>
 
-const Template: ComponentStory<typeof SdpNavigation> = (args) => {
+const Template: ComponentStory<typeof SdaNavigation> = (args) => {
   const [compact, setCompact] = useState(false)
 
-  return <SdpNavigation {...args} compact={compact} setCompact={setCompact} />
+  return <SdaNavigation {...args} compact={compact} setCompact={setCompact} />
 }
 
-// Used in `makeSdpLayoutDecorator` to provide a default layout for the page
+// Used in `makeSdaLayoutDecorator` to provide a default layout for the page
 // stories. Ensure this has all props.
-export const DefaultArgs: SdpNavigationProps = {
+export const DefaultArgs: SdaNavigationProps = {
   tabs: [
     {
       id: DaoTabId.Proposals,

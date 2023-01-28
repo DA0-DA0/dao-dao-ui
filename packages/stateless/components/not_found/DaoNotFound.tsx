@@ -10,7 +10,7 @@ export const DaoNotFound = () => {
 
   return (
     <>
-      {/* SDP does not have AppLayoutContext here. */}
+      {/* SDA does not have AppLayoutContext here. */}
       {PageHeader && <PageHeader title={t('title.daoNotFound')} />}
 
       <ErrorPage title={t('error.couldntFindDAO')}>

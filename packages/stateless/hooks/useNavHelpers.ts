@@ -12,7 +12,7 @@ import { useAppLayoutContextIfAvailable } from '../components/layout/AppLayoutCo
 export const useNavHelpers = (overrideMode?: DaoPageMode) => {
   const router = useRouter()
 
-  // On SDP, the ErrorPage404 renders outside the app layout context. We still
+  // On SDA, the ErrorPage404 renders outside the app layout context. We still
   // want to be able to use these helpers to redirect to the DAO page if we're
   // 404ing on a DAO subpath, so we allow overriding the mode.
   const { mode } = useAppLayoutContextIfAvailable() ?? {

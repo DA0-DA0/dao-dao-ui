@@ -70,7 +70,7 @@ const DaoHomePage: NextPage = () => {
           0
         )
 
-  const tabs = useDaoTabs({ includeSdpHome: true })
+  const tabs = useDaoTabs({ includeSdaHome: true })
   const tab =
     tabs.find((tab) => tab.id === router.asPath.split('#')[1]) || tabs[0]
 
@@ -144,6 +144,6 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps = makeGetDaoStaticProps({
   getProps: async ({ coreAddress }) => ({
-    url: SITE_URL + getDaoPath(DaoPageMode.Sdp, coreAddress),
+    url: SITE_URL + getDaoPath(DaoPageMode.Sda, coreAddress),
   }),
 })

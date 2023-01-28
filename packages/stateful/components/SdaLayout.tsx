@@ -21,7 +21,7 @@ import {
   InstallKeplrModal,
   NoKeplrAccountModal,
   ProposalCreatedModal,
-  SdpLayout as StatelessSdpLayout,
+  SdaLayout as StatelessSdaLayout,
 } from '@dao-dao/stateless'
 import { DaoPageMode, IAppLayoutContext } from '@dao-dao/types'
 
@@ -33,7 +33,7 @@ import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
 
-export const SdpLayout = ({ children }: { children: ReactNode }) => {
+export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
     installWarningVisibleAtom
@@ -74,7 +74,7 @@ export const SdpLayout = ({ children }: { children: ReactNode }) => {
     'RightSidebarContent' | 'PageHeader'
   > = useMemo(
     () => ({
-      mode: DaoPageMode.Sdp,
+      mode: DaoPageMode.Sda,
       responsiveNavigation: {
         enabled: responsiveNavigationEnabled,
         toggle: () => setResponsiveNavigationEnabled((v) => !v),
@@ -127,10 +127,10 @@ export const SdpLayout = ({ children }: { children: ReactNode }) => {
     daoCreatedCardPropsAtom
   )
 
-  const tabs = useDaoTabs({ includeSdpHome: true })
+  const tabs = useDaoTabs({ includeSdaHome: true })
 
   return (
-    <StatelessSdpLayout
+    <StatelessSdaLayout
       connect={connect}
       connectWalletButton={<ConnectWallet variant="secondary" />}
       connected={connected}
@@ -202,6 +202,6 @@ export const SdpLayout = ({ children }: { children: ReactNode }) => {
           }}
         />
       )}
-    </StatelessSdpLayout>
+    </StatelessSdaLayout>
   )
 }

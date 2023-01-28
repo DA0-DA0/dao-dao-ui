@@ -20,7 +20,7 @@ export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
 
   return (
     <>
-      {/* SDP does not have AppLayoutContext here. */}
+      {/* SDA does not have AppLayoutContext here. */}
       {PageHeader && <PageHeader title={t('title.500')} />}
 
       <ErrorPage>

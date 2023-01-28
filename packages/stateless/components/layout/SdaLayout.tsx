@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { RightSidebarProps } from '@dao-dao/types'
-import { SdpLayoutProps } from '@dao-dao/types/stateless/SdpLayout'
+import { SdaLayoutProps } from '@dao-dao/types/stateless/SdaLayout'
 
 import { ErrorBoundary } from '../error/ErrorBoundary'
 import { IconButton } from '../icon_buttons'
@@ -14,9 +14,9 @@ import { Tooltip } from '../tooltip'
 import { AppLayoutContext } from './AppLayoutContext'
 import { makePageHeader } from './PageHeader'
 import { RightSidebar, makeRightSidebarContent } from './RightSidebar'
-import { SdpNavigation } from './SdpNavigation'
+import { SdaNavigation } from './SdaNavigation'
 
-export const SdpLayout = ({
+export const SdaLayout = ({
   navigationProps,
   children,
   rightSidebarProps,
@@ -25,7 +25,7 @@ export const SdpLayout = ({
   connect,
   connected,
   connectWalletButton,
-}: SdpLayoutProps) => {
+}: SdaLayoutProps) => {
   const { t } = useTranslation()
   const router = useRouter()
   // See comment on makeRightSidebarContent in RightSidebar.tsx for information
@@ -89,7 +89,7 @@ export const SdpLayout = ({
     >
       <div className="relative z-[1] flex h-full w-full flex-row items-stretch overflow-hidden">
         <ErrorBoundary>
-          <SdpNavigation {...navigationProps} />
+          <SdaNavigation {...navigationProps} />
         </ErrorBoundary>
 
         <main

@@ -371,8 +371,8 @@ export const CreateDaoForm = ({
               }
             )
 
-            // Don't set following on SDP. Only dApp.
-            if (mode !== DaoPageMode.Sdp) {
+            // Don't set following on SDA. Only dApp.
+            if (mode !== DaoPageMode.Sda) {
               setFollowing(coreAddress)
             }
 
@@ -585,8 +585,8 @@ export const CreateDaoForm = ({
       </RightSidebarContent>
       <PageHeader
         breadcrumbs={{
-          // On SDP, use the SubDAOs tab as the home breadcrumb.
-          sdpHomeTab: {
+          // On SDA, use the SubDAOs tab as the home breadcrumb.
+          sdaHomeTab: {
             id: DaoTabId.Subdaos,
             label: t('title.subDaos'),
           },

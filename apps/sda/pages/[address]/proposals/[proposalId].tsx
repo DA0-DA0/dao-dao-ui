@@ -219,7 +219,7 @@ export const getStaticProps = makeGetDaoProposalStaticProps({
   getProposalUrlPrefix: ({ address }) =>
     SITE_URL +
     getDaoProposalPath(
-      DaoPageMode.Sdp,
+      DaoPageMode.Sda,
       typeof address === 'string' ? address : '',
       ''
     ),

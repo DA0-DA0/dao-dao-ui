@@ -11,7 +11,7 @@ import { DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
 
 import {
   ProposalsTab,
-  SdpDaoHome,
+  SdaDaoHome,
   SubDaosTab,
   TreasuryAndNftsTab,
 } from '../components'
@@ -19,11 +19,11 @@ import { usePayrollAdapter } from '../payroll'
 import { useVotingModuleAdapter } from '../voting-module-adapter'
 
 export type UseDaoTabsOptions = {
-  includeSdpHome?: boolean
+  includeSdaHome?: boolean
 }
 
 export const useDaoTabs = (
-  { includeSdpHome = false }: UseDaoTabsOptions = { includeSdpHome: false }
+  { includeSdaHome = false }: UseDaoTabsOptions = { includeSdaHome: false }
 ): DaoTabWithComponent[] => {
   const { t } = useTranslation()
 
@@ -35,12 +35,12 @@ export const useDaoTabs = (
   const PayrollTab = usePayrollAdapter()?.PayrollTab
 
   return [
-    ...(includeSdpHome
+    ...(includeSdaHome
       ? [
           {
             id: DaoTabId.Home,
             label: t('title.home'),
-            Component: SdpDaoHome,
+            Component: SdaDaoHome,
             Icon: HomeOutlined,
           },
         ]

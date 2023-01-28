@@ -1,4 +1,4 @@
-# @dao-dao/sdp
+# @dao-dao/sda
 
 Web application for viewing a single DAO. Live in production at
 [dao.daodao.zone](https://dao.daodao.zone).

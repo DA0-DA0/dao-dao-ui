@@ -22,7 +22,7 @@ import {
   ApolloGqlProvider,
   DaoPageWrapper,
   DaoPageWrapperProps,
-  SdpLayout,
+  SdaLayout,
   SuspenseLoader,
   WalletProvider,
 } from '@dao-dao/stateful'
@@ -88,12 +88,12 @@ const InnerApp = ({
             router.pathname === '/_error' ? (
               <Component {...pageProps} />
             ) : (
-              // All non-error SDP pages are a DAO page.
+              // All non-error SDA pages are a DAO page.
               <DaoPageWrapper setIcon={setIcon} {...pageProps}>
-                {/* SdpLayout needs DaoPageWrapper for navigation tabs. */}
-                <SdpLayout>
+                {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
+                <SdaLayout>
                   <Component {...pageProps} />
-                </SdpLayout>
+                </SdaLayout>
               </DaoPageWrapper>
             )}
           </WalletProvider>
@@ -105,7 +105,7 @@ const InnerApp = ({
   )
 }
 
-const Sdp = (props: AppProps<DaoPageWrapperProps>) => {
+const Sda = (props: AppProps<DaoPageWrapperProps>) => {
   const { t } = useTranslation()
 
   const [icon, setIcon] = useState<string>()
@@ -173,4 +173,4 @@ const Sdp = (props: AppProps<DaoPageWrapperProps>) => {
   )
 }
 
-export default appWithTranslation(Sdp)
+export default appWithTranslation(Sda)

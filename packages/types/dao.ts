@@ -295,5 +295,5 @@ export type DaoTabWithComponent = DaoTab & {
 
 export enum DaoPageMode {
   Dapp = 'dapp',
-  Sdp = 'sdp',
+  Sda = 'sda',
 }

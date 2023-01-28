@@ -6,8 +6,8 @@ import {
   DaoPageMode,
   IAppLayoutContext,
   PageHeaderProps,
-  SdpLayoutProps,
-  SdpNavigationProps,
+  SdaLayoutProps,
+  SdaNavigationProps,
 } from '@dao-dao/types'
 
 import { ConnectWallet, ConnectWalletProps } from '../wallet'
@@ -15,17 +15,17 @@ import { Default as ConnectWalletStory } from '../wallet/ConnectWallet.stories'
 import { PageHeader } from './PageHeader'
 import { Default as PageHeaderStory } from './PageHeader.stories'
 import { DefaultArgs as RightSidebarStoryArgs } from './RightSidebar.stories'
-import { SdpLayout } from './SdpLayout'
-import { Default as SdpNavigationStory } from './SdpNavigation.stories'
+import { SdaLayout } from './SdaLayout'
+import { Default as SdaNavigationStory } from './SdaNavigation.stories'
 
 export default {
-  title: 'DAO DAO / packages / stateless / components / layout / SdpLayout',
-  component: SdpLayout,
+  title: 'DAO DAO / packages / stateless / components / layout / SdaLayout',
+  component: SdaLayout,
   excludeStories: ['DefaultArgs'],
-} as ComponentMeta<typeof SdpLayout>
+} as ComponentMeta<typeof SdaLayout>
 
-export const DefaultArgs: SdpLayoutProps = {
-  navigationProps: SdpNavigationStory.args as SdpNavigationProps,
+export const DefaultArgs: SdaLayoutProps = {
+  navigationProps: SdaNavigationStory.args as SdaNavigationProps,
   children: (
     <div className="flex h-full flex-col px-6">
       <PageHeader {...(PageHeaderStory.args as PageHeaderProps)} />
@@ -46,7 +46,7 @@ export const DefaultArgs: SdpLayoutProps = {
     },
   },
   context: {
-    mode: DaoPageMode.Sdp,
+    mode: DaoPageMode.Sda,
     responsiveNavigation: {
       enabled: true,
       toggle: () => alert('toggle nav'),
@@ -69,7 +69,7 @@ export const DefaultArgs: SdpLayoutProps = {
   ),
 }
 
-const Template: ComponentStory<typeof SdpLayout> = (args) => {
+const Template: ComponentStory<typeof SdaLayout> = (args) => {
   const [compact, setCompact] = useState(false)
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)
@@ -82,7 +82,7 @@ const Template: ComponentStory<typeof SdpLayout> = (args) => {
     'RightSidebarContent' | 'PageHeader'
   > = useMemo(
     () => ({
-      mode: DaoPageMode.Sdp,
+      mode: DaoPageMode.Sda,
       responsiveNavigation: {
         enabled: responsiveNavigationEnabled,
         toggle: () => setResponsiveNavigationEnabled((v) => !v),
@@ -106,7 +106,7 @@ const Template: ComponentStory<typeof SdpLayout> = (args) => {
   )
 
   return (
-    <SdpLayout
+    <SdaLayout
       {...args}
       context={appLayoutContext}
       navigationProps={{

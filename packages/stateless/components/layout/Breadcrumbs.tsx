@@ -18,7 +18,7 @@ export * from '@dao-dao/types/stateless/Breadcrumbs'
 
 export const Breadcrumbs = ({
   home = false,
-  sdpHomeTab,
+  sdaHomeTab,
   current,
   className,
 }: BreadcrumbsProps) => {
@@ -55,8 +55,8 @@ export const Breadcrumbs = ({
                 {
                   href:
                     getDaoPath(daoInfo.coreAddress) +
-                    (sdpHomeTab ? '#' + sdpHomeTab.id : ''),
-                  label: sdpHomeTab?.label || t('title.home'),
+                    (sdaHomeTab ? '#' + sdaHomeTab.id : ''),
+                  label: sdaHomeTab?.label || t('title.home'),
                 },
               ]),
         ]

@@ -65,7 +65,7 @@ export const Proposal = ({
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeader
         breadcrumbs={{
-          sdpHomeTab: {
+          sdaHomeTab: {
             id: DaoTabId.Proposals,
             label: t('title.proposals'),
           },
