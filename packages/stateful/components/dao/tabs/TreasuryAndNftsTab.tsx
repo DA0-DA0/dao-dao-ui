@@ -18,9 +18,9 @@ import {
   treasuryTokenCardInfosSelector,
 } from '../../../recoil'
 import {
-  useCw20GovernanceTokenInfoResponseIfExists,
-  useCw721GovernanceTokenInfoResponseIfExists,
-  useNativeGovernanceTokenInfoResponseIfExists,
+  useCw20CommonGovernanceTokenInfoIfExists,
+  useCw721CommonGovernanceTokenInfoIfExists,
+  useNativeCommonGovernanceTokenInfoIfExists,
 } from '../../../voting-module-adapter'
 import { NftCard } from '../../NftCard'
 import { StargazeNftImportModal } from '../../StargazeNftImportModal'
@@ -29,12 +29,12 @@ import { TokenCard } from '../TokenCard'
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
   const { isMember = false } = useMembership(daoInfo)
-  const { governanceTokenAddress: cw20GovernanceTokenAddress } =
-    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
-  const { governanceTokenAddress: nativeGovernanceTokenDenom } =
-    useNativeGovernanceTokenInfoResponseIfExists() ?? {}
-  const { governanceTokenAddress: cw721GovernanceCollectionAddress } =
-    useCw721GovernanceTokenInfoResponseIfExists() ?? {}
+  const { denomOrAddress: cw20GovernanceTokenAddress } =
+    useCw20CommonGovernanceTokenInfoIfExists() ?? {}
+  const { denomOrAddress: nativeGovernanceTokenDenom } =
+    useNativeCommonGovernanceTokenInfoIfExists() ?? {}
+  const { denomOrAddress: cw721GovernanceCollectionAddress } =
+    useCw721CommonGovernanceTokenInfoIfExists() ?? {}
 
   const treasuryTokenCardInfosLoadable = useCachedLoadable(
     treasuryTokenCardInfosSelector({
@@ -69,8 +69,6 @@ export const TreasuryAndNftsTab = () => {
 
   // ManageCw721 action defaults to adding
   const addCw721Action = useCoreActionForKey(CoreActionKey.ManageCw721)
-  // Prefill URL only valid if action exists.
-  const prefillValid = !!addCw721Action
   const encodedProposalPrefill = useEncodedDaoProposalSinglePrefill({
     actions: addCw721Action
       ? [
@@ -88,7 +86,8 @@ export const TreasuryAndNftsTab = () => {
       StargazeNftImportModal={StargazeNftImportModal}
       TokenCard={TokenCard}
       addCollectionHref={
-        prefillValid && encodedProposalPrefill
+        // Prefill URL only valid if action exists.
+        !!addCw721Action && encodedProposalPrefill
           ? `/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefill}`
           : undefined
       }

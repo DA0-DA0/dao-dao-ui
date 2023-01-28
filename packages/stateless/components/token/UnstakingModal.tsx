@@ -13,7 +13,7 @@ import { UnstakingTaskStatus } from './UnstakingStatus'
 export interface UnstakingModalProps extends Omit<ModalProps, 'children'> {
   unstakingDuration?: string
   tasks: UnstakingTask[]
-  onClaim?: (tokenSymbol: string) => void
+  onClaim?: () => void
   refresh?: () => void
 }
 
@@ -50,7 +50,7 @@ export const UnstakingModal = ({
         )
         .reduce((combinedTasks, task) => {
           const existingTask = combinedTasks.find(
-            ({ tokenSymbol }) => tokenSymbol === task.tokenSymbol
+            ({ token }) => token.symbol === task.token.symbol
           )
           // If found, just modify existing by increasing amount. No need to
           // worry about the date since it will be replaced by a claim button.
@@ -122,9 +122,7 @@ export const UnstakingModal = ({
                 key={index}
                 dateReplacement={
                   onClaim && (
-                    <Button onClick={() => onClaim(task.tokenSymbol)}>
-                      {t('button.claim')}
-                    </Button>
+                    <Button onClick={onClaim}>{t('button.claim')}</Button>
                   )
                 }
                 task={task}

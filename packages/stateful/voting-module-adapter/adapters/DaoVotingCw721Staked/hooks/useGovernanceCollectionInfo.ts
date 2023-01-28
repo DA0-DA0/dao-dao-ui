@@ -6,23 +6,23 @@ import {
   DaoVotingCw721StakedSelectors,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import {
-  UseGovernanceTokenInfoOptions,
-  UseGovernanceTokenInfoResponse,
-} from '@dao-dao/types'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
+import { TokenType } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import {
+  UseGovernanceCollectionInfoOptions,
+  UseGovernanceCollectionInfoResponse,
+} from '../types'
 
-export const useGovernanceTokenInfo = ({
+export const useGovernanceCollectionInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
-}: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
+}: UseGovernanceCollectionInfoOptions = {}): UseGovernanceCollectionInfoResponse => {
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
-  const { nft_address: governanceTokenAddress } = useRecoilValue(
+  const { nft_address: collectionAddress } = useRecoilValue(
     DaoVotingCw721StakedSelectors.configSelector({
       contractAddress: votingModuleAddress,
       params: [],
@@ -31,24 +31,17 @@ export const useGovernanceTokenInfo = ({
 
   const contractInfo = useRecoilValue(
     Cw721BaseSelectors.contractInfoSelector({
-      contractAddress: governanceTokenAddress,
+      contractAddress: collectionAddress,
       params: [],
     })
   )
 
   const tokenSupplyInfo = useRecoilValue(
     Cw721BaseSelectors.numTokensSelector({
-      contractAddress: governanceTokenAddress,
+      contractAddress: collectionAddress,
       params: [],
     })
   )
-
-  const governanceTokenInfo: TokenInfoResponse = {
-    decimals: 0,
-    name: contractInfo.name,
-    symbol: contractInfo.symbol,
-    total_supply: tokenSupplyInfo.count.toString(),
-  }
 
   /// Optional
 
@@ -57,7 +50,7 @@ export const useGovernanceTokenInfo = ({
     useCachedLoadable(
       fetchWalletBalance && walletAddress
         ? Cw721BaseSelectors.allTokensForOwnerSelector({
-            contractAddress: governanceTokenAddress,
+            contractAddress: collectionAddress,
             owner: walletAddress,
           })
         : constSelector(undefined)
@@ -70,7 +63,7 @@ export const useGovernanceTokenInfo = ({
     useCachedLoadable(
       fetchTreasuryBalance
         ? Cw721BaseSelectors.allTokensForOwnerSelector({
-            contractAddress: governanceTokenAddress,
+            contractAddress: collectionAddress,
             owner: coreAddress,
           })
         : constSelector(undefined)
@@ -96,8 +89,19 @@ export const useGovernanceTokenInfo = ({
 
   return {
     stakingContractAddress: votingModuleAddress,
-    governanceTokenAddress,
-    governanceTokenInfo,
+    collectionAddress,
+    collectionInfo: {
+      name: contractInfo.name,
+      symbol: contractInfo.symbol,
+      totalSupply: tokenSupplyInfo.count,
+    },
+    token: {
+      type: TokenType.Cw721,
+      denomOrAddress: collectionAddress,
+      symbol: contractInfo.symbol,
+      decimals: 0,
+      imageUrl: undefined,
+    },
     /// Optional
     // Wallet balance
     loadingWalletBalance: loadingWalletBalance.loading

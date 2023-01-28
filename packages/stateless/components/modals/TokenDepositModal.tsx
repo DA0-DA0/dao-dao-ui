@@ -1,8 +1,17 @@
+import { WarningRounded } from '@mui/icons-material'
 import { Dispatch, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { AmountWithTimestamp, LoadingData, ModalProps } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import {
+  AmountWithTimestamp,
+  GenericToken,
+  LoadingData,
+  ModalProps,
+} from '@dao-dao/types'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  transformIbcSymbol,
+} from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
 import { NumberInput, PercentButton } from '../inputs'
@@ -10,9 +19,7 @@ import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import { Modal } from './Modal'
 
 export type TokenDepositModalProps = Pick<ModalProps, 'visible' | 'onClose'> & {
-  tokenSymbol: string
-  tokenDecimals: number
-  tokenImageUrl: string
+  token: GenericToken
   loadingBalance: LoadingData<AmountWithTimestamp>
   onDeposit: (amount: number) => void | Promise<void>
   loading: boolean
@@ -21,9 +28,7 @@ export type TokenDepositModalProps = Pick<ModalProps, 'visible' | 'onClose'> & {
 }
 
 export const TokenDepositModal = ({
-  tokenSymbol,
-  tokenDecimals,
-  tokenImageUrl,
+  token,
   loadingBalance,
   onDeposit,
   loading,
@@ -33,7 +38,9 @@ export const TokenDepositModal = ({
 }: TokenDepositModalProps) => {
   const { t } = useTranslation()
 
-  const min = convertMicroDenomToDenomWithDecimals(1, tokenDecimals)
+  const min = convertMicroDenomToDenomWithDecimals(1, token.decimals)
+
+  const { tokenSymbol } = transformIbcSymbol(token.symbol)
 
   return (
     <Modal
@@ -51,8 +58,18 @@ export const TokenDepositModal = ({
       }
       header={{
         title: t('title.depositToken', { tokenSymbol }),
-        subtitle: t('info.depositTokenSubtitle'),
       }}
+      headerContent={
+        <div className="space-y-4">
+          <p>{t('info.depositTokenSubtitle')}</p>
+
+          <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
+            <WarningRounded className="!h-10 !w-10" />
+
+            <p className="">{t('info.depositTokenWarning')}</p>
+          </div>
+        </div>
+      }
     >
       <div className="flex flex-row items-center justify-between gap-10">
         <p className="secondary-text">{t('title.balance')}</p>
@@ -67,8 +84,8 @@ export const TokenDepositModal = ({
           dateFetched={
             loadingBalance.loading ? undefined : loadingBalance.data.timestamp
           }
-          decimals={tokenDecimals}
-          iconUrl={tokenImageUrl}
+          decimals={token.decimals}
+          iconUrl={token.imageUrl}
           showFullAmount
           symbol={tokenSymbol}
         />
@@ -84,7 +101,7 @@ export const TokenDepositModal = ({
           setAmount(
             Number(
               Number((event.target as HTMLInputElement).value).toFixed(
-                tokenDecimals
+                token.decimals
               )
             )
           )
@@ -135,7 +152,7 @@ export const TokenDepositModal = ({
             }
             percent={percent / 100}
             setAmount={setAmount}
-            tokenDecimals={tokenDecimals}
+            tokenDecimals={token.decimals}
           />
         ))}
       </div>

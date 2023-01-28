@@ -25,7 +25,7 @@ import {
   nftCardInfoSelector,
   nftCardInfosForDaoSelector,
 } from '../../../recoil/selectors/nft'
-import { useCw721GovernanceTokenInfoResponseIfExists } from '../../../voting-module-adapter'
+import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../voting-module-adapter'
 import { TransferNftComponent, TransferNftData } from '../../components/nft'
 import { useActionOptions } from '../../react'
 
@@ -137,8 +137,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
 const Component: ActionComponent = (props) => {
   const { address, chainId } = useActionOptions()
   const { watch } = useFormContext()
-  const { governanceTokenAddress: cw721GovernanceCollectionAddress } =
-    useCw721GovernanceTokenInfoResponseIfExists() ?? {}
+  const { denomOrAddress: governanceCollectionAddress } =
+    useCw721CommonGovernanceTokenInfoIfExists() ?? {}
 
   const tokenId = watch(props.fieldNamePrefix + 'tokenId')
   const collection = watch(props.fieldNamePrefix + 'collection')
@@ -149,7 +149,7 @@ const Component: ActionComponent = (props) => {
         ? nftCardInfosForDaoSelector({
             coreAddress: address,
             chainId,
-            governanceCollectionAddress: cw721GovernanceCollectionAddress,
+            governanceCollectionAddress,
           })
         : constSelector([])
     )

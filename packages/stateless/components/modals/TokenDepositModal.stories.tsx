@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { token } from '../token/TokenCard.stories'
 import { TokenDepositModal } from './TokenDepositModal'
 
 export default {
@@ -18,9 +19,7 @@ const Template: ComponentStory<typeof TokenDepositModal> = (args) => {
 export const Default = Template.bind({})
 Default.args = {
   visible: true,
-  tokenSymbol: 'JUNO',
-  tokenDecimals: 6,
-  tokenImageUrl: '/juno.png',
+  token,
   loadingBalance: {
     loading: false,
     data: {

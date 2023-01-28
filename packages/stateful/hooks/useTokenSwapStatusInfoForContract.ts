@@ -4,7 +4,7 @@ import {
   CwTokenSwapSelectors,
   eitherTokenInfoSelector,
 } from '@dao-dao/state/recoil'
-import { TokenSwapStatusProps } from '@dao-dao/types'
+import { TokenSwapStatusProps, TokenType } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../components'
@@ -44,7 +44,7 @@ export const useTokenSwapStatusInfoForContract = ({
   const selfPartyTokenInfo = useRecoilValue(
     eitherTokenInfoSelector({
       chainId,
-      type: 'cw20' in selfParty.promise ? 'cw20' : 'native',
+      type: 'cw20' in selfParty.promise ? TokenType.Cw20 : TokenType.Native,
       denomOrAddress:
         'cw20' in selfParty.promise
           ? selfParty.promise.cw20.contract_addr
@@ -61,7 +61,7 @@ export const useTokenSwapStatusInfoForContract = ({
   const counterpartyTokenInfo = useRecoilValue(
     eitherTokenInfoSelector({
       chainId,
-      type: 'cw20' in counterparty.promise ? 'cw20' : 'native',
+      type: 'cw20' in counterparty.promise ? TokenType.Cw20 : TokenType.Native,
       denomOrAddress:
         'cw20' in counterparty.promise
           ? counterparty.promise.cw20.contract_addr

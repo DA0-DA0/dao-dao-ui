@@ -28,17 +28,11 @@ import { Cw20BaseHooks, useWalletInfo } from '../../hooks'
 export type DaoTokenDepositModalProps = Omit<
   TokenDepositModalProps,
   'loadingBalance' | 'onDeposit' | 'loading' | 'amount' | 'setAmount'
-> & {
-  tokenType: 'native' | 'cw20'
-  tokenDenomOrAddress: string
-}
+>
 
 export const DaoTokenDepositModal = ({
-  tokenType,
-  tokenDenomOrAddress,
+  token,
   onClose,
-  tokenDecimals,
-  tokenSymbol,
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
@@ -58,14 +52,14 @@ export const DaoTokenDepositModal = ({
     useCachedLoadable(
       !address
         ? undefined
-        : tokenType === 'native'
+        : token.type === 'native'
         ? nativeDenomBalanceWithTimestampSelector({
             walletAddress: address,
             chainId,
-            denom: tokenDenomOrAddress,
+            denom: token.denomOrAddress,
           })
         : Cw20BaseSelectors.balanceWithTimestampSelector({
-            contractAddress: tokenDenomOrAddress,
+            contractAddress: token.denomOrAddress,
             chainId,
             params: [{ address }],
           })
@@ -80,7 +74,7 @@ export const DaoTokenDepositModal = ({
   const [loading, setLoading] = useState(false)
 
   const transferCw20 = Cw20BaseHooks.useTransfer({
-    contractAddress: tokenType === 'cw20' ? tokenDenomOrAddress : '',
+    contractAddress: token.type === 'cw20' ? token.denomOrAddress : '',
     sender: address ?? '',
   })
 
@@ -95,17 +89,17 @@ export const DaoTokenDepositModal = ({
       try {
         const microAmount = convertDenomToMicroDenomWithDecimals(
           amount,
-          tokenDecimals
+          token.decimals
         ).toString()
 
-        if (tokenType === 'native') {
+        if (token.type === 'native') {
           await signingCosmWasmClient.sendTokens(
             address,
             coreAddress,
-            coins(microAmount, tokenDenomOrAddress),
+            coins(microAmount, token.denomOrAddress),
             'auto'
           )
-        } else if (tokenType === 'cw20') {
+        } else if (token.type === 'cw20') {
           await transferCw20({
             amount: microAmount,
             recipient: coreAddress,
@@ -118,9 +112,9 @@ export const DaoTokenDepositModal = ({
         toast.success(
           t('success.depositedTokenIntoDao', {
             amount: amount.toLocaleString(undefined, {
-              maximumFractionDigits: tokenDecimals,
+              maximumFractionDigits: token.decimals,
             }),
-            tokenSymbol,
+            tokenSymbol: token.symbol,
             daoName,
           })
         )
@@ -145,10 +139,7 @@ export const DaoTokenDepositModal = ({
       setAmount,
       signingCosmWasmClient,
       t,
-      tokenDecimals,
-      tokenDenomOrAddress,
-      tokenSymbol,
-      tokenType,
+      token,
       transferCw20,
     ]
   )
@@ -165,7 +156,7 @@ export const DaoTokenDepositModal = ({
               data: {
                 amount: convertMicroDenomToDenomWithDecimals(
                   loadingBalance.data.amount,
-                  tokenDecimals
+                  token.decimals
                 ),
                 timestamp: loadingBalance.data.timestamp,
               },
@@ -174,8 +165,7 @@ export const DaoTokenDepositModal = ({
       onClose={onClose}
       onDeposit={onDeposit}
       setAmount={setAmount}
-      tokenDecimals={tokenDecimals}
-      tokenSymbol={tokenSymbol}
+      token={token}
       {...props}
     />
   )

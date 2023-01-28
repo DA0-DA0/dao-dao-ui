@@ -1,5 +1,6 @@
 export * from './useActions'
+export * from './useCommonGovernanceTokenInfo'
 export * from './useDaoInfoBarItems'
-export * from './useGovernanceTokenInfo'
+export * from './useGovernanceCollectionInfo'
 export * from './useProfileNewProposalCardAddresses'
 export * from './useStakingInfo'

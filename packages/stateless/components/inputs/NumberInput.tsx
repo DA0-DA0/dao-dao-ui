@@ -140,7 +140,7 @@ export const NumberInput = <
       {unit && (
         <p
           className={clsx(
-            'secondary-text shrink-0 text-right text-text-tertiary',
+            'secondary-text max-w-[10rem] shrink-0 truncate text-right text-text-tertiary',
             textClassName,
             unitClassName
           )}
