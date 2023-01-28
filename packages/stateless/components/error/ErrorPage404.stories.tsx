@@ -7,8 +7,8 @@ export default {
   component: ErrorPage404,
 } as ComponentMeta<typeof ErrorPage404>
 
-const Template: ComponentStory<typeof ErrorPage404> = (_args) => (
-  <ErrorPage404 />
+const Template: ComponentStory<typeof ErrorPage404> = (args) => (
+  <ErrorPage404 {...args} />
 )
 
 export const Default = Template.bind({})

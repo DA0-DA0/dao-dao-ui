@@ -1,16 +1,26 @@
 import { useRouter } from 'next/router'
 import { useCallback } from 'react'
 
+import { DaoPageMode } from '@dao-dao/types'
 import {
   getDaoPath as _getDaoPath,
   getDaoProposalPath as _getDaoProposalPath,
 } from '@dao-dao/utils'
 
-import { useAppLayoutContext } from '../components/layout/AppLayoutContext'
+import { useAppLayoutContextIfAvailable } from '../components/layout/AppLayoutContext'
 
-export const useNavHelpers = () => {
+export const useNavHelpers = (overrideMode?: DaoPageMode) => {
   const router = useRouter()
-  const { mode } = useAppLayoutContext()
+
+  // On SDP, the ErrorPage404 renders outside the app layout context. We still
+  // want to be able to use these helpers to redirect to the DAO page if we're
+  // 404ing on a DAO subpath, so we allow overriding the mode.
+  const { mode } = useAppLayoutContextIfAvailable() ?? {
+    mode: overrideMode,
+  }
+  if (!mode) {
+    throw new Error('No mode available')
+  }
 
   const getDaoPath = useCallback(
     (coreAddress: string, params?: Record<string, unknown>) =>
