@@ -22,10 +22,9 @@
 import * as Sentry from '@sentry/nextjs'
 import { NextPageContext } from 'next'
 import NextErrorComponent from 'next/error'
-import Link from 'next/link'
 import { useEffect } from 'react'
 
-import { ErrorPage } from '@dao-dao/stateless'
+import { ButtonLink, ErrorPage } from '@dao-dao/stateless'
 import { processError } from '@dao-dao/utils'
 
 interface CustomErrorComponentProps {
@@ -47,17 +46,15 @@ const CustomErrorComponent = ({
         (statusCode && statusCodes[statusCode]) || 'Unknown error'
       }`}
     >
-      <p>
-        An error occured on this page.{' '}
-        <Link href="/">
-          <a className="underline hover:no-underline">
-            Consider returning home.
-          </a>
-        </Link>
-      </p>
+      {/* Cannot access translations on this page. */}
+      <p className="title-text">An error occured on this page.</p>
+
+      <ButtonLink href="/" variant="secondary">
+        Return home
+      </ButtonLink>
 
       {error && (
-        <pre className="mt-6 whitespace-pre-wrap text-xs text-text-interactive-error">
+        <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
           {error}
         </pre>
       )}

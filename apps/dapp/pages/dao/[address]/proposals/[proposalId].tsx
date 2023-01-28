@@ -14,7 +14,6 @@ import {
   DaoProposalPageWrapperProps,
   ProfileDisconnectedCard,
   ProfileProposalCard,
-  Trans,
   useAwaitNextBlock,
   useWalletProfile,
 } from '@dao-dao/stateful'
@@ -192,35 +191,24 @@ const InnerProposal = ({ proposalInfo }: InnerProposalProps) => {
 const ProposalPage: NextPage<DaoProposalPageWrapperProps> = ({
   children: _,
   ...props
-}) => {
-  const { getDaoPath } = useNavHelpers()
-
-  return (
-    <DaoPageWrapper {...props}>
-      {props.proposalInfo && props.serializedInfo ? (
-        <ProposalModuleAdapterProvider
-          initialOptions={{
-            chainId: props.serializedInfo.chainId,
-            coreAddress: props.serializedInfo.coreAddress,
-          }}
-          proposalId={props.proposalInfo.id}
-          proposalModules={props.serializedInfo.proposalModules}
-        >
-          <InnerProposal proposalInfo={props.proposalInfo} />
-        </ProposalModuleAdapterProvider>
-      ) : (
-        <ProposalNotFound
-          Trans={Trans}
-          homeHref={
-            props.serializedInfo
-              ? getDaoPath(props.serializedInfo.coreAddress)
-              : '/'
-          }
-        />
-      )}
-    </DaoPageWrapper>
-  )
-}
+}) => (
+  <DaoPageWrapper {...props}>
+    {props.proposalInfo && props.serializedInfo ? (
+      <ProposalModuleAdapterProvider
+        initialOptions={{
+          chainId: props.serializedInfo.chainId,
+          coreAddress: props.serializedInfo.coreAddress,
+        }}
+        proposalId={props.proposalInfo.id}
+        proposalModules={props.serializedInfo.proposalModules}
+      >
+        <InnerProposal proposalInfo={props.proposalInfo} />
+      </ProposalModuleAdapterProvider>
+    ) : (
+      <ProposalNotFound />
+    )}
+  </DaoPageWrapper>
+)
 
 export default ProposalPage
 

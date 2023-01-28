@@ -1,6 +1,7 @@
-import Link from 'next/link'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { ButtonLink } from '@dao-dao/stateful'
 
 import { useAppLayoutContextIfAvailable } from '../layout/AppLayoutContext'
 import { ErrorPage } from './ErrorPage'
@@ -23,17 +24,13 @@ export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
       {PageHeader && <PageHeader title={t('title.500')} />}
 
       <ErrorPage>
-        <p>
-          {t('error.errorOccurredOnPage')}
-          <br />
-          <Link href="/">
-            <a className="underline hover:no-underline">
-              {t('info.considerReturningHome')}
-            </a>
-          </Link>
-        </p>
+        <p className="title-text">{t('error.errorOccurredOnPage')}</p>
 
-        <pre className="mt-6 whitespace-pre-wrap text-xs text-text-interactive-error">
+        <ButtonLink href="/" variant="secondary">
+          {t('button.returnHome')}
+        </ButtonLink>
+
+        <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
           {error}
         </pre>
       </ErrorPage>

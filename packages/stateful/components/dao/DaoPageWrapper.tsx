@@ -20,7 +20,6 @@ import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 import { ActionsProvider } from '../../actions'
 import { VotingModuleAdapterProvider } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { Trans } from '../Trans'
 
 export type DaoPageWrapperProps = PropsWithChildren<{
   url?: string | null
@@ -121,7 +120,7 @@ export const DaoPageWrapper = ({
         ) : error ? (
           <ErrorPage500 error={error} />
         ) : (
-          <DaoNotFound Trans={Trans} />
+          <DaoNotFound />
         )}
       </SuspenseLoader>
     </>
