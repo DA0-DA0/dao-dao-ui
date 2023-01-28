@@ -133,42 +133,47 @@ export const SdpNavigation = ({
       >
         <PageHeader
           centerNode={
-            <div className="flex grow flex-row items-center justify-between gap-6">
-              <Link href={getDaoPath(daoInfo.coreAddress)}>
-                <a className="flex flex-row items-center gap-2 overflow-hidden">
-                  <DaoImage
-                    LinkWrapper={LinkWrapper}
-                    coreAddress={daoInfo.coreAddress}
-                    daoName={daoInfo.name}
-                    hideRing
-                    imageUrl={daoInfo.imageUrl}
-                    size="md"
-                  />
+            <Link href={getDaoPath(daoInfo.coreAddress)}>
+              <a
+                className={clsx(
+                  'flex flex-row items-center gap-2 overflow-hidden',
+                  // Make room for rightNode switch button.
+                  daoDaoPath && !compact && 'px-12 sm:pl-0'
+                )}
+              >
+                <DaoImage
+                  LinkWrapper={LinkWrapper}
+                  coreAddress={daoInfo.coreAddress}
+                  daoName={daoInfo.name}
+                  hideRing
+                  imageUrl={daoInfo.imageUrl}
+                  size="md"
+                />
 
-                  {!compact && (
-                    <Tooltip title={daoInfo.name}>
-                      <p className="header-text truncate">{daoInfo.name}</p>
-                    </Tooltip>
-                  )}
-                </a>
-              </Link>
-
-              {/* Go to DAO DAO Page */}
-              {daoDaoPath && (
-                <Tooltip title={t('info.switchToDaoDaoView')}>
-                  <IconButtonLink
-                    Icon={LoopRounded}
-                    circular
-                    href={DAO_DAO_URL_PREFIX + daoDaoPath}
-                    openInNewTab={false}
-                    variant="ghost"
-                  />
-                </Tooltip>
-              )}
-            </div>
+                {!compact && (
+                  <Tooltip title={daoInfo.name}>
+                    <p className="header-text truncate">{daoInfo.name}</p>
+                  </Tooltip>
+                )}
+              </a>
+            </Link>
           }
           forceCenter={compact}
           noBorder={compact}
+          rightNode={
+            // Go to DAO DAO Page.
+            daoDaoPath && !compact ? (
+              <Tooltip title={t('info.switchToDaoDaoView')}>
+                <IconButtonLink
+                  Icon={LoopRounded}
+                  circular
+                  href={DAO_DAO_URL_PREFIX + daoDaoPath}
+                  openInNewTab={false}
+                  variant="ghost"
+                />
+              </Tooltip>
+            ) : undefined
+          }
         />
 
         <div className={clsx(!compact && 'pt-2')}>

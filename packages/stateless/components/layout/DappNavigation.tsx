@@ -178,30 +178,35 @@ export const DappNavigation = ({
       >
         <PageHeader
           centerNode={
-            <div className="flex grow flex-row items-center justify-between gap-6">
-              <Link href="/">
-                <a className="flex flex-row items-center gap-2">
-                  <Logo size={32} />
-                  {!compact && <p className="header-text">{t('meta.title')}</p>}
-                </a>
-              </Link>
-
-              {/* Go to Single DAO Page */}
-              {singleDaoPath && (
-                <Tooltip title={t('info.switchToSingleDaoView')}>
-                  <IconButtonLink
-                    Icon={LoopRounded}
-                    circular
-                    href={SINGLE_DAO_DAO_URL_PREFIX + singleDaoPath}
-                    openInNewTab={false}
-                    variant="ghost"
-                  />
-                </Tooltip>
-              )}
-            </div>
+            <Link href="/">
+              <a
+                className={clsx(
+                  'flex flex-row items-center gap-2',
+                  // Make room for rightNode switch button.
+                  singleDaoPath && !compact && 'px-12 sm:pl-0'
+                )}
+              >
+                <Logo size={32} />
+                {!compact && <p className="header-text">{t('meta.title')}</p>}
+              </a>
+            </Link>
           }
           forceCenter={compact}
           noBorder={compact}
+          rightNode={
+            // Go to Single DAO Page.
+            singleDaoPath && !compact ? (
+              <Tooltip title={t('info.switchToSingleDaoView')}>
+                <IconButtonLink
+                  Icon={LoopRounded}
+                  circular
+                  href={SINGLE_DAO_DAO_URL_PREFIX + singleDaoPath}
+                  openInNewTab={false}
+                  variant="ghost"
+                />
+              </Tooltip>
+            ) : undefined
+          }
         />
 
         <div className={clsx(!compact && 'pt-2')}>
