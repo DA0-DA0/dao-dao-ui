@@ -12,10 +12,8 @@ export const SITE_URL =
 
 export const SITE_IMAGE = process.env.NEXT_PUBLIC_SITE_IMAGE as string
 export const WC_ICON_PATH = process.env.NEXT_PUBLIC_WC_ICON_PATH as string
-export const SINGLE_DAO_DAO_URL_PREFIX = process.env
-  .NEXT_PUBLIC_SINGLE_DAO_DAO_URL_PREFIX as string
-export const DAO_DAO_URL_PREFIX = process.env
-  .NEXT_PUBLIC_DAO_DAO_URL_PREFIX as string
+export const SDA_URL_PREFIX = process.env.NEXT_PUBLIC_SDA_URL_PREFIX as string
+export const DAPP_URL_PREFIX = process.env.NEXT_PUBLIC_DAPP_URL_PREFIX as string
 export const CHAIN_GOV_PROPOSAL_URL_TEMPLATE = process.env
   .NEXT_PUBLIC_CHAIN_GOV_PROPOSAL_URL_TEMPLATE as string
 export const LEGACY_URL_PREFIX = process.env

@@ -12,10 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 import { DaoPageMode, DaoTabId } from '@dao-dao/types'
 import { SdaNavigationProps } from '@dao-dao/types/stateless/SdaNavigation'
-import {
-  DAO_DAO_URL_PREFIX,
-  getDaoPath as baseGetDaoPath,
-} from '@dao-dao/utils'
+import { DAPP_URL_PREFIX, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
@@ -167,7 +164,7 @@ export const SdaNavigation = ({
                 <IconButtonLink
                   Icon={LoopRounded}
                   circular
-                  href={DAO_DAO_URL_PREFIX + daoDaoPath}
+                  href={DAPP_URL_PREFIX + daoDaoPath}
                   openInNewTab={false}
                   variant="ghost"
                 />
