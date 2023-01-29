@@ -7,7 +7,11 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { HerbEmoji, InputErrorMessage, NumberInput } from '@dao-dao/stateless'
-import { ActionComponent, AddressInputProps } from '@dao-dao/types'
+import {
+  ActionComponent,
+  AddressInputProps,
+  GenericToken,
+} from '@dao-dao/types'
 import {
   validateAddress,
   validatePositive,
@@ -17,7 +21,7 @@ import {
 import { ActionCard } from '../../../../../actions'
 
 export interface MintOptions {
-  govTokenSymbol: string
+  govToken: GenericToken
   // Used to display the profile of the address receiving minted tokens.
   AddressInput: ComponentType<AddressInputProps>
 }
@@ -27,11 +31,10 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { govTokenSymbol, AddressInput },
+  options: { govToken, AddressInput },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
-  const amount = watch(fieldNamePrefix + 'amount')
 
   return (
     <ActionCard Icon={HerbEmoji} onRemove={onRemove} title={t('title.mint')}>
@@ -41,22 +44,14 @@ export const MintComponent: ActionComponent<MintOptions> = ({
           disabled={!isCreating}
           error={errors?.amount}
           fieldName={fieldNamePrefix + 'amount'}
-          onMinus={() =>
-            setValue(
-              fieldNamePrefix + 'amount',
-              (Number(amount) - 1).toString()
-            )
-          }
-          onPlus={() =>
-            setValue(
-              fieldNamePrefix + 'amount',
-              (Number(amount) + 1).toString()
-            )
-          }
+          min={1 / 10 ** govToken.decimals}
           register={register}
+          setValue={setValue}
           sizing="none"
-          unit={`$${govTokenSymbol}`}
+          step={1 / 10 ** govToken.decimals}
+          unit={'$' + govToken.symbol}
           validation={[validateRequired, validatePositive]}
+          watch={watch}
         />
 
         <div className="flex grow flex-row items-stretch gap-2 sm:gap-3">

@@ -28,7 +28,7 @@ import {
   useWalletInfo,
 } from '../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../components'
-import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
+import { useGovernanceCollectionInfo, useStakingInfo } from '../hooks'
 import { StakingModal } from './StakingModal'
 
 export const ProfileCardMemberInfo = ({
@@ -43,10 +43,13 @@ export const ProfileCardMemberInfo = ({
   const [claimingLoading, setClaimingLoading] = useState(false)
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
-  const { governanceTokenInfo, loadingWalletBalance: loadingUnstakedBalance } =
-    useGovernanceTokenInfo({
-      fetchWalletBalance: true,
-    })
+  const {
+    collectionInfo,
+    token,
+    loadingWalletBalance: loadingUnstakedBalance,
+  } = useGovernanceCollectionInfo({
+    fetchWalletBalance: true,
+  })
 
   const {
     stakingContractAddress,
@@ -109,9 +112,7 @@ export const ProfileCardMemberInfo = ({
       refreshTotals()
       refreshClaims?.()
 
-      toast.success(
-        `Claimed ${sumClaimsAvailable} $${governanceTokenInfo.symbol}`
-      )
+      toast.success(`Claimed ${sumClaimsAvailable} $${collectionInfo.symbol}`)
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -122,7 +123,7 @@ export const ProfileCardMemberInfo = ({
     awaitNextBlock,
     connected,
     doClaim,
-    governanceTokenInfo.symbol,
+    collectionInfo.symbol,
     refreshBalances,
     refreshClaims,
     refreshTotals,
@@ -135,10 +136,9 @@ export const ProfileCardMemberInfo = ({
 
   const unstakingTasks: UnstakingTask[] = [
     ...(claimsPending as NftClaim[]).map(({ release_at }) => ({
+      token,
       status: UnstakingTaskStatus.Unstaking,
       amount: Number(1),
-      tokenSymbol: governanceTokenInfo.symbol,
-      tokenDecimals: Number(0),
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,
@@ -148,10 +148,9 @@ export const ProfileCardMemberInfo = ({
       ),
     })),
     ...(claimsAvailable as NftClaim[]).map(({ release_at }) => ({
+      token,
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: Number(1),
-      tokenSymbol: governanceTokenInfo.symbol,
-      tokenDecimals: Number(0),
       date: convertExpirationToDate(
         blocksPerYear,
         release_at,
@@ -206,7 +205,7 @@ export const ProfileCardMemberInfo = ({
         refreshUnstakingTasks={() => refreshClaims?.()}
         stakingLoading={stakingLoading}
         tokenDecimals={0}
-        tokenSymbol={governanceTokenInfo.symbol}
+        tokenSymbol={collectionInfo.symbol}
         unstakingDurationSeconds={
           (unstakingDuration &&
             durationToSeconds(blocksPerYear, unstakingDuration)) ||

@@ -31,7 +31,7 @@ import {
   useAwaitNextBlock,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
+import { useGovernanceCollectionInfo, useStakingInfo } from '../hooks'
 
 export const StakingModal = (props: BaseStakingModalProps) => (
   <SuspenseLoader fallback={<ModalLoader onClose={props.onClose} />}>
@@ -59,10 +59,10 @@ const InnerStakingModal = ({
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
   const {
-    governanceTokenAddress,
-    governanceTokenInfo,
+    collectionAddress: collectionAddress,
+    collectionInfo,
     loadingWalletBalance: loadingUnstakedBalance,
-  } = useGovernanceTokenInfo({
+  } = useGovernanceCollectionInfo({
     fetchWalletBalance: true,
   })
   const {
@@ -108,7 +108,7 @@ const InnerStakingModal = ({
   }
 
   const doStakeMultiple = Cw721BaseHooks.useSendNftMultiple({
-    contractAddress: governanceTokenAddress,
+    contractAddress: collectionAddress,
     sender: walletAddress ?? '',
   })
   const doUnstake = DaoVotingCw721StakedHooks.useUnstake({
@@ -150,7 +150,7 @@ const InnerStakingModal = ({
           refreshDaoVotingPower()
 
           toast.success(
-            `Staked ${stakeTokenIds.length} $${governanceTokenInfo.symbol}`
+            `Staked ${stakeTokenIds.length} $${collectionInfo.symbol}`
           )
           setStakeTokenIds([])
 
@@ -187,7 +187,7 @@ const InnerStakingModal = ({
           refreshDaoVotingPower()
 
           toast.success(
-            `Unstaked ${unstakeTokenIds.length} $${governanceTokenInfo.symbol}`
+            `Unstaked ${unstakeTokenIds.length} $${collectionInfo.symbol}`
           )
           setUnstakeTokenIds([])
 

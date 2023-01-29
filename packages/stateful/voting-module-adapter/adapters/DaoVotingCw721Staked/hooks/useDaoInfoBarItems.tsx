@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { DaoInfoBarItem, TokenAmountDisplay } from '@dao-dao/stateless'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
+import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
 import { useStakingInfo } from './useStakingInfo'
 
 export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
@@ -19,19 +19,15 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
   }
 
   const {
-    governanceTokenInfo: { symbol, total_supply },
-  } = useGovernanceTokenInfo()
+    collectionInfo: { symbol, totalSupply },
+  } = useGovernanceCollectionInfo()
 
   return [
     {
       Icon: PeopleAltOutlined,
       label: t('title.totalSupply'),
       value: (
-        <TokenAmountDisplay
-          amount={Number(total_supply)}
-          decimals={0}
-          symbol={symbol}
-        />
+        <TokenAmountDisplay amount={totalSupply} decimals={0} symbol={symbol} />
       ),
     },
     {
@@ -40,7 +36,7 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
       value: loadingTotalStakedValue.loading
         ? '...'
         : formatPercentOf100(
-            (loadingTotalStakedValue.data / Number(total_supply)) * 100
+            (loadingTotalStakedValue.data / totalSupply) * 100
           ),
     },
   ]

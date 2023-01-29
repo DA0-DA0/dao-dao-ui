@@ -1,3 +1,7 @@
+import { GenericToken, TokenType } from '@dao-dao/types'
+
+import { getFallbackImage } from '../getFallbackImage'
+import { nativeTokenLabel, nativeTokenLogoURI } from '../ibc'
 import { ChainPrefixIdMaps } from './chainPrefixIdMaps'
 import { CodeIdConfigs } from './codeIdConfigs'
 
@@ -22,6 +26,13 @@ export const NATIVE_DECIMALS = parseInt(
   10
 )
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
+export const NATIVE_TOKEN: GenericToken = {
+  type: TokenType.Native,
+  denomOrAddress: NATIVE_DENOM,
+  symbol: nativeTokenLabel(NATIVE_DENOM),
+  decimals: NATIVE_DECIMALS,
+  imageUrl: nativeTokenLogoURI(NATIVE_DENOM) || getFallbackImage(NATIVE_DENOM),
+}
 export const USDC_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_USDC_DECIMALS || '6',
   10

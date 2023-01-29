@@ -40,6 +40,10 @@ Default.args = {
   data: {},
   isCreating: true,
   options: {
-    governanceTokenSymbol: 'GOV',
+    commonGovernanceTokenInfo: {
+      denomOrAddress: 'gov',
+      symbol: 'GOV',
+      decimals: 6,
+    },
   },
 }

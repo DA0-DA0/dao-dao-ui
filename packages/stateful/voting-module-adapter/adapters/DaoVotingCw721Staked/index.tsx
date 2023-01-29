@@ -10,8 +10,8 @@ import {
 } from './daoCreation'
 import {
   useActions,
+  useCommonGovernanceTokenInfo,
   useDaoInfoBarItems,
-  useGovernanceTokenInfo,
   useProfileNewProposalCardAddresses,
 } from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
@@ -33,7 +33,7 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter<DaoCreationConfig>
         useActions,
         useDaoInfoBarItems,
         useProfileNewProposalCardAddresses,
-        useGovernanceTokenInfo,
+        useCommonGovernanceTokenInfo,
       },
 
       // Components

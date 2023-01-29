@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { Button } from '../buttons/Button'
+import { token } from './TokenCard.stories'
 import { UnstakingLine, UnstakingLineProps } from './UnstakingLine'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
@@ -19,11 +20,13 @@ export const makeProps = (
   tokenSymbol = 'DOG'
 ): UnstakingLineProps => ({
   task: {
+    token: {
+      ...token,
+      symbol: tokenSymbol,
+    },
     status,
     // Random number between 0 and 1000, with up to 6 decimals.
     amount: Math.floor(Math.random() * (1000 * 1e6) + 1e6) / 1e6,
-    tokenSymbol,
-    tokenDecimals: 6,
     date: new Date(
       Date.now() +
         Math.random() *

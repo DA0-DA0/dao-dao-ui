@@ -7,13 +7,14 @@ import {
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import {
-  UseGovernanceTokenInfoOptions,
-  UseGovernanceTokenInfoResponse,
-} from '@dao-dao/types'
+import { TokenType } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import {
+  UseGovernanceTokenInfoOptions,
+  UseGovernanceTokenInfoResponse,
+} from '../types'
 
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
@@ -88,6 +89,13 @@ export const useGovernanceTokenInfo = ({
     stakingContractAddress,
     governanceTokenAddress,
     governanceTokenInfo,
+    token: {
+      type: TokenType.Cw20,
+      denomOrAddress: governanceTokenAddress,
+      symbol: governanceTokenInfo.symbol,
+      decimals: governanceTokenInfo.decimals,
+      imageUrl: undefined,
+    },
     /// Optional
     // Wallet balance
     loadingWalletBalance: loadingWalletBalance.loading

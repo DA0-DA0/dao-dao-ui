@@ -30,9 +30,9 @@ import {
   Cw20StakeHooks,
   useAwaitNextBlock,
   useWalletInfo,
-} from '../../../../../hooks'
-import { ProfileCardMemberInfoTokens } from '../../../../components'
-import { useGovernanceTokenInfo, useStakingInfo } from '../../hooks'
+} from '../../../../hooks'
+import { ProfileCardMemberInfoTokens } from '../../../components'
+import { useGovernanceTokenInfo, useStakingInfo } from '../hooks'
 import { StakingModal } from './StakingModal'
 
 export const ProfileCardMemberInfo = ({
@@ -51,6 +51,7 @@ export const ProfileCardMemberInfo = ({
   const {
     governanceTokenAddress,
     governanceTokenInfo,
+    token,
     loadingWalletBalance: loadingUnstakedBalance,
   } = useGovernanceTokenInfo({
     fetchWalletBalance: true,
@@ -153,13 +154,12 @@ export const ProfileCardMemberInfo = ({
 
   const unstakingTasks: UnstakingTask[] = [
     ...((claimsPending as Claim[]) ?? []).map(({ amount, release_at }) => ({
+      token,
       status: UnstakingTaskStatus.Unstaking,
       amount: convertMicroDenomToDenomWithDecimals(
         amount,
         governanceTokenInfo.decimals
       ),
-      tokenSymbol: governanceTokenInfo.symbol,
-      tokenDecimals: governanceTokenInfo.decimals,
       date:
         blocksPerYearLoadable.state === 'hasValue'
           ? convertExpirationToDate(
@@ -172,13 +172,12 @@ export const ProfileCardMemberInfo = ({
           : undefined,
     })),
     ...((claimsAvailable as Claim[]) ?? []).map(({ amount, release_at }) => ({
+      token,
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: convertMicroDenomToDenomWithDecimals(
         amount,
         governanceTokenInfo.decimals
       ),
-      tokenSymbol: governanceTokenInfo.symbol,
-      tokenDecimals: governanceTokenInfo.decimals,
       date:
         blocksPerYearLoadable.state === 'hasValue'
           ? convertExpirationToDate(

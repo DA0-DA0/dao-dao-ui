@@ -26,7 +26,7 @@ import { useActionOptions } from '../../../../actions/react'
 import { nftCardInfoSelector } from '../../../../recoil/selectors/nft'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
-import { useGovernanceTokenInfo } from './useGovernanceTokenInfo'
+import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
 
 export const useStakingInfo = ({
   fetchClaims = false,
@@ -38,7 +38,8 @@ export const useStakingInfo = ({
   const { chainId } = useActionOptions()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
-  const { governanceTokenAddress } = useGovernanceTokenInfo()
+  const { collectionAddress: governanceTokenAddress } =
+    useGovernanceCollectionInfo()
 
   const stakingContractAddress = votingModuleAddress
   const unstakingDuration =

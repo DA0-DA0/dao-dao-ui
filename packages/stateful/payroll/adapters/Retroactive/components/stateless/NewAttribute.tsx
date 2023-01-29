@@ -136,36 +136,12 @@ export const NewAttribute = ({
                       ?.amount
                   }
                   fieldName={`attributes.${attributeIndex}.tokens.${tokenIndex}.amount`}
-                  onMinus={() =>
-                    setValue(
-                      `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`,
-                      Math.max(
-                        (Number(
-                          watch(
-                            `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`
-                          )
-                        ) || 0) - 1,
-                        Math.pow(10, -decimals)
-                      ).toString()
-                    )
-                  }
-                  onPlus={() =>
-                    setValue(
-                      `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`,
-                      Math.max(
-                        (Number(
-                          watch(
-                            `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`
-                          )
-                        ) || 0) + 1,
-                        Math.pow(10, -decimals)
-                      ).toString()
-                    )
-                  }
                   register={register}
+                  setValue={setValue}
                   sizing="auto"
-                  step={Math.pow(10, -decimals)}
+                  step={1 / 10 ** decimals}
                   validation={[validateRequired, validatePositive]}
+                  watch={watch}
                 />
 
                 <SelectInput
