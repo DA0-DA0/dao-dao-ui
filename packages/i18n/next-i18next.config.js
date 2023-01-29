@@ -6,10 +6,8 @@ const config = {
     // Add your language ISO 639-1 code here.
     locales: ['dog', 'en', 'es', 'fr', 'it', 'ko', 'pl', 'uk', 'zh', 'zh-tw'],
     defaultLocale: 'en',
-    lowerCaseLng: true,
-    // Don't automatically navigate to language subpath.
-    localeDetection: false,
   },
+  lowerCaseLng: true,
   localePath: path.resolve(__dirname, '../../packages/i18n/locales'),
   defaultNS: 'translation',
   ns: ['translation'],

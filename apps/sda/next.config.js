@@ -57,7 +57,7 @@ const config = {
       permanent: true,
     },
     {
-      source: '/',
+      source: '/:locale',
       destination:
         process.env.NEXT_PUBLIC_MAINNET === 'true'
           ? // Redirect to DAO DAO DAO on mainnet.
@@ -66,6 +66,7 @@ const config = {
             // TODO: Create Example Testnet DAO. Replace YAMP DAO below.
             'juno14s58s26lpz07v3adfmftncxg8zde07j56jenwtx3l3ggmn0n5yhq8pznw6',
       permanent: false,
+      locale: false,
     },
   ],
   webpack: (config, options) => {
