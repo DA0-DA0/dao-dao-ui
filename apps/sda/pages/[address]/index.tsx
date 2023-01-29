@@ -71,13 +71,13 @@ const DaoHomePage: NextPage = () => {
         )
 
   const tabs = useDaoTabs({ includeSdaHome: true })
-  const tab =
-    tabs.find((tab) => tab.id === router.asPath.split('#')[1]) || tabs[0]
+  const tabId = router.asPath.split('#')[1]
 
   return (
     <DaoWrappedTab
       DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
       SuspenseLoader={SuspenseLoader}
+      allTabs={tabs}
       rightSidebarContent={
         connected ? (
           // If membership not yet loaded, show loading skeleton.
@@ -127,9 +127,9 @@ const DaoHomePage: NextPage = () => {
       showDiscordNotifierConfigureModal={
         // Only show notifier configure modal if the user is viewing the
         // proposals tab.
-        tab.id === DaoTabId.Proposals
+        tabId === DaoTabId.Proposals
       }
-      tab={tab}
+      tabId={tabId}
     />
   )
 }

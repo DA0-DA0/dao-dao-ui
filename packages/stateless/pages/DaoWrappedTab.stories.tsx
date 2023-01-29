@@ -36,16 +36,19 @@ const Template: ComponentStory<typeof DaoWrappedTab> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  tab: {
-    id: DaoTabId.Home,
-    label: 'Home',
-    Component: () => (
-      <DaoSplashHeader
-        {...(DaoSplashHeaderStory.args as DaoSplashHeaderProps)}
-      />
-    ),
-    Icon: HomeRounded,
-  },
+  allTabs: [
+    {
+      id: DaoTabId.Home,
+      label: 'Home',
+      Component: () => (
+        <DaoSplashHeader
+          {...(DaoSplashHeaderStory.args as DaoSplashHeaderProps)}
+        />
+      ),
+      Icon: HomeRounded,
+    },
+  ],
+  tabId: DaoTabId.Home,
   rightSidebarContent: (
     <ProfileMemberCard
       {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
