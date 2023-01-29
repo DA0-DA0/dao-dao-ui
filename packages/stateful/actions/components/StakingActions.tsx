@@ -295,21 +295,11 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
             fieldName={fieldNamePrefix + 'amount'}
             max={maxAmount}
             min={minAmount}
-            onMinus={() =>
-              setValue(
-                fieldNamePrefix + 'amount',
-                Math.min(Math.max(amount - 1, minAmount), maxAmount)
-              )
-            }
-            onPlus={() =>
-              setValue(
-                fieldNamePrefix + 'amount',
-                Math.min(Math.max(amount + 1, minAmount), maxAmount)
-              )
-            }
             register={register}
+            setValue={setValue}
             step={minAmount}
             validation={[validateRequired, validatePositive]}
+            watch={watch}
           />
 
           <SelectInput

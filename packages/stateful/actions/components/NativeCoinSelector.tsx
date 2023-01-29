@@ -111,22 +111,13 @@ export const NativeCoinSelector = ({
           disabled={!isCreating}
           error={errors?.amount}
           fieldName={fieldNamePrefix + 'amount'}
-          onMinus={() =>
-            setValue(
-              fieldNamePrefix + 'amount',
-              Math.max(Number(watchAmount) - 1, 1 / 10 ** NATIVE_DECIMALS)
-            )
-          }
-          onPlus={() =>
-            setValue(
-              fieldNamePrefix + 'amount',
-              Math.max(Number(watchAmount) + 1, 1 / 10 ** NATIVE_DECIMALS)
-            )
-          }
+          min={1 / Math.pow(10, NATIVE_DECIMALS)}
           register={register}
+          setValue={setValue}
           sizing="auto"
           step={1 / 10 ** NATIVE_DECIMALS}
           validation={[validateRequired, validatePositive]}
+          watch={watch}
         />
 
         <SelectInput

@@ -71,7 +71,7 @@ export const DaoTokenDepositModal = ({
     }
   )
 
-  const [amount, setAmount] = useState(1)
+  const [amount, setAmount] = useState(0)
   const [loading, setLoading] = useState(false)
 
   const transferCw20 = Cw20BaseHooks.useTransfer({

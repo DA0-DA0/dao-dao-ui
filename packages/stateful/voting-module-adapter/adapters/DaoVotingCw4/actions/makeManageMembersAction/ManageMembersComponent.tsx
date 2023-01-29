@@ -103,22 +103,13 @@ export const ManageMembersComponent: ActionComponent<
                       disabled={!isCreating}
                       error={errors?.toAdd?.[index]?.weight}
                       fieldName={weightFieldName}
-                      onMinus={() =>
-                        setValue(
-                          weightFieldName,
-                          Math.max((watch(weightFieldName) || 0) - 1, 0)
-                        )
-                      }
-                      onPlus={() =>
-                        setValue(
-                          weightFieldName,
-                          Math.max((watch(weightFieldName) || 0) + 1, 0)
-                        )
-                      }
+                      min={0}
                       placeholder={t('form.votingWeightPlaceholder')}
                       register={register}
+                      setValue={setValue}
                       sizing="fill"
                       validation={[validateRequired, validateNonNegative]}
+                      watch={watch}
                     />
                     <InputErrorMessage error={errors?.toAdd?.[index]?.weight} />
                   </div>

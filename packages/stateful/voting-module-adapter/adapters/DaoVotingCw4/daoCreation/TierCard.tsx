@@ -138,21 +138,12 @@ export const TierCard = ({
           <NumberInput
             error={errors.votingModuleAdapter?.data?.tiers?.[tierIndex]?.weight}
             fieldName={`votingModuleAdapter.data.tiers.${tierIndex}.weight`}
-            onMinus={() =>
-              setValue(
-                `votingModuleAdapter.data.tiers.${tierIndex}.weight`,
-                Math.max((data.tiers?.[tierIndex]?.weight ?? 0) - 1, 0)
-              )
-            }
-            onPlus={() =>
-              setValue(
-                `votingModuleAdapter.data.tiers.${tierIndex}.weight`,
-                Math.max((data.tiers?.[tierIndex]?.weight ?? 0) + 1, 0)
-              )
-            }
+            min={0}
             register={register}
+            setValue={setValue}
             step={1}
             validation={[validateNonNegative, validateRequired]}
+            watch={watch}
           />
 
           <InputErrorMessage

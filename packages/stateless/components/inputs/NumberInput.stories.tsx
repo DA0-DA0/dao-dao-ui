@@ -17,17 +17,9 @@ const Template: ComponentStory<typeof NumberInput> = (args) => {
   return (
     <NumberInput
       {...args}
-      onMinus={() => {
-        setValue(args.fieldName!, watch(args.fieldName!) - 1)
-        // Report interaction to storybook.
-        args.onMinus?.()
-      }}
-      onPlus={() => {
-        setValue(args.fieldName!, watch(args.fieldName!) + 1)
-        // Report interaction to storybook.
-        args.onPlus?.()
-      }}
       register={register}
+      setValue={setValue}
+      watch={watch}
     />
   )
 }

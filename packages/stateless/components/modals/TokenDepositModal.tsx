@@ -112,7 +112,7 @@ export const TokenDepositModal = ({
         // Auto focus does not work on mobile Safari by design
         // (https://bugs.webkit.org/show_bug.cgi?id=195884#c4).
         autoFocus
-        max={loadingBalance.loading ? 0 : loadingBalance.data.amount}
+        max={loadingBalance.loading ? undefined : loadingBalance.data.amount}
         min={min}
         onInput={(event) =>
           setAmount(
@@ -129,22 +129,7 @@ export const TokenDepositModal = ({
             onDeposit(amount)
           }
         }}
-        onMinus={() =>
-          setAmount((prev) =>
-            Math.min(
-              Math.max(Number((prev - 1).toFixed(0)), min),
-              loadingBalance.loading ? 0 : loadingBalance.data.amount
-            )
-          )
-        }
-        onPlus={() =>
-          setAmount((prev) =>
-            Math.min(
-              Math.max(Number((prev + 1).toFixed(0)), min),
-              loadingBalance.loading ? 0 : loadingBalance.data.amount
-            )
-          )
-        }
+        setValue={(_, value) => setAmount(value)}
         step={min}
         unit={'$' + tokenSymbol}
         value={amount}

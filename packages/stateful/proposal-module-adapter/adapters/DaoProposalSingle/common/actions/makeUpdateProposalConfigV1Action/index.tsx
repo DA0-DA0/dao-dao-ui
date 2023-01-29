@@ -133,12 +133,12 @@ const Component: ActionComponent = (props) => {
   const {
     hooks: { useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
-  const governanceTokenSymbol = useCommonGovernanceTokenInfo?.().symbol
+  const commonGovernanceTokenInfo = useCommonGovernanceTokenInfo?.()
 
   return (
     <UpdateProposalConfigComponent
       {...props}
-      options={{ governanceTokenSymbol }}
+      options={{ commonGovernanceTokenInfo }}
     />
   )
 }
