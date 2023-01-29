@@ -18,6 +18,10 @@ const Template: ComponentStory<typeof TokenDepositModal> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
+  subtitle: 'Tokens will be sent from your wallet to the DAO',
+  warning:
+    'You cannot undo a deposit. You will not gain voting power by depositing tokens.',
+  connected: true,
   visible: true,
   token,
   loadingBalance: {

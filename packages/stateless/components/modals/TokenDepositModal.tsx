@@ -1,5 +1,5 @@
 import { WarningRounded } from '@mui/icons-material'
-import { Dispatch, SetStateAction } from 'react'
+import { ComponentType, Dispatch, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -25,6 +25,10 @@ export type TokenDepositModalProps = Pick<ModalProps, 'visible' | 'onClose'> & {
   loading: boolean
   amount: number
   setAmount: Dispatch<SetStateAction<number>>
+  connected: boolean
+  ConnectWallet?: ComponentType
+  subtitle?: string
+  warning?: string
 }
 
 export const TokenDepositModal = ({
@@ -34,6 +38,10 @@ export const TokenDepositModal = ({
   loading,
   amount,
   setAmount,
+  connected,
+  ConnectWallet,
+  subtitle,
+  warning,
   ...modalProps
 }: TokenDepositModalProps) => {
   const { t } = useTranslation()
@@ -48,54 +56,63 @@ export const TokenDepositModal = ({
       contentContainerClassName="gap-4"
       footerContainerClassName="flex flex-row justify-end !p-4"
       footerContent={
-        <Button
-          disabled={loadingBalance.loading || loadingBalance.data.amount === 0}
-          loading={loading}
-          onClick={() => amount > 0 && onDeposit(amount)}
-        >
-          {t('button.deposit')}
-        </Button>
+        // If not connected and has ConnectWallet component, show ConnectWallet.
+        !connected && ConnectWallet ? (
+          <ConnectWallet />
+        ) : (
+          <Button
+            disabled={
+              !connected ||
+              loadingBalance.loading ||
+              loadingBalance.data.amount === 0
+            }
+            loading={loading}
+            onClick={() => amount > 0 && onDeposit(amount)}
+          >
+            {t('button.deposit')}
+          </Button>
+        )
       }
       header={{
         title: t('title.depositToken', { tokenSymbol }),
       }}
-      headerContent={
-        <div className="space-y-4">
-          <p>{t('info.depositTokenSubtitle')}</p>
-
-          <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
-            <WarningRounded className="!h-10 !w-10" />
-
-            <p className="">{t('info.depositTokenWarning')}</p>
-          </div>
-        </div>
-      }
+      headerContent={subtitle && <p>{subtitle}</p>}
     >
-      <div className="flex flex-row items-center justify-between gap-10">
-        <p className="secondary-text">{t('title.balance')}</p>
+      {warning && (
+        <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
+          <WarningRounded className="!h-10 !w-10" />
 
-        {/* Balance */}
-        <TokenAmountDisplay
-          amount={
-            loadingBalance.loading
-              ? loadingBalance
-              : { loading: false, data: loadingBalance.data.amount }
-          }
-          dateFetched={
-            loadingBalance.loading ? undefined : loadingBalance.data.timestamp
-          }
-          decimals={token.decimals}
-          iconUrl={token.imageUrl}
-          showFullAmount
-          symbol={tokenSymbol}
-        />
-      </div>
+          <p>{warning}</p>
+        </div>
+      )}
+
+      {connected && (
+        <div className="flex flex-row items-center justify-between gap-10">
+          <p className="secondary-text">{t('title.balance')}</p>
+
+          {/* Balance */}
+          <TokenAmountDisplay
+            amount={
+              loadingBalance.loading
+                ? loadingBalance
+                : { loading: false, data: loadingBalance.data.amount }
+            }
+            dateFetched={
+              loadingBalance.loading ? undefined : loadingBalance.data.timestamp
+            }
+            decimals={token.decimals}
+            iconUrl={token.imageUrl}
+            showFullAmount
+            symbol={tokenSymbol}
+          />
+        </div>
+      )}
 
       <NumberInput
         // Auto focus does not work on mobile Safari by design
         // (https://bugs.webkit.org/show_bug.cgi?id=195884#c4).
         autoFocus
-        max={loadingBalance.loading ? undefined : loadingBalance.data.amount}
+        max={loadingBalance.loading ? 0 : loadingBalance.data.amount}
         min={min}
         onInput={(event) =>
           setAmount(
@@ -114,23 +131,17 @@ export const TokenDepositModal = ({
         }}
         onMinus={() =>
           setAmount((prev) =>
-            Math.max(
-              Math.min(
-                Number((prev - 1).toFixed(0)),
-                loadingBalance.loading ? 0 : loadingBalance.data.amount
-              ),
-              min
+            Math.min(
+              Math.max(Number((prev - 1).toFixed(0)), min),
+              loadingBalance.loading ? 0 : loadingBalance.data.amount
             )
           )
         }
         onPlus={() =>
           setAmount((prev) =>
-            Math.max(
-              Math.min(
-                Number((prev + 1).toFixed(0)),
-                loadingBalance.loading ? 0 : loadingBalance.data.amount
-              ),
-              min
+            Math.min(
+              Math.max(Number((prev + 1).toFixed(0)), min),
+              loadingBalance.loading ? 0 : loadingBalance.data.amount
             )
           )
         }

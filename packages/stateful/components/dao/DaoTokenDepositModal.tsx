@@ -24,10 +24,11 @@ import {
 } from '@dao-dao/utils'
 
 import { Cw20BaseHooks, useWalletInfo } from '../../hooks'
+import { ConnectWallet } from '../ConnectWallet'
 
-export type DaoTokenDepositModalProps = Omit<
+export type DaoTokenDepositModalProps = Pick<
   TokenDepositModalProps,
-  'loadingBalance' | 'onDeposit' | 'loading' | 'amount' | 'setAmount'
+  'token' | 'onClose' | 'visible'
 >
 
 export const DaoTokenDepositModal = ({
@@ -37,7 +38,7 @@ export const DaoTokenDepositModal = ({
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
-  const { address, signingCosmWasmClient } = useWallet()
+  const { connected, address, signingCosmWasmClient } = useWallet()
   const { refreshBalances: refreshWalletBalances } = useWalletInfo()
 
   const setRefreshDaoBalancesId = useSetRecoilState(
@@ -146,7 +147,9 @@ export const DaoTokenDepositModal = ({
 
   return (
     <TokenDepositModal
+      ConnectWallet={ConnectWallet}
       amount={amount}
+      connected={connected}
       loading={loading}
       loadingBalance={
         loadingBalance.loading
@@ -166,6 +169,7 @@ export const DaoTokenDepositModal = ({
       onDeposit={onDeposit}
       setAmount={setAmount}
       token={token}
+      warning={t('info.depositTokenWarning')}
       {...props}
     />
   )
