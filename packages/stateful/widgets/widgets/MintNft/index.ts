@@ -1,10 +1,11 @@
-import { Widget } from '@dao-dao/types'
+import { Widget, WidgetVisibilityContext } from '@dao-dao/types'
 
 import { MintNftComponent } from './MintNftComponent'
 import { MintNftData } from './types'
 
 export const MintNftWidget: Widget<MintNftData> = {
   id: 'mint_nft',
+  visibilityContext: WidgetVisibilityContext.Always,
   defaultValues: {
     nftCollection: '',
     description: '',
