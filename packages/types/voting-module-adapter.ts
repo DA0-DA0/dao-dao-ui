@@ -2,7 +2,6 @@ import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 
 import { Action } from './actions'
-import { TokenInfoResponse } from './contracts/Cw20Base'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationGovernanceConfigInputProps,
@@ -10,8 +9,7 @@ import {
   DaoCreationVotingConfigItem,
   DaoTabWithComponent,
 } from './dao'
-import { AmountWithTimestampAndDenom } from './state'
-import { DaoInfoBarItem, LoadingData, StakingMode } from './stateless'
+import { DaoInfoBarItem, StakingMode } from './stateless'
 import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
 
 export interface BaseProfileCardMemberInfoProps {
@@ -26,23 +24,12 @@ export interface BaseStakingModalProps {
   maxDeposit?: string
 }
 
-export interface UseGovernanceTokenInfoOptions {
-  fetchWalletBalance?: boolean
-  fetchTreasuryBalance?: boolean
-  fetchUsdcPrice?: boolean
-}
-
-export interface UseGovernanceTokenInfoResponse {
-  stakingContractAddress: string
-  governanceTokenAddress: string
-  governanceTokenInfo: TokenInfoResponse
-  /// Optional
-  // Wallet balance
-  loadingWalletBalance?: LoadingData<number>
-  // Treasury balance
-  loadingTreasuryBalance?: LoadingData<number>
-  // Price
-  loadingPrice?: LoadingData<AmountWithTimestampAndDenom>
+// Common governance token info used by other modules. Only the denom/contract
+// address, symbol for displaying, and decimals for calculating are necessary.
+export type CommonGovernanceTokenInfo = {
+  denomOrAddress: string
+  symbol: string
+  decimals: number
 }
 
 export interface IVotingModuleAdapter {
@@ -51,9 +38,7 @@ export interface IVotingModuleAdapter {
     useActions: () => Action[]
     useDaoInfoBarItems: () => DaoInfoBarItem[]
     useProfileNewProposalCardAddresses: () => ProfileNewProposalCardAddress[]
-    useGovernanceTokenInfo?: (
-      options?: UseGovernanceTokenInfoOptions
-    ) => UseGovernanceTokenInfoResponse
+    useCommonGovernanceTokenInfo?: () => CommonGovernanceTokenInfo
   }
 
   // Components
@@ -62,6 +47,7 @@ export interface IVotingModuleAdapter {
       labelI18nKey: string
     })[]
     ProfileCardMemberInfo: ComponentType<BaseProfileCardMemberInfoProps>
+    StakingModal?: ComponentType<BaseStakingModalProps>
   }
 }
 

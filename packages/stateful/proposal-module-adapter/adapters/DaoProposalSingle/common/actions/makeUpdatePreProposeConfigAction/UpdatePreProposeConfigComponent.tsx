@@ -113,19 +113,9 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                 disabled={!isCreating}
                 error={errors?.depositInfo?.amount}
                 fieldName={fieldNamePrefix + 'depositInfo.amount'}
-                onMinus={() =>
-                  setValue(
-                    fieldNamePrefix + 'depositInfo.amount',
-                    Math.max(depositInfo.amount - 1, 0)
-                  )
-                }
-                onPlus={() =>
-                  setValue(
-                    fieldNamePrefix + 'depositInfo.amount',
-                    Math.max(depositInfo.amount + 1, 0)
-                  )
-                }
+                min={0}
                 register={register}
+                setValue={setValue}
                 step={Math.pow(
                   10,
                   depositInfo.type === 'cw20'
@@ -133,6 +123,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                     : -NATIVE_DECIMALS
                 )}
                 validation={[validateRequired, validatePositive]}
+                watch={watch}
               />
 
               <SelectInput

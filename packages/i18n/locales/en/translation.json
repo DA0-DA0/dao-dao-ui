@@ -478,6 +478,7 @@
     "depositFromStargazeQuestion": "Deposit NFTs from Stargaze?",
     "depositNftsModalSubtitle": "Select the NFTs you want to deposit into {{daoName}} from your Stargaze wallet.",
     "depositTokenSubtitle": "Tokens will be sent from your wallet.",
+    "depositTokenWarning": "Tokens will be sent from your wallet to the DAO. You cannot undo a deposit. You will not gain voting power by depositing tokens.",
     "disabled": "Disabled",
     "disconnectWalletTooltip": "Disconnect wallet",
     "discordNotifierExplanation": "The Discord Notifier broadcasts a message to registered Discord channels when a proposal is created. Clicking the button below begins the registration process; it will take you to Discord's website and prompt you to choose a server and channel. You will then be redirected back here and prompted to authorize with your wallet. Once this is done, proposal notifications are enabled.",

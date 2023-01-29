@@ -174,25 +174,14 @@ const StakeUnstakeModesBody = ({
       <NumberInput
         containerClassName="py-7 w-full h-20 pl-6 pr-8 bg-background-secondary rounded-md gap-4"
         ghost
-        iconContainerClassName="gap-1"
-        iconSize="default"
+        max={loadingMax.loading ? undefined : loadingMax.data}
+        min={1 / 10 ** tokenDecimals}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
           setAmount(e.target.valueAsNumber)
         }
-        onMinus={
-          loadingMax.loading
-            ? // Use empty function so button still appears.
-              () => {}
-            : () =>
-                setAmount(Math.max(Math.min(amount - 1, loadingMax.data), 0))
-        }
-        onPlus={
-          loadingMax.loading
-            ? // Use empty function so button still appears.
-              () => {}
-            : () =>
-                setAmount(Math.max(Math.min(amount + 1, loadingMax.data), 0))
-        }
+        plusMinusButtonSize="lg"
+        setValue={(_, value) => setAmount(value)}
+        step={1 / 10 ** tokenDecimals}
         textClassName="font-mono leading-5 symbol-small-body-text"
         unit={`$${tokenSymbol}`}
         value={amount}

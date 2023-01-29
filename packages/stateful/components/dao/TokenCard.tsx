@@ -9,8 +9,7 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { CoreActionKey } from '@dao-dao/types'
-import { TokenCardInfo } from '@dao-dao/types/dao'
+import { CoreActionKey, TokenCardInfo } from '@dao-dao/types'
 import {
   NATIVE_DENOM,
   StakeType,
@@ -21,6 +20,7 @@ import {
 import { useCoreActionForKey } from '../../actions'
 import { useEncodedDaoProposalSinglePrefill } from '../../hooks'
 import { tokenCardLazyInfoSelector } from '../../recoil'
+import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { ButtonLink } from '../ButtonLink'
 import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 
@@ -34,9 +34,7 @@ export const TokenCard = (props: TokenCardInfo) => {
   const lazyInfoLoadable = useCachedLoadable(
     tokenCardLazyInfoSelector({
       walletAddress: coreAddress,
-      denom: props.tokenDenom,
-      tokenDecimals: props.tokenDecimals,
-      tokenSymbol: props.tokenSymbol,
+      token: props.token,
     })
   )
 
@@ -46,6 +44,17 @@ export const TokenCard = (props: TokenCardInfo) => {
       console.error(lazyInfoLoadable.contents)
     }
   }, [lazyInfoLoadable.contents, lazyInfoLoadable.state])
+
+  const {
+    hooks: { useCommonGovernanceTokenInfo },
+    components: { StakingModal },
+  } = useVotingModuleAdapter()
+  const governanceInfo = useCommonGovernanceTokenInfo?.()
+  // If this token is the CW20 governance token for the DAO, hide deposit and
+  // show staking modal.
+  const isCw20GovernanceToken =
+    props.token.type === 'cw20' &&
+    props.token.denomOrAddress === governanceInfo?.denomOrAddress
 
   // Refresh staking info.
   const setRefreshNativeTokenStakingInfo = useSetRecoilState(
@@ -65,8 +74,7 @@ export const TokenCard = (props: TokenCardInfo) => {
 
   const stakeAction = useCoreActionForKey(CoreActionKey.StakingActions)
 
-  // Prefill URLs only valid if action exists.
-  const prefillValid = !!stakeAction
+  // Does not get used if not native token.
   const encodedProposalPrefillClaim = useEncodedDaoProposalSinglePrefill({
     actions: stakeAction
       ? stakesWithRewards.map(({ validator: { address } }) => ({
@@ -76,11 +84,12 @@ export const TokenCard = (props: TokenCardInfo) => {
             validator: address,
             // Default values, not needed for displaying this type of message.
             amount: 1,
-            denom: props.tokenDenom,
+            denom: props.token.denomOrAddress,
           },
         }))
       : [],
   })
+  // Does not get used if not native token.
   const encodedProposalPrefillStakeUnstake = useEncodedDaoProposalSinglePrefill(
     {
       // If has unstaked, show stake action by default.
@@ -93,7 +102,7 @@ export const TokenCard = (props: TokenCardInfo) => {
                   stakeType: StakeType.Delegate,
                   validator: '',
                   amount: props.unstakedBalance,
-                  denom: props.tokenDenom,
+                  denom: props.token.denomOrAddress,
                 },
               },
             ]
@@ -104,7 +113,7 @@ export const TokenCard = (props: TokenCardInfo) => {
                 stakeType: StakeType.Undelegate,
                 validator,
                 amount,
-                denom: props.tokenDenom,
+                denom: props.token.denomOrAddress,
               },
             }))
         : [],
@@ -112,28 +121,34 @@ export const TokenCard = (props: TokenCardInfo) => {
   )
 
   const proposeClaimHref =
-    prefillValid &&
+    // Prefill URLs valid if action exists,
+    !!stakeAction &&
+    // ...if there is something to claim,
     stakesWithRewards.length > 0 &&
+    // ...if there is a valid prefill (meaning proposal module adapter exists)
     encodedProposalPrefillClaim &&
-    props.tokenDenom === NATIVE_DENOM
+    props.token.denomOrAddress === NATIVE_DENOM
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: encodedProposalPrefillClaim,
         })
       : undefined
 
   const proposeStakeUnstakeHref =
-    prefillValid &&
+    // Prefill URLs valid if action exists,
+    !!stakeAction &&
+    // ...if there is something to stake or unstake,
     (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
+    // ...if there is a valid prefill (meaning proposal module adapter exists)
     encodedProposalPrefillStakeUnstake &&
-    props.tokenDenom === NATIVE_DENOM
+    props.token.denomOrAddress === NATIVE_DENOM
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: encodedProposalPrefillStakeUnstake,
         })
       : undefined
 
   const onAddToken =
-    addToken && props.cw20Address
-      ? () => props.cw20Address && addToken(props.cw20Address)
+    addToken && props.token.type === 'cw20'
+      ? () => props.token.denomOrAddress && addToken(props.token.denomOrAddress)
       : undefined
 
   const onClaim = proposeClaimHref
@@ -142,6 +157,8 @@ export const TokenCard = (props: TokenCardInfo) => {
 
   const [depositVisible, setDepositVisible] = useState(false)
   const showDeposit = useCallback(() => setDepositVisible(true), [])
+
+  const [showCw20StakingModal, setShowCw20StakingModal] = useState(false)
 
   return (
     <>
@@ -152,23 +169,37 @@ export const TokenCard = (props: TokenCardInfo) => {
           usdcUnitPrice: undefined,
           stakingInfo: undefined,
         })}
+        manageCw20Stake={
+          // If this is the governance token and a CW20, show manage staking
+          // button.
+          isCw20GovernanceToken
+            ? () => setShowCw20StakingModal(true)
+            : undefined
+        }
         onAddToken={onAddToken}
         onClaim={onClaim}
         proposeClaimHref={proposeClaimHref}
         proposeStakeUnstakeHref={proposeStakeUnstakeHref}
         refreshUnstakingTasks={refreshNativeTokenStakingInfo}
-        showDeposit={showDeposit}
+        showDeposit={
+          // If this is the governance token and a CW20, don't show deposit
+          // button. People accidentally deposit governance tokens into the DAO
+          // when they're trying to stake them.
+          isCw20GovernanceToken ? undefined : showDeposit
+        }
       />
 
-      <DaoTokenDepositModal
-        onClose={() => setDepositVisible(false)}
-        tokenDecimals={props.tokenDecimals}
-        tokenDenomOrAddress={props.cw20Address ?? props.tokenDenom}
-        tokenImageUrl={props.imageUrl}
-        tokenSymbol={props.tokenSymbol}
-        tokenType={props.cw20Address ? 'cw20' : 'native'}
-        visible={depositVisible}
-      />
+      {isCw20GovernanceToken && showCw20StakingModal && StakingModal && (
+        <StakingModal onClose={() => setShowCw20StakingModal(false)} />
+      )}
+
+      {!isCw20GovernanceToken && (
+        <DaoTokenDepositModal
+          onClose={() => setDepositVisible(false)}
+          token={props.token}
+          visible={depositVisible}
+        />
+      )}
     </>
   )
 }

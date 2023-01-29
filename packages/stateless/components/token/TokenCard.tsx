@@ -12,14 +12,16 @@ import { useTranslation } from 'react-i18next'
 
 import { TokenCardInfo } from '@dao-dao/types'
 import {
+  getFallbackImage,
   isJunoIbcUsdc,
   secondsToWdhms,
   toAccessibleImageUrl,
+  transformIbcSymbol,
 } from '@dao-dao/utils'
 
 import { ButtonLinkProps } from '../buttons'
 import { Button } from '../buttons/Button'
-import { CopyToClipboard, concatAddressStartEnd } from '../CopyToClipboard'
+import { CopyToClipboard } from '../CopyToClipboard'
 import { DepositEmoji, MoneyEmoji } from '../emoji'
 import { IconButton } from '../icon_buttons/IconButton'
 import { CrownIcon } from '../icons/CrownIcon'
@@ -37,26 +39,24 @@ export interface TokenCardProps extends TokenCardInfo {
   refreshUnstakingTasks?: () => void
   onClaim?: () => void
   showDeposit?: () => void
+  manageCw20Stake?: () => void
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const TokenCard = ({
-  crown,
-  tokenSymbol,
-  tokenDenom,
-  tokenDecimals,
+  token,
+  isGovernanceToken,
   subtitle,
-  imageUrl,
   unstakedBalance,
   hasStakingInfo,
   lazyInfo,
-  cw20Address,
   onAddToken,
   proposeStakeUnstakeHref,
   proposeClaimHref,
   refreshUnstakingTasks,
   onClaim,
   showDeposit,
+  manageCw20Stake,
   ButtonLink,
 }: TokenCardProps) => {
   const { t } = useTranslation()
@@ -93,24 +93,24 @@ export const TokenCard = ({
     return () => clearTimeout(timeout)
   }, [copied])
 
+  const { isIbc, tokenSymbol, originalTokenSymbol } = transformIbcSymbol(
+    token.symbol
+  )
+
   const buttonPopupSections: ButtonPopupSection[] = useMemo(
     () => [
-      ...(cw20Address || onAddToken || showDeposit
+      ...(token.type === 'cw20' || onAddToken || showDeposit || manageCw20Stake
         ? [
             {
               label: t('title.token'),
               buttons: [
-                ...(cw20Address
+                ...(token.type === 'cw20'
                   ? [
                       {
                         Icon: copied ? Check : CopyAll,
                         label: t('button.copyAddressToClipboard'),
                         onClick: () => {
-                          if (!cw20Address) {
-                            return
-                          }
-
-                          navigator.clipboard.writeText(cw20Address)
+                          navigator.clipboard.writeText(token.denomOrAddress)
                           toast.success(t('info.copiedToClipboard'))
                           setCopied(true)
                         },
@@ -132,6 +132,15 @@ export const TokenCard = ({
                         Icon: AccountBalance,
                         label: t('button.deposit'),
                         onClick: showDeposit,
+                      },
+                    ]
+                  : []),
+                ...(manageCw20Stake
+                  ? [
+                      {
+                        Icon: AccountBalance,
+                        label: t('button.manageStake', { tokenSymbol }),
+                        onClick: manageCw20Stake,
                       },
                     ]
                   : []),
@@ -168,20 +177,18 @@ export const TokenCard = ({
         : []),
     ],
     [
-      copied,
-      cw20Address,
+      token.type,
+      token.denomOrAddress,
       onAddToken,
-      proposeClaimHref,
-      proposeStakeUnstakeHref,
       showDeposit,
+      manageCw20Stake,
       t,
+      copied,
+      tokenSymbol,
+      proposeStakeUnstakeHref,
+      proposeClaimHref,
     ]
   )
-
-  // Truncate IBC denominations to prevent overflow.
-  const originalTokenSymbol = tokenSymbol
-  const isIbc = tokenSymbol.toLowerCase().startsWith('ibc')
-  tokenSymbol = isIbc ? concatAddressStartEnd(tokenSymbol, 3, 2) : tokenSymbol
 
   const waitingForStakingInfo = hasStakingInfo && lazyInfo.loading
 
@@ -195,12 +202,14 @@ export const TokenCard = ({
               <div
                 className="h-10 w-10 rounded-full bg-cover bg-center"
                 style={{
-                  backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
+                  backgroundImage: `url(${toAccessibleImageUrl(
+                    token.imageUrl || getFallbackImage(token.denomOrAddress)
+                  )})`,
                 }}
               ></div>
 
               {/* Crown */}
-              {!!crown && (
+              {isGovernanceToken && (
                 <CrownIcon className="absolute -top-4 -left-6 !h-8 !w-8 stroke-2 text-text-secondary" />
               )}
             </div>
@@ -212,8 +221,8 @@ export const TokenCard = ({
                 <CopyToClipboard
                   className="title-text"
                   takeStartEnd={{
-                    start: 8,
-                    end: 4,
+                    start: 7,
+                    end: 3,
                   }}
                   value={originalTokenSymbol}
                 />
@@ -264,11 +273,11 @@ export const TokenCard = ({
                   waitingForStakingInfo ? { loading: true } : totalBalance
                 }
                 className="leading-5 text-text-body"
-                decimals={tokenDecimals}
+                decimals={token.decimals}
                 symbol={tokenSymbol}
               />
 
-              {!isJunoIbcUsdc(tokenDenom) &&
+              {!isJunoIbcUsdc(token.denomOrAddress) &&
                 (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
                   <div className="flex flex-row items-center gap-1">
                     <TokenAmountDisplay
@@ -305,11 +314,11 @@ export const TokenCard = ({
                 <TokenAmountDisplay
                   amount={unstakedBalance}
                   className="leading-5 text-text-body"
-                  decimals={tokenDecimals}
+                  decimals={token.decimals}
                   symbol={tokenSymbol}
                 />
 
-                {!isJunoIbcUsdc(tokenDenom) &&
+                {!isJunoIbcUsdc(token.denomOrAddress) &&
                   (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
@@ -348,7 +357,7 @@ export const TokenCard = ({
               <TokenAmountDisplay
                 amount={lazyInfo.loading ? { loading: true } : totalStaked}
                 className="caption-text text-right font-mono text-text-body"
-                decimals={tokenDecimals}
+                decimals={token.decimals}
                 symbol={tokenSymbol}
               />
             </div>
@@ -415,7 +424,7 @@ export const TokenCard = ({
                   amount={
                     lazyInfo.loading ? { loading: true } : unstakingBalance
                   }
-                  decimals={tokenDecimals}
+                  decimals={token.decimals}
                   symbol={tokenSymbol}
                 />
               </Button>
@@ -427,7 +436,7 @@ export const TokenCard = ({
               <TokenAmountDisplay
                 amount={lazyInfo.loading ? { loading: true } : pendingRewards}
                 className="caption-text text-right font-mono text-text-body"
-                decimals={tokenDecimals}
+                decimals={token.decimals}
                 symbol={tokenSymbol}
               />
             </div>

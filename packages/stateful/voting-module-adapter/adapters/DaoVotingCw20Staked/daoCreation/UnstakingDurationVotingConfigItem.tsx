@@ -19,6 +19,7 @@ export const UnstakingDurationInput = ({
   data: { unstakingDuration },
   register,
   setValue,
+  watch,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
@@ -29,22 +30,13 @@ export const UnstakingDurationInput = ({
         containerClassName="grow"
         error={errors?.unstakingDuration?.value}
         fieldName="unstakingDuration.value"
-        onMinus={() =>
-          setValue(
-            'unstakingDuration.value',
-            Math.max(unstakingDuration.value - 1, 0)
-          )
-        }
-        onPlus={() =>
-          setValue(
-            'unstakingDuration.value',
-            Math.max(unstakingDuration.value + 1, 0)
-          )
-        }
+        min={0}
         register={register}
+        setValue={setValue}
         sizing="sm"
         step={1}
         validation={[validateNonNegative, validateRequired]}
+        watch={watch}
       />
 
       <SelectInput

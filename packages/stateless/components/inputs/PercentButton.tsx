@@ -46,6 +46,11 @@ export const PercentButton = ({
       )
     }
     pressed={
+      // Only show as pressed if percent and amount are both zero or nonzero. If
+      // one is zero and the other is nonzero, the button should not be pressed.
+      // This ensures that the button doesn't show as pressed when the max is 0,
+      // since all percents of 0 are 0.
+      (percent === 0) === (amount === 0) &&
       !loadingMax.loading &&
       (loadingMax.data * percent + (absoluteOffset ?? 0)).toFixed(
         tokenDecimals

@@ -1,6 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { token } from '@dao-dao/stateless/components/token/TokenCard.stories'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
+import { TokenStake } from '@dao-dao/types'
 import { NATIVE_DENOM, StakeType } from '@dao-dao/utils'
 
 import { StakeComponent, StakeData } from './StakingActions'
@@ -23,14 +25,9 @@ const Template: ComponentStory<typeof StakeComponent> = (args) => (
   <StakeComponent {...args} />
 )
 
-const denomProps = {
-  denom: NATIVE_DENOM,
-  symbol: 'JUNOX',
-  decimals: 6,
-}
-
-const stakes = [
+const stakes: TokenStake[] = [
   {
+    token,
     // Random price between 0 and 10000 with up to 6 decimals.
     amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
     validator: {
@@ -43,9 +40,9 @@ const stakes = [
       tokens: 5,
     },
     rewards: 1.23,
-    ...denomProps,
   },
   {
+    token,
     // Random price between 0 and 10000 with up to 6 decimals.
     amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
     validator: {
@@ -58,9 +55,9 @@ const stakes = [
       tokens: 6.2,
     },
     rewards: 4.56,
-    ...denomProps,
   },
   {
+    token,
     // Random price between 0 and 10000 with up to 6 decimals.
     amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
     validator: {
@@ -73,7 +70,6 @@ const stakes = [
       tokens: 7,
     },
     rewards: 7.89,
-    ...denomProps,
   },
 ]
 

@@ -1,7 +1,7 @@
 import { DaoEmoji } from '@dao-dao/stateless'
 import { DurationUnits, VotingModuleAdapter } from '@dao-dao/types'
 
-import { ProfileCardMemberInfo } from './components'
+import { ProfileCardMemberInfo, StakingModal } from './components'
 import {
   GovernanceConfigurationInput,
   GovernanceConfigurationReview,
@@ -10,8 +10,8 @@ import {
 } from './daoCreation'
 import {
   useActions,
+  useCommonGovernanceTokenInfo,
   useDaoInfoBarItems,
-  useGovernanceTokenInfo,
   useProfileNewProposalCardAddresses,
 } from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
@@ -33,12 +33,13 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> 
         useActions,
         useDaoInfoBarItems,
         useProfileNewProposalCardAddresses,
-        useGovernanceTokenInfo,
+        useCommonGovernanceTokenInfo,
       },
 
       // Components
       components: {
         ProfileCardMemberInfo,
+        StakingModal,
       },
     }),
 

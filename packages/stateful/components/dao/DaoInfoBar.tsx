@@ -13,7 +13,7 @@ import {
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import {
-  useCw20GovernanceTokenInfoResponseIfExists,
+  useCw20CommonGovernanceTokenInfoIfExists,
   useVotingModuleAdapter,
 } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -32,8 +32,8 @@ const InnerDaoInfoBar = () => {
   const votingModuleItems = useDaoInfoBarItems()
   const { chainId, coreAddress } = useDaoInfoContext()
 
-  const { governanceTokenAddress: cw20GovernanceTokenAddress } =
-    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+  const { denomOrAddress: cw20GovernanceTokenAddress } =
+    useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
   const treasuryUsdcValueLoading = loadableToLoadingData(
     useCachedLoadable(
