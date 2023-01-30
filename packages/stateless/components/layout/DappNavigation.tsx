@@ -83,9 +83,11 @@ export const DappNavigation = ({
     router: { asPath },
   } = useNavHelpers()
   // If currently viewing a DAO, get the path to the single DAO page.
-  const singleDaoPath = asPath.startsWith(getDaoPath(''))
-    ? asPath.replace(getDaoPath(''), baseGetDaoPath(DaoPageMode.Sda, ''))
-    : undefined
+  const singleDaoPath =
+    asPath.startsWith(getDaoPath('')) &&
+    !asPath.startsWith(getDaoPath('create'))
+      ? asPath.replace(getDaoPath(''), baseGetDaoPath(DaoPageMode.Sda, ''))
+      : undefined
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
