@@ -49,11 +49,29 @@ export const useNavHelpers = (overrideMode?: DaoPageMode) => {
     [getDaoProposalPath, router]
   )
 
+  // Returns address of DAO if we're on a DAO subpath, or undefined.
+  const getCoreAddressFromPath = () =>
+    router.asPath.startsWith(getDaoPath('')) &&
+    !router.asPath.startsWith(getDaoPath('create'))
+      ? // Base of URL does not matter. It just lets us use relative paths.
+        new URL(router.asPath, 'http://localhost').pathname
+          .replace(getDaoPath(''), '')
+          .split('/')[0]
+      : undefined
+
+  // Returns proposal ID if we're on a DAO proposal subpath, or undefined.
+  const getProposalIdFromPath = () =>
+    router.asPath.match(
+      new RegExp('^' + getDaoProposalPath('.+', '([a-zA-Z0-9]+)'))
+    )?.[1]
+
   return {
     getDaoPath,
     goToDao,
     getDaoProposalPath,
     goToDaoProposal,
+    getCoreAddressFromPath,
+    getProposalIdFromPath,
     router,
   }
 }

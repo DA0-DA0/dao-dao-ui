@@ -78,16 +78,35 @@ export const DappNavigation = ({
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
   } = useAppLayoutContext()
 
+  // Check if we're on a DAO page and get URL to the SDA version.
   const {
     getDaoPath,
+    getProposalIdFromPath,
+    getCoreAddressFromPath,
     router: { asPath },
   } = useNavHelpers()
+  // If defined, we are on a DAO page and an address is available.
+  const coreAddressFromPath = getCoreAddressFromPath()
+  // If defined, we are on a DAO proposal page.
+  const proposalIdFromPath = getProposalIdFromPath()
   // If currently viewing a DAO, get the path to the single DAO page.
-  const singleDaoPath =
-    asPath.startsWith(getDaoPath('')) &&
-    !asPath.startsWith(getDaoPath('create'))
-      ? asPath.replace(getDaoPath(''), baseGetDaoPath(DaoPageMode.Sda, ''))
-      : undefined
+  const singleDaoPath = coreAddressFromPath
+    ? // Swap the DAO path prefixes instead of just rebuilding the path to
+      // preserve any additional info (subpaths/queries/hash).
+      asPath.replace(getDaoPath(''), baseGetDaoPath(DaoPageMode.Sda, ''))
+    : undefined
+
+  useEffect(() => {
+    if (coreAddressFromPath) {
+      // Trigger SDA to cache page the user might switch to.
+      fetch(
+        SDA_URL_PREFIX +
+          `/api/revalidate?d=${coreAddressFromPath}${
+            proposalIdFromPath ? `&p=${proposalIdFromPath}` : ''
+          }`
+      )
+    }
+  }, [coreAddressFromPath, proposalIdFromPath, singleDaoPath])
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(

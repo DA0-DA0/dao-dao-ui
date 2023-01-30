@@ -56,6 +56,7 @@ export const SdaNavigation = ({
   const {
     getDaoPath,
     getDaoProposalPath,
+    getProposalIdFromPath,
     router: { asPath },
   } = useNavHelpers()
   const {
@@ -70,6 +71,18 @@ export const SdaNavigation = ({
   const daoDaoPath = asPath.startsWith(getDaoPath(''))
     ? asPath.replace(getDaoPath(''), baseGetDaoPath(DaoPageMode.Dapp, ''))
     : undefined
+  // If defined, we are on a DAO proposal page.
+  const proposalIdFromPath = getProposalIdFromPath()
+
+  useEffect(() => {
+    // Trigger dApp to cache page the user might switch to.
+    fetch(
+      DAPP_URL_PREFIX +
+        `/api/revalidate?d=${daoInfo.coreAddress}${
+          proposalIdFromPath ? `&p=${proposalIdFromPath}` : ''
+        }`
+    )
+  }, [daoInfo.coreAddress, proposalIdFromPath])
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
