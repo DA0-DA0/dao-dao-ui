@@ -486,10 +486,8 @@ const daoCoreDumpState = async (
   // Prevent cycles by ensuring admin has not already been seen.
   previousParentAddresses?: string[]
 ): Promise<DaoCoreDumpState> => {
-  let indexerDumpedState: IndexerDumpState | undefined
-
   try {
-    indexerDumpedState = await queryIndexer<IndexerDumpState>(
+    const indexerDumpedState = await queryIndexer<IndexerDumpState>(
       'contract',
       coreAddress,
       'daoCore/dumpState',
@@ -498,55 +496,57 @@ const daoCoreDumpState = async (
         baseUrl: SITE_URL,
       }
     )
+
+    // Use data from indexer if present.
+    if (indexerDumpedState) {
+      if (
+        LEGACY_DAO_CONTRACT_NAMES.includes(indexerDumpedState.version?.contract)
+      ) {
+        throw new LegacyDaoError()
+      }
+
+      const coreVersion = parseContractVersion(
+        indexerDumpedState.version.version
+      )
+      if (!coreVersion) {
+        throw new Error(serverT('error.failedParsingCoreVersion'))
+      }
+
+      const parentDaoInfo = await loadParentDaoInfo(
+        chainId,
+        bech32Prefix,
+        coreAddress,
+        indexerDumpedState.admin,
+        serverT,
+        [...(previousParentAddresses ?? []), coreAddress]
+      )
+
+      return {
+        ...indexerDumpedState,
+        version: coreVersion,
+        votingModule: {
+          address: indexerDumpedState.voting_module,
+          info: indexerDumpedState.votingModuleInfo,
+        },
+        activeProposalModules: indexerDumpedState.proposal_modules.filter(
+          ({ status }) => status === 'enabled' || status === 'Enabled'
+        ),
+        created: indexerDumpedState.createdAt
+          ? new Date(indexerDumpedState.createdAt)
+          : undefined,
+        parentDao: parentDaoInfo
+          ? {
+              ...parentDaoInfo,
+              // Whether or not this parent has registered its child as a SubDAO.
+              registeredSubDao:
+                indexerDumpedState.adminInfo?.registeredSubDao ?? false,
+            }
+          : null,
+      }
+    }
   } catch (error) {
     // Ignore error. Fallback to querying chain below.
-    console.error(error)
-  }
-
-  // Use data from indexer if present.
-  if (indexerDumpedState) {
-    if (
-      LEGACY_DAO_CONTRACT_NAMES.includes(indexerDumpedState.version?.contract)
-    ) {
-      throw new LegacyDaoError()
-    }
-
-    const coreVersion = parseContractVersion(indexerDumpedState.version.version)
-    if (!coreVersion) {
-      throw new Error(serverT('error.failedParsingCoreVersion'))
-    }
-
-    const parentDaoInfo = await loadParentDaoInfo(
-      chainId,
-      bech32Prefix,
-      coreAddress,
-      indexerDumpedState.admin,
-      serverT,
-      [...(previousParentAddresses ?? []), coreAddress]
-    )
-
-    return {
-      ...indexerDumpedState,
-      version: coreVersion,
-      votingModule: {
-        address: indexerDumpedState.voting_module,
-        info: indexerDumpedState.votingModuleInfo,
-      },
-      activeProposalModules: indexerDumpedState.proposal_modules.filter(
-        ({ status }) => status === 'enabled' || status === 'Enabled'
-      ),
-      created: indexerDumpedState.createdAt
-        ? new Date(indexerDumpedState.createdAt)
-        : undefined,
-      parentDao: parentDaoInfo
-        ? {
-            ...parentDaoInfo,
-            // Whether or not this parent has registered its child as a SubDAO.
-            registeredSubDao:
-              indexerDumpedState.adminInfo?.registeredSubDao ?? false,
-          }
-        : null,
-    }
+    console.error(error, processError(error))
   }
 
   const cwClient = await cosmWasmClientRouter.connect(getRpcForChainId(chainId))
