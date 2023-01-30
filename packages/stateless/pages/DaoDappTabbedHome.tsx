@@ -32,27 +32,19 @@ export const DaoDappTabbedHome = ({
 
   const {
     getDaoPath,
-    getProposalIdFromPath,
     router: { asPath },
   } = useNavHelpers()
-  // If defined, we are on a DAO proposal page.
-  const proposalIdFromPath = getProposalIdFromPath()
-  // Swap the DAO path prefixes instead of just rebuilding the path to
-  // preserve any additional info (subpaths/queries), except remove the hash
-  // since we want to start on the SDA home.
+  // Swap the DAO path prefixes instead of just rebuilding the path to preserve
+  // any additional info (such as query params), except remove the hash since we
+  // want to start on the SDA home.
   const singleDaoPath = asPath
     .replace(getDaoPath(''), baseGetDaoPath(DaoPageMode.Sda, ''))
     .split('#')[0]
 
   useEffect(() => {
     // Trigger SDA to cache page the user might switch to.
-    fetch(
-      SDA_URL_PREFIX +
-        `/api/revalidate?d=${coreAddress}${
-          proposalIdFromPath ? `&p=${proposalIdFromPath}` : ''
-        }`
-    )
-  }, [coreAddress, proposalIdFromPath])
+    fetch(SDA_URL_PREFIX + `/api/revalidate?d=${coreAddress}`)
+  }, [coreAddress])
 
   const [selectedTab, setSelectedTab] = useState(() => {
     // Default to tab from URL hash if present and valid.
@@ -92,7 +84,6 @@ export const DaoDappTabbedHome = ({
           <Tooltip title={t('button.viewSingleDaoPage')}>
             <IconButtonLink
               Icon={ArrowOutwardRounded}
-              circular
               href={SDA_URL_PREFIX + singleDaoPath}
               variant="ghost"
             />
