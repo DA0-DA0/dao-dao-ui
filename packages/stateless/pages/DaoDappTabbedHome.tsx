@@ -94,7 +94,6 @@ export const DaoDappTabbedHome = ({
               Icon={ArrowOutwardRounded}
               circular
               href={SDA_URL_PREFIX + singleDaoPath}
-              openInNewTab={false}
               variant="ghost"
             />
           </Tooltip>
