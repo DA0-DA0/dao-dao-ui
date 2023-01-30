@@ -38,11 +38,11 @@ export const DaoDappTabbedHome = ({
   // If defined, we are on a DAO proposal page.
   const proposalIdFromPath = getProposalIdFromPath()
   // Swap the DAO path prefixes instead of just rebuilding the path to
-  // preserve any additional info (subpaths/queries/hash).
-  const singleDaoPath = asPath.replace(
-    getDaoPath(''),
-    baseGetDaoPath(DaoPageMode.Sda, '')
-  )
+  // preserve any additional info (subpaths/queries), except remove the hash
+  // since we want to start on the SDA home.
+  const singleDaoPath = asPath
+    .replace(getDaoPath(''), baseGetDaoPath(DaoPageMode.Sda, ''))
+    .split('#')[0]
 
   useEffect(() => {
     // Trigger SDA to cache page the user might switch to.
