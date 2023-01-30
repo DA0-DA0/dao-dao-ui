@@ -1,17 +1,15 @@
 import clsx from 'clsx'
 
-import { DaoWrappedTabProps } from '@dao-dao/types'
+import { DaoSdaWrappedTabProps } from '@dao-dao/types'
 
 import { PageLoader, useAppLayoutContext } from '../components'
 
-export const DaoWrappedTab = ({
+export const DaoSdaWrappedTab = ({
   allTabs,
   tabId,
-  DiscordNotifierConfigureModal,
   rightSidebarContent,
   SuspenseLoader,
-  showDiscordNotifierConfigureModal,
-}: DaoWrappedTabProps) => {
+}: DaoSdaWrappedTabProps) => {
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const activeTab = allTabs.find(({ id }) => id === tabId) || allTabs[0]
@@ -26,11 +24,6 @@ export const DaoWrappedTab = ({
         }}
         className="mx-auto max-w-5xl"
         gradient
-        rightNode={
-          showDiscordNotifierConfigureModal ? (
-            <DiscordNotifierConfigureModal />
-          ) : undefined
-        }
       />
 
       <div className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch">

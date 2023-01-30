@@ -106,7 +106,9 @@
     "update": "Update",
     "upload": "Upload",
     "useExistingToken": "Use an existing token",
+    "viewOnDaoDao": "View on DAO DAO",
     "viewProposals": "View proposals",
+    "viewSingleDaoPage": "View single DAO page",
     "withDecodedModuleMessages": "with Decoded Module Messages"
   },
   "daoCreationAdapter": {
@@ -615,8 +617,6 @@
     "submitUpgradeProposal": "Submit a proposal to upgrade the DAO?",
     "submitted": "Submitted",
     "supportsMarkdownFormat": "Supports Markdown format",
-    "switchToDaoDaoView": "Switch to DAO DAO View",
-    "switchToSingleDaoView": "Switch to Single DAO View",
     "syncFollowingDescription": "Followed DAOs now sync across browsers and devices. Would you rather sync your following list or stop following these DAOs?",
     "testnet": "Testnet",
     "tierMemberGovTokenAllocationTooltip": "This member will receive {{tokens}} ${{tokenSymbol}} when the DAO is created.",

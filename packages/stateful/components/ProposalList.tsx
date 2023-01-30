@@ -9,6 +9,7 @@ import {
 
 import { useMembership } from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
+import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureModal'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
 
 // Contracts enforce a max of 30, though this is on the edge for DAOs with
@@ -162,6 +163,7 @@ export const ProposalList = () => {
 
   return (
     <StatelessProposalList
+      DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
       ProposalLine={ProposalLine}
       canLoadMore={canLoadMore}
       createNewProposalHref={getDaoProposalPath(coreAddress, 'create')}

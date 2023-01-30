@@ -12,7 +12,7 @@ import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
-  DiscordNotifierConfigureModal,
+  DaoWidgets,
   LinkWrapper,
   ProfileDaoHomeCard,
   SuspenseLoader,
@@ -23,8 +23,9 @@ import {
 } from '@dao-dao/stateful'
 import { useCoreActionForKey } from '@dao-dao/stateful/actions'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
+import { useWidgets } from '@dao-dao/stateful/widgets'
 import {
-  DaoTabbedHome,
+  DaoDappTabbedHome,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -141,12 +142,22 @@ const InnerDaoHome = () => {
     useFollowingDaos()
   const following = isFollowing(daoInfo.coreAddress)
 
-  const tabs = useDaoTabs()
+  // Add home tab with widgets if any widgets exist.
+  const loadingWidgets = useWidgets({
+    // Load widgets before rendering so that home is selected if there are
+    // widgets.
+    suspendWhileLoading: true,
+  })
+  const tabs = useDaoTabs({
+    includeHome:
+      !loadingWidgets.loading && loadingWidgets.data.length > 0
+        ? DaoWidgets
+        : undefined,
+  })
 
   return (
-    <DaoTabbedHome
+    <DaoDappTabbedHome
       DaoInfoBar={DaoInfoBar}
-      DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
       LinkWrapper={LinkWrapper}
       SuspenseLoader={SuspenseLoader}
       daoInfo={daoInfo}

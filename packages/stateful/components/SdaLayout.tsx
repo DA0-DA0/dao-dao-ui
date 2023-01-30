@@ -25,6 +25,7 @@ import { DaoPageMode, IAppLayoutContext } from '@dao-dao/types'
 import { useDaoTabs, useWalletInfo } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
 import { ConnectWallet } from './ConnectWallet'
+import { SdaDaoHome } from './dao'
 import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
@@ -124,7 +125,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
     daoCreatedCardPropsAtom
   )
 
-  const tabs = useDaoTabs({ includeSdaHome: true })
+  const tabs = useDaoTabs({ includeHome: SdaDaoHome })
 
   return (
     <StatelessSdaLayout

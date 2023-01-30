@@ -5,7 +5,6 @@ import {
   InboxOutlined,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
-  LoopRounded,
   Search,
 } from '@mui/icons-material'
 import { isMobile } from '@walletconnect/browser-utils'
@@ -14,17 +13,11 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoPageMode } from '@dao-dao/types'
 import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
-import {
-  SDA_URL_PREFIX,
-  getDaoPath as baseGetDaoPath,
-  usePlatform,
-} from '@dao-dao/utils'
+import { usePlatform } from '@dao-dao/utils'
 
-import { useNavHelpers } from '../../hooks'
 import { DaoDropdown } from '../dao'
-import { IconButton, IconButtonLink, ThemeToggle } from '../icon_buttons'
+import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { Logo } from '../logo/Logo'
 import { PricePercentChange } from '../token/PricePercentChange'
@@ -77,36 +70,6 @@ export const DappNavigation = ({
     },
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
   } = useAppLayoutContext()
-
-  // Check if we're on a DAO page and get URL to the SDA version.
-  const {
-    getDaoPath,
-    getProposalIdFromPath,
-    getCoreAddressFromPath,
-    router: { asPath },
-  } = useNavHelpers()
-  // If defined, we are on a DAO page and an address is available.
-  const coreAddressFromPath = getCoreAddressFromPath()
-  // If defined, we are on a DAO proposal page.
-  const proposalIdFromPath = getProposalIdFromPath()
-  // If currently viewing a DAO, get the path to the single DAO page.
-  const singleDaoPath = coreAddressFromPath
-    ? // Swap the DAO path prefixes instead of just rebuilding the path to
-      // preserve any additional info (subpaths/queries/hash).
-      asPath.replace(getDaoPath(''), baseGetDaoPath(DaoPageMode.Sda, ''))
-    : undefined
-
-  useEffect(() => {
-    if (coreAddressFromPath) {
-      // Trigger SDA to cache page the user might switch to.
-      fetch(
-        SDA_URL_PREFIX +
-          `/api/revalidate?d=${coreAddressFromPath}${
-            proposalIdFromPath ? `&p=${proposalIdFromPath}` : ''
-          }`
-      )
-    }
-  }, [coreAddressFromPath, proposalIdFromPath, singleDaoPath])
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
@@ -200,13 +163,7 @@ export const DappNavigation = ({
         <PageHeader
           centerNode={
             <Link href="/">
-              <a
-                className={clsx(
-                  'flex flex-row items-center gap-2',
-                  // Make room for rightNode switch button.
-                  singleDaoPath && !compact && 'px-12 sm:pl-0'
-                )}
-              >
+              <a className="flex flex-row items-center gap-2">
                 <Logo size={32} />
                 {!compact && <p className="header-text">{t('meta.title')}</p>}
               </a>
@@ -214,20 +171,6 @@ export const DappNavigation = ({
           }
           forceCenter={compact}
           noBorder={compact}
-          rightNode={
-            // Go to Single DAO Page.
-            singleDaoPath && !compact ? (
-              <Tooltip title={t('info.switchToSingleDaoView')}>
-                <IconButtonLink
-                  Icon={LoopRounded}
-                  circular
-                  href={SDA_URL_PREFIX + singleDaoPath}
-                  openInNewTab={false}
-                  variant="ghost"
-                />
-              </Tooltip>
-            ) : undefined
-          }
         />
 
         <div className={clsx(!compact && 'pt-2')}>

@@ -17,8 +17,6 @@ import { DaoMemberCardProps, DaoTabId } from '@dao-dao/types'
 import {
   DaoInfoBar,
   DaoInfoBarProps,
-  DiscordNotifierConfigureModal,
-  DiscordNotifierConfigureModalProps,
   LinkWrapper,
   MembersTabProps,
   NftCardProps,
@@ -34,26 +32,25 @@ import { Default as MembersTabStory } from '../components/dao/tabs/MembersTab.st
 import { Default as ProposalsTabStory } from '../components/dao/tabs/ProposalsTab.stories'
 import { Default as SubDaosTabStory } from '../components/dao/tabs/SubDaosTab.stories'
 import { Default as TreasuryAndNftsTabStory } from '../components/dao/tabs/TreasuryAndNftsTab.stories'
-import { Default as DiscordNotifierConfigureModalStory } from '../components/modals/DiscordNotifierConfigureModal.stories'
 import { Default as ProfileMemberCardStory } from '../components/profile/ProfileMemberCard.stories'
 import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
-import { DaoTabbedHome } from './DaoTabbedHome'
+import { DaoDappTabbedHome } from './DaoDappTabbedHome'
 
 export default {
-  title: 'DAO DAO / packages / stateless / pages / DaoTabbedHome',
-  component: DaoTabbedHome,
+  title: 'DAO DAO / packages / stateless / pages / DaoDappTabbedHome',
+  component: DaoDappTabbedHome,
   decorators: [
     // Direct ancestor of rendered story.
     DaoPageWrapperDecorator,
     makeDappLayoutDecorator(),
   ],
-} as ComponentMeta<typeof DaoTabbedHome>
+} as ComponentMeta<typeof DaoDappTabbedHome>
 
-const Template: ComponentStory<typeof DaoTabbedHome> = (args) => {
+const Template: ComponentStory<typeof DaoDappTabbedHome> = (args) => {
   const [following, setFollowing] = useState(false)
 
   return (
-    <DaoTabbedHome
+    <DaoDappTabbedHome
       {...args}
       daoInfo={useDaoInfoContext()}
       follow={{
@@ -118,11 +115,6 @@ Default.args = {
   ),
   SuspenseLoader,
   LinkWrapper,
-  DiscordNotifierConfigureModal: () => (
-    <DiscordNotifierConfigureModal
-      {...(DiscordNotifierConfigureModalStory.args as DiscordNotifierConfigureModalProps)}
-    />
-  ),
   follow: {
     following: false,
     onFollow: () => alert('follow'),

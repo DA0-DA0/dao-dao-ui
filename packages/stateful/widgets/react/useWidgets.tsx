@@ -1,6 +1,7 @@
 // External API
 
 import { ComponentType, useMemo } from 'react'
+import { constSelector, useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
@@ -14,26 +15,38 @@ import { objectMatchesStructure } from '@dao-dao/utils'
 import { useMembership } from '../../hooks'
 import { DAO_WIDGETS_ITEM_KEY, getWidgetById } from '../core'
 
+type UseWidgetsOptions = {
+  // If true, will suspend while loading. Otherwise, will start off as loading
+  // but not suspend the UI.
+  suspendWhileLoading?: boolean
+}
+
 // Get widgets for the DAO. If nothing configured or no system found, returns
 // undefined.
-export const useWidgets = (): LoadingData<ComponentType[]> => {
+export const useWidgets = ({
+  suspendWhileLoading = false,
+}: UseWidgetsOptions = {}): LoadingData<ComponentType[]> => {
   const { coreAddress, chainId } = useDaoInfoContext()
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,
   })
 
-  const widgetsItemLoadable = useCachedLoadable(
-    DaoCoreV2Selectors.getItemSelector({
-      chainId,
-      contractAddress: coreAddress,
-      params: [
-        {
-          key: DAO_WIDGETS_ITEM_KEY,
-        },
-      ],
-    })
-  )
+  const itemSelector = DaoCoreV2Selectors.getItemSelector({
+    chainId,
+    contractAddress: coreAddress,
+    params: [
+      {
+        key: DAO_WIDGETS_ITEM_KEY,
+      },
+    ],
+  })
+
+  // If suspend while loading, load the item here. Otherwise, don't block by
+  // loading a constant value immediately.
+  useRecoilValue(suspendWhileLoading ? itemSelector : constSelector(undefined))
+
+  const widgetsItemLoadable = useCachedLoadable(itemSelector)
 
   const widgetComponents = useMemo((): ComponentType[] | undefined => {
     if (

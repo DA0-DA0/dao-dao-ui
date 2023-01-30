@@ -17,4 +17,5 @@ export interface RowProps {
   loading?: boolean
   selected?: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
+  containerClassName?: string
 }

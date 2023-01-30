@@ -5,9 +5,8 @@ import { DaoSplashHeaderProps } from './DaoSplashHeader'
 import { LinkWrapperProps } from './LinkWrapper'
 import { SuspenseLoaderProps } from './SuspenseLoader'
 
-export type DaoTabbedHomeProps = DaoSplashHeaderProps & {
+export type DaoDappTabbedHomeProps = DaoSplashHeaderProps & {
   daoInfo: DaoInfo
-  DiscordNotifierConfigureModal: ComponentType
   rightSidebarContent: ReactNode
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   LinkWrapper: ComponentType<LinkWrapperProps>

@@ -1,22 +1,58 @@
+import { ArrowOutwardRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { DaoTabbedHomeProps } from '@dao-dao/types'
+import { DaoDappTabbedHomeProps, DaoPageMode } from '@dao-dao/types'
+import { SDA_URL_PREFIX, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 
-import { Loader, SegmentedControls, useAppLayoutContext } from '../components'
+import {
+  IconButtonLink,
+  Loader,
+  SegmentedControls,
+  Tooltip,
+  useAppLayoutContext,
+} from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
+import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
+import { useNavHelpers } from '../hooks/useNavHelpers'
 
-export const DaoTabbedHome = ({
+export const DaoDappTabbedHome = ({
   daoInfo,
   follow,
-  DiscordNotifierConfigureModal,
   DaoInfoBar,
   rightSidebarContent,
   SuspenseLoader,
   LinkWrapper,
   tabs,
-}: DaoTabbedHomeProps) => {
+}: DaoDappTabbedHomeProps) => {
+  const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { coreAddress } = useDaoInfoContext()
+
+  const {
+    getDaoPath,
+    getProposalIdFromPath,
+    router: { asPath },
+  } = useNavHelpers()
+  // If defined, we are on a DAO proposal page.
+  const proposalIdFromPath = getProposalIdFromPath()
+  // Swap the DAO path prefixes instead of just rebuilding the path to
+  // preserve any additional info (subpaths/queries/hash).
+  const singleDaoPath = asPath.replace(
+    getDaoPath(''),
+    baseGetDaoPath(DaoPageMode.Sda, '')
+  )
+
+  useEffect(() => {
+    // Trigger SDA to cache page the user might switch to.
+    fetch(
+      SDA_URL_PREFIX +
+        `/api/revalidate?d=${coreAddress}${
+          proposalIdFromPath ? `&p=${proposalIdFromPath}` : ''
+        }`
+    )
+  }, [coreAddress, proposalIdFromPath])
 
   const [selectedTab, setSelectedTab] = useState(() => {
     // Default to tab from URL hash if present and valid.
@@ -51,7 +87,18 @@ export const DaoTabbedHome = ({
         }}
         className="mx-auto max-w-5xl"
         gradient
-        rightNode={<DiscordNotifierConfigureModal />}
+        rightNode={
+          // Go to SDA.
+          <Tooltip title={t('button.viewSingleDaoPage')}>
+            <IconButtonLink
+              Icon={ArrowOutwardRounded}
+              circular
+              href={SDA_URL_PREFIX + singleDaoPath}
+              openInNewTab={false}
+              variant="ghost"
+            />
+          </Tooltip>
+        }
       />
 
       <div className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch">

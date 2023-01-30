@@ -6,33 +6,27 @@ import { useRouter } from 'next/router'
 import React from 'react'
 
 import {
-  DiscordNotifierConfigureModal,
   ProfileDaoHomeCard,
+  SdaDaoHome,
   SuspenseLoader,
   useDaoTabs,
 } from '@dao-dao/stateful'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
-import { DaoWrappedTab } from '@dao-dao/stateless'
-import { DaoPageMode, DaoTabId } from '@dao-dao/types'
+import { DaoSdaWrappedTab } from '@dao-dao/stateless'
+import { DaoPageMode } from '@dao-dao/types'
 import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const DaoHomePage: NextPage = () => {
   const router = useRouter()
 
-  const tabs = useDaoTabs({ includeSdaHome: true })
+  const tabs = useDaoTabs({ includeHome: SdaDaoHome })
   const tabId = router.asPath.split('#')[1]
 
   return (
-    <DaoWrappedTab
-      DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
+    <DaoSdaWrappedTab
       SuspenseLoader={SuspenseLoader}
       allTabs={tabs}
       rightSidebarContent={<ProfileDaoHomeCard />}
-      showDiscordNotifierConfigureModal={
-        // Only show notifier configure modal if the user is viewing the
-        // proposals tab.
-        tabId === DaoTabId.Proposals
-      }
       tabId={tabId}
     />
   )

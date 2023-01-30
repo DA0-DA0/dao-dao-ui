@@ -5,26 +5,22 @@ import {
   HowToVoteOutlined,
   PaidOutlined,
 } from '@mui/icons-material'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
 
-import {
-  ProposalsTab,
-  SdaDaoHome,
-  SubDaosTab,
-  TreasuryAndNftsTab,
-} from '../components'
+import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '../components'
 import { usePayrollAdapter } from '../payroll'
 import { useVotingModuleAdapter } from '../voting-module-adapter'
 
 export type UseDaoTabsOptions = {
-  includeSdaHome?: boolean
+  includeHome?: ComponentType
 }
 
-export const useDaoTabs = (
-  { includeSdaHome = false }: UseDaoTabsOptions = { includeSdaHome: false }
-): DaoTabWithComponent[] => {
+export const useDaoTabs = ({
+  includeHome,
+}: UseDaoTabsOptions = {}): DaoTabWithComponent[] => {
   const { t } = useTranslation()
 
   const {
@@ -35,12 +31,12 @@ export const useDaoTabs = (
   const PayrollTab = usePayrollAdapter()?.PayrollTab
 
   return [
-    ...(includeSdaHome
+    ...(includeHome
       ? [
           {
             id: DaoTabId.Home,
             label: t('title.home'),
-            Component: SdaDaoHome,
+            Component: includeHome,
             Icon: HomeOutlined,
           },
         ]

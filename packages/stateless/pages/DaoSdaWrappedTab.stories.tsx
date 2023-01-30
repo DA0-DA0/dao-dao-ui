@@ -10,28 +10,25 @@ import { DaoSplashHeaderProps, DaoTabId } from '@dao-dao/types'
 
 import {
   DaoSplashHeader,
-  DiscordNotifierConfigureModal,
-  DiscordNotifierConfigureModalProps,
   ProfileMemberCard,
   ProfileMemberCardProps,
 } from '../components'
 import { Default as DaoSplashHeaderStory } from '../components/dao/DaoSplashHeader.stories'
-import { Default as DiscordNotifierConfigureModalStory } from '../components/modals/DiscordNotifierConfigureModal.stories'
 import { Default as ProfileMemberCardStory } from '../components/profile/ProfileMemberCard.stories'
-import { DaoWrappedTab } from './DaoWrappedTab'
+import { DaoSdaWrappedTab } from './DaoSdaWrappedTab'
 
 export default {
-  title: 'DAO DAO / packages / stateless / pages / DaoWrappedTab',
-  component: DaoWrappedTab,
+  title: 'DAO DAO / packages / stateless / pages / DaoSdaWrappedTab',
+  component: DaoSdaWrappedTab,
   decorators: [
     // Direct ancestor of rendered story.
     DaoPageWrapperDecorator,
     makeSdaLayoutDecorator(),
   ],
-} as ComponentMeta<typeof DaoWrappedTab>
+} as ComponentMeta<typeof DaoSdaWrappedTab>
 
-const Template: ComponentStory<typeof DaoWrappedTab> = (args) => (
-  <DaoWrappedTab {...args} />
+const Template: ComponentStory<typeof DaoSdaWrappedTab> = (args) => (
+  <DaoSdaWrappedTab {...args} />
 )
 
 export const Default = Template.bind({})
@@ -54,13 +51,7 @@ Default.args = {
       {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}
     />
   ),
-  DiscordNotifierConfigureModal: () => (
-    <DiscordNotifierConfigureModal
-      {...(DiscordNotifierConfigureModalStory.args as DiscordNotifierConfigureModalProps)}
-    />
-  ),
   SuspenseLoader,
-  showDiscordNotifierConfigureModal: true,
 }
 Default.parameters = {
   design: {

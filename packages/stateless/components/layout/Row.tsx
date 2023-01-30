@@ -24,6 +24,7 @@ export const Row = ({
   loading = false,
   selected = false,
   LinkWrapper,
+  containerClassName,
 }: RowProps) => {
   const { asPath } = useRouter()
   const [expanded, setExpanded] = useState(
@@ -45,7 +46,7 @@ export const Row = ({
   const ExpandButton = expanded ? UnfoldLess : UnfoldMore
 
   return compact ? (
-    <div>
+    <div className={containerClassName}>
       <RowWrapper LinkWrapper={LinkWrapper} href={href}>
         <div
           className={clsx('body-text flex flex-row items-center py-2.5 px-6', {
@@ -75,7 +76,7 @@ export const Row = ({
       <div>{children}</div>
     </div>
   ) : (
-    <div>
+    <div className={containerClassName}>
       <RowWrapper LinkWrapper={LinkWrapper} href={href}>
         <div
           className={clsx('body-text flex flex-row items-center gap-4 p-2', {

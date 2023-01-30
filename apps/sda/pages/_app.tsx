@@ -9,7 +9,7 @@ import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
@@ -67,6 +67,10 @@ const InnerApp = ({
     return () => clearTimeout(timeout)
   }, [navigatingToHref, setNavigatingToHref])
 
+  // Don't attempt to connect wallet on fallback page. This prevents double
+  // wallet requests.
+  const WalletProviderWrapper = router.isFallback ? Fragment : WalletProvider
+
   return (
     <ThemeProvider
       theme={theme}
@@ -74,7 +78,7 @@ const InnerApp = ({
       updateTheme={setTheme}
     >
       <ApolloGqlProvider>
-        <WalletProvider>
+        <WalletProviderWrapper>
           {router.pathname === '/404' ||
           router.pathname === '/500' ||
           router.pathname === '/_error' ? (
@@ -93,7 +97,7 @@ const InnerApp = ({
               </SdaLayout>
             </DaoPageWrapper>
           )}
-        </WalletProvider>
+        </WalletProviderWrapper>
       </ApolloGqlProvider>
 
       <ToastNotifications />

@@ -1,8 +1,8 @@
 import {
   AddRounded,
+  ArrowOutwardRounded,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
-  LoopRounded,
   TagRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
@@ -16,7 +16,7 @@ import { DAPP_URL_PREFIX, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
-import { IconButton, IconButtonLink, ThemeToggle } from '../icon_buttons'
+import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Tooltip } from '../tooltip/Tooltip'
 import { useAppLayoutContext } from './AppLayoutContext'
 import { Footer } from './Footer'
@@ -81,7 +81,7 @@ export const SdaNavigation = ({
         `/api/revalidate?d=${daoInfo.coreAddress}${
           proposalIdFromPath ? `&p=${proposalIdFromPath}` : ''
         }`
-    )
+    ).catch(console.error)
   }, [daoInfo.coreAddress, proposalIdFromPath])
 
   // Use screen resize to determine when compact should be forced on or off.
@@ -170,20 +170,6 @@ export const SdaNavigation = ({
           }
           forceCenter={compact}
           noBorder={compact}
-          rightNode={
-            // Go to DAO DAO Page.
-            daoDaoPath && !compact ? (
-              <Tooltip title={t('info.switchToDaoDaoView')}>
-                <IconButtonLink
-                  Icon={LoopRounded}
-                  circular
-                  href={DAPP_URL_PREFIX + daoDaoPath}
-                  openInNewTab={false}
-                  variant="ghost"
-                />
-              </Tooltip>
-            ) : undefined
-          }
         />
 
         <div className={clsx(!compact && 'pt-2')}>
@@ -239,6 +225,17 @@ export const SdaNavigation = ({
               </Row>
             )
           })}
+
+          {/* Go to DAO DAO Page. */}
+          {daoDaoPath && !compact && (
+            <Row
+              Icon={ArrowOutwardRounded}
+              LinkWrapper={LinkWrapper}
+              containerClassName="opacity-60"
+              href={DAPP_URL_PREFIX + daoDaoPath}
+              label={t('button.viewOnDaoDao')}
+            />
+          )}
         </div>
 
         <div className={clsx('mt-8 flex grow flex-col justify-end gap-2')}>
