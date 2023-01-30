@@ -9,9 +9,7 @@ import { getDaoPath, getDaoProposalPath } from '@dao-dao/utils/url'
 
 // Allow to be called from any origin so that the SDA can trigger a page to
 // cache before the user visits it.
-const cors = Cors({
-  methods: ['GET'],
-})
+const cors = Cors()
 
 export default async function handler(
   req: NextApiRequest,
