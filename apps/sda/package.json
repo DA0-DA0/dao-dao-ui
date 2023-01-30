@@ -34,7 +34,6 @@
     "next": "12.2.6",
     "next-intercept-stdout": "^1.0.1",
     "next-seo": "^5.4.0",
-    "nft.storage": "^7.0.0",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-hook-form": "7.20.4",

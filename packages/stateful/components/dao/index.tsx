@@ -1,10 +1,13 @@
 export * from './tabs'
 
 export * from './CreateDaoForm'
+export * from './CreateDaoProposal'
+export * from './CreateSubDao'
 export * from './DaoCard'
 export * from './DaoInfoBar'
 export * from './DaoMemberCard'
 export * from './DaoPageWrapper'
+export * from './DaoProposal'
 export * from './DaoTokenDepositModal'
 export * from './DaoTreasuryHistory'
 export * from './DiscordNotifierConfigureModal'

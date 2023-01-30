@@ -3,6 +3,7 @@ import { promises as fs } from 'fs'
 import { Fields, Files, IncomingForm } from 'formidable'
 import { NextApiRequest } from 'next'
 
+// Returns contents of form from a Next.js API route request.
 export const parseFormWithImage = async (
   req: NextApiRequest
 ): Promise<{
