@@ -182,28 +182,33 @@ export function ProposalDetails({
     <StatelessProposalDetails
       loading={loading}
       messageToDisplay={(message) => {
-        const data = messageTemplateAndValuesForDecodedCosmosMsg(
-          message,
-          fromCosmosMsgProps
-        )
-        if (data) {
-          const ThisIsAComponentBecauseReactIsAnnoying = () => {
-            // Can't call `useForm` in a callback.
-            const formMethods = useForm({ defaultValues: data.values })
-            return (
-              <FormProvider {...formMethods}>
-                <form>
-                  <data.template.component
-                    contractAddress={contractAddress}
-                    getLabel={(field: string) => field}
-                    multisig={multisig}
-                    readOnly
-                  />
-                </form>
-              </FormProvider>
-            )
+        // If message fails to decode, just display the JSON.
+        try {
+          const data = messageTemplateAndValuesForDecodedCosmosMsg(
+            message,
+            fromCosmosMsgProps
+          )
+          if (data) {
+            const ThisIsAComponentBecauseReactIsAnnoying = () => {
+              // Can't call `useForm` in a callback.
+              const formMethods = useForm({ defaultValues: data.values })
+              return (
+                <FormProvider {...formMethods}>
+                  <form>
+                    <data.template.component
+                      contractAddress={contractAddress}
+                      getLabel={(field: string) => field}
+                      multisig={multisig}
+                      readOnly
+                    />
+                  </form>
+                </FormProvider>
+              )
+            }
+            return <ThisIsAComponentBecauseReactIsAnnoying />
           }
-          return <ThisIsAComponentBecauseReactIsAnnoying />
+        } catch (e) {
+          console.error(e)
         }
         return (
           <CosmosMessageDisplay value={JSON.stringify(message, undefined, 2)} />
