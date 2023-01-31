@@ -93,7 +93,7 @@ export const DaoDappTabbedHome = ({
         }
       />
 
-      <div className="relative z-[1] mx-auto flex max-w-5xl flex-col items-stretch">
+      <div className="relative z-[1] mx-auto -mt-4 flex max-w-5xl flex-col items-stretch">
         <DaoSplashHeader
           DaoInfoBar={DaoInfoBar}
           LinkWrapper={LinkWrapper}
