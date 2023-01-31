@@ -26,7 +26,8 @@
   },
   "devDependencies": {
     "lerna": "^6.4.1",
-    "turbo": "latest"
+    "turbo": "latest",
+    "turbo-ignore": "latest"
   },
   "engines": {
     "npm": ">=7.0.0",
