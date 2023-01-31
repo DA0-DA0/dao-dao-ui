@@ -40,7 +40,6 @@ export const HorizontalScroller = <P extends {}>({
   // Don't scroll this element if it isn't visible as the scrolling is a
   // reasonably heavy operation.
   const { ref: viewRef, inView: componentIsVisible } = useInView()
-  console.log(componentIsVisible)
 
   const handleScroll: UIEventHandler<HTMLDivElement> = useCallback(
     (e) => {
