@@ -81,7 +81,7 @@ export const DaoDappTabbedHome = ({
         gradient
         rightNode={
           // Go to SDA.
-          <Tooltip title={t('button.viewSingleDaoPage')}>
+          <Tooltip title={t('button.viewDaosPage')}>
             <IconButtonLink
               Icon={ArrowOutwardRounded}
               href={SDA_URL_PREFIX + singleDaoPath}

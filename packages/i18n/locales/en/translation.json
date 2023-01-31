@@ -106,9 +106,9 @@
     "update": "Update",
     "upload": "Upload",
     "useExistingToken": "Use an existing token",
+    "viewDaosPage": "View DAO's page",
     "viewOnDaoDao": "View on DAO DAO",
     "viewProposals": "View proposals",
-    "viewSingleDaoPage": "View single DAO page",
     "withDecodedModuleMessages": "with Decoded Module Messages"
   },
   "daoCreationAdapter": {
