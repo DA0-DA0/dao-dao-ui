@@ -31,12 +31,13 @@ import {
 } from '@dao-dao/utils'
 
 import { useCfWorkerAuthPostRequest } from '../../hooks/useCfWorkerAuthPostRequest'
+import { ConnectWallet } from '../ConnectWallet'
 
 export const DiscordNotifierConfigureModal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { chainId, coreAddress } = useDaoInfoContext()
-  const { publicKey } = useWallet(chainId)
+  const { connected, publicKey } = useWallet(chainId)
 
   const [visible, setVisible] = useState(false)
 
@@ -148,9 +149,7 @@ export const DiscordNotifierConfigureModal = () => {
     if (
       !router.isReady ||
       redirected.current ||
-      !router.query.discordNotifier ||
-      // Don't attempt to auto-register until ready.
-      !postRequestReady
+      !router.query.discordNotifier
     ) {
       return
     }
@@ -158,9 +157,13 @@ export const DiscordNotifierConfigureModal = () => {
     // Open this modal since we're completing registration.
     setVisible(true)
 
-    // Only register once.
-    redirected.current = true
-    register()
+    // Don't attempt to auto-register until wallet ready. Still show the modal
+    // above since the wallet may be connecting.
+    if (postRequestReady) {
+      // Only register once.
+      redirected.current = true
+      register()
+    }
   }, [router, register, postRequestReady])
 
   const unregister = useCallback(
@@ -199,6 +202,8 @@ export const DiscordNotifierConfigureModal = () => {
       </Tooltip>
 
       <StatelessDiscordNotifierConfigureModal
+        ConnectWallet={() => <ConnectWallet center />}
+        connected={connected}
         loading={loading}
         onClose={() => setVisible(false)}
         onDelete={unregister}
