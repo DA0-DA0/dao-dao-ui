@@ -4,6 +4,7 @@ import {
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoadable,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
 import { CoreActionKey } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
@@ -28,6 +29,7 @@ import { TokenCard } from '../TokenCard'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
+  const { getDaoProposalPath } = useNavHelpers()
   const { isMember = false } = useMembership(daoInfo)
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
@@ -88,7 +90,9 @@ export const TreasuryAndNftsTab = () => {
       addCollectionHref={
         // Prefill URL only valid if action exists.
         !!addCw721Action && encodedProposalPrefill
-          ? `/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefill}`
+          ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
+              prefill: encodedProposalPrefill,
+            })
           : undefined
       }
       isMember={isMember}

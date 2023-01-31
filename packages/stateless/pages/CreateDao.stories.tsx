@@ -3,8 +3,8 @@ import { ComponentType } from 'react'
 
 import {
   WalletProviderDecorator,
-  makeAppLayoutDecorator,
   makeCreateDaoFormDecorator,
+  makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 
 export default {
@@ -12,7 +12,7 @@ export default {
   decorators: [
     // Direct ancestor of rendered story.
     makeCreateDaoFormDecorator(0),
-    makeAppLayoutDecorator(),
+    makeDappLayoutDecorator(),
     WalletProviderDecorator,
   ],
 } as ComponentMeta<ComponentType>

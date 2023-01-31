@@ -1,45 +1,30 @@
-import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { TransProps } from '@dao-dao/types'
+import { DaoTabId } from '@dao-dao/types'
 
+import { useDaoInfoContext } from '../../hooks'
+import { useNavHelpers } from '../../hooks/useNavHelpers'
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from '../error/ErrorPage'
 import { useAppLayoutContext } from '../layout/AppLayoutContext'
 
-export interface ProposalNotFoundProps {
-  homeHref: string
-  homeLabel?: string
-  Trans: ComponentType<TransProps>
-}
-
-export const ProposalNotFound = ({
-  homeHref,
-  homeLabel = "DAO's home page",
-  Trans,
-}: ProposalNotFoundProps) => {
+export const ProposalNotFound = () => {
   const { t } = useTranslation()
   const { PageHeader } = useAppLayoutContext()
+  const { coreAddress } = useDaoInfoContext()
+  const { getDaoPath } = useNavHelpers()
 
   return (
     <>
       <PageHeader title={t('title.proposalNotFound')} />
 
-      <ErrorPage>
-        <p>
-          <Trans i18nKey="error.couldntFindProposal">
-            We couldn&apos;t find a proposal with that ID. See all proposals on
-            the{' '}
-            <ButtonLink
-              className="link-text"
-              href={homeHref}
-              variant="underline"
-            >
-              {homeLabel}
-            </ButtonLink>
-            .
-          </Trans>
-        </p>
+      <ErrorPage title={t('error.couldntFindProposal')}>
+        <ButtonLink
+          href={getDaoPath(coreAddress) + '#' + DaoTabId.Proposals}
+          variant="secondary"
+        >
+          {t('button.viewProposals')}
+        </ButtonLink>
       </ErrorPage>
     </>
   )

@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Tooltip, useDaoInfoContext } from '@dao-dao/stateless'
+import { Tooltip, useDaoInfoContext, useNavHelpers } from '@dao-dao/stateless'
 import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
 import { formatDate } from '@dao-dao/utils'
 
@@ -24,6 +24,7 @@ export const CompletedSurveyRow = ({
 }: CompletedSurveyRowProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
+  const { getDaoProposalPath } = useNavHelpers()
   const openedAtEpoch = Date.parse(contributionsOpenedAt)
 
   return (
@@ -42,7 +43,7 @@ export const CompletedSurveyRow = ({
           <Tooltip title={t('button.goToProposal')}>
             <IconButtonLink
               Icon={DescriptionOutlined}
-              href={`/dao/${coreAddress}/proposals/${proposalId}`}
+              href={getDaoProposalPath(coreAddress, proposalId)}
               onClick={
                 // Don't click on row.
                 (e) => e.stopPropagation()
@@ -72,7 +73,7 @@ export const CompletedSurveyRow = ({
             <Tooltip title={t('button.goToProposal')}>
               <IconButtonLink
                 Icon={DescriptionOutlined}
-                href={`/dao/${coreAddress}/proposals/${proposalId}`}
+                href={getDaoProposalPath(coreAddress, proposalId)}
                 size="sm"
                 variant="ghost"
               />

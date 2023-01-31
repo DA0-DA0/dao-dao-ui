@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { SITE_URL } from '@dao-dao/utils'
 
+import { useNavHelpers } from '../../../hooks'
 import {
   ItemCreatedModal,
   ItemCreatedModalProps,
@@ -17,6 +18,7 @@ export type DaoCreatedModalProps = Omit<
 
 export const DaoCreatedModal = ({ subDao, ...props }: DaoCreatedModalProps) => {
   const { t } = useTranslation()
+  const { getDaoPath } = useNavHelpers()
 
   return (
     <ItemCreatedModal<DaoCardProps>
@@ -26,7 +28,7 @@ export const DaoCreatedModal = ({ subDao, ...props }: DaoCreatedModalProps) => {
         title: subDao ? t('title.congratsOnSubDao') : t('title.congratsOnDao'),
         subtitle: t('info.easilyShareLink'),
       }}
-      url={SITE_URL + `/dao/${props.itemProps.coreAddress}`}
+      url={SITE_URL + getDaoPath(props.itemProps.coreAddress)}
     />
   )
 }

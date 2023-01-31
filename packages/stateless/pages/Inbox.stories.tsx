@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { makeAppLayoutDecorator } from '@dao-dao/storybook/decorators'
+import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
 
 import {
   LinkWrapper,
@@ -8,7 +8,7 @@ import {
   ProfileHomeCardProps,
   ProposalLine,
 } from '../components'
-import { DefaultArgs as NavigationStoryArgs } from '../components/layout/Navigation.stories'
+import { DefaultArgs as NavigationStoryArgs } from '../components/layout/DappNavigation.stories'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
 import { makeProps as makeProposalLineProps } from '../components/proposal/ProposalLine.ProposalLine.stories'
 import { Inbox } from './Inbox'
@@ -16,7 +16,7 @@ import { Inbox } from './Inbox'
 export default {
   title: 'DAO DAO / packages / stateless / pages / Inbox',
   component: Inbox,
-  decorators: [makeAppLayoutDecorator()],
+  decorators: [makeDappLayoutDecorator()],
 } as ComponentMeta<typeof Inbox>
 
 const Template: ComponentStory<typeof Inbox> = (args) => <Inbox {...args} />

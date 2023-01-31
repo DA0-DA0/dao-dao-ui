@@ -7,6 +7,7 @@ import {
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
 import { CoreActionKey, TokenCardInfo } from '@dao-dao/types'
 import {
@@ -26,6 +27,7 @@ import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 export const TokenCard = (props: TokenCardInfo) => {
   const router = useRouter()
   const { coreAddress } = useDaoInfoContext()
+  const { getDaoProposalPath } = useNavHelpers()
 
   const addToken = useAddToken()
 
@@ -125,9 +127,10 @@ export const TokenCard = (props: TokenCardInfo) => {
     stakesWithRewards.length > 0 &&
     // ...if there is a valid prefill (meaning proposal module adapter exists)
     encodedProposalPrefillClaim &&
-    // ...and if this is the native token.
     props.token.denomOrAddress === NATIVE_DENOM
-      ? `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillClaim}`
+      ? getDaoProposalPath(coreAddress, 'create', {
+          prefill: encodedProposalPrefillClaim,
+        })
       : undefined
 
   const proposeStakeUnstakeHref =
@@ -137,9 +140,10 @@ export const TokenCard = (props: TokenCardInfo) => {
     (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
     // ...if there is a valid prefill (meaning proposal module adapter exists)
     encodedProposalPrefillStakeUnstake &&
-    // ...and if this is the native token.
     props.token.denomOrAddress === NATIVE_DENOM
-      ? `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefillStakeUnstake}`
+      ? getDaoProposalPath(coreAddress, 'create', {
+          prefill: encodedProposalPrefillStakeUnstake,
+        })
       : undefined
 
   const onAddToken =

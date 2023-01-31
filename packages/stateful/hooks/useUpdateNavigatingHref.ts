@@ -18,11 +18,14 @@ export const useUpdateNavigatingHref = () => {
       // href is invalid, do nothing.
       if (
         href &&
-        router.asPath !== href &&
+        // Make sure not only the hash is changing.
+        router.asPath.split('#')[0] !== href.split('#')[0] &&
         // Don't set navigating if remote.
         !href.startsWith('http')
       ) {
         setNavigatingToHref(href)
+      } else {
+        setNavigatingToHref(undefined)
       }
     },
     [router.asPath, setNavigatingToHref]

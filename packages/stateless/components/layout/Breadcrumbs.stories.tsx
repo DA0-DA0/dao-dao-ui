@@ -1,10 +1,13 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { DaoPageWrapperDecorator } from '@dao-dao/storybook'
+
 import { Breadcrumbs } from './Breadcrumbs'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / layout / Breadcrumbs',
   component: Breadcrumbs,
+  decorators: [DaoPageWrapperDecorator],
 } as ComponentMeta<typeof Breadcrumbs>
 
 const Template: ComponentStory<typeof Breadcrumbs> = (args) => (
@@ -13,16 +16,6 @@ const Template: ComponentStory<typeof Breadcrumbs> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  crumbs: [
-    {
-      href: '#',
-      label: 'All DAOs',
-    },
-    {
-      href: '#',
-      label: 'Animals DAO',
-    },
-  ],
   current: 'Dog Dao',
 }
 Default.parameters = {

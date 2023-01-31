@@ -1,5 +1,5 @@
 import { ArrowOutwardRounded, Code, Twitter } from '@mui/icons-material'
-import { ReactNode } from 'react'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ButtonLink } from '../buttons'
@@ -12,43 +12,43 @@ export const Footer = () => {
   return (
     <div className="flex flex-col gap-1 text-text-tertiary">
       <FooterItem
+        Icon={Code}
         href="https://docs.daodao.zone"
-        icon={<Code className="!h-4 !w-4" />}
         name={t('title.documentation')}
       />
       <FooterItem
+        Icon={GithubIcon}
         href="https://github.com/DA0-DA0"
-        icon={<GithubIcon className="!h-4 !w-4" />}
         name={t('title.github')}
       />
       <FooterItem
+        Icon={Twitter}
         href="https://twitter.com/DA0_DA0"
-        icon={<Twitter className="!h-4 !w-4" />}
         name={t('title.twitter')}
       />
       <FooterItem
+        Icon={DiscordIcon}
         href="https://discord.gg/sAaGuyW3D2"
-        icon={<DiscordIcon className="!h-4 !w-4" />}
         name={t('title.discord')}
       />
     </div>
   )
 }
 
-interface FooterItemProps {
+export interface FooterItemProps {
   href: string
-  icon: ReactNode
+  Icon: ComponentType<{ className: string }>
   name: string
 }
 
-const FooterItem = ({ href, icon, name }: FooterItemProps) => (
+export const FooterItem = ({ href, Icon, name }: FooterItemProps) => (
   <ButtonLink
     contentContainerClassName="justify-between"
     href={href}
     variant="ghost"
   >
     <div className="flex flex-row items-center gap-2">
-      {icon}
+      <Icon className="!h-4 !w-4" />
       <p>{name}</p>
     </div>
 

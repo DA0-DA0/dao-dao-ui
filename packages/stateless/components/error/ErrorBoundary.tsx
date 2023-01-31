@@ -1,10 +1,10 @@
 /* eslint-disable i18next/no-literal-string */
-import Link from 'next/link'
 import { Component, ErrorInfo, ReactNode } from 'react'
 import { WithTranslationProps, withTranslation } from 'react-i18next'
 
 import { processError } from '@dao-dao/utils'
 
+import { ButtonLink } from '../buttons'
 import { ErrorPage } from './ErrorPage'
 
 interface ErrorBoundaryProps extends WithTranslationProps {
@@ -42,19 +42,12 @@ class ErrorBoundaryInner extends Component<
           'An unexpected error occurred.'
         }
       >
-        <p>
-          {this.props.i18n?.t?.('error.checkInternetOrTryAgain') ??
-            'Check your internet connection or try again later.'}{' '}
-          <Link href="/">
-            <a className="underline hover:no-underline">
-              {this.props.i18n?.t?.('info.considerReturningHome') ??
-                'Consider returning home.'}
-            </a>
-          </Link>
-        </p>
+        <ButtonLink href="/" variant="secondary">
+          {this.props.i18n?.t?.('button.returnHome') ?? 'Return home'}
+        </ButtonLink>
 
         {!!this.state.error && (
-          <pre className="mt-6 whitespace-pre-wrap text-xs text-text-interactive-error">
+          <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
             {this.state.error}
           </pre>
         )}

@@ -14,9 +14,9 @@ export const ProposalsTab = () => {
   return (
     <StatelessProposalsTab
       ButtonLink={ButtonLink}
+      ProposalList={ProposalList}
       daoInfo={daoInfo}
       isMember={isMember}
-      proposalList={<ProposalList />}
     />
   )
 }

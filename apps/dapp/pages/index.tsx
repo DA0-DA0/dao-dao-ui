@@ -31,8 +31,8 @@ const HomePage: NextPage = () => {
     <Home
       connected={connected}
       featuredDaosProps={{
-        DaoCard,
-        featuredDaos: featuredDaosLoading,
+        Component: DaoCard,
+        items: featuredDaosLoading,
       }}
       followingDaosProps={{
         DaoCard,
