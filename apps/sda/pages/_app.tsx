@@ -79,7 +79,8 @@ const InnerApp = ({
     >
       <ApolloGqlProvider>
         <WalletProviderWrapper>
-          {router.pathname === '/404' ||
+          {router.pathname === '/discord' ||
+          router.pathname === '/404' ||
           router.pathname === '/500' ||
           router.pathname === '/_error' ? (
             <Component {...pageProps} />

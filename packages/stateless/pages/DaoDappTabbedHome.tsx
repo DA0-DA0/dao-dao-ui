@@ -43,7 +43,9 @@ export const DaoDappTabbedHome = ({
 
   useEffect(() => {
     // Trigger SDA to cache page the user might switch to.
-    fetch(SDA_URL_PREFIX + `/api/revalidate?d=${coreAddress}`)
+    fetch(SDA_URL_PREFIX + `/api/revalidate?d=${coreAddress}`).catch(
+      console.error
+    )
   }, [coreAddress])
 
   const [selectedTab, setSelectedTab] = useState(() => {

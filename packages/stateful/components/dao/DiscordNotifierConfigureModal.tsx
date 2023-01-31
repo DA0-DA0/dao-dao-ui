@@ -21,6 +21,7 @@ import {
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { DaoTabId } from '@dao-dao/types'
 import {
   DISCORD_NOTIFIER_API_BASE,
   DISCORD_NOTIFIER_CLIENT_ID,
@@ -131,9 +132,13 @@ export const DiscordNotifierConfigureModal = () => {
       } finally {
         setLoading(false)
         // Remove query params.
-        router.replace(router.asPath.split('?')[0], undefined, {
-          shallow: true,
-        })
+        router.replace(
+          router.asPath.split('?')[0] + '#' + DaoTabId.Proposals,
+          undefined,
+          {
+            shallow: true,
+          }
+        )
       }
     }
   }, [coreAddress, postRequest, router, t])

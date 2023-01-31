@@ -5,8 +5,13 @@ import { GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { DiscordRedirect } from '@dao-dao/stateful'
+import { DaoPageMode } from '@dao-dao/types'
 
-export default DiscordRedirect
+const DiscordRedirectPage = () => (
+  <DiscordRedirect overrideMode={DaoPageMode.Sda} />
+)
+
+export default DiscordRedirectPage
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {

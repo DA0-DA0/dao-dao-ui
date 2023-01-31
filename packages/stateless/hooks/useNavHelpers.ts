@@ -12,9 +12,9 @@ import { useAppLayoutContextIfAvailable } from '../components/layout/AppLayoutCo
 export const useNavHelpers = (overrideMode?: DaoPageMode) => {
   const router = useRouter()
 
-  // On SDA, the ErrorPage404 renders outside the app layout context. We still
-  // want to be able to use these helpers to redirect to the DAO page if we're
-  // 404ing on a DAO subpath, so we allow overriding the mode.
+  // On SDA, some pages, like 404 and discord redirect, render outside the app
+  // layout context. We still want to be able to use these helpers to redirect
+  // to DAO pages, so we allow overriding the mode.
   const { mode } = useAppLayoutContextIfAvailable() ?? {
     mode: overrideMode,
   }
@@ -23,8 +23,8 @@ export const useNavHelpers = (overrideMode?: DaoPageMode) => {
   }
 
   const getDaoPath = useCallback(
-    (coreAddress: string, params?: Record<string, unknown>) =>
-      _getDaoPath(mode, coreAddress, params),
+    (coreAddress: string, params?: Record<string, unknown>, hash?: string) =>
+      _getDaoPath(mode, coreAddress, params, hash),
     [mode]
   )
 
@@ -38,8 +38,9 @@ export const useNavHelpers = (overrideMode?: DaoPageMode) => {
     (
       coreAddress: string,
       proposalId: string,
-      params?: Record<string, unknown>
-    ) => _getDaoProposalPath(mode, coreAddress, proposalId, params),
+      params?: Record<string, unknown>,
+      hash?: string
+    ) => _getDaoProposalPath(mode, coreAddress, proposalId, params, hash),
     [mode]
   )
 
