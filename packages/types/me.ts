@@ -10,8 +10,8 @@ export type MeTransactionForm = {
 }
 
 export type MeTransactionSave = MeTransactionForm & {
-  title: string
-  description: string
+  name: string
+  description?: string
 }
 
 export type MeProps = {
@@ -25,5 +25,10 @@ export type MeProps = {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   error?: string
   txHash?: string
-  saves: LoadingData<MeTransactionSave[]>
+  // If undefined, not yet loaded.
+  saves: LoadingData<MeTransactionSave[] | undefined>
+  loadSaves: () => Promise<void>
+  save: (save: MeTransactionSave) => Promise<boolean>
+  deleteSave: (save: MeTransactionSave) => Promise<boolean>
+  saving: boolean
 }

@@ -1,6 +1,7 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
+import { toHex } from '@cosmjs/encoding'
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import { GetStaticProps, NextPage } from 'next'
@@ -11,30 +12,34 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { meTransactionAtom } from '@dao-dao/state'
+import { meTransactionAtom, meTransactionSavesAtom } from '@dao-dao/state'
 import {
   ConnectWallet,
   ProfileDisconnectedCard,
   ProfileHomeCard,
   SuspenseLoader,
+  useCfWorkerAuthPostRequest,
 } from '@dao-dao/stateful'
 import { ActionsProvider, useCoreActions } from '@dao-dao/stateful/actions'
 import { Loader, Me, MeDisconnected } from '@dao-dao/stateless'
-import { MeProps, MeTransactionForm } from '@dao-dao/types'
+import { MeProps, MeTransactionForm, MeTransactionSave } from '@dao-dao/types'
 import { ActionContextType, ActionsWithData } from '@dao-dao/types/actions'
 import {
   CHAIN_BECH32_PREFIX,
   CHAIN_ID,
+  KVPK_API_BASE,
   cwMsgToEncodeObject,
   processError,
 } from '@dao-dao/utils'
+
+const SAVED_TX_PREFIX = 'savedTx:'
 
 const InnerMe = () => {
   const { t } = useTranslation()
 
   const {
     connected,
-    address: walletAddress,
+    address: walletAddress = '',
     signingCosmWasmClient,
   } = useWallet()
 
@@ -117,20 +122,134 @@ const InnerMe = () => {
     [signingCosmWasmClient, t, walletAddress]
   )
 
+  const { ready: txSavesReady, postRequest: postTxSavesRequest } =
+    useCfWorkerAuthPostRequest(KVPK_API_BASE, 'Transaction Saves')
+
+  const [loadingSaves, setLoadingSaves] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saves, setSaves] = useRecoilState(
+    meTransactionSavesAtom(walletAddress)
+  )
+
+  const loadSaves = async () => {
+    if (!txSavesReady) {
+      toast.error(t('error.connectWalletToContinue'))
+      return
+    }
+
+    setLoadingSaves(true)
+    try {
+      const { items } = await postTxSavesRequest('/list', {
+        prefix: SAVED_TX_PREFIX,
+      })
+
+      console.log(items)
+
+      if (
+        !items ||
+        !Array.isArray(items) ||
+        items.some((item) => !('value' in item))
+      ) {
+        return
+      }
+
+      setSaves(items.map(({ value }) => value))
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setLoadingSaves(false)
+    }
+  }
+  const save = async (save: MeTransactionSave) => {
+    if (!txSavesReady) {
+      toast.error(t('error.connectWalletToContinue'))
+      return false
+    }
+
+    setSaving(true)
+    try {
+      // If saves not yet loaded, load them first.
+      if (!saves) {
+        await loadSaves()
+      }
+
+      const nameHash = toHex(
+        new Uint8Array(
+          await crypto.subtle.digest(
+            'SHA-512',
+            new TextEncoder().encode(save.name)
+          )
+        )
+      )
+
+      await postTxSavesRequest('/set', {
+        key: SAVED_TX_PREFIX + nameHash,
+        value: save,
+      })
+
+      setSaves((prev) => [...(prev ?? []), save])
+
+      return true
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setSaving(false)
+    }
+
+    return false
+  }
+  const deleteSave = async (save: MeTransactionSave) => {
+    if (!txSavesReady) {
+      toast.error(t('error.connectWalletToContinue'))
+      return false
+    }
+
+    try {
+      const nameHash = toHex(
+        new Uint8Array(
+          await crypto.subtle.digest(
+            'SHA-512',
+            new TextEncoder().encode(save.name)
+          )
+        )
+      )
+
+      await postTxSavesRequest('/set', {
+        key: SAVED_TX_PREFIX + nameHash,
+        value: null,
+      })
+
+      setSaves((prev) => (prev ?? []).filter((s) => s.name !== save.name))
+
+      return true
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    }
+
+    return false
+  }
+
   return (
     <Me
       SuspenseLoader={SuspenseLoader}
       actions={actions}
       actionsWithData={actionsWithData}
       connected={connected}
+      deleteSave={deleteSave}
       error={error}
       execute={execute}
       formMethods={formMethods}
+      loadSaves={loadSaves}
       loading={loading}
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }
-      saves={{ loading: false, data: [] }}
+      save={save}
+      saves={loadingSaves ? { loading: true } : { loading: false, data: saves }}
+      saving={saving}
       txHash={txHash}
     />
   )

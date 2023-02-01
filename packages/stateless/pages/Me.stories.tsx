@@ -84,7 +84,7 @@ Default.args = {
     loading: false,
     data: [
       {
-        title: 'Deposit $10',
+        name: 'Deposit $10',
         description:
           'Send $10 USDC to my DAO. This is a very long description. I wish it were shorter.',
         actions: [

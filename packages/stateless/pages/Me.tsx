@@ -1,5 +1,6 @@
 import {
   ArrowOutwardRounded,
+  ClearRounded,
   Functions,
   Key,
   Save,
@@ -14,12 +15,17 @@ import {
   SubmitErrorHandler,
   SubmitHandler,
   useFieldArray,
+  useForm,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { MeProps, MeTransactionForm } from '@dao-dao/types'
+import { MeProps, MeTransactionForm, MeTransactionSave } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
-import { CHAIN_TXN_URL_PREFIX, decodedMessagesString } from '@dao-dao/utils'
+import {
+  CHAIN_TXN_URL_PREFIX,
+  decodedMessagesString,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import {
   ActionCardLoader,
@@ -28,6 +34,11 @@ import {
   ButtonLink,
   CopyToClipboard,
   CosmosMessageDisplay,
+  IconButton,
+  InputErrorMessage,
+  Modal,
+  TextAreaInput,
+  TextInput,
   Tooltip,
   useAppLayoutContext,
 } from '../components'
@@ -49,6 +60,10 @@ export const Me = ({
   error,
   txHash,
   saves,
+  loadSaves,
+  save,
+  deleteSave,
+  saving,
 }: MeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
@@ -103,6 +118,28 @@ export const Me = ({
     [setShowSubmitErrorNote]
   )
 
+  const [saveModalVisible, setSaveModalVisible] = useState(false)
+  const {
+    register: saveRegister,
+    handleSubmit: saveHandleSubmit,
+    formState: { errors: saveErrors },
+  } = useForm<Omit<MeTransactionSave, 'actions'>>({
+    defaultValues: {
+      name: '',
+      description: '',
+    },
+  })
+  const onSave = async (data: Omit<MeTransactionSave, 'actions'>) => {
+    if (
+      await save({
+        ...data,
+        actions: watchActions,
+      })
+    ) {
+      setSaveModalVisible(false)
+    }
+  }
+
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
@@ -114,45 +151,69 @@ export const Me = ({
           <p className="secondary-text">{t('info.meTransactionDescription')}</p>
         </div>
 
-        {(saves.loading || saves.data.length > 0) && (
-          <div className="flex flex-col gap-4">
-            <div
-              className={clsx(
-                'flex flex-row items-center gap-2',
-                saves.loading && 'animate-pulse'
-              )}
-            >
-              <Save className="!h-5 !w-5" />
-              <p className="primary-text">{t('title.saved')}</p>
-            </div>
-
-            {!saves.loading && (
-              <div className="flex flex-row flex-wrap gap-2">
-                {saves.data.map((save, index) => (
-                  <Button
-                    key={index}
-                    contentContainerClassName="flex flex-col !items-start !gap-0 max-w-[16rem] text-left"
-                    onClick={() =>
-                      reset({
-                        // Clone the actions to prevent mutating the original
-                        // save.
-                        actions: cloneDeep(save.actions),
-                      })
-                    }
-                    variant="secondary"
-                  >
-                    <p className="body-text">{save.title}</p>
-                    <p className="secondary-text">{save.description}</p>
-
-                    <p className="caption-text mt-2">
-                      {t('info.actions', { count: save.actions.length })}
-                    </p>
-                  </Button>
-                ))}
-              </div>
+        <div className="flex flex-col items-start gap-4">
+          <div
+            className={clsx(
+              'flex flex-row items-center gap-2',
+              saves.loading && 'animate-pulse'
             )}
+          >
+            <Save className="!h-5 !w-5" />
+            <p className="primary-text">{t('title.saved')}</p>
           </div>
-        )}
+
+          {saves.loading || !saves.data ? (
+            <Button
+              loading={saves.loading}
+              onClick={loadSaves}
+              variant="secondary"
+            >
+              {t('button.loadSaves')}
+            </Button>
+          ) : saves.data.length > 0 ? (
+            <div className="flex flex-row flex-wrap gap-2">
+              {saves.data!.map((save, index) => (
+                <Button
+                  key={index}
+                  contentContainerClassName="flex flex-col !items-start !gap-0 max-w-[16rem] text-left"
+                  onClick={() =>
+                    reset({
+                      // Clone the actions to prevent mutating the original
+                      // save.
+                      actions: cloneDeep(save.actions),
+                    })
+                  }
+                  variant="secondary"
+                >
+                  <div className="flex flex-row items-center justify-between gap-4">
+                    <p className="body-text">{save.name}</p>
+
+                    <Tooltip title={t('button.delete')}>
+                      <IconButton
+                        Icon={ClearRounded}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          deleteSave(save)
+                        }}
+                        size="xs"
+                        variant="ghost"
+                      />
+                    </Tooltip>
+                  </div>
+                  {save.description && (
+                    <p className="secondary-text">{save.description}</p>
+                  )}
+
+                  <p className="caption-text mt-2">
+                    {t('info.actions', { count: save.actions.length })}
+                  </p>
+                </Button>
+              ))}
+            </div>
+          ) : (
+            <p className="caption-text">{t('info.nothingFound')}</p>
+          )}
+        </div>
 
         <FormProvider {...formMethods}>
           <form
@@ -210,6 +271,16 @@ export const Me = ({
               </p>
 
               <div className="flex flex-row items-center justify-end gap-2">
+                <Button
+                  disabled={loading || watchActions.length === 0}
+                  loading={saving}
+                  onClick={() => setSaveModalVisible(true)}
+                  variant="secondary"
+                >
+                  {t('button.save')}
+                  <Save className="!h-5 !w-5" />
+                </Button>
+
                 <Button
                   disabled={
                     loading || (watchActions.length === 0 && !showPreview)
@@ -290,6 +361,46 @@ export const Me = ({
           </form>
         </FormProvider>
       </div>
+
+      {/* Save modal */}
+      <Modal
+        header={{
+          title: t('title.saveTransaction'),
+        }}
+        onClose={() => setSaveModalVisible(false)}
+        visible={saveModalVisible}
+      >
+        <form
+          className="flex flex-col gap-2"
+          onSubmit={saveHandleSubmit(onSave)}
+        >
+          <div className="flex grow flex-col">
+            <TextInput
+              error={saveErrors.name}
+              fieldName="name"
+              placeholder={t('form.name')}
+              register={saveRegister}
+              validation={[validateRequired]}
+            />
+            <InputErrorMessage error={saveErrors.name} />
+          </div>
+
+          <div className="flex flex-col">
+            <TextAreaInput
+              error={saveErrors.description}
+              fieldName="description"
+              placeholder={t('form.descriptionOptional')}
+              register={saveRegister}
+              rows={3}
+            />
+            <InputErrorMessage error={saveErrors.description} />
+          </div>
+
+          <Button className="mt-2 self-end" loading={saving} type="submit">
+            {t('button.save')}
+          </Button>
+        </form>
+      </Modal>
     </>
   )
 }
