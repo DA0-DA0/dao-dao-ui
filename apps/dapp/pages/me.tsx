@@ -143,8 +143,6 @@ const InnerMe = () => {
         prefix: SAVED_TX_PREFIX,
       })
 
-      console.log(items)
-
       if (
         !items ||
         !Array.isArray(items) ||

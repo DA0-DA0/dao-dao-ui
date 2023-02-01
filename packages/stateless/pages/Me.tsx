@@ -122,6 +122,7 @@ export const Me = ({
   const {
     register: saveRegister,
     handleSubmit: saveHandleSubmit,
+    reset: saveReset,
     formState: { errors: saveErrors },
   } = useForm<Omit<MeTransactionSave, 'actions'>>({
     defaultValues: {
@@ -133,7 +134,9 @@ export const Me = ({
     if (
       await save({
         ...data,
-        actions: watchActions,
+        // Clone the actions since the save gets cached. We don't want this form
+        // to affect the save once it's been saved.
+        actions: cloneDeep(watchActions),
       })
     ) {
       setSaveModalVisible(false)
@@ -274,7 +277,11 @@ export const Me = ({
                 <Button
                   disabled={loading || watchActions.length === 0}
                   loading={saving}
-                  onClick={() => setSaveModalVisible(true)}
+                  onClick={() => {
+                    // Clear form and open.
+                    saveReset()
+                    setSaveModalVisible(true)
+                  }}
                   variant="secondary"
                 >
                   {t('button.save')}
