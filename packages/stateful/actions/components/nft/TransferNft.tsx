@@ -55,7 +55,8 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
     }
   }, [selected, setError, clearErrors, t, fieldNamePrefix])
 
-  const [showModal, setShowModal] = useState<boolean>(isCreating)
+  // Show modal initially if creating and no NFT already selected.
+  const [showModal, setShowModal] = useState<boolean>(isCreating && !selected)
 
   return (
     <ActionCard
@@ -181,7 +182,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
             setValue(fieldNamePrefix + 'collection', nft.collection.address)
           }
         }}
-        selectedIds={[selected]}
+        selectedIds={selected ? [selected] : []}
         visible={showModal}
       />
     </ActionCard>

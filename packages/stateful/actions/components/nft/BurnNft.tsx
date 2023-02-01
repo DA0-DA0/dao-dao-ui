@@ -50,7 +50,8 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
     }
   }, [selected, setError, clearErrors, t, fieldNamePrefix, options])
 
-  const [showModal, setShowModal] = useState<boolean>(isCreating)
+  // Show modal initially if creating and no NFT already selected.
+  const [showModal, setShowModal] = useState<boolean>(isCreating && !selected)
 
   return (
     <ActionCard Icon={FireEmoji} onRemove={onRemove} title={t('title.burnNft')}>
@@ -104,7 +105,7 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
             setValue(fieldNamePrefix + 'collection', nft.collection.address)
           }
         }}
-        selectedIds={[selected]}
+        selectedIds={selected ? [selected] : []}
         visible={showModal}
       />
     </ActionCard>
