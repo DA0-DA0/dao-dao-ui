@@ -5,7 +5,7 @@ import {
   makeDaoInfo,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType } from '@dao-dao/types'
+import { ActionContextType } from '@dao-dao/types'
 
 import { MintNftData } from './types'
 import { UploadNftMetadata } from './UploadNftMetadata'
@@ -28,7 +28,7 @@ export default {
       chainId: 'juno-1',
       bech32Prefix: 'juno',
       context: {
-        type: ActionOptionsContextType.Dao,
+        type: ActionContextType.Dao,
         info: makeDaoInfo(),
       },
     }),

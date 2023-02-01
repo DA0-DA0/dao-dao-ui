@@ -27,6 +27,7 @@ export interface NftSelectionModalProps<T extends NftCardInfo>
   onAction: () => void
   actionLoading: boolean
   actionLabel: string
+  fallbackError?: string
   allowSelectingNone?: boolean
   selectedDisplay?: ReactNode
   headerDisplay?: ReactNode
@@ -42,6 +43,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   onAction,
   actionLoading,
   actionLabel,
+  fallbackError,
   containerClassName,
   allowSelectingNone,
   selectedDisplay,
@@ -181,7 +183,9 @@ export const NftSelectionModal = <T extends NftCardInfo>({
       ) : nfts.errored ? (
         <>
           <WarningRounded className="!h-14 !w-14" />
-          <p className="body-text">{t('error.pfpkStargazeReopenModal')}</p>
+          <p className="body-text">
+            {fallbackError ?? t('error.nftLoadFailedReopenModal')}
+          </p>
           <pre className="secondary-text max-w-prose whitespace-pre-wrap text-center text-xs text-text-interactive-error">
             {nfts.error instanceof Error ? nfts.error.message : `${nfts.error}`}
           </pre>

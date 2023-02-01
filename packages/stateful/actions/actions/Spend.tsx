@@ -14,8 +14,8 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
-  ActionOptionsContextType,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -61,7 +61,7 @@ const useCw20BalancesAndInfos = () => {
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
   const cw20BalancesAndInfosLoadable = useCachedLoadable(
-    context.type === ActionOptionsContextType.Dao
+    context.type === ActionContextType.Dao
       ? // Get DAO's cw20 balances and infos.
         DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
           contractAddress: address,
@@ -72,7 +72,7 @@ const useCw20BalancesAndInfos = () => {
 
   const cw20BalancesAndInfos = useMemo(
     () =>
-      context.type === ActionOptionsContextType.Dao
+      context.type === ActionContextType.Dao
         ? cw20BalancesAndInfosLoadable.state === 'hasValue'
           ? cw20BalancesAndInfosLoadable.contents.map(({ addr, ...rest }) => ({
               address: addr,

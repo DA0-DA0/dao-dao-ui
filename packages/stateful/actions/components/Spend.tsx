@@ -14,10 +14,7 @@ import {
   SelectInput,
 } from '@dao-dao/stateless'
 import { AddressInputProps } from '@dao-dao/types'
-import {
-  ActionComponent,
-  ActionOptionsContextType,
-} from '@dao-dao/types/actions'
+import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   NATIVE_DECIMALS,
@@ -67,7 +64,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const validatePossibleSpend = useCallback(
     (id: string, amount: string): string | boolean => {
       const insufficientBalanceI18nKey =
-        context.type === ActionOptionsContextType.Dao
+        context.type === ActionContextType.Dao
           ? 'error.cantSpendMoreThanTreasury'
           : 'error.insufficientWalletBalance'
 

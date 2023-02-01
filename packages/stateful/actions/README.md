@@ -17,7 +17,7 @@ address and version of the DAO's core contract.
 
 ```tsx
 import { ActionsProvider } from '@dao-dao/stateful/actions'
-import { ActionOptionsContextType } from '@dao-dao/types'
+import { ActionContextType } from '@dao-dao/types'
 
 const App = () => (
   <ActionsProvider
@@ -26,7 +26,7 @@ const App = () => (
       bech32Prefix: 'juno',
       address: 'daoCoreAddressGoesHere',
       context: {
-        type: ActionOptionsContextType.Dao,
+        type: ActionContextType.Dao,
         coreVersion: '0.2.0',
       },
     }}

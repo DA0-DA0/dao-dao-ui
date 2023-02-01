@@ -9,18 +9,18 @@ import {
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 import {
-  ActionOptionsContextType,
+  ActionContextType,
   ActionsWithData,
   WalletTransactionForm,
 } from '@dao-dao/types'
 
 import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
-import { Wallet } from './Wallet'
+import { Me } from './Me'
 
 export default {
-  title: 'DAO DAO / packages / stateless / pages / Wallet',
-  component: Wallet,
+  title: 'DAO DAO / packages / stateless / pages / Me',
+  component: Me,
   decorators: [
     WalletProviderDecorator,
     makeDappLayoutDecorator(),
@@ -29,13 +29,13 @@ export default {
       chainId: 'juno-1',
       bech32Prefix: 'juno',
       context: {
-        type: ActionOptionsContextType.Wallet,
+        type: ActionContextType.Wallet,
       },
     }),
   ],
-} as ComponentMeta<typeof Wallet>
+} as ComponentMeta<typeof Me>
 
-const Template: ComponentStory<typeof Wallet> = (args) => {
+const Template: ComponentStory<typeof Me> = (args) => {
   const actions = useCoreActions()
   // Call relevant action hooks in the same order every time.
   const actionsWithData: ActionsWithData = actions.reduce(
@@ -60,7 +60,7 @@ const Template: ComponentStory<typeof Wallet> = (args) => {
   })
 
   return (
-    <Wallet
+    <Me
       {...args}
       actions={actions}
       actionsWithData={actionsWithData}

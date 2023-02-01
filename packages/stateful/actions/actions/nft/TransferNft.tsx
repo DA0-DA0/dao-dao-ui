@@ -7,6 +7,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 import { BoxEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
   CoreActionKey,
   UseDecodedCosmosMsg,
@@ -24,6 +25,7 @@ import { AddressInput } from '../../../components'
 import {
   nftCardInfoSelector,
   nftCardInfosForDaoSelector,
+  walletNftCardInfos,
 } from '../../../recoil/selectors/nft'
 import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../voting-module-adapter'
 import { TransferNftComponent, TransferNftData } from '../../components/nft'
@@ -135,7 +137,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
     : { match: false }
 
 const Component: ActionComponent = (props) => {
-  const { address, chainId } = useActionOptions()
+  const { context, address, chainId } = useActionOptions()
   const { watch } = useFormContext()
   const { denomOrAddress: governanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
@@ -146,11 +148,16 @@ const Component: ActionComponent = (props) => {
   const options = loadableToLoadingDataWithError(
     useCachedLoadable(
       props.isCreating
-        ? nftCardInfosForDaoSelector({
-            coreAddress: address,
-            chainId,
-            governanceCollectionAddress,
-          })
+        ? context.type === ActionContextType.Dao
+          ? nftCardInfosForDaoSelector({
+              coreAddress: address,
+              chainId,
+              governanceCollectionAddress,
+            })
+          : walletNftCardInfos({
+              walletAddress: address,
+              chainId,
+            })
         : constSelector([])
     )
   )
@@ -168,11 +175,14 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeTransferNftAction: ActionMaker<TransferNftData> = ({ t }) => ({
+export const makeTransferNftAction: ActionMaker<TransferNftData> = ({
+  t,
+  context: { type },
+}) => ({
   key: CoreActionKey.TransferNft,
   Icon: BoxEmoji,
   label: t('title.transferNft'),
-  description: t('info.transferNftDescription'),
+  description: t('info.transferNftDescription', { context: type }),
   Component,
   useDefaults,
   useTransformToCosmos,

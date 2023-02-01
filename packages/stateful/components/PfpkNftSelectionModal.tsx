@@ -160,6 +160,7 @@ export const InnerPfpkNftSelectionModal = ({
       actionLabel={t('button.save')}
       actionLoading={updatingProfile}
       allowSelectingNone
+      fallbackError={t('error.stargazeLoadFailedReopenModal')}
       getIdForNft={getIdForNft}
       header={{
         title: t('title.chooseNftProfilePicture'),

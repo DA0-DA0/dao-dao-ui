@@ -7,7 +7,7 @@ import {
   makeActionsProviderDecorator,
   makeDaoInfo,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType } from '@dao-dao/types'
+import { ActionContextType } from '@dao-dao/types'
 
 import { TransferNftComponent } from './TransferNft'
 
@@ -22,7 +22,7 @@ export default {
       chainId: 'juno-1',
       bech32Prefix: 'juno',
       context: {
-        type: ActionOptionsContextType.Dao,
+        type: ActionContextType.Dao,
         info: makeDaoInfo(),
       },
     }),

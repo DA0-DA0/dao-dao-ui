@@ -10,7 +10,7 @@ import {
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
-  ActionOptionsContextType,
+  ActionContextType,
   CommonProposalInfo,
   DaoInfo,
   DaoInfoSerializable,
@@ -153,7 +153,7 @@ const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => (
           bech32Prefix: info.bech32Prefix,
           address: info.coreAddress,
           context: {
-            type: ActionOptionsContextType.Dao,
+            type: ActionContextType.Dao,
             info,
           },
         }}

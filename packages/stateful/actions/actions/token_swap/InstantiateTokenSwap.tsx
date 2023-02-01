@@ -10,7 +10,7 @@ import {
 } from '@dao-dao/state/recoil'
 import { Loader } from '@dao-dao/stateless'
 import { useCachedLoadable } from '@dao-dao/stateless/hooks/useCachedLoadable'
-import { ActionComponent, ActionOptionsContextType } from '@dao-dao/types'
+import { ActionComponent, ActionContextType } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
   CHAIN_BECH32_PREFIX,
@@ -62,7 +62,7 @@ export const InstantiateTokenSwap: ActionComponent<
         }))
       : undefined
   const selfPartyCw20BalancesLoadable = useCachedLoadable(
-    context.type === ActionOptionsContextType.Dao
+    context.type === ActionContextType.Dao
       ? // Get DAO's cw20 balances and infos.
         DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
           contractAddress: selfAddress,
@@ -72,7 +72,7 @@ export const InstantiateTokenSwap: ActionComponent<
       : undefined
   )
   const selfPartyCw20Balances =
-    context.type === ActionOptionsContextType.Dao
+    context.type === ActionContextType.Dao
       ? selfPartyCw20BalancesLoadable.state === 'hasValue'
         ? selfPartyCw20BalancesLoadable.contents.map(
             ({ addr, balance, info }) => ({

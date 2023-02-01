@@ -19,17 +19,9 @@ import {
   SuspenseLoader,
 } from '@dao-dao/stateful'
 import { ActionsProvider, useCoreActions } from '@dao-dao/stateful/actions'
-import {
-  Loader,
-  Wallet,
-  WalletDisconnected,
-  WalletProps,
-} from '@dao-dao/stateless'
+import { Loader, Me, MeDisconnected, MeProps } from '@dao-dao/stateless'
 import { WalletTransactionForm } from '@dao-dao/types'
-import {
-  ActionOptionsContextType,
-  ActionsWithData,
-} from '@dao-dao/types/actions'
+import { ActionContextType, ActionsWithData } from '@dao-dao/types/actions'
 import {
   CHAIN_BECH32_PREFIX,
   CHAIN_ID,
@@ -37,7 +29,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-const InnerWallet = () => {
+const InnerMe = () => {
   const { t } = useTranslation()
 
   const {
@@ -92,7 +84,7 @@ const InnerWallet = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [txHash, setTxHash] = useState('')
-  const execute: WalletProps['execute'] = useCallback(
+  const execute: MeProps['execute'] = useCallback(
     async (data) => {
       if (!signingCosmWasmClient || !walletAddress) {
         setError(t('error.connectWalletToContinue'))
@@ -127,7 +119,7 @@ const InnerWallet = () => {
   )
 
   return (
-    <Wallet
+    <Me
       SuspenseLoader={SuspenseLoader}
       actions={actions}
       actionsWithData={actionsWithData}
@@ -156,17 +148,17 @@ const WalletPage: NextPage = () => {
         bech32Prefix: CHAIN_BECH32_PREFIX,
         address: walletAddress,
         context: {
-          type: ActionOptionsContextType.Wallet,
+          type: ActionContextType.Wallet,
         },
       }}
     >
       {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
       <SuspenseLoader fallback={<Loader />}>
-        <InnerWallet />
+        <InnerMe />
       </SuspenseLoader>
     </ActionsProvider>
   ) : (
-    <WalletDisconnected
+    <MeDisconnected
       autoConnecting={
         status === WalletConnectionStatus.Initializing ||
         status === WalletConnectionStatus.AttemptingAutoConnection

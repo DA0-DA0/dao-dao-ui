@@ -6,7 +6,7 @@ import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { Loader, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionOptionsContextType,
+  ActionContextType,
   CoreActionKey,
   NftCardInfo,
 } from '@dao-dao/types'
@@ -51,7 +51,7 @@ export const MintNft: ActionComponent = (props) => {
 
   // Get all collections in DAO.
   const daoCollections = useRecoilValueLoadable(
-    props.isCreating && context.type === ActionOptionsContextType.Dao
+    props.isCreating && context.type === ActionContextType.Dao
       ? DaoCoreV2Selectors.allCw721TokenListSelector({
           contractAddress: address,
           chainId,
@@ -70,7 +70,7 @@ export const MintNft: ActionComponent = (props) => {
     if (
       // Ensure we are creating a proposal in the context of a DAO.
       props.isCreating &&
-      context.type === ActionOptionsContextType.Dao &&
+      context.type === ActionContextType.Dao &&
       // Ensure the collection is not already in the DAO.
       daoCollections.state === 'hasValue' &&
       !daoCollections.contents.includes(collectionAddress) &&

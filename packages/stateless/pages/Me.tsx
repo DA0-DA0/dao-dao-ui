@@ -34,7 +34,7 @@ import {
   useAppLayoutContext,
 } from '../components'
 
-export interface WalletProps {
+export interface MeProps {
   connected: boolean
   actions: Action[]
   actionsWithData: ActionsWithData
@@ -52,7 +52,7 @@ enum SubmitValue {
   Submit = 'Submit',
 }
 
-export const Wallet = ({
+export const Me = ({
   connected,
   actions,
   actionsWithData,
@@ -63,7 +63,7 @@ export const Wallet = ({
   SuspenseLoader,
   error,
   txHash,
-}: WalletProps) => {
+}: MeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
@@ -119,7 +119,7 @@ export const Wallet = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader className="mx-auto max-w-5xl" title={t('title.wallet')} />
+      <PageHeader className="mx-auto max-w-5xl" title={t('title.me')} />
 
       <div className="mx-auto flex max-w-5xl flex-col items-stretch pb-12">
         <FormProvider {...formMethods}>
@@ -127,48 +127,8 @@ export const Wallet = ({
             className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
           >
-            {/* <div className="bg-background-tertiary rounded-lg">
-            <div className="flex flex-row gap-6 justify-between items-center py-4 px-6 border-b border-border-secondary">
-              <p className="text-text-body primary-text">
-                {t('form.proposalsName')}
-              </p>
-
-              <div className="flex flex-col grow">
-                <TextInput
-                  error={errors.title}
-                  fieldName="title"
-                  placeholder={t('form.proposalsNamePlaceholder')}
-                  register={register}
-                  validation={[validateRequired]}
-                />
-                <InputErrorMessage error={errors.title} />
-              </div>
-            </div>
-            <div className="flex flex-col gap-4 p-6 pt-5">
-              <p className="text-text-body primary-text">
-                {t('form.description')}
-                <span className="text-text-tertiary">
-                  {' – '}
-                  {t('info.supportsMarkdownFormat')}
-                </span>
-              </p>
-
-              <div className="flex flex-col">
-                <TextAreaInput
-                  error={errors.description}
-                  fieldName="description"
-                  placeholder={t('form.proposalsDescriptionPlaceholder')}
-                  register={register}
-                  rows={5}
-                  validation={[validateRequired]}
-                />
-                <InputErrorMessage error={errors.description} />
-              </div>
-            </div>
-          </div> */}
-
-            <p className="title-text mt-6 mb-2 text-text-body">
-              {t('title.actions', { count: proposalActionData.length })}
+            <p className="title-text mb-2 text-text-body">
+              {t('title.transaction')}
             </p>
 
             {proposalActionData.length > 0 && (
@@ -217,7 +177,9 @@ export const Wallet = ({
 
               <div className="flex flex-row items-center justify-end gap-2">
                 <Button
-                  disabled={loading || proposalActionData.length === 0}
+                  disabled={
+                    loading || (proposalActionData.length === 0 && !showPreview)
+                  }
                   type="submit"
                   value={SubmitValue.Preview}
                   variant="secondary"
@@ -255,7 +217,7 @@ export const Wallet = ({
 
             {showSubmitErrorNote && (
               <p className="secondary-text max-w-prose self-end text-right text-base text-text-interactive-error">
-                {t('error.createProposalSubmitInvalid')}
+                {t('error.walletTransactionInvalid')}
               </p>
             )}
 

@@ -13,16 +13,16 @@ import {
 } from '../components'
 import { Default as ProfileDisconnectedCardStory } from '../components/profile/ProfileDisconnectedCard.stories'
 import { Default as ConnectWalletStory } from '../components/wallet/ConnectWallet.stories'
-import { WalletDisconnected } from './WalletDisconnected'
+import { MeDisconnected } from './MeDisconnected'
 
 export default {
-  title: 'DAO DAO / packages / stateless / pages / WalletDisconnected',
-  component: WalletDisconnected,
+  title: 'DAO DAO / packages / stateless / pages / MeDisconnected',
+  component: MeDisconnected,
   decorators: [WalletProviderDecorator, makeDappLayoutDecorator()],
-} as ComponentMeta<typeof WalletDisconnected>
+} as ComponentMeta<typeof MeDisconnected>
 
-const Template: ComponentStory<typeof WalletDisconnected> = (args) => (
-  <WalletDisconnected {...args} />
+const Template: ComponentStory<typeof MeDisconnected> = (args) => (
+  <MeDisconnected {...args} />
 )
 
 export const Default = Template.bind({})

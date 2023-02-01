@@ -5,6 +5,7 @@ import { constSelector } from 'recoil'
 import { FireEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
   CoreActionKey,
   UseDecodedCosmosMsg,
@@ -20,6 +21,7 @@ import {
 import {
   nftCardInfoSelector,
   nftCardInfosForDaoSelector,
+  walletNftCardInfos,
 } from '../../../recoil/selectors/nft'
 import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../voting-module-adapter'
 import { BurnNft, BurnNftData } from '../../components/nft'
@@ -75,7 +77,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<BurnNftData> = (
     : { match: false }
 
 const Component: ActionComponent = (props) => {
-  const { address, chainId } = useActionOptions()
+  const { context, address, chainId } = useActionOptions()
   const { watch } = useFormContext()
   const { denomOrAddress: governanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
@@ -86,11 +88,16 @@ const Component: ActionComponent = (props) => {
   const options = loadableToLoadingDataWithError(
     useCachedLoadable(
       props.isCreating
-        ? nftCardInfosForDaoSelector({
-            coreAddress: address,
-            chainId,
-            governanceCollectionAddress,
-          })
+        ? context.type === ActionContextType.Dao
+          ? nftCardInfosForDaoSelector({
+              coreAddress: address,
+              chainId,
+              governanceCollectionAddress,
+            })
+          : walletNftCardInfos({
+              walletAddress: address,
+              chainId,
+            })
         : constSelector([])
     )
   )
