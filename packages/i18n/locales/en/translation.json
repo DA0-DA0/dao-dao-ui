@@ -208,6 +208,7 @@
     "invalidExecuteMessage": "Invalid execute message",
     "invalidMessage": "Invalid message",
     "loadingData": "Failed to load data.",
+    "meTransactionInvalid": "Correct the errors above before previewing or executing.",
     "missingGovernanceTokenAddress": "Missing governance token address.",
     "mustBeMemberToCreateCompensationCycle": "You must be a member of the DAO to create a compensation cycle.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
@@ -247,8 +248,7 @@
     "tokenSwapContractNotChosen": "You must create a token swap or enter the address of an existing token swap before using this action.",
     "treasuryInsufficient": "The treasury only has {{amount}} ${{tokenSymbol}}, which is insufficient.",
     "treasuryNoTokensCannotStake": "The treasury has no ${{tokenSymbol}}, so you can't stake any tokens.",
-    "unexpectedError": "An unexpected error occurred.",
-    "walletTransactionInvalid": "Correct the errors above before previewing or executing."
+    "unexpectedError": "An unexpected error occurred."
   },
   "form": {
     "addAnImage": "Add an image",
@@ -439,6 +439,8 @@
     "actionPaysTokenSwap_unpaid": "This action sends {{amount}} ${{tokenSymbol}} to the token swap contract below.",
     "actionWithdrawsTokenSwap_done": "This action withdrew {{amount}} ${{tokenSymbol}} from the token swap contract below.",
     "actionWithdrawsTokenSwap_pending": "This action withdraws {{amount}} ${{tokenSymbol}} from the token swap contract below.",
+    "actions_one": "{{count}} action",
+    "actions_other": "{{count}} actions",
     "addCw20ToTreasuryActionDescription": "Display the DAO's balance of a CW20 token in the treasury view.",
     "addCw721ToTreasuryActionDescription": "Display the NFTs owned by the DAO from a CW721 NFT collection in the treasury view.",
     "addedToDaoFollowPrompt": "This DAO has added you as a member. Follow it to receive updates.",
@@ -527,6 +529,7 @@
     "manageSubDaosActionDescription": "Recognize or remove SubDAOs from the DAO.",
     "manageTreasuryNftsDescription": "Manage NFT Collections displayed on your DAO's treasury page.",
     "manageTreasuryTokensDescription": "Manage Tokens displayed on your DAO's treasury page.",
+    "meTransactionDescription": "Construct transactions with the various actions to execute from your wallet.",
     "members": "members",
     "membershipDaoNotMemberInfo_dao": "You are not a member of {{daoName}}. To become a member, existing members must vote to add you.",
     "membershipDaoNotMemberInfo_proposal": "You were not a member of {{daoName}} when this proposal was created, so you cannot vote on it.",
@@ -866,6 +869,7 @@
     "restake": "Restake",
     "retroactiveCompensation": "Retroactive compensation",
     "revoting": "Revoting",
+    "saved": "Saved",
     "search": "Search",
     "selectNftToBurn": "Select NFT To Burn",
     "selectNftToTransfer": "Select NFT To Transfer",

@@ -11,7 +11,8 @@ import {
 import {
   ActionContextType,
   ActionsWithData,
-  WalletTransactionForm,
+  CoreActionKey,
+  MeTransactionForm,
 } from '@dao-dao/types'
 
 import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
@@ -50,12 +51,10 @@ const Template: ComponentStory<typeof Me> = (args) => {
     {}
   )
 
-  const formMethods = useForm<WalletTransactionForm>({
+  const formMethods = useForm<MeTransactionForm>({
     mode: 'onChange',
     defaultValues: {
-      title: '',
-      description: '',
-      actionData: [],
+      actions: [],
     },
   })
 
@@ -81,10 +80,37 @@ Default.args = {
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
   SuspenseLoader,
+  saves: {
+    loading: false,
+    data: [
+      {
+        title: 'Deposit $10',
+        description:
+          'Send $10 USDC to my DAO. This is a very long description. I wish it were shorter.',
+        actions: [
+          {
+            key: CoreActionKey.Spend,
+            data: {},
+          },
+        ],
+      },
+    ],
+  },
 }
-Default.parameters = {
-  design: {
-    type: 'figma',
-    url: '',
+
+export const LoadingSaves = Template.bind({})
+LoadingSaves.args = {
+  ...Default.args,
+  saves: {
+    loading: true,
+  },
+}
+
+export const NoSaves = Template.bind({})
+NoSaves.args = {
+  ...Default.args,
+  saves: {
+    loading: false,
+    data: [],
   },
 }

@@ -5,6 +5,7 @@ import {
   InboxOutlined,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
+  PersonOutline,
   Search,
 } from '@mui/icons-material'
 import { isMobile } from '@walletconnect/browser-utils'
@@ -202,9 +203,17 @@ export const DappNavigation = ({
             }
           />
 
-          {/* Only show inbox and following when connected. */}
+          {/* Only show me, inbox, and following when connected. */}
           {walletConnected && (
             <>
+              <Row
+                Icon={PersonOutline}
+                LinkWrapper={LinkWrapper}
+                compact={compact}
+                href="/me"
+                label={t('title.me')}
+              />
+
               <Row
                 Icon={InboxOutlined}
                 LinkWrapper={LinkWrapper}

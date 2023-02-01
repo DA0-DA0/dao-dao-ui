@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { walletTransactionAtom } from '@dao-dao/state'
+import { meTransactionAtom } from '@dao-dao/state'
 import {
   ConnectWallet,
   ProfileDisconnectedCard,
@@ -19,8 +19,8 @@ import {
   SuspenseLoader,
 } from '@dao-dao/stateful'
 import { ActionsProvider, useCoreActions } from '@dao-dao/stateful/actions'
-import { Loader, Me, MeDisconnected, MeProps } from '@dao-dao/stateless'
-import { WalletTransactionForm } from '@dao-dao/types'
+import { Loader, Me, MeDisconnected } from '@dao-dao/stateless'
+import { MeProps, MeTransactionForm } from '@dao-dao/types'
 import { ActionContextType, ActionsWithData } from '@dao-dao/types/actions'
 import {
   CHAIN_BECH32_PREFIX,
@@ -53,16 +53,15 @@ const InnerMe = () => {
     {}
   )
 
-  const [_walletTransactionAtom, setWalletTransactionAtom] = useRecoilState(
-    walletTransactionAtom
-  )
+  const [_meTransactionAtom, setWalletTransactionAtom] =
+    useRecoilState(meTransactionAtom)
 
-  const formMethods = useForm<WalletTransactionForm>({
+  const formMethods = useForm<MeTransactionForm>({
     mode: 'onChange',
     // Don't clone every render.
     defaultValues: useMemo(
-      () => cloneDeep(_walletTransactionAtom),
-      [_walletTransactionAtom]
+      () => cloneDeep(_meTransactionAtom),
+      [_meTransactionAtom]
     ),
   })
   // Trigger validation on first render, in case loaded from localStorage.
@@ -70,16 +69,16 @@ const InnerMe = () => {
     formMethods.trigger()
   }, [formMethods])
 
-  const walletTransaction = formMethods.watch()
+  const meTransaction = formMethods.watch()
   // Debounce saving latest data to atom and thus localStorage every 10 seconds.
   useEffect(() => {
     // Deep clone to prevent values from becoming readOnly.
     const timeout = setTimeout(
-      () => setWalletTransactionAtom(cloneDeep(walletTransaction)),
+      () => setWalletTransactionAtom(cloneDeep(meTransaction)),
       10000
     )
     return () => clearTimeout(timeout)
-  }, [setWalletTransactionAtom, walletTransaction])
+  }, [setWalletTransactionAtom, meTransaction])
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -131,6 +130,7 @@ const InnerMe = () => {
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }
+      saves={{ loading: false, data: [] }}
       txHash={txHash}
     />
   )
