@@ -1,4 +1,5 @@
 import { ArrowOutwardRounded, DeleteRounded } from '@mui/icons-material'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DiscordNotifierRegistration } from '@dao-dao/state/recoil'
@@ -18,6 +19,8 @@ export type DiscordNotifierConfigureModalProps = Pick<
   registrations: DiscordNotifierRegistration[]
   loading: boolean
   onDelete: (id: string) => Promise<void>
+  connected: boolean
+  ConnectWallet: ComponentType
 }
 
 export const DiscordNotifierConfigureModal = ({
@@ -25,6 +28,8 @@ export const DiscordNotifierConfigureModal = ({
   registrations,
   loading,
   onDelete,
+  connected,
+  ConnectWallet,
   ...props
 }: DiscordNotifierConfigureModalProps) => {
   const { t } = useTranslation()
@@ -40,16 +45,20 @@ export const DiscordNotifierConfigureModal = ({
     >
       <p className="secondary-text">{t('info.discordNotifierExplanation')}</p>
 
-      <Button
-        center
-        loading={loading}
-        onClick={setup}
-        size="lg"
-        variant="secondary"
-      >
-        <DiscordIcon className="!h-5 !w-5" />
-        <p>{t('button.setUpDiscordNotifier')}</p>
-      </Button>
+      {connected ? (
+        <Button
+          center
+          loading={loading}
+          onClick={setup}
+          size="lg"
+          variant="secondary"
+        >
+          <DiscordIcon className="!h-5 !w-5" />
+          <p>{t('button.setUpDiscordNotifier')}</p>
+        </Button>
+      ) : (
+        <ConnectWallet />
+      )}
 
       {registrations.length > 0 && (
         <>

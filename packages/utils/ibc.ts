@@ -1,4 +1,5 @@
 import { NATIVE_DECIMALS, NATIVE_DENOM } from './constants'
+import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
 import ibcAssets from './ibc_assets.json'
 
@@ -40,3 +41,19 @@ export function nativeTokenDecimals(denom: string): number | undefined {
 // Returns true if this denom is the IBC denom for USDC on Juno.
 export const isJunoIbcUsdc = (ibcDenom: string): boolean =>
   ibcAssets.tokens.find(({ id }) => id === 'usd-coin')?.juno_denom === ibcDenom
+
+// Processes symbol and converts into readable format (cut out middle and add
+// ellipses) if long IBC string. Used in `TokenCard` and `TokenDepositModal`.
+export const transformIbcSymbol = (
+  symbol: string
+): { isIbc: boolean; tokenSymbol: string; originalTokenSymbol: string } => {
+  const isIbc = symbol.toLowerCase().startsWith('ibc')
+  // Truncate IBC denominations to prevent overflow.
+  const tokenSymbol = isIbc ? concatAddressStartEnd(symbol, 7, 3) : symbol
+
+  return {
+    isIbc,
+    tokenSymbol,
+    originalTokenSymbol: symbol,
+  }
+}

@@ -26,7 +26,7 @@ const Template: ComponentStory<typeof ProposalsTab> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   isMember: false,
-  proposalList: (
+  ProposalList: () => (
     <ProposalList
       {...(ProposalListStories.Default
         .args as ProposalListProps<ProposalLineProps>)}
@@ -38,7 +38,7 @@ Default.args = {
 export const None = Template.bind({})
 None.args = {
   ...Default.args,
-  proposalList: (
+  ProposalList: () => (
     <ProposalList
       {...(ProposalListStories.None
         .args as ProposalListProps<ProposalLineProps>)}

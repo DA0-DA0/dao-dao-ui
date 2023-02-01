@@ -12,6 +12,7 @@ import removeMarkdown from 'remove-markdown'
 import { DaoCardProps } from '@dao-dao/types/stateless/DaoCard'
 import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
+import { useNavHelpers } from '../../hooks'
 import { IconButton } from '../icon_buttons'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import { TooltipInfoIcon } from '../tooltip'
@@ -41,6 +42,7 @@ export const DaoCard = ({
   follow,
 }: DaoCardProps) => {
   const { t } = useTranslation()
+  const { getDaoPath } = useNavHelpers()
 
   return (
     <LinkWrapper
@@ -48,7 +50,7 @@ export const DaoCard = ({
         'relative flex h-[328px] w-full flex-col items-center justify-between rounded-md bg-background-secondary py-7 px-6 ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus',
         className
       )}
-      href={`${getUrlBaseForChainId(chainId)}/dao/${coreAddress}`}
+      href={getUrlBaseForChainId(chainId) + getDaoPath(coreAddress)}
       onMouseLeave={onMouseLeave}
       onMouseOver={onMouseOver}
     >
@@ -71,7 +73,10 @@ export const DaoCard = ({
                 />
               )}
               className="text-icon-interactive-disabled"
-              href={`/dao/${parentDao.coreAddress}`}
+              href={
+                getUrlBaseForChainId(chainId) +
+                getDaoPath(parentDao.coreAddress)
+              }
               onClick={
                 // Don't click on DAO card.
                 (event) => event.stopPropagation()

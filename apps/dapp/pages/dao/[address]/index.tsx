@@ -1,61 +1,42 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { useWallet } from '@noahsaso/cosmodal'
 import type { GetStaticPaths, NextPage } from 'next'
-import { useRouter } from 'next/router'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
-  DiscordNotifierConfigureModal,
+  DaoWidgets,
   LinkWrapper,
-  ProfileDisconnectedCard,
-  ProposalsTab,
-  SubDaosTab,
+  ProfileDaoHomeCard,
   SuspenseLoader,
-  TreasuryAndNftsTab,
+  useDaoTabs,
   useEncodedDaoProposalSinglePrefill,
   useFollowingDaos,
   useMembership,
-  useWalletInfo,
 } from '@dao-dao/stateful'
 import { useCoreActionForKey } from '@dao-dao/stateful/actions'
-import { usePayrollAdapter } from '@dao-dao/stateful/payroll'
-import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
-import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
+import { useWidgets } from '@dao-dao/stateful/widgets'
 import {
-  DaoHome,
-  Loader,
-  ProfileMemberCard,
-  ProfileNotMemberCard,
-  useAppLayoutContext,
-  useCachedLoadable,
+  DaoDappTabbedHome,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
-import { CoreActionKey } from '@dao-dao/types'
-import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
-import { SITE_URL } from '@dao-dao/utils'
+import { CoreActionKey, DaoPageMode } from '@dao-dao/types'
+import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const InnerDaoHome = () => {
   const { t } = useTranslation()
-  const router = useRouter()
-  const { connected } = useWallet()
-  const { walletProfile, updateProfileName } = useWalletInfo()
-  const { updateProfileNft } = useAppLayoutContext()
+  const { getDaoProposalPath, router } = useNavHelpers()
 
   const daoInfo = useDaoInfoContext()
-  const {
-    components: { extraTabs, ProfileCardMemberInfo },
-  } = useVotingModuleAdapter()
-  const { isMember } = useMembership(daoInfo)
 
   // If no parent, fallback to current address since it's already loaded from
   // the above hook. We won't use this value unless there's a parent. It's
@@ -100,7 +81,9 @@ const InnerDaoHome = () => {
   )
   const addSubDaoProposalPrefillHref =
     prefillValid && daoInfo.parentDao && encodedAddSubDaoProposalPrefill
-      ? `/dao/${daoInfo.parentDao.coreAddress}/proposals/create?prefill=${encodedAddSubDaoProposalPrefill}`
+      ? getDaoProposalPath(daoInfo.parentDao.coreAddress, 'create', {
+          prefill: encodedAddSubDaoProposalPrefill,
+        })
       : undefined
   useEffect(() => {
     if (!addSubDaoProposalPrefillHref) {
@@ -155,65 +138,29 @@ const InnerDaoHome = () => {
     t,
   ])
 
-  const depositInfoSelectors = useMemo(
-    () =>
-      daoInfo.proposalModules.map(
-        (proposalModule) =>
-          matchAndLoadCommon(proposalModule, {
-            chainId: daoInfo.chainId,
-            coreAddress: daoInfo.coreAddress,
-          }).selectors.depositInfo
-      ),
-    [daoInfo.chainId, daoInfo.coreAddress, daoInfo.proposalModules]
-  )
-  const proposalModuleDepositInfosLoadable = useCachedLoadable(
-    waitForAll(depositInfoSelectors)
-  )
-
-  const maxProposalModuleDeposit =
-    proposalModuleDepositInfosLoadable.state !== 'hasValue'
-      ? 0
-      : Math.max(
-          ...(
-            proposalModuleDepositInfosLoadable.contents.filter(
-              Boolean
-            ) as CheckedDepositInfo[]
-          ).map(({ amount }) => Number(amount)),
-          0
-        )
-
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos()
   const following = isFollowing(daoInfo.coreAddress)
 
-  // Get payroll tab component, if exists.
-  const PayrollTab = usePayrollAdapter()?.PayrollTab
+  // Add home tab with widgets if any widgets exist.
+  const loadingWidgets = useWidgets({
+    // Load widgets before rendering so that home is selected if there are
+    // widgets.
+    suspendWhileLoading: true,
+  })
+  const tabs = useDaoTabs({
+    includeHome:
+      !loadingWidgets.loading && loadingWidgets.data.length > 0
+        ? DaoWidgets
+        : undefined,
+  })
 
   return (
-    <DaoHome
-      DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
+    <DaoDappTabbedHome
+      DaoInfoBar={DaoInfoBar}
       LinkWrapper={LinkWrapper}
-      ProposalsTab={ProposalsTab}
-      SubDaosTab={SubDaosTab}
       SuspenseLoader={SuspenseLoader}
-      TreasuryAndNftsTab={TreasuryAndNftsTab}
       daoInfo={daoInfo}
-      daoInfoBar={<DaoInfoBar />}
-      extraTabs={[
-        ...(extraTabs?.map(({ labelI18nKey, ...tab }) => ({
-          label: t(labelI18nKey),
-          ...tab,
-        })) ?? []),
-        ...(PayrollTab
-          ? [
-              {
-                id: 'payroll',
-                label: t('title.payroll'),
-                Component: PayrollTab,
-              },
-            ]
-          : []),
-      ]}
       follow={{
         following,
         onFollow: () =>
@@ -222,52 +169,8 @@ const InnerDaoHome = () => {
             : setFollowing(daoInfo.coreAddress),
         updatingFollowing,
       }}
-      rightSidebarContent={
-        connected ? (
-          // If membership not yet loaded, show loading skeleton.
-          isMember === undefined ? (
-            <ProfileDisconnectedCard className="animate-pulse" />
-          ) : isMember ? (
-            <ProfileMemberCard
-              daoName={daoInfo.name}
-              membershipInfo={
-                <SuspenseLoader fallback={<Loader size={24} />}>
-                  <ProfileCardMemberInfo
-                    deposit={
-                      maxProposalModuleDeposit > 0
-                        ? maxProposalModuleDeposit.toString()
-                        : undefined
-                    }
-                  />
-                </SuspenseLoader>
-              }
-              showUpdateProfileNft={updateProfileNft.toggle}
-              updateProfileName={updateProfileName}
-              walletProfile={walletProfile}
-            />
-          ) : (
-            <ProfileNotMemberCard
-              daoName={daoInfo.name}
-              membershipInfo={
-                <SuspenseLoader fallback={<Loader size={24} />}>
-                  <ProfileCardMemberInfo
-                    deposit={
-                      maxProposalModuleDeposit > 0
-                        ? maxProposalModuleDeposit.toString()
-                        : undefined
-                    }
-                  />
-                </SuspenseLoader>
-              }
-              showUpdateProfileNft={updateProfileNft.toggle}
-              updateProfileName={updateProfileName}
-              walletProfile={walletProfile}
-            />
-          )
-        ) : (
-          <ProfileDisconnectedCard />
-        )
-      }
+      rightSidebarContent={<ProfileDaoHomeCard />}
+      tabs={tabs}
     />
   )
 }
@@ -291,6 +194,6 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps = makeGetDaoStaticProps({
   getProps: async ({ coreAddress }) => ({
-    url: `${SITE_URL}/dao/${coreAddress}`,
+    url: SITE_URL + getDaoPath(DaoPageMode.Dapp, coreAddress),
   }),
 })

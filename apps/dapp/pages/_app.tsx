@@ -19,7 +19,11 @@ import {
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
-import { ApolloGqlProvider, AppLayout, WalletProvider } from '@dao-dao/stateful'
+import {
+  ApolloGqlProvider,
+  DappLayout,
+  WalletProvider,
+} from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
@@ -64,22 +68,23 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
+      {/* Show loader until not fallback anymore, since translations aren't loaded until static props are ready (i.e. not fallback). */}
       <ApolloGqlProvider>
-        {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
+        {/* When on fallback page (loading static props), don't wrap in WalletProvider or DappLayout, since things look weird and broken (e.g. translations aren't loaded, the wallet tries to connect multiple times, etc.). Render the component still so that the SEO meta tags load on first render (on the server) so that URL previews work. Component is responsible for suspending its non-SEO meta tag content with a SuspenseLoader when it needs to wait for the page to load. */}
         {router.isFallback ? (
           <LayoutLoading>
             <Component {...pageProps} />
           </LayoutLoading>
         ) : (
           <WalletProvider>
-            <AppLayout>
+            <DappLayout>
               <Component {...pageProps} />
-            </AppLayout>
+            </DappLayout>
           </WalletProvider>
         )}
-
-        <ToastNotifications />
       </ApolloGqlProvider>
+
+      <ToastNotifications />
     </ThemeProvider>
   )
 }
@@ -100,18 +105,6 @@ const DApp = (props: DappProps) => {
             href: '/apple-touch-icon.png',
             rel: 'apple-touch-icon',
             sizes: '180x180',
-            type: 'image/png',
-          },
-          {
-            href: '/favicon-32x32.png',
-            rel: 'icon',
-            sizes: '32x32',
-            type: 'image/png',
-          },
-          {
-            href: '/favicon-16x16.png',
-            rel: 'icon',
-            sizes: '16x16',
             type: 'image/png',
           },
           {

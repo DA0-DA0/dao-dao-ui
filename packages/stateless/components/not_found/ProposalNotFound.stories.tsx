@@ -1,7 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Trans } from '@dao-dao/stateful'
-
 import { ProposalNotFound } from './ProposalNotFound'
 
 export default {
@@ -10,18 +8,8 @@ export default {
   component: ProposalNotFound,
 } as ComponentMeta<typeof ProposalNotFound>
 
-const Template: ComponentStory<typeof ProposalNotFound> = (args) => (
-  <ProposalNotFound {...args} />
+const Template: ComponentStory<typeof ProposalNotFound> = (_args) => (
+  <ProposalNotFound />
 )
 
 export const Default = Template.bind({})
-Default.args = {
-  homeHref: '#',
-  Trans,
-}
-Default.parameters = {
-  design: {
-    type: 'figma',
-    url: '',
-  },
-}

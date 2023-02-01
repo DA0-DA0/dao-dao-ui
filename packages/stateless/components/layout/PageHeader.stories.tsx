@@ -1,13 +1,16 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { makeAppLayoutContextDecorator } from '@dao-dao/storybook/decorators'
+import {
+  DaoPageWrapperDecorator,
+  makeAppLayoutContextDecorator,
+} from '@dao-dao/storybook/decorators'
 
 import { PageHeader } from './PageHeader'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / layout / PageHeader',
   component: PageHeader,
-  decorators: [makeAppLayoutContextDecorator(false)],
+  decorators: [DaoPageWrapperDecorator, makeAppLayoutContextDecorator(false)],
 } as ComponentMeta<typeof PageHeader>
 
 const Template: ComponentStory<typeof PageHeader> = (args) => (
@@ -24,16 +27,6 @@ Breadcrumbs.args = {
   ...Default.args,
   title: undefined,
   breadcrumbs: {
-    crumbs: [
-      {
-        href: '#',
-        label: 'Home',
-      },
-      {
-        href: '#',
-        label: 'DAO !',
-      },
-    ],
     current: 'Here',
   },
 }

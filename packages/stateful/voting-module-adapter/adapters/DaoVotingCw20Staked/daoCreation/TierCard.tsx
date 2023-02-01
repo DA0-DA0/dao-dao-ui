@@ -145,27 +145,12 @@ export const TierCard = ({
                 errors.votingModuleAdapter?.data?.tiers?.[tierIndex]?.weight
               }
               fieldName={`votingModuleAdapter.data.tiers.${tierIndex}.weight`}
-              onMinus={() =>
-                setValue(
-                  `votingModuleAdapter.data.tiers.${tierIndex}.weight`,
-                  Math.max(
-                    (data.tiers?.[tierIndex]?.weight ?? 0) - 1,
-                    1 / 10 ** NEW_DAO_CW20_DECIMALS
-                  )
-                )
-              }
-              onPlus={() =>
-                setValue(
-                  `votingModuleAdapter.data.tiers.${tierIndex}.weight`,
-                  Math.max(
-                    (data.tiers?.[tierIndex]?.weight ?? 0) + 1,
-                    1 / 10 ** NEW_DAO_CW20_DECIMALS
-                  )
-                )
-              }
+              min={1 / 10 ** NEW_DAO_CW20_DECIMALS}
               register={register}
+              setValue={setValue}
               step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
               validation={[validatePositive, validateRequired]}
+              watch={watch}
             />
             <InputLabel name="%" />
           </div>

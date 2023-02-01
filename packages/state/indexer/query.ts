@@ -20,8 +20,8 @@ export const queryIndexer = async <T = any>(
   { args, block, chainId, baseUrl }: QueryIndexerOptions = {}
 ): Promise<T | undefined> => {
   const response = await fetchWithTimeout(
-    // Timeout after 5 seconds.
-    5000,
+    // Timeout after 10 seconds.
+    10 * 1000,
     (baseUrl || '') + '/api/indexer',
     {
       method: 'POST',

@@ -22,10 +22,11 @@ import { DaoCreationConfig } from '../types'
 export const QuorumInput = ({
   data: {
     quorumEnabled,
-    quorum: { majority, value },
+    quorum: { majority },
   },
   register,
   setValue,
+  watch,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
@@ -39,12 +40,13 @@ export const QuorumInput = ({
               containerClassName="grow"
               error={errors?.quorum?.value}
               fieldName="quorum.value"
-              onMinus={() => setValue('quorum.value', Math.max(value - 1, 1))}
-              onPlus={() => setValue('quorum.value', Math.max(value + 1, 1))}
+              min={1}
               register={register}
+              setValue={setValue}
               sizing="sm"
               step={0.001}
               validation={[validatePositive, validateRequired]}
+              watch={watch}
             />
           )}
 

@@ -1,5 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import {
+  DiscordNotifierConfigureModal,
+  DiscordNotifierConfigureModalProps,
+} from '../modals/DiscordNotifierConfigureModal'
+import { Default as DiscordNotifierConfigureModalStory } from '../modals/DiscordNotifierConfigureModal.stories'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
 import { makeProps as makeProposalProps } from './ProposalLine.ProposalLine.stories'
 import { ProposalList } from './ProposalList'
@@ -36,6 +41,11 @@ Default.args = {
   loadMore: () => alert('load more'),
   loadingMore: false,
   isMember: true,
+  DiscordNotifierConfigureModal: () => (
+    <DiscordNotifierConfigureModal
+      {...(DiscordNotifierConfigureModalStory.args as DiscordNotifierConfigureModalProps)}
+    />
+  ),
 }
 
 export const None = Template.bind({})

@@ -1,5 +1,7 @@
+import { ImageRounded } from '@mui/icons-material'
+
 import { ImageEmoji } from '@dao-dao/stateless'
-import { DurationUnits, VotingModuleAdapter } from '@dao-dao/types'
+import { DaoTabId, DurationUnits, VotingModuleAdapter } from '@dao-dao/types'
 
 import { ProfileCardMemberInfo, StakedNftsTab } from './components'
 import {
@@ -10,8 +12,8 @@ import {
 } from './daoCreation'
 import {
   useActions,
+  useCommonGovernanceTokenInfo,
   useDaoInfoBarItems,
-  useGovernanceTokenInfo,
   useProfileNewProposalCardAddresses,
 } from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
@@ -33,16 +35,17 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter<DaoCreationConfig>
         useActions,
         useDaoInfoBarItems,
         useProfileNewProposalCardAddresses,
-        useGovernanceTokenInfo,
+        useCommonGovernanceTokenInfo,
       },
 
       // Components
       components: {
         extraTabs: [
           {
-            id: 'staked',
+            id: DaoTabId.Staked,
             labelI18nKey: 'title.stakedNfts',
             Component: StakedNftsTab,
+            Icon: ImageRounded,
           },
         ],
         ProfileCardMemberInfo,

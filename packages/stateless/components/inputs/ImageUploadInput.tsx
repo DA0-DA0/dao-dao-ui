@@ -1,7 +1,5 @@
 import { useState } from 'react'
 
-import { uploadImage } from '@dao-dao/utils'
-
 import { ImageDropInput, ImageDropInputProps } from './ImageDropInput'
 
 export type ImageUploadInputProps = Omit<
@@ -23,7 +21,20 @@ export const ImageUploadInput = ({
     setUploading(true)
 
     try {
-      const cid = await uploadImage(file)
+      const form = new FormData()
+      form.append('image', file)
+
+      // Next.js API route.
+      const response = await fetch('/api/uploadImage', {
+        method: 'POST',
+        body: form,
+      })
+
+      const { cid } = await response.json()
+      if (!cid) {
+        throw new Error('Failed to upload image')
+      }
+
       onChange(`ipfs://${cid}`)
     } catch (err) {
       console.error(err)

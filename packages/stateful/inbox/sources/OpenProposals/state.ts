@@ -6,11 +6,16 @@ import {
   openProposalsSelector,
 } from '@dao-dao/state/recoil'
 import {
+  DaoPageMode,
   InboxSourceDaoWithItems,
   InboxSourceItem,
   WithChainId,
 } from '@dao-dao/types'
-import { CHAIN_ID, convertExpirationToDate } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  convertExpirationToDate,
+  getDaoProposalPath,
+} from '@dao-dao/utils'
 
 import { ProposalLineProps } from '../../../components/ProposalLine'
 import { followingDaosWithProposalModulesSelector } from '../../../recoil'
@@ -77,7 +82,11 @@ export const inboxOpenProposalsSelector = selectorFamily<
                         coreAddress,
                         proposalId: `${proposalModule.prefix}${id}`,
                         proposalModules,
-                        proposalViewUrl: `/dao/${coreAddress}/proposals/${proposalModule.prefix}${id}`,
+                        proposalViewUrl: getDaoProposalPath(
+                          DaoPageMode.Dapp,
+                          coreAddress,
+                          `${proposalModule.prefix}${id}`
+                        ),
                       },
                       order: convertExpirationToDate(
                         blocksPerYear,

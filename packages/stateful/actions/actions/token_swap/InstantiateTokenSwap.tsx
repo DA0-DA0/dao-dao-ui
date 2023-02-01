@@ -25,7 +25,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput, Trans } from '../../../components'
-import { useCw20GovernanceTokenInfoResponseIfExists } from '../../../voting-module-adapter/react/hooks/useCw20GovernanceTokenInfoResponseIfExists'
+import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
 import {
   InstantiateTokenSwapOptions,
   PerformTokenSwapData,
@@ -44,8 +44,8 @@ export const InstantiateTokenSwap: ActionComponent<
   // Get CW20 governance token address from voting module adapter if exists,
   // so we can make sure to load it with all cw20 balances, even if it has not
   // been explicitly added to the DAO.
-  const { governanceTokenAddress } =
-    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+  const { denomOrAddress: governanceTokenAddress } =
+    useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
   // Load balances as loadables since they refresh automatically on a timer.
   const selfPartyNativeBalancesLoadable = useCachedLoadable(

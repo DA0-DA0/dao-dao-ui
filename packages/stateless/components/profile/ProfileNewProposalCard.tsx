@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProfileNewProposalCardProps } from '@dao-dao/types/stateless/ProfileNewProposalCard'
+import { concatAddressStartEnd } from '@dao-dao/utils'
 
-import { concatAddressStartEnd } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { MembershipPill } from './MembershipPill'

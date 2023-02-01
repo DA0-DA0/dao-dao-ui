@@ -41,14 +41,18 @@ export const TreasuryAndNftsTab = <
 
   const { t } = useTranslation()
 
-  // Sort crowned tokens first.
+  // Sort governance token first.
   const sortedTokens = useMemo(
     () =>
       tokens.loading
         ? []
         : // `sort` mutates, so let's make a copy of the array first.
           [...tokens.data].sort((a, b) =>
-            !!a.crown === !!b.crown ? 0 : a.crown ? -1 : 1
+            !!a.isGovernanceToken === !!b.isGovernanceToken
+              ? 0
+              : a.isGovernanceToken
+              ? -1
+              : 1
           ),
     [tokens]
   )

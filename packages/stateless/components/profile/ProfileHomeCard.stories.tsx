@@ -16,7 +16,7 @@ const Template: ComponentStory<typeof ProfileHomeCard> = (args) => (
 
 export const Default = Template.bind({})
 // Wallet details are used in other story files, like `SidebarWallet` and
-// `makeAppLayoutDecorator`.
+// `makeDappLayoutDecorator`.
 Default.args = {
   walletProfile: {
     loading: false,
@@ -54,7 +54,7 @@ Default.parameters = {
 
 export const Loading = Template.bind({})
 // Wallet details are used in other story files, like `SidebarWallet` and
-// `makeAppLayoutDecorator`.
+// `makeDappLayoutDecorator`.
 Loading.args = {
   ...Default.args,
   walletProfile: {

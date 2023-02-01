@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { token } from '../token/TokenCard.stories'
 import { TokenDepositModal } from './TokenDepositModal'
 
 export default {
@@ -17,10 +18,12 @@ const Template: ComponentStory<typeof TokenDepositModal> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
+  subtitle: 'Tokens will be sent from your wallet to the DAO',
+  warning:
+    'You cannot undo a deposit. You will not gain voting power by depositing tokens.',
+  connected: true,
   visible: true,
-  tokenSymbol: 'JUNO',
-  tokenDecimals: 6,
-  tokenImageUrl: '/juno.png',
+  token,
   loadingBalance: {
     loading: false,
     data: {
