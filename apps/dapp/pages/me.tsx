@@ -167,11 +167,6 @@ const InnerMe = () => {
 
     setSaving(true)
     try {
-      // If saves not yet loaded, load them first.
-      if (!saves) {
-        await loadSaves()
-      }
-
       const nameHash = toHex(
         new Uint8Array(
           await crypto.subtle.digest(
@@ -186,7 +181,11 @@ const InnerMe = () => {
         value: save,
       })
 
-      setSaves((prev) => [...(prev ?? []), save])
+      // Save overwrites existing save with same name.
+      setSaves((prev) => [
+        ...(prev ?? []).filter((s) => s.name !== save.name),
+        save,
+      ])
 
       return true
     } catch (err) {

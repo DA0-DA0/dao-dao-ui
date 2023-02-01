@@ -120,6 +120,7 @@ export const Me = ({
 
   const [saveModalVisible, setSaveModalVisible] = useState(false)
   const {
+    watch: saveWatch,
     register: saveRegister,
     handleSubmit: saveHandleSubmit,
     reset: saveReset,
@@ -130,6 +131,7 @@ export const Me = ({
       description: '',
     },
   })
+  const watchSaveName = saveWatch('name')
   const onSave = async (data: Omit<MeTransactionSave, 'actions'>) => {
     if (
       await save({
@@ -274,19 +276,32 @@ export const Me = ({
               </p>
 
               <div className="flex flex-row items-center justify-end gap-2">
-                <Button
-                  disabled={loading || watchActions.length === 0}
-                  loading={saving}
-                  onClick={() => {
-                    // Clear form and open.
-                    saveReset()
-                    setSaveModalVisible(true)
-                  }}
-                  variant="secondary"
+                <Tooltip
+                  title={
+                    saves.loading || !saves.data
+                      ? t('info.loadSavesBeforeSaving')
+                      : undefined
+                  }
                 >
-                  {t('button.save')}
-                  <Save className="!h-5 !w-5" />
-                </Button>
+                  <Button
+                    disabled={
+                      // Disallow saving until saves are loaded.
+                      saves.loading ||
+                      !saves.data ||
+                      loading ||
+                      watchActions.length === 0
+                    }
+                    onClick={() => {
+                      // Clear form and open.
+                      saveReset()
+                      setSaveModalVisible(true)
+                    }}
+                    variant="secondary"
+                  >
+                    {t('button.save')}
+                    <Save className="!h-5 !w-5" />
+                  </Button>
+                </Tooltip>
 
                 <Button
                   disabled={
@@ -373,15 +388,16 @@ export const Me = ({
       <Modal
         header={{
           title: t('title.saveTransaction'),
+          subtitle: t('info.saveTransactionDescription'),
         }}
         onClose={() => setSaveModalVisible(false)}
         visible={saveModalVisible}
       >
         <form
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-3"
           onSubmit={saveHandleSubmit(onSave)}
         >
-          <div className="flex grow flex-col">
+          <div className="flex grow flex-col gap-1">
             <TextInput
               error={saveErrors.name}
               fieldName="name"
@@ -390,6 +406,11 @@ export const Me = ({
               validation={[validateRequired]}
             />
             <InputErrorMessage error={saveErrors.name} />
+
+            {!saves.loading &&
+              saves.data?.some(({ name }) => name === watchSaveName) && (
+                <p className="caption-text">{t('info.overwritingSave')}</p>
+              )}
           </div>
 
           <div className="flex flex-col">
