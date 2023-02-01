@@ -522,7 +522,6 @@
     "itemsInInboxNotification_other": "There are {{count}} items in your inbox.",
     "jsonIsValid": "json is valid",
     "keplrModalWalletExplanation": "Your wallet is your digital identity on the blockchain. Having one lets you interact with web3 applications like DAO DAO.\nWe recommend the Keplr wallet.",
-    "loadSavesBeforeSaving": "Load your saves before saving.",
     "loading": "Loading...",
     "loadingProposalStatus": "The proposal is loading...",
     "logo": "Logo",

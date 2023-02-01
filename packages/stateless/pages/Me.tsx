@@ -60,7 +60,6 @@ export const Me = ({
   error,
   txHash,
   saves,
-  loadSaves,
   save,
   deleteSave,
   saving,
@@ -167,17 +166,9 @@ export const Me = ({
             <p className="primary-text">{t('title.saved')}</p>
           </div>
 
-          {saves.loading || !saves.data ? (
-            <Button
-              loading={saves.loading}
-              onClick={loadSaves}
-              variant="secondary"
-            >
-              {t('button.loadSaves')}
-            </Button>
-          ) : saves.data.length > 0 ? (
+          {!saves.loading && saves.data.length > 0 ? (
             <div className="flex flex-row flex-wrap gap-2">
-              {saves.data!.map((save, index) => (
+              {saves.data.map((save, index) => (
                 <Button
                   key={index}
                   contentContainerClassName="flex flex-col !items-start !gap-0 max-w-[16rem] text-left"
@@ -276,32 +267,18 @@ export const Me = ({
               </p>
 
               <div className="flex flex-row items-center justify-end gap-2">
-                <Tooltip
-                  title={
-                    saves.loading || !saves.data
-                      ? t('info.loadSavesBeforeSaving')
-                      : undefined
-                  }
+                <Button
+                  disabled={loading || watchActions.length === 0}
+                  onClick={() => {
+                    // Clear form and open.
+                    saveReset()
+                    setSaveModalVisible(true)
+                  }}
+                  variant="secondary"
                 >
-                  <Button
-                    disabled={
-                      // Disallow saving until saves are loaded.
-                      saves.loading ||
-                      !saves.data ||
-                      loading ||
-                      watchActions.length === 0
-                    }
-                    onClick={() => {
-                      // Clear form and open.
-                      saveReset()
-                      setSaveModalVisible(true)
-                    }}
-                    variant="secondary"
-                  >
-                    {t('button.save')}
-                    <Save className="!h-5 !w-5" />
-                  </Button>
-                </Tooltip>
+                  {t('button.save')}
+                  <Save className="!h-5 !w-5" />
+                </Button>
 
                 <Button
                   disabled={

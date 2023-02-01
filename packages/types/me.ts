@@ -25,9 +25,7 @@ export type MeProps = {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   error?: string
   txHash?: string
-  // If undefined, not yet loaded.
-  saves: LoadingData<MeTransactionSave[] | undefined>
-  loadSaves: () => Promise<void>
+  saves: LoadingData<MeTransactionSave[]>
   save: (save: MeTransactionSave) => Promise<boolean>
   deleteSave: (save: MeTransactionSave) => Promise<boolean>
   saving: boolean

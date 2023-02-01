@@ -88,3 +88,9 @@ export const refreshFollowingDaosAtom = atom({
   key: 'refreshFollowingDaos',
   default: 0,
 })
+
+// Change this to refresh saved TXs.
+export const refreshSavedTxsAtom = atom({
+  key: 'refreshSavedTxs',
+  default: 0,
+})

@@ -9,19 +9,27 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { meTransactionAtom, meTransactionSavesAtom } from '@dao-dao/state'
+import { meTransactionAtom, refreshSavedTxsAtom } from '@dao-dao/state'
 import {
   ConnectWallet,
   ProfileDisconnectedCard,
   ProfileHomeCard,
+  SAVED_TX_PREFIX,
   SuspenseLoader,
+  savedTxsSelector,
+  temporarySavedTxsAtom,
   useCfWorkerAuthPostRequest,
 } from '@dao-dao/stateful'
 import { ActionsProvider, useCoreActions } from '@dao-dao/stateful/actions'
-import { Loader, Me, MeDisconnected } from '@dao-dao/stateless'
+import {
+  Loader,
+  Me,
+  MeDisconnected,
+  useCachedLoadable,
+} from '@dao-dao/stateless'
 import { MeProps, MeTransactionForm, MeTransactionSave } from '@dao-dao/types'
 import { ActionContextType, ActionsWithData } from '@dao-dao/types/actions'
 import {
@@ -29,10 +37,9 @@ import {
   CHAIN_ID,
   KVPK_API_BASE,
   cwMsgToEncodeObject,
+  loadableToLoadingData,
   processError,
 } from '@dao-dao/utils'
-
-const SAVED_TX_PREFIX = 'savedTx:'
 
 const InnerMe = () => {
   const { t } = useTranslation()
@@ -40,6 +47,7 @@ const InnerMe = () => {
   const {
     connected,
     address: walletAddress = '',
+    publicKey,
     signingCosmWasmClient,
   } = useWallet()
 
@@ -125,40 +133,23 @@ const InnerMe = () => {
   const { ready: txSavesReady, postRequest: postTxSavesRequest } =
     useCfWorkerAuthPostRequest(KVPK_API_BASE, 'Transaction Saves')
 
-  const [loadingSaves, setLoadingSaves] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [saves, setSaves] = useRecoilState(
-    meTransactionSavesAtom(walletAddress)
+  const setRefreshSaves = useSetRecoilState(refreshSavedTxsAtom)
+  const refreshSaves = useCallback(
+    () => setRefreshSaves((id) => id + 1),
+    [setRefreshSaves]
   )
 
-  const loadSaves = async () => {
-    if (!txSavesReady) {
-      toast.error(t('error.connectWalletToContinue'))
-      return
-    }
+  const setTemporarySaves = useSetRecoilState(
+    temporarySavedTxsAtom(publicKey?.hex ?? '')
+  )
+  const savesLoading = loadableToLoadingData(
+    useCachedLoadable(
+      publicKey?.hex ? savedTxsSelector(publicKey.hex) : undefined
+    ),
+    []
+  )
+  const [saving, setSaving] = useState(false)
 
-    setLoadingSaves(true)
-    try {
-      const { items } = await postTxSavesRequest('/list', {
-        prefix: SAVED_TX_PREFIX,
-      })
-
-      if (
-        !items ||
-        !Array.isArray(items) ||
-        items.some((item) => !('value' in item))
-      ) {
-        return
-      }
-
-      setSaves(items.map(({ value }) => value))
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-    } finally {
-      setLoadingSaves(false)
-    }
-  }
   const save = async (save: MeTransactionSave) => {
     if (!txSavesReady) {
       toast.error(t('error.connectWalletToContinue'))
@@ -181,11 +172,11 @@ const InnerMe = () => {
         value: save,
       })
 
-      // Save overwrites existing save with same name.
-      setSaves((prev) => [
-        ...(prev ?? []).filter((s) => s.name !== save.name),
-        save,
-      ])
+      setTemporarySaves((prev) => ({
+        ...prev,
+        [nameHash]: save,
+      }))
+      refreshSaves()
 
       return true
     } catch (err) {
@@ -218,7 +209,11 @@ const InnerMe = () => {
         value: null,
       })
 
-      setSaves((prev) => (prev ?? []).filter((s) => s.name !== save.name))
+      setTemporarySaves((prev) => ({
+        ...prev,
+        [nameHash]: null,
+      }))
+      refreshSaves()
 
       return true
     } catch (err) {
@@ -239,13 +234,12 @@ const InnerMe = () => {
       error={error}
       execute={execute}
       formMethods={formMethods}
-      loadSaves={loadSaves}
       loading={loading}
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }
       save={save}
-      saves={loadingSaves ? { loading: true } : { loading: false, data: saves }}
+      saves={savesLoading}
       saving={saving}
       txHash={txHash}
     />

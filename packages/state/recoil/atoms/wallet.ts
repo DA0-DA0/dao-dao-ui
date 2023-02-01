@@ -1,8 +1,8 @@
 // Store each subDAO creation state separately. Main DAO creation state uses an
 
-import { atom, atomFamily } from 'recoil'
+import { atom } from 'recoil'
 
-import { MeTransactionForm, MeTransactionSave } from '@dao-dao/types'
+import { MeTransactionForm } from '@dao-dao/types'
 
 import { localStorageEffectJSON } from '../effects'
 
@@ -18,12 +18,4 @@ export const meTransactionAtom = atom<MeTransactionForm>({
     actions: [],
   },
   effects: [localStorageEffectJSON],
-})
-
-export const meTransactionSavesAtom = atomFamily<
-  MeTransactionSave[] | undefined,
-  string
->({
-  key: 'meTransactionSaves',
-  default: undefined,
 })
