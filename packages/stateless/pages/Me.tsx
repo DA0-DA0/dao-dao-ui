@@ -1,13 +1,11 @@
 import {
   ArrowOutwardRounded,
   ClearRounded,
-  Functions,
   Key,
   Save,
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
-import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useState } from 'react'
 import {
@@ -151,64 +149,10 @@ export const Me = ({
 
       <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6 pb-12">
         <div className="flex flex-col gap-2">
-          <p className="title-text">{t('title.transaction')}</p>
-          <p className="secondary-text">{t('info.meTransactionDescription')}</p>
-        </div>
-
-        <div className="flex flex-col items-start gap-4">
-          <div
-            className={clsx(
-              'flex flex-row items-center gap-2',
-              saves.loading && 'animate-pulse'
-            )}
-          >
-            <Save className="!h-5 !w-5" />
-            <p className="primary-text">{t('title.saved')}</p>
-          </div>
-
-          {!saves.loading && saves.data.length > 0 ? (
-            <div className="flex flex-row flex-wrap gap-2">
-              {saves.data.map((save, index) => (
-                <Button
-                  key={index}
-                  contentContainerClassName="flex flex-col !items-start !gap-0 max-w-[16rem] text-left"
-                  onClick={() =>
-                    reset({
-                      // Clone the actions to prevent mutating the original
-                      // save.
-                      actions: cloneDeep(save.actions),
-                    })
-                  }
-                  variant="secondary"
-                >
-                  <div className="flex flex-row items-center justify-between gap-4">
-                    <p className="body-text">{save.name}</p>
-
-                    <Tooltip title={t('button.delete')}>
-                      <IconButton
-                        Icon={ClearRounded}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          deleteSave(save)
-                        }}
-                        size="xs"
-                        variant="ghost"
-                      />
-                    </Tooltip>
-                  </div>
-                  {save.description && (
-                    <p className="secondary-text">{save.description}</p>
-                  )}
-
-                  <p className="caption-text mt-2">
-                    {t('info.actions', { count: save.actions.length })}
-                  </p>
-                </Button>
-              ))}
-            </div>
-          ) : (
-            <p className="caption-text">{t('info.nothingFound')}</p>
-          )}
+          <p className="title-text">{t('title.transactionBuilder')}</p>
+          <p className="secondary-text">
+            {t('info.transactionBuilderDescription')}
+          </p>
         </div>
 
         <FormProvider {...formMethods}>
@@ -216,13 +160,6 @@ export const Me = ({
             className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
           >
-            <div className="flex flex-row items-center gap-2">
-              <Functions className="!h-5 !w-5" />
-              <p className="primary-text">
-                {t('title.actions', { count: watchActions.length })}
-              </p>
-            </div>
-
             {watchActions.length > 0 && (
               <div className="flex flex-col gap-2">
                 {watchActions.map(({ key, data }, index) => {
@@ -359,6 +296,57 @@ export const Me = ({
             )}
           </form>
         </FormProvider>
+      </div>
+
+      <div className="flex flex-col items-start gap-4">
+        <div className="flex flex-col gap-2">
+          <p className="title-text">{t('title.saved')}</p>
+          <p className="secondary-text">{t('info.txSavesDescription')}</p>
+        </div>
+
+        {!saves.loading && saves.data.length > 0 ? (
+          <div className="flex flex-row flex-wrap gap-2">
+            {saves.data.map((save, index) => (
+              <Button
+                key={index}
+                contentContainerClassName="flex flex-col !items-start !gap-0 max-w-[16rem] text-left"
+                onClick={() =>
+                  reset({
+                    // Clone the actions to prevent mutating the original
+                    // save.
+                    actions: cloneDeep(save.actions),
+                  })
+                }
+                variant="secondary"
+              >
+                <div className="flex flex-row items-center justify-between gap-4">
+                  <p className="body-text">{save.name}</p>
+
+                  <Tooltip title={t('button.delete')}>
+                    <IconButton
+                      Icon={ClearRounded}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        deleteSave(save)
+                      }}
+                      size="xs"
+                      variant="ghost"
+                    />
+                  </Tooltip>
+                </div>
+                {save.description && (
+                  <p className="secondary-text">{save.description}</p>
+                )}
+
+                <p className="caption-text mt-2">
+                  {t('info.actions', { count: save.actions.length })}
+                </p>
+              </Button>
+            ))}
+          </div>
+        ) : (
+          <p className="caption-text">{t('info.nothingFound')}</p>
+        )}
       </div>
 
       {/* Save modal */}
