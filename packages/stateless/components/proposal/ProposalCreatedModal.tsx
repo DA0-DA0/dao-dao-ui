@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ProposalCardProps } from '@dao-dao/types'
 import { SITE_URL } from '@dao-dao/utils'
 
+import { useNavHelpers } from '../../hooks'
 import {
   ItemCreatedModal,
   ItemCreatedModalProps,
@@ -16,6 +17,7 @@ export type ProposalCreatedModalProps = Omit<
 
 export const ProposalCreatedModal = (props: ProposalCreatedModalProps) => {
   const { t } = useTranslation()
+  const { getDaoProposalPath } = useNavHelpers()
 
   return (
     <ItemCreatedModal<ProposalCardProps>
@@ -29,7 +31,7 @@ export const ProposalCreatedModal = (props: ProposalCreatedModalProps) => {
       }}
       url={
         SITE_URL +
-        `/dao/${props.itemProps.dao.coreAddress}/proposals/${props.itemProps.id}`
+        getDaoProposalPath(props.itemProps.dao.coreAddress, props.itemProps.id)
       }
     />
   )

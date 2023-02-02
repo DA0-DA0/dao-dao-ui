@@ -16,7 +16,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   nativeTokenLabel,
-  nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
 export const ValidatorPicker = ({
@@ -149,9 +148,9 @@ export const ValidatorPicker = ({
 
                     <TokenAmountDisplay
                       amount={existingStake.amount}
-                      decimals={existingStake.decimals}
-                      iconUrl={nativeTokenLogoURI(existingStake.denom)}
-                      symbol={existingStake.symbol}
+                      decimals={existingStake.token.decimals}
+                      iconUrl={existingStake.token.imageUrl}
+                      symbol={existingStake.token.symbol}
                     />
                   </div>
 
@@ -162,9 +161,9 @@ export const ValidatorPicker = ({
 
                     <TokenAmountDisplay
                       amount={existingStake.rewards}
-                      decimals={existingStake.decimals}
-                      iconUrl={nativeTokenLogoURI(existingStake.denom)}
-                      symbol={existingStake.symbol}
+                      decimals={existingStake.token.decimals}
+                      iconUrl={existingStake.token.imageUrl}
+                      symbol={existingStake.token.symbol}
                     />
                   </div>
                 </>

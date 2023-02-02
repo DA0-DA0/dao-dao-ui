@@ -20,10 +20,11 @@ import { DaoCreationConfig } from '../types'
 
 export const ThresholdInput = ({
   data: {
-    threshold: { majority, value },
+    threshold: { majority },
   },
   register,
   setValue,
+  watch,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
@@ -35,12 +36,13 @@ export const ThresholdInput = ({
           containerClassName="grow"
           error={errors?.threshold?.value}
           fieldName="threshold.value"
-          onMinus={() => setValue('threshold.value', Math.max(value - 1, 1))}
-          onPlus={() => setValue('threshold.value', Math.max(value + 1, 1))}
+          min={1}
           register={register}
+          setValue={setValue}
           sizing="sm"
           step={0.001}
           validation={[validatePositive, validateRequired]}
+          watch={watch}
         />
       )}
 

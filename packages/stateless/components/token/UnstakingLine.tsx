@@ -20,7 +20,7 @@ export interface UnstakingLineProps {
 const sharedClassNames = 'bg-background-secondary rounded-md'
 
 export const UnstakingLine = ({
-  task: { status, amount, tokenSymbol, tokenDecimals, date },
+  task: { status, amount, token, date },
   dateReplacement,
 }: UnstakingLineProps) => {
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
@@ -47,8 +47,8 @@ export const UnstakingLine = ({
         <TokenAmountDisplay
           amount={amount}
           className="body-text truncate"
-          decimals={tokenDecimals}
-          symbol={tokenSymbol}
+          decimals={token.decimals}
+          symbol={token.symbol}
         />
 
         {dateReplacement || (
@@ -73,8 +73,8 @@ export const UnstakingLine = ({
           <TokenAmountDisplay
             amount={amount}
             className="body-text break-words"
-            decimals={tokenDecimals}
-            symbol={tokenSymbol}
+            decimals={token.decimals}
+            symbol={token.symbol}
           />
 
           {dateReplacement ||

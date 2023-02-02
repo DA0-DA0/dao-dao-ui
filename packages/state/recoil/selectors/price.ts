@@ -7,10 +7,12 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  NATIVE_DECIMALS,
   USDC_SWAP_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
   convertSecondsToBlocks,
   isJunoIbcUsdc,
+  nativeTokenDecimals,
 } from '@dao-dao/utils'
 
 import { refreshTokenUsdcPriceAtom } from '../atoms/refresh'
@@ -19,6 +21,7 @@ import {
   blocksPerYearSelector,
   cosmWasmClientForChainSelector,
   nativeBalancesSelector,
+  nativeDelegatedBalanceSelector,
 } from './chain'
 import { DaoCoreV2Selectors } from './contracts'
 import { queryContractIndexerSelector } from './indexer'
@@ -129,7 +132,16 @@ export const daoTvlSelector = selectorFamily<
       const timestamp = new Date()
 
       const nativeBalances = get(
-        nativeBalancesSelector({ address: coreAddress, chainId })
+        nativeBalancesSelector({
+          address: coreAddress,
+          chainId,
+        })
+      )
+      const nativeDelegatedBalance = get(
+        nativeDelegatedBalanceSelector({
+          address: coreAddress,
+          chainId,
+        })
       )
       const cw20Balances = get(
         DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
@@ -145,6 +157,13 @@ export const daoTvlSelector = selectorFamily<
           denom,
           decimals,
         })),
+        {
+          amount: nativeDelegatedBalance.amount,
+          denom: nativeDelegatedBalance.denom,
+          decimals:
+            nativeTokenDecimals(nativeDelegatedBalance.denom) ||
+            NATIVE_DECIMALS,
+        },
         ...cw20Balances.map(({ addr, balance, info: { decimals } }) => ({
           amount: balance,
           denom: addr,

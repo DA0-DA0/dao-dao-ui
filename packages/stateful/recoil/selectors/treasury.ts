@@ -13,8 +13,10 @@ import {
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state'
 import {
+  GenericToken,
   TokenCardInfo,
   TokenCardLazyInfo,
+  TokenType,
   UnstakingTaskStatus,
   WithChainId,
 } from '@dao-dao/types'
@@ -76,12 +78,15 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               ) > 0
 
             const info: TokenCardInfo = {
+              token: {
+                type: TokenType.Native,
+                denomOrAddress: denom,
+                symbol: label,
+                decimals,
+                imageUrl: imageUrl || getFallbackImage(denom),
+              },
               // True if native token DAO and using this denom.
-              crown: nativeGovernanceTokenDenom === denom,
-              tokenSymbol: label,
-              tokenDenom: denom,
-              tokenDecimals: decimals,
-              imageUrl: imageUrl || getFallbackImage(denom),
+              isGovernanceToken: nativeGovernanceTokenDenom === denom,
               unstakedBalance,
               hasStakingInfo,
 
@@ -93,7 +98,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
         ),
         ...cw20s.map(
           ({
-            addr: denom,
+            addr,
             balance,
             info: { symbol, decimals },
             imageUrl,
@@ -105,13 +110,15 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             )
 
             const info: TokenCardInfo = {
-              crown: isGovernanceToken,
-              tokenSymbol: symbol,
-              tokenDenom: denom,
-              tokenDecimals: decimals,
-              imageUrl: imageUrl || getFallbackImage(denom),
+              token: {
+                type: TokenType.Cw20,
+                denomOrAddress: addr,
+                symbol,
+                decimals,
+                imageUrl: imageUrl || getFallbackImage(addr),
+              },
+              isGovernanceToken,
               unstakedBalance,
-              cw20Address: denom,
               // No unstaking info for CW20.
               hasStakingInfo: false,
 
@@ -131,23 +138,24 @@ export const tokenCardLazyInfoSelector = selectorFamily<
   TokenCardLazyInfo,
   WithChainId<{
     walletAddress: string
-    denom: string
-    tokenDecimals: number
-    tokenSymbol: string
+    token: GenericToken
   }>
 >({
   key: 'tokenCardLazyInfo',
   get:
-    ({ walletAddress, denom, tokenDecimals, tokenSymbol, chainId }) =>
+    ({ walletAddress, token, chainId }) =>
     ({ get }) => {
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
 
       const usdcUnitPrice = get(
-        usdcPerMacroTokenSelector({ denom, decimals: tokenDecimals })
+        usdcPerMacroTokenSelector({
+          denom: token.denomOrAddress,
+          decimals: token.decimals,
+        })
       )
 
       // For now, stakingInfo only exists for native token, until ICA.
-      if (denom === NATIVE_DENOM) {
+      if (token.denomOrAddress === NATIVE_DENOM) {
         const nativeDelegationInfo = get(
           nativeDelegationInfoSelector({ address: walletAddress, chainId })
         )
@@ -162,31 +170,28 @@ export const tokenCardLazyInfoSelector = selectorFamily<
           stakingInfo = {
             unstakingTasks: nativeDelegationInfo.unbondingDelegations.map(
               ({ balance, finishesAt }) => ({
+                token,
                 status: UnstakingTaskStatus.Unstaking,
                 amount: convertMicroDenomToDenomWithDecimals(
                   balance.amount,
-                  tokenDecimals
+                  token.decimals
                 ),
-                tokenSymbol,
-                tokenDecimals: tokenDecimals,
                 date: finishesAt,
               })
             ),
             unstakingDurationSeconds,
             stakes: nativeDelegationInfo.delegations.map(
               ({ validator, delegated, pendingReward }) => ({
+                token,
                 validator,
                 amount: convertMicroDenomToDenomWithDecimals(
                   delegated.amount,
-                  tokenDecimals
+                  token.decimals
                 ),
                 rewards: convertMicroDenomToDenomWithDecimals(
                   pendingReward.amount,
-                  tokenDecimals
+                  token.decimals
                 ),
-                denom,
-                symbol: tokenSymbol,
-                decimals: tokenDecimals,
               })
             ),
           }

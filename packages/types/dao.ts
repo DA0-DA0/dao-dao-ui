@@ -12,12 +12,11 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
-import { ContractVersion, Validator } from './chain'
+import { ContractVersion } from './chain'
 import { ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
 import { ProposalModuleAdapter } from './proposal-module-adapter'
-import { AmountWithTimestamp } from './state'
-import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './stateless'
+import { DaoCardProps, SuspenseLoaderProps } from './stateless'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
@@ -54,59 +53,6 @@ export interface DaoParentInfo {
 export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
   // Created needs to be serialized and de-serialized.
   created: string | null
-}
-
-export enum UnstakingTaskStatus {
-  Unstaking = 'unstaking',
-  ReadyToClaim = 'readyToClaim',
-  Claimed = 'claimed',
-}
-
-export interface UnstakingTask {
-  status: UnstakingTaskStatus
-  amount: number
-  tokenSymbol: string
-  tokenDecimals: number
-  // If unstaking or ready to claim, date it will be/was unstaked.
-  // If claimed, date it was claimed.
-  date?: Date
-}
-
-export interface TokenStake {
-  validator: Validator
-  amount: number
-  rewards: number
-  denom: string
-  symbol: string
-  decimals: number
-}
-
-export interface TokenCardLazyInfo {
-  usdcUnitPrice: AmountWithTimestamp | undefined
-  stakingInfo:
-    | {
-        unstakingTasks: UnstakingTask[]
-        unstakingDurationSeconds: number | undefined
-        stakes: TokenStake[]
-      }
-    | undefined
-}
-
-export interface TokenCardInfo {
-  crown?: boolean
-  tokenSymbol: string
-  tokenDenom: string
-  tokenDecimals: number
-  subtitle?: string
-  imageUrl: string
-  unstakedBalance: number
-  // Defined if this is a Cw20 token.
-  cw20Address?: string
-
-  // Only native tokens load staking info for now, so let's show a nice loader.
-  hasStakingInfo: boolean
-
-  lazyInfo: LoadingData<TokenCardLazyInfo>
 }
 
 export interface NftCardInfo {
@@ -275,4 +221,30 @@ export type DaoCreatedCardProps = Omit<
 export type DaoPayrollConfig = {
   type: string
   data?: Record<string, unknown>
+}
+
+export enum DaoTabId {
+  Home = '',
+  Proposals = 'proposals',
+  Treasury = 'treasury',
+  Subdaos = 'subdaos',
+  Members = 'members',
+  Payroll = 'payroll',
+  Staked = 'staked',
+}
+
+export type DaoTab = {
+  // ID used in URL hash.
+  id: DaoTabId
+  label: string
+  Icon: ComponentType<{ className: string }>
+}
+
+export type DaoTabWithComponent = DaoTab & {
+  Component: ComponentType
+}
+
+export enum DaoPageMode {
+  Dapp = 'dapp',
+  Sda = 'sda',
 }

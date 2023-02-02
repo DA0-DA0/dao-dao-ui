@@ -18,7 +18,7 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components'
-import { useCw20GovernanceTokenInfoResponseIfExists } from '../../../../../voting-module-adapter/react/hooks/useCw20GovernanceTokenInfoResponseIfExists'
+import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import {
@@ -36,8 +36,8 @@ export const NewSurveyForm = () => {
   // Get CW20 governance token address from voting module adapter if exists, so
   // we can make sure to load it with all cw20 balances, even if it has not been
   // explicitly added to the DAO.
-  const { governanceTokenAddress } =
-    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+  const { denomOrAddress: governanceTokenAddress } =
+    useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
   const cw20TokenInfos = useRecoilValue(
     DaoCoreV2Selectors.allCw20InfosSelector({

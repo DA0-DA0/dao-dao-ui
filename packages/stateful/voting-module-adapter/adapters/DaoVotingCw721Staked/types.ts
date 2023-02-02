@@ -1,6 +1,7 @@
 import {
   Duration,
   DurationWithUnits,
+  GenericToken,
   LoadingData,
   LoadingDataWithError,
   NftCardInfo,
@@ -50,4 +51,28 @@ export interface UseStakingInfoResponse {
   loadingWalletStakedValue?: LoadingData<number>
   loadingWalletStakedNfts?: LoadingDataWithError<NftCardInfo[]>
   loadingWalletUnstakedNfts?: LoadingDataWithError<NftCardInfo[]>
+}
+
+export interface UseGovernanceCollectionInfoOptions {
+  fetchWalletBalance?: boolean
+  fetchTreasuryBalance?: boolean
+  // fetchUsdcPrice?: boolean
+}
+
+export interface UseGovernanceCollectionInfoResponse {
+  stakingContractAddress: string
+  collectionAddress: string
+  collectionInfo: {
+    name: string
+    symbol: string
+    totalSupply: number
+  }
+  token: GenericToken
+  /// Optional
+  // Wallet balance
+  loadingWalletBalance?: LoadingData<number>
+  // Treasury balance
+  loadingTreasuryBalance?: LoadingData<number>
+  // Price
+  // loadingPrice?: LoadingData<AmountWithTimestampAndDenom>
 }

@@ -2,7 +2,7 @@ import { DecoratorFn } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
 import { AppLayoutContext } from '@dao-dao/stateless/components/layout/AppLayoutContext'
-import { InboxState } from '@dao-dao/types'
+import { DaoPageMode, InboxState } from '@dao-dao/types'
 
 // Useful when testing individual components that rely on this context value but
 // don't want to render the entire AppLayout.
@@ -20,6 +20,7 @@ export const makeAppLayoutContextDecorator: (
       <AppLayoutContext.Provider
         value={useMemo(
           () => ({
+            mode: DaoPageMode.Dapp,
             responsiveNavigation: {
               enabled: responsiveNavigationEnabled,
               toggle: () => setResponsiveNavigationEnabled((v) => !v),

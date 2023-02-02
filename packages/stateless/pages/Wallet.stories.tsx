@@ -6,7 +6,7 @@ import { useCoreActions } from '@dao-dao/stateful/actions'
 import {
   WalletProviderDecorator,
   makeActionsProviderDecorator,
-  makeAppLayoutDecorator,
+  makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 import {
   ActionOptionsContextType,
@@ -23,7 +23,7 @@ export default {
   component: Wallet,
   decorators: [
     WalletProviderDecorator,
-    makeAppLayoutDecorator(),
+    makeDappLayoutDecorator(),
     makeActionsProviderDecorator({
       address: 'junoWalletAddress',
       chainId: 'juno-1',

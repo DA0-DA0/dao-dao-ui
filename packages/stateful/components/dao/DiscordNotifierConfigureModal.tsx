@@ -21,6 +21,7 @@ import {
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { DaoTabId } from '@dao-dao/types'
 import {
   DISCORD_NOTIFIER_API_BASE,
   DISCORD_NOTIFIER_CLIENT_ID,
@@ -30,12 +31,13 @@ import {
 } from '@dao-dao/utils'
 
 import { useCfWorkerAuthPostRequest } from '../../hooks/useCfWorkerAuthPostRequest'
+import { ConnectWallet } from '../ConnectWallet'
 
 export const DiscordNotifierConfigureModal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { chainId, coreAddress } = useDaoInfoContext()
-  const { publicKey } = useWallet(chainId)
+  const { connected, publicKey } = useWallet(chainId)
 
   const [visible, setVisible] = useState(false)
 
@@ -131,9 +133,13 @@ export const DiscordNotifierConfigureModal = () => {
       } finally {
         setLoading(false)
         // Remove query params.
-        router.replace(router.asPath.split('?')[0], undefined, {
-          shallow: true,
-        })
+        router.replace(
+          router.asPath.split('?')[0] + '#' + DaoTabId.Proposals,
+          undefined,
+          {
+            shallow: true,
+          }
+        )
       }
     }
   }, [coreAddress, postRequest, router, t])
@@ -143,9 +149,7 @@ export const DiscordNotifierConfigureModal = () => {
     if (
       !router.isReady ||
       redirected.current ||
-      !router.query.discordNotifier ||
-      // Don't attempt to auto-register until ready.
-      !postRequestReady
+      !router.query.discordNotifier
     ) {
       return
     }
@@ -153,9 +157,13 @@ export const DiscordNotifierConfigureModal = () => {
     // Open this modal since we're completing registration.
     setVisible(true)
 
-    // Only register once.
-    redirected.current = true
-    register()
+    // Don't attempt to auto-register until wallet ready. Still show the modal
+    // above since the wallet may be connecting.
+    if (postRequestReady) {
+      // Only register once.
+      redirected.current = true
+      register()
+    }
   }, [router, register, postRequestReady])
 
   const unregister = useCallback(
@@ -194,6 +202,8 @@ export const DiscordNotifierConfigureModal = () => {
       </Tooltip>
 
       <StatelessDiscordNotifierConfigureModal
+        ConnectWallet={() => <ConnectWallet center />}
+        connected={connected}
         loading={loading}
         onClose={() => setVisible(false)}
         onDelete={unregister}

@@ -22,4 +22,6 @@ Default.args = {
   setup: () => alert('setup'),
   registrations: [],
   loading: false,
+  connected: true,
+  ConnectWallet: () => <div>ConnectWallet</div>,
 }

@@ -9,15 +9,15 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { NftCard } from '../../../../components'
 import { nftCardInfoSelector } from '../../../../recoil/selectors/nft'
-import { useGovernanceTokenInfo } from '../hooks'
+import { useGovernanceCollectionInfo } from '../hooks'
 
 export const StakedNftsTab = () => {
-  const { governanceTokenAddress, stakingContractAddress } =
-    useGovernanceTokenInfo()
+  const { collectionAddress, stakingContractAddress } =
+    useGovernanceCollectionInfo()
 
   const allStakedTokens = useCachedLoadable(
     Cw721BaseSelectors.allTokensForOwnerSelector({
-      contractAddress: governanceTokenAddress,
+      contractAddress: collectionAddress,
       owner: stakingContractAddress,
     })
   )
@@ -27,7 +27,7 @@ export const StakedNftsTab = () => {
       ? waitForAll(
           allStakedTokens.contents.map((tokenId) =>
             nftCardInfoSelector({
-              collection: governanceTokenAddress,
+              collection: collectionAddress,
               tokenId,
             })
           )

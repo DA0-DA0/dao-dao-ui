@@ -4,6 +4,7 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import {
   SubDaosTab as StatelessSubDaosTab,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
 import { ContractVersion } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
@@ -15,6 +16,7 @@ import { DaoCard } from '../DaoCard'
 
 export const SubDaosTab = () => {
   const daoInfo = useDaoInfoContext()
+  const { getDaoPath } = useNavHelpers()
 
   const { isMember = false } = useMembership(daoInfo)
 
@@ -40,11 +42,13 @@ export const SubDaosTab = () => {
     <StatelessSubDaosTab
       ButtonLink={ButtonLink}
       DaoCard={DaoCard}
-      createSubDaoHref={`/dao/${daoInfo.coreAddress}/create`}
+      createSubDaoHref={getDaoPath(daoInfo.coreAddress) + '/create'}
       daoInfo={daoInfo}
       isMember={isMember}
       subDaos={loadableToLoadingData(subDaoCardInfosLoadable, [])}
-      // upgradeToV2Href={`/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefillUpgrade}`}
+      // upgradeToV2Href={getDaoProposalPath(daoInfo.coreAddress, 'create', {
+      //   prefill: encodedProposalPrefillUpgrade,
+      // })}
     />
   )
 }

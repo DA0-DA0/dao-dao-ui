@@ -5,7 +5,6 @@ import { daoTvlSelector } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   DaoInfoBarLoader,
-  DaoInfoBarProps,
   DaoInfoBar as StatelessDaoInfoBar,
   TokenAmountDisplay,
   useCachedLoadable,
@@ -14,20 +13,18 @@ import {
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import {
-  useCw20GovernanceTokenInfoResponseIfExists,
+  useCw20CommonGovernanceTokenInfoIfExists,
   useVotingModuleAdapter,
 } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export const DaoInfoBar = (props: InnerDaoInfoBarProps) => (
+export const DaoInfoBar = () => (
   <SuspenseLoader fallback={<DaoInfoBarLoader />}>
-    <InnerDaoInfoBar {...props} />
+    <InnerDaoInfoBar />
   </SuspenseLoader>
 )
 
-type InnerDaoInfoBarProps = Omit<DaoInfoBarProps, 'items'>
-
-const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
+const InnerDaoInfoBar = () => {
   const { t } = useTranslation()
   const {
     hooks: { useDaoInfoBarItems },
@@ -35,8 +32,8 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
   const votingModuleItems = useDaoInfoBarItems()
   const { chainId, coreAddress } = useDaoInfoContext()
 
-  const { governanceTokenAddress: cw20GovernanceTokenAddress } =
-    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+  const { denomOrAddress: cw20GovernanceTokenAddress } =
+    useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
   const treasuryUsdcValueLoading = loadableToLoadingData(
     useCachedLoadable(
@@ -98,7 +95,6 @@ const InnerDaoInfoBar = (props: InnerDaoInfoBarProps) => {
         // Voting module-specific items.
         ...votingModuleItems,
       ]}
-      {...props}
     />
   )
 }

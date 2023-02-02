@@ -79,13 +79,13 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
 }
 
 const Component: ActionComponent = (props) => {
-  const { governanceTokenInfo } = useGovernanceTokenInfo()
+  const { token } = useGovernanceTokenInfo()
 
   return (
     <StatelessMintComponent
       {...props}
       options={{
-        govTokenSymbol: governanceTokenInfo.symbol ?? 'gov tokens',
+        govToken: token,
         AddressInput,
       }}
     />

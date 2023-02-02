@@ -1,6 +1,6 @@
 import { constSelector, selectorFamily } from 'recoil'
 
-import { EitherTokenInfo, WithChainId } from '@dao-dao/types'
+import { GenericToken, TokenType, WithChainId } from '@dao-dao/types'
 import {
   nativeTokenDecimals,
   nativeTokenLabel,
@@ -9,11 +9,10 @@ import {
 
 import { Cw20BaseSelectors } from './contracts'
 
-// Standardize format for common CW20 and native token info.
 export const eitherTokenInfoSelector = selectorFamily<
-  EitherTokenInfo,
+  GenericToken,
   WithChainId<{
-    type: 'cw20' | 'native'
+    type: TokenType
     denomOrAddress: string
   }>
 >({
@@ -52,9 +51,10 @@ export const eitherTokenInfoSelector = selectorFamily<
         undefined
 
       return {
+        type,
         denomOrAddress,
-        decimals: tokenInfo.decimals,
         symbol: tokenInfo.symbol,
+        decimals: tokenInfo.decimals,
         imageUrl,
       }
     },

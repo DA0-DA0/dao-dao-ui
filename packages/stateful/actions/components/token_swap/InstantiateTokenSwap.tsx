@@ -130,26 +130,18 @@ export const InstantiateTokenSwap: ActionComponent<
         </InputLabel>
 
         <div className="flex flex-row items-stretch gap-2">
+          {/* Allow to enter value for counterparty greater than what they currently have in the treasury, since they could accept it at a future time when they do have the amount. */}
           <NumberInput
             containerClassName="grow"
             error={errors?.counterparty?.amount}
             fieldName={fieldNamePrefix + 'counterparty.amount'}
-            onMinus={() =>
-              setValue(
-                fieldNamePrefix + 'counterparty.amount',
-                Math.max(counterparty.amount - 1, counterpartyMin)
-              )
-            }
-            onPlus={() =>
-              setValue(
-                fieldNamePrefix + 'counterparty.amount',
-                Math.max(counterparty.amount + 1, counterpartyMin)
-              )
-            }
+            min={counterpartyMin}
             register={register}
+            setValue={setValue}
             sizing="auto"
             step={counterpartyMin}
             validation={[validateRequired, validatePositive]}
+            watch={watch}
           />
 
           <SelectInput
@@ -237,19 +229,9 @@ export const InstantiateTokenSwap: ActionComponent<
             error={errors?.selfParty?.amount}
             fieldName={fieldNamePrefix + 'selfParty.amount'}
             max={selfMax}
-            onMinus={() =>
-              setValue(
-                fieldNamePrefix + 'selfParty.amount',
-                Math.max(selfParty.amount - 1, selfMin)
-              )
-            }
-            onPlus={() =>
-              setValue(
-                fieldNamePrefix + 'selfParty.amount',
-                Math.max(selfParty.amount + 1, selfMin)
-              )
-            }
+            min={selfMin}
             register={register}
+            setValue={setValue}
             sizing="auto"
             step={selfMin}
             validation={[
@@ -264,6 +246,7 @@ export const InstantiateTokenSwap: ActionComponent<
                   tokenSymbol: selfSymbol,
                 }),
             ]}
+            watch={watch}
           />
 
           <SelectInput

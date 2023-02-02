@@ -227,3 +227,16 @@ export const toValidatorAddress = (address: string, bech32Prefix: string) => {
     return ''
   }
 }
+
+export const concatAddressStartEnd = (
+  address: string,
+  takeStart: number,
+  takeEnd: number
+) => {
+  const first = address.substring(0, takeStart)
+  const last = address.substring(address.length - takeEnd, address.length)
+  return [first, last].filter(Boolean).join('..')
+}
+
+export const concatAddressBoth = (address: string, takeN = 7): string =>
+  address && concatAddressStartEnd(address, takeN, takeN)

@@ -131,15 +131,14 @@ const maxVotingInfoToCosmos = (
 
 const Component: ActionComponent = (props) => {
   const {
-    hooks: { useGovernanceTokenInfo },
+    hooks: { useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
-  const governanceTokenSymbol =
-    useGovernanceTokenInfo?.().governanceTokenInfo.symbol
+  const commonGovernanceTokenInfo = useCommonGovernanceTokenInfo?.()
 
   return (
     <UpdateProposalConfigComponent
       {...props}
-      options={{ governanceTokenSymbol }}
+      options={{ commonGovernanceTokenInfo }}
     />
   )
 }
@@ -148,10 +147,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   msg: Record<string, any>
 ) => {
   const {
-    hooks: { useGovernanceTokenInfo },
+    hooks: { useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
-  const voteConversionDecimals =
-    useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
+  const voteConversionDecimals = useCommonGovernanceTokenInfo?.().decimals ?? 0
 
   return useMemo(() => {
     if (
@@ -276,10 +274,10 @@ export const makeUpdateProposalConfigV1Action: ActionMaker<
     )
 
     const {
-      hooks: { useGovernanceTokenInfo },
+      hooks: { useCommonGovernanceTokenInfo },
     } = useVotingModuleAdapter()
     const voteConversionDecimals =
-      useGovernanceTokenInfo?.().governanceTokenInfo.decimals ?? 0
+      useCommonGovernanceTokenInfo?.().decimals ?? 0
 
     return useCallback(
       (data: UpdateProposalConfigData) =>

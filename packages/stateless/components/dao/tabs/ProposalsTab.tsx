@@ -1,31 +1,31 @@
 import { Add } from '@mui/icons-material'
 import { isMobile } from '@walletconnect/browser-utils'
-import { useRouter } from 'next/router'
-import { ComponentType, ReactNode, useEffect } from 'react'
+import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoInfo } from '@dao-dao/types'
 import { usePlatform } from '@dao-dao/utils'
 
+import { useNavHelpers } from '../../../hooks'
 import { ButtonLinkProps } from '../../buttons'
 import { Tooltip } from '../../tooltip/Tooltip'
 
 export interface ProposalsTabProps {
   daoInfo: DaoInfo
   isMember: boolean
-  proposalList: ReactNode
+  ProposalList: ComponentType
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const ProposalsTab = ({
   daoInfo,
   isMember,
-  proposalList,
+  ProposalList,
   ButtonLink,
 }: ProposalsTabProps) => {
   const { t } = useTranslation()
 
-  const router = useRouter()
+  const { goToDaoProposal, getDaoProposalPath } = useNavHelpers()
   // Detect if Mac for checking keypress.
   const { isMac } = usePlatform()
 
@@ -35,14 +35,14 @@ export const ProposalsTab = ({
       if (((!isMac && event.ctrlKey) || event.metaKey) && event.shiftKey) {
         if (event.key === 'p') {
           event.preventDefault()
-          router.push(`/dao/${daoInfo.coreAddress}/proposals/create`)
+          goToDaoProposal(daoInfo.coreAddress, 'create')
         }
       }
     }
 
     document.addEventListener('keydown', handleKeyPress)
     return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [isMac, daoInfo.coreAddress, router])
+  }, [isMac, daoInfo.coreAddress, goToDaoProposal])
 
   return (
     <>
@@ -67,7 +67,7 @@ export const ProposalsTab = ({
           <ButtonLink
             className="shrink-0"
             disabled={!isMember}
-            href={`/dao/${daoInfo.coreAddress}/proposals/create`}
+            href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
           >
             <Add className="!h-4 !w-4" />
             {t('button.newProposal')}
@@ -75,7 +75,7 @@ export const ProposalsTab = ({
         </Tooltip>
       </div>
 
-      {proposalList}
+      <ProposalList />
     </>
   )
 }

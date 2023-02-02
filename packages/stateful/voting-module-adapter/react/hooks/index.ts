@@ -1,3 +1,3 @@
-export * from './useCw20GovernanceTokenInfoResponseIfExists'
-export * from './useCw721GovernanceTokenInfoResponseIfExists'
-export * from './useNativeGovernanceTokenInfoResponseIfExists'
+export * from './useCw20CommonGovernanceTokenInfoIfExists'
+export * from './useCw721CommonGovernanceTokenInfoIfExists'
+export * from './useNativeCommonGovernanceTokenInfoIfExists'

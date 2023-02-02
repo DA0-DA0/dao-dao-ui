@@ -71,15 +71,13 @@ export const PageHeader = ({
             !forceCenter && 'sm:justify-start',
             // When showing title or breadcrumbs, add padding. The `sm`
             // breakpoint is when the UI switches from responsive to desktop
-            // mode, and on DAO pages, this is when the pin toggle displays its
-            // text instead of just its icon. On these larger views, add more
-            // padding to compensate.
-            (title || breadcrumbs) && {
-              'px-24 sm:px-48': true,
+            // mode.
+            (title || breadcrumbs) && [
+              'px-12',
               // Centered on small screen or if forceCenter is true. If not
               // centered, no left padding.
-              'sm:!pl-0': !forceCenter,
-            }
+              !forceCenter && 'sm:pl-0',
+            ]
           )}
         >
           {title ? (

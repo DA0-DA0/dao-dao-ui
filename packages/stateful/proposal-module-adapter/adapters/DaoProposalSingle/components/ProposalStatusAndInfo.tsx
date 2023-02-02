@@ -23,6 +23,7 @@ import {
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
@@ -114,6 +115,7 @@ const InnerProposalStatusAndInfo = ({
 }) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
+  const { getDaoPath } = useNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { connected, address: walletAddress = '' } = useWallet()
   const { isMember = false } = useMembership({
@@ -138,7 +140,11 @@ const InnerProposalStatusAndInfo = ({
       ),
       label: t('title.dao'),
       Value: (props) => (
-        <ButtonLink href={`/dao/${coreAddress}`} variant="underline" {...props}>
+        <ButtonLink
+          href={getDaoPath(coreAddress)}
+          variant="underline"
+          {...props}
+        >
           {daoName}
         </ButtonLink>
       ),
@@ -380,6 +386,7 @@ const InnerProposalStatusAndInfoLoader = (
 ) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress } = useDaoInfoContext()
+  const { getDaoPath } = useNavHelpers()
 
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
     <p className={clsx('animate-pulse', className)}>...</p>
@@ -391,7 +398,11 @@ const InnerProposalStatusAndInfoLoader = (
       ),
       label: t('title.dao'),
       Value: (props) => (
-        <ButtonLink href={`/dao/${coreAddress}`} variant="underline" {...props}>
+        <ButtonLink
+          href={getDaoPath(coreAddress)}
+          variant="underline"
+          {...props}
+        >
           {daoName}
         </ButtonLink>
       ),

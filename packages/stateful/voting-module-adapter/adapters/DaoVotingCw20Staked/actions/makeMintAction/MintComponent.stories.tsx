@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from '@dao-dao/stateless'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
+import { TokenType } from '@dao-dao/types'
 
 import { MintData } from '.'
 import { MintComponent } from './MintComponent'
@@ -30,7 +31,13 @@ Default.args = {
   data: {},
   isCreating: true,
   options: {
-    govTokenSymbol: 'GOV',
+    govToken: {
+      type: TokenType.Cw20,
+      denomOrAddress: 'gov',
+      symbol: 'GOV',
+      decimals: 6,
+      imageUrl: '',
+    },
     AddressInput,
   },
 }

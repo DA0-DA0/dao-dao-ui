@@ -80,6 +80,7 @@
     "readLess": "Read less",
     "readMore": "Read more",
     "resetQuestion": "Reset?",
+    "returnHome": "Return home",
     "review": "Review",
     "reviewResultsAndPropose": "Review results and propose",
     "save": "Save",
@@ -109,8 +110,11 @@
     "update": "Update",
     "upload": "Upload",
     "useExistingToken": "Use an existing token",
-    "withDecodedModuleMessages": "with Decoded Module Messages",
-    "withdrawAvailableBalance": "Withdraw available balance"
+    "withdrawAvailableBalance": "Withdraw available balance",
+    "viewDaosPage": "View DAO's page",
+    "viewOnDaoDao": "View on DAO DAO",
+    "viewProposals": "View proposals",
+    "withDecodedModuleMessages": "with Decoded Module Messages"
   },
   "daoCreationAdapter": {
     "DaoProposalSingle": {
@@ -192,8 +196,8 @@
     "connectWalletToContinue": "Connect a wallet to continue.",
     "connectWalletToCreate": "Connect a wallet to create a DAO.",
     "connectWalletToFollow": "Connect your wallet to follow a DAO.",
-    "couldntFindDAO": "We couldn't find a DAO with that address. Search DAOs on the <2>home page</2>.",
-    "couldntFindProposal": "We couldn't find a proposal with that ID. See all proposals on the <2>DAO's home page</2>.",
+    "couldntFindDAO": "We couldn't find a DAO with that address.",
+    "couldntFindProposal": "We couldn't find a proposal with that ID.",
     "counterpartyBalanceInsufficient": "The counterparty's balance of {{amount}} ${{tokenSymbol}} is insufficient. They may be unable to complete this swap.",
     "createProposalSubmitInvalid": "Correct the errors above before previewing or publishing.",
     "daoFeatureUnsupported": "{{name}} does not support {{feature}} yet.",
@@ -464,7 +468,6 @@
     "completed": "Completed",
     "configureWalletModalExplanation": "You have Keplr installed, but it doesn't seem like you've set up a wallet. To continue, open the Keplr extension and set up a wallet.\nTo open the Keplr extension, press the puzzle icon in the top right of your browser and then press the Keplr button. Once you've done that, a new page will open where you'll be able to create a new account. Configure your wallet to continue.",
     "connectYourWallet": "Connect your wallet",
-    "considerReturningHome": "Consider returning home.",
     "copiedAddressToClipboard": "Copy address to clipboard",
     "copiedDaoAddress": "Copied DAO address",
     "copiedLinkToClipboard": "Copied link to clipboard.",
@@ -489,6 +492,7 @@
     "depositFromStargazeQuestion": "Deposit NFTs from Stargaze?",
     "depositNftsModalSubtitle": "Select the NFTs you want to deposit into {{daoName}} from your Stargaze wallet.",
     "depositTokenSubtitle": "Tokens will be sent from your wallet.",
+    "depositTokenWarning": "Tokens will be sent from your wallet to the DAO. You cannot undo a deposit. You will not gain voting power by depositing tokens.",
     "disabled": "Disabled",
     "disconnectWalletTooltip": "Disconnect wallet",
     "discordNotifierExplanation": "The Discord Notifier broadcasts a message to registered Discord channels when a proposal is created. Clicking the button below begins the registration process; it will take you to Discord's website and prompt you to choose a server and channel. You will then be redirected back here and prompted to authorize with your wallet. Once this is done, proposal notifications are enabled.",

@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 
 import { VotingModuleAdapter } from '@dao-dao/types'
 
-import { ProfileCardMemberInfo } from './components'
-import { useDaoInfoBarItems, useGovernanceTokenInfo } from './hooks'
+import { ProfileCardMemberInfo, StakingModal } from './components'
+import { useCommonGovernanceTokenInfo, useDaoInfoBarItems } from './hooks'
 
 export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
   id: 'DaoVotingNativeStaked',
@@ -21,12 +21,13 @@ export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
       useActions: () => useMemo(() => [], []),
       useDaoInfoBarItems,
       useProfileNewProposalCardAddresses: () => [],
-      useGovernanceTokenInfo,
+      useCommonGovernanceTokenInfo,
     },
 
     // Components
     components: {
       ProfileCardMemberInfo,
+      StakingModal,
     },
   }),
 }

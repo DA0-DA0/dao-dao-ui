@@ -3,8 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { DaoVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter/adapters/DaoVotingCw20Staked'
 import {
   WalletProviderDecorator,
-  makeAppLayoutDecorator,
   makeCreateDaoFormDecorator,
+  makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 
 import { CreateDaoGovernance } from './CreateDaoGovernance'
@@ -25,7 +25,7 @@ export default {
         data: DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig,
       },
     }),
-    makeAppLayoutDecorator(),
+    makeDappLayoutDecorator(),
     WalletProviderDecorator,
   ],
 } as ComponentMeta<typeof CreateDaoGovernance>

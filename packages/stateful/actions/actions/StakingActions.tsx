@@ -25,6 +25,7 @@ import {
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
+  NATIVE_TOKEN,
   StakeType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -32,7 +33,6 @@ import {
   makeDistributeMessage,
   makeStakingMessage,
   nativeTokenDecimals,
-  nativeTokenLabel,
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
@@ -265,6 +265,7 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
               ? []
               : loadingNativeDelegationInfo.data.delegations.map(
                   ({ validator, delegated, pendingReward }) => ({
+                    token: NATIVE_TOKEN,
                     validator,
                     amount: convertMicroDenomToDenomWithDecimals(
                       delegated.amount,
@@ -274,9 +275,6 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
                       pendingReward.amount,
                       NATIVE_DECIMALS
                     ),
-                    denom: NATIVE_DENOM,
-                    symbol: nativeTokenLabel(NATIVE_DENOM),
-                    decimals: NATIVE_DECIMALS,
                   })
                 ),
           validators: loadingValidators.loading ? [] : loadingValidators.data,

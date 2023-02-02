@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
   WalletProviderDecorator,
-  makeAppLayoutDecorator,
+  makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 
 import {
@@ -18,7 +18,7 @@ import { WalletDisconnected } from './WalletDisconnected'
 export default {
   title: 'DAO DAO / packages / stateless / pages / WalletDisconnected',
   component: WalletDisconnected,
-  decorators: [WalletProviderDecorator, makeAppLayoutDecorator()],
+  decorators: [WalletProviderDecorator, makeDappLayoutDecorator()],
 } as ComponentMeta<typeof WalletDisconnected>
 
 const Template: ComponentStory<typeof WalletDisconnected> = (args) => (

@@ -7,7 +7,7 @@ import {
 import { Default as ProposalVoteTallyStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ui/ProposalVoteTally.ProposalVoteTally.stories'
 import {
   DaoPageWrapperDecorator,
-  makeAppLayoutDecorator,
+  makeDappLayoutDecorator,
   makeProposalModuleAdapterDecorator,
 } from '@dao-dao/storybook/decorators'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
@@ -22,7 +22,6 @@ import { Default as ProfileVoteCardStory } from '../components/profile/ProfileVo
 import { Vote as ProposalStatusAndInfoVoteStory } from '../components/proposal/ProposalStatusAndInfo.stories'
 import { ProposalVotes } from '../components/proposal/ProposalVotes'
 import { makeProps as makeProposalVotesProps } from '../components/proposal/ProposalVotes.stories'
-import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { Proposal } from './Proposal'
 
 const proposalId = 'A72'
@@ -34,12 +33,12 @@ export default {
     // Direct ancestor of rendered story.
     makeProposalModuleAdapterDecorator(proposalId),
     DaoPageWrapperDecorator,
-    makeAppLayoutDecorator(),
+    makeDappLayoutDecorator(),
   ],
 } as ComponentMeta<typeof Proposal>
 
 const Template: ComponentStory<typeof Proposal> = (args) => (
-  <Proposal {...args} daoInfo={useDaoInfoContext()} />
+  <Proposal {...args} />
 )
 
 export const Default = Template.bind({})

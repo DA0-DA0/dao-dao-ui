@@ -1,5 +1,7 @@
+import { PeopleAltOutlined } from '@mui/icons-material'
+
 import { HandshakeEmoji } from '@dao-dao/stateless'
-import { VotingModuleAdapter } from '@dao-dao/types'
+import { DaoTabId, VotingModuleAdapter } from '@dao-dao/types'
 
 import { MembersTab, ProfileCardMemberInfo } from './components'
 import {
@@ -36,9 +38,10 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
     components: {
       extraTabs: [
         {
-          id: 'members',
+          id: DaoTabId.Members,
           labelI18nKey: 'title.members',
           Component: MembersTab,
+          Icon: PeopleAltOutlined,
         },
       ],
       ProfileCardMemberInfo,

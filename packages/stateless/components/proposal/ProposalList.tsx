@@ -17,6 +17,7 @@ export interface ProposalListProps<T> {
   loadMore: () => void
   loadingMore: boolean
   isMember: boolean
+  DiscordNotifierConfigureModal: ComponentType
 }
 
 export const ProposalList = <T extends {}>({
@@ -28,6 +29,7 @@ export const ProposalList = <T extends {}>({
   loadMore,
   loadingMore,
   isMember,
+  DiscordNotifierConfigureModal,
 }: ProposalListProps<T>) => {
   const { t } = useTranslation()
 
@@ -35,7 +37,11 @@ export const ProposalList = <T extends {}>({
 
   return openProposals.length > 0 || historyProposals.length > 0 ? (
     <div className="border-t border-border-secondary pt-6">
-      <p className="title-text mb-6 text-text-body">{t('title.proposals')}</p>
+      <div className="mb-6 flex flex-row items-center justify-between gap-6">
+        <p className="title-text text-text-body">{t('title.proposals')}</p>
+
+        <DiscordNotifierConfigureModal />
+      </div>
 
       {!!openProposals.length && (
         <div className="mb-9 space-y-1">

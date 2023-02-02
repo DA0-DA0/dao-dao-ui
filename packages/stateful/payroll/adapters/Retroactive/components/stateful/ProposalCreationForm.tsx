@@ -1,5 +1,4 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -13,6 +12,7 @@ import {
   Loader,
   useCachedLoadable,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
 import { AmountWithTimestampAndDenom } from '@dao-dao/types'
 import { nativeTokenDecimals } from '@dao-dao/utils'
@@ -38,7 +38,7 @@ interface ProposalCreationFormProps {
 
 export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
-  const router = useRouter()
+  const { goToDaoProposal } = useNavHelpers()
   const { coreAddress, chainId } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet(chainId)
@@ -93,7 +93,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
         setRefreshStatus((id) => id + 1)
 
         // Navigate to proposal.
-        router.push(`/dao/${coreAddress}/proposals/${proposalId}`)
+        goToDaoProposal(coreAddress, proposalId)
 
         // Don't stop loading on success since we are now navigating.
       } catch (err) {
@@ -104,12 +104,12 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
     },
     [
       data,
-      coreAddress,
-      postRequest,
       publishProposal,
-      router,
-      setRefreshStatus,
       t,
+      postRequest,
+      coreAddress,
+      setRefreshStatus,
+      goToDaoProposal,
     ]
   )
 

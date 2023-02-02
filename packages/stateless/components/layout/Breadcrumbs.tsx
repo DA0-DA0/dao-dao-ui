@@ -2,21 +2,66 @@ import { ArrowDropDown, ArrowForwardIos, Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
+import { DaoPageMode } from '@dao-dao/types'
 import { BreadcrumbsProps } from '@dao-dao/types/stateless/Breadcrumbs'
+import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
+import { useDaoInfoContextIfAvailable, useNavHelpers } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
 import { TopGradient } from '../TopGradient'
+import { useAppLayoutContext } from './AppLayoutContext'
 
 export * from '@dao-dao/types/stateless/Breadcrumbs'
 
 export const Breadcrumbs = ({
-  crumbs,
+  home = false,
+  sdaHomeTab,
   current,
   className,
 }: BreadcrumbsProps) => {
+  const { t } = useTranslation()
+  // Allow using Breadcrumbs outside of DaoPageWrapper.
+  const daoInfo = useDaoInfoContextIfAvailable()
+  const { mode } = useAppLayoutContext()
+  const { getDaoPath } = useNavHelpers()
+
   const [responsive, setResponsive] = useState(false)
+
+  const crumbs =
+    mode === DaoPageMode.Dapp
+      ? [
+          { href: '/', label: t('title.home') },
+          ...(daoInfo
+            ? [
+                ...getParentDaoBreadcrumbs(getDaoPath, daoInfo.parentDao),
+                ...(home
+                  ? []
+                  : [
+                      {
+                        href: getDaoPath(daoInfo.coreAddress),
+                        label: daoInfo.name,
+                      },
+                    ]),
+              ]
+            : []),
+        ]
+      : [
+          ...(home || !daoInfo
+            ? []
+            : [
+                {
+                  href:
+                    getDaoPath(daoInfo.coreAddress) +
+                    (sdaHomeTab ? '#' + sdaHomeTab.id : ''),
+                  label: sdaHomeTab?.label || t('title.home'),
+                },
+              ]),
+        ]
+
+  const hasCrumbs = crumbs.length > 0
 
   return (
     <>
@@ -41,7 +86,11 @@ export const Breadcrumbs = ({
           // min-width set to auto by default, which prevents text ellipses
           // since this will overflow its parent. Set min-width to 0 so this
           // cannot overflow its parent, and the child text can truncate.
-          className="min-w-0 text-text-primary sm:pointer-events-none"
+          className={clsx(
+            'min-w-0 text-text-primary sm:pointer-events-none',
+            // Disable touch interaction when no crumbs.
+            !hasCrumbs && 'pointer-events-none'
+          )}
           contentContainerClassName="justify-center"
           onClick={() => setResponsive(true)}
           size="none"
@@ -49,14 +98,17 @@ export const Breadcrumbs = ({
         >
           <p className="truncate">{current}</p>
 
-          <ArrowDropDown className="!h-6 !w-6 shrink-0 text-icon-primary sm:!hidden" />
+          {/* When no crumbs, no dropdown/arrow. */}
+          {hasCrumbs && (
+            <ArrowDropDown className="!h-6 !w-6 shrink-0 text-icon-primary sm:!hidden" />
+          )}
         </Button>
       </div>
 
       <div
         className={clsx(
           'header-text fixed top-0 right-0 bottom-0 left-0 z-20 flex flex-col bg-background-base transition-opacity',
-          responsive
+          responsive && hasCrumbs
             ? 'opacity-100 sm:pointer-events-none sm:opacity-0'
             : 'pointer-events-none opacity-0'
         )}

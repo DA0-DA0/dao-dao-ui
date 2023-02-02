@@ -2,10 +2,13 @@ import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useRecoilValue } from 'recoil'
 
 import { nativeBalancesSelector } from '@dao-dao/state'
-import { BabyEmoji } from '@dao-dao/stateless'
+import {
+  ActionCardLoader,
+  BabyEmoji,
+  useCachedLoadable,
+} from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -18,9 +21,11 @@ import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  loadableToLoadingData,
   makeWasmMessage,
 } from '@dao-dao/utils'
 
+import { SuspenseLoader } from '../../components/SuspenseLoader'
 import { useExecutedProposalTxEventsLoadable } from '../../hooks/useExecutedProposalTxEvents'
 import { InstantiateComponent as StatelessInstantiateComponent } from '../components/Instantiate'
 import { useActionOptions } from '../react'
@@ -95,11 +100,19 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
 const Component: ActionComponent = (props) => {
   const { address, chainId } = useActionOptions()
 
-  const nativeBalances = useRecoilValue(
-    nativeBalancesSelector({
-      address,
-      chainId,
-    })
+  // This needs to be loaded via a cached loadable to avoid displaying a loader
+  // when this data updates on a schedule. Manually trigger a suspense loader
+  // the first time when the initial data is still loading.
+  const nativeBalancesLoadable = loadableToLoadingData(
+    useCachedLoadable(
+      address
+        ? nativeBalancesSelector({
+            address,
+            chainId,
+          })
+        : undefined
+    ),
+    []
   )
 
   // If in DAO context, use executed proposal TX events to find instantiated
@@ -181,13 +194,23 @@ const Component: ActionComponent = (props) => {
   ])
 
   return (
-    <StatelessInstantiateComponent
-      {...props}
-      options={{
-        nativeBalances,
-        instantiatedAddress,
-      }}
-    />
+    <SuspenseLoader
+      fallback={<ActionCardLoader />}
+      forceFallback={
+        // Manually trigger loader.
+        nativeBalancesLoadable.loading
+      }
+    >
+      <StatelessInstantiateComponent
+        {...props}
+        options={{
+          nativeBalances: nativeBalancesLoadable.loading
+            ? []
+            : nativeBalancesLoadable.data,
+          instantiatedAddress,
+        }}
+      />
+    </SuspenseLoader>
   )
 }
 

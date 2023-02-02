@@ -1,17 +1,18 @@
 import {
-  BreadcrumbsProps,
+  BreadcrumbCrumb,
   DaoParentInfo,
   DaoPayrollConfig,
 } from '@dao-dao/types'
 
 export const getParentDaoBreadcrumbs = (
+  getDaoPath: (coreAddress: string) => string,
   parentDao: DaoParentInfo | null | undefined
-): BreadcrumbsProps['crumbs'] =>
+): BreadcrumbCrumb[] =>
   parentDao
     ? [
-        ...getParentDaoBreadcrumbs(parentDao.parentDao),
+        ...getParentDaoBreadcrumbs(getDaoPath, parentDao.parentDao),
         {
-          href: `/dao/${parentDao.coreAddress}`,
+          href: getDaoPath(parentDao.coreAddress),
           label: parentDao.name,
         },
       ]

@@ -32,7 +32,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput, SuspenseLoader } from '../../components'
-import { useCw20GovernanceTokenInfoResponseIfExists } from '../../voting-module-adapter'
+import { useCw20CommonGovernanceTokenInfoIfExists } from '../../voting-module-adapter'
 import {
   SpendData,
   SpendComponent as StatelessSpendComponent,
@@ -57,8 +57,8 @@ const useCw20BalancesAndInfos = () => {
   // Get CW20 governance token address from voting module adapter if exists,
   // so we can make sure to load it with all cw20 balances, even if it has not
   // been explicitly added to the DAO.
-  const { governanceTokenAddress } =
-    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+  const { denomOrAddress: governanceTokenAddress } =
+    useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
   const cw20BalancesAndInfosLoadable = useCachedLoadable(
     context.type === ActionOptionsContextType.Dao
@@ -92,14 +92,19 @@ const useCw20BalancesAndInfos = () => {
 }
 
 const Component: ActionComponent<undefined, SpendData> = (props) => {
-  const { address } = useActionOptions()
+  const { address, chainId } = useActionOptions()
 
-  // This needs to be loaded via a cached loadable to avoid displaying a
-  // loader when this data updates on a schedule. Manually trigger a suspense
-  // loader the first time when the initial data is still loading.
+  // This needs to be loaded via a cached loadable to avoid displaying a loader
+  // when this data updates on a schedule. Manually trigger a suspense loader
+  // the first time when the initial data is still loading.
   const nativeBalancesLoadable = loadableToLoadingData(
     useCachedLoadable(
-      address ? nativeBalancesSelector({ address }) : undefined
+      address
+        ? nativeBalancesSelector({
+            address,
+            chainId,
+          })
+        : undefined
     ),
     []
   )

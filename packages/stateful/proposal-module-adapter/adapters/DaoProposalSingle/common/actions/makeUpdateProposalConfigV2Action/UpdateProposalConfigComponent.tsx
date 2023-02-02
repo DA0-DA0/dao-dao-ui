@@ -36,8 +36,6 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
   const quorumType = watch(fieldNamePrefix + 'quorumType')
   const proposalDuration = watch(fieldNamePrefix + 'proposalDuration')
   const proposalDurationUnits = watch(fieldNamePrefix + 'proposalDurationUnits')
-  const thresholdPercentage = watch(fieldNamePrefix + 'thresholdPercentage')
-  const quorumPercentage = watch(fieldNamePrefix + 'quorumPercentage')
   const quorumEnabled = watch(fieldNamePrefix + 'quorumEnabled')
 
   const percentageThresholdSelected = thresholdType === '%'
@@ -95,21 +93,12 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
                 disabled={!isCreating}
                 error={errors?.thresholdPercentage}
                 fieldName={fieldNamePrefix + 'thresholdPercentage'}
-                onMinus={() =>
-                  setValue(
-                    fieldNamePrefix + 'thresholdPercentage',
-                    Math.max(thresholdPercentage - 1, 1)
-                  )
-                }
-                onPlus={() =>
-                  setValue(
-                    fieldNamePrefix + 'thresholdPercentage',
-                    Math.max(thresholdPercentage + 1, 1)
-                  )
-                }
+                min={1}
                 register={register}
+                setValue={setValue}
                 sizing="sm"
                 validation={[validateRequired, validatePercent]}
+                watch={watch}
               />
               <InputErrorMessage error={errors?.thresholdPercentage} />
             </div>
@@ -151,21 +140,12 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
                   disabled={!isCreating}
                   error={errors?.quorumPercentage}
                   fieldName={fieldNamePrefix + 'quorumPercentage'}
-                  onMinus={() =>
-                    setValue(
-                      fieldNamePrefix + 'quorumPercentage',
-                      Math.max(quorumPercentage - 1, 1)
-                    )
-                  }
-                  onPlus={() =>
-                    setValue(
-                      fieldNamePrefix + 'quorumPercentage',
-                      Math.max(quorumPercentage + 1, 1)
-                    )
-                  }
+                  min={1}
                   register={register}
+                  setValue={setValue}
                   sizing="sm"
                   validation={[validateRequired, validatePercent]}
+                  watch={watch}
                 />
                 <InputErrorMessage error={errors?.quorumPercentage} />
               </div>
@@ -197,19 +177,9 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
               disabled={!isCreating}
               error={errors?.proposalDuration}
               fieldName={fieldNamePrefix + 'proposalDuration'}
-              onMinus={() =>
-                setValue(
-                  fieldNamePrefix + 'proposalDuration',
-                  Math.max(proposalDuration - 1, 1)
-                )
-              }
-              onPlus={() =>
-                setValue(
-                  fieldNamePrefix + 'proposalDuration',
-                  Math.max(proposalDuration + 1, 1)
-                )
-              }
+              min={1}
               register={register}
+              setValue={setValue}
               sizing="sm"
               step={1}
               validation={[
@@ -222,6 +192,7 @@ export const UpdateProposalConfigComponent: ActionComponent = ({
                   value >= 60 ||
                   'Cannot be shorter than 60 seconds.',
               ]}
+              watch={watch}
             />
             <InputErrorMessage error={errors?.proposalDuration} />
           </div>

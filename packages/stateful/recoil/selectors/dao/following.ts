@@ -9,9 +9,11 @@ import { CHAIN_ID, FOLLOWING_DAOS_API_BASE } from '@dao-dao/utils'
 import { daoDropdownInfoSelector } from './cards'
 import { daoCoreProposalModulesSelector } from './misc'
 
-// Following API doesn't update right away, so this serves to keep track of all
-// successful updates for the current session. This will be reset on page
-// refresh.
+// Following API doesn't update right away due to Cloudflare KV Store latency,
+// so this serves to keep track of all successful updates for the current
+// session. This will be reset on page refresh. Set this right away so the UI
+// can update immediately even if the API takes up to a minute or two. Though
+// likely it only takes 10 seconds or so.
 export const temporaryFollowingDaosAtom = atom<{
   following: string[]
   unfollowing: string[]
@@ -46,17 +48,26 @@ export const followingDaosSelector = selectorFamily<
       )
 
       if (response.ok) {
-        const { following, pending } = (await response.json()) as {
-          following: string[]
-          pending: string[]
-        }
+        const { following: _following, pending: _pending } =
+          (await response.json()) as {
+            following: string[]
+            pending: string[]
+          }
+
+        const following = uniq(
+          [..._following, ...temporary.following].filter(
+            (address) => !temporary.unfollowing.includes(address)
+          )
+        )
+
+        const pending = _pending.filter(
+          (address) =>
+            !following.includes(address) &&
+            !temporary.unfollowing.includes(address)
+        )
 
         return {
-          following: uniq(
-            [...following, ...temporary.following].filter(
-              (address) => !temporary.unfollowing.includes(address)
-            )
-          ),
+          following,
           pending,
         }
       } else {
