@@ -14,14 +14,28 @@ export type MeTransactionSave = MeTransactionForm & {
   description?: string
 }
 
+// Value goes in URL hash.
+export enum MeTabId {
+  TransactionBuilder = 'tx',
+}
+
+export type MeTab = {
+  id: MeTabId
+  label: string
+  Component: ComponentType
+}
+
 export type MeProps = {
-  connected: boolean
+  rightSidebarContent: ReactNode
+  MeTransactionBuilder: ComponentType
+}
+
+export type MeTransactionBuilderProps = {
   actions: Action[]
   actionsWithData: ActionsWithData
   formMethods: UseFormReturn<MeTransactionForm, object>
   execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
   loading: boolean
-  rightSidebarContent: ReactNode
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   error?: string
   txHash?: string
