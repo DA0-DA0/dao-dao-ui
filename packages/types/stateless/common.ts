@@ -15,11 +15,13 @@ export type LoadingDataWithError<D> =
     }
   | {
       loading: false
+      updating?: boolean
       errored: false
       data: D
     }
   | {
       loading: false
+      updating?: boolean
       errored: true
       error: unknown
     }

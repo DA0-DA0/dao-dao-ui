@@ -19,7 +19,7 @@ import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DENOM,
   makeWasmMessage,
-  validateContractAddress,
+  validateAddress,
   validateCosmosMsg,
   validatePositive,
   validateRequired,
@@ -189,7 +189,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
           type="contract"
-          validation={[(v: string) => validateContractAddress(v, false)]}
+          validation={[(v: string) => !v || validateAddress(v)]}
         />
         <InputErrorMessage error={errors?.admin} />
       </div>

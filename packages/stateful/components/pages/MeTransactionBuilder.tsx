@@ -158,14 +158,15 @@ export const MeTransactionBuilder = () => {
         )
       )
 
+      const key = SAVED_TX_PREFIX + nameHash
       await postTxSavesRequest('/set', {
-        key: SAVED_TX_PREFIX + nameHash,
+        key,
         value: save,
       })
 
       setTemporarySaves((prev) => ({
         ...prev,
-        [nameHash]: save,
+        [key]: save,
       }))
       refreshSaves()
 
@@ -195,14 +196,15 @@ export const MeTransactionBuilder = () => {
         )
       )
 
+      const key = SAVED_TX_PREFIX + nameHash
       await postTxSavesRequest('/set', {
-        key: SAVED_TX_PREFIX + nameHash,
+        key,
         value: null,
       })
 
       setTemporarySaves((prev) => ({
         ...prev,
-        [nameHash]: null,
+        [key]: null,
       }))
       refreshSaves()
 

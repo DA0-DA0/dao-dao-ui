@@ -1,8 +1,11 @@
 import { atomFamily, selectorFamily } from 'recoil'
 
-import { refreshSavedTxsAtom } from '@dao-dao/state/recoil'
-import { MeTransactionSave } from '@dao-dao/types'
-import { KVPK_API_BASE } from '@dao-dao/utils'
+import {
+  refreshCheckmarkStatusAtom,
+  refreshSavedTxsAtom,
+} from '@dao-dao/state/recoil'
+import { MeIdentityStatus, MeTransactionSave } from '@dao-dao/types'
+import { CHECKMARK_API_BASE, KVPK_API_BASE } from '@dao-dao/utils'
 
 export const SAVED_TX_PREFIX = 'savedTx:'
 
@@ -68,3 +71,29 @@ export const savedTxsSelector = selectorFamily<MeTransactionSave[], string>({
       }
     },
 })
+
+// Takes wallet public key as a parameter.
+export const checkmarkStatusSelector = selectorFamily<MeIdentityStatus, string>(
+  {
+    key: 'checkmarkStatus',
+    get:
+      (walletPublicKey) =>
+      async ({ get }) => {
+        get(refreshCheckmarkStatusAtom)
+
+        const response = await fetch(
+          CHECKMARK_API_BASE + `/status/${walletPublicKey}`
+        )
+
+        if (response.ok) {
+          return await response.json()
+        } else {
+          throw new Error(
+            `Failed to fetch checkmark status: ${response.status}/${
+              response.statusText
+            } ${await response.text().catch(() => '')}`.trim()
+          )
+        }
+      },
+  }
+)

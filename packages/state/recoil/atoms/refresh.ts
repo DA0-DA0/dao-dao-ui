@@ -94,3 +94,9 @@ export const refreshSavedTxsAtom = atom({
   key: 'refreshSavedTxs',
   default: 0,
 })
+
+// Change this to refresh checkmark status.
+export const refreshCheckmarkStatusAtom = atom({
+  key: 'refreshCheckmarkStatus',
+  default: 0,
+})

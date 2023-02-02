@@ -804,6 +804,7 @@
     "history": "History",
     "holdings": "Holdings",
     "home": "Home",
+    "identity": "Identity",
     "inbox": "Inbox",
     "inboxWithCount": "Inbox ({{count}})",
     "instantiateSmartContract": "Instantiate Smart Contract",

@@ -7,6 +7,7 @@ import { GetStaticProps, NextPage } from 'next'
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
   ConnectWallet,
+  MeIdentity,
   MeTransactionBuilder,
   ProfileDisconnectedCard,
   ProfileHomeCard,
@@ -36,6 +37,7 @@ const MePage: NextPage = () => {
       {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
       <SuspenseLoader fallback={<Loader />}>
         <Me
+          MeIdentity={MeIdentity}
           MeTransactionBuilder={MeTransactionBuilder}
           rightSidebarContent={<ProfileHomeCard />}
         />

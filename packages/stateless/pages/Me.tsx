@@ -6,11 +6,20 @@ import { MeProps, MeTab, MeTabId } from '@dao-dao/types'
 
 import { SegmentedControls, useAppLayoutContext } from '../components'
 
-export const Me = ({ rightSidebarContent, MeTransactionBuilder }: MeProps) => {
+export const Me = ({
+  rightSidebarContent,
+  MeIdentity,
+  MeTransactionBuilder,
+}: MeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const tabs: MeTab[] = [
+    {
+      id: MeTabId.Identity,
+      label: t('title.identity'),
+      Component: MeIdentity,
+    },
     {
       id: MeTabId.TransactionBuilder,
       label: t('title.transactionBuilder'),
