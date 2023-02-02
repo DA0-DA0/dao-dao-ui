@@ -16,3 +16,4 @@ export {
 } from './DaoVotingNativeStaked'
 export { CwTokenSwapClient, CwTokenSwapQueryClient } from './CwTokenSwap'
 export { CwReceiptClient, CwReceiptQueryClient } from './CwReceipt'
+export { CwCheckmarkClient, CwCheckmarkQueryClient } from './CwCheckmark'

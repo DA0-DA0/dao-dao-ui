@@ -73,4 +73,6 @@ export type MeIdentityProps = {
   onFinishVerification: () => void
   // If undefined, verification is not in progress.
   verificationSessionId: LoadingData<string | undefined>
+  deleteCheckmark: () => Promise<void>
+  deletingCheckmark: boolean
 }

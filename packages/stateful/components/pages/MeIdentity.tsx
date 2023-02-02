@@ -13,11 +13,13 @@ import {
 } from '@dao-dao/stateless'
 import {
   CHECKMARK_API_BASE,
+  CHECKMARK_CONTRACT,
   CHECKMARK_PAYMENT_CONTRACT,
   loadableToLoadingDataWithError,
   processError,
 } from '@dao-dao/utils'
 
+import { useDelete } from '../../hooks/contracts/CwCheckmark'
 import { usePay } from '../../hooks/contracts/CwReceipt'
 import { useCfWorkerAuthPostRequest } from '../../hooks/useCfWorkerAuthPostRequest'
 import { checkmarkStatusSelector } from '../../recoil'
@@ -35,6 +37,8 @@ export const MeIdentity = () => {
   const setRefreshCheckmarkStatus = useSetRecoilState(
     refreshCheckmarkStatusAtom
   )
+  const refreshCheckmarkStatus = () => setRefreshCheckmarkStatus((id) => id + 1)
+
   const loadingStatus = loadableToLoadingDataWithError(
     useCachedLoadable(
       publicKey?.hex ? checkmarkStatusSelector(publicKey.hex) : undefined
@@ -43,6 +47,10 @@ export const MeIdentity = () => {
 
   const pay = usePay({
     contractAddress: CHECKMARK_PAYMENT_CONTRACT,
+    sender: walletAddress,
+  })
+  const _deleteCheckmark = useDelete({
+    contractAddress: CHECKMARK_CONTRACT,
     sender: walletAddress,
   })
 
@@ -96,12 +104,33 @@ export const MeIdentity = () => {
   // Clear data and refresh checkmark status.
   const onFinishVerification = () => {
     setVerificationSessionId('')
-    setRefreshCheckmarkStatus((id) => id + 1)
+    refreshCheckmarkStatus()
+  }
+
+  const [deletingCheckmark, setDeletingCheckmark] = useState(false)
+  const deleteCheckmark = async () => {
+    if (!walletAddress) {
+      toast.error(t('error.connectWalletToContinue'))
+      return
+    }
+
+    setDeletingCheckmark(true)
+    try {
+      await _deleteCheckmark()
+      refreshCheckmarkStatus()
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setDeletingCheckmark(false)
+    }
   }
 
   return (
     <StatelessMeIdentity
       beginVerification={beginVerification}
+      deleteCheckmark={deleteCheckmark}
+      deletingCheckmark={deletingCheckmark}
       loadingStatus={loadingStatus}
       onFinishVerification={onFinishVerification}
       verificationSessionId={

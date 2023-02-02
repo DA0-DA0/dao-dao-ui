@@ -12,6 +12,8 @@ export const MeIdentity = ({
   beginVerification,
   onFinishVerification,
   verificationSessionId,
+  deleteCheckmark,
+  deletingCheckmark,
 }: MeIdentityProps) => {
   const { t } = useTranslation()
   const brand = useNamedThemeColor('text-brand')
@@ -69,7 +71,15 @@ export const MeIdentity = ({
           )}
         </div>
       ) : status === CheckmarkStatus.Checkmarked ? (
-        <p className="header-text">Verified</p>
+        <div className="flex flex-col items-start gap-4">
+          <p className="header-text">Verified</p>
+
+          <Button loading={deletingCheckmark} onClick={deleteCheckmark}>
+            Delete Checkmark
+          </Button>
+        </div>
+      ) : status === CheckmarkStatus.Processing ? (
+        <p className="header-text">Processing</p>
       ) : status === CheckmarkStatus.Failed ? (
         <div className="flex flex-col gap-4">
           <p className="header-text">Verification Failed</p>
