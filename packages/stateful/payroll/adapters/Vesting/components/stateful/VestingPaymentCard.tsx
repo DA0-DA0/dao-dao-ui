@@ -29,7 +29,7 @@ export const VestingPaymentCard = ({
   vestingContractAddress,
   vestingPayment,
   vestedAmount,
-  tokenInfo,
+  token,
 }: StatefulVestingPaymentCardProps) => {
   const { t } = useTranslation()
   const { chainId } = useDaoInfoContext()
@@ -43,12 +43,7 @@ export const VestingPaymentCard = ({
     useCachedLoadable(
       tokenCardLazyInfoSelector({
         walletAddress: vestingContractAddress,
-        denom:
-          'cw20' in vestingPayment.denom
-            ? vestingPayment.denom.cw20
-            : vestingPayment.denom.native,
-        tokenDecimals: tokenInfo.decimals,
-        tokenSymbol: tokenInfo.symbol,
+        token,
         chainId,
       })
     ),
@@ -133,7 +128,7 @@ export const VestingPaymentCard = ({
         ButtonLink={ButtonLink}
         claimedAmount={convertMicroDenomToDenomWithDecimals(
           vestingPayment.claimed_amount,
-          tokenInfo.decimals
+          token.decimals
         )}
         claiming={claiming}
         cw20Address={cw20Address}
@@ -150,10 +145,10 @@ export const VestingPaymentCard = ({
         recipientIsWallet={recipientIsWallet}
         remainingBalanceVesting={convertMicroDenomToDenomWithDecimals(
           vestedAmount,
-          tokenInfo.decimals
+          token.decimals
         )}
         title={vestingPayment.title}
-        tokenInfo={tokenInfo}
+        token={token}
         withdrawableAmount={convertMicroDenomToDenomWithDecimals(
           // Remaining balance held by vesting contract.
           Number(vestingPayment.amount) -
@@ -166,12 +161,12 @@ export const VestingPaymentCard = ({
               0,
               Number(vestingPayment.staked_amount) - Number(vestedAmount)
             ),
-          tokenInfo.decimals
+          token.decimals
         )}
         withdrawing={withdrawing}
       />
 
-      {recipientIsWallet && tokenInfo.denomOrAddress === NATIVE_DENOM && (
+      {recipientIsWallet && token.denomOrAddress === NATIVE_DENOM && (
         <NativeStakingModal
           onClose={() => setShowStakingModal(false)}
           stakes={

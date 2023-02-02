@@ -25,16 +25,16 @@ import {
   Tooltip,
   TooltipInfoIcon,
   UnstakingModal,
-  concatAddressStartEnd,
 } from '@dao-dao/stateless'
 import {
-  EitherTokenInfo,
   Entity,
+  GenericToken,
   LoadingData,
   TokenCardLazyInfo,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
 import {
+  concatAddressStartEnd,
   isJunoIbcUsdc,
   secondsToWdhms,
   toAccessibleImageUrl,
@@ -48,7 +48,7 @@ export interface VestingPaymentCardProps {
 
   ButtonLink: ComponentType<ButtonLinkProps>
   lazyInfo: LoadingData<TokenCardLazyInfo>
-  tokenInfo: EitherTokenInfo
+  token: GenericToken
 
   title: string | undefined | null
   description: string | undefined | null
@@ -77,7 +77,7 @@ export const VestingPaymentCard = ({
   recipientIsWallet,
   ButtonLink,
   lazyInfo,
-  tokenInfo,
+  token,
   title,
   description,
   remainingBalanceVesting,
@@ -214,10 +214,10 @@ export const VestingPaymentCard = ({
   )
 
   // Truncate IBC denominations to prevent overflow.
-  if (tokenInfo.symbol.toLowerCase().startsWith('ibc')) {
-    tokenInfo = {
-      ...tokenInfo,
-      symbol: concatAddressStartEnd(tokenInfo.symbol, 3, 2),
+  if (token.symbol.toLowerCase().startsWith('ibc')) {
+    token = {
+      ...token,
+      symbol: concatAddressStartEnd(token.symbol, 3, 2),
     }
   }
 
@@ -331,11 +331,11 @@ export const VestingPaymentCard = ({
               <TokenAmountDisplay
                 amount={withdrawableAmount}
                 className="leading-5 text-text-body"
-                decimals={tokenInfo.decimals}
-                symbol={tokenInfo.symbol}
+                decimals={token.decimals}
+                symbol={token.symbol}
               />
 
-              {!isJunoIbcUsdc(tokenInfo.denomOrAddress) &&
+              {!isJunoIbcUsdc(token.denomOrAddress) &&
                 (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
                   <div className="flex flex-row items-center gap-1">
                     <TokenAmountDisplay
@@ -371,11 +371,11 @@ export const VestingPaymentCard = ({
               <TokenAmountDisplay
                 amount={remainingBalanceVesting}
                 className="leading-5 text-text-body"
-                decimals={tokenInfo.decimals}
-                symbol={tokenInfo.symbol}
+                decimals={token.decimals}
+                symbol={token.symbol}
               />
 
-              {!isJunoIbcUsdc(tokenInfo.denomOrAddress) &&
+              {!isJunoIbcUsdc(token.denomOrAddress) &&
                 (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
                   <div className="flex flex-row items-center gap-1">
                     <TokenAmountDisplay
@@ -411,11 +411,11 @@ export const VestingPaymentCard = ({
               <TokenAmountDisplay
                 amount={claimedAmount}
                 className="leading-5 text-text-body"
-                decimals={tokenInfo.decimals}
-                symbol={tokenInfo.symbol}
+                decimals={token.decimals}
+                symbol={token.symbol}
               />
 
-              {!isJunoIbcUsdc(tokenInfo.denomOrAddress) &&
+              {!isJunoIbcUsdc(token.denomOrAddress) &&
                 (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
                   <div className="flex flex-row items-center gap-1">
                     <TokenAmountDisplay
@@ -452,8 +452,8 @@ export const VestingPaymentCard = ({
               <TokenAmountDisplay
                 amount={lazyInfo.loading ? { loading: true } : totalStaked}
                 className="caption-text text-right font-mono text-text-body"
-                decimals={tokenInfo.decimals}
-                symbol={tokenInfo.symbol}
+                decimals={token.decimals}
+                symbol={token.symbol}
               />
             </div>
 
@@ -519,8 +519,8 @@ export const VestingPaymentCard = ({
                   amount={
                     lazyInfo.loading ? { loading: true } : unstakingBalance
                   }
-                  decimals={tokenInfo.decimals}
-                  symbol={tokenInfo.symbol}
+                  decimals={token.decimals}
+                  symbol={token.symbol}
                 />
               </Button>
             </div>
@@ -531,8 +531,8 @@ export const VestingPaymentCard = ({
               <TokenAmountDisplay
                 amount={lazyInfo.loading ? { loading: true } : pendingRewards}
                 className="caption-text text-right font-mono text-text-body"
-                decimals={tokenInfo.decimals}
-                symbol={tokenInfo.symbol}
+                decimals={token.decimals}
+                symbol={token.symbol}
               />
             </div>
           </div>

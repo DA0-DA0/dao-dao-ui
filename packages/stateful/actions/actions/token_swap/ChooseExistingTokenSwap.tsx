@@ -4,7 +4,7 @@ import { useRecoilCallback } from 'recoil'
 
 import {
   CwTokenSwapSelectors,
-  eitherTokenInfoSelector,
+  genericTokenSelector,
 } from '@dao-dao/state/recoil'
 import { ActionComponent, TokenType } from '@dao-dao/types'
 import {
@@ -130,7 +130,7 @@ export const ChooseExistingTokenSwap: ActionComponent<
 
           // Get token info so we can get decimals.
           const selfPartyTokenInfo = await snapshot.getPromise(
-            eitherTokenInfoSelector({
+            genericTokenSelector({
               chainId,
               type:
                 'cw20' in selfParty.promise ? TokenType.Cw20 : TokenType.Native,

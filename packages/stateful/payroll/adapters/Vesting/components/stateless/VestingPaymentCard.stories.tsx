@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ButtonLink } from '@dao-dao/stateless'
 import { makeProps as makeTokenCardProps } from '@dao-dao/stateless/components/token/TokenCard.stories'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators/DaoPageWrapperDecorator'
-import { EntityType } from '@dao-dao/types'
+import { EntityType, TokenType } from '@dao-dao/types'
 
 import { VestingPaymentCard } from './VestingPaymentCard'
 
@@ -36,10 +36,12 @@ Default.args = {
   recipientIsWallet: true,
   ButtonLink,
   lazyInfo: makeTokenCardProps().lazyInfo,
-  tokenInfo: {
+  token: {
+    type: TokenType.Native,
     denomOrAddress: 'ujuno',
     symbol: 'JUNO',
     decimals: 6,
+    imageUrl: undefined,
   },
   onWithdraw: () => alert('withdraw'),
   withdrawing: false,

@@ -41,11 +41,3 @@ export type GovProposal = ReturnType<
 export type GovProposalWithDecodedContent = GovProposal & {
   decodedContent: any
 }
-
-// Standardize format for common CW20 and native token info.
-export type EitherTokenInfo = {
-  denomOrAddress: string
-  decimals: number
-  symbol: string
-  imageUrl?: string | undefined
-}

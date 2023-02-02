@@ -4,9 +4,9 @@ import {
   CwPayrollFactorySelectors,
   CwVestingSelectors,
   DaoCoreV2Selectors,
-  eitherTokenInfoSelector,
+  genericTokenSelector,
 } from '@dao-dao/state/recoil'
-import { WithChainId } from '@dao-dao/types'
+import { TokenType, WithChainId } from '@dao-dao/types'
 
 import { StatefulVestingPaymentCardProps } from './components/types'
 
@@ -70,11 +70,11 @@ export const vestingPaymentsSelector = selectorFamily<
         )
       )
 
-      const tokenInfos = get(
+      const tokens = get(
         waitForAll(
           vestingPayments.map(({ denom }) =>
-            eitherTokenInfoSelector({
-              type: 'cw20' in denom ? 'cw20' : 'native',
+            genericTokenSelector({
+              type: 'cw20' in denom ? TokenType.Cw20 : TokenType.Native,
               denomOrAddress: 'cw20' in denom ? denom.cw20 : denom.native,
               chainId,
             })
@@ -86,7 +86,7 @@ export const vestingPaymentsSelector = selectorFamily<
         vestingContractAddress: contract,
         vestingPayment: vestingPayments[index],
         vestedAmount: Number(vestedAmounts[index]),
-        tokenInfo: tokenInfos[index],
+        token: tokens[index],
       }))
     },
 })

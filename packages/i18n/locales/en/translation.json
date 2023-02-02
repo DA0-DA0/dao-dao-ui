@@ -110,11 +110,11 @@
     "update": "Update",
     "upload": "Upload",
     "useExistingToken": "Use an existing token",
-    "withdrawAvailableBalance": "Withdraw available balance",
     "viewDaosPage": "View DAO's page",
     "viewOnDaoDao": "View on DAO DAO",
     "viewProposals": "View proposals",
-    "withDecodedModuleMessages": "with Decoded Module Messages"
+    "withDecodedModuleMessages": "with Decoded Module Messages",
+    "withdrawAvailableBalance": "Withdraw available balance"
   },
   "daoCreationAdapter": {
     "DaoProposalSingle": {

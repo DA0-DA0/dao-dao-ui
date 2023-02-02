@@ -9,14 +9,14 @@ import {
 
 import { Cw20BaseSelectors } from './contracts'
 
-export const eitherTokenInfoSelector = selectorFamily<
+export const genericTokenSelector = selectorFamily<
   GenericToken,
   WithChainId<{
     type: TokenType
     denomOrAddress: string
   }>
 >({
-  key: 'eitherTokenInfo',
+  key: 'genericToken',
   get:
     ({ type, denomOrAddress, chainId }) =>
     async ({ get }) => {
