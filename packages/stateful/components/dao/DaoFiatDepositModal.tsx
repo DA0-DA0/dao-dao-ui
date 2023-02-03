@@ -9,8 +9,8 @@ export const DaoFiatDepositModal = (props: Omit<ModalProps, 'header'>) => {
   return (
     <KadoModal
       header={{
-        title: t('title.depositFiat'),
-        subtitle: t('info.depositFiatDescription'),
+        title: t('title.depositUsdc'),
+        subtitle: t('info.depositUsdcDescription'),
       }}
       toAddress={coreAddress}
       {...props}
