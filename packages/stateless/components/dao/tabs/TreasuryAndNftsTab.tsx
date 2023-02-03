@@ -23,7 +23,7 @@ export interface TreasuryAndNftsTabProps<
   isMember: boolean
   addCollectionHref?: string
   StargazeNftImportModal: ComponentType<Pick<ModalProps, 'onClose'>>
-  FiatDepositModal: ComponentType<Pick<ModalProps, 'onClose' | 'visible'>>
+  FiatDepositModal?: ComponentType<Pick<ModalProps, 'onClose' | 'visible'>>
 }
 
 export const TreasuryAndNftsTab = <
@@ -71,9 +71,12 @@ export const TreasuryAndNftsTab = <
       <div className="flex min-h-[3.5rem] flex-row items-center justify-between pb-6">
         <p className="title-text text-text-body">{t('title.treasury')}</p>
 
-        <Button onClick={() => setShowDepositFiat(true)} variant="secondary">
-          {t('button.depositFiat')}
-        </Button>
+        {/* Only show if defined, which indicates wallet connected. */}
+        {FiatDepositModal && (
+          <Button onClick={() => setShowDepositFiat(true)} variant="secondary">
+            {t('button.depositFiat')}
+          </Button>
+        )}
       </div>
 
       <div className="mb-9">
@@ -145,10 +148,12 @@ export const TreasuryAndNftsTab = <
         />
       )}
 
-      <FiatDepositModal
-        onClose={() => setShowDepositFiat(false)}
-        visible={showDepositFiat}
-      />
+      {FiatDepositModal && (
+        <FiatDepositModal
+          onClose={() => setShowDepositFiat(false)}
+          visible={showDepositFiat}
+        />
+      )}
     </>
   )
 }

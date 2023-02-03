@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect } from 'react'
 
 import {
@@ -30,8 +31,10 @@ import { TokenCard } from '../TokenCard'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
+  const { connected } = useWallet()
   const { getDaoProposalPath } = useNavHelpers()
   const { isMember = false } = useMembership(daoInfo)
+
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
   const { denomOrAddress: nativeGovernanceTokenDenom } =
@@ -85,7 +88,7 @@ export const TreasuryAndNftsTab = () => {
 
   return (
     <StatelessTreasuryAndNftsTab
-      FiatDepositModal={DaoFiatDepositModal}
+      FiatDepositModal={connected ? DaoFiatDepositModal : undefined}
       NftCard={NftCard}
       StargazeNftImportModal={StargazeNftImportModal}
       TokenCard={TokenCard}

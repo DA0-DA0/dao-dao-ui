@@ -246,7 +246,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
       }}
       rightSidebarProps={{
         wallet: <SidebarWallet />,
-        WalletFiatRampModal,
+        WalletFiatRampModal: connected ? WalletFiatRampModal : undefined,
       }}
       walletProfile={
         status === WalletConnectionStatus.Connected ? walletProfile : undefined

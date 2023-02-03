@@ -5,7 +5,8 @@ import { ModalProps } from './Modal'
 export interface RightSidebarProps {
   wallet: ReactNode
   setContentRef: RefCallback<HTMLDivElement>
-  WalletFiatRampModal: ComponentType<Pick<ModalProps, 'onClose' | 'visible'>>
+  // Present if wallet connected, otherwise undefined.
+  WalletFiatRampModal?: ComponentType<Pick<ModalProps, 'onClose' | 'visible'>>
 }
 
 export interface RightSidebarContentProps {

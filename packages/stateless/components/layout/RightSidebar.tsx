@@ -68,22 +68,27 @@ export const RightSidebar = ({
           <div ref={setContentRef}></div>
         </div>
 
-        <Button
-          center
-          className="mt-4"
-          onClick={() => setFiatRampVisible(true)}
-          size="lg"
-          variant="secondary"
-        >
-          <SavingsRounded />
-          {t('button.openFiatRamp')}
-        </Button>
+        {/* Only show if defined, which indicates wallet connected. */}
+        {WalletFiatRampModal && (
+          <Button
+            center
+            className="mt-4"
+            onClick={() => setFiatRampVisible(true)}
+            size="lg"
+            variant="secondary"
+          >
+            <SavingsRounded />
+            {t('button.openFiatRamp')}
+          </Button>
+        )}
       </div>
 
-      <WalletFiatRampModal
-        onClose={() => setFiatRampVisible(false)}
-        visible={fiatRampVisible}
-      />
+      {WalletFiatRampModal && (
+        <WalletFiatRampModal
+          onClose={() => setFiatRampVisible(false)}
+          visible={fiatRampVisible}
+        />
+      )}
     </>
   )
 }
