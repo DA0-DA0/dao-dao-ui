@@ -25,6 +25,7 @@ import {
 } from '../../../voting-module-adapter'
 import { NftCard } from '../../NftCard'
 import { StargazeNftImportModal } from '../../StargazeNftImportModal'
+import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
 import { TokenCard } from '../TokenCard'
 
 export const TreasuryAndNftsTab = () => {
@@ -84,6 +85,7 @@ export const TreasuryAndNftsTab = () => {
 
   return (
     <StatelessTreasuryAndNftsTab
+      FiatDepositModal={DaoFiatDepositModal}
       NftCard={NftCard}
       StargazeNftImportModal={StargazeNftImportModal}
       TokenCard={TokenCard}

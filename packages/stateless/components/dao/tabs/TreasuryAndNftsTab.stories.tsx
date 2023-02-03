@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { DaoFiatDepositModal } from '@dao-dao/stateful'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
 import { NftCard, NftCardProps } from '../../NftCard'
@@ -39,6 +40,7 @@ Default.args = {
   NftCard,
   isMember: true,
   addCollectionHref: '#',
+  FiatDepositModal: DaoFiatDepositModal,
 }
 
 export const Loading = Template.bind({})
@@ -49,4 +51,5 @@ Loading.args = {
   NftCard,
   isMember: true,
   addCollectionHref: '#',
+  FiatDepositModal: DaoFiatDepositModal,
 }

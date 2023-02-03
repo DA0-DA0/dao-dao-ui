@@ -1,20 +1,31 @@
-import { KeyboardDoubleArrowRight } from '@mui/icons-material'
+import { KeyboardDoubleArrowRight, SavingsRounded } from '@mui/icons-material'
 import clsx from 'clsx'
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 
 import {
   RightSidebarContentProps,
   RightSidebarProps,
 } from '@dao-dao/types/stateless/RightSidebar'
 
+import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
 import { useAppLayoutContext } from './AppLayoutContext'
 
 export * from '@dao-dao/types/stateless/RightSidebar'
 
-export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
+export const RightSidebar = ({
+  wallet,
+  setContentRef,
+  WalletFiatRampModal,
+}: RightSidebarProps) => {
+  const { t } = useTranslation()
+
   const { enabled: responsiveEnabled, toggle: toggleResponsive } =
     useAppLayoutContext().responsiveRightSidebar
+
+  const [fiatRampVisible, setFiatRampVisible] = useState(false)
 
   return (
     <>
@@ -56,7 +67,23 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
           {/* Content gets inserted here when the portal <RightSidebarContent> below is used. */}
           <div ref={setContentRef}></div>
         </div>
+
+        <Button
+          center
+          className="mt-4"
+          onClick={() => setFiatRampVisible(true)}
+          size="lg"
+          variant="secondary"
+        >
+          <SavingsRounded />
+          {t('button.openFiatRamp')}
+        </Button>
       </div>
+
+      <WalletFiatRampModal
+        onClose={() => setFiatRampVisible(false)}
+        visible={fiatRampVisible}
+      />
     </>
   )
 }

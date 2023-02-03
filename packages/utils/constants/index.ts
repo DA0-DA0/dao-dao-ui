@@ -163,3 +163,6 @@ export const FOLLOWING_DAOS_API_BASE = process.env
 // Single DAO Mode
 export const SINGLE_DAO_MODE =
   process.env.NEXT_PUBLIC_SINGLE_DAO_MODE === 'true'
+
+// Kado API (https://docs.kado.money)
+export const KADO_API_KEY = process.env.NEXT_PUBLIC_KADO_API_KEY as string

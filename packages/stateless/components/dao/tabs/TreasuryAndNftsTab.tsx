@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { LoadingData, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
 
 import { SortFn, useDropdownSorter } from '../../../hooks'
+import { Button } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown, DropdownOption } from '../../inputs/Dropdown'
 import { Loader } from '../../logo/Loader'
@@ -22,6 +23,7 @@ export interface TreasuryAndNftsTabProps<
   isMember: boolean
   addCollectionHref?: string
   StargazeNftImportModal: ComponentType<Pick<ModalProps, 'onClose'>>
+  FiatDepositModal: ComponentType<Pick<ModalProps, 'onClose' | 'visible'>>
 }
 
 export const TreasuryAndNftsTab = <
@@ -35,6 +37,7 @@ export const TreasuryAndNftsTab = <
   isMember,
   addCollectionHref,
   StargazeNftImportModal,
+  FiatDepositModal,
 }: TreasuryAndNftsTabProps<T, N>) => {
   const [showImportStargazeNftsModal, setShowImportStargazeNftsModal] =
     useState(false)
@@ -60,11 +63,17 @@ export const TreasuryAndNftsTab = <
   const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
     useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
 
+  const [showDepositFiat, setShowDepositFiat] = useState(false)
+
   return (
     <>
       {/* header min-height of 3.5rem standardized across all tabs */}
-      <div className="flex min-h-[3.5rem] flex-row items-center pb-6">
+      <div className="flex min-h-[3.5rem] flex-row items-center justify-between pb-6">
         <p className="title-text text-text-body">{t('title.treasury')}</p>
+
+        <Button onClick={() => setShowDepositFiat(true)} variant="secondary">
+          {t('button.depositFiat')}
+        </Button>
       </div>
 
       <div className="mb-9">
@@ -135,6 +144,11 @@ export const TreasuryAndNftsTab = <
           onClose={() => setShowImportStargazeNftsModal(false)}
         />
       )}
+
+      <FiatDepositModal
+        onClose={() => setShowDepositFiat(false)}
+        visible={showDepositFiat}
+      />
     </>
   )
 }
