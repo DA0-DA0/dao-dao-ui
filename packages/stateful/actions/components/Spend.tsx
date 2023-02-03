@@ -3,7 +3,7 @@ import {
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
-import { ComponentType, useCallback, useEffect, useMemo } from 'react'
+import { ComponentType, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -24,6 +24,7 @@ import {
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  nativeTokenDecimals,
   nativeTokenLabel,
   validateAddress,
   validatePositive,
@@ -162,12 +163,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     errors?._error,
   ])
 
-  const amountDecimals = useMemo(
-    () =>
-      cw20Balances.find(({ info }) => info.symbol === spendDenom)?.info
-        ?.decimals ?? NATIVE_DECIMALS,
-    [spendDenom, cw20Balances]
-  )
+  const amountDecimals =
+    cw20Balances.find(({ info }) => info.symbol === spendDenom)?.info
+      ?.decimals ??
+    nativeTokenDecimals(spendDenom) ??
+    NATIVE_DECIMALS
 
   return (
     <ActionCard Icon={MoneyEmoji} onRemove={onRemove} title={t('title.spend')}>
