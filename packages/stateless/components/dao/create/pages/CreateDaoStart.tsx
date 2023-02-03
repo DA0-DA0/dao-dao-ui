@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 
 import { CreateDaoContext } from '@dao-dao/types'
 import {
-  MAX_DAO_DESCRIPTION_LENGTH,
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
   validateRequired,
@@ -51,14 +50,7 @@ export const CreateDaoStart = ({
           </div>
         </div>
         <div className="flex flex-col gap-4 p-6 pt-5">
-          <p className="primary-text text-text-body">
-            {t('form.description')}
-            <span className="text-text-tertiary">
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              {' – '}
-              {t('form.maxCharacters', { max: MAX_DAO_DESCRIPTION_LENGTH })}
-            </span>
-          </p>
+          <p className="primary-text text-text-body">{t('form.description')}</p>
 
           <div className="flex flex-col">
             <TextAreaInput
@@ -67,14 +59,7 @@ export const CreateDaoStart = ({
               placeholder={t('form.daoDescriptionPlaceholder')}
               register={register}
               rows={5}
-              validation={[
-                validateRequired,
-                (value) =>
-                  value.length <= MAX_DAO_DESCRIPTION_LENGTH ||
-                  t('error.descriptionTooLong', {
-                    max: MAX_DAO_DESCRIPTION_LENGTH,
-                  }),
-              ]}
+              validation={[validateRequired]}
             />
             <InputErrorMessage error={errors.description} />
           </div>
