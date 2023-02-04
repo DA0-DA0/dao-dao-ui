@@ -19,7 +19,6 @@ import {
   navigatingToHrefAtom,
 } from '@dao-dao/state'
 import {
-  ApolloGqlProvider,
   DaoPageWrapper,
   DaoPageWrapperProps,
   SdaLayout,
@@ -77,29 +76,27 @@ const InnerApp = ({
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <ApolloGqlProvider>
-        <WalletProviderWrapper>
-          {router.pathname === '/discord' ||
-          router.pathname === '/404' ||
-          router.pathname === '/500' ||
-          router.pathname === '/_error' ? (
-            <Component {...pageProps} />
-          ) : (
-            // All non-error SDA pages are a DAO page. DaoPageWrapper handles
-            // SEO-meta tag and suspending page content with a SuspenseLoader
-            // while the fallback page is showing (as static props are loaded).
-            // We don't want to suspend this since we want SEO-meta tags to be
-            // able to load on first render (on the server) so that URL previews
-            // work.
-            <DaoPageWrapper setIcon={setIcon} {...pageProps}>
-              {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
-              <SdaLayout>
-                <Component {...pageProps} />
-              </SdaLayout>
-            </DaoPageWrapper>
-          )}
-        </WalletProviderWrapper>
-      </ApolloGqlProvider>
+      <WalletProviderWrapper>
+        {router.pathname === '/discord' ||
+        router.pathname === '/404' ||
+        router.pathname === '/500' ||
+        router.pathname === '/_error' ? (
+          <Component {...pageProps} />
+        ) : (
+          // All non-error SDA pages are a DAO page. DaoPageWrapper handles
+          // SEO-meta tag and suspending page content with a SuspenseLoader
+          // while the fallback page is showing (as static props are loaded).
+          // We don't want to suspend this since we want SEO-meta tags to be
+          // able to load on first render (on the server) so that URL previews
+          // work.
+          <DaoPageWrapper setIcon={setIcon} {...pageProps}>
+            {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
+            <SdaLayout>
+              <Component {...pageProps} />
+            </SdaLayout>
+          </DaoPageWrapper>
+        )}
+      </WalletProviderWrapper>
 
       <ToastNotifications />
     </ThemeProvider>
