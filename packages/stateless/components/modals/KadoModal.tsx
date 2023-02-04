@@ -30,7 +30,8 @@ export const KadoModal = ({
             <p>{t('info.verifyAddressMatches')}</p>
 
             <CopyToClipboard
-              takeStartEnd={{ start: 16, end: 16 }}
+              className="w-full"
+              takeStartEnd={{ start: 10, end: 8 }}
               value={toAddress}
             />
           </div>
@@ -38,8 +39,7 @@ export const KadoModal = ({
       )}
 
       <iframe
-        className="rounded-md"
-        height="100%"
+        className="min-h-[48rem] w-full shrink-0 grow rounded-md"
         src={`https://app.kado.money/?${queryString.stringify({
           apiKey: KADO_API_KEY,
           onRevCurrency: 'USDC',
@@ -51,7 +51,6 @@ export const KadoModal = ({
           cryptoList: 'USDC',
           networkList: 'JUNO',
         })}`}
-        width="100%"
       />
     </Modal>
   )
