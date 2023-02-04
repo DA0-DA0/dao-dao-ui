@@ -1,7 +1,12 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { DaoPayrollConfig, WithChainId } from '@dao-dao/types'
+import {
+  DaoPayrollConfig,
+  GenericTokenBalance,
+  TokenType,
+  WithChainId,
+} from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
@@ -9,7 +14,6 @@ import {
   AdminNominationResponse,
   AdminResponse,
   ConfigResponse,
-  Cw20BalanceResponse,
   Cw20BalancesResponse,
   Cw20TokenListResponse,
   Cw721TokenListResponse,
@@ -47,6 +51,7 @@ import {
   featuredDaoDumpStatesAtom,
   queryContractIndexerSelector,
 } from '../indexer'
+import { genericTokenSelector } from '../token'
 import * as Cw20BaseSelectors from './Cw20Base'
 
 type QueryClientParams = WithChainId<{
@@ -164,7 +169,7 @@ export const configSelector = selectorFamily<
       return await client.config(...params)
     },
 })
-// Use allCw20BalancesAndInfosSelector as it uses the indexer and implements
+// Use allCw20TokensWithBalancesSelector as it uses the indexer and implements
 // pagination for chain queries.
 export const _cw20BalancesSelector = selectorFamily<
   Cw20BalancesResponse,
@@ -644,17 +649,13 @@ export const allCw20InfosSelector = selectorFamily<
 })
 
 const CW20_BALANCES_LIMIT = 10
-export const allCw20BalancesAndInfosSelector = selectorFamily<
-  (Cw20BalanceResponse & {
-    info: TokenInfoResponse
-    imageUrl: string | undefined
-    isGovernanceToken: boolean
-  })[],
+export const allCw20TokensWithBalancesSelector = selectorFamily<
+  GenericTokenBalance[],
   QueryClientParams & {
     governanceTokenAddress?: string
   }
 >({
-  key: 'daoCoreV2AllCw20Balances',
+  key: 'daoCoreV2AllCw20TokensWithBalances',
   get:
     ({ governanceTokenAddress, ...queryClientParams }) =>
     async ({ get }) => {
@@ -725,38 +726,24 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
         })
       }
 
-      const infos = get(
+      const tokens = get(
         waitForAll(
           balances.map(({ addr }) =>
-            Cw20BaseSelectors.tokenInfoSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-
-              contractAddress: addr,
-              params: [],
+            genericTokenSelector({
+              type: TokenType.Cw20,
+              denomOrAddress: addr,
+              chainId: queryClientParams.chainId,
             })
           )
         )
       )
 
-      const cw20LogoUrls = get(
-        waitForAll(
-          balances.map(({ addr }) =>
-            Cw20BaseSelectors.logoUrlSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-              contractAddress: addr,
-            })
-          )
-        )
-      )
-
-      return balances.map((balance, index) => ({
-        ...balance,
-        info: infos[index],
-        imageUrl: cw20LogoUrls[index],
+      return tokens.map((token, index) => ({
+        token,
+        balance: balances![index].balance,
         isGovernanceToken:
-          !!governanceTokenAddress && governanceTokenAddress === balance.addr,
+          !!governanceTokenAddress &&
+          governanceTokenAddress === token.denomOrAddress,
       }))
     },
 })

@@ -96,8 +96,8 @@ export const NewSurveyForm = () => {
 
             tokens.forEach(({ denomOrAddress, amount }) => {
               const nativeDecimals = nativeBalancesLoadable.data.find(
-                ({ denom }) => denom === denomOrAddress
-              )?.decimals
+                ({ token }) => token.denomOrAddress === denomOrAddress
+              )?.token.decimals
               const cw20Decimals = cw20TokenInfos.find(
                 ({ address }) => address === denomOrAddress
               )?.info.decimals
@@ -172,7 +172,9 @@ export const NewSurveyForm = () => {
         nativeDenoms={
           nativeBalancesLoadable.loading
             ? []
-            : nativeBalancesLoadable.data.map(({ denom }) => denom)
+            : nativeBalancesLoadable.data.map(
+                ({ token }) => token.denomOrAddress
+              )
         }
         onCreate={onCreate}
       />

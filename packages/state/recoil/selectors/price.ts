@@ -143,8 +143,8 @@ export const daoTvlSelector = selectorFamily<
           chainId,
         })
       )
-      const cw20Balances = get(
-        DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
+      const cw20TokenBalances = get(
+        DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
           contractAddress: coreAddress,
           chainId,
           governanceTokenAddress: cw20GovernanceTokenAddress,
@@ -152,11 +152,13 @@ export const daoTvlSelector = selectorFamily<
       )
 
       const balances = [
-        ...nativeBalances.map(({ amount, denom, decimals }) => ({
-          amount,
-          denom,
-          decimals,
-        })),
+        ...nativeBalances.map(
+          ({ token: { denomOrAddress, decimals }, balance }) => ({
+            amount: balance,
+            denom: denomOrAddress,
+            decimals,
+          })
+        ),
         {
           amount: nativeDelegatedBalance.amount,
           denom: nativeDelegatedBalance.denom,
@@ -164,10 +166,10 @@ export const daoTvlSelector = selectorFamily<
             nativeTokenDecimals(nativeDelegatedBalance.denom) ||
             NATIVE_DECIMALS,
         },
-        ...cw20Balances.map(({ addr, balance, info: { decimals } }) => ({
+        ...cw20TokenBalances.map(({ balance, token }) => ({
           amount: balance,
-          denom: addr,
-          decimals,
+          denom: token.denomOrAddress,
+          decimals: token.decimals,
         })),
       ]
 

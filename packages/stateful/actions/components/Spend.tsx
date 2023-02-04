@@ -1,4 +1,3 @@
-import { Coin } from '@cosmjs/stargate'
 import {
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
@@ -13,18 +12,16 @@ import {
   NumberInput,
   SelectInput,
 } from '@dao-dao/stateless'
-import { AddressInputProps } from '@dao-dao/types'
+import { AddressInputProps, GenericTokenBalance } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionOptionsContextType,
 } from '@dao-dao/types/actions'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenDecimals,
   nativeTokenLabel,
   validateAddress,
   validatePositive,
@@ -41,12 +38,7 @@ export interface SpendData {
 }
 
 export interface SpendOptions {
-  nativeBalances: readonly Coin[]
-  cw20Balances: {
-    address: string
-    balance: string
-    info: TokenInfoResponse
-  }[]
+  tokens: GenericTokenBalance[]
   // Used to render pfpk or DAO profiles when selecting addresses.
   AddressInput: ComponentType<AddressInputProps>
 }
@@ -56,7 +48,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { nativeBalances, cw20Balances, AddressInput },
+  options: { tokens, AddressInput },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue, setError, clearErrors } = useFormContext()
@@ -72,55 +64,39 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           ? 'error.cantSpendMoreThanTreasury'
           : 'error.insufficientWalletBalance'
 
-      const native = nativeBalances.find(({ denom }) => denom === id)
-      if (native) {
+      const tokenBalance = tokens.find(
+        ({ token: { denomOrAddress } }) => denomOrAddress === id
+      )
+      if (tokenBalance) {
         const microAmount = convertDenomToMicroDenomWithDecimals(
           amount,
-          NATIVE_DECIMALS
+          tokenBalance.token.decimals
         )
         return (
-          microAmount <= Number(native.amount) ||
+          microAmount <= Number(tokenBalance.balance) ||
           t(insufficientBalanceI18nKey, {
             amount: convertMicroDenomToDenomWithDecimals(
-              native.amount,
-              NATIVE_DECIMALS
+              tokenBalance.balance,
+              tokenBalance.token.decimals
             ).toLocaleString(undefined, {
-              maximumFractionDigits: NATIVE_DECIMALS,
+              maximumFractionDigits: tokenBalance.token.decimals,
             }),
-            tokenSymbol: nativeTokenLabel(id),
+            tokenSymbol: tokenBalance.token.symbol,
           })
         )
       }
-      const cw20 = cw20Balances.find(({ address }) => address === id)
-      if (cw20) {
-        const microAmount = convertDenomToMicroDenomWithDecimals(
-          amount,
-          cw20.info.decimals
-        )
-        return (
-          microAmount <= Number(cw20.balance) ||
-          t(insufficientBalanceI18nKey, {
-            amount: convertMicroDenomToDenomWithDecimals(
-              cw20.balance,
-              cw20.info.decimals
-            ).toLocaleString(undefined, {
-              maximumFractionDigits: cw20.info.decimals,
-            }),
-            tokenSymbol: cw20.info.symbol,
-          })
-        )
-      }
-      // If there are no native tokens in the treasury the native balances
-      // query will return an empty list.
+
+      // Just in case native denom not in list.
       if (id === NATIVE_DENOM) {
         return t(insufficientBalanceI18nKey, {
           amount: 0,
           tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
         })
       }
+
       return 'Unrecognized denom.'
     },
-    [context.type, cw20Balances, nativeBalances, t]
+    [context.type, t, tokens]
   )
 
   // Update amount+denom combo error each time either field is updated
@@ -164,9 +140,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   ])
 
   const amountDecimals =
-    cw20Balances.find(({ info }) => info.symbol === spendDenom)?.info
-      ?.decimals ??
-    nativeTokenDecimals(spendDenom) ??
+    tokens.find(({ token }) => token.symbol === spendDenom)?.token.decimals ??
     NATIVE_DECIMALS
 
   return (
@@ -195,13 +169,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             register={register}
             style={{ maxWidth: '8.2rem' }}
           >
-            {nativeBalances.map(({ denom }) => (
-              <option key={denom} value={denom}>
-                ${nativeTokenLabel(denom)}
-              </option>
-            ))}
-            {cw20Balances.map(({ address, info: { symbol } }) => (
-              <option key={address} value={address}>
+            {tokens.map(({ token: { denomOrAddress, symbol } }) => (
+              <option key={denomOrAddress} value={denomOrAddress}>
                 ${symbol}
               </option>
             ))}

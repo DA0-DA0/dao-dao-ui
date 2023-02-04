@@ -13,7 +13,6 @@ import {
   CHAIN_BECH32_PREFIX,
   convertMicroDenomToDenomWithDecimals,
   isValidAddress,
-  nativeTokenDecimals,
   nativeTokenLabel,
   validateAddress,
   validatePositive,
@@ -29,10 +28,8 @@ export const InstantiateTokenSwap: ActionComponent<
   fieldNamePrefix,
   errors,
   options: {
-    selfPartyNativeBalances,
-    selfPartyCw20Balances,
-    counterpartyCw20Balances,
-    counterpartyNativeBalances,
+    selfPartyTokenBalances,
+    counterpartyTokenBalances,
     onInstantiate,
     instantiating,
     AddressInput,
@@ -46,49 +43,33 @@ export const InstantiateTokenSwap: ActionComponent<
   const selfParty = watch(fieldNamePrefix + 'selfParty')
   const counterparty = watch(fieldNamePrefix + 'counterparty')
 
-  const selfCw20 = selfPartyCw20Balances.find(
-    ({ address }) => selfParty.denomOrAddress === address
+  const selfToken = selfPartyTokenBalances.find(
+    ({ token }) => selfParty.denomOrAddress === token.denomOrAddress
   )
-  const selfDecimals = selfCw20
-    ? selfCw20.info.decimals
-    : nativeTokenDecimals(selfParty.denomOrAddress) ?? 0
+  const selfDecimals = selfToken?.token.decimals ?? 0
   const selfMin = convertMicroDenomToDenomWithDecimals(1, selfDecimals)
   const selfMax = convertMicroDenomToDenomWithDecimals(
-    selfCw20
-      ? selfCw20.balance
-      : selfPartyNativeBalances.find(
-          ({ denom }) => selfParty.denomOrAddress === denom
-        )?.amount ?? 0,
+    selfToken?.balance ?? 0,
     selfDecimals
   )
   const selfSymbol =
-    selfCw20?.info.symbol ?? nativeTokenLabel(selfParty.denomOrAddress)
+    selfToken?.token.symbol ?? nativeTokenLabel(selfParty.denomOrAddress)
 
-  const counterpartyCw20 = counterpartyCw20Balances.loading
+  const counterpartyToken = counterpartyTokenBalances.loading
     ? undefined
-    : counterpartyCw20Balances.data.find(
-        ({ address }) => counterparty.denomOrAddress === address
+    : counterpartyTokenBalances.data.find(
+        ({ token }) => counterparty.denomOrAddress === token.denomOrAddress
       )
-  const counterpartyDecimals = counterpartyCw20
-    ? counterpartyCw20.info.decimals
-    : nativeTokenDecimals(counterparty.denomOrAddress) ?? 0
+  const counterpartyDecimals = counterpartyToken?.token.decimals ?? 0
   const counterpartyMin = convertMicroDenomToDenomWithDecimals(
     1,
     counterpartyDecimals
   )
   const counterpartyMax = convertMicroDenomToDenomWithDecimals(
-    counterpartyCw20
-      ? counterpartyCw20.balance
-      : (counterpartyNativeBalances.loading
-          ? undefined
-          : counterpartyNativeBalances.data.find(
-              ({ denom }) => counterparty.denomOrAddress === denom
-            )?.amount) ?? 0,
+    counterpartyToken?.balance ?? 0,
     counterpartyDecimals
   )
-  const counterpartySymbol =
-    counterpartyCw20?.info.symbol ??
-    nativeTokenLabel(counterparty.denomOrAddress)
+  const counterpartySymbol = counterpartyToken?.token.symbol
 
   const counterpartyAddressValid =
     !!counterparty.address &&
@@ -146,51 +127,42 @@ export const InstantiateTokenSwap: ActionComponent<
 
           <SelectInput
             className={
-              counterpartyCw20Balances.loading ||
-              counterpartyNativeBalances.loading
-                ? 'animate-pulse'
-                : undefined
+              counterpartyTokenBalances.loading ? 'animate-pulse' : undefined
             }
             disabled={
-              !counterpartyAddressValid ||
-              counterpartyCw20Balances.loading ||
-              counterpartyNativeBalances.loading
+              !counterpartyAddressValid || counterpartyTokenBalances.loading
             }
             error={errors?.counterparty?.denomOrAddress}
             fieldName={fieldNamePrefix + 'counterparty.denomOrAddress'}
             onChange={(denomOrAddress) => {
-              if (counterpartyCw20Balances.loading) {
+              if (counterpartyTokenBalances.loading) {
                 return
               }
 
-              const foundCw20 = counterpartyCw20Balances.data.find(
-                ({ address }) => denomOrAddress === address
+              const foundToken = counterpartyTokenBalances.data.find(
+                ({ token }) => denomOrAddress === token.denomOrAddress
               )
+              if (!foundToken) {
+                return
+              }
+
               // Update type and decimals.
               setValue(
                 fieldNamePrefix + 'counterparty.type',
-                foundCw20 ? 'cw20' : 'native'
+                foundToken.token.type
               )
               setValue(
                 fieldNamePrefix + 'counterparty.decimals',
-                foundCw20
-                  ? foundCw20.info.decimals
-                  : nativeTokenDecimals(denomOrAddress) ?? 0
+                foundToken.token.decimals
               )
             }}
             register={register}
             style={{ maxWidth: '8.2rem' }}
           >
-            {!counterpartyNativeBalances.loading &&
-              counterpartyNativeBalances.data.map(({ denom }) => (
-                <option key={denom} value={denom}>
-                  ${nativeTokenLabel(denom)}
-                </option>
-              ))}
-            {!counterpartyCw20Balances.loading &&
-              counterpartyCw20Balances.data.map(
-                ({ address, info: { symbol } }) => (
-                  <option key={address} value={address}>
+            {!counterpartyTokenBalances.loading &&
+              counterpartyTokenBalances.data.map(
+                ({ token: { denomOrAddress, symbol } }) => (
+                  <option key={denomOrAddress} value={denomOrAddress}>
                     ${symbol}
                   </option>
                 )
@@ -253,34 +225,33 @@ export const InstantiateTokenSwap: ActionComponent<
             error={errors?.selfParty?.denomOrAddress}
             fieldName={fieldNamePrefix + 'selfParty.denomOrAddress'}
             onChange={(denomOrAddress) => {
-              const foundCw20 = selfPartyCw20Balances.find(
-                ({ address }) => denomOrAddress === address
+              const foundToken = selfPartyTokenBalances.find(
+                ({ token }) => denomOrAddress === token.denomOrAddress
               )
+              if (!foundToken) {
+                return
+              }
+
               // Update type and decimals.
               setValue(
                 fieldNamePrefix + 'selfParty.type',
-                foundCw20 ? 'cw20' : 'native'
+                foundToken.token.type
               )
               setValue(
                 fieldNamePrefix + 'selfParty.decimals',
-                foundCw20
-                  ? foundCw20.info.decimals
-                  : nativeTokenDecimals(denomOrAddress) ?? 0
+                foundToken.token.decimals
               )
             }}
             register={register}
             style={{ maxWidth: '8.2rem' }}
           >
-            {selfPartyNativeBalances.map(({ denom }) => (
-              <option key={denom} value={denom}>
-                ${nativeTokenLabel(denom)}
-              </option>
-            ))}
-            {selfPartyCw20Balances.map(({ address, info: { symbol } }) => (
-              <option key={address} value={address}>
-                ${symbol}
-              </option>
-            ))}
+            {selfPartyTokenBalances.map(
+              ({ token: { denomOrAddress, symbol } }) => (
+                <option key={denomOrAddress} value={denomOrAddress}>
+                  ${symbol}
+                </option>
+              )
+            )}
           </SelectInput>
         </div>
 

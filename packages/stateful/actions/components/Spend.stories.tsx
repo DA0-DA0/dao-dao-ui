@@ -6,7 +6,7 @@ import {
   makeDaoInfo,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
-import { ActionOptionsContextType } from '@dao-dao/types'
+import { ActionOptionsContextType, TokenType } from '@dao-dao/types'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
 import { SpendComponent, SpendData } from './Spend'
@@ -42,35 +42,39 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   options: {
-    nativeBalances: [
+    tokens: [
       {
-        denom: NATIVE_DENOM,
-        amount: '46252349169321',
+        token: {
+          type: TokenType.Native,
+          denomOrAddress: NATIVE_DENOM,
+          decimals: 6,
+          symbol: 'JUNO',
+          imageUrl: '',
+        },
+        balance: '46252349169321',
+      },
+      {
+        token: {
+          type: TokenType.Cw20,
+          denomOrAddress: 'cw20_1',
+          decimals: 6,
+          symbol: 'ATKN',
+          imageUrl: '',
+        },
+        balance: '1284135723893',
+      },
+      {
+        token: {
+          type: TokenType.Cw20,
+          denomOrAddress: 'cw20_2',
+          decimals: 6,
+          symbol: 'DIFF',
+          imageUrl: '',
+        },
+        balance: '102948124125',
       },
     ],
     AddressInput,
-    cw20Balances: [
-      {
-        address: 'cw20_1',
-        balance: '1284135723893',
-        info: {
-          decimals: 6,
-          name: 'A token',
-          symbol: 'ATKN',
-          total_supply: '10238192471284128',
-        },
-      },
-      {
-        address: 'cw20_2',
-        balance: '102948124125',
-        info: {
-          decimals: 6,
-          name: 'A different token',
-          symbol: 'DIFF',
-          total_supply: '6212378128495812',
-        },
-      },
-    ],
   },
   isCreating: true,
   onRemove: () => alert('remove'),
