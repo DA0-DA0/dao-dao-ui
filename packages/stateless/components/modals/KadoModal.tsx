@@ -1,12 +1,14 @@
 import { WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import queryString from 'query-string'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { KadoModalProps } from '@dao-dao/types'
 import { KADO_API_KEY } from '@dao-dao/utils'
 
 import { CopyToClipboard } from '../CopyToClipboard'
+import { Loader } from '../logo'
 import { Modal } from './Modal'
 
 export const KadoModal = ({
@@ -16,6 +18,23 @@ export const KadoModal = ({
   ...modalProps
 }: KadoModalProps) => {
   const { t } = useTranslation()
+
+  // iframe hijacks clicks on mobile Safari even when pointer-events are set to
+  // none (which happens on the modal when visible=false), so we need to
+  // completely hide the iframe when invisible.
+  //
+  // https://stackoverflow.com/questions/39533016/iframe-with-pointer-eventsnone-hijacks-clicks-in-safari-on-ios
+  const [iframeVisible, setIframeVisible] = useState(false)
+  useEffect(() => {
+    // Hide iframe at a delay after modal hides so it doesn't look weird when
+    // disappearing, but show immediately when displaying.
+    if (modalProps.visible) {
+      setIframeVisible(true)
+    } else {
+      const timeout = setTimeout(() => setIframeVisible(false), 200)
+      return () => clearTimeout(timeout)
+    }
+  }, [modalProps.visible])
 
   return (
     <Modal
@@ -38,23 +57,36 @@ export const KadoModal = ({
         </div>
       )}
 
-      {/* iframe hijacks clicks on mobile Safari even when pointer-events are set to none (which happens on the modal when visible=false), so we need to completely hide the iframe when invisible. https://stackoverflow.com/questions/39533016/iframe-with-pointer-eventsnone-hijacks-clicks-in-safari-on-ios */}
-      {modalProps.visible && (
-        <iframe
-          className="max-h-full min-h-[48rem] w-full shrink-0 grow rounded-md"
-          src={`https://app.kado.money/?${queryString.stringify({
-            apiKey: KADO_API_KEY,
-            onRevCurrency: 'USDC',
-            offPayCurrency: 'USDC',
-            offRevCurrency: 'USDC',
-            product: defaultMode?.toUpperCase(),
-            onToAddress: toAddress,
-            network: 'JUNO',
-            cryptoList: 'USDC',
-            networkList: 'JUNO',
-          })}`}
-        />
-      )}
+      <div className="relative max-h-full min-h-[48rem] w-full shrink-0 grow">
+        <div className="absolute z-10 flex w-full flex-col items-center justify-center p-10">
+          <Loader />
+        </div>
+
+        {iframeVisible && (
+          <iframe
+            className="relative z-20 h-full w-full rounded-md"
+            ref={(ref) => {
+              if (ref) {
+                ref.parentElement?.parentElement?.scrollTo({
+                  top: 0,
+                  behavior: 'smooth',
+                })
+              }
+            }}
+            src={`https://app.kado.money/?${queryString.stringify({
+              apiKey: KADO_API_KEY,
+              onRevCurrency: 'USDC',
+              offPayCurrency: 'USDC',
+              offRevCurrency: 'USDC',
+              product: defaultMode?.toUpperCase(),
+              onToAddress: toAddress,
+              network: 'JUNO',
+              cryptoList: 'USDC',
+              networkList: 'JUNO',
+            })}`}
+          />
+        )}
+      </div>
     </Modal>
   )
 }
