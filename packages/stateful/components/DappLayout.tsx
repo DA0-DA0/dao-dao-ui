@@ -45,6 +45,7 @@ import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
 import { SyncFollowingModal } from './SyncFollowingModal'
+import { WalletFiatRampModal } from './WalletFiatRampModal'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
@@ -245,6 +246,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
       }}
       rightSidebarProps={{
         wallet: <SidebarWallet />,
+        WalletFiatRampModal: connected ? WalletFiatRampModal : undefined,
       }}
       walletProfile={
         status === WalletConnectionStatus.Connected ? walletProfile : undefined

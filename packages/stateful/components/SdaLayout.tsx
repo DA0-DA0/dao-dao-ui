@@ -30,6 +30,7 @@ import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
+import { WalletFiatRampModal } from './WalletFiatRampModal'
 
 export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
@@ -143,6 +144,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
       }}
       rightSidebarProps={{
         wallet: <SidebarWallet />,
+        WalletFiatRampModal: connected ? WalletFiatRampModal : undefined,
       }}
       walletProfile={
         status === WalletConnectionStatus.Connected ? walletProfile : undefined
