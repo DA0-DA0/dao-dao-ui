@@ -18,18 +18,17 @@ import {
   formatDateTimeTz,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../../actions'
 import { VestingPaymentCard } from '../../components/stateful/VestingPaymentCard'
-import { StatefulVestingPaymentCardProps } from '../../components/types'
+import { VestingInfo } from '../../components/types'
 
 export type CancelVestingData = {
   address: string
 }
 
 export type CancelVestingOptions = {
-  vestingContracts: LoadingData<StatefulVestingPaymentCardProps[]>
-  cancelledVestingContract: LoadingData<
-    StatefulVestingPaymentCardProps | undefined
-  >
+  vestingInfos: LoadingData<VestingInfo[]>
+  cancelledVestingContract: LoadingData<VestingInfo | undefined>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
@@ -37,19 +36,21 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { vestingContracts, cancelledVestingContract, EntityDisplay },
+  options: { vestingInfos, cancelledVestingContract, EntityDisplay },
 }) => {
   const { t } = useTranslation()
+  const { address } = useActionOptions()
 
   const { watch, setValue } = useFormContext()
   const watchAddress = watch(fieldNamePrefix + 'address')
 
-  const cancellableVestingContracts = vestingContracts.loading
+  // Only vesting contracts with a non-zero balance remaining and whose owner is
+  // the current address are cancellable.
+  const cancellableVestingContracts = vestingInfos.loading
     ? undefined
-    : vestingContracts.data
-        // Only vesting contracts with a non-zero balance remaining are
-        // cancellable.
-        .filter(({ vestedAmount }) => vestedAmount > 0)
+    : vestingInfos.data.filter(
+        ({ owner, vestedAmount }) => owner === address && vestedAmount > 0
+      )
 
   return (
     <>

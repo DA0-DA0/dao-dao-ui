@@ -15,14 +15,18 @@ import {
 } from '@dao-dao/utils'
 
 import { ButtonLink } from '../../../../../components'
-import { useAwaitNextBlock, useEntity } from '../../../../../hooks'
+import {
+  useAwaitNextBlock,
+  useEntity,
+  useWalletInfo,
+} from '../../../../../hooks'
 import {
   useDistribute,
   useWithdrawDelegatorRewards,
 } from '../../../../../hooks/contracts/CwVesting'
 import { tokenCardLazyInfoSelector } from '../../../../../recoil'
 import { VestingPaymentCard as StatelessVestingPaymentCard } from '../stateless/VestingPaymentCard'
-import { StatefulVestingPaymentCardProps } from '../types'
+import { VestingInfo } from '../types'
 import { NativeStakingModal } from './NativeStakingModal'
 
 export const VestingPaymentCard = ({
@@ -30,9 +34,10 @@ export const VestingPaymentCard = ({
   vestingPayment,
   vestedAmount,
   token,
-}: StatefulVestingPaymentCardProps) => {
+}: VestingInfo) => {
   const { t } = useTranslation()
   const { chainId } = useDaoInfoContext()
+  const { refreshBalances } = useWalletInfo()
 
   const recipientEntity = useEntity({
     address: vestingPayment.recipient,
@@ -78,7 +83,10 @@ export const VestingPaymentCard = ({
       toast.success(t('success.withdrewPayment'))
 
       // Give time for indexer to update.
-      awaitNextBlock().then(refresh)
+      awaitNextBlock().then(() => {
+        refresh()
+        refreshBalances()
+      })
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -133,6 +141,13 @@ export const VestingPaymentCard = ({
         claiming={claiming}
         cw20Address={cw20Address}
         description={vestingPayment.description}
+        endDate={
+          'saturating_linear' in vestingPayment.vesting_schedule
+            ? new Date(
+                vestingPayment.vesting_schedule.saturating_linear.max_x * 1000
+              )
+            : undefined
+        }
         lazyInfo={lazyInfoLoading}
         onAddToken={onAddToken}
         onClaim={onClaim}
@@ -147,6 +162,13 @@ export const VestingPaymentCard = ({
           vestedAmount,
           token.decimals
         )}
+        startDate={
+          'saturating_linear' in vestingPayment.vesting_schedule
+            ? new Date(
+                vestingPayment.vesting_schedule.saturating_linear.min_x * 1000
+              )
+            : undefined
+        }
         title={vestingPayment.title}
         token={token}
         withdrawableAmount={convertMicroDenomToDenomWithDecimals(

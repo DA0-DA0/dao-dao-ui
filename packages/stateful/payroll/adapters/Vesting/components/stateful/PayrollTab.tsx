@@ -7,7 +7,7 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { ButtonLink } from '../../../../../components'
 import { useMembership } from '../../../../../hooks/useMembership'
-import { vestingPaymentCardsPropsSelector } from '../../state'
+import { vestingInfosSelector } from '../../state'
 import { PayrollTab as StatelessPayrollTab } from '../stateless/PayrollTab'
 import { VestingPaymentCard } from './VestingPaymentCard'
 
@@ -27,7 +27,7 @@ export const PayrollTab = () => {
 
   const vestingPaymentsLoading = loadableToLoadingData(
     useCachedLoadable(
-      vestingPaymentCardsPropsSelector({
+      vestingInfosSelector({
         coreAddress,
         chainId,
       })

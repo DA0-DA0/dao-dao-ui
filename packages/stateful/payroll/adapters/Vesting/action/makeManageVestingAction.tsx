@@ -45,8 +45,8 @@ import {
 import {
   vestingFactoryOwnerSelector,
   vestingFactorySelector,
-  vestingPaymentCardPropsSelector,
-  vestingPaymentCardsPropsSelector,
+  vestingInfoSelector,
+  vestingInfosSelector,
 } from '../state'
 import {
   BeginVesting,
@@ -96,7 +96,7 @@ const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
 
   const vestingContracts = loadableToLoadingData(
     useCachedLoadable(
-      vestingPaymentCardsPropsSelector({
+      vestingInfosSelector({
         coreAddress: address,
         chainId,
       })
@@ -107,7 +107,7 @@ const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
   const cancelledVestingContract = loadableToLoadingData(
     useRecoilValueLoadable(
       !props.isCreating && !creating && cancelledAddress
-        ? vestingPaymentCardPropsSelector({
+        ? vestingInfoSelector({
             vestingContractAddress: cancelledAddress,
             chainId,
           })
@@ -189,7 +189,7 @@ const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
             errors={props.errors?.cancel}
             fieldNamePrefix={props.fieldNamePrefix + 'cancel.'}
             options={{
-              vestingContracts,
+              vestingInfos: vestingContracts,
               cancelledVestingContract,
               EntityDisplay,
             }}

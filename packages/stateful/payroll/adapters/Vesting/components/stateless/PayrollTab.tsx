@@ -1,23 +1,24 @@
 import { Add } from '@mui/icons-material'
-import { ComponentType } from 'react'
+import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
   ButtonLinkProps,
+  DropdownIconButton,
   GridCardContainer,
   Loader,
   Tooltip,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 
-import { StatefulVestingPaymentCardProps } from '../types'
+import { VestingInfo } from '../types'
 
 export interface PayrollTabProps {
-  vestingPaymentsLoading: LoadingData<StatefulVestingPaymentCardProps[]>
+  vestingPaymentsLoading: LoadingData<VestingInfo[]>
   isMember: boolean
   createVestingPaymentHref: string
   ButtonLink: ComponentType<ButtonLinkProps>
-  VestingPaymentCard: ComponentType<StatefulVestingPaymentCardProps>
+  VestingPaymentCard: ComponentType<VestingInfo>
 }
 
 export const PayrollTab = ({
@@ -28,6 +29,25 @@ export const PayrollTab = ({
   VestingPaymentCard,
 }: PayrollTabProps) => {
   const { t } = useTranslation()
+
+  // Vesting payments that are still vesting or have yet to be funded.
+  const activeVestingPayments = vestingPaymentsLoading.loading
+    ? []
+    : vestingPaymentsLoading.data.filter(
+        ({ vestingPayment }) =>
+          vestingPayment.status === 'active' ||
+          vestingPayment.status === 'unfunded'
+      )
+  // Vesting payments that have finished vesting.
+  const completedVestingPayments = vestingPaymentsLoading.loading
+    ? []
+    : vestingPaymentsLoading.data.filter(
+        ({ vestingPayment }) =>
+          vestingPayment.status !== 'active' &&
+          vestingPayment.status !== 'unfunded'
+      )
+
+  const [showingCompleted, setShowingCompleted] = useState(false)
 
   return (
     <div className="flex flex-col gap-6">
@@ -60,15 +80,50 @@ export const PayrollTab = ({
         </Tooltip>
       </div>
 
-      <div className="mb-9">
+      <div className="mb-9 space-y-6">
         {vestingPaymentsLoading.loading || !vestingPaymentsLoading.data ? (
           <Loader fill={false} />
         ) : vestingPaymentsLoading.data.length ? (
-          <GridCardContainer cardType="wide">
-            {vestingPaymentsLoading.data.map((props, index) => (
-              <VestingPaymentCard key={index} {...props} />
-            ))}
-          </GridCardContainer>
+          <>
+            {activeVestingPayments.length > 0 && (
+              <GridCardContainer cardType="wide">
+                {activeVestingPayments.map((props, index) => (
+                  <VestingPaymentCard key={index} {...props} />
+                ))}
+              </GridCardContainer>
+            )}
+
+            {completedVestingPayments.length > 0 && (
+              <div className="space-y-4">
+                <div className="link-text ml-2 flex flex-row items-center gap-3 text-text-secondary">
+                  <DropdownIconButton
+                    className="text-icon-primary"
+                    open={showingCompleted}
+                    toggle={() => setShowingCompleted((s) => !s)}
+                  />
+
+                  <p
+                    className="cursor-pointer"
+                    onClick={() => setShowingCompleted((s) => !s)}
+                  >
+                    {/* eslint-disable-next-line i18next/no-literal-string */}
+                    {t('title.completed')} •{' '}
+                    {t('info.numPayments', {
+                      count: completedVestingPayments.length,
+                    })}
+                  </p>
+                </div>
+
+                {showingCompleted && (
+                  <GridCardContainer cardType="wide">
+                    {completedVestingPayments.map((props, index) => (
+                      <VestingPaymentCard key={index} {...props} />
+                    ))}
+                  </GridCardContainer>
+                )}
+              </div>
+            )}
+          </>
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>
         )}

@@ -52,4 +52,8 @@ Default.args = {
   remainingBalanceVesting: 401239.5123,
   withdrawableAmount: 1942.7984,
   claimedAmount: 39.234,
+  // Started 2 days ago.
+  startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
+  // Ends in 7 days.
+  endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
 }

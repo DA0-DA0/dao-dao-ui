@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { ComponentType, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 
 import {
   Button,
@@ -25,6 +26,7 @@ import {
   Tooltip,
   TooltipInfoIcon,
   UnstakingModal,
+  useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
   Entity,
@@ -35,6 +37,7 @@ import {
 } from '@dao-dao/types'
 import {
   concatAddressStartEnd,
+  formatDateTimeTz,
   isJunoIbcUsdc,
   secondsToWdhms,
   toAccessibleImageUrl,
@@ -55,6 +58,8 @@ export interface VestingPaymentCardProps {
   remainingBalanceVesting: number
   withdrawableAmount: number
   claimedAmount: number
+  startDate?: Date
+  endDate?: Date
 
   // Defined if using a Cw20 token.
   cw20Address?: string
@@ -83,6 +88,8 @@ export const VestingPaymentCard = ({
   remainingBalanceVesting,
   withdrawableAmount,
   claimedAmount,
+  startDate,
+  endDate,
   cw20Address,
   onWithdraw,
   withdrawing,
@@ -224,6 +231,10 @@ export const VestingPaymentCard = ({
   const [descriptionCollapsible, setDescriptionCollapsible] = useState(false)
   const [descriptionCollapsed, setDescriptionCollapsed] = useState(true)
 
+  const now = new Date()
+
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
+
   return (
     <>
       <div className="rounded-lg bg-background-tertiary">
@@ -321,86 +332,136 @@ export const VestingPaymentCard = ({
           </div>
         )}
 
+        {(startDate || endDate) && (
+          <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
+            {startDate && (
+              <div className="flex flex-row items-start justify-between gap-8">
+                <p className="link-text">
+                  {startDate > now ? t('info.startsAt') : t('info.startedAt')}
+                </p>
+
+                {/* leading-5 to match link-text's line-height. */}
+                {endDate && endDate <= now ? (
+                  <p className="caption-text leading-5 text-text-body">
+                    {formatDateTimeTz(startDate)}
+                  </p>
+                ) : (
+                  <Tooltip title={formatDateTimeTz(startDate)}>
+                    <p className="caption-text leading-5 text-text-body">
+                      <TimeAgo date={startDate} formatter={timeAgoFormatter} />
+                    </p>
+                  </Tooltip>
+                )}
+              </div>
+            )}
+
+            {endDate && (
+              <div className="flex flex-row items-start justify-between gap-8">
+                <p className="link-text">
+                  {endDate > now ? t('info.finishesAt') : t('info.finishedAt')}
+                </p>
+
+                {/* leading-5 to match link-text's line-height. */}
+                {endDate > now ? (
+                  <Tooltip title={formatDateTimeTz(endDate)}>
+                    <p className="caption-text leading-5 text-text-body">
+                      <TimeAgo date={endDate} formatter={timeAgoFormatter} />
+                    </p>
+                  </Tooltip>
+                ) : (
+                  <p className="caption-text leading-5 text-text-body">
+                    {formatDateTimeTz(endDate)}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
-          <div className="flex flex-row items-start justify-between gap-8">
-            <p className="link-text">{t('info.availableBalance')}</p>
+          {withdrawableAmount > 0 && (
+            <div className="flex flex-row items-start justify-between gap-8">
+              <p className="link-text">{t('info.availableBalance')}</p>
 
-            {/* leading-5 to match link-text's line-height. */}
-            <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
               {/* leading-5 to match link-text's line-height. */}
-              <TokenAmountDisplay
-                amount={withdrawableAmount}
-                className="leading-5 text-text-body"
-                decimals={token.decimals}
-                symbol={token.symbol}
-              />
+              <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
+                {/* leading-5 to match link-text's line-height. */}
+                <TokenAmountDisplay
+                  amount={withdrawableAmount}
+                  className="leading-5 text-text-body"
+                  decimals={token.decimals}
+                  symbol={token.symbol}
+                />
 
-              {!isJunoIbcUsdc(token.denomOrAddress) &&
-                (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
-                  <div className="flex flex-row items-center gap-1">
-                    <TokenAmountDisplay
-                      amount={
-                        lazyInfo.loading
-                          ? { loading: true }
-                          : withdrawableAmount *
-                            lazyInfo.data.usdcUnitPrice!.amount
-                      }
-                      dateFetched={
-                        lazyInfo.loading
-                          ? undefined
-                          : lazyInfo.data.usdcUnitPrice!.timestamp
-                      }
-                      estimatedUsdValue
-                    />
+                {!isJunoIbcUsdc(token.denomOrAddress) &&
+                  (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                    <div className="flex flex-row items-center gap-1">
+                      <TokenAmountDisplay
+                        amount={
+                          lazyInfo.loading
+                            ? { loading: true }
+                            : withdrawableAmount *
+                              lazyInfo.data.usdcUnitPrice!.amount
+                        }
+                        dateFetched={
+                          lazyInfo.loading
+                            ? undefined
+                            : lazyInfo.data.usdcUnitPrice!.timestamp
+                        }
+                        estimatedUsdValue
+                      />
 
-                    <TooltipInfoIcon
-                      size="xs"
-                      title={t('info.estimatedUsdValueTooltip')}
-                    />
-                  </div>
-                )}
+                      <TooltipInfoIcon
+                        size="xs"
+                        title={t('info.estimatedUsdValueTooltip')}
+                      />
+                    </div>
+                  )}
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="flex flex-row items-start justify-between gap-8">
-            <p className="link-text">{t('info.remainingBalanceVesting')}</p>
+          {remainingBalanceVesting > 0 && (
+            <div className="flex flex-row items-start justify-between gap-8">
+              <p className="link-text">{t('info.remainingBalanceVesting')}</p>
 
-            {/* leading-5 to match link-text's line-height. */}
-            <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
               {/* leading-5 to match link-text's line-height. */}
-              <TokenAmountDisplay
-                amount={remainingBalanceVesting}
-                className="leading-5 text-text-body"
-                decimals={token.decimals}
-                symbol={token.symbol}
-              />
+              <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
+                {/* leading-5 to match link-text's line-height. */}
+                <TokenAmountDisplay
+                  amount={remainingBalanceVesting}
+                  className="leading-5 text-text-body"
+                  decimals={token.decimals}
+                  symbol={token.symbol}
+                />
 
-              {!isJunoIbcUsdc(token.denomOrAddress) &&
-                (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
-                  <div className="flex flex-row items-center gap-1">
-                    <TokenAmountDisplay
-                      amount={
-                        lazyInfo.loading
-                          ? { loading: true }
-                          : remainingBalanceVesting *
-                            lazyInfo.data.usdcUnitPrice!.amount
-                      }
-                      dateFetched={
-                        lazyInfo.loading
-                          ? undefined
-                          : lazyInfo.data.usdcUnitPrice!.timestamp
-                      }
-                      estimatedUsdValue
-                    />
+                {!isJunoIbcUsdc(token.denomOrAddress) &&
+                  (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                    <div className="flex flex-row items-center gap-1">
+                      <TokenAmountDisplay
+                        amount={
+                          lazyInfo.loading
+                            ? { loading: true }
+                            : remainingBalanceVesting *
+                              lazyInfo.data.usdcUnitPrice!.amount
+                        }
+                        dateFetched={
+                          lazyInfo.loading
+                            ? undefined
+                            : lazyInfo.data.usdcUnitPrice!.timestamp
+                        }
+                        estimatedUsdValue
+                      />
 
-                    <TooltipInfoIcon
-                      size="xs"
-                      title={t('info.estimatedUsdValueTooltip')}
-                    />
-                  </div>
-                )}
+                      <TooltipInfoIcon
+                        size="xs"
+                        title={t('info.estimatedUsdValueTooltip')}
+                      />
+                    </div>
+                  )}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex flex-row items-start justify-between gap-8">
             <p className="link-text">{t('title.claimedBalance')}</p>

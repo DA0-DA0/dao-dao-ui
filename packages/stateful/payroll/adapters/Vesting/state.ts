@@ -8,7 +8,7 @@ import {
 } from '@dao-dao/state/recoil'
 import { TokenType, WithChainId } from '@dao-dao/types'
 
-import { StatefulVestingPaymentCardProps } from './components/types'
+import { VestingInfo } from './components/types'
 
 // Returns the contract address for the cw-payroll-factory if set.
 export const vestingFactorySelector = selectorFamily<
@@ -69,11 +69,11 @@ export const vestingFactoryOwnerSelector = selectorFamily<
     },
 })
 
-export const vestingPaymentCardsPropsSelector = selectorFamily<
-  StatefulVestingPaymentCardProps[],
+export const vestingInfosSelector = selectorFamily<
+  VestingInfo[],
   WithChainId<{ coreAddress: string }>
 >({
-  key: 'vestingPaymentCardsProps',
+  key: 'vestingInfo',
   get:
     ({ chainId, coreAddress }) =>
     ({ get }) => {
@@ -92,7 +92,7 @@ export const vestingPaymentCardsPropsSelector = selectorFamily<
       return get(
         waitForAll(
           vestingPaymentContracts.map(({ contract }) =>
-            vestingPaymentCardPropsSelector({
+            vestingInfoSelector({
               vestingContractAddress: contract,
               chainId,
             })
@@ -102,16 +102,24 @@ export const vestingPaymentCardsPropsSelector = selectorFamily<
     },
 })
 
-export const vestingPaymentCardPropsSelector = selectorFamily<
-  StatefulVestingPaymentCardProps,
+export const vestingInfoSelector = selectorFamily<
+  VestingInfo,
   WithChainId<{ vestingContractAddress: string }>
 >({
-  key: 'vestingPaymentCardProps',
+  key: 'vestingInfo',
   get:
     ({ vestingContractAddress, chainId }) =>
     ({ get }) => {
       const vestingPayment = get(
         CwVestingSelectors.infoSelector({
+          contractAddress: vestingContractAddress,
+          params: [],
+          chainId,
+        })
+      )
+
+      const ownership = get(
+        CwVestingSelectors.ownershipSelector({
           contractAddress: vestingContractAddress,
           params: [],
           chainId,
@@ -143,6 +151,7 @@ export const vestingPaymentCardPropsSelector = selectorFamily<
         vestingPayment,
         vestedAmount: Number(vestedAmount),
         token,
+        owner: ownership.owner || undefined,
       }
     },
 })
