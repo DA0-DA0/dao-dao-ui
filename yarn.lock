@@ -3987,10 +3987,10 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-12.2.6.tgz#7ca74a12b2f46d8cbaca18de11547797db7a86b1"
   integrity sha512-AQ1QbiJ13I+47wXRjJuOUmBp9tmEqEhhqFoaKrFvbj6v4ekZS5/2tlybaZxrVB5mF5Tqu/OcLp5fCqXrDxHbXw==
 
-"@noahsaso/cosmodal@^0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.8.2.tgz#5852c3af3431f591e7ba92f50e8d84c69641c451"
-  integrity sha512-qpo3iUtsv4odpBi/61HImq6fRwodSzAe1suSvLp049jeJ14ju1eOQ8S0CObnzMAMVz6AzjLszkdWv1h59St6Ng==
+"@noahsaso/cosmodal@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.8.3.tgz#df52b88044d4927e55fecea9b8f49fa32028d6c4"
+  integrity sha512-ew9FN0I21d9/5SgU76oh9oHBtSSLYOgDoc4np/Fh+wFGUc53RI5GFKG0fqCCdy5Guuo+TVgrM3eJGlM1xwrDpw==
   dependencies:
     "@cosmjs/cosmwasm-stargate" "0.29.3"
     "@cosmjs/encoding" "0.29.3"
