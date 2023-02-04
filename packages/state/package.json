@@ -24,7 +24,7 @@
   "devDependencies": {
     "@dao-dao/config": "^2.1.0-rc.1",
     "@dao-dao/types": "^2.1.0-rc.1",
-    "@noahsaso/cosmodal": "^0.8.2",
+    "@noahsaso/cosmodal": "^0.8.3",
     "typescript": "^4.8.3"
   },
   "prettier": "@dao-dao/config/prettier"

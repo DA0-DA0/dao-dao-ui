@@ -47,7 +47,7 @@
     "@cosmjs/amino": "0.29.3",
     "@dao-dao/config": "^2.1.0-rc.1",
     "@dao-dao/types": "^2.1.0-rc.1",
-    "@noahsaso/cosmodal": "^0.8.2",
+    "@noahsaso/cosmodal": "^0.8.3",
     "@storybook/react": "^6.5.10",
     "@types/file-saver": "^2.0.5",
     "@types/jest": "^29.1.0",
