@@ -10,8 +10,8 @@ export const WalletFiatRampModal = (props: Omit<ModalProps, 'header'>) => {
   return (
     <KadoModal
       header={{
-        title: t('title.exchangeStableCoin'),
-        subtitle: t('info.exchangeStableCoinDescription'),
+        title: t('title.exchangeUsdc'),
+        subtitle: t('info.exchangeUsdcDescription'),
       }}
       toAddress={address}
       {...props}

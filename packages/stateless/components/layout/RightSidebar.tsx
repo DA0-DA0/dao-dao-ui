@@ -78,7 +78,7 @@ export const RightSidebar = ({
             variant="secondary"
           >
             <SavingsRounded />
-            {t('button.exchangeStableCoin')}
+            {t('button.exchangeUsdc')}
           </Button>
         )}
       </div>
