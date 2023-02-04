@@ -74,7 +74,7 @@ export const TreasuryAndNftsTab = <
         {/* Only show if defined, which indicates wallet connected. */}
         {FiatDepositModal && (
           <Button onClick={() => setShowDepositFiat(true)} variant="secondary">
-            {t('button.depositUsdc')}
+            {t('button.depositFiat')}
           </Button>
         )}
       </div>

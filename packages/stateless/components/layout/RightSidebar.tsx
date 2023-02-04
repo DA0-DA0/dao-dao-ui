@@ -1,4 +1,8 @@
-import { KeyboardDoubleArrowRight, SavingsRounded } from '@mui/icons-material'
+import {
+  KeyboardDoubleArrowRight,
+  Paid,
+  SavingsRounded,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -25,7 +29,10 @@ export const RightSidebar = ({
   const { enabled: responsiveEnabled, toggle: toggleResponsive } =
     useAppLayoutContext().responsiveRightSidebar
 
-  const [fiatRampVisible, setFiatRampVisible] = useState(false)
+  // Set this to a value to show the fiat ramp modal defaulted to that option.
+  const [fiatRampDefaultModeVisible, setFiatRampDefaultModeVisible] = useState<
+    'buy' | 'sell' | undefined
+  >()
 
   return (
     <>
@@ -70,23 +77,35 @@ export const RightSidebar = ({
 
         {/* Only show if defined, which indicates wallet connected. */}
         {WalletFiatRampModal && (
-          <Button
-            center
-            className="mt-4"
-            onClick={() => setFiatRampVisible(true)}
-            size="lg"
-            variant="secondary"
-          >
-            <SavingsRounded />
-            {t('button.exchangeUsdc')}
-          </Button>
+          <div className="mt-6 flex flex-col items-stretch gap-2">
+            <Button
+              center
+              onClick={() => setFiatRampDefaultModeVisible('buy')}
+              size="lg"
+              variant="secondary"
+            >
+              <Paid />
+              {t('button.depositFiat')}
+            </Button>
+
+            <Button
+              center
+              onClick={() => setFiatRampDefaultModeVisible('sell')}
+              size="lg"
+              variant="secondary"
+            >
+              <SavingsRounded />
+              {t('button.withdrawFiat')}
+            </Button>
+          </div>
         )}
       </div>
 
       {WalletFiatRampModal && (
         <WalletFiatRampModal
-          onClose={() => setFiatRampVisible(false)}
-          visible={fiatRampVisible}
+          defaultMode={fiatRampDefaultModeVisible}
+          onClose={() => setFiatRampDefaultModeVisible(undefined)}
+          visible={fiatRampDefaultModeVisible !== undefined}
         />
       )}
     </>

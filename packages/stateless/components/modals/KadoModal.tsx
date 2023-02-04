@@ -3,18 +3,14 @@ import clsx from 'clsx'
 import queryString from 'query-string'
 import { useTranslation } from 'react-i18next'
 
+import { KadoModalProps } from '@dao-dao/types'
 import { KADO_API_KEY } from '@dao-dao/utils'
 
 import { CopyToClipboard } from '../CopyToClipboard'
-import { Modal, ModalProps } from './Modal'
-
-export type KadoModalProps = Omit<ModalProps, 'children'> & {
-  type?: 'buy' | 'sell'
-  toAddress?: string
-}
+import { Modal } from './Modal'
 
 export const KadoModal = ({
-  type = 'buy',
+  defaultMode = 'buy',
   toAddress,
   containerClassName,
   ...modalProps
@@ -49,7 +45,7 @@ export const KadoModal = ({
           onRevCurrency: 'USDC',
           offPayCurrency: 'USDC',
           offRevCurrency: 'USDC',
-          product: type?.toUpperCase(),
+          product: defaultMode?.toUpperCase(),
           onToAddress: toAddress,
           network: 'JUNO',
           cryptoList: 'USDC',
