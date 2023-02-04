@@ -607,7 +607,7 @@
     "stakeActionDescription": "Manage native token staking.",
     "stakeYourTokensToJoin": "Stake your ${{tokenSymbol}} tokens to become a member of {{daoName}}.",
     "staked": "staked",
-    "stakedNftsExplanation": "All the NFTs displayed have been staked by DAO members to earn voting power.",
+    "stakedNftsExplanation": "These have been staked by DAO members to earn voting power.",
     "stakes": "Stakes",
     "stakingActionsDescription": "Manage native token staking: claim rewards, delegate, redelegate, and undelegate.",
     "stakingAddress": "Staking Contract",
