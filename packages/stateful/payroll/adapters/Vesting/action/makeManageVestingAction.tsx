@@ -1,3 +1,4 @@
+import { coins } from '@cosmjs/amino'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
@@ -290,7 +291,7 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
             wasm: {
               execute: {
                 contract_addr: vestingFactory,
-                funds: [],
+                funds: coins(amount, token.denomOrAddress),
                 msg: {
                   instantiate_native_payroll_contract: msg,
                 },
