@@ -19,7 +19,7 @@ export const KadoModal = ({
 
   return (
     <Modal
-      containerClassName={clsx('!h-[90vh] !max-w-lg', containerClassName)}
+      containerClassName={clsx('!h-[80vh] !max-w-lg', containerClassName)}
       {...modalProps}
     >
       {toAddress && (
@@ -39,10 +39,7 @@ export const KadoModal = ({
       )}
 
       <iframe
-        className={clsx(
-          'min-h-[48rem] w-full shrink-0 grow rounded-md',
-          !modalProps.visible && 'pointer-events-none'
-        )}
+        className="max-h-full min-h-[48rem] w-full shrink-0 grow rounded-md"
         src={`https://app.kado.money/?${queryString.stringify({
           apiKey: KADO_API_KEY,
           onRevCurrency: 'USDC',
