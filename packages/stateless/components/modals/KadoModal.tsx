@@ -38,28 +38,23 @@ export const KadoModal = ({
         </div>
       )}
 
-      <iframe
-        className={clsx(
-          'max-h-full min-h-[48rem] w-full shrink-0 grow rounded-md',
-          // iframe hijacks clicks on Safari even when pointer-events are set to
-          // none (which happens on the modal when visible=false), so we need to
-          // completely hide this.
-          //
-          // https://stackoverflow.com/questions/39533016/iframe-with-pointer-eventsnone-hijacks-clicks-in-safari-on-ios
-          !modalProps.visible && 'hidden'
-        )}
-        src={`https://app.kado.money/?${queryString.stringify({
-          apiKey: KADO_API_KEY,
-          onRevCurrency: 'USDC',
-          offPayCurrency: 'USDC',
-          offRevCurrency: 'USDC',
-          product: defaultMode?.toUpperCase(),
-          onToAddress: toAddress,
-          network: 'JUNO',
-          cryptoList: 'USDC',
-          networkList: 'JUNO',
-        })}`}
-      />
+      {/* iframe hijacks clicks on mobile Safari even when pointer-events are set to none (which happens on the modal when visible=false), so we need to completely hide the iframe when invisible. https://stackoverflow.com/questions/39533016/iframe-with-pointer-eventsnone-hijacks-clicks-in-safari-on-ios */}
+      {modalProps.visible && (
+        <iframe
+          className="max-h-full min-h-[48rem] w-full shrink-0 grow rounded-md"
+          src={`https://app.kado.money/?${queryString.stringify({
+            apiKey: KADO_API_KEY,
+            onRevCurrency: 'USDC',
+            offPayCurrency: 'USDC',
+            offRevCurrency: 'USDC',
+            product: defaultMode?.toUpperCase(),
+            onToAddress: toAddress,
+            network: 'JUNO',
+            cryptoList: 'USDC',
+            networkList: 'JUNO',
+          })}`}
+        />
+      )}
     </Modal>
   )
 }
