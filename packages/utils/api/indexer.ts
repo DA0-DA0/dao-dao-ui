@@ -48,6 +48,6 @@ export default async function handler(
 }
 
 const CHAIN_INDEXER_MAP: Record<string, string | undefined> = {
-  'uni-5': 'https://indexer-testnet.daodao.zone',
+  'uni-6': 'https://indexer-testnet.daodao.zone',
   'juno-1': 'https://indexer-mainnet.daodao.zone',
 }
