@@ -46,7 +46,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
       }
 
       const nftCardInfos = stargazeNfts.map(
-        ({ collection, tokenId, image, name }): NftCardInfo => ({
+        ({ collection, tokenId, image, name, description }): NftCardInfo => ({
           collection: {
             address: collection.contractAddress,
             name: collection.name,
@@ -62,6 +62,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
           //   denom: '',
           // }
           name,
+          description: description || undefined,
           chainId: ChainInfoID.Stargaze1,
         })
       )
@@ -113,13 +114,15 @@ export const nftCardInfoWithUriSelector = selectorFamily<
         // metadata and has an image.
         imageUrl: tokenUri ?? '',
         name: '',
+        description: undefined,
         chainId: stargaze ? ChainInfoID.Stargaze1 : chainId ?? CHAIN_ID,
       }
 
-      const { name, imageUrl, externalLink } = parseNftUriResponse(
+      const { name, description, imageUrl, externalLink } = parseNftUriResponse(
         tokenData || ''
       )
       info.name = name || info.name
+      info.description = description || info.description
       info.imageUrl = imageUrl || info.imageUrl
       info.externalLink = externalLink || info.externalLink
 
@@ -286,14 +289,16 @@ export const nftCardInfosForDaoSelector = selectorFamily<
                   //   denom: string
                   // }
                   name: '',
+                  description: '',
                   chainId: stargazeInfo
                     ? ChainInfoID.Stargaze1
                     : chainId ?? CHAIN_ID,
                 }
 
-                const { name, imageUrl, externalLink } =
+                const { name, description, imageUrl, externalLink } =
                   parseNftUriResponse(uriDataResponse)
                 info.name = name || info.name
+                info.description = description || info.description
                 info.imageUrl = imageUrl || info.imageUrl
                 info.externalLink = externalLink || info.externalLink
 

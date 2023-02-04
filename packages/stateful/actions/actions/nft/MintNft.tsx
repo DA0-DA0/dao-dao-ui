@@ -36,6 +36,7 @@ export const MintNft: ActionComponent = (props) => {
             tokenId: data.mintMsg.token_id,
             imageUrl: data.imageUrl,
             name: data.metadata?.name ?? '',
+            description: data.metadata?.description ?? '',
             chainId,
           })
         : // If viewing, get info from token URI.

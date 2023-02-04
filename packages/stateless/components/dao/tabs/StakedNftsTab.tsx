@@ -24,47 +24,42 @@ export const StakedNftsTab = <N extends NftCardInfo>({
   const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
     useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
 
-  return (
+  return nfts.loading || nfts.data.length > 0 ? (
     <>
-      <div className="flex min-h-[3.5rem] flex-row flex-wrap items-center gap-x-4 gap-y-1 border-b border-border-secondary pb-6">
-        <p className="title-text text-text-body">{t('title.stakedNfts')}</p>
-        <p className="secondary-text">{t('info.stakedNftsExplanation')}</p>
+      <div className="flex min-h-[3.5rem] flex-col gap-y-4 gap-x-16 pb-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-row flex-wrap items-end gap-x-4 gap-y-2">
+          <p className="title-text">
+            {nfts.loading
+              ? t('title.nfts')
+              : t('title.numNfts', { count: nfts.data.length })}
+          </p>
+
+          <p className="secondary-text break-words">
+            {t('info.stakedNftsExplanation')}
+          </p>
+        </div>
+
+        {!nfts.loading && nfts.data.length > 0 && (
+          <div className="flex shrink-0 flex-row items-center justify-between gap-4 sm:self-start">
+            <p className="primary-text text-text-body">{t('title.sortBy')}</p>
+
+            <Dropdown {...sortDropdownProps} />
+          </div>
+        )}
       </div>
 
-      {nfts.loading || nfts.data.length > 0 ? (
-        <>
-          <div className="my-6 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
-            <p className="title-text">
-              {nfts.loading
-                ? t('title.nfts')
-                : t('title.numNfts', { count: nfts.data.length })}
-            </p>
-
-            {!nfts.loading && nfts.data.length > 0 && (
-              <div className="flex flex-row items-center justify-between gap-4">
-                <p className="primary-text text-text-body">
-                  {t('title.sortBy')}
-                </p>
-
-                <Dropdown {...sortDropdownProps} />
-              </div>
-            )}
-          </div>
-
-          {nfts.loading ? (
-            <Loader fill={false} />
-          ) : (
-            <GridCardContainer className="pb-6">
-              {sortedNfts.map((props, index) => (
-                <NftCard {...(props as N)} key={index} />
-              ))}
-            </GridCardContainer>
-          )}
-        </>
+      {nfts.loading ? (
+        <Loader fill={false} />
       ) : (
-        <NoContent Icon={Image} body={t('info.noNftsYet')} />
+        <GridCardContainer className="pb-6">
+          {sortedNfts.map((props, index) => (
+            <NftCard {...(props as N)} key={index} />
+          ))}
+        </GridCardContainer>
       )}
     </>
+  ) : (
+    <NoContent Icon={Image} body={t('info.noNftsYet')} />
   )
 }
 
