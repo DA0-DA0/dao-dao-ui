@@ -10,11 +10,12 @@ import { TokenType, WithChainId } from '@dao-dao/types'
 
 import { StatefulVestingPaymentCardProps } from './components/types'
 
-export const vestingPaymentsSelector = selectorFamily<
-  StatefulVestingPaymentCardProps[],
+// Returns the contract address for the cw-payroll-factory if set.
+export const vestingFactorySelector = selectorFamily<
+  string | undefined,
   WithChainId<{ coreAddress: string }>
 >({
-  key: 'vestingPayments',
+  key: 'vestingFactory',
   get:
     ({ chainId, coreAddress }) =>
     ({ get }) => {
@@ -34,10 +35,52 @@ export const vestingPaymentsSelector = selectorFamily<
         !payrollConfig.data.factory ||
         typeof payrollConfig.data.factory !== 'string'
       ) {
-        return []
+        return
       }
 
       const factory = payrollConfig.data.factory
+
+      return factory
+    },
+})
+
+export const vestingFactoryOwnerSelector = selectorFamily<
+  string | undefined,
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'vestingFactoryOwner',
+  get:
+    ({ chainId, coreAddress }) =>
+    ({ get }) => {
+      const factory = get(vestingFactorySelector({ coreAddress, chainId }))
+      if (!factory) {
+        return
+      }
+
+      const ownership = get(
+        CwPayrollFactorySelectors.ownershipSelector({
+          contractAddress: factory,
+          chainId,
+          params: [],
+        })
+      )
+
+      return ownership.owner || undefined
+    },
+})
+
+export const vestingPaymentCardsPropsSelector = selectorFamily<
+  StatefulVestingPaymentCardProps[],
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'vestingPaymentCardsProps',
+  get:
+    ({ chainId, coreAddress }) =>
+    ({ get }) => {
+      const factory = get(vestingFactorySelector({ coreAddress, chainId }))
+      if (!factory) {
+        return []
+      }
 
       const vestingPaymentContracts = get(
         CwPayrollFactorySelectors.allVestingContractsSelector({
@@ -46,47 +89,60 @@ export const vestingPaymentsSelector = selectorFamily<
         })
       )
 
-      const vestingPayments = get(
+      return get(
         waitForAll(
           vestingPaymentContracts.map(({ contract }) =>
-            CwVestingSelectors.infoSelector({
-              contractAddress: contract,
-              params: [],
+            vestingPaymentCardPropsSelector({
+              vestingContractAddress: contract,
               chainId,
             })
           )
         )
       )
+    },
+})
 
-      const vestedAmounts = get(
-        waitForAll(
-          vestingPaymentContracts.map(({ contract }) =>
-            CwVestingSelectors.vestedAmountSelector({
-              contractAddress: contract,
-              params: [],
-              chainId,
-            })
-          )
-        )
+export const vestingPaymentCardPropsSelector = selectorFamily<
+  StatefulVestingPaymentCardProps,
+  WithChainId<{ vestingContractAddress: string }>
+>({
+  key: 'vestingPaymentCardProps',
+  get:
+    ({ vestingContractAddress, chainId }) =>
+    ({ get }) => {
+      const vestingPayment = get(
+        CwVestingSelectors.infoSelector({
+          contractAddress: vestingContractAddress,
+          params: [],
+          chainId,
+        })
       )
 
-      const tokens = get(
-        waitForAll(
-          vestingPayments.map(({ denom }) =>
-            genericTokenSelector({
-              type: 'cw20' in denom ? TokenType.Cw20 : TokenType.Native,
-              denomOrAddress: 'cw20' in denom ? denom.cw20 : denom.native,
-              chainId,
-            })
-          )
-        )
+      const vestedAmount = get(
+        CwVestingSelectors.vestedAmountSelector({
+          contractAddress: vestingContractAddress,
+          params: [],
+          chainId,
+        })
       )
 
-      return vestingPaymentContracts.map(({ contract }, index) => ({
-        vestingContractAddress: contract,
-        vestingPayment: vestingPayments[index],
-        vestedAmount: Number(vestedAmounts[index]),
-        token: tokens[index],
-      }))
+      const token = get(
+        genericTokenSelector({
+          type:
+            'cw20' in vestingPayment.denom ? TokenType.Cw20 : TokenType.Native,
+          denomOrAddress:
+            'cw20' in vestingPayment.denom
+              ? vestingPayment.denom.cw20
+              : vestingPayment.denom.native,
+          chainId,
+        })
+      )
+
+      return {
+        vestingContractAddress,
+        vestingPayment,
+        vestedAmount: Number(vestedAmount),
+        token,
+      }
     },
 })

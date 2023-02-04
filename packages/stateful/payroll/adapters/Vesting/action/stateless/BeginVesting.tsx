@@ -1,14 +1,17 @@
 import {
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
+  WarningRounded,
 } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  CopyToClipboard,
   InputErrorMessage,
   InputLabel,
+  LineGraph,
   NumberInput,
   SelectInput,
   TextAreaInput,
@@ -18,7 +21,8 @@ import {
   ActionComponent,
   ActionOptionsContextType,
   AddressInputProps,
-  GenericToken,
+  GenericTokenBalance,
+  LoadingData,
 } from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
@@ -31,7 +35,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../react'
+import { useActionOptions } from '../../../../../actions/react'
 
 export type BeginVestingData = {
   amount: number
@@ -42,8 +46,11 @@ export type BeginVestingData = {
   startDate: string
   finishDate: string
 }
+
 export type BeginVestingOptions = {
-  tokens: (GenericToken & { microBalance: number })[]
+  tokens: GenericTokenBalance[]
+  // The vesting contract factory owner. If undefined, no owner is set.
+  vestingFactoryOwner: LoadingData<string | undefined>
   AddressInput: ComponentType<AddressInputProps>
 }
 
@@ -51,25 +58,34 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { tokens, AddressInput },
+  options: { tokens, vestingFactoryOwner, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const { context } = useActionOptions()
+  const { address, context } = useActionOptions()
 
   const { register, watch, setValue } = useFormContext()
+  const watchAmount = watch(fieldNamePrefix + 'amount')
   const watchDenomOrAddress = watch(fieldNamePrefix + 'denomOrAddress')
-  const startDate = watch(fieldNamePrefix + 'startDate')
-  const finishDate = watch(fieldNamePrefix + 'finishDate')
+  const parsedStartDate = Date.parse(watch(fieldNamePrefix + 'startDate'))
+  const parsedFinishDate = Date.parse(watch(fieldNamePrefix + 'finishDate'))
+
+  const formattedStartDate = !isNaN(parsedStartDate)
+    ? formatDateTimeTz(new Date(parsedStartDate))
+    : undefined
+  const formattedFinishDate = !isNaN(parsedFinishDate)
+    ? formatDateTimeTz(new Date(parsedFinishDate))
+    : undefined
 
   const selectedToken = tokens.find(
-    ({ denomOrAddress }) => denomOrAddress === watchDenomOrAddress
+    ({ token: { denomOrAddress } }) => denomOrAddress === watchDenomOrAddress
   )
-  const selectedDecimals = selectedToken?.decimals ?? NATIVE_DECIMALS
-  const selectedMicroBalance = selectedToken?.microBalance ?? 0
+  const selectedDecimals = selectedToken?.token.decimals ?? NATIVE_DECIMALS
+  const selectedMicroBalance = selectedToken?.balance ?? 0
   const selectedBalance = convertMicroDenomToDenomWithDecimals(
     selectedMicroBalance,
     selectedDecimals
   )
+  const selectedSymbol = selectedToken?.token?.symbol ?? t('info.tokens')
 
   const insufficientBalanceI18nKey =
     context.type === ActionOptionsContextType.Dao
@@ -103,7 +119,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                       maximumFractionDigits: selectedDecimals,
                     }),
                     tokenSymbol:
-                      selectedToken?.symbol ??
+                      selectedToken?.token.symbol ??
                       t('info.token').toLocaleUpperCase(),
                   }),
               ]}
@@ -118,7 +134,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
               register={register}
               style={{ maxWidth: '8.2rem' }}
             >
-              {tokens.map(({ denomOrAddress, symbol }) => (
+              {tokens.map(({ token: { denomOrAddress, symbol } }) => (
                 <option key={denomOrAddress} value={denomOrAddress}>
                   ${symbol}
                 </option>
@@ -160,17 +176,16 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
             <InputLabel name={t('form.startDate')} />
 
             {/* Date Preview */}
-            {!!startDate && !isNaN(Date.parse(startDate)) && (
-              <p className="caption-text">
-                {formatDateTimeTz(new Date(startDate))}
-              </p>
+            {formattedStartDate && (
+              <p className="caption-text">{formattedStartDate}</p>
             )}
           </div>
 
           <div>
             <TextInput
+              disabled={!isCreating}
               error={errors?.startDate}
-              fieldName="startDate"
+              fieldName={fieldNamePrefix + 'startDate'}
               // eslint-disable-next-line i18next/no-literal-string
               placeholder="YYYY-MM-DD HH:mm"
               register={register}
@@ -186,17 +201,16 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
             <InputLabel name={t('form.finishDate')} />
 
             {/* Date Preview */}
-            {!!finishDate && !isNaN(Date.parse(finishDate)) && (
-              <p className="caption-text">
-                {formatDateTimeTz(new Date(finishDate))}
-              </p>
+            {formattedFinishDate && (
+              <p className="caption-text">{formattedFinishDate}</p>
             )}
           </div>
 
           <div>
             <TextInput
+              disabled={!isCreating}
               error={errors?.finishDate}
-              fieldName="finishDate"
+              fieldName={fieldNamePrefix + 'finishDate'}
               // eslint-disable-next-line i18next/no-literal-string
               placeholder="YYYY-MM-DD HH:mm"
               register={register}
@@ -206,19 +220,27 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                 // Ensure close date is after open date.
                 () =>
                   // Valid if dates not yet available.
-                  !(
-                    startDate &&
-                    !isNaN(Date.parse(startDate)) &&
-                    finishDate &&
-                    !isNaN(Date.parse(finishDate))
-                  ) ||
-                  new Date(finishDate) > new Date(startDate) ||
+                  !(!isNaN(parsedStartDate) && !isNaN(parsedFinishDate)) ||
+                  new Date(parsedFinishDate) > new Date(parsedStartDate) ||
                   t('error.finishDateMustBeAfterStartDate'),
               ]}
             />
             <InputErrorMessage error={errors?.finishDate} />
           </div>
         </div>
+      </div>
+
+      <div className="rounded-md bg-background-tertiary p-2">
+        <LineGraph
+          className="!h-40"
+          labels={[
+            formattedStartDate || t('form.startDate'),
+            formattedFinishDate || t('form.finishDate'),
+          ]}
+          title={t('title.vestingCurve')}
+          yTitle={'$' + selectedSymbol}
+          yValues={[0, watchAmount]}
+        />
       </div>
 
       <div className="space-y-2">
@@ -242,6 +264,33 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         />
         <InputErrorMessage error={errors?.description} />
       </div>
+
+      {!vestingFactoryOwner.loading && (
+        <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
+          <WarningRounded className="!h-8 !w-8" />
+
+          <div className="min-w-0 space-y-2">
+            {vestingFactoryOwner.data === address ? (
+              <p>
+                {t('info.vestingIsCancellableByOwner', {
+                  context: context.type,
+                })}
+              </p>
+            ) : vestingFactoryOwner.data ? (
+              <>
+                <p>{t('info.vestingIsCancellableByOther')}</p>
+
+                <CopyToClipboard
+                  takeStartEnd={{ start: 16, end: 16 }}
+                  value={vestingFactoryOwner.data}
+                />
+              </>
+            ) : (
+              <p>{t('info.vestingNotCancellable')}</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

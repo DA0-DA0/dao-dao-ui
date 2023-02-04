@@ -27,6 +27,8 @@ import {
 } from '@dao-dao/stateless'
 import { ActionKey, CommonProposalInfo, CoreActionKey } from '@dao-dao/types'
 
+import { usePayrollAdapter } from '../../payroll'
+
 interface InnerDaoProposalProps {
   proposalInfo: CommonProposalInfo
 }
@@ -56,10 +58,15 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = useProposalModuleActions()
+  const payrollActions = usePayrollAdapter()?.actions
   const actions = useCoreActions(
     useMemo(
-      () => [...votingModuleActions, ...proposalModuleActions],
-      [proposalModuleActions, votingModuleActions]
+      () => [
+        ...votingModuleActions,
+        ...proposalModuleActions,
+        ...(payrollActions || []),
+      ],
+      [payrollActions, proposalModuleActions, votingModuleActions]
     )
   )
 

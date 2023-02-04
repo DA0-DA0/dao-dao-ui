@@ -31,6 +31,7 @@ export enum CoreActionKey {
   ManageStorageItems = 'manageStorageItems',
   GovernanceVote = 'governanceVote',
   ManagePayroll = 'managePayroll',
+  ManageVesting = 'manageVesting',
 }
 
 // Actions defined in voting or proposal module adapters.

@@ -25,6 +25,7 @@ import {
 
 import { useCoreActions } from '../../../../../actions'
 import { useMembership } from '../../../../../hooks'
+import { usePayrollAdapter } from '../../../../../payroll'
 import { useVotingModuleAdapter } from '../../../../../voting-module-adapter'
 import { proposalSelector } from '../../contracts/DaoProposalSingle.common.recoil'
 import { makeGetProposalInfo } from '../../functions'
@@ -78,10 +79,15 @@ export const NewProposal = ({
   } = useVotingModuleAdapter()
   const votingModuleActions = useVotingModuleActions()
   const proposalModuleActions = makeUseProposalModuleActions(options)()
+  const payrollActions = usePayrollAdapter()?.actions
   const actions = useCoreActions(
     useMemo(
-      () => [...votingModuleActions, ...proposalModuleActions],
-      [proposalModuleActions, votingModuleActions]
+      () => [
+        ...votingModuleActions,
+        ...proposalModuleActions,
+        ...(payrollActions || []),
+      ],
+      [payrollActions, proposalModuleActions, votingModuleActions]
     )
   )
 

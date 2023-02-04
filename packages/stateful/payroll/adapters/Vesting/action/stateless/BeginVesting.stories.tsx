@@ -12,7 +12,7 @@ import { BeginVesting } from './BeginVesting'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / components / vesting / BeginVesting',
+    'DAO DAO / packages / stateful / payroll / adapters / Vesting / action / BeginVesting',
   component: BeginVesting,
   decorators: [
     makeReactHookFormDecorator(),
@@ -46,22 +46,27 @@ Default.args = {
   options: {
     tokens: [
       {
-        type: TokenType.Native,
-        denomOrAddress: 'ujuno',
-        symbol: 'JUNO',
-        decimals: 6,
-        imageUrl: '/juno.png',
-        microBalance: 1248281239056,
+        token: {
+          type: TokenType.Native,
+          denomOrAddress: 'ujuno',
+          symbol: 'JUNO',
+          decimals: 6,
+          imageUrl: '/juno.png',
+        },
+        balance: '1248281239056',
       },
       {
-        type: TokenType.Cw20,
-        denomOrAddress: 'junoCw20Dao',
-        symbol: 'DAO',
-        decimals: 6,
-        imageUrl: '/daodao.png',
-        microBalance: 19023827587124,
+        token: {
+          type: TokenType.Cw20,
+          denomOrAddress: 'junoCw20Dao',
+          symbol: 'DAO',
+          decimals: 6,
+          imageUrl: '/daodao.png',
+        },
+        balance: '19023827587124',
       },
     ],
+    vestingFactoryOwner: { loading: false, data: undefined },
     AddressInput,
   },
 }
