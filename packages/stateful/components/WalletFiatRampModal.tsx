@@ -13,8 +13,8 @@ export const WalletFiatRampModal = (
   return (
     <KadoModal
       header={{
-        title: t('title.depositWithdrawFiat'),
-        subtitle: t('info.depositWithdrawFiatDescription'),
+        title: t('title.fiatOnOffRamp'),
+        subtitle: t('info.fiatOnOffRampDescription'),
       }}
       toAddress={
         // Don't prefill address when selling since it's only relevant when
