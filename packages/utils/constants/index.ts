@@ -85,10 +85,6 @@ export const MAX_DAO_NAME_LENGTH = parseInt(
   process.env.NEXT_PUBLIC_MAX_DAO_NAME_LENGTH || '50',
   10
 )
-export const MAX_DAO_DESCRIPTION_LENGTH = parseInt(
-  process.env.NEXT_PUBLIC_MAX_DAO_DESCRIPTION_LENGTH || '130',
-  10
-)
 
 export const MAX_META_CHARS_PROPOSAL_DESCRIPTION = parseInt(
   process.env.NEXT_PUBLIC_MAX_META_CHARS_PROPOSAL_DESCRIPTION || '200',
