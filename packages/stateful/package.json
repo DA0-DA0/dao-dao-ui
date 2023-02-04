@@ -9,7 +9,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@apollo/client": "^3.6.9",
     "@cosmjs/cosmwasm-stargate": "0.29.3",
     "@cosmjs/encoding": "0.29.3",
     "@cosmjs/proto-signing": "0.29.3",

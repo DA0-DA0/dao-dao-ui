@@ -7,7 +7,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { useGetLoopNftsQuery } from '@dao-dao/state'
 import {
   ModalLoader,
   ModalProps,
@@ -64,12 +63,6 @@ export const InnerPfpkNftSelectionModal = ({
     )
   )
 
-  const loopNftsQuery = useGetLoopNftsQuery({
-    walletAddress: junoWalletAddress ?? '',
-  })
-  const loopNfts =
-    loopNftsQuery.data?.nfts.nodes ?? loopNftsQuery.previousData?.nfts.nodes
-
   const nfts: LoadingDataWithError<NftCardInfo[]> = useMemo(
     () =>
       stargazeNfts.loading ||
@@ -83,38 +76,9 @@ export const InnerPfpkNftSelectionModal = ({
         : {
             loading: false,
             errored: false,
-            data: [
-              ...stargazeNfts.data,
-              ...junoNfts.data
-                // Prevent duplicate NFTs if some exist in the loop API.
-                // Prioritize loop since it has an external link.
-                .filter(
-                  ({ collection, tokenId }) =>
-                    !loopNfts?.some(
-                      ({ contract, tokenID }) =>
-                        contract.id === collection.address &&
-                        tokenID === tokenId
-                    )
-                ),
-              ...(loopNfts?.map(
-                ({ tokenID, image, name, contract }): NftCardInfo => ({
-                  chainId: ChainInfoID.Juno1,
-                  collection: {
-                    address: contract.id,
-                    name: contract.name,
-                  },
-                  tokenId: tokenID,
-                  externalLink: {
-                    href: `https://nft-juno.loop.markets/nftDetail/${contract.id}/${tokenID}`,
-                    name: 'Loop',
-                  },
-                  imageUrl: image,
-                  name: name ?? '',
-                })
-              ) ?? []),
-            ],
+            data: [...stargazeNfts.data, ...junoNfts.data],
           },
-    [junoNfts, loopNfts, stargazeNfts]
+    [junoNfts, stargazeNfts]
   )
 
   const {

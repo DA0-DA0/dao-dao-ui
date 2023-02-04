@@ -7,7 +7,6 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@apollo/client": "^3.6.9",
     "@cosmjs/cosmwasm-stargate": "0.29.3",
     "@dao-dao/config": "^2.1.0-rc.1",
     "next-i18next": "^11.0.0",
