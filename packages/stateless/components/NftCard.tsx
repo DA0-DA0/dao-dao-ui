@@ -5,7 +5,11 @@ import { ComponentType, forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { NftCardInfo, StatefulEntityDisplayProps } from '@dao-dao/types'
-import { getNftName, toAccessibleImageUrl } from '@dao-dao/utils'
+import {
+  getImageUrlForChainId,
+  getNftName,
+  toAccessibleImageUrl,
+} from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from './CopyToClipboard'
 import { Checkbox } from './inputs'
@@ -32,6 +36,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       floorPrice,
       name,
       tokenId,
+      chainId,
       className,
       EntityDisplay,
     },
@@ -41,6 +46,8 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
 
     // Loading if imageUrl is present.
     const [imageLoading, setImageLoading] = useState(!!imageUrl)
+
+    const chainImage = getImageUrlForChainId(chainId)
 
     return (
       <div
@@ -115,7 +122,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             }
           )}
         >
-          {/* Created by */}
+          {/* Collection info */}
           <div className="space-y-4">
             {owner && EntityDisplay && (
               <div className="flex flex-col items-start gap-1">
@@ -124,12 +131,24 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               </div>
             )}
 
-            <div className="flex flex-col items-start gap-1">
-              <p className="secondary-text">{t('title.collection')}</p>
-              <CopyToClipboardUnderline
-                takeStartEnd={{ start: 7, end: 5 }}
-                value={collection.address}
-              />
+            <div className="flex flex-row items-start justify-between gap-4">
+              <div className="flex flex-col items-start gap-1">
+                <p className="secondary-text">{t('title.collection')}</p>
+                <CopyToClipboardUnderline
+                  takeStartEnd={{ start: 7, end: 5 }}
+                  value={collection.address}
+                />
+              </div>
+
+              {chainImage && (
+                <Image
+                  alt=""
+                  className="shrink-0"
+                  height={20}
+                  src={chainImage}
+                  width={20}
+                />
+              )}
             </div>
           </div>
 

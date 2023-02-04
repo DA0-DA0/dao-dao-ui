@@ -19,7 +19,10 @@ import { LoadingDataWithError, NftCardInfo } from '@dao-dao/types'
 import { loadableToLoadingDataWithError, processError } from '@dao-dao/utils'
 
 import { useWalletInfo } from '../hooks'
-import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
+import {
+  walletNftCardInfos,
+  walletStargazeNftCardInfosSelector,
+} from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export type PfpkNftSelectionModalProps = Pick<Required<ModalProps>, 'onClose'>
@@ -42,6 +45,17 @@ export const InnerPfpkNftSelectionModal = ({
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
 
+  const junoNfts = loadableToLoadingDataWithError(
+    useCachedLoadable(
+      junoWalletAddress
+        ? walletNftCardInfos({
+            walletAddress: junoWalletAddress,
+            chainId: ChainInfoID.Juno1,
+          })
+        : undefined
+    )
+  )
+
   const stargazeNfts = loadableToLoadingDataWithError(
     useCachedLoadable(
       stargazeWalletAddress
@@ -58,16 +72,30 @@ export const InnerPfpkNftSelectionModal = ({
 
   const nfts: LoadingDataWithError<NftCardInfo[]> = useMemo(
     () =>
-      stargazeNfts.loading || stargazeNfts.errored
-        ? stargazeNfts
+      stargazeNfts.loading ||
+      stargazeNfts.errored ||
+      junoNfts.loading ||
+      junoNfts.errored
+        ? {
+            loading: true,
+            errored: false,
+          }
         : {
             loading: false,
             errored: false,
             data: [
-              ...stargazeNfts.data.map((nft) => ({
-                ...nft,
-                chainId: ChainInfoID.Stargaze1,
-              })),
+              ...stargazeNfts.data,
+              ...junoNfts.data
+                // Prevent duplicate NFTs if some exist in the loop API.
+                // Prioritize loop since it has an external link.
+                .filter(
+                  ({ collection, tokenId }) =>
+                    !loopNfts?.some(
+                      ({ contract, tokenID }) =>
+                        contract.id === collection.address &&
+                        tokenID === tokenId
+                    )
+                ),
               ...(loopNfts?.map(
                 ({ tokenID, image, name, contract }): NftCardInfo => ({
                   chainId: ChainInfoID.Juno1,
@@ -86,7 +114,7 @@ export const InnerPfpkNftSelectionModal = ({
               ) ?? []),
             ],
           },
-    [loopNfts, stargazeNfts]
+    [junoNfts, loopNfts, stargazeNfts]
   )
 
   const {

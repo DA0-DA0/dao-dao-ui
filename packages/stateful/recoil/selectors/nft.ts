@@ -11,6 +11,8 @@ import {
   DaoCoreV2Selectors,
   nativeAndStargazeCollectionInfoSelector,
   nftTokenUriDataSelector,
+  queryWalletIndexerSelector,
+  refreshWalletBalancesIdAtom,
   refreshWalletStargazeNftsAtom,
 } from '@dao-dao/state'
 import { NftCardInfo, WithChainId } from '@dao-dao/types'
@@ -302,5 +304,52 @@ export const nftCardInfosForDaoSelector = selectorFamily<
         .filter(Boolean) as NftCardInfo[]
 
       return infos
+    },
+})
+
+type CollectionWithTokens = {
+  collectionAddress: string
+  tokens: string[]
+}
+
+// Retrieve all NFTs for a given wallet address using the indexer.
+export const walletNftCardInfos = selectorFamily<
+  NftCardInfo[],
+  WithChainId<{
+    walletAddress: string
+  }>
+>({
+  key: 'walletNftCardInfos',
+  get:
+    ({ walletAddress, chainId }) =>
+    async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(walletAddress))
+
+      const collections: CollectionWithTokens[] = get(
+        queryWalletIndexerSelector({
+          chainId,
+          walletAddress,
+          formulaName: 'nft/collections',
+          id,
+        })
+      )
+      if (!collections || !Array.isArray(collections)) {
+        return []
+      }
+
+      const nftCardInfos = get(
+        waitForAll(
+          collections.flatMap(({ collectionAddress, tokens }) =>
+            tokens.map((tokenId) =>
+              nftCardInfoSelector({
+                collection: collectionAddress,
+                tokenId,
+              })
+            )
+          )
+        )
+      )
+
+      return nftCardInfos
     },
 })
