@@ -203,6 +203,17 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
   const { address, chainId } = useActionOptions()
 
   const loadingTokenBalances = useTokenBalances()
+
+  const vestingFactoryOwner = loadableToLoadingData(
+    useCachedLoadable(
+      vestingFactoryOwnerSelector({
+        coreAddress: address,
+        chainId,
+      })
+    ),
+    undefined
+  )
+
   const vestingFactoryLoadable = useRecoilValueLoadable(
     vestingFactorySelector({
       coreAddress: address,
@@ -217,7 +228,11 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
   return useCallback(
     ({ creating, begin, cancel }: ManageVestingData) => {
       if (creating) {
-        if (loadingTokenBalances.loading || !vestingFactory) {
+        if (
+          loadingTokenBalances.loading ||
+          !vestingFactory ||
+          vestingFactoryOwner.loading
+        ) {
           return
         }
 
@@ -234,7 +249,7 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
         ).toString()
 
         const instantiateMsg: InstantiateMsg = {
-          owner: address,
+          owner: vestingFactoryOwner.data,
           params: {
             amount,
             denom:
@@ -316,7 +331,7 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
         })
       }
     },
-    [address, loadingTokenBalances, vestingFactory]
+    [loadingTokenBalances, vestingFactory, vestingFactoryOwner]
   )
 }
 
