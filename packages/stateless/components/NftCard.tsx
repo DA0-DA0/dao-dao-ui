@@ -190,17 +190,17 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           </p>
 
           {!!description && (
-            <div className="flex grow flex-col justify-between gap-2">
+            <div className="space-y-1">
               <MarkdownRenderer
                 className={
-                  descriptionCollapsed ? 'break-words line-clamp-2' : undefined
+                  descriptionCollapsed ? 'break-words line-clamp-3' : undefined
                 }
                 markdown={description}
               />
 
               {(descriptionCollapsible || !descriptionCollapsed) && (
                 <Button
-                  className="text-text-secondary"
+                  className="text-text-tertiary"
                   onClick={() => setDescriptionCollapsed((c) => !c)}
                   variant="underline"
                 >
