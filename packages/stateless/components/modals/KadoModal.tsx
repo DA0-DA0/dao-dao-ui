@@ -39,7 +39,15 @@ export const KadoModal = ({
       )}
 
       <iframe
-        className="max-h-full min-h-[48rem] w-full shrink-0 grow rounded-md"
+        className={clsx(
+          'max-h-full min-h-[48rem] w-full shrink-0 grow rounded-md',
+          // iframe hijacks clicks on Safari even when pointer-events are set to
+          // none (which happens on the modal when visible=false), so we need to
+          // completely hide this.
+          //
+          // https://stackoverflow.com/questions/39533016/iframe-with-pointer-eventsnone-hijacks-clicks-in-safari-on-ios
+          !modalProps.visible && 'hidden'
+        )}
         src={`https://app.kado.money/?${queryString.stringify({
           apiKey: KADO_API_KEY,
           onRevCurrency: 'USDC',
