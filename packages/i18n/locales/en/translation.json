@@ -75,6 +75,8 @@
     "publishAnywayWithCountdown": "Publish anyway? ({{secondsRemaining}})",
     "publishProposal": "Publish proposal",
     "rateContributions": "Rate contributions",
+    "readLess": "Read less",
+    "readMore": "Read more",
     "resetQuestion": "Reset?",
     "returnHome": "Return home",
     "review": "Review",
