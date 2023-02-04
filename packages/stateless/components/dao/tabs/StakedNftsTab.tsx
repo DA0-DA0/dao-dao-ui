@@ -26,7 +26,7 @@ export const StakedNftsTab = <N extends NftCardInfo>({
 
   return nfts.loading || nfts.data.length > 0 ? (
     <>
-      <div className="flex min-h-[3.5rem] flex-col gap-y-4 gap-x-8 pb-6 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex min-h-[3.5rem] flex-col gap-y-4 gap-x-16 pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-row flex-wrap items-end gap-x-4 gap-y-2">
           <p className="title-text">
             {nfts.loading
@@ -40,7 +40,7 @@ export const StakedNftsTab = <N extends NftCardInfo>({
         </div>
 
         {!nfts.loading && nfts.data.length > 0 && (
-          <div className="flex shrink-0 flex-row items-center justify-between gap-4">
+          <div className="flex shrink-0 flex-row items-center justify-between gap-4 sm:self-start">
             <p className="primary-text text-text-body">{t('title.sortBy')}</p>
 
             <Dropdown {...sortDropdownProps} />
