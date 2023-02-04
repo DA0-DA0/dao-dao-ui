@@ -39,7 +39,10 @@ export const KadoModal = ({
       )}
 
       <iframe
-        className="min-h-[48rem] w-full shrink-0 grow rounded-md"
+        className={clsx(
+          'min-h-[48rem] w-full shrink-0 grow rounded-md',
+          !modalProps.visible && 'pointer-events-none'
+        )}
         src={`https://app.kado.money/?${queryString.stringify({
           apiKey: KADO_API_KEY,
           onRevCurrency: 'USDC',
