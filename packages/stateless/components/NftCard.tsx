@@ -5,10 +5,16 @@ import { ComponentType, forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { NftCardInfo, StatefulEntityDisplayProps } from '@dao-dao/types'
-import { getNftName, toAccessibleImageUrl } from '@dao-dao/utils'
+import {
+  getImageUrlForChainId,
+  getNftName,
+  toAccessibleImageUrl,
+} from '@dao-dao/utils'
 
+import { Button } from './buttons'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
 import { Checkbox } from './inputs'
+import { MarkdownRenderer } from './MarkdownRenderer'
 import { TooltipLikeDisplay } from './tooltip/TooltipLikeDisplay'
 
 export interface NftCardProps extends NftCardInfo {
@@ -31,7 +37,9 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       imageUrl,
       floorPrice,
       name,
+      description,
       tokenId,
+      chainId,
       className,
       EntityDisplay,
     },
@@ -41,6 +49,11 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
 
     // Loading if imageUrl is present.
     const [imageLoading, setImageLoading] = useState(!!imageUrl)
+
+    const chainImage = getImageUrlForChainId(chainId)
+
+    const [descriptionCollapsible, setDescriptionCollapsible] = useState(false)
+    const [descriptionCollapsed, setDescriptionCollapsed] = useState(true)
 
     return (
       <div
@@ -106,57 +119,99 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           />
         )}
 
-        <div
-          className={clsx(
-            'grid items-center gap-x-4 border-b border-border-secondary py-4 px-6',
-            {
-              'grid-cols-1': !floorPrice,
-              'grid-cols-[1fr_1px_1fr]': floorPrice,
-            }
-          )}
-        >
-          {/* Created by */}
-          <div className="space-y-4">
-            {owner && EntityDisplay && (
-              <div className="flex flex-col items-start gap-1">
-                <p className="secondary-text">{t('title.owner')}</p>
-                <EntityDisplay address={owner} />
-              </div>
-            )}
+        <div className="flex flex-col gap-4 border-b border-border-secondary py-4 px-6">
+          {/* Owner */}
+          {owner && EntityDisplay && (
+            <div className="space-y-1">
+              <p className="secondary-text">{t('title.owner')}</p>
 
-            <div className="flex flex-col items-start gap-1">
+              <EntityDisplay address={owner} />
+            </div>
+          )}
+
+          {/* Collection */}
+          <div className="flex flex-row items-start justify-between gap-4">
+            <div className="space-y-1">
               <p className="secondary-text">{t('title.collection')}</p>
+
               <CopyToClipboardUnderline
                 takeStartEnd={{ start: 7, end: 5 }}
                 value={collection.address}
               />
             </div>
+
+            {chainImage && (
+              <Image
+                alt=""
+                className="shrink-0"
+                height={20}
+                src={chainImage}
+                width={20}
+              />
+            )}
           </div>
 
+          {/* Floor price */}
           {floorPrice && (
-            <>
-              {/* Separator */}
-              <div className="h-6 w-[1px] bg-background-primary"></div>
+            <div className="space-y-1">
+              <p className="secondary-text">{t('title.floorPrice')}</p>
 
-              {/* Floor price */}
-              <div className="flex flex-col items-end gap-1">
-                <p className="secondary-text text-right">
-                  {t('title.floorPrice')}
-                </p>
-                <p className="body-text text-right font-mono">
-                  {floorPrice.amount.toLocaleString(undefined, {
-                    maximumSignificantDigits: 3,
-                  })}{' '}
-                  ${floorPrice.denom}
-                </p>
-              </div>
-            </>
+              <p className="body-text font-mono">
+                {floorPrice.amount.toLocaleString(undefined, {
+                  maximumSignificantDigits: 3,
+                })}{' '}
+                ${floorPrice.denom}
+              </p>
+            </div>
           )}
         </div>
 
-        <p className="primary-text min-h-[5.5rem] py-4 px-6">
-          {getNftName(collection.name, tokenId, name)}
-        </p>
+        <div
+          className="flex min-h-[5.5rem] grow flex-col gap-2 py-4 px-6"
+          ref={
+            // Decide if description should be collapsible based on if text is
+            // being truncated or not.
+            (ref) => {
+              if (!ref || descriptionCollapsible) {
+                return
+              }
+
+              const descriptionPTag = ref?.children[1]?.children[0]
+              const descriptionOverflowing =
+                !!descriptionPTag &&
+                descriptionPTag.scrollHeight > descriptionPTag.clientHeight
+
+              setDescriptionCollapsible(descriptionOverflowing)
+            }
+          }
+        >
+          <p className="primary-text">
+            {getNftName(collection.name, tokenId, name)}
+          </p>
+
+          {!!description && (
+            <div className="space-y-1">
+              <MarkdownRenderer
+                className={
+                  descriptionCollapsed ? 'break-words line-clamp-3' : undefined
+                }
+                markdown={description}
+              />
+
+              {(descriptionCollapsible || !descriptionCollapsed) && (
+                <Button
+                  className="text-text-tertiary"
+                  onClick={() => setDescriptionCollapsed((c) => !c)}
+                  variant="underline"
+                >
+                  {descriptionCollapsed
+                    ? t('button.readMore')
+                    : t('button.readLess')}
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     )
   }

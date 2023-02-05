@@ -37,7 +37,7 @@ export const getUrlBaseForChainId = (chainId: string): string =>
     : // Otherwise use chain-specific one.
     chainId === ChainInfoID.Juno1
     ? 'https://daodao.zone'
-    : chainId === ChainInfoID.Uni5
+    : chainId === ChainInfoID.Uni6
     ? 'https://testnet.daodao.zone'
     : ''
 
@@ -61,7 +61,7 @@ export const cosmosValidatorToValidator = ({
 })
 
 export const getImageUrlForChainId = (chainId: string) =>
-  chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni5
+  chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni6
     ? '/juno.png'
     : chainId === ChainInfoID.Stargaze1
     ? '/stargaze.png'

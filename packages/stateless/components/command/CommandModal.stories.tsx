@@ -1,8 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useRef, useState } from 'react'
 
-import { ApolloGqlDecorator } from '@dao-dao/storybook/decorators'
-
 import { CommandModal } from './CommandModal'
 import {
   CommandModalContextView,
@@ -18,7 +16,6 @@ export default {
   title:
     'DAO DAO / packages / stateless / components / CommandModal / CommandModal',
   component: CommandModal,
-  decorators: [ApolloGqlDecorator],
 } as ComponentMeta<typeof CommandModal>
 
 const Template: ComponentStory<typeof CommandModal> = (args) => {

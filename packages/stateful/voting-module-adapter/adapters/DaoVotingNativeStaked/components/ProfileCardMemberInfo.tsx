@@ -16,7 +16,6 @@ import {
   UnstakingTask,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
-import { Claim } from '@dao-dao/types/contracts/Cw20Stake'
 import {
   NATIVE_DENOM,
   convertExpirationToDate,
@@ -105,7 +104,7 @@ export const ProfileCardMemberInfo = ({
     if (!connected) {
       return toast.error(t('error.connectWalletToContinue'))
     }
-    if (sumClaimsAvailable === 0) {
+    if (!sumClaimsAvailable) {
       return toast.error(t('error.noClaimsAvailable'))
     }
 
@@ -122,7 +121,7 @@ export const ProfileCardMemberInfo = ({
 
       toast.success(
         `Claimed ${convertMicroDenomToDenomWithDecimals(
-          sumClaimsAvailable ?? 0,
+          sumClaimsAvailable,
           governanceTokenInfo.decimals
         ).toLocaleString(undefined, {
           maximumFractionDigits: governanceTokenInfo.decimals,
@@ -151,7 +150,7 @@ export const ProfileCardMemberInfo = ({
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
 
   const unstakingTasks: UnstakingTask[] = [
-    ...((claimsPending as Claim[]) ?? []).map(({ amount, release_at }) => ({
+    ...(claimsPending ?? []).map(({ amount, release_at }) => ({
       token,
       status: UnstakingTaskStatus.Unstaking,
       amount: convertMicroDenomToDenomWithDecimals(
@@ -166,7 +165,7 @@ export const ProfileCardMemberInfo = ({
           : 0
       ),
     })),
-    ...((claimsAvailable as Claim[]) ?? []).map(({ amount, release_at }) => ({
+    ...(claimsAvailable ?? []).map(({ amount, release_at }) => ({
       token,
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: convertMicroDenomToDenomWithDecimals(
