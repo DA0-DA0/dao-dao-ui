@@ -20,6 +20,7 @@ import { loadableToLoadingDataWithError, processError } from '@dao-dao/utils'
 import { useWalletInfo } from '../hooks'
 import {
   walletNftCardInfos,
+  walletStakedNftCardInfos,
   walletStargazeNftCardInfosSelector,
 } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
@@ -55,6 +56,17 @@ export const InnerPfpkNftSelectionModal = ({
     )
   )
 
+  const stakedJunoNfts = loadableToLoadingDataWithError(
+    useCachedLoadable(
+      junoWalletAddress
+        ? walletStakedNftCardInfos({
+            walletAddress: junoWalletAddress,
+            chainId: ChainInfoID.Juno1,
+          })
+        : undefined
+    )
+  )
+
   const stargazeNfts = loadableToLoadingDataWithError(
     useCachedLoadable(
       stargazeWalletAddress
@@ -65,10 +77,7 @@ export const InnerPfpkNftSelectionModal = ({
 
   const nfts: LoadingDataWithError<NftCardInfo[]> = useMemo(
     () =>
-      stargazeNfts.loading ||
-      stargazeNfts.errored ||
-      junoNfts.loading ||
-      junoNfts.errored
+      stargazeNfts.loading || junoNfts.loading || stakedJunoNfts.loading
         ? {
             loading: true,
             errored: false,
@@ -76,9 +85,13 @@ export const InnerPfpkNftSelectionModal = ({
         : {
             loading: false,
             errored: false,
-            data: [...stargazeNfts.data, ...junoNfts.data],
+            data: [
+              ...(!stargazeNfts.errored ? stargazeNfts.data : []),
+              ...(!junoNfts.errored ? junoNfts.data : []),
+              ...(!stakedJunoNfts.errored ? stakedJunoNfts.data : []),
+            ],
           },
-    [junoNfts, stargazeNfts]
+    [junoNfts, stakedJunoNfts, stargazeNfts]
   )
 
   const {

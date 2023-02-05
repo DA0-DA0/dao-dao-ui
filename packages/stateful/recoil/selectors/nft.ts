@@ -358,3 +358,46 @@ export const walletNftCardInfos = selectorFamily<
       return nftCardInfos
     },
 })
+
+// Retrieve all NFTs a given wallet address has staked with a DAO (via
+// dao-voting-cw721-staked) using the indexer.
+export const walletStakedNftCardInfos = selectorFamily<
+  NftCardInfo[],
+  WithChainId<{
+    walletAddress: string
+  }>
+>({
+  key: 'walletStakedNftCardInfos',
+  get:
+    ({ walletAddress, chainId }) =>
+    async ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(walletAddress))
+
+      const collections: CollectionWithTokens[] = get(
+        queryWalletIndexerSelector({
+          chainId,
+          walletAddress,
+          formulaName: 'nft/stakedWithDaos',
+          id,
+        })
+      )
+      if (!collections || !Array.isArray(collections)) {
+        return []
+      }
+
+      const nftCardInfos = get(
+        waitForAll(
+          collections.flatMap(({ collectionAddress, tokens }) =>
+            tokens.map((tokenId) =>
+              nftCardInfoSelector({
+                collection: collectionAddress,
+                tokenId,
+              })
+            )
+          )
+        )
+      )
+
+      return nftCardInfos
+    },
+})
