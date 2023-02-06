@@ -3,6 +3,7 @@ import {
   ChangeCircleOutlined,
   FlagOutlined,
   MultilineChart,
+  PersonOutlineRounded,
   Timelapse,
 } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
@@ -24,6 +25,7 @@ import {
 } from '@dao-dao/utils'
 
 import { configSelector } from '../../contracts/DaoProposalSingle.common.recoil'
+import { anyoneCanProposeSelector } from '../selectors'
 import { useProcessTQ } from './useProcessTQ'
 
 export const makeUseProfileNewProposalCardInfoLines =
@@ -44,6 +46,12 @@ export const makeUseProfileNewProposalCardInfoLines =
       })
     )
     const depositInfo = useRecoilValue(depositInfoSelector)
+    const anyoneCanPropose = useRecoilValue(
+      anyoneCanProposeSelector({
+        chainId: options.chainId,
+        preProposeAddress: options.proposalModule.preProposeAddress,
+      })
+    )
 
     const processTQ = useProcessTQ()
     const { threshold, quorum } = processTQ(config.threshold)
@@ -132,5 +140,10 @@ export const makeUseProfileNewProposalCardInfoLines =
             },
           ]
         : []),
+      {
+        Icon: PersonOutlineRounded,
+        label: t('title.proposer'),
+        value: anyoneCanPropose ? t('info.anyone') : t('info.onlyMembers'),
+      },
     ]
   }

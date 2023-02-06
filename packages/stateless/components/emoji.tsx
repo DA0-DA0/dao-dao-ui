@@ -140,3 +140,7 @@ export const WrenchEmoji = () => (
 export const FireEmoji = () => (
   <EmojiWrapper emoji="🔥" labelI18nKey="emoji.fire" />
 )
+
+export const LockWithPenEmoji = () => (
+  <EmojiWrapper emoji="🔏" labelI18nKey="emoji.lockWithPen" />
+)
