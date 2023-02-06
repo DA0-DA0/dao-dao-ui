@@ -25,6 +25,7 @@ export default {
         cw20Decimals: 6,
         refundPolicy: DepositRefundPolicy.OnlyPassed,
       },
+      anyoneCanPropose: false,
     }),
     DaoPageWrapperDecorator,
   ],

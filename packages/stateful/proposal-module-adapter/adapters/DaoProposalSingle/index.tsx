@@ -24,6 +24,7 @@ import {
 import {
   AllowRevotingVotingConfigItem,
   ProposalDepositVotingConfigItem,
+  ProposalSubmissionPolicyVotingConfigItem,
   QuorumVotingConfigItem,
   ThresholdVotingConfigItem,
   VotingDurationVotingConfigItem,
@@ -176,6 +177,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
         cw20TokenInfo: undefined,
         refundPolicy: DepositRefundPolicy.OnlyPassed,
       },
+      anyoneCanPropose: false,
       allowRevoting: false,
     },
 
@@ -185,6 +187,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
         AllowRevotingVotingConfigItem,
         ThresholdVotingConfigItem,
         QuorumVotingConfigItem,
+        ProposalSubmissionPolicyVotingConfigItem,
       ],
       advancedWarningI18nKeys: [
         'daoCreationAdapter.DaoProposalSingle.advancedWarning',

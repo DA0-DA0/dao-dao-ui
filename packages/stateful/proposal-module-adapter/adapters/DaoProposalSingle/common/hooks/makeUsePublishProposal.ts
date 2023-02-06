@@ -29,6 +29,7 @@ import {
   PublishProposal,
   UsePublishProposal,
 } from '../../types'
+import { anyoneCanProposeSelector } from '../selectors'
 
 export const makeUsePublishProposal =
   ({
@@ -42,6 +43,13 @@ export const makeUsePublishProposal =
       coreAddress,
       chainId,
     })
+
+    const anyoneCanPropose = useRecoilValue(
+      anyoneCanProposeSelector({
+        chainId: chainId,
+        preProposeAddress: proposalModule.preProposeAddress,
+      })
+    )
 
     const depositInfo = useRecoilValue(depositInfoSelector)
     const depositInfoCw20TokenAddress =
@@ -179,7 +187,7 @@ export const makeUsePublishProposal =
         if (blockHeight === undefined) {
           throw new Error(t('error.loadingData'))
         }
-        if (!isMember) {
+        if (!anyoneCanPropose && !isMember) {
           throw new Error(t('error.mustBeMemberToCreateProposal'))
         }
         if (depositUnsatisfied) {
@@ -311,6 +319,7 @@ export const makeUsePublishProposal =
       [
         connected,
         blockHeight,
+        anyoneCanPropose,
         isMember,
         depositUnsatisfied,
         simulationBypassExpiration,
@@ -331,6 +340,7 @@ export const makeUsePublishProposal =
 
     return {
       publishProposal,
+      anyoneCanPropose,
       depositUnsatisfied,
       simulationBypassExpiration,
     }

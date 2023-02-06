@@ -12,7 +12,6 @@ import { Dropdown, DropdownOption, useAppLayoutContext } from '../components'
 
 export interface CreateProposalProps {
   daoInfo: DaoInfo
-  notMember: boolean
   proposalModule: ProposalModule
   setProposalModule: (proposalModule: ProposalModule) => void
   newProposal: ReactNode
@@ -22,7 +21,6 @@ export interface CreateProposalProps {
 
 export const CreateProposal = ({
   daoInfo,
-  notMember,
   proposalModule,
   setProposalModule,
   newProposal,
@@ -73,12 +71,6 @@ export const CreateProposal = ({
       />
 
       <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
-        {notMember && (
-          <p className="caption-text text-text-interactive-error">
-            {t('error.mustBeMemberToCreateProposal')}
-          </p>
-        )}
-
         <div className="flex flex-row items-center justify-between">
           <p className="title-text text-text-body">{t('title.newProposal')}</p>
 
