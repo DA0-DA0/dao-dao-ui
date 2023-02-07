@@ -53,9 +53,11 @@ export const UpgradeV1ToV2Component: ActionComponent<
       onRemove={onRemove}
       title={t('title.upgradeToV2')}
     >
-      <p className="body-text mb-4 max-w-prose">
-        {t('info.upgradeToV2Explanation')}
-      </p>
+      {isCreating && (
+        <p className="body-text mb-4 max-w-prose">
+          {t('info.upgradeToV2Explanation')}
+        </p>
+      )}
 
       <InputLabel name={t('form.subDaosToRecognize')} />
 

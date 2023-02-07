@@ -211,7 +211,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
       ? {
           match: true,
           data: {
-            subDaos: msg.wasm.migrate.msg.sub_daos,
+            subDaos: msg.wasm.migrate.msg.from_v1.params.params.sub_daos,
           },
         }
       : {
