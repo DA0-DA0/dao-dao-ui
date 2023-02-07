@@ -18,6 +18,8 @@ import { MarkdownRenderer } from './MarkdownRenderer'
 import { TooltipLikeDisplay } from './tooltip/TooltipLikeDisplay'
 
 export interface NftCardProps extends NftCardInfo {
+  // Alternative label for Owner address.
+  ownerLabel?: string
   checkbox?: {
     checked: boolean
     onClick: () => void
@@ -30,6 +32,7 @@ export interface NftCardProps extends NftCardInfo {
 export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
   function NftCard(
     {
+      ownerLabel,
       collection,
       owner,
       externalLink,
@@ -120,15 +123,6 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
         )}
 
         <div className="flex flex-col gap-4 border-b border-border-secondary py-4 px-6">
-          {/* Owner */}
-          {owner && EntityDisplay && (
-            <div className="space-y-1">
-              <p className="secondary-text">{t('title.owner')}</p>
-
-              <EntityDisplay address={owner} />
-            </div>
-          )}
-
           {/* Collection */}
           <div className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1">
@@ -150,6 +144,15 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               />
             )}
           </div>
+
+          {/* Owner */}
+          {owner && EntityDisplay && (
+            <div className="space-y-1">
+              <p className="secondary-text">{ownerLabel || t('title.owner')}</p>
+
+              <EntityDisplay address={owner} />
+            </div>
+          )}
 
           {/* Floor price */}
           {floorPrice && (

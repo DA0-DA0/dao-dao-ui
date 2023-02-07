@@ -20,6 +20,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -133,4 +134,28 @@ export const votingPowerAtHeightSelector = selectorFamily<
       get(refreshWalletBalancesIdAtom(params[0].address))
       return await client.votingPowerAtHeight(...params)
     },
+})
+
+// Retrieve the staker for a given NFT from the indexer.
+export const stakerForNftSelector = selectorFamily<
+  string | undefined,
+  WithChainId<{
+    contractAddress: string
+    tokenId: string
+  }>
+>({
+  key: 'stakerForNft',
+  get:
+    ({ contractAddress, tokenId, chainId }) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          chainId,
+          contractAddress,
+          formulaName: 'daoVotingCw721Staked/staker',
+          args: {
+            tokenId,
+          },
+        })
+      ),
 })
