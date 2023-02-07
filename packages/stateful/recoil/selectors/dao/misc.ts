@@ -4,8 +4,13 @@ import {
   DaoCoreV2Selectors,
   DaoVotingCw20StakedSelectors,
   contractVersionSelector,
+  queryContractIndexerSelector,
 } from '@dao-dao/state'
-import { ProposalModule, WithChainId } from '@dao-dao/types'
+import {
+  ContractVersionInfo,
+  ProposalModule,
+  WithChainId,
+} from '@dao-dao/types'
 import { CHAIN_ID } from '@dao-dao/utils'
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
@@ -87,5 +92,45 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
           : undefined
 
       return cw20GovernanceTokenAddress
+    },
+})
+
+// Retrieve all potential SubDAOs of the DAO from the indexer.
+export const daoPotentialSubDaosSelector = selectorFamily<
+  string[],
+  WithChainId<{
+    coreAddress: string
+  }>
+>({
+  key: 'daoPotentialSubDaos',
+  get:
+    ({ coreAddress, chainId }) =>
+    ({ get }) => {
+      const potentialSubDaos: {
+        contractAddress: string
+        info: ContractVersionInfo
+      }[] = get(
+        queryContractIndexerSelector({
+          chainId,
+          contractAddress: coreAddress,
+          formulaName: 'daoCore/potentialSubDaos',
+        })
+      )
+
+      // Filter out those that do not appear to be DAO contracts and also the
+      // contract itself since it is probably its own admin.
+      return potentialSubDaos
+        .filter(
+          ({ contractAddress, info }) =>
+            contractAddress !== coreAddress &&
+            [
+              // V1
+              'cw-core',
+              // V2
+              'cwd-core',
+              'dao-core',
+            ].some((name) => info.contract.includes(name))
+        )
+        .map(({ contractAddress }) => contractAddress)
     },
 })

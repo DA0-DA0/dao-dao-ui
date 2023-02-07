@@ -6,17 +6,18 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { ContractVersion } from '@dao-dao/types'
+import { ContractVersion, CoreActionKey } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { useMembership } from '../../../hooks'
+import { useCoreActionForKey } from '../../../actions'
+import { useDaoProposalSinglePrefill, useMembership } from '../../../hooks'
 import { subDaoCardInfosSelector } from '../../../recoil'
 import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
 
 export const SubDaosTab = () => {
   const daoInfo = useDaoInfoContext()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath, getDaoProposalPath } = useNavHelpers()
 
   const { isMember = false } = useMembership(daoInfo)
 
@@ -33,10 +34,18 @@ export const SubDaosTab = () => {
     }
   }, [subDaoCardInfosLoadable.contents, subDaoCardInfosLoadable.state])
 
-  // TODO(v2): Add v1 to v2 migrate action.
-  // const encodedProposalPrefillUpgrade = useEncodedDaoProposalSinglePrefill({
-  //   actions: [],
-  // })
+  const upgradeToV2Action = useCoreActionForKey(CoreActionKey.UpgradeV1ToV2)
+  const upgradeToV2ActionDefaults = upgradeToV2Action?.useDefaults()
+  const proposalPrefillUpgrade = useDaoProposalSinglePrefill({
+    actions: upgradeToV2Action
+      ? [
+          {
+            action: upgradeToV2Action,
+            data: upgradeToV2ActionDefaults,
+          },
+        ]
+      : [],
+  })
 
   return (
     <StatelessSubDaosTab
@@ -46,9 +55,9 @@ export const SubDaosTab = () => {
       daoInfo={daoInfo}
       isMember={isMember}
       subDaos={loadableToLoadingData(subDaoCardInfosLoadable, [])}
-      // upgradeToV2Href={getDaoProposalPath(daoInfo.coreAddress, 'create', {
-      //   prefill: encodedProposalPrefillUpgrade,
-      // })}
+      upgradeToV2Href={getDaoProposalPath(daoInfo.coreAddress, 'create', {
+        prefill: proposalPrefillUpgrade,
+      })}
     />
   )
 }

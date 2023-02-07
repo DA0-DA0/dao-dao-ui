@@ -21,6 +21,7 @@ export interface CodeIdConfig {
   Cw721Base: number
   CwAdminFactory: number
   DaoCore: number
+  DaoMigrator: number
   DaoPreProposeMultiple: number
   DaoPreProposeSingle: number
   DaoProposalMultiple: number

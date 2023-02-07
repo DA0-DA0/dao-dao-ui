@@ -25,6 +25,7 @@ import {
 } from './token_swap'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
+import { makeUpgradeV1ToV2 } from './UpgradeV1ToV2'
 import { makeValidatorActions } from './ValidatorActions'
 
 export const getActions = (options: ActionOptions): Action[] => {
@@ -51,6 +52,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeAuthzExecAction,
     makeValidatorActions,
     makeGovernanceVoteAction,
+    makeUpgradeV1ToV2,
   ]
 
   return actionMakers
