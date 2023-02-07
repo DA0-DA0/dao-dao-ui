@@ -1,6 +1,11 @@
 import { createContext, useContext, useMemo } from 'react'
 
-import { Action, CoreActionKey, IActionsContext } from '@dao-dao/types/actions'
+import {
+  Action,
+  CoreActionKey,
+  IActionsContext,
+  UseCoreActionsOptions,
+} from '@dao-dao/types/actions'
 
 //! External
 
@@ -18,7 +23,10 @@ const useActionsContext = (): IActionsContext => {
   return context
 }
 
-export const useCoreActions = (additionalActions?: Action[]): Action[] => {
+export const useCoreActions = (
+  additionalActions?: Action[],
+  { isCreating = false }: UseCoreActionsOptions = {}
+): Action[] => {
   const baseActions = useActionsContext().actions
 
   return useMemo(
@@ -28,8 +36,11 @@ export const useCoreActions = (additionalActions?: Action[]): Action[] => {
         // Sort alphabetically.
         .sort((a, b) =>
           a.label.toLowerCase().localeCompare(b.label.toLowerCase())
-        ),
-    [additionalActions, baseActions]
+        )
+        // Filter out actions which are not allowed to be created. This is used
+        // to hide the upgrade actions from the list of actions to create.
+        .filter((action) => !isCreating || !action.disallowCreation),
+    [additionalActions, baseActions, isCreating]
   )
 }
 

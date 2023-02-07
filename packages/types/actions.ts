@@ -104,6 +104,12 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   label: string
   description: string
   Component: ActionComponent<Options, Data>
+  // This determines if the action should be hidden from creation. If true, the
+  // action will not be shown in the list of actions to create, but it will
+  // still match and render in existing contexts. This is used to conditionally
+  // show the upgrade actions while still allowing them to render in existing
+  // proposals.
+  disallowCreation?: boolean
   // Hook to get default fields for form display.
   useDefaults: UseDefaults<Data>
   // Hook to make function to convert action data to CosmosMsgFor_Empty.
@@ -157,3 +163,10 @@ export type ActionsWithData = Partial<
     }
   >
 >
+
+export type UseCoreActionsOptions = {
+  // If true, the actions will be filtered to only include those which are
+  // allowed to be created. This is used to hide the upgrade actions from the
+  // list of actions to create.
+  isCreating?: boolean
+}

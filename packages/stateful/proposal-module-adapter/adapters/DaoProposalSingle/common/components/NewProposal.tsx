@@ -82,7 +82,8 @@ export const NewProposal = ({
     useMemo(
       () => [...votingModuleActions, ...proposalModuleActions],
       [proposalModuleActions, votingModuleActions]
-    )
+    ),
+    { isCreating: true }
   )
 
   // Call relevant action hooks in the same order every time.

@@ -45,11 +45,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
   address,
   chainId,
 }) => {
-  // Only v1 DAOs.
-  if (
-    context.type !== ActionOptionsContextType.Dao ||
-    context.info.coreVersion !== ContractVersion.V1
-  ) {
+  if (context.type !== ActionOptionsContextType.Dao) {
     return null
   }
 
@@ -224,6 +220,9 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
     label: t('title.upgradeToV2'),
     description: t('info.upgradeToV2Description'),
     Component,
+    // Only allow v1 DAOs to use this action, but still show it for v2 DAOs
+    // since they may have used it to upgrade from v1 in the past.
+    disallowCreation: context.info.coreVersion !== ContractVersion.V1,
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
