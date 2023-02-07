@@ -26,6 +26,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   isValidContractAddress,
   makeWasmMessage,
+  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
@@ -120,50 +121,50 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
       decimals: cw20GovernanceTokenDecimals,
     } = useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
-    const configDepositInfo = useRecoilValue(
+    const config = useRecoilValue(
       configSelector({
         contractAddress: preProposeAddress,
         params: [],
       })
-    ).deposit_info
+    )
 
     // This is the token info for both the cw20 and voting_module_token deposit
     // type. The config response only contains `native` or `cw20`, as
     // `voting_module_token` is only passed in an execution. The contract
     // converts it to `cw20`.
     const cw20TokenInfo = useRecoilValue(
-      configDepositInfo?.denom && 'cw20' in configDepositInfo.denom
+      config.deposit_info?.denom && 'cw20' in config.deposit_info.denom
         ? Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: configDepositInfo.denom.cw20,
+            contractAddress: config.deposit_info.denom.cw20,
             params: [],
           })
         : constSelector(undefined)
     )
     const cw20Decimals = cw20TokenInfo?.decimals ?? 0
 
-    const depositRequired = !!configDepositInfo
+    const depositRequired = !!config.deposit_info
     const depositInfo: UpdatePreProposeConfigData['depositInfo'] =
-      configDepositInfo
+      config.deposit_info
         ? {
             amount: convertMicroDenomToDenomWithDecimals(
-              configDepositInfo.amount,
-              'native' in configDepositInfo.denom
+              config.deposit_info.amount,
+              'native' in config.deposit_info.denom
                 ? NATIVE_DECIMALS
                 : cw20Decimals
             ),
             type:
-              'native' in configDepositInfo.denom
+              'native' in config.deposit_info.denom
                 ? 'native'
                 : cw20GovernanceTokenAddress &&
-                  configDepositInfo.denom.cw20 === cw20GovernanceTokenAddress
+                  config.deposit_info.denom.cw20 === cw20GovernanceTokenAddress
                 ? 'voting_module_token'
                 : 'cw20',
             cw20Address:
-              'cw20' in configDepositInfo.denom
-                ? configDepositInfo.denom.cw20
+              'cw20' in config.deposit_info.denom
+                ? config.deposit_info.denom.cw20
                 : cw20GovernanceTokenAddress ?? '',
             cw20Decimals,
-            refundPolicy: configDepositInfo.refund_policy,
+            refundPolicy: config.deposit_info.refund_policy,
           }
         : {
             amount: Math.pow(10, NATIVE_DECIMALS),
@@ -176,6 +177,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
     return {
       depositRequired,
       depositInfo,
+      anyoneCanPropose: config.open_proposal_submission,
     }
   }
 
@@ -190,15 +192,12 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
     const { decimals: cw20GovernanceTokenDecimals } =
       useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
-    const { open_proposal_submission } = useRecoilValue(
-      configSelector({
-        contractAddress: preProposeAddress,
-        params: [],
-      })
-    )
-
     return useCallback(
-      ({ depositRequired, depositInfo }: UpdatePreProposeConfigData) => {
+      ({
+        depositRequired,
+        depositInfo,
+        anyoneCanPropose,
+      }: UpdatePreProposeConfigData) => {
         const updateConfigMessage: ExecuteMsg = {
           update_config: {
             deposit_info: depositRequired
@@ -232,8 +231,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
                   refund_policy: depositInfo.refundPolicy,
                 }
               : null,
-            // Pass through since we don't support changing this yet.
-            open_proposal_submission,
+            open_proposal_submission: anyoneCanPropose,
           },
         }
 
@@ -247,31 +245,34 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
           },
         })
       },
-      [cw20GovernanceTokenDecimals, open_proposal_submission]
+      [cw20GovernanceTokenDecimals]
     )
   }
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdatePreProposeConfigData> = (
     msg: Record<string, any>
   ) => {
-    const {
-      denomOrAddress: cw20GovernanceTokenAddress,
-      decimals: cw20GovernanceTokenDecimals,
-    } = useCw20CommonGovernanceTokenInfoIfExists() ?? {}
+    const isUpdatePreProposeConfig = objectMatchesStructure(msg, {
+      wasm: {
+        execute: {
+          contract_addr: {},
+          funds: {},
+          msg: {
+            update_config: {
+              deposit_info: {},
+              open_proposal_submission: {},
+            },
+          },
+        },
+      },
+    })
 
     const configDepositInfo = msg.wasm?.execute?.msg?.update_config
       ?.deposit_info as UncheckedDepositInfo | null | undefined
 
     // Get explicitly-set CW20 token address.
     let cw20TokenAddress: string | undefined
-    if (
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'contract_addr' in msg.wasm.execute &&
-      msg.wasm.execute.contract_addr === preProposeAddress &&
-      'update_config' in msg.wasm.execute.msg &&
-      configDepositInfo
-    ) {
+    if (isUpdatePreProposeConfig && configDepositInfo) {
       cw20TokenAddress =
         'token' in configDepositInfo.denom &&
         'cw20' in configDepositInfo.denom.token.denom
@@ -288,65 +289,70 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
         : constSelector(undefined)
     )
 
-    if (
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'contract_addr' in msg.wasm.execute &&
-      msg.wasm.execute.contract_addr === preProposeAddress &&
-      'update_config' in msg.wasm.execute.msg
-    ) {
-      if (!configDepositInfo) {
-        return {
-          data: {
-            depositRequired: false,
-            depositInfo: {
-              amount: Math.pow(10, NATIVE_DECIMALS),
-              type: 'native',
-              cw20Address: cw20GovernanceTokenAddress ?? '',
-              cw20Decimals: cw20GovernanceTokenDecimals ?? 0,
-              refundPolicy: DepositRefundPolicy.OnlyPassed,
-            },
-          },
-          match: true,
-        }
-      }
+    const {
+      denomOrAddress: cw20GovernanceTokenAddress,
+      decimals: cw20GovernanceTokenDecimals,
+    } = useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
-      const type: UpdatePreProposeConfigData['depositInfo']['type'] =
-        'voting_module_token' in configDepositInfo.denom
-          ? 'voting_module_token'
-          : cw20TokenAddress
-          ? 'cw20'
-          : 'native'
+    if (!isUpdatePreProposeConfig) {
+      return { match: false }
+    }
 
-      const cw20Address =
-        type === 'voting_module_token'
-          ? cw20GovernanceTokenAddress ?? ''
-          : cw20TokenAddress ?? ''
-      const cw20Decimals =
-        type === 'voting_module_token'
-          ? cw20GovernanceTokenDecimals ?? 0
-          : cw20TokenInfo?.decimals ?? 0
+    const anyoneCanPropose =
+      !!msg.wasm.execute.msg.update_config.open_proposal_submission
 
-      const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
-        amount: convertMicroDenomToDenomWithDecimals(
-          configDepositInfo.amount,
-          type === 'native' ? NATIVE_DECIMALS : cw20Decimals
-        ),
-        type,
-        cw20Address,
-        cw20Decimals,
-        refundPolicy: configDepositInfo.refund_policy,
-      }
-
+    if (!configDepositInfo) {
       return {
         data: {
-          depositRequired: true,
-          depositInfo,
+          depositRequired: false,
+          depositInfo: {
+            amount: Math.pow(10, NATIVE_DECIMALS),
+            type: 'native',
+            cw20Address: cw20GovernanceTokenAddress ?? '',
+            cw20Decimals: cw20GovernanceTokenDecimals ?? 0,
+            refundPolicy: DepositRefundPolicy.OnlyPassed,
+          },
+          anyoneCanPropose,
         },
         match: true,
       }
     }
-    return { match: false }
+
+    const type: UpdatePreProposeConfigData['depositInfo']['type'] =
+      'voting_module_token' in configDepositInfo.denom
+        ? 'voting_module_token'
+        : cw20TokenAddress
+        ? 'cw20'
+        : 'native'
+
+    const cw20Address =
+      type === 'voting_module_token'
+        ? cw20GovernanceTokenAddress ?? ''
+        : cw20TokenAddress ?? ''
+    const cw20Decimals =
+      type === 'voting_module_token'
+        ? cw20GovernanceTokenDecimals ?? 0
+        : cw20TokenInfo?.decimals ?? 0
+
+    const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
+      amount: convertMicroDenomToDenomWithDecimals(
+        configDepositInfo.amount,
+        type === 'native' ? NATIVE_DECIMALS : cw20Decimals
+      ),
+      type,
+      cw20Address,
+      cw20Decimals,
+      refundPolicy: configDepositInfo.refund_policy,
+    }
+
+    return {
+      data: {
+        depositRequired: true,
+        depositInfo,
+        anyoneCanPropose,
+      },
+      match: true,
+    }
   }
 
   return {

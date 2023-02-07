@@ -23,6 +23,10 @@ const Template: ComponentStory<typeof ProfileNewProposalCard> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   daoName: 'Dog Dao',
+  isMember: {
+    loading: false,
+    data: true,
+  },
   walletProfile: {
     loading: false,
     data: {
@@ -92,6 +96,9 @@ Loading.args = {
     loading: true,
   },
   info: {
+    loading: true,
+  },
+  isMember: {
     loading: true,
   },
 }

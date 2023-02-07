@@ -12,14 +12,12 @@ import { Tooltip } from '../../tooltip/Tooltip'
 
 export interface ProposalsTabProps {
   daoInfo: DaoInfo
-  isMember: boolean
   ProposalList: ComponentType
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 export const ProposalsTab = ({
   daoInfo,
-  isMember,
   ProposalList,
   ButtonLink,
 }: ProposalsTabProps) => {
@@ -56,17 +54,14 @@ export const ProposalsTab = ({
 
         <Tooltip
           title={
-            isMember
-              ? isMobile()
-                ? undefined
-                : // eslint-disable-next-line i18next/no-literal-string
-                  (isMac ? '⌘' : '⌃') + '⇧P'
-              : t('error.mustBeMemberToCreateProposal')
+            isMobile()
+              ? undefined
+              : // eslint-disable-next-line i18next/no-literal-string
+                (isMac ? '⌘' : '⌃') + '⇧P'
           }
         >
           <ButtonLink
             className="shrink-0"
-            disabled={!isMember}
             href={getDaoProposalPath(daoInfo.coreAddress, 'create')}
           >
             <Add className="!h-4 !w-4" />

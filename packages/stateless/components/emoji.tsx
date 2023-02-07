@@ -144,3 +144,7 @@ export const FireEmoji = () => (
 export const UnicornEmoji = () => (
   <EmojiWrapper emoji="🦄" labelI18nKey="emoji.unicorn" />
 )
+
+export const LockWithPenEmoji = () => (
+  <EmojiWrapper emoji="🔏" labelI18nKey="emoji.lockWithPen" />
+)

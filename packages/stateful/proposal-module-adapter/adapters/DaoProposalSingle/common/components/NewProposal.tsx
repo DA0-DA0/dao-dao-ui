@@ -109,8 +109,12 @@ export const NewProposal = ({
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
   const cosmWasmClient = useRecoilValue(cosmWasmClientForChainSelector(chainId))
 
-  const { publishProposal, depositUnsatisfied, simulationBypassExpiration } =
-    usePublishProposal()
+  const {
+    publishProposal,
+    anyoneCanPropose,
+    depositUnsatisfied,
+    simulationBypassExpiration,
+  } = usePublishProposal()
 
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
@@ -232,6 +236,7 @@ export const NewProposal = ({
     <StatelessNewProposal
       actions={actions}
       actionsWithData={actionsWithData}
+      anyoneCanPropose={anyoneCanPropose}
       connected={connected}
       createProposal={createProposal}
       depositUnsatisfied={depositUnsatisfied}
