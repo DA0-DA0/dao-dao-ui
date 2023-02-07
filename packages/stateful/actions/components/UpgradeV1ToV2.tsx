@@ -1,4 +1,5 @@
 import { Add, Close } from '@mui/icons-material'
+import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -61,7 +62,7 @@ export const UpgradeV1ToV2Component: ActionComponent<
 
       <InputLabel name={t('form.subDaosToRecognize')} />
 
-      <div className="flex flex-col gap-2">
+      <div className={clsx('flex flex-col', isCreating && 'gap-2')}>
         {subDaoFields.map(({ id }, index) => (
           <div key={id} className="flex flex-row items-center gap-2">
             <div className="grow">
