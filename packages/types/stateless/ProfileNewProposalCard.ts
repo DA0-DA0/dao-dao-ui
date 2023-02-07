@@ -17,6 +17,7 @@ export interface ProfileNewProposalCardProps
     | 'compact'
   > {
   daoName: string
+  isMember: LoadingData<boolean>
   info: LoadingData<{
     lines: ProfileNewProposalCardInfoLine[]
     addresses: ProfileNewProposalCardAddress[]

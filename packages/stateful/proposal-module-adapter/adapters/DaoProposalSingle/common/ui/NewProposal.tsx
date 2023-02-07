@@ -4,6 +4,7 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
@@ -65,6 +66,7 @@ export interface NewProposalProps
   loading: boolean
   isPaused: boolean
   isMember: boolean
+  anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   connected: boolean
   actions: Action[]
@@ -77,6 +79,7 @@ export const NewProposal = ({
   loading,
   isPaused,
   isMember,
+  anyoneCanPropose,
   depositUnsatisfied,
   connected,
   actions,
@@ -107,6 +110,7 @@ export const NewProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
+  const { status: walletStatus } = useWallet()
   const { walletAddress = '', walletProfile } = useWalletInfo()
 
   const proposalDescription = watch('description')
@@ -291,8 +295,6 @@ export const NewProposal = ({
               title={
                 !connected
                   ? t('error.connectWalletToContinue')
-                  : !isMember
-                  ? t('error.mustBeMemberToCreateProposal')
                   : depositUnsatisfied
                   ? t('error.notEnoughForDeposit')
                   : isPaused
@@ -302,7 +304,10 @@ export const NewProposal = ({
             >
               <Button
                 disabled={
-                  !connected || !isMember || depositUnsatisfied || isPaused
+                  !connected ||
+                  (!anyoneCanPropose && !isMember) ||
+                  depositUnsatisfied ||
+                  isPaused
                 }
                 loading={loading}
                 type="submit"
@@ -333,6 +338,16 @@ export const NewProposal = ({
             </Tooltip>
           </div>
         </div>
+
+        {!anyoneCanPropose &&
+          !isMember &&
+          walletStatus !== WalletConnectionStatus.Initializing &&
+          walletStatus !== WalletConnectionStatus.AttemptingAutoConnection &&
+          walletStatus !== WalletConnectionStatus.Connecting && (
+            <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
+              {t('error.mustBeMemberToCreateProposal')}
+            </p>
+          )}
 
         {simulationBypassExpiration && (
           <p className="secondary-text max-w-prose self-end text-right text-text-interactive-warning-body">

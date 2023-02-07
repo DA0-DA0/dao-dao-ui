@@ -45,6 +45,7 @@ export interface DaoCreationConfig {
     cw20TokenInfo?: TokenInfoResponse
     refundPolicy: DepositRefundPolicy
   }
+  anyoneCanPropose: boolean
   allowRevoting: boolean
 }
 
@@ -95,6 +96,7 @@ export interface MakeUsePublishProposalOptions {
 
 export type UsePublishProposal = () => {
   publishProposal: PublishProposal
+  anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   simulationBypassExpiration: Date | undefined
 }
