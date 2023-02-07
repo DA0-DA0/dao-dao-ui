@@ -662,7 +662,7 @@
     "updateProposalSubmissionConfigActionDescription": "Update the proposal submission paramaters for your DAO.",
     "updateVotingConfigActionDescription": "Update the voting parameters for your DAO.",
     "upgradeToV2Description": "Upgrade your DAO to the v2 smart contracts. This supports SubDAOs and other new features.",
-    "upgradeToV2Explanation": "This upgrades your DAO's contracts to the latest audited version. Below you may register any SubDAOs that may have been created on v1. SubDAOs can use any version, but v2 is recommended.",
+    "upgradeToV2Explanation": "This upgrades your DAO's contracts to the latest audited version. Below you may register any SubDAOs that were created while this DAO was using v1. SubDAOs can use any version, but v2 is recommended.",
     "validatorActionsDescription": "Make transactions related to DAO run validators.",
     "verifyAddressMatches": "Verify that the following address matches the 'Send To' address in the widget below.",
     "verifyingGovernanceToken": "Verifying CW20 token...",
