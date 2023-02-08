@@ -160,6 +160,7 @@ const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
   }, [info.chainId, info.coreAddress, webSocket])
 
   // Ensure WebSocket is connected every 5 seconds and reconnect if not.
+  // Disconnect on unmount if connected.
   useEffect(() => {
     if (!webSocket) {
       connectWebSocket()
@@ -172,7 +173,14 @@ const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
       }
     }, 5000)
 
-    return () => clearInterval(interval)
+    // Clean up on unmount.
+    return () => {
+      clearInterval(interval)
+
+      if (webSocket && webSocket.readyState !== WebSocket.CLOSED) {
+        webSocket.close()
+      }
+    }
   }, [connectWebSocket, webSocket])
 
   return (
