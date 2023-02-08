@@ -57,7 +57,15 @@ export const useOnDaoWebSocketMessage = (
       webSocket.removeEventListener('message', listener)
       setListening(false)
     }
-  }, [webSocket, callback, expectedType])
+  }, [
+    webSocket,
+    // Make sure to add listener if readyState changes. If this is not included,
+    // it won't always be called since the WebSocket may not be ready
+    // immediately.
+    webSocket?.readyState,
+    callback,
+    expectedType,
+  ])
 
   return listening
 }
