@@ -16,7 +16,7 @@ import {
   CopyToClipboard,
   LineGraph,
   Loader,
-  useDaoInfoContext,
+  useDaoInfo,
 } from '@dao-dao/stateless'
 import {
   CHAIN_TXN_URL_PREFIX,
@@ -61,7 +61,7 @@ export const InnerDaoTreasuryHistory = ({
   shortTitle,
 }: DaoTreasuryHistoryProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfo()
 
   // Initialization.
   const latestBlockHeight = useRecoilValue(blockHeightSelector({}))

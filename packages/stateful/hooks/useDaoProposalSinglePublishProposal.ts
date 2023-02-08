@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { useDaoInfo } from '@dao-dao/stateless'
 
 import {
   DaoProposalSingleAdapter,
@@ -16,10 +16,10 @@ import { PublishProposal } from '../proposal-module-adapter/adapters/DaoProposal
 export const useDaoProposalSinglePublishProposal = ():
   | PublishProposal
   | undefined => {
-  const { coreAddress, chainId, proposalModules } = useDaoInfoContext()
+  const { coreAddress, chainId, proposalModules } = useDaoInfo()
 
   // Memoize hook getter since we don't want to create the hook more than once.
-  // `useDaoInfoContext` always returns the same instances of the data, so no
+  // `useDaoInfo` always returns the same instances of the data, so no
   // hook rules are violated here.
   const useProposalModule = useMemo(() => {
     const daoProposalSingleModule = proposalModules.find(

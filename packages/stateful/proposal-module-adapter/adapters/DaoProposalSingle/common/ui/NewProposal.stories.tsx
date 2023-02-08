@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { useDaoInfo } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   WalletProviderDecorator,
@@ -25,7 +25,7 @@ export default {
 } as ComponentMeta<typeof NewProposal>
 
 const Template: ComponentStory<typeof NewProposal> = (args) => {
-  const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
+  const { chainId, coreAddress, proposalModules } = useDaoInfo()
 
   const singleChoiceProposalModule = proposalModules.find(
     ({ contractName }) =>

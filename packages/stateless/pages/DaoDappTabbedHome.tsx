@@ -14,7 +14,7 @@ import {
   useAppLayoutContext,
 } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
-import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
+import { useDaoInfo } from '../hooks'
 import { useNavHelpers } from '../hooks/useNavHelpers'
 
 export const DaoDappTabbedHome = ({
@@ -28,7 +28,7 @@ export const DaoDappTabbedHome = ({
 }: DaoDappTabbedHomeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfo()
 
   const {
     getDaoPath,

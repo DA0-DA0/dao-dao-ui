@@ -17,7 +17,7 @@ import {
   ProfileNewProposalCardProps,
 } from '../components/profile/ProfileNewProposalCard'
 import { Default as ProfileNewProposalCardStory } from '../components/profile/ProfileNewProposalCard.stories'
-import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
+import { useDaoInfo } from '../hooks'
 import { CreateProposal } from './CreateProposal'
 
 export default {
@@ -31,7 +31,7 @@ export default {
 } as ComponentMeta<typeof CreateProposal>
 
 const Template: ComponentStory<typeof CreateProposal> = (args) => {
-  const daoInfo = useDaoInfoContext()
+  const daoInfo = useDaoInfo()
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(
     // Default to single choice proposal module.

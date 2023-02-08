@@ -14,7 +14,7 @@ import { DaoPageMode, DaoTabId } from '@dao-dao/types'
 import { SdaNavigationProps } from '@dao-dao/types/stateless/SdaNavigation'
 import { DAPP_URL_PREFIX, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 
-import { useDaoInfoContext, useNavHelpers } from '../../hooks'
+import { useDaoInfo, useNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Tooltip } from '../tooltip/Tooltip'
@@ -51,7 +51,7 @@ export const SdaNavigation = ({
   mountedInBrowser,
   LinkWrapper,
 }: SdaNavigationProps) => {
-  const daoInfo = useDaoInfoContext()
+  const daoInfo = useDaoInfo()
   const { t } = useTranslation()
   const {
     getDaoPath,

@@ -1,9 +1,9 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, useCallback, useEffect, useState } from 'react'
 
 import {
-  DaoInfoContext,
+  DaoContext,
   DaoNotFound,
   ErrorPage500,
   PageLoader,
@@ -132,34 +132,79 @@ interface InnerDaoPageWrapperProps
   info: DaoInfo
 }
 
-const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => (
-  // Add a unique key here to tell React to re-render everything when the
-  // `coreAddress` is changed, since for some insane reason, Next.js does not
-  // reset state when navigating between dynamic rotues. Even though the
-  // `info` value passed below changes, somehow no re-render occurs... unless
-  // the `key` prop is unique. See the issue below for more people compaining
-  // about this to no avail. https://github.com/vercel/next.js/issues/9992
-  <DaoInfoContext.Provider key={info.coreAddress} value={info}>
-    <VotingModuleAdapterProvider
-      contractName={info.votingModuleContractName}
-      options={{
-        votingModuleAddress: info.votingModuleAddress,
-        coreAddress: info.coreAddress,
+const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
+  const [webSocket, setWebSocket] = useState<WebSocket | undefined>()
+
+  const connectWebSocket = useCallback(() => {
+    const _webSocket = new WebSocket(
+      `wss://ws.daodao.zone/${info.chainId}_${info.coreAddress}/connect`
+    )
+
+    _webSocket.addEventListener('open', () => {
+      console.log('WebSocket connected.')
+    })
+    _webSocket.addEventListener('close', () => {
+      console.log('WebSocket disconnected.')
+    })
+    _webSocket.addEventListener('error', () => {
+      console.log('WebSocket disconnected.')
+      _webSocket.close()
+    })
+
+    setWebSocket(_webSocket)
+  }, [info.chainId, info.coreAddress])
+
+  // Ensure WebSocket is connected every 5 seconds and reconnect if not.
+  useEffect(() => {
+    if (!webSocket) {
+      connectWebSocket()
+      return
+    }
+
+    const interval = setInterval(() => {
+      if (!webSocket || webSocket.readyState === WebSocket.CLOSED) {
+        connectWebSocket()
+      }
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [connectWebSocket, webSocket])
+
+  return (
+    // Add a unique key here to tell React to re-render everything when the
+    // `coreAddress` is changed, since for some insane reason, Next.js does not
+    // reset state when navigating between dynamic rotues. Even though the
+    // `info` value passed below changes, somehow no re-render occurs... unless
+    // the `key` prop is unique. See the issue below for more people compaining
+    // about this to no avail. https://github.com/vercel/next.js/issues/9992
+    <DaoContext.Provider
+      key={info.coreAddress}
+      value={{
+        daoInfo: info,
+        webSocket,
       }}
     >
-      <ActionsProvider
+      <VotingModuleAdapterProvider
+        contractName={info.votingModuleContractName}
         options={{
-          chainId: info.chainId,
-          bech32Prefix: info.bech32Prefix,
-          address: info.coreAddress,
-          context: {
-            type: ActionOptionsContextType.Dao,
-            info,
-          },
+          votingModuleAddress: info.votingModuleAddress,
+          coreAddress: info.coreAddress,
         }}
       >
-        {children}
-      </ActionsProvider>
-    </VotingModuleAdapterProvider>
-  </DaoInfoContext.Provider>
-)
+        <ActionsProvider
+          options={{
+            chainId: info.chainId,
+            bech32Prefix: info.bech32Prefix,
+            address: info.coreAddress,
+            context: {
+              type: ActionOptionsContextType.Dao,
+              info,
+            },
+          }}
+        >
+          {children}
+        </ActionsProvider>
+      </VotingModuleAdapterProvider>
+    </DaoContext.Provider>
+  )
+}

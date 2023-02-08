@@ -11,7 +11,7 @@ import {
   blocksPerYearSelector,
   cosmWasmClientForChainSelector,
 } from '@dao-dao/state'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
+import { useCachedLoadable, useDaoInfo } from '@dao-dao/stateless'
 import {
   ActionsWithData,
   BaseNewProposalProps,
@@ -51,7 +51,7 @@ export const NewProposal = ({
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
-  const { name: daoName, imageUrl: daoImageUrl } = useDaoInfoContext()
+  const { name: daoName, imageUrl: daoImageUrl } = useDaoInfo()
   const { chainId, coreAddress, proposalModule } = options
   const { connected } = useWallet()
   const { isMember = false } = useMembership({

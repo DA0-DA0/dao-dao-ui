@@ -4,7 +4,7 @@ import { ComponentType, useMemo } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
+import { useCachedLoadable, useDaoInfo } from '@dao-dao/stateless'
 import {
   DaoWidgets,
   LoadingData,
@@ -26,7 +26,7 @@ type UseWidgetsOptions = {
 export const useWidgets = ({
   suspendWhileLoading = false,
 }: UseWidgetsOptions = {}): LoadingData<ComponentType[]> => {
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { coreAddress, chainId } = useDaoInfo()
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,

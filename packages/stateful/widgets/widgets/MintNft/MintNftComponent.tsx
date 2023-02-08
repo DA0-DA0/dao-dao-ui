@@ -12,7 +12,7 @@ import {
   NftCard,
   Tooltip,
   useCachedLoadable,
-  useDaoInfoContext,
+  useDaoInfo,
 } from '@dao-dao/stateless'
 import { WidgetComponentProps } from '@dao-dao/types'
 import { loadableToLoadingData, processError } from '@dao-dao/utils'
@@ -33,7 +33,7 @@ export const MintNftComponent = ({
     signingCosmWasmClient,
     connected,
   } = useWallet()
-  const { chainId } = useDaoInfoContext()
+  const { chainId } = useDaoInfo()
 
   const [minting, setMinting] = useState(false)
 

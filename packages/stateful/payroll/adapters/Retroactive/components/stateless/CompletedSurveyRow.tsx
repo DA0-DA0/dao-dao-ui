@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Tooltip, useDaoInfoContext, useNavHelpers } from '@dao-dao/stateless'
+import { Tooltip, useDaoInfo, useNavHelpers } from '@dao-dao/stateless'
 import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
 import { formatDate } from '@dao-dao/utils'
 
@@ -23,7 +23,7 @@ export const CompletedSurveyRow = ({
   className,
 }: CompletedSurveyRowProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfo()
   const { getDaoProposalPath } = useNavHelpers()
   const openedAtEpoch = Date.parse(contributionsOpenedAt)
 

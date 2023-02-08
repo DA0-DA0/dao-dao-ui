@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import { Cw20BaseSelectors } from '@dao-dao/state'
-import { GearEmoji, useDaoInfoContext } from '@dao-dao/stateless'
+import { GearEmoji, useDaoInfo } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -38,7 +38,7 @@ import {
 
 export const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
-  const { bech32Prefix } = useDaoInfoContext()
+  const { bech32Prefix } = useDaoInfo()
   const cw20GovernanceTokenSymbol =
     useCw20CommonGovernanceTokenInfoIfExists()?.symbol
 

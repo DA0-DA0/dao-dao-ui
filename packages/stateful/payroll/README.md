@@ -46,7 +46,7 @@ const MyPayrollAdapter: PayrollAdapter = {
 
 ### Relevant hooks
 
-You will likely want to take advantage of the `useDaoInfoContext` hook from the
+You will likely want to take advantage of the `useDaoInfo` hook from the
 `@dao-dao/stateless` package to access information about the DAO (such as
 `coreAddress`), as well as the `useWallet` hook to access information and
 clients for the wallet.

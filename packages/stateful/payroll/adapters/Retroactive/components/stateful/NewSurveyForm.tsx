@@ -7,11 +7,7 @@ import {
   DaoCoreV2Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state/recoil'
-import {
-  Loader,
-  useCachedLoadable,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { Loader, useCachedLoadable, useDaoInfo } from '@dao-dao/stateless'
 import {
   convertDenomToMicroDenomWithDecimals,
   loadableToLoadingData,
@@ -31,7 +27,7 @@ import { NewSurveyForm as StatelessNewSurveyForm } from '../stateless/NewSurveyF
 
 export const NewSurveyForm = () => {
   const { t } = useTranslation()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { coreAddress, chainId } = useDaoInfo()
 
   // Get CW20 governance token address from voting module adapter if exists, so
   // we can make sure to load it with all cw20 balances, even if it has not been

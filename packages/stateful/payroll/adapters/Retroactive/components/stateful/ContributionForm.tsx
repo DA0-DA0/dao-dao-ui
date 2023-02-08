@@ -8,7 +8,7 @@ import {
   EntityDisplay,
   Loader,
   useCachedLoadable,
-  useDaoInfoContext,
+  useDaoInfo,
 } from '@dao-dao/stateless'
 
 import { SuspenseLoader } from '../../../../../components'
@@ -20,7 +20,7 @@ import { ContributionForm as StatelessContributionForm } from '../stateless/Cont
 
 export const ContributionForm = () => {
   const { t } = useTranslation()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { coreAddress, chainId } = useDaoInfo()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet(chainId)
   const walletEntity = useEntity({

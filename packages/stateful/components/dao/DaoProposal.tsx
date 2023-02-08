@@ -22,8 +22,9 @@ import {
   Proposal,
   ProposalNotFound,
   ProposalProps,
-  useDaoInfoContext,
+  useDaoInfo,
   useNavHelpers,
+  useOnDaoWebSocketMessage,
 } from '@dao-dao/stateless'
 import { ActionKey, CommonProposalInfo, CoreActionKey } from '@dao-dao/types'
 
@@ -33,9 +34,9 @@ interface InnerDaoProposalProps {
 
 const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
-  const daoInfo = useDaoInfoContext()
+  const daoInfo = useDaoInfo()
   const { getDaoProposalPath, router } = useNavHelpers()
-  const { connected } = useWallet()
+  const { connected, address } = useWallet()
   const {
     adapter: {
       components: {
@@ -87,13 +88,33 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   const awaitNextBlock = useAwaitNextBlock()
 
+  // On vote, refresh.
+  const listeningForVote = useOnDaoWebSocketMessage(
+    'vote',
+    useCallback(
+      ({ voter }) => {
+        if (voter === address) {
+          refreshProposalAndAll()
+          toast.success(t('success.voteCast'))
+        }
+      },
+      [address, refreshProposalAndAll, t]
+    )
+  )
+
+  // Fallback if the listener above is offline when the vote happens.
   const onVoteSuccess = useCallback(async () => {
+    // If listener is already listening, don't do anything here.
+    if (listeningForVote) {
+      return
+    }
+
     // Wait a block for indexer to catch up.
     await awaitNextBlock()
 
     refreshProposalAndAll()
     toast.success(t('success.voteCast'))
-  }, [awaitNextBlock, refreshProposalAndAll, t])
+  }, [awaitNextBlock, listeningForVote, refreshProposalAndAll, t])
 
   const onExecuteSuccess = useCallback(async () => {
     toast.loading(t('success.proposalExecuted'))

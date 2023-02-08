@@ -10,7 +10,7 @@ import {
   InputLabel,
   TextAreaInput,
   TextInput,
-  useDaoInfoContext,
+  useDaoInfo,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
@@ -30,7 +30,7 @@ export const UpdateInfoComponent: ActionComponent<
   undefined,
   UpdateInfoData
 > = ({ fieldNamePrefix, errors, onRemove, isCreating, data }) => {
-  const { name } = useDaoInfoContext()
+  const { name } = useDaoInfo()
   const { address } = useActionOptions()
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()

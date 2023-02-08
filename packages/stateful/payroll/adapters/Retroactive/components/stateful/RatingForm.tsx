@@ -13,7 +13,7 @@ import {
 import {
   Loader,
   useCachedLoadable,
-  useDaoInfoContext,
+  useDaoInfo,
 } from '@dao-dao/stateless'
 import { AmountWithTimestampAndDenom } from '@dao-dao/types'
 import { nativeTokenDecimals } from '@dao-dao/utils'
@@ -40,7 +40,7 @@ interface RatingFormProps {
 
 export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
   const { t } = useTranslation()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { coreAddress, chainId } = useDaoInfo()
   const { publicKey: walletPublicKey } = useWallet(chainId)
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))

@@ -16,7 +16,7 @@ import {
   ProfileNotMemberCard,
   useAppLayoutContext,
   useCachedLoadable,
-  useDaoInfoContext,
+  useDaoInfo,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 
@@ -26,7 +26,7 @@ export const ProfileDaoHomeCard = () => {
   const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
 
-  const daoInfo = useDaoInfoContext()
+  const daoInfo = useDaoInfo()
   const {
     components: { ProfileCardMemberInfo },
   } = useVotingModuleAdapter()

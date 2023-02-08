@@ -8,7 +8,7 @@ import { DaoPageMode } from '@dao-dao/types'
 import { BreadcrumbsProps } from '@dao-dao/types/stateless/Breadcrumbs'
 import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
-import { useDaoInfoContextIfAvailable, useNavHelpers } from '../../hooks'
+import { useDaoInfoIfAvailable, useNavHelpers } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
 import { TopGradient } from '../TopGradient'
@@ -24,7 +24,7 @@ export const Breadcrumbs = ({
 }: BreadcrumbsProps) => {
   const { t } = useTranslation()
   // Allow using Breadcrumbs outside of DaoPageWrapper.
-  const daoInfo = useDaoInfoContextIfAvailable()
+  const daoInfo = useDaoInfoIfAvailable()
   const { mode } = useAppLayoutContext()
   const { getDaoPath } = useNavHelpers()
 

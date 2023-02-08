@@ -22,7 +22,7 @@ import {
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
-  useDaoInfoContext,
+  useDaoInfo,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import {
@@ -114,7 +114,7 @@ const InnerProposalStatusAndInfo = ({
   depositInfo: CheckedDepositInfo | undefined
 }) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
+  const { name: daoName, coreAddress, chainId } = useDaoInfo()
   const { getDaoPath } = useNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { connected, address: walletAddress = '' } = useWallet()
@@ -385,7 +385,7 @@ const InnerProposalStatusAndInfoLoader = (
   props: BaseProposalStatusAndInfoProps
 ) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
+  const { name: daoName, coreAddress } = useDaoInfo()
   const { getDaoPath } = useNavHelpers()
 
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (

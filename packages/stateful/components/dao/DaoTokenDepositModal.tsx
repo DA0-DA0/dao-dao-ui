@@ -14,7 +14,7 @@ import {
   TokenDepositModal,
   TokenDepositModalProps,
   useCachedLoadable,
-  useDaoInfoContext,
+  useDaoInfo,
 } from '@dao-dao/stateless'
 import {
   convertDenomToMicroDenomWithDecimals,
@@ -37,7 +37,7 @@ export const DaoTokenDepositModal = ({
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
+  const { name: daoName, coreAddress, chainId } = useDaoInfo()
   const { connected, address, signingCosmWasmClient } = useWallet()
   const { refreshBalances: refreshWalletBalances } = useWalletInfo()
 

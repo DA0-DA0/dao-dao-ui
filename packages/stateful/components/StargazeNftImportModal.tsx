@@ -10,7 +10,7 @@ import {
   ModalProps,
   NftSelectionModal,
   useCachedLoadable,
-  useDaoInfoContext,
+  useDaoInfo,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
 import { loadableToLoadingDataWithError, processError } from '@dao-dao/utils'
@@ -24,7 +24,7 @@ export const InnerStargazeNftImportModal = ({
   onClose,
 }: StargazeNftImportModalProps) => {
   const { t } = useTranslation()
-  const { coreAddress, name: daoName } = useDaoInfoContext()
+  const { coreAddress, name: daoName } = useDaoInfo()
   const { signingCosmWasmClient, address: stargazeWalletAddress } = useWallet(
     ChainInfoID.Stargaze1
   )

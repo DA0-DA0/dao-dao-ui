@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import {
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoadable,
-  useDaoInfoContext,
+  useDaoInfo,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { CoreActionKey } from '@dao-dao/types'
@@ -30,7 +30,7 @@ import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
 import { TokenCard } from '../TokenCard'
 
 export const TreasuryAndNftsTab = () => {
-  const daoInfo = useDaoInfoContext()
+  const daoInfo = useDaoInfo()
   const { connected } = useWallet()
   const { getDaoProposalPath } = useNavHelpers()
   const { isMember = false } = useMembership(daoInfo)

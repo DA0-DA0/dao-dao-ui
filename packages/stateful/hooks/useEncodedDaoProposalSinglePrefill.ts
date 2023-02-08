@@ -1,4 +1,4 @@
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { useDaoInfo } from '@dao-dao/stateless'
 import { Action, ProposalPrefill } from '@dao-dao/types'
 
 import {
@@ -25,7 +25,7 @@ export const useEncodedDaoProposalSinglePrefill = ({
   actions,
   proposalModuleId = DaoProposalSingleAdapter.id,
 }: UseEncodedProposalPrefillUrlOptions): string | undefined => {
-  const { proposalModules } = useDaoInfoContext()
+  const { proposalModules } = useDaoInfo()
 
   const hasProposalModule = proposalModules.some(
     ({ contractName }) =>

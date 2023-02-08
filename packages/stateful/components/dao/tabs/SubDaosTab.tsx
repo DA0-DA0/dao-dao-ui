@@ -3,7 +3,7 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
   SubDaosTab as StatelessSubDaosTab,
-  useDaoInfoContext,
+  useDaoInfo,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { ContractVersion } from '@dao-dao/types'
@@ -15,7 +15,7 @@ import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
 
 export const SubDaosTab = () => {
-  const daoInfo = useDaoInfoContext()
+  const daoInfo = useDaoInfo()
   const { getDaoPath } = useNavHelpers()
 
   const { isMember = false } = useMembership(daoInfo)

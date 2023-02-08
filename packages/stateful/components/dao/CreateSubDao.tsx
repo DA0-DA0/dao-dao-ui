@@ -1,4 +1,4 @@
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { useDaoInfo } from '@dao-dao/stateless'
 import { getFallbackImage } from '@dao-dao/utils'
 
 import { CreateDaoForm } from './CreateDaoForm'
@@ -6,7 +6,7 @@ import { CreateDaoForm } from './CreateDaoForm'
 // Wrap the CreateDaoForm to create a SubDao for the current DAO.
 export const CreateSubDao = () => {
   const { coreAddress, coreVersion, name, imageUrl, parentDao } =
-    useDaoInfoContext()
+    useDaoInfo()
 
   return (
     <CreateDaoForm
