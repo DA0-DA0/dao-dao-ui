@@ -136,6 +136,11 @@ const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
   const [webSocket, setWebSocket] = useState<WebSocket | undefined>()
 
   const connectWebSocket = useCallback(() => {
+    // Close existing WebSocket if not closed.
+    if (webSocket && webSocket.readyState !== WebSocket.CLOSED) {
+      webSocket.close()
+    }
+
     const _webSocket = new WebSocket(
       `wss://ws.daodao.zone/${info.chainId}_${info.coreAddress}/connect`
     )
@@ -152,7 +157,7 @@ const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
     })
 
     setWebSocket(_webSocket)
-  }, [info.chainId, info.coreAddress])
+  }, [info.chainId, info.coreAddress, webSocket])
 
   // Ensure WebSocket is connected every 5 seconds and reconnect if not.
   useEffect(() => {
