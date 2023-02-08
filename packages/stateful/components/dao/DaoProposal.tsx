@@ -93,8 +93,10 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     'vote',
     useCallback(
       ({ voter }) => {
+        refreshProposalAndAll()
+
+        // If the current user voted, show a success toast.
         if (voter === address) {
-          refreshProposalAndAll()
           toast.success(t('success.voteCast'))
         }
       },
