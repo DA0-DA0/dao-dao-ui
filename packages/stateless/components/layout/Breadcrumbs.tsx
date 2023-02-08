@@ -18,7 +18,7 @@ export * from '@dao-dao/types/stateless/Breadcrumbs'
 
 export const Breadcrumbs = ({
   home = false,
-  sdaHomeTab,
+  homeTab,
   current,
   className,
 }: BreadcrumbsProps) => {
@@ -41,7 +41,12 @@ export const Breadcrumbs = ({
                   ? []
                   : [
                       {
-                        href: getDaoPath(daoInfo.coreAddress),
+                        href: getDaoPath(
+                          daoInfo.coreAddress,
+                          undefined,
+                          // Link to home tab if available.
+                          homeTab?.id
+                        ),
                         label: daoInfo.name,
                       },
                     ]),
@@ -53,10 +58,13 @@ export const Breadcrumbs = ({
             ? []
             : [
                 {
-                  href:
-                    getDaoPath(daoInfo.coreAddress) +
-                    (sdaHomeTab ? '#' + sdaHomeTab.id : ''),
-                  label: sdaHomeTab?.label || t('title.home'),
+                  href: getDaoPath(
+                    daoInfo.coreAddress,
+                    undefined,
+                    // Link to home tab if available.
+                    homeTab?.id
+                  ),
+                  label: homeTab?.sdaLabel || t('title.home'),
                 },
               ]),
         ]
