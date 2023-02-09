@@ -88,21 +88,22 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   const awaitNextBlock = useAwaitNextBlock()
 
-  // On vote, refresh.
+  // On vote or proposal change, refresh.
   const listeningForVote = useOnDaoWebSocketMessage(
     'vote',
     useCallback(
-      ({ voter }) => {
+      ({ proposalId, voter }) => {
         refreshProposalAndAll()
 
-        // If the current user voted, show a success toast.
-        if (voter === address) {
+        // If the current user voted on current proposal, show a success toast.
+        if (proposalId === proposalInfo.id && voter === address) {
           toast.success(t('success.voteCast'))
         }
       },
-      [address, refreshProposalAndAll, t]
+      [address, proposalInfo.id, refreshProposalAndAll, t]
     )
   )
+  useOnDaoWebSocketMessage('proposal', refreshProposalAndAll)
 
   // Fallback if the listener above is offline when the vote happens.
   const onVoteSuccess = useCallback(async () => {

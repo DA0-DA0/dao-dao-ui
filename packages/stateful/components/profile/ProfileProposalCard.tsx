@@ -25,12 +25,7 @@ export interface ProfileProposalCardProps {
 }
 
 export const ProfileProposalCard = () => {
-  const {
-    chainId,
-    coreAddress,
-    name: daoName,
-    proposalModules,
-  } = useDaoInfo()
+  const { chainId, coreAddress, name: daoName, proposalModules } = useDaoInfo()
   const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
 

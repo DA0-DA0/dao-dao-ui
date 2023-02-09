@@ -5,8 +5,7 @@ import { CreateDaoForm } from './CreateDaoForm'
 
 // Wrap the CreateDaoForm to create a SubDao for the current DAO.
 export const CreateSubDao = () => {
-  const { coreAddress, coreVersion, name, imageUrl, parentDao } =
-    useDaoInfo()
+  const { coreAddress, coreVersion, name, imageUrl, parentDao } = useDaoInfo()
 
   return (
     <CreateDaoForm

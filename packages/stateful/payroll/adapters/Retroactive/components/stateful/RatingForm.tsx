@@ -10,11 +10,7 @@ import {
   cosmWasmClientForChainSelector,
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state/recoil'
-import {
-  Loader,
-  useCachedLoadable,
-  useDaoInfo,
-} from '@dao-dao/stateless'
+import { Loader, useCachedLoadable, useDaoInfo } from '@dao-dao/stateless'
 import { AmountWithTimestampAndDenom } from '@dao-dao/types'
 import { nativeTokenDecimals } from '@dao-dao/utils'
 
