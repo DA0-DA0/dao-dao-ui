@@ -2,7 +2,7 @@ import { DecoratorFn } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
 import { AppLayoutContext } from '@dao-dao/stateless/components/layout/AppLayoutContext'
-import { DaoPageMode, InboxState } from '@dao-dao/types'
+import { DaoPageMode, DaoWebSocket, InboxState } from '@dao-dao/types'
 
 // Useful when testing individual components that rely on this context value but
 // don't want to render the entire AppLayout.
@@ -37,6 +37,7 @@ export const makeAppLayoutContextDecorator: (
             RightSidebarContent: () => null,
             setRootCommandContextMaker: () => {},
             inbox: EMPTY_INBOX,
+            daoWebSocket: EMPTY_DAO_WEB_SOCKET,
           }),
           [
             responsiveNavigationEnabled,
@@ -56,4 +57,10 @@ export const EMPTY_INBOX: InboxState = {
   daosWithItems: [],
   itemCount: 0,
   refresh: async () => alert('refetch inbox'),
+}
+
+export const EMPTY_DAO_WEB_SOCKET: DaoWebSocket = {
+  webSocket: null,
+  connect: () => alert('connect'),
+  disconnect: () => alert('disconnect'),
 }

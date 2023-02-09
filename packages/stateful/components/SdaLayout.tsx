@@ -22,7 +22,7 @@ import {
 } from '@dao-dao/stateless'
 import { DaoPageMode, IAppLayoutContext } from '@dao-dao/types'
 
-import { useDaoTabs, useWalletInfo } from '../hooks'
+import { useDaoTabs, useDaoWebSocket, useWalletInfo } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
 import { ConnectWallet } from './ConnectWallet'
 import { SdaDaoHome } from './dao'
@@ -68,6 +68,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
     useState(false)
   const [updateProfileNftVisible, setUpdateProfileNftVisible] = useState(false)
+  const daoWebSocket = useDaoWebSocket()
   const appLayoutContext: Omit<
     IAppLayoutContext,
     'RightSidebarContent' | 'PageHeader'
@@ -94,8 +95,10 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
         itemCount: 0,
         refresh: () => {},
       },
+      daoWebSocket,
     }),
     [
+      daoWebSocket,
       responsiveNavigationEnabled,
       responsiveRightSidebarEnabled,
       updateProfileNftVisible,

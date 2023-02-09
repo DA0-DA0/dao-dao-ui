@@ -10,6 +10,7 @@ import {
   ProfileDisconnectedCard,
   ProfileProposalCard,
   useAwaitNextBlock,
+  useOnDaoWebSocketMessage,
   useWalletProfile,
 } from '@dao-dao/stateful'
 import { useCoreActions } from '@dao-dao/stateful/actions'
@@ -24,7 +25,6 @@ import {
   ProposalProps,
   useDaoInfo,
   useNavHelpers,
-  useOnDaoWebSocketMessage,
 } from '@dao-dao/stateless'
 import { ActionKey, CommonProposalInfo, CoreActionKey } from '@dao-dao/types'
 

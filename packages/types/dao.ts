@@ -49,7 +49,6 @@ export interface DaoParentInfo {
 
 export type IDaoContext = {
   daoInfo: DaoInfo
-  webSocket: WebSocket | undefined
 }
 
 // Used in @dao-dao/stateful/components/DaoPageWrapper to serialize DaoInfo loaded
@@ -248,4 +247,15 @@ export type DaoTabWithComponent = DaoTab & {
 export enum DaoPageMode {
   Dapp = 'dapp',
   Sda = 'sda',
+}
+
+export type DaoWebSocketConnectionInfo = {
+  chainId: string
+  coreAddress: string
+}
+
+export type DaoWebSocket = {
+  webSocket: WebSocket | null
+  connect: (connectionInfo: DaoWebSocketConnectionInfo) => void
+  disconnect: () => void
 }

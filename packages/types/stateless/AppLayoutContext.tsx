@@ -1,7 +1,7 @@
 import { ComponentType, ReactNode } from 'react'
 
 import { CommandModalContextMaker } from '../command'
-import { DaoPageMode } from '../dao'
+import { DaoPageMode, DaoWebSocket } from '../dao'
 import { InboxState } from '../inbox'
 import { PageHeaderProps } from './PageHeader'
 
@@ -25,4 +25,5 @@ export interface IAppLayoutContext {
     rootCommandContextMaker: CommandModalContextMaker
   ) => void
   inbox: InboxState
+  daoWebSocket: DaoWebSocket
 }

@@ -1,12 +1,13 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { PropsWithChildren, useCallback, useEffect, useState } from 'react'
+import { PropsWithChildren, useEffect } from 'react'
 
 import {
   DaoContext,
   DaoNotFound,
   ErrorPage500,
   PageLoader,
+  useAppLayoutContext,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
@@ -133,55 +134,14 @@ interface InnerDaoPageWrapperProps
 }
 
 const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
-  const [webSocket, setWebSocket] = useState<WebSocket | undefined>()
-
-  const connectWebSocket = useCallback(() => {
-    // Close existing WebSocket if not closed.
-    if (webSocket && webSocket.readyState !== WebSocket.CLOSED) {
-      webSocket.close()
-    }
-
-    const _webSocket = new WebSocket(
-      `wss://ws.daodao.zone/${info.chainId}_${info.coreAddress}/connect`
-    )
-
-    _webSocket.addEventListener('open', () => {
-      console.log('WebSocket connected.')
-    })
-    _webSocket.addEventListener('close', () => {
-      console.log('WebSocket disconnected.')
-    })
-    _webSocket.addEventListener('error', () => {
-      console.log('WebSocket disconnected.')
-      _webSocket.close()
-    })
-
-    setWebSocket(_webSocket)
-  }, [info.chainId, info.coreAddress, webSocket])
-
-  // Ensure WebSocket is connected every 5 seconds and reconnect if not.
-  // Disconnect on unmount if connected.
+  // Ensure connected to WebSocket.
+  const { daoWebSocket } = useAppLayoutContext()
   useEffect(() => {
-    if (!webSocket) {
-      connectWebSocket()
-      return
-    }
-
-    const interval = setInterval(() => {
-      if (!webSocket || webSocket.readyState === WebSocket.CLOSED) {
-        connectWebSocket()
-      }
-    }, 5000)
-
-    // Clean up on unmount.
-    return () => {
-      clearInterval(interval)
-
-      if (webSocket && webSocket.readyState !== WebSocket.CLOSED) {
-        webSocket.close()
-      }
-    }
-  }, [connectWebSocket, webSocket])
+    daoWebSocket.connect({
+      chainId: info.chainId,
+      coreAddress: info.coreAddress,
+    })
+  }, [daoWebSocket, info.chainId, info.coreAddress])
 
   return (
     // Add a unique key here to tell React to re-render everything when the
@@ -194,7 +154,6 @@ const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
       key={info.coreAddress}
       value={{
         daoInfo: info,
-        webSocket,
       }}
     >
       <VotingModuleAdapterProvider

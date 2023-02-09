@@ -1,7 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useMemo, useState } from 'react'
 
-import { EMPTY_INBOX } from '@dao-dao/storybook/decorators'
+import {
+  EMPTY_DAO_WEB_SOCKET,
+  EMPTY_INBOX,
+} from '@dao-dao/storybook/decorators'
 import {
   DaoPageMode,
   DappLayoutProps,
@@ -61,6 +64,7 @@ export const DefaultArgs: DappLayoutProps = {
     },
     setRootCommandContextMaker: () => {},
     inbox: EMPTY_INBOX,
+    daoWebSocket: EMPTY_DAO_WEB_SOCKET,
   },
   connect: () => alert('connect'),
   connected: true,
@@ -97,6 +101,7 @@ const Template: ComponentStory<typeof DappLayout> = (args) => {
       },
       setRootCommandContextMaker: () => {},
       inbox: EMPTY_INBOX,
+      daoWebSocket: EMPTY_DAO_WEB_SOCKET,
     }),
     [
       responsiveNavigationEnabled,
