@@ -245,7 +245,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           )}
 
           {/* In the middle, arrow pointing down (from in to out) and swap button. */}
-          <div className="pointer-events-none absolute left-0 right-0 top-full -mt-2 flex items-center justify-center sm:-mt-2.5">
+          <div className="pointer-events-none absolute left-0 right-0 top-full -mt-3 flex items-center justify-center">
             {isCreating ? (
               <IconButton
                 Icon={hoveringOverSwap ? SwapVertRounded : ArrowDownwardRounded}
@@ -350,67 +350,129 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           </p>
         ))}
 
-      {minOutAmount !== undefined ? (
-        <div className="flex max-w-prose flex-col gap-4">
-          <div className="space-y-1">
-            <p className="primary-text">{t('title.minimumOutputRequired')}</p>
-            <p className="caption-text">
-              {t('info.minimumOutputRequiredDescription', {
-                context: context.type,
-              })}
-            </p>
-          </div>
+      {(isCreating ||
+        minOutAmount !== undefined ||
+        maxSlippage !== undefined) && (
+        <div className="flex max-w-prose flex-col gap-6">
+          {(minOutAmount !== undefined || isCreating) && (
+            <div className="flex flex-col gap-4">
+              <div className="space-y-1">
+                <p className="primary-text">
+                  {t('title.minimumOutputRequired')}
+                </p>
+                <p className="caption-text">
+                  {t('info.minimumOutputRequiredDescription', {
+                    context: context.type,
+                  })}
+                </p>
+              </div>
 
-          {isCreating && (
-            <div className="grid grid-cols-4 gap-2">
-              {[90, 95, 97, 99].map((percent) => (
-                <PercentButton
-                  key={percent}
-                  amount={minOutAmount}
-                  label={`${percent}%`}
-                  loadingMax={{ loading: false, data: tokenOutAmount }}
-                  percent={percent / 100}
-                  setAmount={(amount) =>
-                    setValue(fieldNamePrefix + 'minOutAmount', amount)
-                  }
-                  tokenDecimals={tokenOut.decimals}
-                />
-              ))}
+              {isCreating && (
+                <div className="grid grid-cols-5 gap-2">
+                  <Button
+                    center
+                    onClick={() =>
+                      setValue(fieldNamePrefix + 'minOutAmount', undefined, {
+                        shouldValidate: true,
+                      })
+                    }
+                    pressed={minOutAmount === undefined}
+                    variant="secondary"
+                  >
+                    {t('button.none')}
+                  </Button>
+
+                  {[90, 95, 97, 99].map((percent) => (
+                    <PercentButton
+                      key={percent}
+                      amount={minOutAmount ?? 0}
+                      decimals={tokenOut.decimals}
+                      label={`${percent}%`}
+                      loadingMax={{ loading: false, data: tokenOutAmount }}
+                      percent={percent / 100}
+                      setAmount={(amount) =>
+                        setValue(fieldNamePrefix + 'minOutAmount', amount, {
+                          shouldValidate: true,
+                        })
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+
+              <NumberInput
+                disabled={!isCreating}
+                error={errors?.minOutAmount}
+                fieldName={fieldNamePrefix + 'minOutAmount'}
+                max={tokenOutAmount}
+                min={1 / 10 ** tokenOut.decimals}
+                register={register}
+                setValue={setValue}
+                sizing="fill"
+                step={1 / 10 ** tokenOut.decimals}
+                unit={'$' + tokenOut.symbol}
+                validation={[(v) => v === undefined || validatePositive(v)]}
+                watch={watch}
+              />
+
+              <InputErrorMessage
+                className="-mt-2 self-end text-right"
+                error={errors?.minOutAmount}
+              />
             </div>
           )}
 
-          <NumberInput
-            disabled={!isCreating}
-            error={errors?.minOutAmount}
-            fieldName={fieldNamePrefix + 'minOutAmount'}
-            max={tokenOutAmount}
-            min={1 / 10 ** tokenOut.decimals}
-            register={register}
-            setValue={setValue}
-            sizing="fill"
-            step={1 / 10 ** tokenOut.decimals}
-            unit={'$' + tokenOut.symbol}
-            validation={[validateRequired, validatePositive]}
-            watch={watch}
-          />
-        </div>
-      ) : (
-        maxSlippage !== undefined && (
-          <div className="flex max-w-prose flex-col items-start gap-4">
-            <div className="space-y-1">
-              <p className="primary-text">{t('title.maxSlippage')}</p>
-              <p className="caption-text">
-                {t('info.maxSlippageDescription', {
-                  context: context.type,
-                })}
-              </p>
-            </div>
+          {(maxSlippage !== undefined || isCreating) && (
+            <div className="flex flex-col gap-4">
+              <div className="space-y-1">
+                <p className="primary-text">{t('title.maxSlippage')}</p>
+                <p className="caption-text">
+                  {t('info.maxSlippageDescription')}
+                </p>
+              </div>
 
-            <InputThemedText>
-              {formatPercentOf100(maxSlippage * 100)}
-            </InputThemedText>
-          </div>
-        )
+              {isCreating ? (
+                <div className="grid grid-cols-5 gap-2">
+                  <Button
+                    center
+                    onClick={() =>
+                      setValue(fieldNamePrefix + 'maxSlippage', undefined, {
+                        shouldValidate: true,
+                      })
+                    }
+                    pressed={maxSlippage === undefined}
+                    variant="secondary"
+                  >
+                    {t('button.none')}
+                  </Button>
+
+                  {[1, 1.5, 2, 3].map((percent) => (
+                    <PercentButton
+                      key={percent}
+                      amount={maxSlippage ?? 0}
+                      decimals={
+                        // 1.5% (0.015) has the most decimals: 3
+                        3
+                      }
+                      label={`${percent}%`}
+                      loadingMax={{ loading: false, data: 1 }}
+                      percent={percent / 100}
+                      setAmount={(amount) =>
+                        setValue(fieldNamePrefix + 'maxSlippage', amount, {
+                          shouldValidate: true,
+                        })
+                      }
+                    />
+                  ))}
+                </div>
+              ) : (
+                <InputThemedText>
+                  {formatPercentOf100(maxSlippage! * 100)}
+                </InputThemedText>
+              )}
+            </div>
+          )}
+        </div>
       )}
 
       <InputErrorMessage error={errors?.swapOperations} />

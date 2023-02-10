@@ -126,6 +126,7 @@ const useDefaults: UseDefaults<WyndSwapData> = () => {
     },
     tokenOutAmount: 0,
     minOutAmount: 0,
+    maxSlippage: 0.01,
     swapOperations: undefined,
   }
 }
@@ -484,6 +485,7 @@ const useTransformToCosmos: UseTransformToCosmos<WyndSwapData> = () => {
       tokenInAmount,
       tokenOut,
       minOutAmount: _minOutAmount,
+      maxSlippage,
       swapOperations,
     }: WyndSwapData) => {
       if (
@@ -518,6 +520,7 @@ const useTransformToCosmos: UseTransformToCosmos<WyndSwapData> = () => {
         execute_swap_operations: {
           operations: swapOperations,
           minimum_receive: minOutAmount,
+          max_spread: maxSlippage?.toString(),
           referral_address: DAO_DAO_DAO_ADDRESS,
           referral_commission: loadingMaxReferralCommission.data,
         },
