@@ -1,10 +1,11 @@
 import {
   ArrowDownwardRounded,
   ArrowDropDown,
+  SouthRounded,
   SwapVertRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -105,7 +106,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
         ),
         Icon: () => (
           <div
-            className="h-8 w-8 rounded-full bg-contain bg-center"
+            className="h-8 w-8 rounded-full bg-cover bg-center"
             style={{ backgroundImage: `url(${imageUrl})` }}
           />
         ),
@@ -127,7 +128,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           {...props}
         >
           <div
-            className="mr-1 h-10 w-10 rounded-full bg-contain bg-center"
+            className="mr-1 h-10 w-10 rounded-full bg-cover bg-center"
             style={{ backgroundImage: `url(${imageUrl})` }}
           />
           <div className="flex flex-col items-start gap-1">
@@ -164,6 +165,10 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
 
   // When not creating, -1 indicates loading price from TX.
   const loadingOutputPriceFromExecution = !isCreating && tokenOutAmount === -1
+
+  // Handle swap button animation.
+  const [hoveringOverSwap, setHoveringOverSwap] = useState(false)
+  const [swapCycles, setSwapCycles] = useState(0)
 
   return (
     <ActionCard
@@ -235,18 +240,28 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
         <div className="pointer-events-none absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
           {isCreating ? (
             <IconButton
-              Icon={SwapVertRounded}
+              Icon={hoveringOverSwap ? SwapVertRounded : SouthRounded}
               circular
-              className="pointer-events-auto !h-10 !w-10 border border-border-primary bg-background-base"
+              className={clsx(
+                'pointer-events-auto !h-10 !w-10 border border-border-primary bg-background-base',
+                swapCycles > 0
+                  ? 'animate-[breathe_200ms_ease-in-out,spin_200ms_ease-in-out]'
+                  : 'hover:animate-breathe'
+              )}
               iconClassName="!h-7 !w-7 !text-icon-secondary"
-              onClick={() =>
+              onAnimationEnd={() => setSwapCycles(0)}
+              onAnimationIteration={() => setSwapCycles((prev) => prev - 1)}
+              onClick={() => {
                 setValue(fieldNamePrefix, {
                   tokenIn: tokenOut,
                   tokenInAmount: tokenOutAmount,
                   tokenOut: tokenIn,
                   tokenOutAmount: tokenInAmount,
                 })
-              }
+                setSwapCycles((prev) => prev + 1)
+              }}
+              onMouseLeave={() => setHoveringOverSwap(false)}
+              onMouseOver={() => setHoveringOverSwap(true)}
               size="custom"
               variant="none"
             />

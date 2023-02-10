@@ -434,12 +434,21 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
 
       setValue(
         props.fieldNamePrefix + 'tokenOutAmount',
-        Number(outputAmount.value)
+        convertMicroDenomToDenomWithDecimals(
+          outputAmount.value,
+          tokenOut.decimals
+        )
       )
     } catch (err) {
       console.error(err)
     }
-  }, [executedTxLoadable, props.fieldNamePrefix, props.isCreating, setValue])
+  }, [
+    executedTxLoadable,
+    props.fieldNamePrefix,
+    props.isCreating,
+    setValue,
+    tokenOut.decimals,
+  ])
 
   return (
     <SuspenseLoader
