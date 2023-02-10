@@ -71,7 +71,7 @@ export const ValidatorPicker = ({
       Trigger={({ open, ...props }) => (
         <div className={clsx('flex', displayClassName)}>
           {selectedAddress ? (
-            <InputThemedText className="flex min-w-0 grow flex-row items-center justify-between gap-2">
+            <InputThemedText className="min-w-0 grow">
               <CopyToClipboard
                 label={selectedValidator?.moniker}
                 tooltip={t('button.clickToCopyAddress')}

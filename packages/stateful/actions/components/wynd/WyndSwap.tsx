@@ -400,20 +400,30 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
                 </div>
               )}
 
-              <NumberInput
-                disabled={!isCreating}
-                error={errors?.minOutAmount}
-                fieldName={fieldNamePrefix + 'minOutAmount'}
-                max={tokenOutAmount}
-                min={1 / 10 ** tokenOut.decimals}
-                register={register}
-                setValue={setValue}
-                sizing="fill"
-                step={1 / 10 ** tokenOut.decimals}
-                unit={'$' + tokenOut.symbol}
-                validation={[(v) => v === undefined || validatePositive(v)]}
-                watch={watch}
-              />
+              {isCreating ? (
+                <NumberInput
+                  error={errors?.minOutAmount}
+                  fieldName={fieldNamePrefix + 'minOutAmount'}
+                  max={tokenOutAmount}
+                  min={1 / 10 ** tokenOut.decimals}
+                  register={register}
+                  setValue={setValue}
+                  sizing="fill"
+                  step={1 / 10 ** tokenOut.decimals}
+                  unit={'$' + tokenOut.symbol}
+                  validation={[(v) => v === undefined || validatePositive(v)]}
+                  watch={watch}
+                />
+              ) : (
+                <InputThemedText
+                  className="self-start"
+                  unit={'$' + tokenOut.symbol}
+                >
+                  {minOutAmount?.toLocaleString(undefined, {
+                    maximumFractionDigits: tokenOut.decimals,
+                  })}
+                </InputThemedText>
+              )}
 
               <InputErrorMessage
                 className="-mt-2 self-end text-right"
@@ -466,7 +476,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
                   ))}
                 </div>
               ) : (
-                <InputThemedText>
+                <InputThemedText className="self-start">
                   {formatPercentOf100(maxSlippage! * 100)}
                 </InputThemedText>
               )}
