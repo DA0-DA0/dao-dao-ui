@@ -1,6 +1,7 @@
 import { Check, Link } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { ActionCardLoader, IconButton } from '@dao-dao/stateless'
 import { Action, ActionAndData, ActionKeyAndData } from '@dao-dao/types/actions'
@@ -24,14 +25,14 @@ export const ActionsRenderer = ({
       actions: [],
     },
   })
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     formMethods.reset({
       actions: actionData.map(({ action: { key }, data }) => ({
         key,
         data,
       })),
     })
-  }, [actionData, formMethods])
+  }, [actionData, formMethods.reset])
 
   const actionKeysWithData = formMethods.watch('actions')
 
