@@ -189,12 +189,87 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
     props.fieldNamePrefix + 'tokenOutAmount'
   ) as number
 
+  // If proposal executed, get token output amount from tx.
+  const executedTxLoadable = useExecutedProposalTxLoadable()
+  const loadingExecutionOrExecuted =
+    executedTxLoadable.state === 'loading' ||
+    (executedTxLoadable.state === 'hasValue' && !!executedTxLoadable.contents)
+  useEffect(() => {
+    if (
+      props.isCreating ||
+      executedTxLoadable.state !== 'hasValue' ||
+      !executedTxLoadable.contents
+    ) {
+      return
+    }
+
+    try {
+      // This gets all `return_amount` attributes from all swap actions. If this
+      // is not the same length as the number of swap actions, then another swap
+      // occurred in this transaction (likely via a custom message or a contract
+      // execution), and we cannot detect the correct amount. If the lists are
+      // the same length, there is a 1:1 mapping of swap actions to amounts, so
+      // we can use the index of this action in all swap actions to select the
+      // correct amount.
+
+      // All swap actions' data.
+      const swapActionsData = props.allActionsWithData
+        .filter(({ key }) => key === CoreActionKey.WyndSwap)
+        .map(({ data }) => data) as WyndSwapData[]
+      // Index of this action in the list of all swap actions.
+      const innerIndex = swapActionsData.indexOf(
+        props.allActionsWithData[props.index].data
+      )
+      // Should never happen since this action is part of all actions.
+      if (innerIndex === -1) {
+        throw new Error(
+          'internal error: could not find inner swap action index'
+        )
+      }
+
+      // Return amounts stored in wasm events from the transaction data.
+      const returnedAmounts = executedTxLoadable.contents.events.flatMap(
+        ({ type, attributes }) =>
+          type === 'wasm' &&
+          attributes.some(({ key }) => key === 'return_amount')
+            ? attributes
+                .filter(({ key }) => key === 'return_amount')
+                .map(({ value }) => Number(value))
+            : []
+      )
+
+      // If the swap action length does not match the detected return_amount
+      // attributes from the chain, we cannot definitively locate the amount.
+      if (swapActionsData.length !== returnedAmounts.length) {
+        return
+      }
+
+      setValue(
+        props.fieldNamePrefix + 'tokenOutAmount',
+        convertMicroDenomToDenomWithDecimals(
+          returnedAmounts[innerIndex],
+          tokenOut.decimals
+        )
+      )
+    } catch (err) {
+      console.error(err)
+    }
+  }, [
+    executedTxLoadable,
+    props.allActionsWithData,
+    props.fieldNamePrefix,
+    props.index,
+    props.isCreating,
+    setValue,
+    tokenOut.decimals,
+  ])
+
   // On token selection/amount changes, set last touched to the other one to
   // update its simulated price. When not creating, don't simulate token out,
   // since we'll load the actual returned amount from the TX.
   const [simulatingValue, setSimulatingValue] = useState<
     'tokenIn' | 'tokenOut' | undefined
-  >(props.isCreating ? 'tokenOut' : undefined)
+  >('tokenOut')
   // Both tokens are set once initially, so don't simulate anything until both
   // are set one time, so that once they're both set, the token out gets
   // simulated and the values are accurate. simulatingValue gets cleared at the
@@ -202,8 +277,8 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
   const tokenInSet = useRef(false)
   const tokenOutSet = useRef(false)
   useEffect(() => {
-    // Don't simulate if not creating.
-    if (!props.isCreating) {
+    // If executed, don't simulate.
+    if (loadingExecutionOrExecuted) {
       return
     }
 
@@ -229,11 +304,11 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
     setValue,
     tokenInAmount,
     tokenIn,
-    props.isCreating,
+    loadingExecutionOrExecuted,
   ])
   useEffect(() => {
-    // Don't simulate if not creating.
-    if (!props.isCreating) {
+    // If executed, don't simulate.
+    if (loadingExecutionOrExecuted) {
       return
     }
 
@@ -259,7 +334,7 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
     setValue,
     tokenOutAmount,
     tokenOut,
-    props.isCreating,
+    loadingExecutionOrExecuted,
   ])
 
   // When token out amount changes, set the minimum out amount to be 99% of it.
@@ -336,9 +411,10 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
     tokenOut.denomOrAddress,
   ])
 
-  // Simulate offering input and getting output amount.
+  // Simulate offering input and getting output amount. Don't simulate if
+  // executed.
   const tokenOutSimulation = useCachedLoadable(
-    !props.isCreating ||
+    loadingExecutionOrExecuted ||
       loadingMaxReferralCommission.loading ||
       simulatingValue !== 'tokenOut' ||
       swapOperationsLoadable.state !== 'hasValue' ||
@@ -359,9 +435,10 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
           ],
         })
   )
-  // Simulate asking for output and getting input amount.
+  // Simulate asking for output and getting input amount. Don't simulate if
+  // executed.
   const tokenInSimulation = useCachedLoadable(
-    !props.isCreating ||
+    loadingExecutionOrExecuted ||
       loadingMaxReferralCommission.loading ||
       simulatingValue !== 'tokenIn' ||
       swapOperationsLoadable.state !== 'hasValue' ||
@@ -391,7 +468,9 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
       : undefined
 
   useEffect(() => {
-    if (!props.isCreating) {
+    // If executed, don't simulate.
+    if (loadingExecutionOrExecuted) {
+      setSimulatingValue(undefined)
       return
     }
 
@@ -414,8 +493,8 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
       }
     }
   }, [
+    loadingExecutionOrExecuted,
     props.fieldNamePrefix,
-    props.isCreating,
     setValue,
     simulatingValue,
     simulation,
@@ -443,78 +522,6 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
             ),
           },
         }
-
-  // If proposal executed, get token output amount from tx.
-  const executedTxLoadable = useExecutedProposalTxLoadable()
-  useEffect(() => {
-    if (
-      props.isCreating ||
-      executedTxLoadable.state !== 'hasValue' ||
-      !executedTxLoadable.contents
-    ) {
-      return
-    }
-
-    try {
-      // This gets all `return_amount` attributes from all swap actions. If this
-      // is not the same length as the number of swap actions, then another swap
-      // occurred in this transaction (likely via a custom message or a contract
-      // execution), and we cannot detect the correct amount. If the lists are
-      // the same length, there is a 1:1 mapping of swap actions to amounts, so
-      // we can use the index of this action in all swap actions to select the
-      // correct amount.
-
-      // All swap actions' data.
-      const swapActionsData = props.allActionsWithData
-        .filter(({ key }) => key === CoreActionKey.WyndSwap)
-        .map(({ data }) => data) as WyndSwapData[]
-      // Index of this action in the list of all swap actions.
-      const innerIndex = swapActionsData.indexOf(
-        props.allActionsWithData[props.index].data
-      )
-      // Should never happen since this action is part of all actions.
-      if (innerIndex === -1) {
-        throw new Error(
-          'internal error: could not find inner swap action index'
-        )
-      }
-
-      // Return amounts stored in wasm events from the transaction data.
-      const returnedAmounts = executedTxLoadable.contents.events.flatMap(
-        ({ type, attributes }) =>
-          type === 'wasm' &&
-          attributes.some(({ key }) => key === 'return_amount')
-            ? attributes
-                .filter(({ key }) => key === 'return_amount')
-                .map(({ value }) => Number(value))
-            : []
-      )
-
-      // If the swap action length does not match the detected return_amount
-      // attributes from the chain, we cannot definitively locate the amount.
-      if (swapActionsData.length !== returnedAmounts.length) {
-        return
-      }
-
-      setValue(
-        props.fieldNamePrefix + 'tokenOutAmount',
-        convertMicroDenomToDenomWithDecimals(
-          returnedAmounts[innerIndex],
-          tokenOut.decimals
-        )
-      )
-    } catch (err) {
-      console.error(err)
-    }
-  }, [
-    executedTxLoadable,
-    props.allActionsWithData,
-    props.fieldNamePrefix,
-    props.index,
-    props.isCreating,
-    setValue,
-    tokenOut.decimals,
-  ])
 
   return (
     <SuspenseLoader
