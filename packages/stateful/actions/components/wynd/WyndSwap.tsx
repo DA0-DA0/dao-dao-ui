@@ -18,6 +18,7 @@ import {
   InputErrorMessage,
   Loader,
   NumberInput,
+  PercentButton,
   TokenAmountDisplay,
 } from '@dao-dao/stateless'
 import {
@@ -69,6 +70,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
   const tokenInAmount = watch(fieldNamePrefix + 'tokenInAmount') as number
   const tokenOut = watch(fieldNamePrefix + 'tokenOut') as GenericToken
   const tokenOutAmount = watch(fieldNamePrefix + 'tokenOutAmount') as number
+  const minOutAmount = watch(fieldNamePrefix + 'minOutAmount') as number
 
   const tokenInBalance = convertMicroDenomToDenomWithDecimals(
     balances.find(
@@ -257,6 +259,9 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
                   tokenInAmount: tokenOutAmount,
                   tokenOut: tokenIn,
                   tokenOutAmount: tokenInAmount,
+                  minOutAmount: Number(
+                    (tokenInAmount * 0.99).toFixed(tokenIn.decimals)
+                  ),
                 })
                 setSwapCycles((prev) => prev + 1)
               }}
@@ -347,6 +352,24 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
             })}
           </p>
         </div>
+
+        {isCreating && (
+          <div className="grid grid-cols-3 gap-2">
+            {[90, 95, 99].map((percent) => (
+              <PercentButton
+                key={percent}
+                amount={minOutAmount}
+                label={`${percent}%`}
+                loadingMax={{ loading: false, data: tokenOutAmount }}
+                percent={percent / 100}
+                setAmount={(amount) =>
+                  setValue(fieldNamePrefix + 'minOutAmount', amount)
+                }
+                tokenDecimals={tokenOut.decimals}
+              />
+            ))}
+          </div>
+        )}
 
         <NumberInput
           disabled={!isCreating}
