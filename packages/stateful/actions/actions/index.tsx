@@ -27,6 +27,7 @@ import {
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
 import { makeValidatorActions } from './ValidatorActions'
+import { makeWyndSwapAction } from './wynd/WyndSwap'
 
 export const getActions = (options: ActionOptions): Action[] => {
   // Add action makers here to display them.
@@ -53,6 +54,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeAuthzExecAction,
     makeValidatorActions,
     makeGovernanceVoteAction,
+    makeWyndSwapAction,
   ]
 
   return actionMakers

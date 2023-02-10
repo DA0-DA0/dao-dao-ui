@@ -38,9 +38,12 @@ export function nativeTokenDecimals(denom: string): number | undefined {
   return asset?.decimals
 }
 
+export const getJunoIbcUsdc = () =>
+  ibcAssets.tokens.find(({ id }) => id === 'usd-coin')!
+
 // Returns true if this denom is the IBC denom for USDC on Juno.
 export const isJunoIbcUsdc = (ibcDenom: string): boolean =>
-  ibcAssets.tokens.find(({ id }) => id === 'usd-coin')?.juno_denom === ibcDenom
+  getJunoIbcUsdc().juno_denom === ibcDenom
 
 // Processes symbol and converts into readable format (cut out middle and add
 // ellipses) if long IBC string. Used in `TokenCard` and `TokenDepositModal`.

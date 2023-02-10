@@ -184,17 +184,19 @@ export const NftSelectionModal = <T extends NftCardInfo>({
           </pre>
         </>
       ) : nfts.data.length > 0 ? (
-        filteredData.map((nft: T) => (
+        filteredData.map(({ item: nft }) => (
           <NftCard
-            key={getIdForNft(nft)}
+            key={getIdForNft(nft as T)}
             ref={
-              selectedIds[0] === getIdForNft(nft) ? firstSelectedRef : undefined
+              selectedIds[0] === getIdForNft(nft as T)
+                ? firstSelectedRef
+                : undefined
             }
-            {...nft}
+            {...(nft as T)}
             checkbox={{
-              checked: selectedIds.includes(getIdForNft(nft)),
+              checked: selectedIds.includes(getIdForNft(nft as T)),
               // Disable toggling if currently staking.
-              onClick: () => !actionLoading && onNftClick(nft),
+              onClick: () => !actionLoading && onNftClick(nft as T),
             }}
           />
         ))

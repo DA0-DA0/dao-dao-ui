@@ -20,3 +20,8 @@ export {
   DaoVotingNativeStakedClient,
   DaoVotingNativeStakedQueryClient,
 } from './DaoVotingNativeStaked'
+export { WyndexFactoryClient, WyndexFactoryQueryClient } from './WyndexFactory'
+export {
+  WyndexMultiHopClient,
+  WyndexMultiHopQueryClient,
+} from './WyndexMultiHop'

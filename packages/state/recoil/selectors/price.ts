@@ -33,6 +33,8 @@ import { junoswapPoolsListSelector } from './pools'
 const BASE_SWAP_DENOM = 'ujuno'
 const BASE_SWAP_DECIMALS = 6
 
+// TODO: Use prices from WYND.
+
 // Gets the price of a token in USDC / TOKEN. DENOM may either be a native
 // denomination or the address of a cw20 token. Price data is only available for
 // tokens that are tradable on Junoswap.

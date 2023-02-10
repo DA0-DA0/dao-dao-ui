@@ -32,6 +32,7 @@ export enum CoreActionKey {
   GovernanceVote = 'governanceVote',
   ManagePayroll = 'managePayroll',
   ManageVesting = 'manageVesting',
+  WyndSwap = 'wyndSwap',
 }
 
 // Actions defined in voting or proposal module adapters.

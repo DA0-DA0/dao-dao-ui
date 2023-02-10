@@ -132,6 +132,9 @@ interface InnerDaoPageWrapperProps
   info: DaoInfo
 }
 
+// TODO: Add a similar proposal dao page wrapper that adds proposal specific
+// info to actions context (such as if it's open/executed/etc., its TX hash,
+// etc.).
 const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => (
   // Add a unique key here to tell React to re-render everything when the
   // `coreAddress` is changed, since for some insane reason, Next.js does not

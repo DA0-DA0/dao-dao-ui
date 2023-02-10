@@ -1,0 +1,356 @@
+import {
+  ArrowDownwardRounded,
+  ArrowDropDown,
+  SwapVertRounded,
+} from '@mui/icons-material'
+import clsx from 'clsx'
+import { useCallback, useMemo } from 'react'
+import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+
+import {
+  Button,
+  CycleEmoji,
+  FilterableItemPopup,
+  FilterableItemPopupProps,
+  IconButton,
+  InputErrorMessage,
+  Loader,
+  NumberInput,
+  TokenAmountDisplay,
+} from '@dao-dao/stateless'
+import {
+  ActionOptionsContextType,
+  AmountWithTimestamp,
+  GenericToken,
+  GenericTokenBalance,
+  LoadingData,
+} from '@dao-dao/types'
+import { ActionComponent } from '@dao-dao/types/actions'
+import { SwapOperation } from '@dao-dao/types/contracts/WyndexMultiHop'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  validatePositive,
+  validateRequired,
+} from '@dao-dao/utils'
+
+import { useActionOptions } from '../../react'
+import { ActionCard } from '../ActionCard'
+
+export interface WyndSwapData {
+  tokenIn: GenericToken
+  tokenInAmount: number
+  tokenOut: GenericToken
+  tokenOutAmount: number
+  minOutAmount: number
+  swapOperations: SwapOperation[] | undefined
+}
+
+export interface WyndSwapOptions {
+  balances: GenericTokenBalance[]
+  wyndTokens: GenericToken[]
+  simulatingValue: 'tokenIn' | 'tokenOut' | undefined
+  estUsdPrice: LoadingData<AmountWithTimestamp | undefined>
+}
+
+export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
+  fieldNamePrefix,
+  onRemove,
+  errors,
+  isCreating,
+  options: { balances, wyndTokens, simulatingValue, estUsdPrice },
+}) => {
+  const { t } = useTranslation()
+  const { context } = useActionOptions()
+
+  const { register, watch, setValue } = useFormContext()
+  const tokenIn = watch(fieldNamePrefix + 'tokenIn') as GenericToken
+  const tokenInAmount = watch(fieldNamePrefix + 'tokenInAmount') as number
+  const tokenOut = watch(fieldNamePrefix + 'tokenOut') as GenericToken
+  const tokenOutAmount = watch(fieldNamePrefix + 'tokenOutAmount') as number
+
+  const tokenInBalance = convertMicroDenomToDenomWithDecimals(
+    balances.find(
+      ({ token }) => token.denomOrAddress === tokenIn.denomOrAddress
+    )?.balance || '0',
+    tokenIn.decimals
+  )
+  const tokenOutBalance = convertMicroDenomToDenomWithDecimals(
+    balances.find(
+      ({ token }) => token.denomOrAddress === tokenOut.denomOrAddress
+    )?.balance || '0',
+    tokenOut.decimals
+  )
+
+  const availableTokenItems = wyndTokens.map(
+    ({ denomOrAddress, symbol, imageUrl }) => {
+      const { token, balance } = balances.find(
+        ({ token }) => token.denomOrAddress === denomOrAddress
+      ) ?? { token: undefined, balance: '0' }
+
+      return {
+        key: denomOrAddress,
+        label: '$' + symbol,
+        description: balance !== '0' && (
+          <p className="caption-text -mt-1">
+            {!token
+              ? `${t('title.balance')}: 0`
+              : `${t('title.balance')}: ${convertMicroDenomToDenomWithDecimals(
+                  balance,
+                  token.decimals
+                ).toLocaleString(undefined, {
+                  maximumFractionDigits: token.decimals,
+                })}`}
+          </p>
+        ),
+        Icon: () => (
+          <div
+            className="h-8 w-8 rounded-full bg-contain bg-center"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          />
+        ),
+        contentContainerClassName: '!gap-2',
+      }
+    }
+  )
+
+  const makeTokenTrigger = useCallback(
+    ({ imageUrl, symbol, decimals }: GenericToken, balance: number) => {
+      const TokenTrigger: FilterableItemPopupProps['Trigger'] = ({
+        open,
+        ...props
+      }) => (
+        <Button
+          disabled={!isCreating}
+          pressed={open}
+          variant="ghost"
+          {...props}
+        >
+          <div
+            className="mr-1 h-10 w-10 rounded-full bg-contain bg-center"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          />
+          <div className="flex flex-col items-start gap-1">
+            <p className="title-text">${symbol}</p>
+            <p className="caption-text">
+              {t('title.balance')}:{' '}
+              {balance.toLocaleString(undefined, {
+                maximumFractionDigits: decimals,
+              })}
+            </p>
+          </div>
+          {isCreating && <ArrowDropDown className="ml-2 !h-6 !w-6" />}
+        </Button>
+      )
+      return TokenTrigger
+    },
+    [isCreating, t]
+  )
+
+  const TokenInTrigger = useMemo(
+    () => makeTokenTrigger(tokenIn, tokenInBalance),
+    [makeTokenTrigger, tokenIn, tokenInBalance]
+  )
+
+  const TokenOutTrigger = useMemo(
+    () => makeTokenTrigger(tokenOut, tokenOutBalance),
+    [makeTokenTrigger, tokenOut, tokenOutBalance]
+  )
+
+  const insufficientBalanceI18nKey =
+    context.type === ActionOptionsContextType.Dao
+      ? 'error.cantSpendMoreThanTreasury'
+      : 'error.insufficientWalletBalance'
+
+  // When not creating, -1 indicates loading price from TX.
+  const loadingOutputPriceFromExecution = !isCreating && tokenOutAmount === -1
+
+  return (
+    <ActionCard
+      Icon={CycleEmoji}
+      onRemove={onRemove}
+      title={t('title.swapTokensOnWynd')}
+    >
+      <InputErrorMessage
+        className="-mb-2 self-end text-right"
+        error={errors?.tokenInAmount}
+      />
+
+      <div className="relative flex flex-col gap-3">
+        <div
+          className={clsx(
+            'flex flex-row items-stretch gap-4 rounded-md border bg-background-base p-2 pr-6',
+            errors?.tokenInAmount
+              ? 'border-border-interactive-error'
+              : 'border-border-primary'
+          )}
+        >
+          <FilterableItemPopup
+            Trigger={TokenInTrigger}
+            filterableItemKeys={FILTERABLE_KEYS}
+            items={availableTokenItems}
+            onSelect={(_, index) =>
+              setValue(fieldNamePrefix + 'tokenIn', wyndTokens[index])
+            }
+            searchPlaceholder={t('info.searchForToken')}
+          />
+
+          {simulatingValue === 'tokenIn' ? (
+            <div className="flex grow flex-row items-center justify-end">
+              <Loader fill={false} size={24} />
+            </div>
+          ) : (
+            <NumberInput
+              containerClassName="grow"
+              disabled={!isCreating}
+              error={errors?.tokenInAmount}
+              fieldName={fieldNamePrefix + 'tokenInAmount'}
+              ghost
+              hidePlusMinus
+              max={tokenInBalance}
+              min={1 / 10 ** tokenIn.decimals}
+              register={register}
+              setValue={setValue}
+              sizing="auto"
+              step={1 / 10 ** tokenIn.decimals}
+              textClassName="text-lg"
+              validation={[
+                validateRequired,
+                validatePositive,
+                (value) =>
+                  value <= tokenInBalance ||
+                  t(insufficientBalanceI18nKey, {
+                    amount: value.toLocaleString(undefined, {
+                      maximumFractionDigits: tokenIn.decimals,
+                    }),
+                    tokenSymbol: tokenIn.symbol,
+                  }),
+              ]}
+              watch={watch}
+            />
+          )}
+        </div>
+
+        {/* In the middle, swap button during creation, arrow pointing from in to out once created. */}
+        <div className="pointer-events-none absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
+          {isCreating ? (
+            <IconButton
+              Icon={SwapVertRounded}
+              circular
+              className="pointer-events-auto !h-10 !w-10 border border-border-primary bg-background-base"
+              iconClassName="!h-7 !w-7 !text-icon-secondary"
+              onClick={() =>
+                setValue(fieldNamePrefix, {
+                  tokenIn: tokenOut,
+                  tokenInAmount: tokenOutAmount,
+                  tokenOut: tokenIn,
+                  tokenOutAmount: tokenInAmount,
+                })
+              }
+              size="custom"
+              variant="none"
+            />
+          ) : (
+            <div className="flex !h-10 !w-10 flex-row items-center justify-center rounded-full border border-border-primary bg-background-base">
+              <ArrowDownwardRounded className="!h-7 !w-7 !text-icon-secondary" />
+            </div>
+          )}
+        </div>
+
+        <div
+          className={clsx(
+            'flex flex-row items-stretch gap-4 rounded-md border bg-background-base p-2 pr-6',
+            errors?.tokenOutAmount
+              ? 'border-border-interactive-error'
+              : 'border-border-primary'
+          )}
+        >
+          <FilterableItemPopup
+            Trigger={TokenOutTrigger}
+            filterableItemKeys={FILTERABLE_KEYS}
+            items={availableTokenItems}
+            onSelect={(_, index) =>
+              setValue(fieldNamePrefix + 'tokenOut', wyndTokens[index])
+            }
+            searchPlaceholder={t('info.searchForToken')}
+          />
+
+          {simulatingValue === 'tokenOut' || loadingOutputPriceFromExecution ? (
+            <div className="flex grow flex-row items-center justify-end">
+              <Loader fill={false} size={24} />
+            </div>
+          ) : (
+            <NumberInput
+              containerClassName="grow"
+              disabled={!isCreating}
+              error={errors?.tokenOutAmount}
+              fieldName={fieldNamePrefix + 'tokenOutAmount'}
+              ghost
+              hidePlusMinus
+              min={1 / 10 ** tokenOut.decimals}
+              register={register}
+              setValue={setValue}
+              sizing="auto"
+              step={1 / 10 ** tokenOut.decimals}
+              textClassName="text-lg"
+              validation={[validateRequired, validatePositive]}
+              watch={watch}
+            />
+          )}
+        </div>
+      </div>
+
+      <InputErrorMessage
+        className="-mt-2 self-end pr-6 text-right"
+        error={errors?.tokenOutAmount}
+      />
+
+      {!loadingOutputPriceFromExecution &&
+        (estUsdPrice.loading || estUsdPrice.data?.amount !== undefined ? (
+          <TokenAmountDisplay
+            amount={
+              estUsdPrice.loading ? estUsdPrice : estUsdPrice.data!.amount
+            }
+            className="secondary-text self-end pr-6 text-right"
+            dateFetched={
+              estUsdPrice.loading ? undefined : estUsdPrice.data!.timestamp
+            }
+            estimatedUsdValue
+          />
+        ) : (
+          <p className="secondary-text self-end pr-6 text-right">
+            {t('info.noPriceData')}
+          </p>
+        ))}
+
+      <div className="flex max-w-prose flex-col gap-4">
+        <div className="space-y-1">
+          <p className="primary-text">{t('title.minimumOutputRequired')}</p>
+          <p className="caption-text">
+            {t('info.minimumOutputRequiredDescription', {
+              context: context.type,
+            })}
+          </p>
+        </div>
+
+        <NumberInput
+          disabled={!isCreating}
+          error={errors?.minOutAmount}
+          fieldName={fieldNamePrefix + 'minOutAmount'}
+          min={1 / 10 ** tokenOut.decimals}
+          register={register}
+          setValue={setValue}
+          sizing="fill"
+          step={1 / 10 ** tokenOut.decimals}
+          unit={'$' + tokenOut.symbol}
+          validation={[validateRequired, validatePositive]}
+          watch={watch}
+        />
+      </div>
+
+      <InputErrorMessage error={errors?.swapOperations} />
+    </ActionCard>
+  )
+}
+
+const FILTERABLE_KEYS = ['key', 'label']

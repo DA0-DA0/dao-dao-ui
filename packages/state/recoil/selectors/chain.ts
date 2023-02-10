@@ -2,7 +2,7 @@ import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBase64, toHex } from '@cosmjs/encoding'
 import {
   Coin,
-  Event,
+  IndexedTx,
   StargateClient,
   decodeCosmosSdkDecFromProto,
 } from '@cosmjs/stargate'
@@ -572,8 +572,8 @@ export const nativeDelegationInfoSelector = selectorFamily<
     },
 })
 
-export const transactionEventsSelector = selectorFamily<
-  readonly Event[] | undefined,
+export const transactionSelector = selectorFamily<
+  IndexedTx | undefined,
   WithChainId<{ txHash: string }>
 >({
   key: 'transactionEvents',
@@ -583,7 +583,7 @@ export const transactionEventsSelector = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
 
       const tx = await client.getTx(txHash)
-      return tx ? tx.events : undefined
+      return tx ?? undefined
     },
 })
 
