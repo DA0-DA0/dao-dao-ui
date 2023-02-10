@@ -540,7 +540,11 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
               ? []
               : wyndTokensLoadable.contents,
           simulatingValue:
-            simulation?.state === 'loading' ? simulatingValue : undefined,
+            simulation &&
+            (simulation.state === 'loading' ||
+              (simulation.state === 'hasValue' && simulation.updating))
+              ? simulatingValue
+              : undefined,
           estUsdPrice,
         }}
       />
