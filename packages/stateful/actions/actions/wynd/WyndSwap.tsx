@@ -202,6 +202,11 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
   const tokenInSet = useRef(false)
   const tokenOutSet = useRef(false)
   useEffect(() => {
+    // Don't simulate if not creating.
+    if (!props.isCreating) {
+      return
+    }
+
     if (!tokenInSet.current) {
       tokenInSet.current = true
     } else {
@@ -219,8 +224,19 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
         prev === 'tokenIn' ? undefined : 'tokenOut'
       )
     }
-  }, [props.fieldNamePrefix, setValue, tokenInAmount, tokenIn])
+  }, [
+    props.fieldNamePrefix,
+    setValue,
+    tokenInAmount,
+    tokenIn,
+    props.isCreating,
+  ])
   useEffect(() => {
+    // Don't simulate if not creating.
+    if (!props.isCreating) {
+      return
+    }
+
     if (!tokenOutSet.current) {
       tokenOutSet.current = true
     } else {
@@ -238,7 +254,13 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
         prev === 'tokenOut' ? undefined : 'tokenIn'
       )
     }
-  }, [props.fieldNamePrefix, setValue, tokenOutAmount, tokenOut])
+  }, [
+    props.fieldNamePrefix,
+    setValue,
+    tokenOutAmount,
+    tokenOut,
+    props.isCreating,
+  ])
 
   // When token out amount changes, set the minimum out amount to be 99% of it.
   useEffect(() => {
@@ -316,7 +338,8 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
 
   // Simulate offering input and getting output amount.
   const tokenOutSimulation = useCachedLoadable(
-    loadingMaxReferralCommission.loading ||
+    !props.isCreating ||
+      loadingMaxReferralCommission.loading ||
       simulatingValue !== 'tokenOut' ||
       swapOperationsLoadable.state !== 'hasValue' ||
       !swapOperationsLoadable.contents
@@ -338,7 +361,8 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
   )
   // Simulate asking for output and getting input amount.
   const tokenInSimulation = useCachedLoadable(
-    loadingMaxReferralCommission.loading ||
+    !props.isCreating ||
+      loadingMaxReferralCommission.loading ||
       simulatingValue !== 'tokenIn' ||
       swapOperationsLoadable.state !== 'hasValue' ||
       !swapOperationsLoadable.contents
@@ -367,6 +391,10 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
       : undefined
 
   useEffect(() => {
+    if (!props.isCreating) {
+      return
+    }
+
     if (
       simulation &&
       simulation.state !== 'loading' &&
@@ -387,6 +415,7 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
     }
   }, [
     props.fieldNamePrefix,
+    props.isCreating,
     setValue,
     simulatingValue,
     simulation,
