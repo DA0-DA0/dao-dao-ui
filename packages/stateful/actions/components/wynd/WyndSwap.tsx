@@ -2,7 +2,6 @@ import {
   ArrowDownwardRounded,
   ArrowDropDown,
   SouthRounded,
-  SwapVertRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useCallback, useMemo, useState } from 'react'
@@ -130,10 +129,10 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           {...props}
         >
           <div
-            className="mr-1 h-10 w-10 rounded-full bg-cover bg-center"
+            className="mr-1 h-10 w-10 shrink-0 rounded-full bg-cover bg-center"
             style={{ backgroundImage: `url(${imageUrl})` }}
           />
-          <div className="flex flex-col items-start gap-1">
+          <div className="flex flex-col items-start gap-1 text-left">
             <p className="title-text">${symbol}</p>
             <p className="caption-text">
               {t('title.balance')}:{' '}
@@ -183,10 +182,10 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
         error={errors?.tokenInAmount}
       />
 
-      <div className="relative flex flex-col gap-3">
+      <div className="flex flex-col gap-3">
         <div
           className={clsx(
-            'flex flex-row items-stretch gap-4 rounded-md border bg-background-base p-2 pr-6',
+            'relative flex flex-row items-stretch gap-4 rounded-md border bg-background-base p-2 pr-6',
             errors?.tokenInAmount
               ? 'border-border-interactive-error'
               : 'border-border-primary'
@@ -236,45 +235,45 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
               watch={watch}
             />
           )}
-        </div>
 
-        {/* In the middle, swap button during creation, arrow pointing from in to out once created. */}
-        <div className="pointer-events-none absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
-          {isCreating ? (
-            <IconButton
-              Icon={hoveringOverSwap ? SwapVertRounded : SouthRounded}
-              circular
-              className={clsx(
-                'pointer-events-auto !h-10 !w-10 border border-border-primary bg-background-base',
-                swapCycles > 0
-                  ? 'animate-[breathe_200ms_ease-in-out,spin_200ms_ease-in-out]'
-                  : 'hover:animate-breathe'
-              )}
-              iconClassName="!h-7 !w-7 !text-icon-secondary"
-              onAnimationEnd={() => setSwapCycles(0)}
-              onAnimationIteration={() => setSwapCycles((prev) => prev - 1)}
-              onClick={() => {
-                setValue(fieldNamePrefix, {
-                  tokenIn: tokenOut,
-                  tokenInAmount: tokenOutAmount,
-                  tokenOut: tokenIn,
-                  tokenOutAmount: tokenInAmount,
-                  minOutAmount: Number(
-                    (tokenInAmount * 0.99).toFixed(tokenIn.decimals)
-                  ),
-                })
-                setSwapCycles((prev) => prev + 1)
-              }}
-              onMouseLeave={() => setHoveringOverSwap(false)}
-              onMouseOver={() => setHoveringOverSwap(true)}
-              size="custom"
-              variant="none"
-            />
-          ) : (
-            <div className="flex !h-10 !w-10 flex-row items-center justify-center rounded-full border border-border-primary bg-background-base">
-              <ArrowDownwardRounded className="!h-7 !w-7 !text-icon-secondary" />
-            </div>
-          )}
+          {/* In the middle, arrow pointing down (from in to out) and swap button. */}
+          <div className="pointer-events-none absolute left-0 right-0 top-full -mt-2 flex items-center justify-center sm:-mt-2.5">
+            {isCreating ? (
+              <IconButton
+                Icon={hoveringOverSwap ? ArrowDownwardRounded : SouthRounded}
+                circular
+                className={clsx(
+                  'pointer-events-auto !h-8 !w-8 border border-border-primary bg-background-base sm:!h-10 sm:!w-10',
+                  swapCycles > 0
+                    ? 'animate-[breathe_200ms_ease-in-out,spin_200ms_ease-in-out]'
+                    : 'hover:animate-breathe'
+                )}
+                iconClassName="!h-6 !w-6 sm:!h-7 sm:!w-7 !text-icon-secondary"
+                onAnimationEnd={() => setSwapCycles(0)}
+                onAnimationIteration={() => setSwapCycles((prev) => prev - 1)}
+                onClick={() => {
+                  setValue(fieldNamePrefix, {
+                    tokenIn: tokenOut,
+                    tokenInAmount: tokenOutAmount,
+                    tokenOut: tokenIn,
+                    tokenOutAmount: tokenInAmount,
+                    minOutAmount: Number(
+                      (tokenInAmount * 0.99).toFixed(tokenIn.decimals)
+                    ),
+                  })
+                  setSwapCycles((prev) => prev + 1)
+                }}
+                onMouseLeave={() => setHoveringOverSwap(false)}
+                onMouseOver={() => setHoveringOverSwap(true)}
+                size="custom"
+                variant="none"
+              />
+            ) : (
+              <div className="flex !h-8 !w-8 flex-row items-center justify-center rounded-full border border-border-primary bg-background-base sm:!h-10 sm:!w-10">
+                <ArrowDownwardRounded className="!h-6 !w-6 !text-icon-secondary sm:!h-7 sm:!w-7" />
+              </div>
+            )}
+          </div>
         </div>
 
         <div
