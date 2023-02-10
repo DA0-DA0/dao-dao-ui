@@ -1,7 +1,7 @@
 import {
   ArrowDownwardRounded,
   ArrowDropDown,
-  SouthRounded,
+  SwapVertRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useCallback, useMemo, useState } from 'react'
@@ -15,6 +15,7 @@ import {
   FilterableItemPopupProps,
   IconButton,
   InputErrorMessage,
+  InputThemedText,
   Loader,
   NumberInput,
   PercentButton,
@@ -31,6 +32,7 @@ import { ActionComponent } from '@dao-dao/types/actions'
 import { SwapOperation } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
   convertMicroDenomToDenomWithDecimals,
+  formatPercentOf100,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -43,7 +45,8 @@ export interface WyndSwapData {
   tokenInAmount: number
   tokenOut: GenericToken
   tokenOutAmount: number
-  minOutAmount: number
+  minOutAmount?: number
+  maxSlippage?: number
   swapOperations: SwapOperation[] | undefined
 }
 
@@ -69,7 +72,12 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
   const tokenInAmount = watch(fieldNamePrefix + 'tokenInAmount') as number
   const tokenOut = watch(fieldNamePrefix + 'tokenOut') as GenericToken
   const tokenOutAmount = watch(fieldNamePrefix + 'tokenOutAmount') as number
-  const minOutAmount = watch(fieldNamePrefix + 'minOutAmount') as number
+  const minOutAmount = watch(fieldNamePrefix + 'minOutAmount') as
+    | number
+    | undefined
+  const maxSlippage = watch(fieldNamePrefix + 'maxSlippage') as
+    | number
+    | undefined
 
   const tokenInBalance = convertMicroDenomToDenomWithDecimals(
     balances.find(
@@ -132,8 +140,8 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
             className="mr-1 h-10 w-10 shrink-0 rounded-full bg-cover bg-center"
             style={{ backgroundImage: `url(${imageUrl})` }}
           />
-          <div className="flex flex-col items-start gap-1 text-left">
-            <p className="title-text">${symbol}</p>
+          <div className="flex max-w-[10rem] flex-col items-start gap-1 overflow-hidden text-left">
+            <p className="title-text max-w-full truncate">${symbol}</p>
             <p className="caption-text">
               {t('title.balance')}:{' '}
               {balance.toLocaleString(undefined, {
@@ -240,7 +248,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           <div className="pointer-events-none absolute left-0 right-0 top-full -mt-2 flex items-center justify-center sm:-mt-2.5">
             {isCreating ? (
               <IconButton
-                Icon={hoveringOverSwap ? ArrowDownwardRounded : SouthRounded}
+                Icon={hoveringOverSwap ? SwapVertRounded : ArrowDownwardRounded}
                 circular
                 className={clsx(
                   'pointer-events-auto !h-8 !w-8 border border-border-primary bg-background-base sm:!h-10 sm:!w-10',
@@ -342,48 +350,68 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           </p>
         ))}
 
-      <div className="flex max-w-prose flex-col gap-4">
-        <div className="space-y-1">
-          <p className="primary-text">{t('title.minimumOutputRequired')}</p>
-          <p className="caption-text">
-            {t('info.minimumOutputRequiredDescription', {
-              context: context.type,
-            })}
-          </p>
-        </div>
-
-        {isCreating && (
-          <div className="grid grid-cols-3 gap-2">
-            {[90, 95, 99].map((percent) => (
-              <PercentButton
-                key={percent}
-                amount={minOutAmount}
-                label={`${percent}%`}
-                loadingMax={{ loading: false, data: tokenOutAmount }}
-                percent={percent / 100}
-                setAmount={(amount) =>
-                  setValue(fieldNamePrefix + 'minOutAmount', amount)
-                }
-                tokenDecimals={tokenOut.decimals}
-              />
-            ))}
+      {minOutAmount !== undefined ? (
+        <div className="flex max-w-prose flex-col gap-4">
+          <div className="space-y-1">
+            <p className="primary-text">{t('title.minimumOutputRequired')}</p>
+            <p className="caption-text">
+              {t('info.minimumOutputRequiredDescription', {
+                context: context.type,
+              })}
+            </p>
           </div>
-        )}
 
-        <NumberInput
-          disabled={!isCreating}
-          error={errors?.minOutAmount}
-          fieldName={fieldNamePrefix + 'minOutAmount'}
-          min={1 / 10 ** tokenOut.decimals}
-          register={register}
-          setValue={setValue}
-          sizing="fill"
-          step={1 / 10 ** tokenOut.decimals}
-          unit={'$' + tokenOut.symbol}
-          validation={[validateRequired, validatePositive]}
-          watch={watch}
-        />
-      </div>
+          {isCreating && (
+            <div className="grid grid-cols-4 gap-2">
+              {[90, 95, 97, 99].map((percent) => (
+                <PercentButton
+                  key={percent}
+                  amount={minOutAmount}
+                  label={`${percent}%`}
+                  loadingMax={{ loading: false, data: tokenOutAmount }}
+                  percent={percent / 100}
+                  setAmount={(amount) =>
+                    setValue(fieldNamePrefix + 'minOutAmount', amount)
+                  }
+                  tokenDecimals={tokenOut.decimals}
+                />
+              ))}
+            </div>
+          )}
+
+          <NumberInput
+            disabled={!isCreating}
+            error={errors?.minOutAmount}
+            fieldName={fieldNamePrefix + 'minOutAmount'}
+            max={tokenOutAmount}
+            min={1 / 10 ** tokenOut.decimals}
+            register={register}
+            setValue={setValue}
+            sizing="fill"
+            step={1 / 10 ** tokenOut.decimals}
+            unit={'$' + tokenOut.symbol}
+            validation={[validateRequired, validatePositive]}
+            watch={watch}
+          />
+        </div>
+      ) : (
+        maxSlippage !== undefined && (
+          <div className="flex max-w-prose flex-col items-start gap-4">
+            <div className="space-y-1">
+              <p className="primary-text">{t('title.maxSlippage')}</p>
+              <p className="caption-text">
+                {t('info.maxSlippageDescription', {
+                  context: context.type,
+                })}
+              </p>
+            </div>
+
+            <InputThemedText>
+              {formatPercentOf100(maxSlippage * 100)}
+            </InputThemedText>
+          </div>
+        )
+      )}
 
       <InputErrorMessage error={errors?.swapOperations} />
     </ActionCard>

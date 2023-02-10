@@ -506,10 +506,13 @@ const useTransformToCosmos: UseTransformToCosmos<WyndSwapData> = () => {
         tokenInAmount,
         tokenIn.decimals
       ).toString()
-      const minOutAmount = convertDenomToMicroDenomWithDecimals(
-        _minOutAmount,
-        tokenOut.decimals
-      ).toString()
+      const minOutAmount =
+        _minOutAmount !== undefined
+          ? convertDenomToMicroDenomWithDecimals(
+              _minOutAmount,
+              tokenOut.decimals
+            ).toString()
+          : undefined
 
       const msg: ExecuteSwapOperationsMsg = {
         execute_swap_operations: {
@@ -557,7 +560,6 @@ const isValidSwapMsg = (msg: Record<string, any>): boolean =>
   objectMatchesStructure(msg, {
     execute_swap_operations: {
       operations: {},
-      minimum_receive: {},
     },
   }) &&
   msg.execute_swap_operations.operations.length === 1 &&
@@ -637,7 +639,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<WyndSwapData> = (
   const tokenOut = useRecoilValue(
     swapMsg
       ? genericTokenSelector({
-          type: isNative ? TokenType.Native : TokenType.Cw20,
+          type:
+            'native' in
+            swapMsg.execute_swap_operations.operations[0].wyndex_swap
+              .ask_asset_info
+              ? TokenType.Native
+              : TokenType.Cw20,
           denomOrAddress:
             'native' in
             swapMsg.execute_swap_operations.operations[0].wyndex_swap
@@ -656,12 +663,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<WyndSwapData> = (
     ? msg.wasm.execute.msg.send.amount
     : undefined
 
-  if (
-    !tokenIn ||
-    tokenInAmount === undefined ||
-    !tokenOut ||
-    !swapMsg?.execute_swap_operations.minimum_receive
-  ) {
+  if (!swapMsg || !tokenIn || tokenInAmount === undefined || !tokenOut) {
     return { match: false }
   }
 
@@ -676,10 +678,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<WyndSwapData> = (
       tokenOut,
       // Will be loaded in the component.
       tokenOutAmount: -1,
-      minOutAmount: convertMicroDenomToDenomWithDecimals(
-        swapMsg.execute_swap_operations.minimum_receive,
-        tokenOut.decimals
-      ),
+      minOutAmount: swapMsg.execute_swap_operations.minimum_receive
+        ? convertMicroDenomToDenomWithDecimals(
+            swapMsg.execute_swap_operations.minimum_receive,
+            tokenOut.decimals
+          )
+        : undefined,
+      maxSlippage: swapMsg.execute_swap_operations.max_spread
+        ? Number(swapMsg.execute_swap_operations.max_spread)
+        : undefined,
       swapOperations: swapMsg.execute_swap_operations.operations,
     },
   }
