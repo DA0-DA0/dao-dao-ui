@@ -24,7 +24,6 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -73,18 +72,9 @@ export const ownerOfSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const ownerOf = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'cw721/ownerOf',
-          args: params[0],
-        })
-      )
-      if (ownerOf) {
-        return ownerOf
-      }
-
-      // If indexer query fails, fallback to contract query.
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.ownerOf(...params)
     },
@@ -99,6 +89,9 @@ export const approvalSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.approval(...params)
     },
@@ -113,18 +106,9 @@ export const approvalsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const approvals = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'cw721/approvals',
-          args: params[0],
-        })
-      )
-      if (approvals) {
-        return { approvals }
-      }
-
-      // If indexer query fails, fallback to contract query.
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.approvals(...params)
     },
@@ -139,18 +123,9 @@ export const allOperatorsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const operators = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'cw721/allOperators',
-          args: params[0],
-        })
-      )
-      if (operators) {
-        return { operators }
-      }
-
-      // If indexer query fails, fallback to contract query.
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.allOperators(...params)
     },
@@ -165,17 +140,9 @@ export const numTokensSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const count = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'cw721/numTokens',
-        })
-      )
-      if (count) {
-        return { count }
-      }
-
-      // If indexer query fails, fallback to contract query.
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.numTokens(...params)
     },
@@ -190,17 +157,9 @@ export const contractInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const contractInfo = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'cw721/contractInfo',
-        })
-      )
-      if (contractInfo) {
-        return contractInfo
-      }
-
-      // If indexer query fails, fallback to contract query.
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.contractInfo(...params)
     },
@@ -215,18 +174,9 @@ export const nftInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const nftInfo = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'cw721/nftInfo',
-          args: params[0],
-        })
-      )
-      if (nftInfo) {
-        return nftInfo
-      }
-
-      // If indexer query fails, fallback to contract query.
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.nftInfo(...params)
     },
@@ -241,25 +191,15 @@ export const allNftInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const allNftInfo = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'cw721/allNftInfo',
-          args: params[0],
-        })
-      )
-      if (allNftInfo) {
-        return allNftInfo
-      }
-
-      // If indexer query fails, fallback to contract query.
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.allNftInfo(...params)
     },
 })
 
-// Use allTokensForOwnerSelector as it uses the indexer and implements
-// pagination for chain queries.
+// Use allTokensForOwnerSelector as it implements pagination for chain queries.
 export const _tokensSelector = selectorFamily<
   TokensResponse,
   QueryClientParams & {
@@ -285,18 +225,9 @@ export const _allTokensSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const tokens = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'cw721/allTokens',
-          args: params[0],
-        })
-      )
-      if (tokens) {
-        return { tokens }
-      }
-
-      // If indexer query fails, fallback to contract query.
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.allTokens(...params)
     },
@@ -311,17 +242,9 @@ export const minterSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const minter = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'cw721/tokens',
-        })
-      )
-      if (minter) {
-        return { minter }
-      }
-
-      // If indexer query fails, fallback to contract query.
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.minter(...params)
     },
@@ -338,23 +261,11 @@ export const allTokensForOwnerSelector = selectorFamily<
   get:
     ({ owner, ...queryClientParams }) =>
     async ({ get }) => {
-      const id = get(refreshWalletBalancesIdAtom(owner))
+      get(refreshWalletBalancesIdAtom(owner))
 
-      const list = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formulaName: 'cw721/tokens',
-          args: {
-            owner,
-          },
-          id,
-        })
-      )
-      if (list) {
-        return list
-      }
-
-      // If indexer query fails, fallback to contract query.
+      // Don't use the indexer for this since various NFT contracts have
+      // different methods of storing NFT info, and the indexer does not know
+      // about every different way.
 
       const tokens: TokensResponse['tokens'] = []
       while (true) {
