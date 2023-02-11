@@ -559,6 +559,7 @@
     "noDisplayName": "no display name",
     "noFundsDuringInstantiation": "No funds will be transferred during instantiation.",
     "noGovernanceProposalsOpenForVoting": "There are no governance proposals open for voting.",
+    "noNftsFound": "No NFTs found.",
     "noNftsYet": "No NFTs to appreciate yet.",
     "noProposalsTooltip": "This DAO has no proposals and may be inactive or a duplicate.",
     "noProposalsYet": "No proposals to vote on yet.",

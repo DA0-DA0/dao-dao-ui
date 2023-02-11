@@ -12,6 +12,7 @@ import {
   ProfileDisconnectedCard,
   ProfileHomeCard,
   SuspenseLoader,
+  useWalletProfile,
 } from '@dao-dao/stateful'
 import { ActionsProvider } from '@dao-dao/stateful/actions'
 import { Loader, Me, MeDisconnected } from '@dao-dao/stateless'
@@ -19,7 +20,16 @@ import { ActionContextType } from '@dao-dao/types/actions'
 import { CHAIN_BECH32_PREFIX, CHAIN_ID } from '@dao-dao/utils'
 
 const MePage: NextPage = () => {
-  const { address: walletAddress = '', connected, status } = useWallet()
+  const {
+    address: walletAddress = '',
+    publicKey,
+    connected,
+    status,
+  } = useWallet()
+  const { profile } = useWalletProfile({
+    walletAddress,
+    hexPublicKey: publicKey?.hex,
+  })
 
   return connected ? (
     <ActionsProvider
@@ -35,22 +45,25 @@ const MePage: NextPage = () => {
       }}
     >
       {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
-      <SuspenseLoader fallback={<Loader />}>
+      <SuspenseLoader fallback={<Loader />} forceFallback={profile.loading}>
         <Me
           // MeIdentity={MeIdentity}
           MeBalances={MeBalances}
           MeTransactionBuilder={MeTransactionBuilder}
+          loadingProfile={profile}
           rightSidebarContent={<ProfileHomeCard />}
+          walletAddress={walletAddress}
         />
       </SuspenseLoader>
     </ActionsProvider>
   ) : (
     <MeDisconnected
-      autoConnecting={
-        status === WalletConnectionStatus.Initializing ||
-        status === WalletConnectionStatus.AttemptingAutoConnection
-      }
       connectWalletButton={<ConnectWallet />}
+      connecting={
+        status === WalletConnectionStatus.Initializing ||
+        status === WalletConnectionStatus.AttemptingAutoConnection ||
+        status === WalletConnectionStatus.Connecting
+      }
       rightSidebarContent={<ProfileDisconnectedCard />}
     />
   )

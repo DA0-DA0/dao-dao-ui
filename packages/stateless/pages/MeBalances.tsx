@@ -81,7 +81,8 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
         )}
       </div>
 
-      {nfts.loading || nfts.data.length > 0 ? (
+      {/* Only show NFTs once tokens stop loading. */}
+      {!tokens.loading && (nfts.loading || nfts.data.length > 0) ? (
         <div className="flex flex-col gap-2">
           <div className="mb-6 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
             <p className="title-text">
@@ -112,7 +113,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
           )}
         </div>
       ) : (
-        <NoContent Icon={Image} body={t('info.noNftsYet')} />
+        !nfts.loading && <NoContent Icon={Image} body={t('info.noNftsFound')} />
       )}
     </div>
   )

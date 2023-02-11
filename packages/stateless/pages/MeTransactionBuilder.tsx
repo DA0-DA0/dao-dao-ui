@@ -198,19 +198,6 @@ export const MeTransactionBuilder = ({
 
             <div className="flex flex-row items-center justify-end gap-2">
               <Button
-                disabled={loading || watchActions.length === 0}
-                onClick={() => {
-                  // Clear form and open.
-                  saveReset()
-                  setSaveModalVisible(true)
-                }}
-                variant="secondary"
-              >
-                {t('button.save')}
-                <Save className="!h-5 !w-5" />
-              </Button>
-
-              <Button
                 disabled={
                   loading || (watchActions.length === 0 && !showPreview)
                 }
@@ -279,9 +266,25 @@ export const MeTransactionBuilder = ({
         </form>
       </FormProvider>
 
-      <div className="flex flex-col items-start gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <p className="title-text">{t('title.saved')}</p>
+          <div className="flex flex-row items-center justify-between gap-4">
+            <p className="title-text">{t('title.saved')}</p>
+
+            <Button
+              disabled={loading || watchActions.length === 0}
+              onClick={() => {
+                // Clear form and open.
+                saveReset()
+                setSaveModalVisible(true)
+              }}
+              variant="secondary"
+            >
+              {t('button.save')}
+              <Save className="!h-5 !w-5" />
+            </Button>
+          </div>
+
           <p className="secondary-text">{t('info.txSavesDescription')}</p>
         </div>
 

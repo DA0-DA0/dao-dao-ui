@@ -6,13 +6,13 @@ import { PageLoader, useAppLayoutContext } from '../components'
 export interface MeDisconnectedProps {
   rightSidebarContent: ReactNode
   connectWalletButton: ReactNode
-  autoConnecting: boolean
+  connecting: boolean
 }
 
 export const MeDisconnected = ({
   rightSidebarContent,
   connectWalletButton,
-  autoConnecting,
+  connecting,
 }: MeDisconnectedProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
@@ -22,7 +22,7 @@ export const MeDisconnected = ({
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeader className="mx-auto max-w-5xl" title={t('title.me')} />
 
-      {autoConnecting ? (
+      {connecting ? (
         <PageLoader />
       ) : (
         <div className="mx-auto max-w-5xl">{connectWalletButton}</div>

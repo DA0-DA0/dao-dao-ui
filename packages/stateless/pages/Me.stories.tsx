@@ -62,4 +62,13 @@ Default.args = {
       {...(MeTransactionBuilderStory.args as MeTransactionBuilderProps)}
     />
   ),
+  loadingProfile: {
+    loading: false,
+    data: {
+      name: 'A Very Real Name',
+      imageUrl: '/noah.jpg',
+      nft: null,
+      nonce: 0,
+    },
+  },
 }

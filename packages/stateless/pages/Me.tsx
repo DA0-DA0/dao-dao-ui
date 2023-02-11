@@ -1,19 +1,31 @@
 import clsx from 'clsx'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { MeProps, MeTab, MeTabId } from '@dao-dao/types'
+import { averageColorSelector } from '@dao-dao/state/recoil'
+import { MeProps, MeTab, MeTabId, Theme } from '@dao-dao/types'
 
-import { SegmentedControls, useAppLayoutContext } from '../components'
+import {
+  CopyToClipboard,
+  ProfileImage,
+  SegmentedControls,
+  useAppLayoutContext,
+} from '../components'
+import { useCachedLoadable } from '../hooks'
+import { useThemeContext } from '../theme'
 
 export const Me = ({
   rightSidebarContent,
   // MeIdentity,
   MeBalances,
   MeTransactionBuilder,
+  walletAddress,
+  loadingProfile,
 }: MeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { isFallback } = useRouter()
 
   const tabs: MeTab[] = [
     // {
@@ -58,20 +70,86 @@ export const Me = ({
 
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
+  const tabSelector = (
+    <SegmentedControls
+      onSelect={setSelectedTabId}
+      selected={selectedTabId}
+      tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
+    />
+  )
+
+  const { setAccentColor, theme } = useThemeContext()
+  // Get average color of image URL.
+  const averageImgColorLoadable = useCachedLoadable(
+    loadingProfile.loading
+      ? undefined
+      : averageColorSelector(loadingProfile.data.imageUrl)
+  )
+
+  // Set theme's accentColor.
+  useEffect(() => {
+    if (isFallback || averageImgColorLoadable.state !== 'hasValue') {
+      return
+    }
+
+    const accentColor = averageImgColorLoadable.contents
+
+    // Only set the accent color if we have enough contrast.
+    if (accentColor) {
+      const rgb = accentColor
+        .replace(/^rgba?\(|\s+|\)$/g, '')
+        .split(',')
+        .map(Number)
+      const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
+      if (
+        (theme === Theme.Dark && brightness < 100) ||
+        (theme === Theme.Light && brightness > 255 - 100)
+      ) {
+        setAccentColor(undefined)
+        return
+      }
+    }
+
+    setAccentColor(accentColor ?? undefined)
+  }, [
+    setAccentColor,
+    isFallback,
+    theme,
+    averageImgColorLoadable.state,
+    averageImgColorLoadable.contents,
+  ])
+
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader className="mx-auto max-w-5xl" title={t('title.me')} />
+      <PageHeader
+        className="mx-auto max-w-5xl"
+        gradient
+        rightNode={<div className="hidden sm:block">{tabSelector}</div>}
+        title={t('title.me')}
+      />
 
       <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6 pb-12">
-        <SegmentedControls
-          className="w-full shrink"
-          onSelect={setSelectedTabId}
-          selected={selectedTabId}
-          tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
-        />
+        {!loadingProfile.loading && (
+          <div className="flex flex-col items-center gap-2 pb-4 text-center">
+            <ProfileImage
+              imageUrl={
+                loadingProfile.loading
+                  ? undefined
+                  : loadingProfile.data.imageUrl
+              }
+              loading={loadingProfile.loading}
+              size="xl"
+            />
 
-        <p className="header-text mt-4">{selectedTab?.label}</p>
+            <p className="hero-text mt-4">{loadingProfile.data.name}</p>
+
+            <CopyToClipboard takeAll value={walletAddress} />
+          </div>
+        )}
+
+        <div className="mb-4 sm:hidden">{tabSelector}</div>
+        <p className="header-text hidden sm:block">{selectedTab?.label}</p>
 
         {tabs.map(({ id, Component }) => (
           <div key={id} className={clsx(selectedTabId !== id && 'hidden')}>

@@ -35,5 +35,5 @@ Default.args = {
   connectWalletButton: (
     <ConnectWallet {...(ConnectWalletStory.args as ConnectWalletProps)} />
   ),
-  autoConnecting: false,
+  connecting: false,
 }
