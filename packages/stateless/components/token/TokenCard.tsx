@@ -75,7 +75,6 @@ export const TokenCard = ({
 
   const totalStaked =
     lazyStakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
-  const totalBalance = unstakedBalance + totalStaked
   const pendingRewards =
     lazyStakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0
   const unstakingBalance =
@@ -86,6 +85,8 @@ export const TokenCard = ({
         (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
       0
     ) ?? 0
+
+  const totalBalance = unstakedBalance + totalStaked + unstakingBalance
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
 
@@ -357,7 +358,7 @@ export const TokenCard = ({
             </div>
 
             <div className="flex flex-row items-center justify-between gap-8">
-              <p className="secondary-text">{t('title.unstakingTokens')}</p>
+              <p className="secondary-text">{t('title.unstaking')}</p>
 
               <Button
                 className={clsx(
