@@ -24,7 +24,7 @@ import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { ButtonLink } from '../ButtonLink'
 import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 
-export const TokenCard = (props: TokenCardInfo) => {
+export const DaoTokenCard = (props: TokenCardInfo) => {
   const router = useRouter()
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useNavHelpers()

@@ -1,11 +1,28 @@
-import { atomFamily, selectorFamily } from 'recoil'
+import { atomFamily, selectorFamily, waitForAll } from 'recoil'
 
 import {
+  eitherTokenInfoSelector,
+  nativeBalancesSelector,
+  nativeDelegatedBalanceSelector,
+  queryWalletIndexerSelector,
   refreshCheckmarkStatusAtom,
   refreshSavedTxsAtom,
+  refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
-import { MeIdentityStatus, MeTransactionSave } from '@dao-dao/types'
-import { CHECKMARK_API_BASE, KVPK_API_BASE } from '@dao-dao/utils'
+import {
+  MeIdentityStatus,
+  MeTransactionSave,
+  TokenCardInfo,
+  TokenType,
+  WithChainId,
+} from '@dao-dao/types'
+import {
+  CHECKMARK_API_BASE,
+  KVPK_API_BASE,
+  NATIVE_DENOM,
+  convertMicroDenomToDenomWithDecimals,
+  getFallbackImage,
+} from '@dao-dao/utils'
 
 export const SAVED_TX_PREFIX = 'savedTx:'
 
@@ -97,3 +114,108 @@ export const checkmarkStatusSelector = selectorFamily<MeIdentityStatus, string>(
       },
   }
 )
+
+type ContractWithBalance = {
+  contractAddress: string
+  balance: string | undefined
+}
+
+// TODO: Standardize this with the treasury token cards.
+export const walletTokenCardInfosSelector = selectorFamily<
+  TokenCardInfo[],
+  WithChainId<{
+    walletAddress: string
+  }>
+>({
+  key: 'walletTokenCardInfos',
+  get:
+    ({ walletAddress, chainId }) =>
+    ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(walletAddress))
+
+      const nativeBalances = get(
+        nativeBalancesSelector({ address: walletAddress, chainId })
+      )
+      const cw20Contracts: ContractWithBalance[] =
+        get(
+          queryWalletIndexerSelector({
+            chainId,
+            walletAddress,
+            formulaName: 'tokens/list',
+            id,
+          })
+        ) ?? []
+      const cw20s = get(
+        waitForAll(
+          cw20Contracts.map((c) =>
+            eitherTokenInfoSelector({
+              type: TokenType.Cw20,
+              denomOrAddress: c.contractAddress,
+              chainId,
+            })
+          )
+        )
+      )
+
+      const infos: TokenCardInfo[] = [
+        ...nativeBalances.map(
+          ({ denom, amount, decimals, label, imageUrl }) => {
+            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+              amount,
+              decimals
+            )
+
+            // For now, stakingInfo only exists for native token, until ICA.
+            const hasStakingInfo =
+              denom === NATIVE_DENOM &&
+              // Check if anything staked.
+              Number(
+                get(
+                  nativeDelegatedBalanceSelector({
+                    address: walletAddress,
+                    chainId,
+                  })
+                ).amount
+              ) > 0
+
+            const info: TokenCardInfo = {
+              token: {
+                type: TokenType.Native,
+                denomOrAddress: denom,
+                symbol: label,
+                decimals,
+                imageUrl: imageUrl || getFallbackImage(denom),
+              },
+              isGovernanceToken: false,
+              unstakedBalance,
+              hasStakingInfo,
+
+              lazyInfo: { loading: true },
+            }
+
+            return info
+          }
+        ),
+        ...cw20s.map((token, index) => {
+          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+            cw20Contracts[index].balance || '0',
+            token.decimals
+          )
+
+          const info: TokenCardInfo = {
+            token,
+            isGovernanceToken: false,
+            unstakedBalance,
+            // No unstaking info for CW20.
+            hasStakingInfo: false,
+
+            lazyInfo: { loading: true },
+          }
+
+          return info
+        }),
+      ]
+
+      return infos
+    },
+})

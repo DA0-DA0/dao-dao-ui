@@ -3,11 +3,13 @@ import { UseFormReturn } from 'react-hook-form'
 
 import { Action, ActionKeyAndData, ActionsWithData } from './actions'
 import { CosmosMsgFor_Empty } from './contracts'
+import { NftCardInfo } from './dao'
 import {
   LoadingData,
   LoadingDataWithError,
   SuspenseLoaderProps,
 } from './stateless'
+import { TokenCardInfo } from './token'
 
 export type MeTransactionForm = {
   actions: ActionKeyAndData[]
@@ -21,6 +23,7 @@ export type MeTransactionSave = MeTransactionForm & {
 // Value goes in URL hash.
 export enum MeTabId {
   Identity = 'identity',
+  Balances = 'balances',
   TransactionBuilder = 'tx',
 }
 
@@ -32,7 +35,8 @@ export type MeTab = {
 
 export type MeProps = {
   rightSidebarContent: ReactNode
-  MeIdentity: ComponentType
+  // MeIdentity: ComponentType
+  MeBalances: ComponentType
   MeTransactionBuilder: ComponentType
 }
 
@@ -75,4 +79,11 @@ export type MeIdentityProps = {
   verificationSessionId: LoadingData<string | undefined>
   deleteCheckmark: () => Promise<void>
   deletingCheckmark: boolean
+}
+
+export type MeBalancesProps<T extends TokenCardInfo, N extends NftCardInfo> = {
+  tokens: LoadingData<T[]>
+  TokenCard: ComponentType<T>
+  nfts: LoadingData<N[]>
+  NftCard: ComponentType<N>
 }

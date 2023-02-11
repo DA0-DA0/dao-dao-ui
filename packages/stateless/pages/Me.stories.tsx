@@ -5,11 +5,21 @@ import {
   makeActionsProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { ActionContextType, MeTransactionBuilderProps } from '@dao-dao/types'
+import {
+  ActionContextType,
+  MeBalancesProps,
+  MeTransactionBuilderProps,
+} from '@dao-dao/types'
 
-import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
+import {
+  NftCardProps,
+  ProfileHomeCard,
+  ProfileHomeCardProps,
+  TokenCardProps,
+} from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
 import { Me } from './Me'
+import { Default as MeBalancesStory } from './MeBalances.stories'
 import { Default as MeTransactionBuilderStory } from './MeTransactionBuilder.stories'
 
 export default {
@@ -35,6 +45,17 @@ export const Default = Template.bind({})
 Default.args = {
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
+  ),
+  // MeIdentity: () => (
+  //   <MeIdentityStory {...(MeIdentityStory.args as MeIdentityProps)} />
+  // ),
+  MeBalances: () => (
+    <MeBalancesStory
+      {...(MeBalancesStory.args as MeBalancesProps<
+        TokenCardProps,
+        NftCardProps
+      >)}
+    />
   ),
   MeTransactionBuilder: () => (
     <MeTransactionBuilderStory

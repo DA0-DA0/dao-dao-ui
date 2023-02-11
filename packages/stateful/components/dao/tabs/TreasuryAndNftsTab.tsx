@@ -27,7 +27,7 @@ import {
 import { NftCard } from '../../NftCard'
 import { StargazeNftImportModal } from '../../StargazeNftImportModal'
 import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
-import { TokenCard } from '../TokenCard'
+import { DaoTokenCard } from '../DaoTokenCard'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
@@ -91,7 +91,7 @@ export const TreasuryAndNftsTab = () => {
       FiatDepositModal={connected ? DaoFiatDepositModal : undefined}
       NftCard={NftCard}
       StargazeNftImportModal={StargazeNftImportModal}
-      TokenCard={TokenCard}
+      TokenCard={DaoTokenCard}
       addCollectionHref={
         // Prefill URL only valid if action exists.
         !!addCw721Action && encodedProposalPrefill

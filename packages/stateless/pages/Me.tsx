@@ -8,17 +8,23 @@ import { SegmentedControls, useAppLayoutContext } from '../components'
 
 export const Me = ({
   rightSidebarContent,
-  MeIdentity,
+  // MeIdentity,
+  MeBalances,
   MeTransactionBuilder,
 }: MeProps) => {
   const { t } = useTranslation()
   const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const tabs: MeTab[] = [
+    // {
+    //   id: MeTabId.Identity,
+    //   label: t('title.identity'),
+    //   Component: MeIdentity,
+    // },
     {
-      id: MeTabId.Identity,
-      label: t('title.identity'),
-      Component: MeIdentity,
+      id: MeTabId.Balances,
+      label: t('title.balances'),
+      Component: MeBalances,
     },
     {
       id: MeTabId.TransactionBuilder,
@@ -27,7 +33,7 @@ export const Me = ({
     },
   ]
 
-  const [selectedTab, setSelectedTab] = useState<MeTabId>(() => {
+  const [selectedTabId, setSelectedTabId] = useState<MeTabId>(() => {
     // Default to tab from URL hash if present and valid.
     const windowHash =
       typeof window === 'undefined'
@@ -45,10 +51,12 @@ export const Me = ({
       return
     }
 
-    if (window.location.hash.replace('#', '') !== selectedTab) {
-      window.location.hash = selectedTab
+    if (window.location.hash.replace('#', '') !== selectedTabId) {
+      window.location.hash = selectedTabId
     }
-  }, [selectedTab])
+  }, [selectedTabId])
+
+  const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   return (
     <>
@@ -58,13 +66,15 @@ export const Me = ({
       <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6 pb-12">
         <SegmentedControls
           className="w-full shrink"
-          onSelect={setSelectedTab}
-          selected={selectedTab}
+          onSelect={setSelectedTabId}
+          selected={selectedTabId}
           tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
         />
 
+        <p className="header-text mt-4">{selectedTab?.label}</p>
+
         {tabs.map(({ id, Component }) => (
-          <div key={id} className={clsx(selectedTab !== id && 'hidden')}>
+          <div key={id} className={clsx(selectedTabId !== id && 'hidden')}>
             <Component />
           </div>
         ))}
