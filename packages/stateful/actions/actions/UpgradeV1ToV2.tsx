@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
-import { useRecoilValueLoadable } from 'recoil'
+import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
-import { UnicornEmoji } from '@dao-dao/stateless'
+import { UnicornEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -12,7 +12,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 import {
   CODE_ID_CONFIG,
   makeWasmMessage,
@@ -68,8 +67,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
   }
 
   const useTransformToCosmos: UseTransformToCosmos<UpgradeV1ToV2Data> = () => {
-    // Get proposal module deposit info to pass through to pre-propose. If more
-    // than one proposal module, can't determine which to use, so error.
+    // Get proposal module deposit info to pass through to pre-propose.
     const depositInfoSelectors = context.info.proposalModules.map(
       (proposalModule) =>
         matchAndLoadCommon(proposalModule, {
@@ -77,40 +75,52 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
           coreAddress: address,
         }).selectors.depositInfo
     )
-    if (depositInfoSelectors.length !== 1) {
-      throw new Error(
-        `Expected 1 proposal module, found ${depositInfoSelectors.length}.`
-      )
-    }
-
-    const depositInfoLoadable = useRecoilValueLoadable(depositInfoSelectors[0])
+    // The deposit infos are ordered to match the proposal modules in the DAO
+    // core list, which is what the migration contract expects.
+    const proposalModuleDepositInfosLoadable = useCachedLoadable(
+      waitForAll(depositInfoSelectors)
+    )
 
     return useCallback(
       ({ subDaos }) => {
-        if (depositInfoLoadable.state === 'hasError') {
-          throw depositInfoLoadable.contents
-        } else if (depositInfoLoadable.state === 'loading') {
+        if (proposalModuleDepositInfosLoadable.state === 'hasError') {
+          throw proposalModuleDepositInfosLoadable.contents
+        } else if (proposalModuleDepositInfosLoadable.state === 'loading') {
           return
         }
 
-        const depositInfo = depositInfoLoadable.contents
-
-        const preProposeSingleInstantiateMsg: CwPreProposeSingleInstantiateMsg =
-          {
-            deposit_info: depositInfo
-              ? {
-                  amount: depositInfo.amount,
-                  denom: {
-                    token: {
-                      denom: depositInfo.denom,
-                    },
-                  },
-                  refund_policy: depositInfo.refund_policy,
-                }
-              : null,
-            extension: {},
-            open_proposal_submission: false,
-          }
+        const proposalParams = proposalModuleDepositInfosLoadable.contents.map(
+          (depositInfo) => ({
+            close_proposal_on_execution_failure: true,
+            pre_propose_info: {
+              module_may_propose: {
+                info: {
+                  admin: { core_module: {} },
+                  code_id: CODE_ID_CONFIG.DaoPreProposeSingle,
+                  label: `DAO_${context.info.name}_pre-propose-${DaoProposalSingleAdapter.id}`,
+                  msg: Buffer.from(
+                    JSON.stringify({
+                      deposit_info: depositInfo
+                        ? {
+                            amount: depositInfo.amount,
+                            denom: {
+                              token: {
+                                denom: depositInfo.denom,
+                              },
+                            },
+                            refund_policy: depositInfo.refund_policy,
+                          }
+                        : null,
+                      extension: {},
+                      open_proposal_submission: false,
+                    }),
+                    'utf8'
+                  ).toString('base64'),
+                },
+              },
+            },
+          })
+        )
 
         return makeWasmMessage({
           wasm: {
@@ -126,21 +136,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
                       sub_daos: subDaos,
                       migration_params: {
                         migrate_stake_cw20_manager: true,
-                        // dao-proposal-single
-                        close_proposal_on_execution_failure: true,
-                        pre_propose_info: {
-                          module_may_propose: {
-                            info: {
-                              admin: { core_module: {} },
-                              code_id: CODE_ID_CONFIG.DaoPreProposeSingle,
-                              label: `DAO_${context.info.name}_pre-propose-${DaoProposalSingleAdapter.id}`,
-                              msg: Buffer.from(
-                                JSON.stringify(preProposeSingleInstantiateMsg),
-                                'utf8'
-                              ).toString('base64'),
-                            },
-                          },
-                        },
+                        proposal_params: proposalParams,
                       },
                       v1_code_ids: {
                         proposal_single: 427,
@@ -163,7 +159,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
           },
         })
       },
-      [depositInfoLoadable]
+      [proposalModuleDepositInfosLoadable]
     )
   }
 
@@ -182,8 +178,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
                   sub_daos: {},
                   migration_params: {
                     migrate_stake_cw20_manager: {},
-                    close_proposal_on_execution_failure: {},
-                    pre_propose_info: {},
+                    proposal_params: {},
                   },
                   v1_code_ids: {
                     proposal_single: {},
