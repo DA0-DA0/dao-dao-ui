@@ -97,10 +97,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   return (
     <Modal
       {...modalProps}
-      containerClassName={clsx(
-        'h-[48rem] w-full !max-w-3xl',
-        containerClassName
-      )}
+      containerClassName={clsx('h-full w-full !max-w-3xl', containerClassName)}
       contentContainerClassName={
         nfts.errored
           ? 'items-center justify-center gap-4'

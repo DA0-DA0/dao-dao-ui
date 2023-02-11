@@ -15,7 +15,6 @@ import {
   UnstakingTask,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
-import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import {
   convertExpirationToDate,
   durationToSeconds,
@@ -68,9 +67,6 @@ export const ProfileCardMemberInfo = ({
   })
 
   if (
-    claimsPending === undefined ||
-    claimsAvailable === undefined ||
-    sumClaimsAvailable === undefined ||
     loadingUnstakedBalance === undefined ||
     loadingWalletStakedValue === undefined ||
     loadingTotalStakedValue === undefined
@@ -97,7 +93,7 @@ export const ProfileCardMemberInfo = ({
     if (!connected) {
       return toast.error(t('error.connectWalletToContinue'))
     }
-    if (sumClaimsAvailable === 0) {
+    if (!sumClaimsAvailable) {
       return toast.error(t('error.noClaimsAvailable'))
     }
 
@@ -112,7 +108,11 @@ export const ProfileCardMemberInfo = ({
       refreshTotals()
       refreshClaims?.()
 
-      toast.success(`Claimed ${sumClaimsAvailable} $${collectionInfo.symbol}`)
+      toast.success(
+        `Claimed ${sumClaimsAvailable.toLocaleString()} $${
+          collectionInfo.symbol
+        }`
+      )
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -135,7 +135,7 @@ export const ProfileCardMemberInfo = ({
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
 
   const unstakingTasks: UnstakingTask[] = [
-    ...(claimsPending as NftClaim[]).map(({ release_at }) => ({
+    ...(claimsPending ?? []).map(({ release_at }) => ({
       token,
       status: UnstakingTaskStatus.Unstaking,
       amount: Number(1),
@@ -147,7 +147,7 @@ export const ProfileCardMemberInfo = ({
           : 0
       ),
     })),
-    ...(claimsAvailable as NftClaim[]).map(({ release_at }) => ({
+    ...(claimsAvailable ?? []).map(({ release_at }) => ({
       token,
       status: UnstakingTaskStatus.ReadyToClaim,
       amount: Number(1),

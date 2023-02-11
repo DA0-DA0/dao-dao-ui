@@ -39,6 +39,6 @@ const junoMainnet: CodeIdConfig = {
 }
 
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {
-  'uni-5': junoTestnet,
+  'uni-6': junoTestnet,
   'juno-1': junoMainnet,
 }

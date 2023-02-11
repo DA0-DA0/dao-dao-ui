@@ -1,13 +1,14 @@
 import { waitForAll } from 'recoil'
 
 import { Cw721BaseSelectors } from '@dao-dao/state/recoil'
+import { stakerForNftSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoVotingCw721Staked'
 import {
   StakedNftsTab as StatelessStakedNftsTab,
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { NftCard } from '../../../../components'
+import { StakedNftCard } from '../../../../components'
 import { nftCardInfoSelector } from '../../../../recoil/selectors/nft'
 import { useGovernanceCollectionInfo } from '../hooks'
 
@@ -22,23 +23,52 @@ export const StakedNftsTab = () => {
     })
   )
 
-  const nftCardInfosLoadable = useCachedLoadable(
-    allStakedTokens.state === 'hasValue'
-      ? waitForAll(
-          allStakedTokens.contents.map((tokenId) =>
-            nftCardInfoSelector({
-              collection: collectionAddress,
-              tokenId,
-            })
+  const nftCardInfosLoading = loadableToLoadingData(
+    useCachedLoadable(
+      allStakedTokens.state === 'hasValue'
+        ? waitForAll(
+            allStakedTokens.contents.map((tokenId) =>
+              nftCardInfoSelector({
+                collection: collectionAddress,
+                tokenId,
+              })
+            )
           )
-        )
-      : undefined
+        : undefined
+    ),
+    []
+  )
+
+  const stakedTokenOwners = loadableToLoadingData(
+    useCachedLoadable(
+      allStakedTokens.state === 'hasValue'
+        ? waitForAll(
+            allStakedTokens.contents.map((tokenId) =>
+              stakerForNftSelector({
+                contractAddress: stakingContractAddress,
+                tokenId,
+              })
+            )
+          )
+        : undefined
+    ),
+    []
   )
 
   return (
     <StatelessStakedNftsTab
-      NftCard={NftCard}
-      nfts={loadableToLoadingData(nftCardInfosLoadable, [])}
+      NftCard={StakedNftCard}
+      nfts={
+        nftCardInfosLoading.loading || stakedTokenOwners.loading
+          ? { loading: true }
+          : {
+              loading: false,
+              data: nftCardInfosLoading.data.map((nft, index) => ({
+                ...nft,
+                owner: stakedTokenOwners.data[index],
+              })),
+            }
+      }
     />
   )
 }

@@ -19,11 +19,7 @@ import {
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
-import {
-  ApolloGqlProvider,
-  DappLayout,
-  WalletProvider,
-} from '@dao-dao/stateful'
+import { DappLayout, WalletProvider } from '@dao-dao/stateful'
 import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
@@ -68,21 +64,18 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      {/* Show loader until not fallback anymore, since translations aren't loaded until static props are ready (i.e. not fallback). */}
-      <ApolloGqlProvider>
-        {/* When on fallback page (loading static props), don't wrap in WalletProvider or DappLayout, since things look weird and broken (e.g. translations aren't loaded, the wallet tries to connect multiple times, etc.). Render the component still so that the SEO meta tags load on first render (on the server) so that URL previews work. Component is responsible for suspending its non-SEO meta tag content with a SuspenseLoader when it needs to wait for the page to load. */}
-        {router.isFallback ? (
-          <LayoutLoading>
+      {/* When on fallback page (loading static props), don't wrap in WalletProvider or DappLayout, since things look weird and broken (e.g. translations aren't loaded, the wallet tries to connect multiple times, etc.). Render the component still so that the SEO meta tags load on first render (on the server) so that URL previews work. Component is responsible for suspending its non-SEO meta tag content with a SuspenseLoader when it needs to wait for the page to load. */}
+      {router.isFallback ? (
+        <LayoutLoading>
+          <Component {...pageProps} />
+        </LayoutLoading>
+      ) : (
+        <WalletProvider>
+          <DappLayout>
             <Component {...pageProps} />
-          </LayoutLoading>
-        ) : (
-          <WalletProvider>
-            <DappLayout>
-              <Component {...pageProps} />
-            </DappLayout>
-          </WalletProvider>
-        )}
-      </ApolloGqlProvider>
+          </DappLayout>
+        </WalletProvider>
+      )}
 
       <ToastNotifications />
     </ThemeProvider>

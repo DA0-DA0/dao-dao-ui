@@ -16,6 +16,7 @@ export * from '@dao-dao/types/stateless/ProfileNewProposalCard'
 export const ProfileNewProposalCard = ({
   daoName,
   info,
+  isMember,
   ...wrapperProps
 }: ProfileNewProposalCardProps) => {
   const { t } = useTranslation()
@@ -32,7 +33,14 @@ export const ProfileNewProposalCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0"
       compact
-      underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
+      underHeaderComponent={
+        <MembershipPill
+          daoName={daoName}
+          ghost
+          isMember={isMember.loading ? false : isMember.data}
+          loadingIsMember={isMember.loading}
+        />
+      }
       {...wrapperProps}
     >
       <div className="space-y-4 p-6">

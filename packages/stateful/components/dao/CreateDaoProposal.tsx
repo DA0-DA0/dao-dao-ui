@@ -1,4 +1,4 @@
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -24,7 +24,6 @@ import {
   ProposalPrefill,
 } from '@dao-dao/types'
 
-import { useMembership } from '../../hooks/useMembership'
 import {
   DaoProposalSingleAdapter,
   matchAndLoadCommon,
@@ -40,8 +39,7 @@ export const CreateDaoProposal = () => {
   const { t } = useTranslation()
   const { goToDaoProposal, router } = useNavHelpers()
   const daoInfo = useDaoInfoContext()
-  const { isMember = false } = useMembership(daoInfo)
-  const { connected, status } = useWallet()
+  const { connected } = useWallet()
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(
     // Default to single choice proposal module or first otherwise.
@@ -312,13 +310,6 @@ export const CreateDaoProposal = () => {
               unloadDraft={unloadDraft}
             />
           </SuspenseLoader>
-        }
-        notMember={
-          isMember === false &&
-          // Only confirm not a member once wallet status has stopped trying
-          // to connect. If autoconnecting, we don't want to flash "you're not
-          // a member" text yet.
-          status === WalletConnectionStatus.ReadyForConnection
         }
         proposalModule={selectedProposalModule}
         rightSidebarContent={

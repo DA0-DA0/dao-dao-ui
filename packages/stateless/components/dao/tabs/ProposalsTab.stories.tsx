@@ -25,7 +25,6 @@ const Template: ComponentStory<typeof ProposalsTab> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  isMember: false,
   ProposalList: () => (
     <ProposalList
       {...(ProposalListStories.Default

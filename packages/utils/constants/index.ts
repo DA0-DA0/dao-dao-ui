@@ -85,10 +85,6 @@ export const MAX_DAO_NAME_LENGTH = parseInt(
   process.env.NEXT_PUBLIC_MAX_DAO_NAME_LENGTH || '50',
   10
 )
-export const MAX_DAO_DESCRIPTION_LENGTH = parseInt(
-  process.env.NEXT_PUBLIC_MAX_DAO_DESCRIPTION_LENGTH || '130',
-  10
-)
 
 export const MAX_META_CHARS_PROPOSAL_DESCRIPTION = parseInt(
   process.env.NEXT_PUBLIC_MAX_META_CHARS_PROPOSAL_DESCRIPTION || '200',
@@ -176,3 +172,6 @@ export const SYNAPS_API_KEY = process.env.SYNAPS_API_KEY as string
 // Single DAO Mode
 export const SINGLE_DAO_MODE =
   process.env.NEXT_PUBLIC_SINGLE_DAO_MODE === 'true'
+
+// Kado API (https://docs.kado.money)
+export const KADO_API_KEY = process.env.NEXT_PUBLIC_KADO_API_KEY as string

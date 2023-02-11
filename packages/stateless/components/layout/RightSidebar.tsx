@@ -1,20 +1,38 @@
-import { KeyboardDoubleArrowRight } from '@mui/icons-material'
+import {
+  KeyboardDoubleArrowRight,
+  Paid,
+  SavingsRounded,
+} from '@mui/icons-material'
 import clsx from 'clsx'
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 
 import {
   RightSidebarContentProps,
   RightSidebarProps,
 } from '@dao-dao/types/stateless/RightSidebar'
 
+import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
 import { useAppLayoutContext } from './AppLayoutContext'
 
 export * from '@dao-dao/types/stateless/RightSidebar'
 
-export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
+export const RightSidebar = ({
+  wallet,
+  setContentRef,
+  WalletFiatRampModal,
+}: RightSidebarProps) => {
+  const { t } = useTranslation()
+
   const { enabled: responsiveEnabled, toggle: toggleResponsive } =
     useAppLayoutContext().responsiveRightSidebar
+
+  // Set this to a value to show the fiat ramp modal defaulted to that option.
+  const [fiatRampDefaultModeVisible, setFiatRampDefaultModeVisible] = useState<
+    'buy' | 'sell' | undefined
+  >()
 
   return (
     <>
@@ -56,7 +74,40 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
           {/* Content gets inserted here when the portal <RightSidebarContent> below is used. */}
           <div ref={setContentRef}></div>
         </div>
+
+        {/* Only show if defined, which indicates wallet connected. */}
+        {WalletFiatRampModal && (
+          <div className="mt-6 flex flex-col items-stretch gap-2">
+            <Button
+              center
+              onClick={() => setFiatRampDefaultModeVisible('buy')}
+              size="lg"
+              variant="secondary"
+            >
+              <Paid />
+              {t('button.depositFiat')}
+            </Button>
+
+            <Button
+              center
+              onClick={() => setFiatRampDefaultModeVisible('sell')}
+              size="lg"
+              variant="secondary"
+            >
+              <SavingsRounded />
+              {t('button.withdrawFiat')}
+            </Button>
+          </div>
+        )}
       </div>
+
+      {WalletFiatRampModal && (
+        <WalletFiatRampModal
+          defaultMode={fiatRampDefaultModeVisible}
+          onClose={() => setFiatRampDefaultModeVisible(undefined)}
+          visible={fiatRampDefaultModeVisible !== undefined}
+        />
+      )}
     </>
   )
 }

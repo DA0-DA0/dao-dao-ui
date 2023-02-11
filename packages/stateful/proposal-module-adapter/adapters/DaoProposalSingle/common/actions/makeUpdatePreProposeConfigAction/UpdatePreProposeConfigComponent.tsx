@@ -9,6 +9,7 @@ import {
   GearEmoji,
   InputErrorMessage,
   InputLabel,
+  LockWithPenEmoji,
   MoneyEmoji,
   NumberInput,
   SegmentedControls,
@@ -38,6 +39,7 @@ export interface UpdatePreProposeConfigData {
     cw20Decimals: number
     refundPolicy: DepositRefundPolicy
   }
+  anyoneCanPropose: boolean
 }
 
 export interface UpdatePreProposeConfigOptions {
@@ -60,6 +62,8 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
   const depositInfo: UpdatePreProposeConfigData['depositInfo'] = watch(
     fieldNamePrefix + 'depositInfo'
   )
+  const anyoneCanPropose: UpdatePreProposeConfigData['anyoneCanPropose'] =
+    watch(fieldNamePrefix + 'anyoneCanPropose')
 
   return (
     <ActionCard
@@ -88,9 +92,9 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
       <div className="flex flex-col gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
         <div className="flex flex-col gap-2">
           <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
-            <h3 className="primary-text">
+            <p className="primary-text">
               <MoneyEmoji /> {t('form.proposalDepositTitle')}
-            </h3>
+            </p>
 
             <FormSwitchCard
               fieldName={fieldNamePrefix + 'depositRequired'}
@@ -197,6 +201,36 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
             />
           </div>
         )}
+      </div>
+
+      <div className="flex flex-row flex-wrap items-end justify-between gap-x-12 gap-y-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+        <div className="flex flex-col gap-2">
+          <p className="primary-text">
+            <LockWithPenEmoji /> {t('form.proposalSubmissionPolicyTitle')}
+          </p>
+          <p className="secondary-text max-w-prose">
+            {t('form.proposalSubmissionPolicyDescription')}
+          </p>
+        </div>
+
+        <SegmentedControls
+          className="grow"
+          disabled={!isCreating}
+          onSelect={(value) =>
+            setValue(fieldNamePrefix + 'anyoneCanPropose', value)
+          }
+          selected={anyoneCanPropose}
+          tabs={[
+            {
+              label: t('info.onlyMembers'),
+              value: false,
+            },
+            {
+              label: t('info.anyone'),
+              value: true,
+            },
+          ]}
+        />
       </div>
     </ActionCard>
   )

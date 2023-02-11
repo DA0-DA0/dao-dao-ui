@@ -18,6 +18,7 @@ export const parseNftUriResponse = (
   uriDataResponse: string
 ): {
   name: string | undefined
+  description: string | undefined
   imageUrl: string | undefined
   externalLink: { href: string; name: string } | undefined
 } => {
@@ -29,6 +30,7 @@ export const parseNftUriResponse = (
   }
 
   let name
+  let description
   let imageUrl
   let externalLink
   // Only try to parse if there's a good chance this is JSON, the
@@ -39,6 +41,10 @@ export const parseNftUriResponse = (
 
       if (typeof json.name === 'string' && !!json.name.trim()) {
         name = json.name
+      }
+
+      if (typeof json.description === 'string' && !!json.description.trim()) {
+        description = json.description
       }
 
       if (typeof json.image === 'string' && !!json.image) {
@@ -60,7 +66,12 @@ export const parseNftUriResponse = (
     }
   }
 
-  return { name, imageUrl, externalLink }
+  return {
+    name,
+    description,
+    imageUrl,
+    externalLink,
+  }
 }
 
 // Uploads an NFT to NFT Storage and returns the metadata.
