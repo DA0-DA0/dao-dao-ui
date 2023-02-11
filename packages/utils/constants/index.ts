@@ -35,6 +35,9 @@ export const NATIVE_TOKEN: GenericToken = {
   decimals: NATIVE_DECIMALS,
   imageUrl: nativeTokenLogoURI(NATIVE_DENOM) || getFallbackImage(NATIVE_DENOM),
 }
+
+export const JUNO_USDC_DENOM =
+  'ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034'
 export const USDC_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_USDC_DECIMALS || '6',
   10

@@ -1,5 +1,4 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import toast from 'react-hot-toast'
 
 import { GenericToken, TokenStake, TokenType } from '@dao-dao/types'
 
@@ -116,9 +115,6 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
         },
       },
     },
-    onAddToken: () => toast.success('added'),
-    proposeClaimHref: '#',
-    proposeStakeUnstakeHref: '#',
     onClaim: () => alert('claim'),
     ButtonLink,
   }

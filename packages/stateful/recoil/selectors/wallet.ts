@@ -6,6 +6,7 @@ import {
   nativeDelegatedBalanceSelector,
   queryWalletIndexerSelector,
   refreshCheckmarkStatusAtom,
+  refreshHiddenBalancesAtom,
   refreshSavedTxsAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
@@ -82,6 +83,70 @@ export const savedTxsSelector = selectorFamily<MeTransactionSave[], string>({
       } else {
         throw new Error(
           `Failed to fetch tx saves: ${response.status}/${
+            response.statusText
+          } ${await response.text().catch(() => '')}`.trim()
+        )
+      }
+    },
+})
+
+export const HIDDEN_BALANCE_PREFIX = 'hiddenBalance:'
+
+// This doesn't update right away due to Cloudflare KV Store latency, so this
+// serves to keep track of all successful updates for the current session. This
+// will be reset on page refresh. Set this right away so the UI can update
+// immediately even if the API takes up to a minute or two. Though likely it
+// only takes 10 seconds or so.
+//
+// Takes wallet public key as a parameter.
+export const temporaryHiddenBalancesAtom = atomFamily<
+  Record<string, number | null>,
+  string
+>({
+  key: 'temporaryHiddenBalances',
+  default: {},
+})
+
+// Takes wallet public key as a parameter. Return list of token denomOrAddress
+// fields that are hidden.
+export const hiddenBalancesSelector = selectorFamily<string[], string>({
+  key: 'hiddenBalances',
+  get:
+    (walletPublicKey) =>
+    async ({ get }) => {
+      get(refreshHiddenBalancesAtom)
+
+      const temporary = get(temporaryHiddenBalancesAtom(walletPublicKey))
+
+      const response = await fetch(
+        KVPK_API_BASE + `/list/${walletPublicKey}/${HIDDEN_BALANCE_PREFIX}`
+      )
+
+      if (response.ok) {
+        const { items } = (await response.json()) as {
+          items: {
+            key: string
+            value: number | null
+          }[]
+        }
+
+        const hiddenBalances = Object.entries(temporary)
+        // Add any items that are in the KV store but not in the temporary map.
+        items.forEach(({ key, value }) => {
+          if (!(key in temporary)) {
+            hiddenBalances.push([key, value])
+          }
+        })
+
+        const hidden = hiddenBalances
+          .filter(([, value]) => value !== null)
+          // Remove prefix so it's just the token's denomOrAddress.
+          .map(([key]) => key.replace(HIDDEN_BALANCE_PREFIX, ''))
+
+        return hidden
+      } else {
+        throw new Error(
+          `Failed to fetch hidden balances: ${response.status}/${
             response.statusText
           } ${await response.text().catch(() => '')}`.trim()
         )

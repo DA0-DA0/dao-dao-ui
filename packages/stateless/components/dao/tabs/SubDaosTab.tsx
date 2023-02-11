@@ -3,6 +3,7 @@ import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ButtonLinkProps,
   ContractVersion,
   DaoCardInfo,
   DaoInfo,
@@ -10,7 +11,6 @@ import {
 } from '@dao-dao/types'
 
 import { useNavHelpers } from '../../../hooks'
-import { ButtonLinkProps } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Loader } from '../../logo/Loader'
 import { NoContent } from '../../NoContent'

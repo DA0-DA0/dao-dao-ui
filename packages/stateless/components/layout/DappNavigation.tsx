@@ -15,8 +15,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
-import { usePlatform } from '@dao-dao/utils'
 
+import { usePlatform } from '../../hooks'
 import { DaoDropdown } from '../dao'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Loader } from '../logo/Loader'

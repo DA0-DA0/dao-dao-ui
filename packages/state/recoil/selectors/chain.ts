@@ -34,6 +34,7 @@ import {
 import {
   CHAIN_BECH32_PREFIX,
   CHAIN_ID,
+  JUNO_USDC_DENOM,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   cosmWasmClientRouter,
@@ -164,6 +165,13 @@ export const nativeBalancesSelector = selectorFamily<
         balances.push({
           amount: '0',
           denom: NATIVE_DENOM,
+        })
+      }
+      // Add USDC if not present.
+      if (!balances.some(({ denom }) => denom === JUNO_USDC_DENOM)) {
+        balances.push({
+          amount: '0',
+          denom: JUNO_USDC_DENOM,
         })
       }
 

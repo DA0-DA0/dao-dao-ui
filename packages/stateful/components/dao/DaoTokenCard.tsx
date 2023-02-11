@@ -1,21 +1,24 @@
+import { AccountBalance } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { refreshNativeTokenStakingInfoAtom } from '@dao-dao/state'
 import {
+  DepositEmoji,
+  MoneyEmoji,
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { CoreActionKey, TokenCardInfo } from '@dao-dao/types'
 import {
-  NATIVE_DENOM,
-  StakeType,
-  loadableToLoadingData,
-  useAddToken,
-} from '@dao-dao/utils'
+  ButtonPopupSection,
+  CoreActionKey,
+  TokenCardInfo,
+} from '@dao-dao/types'
+import { NATIVE_DENOM, StakeType, loadableToLoadingData } from '@dao-dao/utils'
 
 import { useCoreActionForKey } from '../../actions'
 import { useEncodedDaoProposalSinglePrefill } from '../../hooks'
@@ -25,11 +28,10 @@ import { ButtonLink } from '../ButtonLink'
 import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 
 export const DaoTokenCard = (props: TokenCardInfo) => {
+  const { t } = useTranslation()
   const router = useRouter()
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useNavHelpers()
-
-  const addToken = useAddToken()
 
   const lazyInfoLoadable = useCachedLoadable(
     tokenCardLazyInfoSelector({
@@ -146,11 +148,6 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
         })
       : undefined
 
-  const onAddToken =
-    addToken && props.token.type === 'cw20'
-      ? () => props.token.denomOrAddress && addToken(props.token.denomOrAddress)
-      : undefined
-
   const onClaim = proposeClaimHref
     ? () => router.push(proposeClaimHref)
     : undefined
@@ -160,33 +157,71 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
 
   const [showCw20StakingModal, setShowCw20StakingModal] = useState(false)
 
+  const extraActionSections: ButtonPopupSection[] =
+    proposeStakeUnstakeHref || proposeClaimHref
+      ? [
+          {
+            label: t('title.newProposalTo'),
+            buttons: [
+              ...(proposeStakeUnstakeHref
+                ? [
+                    {
+                      Icon: DepositEmoji,
+                      label: t('button.stakeOrUnstake'),
+                      href: proposeStakeUnstakeHref,
+                    },
+                  ]
+                : []),
+              ...(proposeClaimHref
+                ? [
+                    {
+                      Icon: MoneyEmoji,
+                      label: t('button.claim'),
+                      href: proposeClaimHref,
+                    },
+                  ]
+                : []),
+            ],
+          },
+        ]
+      : []
+
   return (
     <>
       <StatelessTokenCard
         {...props}
         ButtonLink={ButtonLink}
+        actions={{
+          token: isCw20GovernanceToken
+            ? [
+                // If this is the governance token and a CW20, show manage
+                // staking button.
+                {
+                  Icon: AccountBalance,
+                  label: t('button.manageStake', {
+                    tokenSymbol: props.token.symbol,
+                  }),
+                  onClick: () => setShowCw20StakingModal(true),
+                },
+              ]
+            : // Only show deposit button if not governance cw20 token. People
+              // accidentally deposit governance tokens into the DAO when
+              // they're trying to stake them.
+              [
+                {
+                  Icon: AccountBalance,
+                  label: t('button.deposit'),
+                  onClick: showDeposit,
+                },
+              ],
+          extraSections: extraActionSections,
+        }}
         lazyInfo={loadableToLoadingData(lazyInfoLoadable, {
           usdcUnitPrice: undefined,
           stakingInfo: undefined,
         })}
-        manageCw20Stake={
-          // If this is the governance token and a CW20, show manage staking
-          // button.
-          isCw20GovernanceToken
-            ? () => setShowCw20StakingModal(true)
-            : undefined
-        }
-        onAddToken={onAddToken}
         onClaim={onClaim}
-        proposeClaimHref={proposeClaimHref}
-        proposeStakeUnstakeHref={proposeStakeUnstakeHref}
         refreshUnstakingTasks={refreshNativeTokenStakingInfo}
-        showDeposit={
-          // If this is the governance token and a CW20, don't show deposit
-          // button. People accidentally deposit governance tokens into the DAO
-          // when they're trying to stake them.
-          isCw20GovernanceToken ? undefined : showDeposit
-        }
       />
 
       {isCw20GovernanceToken && showCw20StakingModal && StakingModal && (

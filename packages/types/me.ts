@@ -83,6 +83,8 @@ export type MeIdentityProps = {
 
 export type MeBalancesProps<T extends TokenCardInfo, N extends NftCardInfo> = {
   tokens: LoadingData<T[]>
+  // List of token denomOrAddress fields that should be hidden.
+  hiddenTokens: LoadingData<string[]>
   TokenCard: ComponentType<T>
   nfts: LoadingData<N[]>
   NftCard: ComponentType<N>

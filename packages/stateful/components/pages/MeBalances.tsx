@@ -7,12 +7,16 @@ import {
 } from '@dao-dao/stateless'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { walletNftCardInfos, walletTokenCardInfosSelector } from '../../recoil'
+import {
+  hiddenBalancesSelector,
+  walletNftCardInfos,
+  walletTokenCardInfosSelector,
+} from '../../recoil'
 import { NftCard } from '../NftCard'
 import { WalletTokenCard } from '../WalletTokenCard'
 
 export const MeBalances = () => {
-  const { address: walletAddress = '', chainInfo } = useWallet()
+  const { address: walletAddress = '', publicKey, chainInfo } = useWallet()
 
   const tokenCardInfosLoadable = useCachedLoadable(
     walletTokenCardInfosSelector({
@@ -42,10 +46,18 @@ export const MeBalances = () => {
     tokenCardInfosLoadable.state,
   ])
 
+  const hiddenTokens = loadableToLoadingData(
+    useCachedLoadable(
+      publicKey?.hex ? hiddenBalancesSelector(publicKey.hex) : undefined
+    ),
+    []
+  )
+
   return (
     <StatelessMeBalances
       NftCard={NftCard}
       TokenCard={WalletTokenCard}
+      hiddenTokens={hiddenTokens}
       nfts={loadableToLoadingData(nftCardInfosLoadable, [])}
       tokens={loadableToLoadingData(tokenCardInfosLoadable, [])}
     />

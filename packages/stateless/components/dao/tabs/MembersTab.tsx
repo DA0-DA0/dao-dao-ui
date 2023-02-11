@@ -3,7 +3,8 @@ import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ButtonLinkProps } from '../../buttons'
+import { ButtonLinkProps } from '@dao-dao/types'
+
 import { GridCardContainer } from '../../GridCardContainer'
 
 export interface MembersTabProps<D> {

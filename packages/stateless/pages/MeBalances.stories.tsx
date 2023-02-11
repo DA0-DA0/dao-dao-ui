@@ -21,6 +21,10 @@ Default.args = {
     loading: false,
     data: [makeTokenCardProps(true), makeTokenCardProps()],
   },
+  hiddenTokens: {
+    loading: false,
+    data: [],
+  },
   TokenCard,
   nfts: {
     loading: false,
@@ -38,6 +42,7 @@ Default.args = {
 export const Loading = Template.bind({})
 Loading.args = {
   tokens: { loading: true },
+  hiddenTokens: { loading: true },
   TokenCard,
   nfts: { loading: true },
   NftCard,

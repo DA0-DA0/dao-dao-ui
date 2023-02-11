@@ -100,3 +100,9 @@ export const refreshCheckmarkStatusAtom = atom({
   key: 'refreshCheckmarkStatus',
   default: 0,
 })
+
+// Change this to refresh hidden balances.
+export const refreshHiddenBalancesAtom = atom({
+  key: 'refreshHiddenBalances',
+  default: 0,
+})

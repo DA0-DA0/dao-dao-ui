@@ -1,10 +1,13 @@
 import { Image } from '@mui/icons-material'
+import clsx from 'clsx'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MeBalancesProps, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
 
 import {
   Dropdown,
+  DropdownIconButton,
   DropdownOption,
   GridCardContainer,
   Loader,
@@ -14,6 +17,7 @@ import { SortFn, useDropdownSorter } from '../hooks'
 
 export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   tokens,
+  hiddenTokens,
   TokenCard,
   nfts,
   NftCard,
@@ -23,19 +27,57 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
     useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
 
+  const visibleBalances =
+    tokens.loading || hiddenTokens.loading
+      ? []
+      : tokens.data.filter(
+          ({ token }) => !hiddenTokens.data.includes(token.denomOrAddress)
+        )
+  const hiddenBalances =
+    tokens.loading || hiddenTokens.loading
+      ? []
+      : tokens.data.filter(({ token }) =>
+          hiddenTokens.data.includes(token.denomOrAddress)
+        )
+
+  const [showingHidden, setShowingHidden] = useState(false)
+
   return (
     <div className="flex flex-col gap-8">
       <div>
-        {tokens.loading || !tokens.data ? (
+        {tokens.loading || hiddenTokens.loading ? (
           <Loader fill={false} />
         ) : tokens.data.length ? (
           <GridCardContainer cardType="wide">
-            {tokens.data.map((props, index) => (
-              <TokenCard {...props} key={index} />
+            {visibleBalances.map((props) => (
+              <TokenCard {...props} key={props.token.denomOrAddress} />
             ))}
           </GridCardContainer>
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>
+        )}
+
+        {hiddenBalances.length > 0 && (
+          <div className="mt-8 space-y-4">
+            <div className="link-text ml-2 flex flex-row items-center gap-3 text-text-secondary">
+              <DropdownIconButton
+                className="text-icon-primary"
+                open={showingHidden}
+                toggle={() => setShowingHidden((s) => !s)}
+              />
+
+              <p>{t('title.hidden')}</p>
+            </div>
+
+            <GridCardContainer
+              cardType="wide"
+              className={clsx(!showingHidden && 'hidden')}
+            >
+              {hiddenBalances.map((props) => (
+                <TokenCard {...props} key={props.token.denomOrAddress} />
+              ))}
+            </GridCardContainer>
+          </div>
         )}
       </div>
 

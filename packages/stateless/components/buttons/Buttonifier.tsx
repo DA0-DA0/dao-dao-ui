@@ -1,5 +1,6 @@
 import clsx from 'clsx'
-import { ReactNode } from 'react'
+
+import { ButtonifierProps } from '@dao-dao/types'
 
 import { Logo } from '../logo/Logo'
 
@@ -8,26 +9,6 @@ const defaultSize = 'default'
 
 // Pulse for these variants instead of displaying loader.
 const PULSE_LOADING_VARIANTS = 'underline' || 'none'
-
-export interface ButtonifierProps {
-  variant?:
-    | 'primary'
-    | 'primary_outline'
-    | 'secondary'
-    | 'ghost'
-    | 'underline'
-    | 'none'
-  size?: 'sm' | 'lg' | 'default' | 'none'
-  loading?: boolean
-  contentContainerClassName?: string
-  pressed?: boolean
-  hovering?: boolean
-  disabled?: boolean
-  showBadge?: boolean
-  className?: string
-  children?: ReactNode | ReactNode[]
-  center?: boolean
-}
 
 // Get props that should pass through the Buttonifier, such as native button
 // props. Disable button if disabled or loading.

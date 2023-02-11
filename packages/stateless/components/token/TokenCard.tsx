@@ -1,16 +1,21 @@
 import {
-  AccountBalance,
   Add,
   Check,
   CopyAll,
   ExpandCircleDownOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useEffect, useMemo, useState } from 'react'
+import { ComponentType, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { TokenCardInfo } from '@dao-dao/types'
+import {
+  ButtonLinkProps,
+  ButtonPopupSection,
+  ButtonPopupSectionButton,
+  TokenCardInfo,
+  TokenType,
+} from '@dao-dao/types'
 import {
   getFallbackImage,
   isJunoIbcUsdc,
@@ -19,13 +24,12 @@ import {
   transformIbcSymbol,
 } from '@dao-dao/utils'
 
-import { ButtonLinkProps } from '../buttons'
+import { useAddToken } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { CopyToClipboard } from '../CopyToClipboard'
-import { DepositEmoji, MoneyEmoji } from '../emoji'
 import { IconButton } from '../icon_buttons/IconButton'
 import { CrownIcon } from '../icons/CrownIcon'
-import { ButtonPopup, ButtonPopupSection } from '../popup'
+import { ButtonPopup } from '../popup'
 import { TooltipInfoIcon } from '../tooltip'
 import { Tooltip } from '../tooltip/Tooltip'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
@@ -33,14 +37,17 @@ import { UnstakingModal } from './UnstakingModal'
 import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export interface TokenCardProps extends TokenCardInfo {
-  onAddToken?: () => void
-  proposeStakeUnstakeHref?: string
-  proposeClaimHref?: string
   refreshUnstakingTasks?: () => void
   onClaim?: () => void
-  showDeposit?: () => void
-  manageCw20Stake?: () => void
   ButtonLink: ComponentType<ButtonLinkProps>
+  // Actions to display in the button popup.
+  actions?: {
+    // Actions to add in the token section. By default, this will include copy
+    // address and add to wallet, if a cw20 token.
+    token?: ButtonPopupSectionButton[]
+    // Extra sections to add to the action popup.
+    extraSections?: ButtonPopupSection[]
+  }
 }
 
 export const TokenCard = ({
@@ -50,14 +57,10 @@ export const TokenCard = ({
   unstakedBalance,
   hasStakingInfo,
   lazyInfo,
-  onAddToken,
-  proposeStakeUnstakeHref,
-  proposeClaimHref,
   refreshUnstakingTasks,
   onClaim,
-  showDeposit,
-  manageCw20Stake,
   ButtonLink,
+  actions,
 }: TokenCardProps) => {
   const { t } = useTranslation()
 
@@ -97,98 +100,48 @@ export const TokenCard = ({
     token.symbol
   )
 
-  const buttonPopupSections: ButtonPopupSection[] = useMemo(
-    () => [
-      ...(token.type === 'cw20' || onAddToken || showDeposit || manageCw20Stake
-        ? [
-            {
-              label: t('title.token'),
-              buttons: [
-                ...(token.type === 'cw20'
-                  ? [
-                      {
-                        Icon: copied ? Check : CopyAll,
-                        label: t('button.copyAddressToClipboard'),
-                        onClick: () => {
-                          navigator.clipboard.writeText(token.denomOrAddress)
-                          toast.success(t('info.copiedToClipboard'))
-                          setCopied(true)
-                        },
+  const addToken = useAddToken()
+  const addCw20Token =
+    addToken && token.type === TokenType.Cw20
+      ? () => addToken(token.denomOrAddress)
+      : undefined
+
+  // Setup actions for popup. Prefill with cw20 related actions.
+  const buttonPopupSections: ButtonPopupSection[] = [
+    ...(token.type === TokenType.Cw20 || !!actions?.token?.length
+      ? [
+          {
+            label: t('title.token'),
+            buttons: [
+              ...(token.type === TokenType.Cw20
+                ? [
+                    {
+                      Icon: copied ? Check : CopyAll,
+                      label: t('button.copyAddressToClipboard'),
+                      onClick: () => {
+                        navigator.clipboard.writeText(token.denomOrAddress)
+                        toast.success(t('info.copiedToClipboard'))
+                        setCopied(true)
                       },
-                    ]
-                  : []),
-                ...(onAddToken
-                  ? [
-                      {
-                        Icon: Add,
-                        label: t('button.addToKeplr'),
-                        onClick: onAddToken,
-                      },
-                    ]
-                  : []),
-                ...(showDeposit
-                  ? [
-                      {
-                        Icon: AccountBalance,
-                        label: t('button.deposit'),
-                        onClick: showDeposit,
-                      },
-                    ]
-                  : []),
-                ...(manageCw20Stake
-                  ? [
-                      {
-                        Icon: AccountBalance,
-                        label: t('button.manageStake', { tokenSymbol }),
-                        onClick: manageCw20Stake,
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          ]
-        : []),
-      ...(proposeStakeUnstakeHref || proposeClaimHref
-        ? [
-            {
-              label: t('title.newProposalTo'),
-              buttons: [
-                ...(proposeStakeUnstakeHref
-                  ? [
-                      {
-                        Icon: DepositEmoji,
-                        label: t('button.stakeOrUnstake'),
-                        href: proposeStakeUnstakeHref,
-                      },
-                    ]
-                  : []),
-                ...(proposeClaimHref
-                  ? [
-                      {
-                        Icon: MoneyEmoji,
-                        label: t('button.claim'),
-                        href: proposeClaimHref,
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          ]
-        : []),
-    ],
-    [
-      token.type,
-      token.denomOrAddress,
-      onAddToken,
-      showDeposit,
-      manageCw20Stake,
-      t,
-      copied,
-      tokenSymbol,
-      proposeStakeUnstakeHref,
-      proposeClaimHref,
-    ]
-  )
+                    },
+                  ]
+                : []),
+              ...(addCw20Token
+                ? [
+                    {
+                      Icon: Add,
+                      label: t('button.addToKeplr'),
+                      onClick: addCw20Token,
+                    },
+                  ]
+                : []),
+              ...(actions?.token ?? []),
+            ],
+          },
+        ]
+      : []),
+    ...(actions?.extraSections ?? []),
+  ]
 
   const waitingForStakingInfo = hasStakingInfo && lazyInfo.loading
 

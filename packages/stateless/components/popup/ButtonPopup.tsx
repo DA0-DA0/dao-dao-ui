@@ -1,33 +1,15 @@
 import clsx from 'clsx'
-import { ComponentType, Dispatch, SetStateAction, useRef } from 'react'
+import { Dispatch, SetStateAction, useRef } from 'react'
 
-import { Button, ButtonLinkProps } from '../buttons'
-import { Popup, PopupProps } from './Popup'
+import { ButtonPopupProps } from '@dao-dao/types'
 
-export interface ButtonPopupSection {
-  label?: string
-  buttons: ({
-    Icon?: ComponentType<{ className?: string }>
-    label: string
-  } & (
-    | {
-        onClick: () => void
-      }
-    | {
-        href: string
-      }
-  ))[]
-}
-
-export interface ButtonPopupProps
-  extends Omit<PopupProps, 'children' | 'setOpenRef'> {
-  sections: ButtonPopupSection[]
-  ButtonLink: ComponentType<ButtonLinkProps>
-}
+import { Button } from '../buttons'
+import { Popup } from './Popup'
 
 export const ButtonPopup = ({
   sections,
   ButtonLink,
+  closeOnSelect,
   ...props
 }: ButtonPopupProps) => {
   const setOpenRef = useRef<Dispatch<SetStateAction<boolean>> | null>(null)
@@ -44,7 +26,7 @@ export const ButtonPopup = ({
         >
           {label && <p className="link-text text-text-secondary">{label}</p>}
 
-          {buttons.map(({ Icon, label, ...buttonProps }, index) => {
+          {buttons.map(({ Icon, label, loading, ...buttonProps }, index) => {
             const content = (
               <>
                 {Icon && (
@@ -67,10 +49,14 @@ export const ButtonPopup = ({
             return 'onClick' in buttonProps ? (
               <Button
                 {...commonProps}
+                className={loading ? 'animate-pulse' : undefined}
+                disabled={loading}
                 onClick={() => {
                   buttonProps.onClick()
-                  // Close on click.
-                  setOpenRef.current?.(false)
+                  if (closeOnSelect) {
+                    // Close on click.
+                    setOpenRef.current?.(false)
+                  }
                 }}
               >
                 {content}

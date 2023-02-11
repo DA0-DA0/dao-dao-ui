@@ -24,13 +24,14 @@ import {
   ProposalCreatedModal,
   DappLayout as StatelessDappLayout,
   useCachedLoadable,
+  usePlatform,
 } from '@dao-dao/stateless'
 import {
   CommandModalContextMaker,
   DaoPageMode,
   IAppLayoutContext,
 } from '@dao-dao/types'
-import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
+import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { CommandModal, makeGenericContext } from '../command'
 import { useFollowingDaos, useWalletInfo } from '../hooks'
@@ -45,7 +46,6 @@ import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
 import { SyncFollowingModal } from './SyncFollowingModal'
-import { WalletFiatRampModal } from './WalletFiatRampModal'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
@@ -246,7 +246,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
       }}
       rightSidebarProps={{
         wallet: <SidebarWallet />,
-        WalletFiatRampModal: connected ? WalletFiatRampModal : undefined,
       }}
       walletProfile={
         status === WalletConnectionStatus.Connected ? walletProfile : undefined
