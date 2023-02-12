@@ -768,13 +768,15 @@ export const allCw721TokenListSelector = selectorFamily<
   get:
     ({ governanceCollectionAddress, ...queryClientParams }) =>
     async ({ get }) => {
-      const list = get(
+      let list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/cw721List',
         })
       )
       if (list && Array.isArray(list)) {
+        // Copy to new array so we can mutate it below.
+        list = [...list]
         // Add governance collection to beginning of list if not present.
         if (
           governanceCollectionAddress &&
