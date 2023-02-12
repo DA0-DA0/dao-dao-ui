@@ -3,10 +3,10 @@ import { CodeIdConfig } from '@dao-dao/types'
 // ContractVersion.V203: 2.0.3
 // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.3
 const junoTestnet: CodeIdConfig = {
-  Cw20Base: -1,
+  Cw20Base: 177,
   Cw20Stake: 155,
-  Cw4Group: -1,
-  Cw721Base: -1,
+  Cw4Group: 178,
+  Cw721Base: 179,
   CwAdminFactory: 158,
   DaoCore: 163,
   DaoPreProposeMultiple: 167,
