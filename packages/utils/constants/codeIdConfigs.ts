@@ -1,24 +1,24 @@
 import { CodeIdConfig } from '@dao-dao/types'
 
-// ContractVersion.V2Beta
-// https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.0-beta
+// ContractVersion.V203: 2.0.3
+// https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.3
 const junoTestnet: CodeIdConfig = {
-  Cw20Base: 3471, // v0.16
-  Cw20Stake: 3454,
-  Cw4Group: 3472, // v0.16
-  Cw721Base: 3356,
-  CwAdminFactory: 3455,
-  DaoCore: 3457,
-  DaoMigrator: -1,
-  DaoPreProposeMultiple: 3460,
-  DaoPreProposeSingle: 3461,
-  DaoProposalMultiple: 3462,
-  DaoProposalSingle: 3463,
-  DaoVotingCw20Staked: 3464,
-  DaoVotingCw4: 3465,
-  DaoVotingCw721Staked: 3466,
-  DaoVotingNativeStaked: 3467,
-  CwTokenSwap: 3456,
+  Cw20Base: 177,
+  Cw20Stake: 155,
+  Cw4Group: 178,
+  Cw721Base: 179,
+  CwAdminFactory: 158,
+  DaoCore: 163,
+  DaoMigrator: 164,
+  DaoPreProposeMultiple: 167,
+  DaoPreProposeSingle: 168,
+  DaoProposalMultiple: 170,
+  DaoProposalSingle: 171,
+  DaoVotingCw20Staked: 172,
+  DaoVotingCw4: 173,
+  DaoVotingCw721Staked: 174,
+  DaoVotingNativeStaked: 175,
+  CwTokenSwap: 161,
 }
 
 // ContractVersion.V202
