@@ -37,10 +37,10 @@ import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_s
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,
+  FACTORY_CONTRACT_ADDRESS,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   NEW_DAO_CW20_DECIMALS,
-  V1_FACTORY_CONTRACT_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   makeValidateMsg,
@@ -324,7 +324,7 @@ export const CreateDaoForm = ({
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
-      contractAddress: V1_FACTORY_CONTRACT_ADDRESS,
+      contractAddress: FACTORY_CONTRACT_ADDRESS,
       sender: walletAddress ?? '',
     })
 
