@@ -91,18 +91,23 @@ export const UnstakingModal = ({
 
   // Refresh when the soonest task completes if refresh provided.
   useEffect(() => {
-    if (!refresh || unstaking.length === 0) {
+    if (!refresh || unstaking.length === 0 || !unstaking[0].date) {
       return
     }
 
-    // unstaking is sorted so that the first one is next to finish.
-    const msUntilNextTaskCompletion = unstaking[0].date
-      ? unstaking[0].date.getTime() - Date.now()
-      : 1000
+    // Unstaking is sorted so that the first one is next to finish.
+    const msUntilNextTaskCompletion = unstaking[0].date.getTime() - Date.now()
 
-    const timeout = setTimeout(refresh, msUntilNextTaskCompletion)
-    // Clean up on unmount.
-    return () => clearTimeout(timeout)
+    // `setTimeout` uses 32-bit integers, so we need to check if the number is
+    // too large. Why JavaScript...
+    if (msUntilNextTaskCompletion < 2 ** 31) {
+      const timeout = setTimeout(() => {
+        console.log('refresh')
+        refresh()
+      }, msUntilNextTaskCompletion)
+      // Clean up on unmount.
+      return () => clearTimeout(timeout)
+    }
   }, [unstaking, refresh])
 
   return (

@@ -15,6 +15,8 @@ import {
   refreshNativeTokenStakingInfoAtom,
 } from '@dao-dao/state'
 import {
+  DepositEmoji,
+  MoneyEmoji,
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
 } from '@dao-dao/stateless'
@@ -22,11 +24,17 @@ import { TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
   JUNO_USDC_DENOM,
   KVPK_API_BASE,
+  NATIVE_DENOM,
+  cwMsgToEncodeObject,
   loadableToLoadingData,
   processError,
 } from '@dao-dao/utils'
 
-import { useCfWorkerAuthPostRequest } from '../hooks'
+import {
+  useAwaitNextBlock,
+  useCfWorkerAuthPostRequest,
+  useWalletInfo,
+} from '../hooks'
 import {
   HIDDEN_BALANCE_PREFIX,
   hiddenBalancesSelector,
@@ -35,10 +43,15 @@ import {
 } from '../recoil'
 import { ButtonLink } from './ButtonLink'
 import { WalletFiatRampModal } from './WalletFiatRampModal'
+import { WalletStakingModal } from './WalletStakingModal'
 
 export const WalletTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
-  const { address: walletAddress = '', publicKey } = useWallet()
+  const {
+    address: walletAddress = '',
+    publicKey,
+    signingCosmWasmClient,
+  } = useWallet()
 
   const lazyInfoLoadable = useCachedLoadable(
     tokenCardLazyInfoSelector({
@@ -53,6 +66,8 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
       console.error(lazyInfoLoadable.contents)
     }
   }, [lazyInfoLoadable.contents, lazyInfoLoadable.state])
+
+  const { refreshBalances } = useWalletInfo()
 
   // Refresh staking info.
   const setRefreshNativeTokenStakingInfo = useSetRecoilState(
@@ -114,6 +129,9 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     }
   }
 
+  const isNative =
+    props.token.type === TokenType.Native &&
+    props.token.denomOrAddress === NATIVE_DENOM
   const isUsdc =
     props.token.type === TokenType.Native &&
     props.token.denomOrAddress === JUNO_USDC_DENOM
@@ -122,6 +140,53 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   const [fiatRampDefaultModeVisible, setFiatRampDefaultModeVisible] = useState<
     'buy' | 'sell' | undefined
   >()
+
+  const [stakingModalVisible, setStakingModalVisible] = useState(false)
+
+  const awaitNextBlock = useAwaitNextBlock()
+
+  const claimReady =
+    lazyInfoLoadable.state === 'hasValue' &&
+    !!lazyInfoLoadable.contents.stakingInfo?.stakes
+  const [claimLoading, setClaimLoading] = useState(false)
+  const onClaim = async () => {
+    if (!claimReady) {
+      return
+    }
+    if (!signingCosmWasmClient || !walletAddress) {
+      toast.error(t('error.connectWalletToContinue'))
+      return
+    }
+
+    setClaimLoading(true)
+    try {
+      await signingCosmWasmClient.signAndBroadcast(
+        walletAddress,
+        lazyInfoLoadable.contents.stakingInfo!.stakes.map(({ validator }) =>
+          cwMsgToEncodeObject(
+            {
+              distribution: {
+                withdraw_delegator_reward: {
+                  validator: validator.address,
+                },
+              },
+            },
+            walletAddress
+          )
+        ),
+        'auto'
+      )
+
+      // Wait for balances to update.
+      await awaitNextBlock()
+      refreshBalances()
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setClaimLoading(false)
+    }
+  }
 
   return (
     <>
@@ -142,6 +207,25 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                     label: t('button.withdrawFiat'),
                     onClick: () => setFiatRampDefaultModeVisible('sell'),
                   },
+                ]
+              : []),
+            ...(isNative
+              ? [
+                  {
+                    Icon: DepositEmoji,
+                    label: t('button.stakeOrUnstake'),
+                    onClick: () => setStakingModalVisible(true),
+                  },
+                  ...(claimReady
+                    ? [
+                        {
+                          Icon: MoneyEmoji,
+                          label: t('button.claimStakingRewards'),
+                          onClick: onClaim,
+                          loading: claimLoading,
+                        },
+                      ]
+                    : []),
                 ]
               : []),
           ],
@@ -174,6 +258,13 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
           defaultMode={fiatRampDefaultModeVisible}
           onClose={() => setFiatRampDefaultModeVisible(undefined)}
           visible={fiatRampDefaultModeVisible !== undefined}
+        />
+      )}
+
+      {isNative && (
+        <WalletStakingModal
+          onClose={() => setStakingModalVisible(false)}
+          visible={stakingModalVisible}
         />
       )}
     </>

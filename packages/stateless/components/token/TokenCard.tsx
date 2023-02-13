@@ -205,6 +205,7 @@ export const TokenCard = ({
                     {...props}
                   />
                 )}
+                dontCloseOnClick
                 popupClassName="w-[16rem]"
                 position="left"
                 sections={buttonPopupSections}

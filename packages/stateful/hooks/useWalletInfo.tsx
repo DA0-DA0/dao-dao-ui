@@ -11,6 +11,7 @@ import {
   nativeBalanceSelector,
   nativeBalancesFetchedAtSelector,
   nativeDelegatedBalanceSelector,
+  refreshNativeTokenStakingInfoAtom,
   refreshWalletBalancesIdAtom,
   refreshWalletProfileAtom,
 } from '@dao-dao/state'
@@ -91,10 +92,13 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
   const setRefreshWalletBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(address ?? '')
   )
-  const refreshBalances = useCallback(
-    () => setRefreshWalletBalancesId((id) => id + 1),
-    [setRefreshWalletBalancesId]
+  const setRefreshStakingId = useSetRecoilState(
+    refreshNativeTokenStakingInfoAtom(address ?? '')
   )
+  const refreshBalances = useCallback(() => {
+    setRefreshWalletBalancesId((id) => id + 1)
+    setRefreshStakingId((id) => id + 1)
+  }, [setRefreshStakingId, setRefreshWalletBalancesId])
 
   const setRefreshWalletProfile = useSetRecoilState(
     refreshWalletProfileAtom(publicKey?.hex ?? '')
