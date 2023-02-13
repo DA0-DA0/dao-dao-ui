@@ -3,11 +3,9 @@ import { CodeIdConfig } from '@dao-dao/types'
 // ContractVersion.V203
 // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.3
 const junoTestnet: CodeIdConfig = {
-  Cw20Base: 177,
   Cw20Stake: 155,
-  Cw4Group: 178,
-  Cw721Base: 179,
   CwAdminFactory: 158,
+  CwTokenSwap: 161,
   DaoCore: 163,
   DaoMigrator: 164,
   DaoPreProposeMultiple: 167,
@@ -18,17 +16,17 @@ const junoTestnet: CodeIdConfig = {
   DaoVotingCw4: 173,
   DaoVotingCw721Staked: 174,
   DaoVotingNativeStaked: 175,
-  CwTokenSwap: 161,
+  Cw20Base: 177,
+  Cw4Group: 178,
+  Cw721Base: 179,
 }
 
 // ContractVersion.V203
 // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.3
 const junoMainnet: CodeIdConfig = {
-  Cw20Base: 1993, // v0.16
   Cw20Stake: 1995,
-  Cw4Group: 1992, // v0.16
-  Cw721Base: 1994, // v0.16
   CwAdminFactory: 2013,
+  CwTokenSwap: 2000,
   DaoCore: 2024,
   DaoMigrator: 2025,
   DaoPreProposeMultiple: 2028,
@@ -39,7 +37,9 @@ const junoMainnet: CodeIdConfig = {
   DaoVotingCw4: 2034,
   DaoVotingCw721Staked: 2035,
   DaoVotingNativeStaked: 2036,
-  CwTokenSwap: 2000,
+  Cw20Base: 1993, // v0.16
+  Cw4Group: 1992, // v0.16
+  Cw721Base: 1994, // v0.16
 }
 
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {
