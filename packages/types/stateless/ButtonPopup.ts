@@ -25,5 +25,6 @@ export interface ButtonPopupProps
   extends Omit<PopupProps, 'children' | 'setOpenRef'> {
   sections: ButtonPopupSection[]
   ButtonLink: ComponentType<ButtonLinkProps>
-  closeOnSelect?: boolean
+  // If true, clicking on a button will not close the popup.
+  dontCloseOnClick?: boolean
 }

@@ -2,7 +2,7 @@ import { useRecoilValue } from 'recoil'
 
 import {
   CwTokenSwapSelectors,
-  eitherTokenInfoSelector,
+  genericTokenSelector,
 } from '@dao-dao/state/recoil'
 import { TokenSwapStatusProps, TokenType } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
@@ -42,7 +42,7 @@ export const useTokenSwapStatusInfoForContract = ({
       : tokenSwapStatus.counterparty_one
 
   const selfPartyTokenInfo = useRecoilValue(
-    eitherTokenInfoSelector({
+    genericTokenSelector({
       chainId,
       type: 'cw20' in selfParty.promise ? TokenType.Cw20 : TokenType.Native,
       denomOrAddress:
@@ -59,7 +59,7 @@ export const useTokenSwapStatusInfoForContract = ({
   )
 
   const counterpartyTokenInfo = useRecoilValue(
-    eitherTokenInfoSelector({
+    genericTokenSelector({
       chainId,
       type: 'cw20' in counterparty.promise ? TokenType.Cw20 : TokenType.Native,
       denomOrAddress:

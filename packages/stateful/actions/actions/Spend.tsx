@@ -1,23 +1,14 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import {
-  Cw20BaseSelectors,
-  DaoCoreV2Selectors,
-  nativeBalancesSelector,
-} from '@dao-dao/state'
-import {
-  ActionCardLoader,
-  MoneyEmoji,
-  useCachedLoadable,
-} from '@dao-dao/stateless'
+import { genericTokenSelector } from '@dao-dao/state/recoil'
+import { ActionCardLoader, MoneyEmoji } from '@dao-dao/stateless'
+import { TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
-  ActionContextType,
   ActionMaker,
   CoreActionKey,
-  UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
@@ -25,19 +16,17 @@ import {
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  loadableToLoadingData,
   makeBankMessage,
   makeWasmMessage,
-  nativeTokenDecimals,
+  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { AddressInput, SuspenseLoader } from '../../components'
-import { useCw20CommonGovernanceTokenInfoIfExists } from '../../voting-module-adapter'
 import {
   SpendData,
   SpendComponent as StatelessSpendComponent,
 } from '../components/Spend'
-import { useActionOptions } from '../react'
+import { useTokenBalances } from '../hooks/useTokenBalances'
 
 const useDefaults: UseDefaults<SpendData> = () => {
   const { address: walletAddress = '' } = useWallet()
@@ -49,84 +38,21 @@ const useDefaults: UseDefaults<SpendData> = () => {
   }
 }
 
-// Reused selectors in Component and useTransformToCosmos. Undefined when
-// loading.
-const useCw20BalancesAndInfos = () => {
-  const { context, address } = useActionOptions()
-
-  // Get CW20 governance token address from voting module adapter if exists,
-  // so we can make sure to load it with all cw20 balances, even if it has not
-  // been explicitly added to the DAO.
-  const { denomOrAddress: governanceTokenAddress } =
-    useCw20CommonGovernanceTokenInfoIfExists() ?? {}
-
-  const cw20BalancesAndInfosLoadable = useCachedLoadable(
-    context.type === ActionContextType.Dao
-      ? // Get DAO's cw20 balances and infos.
-        DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
-          contractAddress: address,
-          governanceTokenAddress,
-        })
-      : undefined
-  )
-
-  const cw20BalancesAndInfos = useMemo(
-    () =>
-      context.type === ActionContextType.Dao
-        ? cw20BalancesAndInfosLoadable.state === 'hasValue'
-          ? cw20BalancesAndInfosLoadable.contents.map(({ addr, ...rest }) => ({
-              address: addr,
-              ...rest,
-            }))
-          : undefined
-        : // If not a DAO, just return empty array.
-          [],
-    [
-      context.type,
-      cw20BalancesAndInfosLoadable.contents,
-      cw20BalancesAndInfosLoadable.state,
-    ]
-  )
-
-  return cw20BalancesAndInfos
-}
-
 const Component: ActionComponent<undefined, SpendData> = (props) => {
-  const { address, chainId } = useActionOptions()
-
-  // This needs to be loaded via a cached loadable to avoid displaying a loader
-  // when this data updates on a schedule. Manually trigger a suspense loader
-  // the first time when the initial data is still loading.
-  const nativeBalancesLoadable = loadableToLoadingData(
-    useCachedLoadable(
-      address
-        ? nativeBalancesSelector({
-            address,
-            chainId,
-          })
-        : undefined
-    ),
-    []
-  )
-
-  // Undefined when loading.
-  const cw20LoadingBalances = useCw20BalancesAndInfos()
+  const loadingTokens = useTokenBalances()
 
   return (
     <SuspenseLoader
       fallback={<ActionCardLoader />}
       forceFallback={
         // Manually trigger loader.
-        nativeBalancesLoadable.loading || cw20LoadingBalances === undefined
+        loadingTokens.loading
       }
     >
       <StatelessSpendComponent
         {...props}
         options={{
-          nativeBalances: nativeBalancesLoadable.loading
-            ? []
-            : nativeBalancesLoadable.data,
-          cw20Balances: cw20LoadingBalances ?? [],
+          tokens: loadingTokens.loading ? [] : loadingTokens.data,
           AddressInput,
         }}
       />
@@ -134,33 +60,34 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
   )
 }
 
-export const makeSpendAction: ActionMaker<SpendData> = ({ t, context }) => {
-  const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
-    const cw20Tokens = useCw20BalancesAndInfos()
+const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
+  const loadingTokenBalances = useTokenBalances()
 
-    return useCallback(
-      (data: SpendData) => {
-        if (data.denom === NATIVE_DENOM || data.denom.startsWith('ibc/')) {
-          const decimals = nativeTokenDecimals(data.denom)!
-          const amount = convertDenomToMicroDenomWithDecimals(
-            data.amount,
-            decimals
-          )
-          const bank = makeBankMessage(amount.toString(), data.to, data.denom)
-          return { bank }
-        }
+  return useCallback(
+    (data: SpendData) => {
+      if (loadingTokenBalances.loading) {
+        return
+      }
 
-        // Get cw20 token decimals from cw20 treasury list.
-        const cw20TokenInfo = cw20Tokens?.find(
-          ({ address }) => address === data.denom
-        )?.info
-        if (!cw20TokenInfo) {
-          throw new Error(`Unknown token: ${data.denom}`)
-        }
+      const token = loadingTokenBalances.data.find(
+        ({ token }) => token.denomOrAddress === data.denom
+      )?.token
+      if (!token) {
+        throw new Error(`Unknown token: ${data.denom}`)
+      }
 
+      if (token.type === TokenType.Native) {
         const amount = convertDenomToMicroDenomWithDecimals(
           data.amount,
-          cw20TokenInfo.decimals
+          token.decimals
+        )
+        return {
+          bank: makeBankMessage(amount.toString(), data.to, data.denom),
+        }
+      } else if (token.type === TokenType.Cw20) {
+        const amount = convertDenomToMicroDenomWithDecimals(
+          data.amount,
+          token.decimals
         ).toString()
 
         return makeWasmMessage({
@@ -177,86 +104,97 @@ export const makeSpendAction: ActionMaker<SpendData> = ({ t, context }) => {
             },
           },
         })
-      },
-      [cw20Tokens]
-    )
-  }
-
-  const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
-    msg: Record<string, any>
-  ) => {
-    const isTransfer =
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'contract_addr' in msg.wasm.execute &&
-      'transfer' in msg.wasm.execute.msg &&
-      'recipient' in msg.wasm.execute.msg.transfer &&
-      'amount' in msg.wasm.execute.msg.transfer
-
-    const spentTokenAddress = isTransfer
-      ? msg.wasm.execute.contract_addr
-      : undefined
-    const spentTokenDecimals = useRecoilValue(
-      spentTokenAddress
-        ? Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: spentTokenAddress,
-            params: [],
-          })
-        : constSelector(undefined)
-    )?.decimals
-
-    if (
-      'bank' in msg &&
-      'send' in msg.bank &&
-      'amount' in msg.bank.send &&
-      msg.bank.send.amount.length === 1 &&
-      'amount' in msg.bank.send.amount[0] &&
-      'denom' in msg.bank.send.amount[0] &&
-      'to_address' in msg.bank.send
-    ) {
-      const denom = msg.bank.send.amount[0].denom
-      if (denom === NATIVE_DENOM || denom.startsWith('ibc/')) {
-        return {
-          match: true,
-          data: {
-            to: msg.bank.send.to_address,
-            amount: convertMicroDenomToDenomWithDecimals(
-              msg.bank.send.amount[0].amount,
-              nativeTokenDecimals(denom)!
-            ),
-            denom,
-          },
-        }
       }
-    }
+    },
+    [loadingTokenBalances]
+  )
+}
 
-    if (isTransfer && spentTokenDecimals !== undefined) {
-      return {
-        match: true,
-        data: {
-          to: msg.wasm.execute.msg.transfer.recipient,
-          amount: convertMicroDenomToDenomWithDecimals(
-            msg.wasm.execute.msg.transfer.amount,
-            spentTokenDecimals
-          ),
-          denom: msg.wasm.execute.contract_addr,
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
+  msg: Record<string, any>
+) => {
+  const isNative =
+    objectMatchesStructure(msg, {
+      bank: {
+        send: {
+          amount: {},
+          to_address: {},
         },
-      }
-    }
+      },
+    }) &&
+    msg.bank.send.amount.length === 1 &&
+    objectMatchesStructure(msg.bank.send.amount[0], {
+      amount: {},
+      denom: {},
+    })
 
+  const isCw20 = objectMatchesStructure(msg, {
+    wasm: {
+      execute: {
+        contract_addr: {},
+        msg: {
+          transfer: {
+            recipient: {},
+            amount: {},
+          },
+        },
+      },
+    },
+  })
+
+  const token = useRecoilValue(
+    isNative || isCw20
+      ? genericTokenSelector({
+          type: isNative ? TokenType.Native : TokenType.Cw20,
+          denomOrAddress: isNative
+            ? msg.bank.send.amount[0].denom
+            : msg.wasm.execute.contract_addr,
+        })
+      : constSelector(undefined)
+  )
+
+  if (!token) {
     return { match: false }
   }
 
-  return {
-    key: CoreActionKey.Spend,
-    Icon: MoneyEmoji,
-    label: t('title.spend'),
-    description: t('info.spendActionDescription', {
-      context: context.type,
-    }),
-    Component,
-    useDefaults,
-    useTransformToCosmos,
-    useDecodedCosmosMsg,
+  if (token.type === TokenType.Native) {
+    return {
+      match: true,
+      data: {
+        to: msg.bank.send.to_address,
+        amount: convertMicroDenomToDenomWithDecimals(
+          msg.bank.send.amount[0].amount,
+          token.decimals
+        ),
+        denom: token.denomOrAddress,
+      },
+    }
+  } else if (token.type === TokenType.Cw20) {
+    return {
+      match: true,
+      data: {
+        to: msg.wasm.execute.msg.transfer.recipient,
+        amount: convertMicroDenomToDenomWithDecimals(
+          msg.wasm.execute.msg.transfer.amount,
+          token.decimals
+        ),
+        denom: msg.wasm.execute.contract_addr,
+      },
+    }
   }
+
+  return { match: false }
 }
+
+export const makeSpendAction: ActionMaker<SpendData> = ({ t, context }) => ({
+  key: CoreActionKey.Spend,
+  Icon: MoneyEmoji,
+  label: t('title.spend'),
+  description: t('info.spendActionDescription', {
+    context: context.type,
+  }),
+  Component,
+  useDefaults,
+  useTransformToCosmos,
+  useDecodedCosmosMsg,
+})

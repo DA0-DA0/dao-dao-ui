@@ -9,11 +9,10 @@ import {
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
 } from '@dao-dao/state'
-import { TokenCardInfo, TokenType, WithChainId } from '@dao-dao/types'
+import { TokenCardInfo, WithChainId } from '@dao-dao/types'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
-  getFallbackImage,
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
@@ -39,7 +38,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
         nativeBalancesSelector({ address: coreAddress, chainId })
       )
       const cw20s = get(
-        DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
+        DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
           contractAddress: coreAddress,
           chainId,
           governanceTokenAddress: cw20GovernanceTokenAddress,
@@ -47,77 +46,56 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
       )
 
       const infos: TokenCardInfo[] = [
-        ...nativeBalances.map(
-          ({ denom, amount, decimals, label, imageUrl }) => {
-            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-              amount,
-              decimals
-            )
-
-            // For now, stakingInfo only exists for native token, until ICA.
-            const hasStakingInfo =
-              denom === NATIVE_DENOM &&
-              // Check if anything staked.
-              Number(
-                get(
-                  nativeDelegatedBalanceSelector({
-                    address: coreAddress,
-                    chainId,
-                  })
-                ).amount
-              ) > 0
-
-            const info: TokenCardInfo = {
-              token: {
-                type: TokenType.Native,
-                denomOrAddress: denom,
-                symbol: label,
-                decimals,
-                imageUrl: imageUrl || getFallbackImage(denom),
-              },
-              // True if native token DAO and using this denom.
-              isGovernanceToken: nativeGovernanceTokenDenom === denom,
-              unstakedBalance,
-              hasStakingInfo,
-
-              lazyInfo: { loading: true },
-            }
-
-            return info
-          }
-        ),
-        ...cw20s.map(
-          ({
-            addr,
+        ...nativeBalances.map(({ token, balance }) => {
+          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
             balance,
-            info: { symbol, decimals },
-            imageUrl,
-            isGovernanceToken,
-          }) => {
-            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-              balance,
-              decimals
-            )
+            token.decimals
+          )
 
-            const info: TokenCardInfo = {
-              token: {
-                type: TokenType.Cw20,
-                denomOrAddress: addr,
-                symbol,
-                decimals,
-                imageUrl: imageUrl || getFallbackImage(addr),
-              },
-              isGovernanceToken,
-              unstakedBalance,
-              // No unstaking info for CW20.
-              hasStakingInfo: false,
+          // For now, stakingInfo only exists for native token, until ICA.
+          const hasStakingInfo =
+            token.denomOrAddress === NATIVE_DENOM &&
+            // Check if anything staked.
+            Number(
+              get(
+                nativeDelegatedBalanceSelector({
+                  address: coreAddress,
+                  chainId,
+                })
+              ).amount
+            ) > 0
 
-              lazyInfo: { loading: true },
-            }
+          const info: TokenCardInfo = {
+            token,
+            // True if native token DAO and using this denom.
+            isGovernanceToken:
+              nativeGovernanceTokenDenom === token.denomOrAddress,
+            unstakedBalance,
+            hasStakingInfo,
 
-            return info
+            lazyInfo: { loading: true },
           }
-        ),
+
+          return info
+        }),
+        ...cw20s.map(({ token, balance, isGovernanceToken }) => {
+          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+            balance,
+            token.decimals
+          )
+
+          const info: TokenCardInfo = {
+            token,
+            isGovernanceToken: isGovernanceToken ?? false,
+            unstakedBalance,
+            // No unstaking info for CW20.
+            hasStakingInfo: false,
+
+            lazyInfo: { loading: true },
+          }
+
+          return info
+        }),
       ]
 
       return infos

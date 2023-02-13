@@ -212,7 +212,11 @@ export const AddressInput = <
       {showEntity && (
         <EntityDisplay
           address={formValue}
-          className={clsx('max-w-[50%] shrink-0', disabled || 'pl-4')}
+          className={clsx(
+            'shrink-0',
+            !onlyDisplayEntity && 'max-w-[50%]',
+            disabled || 'pl-4'
+          )}
         />
       )}
 

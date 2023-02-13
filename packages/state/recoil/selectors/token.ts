@@ -2,6 +2,7 @@ import { constSelector, selectorFamily } from 'recoil'
 
 import { GenericToken, TokenType, WithChainId } from '@dao-dao/types'
 import {
+  getFallbackImage,
   nativeTokenDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
@@ -9,14 +10,14 @@ import {
 
 import { Cw20BaseSelectors } from './contracts'
 
-export const eitherTokenInfoSelector = selectorFamily<
+export const genericTokenSelector = selectorFamily<
   GenericToken,
   WithChainId<{
     type: TokenType
     denomOrAddress: string
   }>
 >({
-  key: 'eitherTokenInfo',
+  key: 'genericToken',
   get:
     ({ type, denomOrAddress, chainId }) =>
     async ({ get }) => {
@@ -32,23 +33,15 @@ export const eitherTokenInfoSelector = selectorFamily<
               symbol: nativeTokenLabel(denomOrAddress),
             })
       )
-      const imageInfo = get(
-        type === 'cw20'
-          ? Cw20BaseSelectors.marketingInfoSelector({
-              contractAddress: denomOrAddress,
-              chainId,
-              params: [],
-            })
-          : constSelector({
-              // Match structure of marketingInfoSelector.
-              logo: {
-                url: nativeTokenLogoURI(denomOrAddress) ?? '',
-              },
-            })
-      ).logo
       const imageUrl =
-        (imageInfo && imageInfo !== 'embedded' ? imageInfo.url : '') ||
-        undefined
+        get(
+          type === 'cw20'
+            ? Cw20BaseSelectors.logoUrlSelector({
+                contractAddress: denomOrAddress,
+                chainId,
+              })
+            : constSelector(nativeTokenLogoURI(denomOrAddress) ?? '')
+        ) || getFallbackImage(denomOrAddress)
 
       return {
         type,

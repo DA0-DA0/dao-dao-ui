@@ -172,6 +172,10 @@ export const CHECKMARK_PAYMENT_CONTRACT = process.env
 export const SYNAPS_CLIENT_ID = process.env.SYNAPS_CLIENT_ID as string
 export const SYNAPS_API_KEY = process.env.SYNAPS_API_KEY as string
 
+// The key for the item in the DAO core contract that contains the payroll
+// config.
+export const DAO_CORE_PAYROLL_CONFIG_ITEM_KEY = 'payroll'
+
 // Single DAO Mode
 export const SINGLE_DAO_MODE =
   process.env.NEXT_PUBLIC_SINGLE_DAO_MODE === 'true'

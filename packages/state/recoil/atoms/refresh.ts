@@ -106,3 +106,9 @@ export const refreshHiddenBalancesAtom = atom({
   key: 'refreshHiddenBalances',
   default: 0,
 })
+
+// Change this to refresh a vesting contract's data.
+export const refreshVestingAtom = atomFamily<number, string>({
+  key: 'refreshVesting',
+  default: 0,
+})

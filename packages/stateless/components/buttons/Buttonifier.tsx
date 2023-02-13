@@ -2,7 +2,7 @@ import clsx from 'clsx'
 
 import { ButtonifierProps } from '@dao-dao/types'
 
-import { Logo } from '../logo/Logo'
+import { Loader } from '../logo'
 
 const defaultVariant = 'primary'
 const defaultSize = 'default'
@@ -143,9 +143,7 @@ export const ButtonifiedChildren = ({
       )}
     >
       {loading && variant !== PULSE_LOADING_VARIANTS && (
-        <div className="mx-auto inline-block aspect-square h-full animate-spin-medium">
-          <Logo invert={variant === 'primary'} size="100%" />
-        </div>
+        <Loader invert={variant === 'primary'} size={24} />
       )}
     </div>
     <div

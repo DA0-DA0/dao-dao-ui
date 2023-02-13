@@ -17,6 +17,12 @@ export type GenericToken = {
   imageUrl: string | undefined
 }
 
+export type GenericTokenBalance = {
+  token: GenericToken
+  balance: string
+  isGovernanceToken?: boolean
+}
+
 export enum UnstakingTaskStatus {
   Unstaking = 'unstaking',
   ReadyToClaim = 'readyToClaim',

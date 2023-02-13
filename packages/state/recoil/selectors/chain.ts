@@ -20,13 +20,15 @@ import {
   Validator as RpcValidator,
 } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import Long from 'long'
-import { atom, selector, selectorFamily } from 'recoil'
+import { atom, selector, selectorFamily, waitForAll } from 'recoil'
 
 import {
   AmountWithTimestamp,
   Delegation,
+  GenericTokenBalance,
   GovProposalWithDecodedContent,
   NativeDelegationInfo,
+  TokenType,
   UnbondingDelegation,
   Validator,
   WithChainId,
@@ -35,16 +37,12 @@ import {
   CHAIN_BECH32_PREFIX,
   CHAIN_ID,
   JUNO_USDC_DENOM,
-  NATIVE_DECIMALS,
   NATIVE_DENOM,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
   decodeGovProposalContent,
   getAllRpcResponse,
   getRpcForChainId,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -53,6 +51,7 @@ import {
   refreshNativeTokenStakingInfoAtom,
   refreshWalletBalancesIdAtom,
 } from '../atoms/refresh'
+import { genericTokenSelector } from './token'
 
 export const stargateClientForChainSelector = selectorFamily<
   StargateClient,
@@ -142,13 +141,7 @@ export const blockHeightTimestampSafeSelector = selectorFamily<
 })
 
 export const nativeBalancesSelector = selectorFamily<
-  {
-    denom: string
-    amount: string
-    decimals: number
-    label: string
-    imageUrl: string | undefined
-  }[],
+  GenericTokenBalance[],
   WithChainId<{ address: string }>
 >({
   key: 'nativeBalances',
@@ -175,12 +168,21 @@ export const nativeBalancesSelector = selectorFamily<
         })
       }
 
-      return balances.map(({ amount, denom }) => ({
-        amount,
-        denom,
-        decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
-        label: nativeTokenLabel(denom),
-        imageUrl: nativeTokenLogoURI(denom),
+      const tokens = get(
+        waitForAll(
+          balances.map(({ denom }) =>
+            genericTokenSelector({
+              type: TokenType.Native,
+              denomOrAddress: denom,
+              chainId,
+            })
+          )
+        )
+      )
+
+      return tokens.map((token, index) => ({
+        token,
+        balance: balances[index].amount,
       }))
     },
 })

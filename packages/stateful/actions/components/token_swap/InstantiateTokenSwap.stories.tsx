@@ -6,7 +6,7 @@ import {
   makeDaoInfo,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionContextType } from '@dao-dao/types'
+import { ActionContextType, TokenType } from '@dao-dao/types'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
 import { Trans } from '../../../components'
@@ -21,14 +21,14 @@ export default {
     makeReactHookFormDecorator<PerformTokenSwapData>({
       contractChosen: false,
       selfParty: {
-        type: 'cw20',
+        type: TokenType.Cw20,
         denomOrAddress: 'cw20_1',
         amount: 0,
         decimals: 6,
       },
       counterparty: {
         address: '',
-        type: 'native',
+        type: TokenType.Native,
         denomOrAddress: NATIVE_DENOM,
         amount: 0,
         decimals: 6,
@@ -62,65 +62,70 @@ Default.args = {
   onRemove: () => alert('remove'),
   errors: {},
   options: {
-    selfPartyNativeBalances: [
+    selfPartyTokenBalances: [
       {
-        denom: NATIVE_DENOM,
-        amount: '46252349169321',
-      },
-    ],
-    selfPartyCw20Balances: [
-      {
-        address: 'cw20_1',
-        balance: '1284135723893',
-        info: {
+        token: {
+          type: TokenType.Native,
+          denomOrAddress: 'ujuno',
           decimals: 6,
-          name: 'A token',
+          symbol: 'JUNO',
+          imageUrl: '',
+        },
+        balance: '46252349169321',
+      },
+      {
+        token: {
+          type: TokenType.Cw20,
+          denomOrAddress: 'cw20_1',
+          decimals: 6,
           symbol: 'ATKN',
-          total_supply: '10238192471284128',
+          imageUrl: '',
         },
+        balance: '1284135723893',
       },
       {
-        address: 'cw20_2',
-        balance: '102948124125',
-        info: {
+        token: {
+          type: TokenType.Cw20,
+          denomOrAddress: 'cw20_2',
           decimals: 6,
-          name: 'A different token',
           symbol: 'DIFF',
-          total_supply: '6212378128495812',
+          imageUrl: '',
         },
+        balance: '102948124125',
       },
     ],
-    counterpartyNativeBalances: {
+    counterpartyTokenBalances: {
       loading: false,
       data: [
         {
-          denom: NATIVE_DENOM,
-          amount: '46252349169321',
-        },
-      ],
-    },
-    counterpartyCw20Balances: {
-      loading: false,
-      data: [
-        {
-          address: 'cw20_1',
-          balance: '1284135723893',
-          info: {
+          token: {
+            type: TokenType.Native,
+            denomOrAddress: 'ujuno',
             decimals: 6,
-            name: 'A token',
+            symbol: 'JUNO',
+            imageUrl: '',
+          },
+          balance: '46252349169321',
+        },
+        {
+          token: {
+            type: TokenType.Cw20,
+            denomOrAddress: 'cw20_1',
+            decimals: 6,
             symbol: 'ATKN',
-            total_supply: '10238192471284128',
+            imageUrl: '',
           },
+          balance: '1284135723893',
         },
         {
-          address: 'cw20_2',
-          balance: '102948124125',
-          info: {
+          token: {
+            type: TokenType.Cw20,
+            denomOrAddress: 'cw20_2',
             decimals: 6,
-            name: 'A different token',
             symbol: 'DIFF',
-            total_supply: '6212378128495812',
+            imageUrl: '',
           },
+          balance: '102948124125',
         },
       ],
     },

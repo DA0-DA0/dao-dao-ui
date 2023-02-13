@@ -33,8 +33,10 @@ export const validatePercent = (v: string | number) => {
   return (!isNaN(p) && p <= 100 && p >= 0) || 'Invalid percentage'
 }
 
-export const validateAddress = (v: string) =>
-  isValidAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid address'
+export const validateAddress = (v: string, required = true) =>
+  (!required && !v) ||
+  (v && isValidAddress(v, CHAIN_BECH32_PREFIX)) ||
+  'Invalid address'
 
 export const validateValidatorAddress = (v: string) =>
   isValidValidatorAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid address'
