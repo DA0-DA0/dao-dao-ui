@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MeBalancesProps, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
+import { JUNO_USDC_DENOM, NATIVE_DENOM } from '@dao-dao/utils'
 
 import {
   Dropdown,
@@ -30,9 +31,18 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   const visibleBalances =
     tokens.loading || hiddenTokens.loading
       ? []
-      : tokens.data.filter(
-          ({ token }) => !hiddenTokens.data.includes(token.denomOrAddress)
-        )
+      : tokens.data
+          .filter(
+            ({ token }) => !hiddenTokens.data.includes(token.denomOrAddress)
+          )
+          // Sort native first, then USDC.
+          .sort((a) =>
+            a.token.denomOrAddress === NATIVE_DENOM
+              ? -2
+              : a.token.denomOrAddress === JUNO_USDC_DENOM
+              ? -1
+              : 0
+          )
   const hiddenBalances =
     tokens.loading || hiddenTokens.loading
       ? []
