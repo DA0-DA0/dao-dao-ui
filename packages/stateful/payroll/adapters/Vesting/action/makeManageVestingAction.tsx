@@ -13,8 +13,8 @@ import {
 import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
-  ActionOptionsContextType,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -496,7 +496,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
   context,
 }) => {
   // Only available in DAO context.
-  if (context.type !== ActionOptionsContextType.Dao) {
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 

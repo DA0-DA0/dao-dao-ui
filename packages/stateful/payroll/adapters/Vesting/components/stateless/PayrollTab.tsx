@@ -3,13 +3,12 @@ import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ButtonLinkProps,
   DropdownIconButton,
   GridCardContainer,
   Loader,
   Tooltip,
 } from '@dao-dao/stateless'
-import { LoadingData } from '@dao-dao/types'
+import { ButtonLinkProps, LoadingData } from '@dao-dao/types'
 
 import { VestingInfo } from '../types'
 

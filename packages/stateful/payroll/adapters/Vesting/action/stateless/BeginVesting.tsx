@@ -19,7 +19,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionOptionsContextType,
+  ActionContextType,
   AddressInputProps,
   GenericTokenBalance,
   LoadingData,
@@ -88,7 +88,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   const selectedSymbol = selectedToken?.token?.symbol ?? t('info.tokens')
 
   const insufficientBalanceI18nKey =
-    context.type === ActionOptionsContextType.Dao
+    context.type === ActionContextType.Dao
       ? 'error.cantSpendMoreThanTreasury'
       : 'error.insufficientWalletBalance'
 

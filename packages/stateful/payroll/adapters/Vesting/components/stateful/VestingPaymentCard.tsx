@@ -5,13 +5,16 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { refreshVestingAtom } from '@dao-dao/state/recoil'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  useAddToken,
+  useCachedLoadable,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
   loadableToLoadingData,
   processError,
-  useAddToken,
 } from '@dao-dao/utils'
 
 import { ButtonLink } from '../../../../../components'

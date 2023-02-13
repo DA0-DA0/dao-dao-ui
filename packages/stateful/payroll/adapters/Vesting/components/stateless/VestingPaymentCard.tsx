@@ -12,9 +12,7 @@ import TimeAgo from 'react-timeago'
 
 import {
   Button,
-  ButtonLinkProps,
   ButtonPopup,
-  ButtonPopupSection,
   ChartEmoji,
   DepositEmoji,
   EntityDisplay,
@@ -29,6 +27,8 @@ import {
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
+  ButtonLinkProps,
+  ButtonPopupSection,
   Entity,
   GenericToken,
   LoadingData,

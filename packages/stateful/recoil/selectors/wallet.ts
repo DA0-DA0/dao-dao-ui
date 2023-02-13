@@ -1,7 +1,7 @@
 import { atomFamily, selectorFamily, waitForAll } from 'recoil'
 
 import {
-  eitherTokenInfoSelector,
+  genericTokenSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
   queryWalletIndexerSelector,
@@ -22,7 +22,6 @@ import {
   KVPK_API_BASE,
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
-  getFallbackImage,
 } from '@dao-dao/utils'
 
 export const SAVED_TX_PREFIX = 'savedTx:'
@@ -213,7 +212,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
       const cw20s = get(
         waitForAll(
           cw20Contracts.map((c) =>
-            eitherTokenInfoSelector({
+            genericTokenSelector({
               type: TokenType.Cw20,
               denomOrAddress: c.contractAddress,
               chainId,
@@ -223,44 +222,36 @@ export const walletTokenCardInfosSelector = selectorFamily<
       )
 
       const infos: TokenCardInfo[] = [
-        ...nativeBalances.map(
-          ({ denom, amount, decimals, label, imageUrl }) => {
-            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-              amount,
-              decimals
-            )
+        ...nativeBalances.map(({ token, balance }) => {
+          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+            balance,
+            token.decimals
+          )
 
-            // For now, stakingInfo only exists for native token, until ICA.
-            const hasStakingInfo =
-              denom === NATIVE_DENOM &&
-              // Check if anything staked.
-              Number(
-                get(
-                  nativeDelegatedBalanceSelector({
-                    address: walletAddress,
-                    chainId,
-                  })
-                ).amount
-              ) > 0
+          // For now, stakingInfo only exists for native token, until ICA.
+          const hasStakingInfo =
+            token.denomOrAddress === NATIVE_DENOM &&
+            // Check if anything staked.
+            Number(
+              get(
+                nativeDelegatedBalanceSelector({
+                  address: walletAddress,
+                  chainId,
+                })
+              ).amount
+            ) > 0
 
-            const info: TokenCardInfo = {
-              token: {
-                type: TokenType.Native,
-                denomOrAddress: denom,
-                symbol: label,
-                decimals,
-                imageUrl: imageUrl || getFallbackImage(denom),
-              },
-              isGovernanceToken: false,
-              unstakedBalance,
-              hasStakingInfo,
+          const info: TokenCardInfo = {
+            token,
+            isGovernanceToken: false,
+            unstakedBalance,
+            hasStakingInfo,
 
-              lazyInfo: { loading: true },
-            }
-
-            return info
+            lazyInfo: { loading: true },
           }
-        ),
+
+          return info
+        }),
         ...cw20s.map((token, index) => {
           const unstakedBalance = convertMicroDenomToDenomWithDecimals(
             cw20Contracts[index].balance || '0',
