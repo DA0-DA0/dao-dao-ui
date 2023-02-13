@@ -21,8 +21,8 @@ const junoTestnet: CodeIdConfig = {
   CwTokenSwap: 161,
 }
 
-// ContractVersion.V202
-// https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.2
+// ContractVersion.V203
+// https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.3
 const junoMainnet: CodeIdConfig = {
   Cw20Base: 1664, // v0.16
   Cw20Stake: 1900,
