@@ -1,5 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { ComponentProps, useCallback, useMemo } from 'react'
+import { ComponentProps, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
@@ -12,12 +12,11 @@ import {
   useAwaitNextBlock,
   useWalletProfile,
 } from '@dao-dao/stateful'
-import { useCoreActions } from '@dao-dao/stateful/actions'
+import { useActions, useOrderedActionsToMatch } from '@dao-dao/stateful/actions'
 import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapterContext,
 } from '@dao-dao/stateful/proposal-module-adapter'
-import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   Proposal,
   ProposalNotFound,
@@ -25,7 +24,7 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, CommonProposalInfo, CoreActionKey } from '@dao-dao/types'
+import { CommonProposalInfo } from '@dao-dao/types'
 
 interface InnerDaoProposalProps {
   proposalInfo: CommonProposalInfo
@@ -34,6 +33,7 @@ interface InnerDaoProposalProps {
 const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
   const daoInfo = useDaoInfoContext()
+  const orderedActions = useOrderedActionsToMatch(useActions())
   const { getDaoProposalPath, router } = useNavHelpers()
   const { connected } = useWallet()
   const {
@@ -46,41 +46,11 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       },
       hooks: { useProposalRefreshers },
     },
-    common: {
-      hooks: { useActions: useProposalModuleActions },
-    },
   } = useProposalModuleAdapterContext()
-  const {
-    hooks: { useActions: useVotingModuleActions },
-  } = useVotingModuleAdapter()
-
-  const votingModuleActions = useVotingModuleActions()
-  const proposalModuleActions = useProposalModuleActions()
-  const actions = useCoreActions(
-    useMemo(
-      () => [...votingModuleActions, ...proposalModuleActions],
-      [proposalModuleActions, votingModuleActions]
-    )
-  )
 
   const { profile: creatorProfile } = useWalletProfile({
     walletAddress: proposalInfo.createdByAddress,
   })
-
-  // Ensure the last two actions are execute smart contract followed by
-  // custom, since a lot of actions are smart contract executions, and custom
-  // is a catch-all that will display any message. Do this by assigning values
-  // and sorting the actions in ascending order.
-  const orderedActions = useMemo(() => {
-    const keyToValue = (key: ActionKey) =>
-      key === CoreActionKey.Execute ? 1 : key === CoreActionKey.Custom ? 2 : 0
-
-    return actions.sort((a, b) => {
-      const aValue = keyToValue(a.key)
-      const bValue = keyToValue(b.key)
-      return aValue - bValue
-    })
-  }, [actions])
 
   const { refreshProposal, refreshProposalAndAll, refreshing } =
     useProposalRefreshers()

@@ -2,17 +2,13 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/stateful'
-import { useCoreActions } from '@dao-dao/stateful/actions'
+import { useCoreActions, useLoadActions } from '@dao-dao/stateful/actions'
 import {
   WalletProviderDecorator,
   makeActionsProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import {
-  ActionOptionsContextType,
-  ActionsWithData,
-  WalletTransactionForm,
-} from '@dao-dao/types'
+import { ActionOptionsContextType, WalletTransactionForm } from '@dao-dao/types'
 
 import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
@@ -37,18 +33,7 @@ export default {
 
 const Template: ComponentStory<typeof Wallet> = (args) => {
   const actions = useCoreActions()
-  // Call relevant action hooks in the same order every time.
-  const actionsWithData: ActionsWithData = actions.reduce(
-    (acc, action) => ({
-      ...acc,
-      [action.key]: {
-        action,
-        transform: action.useTransformToCosmos(),
-        defaults: action.useDefaults(),
-      },
-    }),
-    {}
-  )
+  const loadedActions = useLoadActions(actions)
 
   const formMethods = useForm<WalletTransactionForm>({
     mode: 'onChange',
@@ -63,8 +48,8 @@ const Template: ComponentStory<typeof Wallet> = (args) => {
     <Wallet
       {...args}
       actions={actions}
-      actionsWithData={actionsWithData}
       formMethods={formMethods}
+      loadedActions={loadedActions}
     />
   )
 }
