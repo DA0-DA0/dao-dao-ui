@@ -1,29 +1,39 @@
 import cloneDeep from 'lodash.clonedeep'
-import { ComponentType } from 'react'
+import { ComponentType, useMemo } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import {
   ActionCardLoader,
   ActionSelector,
   Button,
+  InputErrorMessage,
+  JoystickEmoji,
   Loader,
-  MushroomEmoji,
 } from '@dao-dao/stateless'
-import { LoadingData, StatefulEntityDisplayProps } from '@dao-dao/types'
+import {
+  CosmosMsgFor_Empty,
+  LoadingData,
+  StatefulEntityDisplayProps,
+} from '@dao-dao/types'
 import {
   Action,
+  ActionAndData,
   ActionComponent,
   ActionKeyAndData,
   LoadedActions,
 } from '@dao-dao/types/actions'
+import { decodeMessages } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components'
 import { ActionCard } from './ActionCard'
+import { ActionsRenderer } from './ActionsRenderer'
 
 export interface DaoAdminExecOptions {
   actions: Action[]
   loadedActions: LoadedActions
+  orderedActions: Action[]
   // DAO core addresses where the admin is set to the current DAO/wallet.
   childDaos: LoadingData<string[]>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
@@ -31,38 +41,30 @@ export interface DaoAdminExecOptions {
 
 export type DaoAdminExecData = {
   coreAddress: string
-  actions: ActionKeyAndData[]
+  msgs: CosmosMsgFor_Empty[]
+
+  // Interal action data so that errors are added to main form.
+  _actions?: ActionKeyAndData[]
 }
 
-export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = ({
-  fieldNamePrefix,
-  onRemove,
-  errors,
-  isCreating,
-  options: { actions, loadedActions, childDaos, EntityDisplay },
-}) => {
-  const { control, watch, resetField, setValue } =
-    useFormContext<DaoAdminExecData>()
+export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
+  props
+) => {
   const { t } = useTranslation()
-
-  const coreAddress = watch((fieldNamePrefix + 'coreAddress') as 'coreAddress')
-
+  const { watch, setValue } = useFormContext<DaoAdminExecData>()
   const {
-    fields: actionDataFields,
-    append: appendAction,
-    remove: removeAction,
-  } = useFieldArray({
-    name: (fieldNamePrefix + 'actions') as 'actions',
-    control,
-    // TODO: What is?
-    shouldUnregister: true,
-  })
+    options: { childDaos, EntityDisplay },
+  } = props
+
+  const coreAddress = watch(
+    (props.fieldNamePrefix + 'coreAddress') as 'coreAddress'
+  )
 
   return (
     <ActionCard
-      Icon={MushroomEmoji}
-      onRemove={onRemove}
-      title={t('title.subDaoExec')}
+      Icon={JoystickEmoji}
+      onRemove={props.onRemove}
+      title={t('title.daoAdminExec')}
     >
       <div className="flex flex-row flex-wrap gap-2">
         {childDaos.loading ? (
@@ -73,7 +75,7 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = ({
               key={childDao}
               onClick={() =>
                 setValue(
-                  (fieldNamePrefix + 'coreAddress') as 'coreAddress',
+                  (props.fieldNamePrefix + 'coreAddress') as 'coreAddress',
                   childDao
                 )
               }
@@ -86,10 +88,64 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = ({
         )}
       </div>
 
-      <p className="title-text my-6 text-text-body">
-        {t('title.actions', { count: actionDataFields.length })}
-      </p>
+      {props.isCreating ? (
+        <DaoAdminExecActionEditor {...props} />
+      ) : (
+        <DaoAdminExecActionRenderer {...props} />
+      )}
+    </ActionCard>
+  )
+}
 
+export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
+  fieldNamePrefix,
+  isCreating,
+  errors,
+  options: { actions, loadedActions },
+}) => {
+  const { watch, control, resetField, setValue, clearErrors, setError } =
+    useFormContext<DaoAdminExecData>()
+
+  const {
+    fields: actionDataFields,
+    append: appendAction,
+    remove: removeAction,
+  } = useFieldArray({
+    name: (fieldNamePrefix + '_actions') as '_actions',
+    control,
+  })
+
+  // Update action msgs from actions form data.
+  let msgs: CosmosMsgFor_Empty[] | undefined
+  try {
+    msgs =
+      (watch((fieldNamePrefix + '_actions') as '_actions')
+        ?.map(({ key, data }) => loadedActions[key]?.transform(data))
+        // Filter out undefined messages.
+        .filter(Boolean) as CosmosMsgFor_Empty[]) ?? []
+
+    if (errors?.msgs) {
+      clearErrors((fieldNamePrefix + 'msgs') as 'msgs')
+    }
+  } catch (err) {
+    console.error(err)
+
+    if (!errors?.msgs) {
+      setError((fieldNamePrefix + 'msgs') as 'msgs', {
+        type: 'manual',
+        message: err instanceof Error ? err.message : `${err}`,
+      })
+    }
+  }
+
+  useDeepCompareEffect(() => {
+    if (msgs) {
+      setValue((fieldNamePrefix + 'msgs') as 'msgs', msgs)
+    }
+  }, [msgs])
+
+  return (
+    <>
       {actionDataFields.length > 0 && (
         <div className="mb-4 flex flex-col gap-2">
           {actionDataFields.map(({ id, key, data }, index) => {
@@ -103,22 +159,23 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = ({
                 <Component
                   allActionsWithData={actionDataFields}
                   data={data}
-                  fieldNamePrefix={fieldNamePrefix + `actions.${index}.data.`}
+                  fieldNamePrefix={fieldNamePrefix + `_actions.${index}.data.`}
                   index={index}
                   {...(isCreating
                     ? {
                         isCreating,
-                        errors: errors?.actions?.[index]?.data || {},
+                        errors: errors?._actions?.[index]?.data || {},
                         addAction: appendAction,
                         onRemove: () => {
-                          // Reset the data field to avoid stale data. Honestly not
-                          // sure why this has to happen; I figured the `remove` call
-                          // would do this automatically. Some actions, like Execute
-                          // Smart Contract, don't seem to need this, while others,
-                          // like the Token Swap actions, do.
+                          // Reset the data field to avoid stale data. Honestly
+                          // not sure why this has to happen; I figured the
+                          // `remove` call would do this automatically. Some
+                          // actions, like Execute Smart Contract, don't seem to
+                          // need this, while others, like the Token Swap
+                          // actions, do.
                           resetField(
                             (fieldNamePrefix +
-                              `actions.${index}.data`) as `actions.${number}.data`,
+                              `_actions.${index}.data`) as `_actions.${number}.data`,
                             {
                               defaultValue: {},
                             }
@@ -137,16 +194,64 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = ({
         </div>
       )}
 
-      <ActionSelector
-        actions={actions}
-        onSelectAction={({ key }) => {
-          appendAction({
-            key,
-            // Clone to prevent the form from mutating the original object.
-            data: cloneDeep(loadedActions[key]?.defaults ?? {}),
-          })
-        }}
-      />
-    </ActionCard>
+      {actions.length === 0 ? (
+        <Loader />
+      ) : (
+        <>
+          <div className="self-start">
+            <ActionSelector
+              actions={actions}
+              onSelectAction={({ key }) => {
+                appendAction({
+                  key,
+                  // Clone to prevent the form from mutating the original object.
+                  data: cloneDeep(loadedActions[key]?.defaults ?? {}),
+                })
+              }}
+            />
+          </div>
+
+          <InputErrorMessage error={errors?.msgs} />
+        </>
+      )}
+    </>
+  )
+}
+
+export const DaoAdminExecActionRenderer: ActionComponent<
+  DaoAdminExecOptions
+> = ({ fieldNamePrefix, options: { orderedActions } }) => {
+  const { watch } = useFormContext<DaoAdminExecData>()
+  const msgs = watch((fieldNamePrefix + 'msgs') as 'msgs')
+
+  const decodedMessages = useMemo(() => decodeMessages(msgs), [msgs])
+
+  // Call relevant action hooks in the same order every time.
+  const actionData = decodedMessages
+    .map((message) => {
+      const actionMatch = orderedActions
+        .map((action) => ({
+          action,
+          ...action.useDecodedCosmosMsg(message),
+        }))
+        .find(({ match }) => match)
+
+      return (
+        actionMatch && {
+          action: actionMatch.action,
+          data: actionMatch.data,
+        }
+      )
+    })
+    .filter(Boolean) as ActionAndData[]
+
+  return (
+    <>
+      {orderedActions.length === 0 ? (
+        <Loader />
+      ) : (
+        <ActionsRenderer actionData={actionData} hideCopyLink />
+      )}
+    </>
   )
 }

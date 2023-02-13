@@ -2,13 +2,13 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/stateful'
-import { useCoreActions, useLoadActions } from '@dao-dao/stateful/actions'
+import { useActions, useLoadActions } from '@dao-dao/stateful/actions'
 import {
+  WalletActionsProviderDecorator,
   WalletProviderDecorator,
-  makeActionsProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { ActionOptionsContextType, WalletTransactionForm } from '@dao-dao/types'
+import { WalletTransactionForm } from '@dao-dao/types'
 
 import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
@@ -20,19 +20,12 @@ export default {
   decorators: [
     WalletProviderDecorator,
     makeDappLayoutDecorator(),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionOptionsContextType.Wallet,
-      },
-    }),
+    WalletActionsProviderDecorator,
   ],
 } as ComponentMeta<typeof Wallet>
 
 const Template: ComponentStory<typeof Wallet> = (args) => {
-  const actions = useCoreActions()
+  const actions = useActions()
   const loadedActions = useLoadActions(actions)
 
   const formMethods = useForm<WalletTransactionForm>({
