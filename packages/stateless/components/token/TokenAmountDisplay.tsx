@@ -57,6 +57,15 @@ export type TokenAmountDisplayProps = Omit<
 } & ( // If not USD estimate, require symbol and decimals.
     | {
         symbol: string
+        hideSymbol?: never
+        // Full decimal precision of the value.
+        decimals: number
+        estimatedUsdValue?: false
+      }
+    // Alow hiding symbol.
+    | {
+        symbol?: never
+        hideSymbol: true
         // Full decimal precision of the value.
         decimals: number
         estimatedUsdValue?: false
@@ -64,6 +73,7 @@ export type TokenAmountDisplayProps = Omit<
     // If USD estimate, disallow symbol and decimals since we'll use USDC's.
     | {
         symbol?: never
+        hideSymbol?: never
         decimals?: never
         estimatedUsdValue: true
       }
@@ -83,6 +93,7 @@ export const TokenAmountDisplay = ({
   iconUrl,
   iconClassName,
   symbol,
+  hideSymbol,
   estimatedUsdValue,
   ...props
 }: TokenAmountDisplayProps) => {
@@ -93,14 +104,19 @@ export const TokenAmountDisplay = ({
     : 'format.token'
   const decimals = estimatedUsdValue ? USDC_DECIMALS : _decimals
 
+  const translateOrOmitSymbol = (translationKey: string, amount: string) =>
+    hideSymbol
+      ? amount
+      : t(translationKey, {
+          amount,
+          symbol,
+        })
+
   // If loading, display pulsing ellipses.
   if (typeof _amount !== 'number' && 'loading' in _amount && _amount.loading) {
     return (
       <p {...props} className={clsx('animate-pulse', props.className)}>
-        {t(tokenTranslation, {
-          amount: '...',
-          symbol,
-        })}
+        {translateOrOmitSymbol(tokenTranslation, '...')}
       </p>
     )
   }
@@ -166,24 +182,20 @@ export const TokenAmountDisplay = ({
 
   const wasCompacted = full !== compact
 
-  const display = t(
-    // If compact is different from full and not a large number, display
-    // approximation indication (e.g. ~15.34 when the full value is 15.344913).
-    // When large, the compact notation (e.g. 1.52K or 23.5M) is enough to
-    // indicate that there is missing info, and we don't need the explicit
-    // approximation indication.
-    !showFullAmount &&
-      wasCompacted &&
-      !largeNumber &&
-      !hideApprox &&
-      !estimatedUsdValue
-      ? 'format.tokenApprox'
-      : tokenTranslation,
-    {
-      amount: showFullAmount ? full : compact,
-      symbol,
-    }
-  )
+  // If compact is different from full and not a large number, display
+  // approximation indication (e.g. ~15.34 when the full value is 15.344913).
+  // When large, the compact notation (e.g. 1.52K or 23.5M) is enough to
+  // indicate that there is missing info, and we don't need the explicit
+  // approximation indication.
+  const display =
+    (!showFullAmount &&
+    wasCompacted &&
+    !largeNumber &&
+    !hideApprox &&
+    !estimatedUsdValue
+      ? '~'
+      : '') +
+    translateOrOmitSymbol(tokenTranslation, showFullAmount ? full : compact)
 
   const content = (
     <p {...props}>
@@ -205,10 +217,8 @@ export const TokenAmountDisplay = ({
         shouldShowFullTooltip || dateFetched ? (
           <>
             {shouldShowFullTooltip &&
-              t('format.token', {
-                amount: full,
-                symbol,
-              })}
+              // eslint-disable-next-line i18next/no-literal-string
+              translateOrOmitSymbol('format.token', full)}
 
             {shouldShowFullTooltip && dateFetched && <br />}
 

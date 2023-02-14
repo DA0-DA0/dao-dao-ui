@@ -5,7 +5,7 @@ import { refreshVestingAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { ButtonLink } from '../../../../../components'
+import { ButtonLink, EntityDisplay } from '../../../../../components'
 import { useMembership } from '../../../../../hooks/useMembership'
 import { vestingInfosSelector } from '../../state'
 import { PayrollTab as StatelessPayrollTab } from '../stateless/PayrollTab'
@@ -44,6 +44,7 @@ export const PayrollTab = () => {
   return (
     <StatelessPayrollTab
       ButtonLink={ButtonLink}
+      EntityDisplay={EntityDisplay}
       VestingPaymentCard={VestingPaymentCard}
       createVestingPaymentHref={createVestingPaymentHref}
       isMember={isMember}
