@@ -8,9 +8,11 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
+import { useSetRecoilState, waitForAll } from 'recoil'
 
 import {
+  Cw20BaseSelectors,
+  DaoCoreV2Selectors,
   refreshHiddenBalancesAtom,
   refreshNativeTokenStakingInfoAtom,
 } from '@dao-dao/state'
@@ -42,6 +44,7 @@ import {
   tokenCardLazyInfoSelector,
 } from '../recoil'
 import { ButtonLink } from './ButtonLink'
+import { EntityDisplay } from './EntityDisplay'
 import { WalletFiatRampModal } from './WalletFiatRampModal'
 import { WalletStakingModal } from './WalletStakingModal'
 
@@ -60,12 +63,67 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     })
   )
 
+  const daosLoadable = useCachedLoadable(
+    props.token.type === TokenType.Cw20
+      ? Cw20BaseSelectors.daosSelector({
+          contractAddress: props.token.denomOrAddress,
+        })
+      : undefined
+  )
+  // Get DAOs the wallet has voting power in.
+  const daosVotingPowersLoadable = useCachedLoadable(
+    daosLoadable.state === 'hasValue' && walletAddress
+      ? waitForAll(
+          daosLoadable.contents.map((contractAddress) =>
+            DaoCoreV2Selectors.votingPowerAtHeightSelector({
+              contractAddress,
+              params: [
+                {
+                  address: walletAddress,
+                },
+              ],
+            })
+          )
+        )
+      : undefined
+  )
+
+  const daosGoverned =
+    daosLoadable.state === 'hasValue' &&
+    daosVotingPowersLoadable.state === 'hasValue'
+      ? // If wallet has voting power in only one of the DAOs, only use that one.
+        daosVotingPowersLoadable.contents.filter(({ power }) => power !== '0')
+          .length === 1
+        ? daosLoadable.contents.filter(
+            (_, i) => daosVotingPowersLoadable.contents[i].power !== '0'
+          )
+        : // Otherwise, sort by voting power.
+          [...daosLoadable.contents].sort(
+            (a, b) =>
+              Number(
+                daosVotingPowersLoadable.contents[
+                  daosLoadable.contents.indexOf(b)
+                ].power
+              ) -
+              Number(
+                daosVotingPowersLoadable.contents[
+                  daosLoadable.contents.indexOf(a)
+                ].power
+              )
+          )
+      : []
+
+  console.log(daosLoadable, daosVotingPowersLoadable)
+
   //! Loadable errors.
   useEffect(() => {
     if (lazyInfoLoadable.state === 'hasError') {
       console.error(lazyInfoLoadable.contents)
     }
-  }, [lazyInfoLoadable.contents, lazyInfoLoadable.state])
+    if (daosLoadable.state === 'hasError') {
+      console.error(daosLoadable.contents)
+    }
+  }, [daosLoadable, lazyInfoLoadable])
 
   const { refreshBalances } = useWalletInfo()
 
@@ -193,6 +251,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
       <StatelessTokenCard
         {...props}
         ButtonLink={ButtonLink}
+        EntityDisplay={EntityDisplay}
         actions={{
           token: [
             ...(isUsdc
@@ -246,6 +305,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                   },
                 ],
         }}
+        daosGoverned={daosGoverned}
         lazyInfo={loadableToLoadingData(lazyInfoLoadable, {
           usdcUnitPrice: undefined,
           stakingInfo: undefined,

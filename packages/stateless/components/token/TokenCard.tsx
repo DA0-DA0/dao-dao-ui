@@ -13,6 +13,7 @@ import {
   ButtonLinkProps,
   ButtonPopupSection,
   ButtonPopupSectionButton,
+  StatefulEntityDisplayProps,
   TokenCardInfo,
   TokenType,
 } from '@dao-dao/types'
@@ -48,6 +49,9 @@ export interface TokenCardProps extends TokenCardInfo {
     // Extra sections to add to the action popup.
     extraSections?: ButtonPopupSection[]
   }
+  // Display DAOs that the token is used as governance in.
+  daosGoverned?: string[]
+  EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
 }
 
 export const TokenCard = ({
@@ -61,6 +65,8 @@ export const TokenCard = ({
   onClaim,
   ButtonLink,
   actions,
+  daosGoverned,
+  EntityDisplay,
 }: TokenCardProps) => {
   const { t } = useTranslation()
 
@@ -183,7 +189,8 @@ export const TokenCard = ({
               ) : (
                 <p className="title-text">${tokenSymbol}</p>
               )}
-              <p className="caption-text">{subtitle}</p>
+
+              {!!subtitle && <p className="caption-text">{subtitle}</p>}
             </div>
           </div>
 
@@ -394,6 +401,18 @@ export const TokenCard = ({
                 decimals={token.decimals}
                 symbol={tokenSymbol}
               />
+            </div>
+          </div>
+        )}
+
+        {EntityDisplay && daosGoverned && daosGoverned.length > 0 && (
+          <div className="space-y-2 border-t border-border-secondary py-4 px-6">
+            <p className="link-text">{t('title.daos')}</p>
+
+            <div className="space-y-1">
+              {daosGoverned.map((dao) => (
+                <EntityDisplay key={dao} address={dao} />
+              ))}
             </div>
           </div>
         )}

@@ -365,3 +365,17 @@ export const topAccountBalancesSelector = selectorFamily<
         })
       ) ?? undefined,
 })
+
+// Get DAOs that use this cw20 token as their governance token from the indexer.
+export const daosSelector = selectorFamily<string[], QueryClientParams>({
+  key: 'cw20BaseDaos',
+  get:
+    (queryClientParams) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/daos',
+        })
+      ) ?? [],
+})
