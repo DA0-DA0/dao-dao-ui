@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector } from 'recoil'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors, walletAdminOfDaosSelector } from '@dao-dao/state'
 import { JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
@@ -15,7 +15,12 @@ import {
 } from '@dao-dao/types'
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
-import { AddressInput, DaoProviders, EntityDisplay } from '../../components'
+import {
+  AddressInput,
+  DaoProviders,
+  EntityDisplay,
+  SuspenseLoader,
+} from '../../components'
 import { daoInfoSelector } from '../../recoil'
 import {
   DaoAdminExecData,
@@ -95,7 +100,7 @@ const Component: ActionComponent = (props) => {
       ? daoSubDaosLoadable
       : walletAdminOfDaosLoadable
 
-  const daoInfoLoadable = useCachedLoadable(
+  const daoInfoLoadable = useRecoilValueLoadable(
     context.type === ActionOptionsContextType.Dao
       ? daoInfoSelector({
           coreAddress,
@@ -117,9 +122,13 @@ const Component: ActionComponent = (props) => {
 
   return context.type === ActionOptionsContextType.Dao ? (
     daoInfoLoadable.state === 'hasValue' ? (
-      <DaoProviders info={daoInfoLoadable.contents!}>
-        <InnerComponent {...props} options={options} />
-      </DaoProviders>
+      <SuspenseLoader
+        fallback={<InnerComponentLoading {...props} options={options} />}
+      >
+        <DaoProviders info={daoInfoLoadable.contents!}>
+          <InnerComponent {...props} options={options} />
+        </DaoProviders>
+      </SuspenseLoader>
     ) : (
       <InnerComponentLoading {...props} options={options} />
     )
