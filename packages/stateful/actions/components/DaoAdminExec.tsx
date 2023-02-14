@@ -25,7 +25,12 @@ import {
   ActionKeyAndData,
   LoadedActions,
 } from '@dao-dao/types/actions'
-import { decodeMessages, validateContractAddress } from '@dao-dao/utils'
+import {
+  CHAIN_BECH32_PREFIX,
+  decodeMessages,
+  isValidContractAddress,
+  validateContractAddress,
+} from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components'
 import { ActionCard } from './ActionCard'
@@ -99,7 +104,7 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
         )}
       </div>
 
-      {!!coreAddress && (
+      {isValidContractAddress(coreAddress, CHAIN_BECH32_PREFIX) && (
         <>
           <p className="title-text">{t('title.actions')}</p>
           {isCreating ? (
@@ -153,6 +158,8 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
       })
     }
   }
+
+  console.log('rendering')
 
   useDeepCompareEffect(() => {
     if (msgs) {
