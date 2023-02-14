@@ -480,7 +480,7 @@
     "creatingDao": "Creating DAO...",
     "customActionDescription_dao": "Perform any custom action a wallet can.",
     "customActionDescription_wallet": "Perform any custom action.",
-    "daoAdminExecDescription": "Execute messages on behalf of another DAO. For example, a parent DAO could use this to execute messages on behalf of a SubDAO.",
+    "daoAdminExecDescription": "Execute messages on behalf of another DAO. A parent DAO could use this to execute messages on behalf of a SubDAO.",
     "daoCreationProcessExplanation": "Creating your DAO has never been this easy:",
     "daoInfoWillRefresh": "DAO information may take up to {{minutes}} minutes to update on all pages once proposal is executed.",
     "daodaoLogo": "DAO DAO Logo",
