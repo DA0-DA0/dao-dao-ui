@@ -7,12 +7,13 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 import {
   ActionCardLoader,
   ActionSelector,
-  Button,
   InputErrorMessage,
   JoystickEmoji,
   Loader,
+  RadioInput,
 } from '@dao-dao/stateless'
 import {
+  AddressInputProps,
   CosmosMsgFor_Empty,
   LoadingData,
   StatefulEntityDisplayProps,
@@ -24,7 +25,7 @@ import {
   ActionKeyAndData,
   LoadedActions,
 } from '@dao-dao/types/actions'
-import { decodeMessages } from '@dao-dao/utils'
+import { decodeMessages, validateContractAddress } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components'
 import { ActionCard } from './ActionCard'
@@ -36,6 +37,7 @@ export interface DaoAdminExecOptions {
   orderedActions: Action[]
   // DAO core addresses where the admin is set to the current DAO/wallet.
   childDaos: LoadingData<string[]>
+  AddressInput: ComponentType<AddressInputProps<DaoAdminExecData>>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
@@ -51,47 +53,61 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
   props
 ) => {
   const { t } = useTranslation()
-  const { watch, setValue } = useFormContext<DaoAdminExecData>()
+  const { watch, setValue, register } = useFormContext<DaoAdminExecData>()
   const {
-    options: { childDaos, EntityDisplay },
+    fieldNamePrefix,
+    onRemove,
+    errors,
+    isCreating,
+    options: { childDaos, AddressInput, EntityDisplay },
   } = props
 
-  const coreAddress = watch(
-    (props.fieldNamePrefix + 'coreAddress') as 'coreAddress'
-  )
+  const coreAddress = watch((fieldNamePrefix + 'coreAddress') as 'coreAddress')
 
   return (
     <ActionCard
       Icon={JoystickEmoji}
-      onRemove={props.onRemove}
+      onRemove={onRemove}
       title={t('title.daoAdminExec')}
     >
-      <div className="flex flex-row flex-wrap gap-2">
+      <p className="title-text">{t('title.dao')}</p>
+      <div className="mb-2">
         {childDaos.loading ? (
           <Loader />
+        ) : isCreating ? (
+          childDaos.data.length > 0 ? (
+            <RadioInput
+              fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
+              options={childDaos.data.map((childDao) => ({
+                display: <EntityDisplay address={childDao} hideImage noCopy />,
+                value: childDao,
+              }))}
+              setValue={setValue}
+              watch={watch}
+            />
+          ) : (
+            <AddressInput
+              error={errors?.coreAddress}
+              fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
+              register={register}
+              type="contract"
+              validation={[validateContractAddress]}
+            />
+          )
         ) : (
-          childDaos.data.map((childDao) => (
-            <Button
-              key={childDao}
-              onClick={() =>
-                setValue(
-                  (props.fieldNamePrefix + 'coreAddress') as 'coreAddress',
-                  childDao
-                )
-              }
-              pressed={coreAddress === childDao}
-              variant="secondary"
-            >
-              <EntityDisplay address={childDao} />
-            </Button>
-          ))
+          <EntityDisplay address={coreAddress} />
         )}
       </div>
 
-      {props.isCreating ? (
-        <DaoAdminExecActionEditor {...props} />
-      ) : (
-        <DaoAdminExecActionRenderer {...props} />
+      {!!coreAddress && (
+        <>
+          <p className="title-text">{t('title.actions')}</p>
+          {isCreating ? (
+            <DaoAdminExecActionEditor {...props} />
+          ) : (
+            <DaoAdminExecActionRenderer {...props} />
+          )}
+        </>
       )}
     </ActionCard>
   )
@@ -116,7 +132,7 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
   })
 
   // Update action msgs from actions form data.
-  let msgs: CosmosMsgFor_Empty[] | undefined
+  let msgs: CosmosMsgFor_Empty[] = []
   try {
     msgs =
       (watch((fieldNamePrefix + '_actions') as '_actions')
@@ -204,7 +220,7 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
               onSelectAction={({ key }) => {
                 appendAction({
                   key,
-                  // Clone to prevent the form from mutating the original object.
+                  // Clone to prevent form from mutating the original object.
                   data: cloneDeep(loadedActions[key]?.defaults ?? {}),
                 })
               }}

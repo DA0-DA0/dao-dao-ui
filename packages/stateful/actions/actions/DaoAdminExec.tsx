@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state'
+import { DaoCoreV2Selectors, walletAdminOfDaosSelector } from '@dao-dao/state'
 import { JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -15,7 +15,7 @@ import {
 } from '@dao-dao/types'
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
-import { DaoProviders, EntityDisplay } from '../../components'
+import { AddressInput, DaoProviders, EntityDisplay } from '../../components'
 import { daoInfoSelector } from '../../recoil'
 import {
   DaoAdminExecData,
@@ -45,6 +45,7 @@ const InnerComponentLoading: ActionComponent<InnerOptions> = (props) => (
       loadedActions: {},
       orderedActions: [],
       childDaos: props.options.childDaos,
+      AddressInput,
       EntityDisplay,
     }}
   />
@@ -63,6 +64,7 @@ const InnerComponent: ActionComponent<InnerOptions> = (props) => {
         loadedActions,
         orderedActions,
         childDaos: props.options.childDaos,
+        AddressInput,
         EntityDisplay,
       }}
     />
@@ -76,14 +78,22 @@ const Component: ActionComponent = (props) => {
   const { watch } = useFormContext()
   const coreAddress = watch(props.fieldNamePrefix + 'coreAddress')
 
-  const childDaosLoadable = useCachedLoadable(
+  const daoSubDaosLoadable = useCachedLoadable(
     context.type === ActionOptionsContextType.Dao
       ? DaoCoreV2Selectors.listAllSubDaosSelector({
           contractAddress: address,
         })
-      : // TODO: Get DAOs where wallet is admin.
-        constSelector([])
+      : undefined
   )
+  const walletAdminOfDaosLoadable = useCachedLoadable(
+    context.type === ActionOptionsContextType.Wallet
+      ? walletAdminOfDaosSelector(address)
+      : undefined
+  )
+  const childDaosLoadable =
+    context.type === ActionOptionsContextType.Dao
+      ? daoSubDaosLoadable
+      : walletAdminOfDaosLoadable
 
   const daoInfoLoadable = useCachedLoadable(
     context.type === ActionOptionsContextType.Dao
@@ -98,7 +108,9 @@ const Component: ActionComponent = (props) => {
       childDaosLoadable.state === 'hasValue'
         ? {
             loading: false,
-            data: childDaosLoadable.contents.map(({ addr }) => addr),
+            data: childDaosLoadable.contents.map((dao) =>
+              typeof dao === 'string' ? dao : dao.addr
+            ),
           }
         : { loading: true },
   }
