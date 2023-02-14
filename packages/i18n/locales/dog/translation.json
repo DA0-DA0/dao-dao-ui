@@ -258,8 +258,7 @@
     "time": "{{value}} {{unit}}",
     "timeAgo": "{{value}} {{unit}} ago",
     "timeLeft": "{{value}} {{unit}} lef",
-    "token": "{{amount}} ${{symbol}}",
-    "tokenApprox": "~{{amount}} ${{symbol}}"
+    "token": "{{amount}} ${{symbol}}"
   },
   "info": {
     "abstainVote": "absteyn",

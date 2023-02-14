@@ -30,17 +30,16 @@ import {
 import { tokenCardLazyInfoSelector } from '../../../../../recoil'
 import { VestingPaymentCard as StatelessVestingPaymentCard } from '../stateless/VestingPaymentCard'
 import { VestingInfo } from '../types'
+import { getWithdrawableAmount } from '../utils'
 import { NativeStakingModal } from './NativeStakingModal'
 
-export const VestingPaymentCard = ({
-  vestingContractAddress,
-  vestingPayment,
-  vestedAmount,
-  token,
-}: VestingInfo) => {
+export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { t } = useTranslation()
   const { chainId } = useDaoInfoContext()
   const { refreshBalances } = useWalletInfo()
+
+  const { vestingContractAddress, vestingPayment, vestedAmount, token } =
+    vestingInfo
 
   const recipientEntity = useEntity({
     address: vestingPayment.recipient,
@@ -85,11 +84,11 @@ export const VestingPaymentCard = ({
       await distribute()
       toast.success(t('success.withdrewPayment'))
 
-      // Give time for indexer to update.
-      awaitNextBlock().then(() => {
-        refresh()
-        refreshBalances()
-      })
+      // Give time for indexer to update and then refresh.
+      await awaitNextBlock()
+
+      refresh()
+      refreshBalances()
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -113,8 +112,10 @@ export const VestingPaymentCard = ({
         })
         toast.success(t('success.claimedRewards'))
 
-        // Give time for indexer to update.
-        awaitNextBlock().then(refresh)
+        // Give time for indexer to update and then refresh.
+        await awaitNextBlock()
+
+        refresh()
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
@@ -174,20 +175,7 @@ export const VestingPaymentCard = ({
         }
         title={vestingPayment.title}
         token={token}
-        withdrawableAmount={convertMicroDenomToDenomWithDecimals(
-          // Remaining balance held by vesting contract.
-          Number(vestingPayment.amount) -
-            // Remaining balance to vest.
-            Number(vestedAmount) -
-            // Take into account vested tokens that are staked. If fewer tokens
-            // are staked than have unvested, no vested tokens are staked and
-            // thus all vested tokens can be claimed.
-            Math.max(
-              0,
-              Number(vestingPayment.staked_amount) - Number(vestedAmount)
-            ),
-          token.decimals
-        )}
+        withdrawableAmount={getWithdrawableAmount(vestingInfo)}
         withdrawing={withdrawing}
       />
 

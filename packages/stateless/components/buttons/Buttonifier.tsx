@@ -110,8 +110,7 @@ export const getButtonifiedClassNames = ({
       '!p-0': true,
       underline: variant === 'underline',
       // Default
-      'transition-opacity hover:opacity-80 active:opacity-70':
-        !disabledOrLoading,
+      'hover:opacity-80 active:opacity-70': !disabledOrLoading,
       // Disabled
       'text-text-button-disabled': disabledOrLoading,
     },

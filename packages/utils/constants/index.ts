@@ -76,8 +76,8 @@ export const CODE_ID_CONFIG = CodeIdConfigs[CHAIN_ID]!
 export const CHAIN_PREFIX_ID_MAP =
   ChainPrefixIdMaps[MAINNET ? 'mainnet' : 'testnet']
 
-export const V1_FACTORY_CONTRACT_ADDRESS = process.env
-  .NEXT_PUBLIC_V1_FACTORY_CONTRACT_ADDRESS as string
+export const FACTORY_CONTRACT_ADDRESS = process.env
+  .NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as string
 
 // DAO name min/max and description max defined in core.
 export const MIN_DAO_NAME_LENGTH = parseInt(

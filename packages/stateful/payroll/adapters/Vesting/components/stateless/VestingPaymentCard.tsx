@@ -20,6 +20,7 @@ import {
   Loader,
   MarkdownRenderer,
   MoneyEmoji,
+  ProfileImage,
   TokenAmountDisplay,
   Tooltip,
   TooltipInfoIcon,
@@ -40,7 +41,6 @@ import {
   formatDateTimeTz,
   isJunoIbcUsdc,
   secondsToWdhms,
-  toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
 export interface VestingPaymentCardProps {
@@ -238,24 +238,21 @@ export const VestingPaymentCard = ({
   return (
     <>
       <div className="rounded-lg bg-background-tertiary">
-        <div className="relative p-5">
-          <div className="flex flex-row gap-4 pr-5">
+        <div className="relative p-6">
+          <div className="flex flex-col items-center justify-center gap-4">
             {/* Image */}
             {recipientEntity.loading ? (
               <Loader fill={false} size={40} />
             ) : (
-              <div
-                className="h-10 w-10 rounded-full bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(${toAccessibleImageUrl(
-                    recipientEntity.data.imageUrl
-                  )})`,
-                }}
-              ></div>
+              <ProfileImage
+                imageUrl={recipientEntity.data.imageUrl}
+                rounded
+                size="sm"
+              />
             )}
 
             {/* Titles */}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col items-center gap-1">
               <EntityDisplay
                 address={recipient}
                 // Image shown to the left.
@@ -268,7 +265,7 @@ export const VestingPaymentCard = ({
           </div>
 
           {buttonPopupSections.length > 0 && (
-            <div className="absolute top-3 right-3">
+            <div className="absolute top-1 right-1">
               <ButtonPopup
                 ButtonLink={ButtonLink}
                 Trigger={({ open, ...props }) => (
