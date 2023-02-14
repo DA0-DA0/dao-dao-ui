@@ -18,9 +18,8 @@ const junoTestnet: CodeIdConfig = {
   DaoVotingCw721Staked: 174,
   DaoVotingNativeStaked: 175,
   CwTokenSwap: 161,
-  // TODO: Add testnet code IDs.
-  CwPayrollFactory: -1,
-  CwVesting: -1,
+  CwPayrollFactory: 160,
+  CwVesting: 162,
 }
 
 // ContractVersion.V2: 2.0.1
