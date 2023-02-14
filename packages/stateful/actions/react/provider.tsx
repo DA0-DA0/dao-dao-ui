@@ -38,7 +38,11 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   // Get the actions for a DAO from its various sources:
   // - core actions
   // - voting module adapter actions
-  // - proposal module adapter actions
+  // - all proposal module adapters actions
+  //
+  // The core actions are relevant to all DAOs, and the adapter actions are
+  // relevant to the DAO's specific modules. There will be one voting module and
+  // many proposal modules.
 
   // Get voting module adapter actions.
   const votingModuleActions = useVotingModuleAdapter().hooks.useActions(options)
