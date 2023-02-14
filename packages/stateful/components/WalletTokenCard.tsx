@@ -113,8 +113,6 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
           )
       : []
 
-  console.log(daosLoadable, daosVotingPowersLoadable)
-
   //! Loadable errors.
   useEffect(() => {
     if (lazyInfoLoadable.state === 'hasError') {

@@ -92,39 +92,40 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
       </div>
 
       {/* Only show NFTs once tokens stop loading. */}
-      {!tokens.loading && (nfts.loading || nfts.data.length > 0) ? (
-        <div className="flex flex-col gap-2">
-          <div className="mb-6 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
-            <p className="title-text">
-              {nfts.loading
-                ? t('title.nfts')
-                : t('title.numNfts', { count: nfts.data.length })}
-            </p>
+      {!tokens.loading &&
+        (nfts.loading || nfts.data.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            <div className="mb-6 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
+              <p className="title-text">
+                {nfts.loading
+                  ? t('title.nfts')
+                  : t('title.numNfts', { count: nfts.data.length })}
+              </p>
 
-            {!nfts.loading && nfts.data.length > 0 && (
-              <div className="flex flex-row items-center justify-between gap-4">
-                <p className="primary-text text-text-body">
-                  {t('title.sortBy')}
-                </p>
+              {!nfts.loading && nfts.data.length > 0 && (
+                <div className="flex flex-row items-center justify-between gap-4">
+                  <p className="primary-text text-text-body">
+                    {t('title.sortBy')}
+                  </p>
 
-                <Dropdown {...sortDropdownProps} />
-              </div>
+                  <Dropdown {...sortDropdownProps} />
+                </div>
+              )}
+            </div>
+
+            {nfts.loading ? (
+              <Loader fill={false} />
+            ) : (
+              <GridCardContainer className="pb-6">
+                {sortedNfts.map((props, index) => (
+                  <NftCard {...(props as N)} key={index} />
+                ))}
+              </GridCardContainer>
             )}
           </div>
-
-          {nfts.loading ? (
-            <Loader fill={false} />
-          ) : (
-            <GridCardContainer className="pb-6">
-              {sortedNfts.map((props, index) => (
-                <NftCard {...(props as N)} key={index} />
-              ))}
-            </GridCardContainer>
-          )}
-        </div>
-      ) : (
-        !nfts.loading && <NoContent Icon={Image} body={t('info.noNftsFound')} />
-      )}
+        ) : (
+          <NoContent Icon={Image} body={t('info.noNftsFound')} />
+        ))}
     </div>
   )
 }

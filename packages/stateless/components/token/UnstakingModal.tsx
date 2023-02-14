@@ -101,10 +101,7 @@ export const UnstakingModal = ({
     // `setTimeout` uses 32-bit integers, so we need to check if the number is
     // too large. Why JavaScript...
     if (msUntilNextTaskCompletion < 2 ** 31) {
-      const timeout = setTimeout(() => {
-        console.log('refresh')
-        refresh()
-      }, msUntilNextTaskCompletion)
+      const timeout = setTimeout(refresh, msUntilNextTaskCompletion)
       // Clean up on unmount.
       return () => clearTimeout(timeout)
     }
