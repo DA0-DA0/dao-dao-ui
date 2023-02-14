@@ -4,6 +4,7 @@ import { DISABLED_ACTIONS } from '@dao-dao/utils'
 import { makeAuthzAuthorizationAction } from './AuthzAuthorization'
 import { makeAuthzExecAction } from './AuthzExec'
 import { makeCustomAction } from './Custom'
+import { makeDaoAdminExecAction } from './DaoAdminExec'
 import { makeExecuteAction } from './Execute'
 import { makeGovernanceVoteAction } from './GovernanceVote'
 import { makeInstantiateAction } from './Instantiate'
@@ -51,6 +52,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeAuthzExecAction,
     makeValidatorActions,
     makeGovernanceVoteAction,
+    makeDaoAdminExecAction,
   ]
 
   return actionMakers

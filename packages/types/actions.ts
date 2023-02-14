@@ -30,6 +30,7 @@ export enum CoreActionKey {
   WithdrawTokenSwap = 'withdrawTokenSwap',
   ManageStorageItems = 'manageStorageItems',
   GovernanceVote = 'governanceVote',
+  DaoAdminExec = 'daoAdminExec',
 }
 
 // Actions defined in voting or proposal module adapters.
@@ -146,13 +147,9 @@ export interface IActionsContext {
   actions: Action[]
 }
 
-export type ActionsWithData = Partial<
-  Record<
-    ActionKey,
-    {
-      action: Action
-      transform: ReturnType<UseTransformToCosmos>
-      defaults: ReturnType<UseDefaults>
-    }
-  >
->
+export type LoadedAction = {
+  action: Action
+  transform: ReturnType<UseTransformToCosmos>
+  defaults: ReturnType<UseDefaults>
+}
+export type LoadedActions = Partial<Record<ActionKey, LoadedAction>>

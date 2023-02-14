@@ -2,11 +2,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from '@dao-dao/stateless'
 import {
-  makeActionsProviderDecorator,
   makeDaoInfo,
+  makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType } from '@dao-dao/types'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
 import { Trans } from '../../../components'
@@ -34,15 +33,7 @@ export default {
         decimals: 6,
       },
     }),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionOptionsContextType.Dao,
-        info: makeDaoInfo(),
-      },
-    }),
+    makeDaoProvidersDecorator(makeDaoInfo()),
   ],
 } as ComponentMeta<typeof InstantiateTokenSwap>
 
