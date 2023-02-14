@@ -6,7 +6,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
-import { useWalletInfo } from '../../hooks'
+import { useMembership, useWalletInfo } from '../../hooks'
 import { matchAndLoadCommon } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -26,6 +26,7 @@ export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
         <StatelessProfileNewProposalCard
           daoName={daoName}
           info={{ loading: true }}
+          isMember={{ loading: true }}
           showUpdateProfileNft={updateProfileNft.toggle}
           updateProfileName={updateProfileName}
           walletProfile={walletProfile}
@@ -47,7 +48,7 @@ export const InnerProfileNewProposalCard = ({
   },
 }: ProfileNewProposalCardProps) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
+  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
   const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
   const {
@@ -56,6 +57,11 @@ export const InnerProfileNewProposalCard = ({
 
   const lines = useProfileNewProposalCardInfoLines()
   const addresses = useProfileNewProposalCardAddresses()
+
+  const { isMember } = useMembership({
+    coreAddress,
+    chainId,
+  })
 
   return (
     <StatelessProfileNewProposalCard
@@ -73,6 +79,11 @@ export const InnerProfileNewProposalCard = ({
           ],
         },
       }}
+      isMember={
+        isMember === undefined
+          ? { loading: true }
+          : { loading: false, data: isMember }
+      }
       showUpdateProfileNft={updateProfileNft.toggle}
       updateProfileName={updateProfileName}
       walletProfile={walletProfile}

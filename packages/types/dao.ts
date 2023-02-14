@@ -72,6 +72,7 @@ export interface NftCardInfo {
     denom: string
   }
   name: string
+  description: string | undefined
   chainId: string
 }
 

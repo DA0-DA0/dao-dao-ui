@@ -4,6 +4,7 @@ import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { ArrowBack } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
+import merge from 'lodash.merge'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -36,10 +37,10 @@ import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_s
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,
+  FACTORY_CONTRACT_ADDRESS,
   NATIVE_DECIMALS,
   NATIVE_DENOM,
   NEW_DAO_CW20_DECIMALS,
-  V1_FACTORY_CONTRACT_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   makeValidateMsg,
@@ -110,7 +111,9 @@ export const CreateDaoForm = ({
   // Verify cached value is still valid, and fix if not.
   const defaultForm = useMemo(() => {
     const defaultNewDao = makeDefaultNewDao()
+
     const cached = cloneDeep(_newDaoAtom)
+
     // Verify that the voting module adapter is still valid, since the IDs have
     // been renamed a couple times.
     if (
@@ -135,10 +138,33 @@ export const CreateDaoForm = ({
       }
     }
 
-    return {
-      ...cached,
-      ...defaults,
-    }
+    // Merge defaults in case there are any new fields.
+    const votingModuleAdapter = getVotingModuleAdapterById(
+      cached.votingModuleAdapter.id
+    )
+    merge(
+      // Merges into this object.
+      cached.votingModuleAdapter.data,
+      // Start with defaults.
+      votingModuleAdapter?.daoCreation?.defaultConfig,
+      // Overwrite with existing values.
+      cached.votingModuleAdapter.data
+    )
+
+    cached.proposalModuleAdapters.forEach((adapter) => {
+      const proposalModuleAdapter = getProposalModuleAdapterById(adapter.id)
+      merge(
+        // Merges into this object.
+        adapter.data,
+        // Start with defaults.
+        proposalModuleAdapter?.daoCreation?.defaultConfig,
+        // Overwrite with existing values.
+        adapter.data
+      )
+    })
+
+    // Merge defaults passed into component, if any.
+    return merge(cached, defaults)
   }, [_newDaoAtom, defaults])
 
   const form = useForm<NewDao>({
@@ -298,7 +324,7 @@ export const CreateDaoForm = ({
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
-      contractAddress: V1_FACTORY_CONTRACT_ADDRESS,
+      contractAddress: FACTORY_CONTRACT_ADDRESS,
       sender: walletAddress ?? '',
     })
 

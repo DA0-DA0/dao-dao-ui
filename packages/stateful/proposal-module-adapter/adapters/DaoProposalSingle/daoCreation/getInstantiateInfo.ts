@@ -34,6 +34,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     quorum,
     votingDuration,
     proposalDeposit,
+    anyoneCanPropose,
     allowRevoting,
   },
   t
@@ -86,8 +87,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         }
       : null,
     extension: {},
-    // Only allow members with voting power to propose.
-    open_proposal_submission: false,
+    open_proposal_submission: anyoneCanPropose,
   }
 
   // Validate and throw error if invalid according to JSON schema.

@@ -1,4 +1,3 @@
-export * from './ApolloGqlDecorator'
 export * from './DaoPageWrapperDecorator'
 export * from './makeActionsProviderDecorator'
 export * from './makeAppLayoutContextDecorator'

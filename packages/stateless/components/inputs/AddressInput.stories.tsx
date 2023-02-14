@@ -40,7 +40,7 @@ AutofillProfile.args = {
           nonce: 7,
           name: 'peepobaked',
           nft: {
-            chainId: 'uni-5',
+            chainId: 'uni-6',
             collectionAddress:
               'juno17p6u07z9zr4ej6jt55fvafp966v90vm6m8xarejzgjqc7305w58qjmsej2',
             tokenId: 'baked_peepo',
@@ -56,7 +56,7 @@ AutofillProfile.args = {
           nonce: 65,
           name: 'peepodab',
           nft: {
-            chainId: 'uni-5',
+            chainId: 'uni-6',
             collectionAddress:
               'juno17p6u07z9zr4ej6jt55fvafp966v90vm6m8xarejzgjqc7305w58qjmsej2',
             tokenId: 'deeply_dabbing_peepo',
@@ -81,7 +81,7 @@ AutofillProfile.args = {
           nonce: 4,
           name: 'peepopraying',
           nft: {
-            chainId: 'uni-5',
+            chainId: 'uni-6',
             collectionAddress:
               'juno17p6u07z9zr4ej6jt55fvafp966v90vm6m8xarejzgjqc7305w58qjmsej2',
             tokenId: 'praying_peepo',
@@ -97,7 +97,7 @@ AutofillProfile.args = {
           nonce: 2,
           name: 'peepoturbo',
           nft: {
-            chainId: 'uni-5',
+            chainId: 'uni-6',
             collectionAddress:
               'juno17p6u07z9zr4ej6jt55fvafp966v90vm6m8xarejzgjqc7305w58qjmsej2',
             tokenId: 'turbo_peepo',

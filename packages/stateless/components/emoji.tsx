@@ -156,3 +156,7 @@ export const BeeEmoji = () => (
 export const SuitAndTieEmoji = () => (
   <EmojiWrapper emoji="👔" labelI18nKey="emoji.suitAndTie" />
 )
+
+export const LockWithPenEmoji = () => (
+  <EmojiWrapper emoji="🔏" labelI18nKey="emoji.lockWithPen" />
+)

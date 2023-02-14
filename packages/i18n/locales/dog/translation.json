@@ -139,7 +139,6 @@
     "createProposalSubmitInvalid": "corect teh errurz above b4 previevin or publisshing",
     "daoFeatureUnsupported": "{{name}} don suport {{feature}} yet",
     "daoIsPaused": "u cannt cre8 a puppozal when da da0 iz pauzed",
-    "descriptionTooLong": "a da0s descripshon must bee lesss den er eqwal 2 {{max}} cherecterz lonng 🐶",
     "errorOccurredOnPage": "an errr ocoorrd on dis page",
     "failedParsingCoreVersion": "fayld 2 deternmin corr verzion",
     "failedToGetTokenInfo": "failb 2 git tokken info. pliz enter a valid {{tokenType}} contract adress",

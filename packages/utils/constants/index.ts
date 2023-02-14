@@ -73,8 +73,8 @@ export const CODE_ID_CONFIG = CodeIdConfigs[CHAIN_ID]!
 export const CHAIN_PREFIX_ID_MAP =
   ChainPrefixIdMaps[MAINNET ? 'mainnet' : 'testnet']
 
-export const V1_FACTORY_CONTRACT_ADDRESS = process.env
-  .NEXT_PUBLIC_V1_FACTORY_CONTRACT_ADDRESS as string
+export const FACTORY_CONTRACT_ADDRESS = process.env
+  .NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as string
 
 // DAO name min/max and description max defined in core.
 export const MIN_DAO_NAME_LENGTH = parseInt(
@@ -83,10 +83,6 @@ export const MIN_DAO_NAME_LENGTH = parseInt(
 )
 export const MAX_DAO_NAME_LENGTH = parseInt(
   process.env.NEXT_PUBLIC_MAX_DAO_NAME_LENGTH || '50',
-  10
-)
-export const MAX_DAO_DESCRIPTION_LENGTH = parseInt(
-  process.env.NEXT_PUBLIC_MAX_DAO_DESCRIPTION_LENGTH || '130',
   10
 )
 
@@ -167,3 +163,6 @@ export const DAO_CORE_PAYROLL_CONFIG_ITEM_KEY = 'payroll'
 // Single DAO Mode
 export const SINGLE_DAO_MODE =
   process.env.NEXT_PUBLIC_SINGLE_DAO_MODE === 'true'
+
+// Kado API (https://docs.kado.money)
+export const KADO_API_KEY = process.env.NEXT_PUBLIC_KADO_API_KEY as string

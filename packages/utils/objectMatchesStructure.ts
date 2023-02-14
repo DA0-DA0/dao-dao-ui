@@ -11,7 +11,7 @@ export const objectMatchesStructure = (
     // If true, will not verify that values are defined and non-null.
     ignoreNullUndefined?: boolean
   } = {
-    ignoreNullUndefined: false,
+    ignoreNullUndefined: true,
   }
 ): boolean => {
   if (!object || typeof object !== 'object' || Array.isArray(object)) {
