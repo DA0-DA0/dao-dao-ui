@@ -7,7 +7,6 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 import {
   ActionCardLoader,
   ActionSelector,
-  InputErrorMessage,
   JoystickEmoji,
   Loader,
   RadioInput,
@@ -159,8 +158,6 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
     }
   }
 
-  console.log('rendering')
-
   useDeepCompareEffect(() => {
     if (msgs) {
       setValue((fieldNamePrefix + 'msgs') as 'msgs', msgs)
@@ -220,22 +217,18 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
       {actions.length === 0 ? (
         <Loader />
       ) : (
-        <>
-          <div className="self-start">
-            <ActionSelector
-              actions={actions}
-              onSelectAction={({ key }) => {
-                appendAction({
-                  key,
-                  // Clone to prevent form from mutating the original object.
-                  data: cloneDeep(loadedActions[key]?.defaults ?? {}),
-                })
-              }}
-            />
-          </div>
-
-          <InputErrorMessage error={errors?.msgs} />
-        </>
+        <div className="self-start">
+          <ActionSelector
+            actions={actions}
+            onSelectAction={({ key }) => {
+              appendAction({
+                key,
+                // Clone to prevent form from mutating the original object.
+                data: cloneDeep(loadedActions[key]?.defaults ?? {}),
+              })
+            }}
+          />
+        </div>
       )}
     </>
   )

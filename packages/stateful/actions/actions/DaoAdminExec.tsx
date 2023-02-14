@@ -136,8 +136,6 @@ const Component: ActionComponent = (props) => {
         : { loading: true },
   }
 
-  console.log('rerendering')
-
   return context.type === ActionOptionsContextType.Dao ? (
     daoInfoLoadable.state === 'hasValue' ? (
       <SuspenseLoader
