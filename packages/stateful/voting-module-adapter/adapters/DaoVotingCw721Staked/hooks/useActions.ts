@@ -1,7 +1,3 @@
-import { useMemo } from 'react'
+import { Action, ActionOptions } from '@dao-dao/types'
 
-import { Action } from '@dao-dao/types'
-
-export const useActions = (): Action[] => {
-  return useMemo(() => [].filter(Boolean) as Action[], [])
-}
+export const useActions = (_options: ActionOptions) => [] as Action[]

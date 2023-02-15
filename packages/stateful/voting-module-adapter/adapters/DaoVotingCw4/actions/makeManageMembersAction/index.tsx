@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/types/actions'
 import { makeWasmMessage } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../../actions'
 import { AddressInput } from '../../../../../components'
 import { useVotingModule as useCw4VotingModule } from '../../hooks/useVotingModule'
 import {
@@ -23,6 +24,28 @@ const useDefaults: UseDefaults<ManageMembersData> = (): ManageMembersData => ({
   toAdd: [],
   toRemove: [],
 })
+
+const Component: ActionComponent = (props) => {
+  const { t } = useTranslation()
+  const { address } = useActionOptions()
+
+  const { members } = useCw4VotingModule(address, {
+    fetchMembers: true,
+  })
+  if (!members) {
+    throw new Error(t('error.loadingData'))
+  }
+
+  return (
+    <StatelessManageMembersComponent
+      {...props}
+      options={{
+        currentMembers: members.map(({ addr }) => addr),
+        AddressInput,
+      }}
+    />
+  )
+}
 
 export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
   t,
@@ -50,6 +73,7 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
       [cw4GroupAddress]
     )
   }
+
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageMembersData> = (
     msg: Record<string, any>
   ) => {
@@ -80,26 +104,6 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
 
       return { match: false }
     }, [cw4GroupAddress, msg])
-  }
-
-  const Component: ActionComponent = (props) => {
-    const { t } = useTranslation()
-    const { members } = useCw4VotingModule(address, {
-      fetchMembers: true,
-    })
-    if (!members) {
-      throw new Error(t('error.loadingData'))
-    }
-
-    return (
-      <StatelessManageMembersComponent
-        {...props}
-        options={{
-          currentMembers: members.map(({ addr }) => addr),
-          AddressInput,
-        }}
-      />
-    )
   }
 
   return {

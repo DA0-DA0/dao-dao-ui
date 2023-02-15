@@ -1,6 +1,6 @@
 import { BookOutlined, FlagOutlined, Timelapse } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
@@ -13,7 +13,6 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
-  ActionsWithData,
   BaseNewProposalProps,
   IProposalModuleAdapterCommonOptions,
 } from '@dao-dao/types'
@@ -23,10 +22,8 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useCoreActions } from '../../../../../actions'
+import { useActions, useLoadActions } from '../../../../../actions'
 import { useMembership } from '../../../../../hooks'
-import { usePayrollAdapter } from '../../../../../payroll'
-import { useVotingModuleAdapter } from '../../../../../voting-module-adapter'
 import { proposalSelector } from '../../contracts/DaoProposalSingle.common.recoil'
 import { makeGetProposalInfo } from '../../functions'
 import {
@@ -34,10 +31,7 @@ import {
   NewProposalForm,
   UsePublishProposal,
 } from '../../types'
-import {
-  makeUseActions as makeUseProposalModuleActions,
-  useProcessTQ,
-} from '../hooks'
+import { useProcessTQ } from '../hooks'
 import { NewProposal as StatelessNewProposal } from '../ui/NewProposal'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> & {
@@ -52,13 +46,22 @@ export const NewProposal = ({
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
-  const { name: daoName, imageUrl: daoImageUrl } = useDaoInfoContext()
-  const { chainId, coreAddress, proposalModule } = options
+  const {
+    name: daoName,
+    imageUrl: daoImageUrl,
+    chainId,
+    coreAddress,
+  } = useDaoInfoContext()
   const { connected } = useWallet()
+
+  const actions = useActions()
+  const loadedActions = useLoadActions(actions)
+
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,
   })
+
   const [loading, setLoading] = useState(false)
 
   // Info about if the DAO is paused. This selector depends on blockHeight,
@@ -73,36 +76,6 @@ export const NewProposal = ({
   const isPaused =
     pauseInfo.state === 'hasValue' &&
     ('paused' in pauseInfo.contents || 'Paused' in pauseInfo.contents)
-
-  const {
-    hooks: { useActions: useVotingModuleActions },
-  } = useVotingModuleAdapter()
-  const votingModuleActions = useVotingModuleActions()
-  const proposalModuleActions = makeUseProposalModuleActions(options)()
-  const payrollActions = usePayrollAdapter()?.actions
-  const actions = useCoreActions(
-    useMemo(
-      () => [
-        ...votingModuleActions,
-        ...proposalModuleActions,
-        ...(payrollActions || []),
-      ],
-      [payrollActions, proposalModuleActions, votingModuleActions]
-    )
-  )
-
-  // Call relevant action hooks in the same order every time.
-  const actionsWithData: ActionsWithData = actions.reduce(
-    (acc, action) => ({
-      ...acc,
-      [action.key]: {
-        action,
-        transform: action.useTransformToCosmos(),
-        defaults: action.useDefaults(),
-      },
-    }),
-    {}
-  )
 
   const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
   const blockHeight =
@@ -158,7 +131,7 @@ export const NewProposal = ({
           const proposal = (
             await snapshot.getPromise(
               proposalSelector({
-                contractAddress: proposalModule.address,
+                contractAddress: options.proposalModule.address,
                 params: [
                   {
                     proposalId: proposalNumber,
@@ -232,7 +205,7 @@ export const NewProposal = ({
       onCreateSuccess,
       options,
       processTQ,
-      proposalModule.address,
+      options.proposalModule.address,
       publishProposal,
       t,
     ]
@@ -241,13 +214,13 @@ export const NewProposal = ({
   return (
     <StatelessNewProposal
       actions={actions}
-      actionsWithData={actionsWithData}
       anyoneCanPropose={anyoneCanPropose}
       connected={connected}
       createProposal={createProposal}
       depositUnsatisfied={depositUnsatisfied}
       isMember={isMember}
       isPaused={isPaused}
+      loadedActions={loadedActions}
       loading={loading}
       simulationBypassExpiration={simulationBypassExpiration}
       {...props}
