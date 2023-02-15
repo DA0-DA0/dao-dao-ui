@@ -130,14 +130,16 @@ type InnerDaoPageWrapperProps = {
 }
 
 const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
-  // Ensure connected to WebSocket.
-  const { daoWebSocket } = useAppLayoutContext()
+  // Ensure connected to current DAO's WebSocket.
+  const {
+    daoWebSocket: { connect },
+  } = useAppLayoutContext()
   useEffect(() => {
-    daoWebSocket.connect({
+    connect({
       chainId: info.chainId,
       coreAddress: info.coreAddress,
     })
-  }, [daoWebSocket, info.chainId, info.coreAddress])
+  }, [connect, info.chainId, info.coreAddress])
 
   return <DaoProviders info={info}>{children}</DaoProviders>
 }

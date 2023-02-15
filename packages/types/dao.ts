@@ -1,4 +1,5 @@
 import { TFunction } from 'next-i18next'
+import { Channel } from 'pusher-js'
 import { ComponentType } from 'react'
 import {
   FieldError,
@@ -255,7 +256,7 @@ export type DaoWebSocketConnectionInfo = {
 }
 
 export type DaoWebSocket = {
-  webSocket: WebSocket | null
+  channel: Channel | null
   connect: (connectionInfo: DaoWebSocketConnectionInfo) => void
   disconnect: () => void
 }

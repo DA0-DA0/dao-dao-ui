@@ -68,7 +68,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
     useState(false)
   const [updateProfileNftVisible, setUpdateProfileNftVisible] = useState(false)
-  const daoWebSocket = useDaoWebSocket()
+  const daoWebSocket = useDaoWebSocket(DaoPageMode.Sda)
   const appLayoutContext: Omit<
     IAppLayoutContext,
     'RightSidebarContent' | 'PageHeader'
