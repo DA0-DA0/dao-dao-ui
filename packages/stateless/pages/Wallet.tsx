@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Action,
-  ActionsWithData,
+  LoadedActions,
   SuspenseLoaderProps,
   WalletTransactionForm,
 } from '@dao-dao/types'
@@ -37,7 +37,7 @@ import {
 export interface WalletProps {
   connected: boolean
   actions: Action[]
-  actionsWithData: ActionsWithData
+  loadedActions: LoadedActions
   formMethods: UseFormReturn<WalletTransactionForm, object>
   execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
   loading: boolean
@@ -55,7 +55,7 @@ enum SubmitValue {
 export const Wallet = ({
   connected,
   actions,
-  actionsWithData,
+  loadedActions,
   formMethods,
   execute,
   loading,
@@ -98,13 +98,13 @@ export const Wallet = ({
       }
 
       const messages = actionData
-        .map(({ key, data }) => actionsWithData[key]?.transform(data))
+        .map(({ key, data }) => loadedActions[key]?.transform(data))
         // Filter out undefined messages.
         .filter(Boolean) as CosmosMsgFor_Empty[]
 
       execute(messages)
     },
-    [execute, actionsWithData]
+    [execute, loadedActions]
   )
 
   const onSubmitError: SubmitErrorHandler<WalletTransactionForm> = useCallback(
@@ -175,7 +175,7 @@ export const Wallet = ({
               <div className="flex flex-col gap-2">
                 {proposalActionData.map((actionData, index) => {
                   const Component =
-                    actionsWithData[actionData.key]?.action?.Component
+                    loadedActions[actionData.key]?.action?.Component
                   if (!Component) {
                     return null
                   }
@@ -204,7 +204,7 @@ export const Wallet = ({
                 onSelectAction={({ key }) => {
                   append({
                     key,
-                    data: actionsWithData[key]?.defaults ?? {},
+                    data: loadedActions[key]?.defaults ?? {},
                   })
                 }}
               />
@@ -283,9 +283,7 @@ export const Wallet = ({
               <CosmosMessageDisplay
                 value={decodedMessagesString(
                   proposalActionData
-                    .map(({ key, data }) =>
-                      actionsWithData[key]?.transform(data)
-                    )
+                    .map(({ key, data }) => loadedActions[key]?.transform(data))
                     // Filter out undefined messages.
                     .filter(Boolean) as CosmosMsgFor_Empty[]
                 )}

@@ -2,17 +2,13 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/stateful'
-import { useCoreActions } from '@dao-dao/stateful/actions'
+import { useActions, useLoadActions } from '@dao-dao/stateful/actions'
 import {
+  WalletActionsProviderDecorator,
   WalletProviderDecorator,
-  makeActionsProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import {
-  ActionOptionsContextType,
-  ActionsWithData,
-  WalletTransactionForm,
-} from '@dao-dao/types'
+import { WalletTransactionForm } from '@dao-dao/types'
 
 import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
@@ -24,31 +20,13 @@ export default {
   decorators: [
     WalletProviderDecorator,
     makeDappLayoutDecorator(),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionOptionsContextType.Wallet,
-      },
-    }),
+    WalletActionsProviderDecorator,
   ],
 } as ComponentMeta<typeof Wallet>
 
 const Template: ComponentStory<typeof Wallet> = (args) => {
-  const actions = useCoreActions()
-  // Call relevant action hooks in the same order every time.
-  const actionsWithData: ActionsWithData = actions.reduce(
-    (acc, action) => ({
-      ...acc,
-      [action.key]: {
-        action,
-        transform: action.useTransformToCosmos(),
-        defaults: action.useDefaults(),
-      },
-    }),
-    {}
-  )
+  const actions = useActions()
+  const loadedActions = useLoadActions(actions)
 
   const formMethods = useForm<WalletTransactionForm>({
     mode: 'onChange',
@@ -63,8 +41,8 @@ const Template: ComponentStory<typeof Wallet> = (args) => {
     <Wallet
       {...args}
       actions={actions}
-      actionsWithData={actionsWithData}
       formMethods={formMethods}
+      loadedActions={loadedActions}
     />
   )
 }

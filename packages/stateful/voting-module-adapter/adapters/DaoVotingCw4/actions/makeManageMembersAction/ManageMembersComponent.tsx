@@ -115,7 +115,7 @@ export const ManageMembersComponent: ActionComponent<
                   </div>
 
                   <div className="flex grow flex-row items-stretch justify-center gap-2 sm:gap-3">
-                    <div className="flex flex-row items-center pl-1 sm:pl-0">
+                    <div className="flex flex-row items-center pt-4 pl-1 sm:pl-0 ">
                       <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
                       <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
                     </div>

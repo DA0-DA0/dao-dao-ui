@@ -64,7 +64,7 @@ export const EntityDisplay = ({
         }}
         tooltip={
           // If displaying name, show tooltip to copy address.
-          !loadingEntity.loading && loadingEntity.data.name
+          !loadingEntity.loading && loadingEntity.data.name && !noCopy
             ? t('button.clickToCopyAddress')
             : undefined
         }

@@ -91,8 +91,8 @@ export const CopyToClipboardUnderline = ({
     <Tooltip title={tooltip}>
       <p
         className={clsx(
-          'truncate font-mono text-xs text-text-body underline transition-opacity hover:opacity-80 active:opacity-70',
-          !noCopy && 'cursor-pointer',
+          'truncate font-mono text-xs text-text-body transition-opacity hover:opacity-80 active:opacity-70',
+          !noCopy && 'cursor-pointer underline',
           className,
           textClassName
         )}
