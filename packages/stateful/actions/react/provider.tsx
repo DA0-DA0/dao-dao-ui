@@ -9,6 +9,7 @@ import {
   IActionsContext,
 } from '@dao-dao/types'
 
+import { usePayrollAdapter } from '../../payroll'
 import { matchAndLoadCommon } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { getActions } from '../actions'
@@ -39,6 +40,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   // - core actions
   // - voting module adapter actions
   // - all proposal module adapters actions
+  // - payroll adapter actions
   //
   // The core actions are relevant to all DAOs, and the adapter actions are
   // relevant to the DAO's specific modules. There will be one voting module and
@@ -68,11 +70,18 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
       useActions(options)
   )
 
+  const payrollActions = usePayrollAdapter()?.actions
+
   const coreActions = getActions(options)
 
   const context: IActionsContext = {
     options,
-    actions: [...coreActions, ...votingModuleActions, ...proposalModuleActions]
+    actions: [
+      ...coreActions,
+      ...votingModuleActions,
+      ...proposalModuleActions,
+      ...(payrollActions ?? []),
+    ]
       // Sort alphabetically.
       .sort((a, b) =>
         a.label.toLowerCase().localeCompare(b.label.toLowerCase())
