@@ -48,6 +48,11 @@ export const wyndUsdPriceSelector = selectorFamily<
   get:
     (denomOrAddress) =>
     ({ get }) => {
+      // Allow refreshing all prices at once.
+      get(refreshTokenUsdcPriceAtom(''))
+      // Allow refreshing just this denom.
+      get(refreshTokenUsdcPriceAtom(denomOrAddress))
+
       const timestamp = new Date()
 
       const wyndPrices = get(wyndPricesSelector)

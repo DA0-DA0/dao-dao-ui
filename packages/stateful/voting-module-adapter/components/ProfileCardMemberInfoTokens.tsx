@@ -2,12 +2,7 @@ import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Button,
-  ButtonLink,
-  TokenAmountDisplay,
-  UnstakingModal,
-} from '@dao-dao/stateless'
+import { Button, TokenAmountDisplay, UnstakingModal } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   LoadingData,
@@ -28,7 +23,7 @@ export interface ProfileCardMemberInfoTokensProps
   onClaim: () => void
   onStake: () => void
   refreshUnstakingTasks: () => void
-  junoswapHref?: string
+  onGetTokens?: () => void
   loadingVotingPower: LoadingData<number>
   loadingStakedTokens: LoadingData<number>
   loadingUnstakedTokens: LoadingData<number>
@@ -45,7 +40,7 @@ export const ProfileCardMemberInfoTokens = ({
   onClaim,
   onStake,
   refreshUnstakingTasks,
-  junoswapHref,
+  onGetTokens,
   cantVoteOnProposal,
   loadingVotingPower,
   loadingStakedTokens,
@@ -100,14 +95,14 @@ export const ProfileCardMemberInfoTokens = ({
           !isMember ? (
             <p>
               {t('info.stakeYourTokensToJoin', { tokenSymbol, daoName })}{' '}
-              {junoswapHref && (
-                <ButtonLink
+              {onGetTokens && (
+                <Button
                   className="font-normal text-inherit"
-                  href={junoswapHref}
+                  onClick={onGetTokens}
                   variant="underline"
                 >
-                  {t('info.getTokensOn', { name: 'Junoswap' })}
-                </ButtonLink>
+                  {t('info.getTokensOn', { name: 'WYND' })}
+                </Button>
               )}
             </p>
           ) : null

@@ -4,7 +4,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   Cw20BaseSelectors,
   DaoVotingCw20StakedSelectors,
-  usdcPerMacroTokenSelector,
+  wyndUsdPriceSelector,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
@@ -76,10 +76,7 @@ export const useGovernanceTokenInfo = ({
   const loadingPrice = loadableToLoadingData(
     useCachedLoadable(
       fetchUsdcPrice
-        ? usdcPerMacroTokenSelector({
-            denom: governanceTokenAddress,
-            decimals: governanceTokenInfo.decimals,
-          })
+        ? wyndUsdPriceSelector(governanceTokenAddress)
         : constSelector(undefined)
     ),
     undefined

@@ -7,7 +7,6 @@ import { useRecoilValue } from 'recoil'
 import {
   blockHeightSelector,
   blocksPerYearSelector,
-  junoswapPoolsListSelector,
   stakingLoadingAtom,
 } from '@dao-dao/state'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
@@ -17,11 +16,9 @@ import {
   UnstakingTaskStatus,
 } from '@dao-dao/types'
 import {
-  NATIVE_DENOM,
   convertExpirationToDate,
   convertMicroDenomToDenomWithDecimals,
   durationToSeconds,
-  nativeTokenLabel,
   processError,
 } from '@dao-dao/utils'
 
@@ -50,7 +47,6 @@ export const ProfileCardMemberInfo = ({
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
 
   const {
-    governanceTokenAddress,
     governanceTokenInfo,
     token,
     loadingWalletBalance: loadingUnstakedBalance,
@@ -80,19 +76,6 @@ export const ProfileCardMemberInfo = ({
   ) {
     throw new Error(t('error.loadingData'))
   }
-
-  // Search for native governance token in junoswap pools list.
-  const poolsList = useRecoilValue(junoswapPoolsListSelector)
-  const governanceTokenPoolSymbol = poolsList?.pools
-    .flatMap(({ pool_assets }) => pool_assets)
-    .find(
-      ({ native, symbol, denom }) =>
-        native &&
-        denom.startsWith('ibc/') &&
-        // governanceTokenAddress is denom of native token, so its label should
-        // be its symbol.
-        symbol === nativeTokenLabel(governanceTokenAddress)
-    )?.symbol
 
   const doClaim = DaoVotingNativeStakedHooks.useClaim({
     contractAddress: votingModuleAddress,
@@ -194,13 +177,6 @@ export const ProfileCardMemberInfo = ({
       <ProfileCardMemberInfoTokens
         claimingLoading={claimingLoading}
         daoName={daoName}
-        junoswapHref={
-          governanceTokenPoolSymbol
-            ? `https://junoswap.com/?from=${nativeTokenLabel(
-                NATIVE_DENOM
-              )}&to=${governanceTokenPoolSymbol}`
-            : undefined
-        }
         loadingStakedTokens={
           loadingWalletStakedValue.loading
             ? { loading: true }
@@ -235,6 +211,10 @@ export const ProfileCardMemberInfo = ({
               }
         }
         onClaim={onClaim}
+        onGetTokens={
+          // TODO: WYND swap widget if pool exists.
+          undefined
+        }
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => refreshClaims?.()}
         stakingLoading={stakingLoading}

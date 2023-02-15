@@ -59,10 +59,6 @@ export const DAO_DAO_DAO_ADDRESS = process.env
 export const MICRO_STAKING_DENOM = process.env
   .NEXT_PUBLIC_STAKING_DENOM as string
 
-export const USDC_SWAP_ADDRESS = process.env
-  .NEXT_PUBLIC_USDC_SWAP_ADDRESS as string
-export const POOLS_LIST_URL = process.env.NEXT_PUBLIC_POOLS_LIST_URL as string
-
 export const CI = process.env.CI === 'true'
 
 // Code IDs
