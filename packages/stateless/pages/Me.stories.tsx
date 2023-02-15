@@ -1,15 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
+  WalletActionsProviderDecorator,
   WalletProviderDecorator,
-  makeActionsProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import {
-  ActionContextType,
-  MeBalancesProps,
-  MeTransactionBuilderProps,
-} from '@dao-dao/types'
+import { MeBalancesProps, MeTransactionBuilderProps } from '@dao-dao/types'
 
 import {
   NftCardProps,
@@ -28,14 +24,7 @@ export default {
   decorators: [
     WalletProviderDecorator,
     makeDappLayoutDecorator(),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionContextType.Wallet,
-      },
-    }),
+    WalletActionsProviderDecorator,
   ],
 } as ComponentMeta<typeof Me>
 
