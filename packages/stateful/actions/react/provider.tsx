@@ -2,7 +2,7 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { useDaoInfo } from '@dao-dao/stateless'
 import {
   ActionOptions,
   ActionOptionsContextType,
@@ -23,7 +23,7 @@ export interface ActionsProviderProps {
 // where this component is used for a usage example.
 export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   const { t } = useTranslation()
-  const info = useDaoInfoContext()
+  const info = useDaoInfo()
   const options: ActionOptions = {
     t,
     chainId: info.chainId,
