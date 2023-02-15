@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { useCoreActions } from '@dao-dao/stateful/actions'
+import { useActions } from '@dao-dao/stateful/actions'
 
 import { ActionSelector } from './ActionSelector'
 
@@ -11,7 +11,7 @@ export default {
 } as ComponentMeta<typeof ActionSelector>
 
 const Template: ComponentStory<typeof ActionSelector> = (args) => {
-  const actions = useCoreActions()
+  const actions = useActions()
 
   return <ActionSelector {...args} actions={actions} />
 }

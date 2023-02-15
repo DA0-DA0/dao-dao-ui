@@ -12,12 +12,14 @@ import { SuspenseLoader } from '../../components/SuspenseLoader'
 export interface ActionsRendererProps {
   availableActions: Action[]
   actionData: ActionAndData[]
-  onCopyLink: () => void
+  hideCopyLink?: boolean
+  onCopyLink?: () => void
 }
 
 export const ActionsRenderer = ({
   availableActions,
   actionData,
+  hideCopyLink,
   onCopyLink,
 }: ActionsRendererProps) => {
   const formMethods = useForm<{ actions: ActionKeyAndData[] }>({
@@ -67,19 +69,21 @@ export const ActionsRenderer = ({
                 />
               </SuspenseLoader>
 
-              <IconButton
-                Icon={copied === index ? Check : Link}
-                className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100"
-                onClick={() => {
-                  const url = new URL(window.location.href)
-                  url.hash = '#' + `A${index + 1}`
-                  navigator.clipboard.writeText(url.href)
-                  setCopied(index)
-                  onCopyLink()
-                }}
-                size="sm"
-                variant="none"
-              />
+              {!hideCopyLink && (
+                <IconButton
+                  Icon={copied === index ? Check : Link}
+                  className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100"
+                  onClick={() => {
+                    const url = new URL(window.location.href)
+                    url.hash = '#' + `A${index + 1}`
+                    navigator.clipboard.writeText(url.href)
+                    setCopied(index)
+                    onCopyLink?.()
+                  }}
+                  size="sm"
+                  variant="none"
+                />
+              )}
             </div>
           )
         })}

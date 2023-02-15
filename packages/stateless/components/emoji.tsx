@@ -164,3 +164,7 @@ export const LockWithPenEmoji = () => (
 export const CycleEmoji = () => (
   <EmojiWrapper emoji="🔄" labelI18nKey="emoji.cycle" />
 )
+
+export const JoystickEmoji = () => (
+  <EmojiWrapper emoji="🕹️" labelI18nKey="emoji.joystick" />
+)
