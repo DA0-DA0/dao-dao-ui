@@ -2,18 +2,13 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/stateful'
-import { useCoreActions } from '@dao-dao/stateful/actions'
+import { useActions, useLoadActions } from '@dao-dao/stateful/actions'
 import {
+  WalletActionsProviderDecorator,
   WalletProviderDecorator,
-  makeActionsProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import {
-  ActionContextType,
-  ActionsWithData,
-  CoreActionKey,
-  MeTransactionForm,
-} from '@dao-dao/types'
+import { CoreActionKey, MeTransactionForm } from '@dao-dao/types'
 
 import { MeTransactionBuilder } from './MeTransactionBuilder'
 
@@ -23,31 +18,13 @@ export default {
   decorators: [
     WalletProviderDecorator,
     makeDappLayoutDecorator(),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionContextType.Wallet,
-      },
-    }),
+    WalletActionsProviderDecorator,
   ],
 } as ComponentMeta<typeof MeTransactionBuilder>
 
 const Template: ComponentStory<typeof MeTransactionBuilder> = (args) => {
-  const actions = useCoreActions()
-  // Call relevant action hooks in the same order every time.
-  const actionsWithData: ActionsWithData = actions.reduce(
-    (acc, action) => ({
-      ...acc,
-      [action.key]: {
-        action,
-        transform: action.useTransformToCosmos(),
-        defaults: action.useDefaults(),
-      },
-    }),
-    {}
-  )
+  const actions = useActions()
+  const loadedActions = useLoadActions(actions)
 
   const formMethods = useForm<MeTransactionForm>({
     mode: 'onChange',
@@ -60,8 +37,8 @@ const Template: ComponentStory<typeof MeTransactionBuilder> = (args) => {
     <MeTransactionBuilder
       {...args}
       actions={actions}
-      actionsWithData={actionsWithData}
       formMethods={formMethods}
+      loadedActions={loadedActions}
     />
   )
 }
@@ -102,7 +79,7 @@ Default.args = {
 
   // Overwritten in template.
   actions: [],
-  actionsWithData: {},
+  loadedActions: {},
   formMethods: {} as any,
 }
 

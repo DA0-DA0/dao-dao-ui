@@ -64,7 +64,7 @@ export const MembersTab = <D extends {}>({
           ))}
         </GridCardContainer>
       ) : (
-        <p className="secondary-text">{t('info.noSubDaos')}</p>
+        <p className="secondary-text">{t('error.noMembers')}</p>
       )}
     </>
   )

@@ -42,10 +42,10 @@ Now that the library has been setup, you can use the hook anywhere as a
 descendant of the Provider to access the actions.
 
 ```tsx
-import { useCoreActions } from '@dao-dao/stateful/actions'
+import { useActions } from '@dao-dao/stateful/actions'
 
 const ActionPicker = () => {
-  const actions = useCoreActions()
+  const actions = useActions()
 
   return actions.map((action) => (
     <ActionPickerOption action={action} key={action.key} />

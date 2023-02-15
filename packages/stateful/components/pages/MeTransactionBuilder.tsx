@@ -15,7 +15,7 @@ import {
   temporarySavedTxsAtom,
   useCfWorkerAuthPostRequest,
 } from '@dao-dao/stateful'
-import { useCoreActions } from '@dao-dao/stateful/actions'
+import { useActions, useLoadActions } from '@dao-dao/stateful/actions'
 import {
   MeTransactionBuilder as StatelessMeTransactionBuilder,
   useCachedLoadable,
@@ -25,7 +25,6 @@ import {
   MeTransactionForm,
   MeTransactionSave,
 } from '@dao-dao/types'
-import { ActionsWithData } from '@dao-dao/types/actions'
 import {
   KVPK_API_BASE,
   cwMsgToEncodeObject,
@@ -42,20 +41,8 @@ export const MeTransactionBuilder = () => {
     signingCosmWasmClient,
   } = useWallet()
 
-  const actions = useCoreActions()
-
-  // Call relevant action hooks in the same order every time.
-  const actionsWithData: ActionsWithData = actions.reduce(
-    (acc, action) => ({
-      ...acc,
-      [action.key]: {
-        action,
-        transform: action.useTransformToCosmos(),
-        defaults: action.useDefaults(),
-      },
-    }),
-    {}
-  )
+  const actions = useActions()
+  const loadedActions = useLoadActions(actions)
 
   const [_meTransactionAtom, setWalletTransactionAtom] =
     useRecoilState(meTransactionAtom)
@@ -221,11 +208,11 @@ export const MeTransactionBuilder = () => {
     <StatelessMeTransactionBuilder
       SuspenseLoader={SuspenseLoader}
       actions={actions}
-      actionsWithData={actionsWithData}
       deleteSave={deleteSave}
       error={error}
       execute={execute}
       formMethods={formMethods}
+      loadedActions={loadedActions}
       loading={loading}
       save={save}
       saves={savesLoading}

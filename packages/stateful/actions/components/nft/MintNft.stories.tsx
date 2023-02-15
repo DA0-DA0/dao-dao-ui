@@ -3,11 +3,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { AddressInput } from '@dao-dao/stateless'
 import { makeProps as makeNftInfoProps } from '@dao-dao/stateless/components/NftCard.stories'
 import {
-  makeActionsProviderDecorator,
   makeDaoInfo,
+  makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionContextType } from '@dao-dao/types'
 
 import { MintNft } from './MintNft'
 import { MintNftData } from './types'
@@ -24,15 +23,7 @@ export default {
         token_id: '',
       },
     }),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionContextType.Dao,
-        info: makeDaoInfo(),
-      },
-    }),
+    makeDaoProvidersDecorator(makeDaoInfo()),
   ],
 } as ComponentMeta<typeof MintNft>
 

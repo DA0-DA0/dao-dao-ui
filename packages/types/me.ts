@@ -1,7 +1,7 @@
 import { ComponentType, ReactNode } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
-import { Action, ActionKeyAndData, ActionsWithData } from './actions'
+import { Action, ActionKeyAndData, LoadedActions } from './actions'
 import { CosmosMsgFor_Empty } from './contracts'
 import { NftCardInfo } from './dao'
 import { WalletProfile } from './profile'
@@ -45,7 +45,7 @@ export type MeProps = {
 
 export type MeTransactionBuilderProps = {
   actions: Action[]
-  actionsWithData: ActionsWithData
+  loadedActions: LoadedActions
   formMethods: UseFormReturn<MeTransactionForm, object>
   execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>
   loading: boolean

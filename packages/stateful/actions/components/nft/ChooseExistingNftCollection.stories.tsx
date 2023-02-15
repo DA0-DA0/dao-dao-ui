@@ -1,11 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
-  makeActionsProviderDecorator,
   makeDaoInfo,
+  makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionContextType } from '@dao-dao/types'
 
 import { MintNftData } from '.'
 import { ChooseExistingNftCollection } from './ChooseExistingNftCollection'
@@ -30,15 +29,7 @@ export default {
         extra: '',
       },
     }),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionContextType.Dao,
-        info: makeDaoInfo(),
-      },
-    }),
+    makeDaoProvidersDecorator(makeDaoInfo()),
   ],
 } as ComponentMeta<typeof ChooseExistingNftCollection>
 

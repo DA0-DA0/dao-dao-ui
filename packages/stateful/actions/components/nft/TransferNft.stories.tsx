@@ -4,10 +4,9 @@ import { AddressInput } from '@dao-dao/stateless'
 import { makeProps as makeNftCardProps } from '@dao-dao/stateless/components/NftCard.stories'
 import {
   ReactHookFormDecorator,
-  makeActionsProviderDecorator,
   makeDaoInfo,
+  makeDaoProvidersDecorator,
 } from '@dao-dao/storybook'
-import { ActionContextType } from '@dao-dao/types'
 
 import { TransferNftComponent } from './TransferNft'
 
@@ -17,15 +16,7 @@ export default {
   component: TransferNftComponent,
   decorators: [
     ReactHookFormDecorator,
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionContextType.Dao,
-        info: makeDaoInfo(),
-      },
-    }),
+    makeDaoProvidersDecorator(makeDaoInfo()),
   ],
 } as ComponentMeta<typeof TransferNftComponent>
 

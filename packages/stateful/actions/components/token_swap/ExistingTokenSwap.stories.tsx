@@ -2,11 +2,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeProps as makeTokenSwapStatusProps } from '@dao-dao/stateless/components/TokenSwapStatus.stories'
 import {
-  makeActionsProviderDecorator,
   makeDaoInfo,
+  makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionContextType } from '@dao-dao/types'
 
 import { ExistingTokenSwap } from './ExistingTokenSwap'
 import { PerformTokenSwapData } from './types'
@@ -21,15 +20,7 @@ export default {
       contractChosen: true,
       tokenSwapContractAddress: 'junoTokenSwapContract',
     }),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionContextType.Dao,
-        info: makeDaoInfo(),
-      },
-    }),
+    makeDaoProvidersDecorator(makeDaoInfo()),
   ],
 } as ComponentMeta<typeof ExistingTokenSwap>
 

@@ -2,11 +2,11 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from '@dao-dao/stateless'
 import {
-  makeActionsProviderDecorator,
   makeDaoInfo,
+  makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionContextType, TokenType } from '@dao-dao/types'
+import { TokenType } from '@dao-dao/types'
 
 import { BeginVesting } from './BeginVesting'
 
@@ -16,15 +16,7 @@ export default {
   component: BeginVesting,
   decorators: [
     makeReactHookFormDecorator(),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionContextType.Dao,
-        info: makeDaoInfo(),
-      },
-    }),
+    makeDaoProvidersDecorator(makeDaoInfo()),
   ],
 } as ComponentMeta<typeof BeginVesting>
 

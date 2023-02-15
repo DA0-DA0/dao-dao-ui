@@ -51,7 +51,7 @@ enum SubmitValue {
 
 export const MeTransactionBuilder = ({
   actions,
-  actionsWithData,
+  loadedActions,
   formMethods,
   execute,
   loading,
@@ -97,13 +97,13 @@ export const MeTransactionBuilder = ({
       }
 
       const messages = actions
-        .map(({ key, data }) => actionsWithData[key]?.transform(data))
+        .map(({ key, data }) => loadedActions[key]?.transform(data))
         // Filter out undefined messages.
         .filter(Boolean) as CosmosMsgFor_Empty[]
 
       execute(messages)
     },
-    [execute, actionsWithData]
+    [execute, loadedActions]
   )
 
   const onSubmitError: SubmitErrorHandler<MeTransactionForm> = useCallback(
@@ -156,7 +156,7 @@ export const MeTransactionBuilder = ({
           {watchActions.length > 0 && (
             <div className="flex flex-col gap-2">
               {watchActions.map(({ key, data }, index) => {
-                const Component = actionsWithData[key]?.action?.Component
+                const Component = loadedActions[key]?.action?.Component
                 if (!Component) {
                   return null
                 }
@@ -185,7 +185,7 @@ export const MeTransactionBuilder = ({
               onSelectAction={({ key }) => {
                 append({
                   key,
-                  data: actionsWithData[key]?.defaults ?? {},
+                  data: loadedActions[key]?.defaults ?? {},
                 })
               }}
             />
@@ -257,7 +257,7 @@ export const MeTransactionBuilder = ({
             <CosmosMessageDisplay
               value={decodedMessagesString(
                 watchActions
-                  .map(({ key, data }) => actionsWithData[key]?.transform(data))
+                  .map(({ key, data }) => loadedActions[key]?.transform(data))
                   // Filter out undefined messages.
                   .filter(Boolean) as CosmosMsgFor_Empty[]
               )}

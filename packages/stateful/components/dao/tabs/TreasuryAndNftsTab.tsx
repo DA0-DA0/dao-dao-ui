@@ -10,7 +10,7 @@ import {
 import { CoreActionKey } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { useCoreActionForKey } from '../../../actions'
+import { useActionForKey } from '../../../actions'
 import {
   useEncodedDaoProposalSinglePrefill,
   useMembership,
@@ -74,7 +74,7 @@ export const TreasuryAndNftsTab = () => {
   ])
 
   // ManageCw721 action defaults to adding
-  const addCw721Action = useCoreActionForKey(CoreActionKey.ManageCw721)
+  const addCw721Action = useActionForKey(CoreActionKey.ManageCw721)
   const encodedProposalPrefill = useEncodedDaoProposalSinglePrefill({
     actions: addCw721Action
       ? [

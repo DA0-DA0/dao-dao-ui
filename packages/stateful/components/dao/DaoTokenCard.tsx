@@ -20,7 +20,7 @@ import {
 } from '@dao-dao/types'
 import { NATIVE_DENOM, StakeType, loadableToLoadingData } from '@dao-dao/utils'
 
-import { useCoreActionForKey } from '../../actions'
+import { useActionForKey } from '../../actions'
 import { useEncodedDaoProposalSinglePrefill } from '../../hooks'
 import { tokenCardLazyInfoSelector } from '../../recoil'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
@@ -74,7 +74,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
 
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
-  const stakeAction = useCoreActionForKey(CoreActionKey.StakingActions)
+  const stakeAction = useActionForKey(CoreActionKey.StakingActions)
 
   // Does not get used if not native token.
   const encodedProposalPrefillClaim = useEncodedDaoProposalSinglePrefill({

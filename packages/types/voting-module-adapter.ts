@@ -1,7 +1,7 @@
 import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 
-import { Action } from './actions'
+import { Action, ActionOptions } from './actions'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationGovernanceConfigInputProps,
@@ -35,7 +35,7 @@ export type CommonGovernanceTokenInfo = {
 export interface IVotingModuleAdapter {
   // Hooks
   hooks: {
-    useActions: () => Action[]
+    useActions: (options: ActionOptions) => Action[]
     useDaoInfoBarItems: () => DaoInfoBarItem[]
     useProfileNewProposalCardAddresses: () => ProfileNewProposalCardAddress[]
     useCommonGovernanceTokenInfo?: () => CommonGovernanceTokenInfo
