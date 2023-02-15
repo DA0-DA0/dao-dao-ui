@@ -92,36 +92,40 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
     tokenOut.decimals
   )
 
-  const availableTokenItems = wyndTokens.map(
-    ({ denomOrAddress, symbol, imageUrl }) => {
-      const { token, balance } = balances.find(
-        ({ token }) => token.denomOrAddress === denomOrAddress
-      ) ?? { token: undefined, balance: '0' }
+  const availableTokenItems = useMemo(
+    () =>
+      wyndTokens.map(({ denomOrAddress, symbol, imageUrl }) => {
+        const { token, balance } = balances.find(
+          ({ token }) => token.denomOrAddress === denomOrAddress
+        ) ?? { token: undefined, balance: '0' }
 
-      return {
-        key: denomOrAddress,
-        label: '$' + symbol,
-        description: balance !== '0' && (
-          <p className="caption-text -mt-1">
-            {!token
-              ? `${t('title.balance')}: 0`
-              : `${t('title.balance')}: ${convertMicroDenomToDenomWithDecimals(
-                  balance,
-                  token.decimals
-                ).toLocaleString(undefined, {
-                  maximumFractionDigits: token.decimals,
-                })}`}
-          </p>
-        ),
-        Icon: () => (
-          <div
-            className="h-8 w-8 rounded-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-          />
-        ),
-        contentContainerClassName: '!gap-2',
-      }
-    }
+        return {
+          key: denomOrAddress,
+          label: '$' + symbol,
+          description: balance !== '0' && (
+            <p className="caption-text -mt-1">
+              {!token
+                ? `${t('title.balance')}: 0`
+                : `${t(
+                    'title.balance'
+                  )}: ${convertMicroDenomToDenomWithDecimals(
+                    balance,
+                    token.decimals
+                  ).toLocaleString(undefined, {
+                    maximumFractionDigits: token.decimals,
+                  })}`}
+            </p>
+          ),
+          Icon: () => (
+            <div
+              className="h-8 w-8 rounded-full bg-cover bg-center"
+              style={{ backgroundImage: `url(${imageUrl})` }}
+            />
+          ),
+          contentContainerClassName: '!gap-2',
+        }
+      }),
+    [balances, t, wyndTokens]
   )
 
   const makeTokenTrigger = useCallback(
