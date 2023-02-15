@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { ReactNode } from 'react'
 import {
   FieldValues,
   Path,
@@ -12,10 +13,9 @@ export interface RadioInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
 > {
-  options: {
-    label: string
+  options: ({
     value: UnpackNestedValue<PathValue<FV, FieldName>>
-  }[]
+  } & ({ label: string } | { display: ReactNode }))[]
   fieldName: FieldName
   watch: UseFormWatch<FV>
   setValue: UseFormSetValue<FV>
@@ -29,17 +29,19 @@ export const RadioInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   setValue,
   className,
 }: RadioInputProps<FV, FieldName>) => (
-  <div className={clsx('flex flex-row items-stretch gap-2', className)}>
-    {options.map(({ label: optionLabel, value }, index) => {
+  <div
+    className={clsx('flex flex-row flex-wrap items-stretch gap-2', className)}
+  >
+    {options.map(({ value, ...labelOrDisplay }, index) => {
       const selected = value === watch(fieldName)
 
       return (
         <RadioButton
           key={index}
           background
-          label={optionLabel}
           onClick={() => setValue(fieldName, value)}
           selected={selected}
+          {...labelOrDisplay}
         />
       )
     })}
@@ -52,6 +54,7 @@ export interface RadioButtonProps {
   label?: string
   background?: boolean
   className?: string
+  display?: ReactNode
 }
 
 export const RadioButton = ({
@@ -60,6 +63,7 @@ export const RadioButton = ({
   label,
   background,
   className,
+  display,
 }: RadioButtonProps) => (
   <div
     className={clsx(
@@ -87,5 +91,6 @@ export const RadioButton = ({
     </div>
 
     {!!label && <p className="primary-text">{label}</p>}
+    {display}
   </div>
 )

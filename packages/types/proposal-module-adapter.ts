@@ -2,7 +2,7 @@ import { ComponentType } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
-import { Action } from './actions'
+import { Action, ActionOptions } from './actions'
 import { ContractVersion } from './chain'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo } from './contracts/common'
@@ -35,7 +35,7 @@ export interface IProposalModuleAdapterCommon<
 
   // Hooks
   hooks: {
-    useActions: () => Action[]
+    useActions: (options: ActionOptions) => Action[]
     useProfileNewProposalCardInfoLines: () => ProfileNewProposalCardInfoLine[]
   }
 

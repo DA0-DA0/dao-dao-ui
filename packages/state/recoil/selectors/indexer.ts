@@ -184,3 +184,21 @@ export const walletMemberOfDaosSelector = selector<string[]>({
       : []
   },
 })
+
+export const walletAdminOfDaosSelector = selectorFamily<string[], string>({
+  key: 'walletAdminOfDaos',
+  get:
+    (walletAddress) =>
+    ({ get }) => {
+      const walletAdminOfDaos: string[] = get(
+        queryWalletIndexerSelector({
+          walletAddress,
+          formulaName: 'daos/adminOf',
+        })
+      )
+
+      return walletAdminOfDaos && Array.isArray(walletAdminOfDaos)
+        ? walletAdminOfDaos
+        : []
+    },
+})

@@ -46,7 +46,7 @@ export const UpdateInfoComponent: ActionComponent<
         <div className="flex flex-col gap-4 pl-2">
           <ImageSelector
             Trans={Trans}
-            error={errors?.name}
+            error={errors?.image_url}
             fieldName={fieldNamePrefix + 'image_url'}
             register={register}
             setValue={setValue}

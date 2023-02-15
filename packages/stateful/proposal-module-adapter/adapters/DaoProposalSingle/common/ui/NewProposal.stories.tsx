@@ -1,20 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { useDaoInfo } from '@dao-dao/stateless'
 import {
   DaoPageWrapperDecorator,
   WalletProviderDecorator,
 } from '@dao-dao/storybook/decorators'
-import { ActionsWithData } from '@dao-dao/types'
+import { LoadedActions } from '@dao-dao/types'
 
-import { useCoreActions } from '../../../../../actions'
-import { useVotingModuleAdapter } from '../../../../../voting-module-adapter'
-import { matchAdapter as matchProposalModuleAdapter } from '../../../../core'
-import { DaoProposalSingleAdapter } from '../../index'
+import { useActions } from '../../../../../actions'
 import { NewProposalForm } from '../../types'
-import { makeUseActions as makeUseProposalModuleActions } from '../hooks'
 import { NewProposal } from './NewProposal'
 
 export default {
@@ -25,32 +19,10 @@ export default {
 } as ComponentMeta<typeof NewProposal>
 
 const Template: ComponentStory<typeof NewProposal> = (args) => {
-  const { chainId, coreAddress, proposalModules } = useDaoInfo()
-
-  const singleChoiceProposalModule = proposalModules.find(
-    ({ contractName }) =>
-      matchProposalModuleAdapter(contractName)?.id ===
-      DaoProposalSingleAdapter.id
-  )!
-
-  const {
-    hooks: { useActions: useVotingModuleActions },
-  } = useVotingModuleAdapter()
-  const votingModuleActions = useVotingModuleActions()
-  const proposalModuleActions = makeUseProposalModuleActions({
-    chainId,
-    proposalModule: singleChoiceProposalModule,
-    coreAddress,
-  })()
-  const actions = useCoreActions(
-    useMemo(
-      () => [...votingModuleActions, ...proposalModuleActions],
-      [proposalModuleActions, votingModuleActions]
-    )
-  )
+  const actions = useActions()
 
   // Call relevant action hooks in the same order every time.
-  const actionsWithData: ActionsWithData = actions.reduce(
+  const loadedActions: LoadedActions = actions.reduce(
     (acc, action) => ({
       ...acc,
       [action.key]: {
@@ -78,11 +50,7 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
 
   return (
     <FormProvider {...formMethods}>
-      <NewProposal
-        {...args}
-        actions={actions}
-        actionsWithData={actionsWithData}
-      />
+      <NewProposal {...args} actions={actions} loadedActions={loadedActions} />
     </FormProvider>
   )
 }

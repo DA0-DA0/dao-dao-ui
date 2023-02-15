@@ -1,9 +1,8 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, ReactNode, useEffect } from 'react'
 
 import {
-  DaoContext,
   DaoNotFound,
   ErrorPage500,
   PageLoader,
@@ -11,16 +10,14 @@ import {
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
-  ActionOptionsContextType,
   CommonProposalInfo,
   DaoInfo,
   DaoInfoSerializable,
 } from '@dao-dao/types'
 import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
-import { ActionsProvider } from '../../actions'
-import { VotingModuleAdapterProvider } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { DaoProviders } from './DaoProviders'
 
 export type DaoPageWrapperProps = PropsWithChildren<{
   url?: string | null
@@ -45,7 +42,6 @@ export const DaoPageWrapper = ({
   error,
   setIcon,
   children,
-  ...innerProps
 }: DaoPageWrapperProps) => {
   const { isReady, isFallback } = useRouter()
   const { setAccentColor, theme } = useThemeContext()
@@ -112,7 +108,7 @@ export const DaoPageWrapper = ({
       {/* On fallback page (waiting for static props), `info` is not yet present. Let's just display a loader until `info` is loaded. We can't access translations until static props are loaded anyways. */}
       <SuspenseLoader fallback={<PageLoader />}>
         {info ? (
-          <InnerDaoPageWrapper info={info} {...innerProps}>
+          <InnerDaoPageWrapper info={info}>
             {/* Suspend children to prevent unmounting and remounting InnerDaoPageWrapper and the context providers inside it every time something needs to suspend (which causes a lot of flickering loading states). */}
             <SuspenseLoader fallback={<PageLoader />}>
               {children}
@@ -128,9 +124,9 @@ export const DaoPageWrapper = ({
   )
 }
 
-interface InnerDaoPageWrapperProps
-  extends Pick<DaoPageWrapperProps, 'children'> {
+type InnerDaoPageWrapperProps = {
   info: DaoInfo
+  children: ReactNode
 }
 
 const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
@@ -143,40 +139,5 @@ const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
     })
   }, [daoWebSocket, info.chainId, info.coreAddress])
 
-  return (
-    // Add a unique key here to tell React to re-render everything when the
-    // `coreAddress` is changed, since for some insane reason, Next.js does not
-    // reset state when navigating between dynamic rotues. Even though the
-    // `info` value passed below changes, somehow no re-render occurs... unless
-    // the `key` prop is unique. See the issue below for more people compaining
-    // about this to no avail. https://github.com/vercel/next.js/issues/9992
-    <DaoContext.Provider
-      key={info.coreAddress}
-      value={{
-        daoInfo: info,
-      }}
-    >
-      <VotingModuleAdapterProvider
-        contractName={info.votingModuleContractName}
-        options={{
-          votingModuleAddress: info.votingModuleAddress,
-          coreAddress: info.coreAddress,
-        }}
-      >
-        <ActionsProvider
-          options={{
-            chainId: info.chainId,
-            bech32Prefix: info.bech32Prefix,
-            address: info.coreAddress,
-            context: {
-              type: ActionOptionsContextType.Dao,
-              info,
-            },
-          }}
-        >
-          {children}
-        </ActionsProvider>
-      </VotingModuleAdapterProvider>
-    </DaoContext.Provider>
-  )
+  return <DaoProviders info={info}>{children}</DaoProviders>
 }

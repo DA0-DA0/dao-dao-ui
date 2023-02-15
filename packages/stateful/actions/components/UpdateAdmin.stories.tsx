@@ -2,10 +2,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
   ReactHookFormDecorator,
-  makeActionsProviderDecorator,
   makeDaoInfo,
+  makeDaoProvidersDecorator,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType } from '@dao-dao/types'
 
 import { UpdateAdminComponent } from './UpdateAdmin'
 
@@ -14,15 +13,7 @@ export default {
   component: UpdateAdminComponent,
   decorators: [
     ReactHookFormDecorator,
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionOptionsContextType.Dao,
-        info: makeDaoInfo(),
-      },
-    }),
+    makeDaoProvidersDecorator(makeDaoInfo()),
   ],
 } as ComponentMeta<typeof UpdateAdminComponent>
 
