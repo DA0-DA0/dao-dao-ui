@@ -256,6 +256,7 @@ export type DaoWebSocketConnectionInfo = {
 }
 
 export type DaoWebSocket = {
+  connected: boolean
   channel: Channel | null
   connect: (connectionInfo: DaoWebSocketConnectionInfo) => void
   disconnect: () => void

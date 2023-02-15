@@ -28,6 +28,7 @@ const channelNameForConnectionInfo = ({
 export const useDaoWebSocket = (pageMode: DaoPageMode): DaoWebSocket => {
   // Create pusher client once mounted in browser.
   const pusher = useRef<Pusher | null>(null)
+  const [connected, setConnected] = useState(false)
 
   const [channel, setChannel] = useState<Channel | null>(null)
   const connectionInfo = useRef<DaoWebSocketConnectionInfo | null>(null)
@@ -54,6 +55,9 @@ export const useDaoWebSocket = (pageMode: DaoPageMode): DaoWebSocket => {
           } else if (states.current === 'connected') {
             console.log('WebSocket connected.')
           }
+
+          // Update connected state so listeners know if they are active or not.
+          setConnected(states.current === 'connected')
         })
       }
 
@@ -120,6 +124,7 @@ export const useDaoWebSocket = (pageMode: DaoPageMode): DaoWebSocket => {
   }, [asPath, disconnect, pageMode])
 
   return {
+    connected,
     channel,
     connect,
     disconnect,
@@ -133,11 +138,11 @@ export const useOnDaoWebSocketMessage = (
   expectedType: string,
   callback: (data: Record<string, any>) => any
 ) => {
-  const { channel } = useAppLayoutContext().daoWebSocket
+  const { connected, channel } = useAppLayoutContext().daoWebSocket
 
   const [listening, setListening] = useState(false)
   useEffect(() => {
-    if (!channel) {
+    if (!connected || !channel) {
       setListening(false)
       return
     }
@@ -163,7 +168,7 @@ export const useOnDaoWebSocketMessage = (
       channel.unbind('broadcast', handler)
       setListening(false)
     }
-  }, [channel, callback, expectedType])
+  }, [channel, callback, expectedType, connected])
 
   return listening
 }

@@ -60,6 +60,7 @@ export const EMPTY_INBOX: InboxState = {
 }
 
 export const EMPTY_DAO_WEB_SOCKET: DaoWebSocket = {
+  connected: false,
   channel: null,
   connect: () => alert('connect'),
   disconnect: () => alert('disconnect'),
