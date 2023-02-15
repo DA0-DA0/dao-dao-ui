@@ -70,7 +70,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
       useActions(options)
   )
 
-  const payrollActions = usePayrollAdapter()?.actions
+  const payrollActions = usePayrollAdapter()?.makeActions(options)
 
   const coreActions = getActions(options)
 
