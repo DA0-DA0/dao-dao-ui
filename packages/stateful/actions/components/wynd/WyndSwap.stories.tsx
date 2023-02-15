@@ -1,11 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
-  makeActionsProviderDecorator,
   makeDaoInfo,
+  makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
-import { ActionOptionsContextType, TokenType } from '@dao-dao/types'
+import { TokenType } from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
@@ -43,15 +43,7 @@ export default {
       minOutAmount: 0,
       swapOperations: undefined,
     }),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionOptionsContextType.Dao,
-        info: makeDaoInfo(),
-      },
-    }),
+    makeDaoProvidersDecorator(makeDaoInfo()),
   ],
 } as ComponentMeta<typeof WyndSwapComponent>
 

@@ -266,7 +266,11 @@ export const DaoAdminExecActionRenderer: ActionComponent<
       {orderedActions.length === 0 ? (
         <Loader />
       ) : (
-        <ActionsRenderer actionData={actionData} hideCopyLink />
+        <ActionsRenderer
+          actionData={actionData}
+          availableActions={orderedActions}
+          hideCopyLink
+        />
       )}
     </>
   )
