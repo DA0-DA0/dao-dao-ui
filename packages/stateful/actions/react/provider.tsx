@@ -2,7 +2,7 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { Loader, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   ActionContextType,
   ActionOptions,
@@ -95,14 +95,12 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   )
 }
 
-// Make sure this re-renders when the options change. You can do this by setting
-// a `key` on this component or one of its ancestors. See DaoPageWrapper.tsx
-// where this component is used for a usage example.
 export const WalletActionsProvider = ({ children }: ActionsProviderProps) => {
   const { t } = useTranslation()
   const { chainInfo, address } = useWallet()
+
   if (!chainInfo || !address) {
-    throw new Error('WalletActionsProvider: no wallet connected')
+    return <Loader />
   }
 
   const options: ActionOptions = {

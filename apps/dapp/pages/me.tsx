@@ -14,10 +14,8 @@ import {
   SuspenseLoader,
   useWalletProfile,
 } from '@dao-dao/stateful'
-import { ActionsProvider } from '@dao-dao/stateful/actions'
+import { WalletActionsProvider } from '@dao-dao/stateful/actions'
 import { Loader, Me, MeDisconnected } from '@dao-dao/stateless'
-import { ActionContextType } from '@dao-dao/types/actions'
-import { CHAIN_BECH32_PREFIX, CHAIN_ID } from '@dao-dao/utils'
 
 const MePage: NextPage = () => {
   const {
@@ -32,18 +30,7 @@ const MePage: NextPage = () => {
   })
 
   return connected ? (
-    <ActionsProvider
-      // If walletAddress changes, refresh actions.
-      key={walletAddress}
-      options={{
-        chainId: CHAIN_ID,
-        bech32Prefix: CHAIN_BECH32_PREFIX,
-        address: walletAddress,
-        context: {
-          type: ActionContextType.Wallet,
-        },
-      }}
-    >
+    <WalletActionsProvider>
       {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
       <SuspenseLoader fallback={<Loader />} forceFallback={profile.loading}>
         <Me
@@ -55,7 +42,7 @@ const MePage: NextPage = () => {
           walletAddress={walletAddress}
         />
       </SuspenseLoader>
-    </ActionsProvider>
+    </WalletActionsProvider>
   ) : (
     <MeDisconnected
       connectWalletButton={<ConnectWallet />}
