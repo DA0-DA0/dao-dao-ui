@@ -131,31 +131,31 @@ export const useDaoWebSocket = (pageMode: DaoPageMode): DaoWebSocket => {
   }
 }
 
-type CallbackFunction = (data: Record<string, any>) => any
+type OnMessageCallback = (data: Record<string, any>) => any
 // If data not passed, will use the default data passed to the hook.
-type FallbackFunction = (data?: Record<string, any>) => void
+type OnMessageFallback = (data?: Record<string, any>) => void
 
 // Listens for messages from the DAO WebSocket and calls the callback if the
 // message type matches the expected type. Returns whether or not the listener
 // is currently active.
 export const useOnDaoWebSocketMessage = (
   expectedType: string,
-  callback: CallbackFunction,
+  onMessage: OnMessageCallback,
   // If passed, will be used as the default data for the fallback function
   // returned. The returned fallback function optionally allows passing data
   // which will override this default.
-  defaultFallbackData?: Parameters<FallbackFunction>[0]
+  defaultFallbackData?: Parameters<OnMessageFallback>[0]
 ): {
   listening: boolean
-  fallback: FallbackFunction
+  fallback: OnMessageFallback
 } => {
   const { connected, channel } = useAppLayoutContext().daoWebSocket
 
   // Store callback in ref so it can be used in the effect without having to
   // reapply the handler on every re-render. This avoids having to pass in a
   // memoized `useCallback` function to prevent additional re-renders.
-  const callbackRef = useRef<CallbackFunction>(callback)
-  callbackRef.current = callback
+  const callbackRef = useRef<OnMessageCallback>(onMessage)
+  callbackRef.current = onMessage
 
   const [listening, setListening] = useState(false)
   useEffect(() => {
@@ -194,7 +194,7 @@ export const useOnDaoWebSocketMessage = (
   // we still want to execute the callback.
   const defaultFallbackDataRef = useRef(defaultFallbackData)
   defaultFallbackDataRef.current = defaultFallbackData
-  const fallback: FallbackFunction = useCallback((data) => {
+  const fallback: OnMessageFallback = useCallback((data) => {
     callbackRef.current(data ?? defaultFallbackDataRef.current ?? {})
   }, [])
 
