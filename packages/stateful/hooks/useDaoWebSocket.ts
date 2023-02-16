@@ -203,6 +203,8 @@ export const useOnDaoWebSocketMessage = (
     return () => {
       channel.unbind('broadcast', handler)
       setListening(false)
+
+      console.log(`Stopped listening for WebSocket ${expectedType} messages.`)
     }
   }, [channel, expectedType, connected])
 
