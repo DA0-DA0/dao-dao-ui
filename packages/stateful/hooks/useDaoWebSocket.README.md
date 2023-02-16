@@ -6,8 +6,8 @@ DAO and its proposals. It is used in the top-level layout components
 (`DappLayout` and `SdaLayout`) to provide a global WebSocket instance to the
 entire app via the AppLayoutContext provider and its `useAppLayoutContext` hook.
 This architecture removes the need for multiple connections or constant
-re-connections when the page changes. This hook is already setup and mostly will
-not change.
+re-connections when the page changes. This hook is already set up and mostly
+will not change.
 
 The `useOnDaoWebSocketMessage` hook wraps the connection and provides a simple
 interface to subscribe to events. **_This is likely the hook you want to use in

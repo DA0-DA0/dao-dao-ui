@@ -73,6 +73,7 @@ export const ProposalList = () => {
 
         try {
           do {
+            // Load the most recent PROP_LOAD_LIMIT proposals from each module.
             const proposalListInfos = await Promise.all(
               reverseProposalInfosSelectors.map(
                 async ({ proposalModule, reverseProposalInfos }) => {
@@ -106,23 +107,24 @@ export const ProposalList = () => {
                   ? -1
                   : 0
               )
-              // We can only guarantee that the first PROP_LOAD_LIMIT proposals
-              // in this list of proposals combined from all proposal modules
-              // are in order, since we loaded the most recent PROP_LOAD_LIMIT
-              // proposals from each module, and then sorted all of them against
-              // each other. If we display all proposals returned (e.g. 10 from
-              // A, 10 from B, etc.), it's possible we'll include proposals from
-              // module B that are temporally after not-yet-loaded proposals
-              // from module A. In other words, if A has 12 proposals, B has 5
-              // proposals, all of A's proposals are more recent than B's, and
-              // we load the first 10 from both, we cannot show the first 10
-              // from A followed by all 5 from B, because we do not yet know if
-              // A has another page of 10 that are before B's 5. Thus, we ask
-              // all modules for 10, and only show the most recent 10, until the
-              // next list loads the remaining 2 from A followed by the 5 from B
-              // (since A is out of proposals). In summary, we must display at
-              // most the number of proposals that we ask for from each module
-              // to preserve the relative timestamps across all modules.
+              // We loaded the most recent PROP_LOAD_LIMIT proposals from each
+              // module above, and then sorted all of them against each other.
+              // Thus, we can only guarantee that the first PROP_LOAD_LIMIT
+              // proposals in this list of proposals combined from all proposal
+              // modules are in order. If we display all proposals returned
+              // (e.g. 10 from A, 10 from B, etc.), it's possible we'll include
+              // proposals from module B that are temporally after
+              // not-yet-loaded proposals from module A. In other words, if A
+              // has 12 proposals, B has 5 proposals, all of A's proposals are
+              // more recent than B's, and we load the first 10 from both, we
+              // cannot show the first 10 from A followed by all 5 from B,
+              // because we do not yet know if A has another page of 10 that are
+              // before B's 5. Thus, we ask all modules for 10, and only show
+              // the most recent 10, until the next list loads the remaining 2
+              // from A followed by the 5 from B (since A is out of proposals).
+              // In summary, we must display at most the number of proposals
+              // that we ask for from each module to preserve the relative
+              // timestamps across all modules.
               .slice(0, PROP_PAGINATE_LIMIT)
 
             // Store startBefore cursor values for next query based on last
