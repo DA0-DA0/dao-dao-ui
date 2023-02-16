@@ -385,24 +385,19 @@ export const CreateDaoForm = ({
         if (connected) {
           setCreating(true)
           try {
-            const coreAddress = await toast.promise(
-              createDaoWithFactory().then(
-                // New wallet balances will not appear until the next block.
-                (address) => awaitNextBlock().then(() => address)
-              ),
-              {
-                loading: t('info.creatingDao'),
-                success: t('success.daoCreatedPleaseWait'),
-                error: (err) => processError(err),
-              }
-            )
+            const coreAddress = await toast.promise(createDaoWithFactory(), {
+              loading: t('info.creatingDao'),
+              success: t('success.daoCreatedPleaseWait'),
+              error: (err) => processError(err),
+            })
 
             // Don't set following on SDA. Only dApp.
             if (mode !== DaoPageMode.Sda) {
               setFollowing(coreAddress)
             }
 
-            refreshBalances()
+            // New wallet balances will not appear until the next block.
+            awaitNextBlock().then(refreshBalances)
 
             //! Show DAO created modal.
 
@@ -611,11 +606,13 @@ export const CreateDaoForm = ({
       </RightSidebarContent>
       <PageHeader
         breadcrumbs={{
-          // On SDA, use the SubDAOs tab as the home breadcrumb.
-          sdaHomeTab: {
-            id: DaoTabId.Subdaos,
-            label: t('title.subDaos'),
-          },
+          // Use the SubDAOs tab as the home breadcrumb if making a SubDAO.
+          homeTab: makingSubDao
+            ? {
+                id: DaoTabId.Subdaos,
+                sdaLabel: t('title.subDaos'),
+              }
+            : undefined,
           current:
             name.trim() ||
             (makingSubDao ? t('title.newSubDao') : t('title.newDao')),

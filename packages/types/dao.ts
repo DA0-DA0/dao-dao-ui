@@ -1,4 +1,5 @@
 import { TFunction } from 'next-i18next'
+import { Channel } from 'pusher-js'
 import { ComponentType } from 'react'
 import {
   FieldError,
@@ -243,4 +244,16 @@ export type DaoTabWithComponent = DaoTab & {
 export enum DaoPageMode {
   Dapp = 'dapp',
   Sda = 'sda',
+}
+
+export type DaoWebSocketConnectionInfo = {
+  chainId: string
+  coreAddress: string
+}
+
+export type DaoWebSocket = {
+  connected: boolean
+  channel: Channel | null
+  connect: (connectionInfo: DaoWebSocketConnectionInfo) => void
+  disconnect: () => void
 }

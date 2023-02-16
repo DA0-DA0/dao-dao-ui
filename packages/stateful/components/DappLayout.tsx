@@ -33,7 +33,7 @@ import {
 import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import { CommandModal, makeGenericContext } from '../command'
-import { useFollowingDaos, useWalletInfo } from '../hooks'
+import { useDaoWebSocket, useFollowingDaos, useWalletInfo } from '../hooks'
 import { useInbox } from '../inbox'
 import {
   daoCreatedCardPropsAtom,
@@ -147,6 +147,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
     useState(false)
   const [updateProfileNftVisible, setUpdateProfileNftVisible] = useState(false)
+  const daoWebSocket = useDaoWebSocket(DaoPageMode.Dapp)
   const appLayoutContext: Omit<
     IAppLayoutContext,
     'RightSidebarContent' | 'PageHeader'
@@ -170,8 +171,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         // why we pass a function here.
         _setRootCommandContextMaker(() => maker),
       inbox,
+      daoWebSocket,
     }),
     [
+      daoWebSocket,
       inbox,
       responsiveNavigationEnabled,
       responsiveRightSidebarEnabled,

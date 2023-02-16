@@ -330,17 +330,6 @@ const InnerProposalStatusAndInfo = ({
     awaitNextBlock,
   ])
 
-  // Refresh proposal every 30 seconds, while voting open. Refreshes status and
-  // votes.
-  useEffect(() => {
-    if (!proposal.votingOpen) {
-      return
-    }
-
-    const interval = setInterval(refreshProposal, 30 * 1000)
-    return () => clearInterval(interval)
-  }, [refreshProposal, proposal.votingOpen])
-
   return (
     <StatelessProposalStatusAndInfo
       {...props}

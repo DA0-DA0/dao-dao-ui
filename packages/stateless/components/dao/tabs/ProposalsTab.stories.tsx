@@ -27,8 +27,9 @@ export const Default = Template.bind({})
 Default.args = {
   ProposalList: () => (
     <ProposalList
-      {...(ProposalListStories.Default
-        .args as ProposalListProps<ProposalLineProps>)}
+      {...(ProposalListStories.Default.args as ProposalListProps<
+        ProposalLineProps & { proposalId: string }
+      >)}
     />
   ),
   ButtonLink,
@@ -39,8 +40,9 @@ None.args = {
   ...Default.args,
   ProposalList: () => (
     <ProposalList
-      {...(ProposalListStories.None
-        .args as ProposalListProps<ProposalLineProps>)}
+      {...(ProposalListStories.None.args as ProposalListProps<
+        ProposalLineProps & { proposalId: string }
+      >)}
     />
   ),
   ButtonLink,

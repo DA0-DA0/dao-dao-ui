@@ -1,11 +1,12 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, ReactNode, useEffect } from 'react'
 
 import {
   DaoNotFound,
   ErrorPage500,
   PageLoader,
+  useAppLayoutContext,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
@@ -41,7 +42,6 @@ export const DaoPageWrapper = ({
   error,
   setIcon,
   children,
-  ...innerProps
 }: DaoPageWrapperProps) => {
   const { isReady, isFallback } = useRouter()
   const { setAccentColor, theme } = useThemeContext()
@@ -108,12 +108,12 @@ export const DaoPageWrapper = ({
       {/* On fallback page (waiting for static props), `info` is not yet present. Let's just display a loader until `info` is loaded. We can't access translations until static props are loaded anyways. */}
       <SuspenseLoader fallback={<PageLoader />}>
         {info ? (
-          <DaoProviders info={info} {...innerProps}>
+          <InnerDaoPageWrapper info={info}>
             {/* Suspend children to prevent unmounting and remounting InnerDaoPageWrapper and the context providers inside it every time something needs to suspend (which causes a lot of flickering loading states). */}
             <SuspenseLoader fallback={<PageLoader />}>
               {children}
             </SuspenseLoader>
-          </DaoProviders>
+          </InnerDaoPageWrapper>
         ) : error ? (
           <ErrorPage500 error={error} />
         ) : (
@@ -122,4 +122,24 @@ export const DaoPageWrapper = ({
       </SuspenseLoader>
     </>
   )
+}
+
+type InnerDaoPageWrapperProps = {
+  info: DaoInfo
+  children: ReactNode
+}
+
+const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
+  // Ensure connected to current DAO's WebSocket.
+  const {
+    daoWebSocket: { connect },
+  } = useAppLayoutContext()
+  useEffect(() => {
+    connect({
+      chainId: info.chainId,
+      coreAddress: info.coreAddress,
+    })
+  }, [connect, info.chainId, info.coreAddress])
+
+  return <DaoProviders info={info}>{children}</DaoProviders>
 }
