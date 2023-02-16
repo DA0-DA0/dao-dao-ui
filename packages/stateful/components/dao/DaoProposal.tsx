@@ -105,7 +105,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const {
     listening: listeningForProposal,
     fallback: onProposalUpdateFallback,
-  } = useOnDaoWebSocketMessage('proposal', ({ status, proposalId }) => {
+  } = useOnDaoWebSocketMessage('proposal', async ({ status, proposalId }) => {
     // If the current proposal updated...
     if (proposalId === proposalInfo.id) {
       refreshProposalAndAll()
@@ -115,9 +115,10 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         // Show loading since page will reload shortly.
         toast.loading(t('success.proposalExecuted'))
 
-        // Manually revalidate DAO static props. Don't await this promise since
-        // we just want to tell the server to do it; we're about to reload.
-        fetch(`/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`)
+        // Manually revalidate DAO static props.
+        await fetch(
+          `/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`
+        )
 
         // Refresh entire app since any DAO config may have changed.
         window.location.reload()
