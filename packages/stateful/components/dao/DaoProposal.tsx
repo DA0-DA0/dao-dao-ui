@@ -9,7 +9,6 @@ import {
   DaoProposalPageWrapperProps,
   ProfileDisconnectedCard,
   ProfileProposalCard,
-  useAwaitNextBlock,
   useOnDaoWebSocketMessage,
   useWalletProfile,
 } from '@dao-dao/stateful'
@@ -57,10 +56,8 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { refreshProposal, refreshProposalAndAll, refreshing } =
     useProposalRefreshers()
 
-  const awaitNextBlock = useAwaitNextBlock()
-
   // Vote listener. Show alerts and refresh accordingly.
-  const { listening: listeningForVote, fallback: onVoteFallback } =
+  const { listening: listeningForVote, fallback: onVoteSuccess } =
     useOnDaoWebSocketMessage(
       'vote',
       ({ proposalId, voter }) => {
@@ -80,26 +77,6 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         voter: address,
       }
     )
-
-  // Fallback if the listener above is offline, refresh every 30 seconds.
-  useEffect(() => {
-    const interval = setInterval(refreshProposalAndAll, 30 * 1000)
-    return () => clearInterval(interval)
-  }, [refreshProposalAndAll])
-
-  // Fallback if the listener above is offline when the vote happens.
-  const onVoteSuccess = useCallback(async () => {
-    // If listener is already listening, don't do anything here.
-    if (listeningForVote) {
-      return
-    }
-
-    // Wait a block for indexer to catch up.
-    await awaitNextBlock()
-
-    // Call the callback manually.
-    onVoteFallback()
-  }, [awaitNextBlock, listeningForVote, onVoteFallback])
 
   // Proposal status listener. Show alerts and refresh accordingly.
   const {
@@ -130,49 +107,35 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     }
   })
 
-  // Fallback if the listener above is offline when the vote happens.
-  const onExecuteSuccess = useCallback(async () => {
-    // If listener is already listening, don't do anything here.
-    if (listeningForProposal) {
+  // Fallback if the listener above is not listening.
+  const onExecuteSuccess = useCallback(
+    () =>
+      onProposalUpdateFallback({
+        status: Status.Executed,
+        proposalId: proposalInfo.id,
+      }),
+    [onProposalUpdateFallback, proposalInfo.id]
+  )
+
+  // Fallback if the listener above is not listening.
+  const onCloseSuccess = useCallback(
+    () =>
+      onProposalUpdateFallback({
+        status: Status.Closed,
+        proposalId: proposalInfo.id,
+      }),
+    [onProposalUpdateFallback, proposalInfo.id]
+  )
+
+  // Fallback if both listeners above are offline, refresh every 30 seconds.
+  useEffect(() => {
+    if (listeningForVote || listeningForProposal) {
       return
     }
 
-    // Wait a block for indexer to catch up.
-    await awaitNextBlock()
-
-    // Call the callback manually.
-    onProposalUpdateFallback({
-      status: Status.Executed,
-      proposalId: proposalInfo.id,
-    })
-  }, [
-    awaitNextBlock,
-    listeningForProposal,
-    onProposalUpdateFallback,
-    proposalInfo.id,
-  ])
-
-  // Fallback if the listener above is offline when the vote happens.
-  const onCloseSuccess = useCallback(async () => {
-    // If listener is already listening, don't do anything here.
-    if (listeningForProposal) {
-      return
-    }
-
-    // Wait a block for indexer to catch up.
-    await awaitNextBlock()
-
-    // Call the callback manually.
-    onProposalUpdateFallback({
-      status: Status.Closed,
-      proposalId: proposalInfo.id,
-    })
-  }, [
-    awaitNextBlock,
-    listeningForProposal,
-    onProposalUpdateFallback,
-    proposalInfo.id,
-  ])
+    const interval = setInterval(refreshProposalAndAll, 30 * 1000)
+    return () => clearInterval(interval)
+  }, [listeningForProposal, listeningForVote, refreshProposalAndAll])
 
   // Memoize ProposalStatusAndInfo so it doesn't re-render when the proposal
   // refreshes. The cached loadable it uses internally depends on the

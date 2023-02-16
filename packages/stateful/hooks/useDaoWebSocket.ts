@@ -16,6 +16,8 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { useAwaitNextBlock } from './useAwaitNextBlock'
+
 const channelNameForConnectionInfo = ({
   chainId,
   coreAddress,
@@ -133,11 +135,25 @@ export const useDaoWebSocket = (pageMode: DaoPageMode): DaoWebSocket => {
 
 type OnMessageCallback = (data: Record<string, any>) => any
 // If data not passed, will use the default data passed to the hook.
-type OnMessageFallback = (data?: Record<string, any>) => void
+type OnMessageFallbackOptions = {
+  // If true, will not wait for the next block before calling the callback.
+  // Defaults to false.
+  skipWait?: boolean
+  // If true, will only call the callback if the listener is not listening.
+  // Defaults to true.
+  onlyIfNotListening?: boolean
+}
+type OnMessageFallback = (
+  data?: Record<string, any>,
+  options?: OnMessageFallbackOptions
+) => void
 
 // Listens for messages from the DAO WebSocket and calls the callback if the
 // message type matches the expected type. Returns whether or not the listener
-// is currently active.
+// is currently active and a fallback function. By default, the fallback
+// function will call the callback function if the listener is not listening,
+// and after waiting for the next block. Its behavior can be customized with its
+// options arguments.
 export const useOnDaoWebSocketMessage = (
   expectedType: string,
   onMessage: OnMessageCallback,
@@ -158,6 +174,7 @@ export const useOnDaoWebSocketMessage = (
   callbackRef.current = onMessage
 
   const [listening, setListening] = useState(false)
+
   useEffect(() => {
     if (!connected || !channel) {
       setListening(false)
@@ -189,14 +206,34 @@ export const useOnDaoWebSocketMessage = (
     }
   }, [channel, expectedType, connected])
 
+  const awaitNextBlock = useAwaitNextBlock()
+
+  // Store listening in ref so the fallback function can access it within the
+  // same instance of the function without re-rendering.
+  const listeningRef = useRef(listening)
+  listeningRef.current = listening
+
   // Create a memoized fallback function that calls the callback with the
-  // fallback data. This is useful for when the WebSocket is not connected, but
-  // we still want to execute the callback.
+  // fallback data after waiting a block. This is useful for ensuring the
+  // callback gets executed when the WebSocket is misbehaving.
   const defaultFallbackDataRef = useRef(defaultFallbackData)
   defaultFallbackDataRef.current = defaultFallbackData
-  const fallback: OnMessageFallback = useCallback((data) => {
-    callbackRef.current(data ?? defaultFallbackDataRef.current ?? {})
-  }, [])
+  const fallback: OnMessageFallback = useCallback(
+    async (data, { skipWait = false, onlyIfNotListening = true } = {}) => {
+      // Do nothing if we are already listening.
+      if (onlyIfNotListening && listeningRef.current) {
+        return
+      }
+
+      if (!skipWait) {
+        // Wait one block before executing the callback.
+        await awaitNextBlock()
+      }
+
+      callbackRef.current(data ?? defaultFallbackDataRef.current ?? {})
+    },
+    [awaitNextBlock]
+  )
 
   return {
     listening,
