@@ -4,7 +4,7 @@ import { useRecoilCallback, useSetRecoilState } from 'recoil'
 import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
-  useDaoInfo,
+  useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
 
@@ -18,7 +18,7 @@ import { ProposalLine, ProposalLineProps } from './ProposalLine'
 const PROP_LOAD_LIMIT = 20
 
 export const ProposalList = () => {
-  const { chainId, coreAddress, proposalModules } = useDaoInfo()
+  const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
   const { getDaoProposalPath } = useNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,

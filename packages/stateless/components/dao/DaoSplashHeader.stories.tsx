@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook'
 
-import { useDaoInfo } from '../../hooks'
+import { useDaoInfoContext } from '../../hooks'
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoInfoBar, DaoInfoBarProps } from './DaoInfoBar'
 import { Default as DaoInfoBarStory } from './DaoInfoBar.DaoInfoBar.stories'
@@ -15,7 +15,7 @@ export default {
 } as ComponentMeta<typeof DaoSplashHeader>
 
 const Template: ComponentStory<typeof DaoSplashHeader> = (args) => (
-  <DaoSplashHeader {...args} daoInfo={useDaoInfo()} />
+  <DaoSplashHeader {...args} daoInfo={useDaoInfoContext()} />
 )
 
 export const Default = Template.bind({})

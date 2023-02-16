@@ -15,7 +15,7 @@ import {
 import {
   CreateProposal,
   PageLoader,
-  useDaoInfo,
+  useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import {
@@ -38,7 +38,7 @@ import { SuspenseLoader } from '../SuspenseLoader'
 export const CreateDaoProposal = () => {
   const { t } = useTranslation()
   const { goToDaoProposal, router } = useNavHelpers()
-  const daoInfo = useDaoInfo()
+  const daoInfo = useDaoInfoContext()
   const { connected } = useWallet()
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(

@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
-import { useDaoInfo } from '../../../hooks/useDaoContext'
+import { useDaoInfoContext } from '../../../hooks'
 import { ButtonLink } from '../../buttons'
 import { IconButtonLink } from '../../icon_buttons'
 import { LinkWrapper } from '../../LinkWrapper'
@@ -41,7 +41,7 @@ const Template: ComponentStory<typeof SubDaosTab> = (args) => {
           }}
         />
       )}
-      daoInfo={useDaoInfo()}
+      daoInfo={useDaoInfoContext()}
     />
   )
 }

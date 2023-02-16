@@ -1,4 +1,4 @@
-import { useDaoInfo } from '@dao-dao/stateless'
+import { useDaoInfoContext } from '@dao-dao/stateless'
 import { BaseProfileCardMemberInfoProps } from '@dao-dao/types'
 
 import { useMembership } from '../../../../hooks'
@@ -9,7 +9,7 @@ export const ProfileCardMemberInfo = ({
   deposit: _deposit,
   ...props
 }: BaseProfileCardMemberInfoProps) => {
-  const { name: daoName, chainId } = useDaoInfo()
+  const { name: daoName, chainId } = useDaoInfoContext()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
   const { walletVotingWeight, totalVotingWeight } = useMembership({

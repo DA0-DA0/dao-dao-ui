@@ -11,7 +11,7 @@ import {
 import {
   Loader,
   useCachedLoadable,
-  useDaoInfo,
+  useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { AmountWithTimestampAndDenom } from '@dao-dao/types'
@@ -39,7 +39,7 @@ interface ProposalCreationFormProps {
 export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
   const { goToDaoProposal } = useNavHelpers()
-  const { coreAddress, chainId } = useDaoInfo()
+  const { coreAddress, chainId } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet(chainId)
 

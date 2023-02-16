@@ -1,13 +1,13 @@
 import {
   ProposalsTab as StatelessProposalsTab,
-  useDaoInfo,
+  useDaoInfoContext,
 } from '@dao-dao/stateless'
 
 import { ButtonLink } from '../../ButtonLink'
 import { ProposalList } from '../../ProposalList'
 
 export const ProposalsTab = () => {
-  const daoInfo = useDaoInfo()
+  const daoInfo = useDaoInfoContext()
 
   return (
     <StatelessProposalsTab

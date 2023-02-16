@@ -48,10 +48,6 @@ export interface DaoParentInfo {
   registeredSubDao: boolean
 }
 
-export type IDaoContext = {
-  daoInfo: DaoInfo
-}
-
 // Used in @dao-dao/stateful/components/DaoPageWrapper to serialize DaoInfo loaded
 // via static props (@dao-dao/stateful/server/makeGetDaoStaticProps) to be fed
 // into DaoPageWrapper and available in the UI via DaoInfoContext.

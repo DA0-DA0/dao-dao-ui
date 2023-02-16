@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { useDaoInfo } from '@dao-dao/stateless'
+import { useDaoInfoContext } from '@dao-dao/stateless'
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
 import {
   makeBankMessage,
@@ -35,7 +35,7 @@ export const OpenSurveySection = ({
   status,
 }: StatefulOpenSurveySectionProps) => {
   const { t } = useTranslation()
-  const { coreAddress, chainId, bech32Prefix } = useDaoInfo()
+  const { coreAddress, chainId, bech32Prefix } = useDaoInfoContext()
 
   const { connected } = useWallet()
   // Voting power at time of survey creation, which determines what access level

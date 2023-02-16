@@ -33,7 +33,7 @@ import { Default as ProposalsTabStory } from '../components/dao/tabs/ProposalsTa
 import { Default as SubDaosTabStory } from '../components/dao/tabs/SubDaosTab.stories'
 import { Default as TreasuryAndNftsTabStory } from '../components/dao/tabs/TreasuryAndNftsTab.stories'
 import { Default as ProfileMemberCardStory } from '../components/profile/ProfileMemberCard.stories'
-import { useDaoInfo } from '../hooks/useDaoContext'
+import { useDaoInfoContext } from '../hooks'
 import { DaoDappTabbedHome } from './DaoDappTabbedHome'
 
 export default {
@@ -52,7 +52,7 @@ const Template: ComponentStory<typeof DaoDappTabbedHome> = (args) => {
   return (
     <DaoDappTabbedHome
       {...args}
-      daoInfo={useDaoInfo()}
+      daoInfo={useDaoInfoContext()}
       follow={{
         following,
         onFollow: () => setFollowing((p) => !p),

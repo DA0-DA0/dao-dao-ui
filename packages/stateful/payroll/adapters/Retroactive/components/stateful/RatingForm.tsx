@@ -10,7 +10,11 @@ import {
   cosmWasmClientForChainSelector,
   usdcPerMacroTokenSelector,
 } from '@dao-dao/state/recoil'
-import { Loader, useCachedLoadable, useDaoInfo } from '@dao-dao/stateless'
+import {
+  Loader,
+  useCachedLoadable,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
 import { AmountWithTimestampAndDenom } from '@dao-dao/types'
 import { nativeTokenDecimals } from '@dao-dao/utils'
 
@@ -36,7 +40,7 @@ interface RatingFormProps {
 
 export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
   const { t } = useTranslation()
-  const { coreAddress, chainId } = useDaoInfo()
+  const { coreAddress, chainId } = useDaoInfoContext()
   const { publicKey: walletPublicKey } = useWallet(chainId)
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))

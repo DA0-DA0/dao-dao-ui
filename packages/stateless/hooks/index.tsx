@@ -1,5 +1,5 @@
 export * from './useCachedLoadable'
-export * from './useDaoContext'
+export * from './useDaoInfoContext'
 export * from './useDropdownSorter'
 export * from './useMountedInBrowser'
 export * from './useNavHelpers'

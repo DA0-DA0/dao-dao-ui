@@ -102,7 +102,7 @@ view the voting configuration for each one:
 import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
 
 export const DaoInfo = () => {
-  const { coreAddress, proposalModules } = useDaoInfo()
+  const { coreAddress, proposalModules } = useDaoInfoContext()
 
   const components = useMemo(
     () =>

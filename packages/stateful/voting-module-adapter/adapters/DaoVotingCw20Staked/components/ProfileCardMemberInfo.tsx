@@ -10,7 +10,7 @@ import {
   junoswapPoolsListSelector,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useDaoInfo } from '@dao-dao/stateless'
+import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   UnstakingTask,
@@ -39,7 +39,7 @@ export const ProfileCardMemberInfo = ({
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
-  const { name: daoName, chainId } = useDaoInfo()
+  const { name: daoName, chainId } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletInfo()
 

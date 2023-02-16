@@ -11,7 +11,7 @@ import {
   blocksPerYearSelector,
   cosmWasmClientForChainSelector,
 } from '@dao-dao/state'
-import { useCachedLoadable, useDaoInfo } from '@dao-dao/stateless'
+import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   BaseNewProposalProps,
   IProposalModuleAdapterCommonOptions,
@@ -51,7 +51,7 @@ export const NewProposal = ({
     imageUrl: daoImageUrl,
     chainId,
     coreAddress,
-  } = useDaoInfo()
+  } = useDaoInfoContext()
   const { connected } = useWallet()
 
   const actions = useActions()

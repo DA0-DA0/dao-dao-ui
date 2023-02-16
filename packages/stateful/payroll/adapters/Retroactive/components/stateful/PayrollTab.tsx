@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import { waitForAll } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import { useCachedLoadable, useDaoInfo } from '@dao-dao/stateless'
+import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   loadableToLoadingData,
   secp256k1PublicKeyToBech32Address,
@@ -22,7 +22,7 @@ import { NewSurveyForm } from './NewSurveyForm'
 import { OpenSurveySection } from './OpenSurveySection'
 
 export const PayrollTab = () => {
-  const { chainId, coreAddress, bech32Prefix } = useDaoInfo()
+  const { chainId, coreAddress, bech32Prefix } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet(chainId)
   const { isMember = false } = useMembership({

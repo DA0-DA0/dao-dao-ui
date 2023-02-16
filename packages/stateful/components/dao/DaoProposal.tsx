@@ -22,7 +22,7 @@ import {
   Proposal,
   ProposalNotFound,
   ProposalProps,
-  useDaoInfo,
+  useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { CommonProposalInfo } from '@dao-dao/types'
@@ -34,7 +34,7 @@ interface InnerDaoProposalProps {
 
 const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
-  const daoInfo = useDaoInfo()
+  const daoInfo = useDaoInfoContext()
   const orderedActions = useOrderedActionsToMatch(useActions())
   const { getDaoProposalPath, router } = useNavHelpers()
   const { connected, address } = useWallet()

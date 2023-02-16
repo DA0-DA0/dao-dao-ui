@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   ProfileNewProposalCard as StatelessProfileNewProposalCard,
   useAppLayoutContext,
-  useDaoInfo,
+  useDaoInfoContext,
 } from '@dao-dao/stateless'
 
 import { useMembership, useWalletInfo } from '../../hooks'
@@ -16,7 +16,7 @@ export interface ProfileNewProposalCardProps {
 }
 
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
-  const { name: daoName, coreAddress } = useDaoInfo()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
   const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
 
@@ -48,7 +48,7 @@ export const InnerProfileNewProposalCard = ({
   },
 }: ProfileNewProposalCardProps) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress, chainId } = useDaoInfo()
+  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
   const { walletProfile, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppLayoutContext()
   const {

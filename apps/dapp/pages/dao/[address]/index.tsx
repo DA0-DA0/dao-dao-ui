@@ -26,7 +26,7 @@ import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useWidgets } from '@dao-dao/stateful/widgets'
 import {
   DaoDappTabbedHome,
-  useDaoInfo,
+  useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { CoreActionKey, DaoPageMode } from '@dao-dao/types'
@@ -36,7 +36,7 @@ const InnerDaoHome = () => {
   const { t } = useTranslation()
   const { getDaoProposalPath, router } = useNavHelpers()
 
-  const daoInfo = useDaoInfo()
+  const daoInfo = useDaoInfoContext()
 
   // If no parent, fallback to current address since it's already loaded from
   // the above hook. We won't use this value unless there's a parent. It's

@@ -8,7 +8,7 @@ import {
   Loader,
   NoContent,
   Tooltip,
-  useDaoInfo,
+  useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
@@ -50,7 +50,7 @@ export const PayrollTab = ({
   IconButtonLink,
 }: PayrollTabProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfo()
+  const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useNavHelpers()
 
   const [showCreate, setShowCreate] = useState(false)

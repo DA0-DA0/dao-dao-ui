@@ -6,7 +6,7 @@ import { refreshNativeTokenStakingInfoAtom } from '@dao-dao/state'
 import {
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
-  useDaoInfo,
+  useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { CoreActionKey, TokenCardInfo } from '@dao-dao/types'
@@ -26,7 +26,7 @@ import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 
 export const TokenCard = (props: TokenCardInfo) => {
   const router = useRouter()
-  const { coreAddress } = useDaoInfo()
+  const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useNavHelpers()
 
   const addToken = useAddToken()
