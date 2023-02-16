@@ -17,7 +17,7 @@ import {
   ProfileNewProposalCardProps,
 } from '../components/profile/ProfileNewProposalCard'
 import { Default as ProfileNewProposalCardStory } from '../components/profile/ProfileNewProposalCard.stories'
-import { useDaoInfoContext } from '../hooks'
+import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { CreateProposal } from './CreateProposal'
 
 export default {

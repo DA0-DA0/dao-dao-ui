@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
-import { useDaoInfoContext } from '../../../hooks'
+import { useDaoInfoContext } from '../../../hooks/useDaoInfoContext'
 import { ButtonLink } from '../../buttons'
 import { IconButtonLink } from '../../icon_buttons'
 import { LinkWrapper } from '../../LinkWrapper'

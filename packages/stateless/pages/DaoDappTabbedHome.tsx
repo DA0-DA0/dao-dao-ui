@@ -14,7 +14,7 @@ import {
   useAppLayoutContext,
 } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
-import { useDaoInfoContext } from '../hooks'
+import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { useNavHelpers } from '../hooks/useNavHelpers'
 
 export const DaoDappTabbedHome = ({
