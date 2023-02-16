@@ -19,7 +19,7 @@ export const useDaoProposalSinglePublishProposal = ():
   const { coreAddress, chainId, proposalModules } = useDaoInfoContext()
 
   // Memoize hook getter since we don't want to create the hook more than once.
-  // `useDaoInfo` always returns the same instances of the data, so no
+  // `useDaoInfoContext` always returns the same instances of the data, so no
   // hook rules are violated here.
   const useProposalModule = useMemo(() => {
     const daoProposalSingleModule = proposalModules.find(
