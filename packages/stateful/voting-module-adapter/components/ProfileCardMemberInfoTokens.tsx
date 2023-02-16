@@ -17,7 +17,7 @@ import {
 import { formatPercentOf100, secondsToWdhms } from '@dao-dao/utils'
 
 export interface ProfileCardMemberInfoTokensProps
-  extends Omit<BaseProfileCardMemberInfoProps, 'deposit'> {
+  extends Omit<BaseProfileCardMemberInfoProps, 'maxGovernanceTokenDeposit'> {
   daoName: string
   claimingLoading: boolean
   stakingLoading: boolean

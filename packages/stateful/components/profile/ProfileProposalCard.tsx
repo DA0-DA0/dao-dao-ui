@@ -41,6 +41,7 @@ export const ProfileProposalCard = () => {
 
   const {
     components: { ProfileCardMemberInfo },
+    hooks: { useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
 
   const depositInfoSelectors = useMemo(
@@ -58,15 +59,23 @@ export const ProfileProposalCard = () => {
     waitForAll(depositInfoSelectors)
   )
 
-  const maxProposalModuleDeposit =
+  const { denomOrAddress: governanceDenomOrAddress } =
+    useCommonGovernanceTokenInfo?.() ?? {}
+
+  // Get max deposit of governance token across all proposal modules.
+  const maxGovernanceTokenProposalModuleDeposit =
     proposalModuleDepositInfosLoadable.state !== 'hasValue'
       ? 0
       : Math.max(
-          ...(
-            proposalModuleDepositInfosLoadable.contents.filter(
-              Boolean
-            ) as CheckedDepositInfo[]
-          ).map(({ amount }) => Number(amount)),
+          ...proposalModuleDepositInfosLoadable.contents
+            .filter(
+              (depositInfo): depositInfo is CheckedDepositInfo =>
+                !!depositInfo &&
+                ('cw20' in depositInfo.denom
+                  ? depositInfo.denom.cw20
+                  : depositInfo.denom.native) === governanceDenomOrAddress
+            )
+            .map(({ amount }) => Number(amount)),
           0
         )
 
@@ -120,9 +129,9 @@ export const ProfileProposalCard = () => {
         <SuspenseLoader fallback={<Loader size={24} />}>
           <ProfileCardMemberInfo
             cantVoteOnProposal
-            deposit={
-              maxProposalModuleDeposit > 0
-                ? maxProposalModuleDeposit.toString()
+            maxGovernanceTokenDeposit={
+              maxGovernanceTokenProposalModuleDeposit > 0
+                ? maxGovernanceTokenProposalModuleDeposit.toString()
                 : undefined
             }
           />

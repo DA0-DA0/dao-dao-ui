@@ -41,7 +41,7 @@ export interface DaoCreationConfig {
     enabled: boolean
     amount: number
     type: 'native' | 'cw20' | 'voting_module_token'
-    cw20Address: string
+    denomOrAddress: string
     cw20TokenInfo?: TokenInfoResponse
     refundPolicy: DepositRefundPolicy
   }

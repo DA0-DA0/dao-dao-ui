@@ -173,7 +173,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
         enabled: false,
         amount: 10,
         type: 'native',
-        cw20Address: '',
+        denomOrAddress: '',
         cw20TokenInfo: undefined,
         refundPolicy: DepositRefundPolicy.OnlyPassed,
       },

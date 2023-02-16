@@ -23,6 +23,7 @@ import {
   CHAIN_BECH32_PREFIX,
   NATIVE_DENOM,
   NEW_DAO_CW20_DECIMALS,
+  convertMicroDenomToDenomWithDecimals,
   isValidContractAddress,
   nativeTokenDecimals,
   nativeTokenLabel,
@@ -42,7 +43,7 @@ const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 export const ProposalDepositInput = ({
   newDao: { votingModuleAdapter },
   data: {
-    proposalDeposit: { enabled, type, cw20Address, cw20TokenInfo },
+    proposalDeposit: { enabled, type, denomOrAddress, cw20TokenInfo },
   },
   register,
   setValue,
@@ -68,10 +69,10 @@ export const ProposalDepositInput = ({
 
   const cw20TokenInfoLoadable = useRecoilValueLoadable(
     type === 'cw20' &&
-      cw20Address &&
-      isValidContractAddress(cw20Address, CHAIN_BECH32_PREFIX)
+      denomOrAddress &&
+      isValidContractAddress(denomOrAddress, CHAIN_BECH32_PREFIX)
       ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: cw20Address,
+          contractAddress: denomOrAddress,
           params: [],
         })
       : constSelector(undefined)
@@ -113,12 +114,12 @@ export const ProposalDepositInput = ({
 
   const decimals =
     type === 'native'
-      ? nativeTokenDecimals(NATIVE_DENOM) ?? 0
+      ? nativeTokenDecimals(denomOrAddress) ?? 0
       : type === 'voting_module_token'
       ? cw20GovernanceTokenDecimals ?? 0
       : // type === 'cw20'
         cw20TokenInfoLoaded?.decimals ?? 0
-  const minimum = 1 / Math.pow(10, decimals)
+  const minimum = convertMicroDenomToDenomWithDecimals(1, decimals)
 
   return (
     <div className="flex flex-col gap-2">
@@ -168,9 +169,9 @@ export const ProposalDepositInput = ({
               <div className="flex flex-col gap-1">
                 <AddressInput
                   error={
-                    errors?.proposalDeposit?.cw20Address ?? cw20AddressError
+                    errors?.proposalDeposit?.denomOrAddress ?? cw20AddressError
                   }
-                  fieldName="proposalDeposit.cw20Address"
+                  fieldName="proposalDeposit.denomOrAddress"
                   placeholder={t('form.tokenAddress')}
                   register={register}
                   type="contract"
@@ -179,7 +180,7 @@ export const ProposalDepositInput = ({
 
                 <InputErrorMessage
                   error={
-                    errors?.proposalDeposit?.cw20Address ??
+                    errors?.proposalDeposit?.denomOrAddress ??
                     (cw20AddressError
                       ? { type: 'validate', message: cw20AddressError }
                       : undefined)
@@ -215,7 +216,7 @@ export const ProposalDepositInput = ({
 export const ProposalDepositReview = ({
   newDao: { votingModuleAdapter },
   data: {
-    proposalDeposit: { enabled, amount, type, cw20TokenInfo },
+    proposalDeposit: { enabled, amount, type, denomOrAddress, cw20TokenInfo },
   },
 }: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
@@ -238,14 +239,14 @@ export const ProposalDepositReview = ({
 
   const decimals =
     type === 'native'
-      ? nativeTokenDecimals(NATIVE_DENOM) ?? 0
+      ? nativeTokenDecimals(denomOrAddress) ?? 0
       : type === 'voting_module_token'
       ? cw20GovernanceTokenDecimals ?? 0
       : // type === 'cw20'
         cw20TokenInfo?.decimals ?? 0
   const symbol =
     (type === 'native'
-      ? nativeTokenLabel(NATIVE_DENOM)
+      ? nativeTokenLabel(denomOrAddress)
       : type === 'voting_module_token'
       ? cw20GovernanceTokenSymbol
       : // type === 'cw20'

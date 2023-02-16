@@ -13,7 +13,7 @@ import { DaoInfoBarItem, StakingMode } from './stateless'
 import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
 
 export interface BaseProfileCardMemberInfoProps {
-  deposit: string | undefined
+  maxGovernanceTokenDeposit: string | undefined
   // True if wallet cannot vote on a proposal being shown.
   cantVoteOnProposal?: boolean
 }

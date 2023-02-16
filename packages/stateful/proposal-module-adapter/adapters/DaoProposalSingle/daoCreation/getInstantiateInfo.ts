@@ -6,7 +6,6 @@ import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalSingle.
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   CODE_ID_CONFIG,
-  NATIVE_DENOM,
   NEW_DAO_CW20_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
@@ -52,7 +51,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 
   const decimals =
     proposalDeposit.type === 'native'
-      ? nativeTokenDecimals(NATIVE_DENOM) ?? 0
+      ? nativeTokenDecimals(proposalDeposit.denomOrAddress) ?? 0
       : proposalDeposit.type === 'voting_module_token'
       ? cw20GovernanceTokenDecimals ?? 0
       : // type === 'cw20'
@@ -75,11 +74,11 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
                     denom:
                       proposalDeposit.type === 'native'
                         ? {
-                            native: NATIVE_DENOM,
+                            native: proposalDeposit.denomOrAddress,
                           }
                         : // proposalDeposit.type === 'cw20'
                           {
-                            cw20: proposalDeposit.cw20Address,
+                            cw20: proposalDeposit.denomOrAddress,
                           },
                   },
                 },
