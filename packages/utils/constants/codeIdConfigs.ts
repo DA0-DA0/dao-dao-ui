@@ -7,7 +7,8 @@ const junoTestnet: CodeIdConfig = {
   CwAdminFactory: 158,
   CwTokenSwap: 161,
   DaoCore: 163,
-  DaoMigrator: 164,
+  // TODO: Add DaoMigrator.
+  DaoMigrator: -1,
   DaoPreProposeMultiple: 167,
   DaoPreProposeSingle: 168,
   DaoProposalMultiple: 170,
@@ -28,7 +29,8 @@ const junoMainnet: CodeIdConfig = {
   CwAdminFactory: 2013,
   CwTokenSwap: 2000,
   DaoCore: 2024,
-  DaoMigrator: 2025,
+  // TODO: Add DaoMigrator.
+  DaoMigrator: -1,
   DaoPreProposeMultiple: 2028,
   DaoPreProposeSingle: 2029,
   DaoProposalMultiple: 2031,
