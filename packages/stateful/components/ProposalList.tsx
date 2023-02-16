@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useRecoilCallback } from 'recoil'
+import { useRecoilCallback, useSetRecoilState } from 'recoil'
 
+import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
   useDaoInfo,
   useNavHelpers,
 } from '@dao-dao/stateless'
 
-import { useMembership } from '../hooks'
+import { useMembership, useOnDaoWebSocketMessage } from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
 import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureModal'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
@@ -23,6 +24,12 @@ export const ProposalList = () => {
     coreAddress,
     chainId,
   })
+
+  // Refresh all proposals on proposal WebSocket messages.
+  const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
+  useOnDaoWebSocketMessage('proposal', () =>
+    setRefreshProposalsId((id) => id + 1)
+  )
 
   const [openProposals, setOpenProposals] = useState<ProposalLineProps[]>([])
   const [historyProposals, setHistoryProposals] = useState<ProposalLineProps[]>(

@@ -131,14 +131,31 @@ export const useDaoWebSocket = (pageMode: DaoPageMode): DaoWebSocket => {
   }
 }
 
+type CallbackFunction = (data: Record<string, any>) => any
+// If data not passed, will use the default data passed to the hook.
+type FallbackFunction = (data?: Record<string, any>) => void
+
 // Listens for messages from the DAO WebSocket and calls the callback if the
 // message type matches the expected type. Returns whether or not the listener
 // is currently active.
 export const useOnDaoWebSocketMessage = (
   expectedType: string,
-  callback: (data: Record<string, any>) => any
-) => {
+  callback: CallbackFunction,
+  // If passed, will be used as the default data for the fallback function
+  // returned. The returned fallback function optionally allows passing data
+  // which will override this default.
+  defaultFallbackData?: Parameters<FallbackFunction>[0]
+): {
+  listening: boolean
+  fallback: FallbackFunction
+} => {
   const { connected, channel } = useAppLayoutContext().daoWebSocket
+
+  // Store callback in ref so it can be used in the effect without having to
+  // reapply the handler on every re-render. This avoids having to pass in a
+  // memoized `useCallback` function to prevent additional re-renders.
+  const callbackRef = useRef<CallbackFunction>(callback)
+  callbackRef.current = callback
 
   const [listening, setListening] = useState(false)
   useEffect(() => {
@@ -156,19 +173,33 @@ export const useOnDaoWebSocketMessage = (
         }) &&
         data.type === expectedType
       ) {
-        callback(data.data)
+        callbackRef.current(data.data)
       }
     }
 
     channel.bind('broadcast', handler)
     setListening(true)
 
+    console.log(`Listening for WebSocket ${expectedType} messages...`)
+
     // Remove listener on unmount.
     return () => {
       channel.unbind('broadcast', handler)
       setListening(false)
     }
-  }, [channel, callback, expectedType, connected])
+  }, [channel, expectedType, connected])
 
-  return listening
+  // Create a memoized fallback function that calls the callback with the
+  // fallback data. This is useful for when the WebSocket is not connected, but
+  // we still want to execute the callback.
+  const defaultFallbackDataRef = useRef(defaultFallbackData)
+  defaultFallbackDataRef.current = defaultFallbackData
+  const fallback: FallbackFunction = useCallback((data) => {
+    callbackRef.current(data ?? defaultFallbackDataRef.current ?? {})
+  }, [])
+
+  return {
+    listening,
+    fallback,
+  }
 }

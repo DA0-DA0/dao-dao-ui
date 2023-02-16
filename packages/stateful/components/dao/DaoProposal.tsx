@@ -1,5 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { ComponentProps, useCallback } from 'react'
+import { ComponentProps, useCallback, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
@@ -26,6 +26,7 @@ import {
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { CommonProposalInfo } from '@dao-dao/types'
+import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 interface InnerDaoProposalProps {
   proposalInfo: CommonProposalInfo
@@ -58,22 +59,33 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   const awaitNextBlock = useAwaitNextBlock()
 
-  // On vote or proposal change, refresh.
-  const listeningForVote = useOnDaoWebSocketMessage(
-    'vote',
-    useCallback(
+  // Vote listener. Show alerts and refresh accordingly.
+  const { listening: listeningForVote, fallback: onVoteFallback } =
+    useOnDaoWebSocketMessage(
+      'vote',
       ({ proposalId, voter }) => {
-        refreshProposalAndAll()
+        // If vote made on current proposal...
+        if (proposalId === proposalInfo.id) {
+          refreshProposalAndAll()
 
-        // If the current user voted on current proposal, show a success toast.
-        if (proposalId === proposalInfo.id && voter === address) {
-          toast.success(t('success.voteCast'))
+          // If the current user voted on current proposal, show a success
+          // toast.
+          if (voter === address) {
+            toast.success(t('success.voteCast'))
+          }
         }
       },
-      [address, proposalInfo.id, refreshProposalAndAll, t]
+      {
+        proposalId: proposalInfo.id,
+        voter: address,
+      }
     )
-  )
-  useOnDaoWebSocketMessage('proposal', refreshProposalAndAll)
+
+  // Fallback if the listener above is offline, refresh every 30 seconds.
+  useEffect(() => {
+    const interval = setInterval(refreshProposalAndAll, 30 * 1000)
+    return () => clearInterval(interval)
+  }, [refreshProposalAndAll])
 
   // Fallback if the listener above is offline when the vote happens.
   const onVoteSuccess = useCallback(async () => {
@@ -85,31 +97,81 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     // Wait a block for indexer to catch up.
     await awaitNextBlock()
 
-    refreshProposalAndAll()
-    toast.success(t('success.voteCast'))
-  }, [awaitNextBlock, listeningForVote, refreshProposalAndAll, t])
+    // Call the callback manually.
+    onVoteFallback()
+  }, [awaitNextBlock, listeningForVote, onVoteFallback])
 
+  // Proposal status listener. Show alerts and refresh accordingly.
+  const {
+    listening: listeningForProposal,
+    fallback: onProposalUpdateFallback,
+  } = useOnDaoWebSocketMessage('proposal', ({ status, proposalId }) => {
+    // If the current proposal updated...
+    if (proposalId === proposalInfo.id) {
+      refreshProposalAndAll()
+
+      // On execute, revalidate and refresh page.
+      if (status === Status.Executed) {
+        // Show loading since page will reload shortly.
+        toast.loading(t('success.proposalExecuted'))
+
+        // Manually revalidate DAO static props. Don't await this promise since
+        // we just want to tell the server to do it; we're about to reload.
+        fetch(`/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`)
+
+        // Refresh entire app since any DAO config may have changed.
+        window.location.reload()
+      }
+      // On close, show success toast.
+      else if (status === Status.Closed) {
+        toast.success(t('success.proposalClosed'))
+      }
+    }
+  })
+
+  // Fallback if the listener above is offline when the vote happens.
   const onExecuteSuccess = useCallback(async () => {
-    toast.loading(t('success.proposalExecuted'))
+    // If listener is already listening, don't do anything here.
+    if (listeningForProposal) {
+      return
+    }
 
     // Wait a block for indexer to catch up.
     await awaitNextBlock()
 
-    // Manually revalidate DAO static props. Don't await this promise since we
-    // just want to tell the server to do it, and we're about to reload anyway.
-    fetch(`/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`)
+    // Call the callback manually.
+    onProposalUpdateFallback({
+      status: Status.Executed,
+      proposalId: proposalInfo.id,
+    })
+  }, [
+    awaitNextBlock,
+    listeningForProposal,
+    onProposalUpdateFallback,
+    proposalInfo.id,
+  ])
 
-    // Refresh entire app since any DAO config may have changed.
-    window.location.reload()
-  }, [awaitNextBlock, daoInfo.coreAddress, proposalInfo.id, t])
-
+  // Fallback if the listener above is offline when the vote happens.
   const onCloseSuccess = useCallback(async () => {
+    // If listener is already listening, don't do anything here.
+    if (listeningForProposal) {
+      return
+    }
+
     // Wait a block for indexer to catch up.
     await awaitNextBlock()
 
-    refreshProposalAndAll()
-    toast.success(t('success.proposalClosed'))
-  }, [awaitNextBlock, refreshProposalAndAll, t])
+    // Call the callback manually.
+    onProposalUpdateFallback({
+      status: Status.Closed,
+      proposalId: proposalInfo.id,
+    })
+  }, [
+    awaitNextBlock,
+    listeningForProposal,
+    onProposalUpdateFallback,
+    proposalInfo.id,
+  ])
 
   // Memoize ProposalStatusAndInfo so it doesn't re-render when the proposal
   // refreshes. The cached loadable it uses internally depends on the
