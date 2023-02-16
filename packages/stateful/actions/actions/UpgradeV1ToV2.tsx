@@ -90,50 +90,48 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
           return
         }
 
-        // Map proposal module addresses to its migration params.
-        const proposalParams =
-          proposalModuleDepositInfosLoadable.contents.reduce(
-            (acc, depositInfo, index) => ({
-              ...acc,
-              [context.info.proposalModules[index].address]: {
-                close_proposal_on_execution_failure: true,
-                pre_propose_info: {
-                  module_may_propose: {
-                    info: {
-                      admin: { core_module: {} },
-                      code_id: CODE_ID_CONFIG.DaoPreProposeSingle,
-                      label: `DAO_${context.info.name}_pre-propose-${DaoProposalSingleAdapter.id}`,
-                      msg: Buffer.from(
-                        JSON.stringify({
-                          deposit_info: depositInfo
-                            ? {
-                                amount: depositInfo.amount,
-                                denom: {
-                                  token: {
-                                    denom: depositInfo.denom,
-                                  },
+        // Array of tuples of each proposal module address and its params.
+        const proposalParams = proposalModuleDepositInfosLoadable.contents.map(
+          (depositInfo, index) => [
+            context.info.proposalModules[index].address,
+            {
+              close_proposal_on_execution_failure: true,
+              pre_propose_info: {
+                module_may_propose: {
+                  info: {
+                    admin: { core_module: {} },
+                    code_id: CODE_ID_CONFIG.DaoPreProposeSingle,
+                    label: `DAO_${context.info.name}_pre-propose-${DaoProposalSingleAdapter.id}`,
+                    msg: Buffer.from(
+                      JSON.stringify({
+                        deposit_info: depositInfo
+                          ? {
+                              amount: depositInfo.amount,
+                              denom: {
+                                token: {
+                                  denom: depositInfo.denom,
                                 },
-                                refund_policy: depositInfo.refund_policy,
-                              }
-                            : null,
-                          extension: {},
-                          open_proposal_submission: false,
-                        }),
-                        'utf8'
-                      ).toString('base64'),
-                    },
+                              },
+                              refund_policy: depositInfo.refund_policy,
+                            }
+                          : null,
+                        extension: {},
+                        open_proposal_submission: false,
+                      }),
+                      'utf8'
+                    ).toString('base64'),
                   },
                 },
               },
-            }),
-            {} as Record<
-              string,
-              {
-                close_proposal_on_execution_failure: boolean
-                pre_propose_info: PreProposeInfo
-              }
-            >
-          )
+            },
+          ]
+        ) as [
+          string,
+          {
+            close_proposal_on_execution_failure: boolean
+            pre_propose_info: PreProposeInfo
+          }
+        ][]
 
         return makeWasmMessage({
           wasm: {
