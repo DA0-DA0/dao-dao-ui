@@ -11,9 +11,10 @@ import {
 } from './dao'
 import { DaoInfoBarItem, StakingMode } from './stateless'
 import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
+import { GenericToken } from './token'
 
 export interface BaseProfileCardMemberInfoProps {
-  deposit: string | undefined
+  maxGovernanceTokenDeposit: string | undefined
   // True if wallet cannot vote on a proposal being shown.
   cantVoteOnProposal?: boolean
 }
@@ -24,21 +25,13 @@ export interface BaseStakingModalProps {
   maxDeposit?: string
 }
 
-// Common governance token info used by other modules. Only the denom/contract
-// address, symbol for displaying, and decimals for calculating are necessary.
-export type CommonGovernanceTokenInfo = {
-  denomOrAddress: string
-  symbol: string
-  decimals: number
-}
-
 export interface IVotingModuleAdapter {
   // Hooks
   hooks: {
     useActions: (options: ActionOptions) => Action[]
     useDaoInfoBarItems: () => DaoInfoBarItem[]
     useProfileNewProposalCardAddresses: () => ProfileNewProposalCardAddress[]
-    useCommonGovernanceTokenInfo?: () => CommonGovernanceTokenInfo
+    useCommonGovernanceTokenInfo?: () => GenericToken
   }
 
   // Components

@@ -9,18 +9,17 @@ import {
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { Cw20BaseSelectors, blocksPerYearSelector } from '@dao-dao/state'
+import { blocksPerYearSelector, eitherTokenInfoSelector } from '@dao-dao/state'
 import {
   DepositInfoSelector,
   DepositRefundPolicy,
   IProposalModuleAdapterCommonOptions,
   ProfileNewProposalCardInfoLine,
+  TokenType,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   durationToSeconds,
-  nativeTokenDecimals,
-  nativeTokenLabel,
   secondsToWdhms,
 } from '@dao-dao/utils'
 
@@ -56,36 +55,27 @@ export const makeUseProfileNewProposalCardInfoLines =
     const processTQ = useProcessTQ()
     const { threshold, quorum } = processTQ(config.threshold)
 
-    const cw20DepositTokenInfo = useRecoilValue(
-      depositInfo?.denom && 'cw20' in depositInfo.denom
-        ? Cw20BaseSelectors.tokenInfoSelector({
-            contractAddress: depositInfo.denom.cw20,
+    const depositTokenInfo = useRecoilValue(
+      depositInfo
+        ? eitherTokenInfoSelector({
+            type:
+              'native' in depositInfo.denom ? TokenType.Native : TokenType.Cw20,
+            denomOrAddress:
+              'native' in depositInfo.denom
+                ? depositInfo.denom.native
+                : depositInfo.denom.cw20,
             chainId: options.chainId,
-            params: [],
           })
         : constSelector(undefined)
     )
-    const depositDecimals = depositInfo?.denom
-      ? 'cw20' in depositInfo.denom && cw20DepositTokenInfo
-        ? cw20DepositTokenInfo.decimals
-        : 'native' in depositInfo.denom
-        ? nativeTokenDecimals(depositInfo.denom.native) ?? 0
-        : 0
-      : 0
-    const depositSymbol = depositInfo?.denom
-      ? 'cw20' in depositInfo.denom && cw20DepositTokenInfo
-        ? cw20DepositTokenInfo.symbol
-        : 'native' in depositInfo.denom
-        ? nativeTokenLabel(depositInfo.denom.native)
-        : undefined
-      : undefined
 
-    const proposalDeposit = depositInfo?.amount
-      ? convertMicroDenomToDenomWithDecimals(
-          depositInfo.amount,
-          depositDecimals
-        )
-      : 0
+    const proposalDeposit =
+      depositInfo && depositTokenInfo
+        ? convertMicroDenomToDenomWithDecimals(
+            depositInfo.amount,
+            depositTokenInfo.decimals
+          )
+        : 0
 
     const blocksPerYear = useRecoilValue(
       blocksPerYearSelector({
@@ -119,12 +109,13 @@ export const makeUseProfileNewProposalCardInfoLines =
         Icon: AttachMoney,
         label: t('title.deposit'),
         value:
-          proposalDeposit > 0
-            ? proposalDeposit.toLocaleString(undefined, {
-                maximumFractionDigits: depositDecimals,
-              }) +
-              ' $' +
-              depositSymbol
+          proposalDeposit > 0 && depositTokenInfo
+            ? t('format.token', {
+                amount: proposalDeposit.toLocaleString(undefined, {
+                  maximumFractionDigits: depositTokenInfo.decimals,
+                }),
+                symbol: depositTokenInfo.symbol,
+              })
             : t('info.none'),
       },
       ...(depositInfo && proposalDeposit > 0
