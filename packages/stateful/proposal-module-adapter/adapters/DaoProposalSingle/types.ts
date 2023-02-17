@@ -4,6 +4,7 @@ import {
   ActionKeyAndData,
   DepositInfoSelector,
   DurationWithUnits,
+  GenericToken,
   IProposalModuleAdapterCommonOptions,
   ProcessedTQ,
 } from '@dao-dao/types'
@@ -11,7 +12,6 @@ import {
   CosmosMsgFor_Empty,
   DepositRefundPolicy,
 } from '@dao-dao/types/contracts/common'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
@@ -40,9 +40,11 @@ export interface DaoCreationConfig {
   proposalDeposit: {
     enabled: boolean
     amount: number
+    // Token input fields.
     type: 'native' | 'cw20' | 'voting_module_token'
     denomOrAddress: string
-    cw20TokenInfo?: TokenInfoResponse
+    // Loaded from token input fields to access metadata.
+    token?: GenericToken
     refundPolicy: DepositRefundPolicy
   }
   anyoneCanPropose: boolean

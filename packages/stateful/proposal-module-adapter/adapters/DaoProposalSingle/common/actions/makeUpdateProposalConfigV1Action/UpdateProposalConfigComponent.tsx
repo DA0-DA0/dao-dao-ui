@@ -14,7 +14,7 @@ import {
   RecycleEmoji,
   SelectInput,
 } from '@dao-dao/stateless'
-import { ActionComponent, CommonGovernanceTokenInfo } from '@dao-dao/types'
+import { ActionComponent, GenericToken } from '@dao-dao/types'
 import {
   validatePercent,
   validatePositive,
@@ -25,7 +25,7 @@ import { ActionCard } from '../../../../../../actions'
 import { Trans } from '../../../../../../components/Trans'
 
 export interface UpdateProposalConfigOptions {
-  commonGovernanceTokenInfo?: CommonGovernanceTokenInfo
+  commonGovernanceTokenInfo?: GenericToken
 }
 
 export const UpdateProposalConfigComponent: ActionComponent<

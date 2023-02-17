@@ -188,11 +188,28 @@ export const GovernanceConfigurationInput = ({
         })
       : constSelector(undefined)
   )
+  const existingGovernanceTokenLogoUrlLoadable = useRecoilValueLoadable(
+    existingGovernanceTokenAddress &&
+      isValidContractAddress(
+        existingGovernanceTokenAddress,
+        CHAIN_BECH32_PREFIX
+      )
+      ? Cw20BaseSelectors.logoUrlSelector({
+          contractAddress: existingGovernanceTokenAddress,
+        })
+      : constSelector(undefined)
+  )
   useEffect(() => {
     setValue(
       'votingModuleAdapter.data.existingGovernanceTokenInfo',
       existingGovernanceTokenInfoLoadable.state === 'hasValue'
         ? existingGovernanceTokenInfoLoadable.contents
+        : undefined
+    )
+    setValue(
+      'votingModuleAdapter.data.existingGovernanceTokenLogoUrl',
+      existingGovernanceTokenLogoUrlLoadable.state === 'hasValue'
+        ? existingGovernanceTokenLogoUrlLoadable.contents
         : undefined
     )
 
@@ -215,6 +232,7 @@ export const GovernanceConfigurationInput = ({
     clearErrors,
     errors?.votingModuleAdapter?.data?.existingGovernanceTokenInfo,
     existingGovernanceTokenInfoLoadable,
+    existingGovernanceTokenLogoUrlLoadable,
     setError,
     setValue,
     t,

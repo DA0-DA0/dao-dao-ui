@@ -3,6 +3,8 @@ import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
 import ibcAssets from './ibc_assets.json'
 
+export { ibcAssets }
+
 export function nativeTokenLabel(denom: string): string {
   // Search IBC asset strings (juno_denom) if denom is in IBC format.
   // Otherwise just check microdenoms.
