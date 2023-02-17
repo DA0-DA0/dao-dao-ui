@@ -1,10 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
+import { TokenType } from '@dao-dao/types'
 
 import { UpdateProposalConfigData } from '.'
 import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
-import { TokenType } from '@dao-dao/types'
 
 export default {
   title:

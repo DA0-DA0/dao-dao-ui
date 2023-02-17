@@ -301,14 +301,14 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
         : constSelector(undefined)
     )
 
-    if (!token) {
+    if (!isUpdatePreProposeConfig) {
       return { match: false }
     }
 
     const anyoneCanPropose =
       !!msg.wasm.execute.msg.update_config.open_proposal_submission
 
-    if (!configDepositInfo) {
+    if (!configDepositInfo || !token) {
       return {
         data: {
           depositRequired: false,
