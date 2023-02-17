@@ -26,7 +26,7 @@ export const RightSidebar = ({
   const { t } = useTranslation()
 
   const {
-    rightSidebarRef,
+    setRightSidebarRef,
     responsiveRightSidebar: {
       enabled: responsiveEnabled,
       toggle: toggleResponsive,
@@ -76,7 +76,7 @@ export const RightSidebar = ({
 
         <div className="mt-1">
           {/* Content gets inserted here when the portal <RightSidebarContent> below is used. */}
-          <div ref={rightSidebarRef}></div>
+          <div ref={setRightSidebarRef}></div>
         </div>
 
         {/* Only show if defined, which indicates wallet connected. */}
@@ -120,7 +120,7 @@ export const RightSidebar = ({
 // the right sidebar (which is located in a separate React tree due to the
 // nature of `DappLayout`/`SdaLayout` managing the layout of the navigation bar,
 // main page content, and right sidebar). This component uses a reference to the
-// container `div` (seen above with property `ref={rightSidebarRef}`) and
+// container `div` (seen above with property `ref={setRightSidebarRef}`) and
 // provides a component that will funnel its `children` into a React portal
 // (https://reactjs.org/docs/portals.html). `AppContext` provides a ref which
 // the `RightSidebar` component above uses and the `RightSidebarContent` below

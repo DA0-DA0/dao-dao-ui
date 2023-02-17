@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 import { BreadcrumbsProps } from './Breadcrumbs'
 
-export interface PageHeaderProps {
+export type PageHeaderProps = {
   title?: string
   breadcrumbs?: BreadcrumbsProps
   className?: string

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import { AppContext } from '@dao-dao/stateless'
 import {
@@ -21,10 +21,26 @@ export const AppContextProvider = ({
     useState(false)
   const [updateProfileNftVisible, setUpdateProfileNftVisible] = useState(false)
 
-  // Page header.
+  // Page header. Set state when ref is set so it re-renders immediately.
+  // Without this, the page header is invisible until the next render.
+  const [, setPageHeaderSet] = useState(false)
   const pageHeaderRef = useRef<HTMLDivElement | null>(null)
-  // Right sidebar.
+  const setPageHeaderRef = useCallback((ref: HTMLDivElement | null) => {
+    if (ref) {
+      pageHeaderRef.current = ref
+      setPageHeaderSet(true)
+    }
+  }, [])
+  // Right sidebar. Set state when ref is set so it re-renders immediately.
+  // Without this, the right sidebar is invisible until the next render.
+  const [, setRightSidebarSet] = useState(false)
   const rightSidebarRef = useRef<HTMLDivElement | null>(null)
+  const setRightSidebarRef = useCallback((ref: HTMLDivElement | null) => {
+    if (ref) {
+      rightSidebarRef.current = ref
+      setRightSidebarSet(true)
+    }
+  }, [])
 
   // Command modal.
   const [rootCommandContextMaker, _setRootCommandContextMaker] =
@@ -58,6 +74,12 @@ export const AppContextProvider = ({
           visible: updateProfileNftVisible,
           toggle: () => setUpdateProfileNftVisible((v) => !v),
         },
+        // Include the page header and right sidebar portal refs in the context
+        // to be accessed by the component portals.
+        pageHeaderRef,
+        setPageHeaderRef,
+        rightSidebarRef,
+        setRightSidebarRef,
         rootCommandContextMaker,
         setRootCommandContextMaker: (maker) =>
           // See comment in `_setRootCommandContextMaker` for an explanation on
@@ -65,10 +87,6 @@ export const AppContextProvider = ({
           _setRootCommandContextMaker(() => maker),
         inbox,
         daoWebSocket,
-        // Include the page header and right sidebar portal refs in the context
-        // to be accessed by the component portals.
-        pageHeaderRef,
-        rightSidebarRef,
       }}
     >
       {children}
