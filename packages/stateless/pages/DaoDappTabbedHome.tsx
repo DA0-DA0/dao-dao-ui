@@ -9,9 +9,10 @@ import { SDA_URL_PREFIX, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 import {
   IconButtonLink,
   Loader,
+  PageHeaderContent,
+  RightSidebarContent,
   SegmentedControls,
   Tooltip,
-  useAppContext,
 } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
 import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
@@ -27,7 +28,6 @@ export const DaoDappTabbedHome = ({
   tabs,
 }: DaoDappTabbedHomeProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppContext()
   const { coreAddress } = useDaoInfoContext()
 
   const {
@@ -74,7 +74,7 @@ export const DaoDappTabbedHome = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader
+      <PageHeaderContent
         breadcrumbs={{
           home: true,
           current: daoInfo.name,

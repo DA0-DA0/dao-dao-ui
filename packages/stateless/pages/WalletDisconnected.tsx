@@ -1,7 +1,11 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PageLoader, useAppContext } from '../components'
+import {
+  PageHeaderContent,
+  PageLoader,
+  RightSidebarContent,
+} from '../components'
 
 export interface WalletDisconnectedProps {
   rightSidebarContent: ReactNode
@@ -15,12 +19,14 @@ export const WalletDisconnected = ({
   autoConnecting,
 }: WalletDisconnectedProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppContext()
 
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader className="mx-auto max-w-5xl" title={t('title.wallet')} />
+      <PageHeaderContent
+        className="mx-auto max-w-5xl"
+        title={t('title.wallet')}
+      />
 
       {autoConnecting ? (
         <PageLoader />

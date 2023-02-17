@@ -8,7 +8,7 @@ import { RightSidebarProps } from './RightSidebar'
 export interface DappLayoutProps {
   navigationProps: DappNavigationProps
   children: ReactNode
-  rightSidebarProps: Omit<RightSidebarProps, 'setContentRef'>
+  rightSidebarProps: RightSidebarProps
   walletProfile?: LoadingData<WalletProfile>
   connect: () => void
   connected: boolean

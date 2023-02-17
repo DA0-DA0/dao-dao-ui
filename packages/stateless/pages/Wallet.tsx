@@ -30,8 +30,9 @@ import {
   ButtonLink,
   CopyToClipboard,
   CosmosMessageDisplay,
+  PageHeaderContent,
+  RightSidebarContent,
   Tooltip,
-  useAppContext,
 } from '../components'
 
 export interface WalletProps {
@@ -65,7 +66,6 @@ export const Wallet = ({
   txHash,
 }: WalletProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppContext()
 
   const {
     control,
@@ -119,7 +119,10 @@ export const Wallet = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader className="mx-auto max-w-5xl" title={t('title.wallet')} />
+      <PageHeaderContent
+        className="mx-auto max-w-5xl"
+        title={t('title.wallet')}
+      />
 
       <div className="mx-auto flex max-w-5xl flex-col items-stretch pb-12">
         <FormProvider {...formMethods}>

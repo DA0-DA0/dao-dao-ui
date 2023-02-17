@@ -112,10 +112,13 @@ export const PageHeader = ({
   )
 }
 
-// This is a function that generates a function component, used in pages to
-// render the page header. See the `makeRightSidebarContent` function comment in
-// `RightSidebar.tsx` for more information on how this works.
-export const makePageHeader = (container: HTMLDivElement | null) =>
-  function PageHeaderPortal(props: PageHeaderProps) {
-    return container ? createPortal(<PageHeader {...props} />, container) : null
-  }
+// This is a portal that inserts a PageHeader wherever the AppContext's
+// `pageHeaderRef` is placed. This is handled by the layout components. See the
+// `ReactSidebarContent` comment in `RightSidebar.tsx` for more information on
+// how this works.
+export const PageHeaderContent = (props: PageHeaderProps) => {
+  const container = useAppContext().pageHeaderRef
+  return container.current
+    ? createPortal(<PageHeader {...props} />, container.current)
+    : null
+}

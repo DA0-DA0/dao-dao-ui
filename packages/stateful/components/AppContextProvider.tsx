@@ -1,14 +1,9 @@
-import { useCallback, useState } from 'react'
+import { useRef, useState } from 'react'
 
-import {
-  AppContext,
-  makePageHeader,
-  makeRightSidebarContent,
-} from '@dao-dao/stateless'
+import { AppContext } from '@dao-dao/stateless'
 import {
   AppContextProviderProps,
   CommandModalContextMaker,
-  RightSidebarProps,
 } from '@dao-dao/types'
 
 import { makeGenericContext } from '../command'
@@ -27,30 +22,9 @@ export const AppContextProvider = ({
   const [updateProfileNftVisible, setUpdateProfileNftVisible] = useState(false)
 
   // Page header.
-  const [PageHeader, setPageHeader] = useState(() => makePageHeader(null))
-  const setPageHeaderRef = useCallback(
-    (ref: HTMLDivElement | null) =>
-      // Use state setting function since we want to return a function
-      // (component).
-      setPageHeader(() => makePageHeader(ref)),
-    []
-  )
-
+  const pageHeaderRef = useRef<HTMLDivElement | null>(null)
   // Right sidebar.
-  const [RightSidebarContent, setRightSidebarContent] = useState(() =>
-    makeRightSidebarContent(null)
-  )
-  // See comment on makeRightSidebarContent in RightSidebar.tsx for information
-  // on what this is and how it works and why it exists. Use state setting
-  // function since we want to return a function (component).
-  const setRightSidebarContentRef: RightSidebarProps['setContentRef'] =
-    useCallback(
-      (ref) =>
-        // Use state setting function since we want to return a function
-        // (component).
-        setRightSidebarContent(() => makeRightSidebarContent(ref)),
-      []
-    )
+  const rightSidebarRef = useRef<HTMLDivElement | null>(null)
 
   // Command modal.
   const [rootCommandContextMaker, _setRootCommandContextMaker] =
@@ -91,13 +65,10 @@ export const AppContextProvider = ({
           _setRootCommandContextMaker(() => maker),
         inbox,
         daoWebSocket,
-        // Include the page header and right sidebar portal renderers in the
-        // context to be accessed by pages, and the ref setters to be accessed
-        // by the layout component.
-        PageHeader,
-        setPageHeaderRef,
-        RightSidebarContent,
-        setRightSidebarContentRef,
+        // Include the page header and right sidebar portal refs in the context
+        // to be accessed by the component portals.
+        pageHeaderRef,
+        rightSidebarRef,
       }}
     >
       {children}

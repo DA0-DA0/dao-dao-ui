@@ -18,6 +18,8 @@ import {
   DaoCreateSidebarCard,
   DaoHeader,
   ImageSelector,
+  PageHeaderContent,
+  RightSidebarContent,
   useAppContext,
   useCachedLoadable,
   useNavHelpers,
@@ -98,7 +100,7 @@ export const CreateDaoForm = ({
   const { goToDao } = useNavHelpers()
   const { setFollowing } = useFollowingDaos()
 
-  const { mode, RightSidebarContent, PageHeader } = useAppContext()
+  const { mode } = useAppContext()
 
   const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
     daoCreatedCardPropsAtom
@@ -604,7 +606,7 @@ export const CreateDaoForm = ({
           pageIndex={daoCreatedCardProps ? 4 : pageIndex}
         />
       </RightSidebarContent>
-      <PageHeader
+      <PageHeaderContent
         breadcrumbs={{
           // Use the SubDAOs tab as the home breadcrumb if making a SubDAO.
           homeTab: makingSubDao
