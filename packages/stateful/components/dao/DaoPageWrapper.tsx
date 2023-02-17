@@ -6,7 +6,7 @@ import {
   DaoNotFound,
   ErrorPage500,
   PageLoader,
-  useAppLayoutContext,
+  useAppContext,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
@@ -133,7 +133,7 @@ const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => {
   // Ensure connected to current DAO's WebSocket.
   const {
     daoWebSocket: { connect },
-  } = useAppLayoutContext()
+  } = useAppContext()
   useEffect(() => {
     connect({
       chainId: info.chainId,

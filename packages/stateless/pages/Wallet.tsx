@@ -31,7 +31,7 @@ import {
   CopyToClipboard,
   CosmosMessageDisplay,
   Tooltip,
-  useAppLayoutContext,
+  useAppContext,
 } from '../components'
 
 export interface WalletProps {
@@ -65,7 +65,7 @@ export const Wallet = ({
   txHash,
 }: WalletProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppContext()
 
   const {
     control,

@@ -2,6 +2,7 @@ export * from './dao'
 export * from './profile'
 
 export * from './AddressInput'
+export * from './AppContextProvider'
 export * from './ButtonLink'
 export * from './ConnectWallet'
 export * from './DappLayout'

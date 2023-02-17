@@ -6,11 +6,11 @@ import { useDaoInfoContext } from '../../hooks'
 import { useNavHelpers } from '../../hooks/useNavHelpers'
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from '../error/ErrorPage'
-import { useAppLayoutContext } from '../layout/AppLayoutContext'
+import { useAppContext } from '../layout/AppContext'
 
 export const ProposalNotFound = () => {
   const { t } = useTranslation()
-  const { PageHeader } = useAppLayoutContext()
+  const { PageHeader } = useAppContext()
   const { coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useNavHelpers()
 

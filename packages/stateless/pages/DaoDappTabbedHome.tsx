@@ -11,7 +11,7 @@ import {
   Loader,
   SegmentedControls,
   Tooltip,
-  useAppLayoutContext,
+  useAppContext,
 } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
 import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
@@ -27,7 +27,7 @@ export const DaoDappTabbedHome = ({
   tabs,
 }: DaoDappTabbedHomeProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppContext()
   const { coreAddress } = useDaoInfoContext()
 
   const {

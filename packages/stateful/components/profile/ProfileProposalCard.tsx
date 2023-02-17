@@ -5,7 +5,7 @@ import {
   Loader,
   ProfileCantVoteCard,
   ProfileVoteCard,
-  useAppLayoutContext,
+  useAppContext,
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
@@ -32,7 +32,7 @@ export const ProfileProposalCard = () => {
     proposalModules,
   } = useDaoInfoContext()
   const { walletProfile, updateProfileName } = useWalletInfo()
-  const { updateProfileNft } = useAppLayoutContext()
+  const { updateProfileNft } = useAppContext()
 
   const {
     hooks: { useLoadingWalletVoteInfo },

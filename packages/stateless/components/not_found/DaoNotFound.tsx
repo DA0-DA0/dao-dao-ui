@@ -2,11 +2,11 @@ import { useTranslation } from 'react-i18next'
 
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from '../error/ErrorPage'
-import { useAppLayoutContextIfAvailable } from '../layout/AppLayoutContext'
+import { useAppContextIfAvailable } from '../layout/AppContext'
 
 export const DaoNotFound = () => {
   const { t } = useTranslation()
-  const PageHeader = useAppLayoutContextIfAvailable()?.PageHeader
+  const PageHeader = useAppContextIfAvailable()?.PageHeader
 
   return (
     <>

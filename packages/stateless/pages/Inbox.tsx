@@ -10,7 +10,7 @@ import {
   IconButton,
   Loader,
   NoContent,
-  useAppLayoutContext,
+  useAppContext,
 } from '../components'
 import { useNavHelpers } from '../hooks'
 
@@ -27,7 +27,7 @@ export const Inbox = ({
 }: InboxProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useNavHelpers()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppContext()
 
   const [refreshSpinning, setRefreshSpinning] = useState(false)
   // Start spinning refresh icon if refreshing sets to true. Turn off once the

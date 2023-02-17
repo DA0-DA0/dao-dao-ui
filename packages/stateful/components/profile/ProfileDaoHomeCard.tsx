@@ -14,7 +14,7 @@ import {
   Loader,
   ProfileMemberCard,
   ProfileNotMemberCard,
-  useAppLayoutContext,
+  useAppContext,
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
@@ -24,7 +24,7 @@ import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 export const ProfileDaoHomeCard = () => {
   const { connected } = useWallet()
   const { walletProfile, updateProfileName } = useWalletInfo()
-  const { updateProfileNft } = useAppLayoutContext()
+  const { updateProfileNft } = useAppContext()
 
   const daoInfo = useDaoInfoContext()
   const {

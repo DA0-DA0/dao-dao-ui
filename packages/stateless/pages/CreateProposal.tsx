@@ -8,7 +8,7 @@ import {
   ProposalModuleAdapter,
 } from '@dao-dao/types'
 
-import { Dropdown, DropdownOption, useAppLayoutContext } from '../components'
+import { Dropdown, DropdownOption, useAppContext } from '../components'
 
 export interface CreateProposalProps {
   daoInfo: DaoInfo
@@ -28,7 +28,7 @@ export const CreateProposal = ({
   matchAdapter,
 }: CreateProposalProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppContext()
 
   // List of proposal modules available, using the adapter ID to derive a label
   // to display in the dropdown.

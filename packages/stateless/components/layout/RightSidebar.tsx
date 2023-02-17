@@ -15,7 +15,7 @@ import {
 
 import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
-import { useAppLayoutContext } from './AppLayoutContext'
+import { useAppContext } from './AppContext'
 
 export * from '@dao-dao/types/stateless/RightSidebar'
 
@@ -27,7 +27,7 @@ export const RightSidebar = ({
   const { t } = useTranslation()
 
   const { enabled: responsiveEnabled, toggle: toggleResponsive } =
-    useAppLayoutContext().responsiveRightSidebar
+    useAppContext().responsiveRightSidebar
 
   // Set this to a value to show the fiat ramp modal defaulted to that option.
   const [fiatRampDefaultModeVisible, setFiatRampDefaultModeVisible] = useState<

@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 import Pusher, { Channel } from 'pusher-js'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { useAppLayoutContext } from '@dao-dao/stateless'
+import { useAppContext } from '@dao-dao/stateless'
 import {
   DaoPageMode,
   DaoWebSocket,
@@ -165,7 +165,7 @@ export const useOnDaoWebSocketMessage = (
   listening: boolean
   fallback: OnMessageFallback
 } => {
-  const { connected, channel } = useAppLayoutContext().daoWebSocket
+  const { connected, channel } = useAppContext().daoWebSocket
 
   // Store callback in ref so it can be used in the effect without having to
   // reapply the handler on every re-render. This avoids having to pass in a
