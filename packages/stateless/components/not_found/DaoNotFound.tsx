@@ -9,7 +9,7 @@ export const DaoNotFound = () => {
 
   return (
     <>
-      <PageHeaderContent title={t('title.daoNotFound')} />
+      <PageHeaderContent forceCenter title={t('title.daoNotFound')} />
 
       <ErrorPage title={t('error.couldntFindDAO')}>
         <ButtonLink href="/" variant="secondary">

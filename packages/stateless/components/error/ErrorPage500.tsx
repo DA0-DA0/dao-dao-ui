@@ -19,7 +19,7 @@ export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
 
   return (
     <>
-      <PageHeaderContent title={t('title.500')} />
+      <PageHeaderContent forceCenter title={t('title.500')} />
 
       <ErrorPage>
         <p className="title-text">{t('error.errorOccurredOnPage')}</p>
