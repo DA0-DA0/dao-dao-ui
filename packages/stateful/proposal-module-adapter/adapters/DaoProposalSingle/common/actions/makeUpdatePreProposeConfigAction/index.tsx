@@ -290,7 +290,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
           ? constSelector(governanceToken)
           : eitherTokenInfoSelector({
               type:
-                'native' in configDepositInfo.denom
+                'native' in configDepositInfo.denom.token.denom
                   ? TokenType.Native
                   : TokenType.Cw20,
               denomOrAddress:
