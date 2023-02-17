@@ -26,8 +26,8 @@ export const AppContextProvider = ({
   const [, setPageHeaderSet] = useState(false)
   const pageHeaderRef = useRef<HTMLDivElement | null>(null)
   const setPageHeaderRef = useCallback((ref: HTMLDivElement | null) => {
+    pageHeaderRef.current = ref
     if (ref) {
-      pageHeaderRef.current = ref
       setPageHeaderSet(true)
     }
   }, [])
@@ -36,8 +36,8 @@ export const AppContextProvider = ({
   const [, setRightSidebarSet] = useState(false)
   const rightSidebarRef = useRef<HTMLDivElement | null>(null)
   const setRightSidebarRef = useCallback((ref: HTMLDivElement | null) => {
+    rightSidebarRef.current = ref
     if (ref) {
-      rightSidebarRef.current = ref
       setRightSidebarSet(true)
     }
   }, [])
