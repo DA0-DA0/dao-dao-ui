@@ -46,6 +46,14 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
     vote?.currentVote
   )
 
+  const currentVote = vote?.currentVote
+    ? vote.options.find((option) => option.value === vote.currentVote)
+    : undefined
+  // If the wallet's current vote is the selected vote. This means revoting is
+  // allowed, and the current vote selected is the same vote as before.
+  const currentVoteSelected =
+    !!currentVote && selectedVote === currentVote.value
+
   return (
     <div
       className={clsx(
@@ -130,7 +138,11 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
             contentContainerClassName={clsx('justify-center', {
               'primary-text': !selectedVote,
             })}
-            disabled={!selectedVote}
+            disabled={
+              // Disable when no vote selected, or selected vote is already the
+              // current vote. This is possible when revoting is allowed.
+              !selectedVote || currentVoteSelected
+            }
             loading={vote.loading}
             onClick={() => selectedVote && vote.onCastVote(selectedVote)}
             size="lg"
@@ -140,7 +152,9 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
               vote.currentVote ? 'secondary' : 'primary'
             }
           >
-            {t('button.castYourVote')}
+            {vote.currentVote
+              ? t('button.changeYourVote')
+              : t('button.castYourVote')}
           </Button>
         </div>
       )}
