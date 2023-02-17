@@ -18,7 +18,7 @@
       "name": "Terra Classic",
       "symbol": "LUNC",
       "chain_id": "columbus-5",
-      "rpc": "https://rpc-columbus.keplr.app:443",
+      "rpc": "https://rpc-terra-ia.cosmosia.notional.ventures:443",
       "denom": "uluna",
       "decimals": 6,
       "channel": "channel-20",
@@ -31,7 +31,7 @@
       "name": "Terra UST Classic",
       "symbol": "USTC",
       "chain_id": "columbus-5",
-      "rpc": "https://rpc-columbus.keplr.app:443",
+      "rpc": "https://rpc-terra-ia.cosmosia.notional.ventures:443",
       "denom": "uusd",
       "decimals": 6,
       "channel": "channel-20",
@@ -221,6 +221,19 @@
       "juno_channel": "channel-83",
       "juno_denom": "ibc/5CB906E82B7A88E62644AD811361F5858B74BA9EBD75C84B6D24B20C01A4819F",
       "logoURI": "https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/images/assetmantle.png"
+    },
+    {
+      "id": "teritori",
+      "name": "TORI",
+      "symbol": "TORI",
+      "chain_id": "teritori-1",
+      "rpc": "https://teritori-rpc.lavenderfive.com:443",
+      "denom": "utori",
+      "decimals": 6,
+      "channel": "channel-11",
+      "juno_channel": "channel-164",
+      "juno_denom": "ibc/436B576861090C1C921D56BA1FAE481A04D2E938EBDFF55C4712670F9754AC40",
+      "logoURI": "https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/images/tori.png"
     }
   ]
 }
