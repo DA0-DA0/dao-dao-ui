@@ -1,10 +1,8 @@
-import { ComponentType, ReactNode } from 'react'
+import { MutableRefObject, ReactNode } from 'react'
 
 import { CommandModalContextMaker } from '../command'
 import { DaoPageMode, DaoWebSocket } from '../dao'
 import { InboxState } from '../inbox'
-import { PageHeaderProps } from './PageHeader'
-import { RightSidebarProps } from './RightSidebar'
 
 export type IAppContext = {
   // DAO page mode.
@@ -25,12 +23,10 @@ export type IAppContext = {
   }
 
   // Page header.
-  PageHeader: ComponentType<PageHeaderProps>
-  setPageHeaderRef: (ref: HTMLDivElement | null) => void
+  pageHeaderRef: MutableRefObject<HTMLDivElement | null>
 
   // Right sidebar.
-  RightSidebarContent: ComponentType<{ children: ReactNode }>
-  setRightSidebarContentRef: RightSidebarProps['setContentRef']
+  rightSidebarRef: MutableRefObject<HTMLDivElement | null>
 
   // Command modal.
   rootCommandContextMaker: CommandModalContextMaker

@@ -6,17 +6,16 @@ import { useDaoInfoContext } from '../../hooks'
 import { useNavHelpers } from '../../hooks/useNavHelpers'
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from '../error/ErrorPage'
-import { useAppContext } from '../layout/AppContext'
+import { PageHeaderContent } from '../layout'
 
 export const ProposalNotFound = () => {
   const { t } = useTranslation()
-  const { PageHeader } = useAppContext()
   const { coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useNavHelpers()
 
   return (
     <>
-      <PageHeader title={t('title.proposalNotFound')} />
+      <PageHeaderContent title={t('title.proposalNotFound')} />
 
       <ErrorPage title={t('error.couldntFindProposal')}>
         <ButtonLink

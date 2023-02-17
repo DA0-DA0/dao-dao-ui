@@ -7,7 +7,7 @@ import { PageHeaderProps } from '@dao-dao/types/stateless/PageHeader'
 
 import { IconButton } from '../icon_buttons'
 import { TopGradient } from '../TopGradient'
-import { useAppContext } from './AppContext'
+import { useAppContext, useAppContextIfAvailable } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
 
 export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-20'
@@ -112,10 +112,18 @@ export const PageHeader = ({
   )
 }
 
-// This is a function that generates a function component, used in pages to
-// render the page header. See the `makeRightSidebarContent` function comment in
-// `RightSidebar.tsx` for more information on how this works.
-export const makePageHeader = (container: HTMLDivElement | null) =>
-  function PageHeaderPortal(props: PageHeaderProps) {
-    return container ? createPortal(<PageHeader {...props} />, container) : null
-  }
+// This is a portal that inserts a PageHeader wherever the AppContext's
+// `pageHeaderRef` is placed. This is handled by the layout components. See the
+// `ReactSidebarContent` comment in `RightSidebar.tsx` for more information on
+// how this works.
+//
+// If not in an AppContext, this component will render a PageHeader normally
+// instead of using the portal.
+export const PageHeaderContent = (props: PageHeaderProps) => {
+  const container = useAppContextIfAvailable()?.pageHeaderRef
+  return container?.current ? (
+    createPortal(<PageHeader {...props} />, container.current)
+  ) : (
+    <PageHeader {...props} />
+  )
+}

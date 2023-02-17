@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ButtonLink } from '@dao-dao/stateful'
 
-import { useAppContextIfAvailable } from '../layout/AppContext'
+import { PageHeaderContent } from '../layout'
 import { ErrorPage } from './ErrorPage'
 
 export interface ErrorPage500Props {
@@ -12,7 +12,6 @@ export interface ErrorPage500Props {
 
 export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
   const { t } = useTranslation()
-  const PageHeader = useAppContextIfAvailable()?.PageHeader
 
   useEffect(() => {
     console.error(error)
@@ -20,8 +19,7 @@ export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
 
   return (
     <>
-      {/* SDA does not have AppLayoutContext here. */}
-      {PageHeader && <PageHeader title={t('title.500')} />}
+      <PageHeaderContent forceCenter title={t('title.500')} />
 
       <ErrorPage>
         <p className="title-text">{t('error.errorOccurredOnPage')}</p>

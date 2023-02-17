@@ -2,16 +2,14 @@ import { useTranslation } from 'react-i18next'
 
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from '../error/ErrorPage'
-import { useAppContextIfAvailable } from '../layout/AppContext'
+import { PageHeaderContent } from '../layout'
 
 export const DaoNotFound = () => {
   const { t } = useTranslation()
-  const PageHeader = useAppContextIfAvailable()?.PageHeader
 
   return (
     <>
-      {/* SDA does not have AppLayoutContext here. */}
-      {PageHeader && <PageHeader title={t('title.daoNotFound')} />}
+      <PageHeaderContent forceCenter title={t('title.daoNotFound')} />
 
       <ErrorPage title={t('error.couldntFindDAO')}>
         <ButtonLink href="/" variant="secondary">

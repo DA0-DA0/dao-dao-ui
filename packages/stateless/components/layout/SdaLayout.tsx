@@ -25,12 +25,8 @@ export const SdaLayout = ({
 }: SdaLayoutProps) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const {
-    responsiveNavigation,
-    responsiveRightSidebar,
-    setRightSidebarContentRef,
-    setPageHeaderRef,
-  } = useAppContext()
+  const { responsiveNavigation, responsiveRightSidebar, pageHeaderRef } =
+    useAppContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
 
@@ -131,7 +127,7 @@ export const SdaLayout = ({
           )}
         </div>
 
-        <div className="shrink-0 px-6" ref={setPageHeaderRef}></div>
+        <div className="shrink-0 px-6" ref={pageHeaderRef}></div>
 
         {/* Make horizontal padding 1 unit more than page header so that the body is not touching the sides of the page header's bottom border when it scrolls. */}
         <div
@@ -147,10 +143,7 @@ export const SdaLayout = ({
       </main>
 
       <ErrorBoundary>
-        <RightSidebar
-          {...rightSidebarProps}
-          setContentRef={setRightSidebarContentRef}
-        />
+        <RightSidebar {...rightSidebarProps} />
       </ErrorBoundary>
     </div>
   )

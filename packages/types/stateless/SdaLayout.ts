@@ -8,7 +8,7 @@ import { SdaNavigationProps } from './SdaNavigation'
 export interface SdaLayoutProps {
   navigationProps: SdaNavigationProps
   children: ReactNode
-  rightSidebarProps: Omit<RightSidebarProps, 'setContentRef'>
+  rightSidebarProps: RightSidebarProps
   walletProfile?: LoadingData<WalletProfile>
   connect: () => void
   connected: boolean

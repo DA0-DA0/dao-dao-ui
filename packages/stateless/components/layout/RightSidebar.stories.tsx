@@ -24,7 +24,6 @@ export const DefaultArgs: RightSidebarProps = {
       {...(ConnectedSidebarWalletStory.args as SidebarWalletProps)}
     />
   ),
-  setContentRef: () => {},
   WalletFiatRampModal,
 }
 

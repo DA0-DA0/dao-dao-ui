@@ -1,5 +1,5 @@
 import { DecoratorFn } from '@storybook/react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { makeGenericContext } from '@dao-dao/stateful/command'
 import { AppContext } from '@dao-dao/stateless'
@@ -17,6 +17,9 @@ export const makeAppContextDecorator: (
       useState(false)
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false)
 
+    const pageHeaderRef = useRef(null)
+    const rightSidebarRef = useRef(null)
+
     return (
       <AppContext.Provider
         value={{
@@ -33,10 +36,8 @@ export const makeAppContextDecorator: (
             visible: updateProfileVisible,
             toggle: () => setUpdateProfileVisible((v) => !v),
           },
-          PageHeader: () => null,
-          setPageHeaderRef: () => {},
-          RightSidebarContent: () => null,
-          setRightSidebarContentRef: () => {},
+          pageHeaderRef,
+          rightSidebarRef,
           rootCommandContextMaker: makeGenericContext,
           setRootCommandContextMaker: () => {},
           inbox: EMPTY_INBOX,
