@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ButtonLink } from '@dao-dao/stateful'
 
-import { useAppLayoutContextIfAvailable } from '../layout/AppLayoutContext'
+import { useAppContextIfAvailable } from '../layout/AppContext'
 import { ErrorPage } from './ErrorPage'
 
 export interface ErrorPage500Props {
@@ -12,7 +12,7 @@ export interface ErrorPage500Props {
 
 export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
   const { t } = useTranslation()
-  const PageHeader = useAppLayoutContextIfAvailable()?.PageHeader
+  const PageHeader = useAppContextIfAvailable()?.PageHeader
 
   useEffect(() => {
     console.error(error)

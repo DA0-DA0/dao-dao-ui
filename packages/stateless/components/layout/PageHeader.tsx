@@ -7,7 +7,7 @@ import { PageHeaderProps } from '@dao-dao/types/stateless/PageHeader'
 
 import { IconButton } from '../icon_buttons'
 import { TopGradient } from '../TopGradient'
-import { useAppLayoutContext } from './AppLayoutContext'
+import { useAppContext } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
 
 export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-20'
@@ -23,7 +23,7 @@ export const PageHeader = ({
   rightNode,
   gradient,
 }: PageHeaderProps) => {
-  const { toggle } = useAppLayoutContext().responsiveNavigation
+  const { toggle } = useAppContext().responsiveNavigation
 
   // Intelligently move gradient to match scroll of page.
   const [scrollableScrollTop, setScrollableScrollTop] = useState(0)

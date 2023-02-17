@@ -19,12 +19,19 @@ import {
   navigatingToHrefAtom,
 } from '@dao-dao/state'
 import {
+  AppContextProvider,
   DaoPageWrapper,
   DaoPageWrapperProps,
   SdaLayout,
   WalletProvider,
 } from '@dao-dao/stateful'
-import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
+import {
+  PageLoader,
+  Theme,
+  ThemeProvider,
+  ToastNotifications,
+} from '@dao-dao/stateless'
+import { DaoPageMode } from '@dao-dao/types'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 const InnerApp = ({
@@ -66,37 +73,34 @@ const InnerApp = ({
     return () => clearTimeout(timeout)
   }, [navigatingToHref, setNavigatingToHref])
 
-  // Don't attempt to connect wallet on fallback page. This prevents double
-  // wallet requests.
-  const WalletProviderWrapper = router.isFallback ? Fragment : WalletProvider
-
   return (
     <ThemeProvider
       theme={theme}
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <WalletProviderWrapper>
-        {router.pathname === '/discord' ||
+      {/* When on fallback page (loading static props), don't wrap in WalletProvider or SdaLayout, since things look weird and broken (e.g. translations aren't loaded, the wallet tries to connect multiple times, etc.). Render the component still so that the SEO meta tags load on first render (on the server) so that URL previews work. Component is responsible for suspending its non-SEO meta tag content with a SuspenseLoader when it needs to wait for the page to load. */}
+      {router.isFallback ? (
+        <PageLoader />
+      ) : router.pathname === '/discord' ||
         router.pathname === '/404' ||
         router.pathname === '/500' ||
         router.pathname === '/_error' ? (
-          <Component {...pageProps} />
-        ) : (
-          // All non-error SDA pages are a DAO page. DaoPageWrapper handles
-          // SEO-meta tag and suspending page content with a SuspenseLoader
-          // while the fallback page is showing (as static props are loaded).
-          // We don't want to suspend this since we want SEO-meta tags to be
-          // able to load on first render (on the server) so that URL previews
-          // work.
-          <DaoPageWrapper setIcon={setIcon} {...pageProps}>
-            {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
-            <SdaLayout>
-              <Component {...pageProps} />
-            </SdaLayout>
-          </DaoPageWrapper>
-        )}
-      </WalletProviderWrapper>
+        <Component {...pageProps} />
+      ) : (
+        <WalletProvider>
+          {/* AppContextProvider uses wallet context. */}
+          <AppContextProvider mode={DaoPageMode.Sda}>
+            {/* All non-error/discord redirect SDA pages are a DAO page. */}
+            <DaoPageWrapper setIcon={setIcon} {...pageProps}>
+              {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
+              <SdaLayout>
+                <Component {...pageProps} />
+              </SdaLayout>
+            </DaoPageWrapper>
+          </AppContextProvider>
+        </WalletProvider>
+      )}
 
       <ToastNotifications />
     </ThemeProvider>

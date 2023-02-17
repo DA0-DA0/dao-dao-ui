@@ -8,7 +8,7 @@ import {
   LoadingData,
 } from '@dao-dao/types'
 
-import { ProposalContentDisplay, useAppLayoutContext } from '../components'
+import { ProposalContentDisplay, useAppContext } from '../components'
 
 export interface ProposalProps {
   proposalInfo: CommonProposalInfo
@@ -39,7 +39,7 @@ export const Proposal = ({
   refreshing,
 }: ProposalProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppContext()
 
   // Scroll to hash manually if available since this component and thus the
   // desired target anchor text won't be ready right when the page renders.

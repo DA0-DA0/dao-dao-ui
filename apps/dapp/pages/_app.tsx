@@ -9,7 +9,7 @@ import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
-import { ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
@@ -19,8 +19,18 @@ import {
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
-import { DappLayout, WalletProvider } from '@dao-dao/stateful'
-import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
+import {
+  AppContextProvider,
+  DappLayout,
+  WalletProvider,
+} from '@dao-dao/stateful'
+import {
+  PageLoader,
+  Theme,
+  ThemeProvider,
+  ToastNotifications,
+} from '@dao-dao/stateless'
+import { DaoPageMode } from '@dao-dao/types'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 type DappProps = AppProps<{ featuredDaoDumpStates?: any[] } | {}>
@@ -66,14 +76,15 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
     >
       {/* When on fallback page (loading static props), don't wrap in WalletProvider or DappLayout, since things look weird and broken (e.g. translations aren't loaded, the wallet tries to connect multiple times, etc.). Render the component still so that the SEO meta tags load on first render (on the server) so that URL previews work. Component is responsible for suspending its non-SEO meta tag content with a SuspenseLoader when it needs to wait for the page to load. */}
       {router.isFallback ? (
-        <LayoutLoading>
-          <Component {...pageProps} />
-        </LayoutLoading>
+        <PageLoader />
       ) : (
         <WalletProvider>
-          <DappLayout>
-            <Component {...pageProps} />
-          </DappLayout>
+          {/* AppContextProvider uses wallet context. */}
+          <AppContextProvider mode={DaoPageMode.Dapp}>
+            <DappLayout>
+              <Component {...pageProps} />
+            </DappLayout>
+          </AppContextProvider>
         </WalletProvider>
       )}
 
@@ -81,11 +92,6 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
     </ThemeProvider>
   )
 }
-
-// Plain layout while layout is loading (fallback page).
-const LayoutLoading = ({ children }: { children: ReactNode }) => (
-  <main className="h-full min-h-screen w-full overflow-hidden">{children}</main>
-)
 
 const DApp = (props: DappProps) => {
   const { t } = useTranslation()

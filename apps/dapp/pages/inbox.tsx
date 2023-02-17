@@ -13,13 +13,13 @@ import {
   ProfileHomeCard,
   SuspenseLoader,
 } from '@dao-dao/stateful'
-import { Inbox, PageLoader, useAppLayoutContext } from '@dao-dao/stateless'
+import { Inbox, PageLoader, useAppContext } from '@dao-dao/stateless'
 import { SITE_URL } from '@dao-dao/utils'
 
 const InnerInbox = () => {
   const { connected } = useWallet()
 
-  const { inbox } = useAppLayoutContext()
+  const { inbox } = useAppContext()
 
   return (
     <Inbox

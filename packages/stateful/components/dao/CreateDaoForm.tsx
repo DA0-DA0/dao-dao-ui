@@ -18,7 +18,7 @@ import {
   DaoCreateSidebarCard,
   DaoHeader,
   ImageSelector,
-  useAppLayoutContext,
+  useAppContext,
   useCachedLoadable,
   useNavHelpers,
   useThemeContext,
@@ -98,7 +98,7 @@ export const CreateDaoForm = ({
   const { goToDao } = useNavHelpers()
   const { setFollowing } = useFollowingDaos()
 
-  const { mode, RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { mode, RightSidebarContent, PageHeader } = useAppContext()
 
   const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
     daoCreatedCardPropsAtom

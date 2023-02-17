@@ -1,5 +1,5 @@
 import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
-import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
@@ -19,10 +19,10 @@ import {
   NoKeplrAccountModal,
   ProposalCreatedModal,
   SdaLayout as StatelessSdaLayout,
+  useAppContext,
 } from '@dao-dao/stateless'
-import { DaoPageMode, IAppLayoutContext } from '@dao-dao/types'
 
-import { useDaoTabs, useDaoWebSocket, useWalletInfo } from '../hooks'
+import { useDaoTabs, useWalletInfo } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
 import { ConnectWallet } from './ConnectWallet'
 import { SdaDaoHome } from './dao'
@@ -62,49 +62,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
     )
   }, [error, setInstallWarningVisible, setNoKeplrAccount])
 
-  //! AppLayoutContext
-  const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
-    useState(false)
-  const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
-    useState(false)
-  const [updateProfileNftVisible, setUpdateProfileNftVisible] = useState(false)
-  const daoWebSocket = useDaoWebSocket(DaoPageMode.Sda)
-  const appLayoutContext: Omit<
-    IAppLayoutContext,
-    'RightSidebarContent' | 'PageHeader'
-  > = useMemo(
-    () => ({
-      mode: DaoPageMode.Sda,
-      responsiveNavigation: {
-        enabled: responsiveNavigationEnabled,
-        toggle: () => setResponsiveNavigationEnabled((v) => !v),
-      },
-      responsiveRightSidebar: {
-        enabled: responsiveRightSidebarEnabled,
-        toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
-      },
-      updateProfileNft: {
-        visible: updateProfileNftVisible,
-        toggle: () => setUpdateProfileNftVisible((v) => !v),
-      },
-      setRootCommandContextMaker: () => {},
-      inbox: {
-        loading: false,
-        refreshing: false,
-        daosWithItems: [],
-        itemCount: 0,
-        refresh: () => {},
-      },
-      daoWebSocket,
-    }),
-    [
-      daoWebSocket,
-      responsiveNavigationEnabled,
-      responsiveRightSidebarEnabled,
-      updateProfileNftVisible,
-    ]
-  )
-
   //! Refresh every minute. Block height, USDC conversions, and wallet balances.
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
   const setRefreshUsdcPrices = useSetRecoilState(refreshTokenUsdcPriceAtom(''))
@@ -131,12 +88,13 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
 
   const tabs = useDaoTabs({ includeHome: SdaDaoHome })
 
+  const { updateProfileNft } = useAppContext()
+
   return (
     <StatelessSdaLayout
       connect={connect}
       connectWalletButton={<ConnectWallet variant="secondary" />}
       connected={connected}
-      context={appLayoutContext}
       navigationProps={{
         tabs,
         LinkWrapper,
@@ -170,10 +128,8 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
         visible={mountedInBrowser && !betaWarningAccepted}
       />
 
-      {updateProfileNftVisible && (
-        <PfpkNftSelectionModal
-          onClose={() => setUpdateProfileNftVisible(false)}
-        />
+      {updateProfileNft.visible && (
+        <PfpkNftSelectionModal onClose={updateProfileNft.toggle} />
       )}
 
       {daoCreatedCardProps && (

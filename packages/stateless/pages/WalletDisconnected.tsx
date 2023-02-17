@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PageLoader, useAppLayoutContext } from '../components'
+import { PageLoader, useAppContext } from '../components'
 
 export interface WalletDisconnectedProps {
   rightSidebarContent: ReactNode
@@ -15,7 +15,7 @@ export const WalletDisconnected = ({
   autoConnecting,
 }: WalletDisconnectedProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppContext()
 
   return (
     <>

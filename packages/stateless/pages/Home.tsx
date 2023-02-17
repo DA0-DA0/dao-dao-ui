@@ -8,7 +8,7 @@ import {
   FollowingDaosProps,
   HorizontalScroller,
   HorizontalScrollerProps,
-  useAppLayoutContext,
+  useAppContext,
 } from '../components'
 
 export type HomeProps = {
@@ -32,7 +32,7 @@ export const Home = ({
   connected,
 }: HomeProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { RightSidebarContent, PageHeader } = useAppContext()
 
   return (
     <>

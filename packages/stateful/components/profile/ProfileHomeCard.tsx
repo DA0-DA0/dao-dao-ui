@@ -1,7 +1,7 @@
 import { walletProposalStatsSelector } from '@dao-dao/state/recoil'
 import {
   ProfileHomeCard as StatelessProfileHomeCard,
-  useAppLayoutContext,
+  useAppContext,
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
@@ -17,7 +17,7 @@ export const ProfileHomeCard = () => {
     dateBalancesFetched,
     updateProfileName,
   } = useWalletInfo()
-  const { updateProfileNft, inbox } = useAppLayoutContext()
+  const { updateProfileNft, inbox } = useAppContext()
 
   const walletProposalStatsLoadable = useCachedLoadable(
     walletAddress
