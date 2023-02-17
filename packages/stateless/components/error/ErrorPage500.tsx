@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ButtonLink } from '@dao-dao/stateful'
 
-import {
-  PageHeader,
-  PageHeaderContent,
-  useAppContextIfAvailable,
-} from '../layout'
+import { PageHeaderContent } from '../layout'
 import { ErrorPage } from './ErrorPage'
 
 export interface ErrorPage500Props {
@@ -16,11 +12,6 @@ export interface ErrorPage500Props {
 
 export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
   const { t } = useTranslation()
-  const appContext = useAppContextIfAvailable()
-
-  // SDA does not have AppContext here, so if not available, just render
-  // component directly. Otherwise use portal.
-  const PageHeaderRenderer = appContext ? PageHeaderContent : PageHeader
 
   useEffect(() => {
     console.error(error)
@@ -28,7 +19,7 @@ export const ErrorPage500 = ({ error }: ErrorPage500Props) => {
 
   return (
     <>
-      <PageHeaderRenderer title={t('title.500')} />
+      <PageHeaderContent title={t('title.500')} />
 
       <ErrorPage>
         <p className="title-text">{t('error.errorOccurredOnPage')}</p>
