@@ -130,7 +130,12 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
             contentContainerClassName={clsx('justify-center', {
               'primary-text': !selectedVote,
             })}
-            disabled={!selectedVote}
+            disabled={
+              // Disable when no vote selected, or selected vote is already the
+              // current vote. This is possible when revoting is allowed.
+              !selectedVote ||
+              (!!vote?.currentVote && selectedVote === vote.currentVote)
+            }
             loading={vote.loading}
             onClick={() => selectedVote && vote.onCastVote(selectedVote)}
             size="lg"
