@@ -2,12 +2,13 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
   keplrProfileImageSelector,
-  pfpkProfileSelector,
   walletHexPublicKeySelector,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { LoadingData, WalletProfile, WithChainId } from '@dao-dao/types'
 import { getFallbackImage, loadableToLoadingData } from '@dao-dao/utils'
+
+import { pfpkProfileSelector } from '../recoil/selectors/profile'
 
 export type UseWalletProfileOptions = WithChainId<{
   walletAddress: string
