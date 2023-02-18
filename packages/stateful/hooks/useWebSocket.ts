@@ -68,7 +68,10 @@ export const useWebSocketChannels = (channelNames: string[]) => {
       memoizedChannelNames.reduce(
         (acc, channelName) => ({
           ...acc,
-          [channelName]: (acc[channelName] || 0) + 1,
+          // In case the counter becomes negative for some reason, make sure it
+          // is set back to 1 so the subscription stays live. This should never
+          // happen since the counter is decremented on unmount.
+          [channelName]: Math.max((acc[channelName] || 0) + 1, 1),
         }),
         subscriptions
       )
@@ -84,7 +87,8 @@ export const useWebSocketChannels = (channelNames: string[]) => {
         memoizedChannelNames.reduce(
           (acc, channelName) => ({
             ...acc,
-            [channelName]: (acc[channelName] || 0) - 1,
+            // Prevent counter from becoming negative.
+            [channelName]: Math.max((acc[channelName] || 0) - 1, 0),
           }),
           subscriptions
         )
