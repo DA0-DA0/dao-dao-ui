@@ -120,9 +120,16 @@ export const PageHeader = ({
 // If not in an AppContext, this component will render a PageHeader normally
 // instead of using the portal.
 export const PageHeaderContent = (props: PageHeaderProps) => {
-  const container = useAppContextIfAvailable()?.pageHeaderRef
-  return container?.current ? (
-    createPortal(<PageHeader {...props} />, container.current)
+  const appContext = useAppContextIfAvailable()
+
+  // If app context is available, but the page header ref is not, render nothing
+  // until the ref is available. If not in an app context, render the element
+  // directly. The direct render is useful when outside the AppContext, such as
+  // error pages in the SDA.
+  return appContext ? (
+    appContext.pageHeaderRef.current ? (
+      createPortal(<PageHeader {...props} />, appContext.pageHeaderRef.current)
+    ) : null
   ) : (
     <PageHeader {...props} />
   )

@@ -1,5 +1,5 @@
 import { DecoratorFn } from '@storybook/react'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import { makeGenericContext } from '@dao-dao/stateful/command'
 import { AppContext } from '@dao-dao/stateless'
@@ -17,8 +17,24 @@ export const makeAppContextDecorator: (
       useState(false)
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false)
 
-    const pageHeaderRef = useRef(null)
-    const rightSidebarRef = useRef(null)
+    // Page header.
+    const [, setPageHeaderSet] = useState(false)
+    const pageHeaderRef = useRef<HTMLDivElement | null>(null)
+    const setPageHeaderRef = useCallback((ref: HTMLDivElement | null) => {
+      if (ref) {
+        pageHeaderRef.current = ref
+        setPageHeaderSet(true)
+      }
+    }, [])
+    // Right sidebar.
+    const [, setRightSidebarSet] = useState(false)
+    const rightSidebarRef = useRef<HTMLDivElement | null>(null)
+    const setRightSidebarRef = useCallback((ref: HTMLDivElement | null) => {
+      if (ref) {
+        rightSidebarRef.current = ref
+        setRightSidebarSet(true)
+      }
+    }, [])
 
     return (
       <AppContext.Provider
@@ -37,7 +53,9 @@ export const makeAppContextDecorator: (
             toggle: () => setUpdateProfileVisible((v) => !v),
           },
           pageHeaderRef,
+          setPageHeaderRef,
           rightSidebarRef,
+          setRightSidebarRef,
           rootCommandContextMaker: makeGenericContext,
           setRootCommandContextMaker: () => {},
           inbox: EMPTY_INBOX,

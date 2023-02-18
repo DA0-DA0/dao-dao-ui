@@ -27,7 +27,7 @@ export const DappLayout = ({
 }: DappLayoutProps) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { responsiveNavigation, responsiveRightSidebar, pageHeaderRef } =
+  const { responsiveNavigation, responsiveRightSidebar, setPageHeaderRef } =
     useAppContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
@@ -129,7 +129,7 @@ export const DappLayout = ({
           )}
         </div>
 
-        <div className="shrink-0 px-6" ref={pageHeaderRef}></div>
+        <div className="shrink-0 px-6" ref={setPageHeaderRef}></div>
 
         {/* Make horizontal padding 1 unit more than page header so that the body is not touching the sides of the page header's bottom border when it scrolls. */}
         <div
