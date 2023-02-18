@@ -17,6 +17,7 @@ import {
   DaoCreatedModal,
   InstallKeplrModal,
   NoKeplrAccountModal,
+  PageLoader,
   ProposalCreatedModal,
   SdaLayout as StatelessSdaLayout,
   useAppContext,
@@ -30,6 +31,7 @@ import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
+import { SuspenseLoader } from './SuspenseLoader'
 import { WalletFiatRampModal } from './WalletFiatRampModal'
 
 export const SdaLayout = ({ children }: { children: ReactNode }) => {
@@ -111,7 +113,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
         status === WalletConnectionStatus.Connected ? walletProfile : undefined
       }
     >
-      {children}
+      <SuspenseLoader fallback={<PageLoader />}>{children}</SuspenseLoader>
 
       {/* Modals */}
 
