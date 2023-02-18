@@ -1,5 +1,7 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRecoilState } from 'recoil'
 
+import { indexerWebSocketChannelSubscriptionsAtom } from '@dao-dao/state/recoil'
 import { AppContext } from '@dao-dao/stateless'
 import {
   AppContextProviderProps,
@@ -7,7 +9,7 @@ import {
 } from '@dao-dao/types'
 
 import { makeGenericContext } from '../command'
-import { useDaoWebSocket } from '../hooks/useDaoWebSocket'
+import { useWebSocket } from '../hooks'
 import { useInbox } from '../inbox'
 
 export const AppContextProvider = ({
@@ -55,8 +57,36 @@ export const AppContextProvider = ({
   // Inbox.
   const inbox = useInbox()
 
-  // WebSocket.
-  const daoWebSocket = useDaoWebSocket(mode)
+  // Unsubscribe from WebSocket channels when all subscriptions removed.
+  const { pusher } = useWebSocket()
+  const [
+    indexerWebSocketChannelSubscriptions,
+    setIndexerWebSocketChannelSubscriptions,
+  ] = useRecoilState(indexerWebSocketChannelSubscriptionsAtom)
+  useEffect(() => {
+    if (!pusher) {
+      return
+    }
+
+    const emptyChannels = Object.entries(indexerWebSocketChannelSubscriptions)
+      .filter(([, subscriptions]) => subscriptions === 0)
+      .map(([channel]) => channel)
+
+    if (emptyChannels.length > 0) {
+      emptyChannels.forEach((channel) => pusher.unsubscribe(channel))
+      setIndexerWebSocketChannelSubscriptions((subscriptions) => {
+        const newSubscriptions = { ...subscriptions }
+        emptyChannels.forEach((channel) => {
+          delete newSubscriptions[channel]
+        })
+        return newSubscriptions
+      })
+    }
+  }, [
+    indexerWebSocketChannelSubscriptions,
+    pusher,
+    setIndexerWebSocketChannelSubscriptions,
+  ])
 
   return (
     <AppContext.Provider
@@ -86,7 +116,6 @@ export const AppContextProvider = ({
           // why we pass a function here.
           _setRootCommandContextMaker(() => maker),
         inbox,
-        daoWebSocket,
       }}
     >
       {children}

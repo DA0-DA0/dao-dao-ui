@@ -3,7 +3,7 @@ import { useCallback, useRef, useState } from 'react'
 
 import { makeGenericContext } from '@dao-dao/stateful/command'
 import { AppContext } from '@dao-dao/stateless'
-import { DaoPageMode, DaoWebSocket, InboxState } from '@dao-dao/types'
+import { DaoPageMode, InboxState } from '@dao-dao/types'
 
 // Useful when testing individual components that rely on this context value but
 // don't want to render the entire AppLayout.
@@ -59,7 +59,6 @@ export const makeAppContextDecorator: (
           rootCommandContextMaker: makeGenericContext,
           setRootCommandContextMaker: () => {},
           inbox: EMPTY_INBOX,
-          daoWebSocket: EMPTY_DAO_WEB_SOCKET,
         }}
       >
         <Story />
@@ -73,11 +72,4 @@ export const EMPTY_INBOX: InboxState = {
   daosWithItems: [],
   itemCount: 0,
   refresh: async () => alert('refetch inbox'),
-}
-
-export const EMPTY_DAO_WEB_SOCKET: DaoWebSocket = {
-  connected: false,
-  channel: null,
-  connect: () => alert('connect'),
-  disconnect: () => alert('disconnect'),
 }

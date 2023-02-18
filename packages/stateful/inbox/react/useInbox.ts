@@ -31,7 +31,8 @@ export const useInbox = (): InboxState => {
 
   // Sort and combine items from all sources.
   const { itemCount, sourceDaosWithItems } = useMemo(() => {
-    // Flatten items so we can sort them with respect to each other.
+    // Flatten items so we can sort them with respect to each other. This also
+    // serves to filter out any DAOs with no items.
     const itemsWithDao = sources
       .flatMap(({ Renderer, data: { daosWithItems } }) =>
         daosWithItems.flatMap(({ coreAddress, items }) =>

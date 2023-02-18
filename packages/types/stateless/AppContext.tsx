@@ -1,7 +1,7 @@
 import { MutableRefObject, ReactNode } from 'react'
 
 import { CommandModalContextMaker } from '../command'
-import { DaoPageMode, DaoWebSocket } from '../dao'
+import { DaoPageMode } from '../dao'
 import { InboxState } from '../inbox'
 
 export type IAppContext = {
@@ -38,9 +38,6 @@ export type IAppContext = {
 
   // Inbox.
   inbox: InboxState
-
-  // WebSocket.
-  daoWebSocket: DaoWebSocket
 }
 
 export type AppContextProviderProps = {
