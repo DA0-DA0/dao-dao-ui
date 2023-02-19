@@ -9,6 +9,7 @@ import {
   DaoProposalPageWrapperProps,
   ProfileDisconnectedCard,
   ProfileProposalCard,
+  SuspenseLoader,
   useOnDaoWebSocketMessage,
   useWalletProfile,
 } from '@dao-dao/stateful'
@@ -18,6 +19,7 @@ import {
   useProposalModuleAdapterContext,
 } from '@dao-dao/stateful/proposal-module-adapter'
 import {
+  Loader,
   Proposal,
   ProposalNotFound,
   ProposalProps,
@@ -163,17 +165,21 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     <Proposal
       ProposalStatusAndInfo={CachedProposalStatusAndInfo}
       actionDisplay={
-        <ProposalActionDisplay
-          availableActions={orderedActions}
-          duplicateLoading={!!navigatingToHref?.startsWith(duplicateUrlPrefix)}
-          onDuplicate={(data) => {
-            const url =
-              duplicateUrlPrefix + encodeURIComponent(JSON.stringify(data))
-            router.push(url)
-            // Show loading on duplicate button.
-            setNavigatingToHref(url)
-          }}
-        />
+        <SuspenseLoader fallback={<Loader />}>
+          <ProposalActionDisplay
+            availableActions={orderedActions}
+            duplicateLoading={
+              !!navigatingToHref?.startsWith(duplicateUrlPrefix)
+            }
+            onDuplicate={(data) => {
+              const url =
+                duplicateUrlPrefix + encodeURIComponent(JSON.stringify(data))
+              router.push(url)
+              // Show loading on duplicate button.
+              setNavigatingToHref(url)
+            }}
+          />
+        </SuspenseLoader>
       }
       creator={{
         name: creatorProfile.loading
