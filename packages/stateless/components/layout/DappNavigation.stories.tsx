@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { makeAppLayoutContextDecorator } from '@dao-dao/storybook/decorators'
+import { makeAppContextDecorator } from '@dao-dao/storybook/decorators'
 
 import { LinkWrapper } from '../LinkWrapper'
 import { DappNavigation, DappNavigationProps } from './DappNavigation'
@@ -10,7 +10,7 @@ export default {
   title:
     'DAO DAO / packages / stateless / components / layout / DappNavigation',
   component: DappNavigation,
-  decorators: [makeAppLayoutContextDecorator(true)],
+  decorators: [makeAppContextDecorator(true)],
   excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof DappNavigation>
 

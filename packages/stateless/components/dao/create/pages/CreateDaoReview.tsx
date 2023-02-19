@@ -36,7 +36,22 @@ export const CreateDaoReview = ({
         // Convert encoded module instantiation messages back to readable JSON.
         if (decodeModuleMessages) {
           msg.proposal_modules_instantiate_info.forEach((info) => {
-            info.msg = parseEncodedMessage(info.msg)
+            const msg = parseEncodedMessage(info.msg)
+
+            // Convert encoded pre_propose_info message back to readable JSON.
+            if (
+              'pre_propose_info' in msg &&
+              'module_may_propose' in msg.pre_propose_info &&
+              'info' in msg.pre_propose_info.module_may_propose &&
+              'msg' in msg.pre_propose_info.module_may_propose.info
+            ) {
+              msg.pre_propose_info.module_may_propose.info.msg =
+                parseEncodedMessage(
+                  msg.pre_propose_info.module_may_propose.info.msg
+                )
+            }
+
+            info.msg = msg
           })
           msg.voting_module_instantiate_info.msg = parseEncodedMessage(
             msg.voting_module_instantiate_info.msg

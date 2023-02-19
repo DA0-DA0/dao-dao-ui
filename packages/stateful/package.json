@@ -36,6 +36,7 @@
     "lodash.merge": "^4.6.2",
     "lodash.uniq": "^4.5.0",
     "next-seo": "^5.4.0",
+    "pusher-js": "^7.6.0",
     "react": "18.1.0",
     "react-hook-form": "7.20.4",
     "react-hot-toast": "^2.1.1",

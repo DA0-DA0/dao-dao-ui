@@ -8,7 +8,12 @@ import {
   ProposalModuleAdapter,
 } from '@dao-dao/types'
 
-import { Dropdown, DropdownOption, useAppLayoutContext } from '../components'
+import {
+  Dropdown,
+  DropdownOption,
+  PageHeaderContent,
+  RightSidebarContent,
+} from '../components'
 
 export interface CreateProposalProps {
   daoInfo: DaoInfo
@@ -28,7 +33,6 @@ export const CreateProposal = ({
   matchAdapter,
 }: CreateProposalProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   // List of proposal modules available, using the adapter ID to derive a label
   // to display in the dropdown.
@@ -51,11 +55,11 @@ export const CreateProposal = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader
+      <PageHeaderContent
         breadcrumbs={{
-          sdaHomeTab: {
+          homeTab: {
             id: DaoTabId.Proposals,
-            label: t('title.proposals'),
+            sdaLabel: t('title.proposals'),
           },
           current: t('title.createProposal'),
         }}

@@ -32,10 +32,8 @@ export const HorizontalScroller = <P extends {}>({
   const [autoscroll, setAutoscroll] = useState(true)
 
   const scrollRef = useRef<HTMLDivElement | null>(null)
-  // Prevent autoscroll if user scrolled within past 150ms. Replicate a scroll
-  // end event by clearing and resetting a timer on scroll.
-  const userScrolling = useRef(false)
-  const userScrollingTimer = useRef<ReturnType<typeof setTimeout>>()
+  // Prevent autoscroll if user touching.
+  const userTouching = useRef(false)
 
   // Don't scroll this element if it isn't visible as the scrolling is a
   // reasonably heavy operation.
@@ -43,31 +41,20 @@ export const HorizontalScroller = <P extends {}>({
 
   const handleScroll: UIEventHandler<HTMLDivElement> = useCallback(
     (e) => {
-      // Clear timeout if exists so we can reset it.
-      if (userScrollingTimer.current) {
-        clearTimeout(userScrollingTimer.current)
-      }
-      // Reset timer to unset user scrolling in 150ms.
-      userScrollingTimer.current = setTimeout(() => {
-        userScrolling.current = false
-        userScrollingTimer.current = undefined
-      }, 150)
-
       const container = e.currentTarget
       const scrollPos = container.scrollLeft
       const scrollWidth = container.scrollWidth
       const divWidth = container.clientWidth
 
       if (scrollPos >= scrollWidth - divWidth) {
-        // Scroll to the end of the non-clones. This will put us in a
-        // position where we have the last element followed by the
-        // clones. Subtracting div-width has the effect of placing the
-        // end of the scroll view at the end of the clones.
+        // Scroll to the end of the non-clones. This will put us in a position
+        // where we have the last element followed by the clones. Subtracting
+        // div-width has the effect of placing the end of the scroll view at the
+        // end of the clones.
         container.scrollLeft = clonesWidth - divWidth
       } else if (scrollPos <= 0) {
-        // Scroll to the beginning of the clones. This will put us in
-        // a position where we have the first element with the
-        // non-clones behind us.
+        // Scroll to the beginning of the clones. This will put us in a position
+        // where we have the first element with the non-clones behind us.
         container.scrollLeft = scrollWidth - clonesWidth
       }
     },
@@ -82,8 +69,8 @@ export const HorizontalScroller = <P extends {}>({
       (accum, { clientWidth }) => accum + clientWidth,
       0
     )
-    // We use 16 pixels of padding between each element so we need to
-    // add that information when considering the width.
+    // We use 16 pixels of padding between each element so we need to add that
+    // information when considering the width.
     setClonesWidth(width + 16 * clonesArray.length)
   }, [])
 
@@ -93,7 +80,7 @@ export const HorizontalScroller = <P extends {}>({
     }
 
     const interval = setInterval(() => {
-      if (scrollRef.current && !userScrolling.current) {
+      if (scrollRef.current && !userTouching.current) {
         scrollRef.current.scrollBy(1, 0)
       }
     }, 50)
@@ -119,8 +106,11 @@ export const HorizontalScroller = <P extends {}>({
           onMouseEnter={() => setAutoscroll(false)}
           onMouseLeave={() => setAutoscroll(true)}
           onScroll={handleScroll}
+          onTouchEnd={() => {
+            userTouching.current = false
+          }}
           onTouchStart={() => {
-            userScrolling.current = true
+            userTouching.current = true
           }}
           ref={(r) => {
             scrollRef.current = r

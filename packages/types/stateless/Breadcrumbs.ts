@@ -9,12 +9,12 @@ export type BreadcrumbCrumb = {
 
 export interface BreadcrumbsProps {
   home?: boolean
-  // Override the home tab crumb when in the SDA. For example, when viewing a
-  // proposal, we probably want to link back to the proposals tab instead of
-  // home.
-  sdaHomeTab?: {
+  // Override the home crumb tab. For example, when viewing a proposal, we
+  // probably want to link back to the proposals tab instead of home. On the
+  // SDA, the specified label is used. On the dApp, the name of the DAO is used.
+  homeTab?: {
     id: DaoTabId
-    label: string
+    sdaLabel: string
   }
   current: ReactNode
   className?: string

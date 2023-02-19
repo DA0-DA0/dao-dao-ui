@@ -4,11 +4,11 @@ import {
   Cw721BaseSelectors,
   DaoVotingCw721StakedSelectors,
 } from '@dao-dao/state/recoil'
-import { CommonGovernanceTokenInfo } from '@dao-dao/types'
+import { GenericToken, TokenType } from '@dao-dao/types'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const useCommonGovernanceTokenInfo = (): CommonGovernanceTokenInfo => {
+export const useCommonGovernanceTokenInfo = (): GenericToken => {
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { nft_address: collectionAddress } = useRecoilValue(
@@ -26,8 +26,10 @@ export const useCommonGovernanceTokenInfo = (): CommonGovernanceTokenInfo => {
   )
 
   return {
+    type: TokenType.Cw721,
     denomOrAddress: collectionAddress,
     symbol: contractInfo.symbol,
     decimals: 0,
+    imageUrl: undefined,
   }
 }

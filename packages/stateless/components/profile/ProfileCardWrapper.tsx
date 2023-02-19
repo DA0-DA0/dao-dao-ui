@@ -62,7 +62,7 @@ export const ProfileCardWrapper = ({
               size="sm"
             />
 
-            <div className="flex flex-col gap-1">
+            <div className="flex min-w-0 flex-col gap-1">
               <ProfileNameDisplayAndEditor
                 canEdit={canEdit}
                 compact={compact}

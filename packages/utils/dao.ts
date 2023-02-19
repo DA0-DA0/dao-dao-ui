@@ -1,4 +1,8 @@
-import { BreadcrumbCrumb, DaoParentInfo } from '@dao-dao/types'
+import {
+  BreadcrumbCrumb,
+  DaoParentInfo,
+  DaoWebSocketChannelInfo,
+} from '@dao-dao/types'
 
 export const getParentDaoBreadcrumbs = (
   getDaoPath: (coreAddress: string) => string,
@@ -13,3 +17,8 @@ export const getParentDaoBreadcrumbs = (
         },
       ]
     : []
+
+export const webSocketChannelNameForDao = ({
+  chainId,
+  coreAddress,
+}: DaoWebSocketChannelInfo) => `${chainId}_${coreAddress}`

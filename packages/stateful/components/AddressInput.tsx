@@ -8,7 +8,6 @@ import {
 } from 'recoil'
 
 import {
-  pfpkProfileSelector,
   searchProfilesByNamePrefixSelector,
   walletHexPublicKeyOverridesAtom,
 } from '@dao-dao/state/recoil'
@@ -19,6 +18,7 @@ import {
 import { AddressInputProps } from '@dao-dao/types'
 import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
+import { pfpkProfileSelector } from '../recoil/selectors/profile'
 import { EntityDisplay } from './EntityDisplay'
 
 export const AddressInput = <

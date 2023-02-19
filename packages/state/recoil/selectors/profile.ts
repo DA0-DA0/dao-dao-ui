@@ -2,9 +2,7 @@ import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   KeplrWalletProfile,
-  PfpkWalletProfile,
   ProfileSearchHit,
-  WalletProfile,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -15,49 +13,6 @@ import {
 } from '@dao-dao/utils'
 
 import { refreshWalletProfileAtom } from '../atoms/refresh'
-
-export const pfpkProfileSelector = selectorFamily<WalletProfile, string>({
-  key: 'pfpkProfile',
-  get:
-    (publicKey) =>
-    async ({ get }) => {
-      get(refreshWalletProfileAtom(publicKey))
-
-      let profile: WalletProfile = {
-        // Disallows editing if we don't have correct nonce from server.
-        nonce: -1,
-        name: null,
-        imageUrl: '',
-        nft: null,
-      }
-
-      // Load profile from PFPK API.
-      let response
-      try {
-        response = await fetch(PFPK_API_BASE + `/${publicKey}`)
-        if (response.ok) {
-          const pfpkProfile: PfpkWalletProfile = await response.json()
-          profile.nonce = pfpkProfile.nonce
-          profile.name = pfpkProfile.name
-          profile.nft = pfpkProfile.nft
-          // Set root-level `imageUrl` if NFT present.
-          if (pfpkProfile.nft?.imageUrl) {
-            profile.imageUrl = transformIpfsUrlToHttpsIfNecessary(
-              pfpkProfile.nft.imageUrl
-            )
-          }
-        } else {
-          console.error(await response.json())
-        }
-      } catch (err) {
-        console.error(processError(err))
-      }
-
-      return profile
-    },
-  // Allow overriding imageUrl with Keplr fallback.
-  dangerouslyAllowMutability: true,
-})
 
 export const keplrProfileImageSelector = selectorFamily<
   string | undefined,

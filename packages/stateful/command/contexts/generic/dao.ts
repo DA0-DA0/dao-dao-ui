@@ -28,7 +28,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const { t } = useTranslation()
     const { getDaoPath, getDaoProposalPath, router } = useNavHelpers()
 
-    const { status } = useWallet(chainId)
+    const { status } = useWallet()
     const { isMember } = useMembership({
       coreAddress,
       chainId,

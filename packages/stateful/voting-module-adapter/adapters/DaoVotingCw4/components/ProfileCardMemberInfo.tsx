@@ -6,7 +6,7 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { ProfileCardMemberInfo as StatelessProfileCardMemberInfo } from '../ui/ProfileCardMemberInfo'
 
 export const ProfileCardMemberInfo = ({
-  deposit: _deposit,
+  maxGovernanceTokenDeposit: _,
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { name: daoName, chainId } = useDaoInfoContext()

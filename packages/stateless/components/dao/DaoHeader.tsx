@@ -51,7 +51,7 @@ export const DaoHeader = ({
       </div>
 
       <MarkdownRenderer
-        className="body-text whitespace-pre-wrap"
+        className="body-text max-w-[min(100%,65ch)] whitespace-pre-wrap"
         markdown={description}
       />
 

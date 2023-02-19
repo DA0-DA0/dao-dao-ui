@@ -1,4 +1,4 @@
-import { atom, selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   blockHeightSelector,
@@ -20,11 +20,6 @@ import {
 import { ProposalLineProps } from '../../../components/ProposalLine'
 import { followingDaosWithProposalModulesSelector } from '../../../recoil'
 
-export const refreshInboxOpenProposalsAtom = atom<number>({
-  key: 'refreshInboxOpenProposals',
-  default: 0,
-})
-
 export const inboxOpenProposalsSelector = selectorFamily<
   InboxSourceDaoWithItems[],
   WithChainId<{ walletAddress?: string }>
@@ -33,8 +28,6 @@ export const inboxOpenProposalsSelector = selectorFamily<
   get:
     ({ walletAddress, chainId }) =>
     ({ get }) => {
-      get(refreshInboxOpenProposalsAtom)
-
       const blocksPerYear = get(blocksPerYearSelector({}))
       const currentBlockHeight = get(blockHeightSelector({}))
 

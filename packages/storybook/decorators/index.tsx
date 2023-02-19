@@ -1,5 +1,5 @@
 export * from './DaoPageWrapperDecorator'
-export * from './makeAppLayoutContextDecorator'
+export * from './makeAppContextDecorator'
 export * from './makeCreateDaoFormDecorator'
 export * from './makeDaoProvidersDecorator'
 export * from './makeDappLayoutDecorator'
