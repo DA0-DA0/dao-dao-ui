@@ -30,20 +30,10 @@ Sentry.init({
     'TypeError: The request timed out.',
     'TypeError: cancelled',
     'TypeError: Cancelled',
+    'hydration',
+    'hydrating',
+    'The user aborted a request.',
+    'Cancel rendering route',
+    'Transaction rejected',
   ],
-
-  // Don't send hydration errors.
-  beforeSend: (event, hint) => {
-    const error = hint.originalException
-    if (
-      error &&
-      'message' in error &&
-      typeof error.message === 'string' &&
-      error.message.match(/hydration|hydrating/i)
-    ) {
-      return null
-    }
-
-    return event
-  },
 })
