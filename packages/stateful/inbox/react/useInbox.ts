@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { waitForAll } from 'recoil'
 
 import { configSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoCore.v2'
@@ -18,16 +18,16 @@ export const useInbox = (): InboxState => {
   }))
 
   // Refresh all input sources.
-  const refresh = useCallback(
-    () => sources.map(({ data: { refresh } }) => refresh()),
-    [sources]
-  )
+  const refresh = () => sources.map(({ data: { refresh } }) => refresh())
 
-  // Automatically update all sources once per minute.
+  // Update all sources once per minute. Memoize refresh function so that it
+  // doesn't restart the interval when the ref changes.
+  const refreshRef = useRef(refresh)
+  refreshRef.current = refresh
   useEffect(() => {
-    const interval = setInterval(refresh, 60 * 1000)
+    const interval = setInterval(() => refreshRef.current(), 60 * 1000)
     return () => clearInterval(interval)
-  }, [refresh])
+  }, [])
 
   // Sort and combine items from all sources.
   const { itemCount, sourceDaosWithItems } = useMemo(() => {
