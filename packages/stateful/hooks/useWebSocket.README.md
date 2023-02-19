@@ -1,19 +1,35 @@
 # WebSocket hooks
 
-The `useDaoWebSocket` hook maintains a client connection to the WebSocket
-server, which is responsible for broadcasting events from the indexer about a
-DAO and its proposals. It is used in the top-level layout components
-(`DappLayout` and `SdaLayout`) to provide a global WebSocket instance to the
-entire app via the AppLayoutContext provider and its `useAppLayoutContext` hook.
-This architecture removes the need for multiple connections or constant
-re-connections when the page changes. This hook is already set up and mostly
-will not change.
+The `useWebSocket` hook provides access to a client connection to the WebSocket
+server, which is responsible for broadcasting events from the indexer. The
+client is a singleton, meaing all hooks provide the same client. This
+architecture removes the need for multiple connections or constant
+re-connections when the page changes.
 
-The `useOnDaoWebSocketMessage` hook wraps the connection and provides a simple
-interface to subscribe to events. **_This is likely the hook you want to use in
-your components if you're adding WebSocket functionality._**
+The `useWebSocketChannel(s)` hooks wrap the web socket hook and return one or
+several subscriptions to channels, keeping track of how many subscriptions there
+are to each channel across the whole app. `AppContextProvider` will unsubscribe
+from a channel once all listeners have stopped listening to it.
 
-## How to subscribe to WebSocket events
+The `useOnWebSocketMessage` hook wraps the channel listener and provides a
+simple interface to subscribe to messages across one or many channels matching
+an expected type and calling a callback function when necessary.
+
+The `useOnDaoWebSocketMessage` hook is a shortcut for the above hook to connect
+to the current DAO's channel. This can only be used when on a DAO's page.
+
+### Which one should I use?
+
+You most likely want to use `useOnWebSocketMessage` or
+`useOnDaoWebSocketMessage` if you're adding WebSocket functionality. The web
+socket and channel hooks manage the connection and subscriptions, so you don't
+have to worry about those. `useOnWebSocketMessage` is useful for subscribing to
+multiple channels, such as the inbox that wants to be notified of new proposals
+for all followed DAOs. `useOnDaoWebSocketMessage` on the other hand is useful
+for subscribing to the current DAO's channel, such as the proposal page that
+wants to refresh when a vote is cast on the current DAO.
+
+## How to subscribe to WebSocket events for a DAO
 
 The `useOnDaoWebSocketMessage` hook assumes the WebSocket always sends messages
 under the `broadcast` event name with a payload that contains `type` (a string)
@@ -66,6 +82,13 @@ both automatically memoized, so it's safe to pass callback functions without
 wrapping them in a `useCallback` to `onMessage`, and it's also safe to pass
 `fallback` as a dependency to other hooks without causing unnecessary
 re-renders.
+
+### What about `useOnWebSocketMessage`?
+
+`useOnWebSocketMessage` is the same as the above hook, except it contains an
+extra argument at the beginning for a list of channel names to apply the handler
+to. Under the hood, `useOnDaoWebSocketMessage` simply uses
+`useOnWebSocketMessage` with one channel—the current DAO.
 
 ## Example
 

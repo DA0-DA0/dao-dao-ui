@@ -17,9 +17,14 @@ import { Inbox, PageLoader, useAppContext } from '@dao-dao/stateless'
 import { SITE_URL } from '@dao-dao/utils'
 
 const InnerInbox = () => {
+  const { t } = useTranslation()
   const { connected } = useWallet()
 
   const { inbox } = useAppContext()
+  // Type-check, should always be loaded for dapp.
+  if (!inbox) {
+    throw new Error(t('error.loadingData'))
+  }
 
   return (
     <Inbox

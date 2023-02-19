@@ -132,9 +132,11 @@ export const DaoCard = ({
           parentDao={parentDao}
           size="sm"
         />
-        <p className="primary-text mt-2">{name}</p>
+        <p className="primary-text mt-2 text-center">{name}</p>
         {established && (
-          <p className="caption-text mt-1">{formatDate(established)}</p>
+          <p className="caption-text mt-1 text-center">
+            {formatDate(established)}
+          </p>
         )}
       </div>
 

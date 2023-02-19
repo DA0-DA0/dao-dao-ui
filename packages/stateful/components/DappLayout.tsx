@@ -30,7 +30,6 @@ import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
 import { useFollowingDaos, useWalletInfo } from '../hooks'
-import { useInbox } from '../inbox'
 import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
@@ -67,6 +66,12 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   )
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
+
+  const { rootCommandContextMaker, updateProfileNft, inbox } = useAppContext()
+  // Type-check, should always be loaded for dapp.
+  if (!inbox) {
+    throw new Error(t('error.loadingData'))
+  }
 
   //! WALLET CONNECTION ERROR MODALS
   const { connect, connected, error, status } = useWalletManager()
@@ -110,7 +115,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   }, [handleKeyPress])
 
   //! Inbox
-  const inbox = useInbox()
   // Inbox notifications
   const [lastProposalCount, setLastProposalCount] = useState(inbox.itemCount)
   useEffect(() => {
@@ -163,8 +167,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     followingDaoDropdownInfosLoadable.contents,
     followingDaoDropdownInfosLoadable.state,
   ])
-
-  const { rootCommandContextMaker, updateProfileNft } = useAppContext()
 
   return (
     <StatelessDappLayout
@@ -219,11 +221,13 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         onClose={() => setBetaWarningAccepted(true)}
         visible={mountedInBrowser && !betaWarningAccepted}
       />
-      <CommandModal
-        makeRootContext={rootCommandContextMaker}
-        setVisible={setCommandModalVisible}
-        visible={commandModalVisible}
-      />
+      {rootCommandContextMaker && (
+        <CommandModal
+          makeRootContext={rootCommandContextMaker}
+          setVisible={setCommandModalVisible}
+          visible={commandModalVisible}
+        />
+      )}
       <SyncFollowingModal />
 
       {updateProfileNft.visible && (

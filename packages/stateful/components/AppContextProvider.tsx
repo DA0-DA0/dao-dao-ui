@@ -1,13 +1,17 @@
-import { useCallback, useRef, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { useRecoilState } from 'recoil'
 
+import { indexerWebSocketChannelSubscriptionsAtom } from '@dao-dao/state/recoil'
 import { AppContext } from '@dao-dao/stateless'
 import {
   AppContextProviderProps,
   CommandModalContextMaker,
+  CommonAppContext,
+  DaoPageMode,
 } from '@dao-dao/types'
 
 import { makeGenericContext } from '../command'
-import { useDaoWebSocket } from '../hooks/useDaoWebSocket'
+import { useWebSocket } from '../hooks'
 import { useInbox } from '../inbox'
 
 export const AppContextProvider = ({
@@ -42,6 +46,80 @@ export const AppContextProvider = ({
     }
   }, [])
 
+  // Unsubscribe from WebSocket channels when all subscriptions removed.
+  const { pusher } = useWebSocket()
+  const [
+    indexerWebSocketChannelSubscriptions,
+    setIndexerWebSocketChannelSubscriptions,
+  ] = useRecoilState(indexerWebSocketChannelSubscriptionsAtom)
+  useEffect(() => {
+    if (!pusher) {
+      return
+    }
+
+    const emptyChannels = Object.entries(indexerWebSocketChannelSubscriptions)
+      .filter(([, subscriptions]) => subscriptions === 0)
+      .map(([channel]) => channel)
+
+    if (emptyChannels.length > 0) {
+      emptyChannels.forEach((channel) => pusher.unsubscribe(channel))
+      setIndexerWebSocketChannelSubscriptions((subscriptions) => {
+        const newSubscriptions = { ...subscriptions }
+        emptyChannels.forEach((channel) => {
+          delete newSubscriptions[channel]
+        })
+        return newSubscriptions
+      })
+    }
+  }, [
+    indexerWebSocketChannelSubscriptions,
+    pusher,
+    setIndexerWebSocketChannelSubscriptions,
+  ])
+
+  const commonContext: CommonAppContext = {
+    responsiveNavigation: {
+      enabled: responsiveNavigationEnabled,
+      toggle: () => setResponsiveNavigationEnabled((v) => !v),
+    },
+    responsiveRightSidebar: {
+      enabled: responsiveRightSidebarEnabled,
+      toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
+    },
+    updateProfileNft: {
+      visible: updateProfileNftVisible,
+      toggle: () => setUpdateProfileNftVisible((v) => !v),
+    },
+    // Include the page header and right sidebar portal refs in the context
+    // to be accessed by the component portals.
+    pageHeaderRef,
+    setPageHeaderRef,
+    rightSidebarRef,
+    setRightSidebarRef,
+  }
+
+  return mode === DaoPageMode.Dapp ? (
+    <DappContextProvider commonContext={commonContext}>
+      {children}
+    </DappContextProvider>
+  ) : mode === DaoPageMode.Sda ? (
+    <SdaContextProvider commonContext={commonContext}>
+      {children}
+    </SdaContextProvider>
+  ) : null
+}
+
+// App-specific context providers.
+
+type CommonAppContextProviderProps = {
+  commonContext: CommonAppContext
+  children: ReactNode
+}
+
+const DappContextProvider = ({
+  commonContext,
+  children,
+}: CommonAppContextProviderProps) => {
   // Command modal.
   const [rootCommandContextMaker, _setRootCommandContextMaker] =
     useState<CommandModalContextMaker>(
@@ -51,45 +129,48 @@ export const AppContextProvider = ({
       // returns the function we want to set.
       () => makeGenericContext
     )
+  const setRootCommandContextMaker = useCallback(
+    (maker) =>
+      // See comment in `_setRootCommandContextMaker` for an explanation on why
+      // we pass a function here.
+      _setRootCommandContextMaker(() => maker),
+    []
+  )
 
   // Inbox.
   const inbox = useInbox()
 
-  // WebSocket.
-  const daoWebSocket = useDaoWebSocket(mode)
-
   return (
     <AppContext.Provider
       value={{
-        mode,
-        responsiveNavigation: {
-          enabled: responsiveNavigationEnabled,
-          toggle: () => setResponsiveNavigationEnabled((v) => !v),
-        },
-        responsiveRightSidebar: {
-          enabled: responsiveRightSidebarEnabled,
-          toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
-        },
-        updateProfileNft: {
-          visible: updateProfileNftVisible,
-          toggle: () => setUpdateProfileNftVisible((v) => !v),
-        },
-        // Include the page header and right sidebar portal refs in the context
-        // to be accessed by the component portals.
-        pageHeaderRef,
-        setPageHeaderRef,
-        rightSidebarRef,
-        setRightSidebarRef,
+        ...commonContext,
+
+        mode: DaoPageMode.Dapp,
+
+        // Command modal.
         rootCommandContextMaker,
-        setRootCommandContextMaker: (maker) =>
-          // See comment in `_setRootCommandContextMaker` for an explanation on
-          // why we pass a function here.
-          _setRootCommandContextMaker(() => maker),
+        setRootCommandContextMaker,
+
+        // Inbox.
         inbox,
-        daoWebSocket,
       }}
     >
       {children}
     </AppContext.Provider>
   )
 }
+
+const SdaContextProvider = ({
+  commonContext,
+  children,
+}: CommonAppContextProviderProps) => (
+  <AppContext.Provider
+    value={{
+      ...commonContext,
+
+      mode: DaoPageMode.Sda,
+    }}
+  >
+    {children}
+  </AppContext.Provider>
+)
