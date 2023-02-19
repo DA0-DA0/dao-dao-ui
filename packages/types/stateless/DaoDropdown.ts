@@ -16,4 +16,5 @@ export interface DaoDropdownProps {
   indent?: number
   compact?: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
+  defaultCollapsed?: boolean
 }
