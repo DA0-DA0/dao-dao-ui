@@ -129,6 +129,13 @@ const DappContextProvider = ({
       // returns the function we want to set.
       () => makeGenericContext
     )
+  const setRootCommandContextMaker = useCallback(
+    (maker) =>
+      // See comment in `_setRootCommandContextMaker` for an explanation on why
+      // we pass a function here.
+      _setRootCommandContextMaker(() => maker),
+    []
+  )
 
   // Inbox.
   const inbox = useInbox()
@@ -142,10 +149,7 @@ const DappContextProvider = ({
 
         // Command modal.
         rootCommandContextMaker,
-        setRootCommandContextMaker: (maker) =>
-          // See comment in `_setRootCommandContextMaker` for an explanation on
-          // why we pass a function here.
-          _setRootCommandContextMaker(() => maker),
+        setRootCommandContextMaker,
 
         // Inbox.
         inbox,
