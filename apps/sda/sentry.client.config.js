@@ -31,4 +31,19 @@ Sentry.init({
     'TypeError: cancelled',
     'TypeError: Cancelled',
   ],
+
+  // Don't send hydration errors.
+  beforeSend: (event, hint) => {
+    const error = hint.originalException
+    if (
+      error &&
+      'message' in error &&
+      typeof error.message === 'string' &&
+      error.message.match(/hydration|hydrating/i)
+    ) {
+      return null
+    }
+
+    return event
+  },
 })
