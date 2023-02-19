@@ -194,7 +194,15 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       proposalInfo={proposalInfo}
       refreshing={refreshing}
       rightSidebarContent={
-        connected ? <ProfileProposalCard /> : <ProfileDisconnectedCard />
+        connected ? (
+          <SuspenseLoader
+            fallback={<ProfileDisconnectedCard className="animate-pulse" />}
+          >
+            <ProfileProposalCard />
+          </SuspenseLoader>
+        ) : (
+          <ProfileDisconnectedCard />
+        )
       }
       voteTally={<ProposalVoteTally />}
       votesCast={<ProposalVotes />}
