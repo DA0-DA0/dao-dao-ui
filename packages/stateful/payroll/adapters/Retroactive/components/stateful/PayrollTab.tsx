@@ -24,7 +24,7 @@ import { OpenSurveySection } from './OpenSurveySection'
 export const PayrollTab = () => {
   const { chainId, coreAddress, bech32Prefix } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
-    useWallet(chainId)
+    useWallet()
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,

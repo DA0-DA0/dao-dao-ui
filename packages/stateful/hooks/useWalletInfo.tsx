@@ -42,7 +42,7 @@ export interface UseWalletReturn {
 }
 
 export const useWalletInfo = (chainId?: string): UseWalletReturn => {
-  const { address, connected, publicKey } = useWallet(chainId)
+  const { address, connected, publicKey } = useWallet()
   const connectWalletToChain = useConnectWalletToChain()
 
   // Fetch wallet balance.
