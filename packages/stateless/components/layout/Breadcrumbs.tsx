@@ -92,7 +92,13 @@ export const Breadcrumbs = ({
               <Tooltip title={firstOrLast ? undefined : label}>
                 <div
                   className={clsx(
-                    idx > 0 && 'max-w-[8rem] overflow-hidden truncate'
+                    'overflow-hidden truncate',
+                    // When there are at least 3 crumbs, and this is the last
+                    // crumb, set max width so it doesn't take up too much
+                    // space.
+                    idx === crumbs.length - 1 &&
+                      crumbs.length > 2 &&
+                      'max-w-[8rem]'
                   )}
                 >
                   <Link href={href}>
