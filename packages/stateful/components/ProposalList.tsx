@@ -16,7 +16,7 @@ import { ProposalLine, ProposalLineProps } from './ProposalLine'
 // Contracts enforce a max of 30, though this is on the edge, so use 20.
 const PROP_PAGINATE_LIMIT = 20
 // Load proposals until at least this many are loaded.
-const MIN_LOAD_PROPS = 40
+const MIN_LOAD_PROPS = 100
 
 export const ProposalList = () => {
   const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
