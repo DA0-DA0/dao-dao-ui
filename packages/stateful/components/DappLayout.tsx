@@ -219,11 +219,13 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         onClose={() => setBetaWarningAccepted(true)}
         visible={mountedInBrowser && !betaWarningAccepted}
       />
-      <CommandModal
-        makeRootContext={rootCommandContextMaker}
-        setVisible={setCommandModalVisible}
-        visible={commandModalVisible}
-      />
+      {rootCommandContextMaker && (
+        <CommandModal
+          makeRootContext={rootCommandContextMaker}
+          setVisible={setCommandModalVisible}
+          visible={commandModalVisible}
+        />
+      )}
       <SyncFollowingModal />
 
       {updateProfileNft.visible && (

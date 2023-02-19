@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
 import { indexerWebSocketChannelSubscriptionsAtom } from '@dao-dao/state/recoil'
@@ -6,6 +6,8 @@ import { AppContext } from '@dao-dao/stateless'
 import {
   AppContextProviderProps,
   CommandModalContextMaker,
+  CommonAppContext,
+  DaoPageMode,
 } from '@dao-dao/types'
 
 import { makeGenericContext } from '../command'
@@ -44,19 +46,6 @@ export const AppContextProvider = ({
     }
   }, [])
 
-  // Command modal.
-  const [rootCommandContextMaker, _setRootCommandContextMaker] =
-    useState<CommandModalContextMaker>(
-      // makeGenericContext is a function, and useState allows passing a
-      // function that executes immediately and returns the initial value for
-      // the state. Thus, pass a function that is called immediately, which
-      // returns the function we want to set.
-      () => makeGenericContext
-    )
-
-  // Inbox.
-  const inbox = useInbox()
-
   // Unsubscribe from WebSocket channels when all subscriptions removed.
   const { pusher } = useWebSocket()
   const [
@@ -88,33 +77,77 @@ export const AppContextProvider = ({
     setIndexerWebSocketChannelSubscriptions,
   ])
 
+  const commonContext: CommonAppContext = {
+    responsiveNavigation: {
+      enabled: responsiveNavigationEnabled,
+      toggle: () => setResponsiveNavigationEnabled((v) => !v),
+    },
+    responsiveRightSidebar: {
+      enabled: responsiveRightSidebarEnabled,
+      toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
+    },
+    updateProfileNft: {
+      visible: updateProfileNftVisible,
+      toggle: () => setUpdateProfileNftVisible((v) => !v),
+    },
+    // Include the page header and right sidebar portal refs in the context
+    // to be accessed by the component portals.
+    pageHeaderRef,
+    setPageHeaderRef,
+    rightSidebarRef,
+    setRightSidebarRef,
+  }
+
+  return mode === DaoPageMode.Dapp ? (
+    <DappContextProvider commonContext={commonContext}>
+      {children}
+    </DappContextProvider>
+  ) : mode === DaoPageMode.Sda ? (
+    <SdaContextProvider commonContext={commonContext}>
+      {children}
+    </SdaContextProvider>
+  ) : null
+}
+
+// App-specific context providers.
+
+type CommonAppContextProviderProps = {
+  commonContext: CommonAppContext
+  children: ReactNode
+}
+
+const DappContextProvider = ({
+  commonContext,
+  children,
+}: CommonAppContextProviderProps) => {
+  // Command modal.
+  const [rootCommandContextMaker, _setRootCommandContextMaker] =
+    useState<CommandModalContextMaker>(
+      // makeGenericContext is a function, and useState allows passing a
+      // function that executes immediately and returns the initial value for
+      // the state. Thus, pass a function that is called immediately, which
+      // returns the function we want to set.
+      () => makeGenericContext
+    )
+
+  // Inbox.
+  const inbox = useInbox()
+
   return (
     <AppContext.Provider
       value={{
-        mode,
-        responsiveNavigation: {
-          enabled: responsiveNavigationEnabled,
-          toggle: () => setResponsiveNavigationEnabled((v) => !v),
-        },
-        responsiveRightSidebar: {
-          enabled: responsiveRightSidebarEnabled,
-          toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
-        },
-        updateProfileNft: {
-          visible: updateProfileNftVisible,
-          toggle: () => setUpdateProfileNftVisible((v) => !v),
-        },
-        // Include the page header and right sidebar portal refs in the context
-        // to be accessed by the component portals.
-        pageHeaderRef,
-        setPageHeaderRef,
-        rightSidebarRef,
-        setRightSidebarRef,
+        ...commonContext,
+
+        mode: DaoPageMode.Dapp,
+
+        // Command modal.
         rootCommandContextMaker,
         setRootCommandContextMaker: (maker) =>
           // See comment in `_setRootCommandContextMaker` for an explanation on
           // why we pass a function here.
           _setRootCommandContextMaker(() => maker),
+
+        // Inbox.
         inbox,
       }}
     >
@@ -122,3 +155,18 @@ export const AppContextProvider = ({
     </AppContext.Provider>
   )
 }
+
+const SdaContextProvider = ({
+  commonContext,
+  children,
+}: CommonAppContextProviderProps) => (
+  <AppContext.Provider
+    value={{
+      ...commonContext,
+
+      mode: DaoPageMode.Sda,
+    }}
+  >
+    {children}
+  </AppContext.Provider>
+)

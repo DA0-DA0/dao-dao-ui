@@ -4,10 +4,8 @@ import { CommandModalContextMaker } from '../command'
 import { DaoPageMode } from '../dao'
 import { InboxState } from '../inbox'
 
-export type IAppContext = {
-  // DAO page mode.
-  mode: DaoPageMode
-
+// App context used by all page modes.
+export type CommonAppContext = {
   // Visibility toggles.
   responsiveNavigation: {
     enabled: boolean
@@ -29,16 +27,34 @@ export type IAppContext = {
   // Right sidebar.
   rightSidebarRef: MutableRefObject<HTMLDivElement | null>
   setRightSidebarRef: (ref: HTMLDivElement | null) => void
-
-  // Command modal.
-  rootCommandContextMaker: CommandModalContextMaker
-  setRootCommandContextMaker: (
-    rootCommandContextMaker: CommandModalContextMaker
-  ) => void
-
-  // Inbox.
-  inbox: InboxState
 }
+
+export type IAppContext = CommonAppContext &
+  // Dapp has command modal and inbox.
+  (| {
+        mode: DaoPageMode.Dapp
+
+        // Command modal.
+        rootCommandContextMaker: CommandModalContextMaker
+        setRootCommandContextMaker: (
+          rootCommandContextMaker: CommandModalContextMaker
+        ) => void
+
+        // Inbox.
+        inbox: InboxState
+      }
+    // SDA has no command modal nor inbox.
+    | {
+        mode: DaoPageMode.Sda
+
+        // Command modal.
+        rootCommandContextMaker?: never
+        setRootCommandContextMaker?: never
+
+        // Inbox.
+        inbox?: never
+      }
+  )
 
 export type AppContextProviderProps = {
   mode: DaoPageMode
