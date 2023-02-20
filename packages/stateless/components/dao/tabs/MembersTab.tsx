@@ -5,9 +5,11 @@ import {
   CategoryScale,
   Chart as ChartJS,
   LinearScale,
+  Tooltip,
+  TooltipOptions,
 } from 'chart.js'
 import clsx from 'clsx'
-import { ComponentType } from 'react'
+import { ComponentType, useCallback, useState } from 'react'
 import { Pie } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 
@@ -20,10 +22,11 @@ import { formatPercentOf100 } from '@dao-dao/utils'
 import { useNamedThemeColor } from '../../../theme'
 import { ButtonLinkProps } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
+import { TooltipLikeDisplay } from '../../tooltip'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
 import { VOTING_POWER_DISTRIBUTION_COLORS } from '../create'
 
-ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale)
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip)
 
 export interface MembersTabProps {
   DaoMemberCard: ComponentType<StatefulDaoMemberCardProps>
@@ -39,6 +42,8 @@ export interface MembersTabProps {
   }
 }
 
+const TOP_MEMBER_COUNT = VOTING_POWER_DISTRIBUTION_COLORS.length
+
 export const MembersTab = ({
   DaoMemberCard,
   members,
@@ -53,17 +58,15 @@ export const MembersTab = ({
   // If anyone's voting power is still loading, can't yet show the top members.
   const topMembers = members.some((member) => member.votingPowerPercent.loading)
     ? []
-    : members
-        .slice(0, VOTING_POWER_DISTRIBUTION_COLORS.length - 1)
-        .map((member, index) => ({
-          ...member,
-          color:
-            VOTING_POWER_DISTRIBUTION_COLORS[
-              index % VOTING_POWER_DISTRIBUTION_COLORS.length
-            ],
-        }))
+    : members.slice(0, TOP_MEMBER_COUNT - 1).map((member, index) => ({
+        ...member,
+        color:
+          VOTING_POWER_DISTRIBUTION_COLORS[
+            index % VOTING_POWER_DISTRIBUTION_COLORS.length
+          ],
+      }))
   const otherVotingPowerPercent = members
-    .slice(VOTING_POWER_DISTRIBUTION_COLORS.length - 1)
+    .slice(TOP_MEMBER_COUNT - 1)
     .reduce(
       (acc, member) =>
         acc +
@@ -71,6 +74,55 @@ export const MembersTab = ({
           ? 0
           : member.votingPowerPercent.data),
       0
+    )
+
+  const [tooltipData, setTooltipData] = useState<{
+    address: string
+    isOther: boolean
+    top: number
+    left: number
+  }>()
+  const tooltipMember =
+    tooltipData &&
+    members.find(({ address }) => address === tooltipData.address)
+  const tooltipVotingPowerPercent =
+    tooltipData &&
+    (tooltipData.isOther
+      ? otherVotingPowerPercent
+      : tooltipMember &&
+        (tooltipMember.votingPowerPercent.loading
+          ? -1
+          : tooltipMember.votingPowerPercent.data))
+
+  // Show custom tooltip when built-in tooltip is supposed to show. This hacks
+  // into the `external` callback of the pie chart's tooltip to mimic tooltip
+  // behavior with custom content.
+  const externalTooltipCallback: TooltipOptions<'pie'>['external'] =
+    useCallback(
+      (context) => {
+        // If tooltip is supposed to hide, do nothing. If tooltip is already
+        // showing, this will leave it showing. The pie chart container has an
+        // `onMouseLeave` handler that hides the tooltip. This allows the user
+        // to mouse over the tooltip and not have it disappear.
+        if (context.tooltip.opacity === 0) {
+          return
+        }
+
+        const newAddress = context.tooltip.dataPoints[0].label
+        const isOther =
+          context.tooltip.dataPoints[0].dataIndex === TOP_MEMBER_COUNT - 1
+        if (!tooltipData || tooltipData.address !== newAddress) {
+          const { x, y } = context.tooltip
+
+          setTooltipData({
+            address: newAddress,
+            top: y,
+            left: x,
+            isOther,
+          })
+        }
+      },
+      [tooltipData]
     )
 
   return (
@@ -157,7 +209,10 @@ export const MembersTab = ({
               {t('title.distribution')}
             </p>
 
-            <div className="flex w-full max-w-[min(24rem,80%)] items-center justify-center">
+            <div
+              className="relative flex w-full max-w-[min(24rem,80%)] items-center justify-center"
+              onMouseLeave={() => setTooltipData(undefined)}
+            >
               <Pie
                 className="!aspect-square justify-self-center"
                 data={{
@@ -184,11 +239,34 @@ export const MembersTab = ({
                   ],
                 }}
                 options={{
-                  // Disable all events (hover, tooltip, etc.)
-                  events: [],
-                  animation: false,
+                  plugins: {
+                    tooltip: {
+                      enabled: false,
+                      external: externalTooltipCallback,
+                    },
+                  },
                 }}
               />
+              {tooltipData && tooltipVotingPowerPercent && (
+                <TooltipLikeDisplay
+                  className="animate-fadein absolute flex-col items-start justify-center gap-2"
+                  style={{ top: tooltipData.top, left: tooltipData.left }}
+                >
+                  {tooltipData.isOther ? (
+                    <p className="primary-text">{topVoters.otherTitle}</p>
+                  ) : (
+                    <topVoters.EntityDisplay address={tooltipData.address} />
+                  )}
+
+                  <div className="flex flex-row items-center justify-between gap-2">
+                    <p className="secondary-text">{t('title.votingPower')}:</p>
+
+                    <p className="symbol-small-body-text font-mono">
+                      {formatPercentOf100(tooltipVotingPowerPercent)}
+                    </p>
+                  </div>
+                </TooltipLikeDisplay>
+              )}
             </div>
           </div>
         </div>
