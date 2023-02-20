@@ -4,17 +4,16 @@ import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
 import { NftCard, NftCardProps } from '../../NftCard'
 import { makeProps as makeNftCardProps } from '../../NftCard.stories'
-import { StakedNftsTab } from './StakedNftsTab'
+import { NftsTab } from './NftsTab'
 
 export default {
-  title:
-    'DAO DAO / packages / stateless / components / dao / tabs / StakedNftsTab',
-  component: StakedNftsTab,
+  title: 'DAO DAO / packages / stateless / components / dao / tabs / NftsTab',
+  component: NftsTab,
   decorators: [DaoPageWrapperDecorator],
-} as ComponentMeta<typeof StakedNftsTab>
+} as ComponentMeta<typeof NftsTab>
 
-const Template: ComponentStory<typeof StakedNftsTab<NftCardProps>> = (args) => (
-  <StakedNftsTab {...args} />
+const Template: ComponentStory<typeof NftsTab<NftCardProps>> = (args) => (
+  <NftsTab {...args} />
 )
 
 export const Default = Template.bind({})
@@ -30,10 +29,11 @@ Default.args = {
     ],
   },
   NftCard,
+  description: 'This is the NFTs tab.',
 }
 
 export const Loading = Template.bind({})
 Loading.args = {
+  ...Default.args,
   nfts: { loading: true },
-  NftCard,
 }
