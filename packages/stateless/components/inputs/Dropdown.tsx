@@ -125,7 +125,7 @@ export const Dropdown = <T extends unknown>({
           {options.map((option, index) => (
             <Button
               key={index}
-              className="rounded-none"
+              className="rounded-none text-left"
               onClick={() => {
                 onSelect(option.value, index)
 

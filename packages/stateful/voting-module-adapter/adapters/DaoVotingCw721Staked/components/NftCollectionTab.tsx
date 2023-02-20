@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, waitForAll } from 'recoil'
 
@@ -9,6 +10,12 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 import { NftCardNoCollection, StakedNftCard } from '../../../../components'
 import { nftCardInfoSelector } from '../../../../recoil/selectors/nft'
 import { useGovernanceCollectionInfo } from '../hooks'
+
+enum Filter {
+  All = 'all',
+  Staked = 'staked',
+  Unstaked = 'unstaked',
+}
 
 export const NftCollectionTab = () => {
   const { t } = useTranslation()
@@ -77,10 +84,30 @@ export const NftCollectionTab = () => {
     []
   )
 
+  const [filter, setFilter] = useState(Filter.All)
+
   return (
     <NftsTab
       NftCard={NftCardNoCollection}
-      description={t('info.nftCollectionExplanation')}
+      description={t('info.nftCollectionExplanation', { context: filter })}
+      filterDropdownProps={{
+        onSelect: (value) => setFilter(value),
+        options: [
+          {
+            label: t('title.allNfts'),
+            value: Filter.All,
+          },
+          {
+            label: t('title.stakedNfts'),
+            value: Filter.Staked,
+          },
+          {
+            label: t('title.unstakedNfts'),
+            value: Filter.Unstaked,
+          },
+        ],
+        selected: filter,
+      }}
       nfts={
         nftCardInfosLoading.loading ||
         tokenOwners.loading ||
@@ -98,6 +125,14 @@ export const NftCollectionTab = () => {
                       ? StakedNftCard
                       : undefined,
                 }))
+                // Filter by selected filter.
+                .filter((nft) =>
+                  filter === Filter.All
+                    ? true
+                    : filter === Filter.Staked
+                    ? nft.OverrideNftCard
+                    : !nft.OverrideNftCard
+                )
                 // Sort staked NFTs first.
                 .sort((a, b) =>
                   a.OverrideNftCard && b.OverrideNftCard

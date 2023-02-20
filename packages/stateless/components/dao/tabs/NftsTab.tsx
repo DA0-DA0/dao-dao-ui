@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { LoadingData, NftCardInfo } from '@dao-dao/types'
 
 import { GridCardContainer } from '../../GridCardContainer'
+import { Dropdown, DropdownProps } from '../../inputs/Dropdown'
 import { Loader } from '../../logo/Loader'
 import { NoContent } from '../../NoContent'
 
@@ -12,12 +13,15 @@ export interface NftsTabProps<N extends NftCardInfo> {
   nfts: LoadingData<(N & { OverrideNftCard?: ComponentType<N> })[]>
   NftCard: ComponentType<N>
   description?: string
+  // If present, will show a dropdown to filter the NFTs.
+  filterDropdownProps?: DropdownProps<any>
 }
 
 export const NftsTab = <N extends NftCardInfo>({
   nfts,
   NftCard,
   description,
+  filterDropdownProps,
 }: NftsTabProps<N>) => {
   const { t } = useTranslation()
 
@@ -35,6 +39,14 @@ export const NftsTab = <N extends NftCardInfo>({
             <p className="secondary-text break-words">{description}</p>
           )}
         </div>
+
+        {filterDropdownProps && (
+          <div className="flex shrink-0 flex-row items-center justify-between gap-4">
+            <p className="primary-text text-text-body">{t('title.filter')}</p>
+
+            <Dropdown {...filterDropdownProps} />
+          </div>
+        )}
       </div>
 
       {nfts.loading ? (
