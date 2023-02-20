@@ -224,10 +224,6 @@ export const ProfileCardMemberInfo = ({
               }
         }
         onClaim={onClaim}
-        onGetTokens={
-          // TODO: WYND swap widget if pool exists.
-          undefined
-        }
         onStake={() => setShowStakingModal(true)}
         refreshUnstakingTasks={() => refreshClaims?.()}
         stakingLoading={stakingLoading}

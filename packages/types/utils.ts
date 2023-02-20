@@ -30,8 +30,6 @@ export interface CodeIdConfig {
   DaoVotingCw721Staked: number
   DaoVotingNativeStaked: number
   CwTokenSwap: number
-  CwPayrollFactory: number
-  CwVesting: number
 }
 
 export interface ChainPrefixIdMap {

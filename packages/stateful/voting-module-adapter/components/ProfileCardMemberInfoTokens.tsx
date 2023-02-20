@@ -23,7 +23,6 @@ export interface ProfileCardMemberInfoTokensProps
   onClaim: () => void
   onStake: () => void
   refreshUnstakingTasks: () => void
-  onGetTokens?: () => void
   loadingVotingPower: LoadingData<number>
   loadingStakedTokens: LoadingData<number>
   loadingUnstakedTokens: LoadingData<number>
@@ -40,7 +39,6 @@ export const ProfileCardMemberInfoTokens = ({
   onClaim,
   onStake,
   refreshUnstakingTasks,
-  onGetTokens,
   cantVoteOnProposal,
   loadingVotingPower,
   loadingStakedTokens,
@@ -83,29 +81,17 @@ export const ProfileCardMemberInfoTokens = ({
     <>
       <div className="secondary-text space-y-3">
         {
-          // If cannot vote on proposal, this means they did not have voting power at the time of proposal creation. Show proposal-specific message when in a proposal.
-          cantVoteOnProposal ? (
+          // If cannot vote on proposal, this means they did not have voting
+          // power at the time of proposal creation. Show proposal-specific
+          // message when in a proposal.
+          cantVoteOnProposal && (
             <p>
               {t('info.tokenDaoNotMemberInfoProposal', {
                 tokenSymbol,
                 daoName,
               })}
             </p>
-          ) : // Only show join instructions if not proposal-specific message above.
-          !isMember ? (
-            <p>
-              {t('info.stakeYourTokensToJoin', { tokenSymbol, daoName })}{' '}
-              {onGetTokens && (
-                <Button
-                  className="font-normal text-inherit"
-                  onClick={onGetTokens}
-                  variant="underline"
-                >
-                  {t('info.getTokensOn', { name: 'WYND' })}
-                </Button>
-              )}
-            </p>
-          ) : null
+          )
         }
 
         <div className="flex flex-row items-start justify-between">
