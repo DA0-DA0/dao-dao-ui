@@ -105,22 +105,26 @@ export function decodeMessages(
   for (const msgObj of msgs) {
     if (isWasmMsg(msgObj)) {
       const msgType = getWasmMsgType(msgObj.wasm)
-      if (msgType && isBinaryType(msgType)) {
-        const base64Msg = (msgObj.wasm as any)[msgType]
-        if (base64Msg) {
-          const msg = parseEncodedMessage(base64Msg.msg)
-          if (msg) {
-            decodedMessageArray.push({
-              ...msgObj,
-              wasm: {
-                ...msgObj.wasm,
-                [msgType]: {
-                  ...base64Msg,
-                  msg,
+      if (msgType) {
+        if (isBinaryType(msgType)) {
+          const base64Msg = (msgObj.wasm as any)[msgType]
+          if (base64Msg) {
+            const msg = parseEncodedMessage(base64Msg.msg)
+            if (msg) {
+              decodedMessageArray.push({
+                ...msgObj,
+                wasm: {
+                  ...msgObj.wasm,
+                  [msgType]: {
+                    ...base64Msg,
+                    msg,
+                  },
                 },
-              },
-            })
+              })
+            }
           }
+        } else {
+          decodedMessageArray.push(msgObj)
         }
       }
     } else if (isCosmWasmStargateMsg(msgObj)) {
