@@ -1,6 +1,6 @@
 import { PayrollAdapter } from '@dao-dao/types'
 
-import { RetroactiveAdapter, VestingAdapter } from './adapters'
+import { RetroactiveAdapter } from './adapters'
 
 // The item key in a DAO's core contract that stores the payroll system ID.
 export const DAO_PAYROLL_ITEM_KEY = 'payroll'
@@ -13,10 +13,7 @@ export const DAO_PAYROLL_ITEM_KEY = 'payroll'
 // should have a dependency chain that leads back to the matching functions
 // below, except the react provider, which we should only be used externally.
 // This is a problem to solve later.
-export const getAdapters = (): readonly PayrollAdapter[] => [
-  RetroactiveAdapter,
-  VestingAdapter,
-]
+export const getAdapters = (): readonly PayrollAdapter[] => [RetroactiveAdapter]
 
 export const getAdapterById = (id: string) =>
   getAdapters().find((adapter) => adapter.id === id)
