@@ -124,7 +124,7 @@ export const Wallet = ({
         title={t('title.wallet')}
       />
 
-      <div className="mx-auto flex max-w-5xl flex-col items-stretch pb-12">
+      <div className="mx-auto flex max-w-5xl flex-col items-stretch">
         <FormProvider {...formMethods}>
           <form
             className="flex flex-col gap-4"
