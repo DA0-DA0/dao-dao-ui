@@ -12,7 +12,7 @@ import {
   DaoPageWrapperDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { DaoMemberCardProps, DaoTabId } from '@dao-dao/types'
+import { DaoTabId } from '@dao-dao/types'
 
 import {
   DaoInfoBar,
@@ -101,9 +101,7 @@ Default.args = {
       id: DaoTabId.Members,
       label: 'Members',
       Component: () => (
-        <MembersTabStory
-          {...(MembersTabStory.args as MembersTabProps<DaoMemberCardProps>)}
-        />
+        <MembersTabStory {...(MembersTabStory.args as MembersTabProps)} />
       ),
       Icon: PeopleAltRounded,
     },
