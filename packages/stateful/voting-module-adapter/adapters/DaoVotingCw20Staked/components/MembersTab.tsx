@@ -15,6 +15,7 @@ import { DaoVotingCw20StakedSelectors } from '@dao-dao/state/recoil'
 import {
   Loader,
   MembersTab as StatelessMembersTab,
+  TooltipInfoIcon,
   VOTING_POWER_DISTRIBUTION_COLORS,
   useCachedLoadable,
   useNamedThemeColor,
@@ -114,9 +115,16 @@ export const MembersTab = () => {
       ) : (
         <div className="flex flex-col items-stretch rounded-lg bg-background-tertiary sm:flex-row">
           <div className="flex grow flex-col gap-2 overflow-hidden p-6">
-            <p className="primary-text mb-4 text-text-body">
-              {t('title.topStakers')}
-            </p>
+            <div className="mb-4 flex flex-row items-center gap-2">
+              <p className="primary-text text-text-body">
+                {t('title.topStakers')}
+              </p>
+
+              <TooltipInfoIcon
+                size="sm"
+                title={t('info.percentagesShownAreVotingPower')}
+              />
+            </div>
 
             {topStakers.map(
               ({ address, votingPowerPercent, isOther, color }, index) => (
