@@ -8,7 +8,11 @@ import {
   LoadingData,
 } from '@dao-dao/types'
 
-import { ProposalContentDisplay, useAppLayoutContext } from '../components'
+import {
+  PageHeaderContent,
+  ProposalContentDisplay,
+  RightSidebarContent,
+} from '../components'
 
 export interface ProposalProps {
   proposalInfo: CommonProposalInfo
@@ -39,7 +43,6 @@ export const Proposal = ({
   refreshing,
 }: ProposalProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   // Scroll to hash manually if available since this component and thus the
   // desired target anchor text won't be ready right when the page renders.
@@ -63,11 +66,11 @@ export const Proposal = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader
+      <PageHeaderContent
         breadcrumbs={{
-          sdaHomeTab: {
+          homeTab: {
             id: DaoTabId.Proposals,
-            label: t('title.proposals'),
+            sdaLabel: t('title.proposals'),
           },
           current: `${t('title.proposal')} ${id}`,
         }}

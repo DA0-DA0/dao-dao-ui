@@ -172,3 +172,12 @@ export const WYND_API_BASE = process.env.NEXT_PUBLIC_WYND_API_BASE as string
 export const WYND_REFERRAL_COMMISSION = Number(
   process.env.NEXT_PUBLIC_WYND_REFERRAL_COMMISSION || '0.01'
 )
+
+// WebSockets API
+export const WEB_SOCKET_PUSHER_APP_KEY = process.env
+  .NEXT_PUBLIC_WEB_SOCKET_PUSHER_APP_KEY as string
+export const WEB_SOCKET_PUSHER_HOST = process.env
+  .NEXT_PUBLIC_WEB_SOCKET_PUSHER_HOST as string
+export const WEB_SOCKET_PUSHER_PORT = Number(
+  process.env.NEXT_PUBLIC_WEB_SOCKET_PUSHER_PORT || '6001'
+)

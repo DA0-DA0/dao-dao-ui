@@ -15,6 +15,7 @@
     "cancel": "Cancel",
     "castYourVote": "Cast your vote",
     "change": "Change",
+    "changeYourVote": "Change your vote",
     "chooseImage": "Choose image",
     "claim": "Claim",
     "claimNumTokens": "Claim your {{amount}} ${{tokenSymbol}}",

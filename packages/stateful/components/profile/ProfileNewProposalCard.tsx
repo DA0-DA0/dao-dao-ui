@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ProfileNewProposalCard as StatelessProfileNewProposalCard,
-  useAppLayoutContext,
+  useAppContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
@@ -18,7 +18,7 @@ export interface ProfileNewProposalCardProps {
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { walletProfile, updateProfileName } = useWalletInfo()
-  const { updateProfileNft } = useAppLayoutContext()
+  const { updateProfileNft } = useAppContext()
 
   return (
     <SuspenseLoader
@@ -50,7 +50,7 @@ export const InnerProfileNewProposalCard = ({
   const { t } = useTranslation()
   const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
   const { walletProfile, updateProfileName } = useWalletInfo()
-  const { updateProfileNft } = useAppLayoutContext()
+  const { updateProfileNft } = useAppContext()
   const {
     hooks: { useProfileNewProposalCardAddresses },
   } = useVotingModuleAdapter()

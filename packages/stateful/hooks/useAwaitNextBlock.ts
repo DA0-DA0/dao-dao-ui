@@ -12,29 +12,34 @@ export const useAwaitNextBlock = (chainId?: string) => {
   const clientLoadable = useRecoilValueLoadable(
     cosmWasmClientForChainSelector(chainId)
   )
+  const client =
+    clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
+
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
 
   const doAfterNextBlock = useCallback(async () => {
-    if (clientLoadable.state !== 'hasValue') {
+    if (!client) {
       return
     }
-    const client = clientLoadable.contents
 
-    let currentBlockHeight = await client.getHeight()
-    // Store what block height we want to wait for. Wait for one past next block
-    // to ensure one whole block starts and finishes. If we wait for the next
-    // one and we are only 2 seconds from it, it's possible the transaction
-    // we're waiting for has not yet happened.
-    const nextBlockHeight = currentBlockHeight + 2
+    // Store what block height we want to wait for.
+    const nextBlockHeight = (await client.getHeight()) + 1
 
     // Refresh block height every 1 second until height changes.
-    while (currentBlockHeight < nextBlockHeight) {
-      currentBlockHeight = await client.getHeight()
-    }
+    await new Promise<void>((resolve) => {
+      const interval = setInterval(async () => {
+        const currentBlockHeight = await client.getHeight()
+        // Once we reach the next block height, stop polling and resolve.
+        if (currentBlockHeight >= nextBlockHeight) {
+          clearInterval(interval)
+          resolve()
+        }
+      }, 1000)
+    })
 
     // Refresh global block height.
     setRefreshBlockHeight((id) => id + 1)
-  }, [clientLoadable, setRefreshBlockHeight])
+  }, [client, setRefreshBlockHeight])
 
   return doAfterNextBlock
 }

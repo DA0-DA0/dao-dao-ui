@@ -2,6 +2,7 @@ export interface PfpkWalletProfile {
   nonce: number
   name: string | null
   nft: {
+    chainId: string
     imageUrl: string
     tokenId: string
     collectionAddress: string

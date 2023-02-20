@@ -1,16 +1,14 @@
 import { useRecoilValue } from 'recoil'
 
-import { DaoVotingNativeStakedSelectors } from '@dao-dao/state/recoil'
-import { CommonGovernanceTokenInfo } from '@dao-dao/types'
 import {
-  NATIVE_DECIMALS,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-} from '@dao-dao/utils'
+  DaoVotingNativeStakedSelectors,
+  eitherTokenInfoSelector,
+} from '@dao-dao/state/recoil'
+import { GenericToken, TokenType } from '@dao-dao/types'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const useCommonGovernanceTokenInfo = (): CommonGovernanceTokenInfo => {
+export const useCommonGovernanceTokenInfo = (): GenericToken => {
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { denom } = useRecoilValue(
@@ -20,9 +18,12 @@ export const useCommonGovernanceTokenInfo = (): CommonGovernanceTokenInfo => {
     })
   )
 
-  return {
-    denomOrAddress: denom,
-    symbol: nativeTokenLabel(denom),
-    decimals: nativeTokenDecimals(denom) ?? NATIVE_DECIMALS,
-  }
+  const eitherTokenInfo = useRecoilValue(
+    eitherTokenInfoSelector({
+      type: TokenType.Native,
+      denomOrAddress: denom,
+    })
+  )
+
+  return eitherTokenInfo
 }

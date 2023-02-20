@@ -40,7 +40,7 @@ interface RatingFormProps {
 export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
   const { t } = useTranslation()
   const { coreAddress, chainId } = useDaoInfoContext()
-  const { publicKey: walletPublicKey } = useWallet(chainId)
+  const { publicKey: walletPublicKey } = useWallet()
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))
   const postRequest = usePostRequest()

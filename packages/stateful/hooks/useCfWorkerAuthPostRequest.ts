@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 export const useCfWorkerAuthPostRequest = (
   apiBase: string,
-  signatureType: string,
-  chainId?: string
+  signatureType: string
 ) => {
   const { t } = useTranslation()
   const {
@@ -14,7 +13,7 @@ export const useCfWorkerAuthPostRequest = (
     publicKey,
     chainInfo,
     address: walletAddress,
-  } = useWallet(chainId)
+  } = useWallet()
 
   const ready = !!walletClient && !!publicKey && !!chainInfo && !!walletAddress
 

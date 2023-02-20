@@ -1,5 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { ComponentProps, useCallback } from 'react'
+import { ComponentProps, useCallback, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
@@ -9,7 +9,8 @@ import {
   DaoProposalPageWrapperProps,
   ProfileDisconnectedCard,
   ProfileProposalCard,
-  useAwaitNextBlock,
+  SuspenseLoader,
+  useOnDaoWebSocketMessage,
   useWalletProfile,
 } from '@dao-dao/stateful'
 import { useActions, useOrderedActionsToMatch } from '@dao-dao/stateful/actions'
@@ -18,6 +19,7 @@ import {
   useProposalModuleAdapterContext,
 } from '@dao-dao/stateful/proposal-module-adapter'
 import {
+  Loader,
   Proposal,
   ProposalNotFound,
   ProposalProps,
@@ -25,6 +27,7 @@ import {
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { CommonProposalInfo } from '@dao-dao/types'
+import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 interface InnerDaoProposalProps {
   proposalInfo: CommonProposalInfo
@@ -35,7 +38,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const daoInfo = useDaoInfoContext()
   const orderedActions = useOrderedActionsToMatch(useActions())
   const { getDaoProposalPath, router } = useNavHelpers()
-  const { connected } = useWallet()
+  const { connected, address } = useWallet()
   const {
     adapter: {
       components: {
@@ -55,37 +58,86 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { refreshProposal, refreshProposalAndAll, refreshing } =
     useProposalRefreshers()
 
-  const awaitNextBlock = useAwaitNextBlock()
+  // Vote listener. Show alerts and refresh accordingly.
+  const { listening: listeningForVote, fallback: onVoteSuccess } =
+    useOnDaoWebSocketMessage(
+      'vote',
+      ({ proposalId, voter }) => {
+        // If vote made on current proposal...
+        if (proposalId === proposalInfo.id) {
+          refreshProposalAndAll()
 
-  const onVoteSuccess = useCallback(async () => {
-    // Wait a block for indexer to catch up.
-    await awaitNextBlock()
+          // If the current user voted on current proposal, show a success
+          // toast.
+          if (voter === address) {
+            toast.success(t('success.voteCast'))
+          }
+        }
+      },
+      {
+        proposalId: proposalInfo.id,
+        voter: address,
+      }
+    )
 
-    refreshProposalAndAll()
-    toast.success(t('success.voteCast'))
-  }, [awaitNextBlock, refreshProposalAndAll, t])
+  // Proposal status listener. Show alerts and refresh accordingly.
+  const {
+    listening: listeningForProposal,
+    fallback: onProposalUpdateFallback,
+  } = useOnDaoWebSocketMessage('proposal', async ({ status, proposalId }) => {
+    // If the current proposal updated...
+    if (proposalId === proposalInfo.id) {
+      refreshProposalAndAll()
 
-  const onExecuteSuccess = useCallback(async () => {
-    toast.loading(t('success.proposalExecuted'))
+      // On execute, revalidate and refresh page.
+      if (status === Status.Executed) {
+        // Show loading since page will reload shortly.
+        toast.loading(t('success.proposalExecuted'))
 
-    // Wait a block for indexer to catch up.
-    await awaitNextBlock()
+        // Manually revalidate DAO static props.
+        await fetch(
+          `/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`
+        )
 
-    // Manually revalidate DAO static props. Don't await this promise since we
-    // just want to tell the server to do it, and we're about to reload anyway.
-    fetch(`/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`)
+        // Refresh entire app since any DAO config may have changed.
+        window.location.reload()
+      }
+      // On close, show success toast.
+      else if (status === Status.Closed) {
+        toast.success(t('success.proposalClosed'))
+      }
+    }
+  })
 
-    // Refresh entire app since any DAO config may have changed.
-    window.location.reload()
-  }, [awaitNextBlock, daoInfo.coreAddress, proposalInfo.id, t])
+  // Fallback if the listener above is not listening.
+  const onExecuteSuccess = useCallback(
+    () =>
+      onProposalUpdateFallback({
+        status: Status.Executed,
+        proposalId: proposalInfo.id,
+      }),
+    [onProposalUpdateFallback, proposalInfo.id]
+  )
 
-  const onCloseSuccess = useCallback(async () => {
-    // Wait a block for indexer to catch up.
-    await awaitNextBlock()
+  // Fallback if the listener above is not listening.
+  const onCloseSuccess = useCallback(
+    () =>
+      onProposalUpdateFallback({
+        status: Status.Closed,
+        proposalId: proposalInfo.id,
+      }),
+    [onProposalUpdateFallback, proposalInfo.id]
+  )
 
-    refreshProposalAndAll()
-    toast.success(t('success.proposalClosed'))
-  }, [awaitNextBlock, refreshProposalAndAll, t])
+  // Fallback if both listeners above are offline, refresh every 30 seconds.
+  useEffect(() => {
+    if (listeningForVote || listeningForProposal) {
+      return
+    }
+
+    const interval = setInterval(refreshProposalAndAll, 30 * 1000)
+    return () => clearInterval(interval)
+  }, [listeningForProposal, listeningForVote, refreshProposalAndAll])
 
   // Memoize ProposalStatusAndInfo so it doesn't re-render when the proposal
   // refreshes. The cached loadable it uses internally depends on the
@@ -113,17 +165,21 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     <Proposal
       ProposalStatusAndInfo={CachedProposalStatusAndInfo}
       actionDisplay={
-        <ProposalActionDisplay
-          availableActions={orderedActions}
-          duplicateLoading={!!navigatingToHref?.startsWith(duplicateUrlPrefix)}
-          onDuplicate={(data) => {
-            const url =
-              duplicateUrlPrefix + encodeURIComponent(JSON.stringify(data))
-            router.push(url)
-            // Show loading on duplicate button.
-            setNavigatingToHref(url)
-          }}
-        />
+        <SuspenseLoader fallback={<Loader />}>
+          <ProposalActionDisplay
+            availableActions={orderedActions}
+            duplicateLoading={
+              !!navigatingToHref?.startsWith(duplicateUrlPrefix)
+            }
+            onDuplicate={(data) => {
+              const url =
+                duplicateUrlPrefix + encodeURIComponent(JSON.stringify(data))
+              router.push(url)
+              // Show loading on duplicate button.
+              setNavigatingToHref(url)
+            }}
+          />
+        </SuspenseLoader>
       }
       creator={{
         name: creatorProfile.loading
@@ -138,7 +194,15 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       proposalInfo={proposalInfo}
       refreshing={refreshing}
       rightSidebarContent={
-        connected ? <ProfileProposalCard /> : <ProfileDisconnectedCard />
+        connected ? (
+          <SuspenseLoader
+            fallback={<ProfileDisconnectedCard className="animate-pulse" />}
+          >
+            <ProfileProposalCard />
+          </SuspenseLoader>
+        ) : (
+          <ProfileDisconnectedCard />
+        )
       }
       voteTally={<ProposalVoteTally />}
       votesCast={<ProposalVotes />}

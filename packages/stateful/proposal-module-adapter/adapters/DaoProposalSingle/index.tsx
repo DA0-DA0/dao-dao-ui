@@ -4,6 +4,7 @@ import {
   ProposalModuleAdapter,
 } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { NATIVE_DENOM } from '@dao-dao/utils'
 
 import {
   NewProposal,
@@ -173,8 +174,8 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
         enabled: false,
         amount: 10,
         type: 'native',
-        cw20Address: '',
-        cw20TokenInfo: undefined,
+        denomOrAddress: NATIVE_DENOM,
+        token: undefined,
         refundPolicy: DepositRefundPolicy.OnlyPassed,
       },
       anyoneCanPropose: false,

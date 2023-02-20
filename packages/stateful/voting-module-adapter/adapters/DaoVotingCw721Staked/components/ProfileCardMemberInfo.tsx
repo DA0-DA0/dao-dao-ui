@@ -31,7 +31,7 @@ import { useGovernanceCollectionInfo, useStakingInfo } from '../hooks'
 import { StakingModal } from './StakingModal'
 
 export const ProfileCardMemberInfo = ({
-  deposit,
+  maxGovernanceTokenDeposit,
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
@@ -156,7 +156,7 @@ export const ProfileCardMemberInfo = ({
     <>
       {showStakingModal && (
         <StakingModal
-          maxDeposit={deposit}
+          maxDeposit={maxGovernanceTokenDeposit}
           onClose={() => setShowStakingModal(false)}
         />
       )}

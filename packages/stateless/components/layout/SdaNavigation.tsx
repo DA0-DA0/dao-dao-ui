@@ -18,7 +18,7 @@ import { useDaoInfoContext, useNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Tooltip } from '../tooltip/Tooltip'
-import { useAppLayoutContext } from './AppLayoutContext'
+import { useAppContext } from './AppContext'
 import { Footer } from './Footer'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
@@ -65,7 +65,7 @@ export const SdaNavigation = ({
       toggle: toggleResponsive,
     },
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
-  } = useAppLayoutContext()
+  } = useAppContext()
 
   // Get the path to the DAO page on main DAO DAO.
   const daoDaoPath = asPath.startsWith(getDaoPath(''))

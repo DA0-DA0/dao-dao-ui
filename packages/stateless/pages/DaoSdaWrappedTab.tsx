@@ -2,7 +2,11 @@ import clsx from 'clsx'
 
 import { DaoSdaWrappedTabProps } from '@dao-dao/types'
 
-import { PageLoader, useAppLayoutContext } from '../components'
+import {
+  PageHeaderContent,
+  PageLoader,
+  RightSidebarContent,
+} from '../components'
 
 export const DaoSdaWrappedTab = ({
   allTabs,
@@ -10,14 +14,12 @@ export const DaoSdaWrappedTab = ({
   rightSidebarContent,
   SuspenseLoader,
 }: DaoSdaWrappedTabProps) => {
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
-
   const activeTab = allTabs.find(({ id }) => id === tabId) || allTabs[0]
 
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader
+      <PageHeaderContent
         breadcrumbs={{
           home: true,
           current: activeTab.label,
