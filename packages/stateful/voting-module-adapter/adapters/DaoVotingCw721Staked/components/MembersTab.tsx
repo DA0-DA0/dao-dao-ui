@@ -60,8 +60,6 @@ export const MembersTab = () => {
     })
   )
 
-  console.log(topStakersLoadable)
-
   const otherColor = useNamedThemeColor('background-primary')
 
   const topStakers =
