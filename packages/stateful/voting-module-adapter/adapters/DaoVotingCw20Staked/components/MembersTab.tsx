@@ -53,6 +53,7 @@ ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip)
 export const MembersTab = () => {
   const { t } = useTranslation()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
+
   const topStakersLoadable = useCachedLoadable(
     DaoVotingCw20StakedSelectors.topStakersSelector({
       contractAddress: votingModuleAddress,
@@ -78,7 +79,7 @@ export const MembersTab = () => {
                 {
                   address: '',
                   balance: topStakersLoadable.contents
-                    .slice(0, 9)
+                    .slice(9)
                     .reduce((acc, { balance }) => acc + Number(balance), 0),
                   votingPowerPercent: topStakersLoadable.contents
                     .slice(9)
@@ -172,7 +173,9 @@ export const MembersTab = () => {
                   labels: topStakers.map(({ address }) => address),
                   datasets: [
                     {
-                      data: topStakers.map(({ balance }) => Number(balance)),
+                      data: topStakers.map(({ votingPowerPercent }) =>
+                        Number(votingPowerPercent)
+                      ),
                       backgroundColor: topStakers.map(({ color }) => color),
                       borderWidth: 0,
                     },
