@@ -13,7 +13,6 @@ import {
   CHAIN_BECH32_PREFIX,
   convertMicroDenomToDenomWithDecimals,
   isValidAddress,
-  nativeTokenLabel,
   validateAddress,
   validatePositive,
   validateRequired,
@@ -52,8 +51,7 @@ export const InstantiateTokenSwap: ActionComponent<
     selfToken?.balance ?? 0,
     selfDecimals
   )
-  const selfSymbol =
-    selfToken?.token.symbol ?? nativeTokenLabel(selfParty.denomOrAddress)
+  const selfSymbol = selfToken?.token.symbol ?? t('info.tokens')
 
   const counterpartyToken = counterpartyTokenBalances.loading
     ? undefined
@@ -69,7 +67,7 @@ export const InstantiateTokenSwap: ActionComponent<
     counterpartyToken?.balance ?? 0,
     counterpartyDecimals
   )
-  const counterpartySymbol = counterpartyToken?.token.symbol
+  const counterpartySymbol = counterpartyToken?.token.symbol ?? t('info.tokens')
 
   const counterpartyAddressValid =
     !!counterparty.address &&
