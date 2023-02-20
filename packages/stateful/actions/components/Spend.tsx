@@ -94,7 +94,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         })
       }
 
-      return 'Unrecognized denom.'
+      return t('error.unknownDenom', { denom: id })
     },
     [context.type, t, tokens]
   )
