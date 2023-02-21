@@ -272,7 +272,9 @@
   "form": {
     "addAnImage": "Add an image",
     "address": "Address",
-    "addressInputPlaceholder": "Search profile name or enter an address...",
+    "addressInputPlaceholder_any": "Search profile or DAO name or enter an address...",
+    "addressInputPlaceholder_contract": "Search DAO name or enter an address...",
+    "addressInputPlaceholder_wallet": "Search profile name or enter an address...",
     "admin": "Admin",
     "allowRevotingDescription": "This will allow members to change their vote on proposals before the voting duration deadline. As a result, proposals will not be able to finish early.",
     "allowRevotingTitle": "Allow revoting",

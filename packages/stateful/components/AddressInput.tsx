@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import {
   constSelector,
   useRecoilValueLoadable,
@@ -8,6 +9,7 @@ import {
 } from 'recoil'
 
 import {
+  searchDaosSelector,
   searchProfilesByNamePrefixSelector,
   walletHexPublicKeyOverridesAtom,
 } from '@dao-dao/state/recoil'
@@ -15,8 +17,12 @@ import {
   AddressInput as StatelessAddressInput,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { AddressInputProps } from '@dao-dao/types'
-import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
+import { AddressInputProps, EntityType } from '@dao-dao/types'
+import {
+  CHAIN_BECH32_PREFIX,
+  getFallbackImage,
+  isValidAddress,
+} from '@dao-dao/utils'
 
 import { pfpkProfileSelector } from '../recoil/selectors/profile'
 import { EntityDisplay } from './EntityDisplay'
@@ -27,6 +33,8 @@ export const AddressInput = <
 >(
   props: AddressInputProps<FV, FieldName>
 ) => {
+  const { t } = useTranslation()
+
   // Null if not within a FormProvider.
   const formContext = useFormContext<FV>()
   const watch = props.watch || formContext?.watch
@@ -37,10 +45,19 @@ export const AddressInput = <
     formValue.length >= 3 &&
     // Don't search name if it's an address.
     !isValidAddress(formValue, CHAIN_BECH32_PREFIX)
+
   const searchProfilesLoadable = useCachedLoadable(
-    hasFormValue
+    hasFormValue && props.type !== 'contract'
       ? searchProfilesByNamePrefixSelector({
           namePrefix: formValue,
+        })
+      : undefined
+  )
+  const searchDaosLoadable = useCachedLoadable(
+    hasFormValue && props.type !== 'wallet'
+      ? searchDaosSelector({
+          query: formValue,
+          limit: 5,
         })
       : undefined
   )
@@ -88,19 +105,62 @@ export const AddressInput = <
       {...props}
       EntityDisplay={props.EntityDisplay || EntityDisplay}
       autoComplete="off"
-      autofillProfiles={
+      autofillEntities={
         hasFormValue
           ? {
               hits:
-                searchProfilesLoadable.state === 'hasValue'
-                  ? searchProfilesLoadable.contents
+                searchProfilesLoadable.state === 'hasValue' ||
+                searchDaosLoadable.state === 'hasValue'
+                  ? [
+                      ...(searchProfilesLoadable.state === 'hasValue'
+                        ? searchProfilesLoadable.contents.map(
+                            ({ publicKey, address, profile }) => ({
+                              type: EntityType.Wallet,
+                              address,
+                              name: profile.name,
+                              imageUrl:
+                                profile.nft?.imageUrl ||
+                                getFallbackImage(publicKey),
+                            })
+                          )
+                        : []),
+                      ...(searchDaosLoadable.state === 'hasValue'
+                        ? searchDaosLoadable.contents
+                            .filter(
+                              ({ value }) =>
+                                value?.config && value.proposalCount
+                            )
+                            .map(
+                              ({
+                                contractAddress,
+                                value: {
+                                  config: { name, image_url },
+                                },
+                              }) => ({
+                                type: EntityType.Dao,
+                                address: contractAddress,
+                                name,
+                                imageUrl:
+                                  image_url ||
+                                  getFallbackImage(contractAddress),
+                              })
+                            )
+                        : []),
+                    ]
                   : [],
               loading:
                 searchProfilesLoadable.state === 'loading' ||
                 (searchProfilesLoadable.state === 'hasValue' &&
-                  searchProfilesLoadable.updating),
+                  searchProfilesLoadable.updating) ||
+                searchDaosLoadable.state === 'loading' ||
+                (searchDaosLoadable.state === 'hasValue' &&
+                  searchDaosLoadable.updating),
             }
           : undefined
+      }
+      placeholder={
+        props.placeholder ||
+        t('form.addressInputPlaceholder', { context: props.type || 'any' })
       }
     />
   )

@@ -2,14 +2,9 @@ import { Code, Wallet } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
 
-import { AddressInputProps, EntityType } from '@dao-dao/types'
-import {
-  CHAIN_BECH32_PREFIX,
-  getFallbackImage,
-  isValidAddress,
-} from '@dao-dao/utils'
+import { AddressInputProps } from '@dao-dao/types'
+import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
 import { EntityDisplay as StatelessEntityDisplay } from '../EntityDisplay'
 import { Loader } from '../logo/Loader'
@@ -31,11 +26,10 @@ export const AddressInput = <
   containerClassName,
   type = 'wallet',
   EntityDisplay,
-  autofillProfiles,
+  autofillEntities: autofillProfiles,
   placeholder,
   ...rest
 }: AddressInputProps<FV, FieldName>) => {
-  const { t } = useTranslation()
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
@@ -187,11 +181,8 @@ export const AddressInput = <
             disabled={disabled}
             placeholder={
               placeholder ||
-              // If contract, use chain prefix. Otherwise, for a wallet, suggest
-              // typing in a profile name.
-              (type === 'contract'
-                ? `${CHAIN_BECH32_PREFIX}...`
-                : t('form.addressInputPlaceholder'))
+              // If contract, use chain prefix.
+              (type === 'contract' ? `${CHAIN_BECH32_PREFIX}...` : undefined)
             }
             type="text"
             {...rest}
@@ -230,9 +221,9 @@ export const AddressInput = <
           )}
         >
           <div className="no-scrollbar flex h-full max-h-80 flex-col overflow-y-auto">
-            {autofillProfiles.hits.map((hit, index) => (
+            {autofillProfiles.hits.map((entity, index) => (
               <div
-                key={hit.publicKey}
+                key={entity.address}
                 className={clsx(
                   'cursor-pointer py-3 pl-4 pr-[6px] transition-all hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
                   selectedProfileIndex === index &&
@@ -241,23 +232,15 @@ export const AddressInput = <
                 onClick={() => selectAutofillProfile(index)}
               >
                 <StatelessEntityDisplay
-                  key={hit.publicKey}
-                  address={hit.address}
+                  address={entity.address}
                   className="!gap-3"
                   copyToClipboardProps={{
                     textClassName: 'no-underline',
-                    tooltip: hit.address,
+                    tooltip: entity.address,
                   }}
                   loadingEntity={{
                     loading: false,
-                    data: {
-                      type: EntityType.Wallet,
-                      address: hit.address,
-                      name: hit.profile.name,
-                      imageUrl:
-                        hit.profile.nft?.imageUrl ||
-                        getFallbackImage(hit.publicKey),
-                    },
+                    data: entity,
                   }}
                   noCopy
                   noImageTooltip
