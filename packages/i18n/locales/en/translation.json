@@ -723,7 +723,7 @@
     "withdrawTokenSwapDescription": "Withdraw funds from a token swap that has not yet completed.",
     "wouldYouLikeToSearchQuestion": "Would you like to search for a DAO?",
     "wyndSwapSummary_minOut": "This swaps {{in}} for at least {{minOut}}. If the price is too low, the swap will fail.",
-    "wyndSwapSummary_unsafe": "BE CAREFUL! This swaps {{in}} for ${{outSymbol}} at whatever the price is at the time of the swap. We recommend using a minimum output to guarantee a fair price and fail otherwise.",
+    "wyndSwapSummary_unsafe": "BE CAREFUL! This swaps {{in}} for ${{outSymbol}} at whatever the price is at the time of the swap. We recommend using a minimum output to require a fair price.",
     "yes": "Yes",
     "yesVote": "Yes",
     "yesWillWinTieClarification": "'Yes' will win a tie vote.",
