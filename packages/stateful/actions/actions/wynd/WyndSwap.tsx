@@ -609,8 +609,6 @@ const useTransformToCosmos: UseTransformToCosmos<WyndSwapData> = () => {
         },
       }
 
-      console.log(msg)
-
       if (tokenIn.type === TokenType.Native) {
         return makeWasmMessage({
           wasm: {
