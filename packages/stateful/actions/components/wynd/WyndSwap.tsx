@@ -1,7 +1,9 @@
 import {
   ArrowDownwardRounded,
   ArrowDropDown,
+  InfoRounded,
   SwapVertRounded,
+  WarningRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useCallback, useMemo, useState } from 'react'
@@ -490,6 +492,45 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           )}
         </div>
       )}
+
+      <div className="mt-2 flex max-w-prose flex-row items-center gap-3 rounded-md bg-background-tertiary p-4">
+        {minOutAmount === undefined ? (
+          <WarningRounded className="!h-14 !w-14 text-icon-interactive-warning" />
+        ) : (
+          <InfoRounded className="!h-10 !w-10" />
+        )}
+
+        <p
+          className={clsx(
+            'body-text',
+            minOutAmount === undefined && 'text-text-interactive-warning-body'
+          )}
+        >
+          {t(
+            'info.wyndSwapSummary',
+            minOutAmount === undefined
+              ? {
+                  context: 'unsafe',
+                  in: t('format.token', {
+                    amount: tokenInAmount,
+                    symbol: tokenIn.symbol,
+                  }),
+                  outSymbol: tokenOut.symbol,
+                }
+              : {
+                  context: 'minOut',
+                  in: t('format.token', {
+                    amount: tokenInAmount,
+                    symbol: tokenIn.symbol,
+                  }),
+                  minOut: t('format.token', {
+                    amount: minOutAmount,
+                    symbol: tokenOut.symbol,
+                  }),
+                }
+          )}
+        </p>
+      </div>
 
       <InputErrorMessage error={errors?.swapOperations} />
     </ActionCard>
