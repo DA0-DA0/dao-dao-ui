@@ -370,7 +370,7 @@ export const NewProposal = ({
                           <p className="secondary-text">
                             {multipleChoiceOption.description}
                           </p>
-                          {actionData.length ? (
+                          {actionData && actionData.length ? (
                             <CosmosMessageDisplay
                               value={decodedMessagesString(
                                 actionData

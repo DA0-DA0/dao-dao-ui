@@ -188,7 +188,7 @@ export const MultipleChoiceOption = <
                         errors.choices?.[optionIndex]?.actionData?.[actionIndex]
                           ?.data || {}
                       }
-                      fieldNamePrefix={`actionData.${actionIndex}.data.`}
+                      fieldNamePrefix={`choices.${optionIndex}.actionData.${actionIndex}.data.`}
                       index={actionIndex}
                       isCreating
                       onRemove={() => {
