@@ -146,12 +146,14 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           />
           <div className="flex max-w-[10rem] flex-col items-start gap-1 overflow-hidden text-left">
             <p className="title-text max-w-full truncate">${symbol}</p>
-            <p className="caption-text">
-              {t('title.balance')}:{' '}
-              {balance.toLocaleString(undefined, {
-                maximumFractionDigits: decimals,
-              })}
-            </p>
+            {isCreating && (
+              <p className="caption-text">
+                {t('title.balance')}:{' '}
+                {balance.toLocaleString(undefined, {
+                  maximumFractionDigits: decimals,
+                })}
+              </p>
+            )}
           </div>
           {isCreating && <ArrowDropDown className="ml-2 !h-6 !w-6" />}
         </Button>
