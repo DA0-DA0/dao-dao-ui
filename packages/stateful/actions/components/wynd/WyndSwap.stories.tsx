@@ -14,6 +14,7 @@ import {
   nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
+import { AddressInput } from '../../../components'
 import { WyndSwapComponent, WyndSwapData } from './WyndSwap'
 
 const usdc = getJunoIbcUsdc()
@@ -42,6 +43,7 @@ export default {
       tokenOutAmount: 0,
       minOutAmount: 0,
       swapOperations: undefined,
+      receiver: '',
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
   ],
@@ -61,6 +63,7 @@ Default.args = {
     wyndTokens: [],
     simulatingValue: undefined,
     estUsdPrice: { loading: true },
+    AddressInput,
   },
   isCreating: true,
   onRemove: () => alert('remove'),
