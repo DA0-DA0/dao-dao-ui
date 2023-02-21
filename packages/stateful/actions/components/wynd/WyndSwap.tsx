@@ -6,7 +6,7 @@ import {
   WarningRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useCallback, useMemo, useState } from 'react'
+import { ComponentType, useCallback, useMemo, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -25,6 +25,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionOptionsContextType,
+  AddressInputProps,
   AmountWithTimestamp,
   GenericToken,
   GenericTokenBalance,
@@ -35,6 +36,7 @@ import { SwapOperation } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
+  validateAddress,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -50,6 +52,7 @@ export interface WyndSwapData {
   minOutAmount?: number
   maxSlippage?: number
   swapOperations: SwapOperation[] | undefined
+  receiver: string
 }
 
 export interface WyndSwapOptions {
@@ -57,6 +60,7 @@ export interface WyndSwapOptions {
   wyndTokens: GenericToken[]
   simulatingValue: 'tokenIn' | 'tokenOut' | undefined
   estUsdPrice: LoadingData<AmountWithTimestamp | undefined>
+  AddressInput: ComponentType<AddressInputProps>
 }
 
 export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
@@ -64,7 +68,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { balances, wyndTokens, simulatingValue, estUsdPrice },
+  options: { balances, wyndTokens, simulatingValue, estUsdPrice, AddressInput },
 }) => {
   const { t } = useTranslation()
   const { context } = useActionOptions()
@@ -268,15 +272,14 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
                 onAnimationEnd={() => setSwapCycles(0)}
                 onAnimationIteration={() => setSwapCycles((prev) => prev - 1)}
                 onClick={() => {
-                  setValue(fieldNamePrefix, {
-                    tokenIn: tokenOut,
-                    tokenInAmount: tokenOutAmount,
-                    tokenOut: tokenIn,
-                    tokenOutAmount: tokenInAmount,
-                    minOutAmount: Number(
-                      (tokenInAmount * 0.99).toFixed(tokenIn.decimals)
-                    ),
-                  })
+                  setValue(fieldNamePrefix + 'tokenIn', tokenOut)
+                  setValue(fieldNamePrefix + 'tokenInAmount', tokenOutAmount)
+                  setValue(fieldNamePrefix + 'tokenOut', tokenIn)
+                  setValue(fieldNamePrefix + 'tokenOutAmount', tokenInAmount)
+                  setValue(
+                    fieldNamePrefix + 'minOutAmount',
+                    Number((tokenInAmount * 0.99).toFixed(tokenIn.decimals))
+                  )
                   setSwapCycles((prev) => prev + 1)
                 }}
                 onMouseLeave={() => setHoveringOverSwap(false)}
@@ -358,178 +361,188 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           </p>
         ))}
 
-      {(isCreating ||
-        minOutAmount !== undefined ||
-        maxSlippage !== undefined) && (
-        <div className="flex max-w-prose flex-col gap-6">
-          {(minOutAmount !== undefined || isCreating) && (
-            <div className="flex flex-col gap-4">
-              <div className="space-y-1">
-                <p className="primary-text">
-                  {t('title.minimumOutputRequired')}
-                </p>
-                <p className="caption-text">
-                  {t('info.minimumOutputRequiredDescription', {
-                    context: context.type,
-                  })}
-                </p>
-              </div>
-
-              {isCreating && (
-                <div className="grid grid-cols-5 gap-2">
-                  <Button
-                    center
-                    onClick={() =>
-                      setValue(fieldNamePrefix + 'minOutAmount', undefined, {
-                        shouldValidate: true,
-                      })
-                    }
-                    pressed={minOutAmount === undefined}
-                    variant="secondary"
-                  >
-                    {t('button.none')}
-                  </Button>
-
-                  {[90, 95, 97, 99].map((percent) => (
-                    <PercentButton
-                      key={percent}
-                      amount={minOutAmount ?? 0}
-                      decimals={tokenOut.decimals}
-                      label={`${percent}%`}
-                      loadingMax={{ loading: false, data: tokenOutAmount }}
-                      percent={percent / 100}
-                      setAmount={(amount) =>
-                        setValue(fieldNamePrefix + 'minOutAmount', amount, {
-                          shouldValidate: true,
-                        })
-                      }
-                    />
-                  ))}
-                </div>
-              )}
-
-              {isCreating ? (
-                <NumberInput
-                  error={errors?.minOutAmount}
-                  fieldName={fieldNamePrefix + 'minOutAmount'}
-                  max={tokenOutAmount}
-                  min={1 / 10 ** tokenOut.decimals}
-                  register={register}
-                  setValue={setValue}
-                  sizing="fill"
-                  step={1 / 10 ** tokenOut.decimals}
-                  unit={'$' + tokenOut.symbol}
-                  validation={[(v) => v === undefined || validatePositive(v)]}
-                  watch={watch}
-                />
-              ) : (
-                <InputThemedText
-                  className="self-start"
-                  unit={'$' + tokenOut.symbol}
-                >
-                  {minOutAmount?.toLocaleString(undefined, {
-                    maximumFractionDigits: tokenOut.decimals,
-                  })}
-                </InputThemedText>
-              )}
-
-              <InputErrorMessage
-                className="-mt-2 self-end text-right"
-                error={errors?.minOutAmount}
-              />
-            </div>
-          )}
-
-          {(maxSlippage !== undefined || isCreating) && (
-            <div className="flex flex-col gap-4">
-              <div className="space-y-1">
-                <p className="primary-text">{t('title.maxSlippage')}</p>
-                <p className="caption-text">
-                  {t('info.maxSlippageDescription')}
-                </p>
-              </div>
-
-              {isCreating ? (
-                <div className="grid grid-cols-5 gap-2">
-                  <Button
-                    center
-                    onClick={() =>
-                      setValue(fieldNamePrefix + 'maxSlippage', undefined, {
-                        shouldValidate: true,
-                      })
-                    }
-                    pressed={maxSlippage === undefined}
-                    variant="secondary"
-                  >
-                    {t('button.none')}
-                  </Button>
-
-                  {[1, 1.5, 2, 3].map((percent) => (
-                    <PercentButton
-                      key={percent}
-                      amount={maxSlippage ?? 0}
-                      decimals={
-                        // 1.5% (0.015) has the most decimals: 3
-                        3
-                      }
-                      label={`${percent}%`}
-                      loadingMax={{ loading: false, data: 1 }}
-                      percent={percent / 100}
-                      setAmount={(amount) =>
-                        setValue(fieldNamePrefix + 'maxSlippage', amount, {
-                          shouldValidate: true,
-                        })
-                      }
-                    />
-                  ))}
-                </div>
-              ) : (
-                <InputThemedText className="self-start">
-                  {formatPercentOf100(maxSlippage! * 100)}
-                </InputThemedText>
-              )}
-            </div>
-          )}
+      <div className="flex max-w-prose flex-col gap-6">
+        {/* Recipient */}
+        <div className="space-y-2">
+          <p className="primary-text">{t('title.recipient')}</p>
+          <AddressInput
+            disabled={!isCreating}
+            error={errors?.receiver}
+            fieldName={fieldNamePrefix + 'receiver'}
+            register={register}
+            setValue={setValue}
+            validation={[validateRequired, validateAddress]}
+            watch={watch}
+          />
+          <InputErrorMessage error={errors?.receiver} />
         </div>
-      )}
 
-      <div className="mt-2 flex max-w-prose flex-row items-center gap-3 rounded-md bg-background-tertiary p-4">
-        {minOutAmount === undefined ? (
-          <WarningRounded className="!h-14 !w-14 text-icon-interactive-warning" />
-        ) : (
-          <InfoRounded className="!h-10 !w-10" />
+        {/* Min output */}
+        {(minOutAmount !== undefined || isCreating) && (
+          <div className="flex flex-col gap-4">
+            <div className="space-y-1">
+              <p className="primary-text">{t('title.minimumOutputRequired')}</p>
+              <p className="caption-text">
+                {t('info.minimumOutputRequiredDescription', {
+                  context: context.type,
+                })}
+              </p>
+            </div>
+
+            {isCreating && (
+              <div className="grid grid-cols-5 gap-2">
+                <Button
+                  center
+                  onClick={() =>
+                    setValue(fieldNamePrefix + 'minOutAmount', undefined, {
+                      shouldValidate: true,
+                    })
+                  }
+                  pressed={minOutAmount === undefined}
+                  variant="secondary"
+                >
+                  {t('button.none')}
+                </Button>
+
+                {[90, 95, 97, 99].map((percent) => (
+                  <PercentButton
+                    key={percent}
+                    amount={minOutAmount ?? 0}
+                    decimals={tokenOut.decimals}
+                    label={`${percent}%`}
+                    loadingMax={{ loading: false, data: tokenOutAmount }}
+                    percent={percent / 100}
+                    setAmount={(amount) =>
+                      setValue(fieldNamePrefix + 'minOutAmount', amount, {
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                ))}
+              </div>
+            )}
+
+            {isCreating ? (
+              <NumberInput
+                error={errors?.minOutAmount}
+                fieldName={fieldNamePrefix + 'minOutAmount'}
+                max={tokenOutAmount}
+                min={1 / 10 ** tokenOut.decimals}
+                register={register}
+                setValue={setValue}
+                sizing="fill"
+                step={1 / 10 ** tokenOut.decimals}
+                unit={'$' + tokenOut.symbol}
+                validation={[(v) => v === undefined || validatePositive(v)]}
+                watch={watch}
+              />
+            ) : (
+              <InputThemedText
+                className="self-start"
+                unit={'$' + tokenOut.symbol}
+              >
+                {minOutAmount?.toLocaleString(undefined, {
+                  maximumFractionDigits: tokenOut.decimals,
+                })}
+              </InputThemedText>
+            )}
+
+            <InputErrorMessage
+              className="-mt-2 self-end text-right"
+              error={errors?.minOutAmount}
+            />
+          </div>
         )}
 
-        <p
-          className={clsx(
-            'body-text',
-            minOutAmount === undefined && 'text-text-interactive-warning-body'
+        {/* Max slippage */}
+        {(maxSlippage !== undefined || isCreating) && (
+          <div className="flex flex-col gap-4">
+            <div className="space-y-1">
+              <p className="primary-text">{t('title.maxSlippage')}</p>
+              <p className="caption-text">{t('info.maxSlippageDescription')}</p>
+            </div>
+
+            {isCreating ? (
+              <div className="grid grid-cols-5 gap-2">
+                <Button
+                  center
+                  onClick={() =>
+                    setValue(fieldNamePrefix + 'maxSlippage', undefined, {
+                      shouldValidate: true,
+                    })
+                  }
+                  pressed={maxSlippage === undefined}
+                  variant="secondary"
+                >
+                  {t('button.none')}
+                </Button>
+
+                {[1, 1.5, 2, 3].map((percent) => (
+                  <PercentButton
+                    key={percent}
+                    amount={maxSlippage ?? 0}
+                    decimals={
+                      // 1.5% (0.015) has the most decimals: 3
+                      3
+                    }
+                    label={`${percent}%`}
+                    loadingMax={{ loading: false, data: 1 }}
+                    percent={percent / 100}
+                    setAmount={(amount) =>
+                      setValue(fieldNamePrefix + 'maxSlippage', amount, {
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <InputThemedText className="self-start">
+                {formatPercentOf100(maxSlippage! * 100)}
+              </InputThemedText>
+            )}
+          </div>
+        )}
+
+        {/* Summary */}
+        <div className="flex max-w-prose flex-row items-center gap-3 rounded-md bg-background-tertiary p-4">
+          {minOutAmount === undefined ? (
+            <WarningRounded className="!h-14 !w-14 text-icon-interactive-warning" />
+          ) : (
+            <InfoRounded className="!h-10 !w-10" />
           )}
-        >
-          {t(
-            'info.wyndSwapSummary',
-            minOutAmount === undefined
-              ? {
-                  context: 'unsafe',
-                  in: t('format.token', {
-                    amount: tokenInAmount,
-                    symbol: tokenIn.symbol,
-                  }),
-                  outSymbol: tokenOut.symbol,
-                }
-              : {
-                  context: 'minOut',
-                  in: t('format.token', {
-                    amount: tokenInAmount,
-                    symbol: tokenIn.symbol,
-                  }),
-                  minOut: t('format.token', {
-                    amount: minOutAmount,
-                    symbol: tokenOut.symbol,
-                  }),
-                }
-          )}
-        </p>
+
+          <p
+            className={clsx(
+              'body-text',
+              minOutAmount === undefined && 'text-text-interactive-warning-body'
+            )}
+          >
+            {t(
+              'info.wyndSwapSummary',
+              minOutAmount === undefined
+                ? {
+                    context: 'unsafe',
+                    in: t('format.token', {
+                      amount: tokenInAmount,
+                      symbol: tokenIn.symbol,
+                    }),
+                    outSymbol: tokenOut.symbol,
+                  }
+                : {
+                    context: 'minOut',
+                    in: t('format.token', {
+                      amount: tokenInAmount,
+                      symbol: tokenIn.symbol,
+                    }),
+                    minOut: t('format.token', {
+                      amount: minOutAmount,
+                      symbol: tokenOut.symbol,
+                    }),
+                  }
+            )}
+          </p>
+        </div>
       </div>
 
       <InputErrorMessage error={errors?.swapOperations} />

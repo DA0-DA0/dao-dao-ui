@@ -60,6 +60,7 @@ import {
   parseEncodedMessage,
 } from '@dao-dao/utils'
 
+import { AddressInput } from '../../../components'
 import { SuspenseLoader } from '../../../components/SuspenseLoader'
 import { useExecutedProposalTxLoadable } from '../../../hooks'
 import {
@@ -67,6 +68,7 @@ import {
   WyndSwapData,
 } from '../../components/wynd/WyndSwap'
 import { useTokenBalances } from '../../hooks/useTokenBalances'
+import { useActionOptions } from '../../react'
 
 // Set max referral commission to the min of the max referral allowed and the
 // DAO DAO referral set.
@@ -106,6 +108,7 @@ const useLoadingWyndReferralCommission = (): LoadingData<string> => {
 
 const useDefaults: UseDefaults<WyndSwapData> = () => {
   const usdc = getJunoIbcUsdc()
+  const { address } = useActionOptions()
 
   return {
     tokenIn: {
@@ -127,6 +130,7 @@ const useDefaults: UseDefaults<WyndSwapData> = () => {
     minOutAmount: 0,
     maxSlippage: 0.01,
     swapOperations: undefined,
+    receiver: address,
   }
 }
 
@@ -546,6 +550,7 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
               ? simulatingValue
               : undefined,
           estUsdPrice,
+          AddressInput,
         }}
       />
     </SuspenseLoader>
@@ -563,6 +568,7 @@ const useTransformToCosmos: UseTransformToCosmos<WyndSwapData> = () => {
       minOutAmount: _minOutAmount,
       maxSlippage,
       swapOperations,
+      receiver,
     }: WyndSwapData) => {
       if (
         loadingMaxReferralCommission.loading ||
@@ -599,8 +605,11 @@ const useTransformToCosmos: UseTransformToCosmos<WyndSwapData> = () => {
           max_spread: maxSlippage?.toString(),
           referral_address: DAO_DAO_DAO_ADDRESS,
           referral_commission: loadingMaxReferralCommission.data,
+          receiver,
         },
       }
+
+      console.log(msg)
 
       if (tokenIn.type === TokenType.Native) {
         return makeWasmMessage({
@@ -652,6 +661,8 @@ const isValidSwapMsg = (msg: Record<string, any>): boolean =>
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<WyndSwapData> = (
   msg: Record<string, any>
 ) => {
+  const { address } = useActionOptions()
+
   let swapMsg: ExecuteSwapOperationsMsg | undefined
 
   const isNative =
@@ -767,6 +778,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<WyndSwapData> = (
         ? Number(swapMsg.execute_swap_operations.max_spread)
         : undefined,
       swapOperations: swapMsg.execute_swap_operations.operations,
+      receiver: swapMsg.execute_swap_operations.receiver || address,
     },
   }
 }
