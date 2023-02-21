@@ -149,12 +149,14 @@ export const AddressInput = <
                     ]
                   : [],
               loading:
-                searchProfilesLoadable.state === 'loading' ||
-                (searchProfilesLoadable.state === 'hasValue' &&
-                  searchProfilesLoadable.updating) ||
-                searchDaosLoadable.state === 'loading' ||
-                (searchDaosLoadable.state === 'hasValue' &&
-                  searchDaosLoadable.updating),
+                (props.type !== 'contract' &&
+                  (searchProfilesLoadable.state === 'loading' ||
+                    (searchProfilesLoadable.state === 'hasValue' &&
+                      searchProfilesLoadable.updating))) ||
+                (props.type !== 'wallet' &&
+                  (searchDaosLoadable.state === 'loading' ||
+                    (searchDaosLoadable.state === 'hasValue' &&
+                      searchDaosLoadable.updating))),
             }
           : undefined
       }
