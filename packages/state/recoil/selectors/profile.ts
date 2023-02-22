@@ -23,12 +23,14 @@ export const keplrProfileImageSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     async ({ get }) => {
-      const publicKey = get(
-        walletHexPublicKeySelector({
-          walletAddress: address,
-          chainId,
-        })
-      )
+      const publicKey = address
+        ? get(
+            walletHexPublicKeySelector({
+              walletAddress: address,
+              chainId,
+            })
+          )
+        : undefined
 
       try {
         const response = await fetch(
