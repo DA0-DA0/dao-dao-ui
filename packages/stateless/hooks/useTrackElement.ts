@@ -17,8 +17,6 @@ export const useTrackElement = () => {
 
   // Update the rect of the element on window scroll and resize.
   useEffect(() => {
-    updateRect()
-
     window.addEventListener('scroll', updateRect)
     window.addEventListener('resize', updateRect)
 
@@ -32,6 +30,10 @@ export const useTrackElement = () => {
   const [elementReady, setElementReady] = useState(false)
   // Use a ResizeObserver to update the rect when the element changes size.
   useEffect(() => {
+    // Update the rect when the element readiness changes (sets on initial ready
+    // and clears if unset).
+    updateRect()
+
     if (!ref.current) {
       return
     }
