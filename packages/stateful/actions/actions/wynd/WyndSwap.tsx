@@ -52,6 +52,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   encodeMessageAsBase64,
   getJunoIbcUsdc,
+  loadableToLoadingData,
   loadableToLoadingDataWithError,
   makeWasmMessage,
   nativeTokenLabel,
@@ -169,21 +170,21 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
         {} as Record<string, WyndPoolToken>
       )
   )
-  const wyndTokensLoadable = useCachedLoadable(
-    uniqueWyndPoolTokens.length > 0
-      ? waitForAll(
-          uniqueWyndPoolTokens.map((token) =>
-            genericTokenSelector({
-              type: 'native' in token ? TokenType.Native : TokenType.Cw20,
-              denomOrAddress: 'native' in token ? token.native : token.token,
-            })
+  const loadingWyndTokens = loadableToLoadingData(
+    useCachedLoadable(
+      uniqueWyndPoolTokens.length > 0
+        ? waitForAll(
+            uniqueWyndPoolTokens.map((token) =>
+              genericTokenSelector({
+                type: 'native' in token ? TokenType.Native : TokenType.Cw20,
+                denomOrAddress: 'native' in token ? token.native : token.token,
+              })
+            )
           )
-        )
-      : undefined
+        : undefined
+    ),
+    []
   )
-  if (wyndTokensLoadable.state === 'hasError') {
-    throw wyndTokensLoadable.contents
-  }
 
   const { watch, setValue, clearErrors, setError } = useFormContext()
   const tokenIn = watch(props.fieldNamePrefix + 'tokenIn') as GenericToken
@@ -532,17 +533,14 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
       fallback={<ActionCardLoader />}
       forceFallback={
         // Manually trigger loader.
-        loadingBalances.loading || wyndTokensLoadable.state !== 'hasValue'
+        loadingBalances.loading || loadingWyndTokens.loading
       }
     >
       <StatelessWyndSwapComponent
         {...props}
         options={{
           balances: loadingBalances.loading ? [] : loadingBalances.data,
-          wyndTokens:
-            wyndTokensLoadable.state !== 'hasValue'
-              ? []
-              : wyndTokensLoadable.contents,
+          wyndTokens: loadingWyndTokens.loading ? [] : loadingWyndTokens.data,
           simulatingValue:
             simulation &&
             (simulation.state === 'loading' ||
