@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { blocksPerYearSelector, eitherTokenInfoSelector } from '@dao-dao/state'
+import { blocksPerYearSelector, genericTokenSelector } from '@dao-dao/state'
 import {
   DepositInfoSelector,
   DepositRefundPolicy,
@@ -57,7 +57,7 @@ export const makeUseProfileNewProposalCardInfoLines =
 
     const depositTokenInfo = useRecoilValue(
       depositInfo
-        ? eitherTokenInfoSelector({
+        ? genericTokenSelector({
             type:
               'native' in depositInfo.denom ? TokenType.Native : TokenType.Cw20,
             denomOrAddress:

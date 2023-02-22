@@ -1,13 +1,17 @@
-import { useEffect } from 'react'
+import Fuse from 'fuse.js'
+import { useEffect, useMemo } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import {
   constSelector,
   useRecoilValueLoadable,
   useSetRecoilState,
   waitForAll,
 } from 'recoil'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
+  searchDaosSelector,
   searchProfilesByNamePrefixSelector,
   walletHexPublicKeyOverridesAtom,
 } from '@dao-dao/state/recoil'
@@ -15,8 +19,12 @@ import {
   AddressInput as StatelessAddressInput,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { AddressInputProps } from '@dao-dao/types'
-import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
+import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
+import {
+  CHAIN_BECH32_PREFIX,
+  getFallbackImage,
+  isValidAddress,
+} from '@dao-dao/utils'
 
 import { pfpkProfileSelector } from '../recoil/selectors/profile'
 import { EntityDisplay } from './EntityDisplay'
@@ -27,6 +35,8 @@ export const AddressInput = <
 >(
   props: AddressInputProps<FV, FieldName>
 ) => {
+  const { t } = useTranslation()
+
   // Null if not within a FormProvider.
   const formContext = useFormContext<FV>()
   const watch = props.watch || formContext?.watch
@@ -37,10 +47,19 @@ export const AddressInput = <
     formValue.length >= 3 &&
     // Don't search name if it's an address.
     !isValidAddress(formValue, CHAIN_BECH32_PREFIX)
+
   const searchProfilesLoadable = useCachedLoadable(
-    hasFormValue
+    hasFormValue && props.type !== 'contract'
       ? searchProfilesByNamePrefixSelector({
           namePrefix: formValue,
+        })
+      : undefined
+  )
+  const searchDaosLoadable = useCachedLoadable(
+    hasFormValue && props.type !== 'wallet'
+      ? searchDaosSelector({
+          query: formValue,
+          limit: 5,
         })
       : undefined
   )
@@ -83,24 +102,80 @@ export const AddressInput = <
       : constSelector(undefined)
   )
 
+  // Combine profiles and DAOs into a single array of entities.
+  const entities: Entity[] =
+    searchProfilesLoadable.state === 'hasValue' ||
+    searchDaosLoadable.state === 'hasValue'
+      ? [
+          ...(searchProfilesLoadable.state === 'hasValue'
+            ? searchProfilesLoadable.contents.map(
+                ({ publicKey, address, profile }) => ({
+                  type: EntityType.Wallet,
+                  address,
+                  name: profile.name,
+                  imageUrl:
+                    profile.nft?.imageUrl || getFallbackImage(publicKey),
+                })
+              )
+            : []),
+          ...(searchDaosLoadable.state === 'hasValue'
+            ? searchDaosLoadable.contents
+                .filter(({ value }) => value?.config && value.proposalCount)
+                .map(
+                  ({
+                    contractAddress,
+                    value: {
+                      config: { name, image_url },
+                    },
+                  }) => ({
+                    type: EntityType.Dao,
+                    address: contractAddress,
+                    name,
+                    imageUrl: image_url || getFallbackImage(contractAddress),
+                  })
+                )
+            : []),
+        ]
+      : []
+
+  // Use Fuse to search combined profiles and DAOs by name so that is most
+  // relevant (as opposed to just sticking DAOs after profiles).
+
+  const fuse = useMemo(
+    () => new Fuse(entities, { keys: ['name'] }),
+    // Only reinstantiate fuse when entities deeply changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useDeepCompareMemoize(entities)
+  )
+  const searchedEntities = useMemo(
+    () => (hasFormValue ? fuse.search(formValue).map(({ item }) => item) : []),
+    [formValue, fuse, hasFormValue]
+  )
+
   return (
     <StatelessAddressInput<FV, FieldName>
       {...props}
       EntityDisplay={props.EntityDisplay || EntityDisplay}
       autoComplete="off"
-      autofillProfiles={
+      autofillEntities={
         hasFormValue
           ? {
-              hits:
-                searchProfilesLoadable.state === 'hasValue'
-                  ? searchProfilesLoadable.contents
-                  : [],
+              entities: searchedEntities,
               loading:
-                searchProfilesLoadable.state === 'loading' ||
-                (searchProfilesLoadable.state === 'hasValue' &&
-                  searchProfilesLoadable.updating),
+                (props.type !== 'contract' &&
+                  (searchProfilesLoadable.state === 'loading' ||
+                    (searchProfilesLoadable.state === 'hasValue' &&
+                      searchProfilesLoadable.updating))) ||
+                (props.type !== 'wallet' &&
+                  (searchDaosLoadable.state === 'loading' ||
+                    (searchDaosLoadable.state === 'hasValue' &&
+                      searchDaosLoadable.updating))),
             }
           : undefined
+      }
+      placeholder={
+        props.placeholder ||
+        t('form.addressInputPlaceholder', { context: props.type || 'any' })
       }
     />
   )

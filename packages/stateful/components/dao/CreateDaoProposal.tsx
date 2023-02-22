@@ -32,9 +32,6 @@ import {
 import { ProfileDisconnectedCard, ProfileNewProposalCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-// TODO(v2): Fix errors getting stuck when removing components with errors (I
-// think this is when it happens). Can't click preview or submit sometimes even
-// tho there are no visible errors.
 export const CreateDaoProposal = () => {
   const { t } = useTranslation()
   const { goToDaoProposal, router } = useNavHelpers()

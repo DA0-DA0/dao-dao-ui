@@ -30,6 +30,7 @@ export enum CoreActionKey {
   WithdrawTokenSwap = 'withdrawTokenSwap',
   ManageStorageItems = 'manageStorageItems',
   GovernanceVote = 'governanceVote',
+  WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
 }
 

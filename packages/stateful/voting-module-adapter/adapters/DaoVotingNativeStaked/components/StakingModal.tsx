@@ -271,6 +271,7 @@ const InnerStakingModal = ({
       }
       setAmount={(newAmount) => setAmount(newAmount)}
       tokenDecimals={governanceTokenInfo.decimals}
+      tokenDenom={governanceTokenAddress}
       tokenSymbol={governanceTokenInfo.symbol}
       unstakingDuration={unstakingDuration ?? null}
     />

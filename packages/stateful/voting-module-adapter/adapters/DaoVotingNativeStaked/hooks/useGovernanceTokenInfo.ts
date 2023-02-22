@@ -6,7 +6,7 @@ import {
   DaoVotingNativeStakedSelectors,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
-  usdcPerMacroTokenSelector,
+  wyndUsdPriceSelector,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
@@ -86,10 +86,7 @@ export const useGovernanceTokenInfo = ({
   const loadingPrice = loadableToLoadingData(
     useCachedLoadable(
       fetchUsdcPrice && governanceTokenInfo
-        ? usdcPerMacroTokenSelector({
-            denom,
-            decimals: governanceTokenInfo.decimals,
-          })
+        ? wyndUsdPriceSelector(denom)
         : constSelector(undefined)
     ),
     undefined

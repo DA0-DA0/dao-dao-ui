@@ -13,7 +13,10 @@ import {
   WrenchEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { validateRequired } from '@dao-dao/utils'
+import {
+  DAO_CORE_PAYROLL_CONFIG_ITEM_KEY,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import { ActionCard } from './ActionCard'
 
@@ -213,8 +216,8 @@ export const ManageStorageItemsComponent: ActionComponent<
   )
 }
 
-const SUGGESTED_KEYS = ['payroll']
+const SUGGESTED_KEYS = [DAO_CORE_PAYROLL_CONFIG_ITEM_KEY]
 
 const SUGGESTED_VALUES_FOR_KEYS: Record<string, string[] | undefined> = {
-  payroll: ['retroactive'],
+  [DAO_CORE_PAYROLL_CONFIG_ITEM_KEY]: ['retroactive'],
 }

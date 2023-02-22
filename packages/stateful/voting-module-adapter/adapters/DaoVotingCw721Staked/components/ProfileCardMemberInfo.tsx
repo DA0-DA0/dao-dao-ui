@@ -74,15 +74,6 @@ export const ProfileCardMemberInfo = ({
     throw new Error(t('error.loadingData'))
   }
 
-  /*
-  // Search for governance token in junoswap pools list.
-  const poolsList = useRecoilValue(junoswapPoolsListSelector)
-  const governanceTokenPoolSymbol = poolsList?.pools
-    .flatMap(({ pool_assets }) => pool_assets)
-    .find(
-      ({ token_address }) => governanceTokenAddress === token_address
-    )?.symbol
-*/
   const doClaim = DaoVotingCw721StakedHooks.useClaimNfts({
     contractAddress: stakingContractAddress,
     sender: walletAddress ?? '',

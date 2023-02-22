@@ -1,5 +1,4 @@
 import { coins } from '@cosmjs/amino'
-import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -20,6 +19,7 @@ import {
 } from '@dao-dao/types/actions'
 import {
   convertDenomToMicroDenomWithDecimals,
+  encodeMessageAsBase64,
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
@@ -161,15 +161,11 @@ const useTransformToCosmos: UseTransformToCosmos<PerformTokenSwapData> = () => {
                   send: {
                     amount,
                     contract: tokenSwapContractAddress,
-                    msg: toBase64(
-                      toUtf8(
-                        JSON.stringify({
-                          // Use common key to identify CW20s being sent to
-                          // token swaps from this DAO DAO action.
-                          [CW20_SEND_MSG_KEY]: {},
-                        })
-                      )
-                    ),
+                    msg: encodeMessageAsBase64({
+                      // Use common key to identify CW20s being sent to token
+                      // swaps from this DAO DAO action.
+                      [CW20_SEND_MSG_KEY]: {},
+                    }),
                   },
                 },
               },

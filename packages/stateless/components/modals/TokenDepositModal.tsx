@@ -140,6 +140,7 @@ export const TokenDepositModal = ({
           <PercentButton
             key={percent}
             amount={amount}
+            decimals={token.decimals}
             label={`${percent}%`}
             loadingMax={
               loadingBalance.loading
@@ -148,7 +149,6 @@ export const TokenDepositModal = ({
             }
             percent={percent / 100}
             setAmount={setAmount}
-            tokenDecimals={token.decimals}
           />
         ))}
       </div>

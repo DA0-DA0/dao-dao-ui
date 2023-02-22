@@ -4,7 +4,12 @@ import { LoaderProps } from '@dao-dao/types/stateless/Loader'
 
 import { Logo } from './Logo'
 
-export const Loader = ({ fill = true, size = 42, className }: LoaderProps) => (
+export const Loader = ({
+  fill = true,
+  size = 42,
+  invert,
+  className,
+}: LoaderProps) => (
   <div
     className={clsx(
       'flex flex-row items-center justify-center',
@@ -12,7 +17,7 @@ export const Loader = ({ fill = true, size = 42, className }: LoaderProps) => (
       className
     )}
   >
-    <Logo className="animate-spin-medium" size={size} />
+    <Logo className="animate-spin-medium" invert={invert} size={size} />
   </div>
 )
 

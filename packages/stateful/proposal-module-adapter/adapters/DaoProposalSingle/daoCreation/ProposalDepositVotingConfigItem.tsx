@@ -3,7 +3,7 @@ import { ComponentType, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { eitherTokenInfoSelector } from '@dao-dao/state'
+import { genericTokenSelector } from '@dao-dao/state'
 import {
   AddressInput,
   Button,
@@ -103,12 +103,12 @@ export const ProposalDepositInput = ({
     type === 'cw20' &&
       denomOrAddress &&
       isValidContractAddress(denomOrAddress, CHAIN_BECH32_PREFIX)
-      ? eitherTokenInfoSelector({
+      ? genericTokenSelector({
           type: TokenType.Cw20,
           denomOrAddress,
         })
       : type === 'native'
-      ? eitherTokenInfoSelector({
+      ? genericTokenSelector({
           type: TokenType.Native,
           denomOrAddress,
         })

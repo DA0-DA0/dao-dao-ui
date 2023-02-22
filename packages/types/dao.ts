@@ -219,6 +219,11 @@ export type DaoCreatedCardProps = Omit<
   'follow' | 'LinkWrapper' | 'IconButtonLink'
 >
 
+export type DaoPayrollConfig = {
+  type: string
+  data?: Record<string, unknown>
+}
+
 export enum DaoTabId {
   Home = '',
   Proposals = 'proposals',

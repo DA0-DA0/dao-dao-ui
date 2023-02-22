@@ -2,7 +2,7 @@ import { useRecoilValue } from 'recoil'
 
 import {
   DaoVotingNativeStakedSelectors,
-  eitherTokenInfoSelector,
+  genericTokenSelector,
 } from '@dao-dao/state/recoil'
 import { GenericToken, TokenType } from '@dao-dao/types'
 
@@ -19,7 +19,7 @@ export const useCommonGovernanceTokenInfo = (): GenericToken => {
   )
 
   const eitherTokenInfo = useRecoilValue(
-    eitherTokenInfoSelector({
+    genericTokenSelector({
       type: TokenType.Native,
       denomOrAddress: denom,
     })

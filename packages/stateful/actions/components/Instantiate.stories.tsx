@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
+import { TokenType } from '@dao-dao/types'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
 import { InstantiateComponent } from './Instantiate'
@@ -27,12 +28,24 @@ Default.args = {
   options: {
     nativeBalances: [
       {
-        denom: NATIVE_DENOM,
-        amount: '1231245124',
+        token: {
+          type: TokenType.Native,
+          denomOrAddress: NATIVE_DENOM,
+          decimals: 6,
+          symbol: 'JUNO',
+          imageUrl: '',
+        },
+        balance: '1231245124',
       },
       {
-        denom: 'uatom',
-        amount: '984129741',
+        token: {
+          type: TokenType.Native,
+          denomOrAddress: 'uatom',
+          decimals: 6,
+          symbol: 'ATOM',
+          imageUrl: '',
+        },
+        balance: '984129741',
       },
     ],
   },
