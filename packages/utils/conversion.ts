@@ -238,7 +238,15 @@ export const toValidatorAddress = (address: string, bech32Prefix: string) => {
 }
 
 // Convert bech32 address to general hex bech32 hash.
-export const toBech32Hash = (address: string) => toHex(fromBech32(address).data)
+export const toBech32Hash = (address: string) => {
+  try {
+    return toHex(fromBech32(address).data)
+  } catch (err) {
+    // Silently error.
+    console.error(err)
+    return ''
+  }
+}
 
 export const concatAddressStartEnd = (
   address: string,
