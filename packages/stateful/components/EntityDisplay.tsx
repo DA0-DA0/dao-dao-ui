@@ -6,6 +6,7 @@ import { useEntity } from '../hooks'
 export const EntityDisplay = (props: StatefulEntityDisplayProps) => {
   const loadingEntity = useEntity({
     address: props.address,
+    chainId: props.chainId,
   })
 
   return <StatelessEntityDisplay {...props} loadingEntity={loadingEntity} />

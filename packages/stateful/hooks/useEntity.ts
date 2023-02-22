@@ -31,6 +31,7 @@ export const useEntity = ({
   // Try loading wallet profile assuming the address is a wallet.
   const walletProfile = useWalletProfile({
     walletAddress: address,
+    chainId,
   })
 
   return daoConfig.state !== 'hasValue' && walletProfile.profile.loading

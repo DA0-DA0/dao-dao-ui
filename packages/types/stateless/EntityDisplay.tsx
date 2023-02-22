@@ -16,6 +16,7 @@ export interface Entity {
 
 export interface EntityDisplayProps {
   address: string
+  chainId?: string
   loadingEntity: LoadingData<Entity>
   imageSize?: number
   hideImage?: boolean
