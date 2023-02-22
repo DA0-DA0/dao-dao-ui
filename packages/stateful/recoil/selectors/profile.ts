@@ -6,25 +6,28 @@ import { PFPK_API_BASE, processError } from '@dao-dao/utils'
 
 import { nftCardInfoSelector } from './nft'
 
+export const EMPTY_PFPK_PROFILE: WalletProfile = {
+  // Disallows editing if we don't have correct nonce from server.
+  nonce: -1,
+  name: null,
+  imageUrl: '',
+  nft: null,
+}
+
+// Get profile from PFPK API. Parameter is wallet address.
 export const pfpkProfileSelector = selectorFamily<WalletProfile, string>({
   key: 'pfpkProfile',
   get:
-    (publicKey) =>
+    (walletAddress) =>
     async ({ get }) => {
-      get(refreshWalletProfileAtom(publicKey))
+      get(refreshWalletProfileAtom(walletAddress))
 
-      let profile: WalletProfile = {
-        // Disallows editing if we don't have correct nonce from server.
-        nonce: -1,
-        name: null,
-        imageUrl: '',
-        nft: null,
-      }
+      let profile: WalletProfile = { ...EMPTY_PFPK_PROFILE }
 
       // Load profile from PFPK API.
       let response
       try {
-        response = await fetch(PFPK_API_BASE + `/${publicKey}`)
+        response = await fetch(PFPK_API_BASE + `/address/${walletAddress}`)
         if (response.ok) {
           const pfpkProfile: PfpkWalletProfile = await response.json()
           profile.nonce = pfpkProfile.nonce

@@ -1,4 +1,4 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
+import { fromBech32, toBech32, toHex } from '@cosmjs/encoding'
 import { TFunction } from 'next-i18next'
 import { Loadable } from 'recoil'
 
@@ -236,6 +236,9 @@ export const toValidatorAddress = (address: string, bech32Prefix: string) => {
     return ''
   }
 }
+
+// Convert bech32 address to general hex bech32 hash.
+export const toBech32Hash = (address: string) => toHex(fromBech32(address).data)
 
 export const concatAddressStartEnd = (
   address: string,

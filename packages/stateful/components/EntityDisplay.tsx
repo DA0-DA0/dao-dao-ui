@@ -6,7 +6,6 @@ import { useEntity } from '../hooks'
 export const EntityDisplay = (props: StatefulEntityDisplayProps) => {
   const loadingEntity = useEntity({
     address: props.address,
-    walletHexPublicKey: props.walletHexPublicKey,
   })
 
   return <StatelessEntityDisplay {...props} loadingEntity={loadingEntity} />

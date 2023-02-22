@@ -97,7 +97,7 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
   )
 
   const setRefreshWalletProfile = useSetRecoilState(
-    refreshWalletProfileAtom(publicKey?.hex ?? '')
+    refreshWalletProfileAtom(address ?? '')
   )
   const refreshWalletProfile = useCallback(
     () => setRefreshWalletProfile((id) => id + 1),
@@ -107,7 +107,6 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
   // Get PFPK profile from API.
   const { profile: pfpkProfile, backupProfileImage } = useWalletProfile({
     walletAddress: address ?? '',
-    hexPublicKey: publicKey?.hex,
     chainId,
   })
 

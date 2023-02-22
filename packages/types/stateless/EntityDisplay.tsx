@@ -29,9 +29,4 @@ export interface EntityDisplayProps {
 export type StatefulEntityDisplayProps = Omit<
   EntityDisplayProps,
   'loadingEntity'
-> & {
-  // Allow specifying public key to speed up loading. Just providing an address
-  // requires a chain query to fetch the public key. If we know the entity is a
-  // wallet and have its public key, we can skip the chain query.
-  walletHexPublicKey?: string
-}
+>

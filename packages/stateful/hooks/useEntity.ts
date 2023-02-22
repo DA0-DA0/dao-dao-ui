@@ -11,22 +11,15 @@ import { useWalletProfile } from './useWalletProfile'
 
 export type UseEntityOptions = WithChainId<{
   address: string
-  // Optionally allow specifying wallet public key if known, since it's faster.
-  // With just an address, we have to query the chain for the public key.
-  walletHexPublicKey?: string
 }>
 
 export const useEntity = ({
   address,
-  walletHexPublicKey,
   chainId,
 }: UseEntityOptions): LoadingData<Entity> => {
   // Try to load config assuming the address is a DAO.
   const daoConfig = useCachedLoadable(
-    // If we have a wallet public key, we can skip the contract query.
-    !walletHexPublicKey &&
-      address &&
-      isValidContractAddress(address, CHAIN_BECH32_PREFIX)
+    address && isValidContractAddress(address, CHAIN_BECH32_PREFIX)
       ? DaoCoreV2Selectors.configSelector({
           contractAddress: address,
           chainId,
@@ -38,8 +31,6 @@ export const useEntity = ({
   // Try loading wallet profile assuming the address is a wallet.
   const walletProfile = useWalletProfile({
     walletAddress: address,
-    // hexPublicKey is faster and only applies to wallets.
-    hexPublicKey: walletHexPublicKey,
   })
 
   return daoConfig.state !== 'hasValue' && walletProfile.profile.loading

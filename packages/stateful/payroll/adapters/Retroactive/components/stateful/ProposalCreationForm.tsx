@@ -142,7 +142,6 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
 
   const walletEntity = useEntity({
     address: walletAddress,
-    walletHexPublicKey: walletPublicKey?.hex,
     chainId,
   })
 

@@ -1,19 +1,13 @@
 import Fuse from 'fuse.js'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import {
-  constSelector,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-  waitForAll,
-} from 'recoil'
+import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
   searchDaosSelector,
   searchProfilesByNamePrefixSelector,
-  walletHexPublicKeyOverridesAtom,
 } from '@dao-dao/state/recoil'
 import {
   AddressInput as StatelessAddressInput,
@@ -24,6 +18,7 @@ import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
   isValidAddress,
+  toBech32Hash,
 } from '@dao-dao/utils'
 
 import { pfpkProfileSelector } from '../recoil/selectors/profile'
@@ -65,38 +60,13 @@ export const AddressInput = <
   )
 
   // Cache searched profiles public keys in background so they're ready if
-  // selected. We cannot retrieve the public key for an address without the
-  // account existing on chain. If we're on a chain the user hasn't used before,
-  // their profile won't actually load in the `EntityDisplay` component.
-  // Profile search uses names and public keys, but `EntityDisplay` needs to
-  // extract the public key from the address. Thus, we can precache the searched
-  // profiles even if they don't exist on the current chain.
-  const setWalletHexPublicKeyOverrides = useSetRecoilState(
-    walletHexPublicKeyOverridesAtom
-  )
-  useEffect(() => {
-    if (
-      searchProfilesLoadable.state === 'hasValue' &&
-      searchProfilesLoadable.contents.length > 0
-    ) {
-      setWalletHexPublicKeyOverrides((prev) =>
-        searchProfilesLoadable.contents.reduce(
-          (acc, { publicKey, address }) => ({
-            ...acc,
-            [address]: publicKey,
-          }),
-          prev
-        )
-      )
-    }
-  }, [searchProfilesLoadable, setWalletHexPublicKeyOverrides])
-
+  // selected.
   useRecoilValueLoadable(
     searchProfilesLoadable.state === 'hasValue' &&
       searchProfilesLoadable.contents.length > 0
       ? waitForAll(
-          searchProfilesLoadable.contents.map(({ publicKey }) =>
-            pfpkProfileSelector(publicKey)
+          searchProfilesLoadable.contents.map(({ address }) =>
+            pfpkProfileSelector(address)
           )
         )
       : constSelector(undefined)
@@ -108,15 +78,14 @@ export const AddressInput = <
     searchDaosLoadable.state === 'hasValue'
       ? [
           ...(searchProfilesLoadable.state === 'hasValue'
-            ? searchProfilesLoadable.contents.map(
-                ({ publicKey, address, profile }) => ({
-                  type: EntityType.Wallet,
-                  address,
-                  name: profile.name,
-                  imageUrl:
-                    profile.nft?.imageUrl || getFallbackImage(publicKey),
-                })
-              )
+            ? searchProfilesLoadable.contents.map(({ address, profile }) => ({
+                type: EntityType.Wallet,
+                address,
+                name: profile.name,
+                imageUrl:
+                  profile.nft?.imageUrl ||
+                  getFallbackImage(toBech32Hash(address)),
+              }))
             : []),
           ...(searchDaosLoadable.state === 'hasValue'
             ? searchDaosLoadable.contents

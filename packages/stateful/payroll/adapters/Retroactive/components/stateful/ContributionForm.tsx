@@ -25,7 +25,6 @@ export const ContributionForm = () => {
     useWallet()
   const walletEntity = useEntity({
     address: walletAddress,
-    walletHexPublicKey: walletPublicKey?.hex,
     chainId,
   })
 
