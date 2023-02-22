@@ -32,23 +32,26 @@ export const keplrProfileImageSelector = selectorFamily<
           )
         : undefined
 
+      if (!publicKey) {
+        return
+      }
+
       try {
         const response = await fetch(
           `https://api.kube-uw2.keplr-prod.manythings.xyz/v1/user/${publicKey}/profile`
         )
         if (!response.ok) {
           console.error(await response.text())
-          return undefined
+          return
         }
 
         const { profile }: KeplrWalletProfile = await response.json()
-        return 'imageUrl' in profile
-          ? transformIpfsUrlToHttpsIfNecessary(profile.imageUrl)
-          : undefined
+        if ('imageUrl' in profile) {
+          return transformIpfsUrlToHttpsIfNecessary(profile.imageUrl)
+        }
       } catch (err) {
         console.error(err)
         // Fail silently.
-        return undefined
       }
     },
 })
