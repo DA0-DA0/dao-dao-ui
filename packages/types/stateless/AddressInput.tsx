@@ -33,7 +33,7 @@ export interface AddressInputProps<
   type?: 'wallet' | 'contract'
   EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
   autofillEntities?: {
-    hits: Entity[]
+    entities: Entity[]
     loading: boolean
   }
 }

@@ -26,7 +26,7 @@ export const AddressInput = <
   containerClassName,
   type = 'wallet',
   EntityDisplay,
-  autofillEntities: autofillProfiles,
+  autofillEntities,
   placeholder,
   ...rest
 }: AddressInputProps<FV, FieldName>) => {
@@ -56,34 +56,31 @@ export const AddressInput = <
   })
 
   const [inputFocused, setInputFocused] = useState(false)
-  const [selectedProfileIndex, setSelectedProfileIndex] = useState(0)
+  const [selectedEntityIndex, setSelectedEntityIndex] = useState(0)
   // Ensure selected index stays valid.
   useEffect(() => {
-    setSelectedProfileIndex((prev) =>
-      Math.min(prev, autofillProfiles?.hits.length ?? 0)
+    setSelectedEntityIndex((prev) =>
+      Math.min(prev, autofillEntities?.entities.length ?? 0)
     )
-  }, [autofillProfiles])
+  }, [autofillEntities])
 
-  // Only show profile auto fill dropdown if there are hits to show.
-  const showProfileAutofill =
-    inputFocused &&
-    type === 'wallet' &&
-    autofillProfiles &&
-    autofillProfiles.hits.length > 0
-  const selectAutofillProfile = useCallback(
+  // Only show auto fill dropdown if there are entities to show.
+  const showEntityAutoFill =
+    inputFocused && autofillEntities && autofillEntities.entities.length > 0
+  const selectAutofillEntity = useCallback(
     (index?: number) => {
-      index ??= selectedProfileIndex
+      index ??= selectedEntityIndex
 
       if (
-        !autofillProfiles ||
+        !autofillEntities ||
         index < 0 ||
-        index >= autofillProfiles.hits.length
+        index >= autofillEntities.entities.length
       ) {
         return
       }
 
-      const selectedProfile = autofillProfiles.hits[index]
-      setValue?.(fieldName, selectedProfile.address as any, {
+      const selectedEntity = autofillEntities.entities[index]
+      setValue?.(fieldName, selectedEntity.address as any, {
         shouldValidate: true,
         shouldDirty: true,
         shouldTouch: true,
@@ -91,13 +88,13 @@ export const AddressInput = <
 
       inputRef.current?.blur()
     },
-    [autofillProfiles, fieldName, selectedProfileIndex, setValue]
+    [autofillEntities, fieldName, selectedEntityIndex, setValue]
   )
 
-  // Navigate between selected profiles with arrow keys.
+  // Navigate between selected entities with arrow keys.
   useEffect(() => {
-    // If not showing profile autofill, do not process keypresses.
-    if (!showProfileAutofill || !autofillProfiles) {
+    // If not showing entity autofill, do not process keypresses.
+    if (!showEntityAutoFill || !autofillEntities) {
       return
     }
 
@@ -110,25 +107,25 @@ export const AddressInput = <
         case 'ArrowLeft':
         case 'ArrowUp':
           event.preventDefault()
-          setSelectedProfileIndex((index) =>
+          setSelectedEntityIndex((index) =>
             index - 1 < 0
-              ? autofillProfiles.hits.length - 1
+              ? autofillEntities.entities.length - 1
               : // Just in case for some reason the index is overflowing.
-                Math.min(index - 1, autofillProfiles.hits.length - 1)
+                Math.min(index - 1, autofillEntities.entities.length - 1)
           )
           break
         case 'ArrowRight':
         case 'ArrowDown':
         case 'Tab':
           event.preventDefault()
-          setSelectedProfileIndex(
+          setSelectedEntityIndex(
             // Just in case for some reason the index is underflowing.
-            (index) => Math.max(index + 1, 0) % autofillProfiles.hits.length
+            (index) => Math.max(index + 1, 0) % autofillEntities.entities.length
           )
           break
         case 'Enter':
           event.preventDefault()
-          selectAutofillProfile()
+          selectAutofillEntity()
           break
       }
     }
@@ -137,7 +134,7 @@ export const AddressInput = <
 
     // Clean up event listener on unmount.
     return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [autofillProfiles, selectAutofillProfile, showProfileAutofill])
+  }, [autofillEntities, selectAutofillEntity, showEntityAutoFill])
 
   // Only display entity if input is disabled and we're showing the entity. This
   // is probably showing in a readonly form with submitted data.
@@ -152,18 +149,18 @@ export const AddressInput = <
           ? 'p-2'
           : [
               'rounded-md py-3 px-4 ring-1 focus-within:ring-2 ',
-              error && !showProfileAutofill
+              error && !showEntityAutoFill
                 ? 'ring-border-interactive-error'
                 : 'ring-border-primary focus:ring-border-interactive-focus',
             ],
-        showProfileAutofill && 'rounded-b-none',
+        showEntityAutoFill && 'rounded-b-none',
         containerClassName
       )}
     >
       {!onlyDisplayEntity && (
         <>
-          {/* If profiles are loading, display loader. */}
-          {autofillProfiles?.loading ? (
+          {/* If entities are loading, display loader. */}
+          {autofillEntities?.loading ? (
             <Loader fill={false} size={20} />
           ) : (
             <Icon className="!h-5 !w-5" />
@@ -188,7 +185,7 @@ export const AddressInput = <
             {...rest}
             {...inputRegistration}
             onBlur={
-              // Timeout to allow click event to happen on profile autofill row.
+              // Timeout to allow click event to happen on entity autofill row.
               () => setTimeout(() => setInputFocused(false), 100)
             }
             onFocus={() => setInputFocused(true)}
@@ -211,25 +208,23 @@ export const AddressInput = <
         />
       )}
 
-      {!disabled && type === 'wallet' && !!autofillProfiles && (
+      {!disabled && !!autofillEntities && (
         <div
           className={clsx(
             'absolute top-full -left-[2px] -right-[2px] z-10 mt-[2px] overflow-hidden rounded-b-md border-2 border-t-0 border-border-primary bg-component-dropdown transition-all',
-            showProfileAutofill
-              ? 'opacity-100'
-              : 'pointer-events-none opacity-0'
+            showEntityAutoFill ? 'opacity-100' : 'pointer-events-none opacity-0'
           )}
         >
           <div className="no-scrollbar flex h-full max-h-80 flex-col overflow-y-auto">
-            {autofillProfiles.hits.map((entity, index) => (
+            {autofillEntities.entities.map((entity, index) => (
               <div
                 key={entity.address}
                 className={clsx(
                   'cursor-pointer py-3 pl-4 pr-[6px] transition-all hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
-                  selectedProfileIndex === index &&
+                  selectedEntityIndex === index &&
                     'bg-background-interactive-selected'
                 )}
-                onClick={() => selectAutofillProfile(index)}
+                onClick={() => selectAutofillEntity(index)}
               >
                 <StatelessEntityDisplay
                   address={entity.address}

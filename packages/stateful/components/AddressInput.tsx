@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import Fuse from 'fuse.js'
+import { useEffect, useMemo } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import {
@@ -7,6 +8,7 @@ import {
   useSetRecoilState,
   waitForAll,
 } from 'recoil'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
   searchDaosSelector,
@@ -17,7 +19,7 @@ import {
   AddressInput as StatelessAddressInput,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { AddressInputProps, EntityType } from '@dao-dao/types'
+import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
@@ -100,6 +102,56 @@ export const AddressInput = <
       : constSelector(undefined)
   )
 
+  // Combine profiles and DAOs into a single array of entities.
+  const entities: Entity[] =
+    searchProfilesLoadable.state === 'hasValue' ||
+    searchDaosLoadable.state === 'hasValue'
+      ? [
+          ...(searchProfilesLoadable.state === 'hasValue'
+            ? searchProfilesLoadable.contents.map(
+                ({ publicKey, address, profile }) => ({
+                  type: EntityType.Wallet,
+                  address,
+                  name: profile.name,
+                  imageUrl:
+                    profile.nft?.imageUrl || getFallbackImage(publicKey),
+                })
+              )
+            : []),
+          ...(searchDaosLoadable.state === 'hasValue'
+            ? searchDaosLoadable.contents
+                .filter(({ value }) => value?.config && value.proposalCount)
+                .map(
+                  ({
+                    contractAddress,
+                    value: {
+                      config: { name, image_url },
+                    },
+                  }) => ({
+                    type: EntityType.Dao,
+                    address: contractAddress,
+                    name,
+                    imageUrl: image_url || getFallbackImage(contractAddress),
+                  })
+                )
+            : []),
+        ]
+      : []
+
+  // Use Fuse to search combined profiles and DAOs by name so that is most
+  // relevant (as opposed to just sticking DAOs after profiles).
+
+  const fuse = useMemo(
+    () => new Fuse(entities, { keys: ['name'] }),
+    // Only reinstantiate fuse when entities deeply changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useDeepCompareMemoize(entities)
+  )
+  const searchedEntities = useMemo(
+    () => (hasFormValue ? fuse.search(formValue).map(({ item }) => item) : []),
+    [formValue, fuse, hasFormValue]
+  )
+
   return (
     <StatelessAddressInput<FV, FieldName>
       {...props}
@@ -108,46 +160,7 @@ export const AddressInput = <
       autofillEntities={
         hasFormValue
           ? {
-              hits:
-                searchProfilesLoadable.state === 'hasValue' ||
-                searchDaosLoadable.state === 'hasValue'
-                  ? [
-                      ...(searchProfilesLoadable.state === 'hasValue'
-                        ? searchProfilesLoadable.contents.map(
-                            ({ publicKey, address, profile }) => ({
-                              type: EntityType.Wallet,
-                              address,
-                              name: profile.name,
-                              imageUrl:
-                                profile.nft?.imageUrl ||
-                                getFallbackImage(publicKey),
-                            })
-                          )
-                        : []),
-                      ...(searchDaosLoadable.state === 'hasValue'
-                        ? searchDaosLoadable.contents
-                            .filter(
-                              ({ value }) =>
-                                value?.config && value.proposalCount
-                            )
-                            .map(
-                              ({
-                                contractAddress,
-                                value: {
-                                  config: { name, image_url },
-                                },
-                              }) => ({
-                                type: EntityType.Dao,
-                                address: contractAddress,
-                                name,
-                                imageUrl:
-                                  image_url ||
-                                  getFallbackImage(contractAddress),
-                              })
-                            )
-                        : []),
-                    ]
-                  : [],
+              entities: searchedEntities,
               loading:
                 (props.type !== 'contract' &&
                   (searchProfilesLoadable.state === 'loading' ||

@@ -33,7 +33,7 @@ AutofillProfile.args = {
   EntityDisplay,
   autofillEntities: {
     loading: false,
-    hits: [
+    entities: [
       {
         type: EntityType.Wallet,
         address: 'peepobaked',
