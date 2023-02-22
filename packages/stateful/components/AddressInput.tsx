@@ -120,7 +120,7 @@ export const AddressInput = <
             : []),
           ...(searchDaosLoadable.state === 'hasValue'
             ? searchDaosLoadable.contents
-                .filter(({ value }) => value?.config && value.proposalCount)
+                .filter(({ value }) => value?.config)
                 .map(
                   ({
                     contractAddress,
@@ -145,7 +145,7 @@ export const AddressInput = <
     () => new Fuse(entities, { keys: ['name'] }),
     // Only reinstantiate fuse when entities deeply changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useDeepCompareMemoize(entities)
+    useDeepCompareMemoize([entities])
   )
   const searchedEntities = useMemo(
     () => (hasFormValue ? fuse.search(formValue).map(({ item }) => item) : []),
