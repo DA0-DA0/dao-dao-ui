@@ -10,10 +10,6 @@ export const useTrackElement = () => {
   const elementRef = useRef<HTMLDivElement | null>(null)
   // Get the rect of the element and update on window scroll and resize.
   useEffect(() => {
-    if (!elementRef.current) {
-      return
-    }
-
     const updateRect = () => {
       setRect(elementRef.current?.getBoundingClientRect())
     }
