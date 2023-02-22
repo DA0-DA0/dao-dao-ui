@@ -23,13 +23,14 @@ export const keplrProfileImageSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     async ({ get }) => {
+      const publicKey = get(
+        walletHexPublicKeySelector({
+          walletAddress: address,
+          chainId,
+        })
+      )
+
       try {
-        const publicKey = get(
-          walletHexPublicKeySelector({
-            walletAddress: address,
-            chainId,
-          })
-        )
         const response = await fetch(
           `https://api.kube-uw2.keplr-prod.manythings.xyz/v1/user/${publicKey}/profile`
         )

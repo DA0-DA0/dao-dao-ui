@@ -27,16 +27,20 @@ export const useWalletProfile = ({
 }: UseWalletProfileOptions): UseWalletProfileReturn => {
   // Get PFPK profile from API.
   const profile = loadableToLoadingData(
-    useCachedLoadable(pfpkProfileSelector(walletAddress)),
+    useCachedLoadable(
+      walletAddress ? pfpkProfileSelector(walletAddress) : undefined
+    ),
     EMPTY_PFPK_PROFILE
   )
 
   // Get Keplr wallet image from API.
   const keplrProfileImageLoadable = useCachedLoadable(
-    keplrProfileImageSelector({
-      address: walletAddress,
-      chainId,
-    })
+    walletAddress
+      ? keplrProfileImageSelector({
+          address: walletAddress,
+          chainId,
+        })
+      : undefined
   )
   const keplrProfileImage =
     keplrProfileImageLoadable.state === 'hasValue'

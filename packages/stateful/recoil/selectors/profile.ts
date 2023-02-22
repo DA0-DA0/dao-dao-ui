@@ -53,6 +53,12 @@ export const pfpkProfileSelector = selectorFamily<WalletProfile, string>({
           console.error(await response.json())
         }
       } catch (err) {
+        // If error is a Promise, rethrow it. Recoil's `get` throws a Promise
+        // when it is waiting for a selector to resolve.
+        if (err instanceof Promise) {
+          throw err
+        }
+
         console.error(processError(err))
       }
 
