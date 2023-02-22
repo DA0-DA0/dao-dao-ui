@@ -21,7 +21,7 @@ import {
   toBech32Hash,
 } from '@dao-dao/utils'
 
-import { pfpkProfileSelector } from '../recoil/selectors/profile'
+import { walletProfileDataSelector } from '../recoil/selectors/profile'
 import { EntityDisplay } from './EntityDisplay'
 
 export const AddressInput = <
@@ -59,14 +59,15 @@ export const AddressInput = <
       : undefined
   )
 
-  // Cache searched profiles public keys in background so they're ready if
-  // selected.
+  // Cache searched profiles in background so they're ready if selected.
   useRecoilValueLoadable(
     searchProfilesLoadable.state === 'hasValue' &&
       searchProfilesLoadable.contents.length > 0
       ? waitForAll(
           searchProfilesLoadable.contents.map(({ address }) =>
-            pfpkProfileSelector(address)
+            walletProfileDataSelector({
+              address: address,
+            })
           )
         )
       : constSelector(undefined)

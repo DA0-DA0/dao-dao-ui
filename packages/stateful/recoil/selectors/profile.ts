@@ -1,12 +1,20 @@
-import { selectorFamily } from 'recoil'
+import { noWait, selectorFamily } from 'recoil'
 
-import { refreshWalletProfileAtom } from '@dao-dao/state/recoil'
-import { PfpkWalletProfile, WalletProfile } from '@dao-dao/types'
-import { PFPK_API_BASE, processError } from '@dao-dao/utils'
+import {
+  keplrProfileImageSelector,
+  refreshWalletProfileAtom,
+} from '@dao-dao/state/recoil'
+import {
+  PfpkWalletProfile,
+  WalletProfile,
+  WalletProfileData,
+  WithChainId,
+} from '@dao-dao/types'
+import { PFPK_API_BASE, getFallbackImage, toBech32Hash } from '@dao-dao/utils'
 
 import { nftCardInfoSelector } from './nft'
 
-export const EMPTY_PFPK_PROFILE: WalletProfile = {
+export const EMPTY_WALLET_PROFILE: WalletProfile = {
   // Disallows editing if we don't have correct nonce from server.
   nonce: -1,
   name: null,
@@ -14,56 +22,105 @@ export const EMPTY_PFPK_PROFILE: WalletProfile = {
   nft: null,
 }
 
-// Get profile from PFPK API. Parameter is wallet address.
-export const pfpkProfileSelector = selectorFamily<WalletProfile, string>({
+// Get profile from PFPK API.
+export const pfpkProfileSelector = selectorFamily<
+  PfpkWalletProfile | null,
+  string
+>({
   key: 'pfpkProfile',
   get:
     (walletAddress) =>
     async ({ get }) => {
       get(refreshWalletProfileAtom(walletAddress))
 
-      let profile: WalletProfile = { ...EMPTY_PFPK_PROFILE }
-
-      // Load profile from PFPK API.
-      let response
       try {
-        response = await fetch(PFPK_API_BASE + `/address/${walletAddress}`)
+        const response = await fetch(
+          PFPK_API_BASE + `/address/${walletAddress}`
+        )
         if (response.ok) {
-          const pfpkProfile: PfpkWalletProfile = await response.json()
-          profile.nonce = pfpkProfile.nonce
-          profile.name = pfpkProfile.name
-          profile.nft = pfpkProfile.nft
-
-          // Get NFT info from data to extract image.
-          if (pfpkProfile.nft) {
-            const nftInfo = get(
-              nftCardInfoSelector({
-                collection: pfpkProfile.nft.collectionAddress,
-                tokenId: pfpkProfile.nft.tokenId,
-                chainId: pfpkProfile.nft.chainId,
-              })
-            )
-
-            // Set `imageUrl` if NFT present.
-            if (nftInfo?.imageUrl) {
-              profile.imageUrl = nftInfo.imageUrl
-            }
-          }
+          return await response.json()
         } else {
-          console.error(await response.json())
+          console.error(await response.json().catch(() => response.statusText))
         }
       } catch (err) {
-        // If error is a Promise, rethrow it. Recoil's `get` throws a Promise
-        // when it is waiting for a selector to resolve.
-        if (err instanceof Promise) {
-          throw err
-        }
+        console.error(err)
+      }
+    },
+})
 
-        console.error(processError(err))
+// This selector returns the profile for a wallet with some helpful metadata,
+// such as its loading state and a backup image. It is designed to not wait for
+// any data, returning a default profile immediately and filling in data as it
+// comes in. Thus, it should be safe to use in any component without suspending
+// it.
+export const walletProfileDataSelector = selectorFamily<
+  WalletProfileData,
+  WithChainId<{
+    address: string
+  }>
+>({
+  key: 'walletProfileData',
+  get:
+    ({ address, chainId }) =>
+    async ({ get }) => {
+      get(refreshWalletProfileAtom(address))
+
+      let profile = { ...EMPTY_WALLET_PROFILE }
+
+      const pfpkProfileLoadable = get(noWait(pfpkProfileSelector(address)))
+      const pfpkProfile =
+        pfpkProfileLoadable.state === 'hasValue'
+          ? pfpkProfileLoadable.contents
+          : null
+      if (pfpkProfile) {
+        profile.nonce = pfpkProfile.nonce
+        profile.name = pfpkProfile.name
+        profile.nft = pfpkProfile.nft
       }
 
-      return profile
+      const keplrProfileImage = get(
+        noWait(
+          keplrProfileImageSelector({
+            address: address,
+            chainId,
+          })
+        )
+      )
+      const backupImageUrl =
+        (keplrProfileImage.state === 'hasValue' &&
+          keplrProfileImage.contents) ||
+        getFallbackImage(toBech32Hash(address))
+
+      // Set `imageUrl` to PFPK image, defaulting to fallback image.
+      profile.imageUrl = pfpkProfile?.nft?.imageUrl || backupImageUrl
+
+      // If NFT present from PFPK, get image from token.
+      if (pfpkProfile?.nft) {
+        // Don't wait for NFT info to load. When it loads, it will update.
+        const nftInfoLoadable = get(
+          noWait(
+            nftCardInfoSelector({
+              collection: pfpkProfile.nft.collectionAddress,
+              tokenId: pfpkProfile.nft.tokenId,
+              chainId: pfpkProfile.nft.chainId,
+            })
+          )
+        )
+
+        // Set `imageUrl` if defined, overriding PFPK image and backup.
+        if (
+          nftInfoLoadable.state === 'hasValue' &&
+          nftInfoLoadable.contents?.imageUrl
+        ) {
+          profile.imageUrl = nftInfoLoadable.contents.imageUrl
+        }
+      }
+
+      return {
+        loading: pfpkProfileLoadable.state === 'loading',
+        address,
+        profile,
+        backupImageUrl,
+      }
     },
-  // Allow overriding imageUrl with Keplr fallback.
-  dangerouslyAllowMutability: true,
 })

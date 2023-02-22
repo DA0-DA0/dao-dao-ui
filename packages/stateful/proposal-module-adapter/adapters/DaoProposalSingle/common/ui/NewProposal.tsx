@@ -111,7 +111,7 @@ export const NewProposal = ({
   const [submitError, setSubmitError] = useState('')
 
   const { status: walletStatus } = useWallet()
-  const { walletAddress = '', walletProfile } = useWalletInfo()
+  const { walletAddress = '', walletProfileData } = useWalletInfo()
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -391,9 +391,9 @@ export const NewProposal = ({
               createdAt={new Date()}
               creator={{
                 address: walletAddress,
-                name: walletProfile.loading
-                  ? walletProfile
-                  : { loading: false, data: walletProfile.data.name },
+                name: walletProfileData.loading
+                  ? { loading: true }
+                  : { loading: false, data: walletProfileData.profile.name },
               }}
               description={proposalDescription}
               title={proposalTitle}

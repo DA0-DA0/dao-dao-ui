@@ -1,3 +1,5 @@
+import { constSelector, useRecoilValue } from 'recoil'
+
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { Entity, EntityType, LoadingData, WithChainId } from '@dao-dao/types'
@@ -5,9 +7,10 @@ import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
   isValidContractAddress,
+  isValidWalletAddress,
 } from '@dao-dao/utils'
 
-import { useWalletProfile } from './useWalletProfile'
+import { walletProfileDataSelector } from '../recoil'
 
 export type UseEntityOptions = WithChainId<{
   address: string
@@ -28,13 +31,17 @@ export const useEntity = ({
       : undefined
   )
 
-  // Try loading wallet profile assuming the address is a wallet.
-  const walletProfile = useWalletProfile({
-    walletAddress: address,
-    chainId,
-  })
+  const walletProfileData = useRecoilValue(
+    address && isValidWalletAddress(address, CHAIN_BECH32_PREFIX)
+      ? walletProfileDataSelector({
+          address,
+          chainId,
+        })
+      : constSelector(undefined)
+  )
 
-  return daoConfig.state !== 'hasValue' && walletProfile.profile.loading
+  return daoConfig.state !== 'hasValue' &&
+    (!walletProfileData || walletProfileData.loading)
     ? { loading: true }
     : {
         loading: false,
@@ -45,14 +52,14 @@ export const useEntity = ({
           name:
             daoConfig.state === 'hasValue'
               ? daoConfig.contents.name
-              : !walletProfile.profile.loading
-              ? walletProfile.profile.data.name
+              : walletProfileData && !walletProfileData.loading
+              ? walletProfileData.profile.name
               : null,
           imageUrl:
             (daoConfig.state === 'hasValue'
               ? daoConfig.contents.image_url
-              : !walletProfile.profile.loading
-              ? walletProfile.profile.data.imageUrl
+              : walletProfileData && !walletProfileData.loading
+              ? walletProfileData.profile.imageUrl
               : undefined) || getFallbackImage(address),
         },
       }

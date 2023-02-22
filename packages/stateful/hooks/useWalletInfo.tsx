@@ -5,7 +5,7 @@ import {
   useWallet,
 } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
   nativeBalanceSelector,
@@ -15,14 +15,14 @@ import {
   refreshWalletProfileAtom,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { LoadingData, WalletProfile, WalletProfileUpdate } from '@dao-dao/types'
+import { WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
   PFPK_API_BASE,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
-import { useWalletProfile } from './useWalletProfile'
+import { walletProfileDataSelector } from '../recoil'
 
 export interface UseWalletReturn {
   walletAddress: string | undefined
@@ -31,14 +31,14 @@ export interface UseWalletReturn {
   dateBalancesFetched: Date | undefined
   refreshBalances: () => void
 
-  walletProfile: LoadingData<WalletProfile>
+  walletProfileData: WalletProfileData
   updateProfile: (profile: Omit<WalletProfileUpdate, 'nonce'>) => Promise<void>
   updateProfileName: (
     name: Required<WalletProfileUpdate>['name']
   ) => Promise<void>
   updateProfileNft: (nft: Required<WalletProfileUpdate>['nft']) => Promise<void>
   updatingProfile: boolean
-  backupProfileImage: string | undefined
+  backupImageUrl: string
 }
 
 export const useWalletInfo = (chainId?: string): UseWalletReturn => {
@@ -104,11 +104,17 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     [setRefreshWalletProfile]
   )
 
-  // Get PFPK profile from API.
-  const { profile: pfpkProfile, backupProfileImage } = useWalletProfile({
-    walletAddress: address ?? '',
-    chainId,
-  })
+  const walletProfileData = useRecoilValue(
+    walletProfileDataSelector({
+      address: address ?? '',
+      chainId,
+    })
+  )
+  const {
+    loading: profileLoading,
+    profile: walletProfile,
+    backupImageUrl,
+  } = walletProfileData
 
   const [updatingNonce, setUpdatingNonce] = useState<number>()
   const onUpdateRef = useRef<() => void>()
@@ -120,9 +126,9 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
       if (
         !connected ||
         !publicKey ||
-        pfpkProfile.loading ||
+        profileLoading ||
         // Disallow editing if we don't have correct nonce from server.
-        pfpkProfile.data.nonce < 0
+        walletProfile.nonce < 0
       ) {
         return
       }
@@ -134,11 +140,11 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
 
       // Set onUpdate handler.
       onUpdateRef.current = onUpdate
-      setUpdatingNonce(pfpkProfile.data.nonce)
+      setUpdatingNonce(walletProfile.nonce)
       try {
         const profileUpdate: WalletProfileUpdate = {
           ...profile,
-          nonce: pfpkProfile.data.nonce,
+          nonce: walletProfile.nonce,
         }
 
         const offlineSignerAmino =
@@ -200,29 +206,30 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
       }
     },
     [
-      connectWalletToChain,
       connected,
       publicKey,
+      profileLoading,
+      walletProfile.nonce,
+      connectWalletToChain,
       refreshWalletProfile,
-      pfpkProfile,
     ]
   )
   // Listen for nonce to incremenent to clear updating state, since we want the
   // new profile to be ready on the same render that we stop loading.
   useEffect(() => {
-    if (updatingNonce === undefined || pfpkProfile.loading) {
+    if (updatingNonce === undefined || profileLoading) {
       return
     }
 
     // If nonce incremented, clear updating state and call onUpdate handler if
     // exists.
-    if (pfpkProfile.data.nonce > updatingNonce) {
+    if (walletProfile.nonce > updatingNonce) {
       onUpdateRef.current?.()
       onUpdateRef.current = undefined
 
       setUpdatingNonce(undefined)
     }
-  }, [updatingNonce, pfpkProfile])
+  }, [updatingNonce, walletProfile, profileLoading])
 
   // Promisified updateProfile.
   const updateProfile = useCallback(
@@ -249,11 +256,11 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     dateBalancesFetched,
     refreshBalances,
 
-    walletProfile: pfpkProfile,
+    walletProfileData,
     updateProfile,
     updateProfileName,
     updateProfileNft,
     updatingProfile: updatingNonce !== undefined,
-    backupProfileImage,
+    backupImageUrl,
   }
 }

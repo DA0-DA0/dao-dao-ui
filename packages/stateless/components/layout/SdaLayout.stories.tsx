@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 import {
   PageHeaderProps,
   SdaLayoutProps,
@@ -33,15 +34,7 @@ export const DefaultArgs: SdaLayoutProps = {
     </div>
   ),
   rightSidebarProps: RightSidebarStoryArgs,
-  walletProfile: {
-    loading: false,
-    data: {
-      nonce: 0,
-      imageUrl: '/noah.jpg',
-      name: 'wallet_name',
-      nft: null,
-    },
-  },
+  walletProfileData: WALLET_PROFILE_DATA,
   connect: () => alert('connect'),
   connected: true,
   connectWalletButton: (
