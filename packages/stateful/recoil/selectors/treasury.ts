@@ -10,7 +10,7 @@ import {
   nativeDelegatedBalanceSelector,
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
-  usdcPerMacroTokenSelector,
+  wyndUsdPriceSelector,
 } from '@dao-dao/state'
 import {
   GenericToken,
@@ -124,12 +124,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
     ({ get }) => {
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
 
-      const usdcUnitPrice = get(
-        usdcPerMacroTokenSelector({
-          denom: token.denomOrAddress,
-          decimals: token.decimals,
-        })
-      )
+      const usdUnitPrice = get(wyndUsdPriceSelector(token.denomOrAddress))
 
       // For now, stakingInfo only exists for native token, until ICA.
       if (token.denomOrAddress === NATIVE_DENOM) {
@@ -176,7 +171,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
       }
 
       return {
-        usdcUnitPrice,
+        usdUnitPrice,
         stakingInfo,
       }
     },

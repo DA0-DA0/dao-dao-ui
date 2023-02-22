@@ -249,3 +249,8 @@ export enum DaoPageMode {
   Dapp = 'dapp',
   Sda = 'sda',
 }
+
+export type DaoWebSocketChannelInfo = {
+  chainId: string
+  coreAddress: string
+}

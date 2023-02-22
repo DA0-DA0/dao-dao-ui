@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react'
+import { ArrowDropDown } from '@mui/icons-material'
+import { ComponentType, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { Cw20BaseSelectors } from '@dao-dao/state'
+import { genericTokenSelector } from '@dao-dao/state'
 import {
   AddressInput,
+  Button,
+  FilterableItemPopup,
   FormSwitchCard,
-  FormattedJsonDisplay,
   InputErrorMessage,
   InputLabel,
+  Loader,
   MoneyEmoji,
   NumberInput,
   SelectInput,
@@ -18,14 +21,20 @@ import {
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
   DepositRefundPolicy,
+  GenericToken,
+  TokenType,
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
   NATIVE_DENOM,
   NEW_DAO_CW20_DECIMALS,
+  convertMicroDenomToDenomWithDecimals,
+  getFallbackImage,
+  ibcAssets,
   isValidContractAddress,
-  nativeTokenDecimals,
   nativeTokenLabel,
+  nativeTokenLogoURI,
+  toAccessibleImageUrl,
   validateContractAddress,
   validatePositive,
 } from '@dao-dao/utils'
@@ -42,7 +51,7 @@ const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 export const ProposalDepositInput = ({
   newDao: { votingModuleAdapter },
   data: {
-    proposalDeposit: { enabled, type, cw20Address, cw20TokenInfo },
+    proposalDeposit: { enabled, type, denomOrAddress, token },
   },
   register,
   setValue,
@@ -55,6 +64,7 @@ export const ProposalDepositInput = ({
   const cw20StakedBalanceVotingAdapterData =
     votingModuleAdapter.data as DaoVotingCw20StakedConfig
 
+  // Governance token may be new or existing, so we have to handle both cases.
   const cw20GovernanceTokenSymbol = isDaoVotingCw20StakedAdapter
     ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
       ? cw20StakedBalanceVotingAdapterData.newInfo.symbol
@@ -65,60 +75,134 @@ export const ProposalDepositInput = ({
       ? NEW_DAO_CW20_DECIMALS
       : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.decimals
     : undefined
+  const cw20GovernanceTokenImageUrl = isDaoVotingCw20StakedAdapter
+    ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
+      ? cw20StakedBalanceVotingAdapterData.newInfo.imageUrl
+      : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenLogoUrl
+    : undefined
 
-  const cw20TokenInfoLoadable = useRecoilValueLoadable(
+  const memoizedCw20GovernanceToken: GenericToken = useMemo(
+    () => ({
+      // Does not matter.
+      type: TokenType.Cw20,
+      // Does not matter.
+      denomOrAddress: '',
+      // Does not matter.
+      symbol: cw20GovernanceTokenSymbol ?? '',
+      decimals: cw20GovernanceTokenDecimals ?? 0,
+      imageUrl: cw20GovernanceTokenImageUrl,
+    }),
+    [
+      cw20GovernanceTokenDecimals,
+      cw20GovernanceTokenImageUrl,
+      cw20GovernanceTokenSymbol,
+    ]
+  )
+
+  const tokenLoadable = useRecoilValueLoadable(
     type === 'cw20' &&
-      cw20Address &&
-      isValidContractAddress(cw20Address, CHAIN_BECH32_PREFIX)
-      ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: cw20Address,
-          params: [],
+      denomOrAddress &&
+      isValidContractAddress(denomOrAddress, CHAIN_BECH32_PREFIX)
+      ? genericTokenSelector({
+          type: TokenType.Cw20,
+          denomOrAddress,
         })
+      : type === 'native'
+      ? genericTokenSelector({
+          type: TokenType.Native,
+          denomOrAddress,
+        })
+      : type === 'voting_module_token'
+      ? constSelector(memoizedCw20GovernanceToken)
       : constSelector(undefined)
   )
-  const cw20TokenInfoLoaded =
-    cw20TokenInfoLoadable.state === 'hasValue'
-      ? cw20TokenInfoLoadable.contents
-      : undefined
+  const tokenLoaded =
+    tokenLoadable.state === 'hasValue' ? tokenLoadable.contents : undefined
 
-  // Update cw20 token info and address error.
+  // Update token and cw20 address error.
   const [cw20AddressError, setCw20AddressError] = useState<string>()
   useEffect(() => {
     // Update token info so we can use symbol and decimals later.
     if (
-      cw20TokenInfoLoadable.state === 'hasValue' &&
-      cw20TokenInfo !== cw20TokenInfoLoadable.contents
+      tokenLoadable.state === 'hasValue' &&
+      token !== tokenLoadable.contents
     ) {
-      setValue('proposalDeposit.cw20TokenInfo', cw20TokenInfoLoadable.contents)
+      setValue('proposalDeposit.token', tokenLoadable.contents)
     }
 
-    if (cw20TokenInfoLoadable.state !== 'hasError') {
+    if (tokenLoadable.state !== 'hasError' || type !== 'cw20') {
       if (cw20AddressError) {
         setCw20AddressError(undefined)
       }
       return
     }
 
-    if (!cw20AddressError) {
+    if (!cw20AddressError && type === 'cw20') {
       setCw20AddressError(t('error.notCw20Address'))
     }
   }, [
-    cw20TokenInfoLoadable.state,
-    cw20TokenInfoLoadable.contents,
+    tokenLoadable.state,
+    tokenLoadable.contents,
     setValue,
     t,
     cw20AddressError,
-    cw20TokenInfo,
+    token,
+    type,
   ])
 
-  const decimals =
-    type === 'native'
-      ? nativeTokenDecimals(NATIVE_DENOM) ?? 0
-      : type === 'voting_module_token'
-      ? cw20GovernanceTokenDecimals ?? 0
-      : // type === 'cw20'
-        cw20TokenInfoLoaded?.decimals ?? 0
-  const minimum = 1 / Math.pow(10, decimals)
+  const decimals = tokenLoaded?.decimals ?? 0
+  const minimum = convertMicroDenomToDenomWithDecimals(1, decimals)
+
+  const availableTokens: {
+    key: string
+    type: 'native' | 'cw20' | 'voting_module_token'
+    label: string
+    description?: string
+    Icon?: ComponentType
+  }[] = [
+    // Governance token first.
+    ...(cw20GovernanceTokenSymbol
+      ? [
+          {
+            key: 'voting_module_token',
+            type: 'voting_module_token' as const,
+            label: '$' + cw20GovernanceTokenSymbol,
+            imageUrl: cw20GovernanceTokenImageUrl,
+          },
+        ]
+      : []),
+    // Then native.
+    {
+      key: NATIVE_DENOM,
+      type: 'native' as const,
+      label: nativeTokenLabel(NATIVE_DENOM),
+      imageUrl: nativeTokenLogoURI(NATIVE_DENOM),
+    },
+    // Then the IBC assets.
+    ...ibcAssets.tokens.map(({ juno_denom, symbol, name, logoURI }) => ({
+      key: juno_denom,
+      type: 'native' as const,
+      label: symbol,
+      description: symbol === name ? undefined : name,
+      imageUrl: logoURI,
+    })),
+    // Then other CW20.
+    {
+      key: 'other_cw20',
+      type: 'cw20' as const,
+      label: t('form.cw20Token'),
+    },
+  ].map(({ imageUrl, ...rest }) => ({
+    ...rest,
+    Icon: imageUrl
+      ? () => (
+          <div
+            className="h-8 w-8 rounded-full bg-cover bg-center"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          />
+        )
+      : undefined,
+  }))
 
   return (
     <div className="flex flex-col gap-2">
@@ -143,55 +227,84 @@ export const ProposalDepositInput = ({
                 validation={[validatePositive]}
               />
 
-              <SelectInput
-                error={errors?.proposalDeposit?.type}
-                fieldName="proposalDeposit.type"
-                register={register}
-              >
-                <option value="native">
-                  ${nativeTokenLabel(NATIVE_DENOM)}
-                </option>
-                {cw20GovernanceTokenSymbol && (
-                  <option value="voting_module_token">
-                    ${cw20GovernanceTokenSymbol}
-                  </option>
+              <FilterableItemPopup
+                Trigger={({ open, ...props }) => (
+                  <Button
+                    contentContainerClassName="justify-between"
+                    pressed={open}
+                    variant="secondary"
+                    {...props}
+                  >
+                    {tokenLoaded ? (
+                      <div className="flex flex-row items-center gap-2">
+                        <div
+                          className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
+                          style={{
+                            backgroundImage: `url(${toAccessibleImageUrl(
+                              tokenLoaded.imageUrl ||
+                                getFallbackImage(tokenLoaded.denomOrAddress)
+                            )})`,
+                          }}
+                        />
+
+                        <p>${tokenLoaded.symbol}</p>
+                      </div>
+                    ) : type === 'cw20' &&
+                      !isValidContractAddress(
+                        denomOrAddress,
+                        CHAIN_BECH32_PREFIX
+                      ) ? (
+                      t('form.cw20Token')
+                    ) : (
+                      tokenLoadable.state === 'loading' && <Loader size={24} />
+                    )}
+
+                    <ArrowDropDown className="ml-2 !h-6 !w-6" />
+                  </Button>
                 )}
-                <option value="cw20">{t('form.cw20Token')}</option>
-              </SelectInput>
+                filterableItemKeys={FILTERABLE_KEYS}
+                items={availableTokens}
+                onSelect={({ key, type }) => {
+                  setValue('proposalDeposit.type', type)
+
+                  // `key` for native tokens is the denom.
+                  if (type === 'native') {
+                    setValue('proposalDeposit.denomOrAddress', key)
+                  } else {
+                    // `voting_module_token` doesn't need one set, and `cw20`
+                    // shows an address input, so clear for both.
+                    setValue('proposalDeposit.denomOrAddress', '')
+                  }
+                }}
+                searchPlaceholder={t('info.searchForToken')}
+              />
             </div>
 
             <InputErrorMessage error={errors?.proposalDeposit?.amount} />
           </div>
 
           {type === 'cw20' && (
-            <>
-              <div className="flex flex-col gap-1">
-                <AddressInput
-                  error={
-                    errors?.proposalDeposit?.cw20Address ?? cw20AddressError
-                  }
-                  fieldName="proposalDeposit.cw20Address"
-                  placeholder={t('form.tokenAddress')}
-                  register={register}
-                  type="contract"
-                  validation={[validateContractAddress]}
-                />
-
-                <InputErrorMessage
-                  error={
-                    errors?.proposalDeposit?.cw20Address ??
-                    (cw20AddressError
-                      ? { type: 'validate', message: cw20AddressError }
-                      : undefined)
-                  }
-                />
-              </div>
-
-              <FormattedJsonDisplay
-                jsonLoadable={cw20TokenInfoLoadable}
-                title={t('form.tokenInfo')}
+            <div className="flex flex-col gap-1">
+              <AddressInput
+                error={
+                  errors?.proposalDeposit?.denomOrAddress ?? cw20AddressError
+                }
+                fieldName="proposalDeposit.denomOrAddress"
+                placeholder={t('form.tokenAddress')}
+                register={register}
+                type="contract"
+                validation={[validateContractAddress]}
               />
-            </>
+
+              <InputErrorMessage
+                error={
+                  errors?.proposalDeposit?.denomOrAddress ??
+                  (cw20AddressError
+                    ? { type: 'validate', message: cw20AddressError }
+                    : undefined)
+                }
+              />
+            </div>
           )}
 
           <InputLabel className="mt-1" name={t('form.refundPolicyTitle')} />
@@ -213,52 +326,25 @@ export const ProposalDepositInput = ({
 }
 
 export const ProposalDepositReview = ({
-  newDao: { votingModuleAdapter },
   data: {
-    proposalDeposit: { enabled, amount, type, cw20TokenInfo },
+    proposalDeposit: { enabled, amount, token },
   },
 }: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
 
-  const isDaoVotingCw20StakedAdapter =
-    votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id
-  const cw20StakedBalanceVotingAdapterData =
-    votingModuleAdapter.data as DaoVotingCw20StakedConfig
-
-  const cw20GovernanceTokenSymbol = isDaoVotingCw20StakedAdapter
-    ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
-      ? cw20StakedBalanceVotingAdapterData.newInfo.symbol
-      : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.symbol
-    : undefined
-  const cw20GovernanceTokenDecimals = isDaoVotingCw20StakedAdapter
-    ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
-      ? NEW_DAO_CW20_DECIMALS
-      : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.decimals
-    : undefined
-
-  const decimals =
-    type === 'native'
-      ? nativeTokenDecimals(NATIVE_DENOM) ?? 0
-      : type === 'voting_module_token'
-      ? cw20GovernanceTokenDecimals ?? 0
-      : // type === 'cw20'
-        cw20TokenInfo?.decimals ?? 0
-  const symbol =
-    (type === 'native'
-      ? nativeTokenLabel(NATIVE_DENOM)
-      : type === 'voting_module_token'
-      ? cw20GovernanceTokenSymbol
-      : // type === 'cw20'
-        cw20TokenInfo?.symbol) || t('info.tokens')
+  const decimals = token?.decimals ?? 0
+  const symbol = token?.symbol || t('info.tokens')
 
   return !enabled ? (
     <>{t('info.none')}</>
   ) : (
     <>
-      {amount.toLocaleString(undefined, {
-        maximumFractionDigits: decimals,
-      })}{' '}
-      ${symbol}
+      {t('format.token', {
+        amount: amount.toLocaleString(undefined, {
+          maximumFractionDigits: decimals,
+        }),
+        symbol,
+      })}
     </>
   )
 }
@@ -272,3 +358,5 @@ export const ProposalDepositVotingConfigItem: DaoCreationVotingConfigItem<DaoCre
     getInputError: () => undefined,
     Review: ProposalDepositReview,
   }
+
+const FILTERABLE_KEYS = ['key', 'label', 'description']

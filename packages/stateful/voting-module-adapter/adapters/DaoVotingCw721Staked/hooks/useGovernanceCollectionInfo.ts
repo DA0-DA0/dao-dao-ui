@@ -77,10 +77,7 @@ export const useGovernanceCollectionInfo = ({
   const loadingPrice = loadableToLoadingData(
     useCachedLoadable(
       fetchUsdcPrice && governanceTokenInfo
-        ? usdcPerMacroTokenSelector({
-            denom,
-            decimals: governanceTokenInfo.decimals,
-          })
+        ? wyndUsdPriceSelector(denom)
         : constSelector(undefined)
     ),
     undefined

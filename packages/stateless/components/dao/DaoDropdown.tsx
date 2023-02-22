@@ -16,6 +16,7 @@ export const DaoDropdown = ({
   indent = 0,
   compact = false,
   LinkWrapper,
+  defaultCollapsed,
 }: DaoDropdownProps) => {
   const { asPath } = useRouter()
 
@@ -43,6 +44,7 @@ export const DaoDropdown = ({
   ) : (
     <Collapsible
       containerClassName="!gap-0"
+      defaultCollapsed={defaultCollapsed}
       headerClassName={clsx(
         'rounded-md',
         selected && 'bg-background-interactive-selected'
@@ -67,6 +69,7 @@ export const DaoDropdown = ({
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 dao={dao}
+                defaultCollapsed
                 indent={indent + 1}
               />
             ))}

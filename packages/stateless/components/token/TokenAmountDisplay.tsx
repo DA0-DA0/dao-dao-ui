@@ -142,12 +142,16 @@ export const TokenAmountDisplay = ({
     ...options,
     notation: 'compact',
     maximumFractionDigits: maxCompactDecimals,
+    // Always show all decimals if USD estimate.
+    minimumFractionDigits: estimatedUsdValue
+      ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS
+      : undefined,
     // notation=compact seems to set maximumSignificantDigits if undefined.
     // Because we are rounding toward more precision above, set
-    // maximumSignificantDigits to 1 so that notation=compact does not
-    // override it and display extra decimals in case maximumFractionDigits is
-    // less. This appears to work fine on both Chrome and Safari, which is
-    // good enough for now. This is a crazy hack.
+    // maximumSignificantDigits to 1 so that notation=compact does not override
+    // it and display extra decimals in case maximumFractionDigits is less. This
+    // appears to work fine on both Chrome and Safari, which is good enough for
+    // now. This is a crazy hack.
     maximumSignificantDigits: 1,
   }
 

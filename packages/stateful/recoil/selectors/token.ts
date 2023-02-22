@@ -1,11 +1,16 @@
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
   nativeBalancesSelector,
+  walletCw20BalancesSelector,
 } from '@dao-dao/state/recoil'
 import { GenericTokenBalance, WithChainId } from '@dao-dao/types'
-import { CHAIN_BECH32_PREFIX, isValidContractAddress } from '@dao-dao/utils'
+import {
+  CHAIN_BECH32_PREFIX,
+  isValidContractAddress,
+  isValidWalletAddress,
+} from '@dao-dao/utils'
 
 export const genericTokenBalancesSelector = selectorFamily<
   GenericTokenBalance[],
@@ -25,20 +30,21 @@ export const genericTokenBalancesSelector = selectorFamily<
         })
       )
 
-      const cw20TokenBalances = isValidContractAddress(
-        address,
-        CHAIN_BECH32_PREFIX
-      )
-        ? get(
-            DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
+      const cw20TokenBalances = get(
+        isValidContractAddress(address, CHAIN_BECH32_PREFIX)
+          ? DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
               contractAddress: address,
               governanceTokenAddress: cw20GovernanceTokenAddress,
               chainId,
             })
-          )
-        : // TODO: Index wallet CW20s and load them here.
-          []
+          : isValidWalletAddress(address, CHAIN_BECH32_PREFIX)
+          ? walletCw20BalancesSelector({
+              walletAddress: address,
+              chainId,
+            })
+          : waitForAll([])
+      )
 
-      return [...(nativeTokenBalances || []), ...(cw20TokenBalances || [])]
+      return [...nativeTokenBalances, ...cw20TokenBalances]
     },
 })

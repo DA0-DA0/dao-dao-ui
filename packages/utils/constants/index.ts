@@ -53,13 +53,11 @@ export const CHAIN_REST_ENDPOINT = process.env
   .NEXT_PUBLIC_CHAIN_REST_ENDPOINT as string
 export const CHAIN_BECH32_PREFIX = process.env
   .NEXT_PUBLIC_CHAIN_BECH32_PREFIX as string
+export const DAO_DAO_DAO_ADDRESS = process.env
+  .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
 
 export const MICRO_STAKING_DENOM = process.env
   .NEXT_PUBLIC_STAKING_DENOM as string
-
-export const USDC_SWAP_ADDRESS = process.env
-  .NEXT_PUBLIC_USDC_SWAP_ADDRESS as string
-export const POOLS_LIST_URL = process.env.NEXT_PUBLIC_POOLS_LIST_URL as string
 
 export const CI = process.env.CI === 'true'
 
@@ -166,3 +164,20 @@ export const SINGLE_DAO_MODE =
 
 // Kado API (https://docs.kado.money)
 export const KADO_API_KEY = process.env.NEXT_PUBLIC_KADO_API_KEY as string
+
+// WYND
+export const WYND_MULTI_HOP_CONTRACT = process.env
+  .NEXT_PUBLIC_WYND_MULTI_HOP_CONTRACT as string
+export const WYND_API_BASE = process.env.NEXT_PUBLIC_WYND_API_BASE as string
+export const WYND_REFERRAL_COMMISSION = Number(
+  process.env.NEXT_PUBLIC_WYND_REFERRAL_COMMISSION || '0.01'
+)
+
+// WebSockets API
+export const WEB_SOCKET_PUSHER_APP_KEY = process.env
+  .NEXT_PUBLIC_WEB_SOCKET_PUSHER_APP_KEY as string
+export const WEB_SOCKET_PUSHER_HOST = process.env
+  .NEXT_PUBLIC_WEB_SOCKET_PUSHER_HOST as string
+export const WEB_SOCKET_PUSHER_PORT = Number(
+  process.env.NEXT_PUBLIC_WEB_SOCKET_PUSHER_PORT || '6001'
+)

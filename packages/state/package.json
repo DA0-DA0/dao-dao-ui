@@ -19,6 +19,7 @@
     "interchain-rpc": "1.5.0",
     "json5": "^2.2.0",
     "meilisearch": "^0.30.0",
+    "pusher-js": "^7.6.0",
     "recoil": "^0.7.2"
   },
   "devDependencies": {

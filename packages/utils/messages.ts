@@ -104,16 +104,19 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
 export function decodeMessages(
   msgs: CosmosMsgFor_Empty[]
 ): { [key: string]: any }[] {
-  const decodedMessageArray: any[] = []
+  const decodedMessages: any[] = []
+
   for (const msgObj of msgs) {
     if (isWasmMsg(msgObj)) {
+      let decodedWasmMsg = msgObj
+
       const msgType = getWasmMsgType(msgObj.wasm)
       if (msgType && isBinaryType(msgType)) {
         const base64Msg = (msgObj.wasm as any)[msgType]
         if (base64Msg) {
           const msg = parseEncodedMessage(base64Msg.msg)
           if (msg) {
-            decodedMessageArray.push({
+            decodedWasmMsg = {
               ...msgObj,
               wasm: {
                 ...msgObj.wasm,
@@ -122,21 +125,19 @@ export function decodeMessages(
                   msg,
                 },
               },
-            })
+            }
           }
         }
       }
+
+      decodedMessages.push(decodedWasmMsg)
     } else if (isCosmWasmStargateMsg(msgObj)) {
       // Decode Stargate protobuf message.
-      decodedMessageArray.push(decodeStargateMessage(msgObj))
+      decodedMessages.push(decodeStargateMessage(msgObj))
     } else {
-      decodedMessageArray.push(msgObj)
+      decodedMessages.push(msgObj)
     }
   }
-
-  const decodedMessages = decodedMessageArray.length
-    ? decodedMessageArray
-    : msgs
 
   return decodedMessages
 }

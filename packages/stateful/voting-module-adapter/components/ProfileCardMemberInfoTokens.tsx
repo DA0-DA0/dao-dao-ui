@@ -2,12 +2,7 @@ import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Button,
-  ButtonLink,
-  TokenAmountDisplay,
-  UnstakingModal,
-} from '@dao-dao/stateless'
+import { Button, TokenAmountDisplay, UnstakingModal } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   LoadingData,
@@ -17,7 +12,7 @@ import {
 import { formatPercentOf100, secondsToWdhms } from '@dao-dao/utils'
 
 export interface ProfileCardMemberInfoTokensProps
-  extends Omit<BaseProfileCardMemberInfoProps, 'deposit'> {
+  extends Omit<BaseProfileCardMemberInfoProps, 'maxGovernanceTokenDeposit'> {
   daoName: string
   claimingLoading: boolean
   stakingLoading: boolean
@@ -28,7 +23,6 @@ export interface ProfileCardMemberInfoTokensProps
   onClaim: () => void
   onStake: () => void
   refreshUnstakingTasks: () => void
-  junoswapHref?: string
   loadingVotingPower: LoadingData<number>
   loadingStakedTokens: LoadingData<number>
   loadingUnstakedTokens: LoadingData<number>
@@ -45,7 +39,6 @@ export const ProfileCardMemberInfoTokens = ({
   onClaim,
   onStake,
   refreshUnstakingTasks,
-  junoswapHref,
   cantVoteOnProposal,
   loadingVotingPower,
   loadingStakedTokens,
@@ -88,29 +81,17 @@ export const ProfileCardMemberInfoTokens = ({
     <>
       <div className="secondary-text space-y-3">
         {
-          // If cannot vote on proposal, this means they did not have voting power at the time of proposal creation. Show proposal-specific message when in a proposal.
-          cantVoteOnProposal ? (
+          // If cannot vote on proposal, this means they did not have voting
+          // power at the time of proposal creation. Show proposal-specific
+          // message when in a proposal.
+          cantVoteOnProposal && (
             <p>
               {t('info.tokenDaoNotMemberInfoProposal', {
                 tokenSymbol,
                 daoName,
               })}
             </p>
-          ) : // Only show join instructions if not proposal-specific message above.
-          !isMember ? (
-            <p>
-              {t('info.stakeYourTokensToJoin', { tokenSymbol, daoName })}{' '}
-              {junoswapHref && (
-                <ButtonLink
-                  className="font-normal text-inherit"
-                  href={junoswapHref}
-                  variant="underline"
-                >
-                  {t('info.getTokensOn', { name: 'Junoswap' })}
-                </ButtonLink>
-              )}
-            </p>
-          ) : null
+          )
         }
 
         <div className="flex flex-row items-start justify-between">

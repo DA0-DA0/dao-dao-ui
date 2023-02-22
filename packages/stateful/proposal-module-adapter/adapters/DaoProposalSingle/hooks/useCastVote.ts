@@ -1,5 +1,5 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { ContractVersion } from '@dao-dao/types'
@@ -9,6 +9,7 @@ import { processError } from '@dao-dao/utils'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useVote as useVoteV1 } from '../contracts/CwProposalSingle.v1.hooks'
 import { useVote as useVoteV2 } from '../contracts/DaoProposalSingle.v2.hooks'
+import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
@@ -22,6 +23,17 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
   })
 
   const [castingVote, setCastingVote] = useState(false)
+
+  // On vote update, stop loading. This ensures the vote button doesn't stop
+  // loading too early, before the vote data has been refreshed.
+  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
+  const vote =
+    !loadingWalletVoteInfo || loadingWalletVoteInfo.loading
+      ? undefined
+      : loadingWalletVoteInfo.data.vote
+  useEffect(() => {
+    setCastingVote(false)
+  }, [vote])
 
   return {
     castVote: useCallback(
@@ -40,9 +52,12 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
         } catch (err) {
           console.error(err)
           toast.error(processError(err))
-        } finally {
+
+          // Stop loading if errored.
           setCastingVote(false)
         }
+
+        // Loading will stop on success when vote data refreshes.
       },
       [connected, setCastingVote, castVote, proposalNumber, onSuccess]
     ),

@@ -253,11 +253,11 @@ const StakeUnstakeModesBody = ({
             <PercentButton
               key={percent}
               amount={amount}
+              decimals={tokenDecimals}
               label={`${percent}%`}
               loadingMax={loadingMax}
               percent={percent / 100}
               setAmount={setAmount}
-              tokenDecimals={tokenDecimals}
             />
           ))}
         </div>
@@ -269,6 +269,7 @@ const StakeUnstakeModesBody = ({
               absoluteOffset={-proposalDeposit}
               amount={amount}
               className="mt-2"
+              decimals={tokenDecimals}
               label={t('button.stakeAllButProposalDeposit', {
                 proposalDeposit: proposalDeposit.toLocaleString(undefined, {
                   maximumFractionDigits: tokenDecimals,
@@ -278,7 +279,6 @@ const StakeUnstakeModesBody = ({
               loadingMax={loadingMax}
               percent={1}
               setAmount={setAmount}
-              tokenDecimals={tokenDecimals}
             />
           )}
       </div>

@@ -35,6 +35,7 @@ export interface DaoCreationConfig {
     total_supply: string
     _error?: undefined
   }
+  existingGovernanceTokenLogoUrl?: string
   unstakingDuration: DurationWithUnits
 }
 

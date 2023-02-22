@@ -11,21 +11,22 @@ import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 import { useDaoInfoContextIfAvailable, useNavHelpers } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
+import { Tooltip } from '../tooltip'
 import { TopGradient } from '../TopGradient'
-import { useAppLayoutContext } from './AppLayoutContext'
+import { useAppContext } from './AppContext'
 
 export * from '@dao-dao/types/stateless/Breadcrumbs'
 
 export const Breadcrumbs = ({
   home = false,
-  sdaHomeTab,
+  homeTab,
   current,
   className,
 }: BreadcrumbsProps) => {
   const { t } = useTranslation()
   // Allow using Breadcrumbs outside of DaoPageWrapper.
   const daoInfo = useDaoInfoContextIfAvailable()
-  const { mode } = useAppLayoutContext()
+  const { mode } = useAppContext()
   const { getDaoPath } = useNavHelpers()
 
   const [responsive, setResponsive] = useState(false)
@@ -41,7 +42,12 @@ export const Breadcrumbs = ({
                   ? []
                   : [
                       {
-                        href: getDaoPath(daoInfo.coreAddress),
+                        href: getDaoPath(
+                          daoInfo.coreAddress,
+                          undefined,
+                          // Link to home tab if available.
+                          homeTab?.id
+                        ),
                         label: daoInfo.name,
                       },
                     ]),
@@ -53,10 +59,13 @@ export const Breadcrumbs = ({
             ? []
             : [
                 {
-                  href:
-                    getDaoPath(daoInfo.coreAddress) +
-                    (sdaHomeTab ? '#' + sdaHomeTab.id : ''),
-                  label: sdaHomeTab?.label || t('title.home'),
+                  href: getDaoPath(
+                    daoInfo.coreAddress,
+                    undefined,
+                    // Link to home tab if available.
+                    homeTab?.id
+                  ),
+                  label: homeTab?.sdaLabel || t('title.home'),
                 },
               ]),
         ]
@@ -71,15 +80,39 @@ export const Breadcrumbs = ({
           className
         )}
       >
-        {crumbs.map(({ href, label }, idx) => (
-          <div key={idx} className="hidden flex-row items-center gap-2 sm:flex">
-            <Link href={href}>
-              <a className="transition-opacity hover:opacity-80">{label}</a>
-            </Link>
+        {crumbs.map(({ href, label }, idx) => {
+          // If not first or last crumb, show ellipsis.
+          const firstOrLast = idx === 0 || idx === crumbs.length - 1
 
-            <ArrowForwardIos className="!h-5 !w-5 text-icon-tertiary" />
-          </div>
-        ))}
+          return (
+            <div
+              key={idx}
+              className="hidden shrink-0 flex-row items-center gap-2 sm:flex"
+            >
+              <Tooltip title={firstOrLast ? undefined : label}>
+                <div
+                  className={clsx(
+                    'overflow-hidden truncate',
+                    // When there are at least 3 crumbs, and this is the last
+                    // crumb, set max width so it doesn't take up too much
+                    // space.
+                    idx === crumbs.length - 1 &&
+                      crumbs.length > 2 &&
+                      'max-w-[8rem]'
+                  )}
+                >
+                  <Link href={href}>
+                    <a className="transition-opacity hover:opacity-80">
+                      {firstOrLast ? label : '...'}
+                    </a>
+                  </Link>
+                </div>
+              </Tooltip>
+
+              <ArrowForwardIos className="!h-5 !w-5 text-icon-tertiary" />
+            </div>
+          )
+        })}
 
         <Button
           // Disable touch interaction when not responsive. Flex items have

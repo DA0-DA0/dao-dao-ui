@@ -8,7 +8,8 @@ import {
   FollowingDaosProps,
   HorizontalScroller,
   HorizontalScrollerProps,
-  useAppLayoutContext,
+  PageHeaderContent,
+  RightSidebarContent,
 } from '../components'
 
 export type HomeProps = {
@@ -32,12 +33,11 @@ export const Home = ({
   connected,
 }: HomeProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader className={maxWidth} title={t('title.home')} />
+      <PageHeaderContent className={maxWidth} title={t('title.home')} />
 
       <div className="flex flex-col items-center gap-8">
         <p className={clsx('title-text', maxWidth)}>

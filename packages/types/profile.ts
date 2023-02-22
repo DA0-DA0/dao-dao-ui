@@ -2,6 +2,7 @@ export interface PfpkWalletProfile {
   nonce: number
   name: string | null
   nft: {
+    chainId: string
     imageUrl: string
     tokenId: string
     collectionAddress: string
@@ -41,7 +42,6 @@ export interface ProfileSearchHit {
   publicKey: string
   address: string
   profile: {
-    nonce: number
     name: string | null
     nft: {
       chainId: string
