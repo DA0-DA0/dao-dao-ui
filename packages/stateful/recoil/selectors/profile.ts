@@ -31,6 +31,10 @@ export const pfpkProfileSelector = selectorFamily<
   get:
     (walletAddress) =>
     async ({ get }) => {
+      if (!walletAddress) {
+        return null
+      }
+
       get(refreshWalletProfileAtom(walletAddress))
 
       try {
@@ -45,6 +49,8 @@ export const pfpkProfileSelector = selectorFamily<
       } catch (err) {
         console.error(err)
       }
+
+      return null
     },
 })
 
@@ -62,10 +68,19 @@ export const walletProfileDataSelector = selectorFamily<
   key: 'walletProfileData',
   get:
     ({ address, chainId }) =>
-    async ({ get }) => {
-      get(refreshWalletProfileAtom(address))
-
+    ({ get }) => {
       let profile = { ...EMPTY_WALLET_PROFILE }
+
+      if (!address) {
+        return {
+          loading: false,
+          address,
+          profile,
+          backupImageUrl: getFallbackImage(),
+        }
+      }
+
+      get(refreshWalletProfileAtom(address))
 
       const pfpkProfileLoadable = get(noWait(pfpkProfileSelector(address)))
       const pfpkProfile =
