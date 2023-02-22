@@ -231,8 +231,6 @@ export const toValidatorAddress = (address: string, bech32Prefix: string) => {
   try {
     return toBech32(bech32Prefix + 'valoper', fromBech32(address).data)
   } catch (err) {
-    // Silently error.
-    console.error(err)
     return ''
   }
 }
@@ -242,8 +240,6 @@ export const toBech32Hash = (address: string) => {
   try {
     return toHex(fromBech32(address).data)
   } catch (err) {
-    // Silently error.
-    console.error(err)
     return ''
   }
 }
