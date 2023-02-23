@@ -2,7 +2,7 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { ComponentProps, useCallback, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { navigatingToHrefAtom } from '@dao-dao/state'
 import {
@@ -11,7 +11,7 @@ import {
   ProfileProposalCard,
   SuspenseLoader,
   useOnDaoWebSocketMessage,
-  useWalletProfile,
+  walletProfileDataSelector,
 } from '@dao-dao/stateful'
 import { useActions, useOrderedActionsToMatch } from '@dao-dao/stateful/actions'
 import {
@@ -51,9 +51,12 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     },
   } = useProposalModuleAdapterContext()
 
-  const { profile: creatorProfile } = useWalletProfile({
-    walletAddress: proposalInfo.createdByAddress,
-  })
+  const { profile: creatorProfile, loading: creatorProfileLoading } =
+    useRecoilValue(
+      walletProfileDataSelector({
+        address: proposalInfo.createdByAddress,
+      })
+    )
 
   const { refreshProposal, refreshProposalAndAll, refreshing } =
     useProposalRefreshers()
@@ -182,11 +185,11 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         </SuspenseLoader>
       }
       creator={{
-        name: creatorProfile.loading
-          ? creatorProfile
+        name: creatorProfileLoading
+          ? { loading: true }
           : {
-              ...creatorProfile,
-              data: creatorProfile.data.name,
+              loading: false,
+              data: creatorProfile.name,
             },
         address: proposalInfo.createdByAddress,
       }}

@@ -166,7 +166,7 @@ export const TokenCard = (props: TokenCardInfo) => {
         {...props}
         ButtonLink={ButtonLink}
         lazyInfo={loadableToLoadingData(lazyInfoLoadable, {
-          usdcUnitPrice: undefined,
+          usdUnitPrice: undefined,
           stakingInfo: undefined,
         })}
         manageCw20Stake={

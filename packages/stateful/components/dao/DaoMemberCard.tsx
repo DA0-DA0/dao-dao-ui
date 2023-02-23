@@ -1,10 +1,16 @@
+import { useRecoilValue } from 'recoil'
+
 import { DaoMemberCard as StatelessDaoMemberCard } from '@dao-dao/stateless'
 import { DaoMemberCardProps } from '@dao-dao/types/stateless/DaoMemberCard'
 
-import { useWalletProfile } from '../../hooks'
+import { walletProfileDataSelector } from '../../recoil'
 
-export const DaoMemberCard = (props: Omit<DaoMemberCardProps, 'profile'>) => {
-  const { profile } = useWalletProfile({ walletAddress: props.address })
+export const DaoMemberCard = (
+  props: Omit<DaoMemberCardProps, 'profileData'>
+) => {
+  const profileData = useRecoilValue(
+    walletProfileDataSelector({ address: props.address })
+  )
 
-  return <StatelessDaoMemberCard {...props} profile={profile} />
+  return <StatelessDaoMemberCard {...props} profileData={profileData} />
 }

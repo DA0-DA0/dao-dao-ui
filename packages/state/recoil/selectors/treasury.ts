@@ -2,7 +2,7 @@ import { parseCoins } from '@cosmjs/proto-signing'
 import { IndexedTx } from '@cosmjs/stargate'
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { WithChainId } from '@dao-dao/types'
+import { AmountWithTimestamp, TokenType, WithChainId } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
@@ -12,7 +12,12 @@ import {
 import {
   blockHeightTimestampSafeSelector,
   cosmWasmClientForChainSelector,
+  nativeBalancesSelector,
+  nativeDelegatedBalanceSelector,
 } from './chain'
+import { DaoCoreV2Selectors } from './contracts'
+import { genericTokenSelector } from './token'
+import { wyndUsdPriceSelector } from './wynd'
 
 type TreasuryTransactionsParams = WithChainId<{
   address: string
@@ -167,5 +172,72 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
           }
         })
         .filter(Boolean) as TransformedTreasuryTransaction[]
+    },
+})
+
+export const daoTvlSelector = selectorFamily<
+  AmountWithTimestamp,
+  WithChainId<{
+    coreAddress: string
+    cw20GovernanceTokenAddress?: string
+  }>
+>({
+  key: 'daoTvl',
+  get:
+    ({ coreAddress, cw20GovernanceTokenAddress, chainId }) =>
+    async ({ get }) => {
+      const timestamp = new Date()
+
+      const nativeBalances = get(
+        nativeBalancesSelector({
+          address: coreAddress,
+          chainId,
+        })
+      )
+
+      const nativeDelegatedBalance = get(
+        nativeDelegatedBalanceSelector({
+          address: coreAddress,
+          chainId,
+        })
+      )
+      const nativeDelegatedToken = get(
+        genericTokenSelector({
+          type: TokenType.Native,
+          denomOrAddress: nativeDelegatedBalance.denom,
+          chainId,
+        })
+      )
+
+      const cw20TokenBalances = get(
+        DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
+          contractAddress: coreAddress,
+          chainId,
+          governanceTokenAddress: cw20GovernanceTokenAddress,
+        })
+      )
+
+      const balances = [
+        ...nativeBalances,
+        {
+          token: nativeDelegatedToken,
+          balance: nativeDelegatedBalance.amount,
+        },
+        ...cw20TokenBalances,
+      ]
+
+      const prices = balances.map(({ token, balance }) => {
+        const price = get(wyndUsdPriceSelector(token.denomOrAddress))?.amount
+        return price
+          ? convertMicroDenomToDenomWithDecimals(balance, token.decimals) *
+              price
+          : 0
+      })
+      const amount = prices.reduce((price, total) => price + total, 0)
+
+      return {
+        amount,
+        timestamp,
+      }
     },
 })

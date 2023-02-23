@@ -1,4 +1,3 @@
-import { Coin } from '@cosmjs/stargate'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -10,8 +9,9 @@ import {
   NumberInput,
   SelectInput,
   TokenAmountDisplay,
+  ValidatorPicker,
 } from '@dao-dao/stateless'
-import { TokenStake, Validator } from '@dao-dao/types'
+import { GenericTokenBalance, TokenStake, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   CHAIN_BECH32_PREFIX,
@@ -30,7 +30,6 @@ import {
 } from '@dao-dao/utils'
 
 import { ActionCard } from './ActionCard'
-import { ValidatorPicker } from './ValidatorPicker'
 
 export const useStakeActions = (): { type: StakeType; name: string }[] => {
   const { t } = useTranslation()
@@ -56,7 +55,7 @@ export const useStakeActions = (): { type: StakeType; name: string }[] => {
 }
 
 export interface StakeOptions {
-  nativeBalances: readonly Coin[]
+  nativeBalances: GenericTokenBalance[]
   stakes: TokenStake[]
   validators: Validator[]
   executed: boolean
@@ -124,7 +123,8 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
   const maxAmount =
     stakeType === StakeType.Delegate
       ? convertMicroDenomToDenomWithDecimals(
-          nativeBalances.find((coin) => coin.denom === denom)?.amount ?? 0,
+          nativeBalances.find(({ token }) => token.denomOrAddress === denom)
+            ?.balance ?? 0,
           denomDecimals
         )
       : sourceValidatorStaked
@@ -309,9 +309,9 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
             register={register}
           >
             {nativeBalances.length !== 0 ? (
-              nativeBalances.map(({ denom }) => (
-                <option key={denom} value={denom}>
-                  ${nativeTokenLabel(denom)}
+              nativeBalances.map(({ token: { denomOrAddress, symbol } }) => (
+                <option key={denomOrAddress} value={denomOrAddress}>
+                  ${symbol}
                 </option>
               ))
             ) : (

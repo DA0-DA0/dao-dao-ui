@@ -1,4 +1,3 @@
-import { Coin } from '@cosmjs/stargate'
 import { Check, Close } from '@mui/icons-material'
 import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
@@ -8,16 +7,22 @@ import {
   AddressInput,
   Button,
   CodeMirrorInput,
+  FormSwitchCard,
   InputErrorMessage,
   InputLabel,
+  NumberInput,
+  SelectInput,
   SwordsEmoji,
 } from '@dao-dao/stateless'
+import { GenericTokenBalance, TokenType } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DENOM,
+  convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
   validateContractAddress,
   validateCosmosMsg,
+  validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -27,8 +32,16 @@ import {
   NativeCoinSelectorProps,
 } from './NativeCoinSelector'
 
+export interface ExecuteData {
+  address: string
+  message: string
+  funds: { denom: string; amount: number }[]
+  // Whether or not we're executing via a CW20 send.
+  cw20: boolean
+}
+
 export interface ExecuteOptions {
-  nativeBalances: readonly Coin[]
+  balances: GenericTokenBalance[]
   // Only present once executed.
   instantiatedAddress?: string
 }
@@ -36,7 +49,7 @@ export interface ExecuteOptions {
 export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
   const { t } = useTranslation()
   const { fieldNamePrefix, onRemove, errors, isCreating } = props
-  const { register, control } = useFormContext()
+  const { register, control, watch, setValue } = useFormContext()
   const {
     fields: coins,
     append: appendCoin,
@@ -45,6 +58,17 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
     control,
     name: fieldNamePrefix + 'funds',
   })
+
+  const cw20Tokens = props.options.balances.filter(
+    ({ token }) => token.type === TokenType.Cw20
+  )
+  const cw20 = watch(fieldNamePrefix + 'cw20') as boolean
+  const firstDenom = (
+    watch(fieldNamePrefix + 'funds.0') as ExecuteData['funds'][0] | undefined
+  )?.denom
+  const selectedCw20 = props.options.balances.find(
+    ({ token }) => token.denomOrAddress === firstDenom
+  )
 
   return (
     <ActionCard
@@ -108,35 +132,103 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
         )}
       </div>
 
-      <div className="flex flex-col items-stretch gap-1">
+      <div className="flex flex-col gap-1">
         <InputLabel name={t('form.funds')} />
-        <div className="flex flex-col items-stretch gap-2">
-          {coins.map(({ id }, index) => (
-            <NativeCoinSelector
-              key={id}
-              {...({
-                ...props,
-                onRemove: props.isCreating
-                  ? () => removeCoin(index)
-                  : props.onRemove,
-              } as NativeCoinSelectorProps)}
-              errors={errors?.funds?.[index]}
-              fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
-            />
-          ))}
-          {!isCreating && coins.length === 0 && (
-            <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
-              {t('info.none')}
-            </p>
-          )}
+
+        <div className="flex flex-row items-end justify-between gap-6">
+          <div className="flex flex-col gap-1">
+            {cw20 ? (
+              <div className="flex grow flex-row items-stretch gap-2">
+                <NumberInput
+                  containerClassName="grow"
+                  disabled={!isCreating}
+                  error={errors?.funds?.[0]?.amount}
+                  fieldName={fieldNamePrefix + 'funds.0.amount'}
+                  max={convertMicroDenomToDenomWithDecimals(
+                    selectedCw20?.balance ?? 0,
+                    selectedCw20?.token.decimals ?? 0
+                  )}
+                  min={convertMicroDenomToDenomWithDecimals(
+                    1,
+                    selectedCw20?.token.decimals ?? 0
+                  )}
+                  register={register}
+                  setValue={setValue}
+                  sizing="auto"
+                  step={convertMicroDenomToDenomWithDecimals(
+                    1,
+                    selectedCw20?.token.decimals ?? 0
+                  )}
+                  validation={[validateRequired, validatePositive]}
+                  watch={watch}
+                />
+
+                <SelectInput
+                  defaultValue={cw20Tokens[0]?.token.denomOrAddress}
+                  disabled={!isCreating}
+                  error={errors?.funds?.[0]?.denom}
+                  fieldName={fieldNamePrefix + 'funds.0.denom'}
+                  register={register}
+                  style={{ maxWidth: '8.2rem' }}
+                >
+                  {cw20Tokens.map(({ token: { denomOrAddress, symbol } }) => (
+                    <option key={denomOrAddress} value={denomOrAddress}>
+                      ${symbol}
+                    </option>
+                  ))}
+                </SelectInput>
+              </div>
+            ) : (
+              <div className="flex flex-col items-stretch gap-2">
+                {coins.map(({ id }, index) => (
+                  <NativeCoinSelector
+                    key={id}
+                    {...({
+                      ...props,
+                      options: {
+                        nativeBalances: props.options.balances.filter(
+                          ({ token }) => token.type === TokenType.Native
+                        ),
+                      },
+                      onRemove: props.isCreating
+                        ? () => removeCoin(index)
+                        : undefined,
+                    } as NativeCoinSelectorProps)}
+                    errors={errors?.funds?.[index]}
+                    fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+                  />
+                ))}
+                {!isCreating && coins.length === 0 && (
+                  <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
+                    {t('info.none')}
+                  </p>
+                )}
+                {isCreating && (
+                  <Button
+                    className="self-start"
+                    onClick={() =>
+                      appendCoin({ amount: 1, denom: NATIVE_DENOM })
+                    }
+                    variant="secondary"
+                  >
+                    {t('button.addPayment')}
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+
           {isCreating && (
-            <Button
-              className="self-start"
-              onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
-              variant="secondary"
-            >
-              {t('button.addPayment')}
-            </Button>
+            <FormSwitchCard
+              fieldName={fieldNamePrefix + 'cw20'}
+              label={t('form.useCw20')}
+              onToggle={() => setValue(fieldNamePrefix + 'funds', [])}
+              readOnly={!isCreating}
+              setValue={setValue}
+              sizing="sm"
+              tooltip={t('form.useCw20ExecuteTooltip')}
+              value={watch(fieldNamePrefix + 'cw20')}
+            />
           )}
         </div>
       </div>

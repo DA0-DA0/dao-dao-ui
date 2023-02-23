@@ -278,7 +278,7 @@ export const TokenCard = ({
               />
 
               {!isJunoIbcUsdc(token.denomOrAddress) &&
-                (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                   <div className="flex flex-row items-center gap-1">
                     <TokenAmountDisplay
                       amount={
@@ -286,12 +286,12 @@ export const TokenCard = ({
                         // until it is loaded so this is accurate.
                         waitingForStakingInfo || lazyInfo.loading
                           ? { loading: true }
-                          : totalBalance * lazyInfo.data.usdcUnitPrice!.amount
+                          : totalBalance * lazyInfo.data.usdUnitPrice!.amount
                       }
                       dateFetched={
                         lazyInfo.loading
                           ? undefined
-                          : lazyInfo.data.usdcUnitPrice!.timestamp
+                          : lazyInfo.data.usdUnitPrice!.timestamp
                       }
                       estimatedUsdValue
                     />
@@ -319,19 +319,19 @@ export const TokenCard = ({
                 />
 
                 {!isJunoIbcUsdc(token.denomOrAddress) &&
-                  (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
                         amount={
                           lazyInfo.loading
                             ? { loading: true }
                             : unstakedBalance *
-                              lazyInfo.data.usdcUnitPrice!.amount
+                              lazyInfo.data.usdUnitPrice!.amount
                         }
                         dateFetched={
                           lazyInfo.loading
                             ? undefined
-                            : lazyInfo.data.usdcUnitPrice!.timestamp
+                            : lazyInfo.data.usdUnitPrice!.timestamp
                         }
                         estimatedUsdValue
                       />

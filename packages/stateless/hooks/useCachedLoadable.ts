@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { RecoilValue, constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { CachedLoadable } from '@dao-dao/types'
@@ -65,23 +65,41 @@ export const useCachedLoadable = <T extends unknown>(
     }
   }, [loadable, loadableLoadingOrNotReady, recoilValue])
 
-  return initialLoading ||
-    !recoilValue ||
-    // Keep loading until contents has first value set. However if an error is
-    // present, override and return the error.
-    (loadable.state !== 'hasError' && !contentsHasValue)
-    ? {
-        state: 'loading',
-        contents: undefined,
-      }
-    : loadable.state === 'hasError'
-    ? {
-        state: 'hasError',
-        contents: loadable.contents,
-      }
-    : {
-        state: 'hasValue',
-        contents: contents as T,
-        updating,
-      }
+  // Memoize the loadable so it can be used in `useEffect` dependencies to
+  // prevent causing infinite loops. If this is not memoized, it will change on
+  // every render, which may cause infinite loops if the `useEffect` sets some
+  // state that causes additional re-renders.
+  const cachedLoadable = useMemo(
+    (): CachedLoadable<T> =>
+      initialLoading ||
+      !recoilValue ||
+      // Keep loading until contents has first value set. However if an error is
+      // present, override and return the error.
+      (loadable.state !== 'hasError' && !contentsHasValue)
+        ? {
+            state: 'loading',
+            contents: undefined,
+          }
+        : loadable.state === 'hasError'
+        ? {
+            state: 'hasError',
+            contents: loadable.contents,
+          }
+        : {
+            state: 'hasValue',
+            contents: contents as T,
+            updating,
+          },
+    [
+      contents,
+      contentsHasValue,
+      initialLoading,
+      loadable.contents,
+      loadable.state,
+      recoilValue,
+      updating,
+    ]
+  )
+
+  return cachedLoadable
 }

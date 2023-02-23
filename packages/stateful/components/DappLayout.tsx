@@ -77,7 +77,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { connect, connected, error, status } = useWalletManager()
   const {
     walletAddress,
-    walletProfile,
+    walletProfileData,
     refreshBalances: refreshWalletBalances,
   } = useWalletInfo()
   useEffect(() => {
@@ -201,8 +201,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         wallet: <SidebarWallet />,
         WalletFiatRampModal: connected ? WalletFiatRampModal : undefined,
       }}
-      walletProfile={
-        status === WalletConnectionStatus.Connected ? walletProfile : undefined
+      walletProfileData={
+        status === WalletConnectionStatus.Connected
+          ? walletProfileData
+          : undefined
       }
     >
       {children}

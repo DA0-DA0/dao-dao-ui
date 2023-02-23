@@ -52,7 +52,6 @@ export const makeCantVoteOnProposalProps = (
   loadingStakedTokens: { loading: false, data: 0 },
   loadingVotingPower: { loading: false, data: 0 },
   cantVoteOnProposal: true,
-  junoswapHref: 'https://junoswap.com',
 })
 
 export const Default = Template.bind({})
@@ -77,7 +76,6 @@ NotMember.args = {
   ...makeProps(),
   loadingStakedTokens: { loading: false, data: 0 },
   loadingVotingPower: { loading: false, data: 0 },
-  junoswapHref: 'https://junoswap.com',
 }
 NotMember.parameters = {
   design: {

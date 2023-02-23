@@ -23,14 +23,16 @@ export const makeProps = (): DaoMemberCardProps => ({
     loading: false,
     data: Math.floor(Math.random() * (30 * 1e2) + 1e2) / 1e2,
   },
-  profile: {
+  profileData: {
     loading: false,
-    data: {
+    address: 'juno1abczhsdyechxcjz90y',
+    profile: {
       name: 'Modern-Edamame',
       imageUrl: '/noah.jpg',
       nft: null,
       nonce: 0,
     },
+    backupImageUrl: '/noah.jpg',
   },
 })
 
@@ -47,5 +49,15 @@ export const Loading = Template.bind({})
 Loading.args = {
   ...Default.args,
   votingPowerPercent: { loading: true },
-  profile: { loading: true },
+  profileData: {
+    loading: true,
+    address: Default.args.address!,
+    profile: {
+      name: '',
+      imageUrl: '',
+      nft: null,
+      nonce: 0,
+    },
+    backupImageUrl: '/noah.jpg',
+  },
 }

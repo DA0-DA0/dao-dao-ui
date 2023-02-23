@@ -13,6 +13,7 @@ import { Button } from '../buttons/Button'
 import { NumberInput, PercentButton, SegmentedControls } from '../inputs'
 import { Modal } from '../modals/Modal'
 import { Tooltip } from '../tooltip/Tooltip'
+import { ValidatorPicker } from '../ValidatorPicker'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 
 export * from '@dao-dao/types/stateless/StakingModal'
@@ -29,6 +30,7 @@ export const StakingModal = ({
   // macrodenom
   loadingUnstakableTokens,
   unstakingDuration,
+  tokenDenom,
   tokenSymbol,
   tokenDecimals,
   // macrodenom
@@ -36,16 +38,38 @@ export const StakingModal = ({
   loading,
   error,
   onAction,
+  validatorPicker,
+  visible = true,
 }: StakingModalProps) => {
   const { t } = useTranslation()
 
   const [mode, setMode] = useState(initialMode)
+  const [validator, setValidator] = useState<string>()
+
+  // If choosing a validator, unstakable amount depends on chosen validator.
+  if (validatorPicker) {
+    loadingUnstakableTokens = {
+      loading: false,
+      data:
+        validatorPicker.stakes?.find(
+          (stake) => stake.validator.address === validator
+        )?.amount ?? 0,
+    }
+  }
+  // If not choosing a validator and no unstakable amount passed, assume 0.
+  else if (!loadingUnstakableTokens) {
+    loadingUnstakableTokens = {
+      loading: false,
+      data: 0,
+    }
+  }
+
   const maxTx =
     mode === StakingMode.Stake
       ? loadingStakableTokens.loading
         ? undefined
         : loadingStakableTokens.data
-      : loadingUnstakableTokens.loading
+      : !loadingUnstakableTokens || loadingUnstakableTokens.loading
       ? undefined
       : loadingUnstakableTokens.data
 
@@ -75,7 +99,8 @@ export const StakingModal = ({
             onClick={() =>
               onAction(
                 mode,
-                mode === StakingMode.Claim ? claimableTokens : amount
+                mode === StakingMode.Claim ? claimableTokens : amount,
+                validator
               )
             }
           >
@@ -90,26 +115,49 @@ export const StakingModal = ({
             : t('title.manageStaking'),
       }}
       headerContent={
-        mode === StakingMode.Claim ? undefined : (
-          <SegmentedControls
-            className="mt-5"
-            onSelect={setMode}
-            selected={mode}
-            tabs={[
-              {
-                label: t(`button.stakingMode.stake`),
-                value: StakingMode.Stake,
-              },
-              {
-                label: t(`button.stakingMode.unstake`),
-                value: StakingMode.Unstake,
-              },
-            ]}
-          />
-        )
+        mode !== StakingMode.Claim || validatorPicker ? (
+          <div className="mt-5 flex w-full flex-col gap-2">
+            {mode !== StakingMode.Claim && (
+              <SegmentedControls
+                onSelect={setMode}
+                selected={mode}
+                tabs={[
+                  {
+                    label: t(`button.stakingMode.stake`),
+                    value: StakingMode.Stake,
+                  },
+                  {
+                    label: t(`button.stakingMode.unstake`),
+                    value: StakingMode.Unstake,
+                  },
+                ]}
+              />
+            )}
+
+            {validatorPicker && (
+              <ValidatorPicker
+                {...validatorPicker}
+                nativeDecimals={tokenDecimals}
+                nativeDenom={tokenDenom}
+                onSelect={({ address }) => setValidator(address)}
+                selectedAddress={validator}
+                validators={
+                  mode === StakingMode.Stake
+                    ? validatorPicker.validators
+                    : validatorPicker.validators.filter((v) =>
+                        validatorPicker.stakes?.some(
+                          (s) =>
+                            s.validator.address === v.address && s.amount > 0
+                        )
+                      )
+                }
+              />
+            )}
+          </div>
+        ) : undefined
       }
       onClose={onClose}
-      visible
+      visible={visible}
     >
       {mode === StakingMode.Stake && (
         <StakeUnstakeModesBody
@@ -205,11 +253,11 @@ const StakeUnstakeModesBody = ({
             <PercentButton
               key={percent}
               amount={amount}
+              decimals={tokenDecimals}
               label={`${percent}%`}
               loadingMax={loadingMax}
               percent={percent / 100}
               setAmount={setAmount}
-              tokenDecimals={tokenDecimals}
             />
           ))}
         </div>
@@ -221,6 +269,7 @@ const StakeUnstakeModesBody = ({
               absoluteOffset={-proposalDeposit}
               amount={amount}
               className="mt-2"
+              decimals={tokenDecimals}
               label={t('button.stakeAllButProposalDeposit', {
                 proposalDeposit: proposalDeposit.toLocaleString(undefined, {
                   maximumFractionDigits: tokenDecimals,
@@ -230,7 +279,6 @@ const StakeUnstakeModesBody = ({
               loadingMax={loadingMax}
               percent={1}
               setAmount={setAmount}
-              tokenDecimals={tokenDecimals}
             />
           )}
       </div>

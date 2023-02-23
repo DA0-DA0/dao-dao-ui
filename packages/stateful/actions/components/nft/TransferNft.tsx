@@ -74,7 +74,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
 
             <AddressInput
               disabled={!isCreating}
-              error={errors?.to}
+              error={errors?.recipient}
               fieldName={fieldNamePrefix + 'recipient'}
               register={register}
               validation={[

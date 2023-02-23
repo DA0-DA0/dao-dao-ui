@@ -26,9 +26,12 @@ export interface FilterableItem {
   description?: ReactNode
   rightNode?: ReactNode
   selected?: boolean
+  contentContainerClassName?: string
 }
 
-export interface FilterableItemPopupProps<T extends FilterableItem> {
+export interface FilterableItemPopupProps<
+  T extends FilterableItem = FilterableItem
+> {
   Trigger: ComponentType<{ onClick: () => void; open: boolean }>
   items: T[]
   filterableItemKeys: Fuse.FuseOptionKey<T>[]
@@ -85,8 +88,8 @@ export const FilterableItemPopup = <T extends FilterableItem>({
   }, [selectedIndex])
 
   const onSelectItem = useCallback(
-    (item: T, index: number) => {
-      onSelect(item, index)
+    (item: T, originalIndex: number) => {
+      onSelect(item, originalIndex)
       // Close.
       if (closeOnSelect) {
         setOpen(false)
@@ -124,7 +127,8 @@ export const FilterableItemPopup = <T extends FilterableItem>({
         case 'Enter':
           event.preventDefault()
           if (selectedIndex >= 0 && selectedIndex < filteredData.length) {
-            onSelectItem(filteredData[selectedIndex], selectedIndex)
+            const { item, originalIndex } = filteredData[selectedIndex]
+            onSelectItem(item, originalIndex)
           }
           break
       }
@@ -198,7 +202,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
           ref={itemsListRef}
         >
           {filteredData.length > 0 ? (
-            filteredData.map((item, index) => (
+            filteredData.map(({ item, originalIndex }, index) => (
               <Button
                 key={item.key}
                 className={clsx(
@@ -206,8 +210,11 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                   selectedIndex === index &&
                     'bg-background-interactive-selected'
                 )}
-                contentContainerClassName="gap-4"
-                onClick={() => onSelectItem(item, index)}
+                contentContainerClassName={clsx(
+                  'gap-4',
+                  item.contentContainerClassName
+                )}
+                onClick={() => onSelectItem(item, originalIndex)}
                 variant="ghost"
               >
                 {item.Icon && (

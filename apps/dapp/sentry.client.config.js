@@ -30,5 +30,10 @@ Sentry.init({
     'TypeError: The request timed out.',
     'TypeError: cancelled',
     'TypeError: Cancelled',
+    'hydration',
+    'hydrating',
+    'The user aborted a request.',
+    'Cancel rendering route',
+    'Transaction rejected',
   ],
 })

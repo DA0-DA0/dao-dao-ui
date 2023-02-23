@@ -8,7 +8,7 @@ import { useRecoilValue, useSetRecoilState, waitForAll } from 'recoil'
 import {
   Cw20BaseSelectors,
   cosmWasmClientForChainSelector,
-  usdcPerMacroTokenSelector,
+  wyndUsdPriceSelector,
 } from '@dao-dao/state/recoil'
 import {
   Loader,
@@ -16,7 +16,6 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { AmountWithTimestampAndDenom } from '@dao-dao/types'
-import { nativeTokenDecimals } from '@dao-dao/utils'
 
 import {
   AddressInput,
@@ -103,23 +102,8 @@ export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
       ? waitForAll(
           statusLoadable.contents.survey.attributes.flatMap(
             ({ nativeTokens, cw20Tokens }) => [
-              ...nativeTokens.map(({ denom }) => {
-                const decimals = nativeTokenDecimals(denom)
-                if (decimals === undefined) {
-                  throw new Error(`Unknown denom: ${denom}`)
-                }
-                return usdcPerMacroTokenSelector({
-                  denom,
-                  decimals,
-                })
-              }),
-              ...cw20Tokens.map(({ address }, cw20TokenIndex) =>
-                usdcPerMacroTokenSelector({
-                  denom: address,
-                  decimals:
-                    loadingCw20TokenInfos.contents[cw20TokenIndex].decimals,
-                })
-              ),
+              ...nativeTokens.map(({ denom }) => wyndUsdPriceSelector(denom)),
+              ...cw20Tokens.map(({ address }) => wyndUsdPriceSelector(address)),
             ]
           )
         )

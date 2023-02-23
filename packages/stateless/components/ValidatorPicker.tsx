@@ -11,31 +11,18 @@ import {
   TokenAmountDisplay,
   Tooltip,
 } from '@dao-dao/stateless'
-import { TokenStake, Validator } from '@dao-dao/types'
+import { ValidatorPickerProps } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   nativeTokenLabel,
 } from '@dao-dao/utils'
 
-export interface ValidatorPickerProps {
-  validators: Validator[]
-  stakes?: TokenStake[]
-  selectedAddress?: string
-  readOnly: boolean
-  onSelect: (validator: Validator) => void
-  // Denom and decimals that correspond with validator.tokens (likely the native
-  // token on the chain).
-  nativeDenom: string
-  nativeDecimals: number
-  displayClassName?: string
-}
-
 export const ValidatorPicker = ({
   validators,
   stakes,
   selectedAddress,
-  readOnly,
+  readOnly = false,
   onSelect,
   nativeDenom,
   nativeDecimals,
@@ -84,7 +71,7 @@ export const ValidatorPicker = ({
       Trigger={({ open, ...props }) => (
         <div className={clsx('flex', displayClassName)}>
           {selectedAddress ? (
-            <InputThemedText className="flex min-w-0 grow flex-row items-center justify-between gap-2">
+            <InputThemedText className="min-w-0 grow">
               <CopyToClipboard
                 label={selectedValidator?.moniker}
                 tooltip={t('button.clickToCopyAddress')}

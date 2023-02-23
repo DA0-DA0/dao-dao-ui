@@ -263,10 +263,7 @@ export const RatingForm = ({
                       'rounded-bl-md'
                   )}
                 >
-                  <EntityDisplay
-                    address={contribution.contributor.address}
-                    walletHexPublicKey={contribution.contributor.publicKey}
-                  />
+                  <EntityDisplay address={contribution.contributor.address} />
 
                   <MarkdownRenderer
                     className="styled-scrollbar max-h-40 overflow-y-auto py-2 pr-2"

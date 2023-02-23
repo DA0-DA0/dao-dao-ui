@@ -1,4 +1,3 @@
-import { Coin } from '@cosmjs/stargate'
 import { Check, Close } from '@mui/icons-material'
 import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
@@ -15,11 +14,12 @@ import {
   NumberInput,
   TextInput,
 } from '@dao-dao/stateless'
+import { GenericTokenBalance } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DENOM,
   makeWasmMessage,
-  validateContractAddress,
+  validateAddress,
   validateCosmosMsg,
   validatePositive,
   validateRequired,
@@ -32,7 +32,7 @@ import {
 } from './NativeCoinSelector'
 
 export interface InstantiateOptions {
-  nativeBalances: readonly Coin[]
+  nativeBalances: GenericTokenBalance[]
   // Only present once executed.
   instantiatedAddress?: string
 }
@@ -189,7 +189,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
           type="contract"
-          validation={[(v: string) => validateContractAddress(v, false)]}
+          validation={[(v: string) => validateAddress(v, false)]}
         />
         <InputErrorMessage error={errors?.admin} />
       </div>

@@ -13,32 +13,47 @@ import {
 } from '@dao-dao/utils'
 
 import { refreshWalletProfileAtom } from '../atoms/refresh'
+import { walletHexPublicKeySelector } from './chain'
 
 export const keplrProfileImageSelector = selectorFamily<
   string | undefined,
-  string
+  WithChainId<{ address: string }>
 >({
   key: 'keplrProfileImage',
-  get: (publicKey) => async () => {
-    try {
-      const response = await fetch(
-        `https://api.kube-uw2.keplr-prod.manythings.xyz/v1/user/${publicKey}/profile`
-      )
-      if (!response.ok) {
-        console.error(await response.text())
-        return undefined
+  get:
+    ({ address, chainId }) =>
+    async ({ get }) => {
+      const publicKey = address
+        ? get(
+            walletHexPublicKeySelector({
+              walletAddress: address,
+              chainId,
+            })
+          )
+        : undefined
+
+      if (!publicKey) {
+        return
       }
 
-      const { profile }: KeplrWalletProfile = await response.json()
-      return 'imageUrl' in profile
-        ? transformIpfsUrlToHttpsIfNecessary(profile.imageUrl)
-        : undefined
-    } catch (err) {
-      console.error(err)
-      // Fail silently.
-      return undefined
-    }
-  },
+      try {
+        const response = await fetch(
+          `https://api.kube-uw2.keplr-prod.manythings.xyz/v1/user/${publicKey}/profile`
+        )
+        if (!response.ok) {
+          console.error(await response.text())
+          return
+        }
+
+        const { profile }: KeplrWalletProfile = await response.json()
+        if ('imageUrl' in profile) {
+          return transformIpfsUrlToHttpsIfNecessary(profile.imageUrl)
+        }
+      } catch (err) {
+        console.error(err)
+        // Fail silently.
+      }
+    },
 })
 
 export const searchProfilesByNamePrefixSelector = selectorFamily<
@@ -74,7 +89,7 @@ export const searchProfilesByNamePrefixSelector = selectorFamily<
       // Add refresher dependencies.
       if (hits.length > 0) {
         get(
-          waitForAll(hits.map((hit) => refreshWalletProfileAtom(hit.publicKey)))
+          waitForAll(hits.map((hit) => refreshWalletProfileAtom(hit.address)))
         )
       }
 
