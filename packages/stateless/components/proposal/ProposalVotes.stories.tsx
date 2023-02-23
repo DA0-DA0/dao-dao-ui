@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { VoteDisplay } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ProposalVotes/VoteDisplay'
 import { EntityType } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { getFallbackImage } from '@dao-dao/utils'
+import { getFallbackImage, toBech32Hash } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../EntityDisplay'
 import { ProposalVotes, ProposalVotesProps } from './ProposalVotes'
@@ -43,7 +43,7 @@ export const makeProps = (): ProposalVotesProps<Vote> => ({
           type: EntityType.Wallet,
           address: props.address,
           name: null,
-          imageUrl: getFallbackImage(props.address),
+          imageUrl: getFallbackImage(toBech32Hash(props.address)),
         },
       }}
       {...props}

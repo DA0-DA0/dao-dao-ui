@@ -11,7 +11,7 @@ import { useWalletInfo } from '../../hooks'
 export const ProfileHomeCard = () => {
   const {
     walletAddress = '',
-    walletProfile,
+    walletProfileData,
     walletBalance,
     walletStakedBalance,
     dateBalancesFetched,
@@ -64,7 +64,7 @@ export const ProfileHomeCard = () => {
       tokenDecimals={NATIVE_DECIMALS}
       tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
       updateProfileName={updateProfileName}
-      walletProfile={walletProfile}
+      walletProfileData={walletProfileData}
     />
   )
 }

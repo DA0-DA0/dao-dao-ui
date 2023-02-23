@@ -1,5 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import {
+  WALLET_PROFILE_DATA,
+  WALLET_PROFILE_DATA_LOADING,
+} from '@dao-dao/storybook'
+
 import { MembershipPill } from './MembershipPill'
 import { ProfileCardWrapper } from './ProfileCardWrapper'
 
@@ -17,15 +22,7 @@ const Template: ComponentStory<typeof ProfileCardWrapper> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  walletProfile: {
-    loading: false,
-    data: {
-      nonce: 0,
-      imageUrl: '/noah.jpg',
-      name: 'wallet_name',
-      nft: null,
-    },
-  },
+  walletProfileData: WALLET_PROFILE_DATA,
   underHeaderComponent: <MembershipPill daoName="DAO" isMember={false} />,
   children: <p>Content!</p>,
 }
@@ -39,23 +36,12 @@ Default.parameters = {
 export const DefaultLoading = Template.bind({})
 DefaultLoading.args = {
   ...Default.args,
-  walletProfile: {
-    loading: true,
-  },
+  walletProfileData: WALLET_PROFILE_DATA_LOADING,
 }
 
 export const Compact = Template.bind({})
 Compact.args = {
-  walletProfile: {
-    loading: false,
-    data: {
-      nonce: 0,
-      imageUrl:
-        'https://ipfs.stargaze.zone/ipfs/bafybeibnuzc52kmcu4c5pxxwkr3vyp34gsrdomlvw3e66w4ltidr2v4oxi',
-      name: 'wallet_name',
-      nft: null,
-    },
-  },
+  walletProfileData: WALLET_PROFILE_DATA,
   compact: true,
   children: <p>Content!</p>,
 }
@@ -69,7 +55,5 @@ Compact.parameters = {
 export const CompactLoading = Template.bind({})
 CompactLoading.args = {
   ...Compact.args,
-  walletProfile: {
-    loading: true,
-  },
+  walletProfileData: WALLET_PROFILE_DATA_LOADING,
 }

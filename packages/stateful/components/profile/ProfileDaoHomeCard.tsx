@@ -23,7 +23,7 @@ import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 // This is the card shown when viewing a DAO's home page.
 export const ProfileDaoHomeCard = () => {
   const { connected } = useWallet()
-  const { walletProfile, updateProfileName } = useWalletInfo()
+  const { walletProfileData, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppContext()
 
   const daoInfo = useDaoInfoContext()
@@ -88,7 +88,7 @@ export const ProfileDaoHomeCard = () => {
         }
         showUpdateProfileNft={updateProfileNft.toggle}
         updateProfileName={updateProfileName}
-        walletProfile={walletProfile}
+        walletProfileData={walletProfileData}
       />
     ) : (
       <ProfileNotMemberCard
@@ -106,7 +106,7 @@ export const ProfileDaoHomeCard = () => {
         }
         showUpdateProfileNft={updateProfileNft.toggle}
         updateProfileName={updateProfileName}
-        walletProfile={walletProfile}
+        walletProfileData={walletProfileData}
       />
     )
   ) : (

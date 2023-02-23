@@ -95,15 +95,15 @@ export const InnerPfpkNftSelectionModal = ({
   )
 
   const {
-    walletProfile,
+    walletProfileData,
     updateProfileNft,
     updatingProfile,
-    backupProfileImage,
+    backupImageUrl,
   } = useWalletInfo()
   // Initialize to selected NFT.
   const [selected, setSelected] = useState<string | undefined>(
-    !walletProfile.loading && walletProfile.data.nft
-      ? `${walletProfile.data.nft.collectionAddress}:${walletProfile.data.nft.tokenId}`
+    !walletProfileData.loading && walletProfileData.profile.nft
+      ? `${walletProfileData.profile.nft.collectionAddress}:${walletProfileData.profile.nft.tokenId}`
       : undefined
   )
   const selectedNft =
@@ -112,20 +112,20 @@ export const InnerPfpkNftSelectionModal = ({
       : undefined
   // If nonce changes, set selected NFT.
   const [lastNonce, setLastNonce] = useState(
-    walletProfile.loading ? 0 : walletProfile.data.nonce
+    walletProfileData.loading ? 0 : walletProfileData.profile.nonce
   )
   useEffect(() => {
     if (
-      !walletProfile.loading &&
-      walletProfile.data.nft &&
-      walletProfile.data.nonce > lastNonce
+      !walletProfileData.loading &&
+      walletProfileData.profile.nft &&
+      walletProfileData.profile.nonce > lastNonce
     ) {
       setSelected(
-        `${walletProfile.data.nft.collectionAddress}:${walletProfile.data.nft.tokenId}`
+        `${walletProfileData.profile.nft.collectionAddress}:${walletProfileData.profile.nft.tokenId}`
       )
-      setLastNonce(walletProfile.data.nonce)
+      setLastNonce(walletProfileData.profile.nonce)
     }
-  }, [walletProfile, lastNonce])
+  }, [lastNonce, walletProfileData])
 
   const onAction = useCallback(async () => {
     if (nfts.loading) {
@@ -190,7 +190,7 @@ export const InnerPfpkNftSelectionModal = ({
             !nfts.loading
               ? selectedNft
                 ? selectedNft.imageUrl
-                : backupProfileImage
+                : backupImageUrl
               : undefined
           }
           loading={nfts.loading}

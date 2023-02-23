@@ -1,3 +1,5 @@
+import { constSelector, useRecoilValue } from 'recoil'
+
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { Entity, EntityType, LoadingData, WithChainId } from '@dao-dao/types'
@@ -5,28 +7,22 @@ import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
   isValidContractAddress,
+  isValidWalletAddress,
 } from '@dao-dao/utils'
 
-import { useWalletProfile } from './useWalletProfile'
+import { walletProfileDataSelector } from '../recoil'
 
 export type UseEntityOptions = WithChainId<{
   address: string
-  // Optionally allow specifying wallet public key if known, since it's faster.
-  // With just an address, we have to query the chain for the public key.
-  walletHexPublicKey?: string
 }>
 
 export const useEntity = ({
   address,
-  walletHexPublicKey,
   chainId,
 }: UseEntityOptions): LoadingData<Entity> => {
   // Try to load config assuming the address is a DAO.
   const daoConfig = useCachedLoadable(
-    // If we have a wallet public key, we can skip the contract query.
-    !walletHexPublicKey &&
-      address &&
-      isValidContractAddress(address, CHAIN_BECH32_PREFIX)
+    address && isValidContractAddress(address, CHAIN_BECH32_PREFIX)
       ? DaoCoreV2Selectors.configSelector({
           contractAddress: address,
           chainId,
@@ -35,14 +31,17 @@ export const useEntity = ({
       : undefined
   )
 
-  // Try loading wallet profile assuming the address is a wallet.
-  const walletProfile = useWalletProfile({
-    walletAddress: address,
-    // hexPublicKey is faster and only applies to wallets.
-    hexPublicKey: walletHexPublicKey,
-  })
+  const walletProfileData = useRecoilValue(
+    address && isValidWalletAddress(address, CHAIN_BECH32_PREFIX)
+      ? walletProfileDataSelector({
+          address,
+          chainId,
+        })
+      : constSelector(undefined)
+  )
 
-  return daoConfig.state !== 'hasValue' && walletProfile.profile.loading
+  return daoConfig.state !== 'hasValue' &&
+    (!walletProfileData || walletProfileData.loading)
     ? { loading: true }
     : {
         loading: false,
@@ -53,14 +52,14 @@ export const useEntity = ({
           name:
             daoConfig.state === 'hasValue'
               ? daoConfig.contents.name
-              : !walletProfile.profile.loading
-              ? walletProfile.profile.data.name
+              : walletProfileData && !walletProfileData.loading
+              ? walletProfileData.profile.name
               : null,
           imageUrl:
             (daoConfig.state === 'hasValue'
               ? daoConfig.contents.image_url
-              : !walletProfile.profile.loading
-              ? walletProfile.profile.data.imageUrl
+              : walletProfileData && !walletProfileData.loading
+              ? walletProfileData.profile.imageUrl
               : undefined) || getFallbackImage(address),
         },
       }

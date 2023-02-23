@@ -20,7 +20,7 @@ import {
   Validator as RpcValidator,
 } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import Long from 'long'
-import { atom, selector, selectorFamily, waitForAll } from 'recoil'
+import { selector, selectorFamily, waitForAll } from 'recoil'
 
 import {
   AmountWithTimestamp,
@@ -587,14 +587,6 @@ export const transactionSelector = selectorFamily<
     },
 })
 
-// See usage in stateful `AddressInput` component.
-export const walletHexPublicKeyOverridesAtom = atom<
-  Record<string, string | undefined>
->({
-  key: 'walletHexPublicKeyOverrides',
-  default: {},
-})
-
 export const walletHexPublicKeySelector = selectorFamily<
   string | undefined,
   WithChainId<{ walletAddress: string }>
@@ -603,11 +595,6 @@ export const walletHexPublicKeySelector = selectorFamily<
   get:
     ({ walletAddress, chainId }) =>
     async ({ get }) => {
-      const override = get(walletHexPublicKeyOverridesAtom)[walletAddress]
-      if (override) {
-        return override
-      }
-
       const client = get(cosmWasmClientForChainSelector(chainId))
       const account = await client.getAccount(walletAddress)
       if (!account?.pubkey?.value) {

@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProfileCardMemberInfoTokens } from '@dao-dao/stateful/voting-module-adapter/components/ProfileCardMemberInfoTokens'
 import { makeProps as makeProfileCardMemberInfoTokensProps } from '@dao-dao/stateful/voting-module-adapter/components/ProfileCardMemberInfoTokens.stories'
+import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 
 import { ProfileNotMemberCard } from './ProfileNotMemberCard'
 
@@ -20,15 +21,7 @@ const Template: ComponentStory<typeof ProfileNotMemberCard> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   daoName: 'Dog Dao',
-  walletProfile: {
-    loading: false,
-    data: {
-      nonce: 0,
-      imageUrl: '/noah.jpg',
-      name: '@Modern-Edamame',
-      nft: null,
-    },
-  },
+  walletProfileData: WALLET_PROFILE_DATA,
   membershipInfo: (
     <ProfileCardMemberInfoTokens {...makeProfileCardMemberInfoTokensProps()} />
   ),
