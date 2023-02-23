@@ -234,11 +234,11 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
               ghost
               hidePlusMinus
               max={tokenInBalance}
-              min={1 / 10 ** tokenIn.decimals}
+              min={convertMicroDenomToDenomWithDecimals(1, tokenIn.decimals)}
               register={register}
               setValue={setValue}
               sizing="auto"
-              step={1 / 10 ** tokenIn.decimals}
+              step={convertMicroDenomToDenomWithDecimals(1, tokenIn.decimals)}
               textClassName="text-lg"
               validation={[
                 validateRequired,
@@ -246,7 +246,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
                 (value) =>
                   value <= tokenInBalance ||
                   t(insufficientBalanceI18nKey, {
-                    amount: value.toLocaleString(undefined, {
+                    amount: tokenInBalance.toLocaleString(undefined, {
                       maximumFractionDigits: tokenIn.decimals,
                     }),
                     tokenSymbol: tokenIn.symbol,
@@ -325,11 +325,11 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
               fieldName={fieldNamePrefix + 'tokenOutAmount'}
               ghost
               hidePlusMinus
-              min={1 / 10 ** tokenOut.decimals}
+              min={convertMicroDenomToDenomWithDecimals(1, tokenOut.decimals)}
               register={register}
               setValue={setValue}
               sizing="auto"
-              step={1 / 10 ** tokenOut.decimals}
+              step={convertMicroDenomToDenomWithDecimals(1, tokenOut.decimals)}
               textClassName="text-lg"
               validation={[validateRequired, validatePositive]}
               watch={watch}
