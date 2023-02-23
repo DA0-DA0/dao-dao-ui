@@ -59,14 +59,14 @@ export const AddressInput = <
       : undefined
   )
 
-  // Cache searched profiles in background so they're ready if selected.
-  useRecoilValueLoadable(
-    searchProfilesLoadable.state === 'hasValue' &&
-      searchProfilesLoadable.contents.length > 0
+  // Get wallet profiles for the search results so we can use the correct images
+  // for consistency (the wallet profile selector handles fallback images).
+  const searchedProfilesLoadable = useRecoilValueLoadable(
+    searchProfilesLoadable.state === 'hasValue'
       ? waitForAll(
           searchProfilesLoadable.contents.map(({ address }) =>
             walletProfileDataSelector({
-              address: address,
+              address,
             })
           )
         )
@@ -79,14 +79,21 @@ export const AddressInput = <
     searchDaosLoadable.state === 'hasValue'
       ? [
           ...(searchProfilesLoadable.state === 'hasValue'
-            ? searchProfilesLoadable.contents.map(({ address, profile }) => ({
-                type: EntityType.Wallet,
-                address,
-                name: profile.name,
-                imageUrl:
-                  profile.nft?.imageUrl ||
-                  getFallbackImage(toBech32Hash(address)),
-              }))
+            ? searchProfilesLoadable.contents.map(
+                ({ address, profile: { name, nft } }, index) => ({
+                  type: EntityType.Wallet,
+                  address,
+                  name,
+                  imageUrl:
+                    // Use loaded profile image if available, and fallback to
+                    // image from search, and fallback image otherwise.
+                    (searchedProfilesLoadable.state === 'hasValue' &&
+                      searchedProfilesLoadable.contents?.[index]?.profile
+                        .imageUrl) ||
+                    nft?.imageUrl ||
+                    getFallbackImage(toBech32Hash(address)),
+                })
+              )
             : []),
           ...(searchDaosLoadable.state === 'hasValue'
             ? searchDaosLoadable.contents
