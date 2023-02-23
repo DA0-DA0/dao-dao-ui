@@ -493,7 +493,10 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
           convertMicroDenomToDenomWithDecimals(
             simulation.contents.amount,
             simulatingValue === 'tokenIn' ? tokenIn.decimals : tokenOut.decimals
-          )
+          ),
+          {
+            shouldValidate: true,
+          }
         )
       }
     }

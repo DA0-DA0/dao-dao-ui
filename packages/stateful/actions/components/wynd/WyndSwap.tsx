@@ -246,7 +246,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
                 (value) =>
                   value <= tokenInBalance ||
                   t(insufficientBalanceI18nKey, {
-                    amount: value.toLocaleString(undefined, {
+                    amount: tokenInBalance.toLocaleString(undefined, {
                       maximumFractionDigits: tokenIn.decimals,
                     }),
                     tokenSymbol: tokenIn.symbol,
