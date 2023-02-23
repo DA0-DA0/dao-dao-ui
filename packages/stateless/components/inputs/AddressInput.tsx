@@ -59,6 +59,7 @@ export const AddressInput = <
   })
 
   const [inputFocused, setInputFocused] = useState(false)
+  const autofillEntityContainerRef = useRef<HTMLDivElement | null>(null)
   const [selectedEntityIndex, setSelectedEntityIndex] = useState(0)
   // Ensure selected index stays valid.
   useEffect(() => {
@@ -66,6 +67,29 @@ export const AddressInput = <
       Math.min(prev, autofillEntities?.entities.length ?? 0)
     )
   }, [autofillEntities])
+  // Scroll to selected entity.
+  useEffect(() => {
+    if (!autofillEntityContainerRef.current || selectedEntityIndex === -1) {
+      return
+    }
+
+    const selected = autofillEntityContainerRef.current.children[
+      selectedEntityIndex
+    ] as HTMLDivElement | undefined
+    if (!selected) {
+      return
+    }
+
+    // If selected entity is not in view, scroll to it.
+    if (
+      selected.offsetTop < autofillEntityContainerRef.current.scrollTop ||
+      selected.offsetTop + selected.clientHeight >
+        autofillEntityContainerRef.current.scrollTop +
+          autofillEntityContainerRef.current.clientHeight
+    ) {
+      selected.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [selectedEntityIndex])
 
   // Only show auto fill dropdown if there are entities to show.
   const showEntityAutoFill =
@@ -232,7 +256,10 @@ export const AddressInput = <
               width: addressInputRect.width + 4,
             }}
           >
-            <div className="no-scrollbar flex h-full max-h-80 flex-col overflow-y-auto">
+            <div
+              className="no-scrollbar flex h-full max-h-80 flex-col overflow-y-auto"
+              ref={autofillEntityContainerRef}
+            >
               {autofillEntities.entities.map((entity, index) => (
                 <div
                   key={entity.address}
