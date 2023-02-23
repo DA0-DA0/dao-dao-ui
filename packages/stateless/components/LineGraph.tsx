@@ -16,16 +16,26 @@ export interface LineGraphProps {
   title: string
   yTitle: string
   yValues: number[]
+  labels?: string[]
+  className?: string
 }
 
-export const LineGraph = ({ title, yTitle, yValues }: LineGraphProps) => {
+export const LineGraph = ({
+  title,
+  yTitle,
+  yValues,
+  labels,
+  className,
+}: LineGraphProps) => {
   const { accentColor } = useThemeContext()
-  const darkRgb = `rgba(${useNamedThemeColor('dark')}, 0.2)`
+  const textColor = useNamedThemeColor('text-tertiary')
+  const borderColor = useNamedThemeColor('border-primary')
 
   return (
     <Line
+      className={className}
       data={{
-        labels: yValues.map(() => ''),
+        labels: labels || yValues.map(() => ''),
         datasets: [
           {
             data: yValues,
@@ -34,6 +44,8 @@ export const LineGraph = ({ title, yTitle, yValues }: LineGraphProps) => {
         ],
       }}
       options={{
+        responsive: true,
+        maintainAspectRatio: false,
         // Disable all events (hover, tooltip, etc.)
         events: [],
         animation: false,
@@ -46,25 +58,36 @@ export const LineGraph = ({ title, yTitle, yValues }: LineGraphProps) => {
           title: {
             display: true,
             text: title,
+            color: textColor,
+            font: {
+              weight: 'normal',
+            },
           },
         },
         scales: {
           x: {
-            display: false,
+            display: !!labels,
+            ticks: {
+              color: textColor,
+            },
+            grid: {
+              color: borderColor,
+              tickColor: 'transparent',
+            },
           },
           y: {
             display: true,
             title: {
               text: yTitle,
               display: true,
-              color: darkRgb,
+              color: textColor,
             },
             ticks: {
-              color: darkRgb,
+              color: textColor,
             },
             grid: {
-              borderColor: darkRgb,
-              color: darkRgb,
+              color: borderColor,
+              tickColor: 'transparent',
             },
           },
         },

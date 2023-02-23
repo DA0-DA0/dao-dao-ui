@@ -1,4 +1,3 @@
-import { Coin } from '@cosmjs/stargate'
 import { Close } from '@mui/icons-material'
 import { ComponentProps, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
@@ -10,6 +9,7 @@ import {
   NumberInput,
   SelectInput,
 } from '@dao-dao/stateless'
+import { GenericTokenBalance } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DECIMALS,
@@ -22,7 +22,7 @@ import {
 } from '@dao-dao/utils'
 
 export type NativeCoinSelectorProps = ComponentProps<
-  ActionComponent<{ nativeBalances: readonly Coin[] }>
+  ActionComponent<{ nativeBalances: GenericTokenBalance[] }>
 > & {
   className?: string
 }
@@ -43,22 +43,24 @@ export const NativeCoinSelector = ({
 
   const validatePossibleSpend = useCallback(
     (id: string, amount: string): string | boolean => {
-      const native = nativeBalances.find(({ denom }) => denom === id)
+      const native = nativeBalances.find(
+        ({ token }) => token.denomOrAddress === id
+      )
       if (native) {
         const microAmount = convertDenomToMicroDenomWithDecimals(
           amount,
-          NATIVE_DECIMALS
+          native.token.decimals
         )
         return (
-          microAmount <= Number(native.amount) ||
+          microAmount <= Number(native.balance) ||
           t('error.cantSpendMoreThanTreasury', {
             amount: convertMicroDenomToDenomWithDecimals(
-              native.amount,
-              NATIVE_DECIMALS
+              native.balance,
+              native.token.decimals
             ).toLocaleString(undefined, {
-              maximumFractionDigits: NATIVE_DECIMALS,
+              maximumFractionDigits: native.token.decimals,
             }),
-            tokenSymbol: nativeTokenLabel(id),
+            tokenSymbol: native.token.symbol,
           })
         )
       }
@@ -127,9 +129,9 @@ export const NativeCoinSelector = ({
           fieldName={fieldNamePrefix + 'denom'}
           register={register}
         >
-          {nativeBalances.map(({ denom }) => (
-            <option key={denom} value={denom}>
-              ${nativeTokenLabel(denom)}
+          {nativeBalances.map(({ token: { denomOrAddress, symbol } }) => (
+            <option key={denomOrAddress} value={denomOrAddress}>
+              ${symbol}
             </option>
           ))}
         </SelectInput>

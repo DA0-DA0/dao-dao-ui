@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
 
-import { WalletProfile } from '../profile'
-import { LoadingData } from './common'
+import { WalletProfileData } from '../profile'
 import { DappNavigationProps } from './DappNavigation'
 import { RightSidebarProps } from './RightSidebar'
 
@@ -9,7 +8,7 @@ export interface DappLayoutProps {
   navigationProps: DappNavigationProps
   children: ReactNode
   rightSidebarProps: RightSidebarProps
-  walletProfile?: LoadingData<WalletProfile>
+  walletProfileData?: WalletProfileData
   connect: () => void
   connected: boolean
   connectWalletButton: ReactNode

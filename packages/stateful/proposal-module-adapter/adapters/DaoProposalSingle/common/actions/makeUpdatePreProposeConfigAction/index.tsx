@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
-import { eitherTokenInfoSelector } from '@dao-dao/state'
+import { genericTokenSelector } from '@dao-dao/state'
 import { GearEmoji, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -57,12 +57,12 @@ export const Component: ActionComponent = (props) => {
     depositInfo.type === 'cw20' &&
       depositInfo.denomOrAddress &&
       isValidContractAddress(depositInfo.denomOrAddress, bech32Prefix)
-      ? eitherTokenInfoSelector({
+      ? genericTokenSelector({
           type: TokenType.Cw20,
           denomOrAddress: depositInfo.denomOrAddress,
         })
       : depositInfo.type === 'native'
-      ? eitherTokenInfoSelector({
+      ? genericTokenSelector({
           type: TokenType.Native,
           denomOrAddress: depositInfo.denomOrAddress,
         })
@@ -142,7 +142,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
     // converts it to `cw20`.
     const token = useRecoilValue(
       config.deposit_info
-        ? eitherTokenInfoSelector({
+        ? genericTokenSelector({
             type:
               'native' in config.deposit_info.denom
                 ? TokenType.Native
@@ -288,7 +288,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
       configDepositInfo && isUpdatePreProposeConfig
         ? 'voting_module_token' in configDepositInfo.denom
           ? constSelector(governanceToken)
-          : eitherTokenInfoSelector({
+          : genericTokenSelector({
               type:
                 'native' in configDepositInfo.denom.token.denom
                   ? TokenType.Native

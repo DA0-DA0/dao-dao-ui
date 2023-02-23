@@ -1,10 +1,10 @@
-import { WalletProfile } from '../profile'
+import { WalletProfileData } from '../profile'
 import { LoadingData } from './common'
 
 export type DaoMemberCardProps = {
   address: string
   votingPowerPercent: LoadingData<number>
-  profile: LoadingData<WalletProfile>
+  profileData: WalletProfileData
 }
 
-export type StatefulDaoMemberCardProps = Omit<DaoMemberCardProps, 'profile'>
+export type StatefulDaoMemberCardProps = Omit<DaoMemberCardProps, 'profileData'>

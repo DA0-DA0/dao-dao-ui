@@ -12,6 +12,7 @@ export interface ProfileImageProps {
   fallbackIconClassName?: string
   onClick?: () => void
   onEdit?: () => void
+  rounded?: boolean
 }
 
 export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
@@ -24,6 +25,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
       fallbackIconClassName,
       onClick,
       onEdit,
+      rounded,
     },
     ref
   ) {
@@ -47,19 +49,21 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
     const loadingImage = loading || loadedImage !== imageUrl
 
     // Size and rounding of container and children.
-    const sizingRoundingClassNames = clsx({
-      'h-8 w-8 rounded-full': size === 'xs',
-      'h-10 w-10 rounded-xl': size === 'sm',
-      'h-16 w-16 rounded-2xl': size === 'lg',
-    })
+    const sizingRoundingClassNames = clsx(
+      {
+        'h-8 w-8 rounded-full': size === 'xs',
+        'h-10 w-10 rounded-xl': size === 'sm',
+        'h-16 w-16 rounded-2xl': size === 'lg',
+      },
+      rounded && '!rounded-full'
+    )
 
     return (
       <div
         className={clsx(
           // Center icon.
-          'relative flex shrink-0 items-center justify-center',
-          (!imageUrl || loadingImage) &&
-            'border border-border-interactive-disabled',
+          'relative flex shrink-0 items-center justify-center border border-transparent',
+          (!imageUrl || loadingImage) && 'border-border-interactive-disabled',
           sizingRoundingClassNames,
           // Pulse person placeholder when loading.
           loadingImage &&

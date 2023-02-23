@@ -20,7 +20,7 @@ export const DappLayout = ({
   navigationProps,
   children,
   rightSidebarProps,
-  walletProfile,
+  walletProfileData,
   connect,
   connected,
   connectWalletButton,
@@ -83,12 +83,8 @@ export const DappLayout = ({
                 <ProfileImage
                   className="bg-background-primary transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed"
                   fallbackIconClassName="!text-icon-primary !w-3/5 !h-3/5"
-                  imageUrl={
-                    !walletProfile || walletProfile.loading
-                      ? undefined
-                      : walletProfile.data.imageUrl
-                  }
-                  loading={!!walletProfile?.loading}
+                  imageUrl={walletProfileData?.profile.imageUrl}
+                  loading={walletProfileData?.loading}
                   size="xs"
                 />
               </div>

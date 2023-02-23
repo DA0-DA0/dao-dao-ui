@@ -4,10 +4,10 @@ import { StatefulEntityDisplayProps } from '@dao-dao/types'
 import { useEntity } from '../hooks'
 
 export const EntityDisplay = (props: StatefulEntityDisplayProps) => {
-  const profile = useEntity({
+  const loadingEntity = useEntity({
     address: props.address,
-    walletHexPublicKey: props.walletHexPublicKey,
+    chainId: props.chainId,
   })
 
-  return <StatelessEntityDisplay {...props} loadingEntity={profile} />
+  return <StatelessEntityDisplay {...props} loadingEntity={loadingEntity} />
 }

@@ -26,7 +26,7 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
-import { useExecutedProposalTxEventsLoadable } from '../../hooks/useExecutedProposalTxEvents'
+import { useExecutedProposalTxLoadable } from '../../hooks/useExecutedProposalTxLoadable'
 import { InstantiateComponent as StatelessInstantiateComponent } from '../components/Instantiate'
 import { useActionOptions } from '../react'
 
@@ -116,9 +116,8 @@ const Component: ActionComponent = (props) => {
   )
 
   // If in DAO context, use executed proposal TX events to find instantiated
-  // address if already instantiated. If in wallet context, there will be no
-  // events.
-  const executedTxEventsLoadable = useExecutedProposalTxEventsLoadable()
+  // address if already instantiated. If in wallet context, there will be no tx.
+  const executedTxLoadable = useExecutedProposalTxLoadable()
 
   const { watch } = useFormContext()
   const codeId: number = watch(props.fieldNamePrefix + 'codeId')
@@ -133,8 +132,8 @@ const Component: ActionComponent = (props) => {
   // select the correct address.
   const instantiatedAddress = useMemo(() => {
     if (
-      executedTxEventsLoadable.state !== 'hasValue' ||
-      !executedTxEventsLoadable.contents
+      executedTxLoadable.state !== 'hasValue' ||
+      !executedTxLoadable.contents
     ) {
       return
     }
@@ -161,7 +160,7 @@ const Component: ActionComponent = (props) => {
 
     // Instantiation events from the transaction data.
     const instantiationAttributes =
-      executedTxEventsLoadable.contents.find(
+      executedTxLoadable.contents.events.find(
         ({ type }) => type === 'instantiate'
       )?.attributes ?? []
     // Instantiated addresses for the code ID this action instantiated.
@@ -186,12 +185,7 @@ const Component: ActionComponent = (props) => {
     }
 
     return codeIdInstantiations[innerIndex]
-  }, [
-    executedTxEventsLoadable.state,
-    executedTxEventsLoadable.contents,
-    props,
-    codeId,
-  ])
+  }, [executedTxLoadable, props, codeId])
 
   return (
     <SuspenseLoader

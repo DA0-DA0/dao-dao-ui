@@ -1,11 +1,11 @@
 import { constSelector } from 'recoil'
 
-import { transactionEventsSelector } from '@dao-dao/state/recoil'
+import { transactionSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 
 import { useProposalModuleAdapterIfAvailable } from '../proposal-module-adapter'
 
-export const useExecutedProposalTxEventsLoadable = () => {
+export const useExecutedProposalTxLoadable = () => {
   // Use proposal execution hash to find instantiated
   // address if already instantiated. If not in a proposal, the proposal module
   // adapter will not be available and so the hook will be undefined.
@@ -14,7 +14,7 @@ export const useExecutedProposalTxEventsLoadable = () => {
   } = useProposalModuleAdapterIfAvailable() ?? { hooks: {} }
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash?.()
 
-  const txEventsLoadable = useCachedLoadable(
+  const txLoadable = useCachedLoadable(
     // If no hook is available, no execution hash to load since we're not in a
     // proposal.
     !loadingExecutionTxHash
@@ -27,8 +27,8 @@ export const useExecutedProposalTxEventsLoadable = () => {
       !loadingExecutionTxHash.data
       ? constSelector(undefined)
       : // Otherwise load the events for the given TX hash.
-        transactionEventsSelector({ txHash: loadingExecutionTxHash.data })
+        transactionSelector({ txHash: loadingExecutionTxHash.data })
   )
 
-  return txEventsLoadable
+  return txLoadable
 }

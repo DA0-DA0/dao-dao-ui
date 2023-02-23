@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 
 import { EntityDisplay } from '@dao-dao/stateful'
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
+import { EntityType } from '@dao-dao/types'
 
 import { AddressInput } from './AddressInput'
 
@@ -30,81 +31,42 @@ AutofillProfile.args = {
   placeholder: 'juno...',
   type: 'wallet',
   EntityDisplay,
-  autofillProfiles: {
+  autofillEntities: {
     loading: false,
-    hits: [
+    entities: [
       {
-        publicKey: 'peepobaked',
+        type: EntityType.Wallet,
         address: 'peepobaked',
-        profile: {
-          nonce: 7,
-          name: 'peepobaked',
-          nft: {
-            chainId: 'uni-6',
-            collectionAddress:
-              'juno17p6u07z9zr4ej6jt55fvafp966v90vm6m8xarejzgjqc7305w58qjmsej2',
-            tokenId: 'baked_peepo',
-            imageUrl:
-              'ipfs://bafybeigwkqqhatvnlmeetnjrupemktzirlcj5j7lubnt76uxe3byzk5gbm/blob',
-          },
-        },
+        name: 'peepobaked',
+        imageUrl:
+          'ipfs://bafybeigwkqqhatvnlmeetnjrupemktzirlcj5j7lubnt76uxe3byzk5gbm/blob',
       },
       {
-        publicKey: 'peepodab',
+        type: EntityType.Wallet,
         address: 'peepodab',
-        profile: {
-          nonce: 65,
-          name: 'peepodab',
-          nft: {
-            chainId: 'uni-6',
-            collectionAddress:
-              'juno17p6u07z9zr4ej6jt55fvafp966v90vm6m8xarejzgjqc7305w58qjmsej2',
-            tokenId: 'deeply_dabbing_peepo',
-            imageUrl:
-              'ipfs://bafybeiajdpcrfbr5vr76xbeumt64wuzrqrbavnmzj5juenmu5d2uuimzo4/blob',
-          },
-        },
+        name: 'peepodab',
+        imageUrl:
+          'ipfs://bafybeiajdpcrfbr5vr76xbeumt64wuzrqrbavnmzj5juenmu5d2uuimzo4/blob',
       },
       {
-        publicKey: 'peeponothing',
+        type: EntityType.Wallet,
         address: 'peeponothing',
-        profile: {
-          nonce: 5,
-          name: 'peeponothing',
-          nft: null,
-        },
+        name: 'peeponothing',
+        imageUrl: '/placeholder/1.svg',
       },
       {
-        publicKey: 'peepopraying',
+        type: EntityType.Wallet,
         address: 'peepopraying',
-        profile: {
-          nonce: 4,
-          name: 'peepopraying',
-          nft: {
-            chainId: 'uni-6',
-            collectionAddress:
-              'juno17p6u07z9zr4ej6jt55fvafp966v90vm6m8xarejzgjqc7305w58qjmsej2',
-            tokenId: 'praying_peepo',
-            imageUrl:
-              'ipfs://bafybeie7bh35eok2h2u67hmhyyw7kgmsmpubm3zhynyog2kcqfrejbwoei/blob',
-          },
-        },
+        name: 'peepopraying',
+        imageUrl:
+          'ipfs://bafybeie7bh35eok2h2u67hmhyyw7kgmsmpubm3zhynyog2kcqfrejbwoei/blob',
       },
       {
-        publicKey: 'peepoturbo',
+        type: EntityType.Wallet,
         address: 'peepoturbo',
-        profile: {
-          nonce: 2,
-          name: 'peepoturbo',
-          nft: {
-            chainId: 'uni-6',
-            collectionAddress:
-              'juno17p6u07z9zr4ej6jt55fvafp966v90vm6m8xarejzgjqc7305w58qjmsej2',
-            tokenId: 'turbo_peepo',
-            imageUrl:
-              'ipfs://bafybeiay2jgeusl63sie2lgocybux63nhy3viflkfkem2ove7nwmfxygkq/blob',
-          },
-        },
+        name: 'peepoturbo',
+        imageUrl:
+          'ipfs://bafybeiay2jgeusl63sie2lgocybux63nhy3viflkfkem2ove7nwmfxygkq/blob',
       },
     ],
   },

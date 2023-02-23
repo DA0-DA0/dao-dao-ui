@@ -36,7 +36,7 @@ import {
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
-import { useExecutedProposalTxEventsLoadable } from '../../hooks'
+import { useExecutedProposalTxLoadable } from '../../hooks'
 import {
   StakeData,
   StakeComponent as StatelessStakeComponent,
@@ -175,21 +175,21 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
   )
 
   // If in DAO context, use executed proposal TX events to find claimed
-  // rewards. If in wallet context, events will be undefined.
-  const executedTxEventsLoadable = useExecutedProposalTxEventsLoadable()
+  // rewards. If in wallet context, will be undefined.
+  const executedTxLoadable = useExecutedProposalTxLoadable()
 
   const { watch } = useFormContext()
   let claimedRewards: number | undefined
   if (
-    executedTxEventsLoadable.state === 'hasValue' &&
-    executedTxEventsLoadable.contents &&
+    executedTxLoadable.state === 'hasValue' &&
+    executedTxLoadable.contents &&
     watch(props.fieldNamePrefix + 'stakeType') ===
       StakeType.WithdrawDelegatorReward
   ) {
     const validator = watch(props.fieldNamePrefix + 'validator')
 
     const claimValidatorRewardsEvents =
-      executedTxEventsLoadable.contents.filter(
+      executedTxLoadable.contents.events.filter(
         ({ type, attributes }) =>
           type === 'withdraw_rewards' &&
           attributes.some(
@@ -279,8 +279,8 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
                 ),
           validators: loadingValidators.loading ? [] : loadingValidators.data,
           executed:
-            executedTxEventsLoadable.state === 'hasValue' &&
-            !!executedTxEventsLoadable.contents,
+            executedTxLoadable.state === 'hasValue' &&
+            !!executedTxLoadable.contents,
           claimedRewards,
           nativeUnstakingDurationSeconds,
         }}

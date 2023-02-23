@@ -2,16 +2,16 @@ import { ComponentType } from 'react'
 
 import {
   AddressInputProps,
-  Coin,
+  GenericTokenBalance,
   LoadingData,
   TokenSwapStatusProps,
+  TokenType,
   TransProps,
 } from '@dao-dao/types'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 
 export interface Counterparty {
   address: string
-  type: 'cw20' | 'native'
+  type: TokenType
   denomOrAddress: string
   amount: number
   decimals: number
@@ -45,21 +45,8 @@ export interface InstantiateTokenSwapOptions {
   instantiating: boolean
   onInstantiate: () => Promise<void>
 
-  selfPartyNativeBalances: readonly Coin[]
-  selfPartyCw20Balances: {
-    address: string
-    balance: string
-    info: TokenInfoResponse
-  }[]
-
-  counterpartyNativeBalances: LoadingData<readonly Coin[]>
-  counterpartyCw20Balances: LoadingData<
-    {
-      address: string
-      balance: string
-      info: TokenInfoResponse
-    }[]
-  >
+  selfPartyTokenBalances: GenericTokenBalance[]
+  counterpartyTokenBalances: LoadingData<GenericTokenBalance[]>
 
   Trans: ComponentType<TransProps>
   AddressInput: ComponentType<AddressInputProps>
