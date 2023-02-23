@@ -18,11 +18,7 @@ import {
   wyndSwapOperationsSelector,
   wyndUsdPriceSelector,
 } from '@dao-dao/state/recoil'
-import {
-  ActionCardLoader,
-  CycleEmoji,
-  useCachedLoadable,
-} from '@dao-dao/stateless'
+import { CycleEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   AmountWithTimestamp,
   GenericToken,
@@ -62,7 +58,6 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../components'
-import { SuspenseLoader } from '../../../components/SuspenseLoader'
 import { useExecutedProposalTxLoadable } from '../../../hooks'
 import {
   WyndSwapComponent as StatelessWyndSwapComponent,
@@ -114,18 +109,18 @@ const useDefaults: UseDefaults<WyndSwapData> = () => {
   return {
     tokenIn: {
       type: TokenType.Native,
-      denomOrAddress: NATIVE_DENOM,
-      symbol: nativeTokenLabel(NATIVE_DENOM),
-      decimals: NATIVE_DECIMALS,
-      imageUrl: nativeTokenLogoURI(NATIVE_DENOM),
-    },
-    tokenInAmount: 1,
-    tokenOut: {
-      type: TokenType.Native,
       denomOrAddress: usdc.juno_denom,
       symbol: usdc.symbol,
       decimals: usdc.decimals,
       imageUrl: usdc.logoURI,
+    },
+    tokenInAmount: 0,
+    tokenOut: {
+      type: TokenType.Native,
+      denomOrAddress: NATIVE_DENOM,
+      symbol: nativeTokenLabel(NATIVE_DENOM),
+      decimals: NATIVE_DECIMALS,
+      imageUrl: nativeTokenLogoURI(NATIVE_DENOM),
     },
     tokenOutAmount: 0,
     minOutAmount: 0,
@@ -532,29 +527,21 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
         }
 
   return (
-    <SuspenseLoader
-      fallback={<ActionCardLoader />}
-      forceFallback={
-        // Manually trigger loader.
-        loadingBalances.loading || loadingWyndTokens.loading
-      }
-    >
-      <StatelessWyndSwapComponent
-        {...props}
-        options={{
-          balances: loadingBalances.loading ? [] : loadingBalances.data,
-          wyndTokens: loadingWyndTokens.loading ? [] : loadingWyndTokens.data,
-          simulatingValue:
-            simulation &&
-            (simulation.state === 'loading' ||
-              (simulation.state === 'hasValue' && simulation.updating))
-              ? simulatingValue
-              : undefined,
-          estUsdPrice,
-          AddressInput,
-        }}
-      />
-    </SuspenseLoader>
+    <StatelessWyndSwapComponent
+      {...props}
+      options={{
+        loadingBalances,
+        loadingWyndTokens,
+        simulatingValue:
+          simulation &&
+          (simulation.state === 'loading' ||
+            (simulation.state === 'hasValue' && simulation.updating))
+            ? simulatingValue
+            : undefined,
+        estUsdPrice,
+        AddressInput,
+      }}
+    />
   )
 }
 
