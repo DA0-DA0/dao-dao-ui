@@ -59,8 +59,14 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   options: {
-    balances: [],
-    wyndTokens: [],
+    loadingBalances: {
+      loading: false,
+      data: [],
+    },
+    loadingWyndTokens: {
+      loading: false,
+      data: [],
+    },
     simulatingValue: undefined,
     estUsdPrice: { loading: true },
     AddressInput,
