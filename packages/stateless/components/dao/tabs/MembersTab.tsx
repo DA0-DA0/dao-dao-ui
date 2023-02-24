@@ -1,16 +1,6 @@
 import { Add } from '@mui/icons-material'
-import {
-  ArcElement,
-  BarElement,
-  CategoryScale,
-  Chart as ChartJS,
-  LinearScale,
-  Tooltip,
-  TooltipOptions,
-} from 'chart.js'
 import clsx from 'clsx'
-import { ComponentType, useCallback, useState } from 'react'
-import { Pie } from 'react-chartjs-2'
+import { ComponentType, Fragment, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -19,14 +9,11 @@ import {
 } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { useNamedThemeColor } from '../../../theme'
 import { ButtonLinkProps } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
-import { TooltipLikeDisplay } from '../../tooltip'
+import { Dropdown, DropdownOption } from '../../inputs/Dropdown'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
-import { VOTING_POWER_DISTRIBUTION_COLORS } from '../create'
-
-ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip)
+import { VOTING_POWER_DISTRIBUTION_COLORS_ORDERED } from '../create'
 
 export interface MembersTabProps {
   DaoMemberCard: ComponentType<StatefulDaoMemberCardProps>
@@ -42,7 +29,15 @@ export interface MembersTabProps {
   }
 }
 
-const TOP_MEMBER_COUNT = VOTING_POWER_DISTRIBUTION_COLORS.length
+// Store absolutes as negative numbers and percentages as positive numbers.
+enum TopStakerState {
+  TenAbsolute = -10,
+  TenPercent = 10,
+  TwentyPercent = 20,
+  All = 100,
+}
+
+const NUM_VERTICAL_BARS = 10
 
 export const MembersTab = ({
   DaoMemberCard,
@@ -53,20 +48,70 @@ export const MembersTab = ({
   topVoters,
 }: MembersTabProps) => {
   const { t } = useTranslation()
-  const otherColor = useNamedThemeColor('background-primary')
+
+  const [topStakerState, setTopStakerState] = useState(
+    TopStakerState.TenAbsolute
+  )
+  const topStakerStateOptions: DropdownOption<TopStakerState>[] = [
+    {
+      label: t('title.topAbsolute', { count: -TopStakerState.TenAbsolute }),
+      value: TopStakerState.TenAbsolute,
+    },
+    {
+      label: t('title.topPercent', { percent: TopStakerState.TenPercent }),
+      value: TopStakerState.TenPercent,
+    },
+    {
+      label: t('title.topPercent', { percent: TopStakerState.TwentyPercent }),
+      value: TopStakerState.TwentyPercent,
+    },
+    {
+      label: t('title.all'),
+      value: TopStakerState.All,
+    },
+  ]
+  const topStakerStateOption = topStakerStateOptions.find(
+    (option) => option.value === topStakerState
+  )
 
   // If anyone's voting power is still loading, can't yet show the top members.
-  const topMembers = members.some((member) => member.votingPowerPercent.loading)
+  const sortedMembers = members.some(
+    (member) => member.votingPowerPercent.loading
+  )
     ? []
-    : members.slice(0, TOP_MEMBER_COUNT - 1).map((member, index) => ({
-        ...member,
-        color:
-          VOTING_POWER_DISTRIBUTION_COLORS[
-            index % VOTING_POWER_DISTRIBUTION_COLORS.length
-          ],
-      }))
+    : members.sort(
+        (a, b) =>
+          (b.votingPowerPercent.loading ? 0 : b.votingPowerPercent.data) -
+          (a.votingPowerPercent.loading ? 0 : a.votingPowerPercent.data)
+      )
+
+  // Get members that hold the top x% of voting power.
+  const topMemberUpperIndex =
+    topStakerState < 0
+      ? -topStakerState
+      : sortedMembers.reduce(
+          (acc, member, index) => ({
+            total:
+              acc.total +
+              (member.votingPowerPercent.loading
+                ? 0
+                : member.votingPowerPercent.data),
+            // If the current total is past the top x%, keep the index the same. This
+            // index is the index of the last member in the top x% of voting power.
+            index: acc.total >= topStakerState ? acc.index : index,
+          }),
+          { total: 0, index: 0 }
+        ).index + 1
+
+  const topMembers = sortedMembers.slice(0, topMemberUpperIndex)
+  const topMembersVotingPowerPercent = topMembers.reduce(
+    (acc, member) =>
+      acc +
+      (member.votingPowerPercent.loading ? 0 : member.votingPowerPercent.data),
+    0
+  )
   const otherVotingPowerPercent = members
-    .slice(TOP_MEMBER_COUNT - 1)
+    .slice(topMemberUpperIndex)
     .reduce(
       (acc, member) =>
         acc +
@@ -74,55 +119,6 @@ export const MembersTab = ({
           ? 0
           : member.votingPowerPercent.data),
       0
-    )
-
-  const [tooltipData, setTooltipData] = useState<{
-    address: string
-    isOther: boolean
-    top: number
-    left: number
-  }>()
-  const tooltipMember =
-    tooltipData &&
-    members.find(({ address }) => address === tooltipData.address)
-  const tooltipVotingPowerPercent =
-    tooltipData &&
-    (tooltipData.isOther
-      ? otherVotingPowerPercent
-      : tooltipMember &&
-        (tooltipMember.votingPowerPercent.loading
-          ? -1
-          : tooltipMember.votingPowerPercent.data))
-
-  // Show custom tooltip when built-in tooltip is supposed to show. This hacks
-  // into the `external` callback of the pie chart's tooltip to mimic tooltip
-  // behavior with custom content.
-  const externalTooltipCallback: TooltipOptions<'pie'>['external'] =
-    useCallback(
-      (context) => {
-        // If tooltip is supposed to hide, do nothing. If tooltip is already
-        // showing, this will leave it showing. The pie chart container has an
-        // `onMouseLeave` handler that hides the tooltip. This allows the user
-        // to mouse over the tooltip and not have it disappear.
-        if (context.tooltip.opacity === 0) {
-          return
-        }
-
-        const newAddress = context.tooltip.dataPoints[0].label
-        const isOther =
-          context.tooltip.dataPoints[0].dataIndex === TOP_MEMBER_COUNT - 1
-        if (!tooltipData || tooltipData.address !== newAddress) {
-          const { x, y } = context.tooltip
-
-          setTooltipData({
-            address: newAddress,
-            top: y,
-            left: x,
-            isOther,
-          })
-        }
-      },
-      [tooltipData]
     )
 
   return (
@@ -147,125 +143,100 @@ export const MembersTab = ({
       )}
 
       {topVoters && topMembers.length > 0 && (
-        <div className="mb-6 flex flex-col items-stretch rounded-lg bg-background-tertiary sm:flex-row">
+        <div className="mb-6 flex flex-col items-stretch rounded-lg bg-background-tertiary">
           <div className="flex grow flex-col gap-2 overflow-hidden p-6">
-            <div className="mb-4 flex flex-row items-center gap-2">
-              <p className="primary-text text-text-body">{topVoters.title}</p>
+            <div className="mb-4 flex flex-row items-stretch justify-between gap-4">
+              <div className="flex flex-row items-center gap-2">
+                <p className="primary-text text-text-body">{topVoters.title}</p>
 
-              <TooltipInfoIcon
-                size="sm"
-                title={t('info.percentagesShownAreVotingPower')}
+                <TooltipInfoIcon
+                  size="sm"
+                  title={t('info.percentagesShownAreVotingPower')}
+                />
+              </div>
+
+              <Dropdown
+                onSelect={setTopStakerState}
+                options={topStakerStateOptions}
+                selected={topStakerState}
               />
             </div>
 
-            {topMembers.map(({ address, votingPowerPercent, color }) => (
-              <div
-                key={address}
-                className="flex flex-row items-center justify-between gap-2"
-              >
-                <topVoters.EntityDisplay address={address} />
+            <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-6 gap-y-1">
+              {topMembers.map(({ address, votingPowerPercent }, index) => (
+                <Fragment key={address}>
+                  <topVoters.EntityDisplay address={address} />
 
-                <div className="flex flex-row items-center gap-3">
+                  <div className="relative flex h-8 w-full flex-row items-stretch justify-between">
+                    {/* Bar color */}
+                    <div
+                      className="absolute top-0 bottom-0 left-0"
+                      style={{
+                        backgroundColor:
+                          VOTING_POWER_DISTRIBUTION_COLORS_ORDERED[
+                            index %
+                              VOTING_POWER_DISTRIBUTION_COLORS_ORDERED.length
+                          ],
+                        width: votingPowerPercent.loading
+                          ? 0
+                          : formatPercentOf100(votingPowerPercent.data),
+                      }}
+                    ></div>
+
+                    {/* Vertical bars */}
+                    {[...Array(NUM_VERTICAL_BARS)].map((_, index) => (
+                      <div
+                        key={index}
+                        className="-mt-[2px] -mb-[2px] w-[1px] bg-border-secondary"
+                      ></div>
+                    ))}
+                  </div>
+
                   <p className="caption-text text-right font-mono text-text-tertiary">
                     {votingPowerPercent.loading
                       ? '...'
                       : formatPercentOf100(votingPowerPercent.data)}
                   </p>
+                </Fragment>
+              ))}
 
-                  <div
-                    className="h-3 w-3 rounded-full"
-                    style={{
-                      backgroundColor: color,
-                    }}
-                  ></div>
-                </div>
-              </div>
-            ))}
+              {topMembersVotingPowerPercent > 0 && (
+                <>
+                  {/* Space row */}
+                  <div></div>
+                  <Bar color="transparent" percent={0} />
+                  <div></div>
 
-            {otherVotingPowerPercent > 0 && (
-              <div className="mt-6 flex grow flex-row items-end justify-between gap-2">
-                <p className="primary-text text-text-secondary">
-                  {topVoters.otherTitle}
-                </p>
+                  <p className="primary-text font-bold text-text-secondary">
+                    {topStakerStateOption?.label ?? topVoters.title}
+                  </p>
 
-                <div className="flex flex-row items-center gap-3">
+                  <Bar
+                    color="var(--text-tertiary)"
+                    percent={topMembersVotingPowerPercent}
+                  />
+
+                  <p className="caption-text text-right font-mono text-text-tertiary">
+                    {formatPercentOf100(topMembersVotingPowerPercent)}
+                  </p>
+                </>
+              )}
+
+              {otherVotingPowerPercent > 0 && (
+                <>
+                  <p className="primary-text font-bold text-text-secondary">
+                    {topVoters.otherTitle}
+                  </p>
+
+                  <Bar
+                    color="var(--text-interactive-disabled)"
+                    percent={otherVotingPowerPercent}
+                  />
+
                   <p className="caption-text text-right font-mono text-text-tertiary">
                     {formatPercentOf100(otherVotingPowerPercent)}
                   </p>
-
-                  <div
-                    className="h-3 w-3 rounded-full"
-                    style={{
-                      backgroundColor: otherColor,
-                    }}
-                  ></div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="flex grow flex-col items-center gap-8 border-t border-border-secondary p-6 pb-12 sm:border-l sm:border-t-0">
-            <p className="primary-text self-stretch text-text-body">
-              {t('title.distribution')}
-            </p>
-
-            <div
-              className="relative flex w-full max-w-[min(24rem,80%)] items-center justify-center"
-              onMouseLeave={() => setTooltipData(undefined)}
-            >
-              <Pie
-                className="!aspect-square justify-self-center"
-                data={{
-                  labels: [
-                    ...topMembers.map(({ address }) => address),
-                    topVoters.otherTitle,
-                  ],
-                  datasets: [
-                    {
-                      data: [
-                        ...topMembers.map(({ votingPowerPercent }) =>
-                          votingPowerPercent.loading
-                            ? 0
-                            : votingPowerPercent.data
-                        ),
-                        otherVotingPowerPercent,
-                      ],
-                      backgroundColor: [
-                        ...topMembers.map(({ color }) => color),
-                        otherColor,
-                      ],
-                      borderWidth: 0,
-                    },
-                  ],
-                }}
-                options={{
-                  plugins: {
-                    tooltip: {
-                      enabled: false,
-                      external: externalTooltipCallback,
-                    },
-                  },
-                }}
-              />
-              {tooltipData && tooltipVotingPowerPercent && (
-                <TooltipLikeDisplay
-                  className="animate-fadein absolute flex-col items-start justify-center gap-2"
-                  style={{ top: tooltipData.top, left: tooltipData.left }}
-                >
-                  {tooltipData.isOther ? (
-                    <p className="primary-text">{topVoters.otherTitle}</p>
-                  ) : (
-                    <topVoters.EntityDisplay address={tooltipData.address} />
-                  )}
-
-                  <div className="flex flex-row items-center justify-between gap-2">
-                    <p className="secondary-text">{t('title.votingPower')}:</p>
-
-                    <p className="symbol-small-body-text font-mono">
-                      {formatPercentOf100(tooltipVotingPowerPercent)}
-                    </p>
-                  </div>
-                </TooltipLikeDisplay>
+                </>
               )}
             </div>
           </div>
@@ -296,3 +267,29 @@ export const MembersTab = ({
     </>
   )
 }
+
+type BarProps = {
+  color: string
+  percent: number
+}
+
+const Bar = ({ color, percent }: BarProps) => (
+  <div className="relative flex h-8 w-full flex-row items-stretch justify-between">
+    {/* Bar color */}
+    <div
+      className="absolute top-0 bottom-0 left-0"
+      style={{
+        backgroundColor: color,
+        width: formatPercentOf100(percent),
+      }}
+    ></div>
+
+    {/* Vertical bars */}
+    {[...Array(NUM_VERTICAL_BARS)].map((_, index) => (
+      <div
+        key={index}
+        className="-mt-[2px] -mb-[2px] w-[1px] bg-border-secondary"
+      ></div>
+    ))}
+  </div>
+)
