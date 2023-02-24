@@ -19,5 +19,5 @@ Default.args = {
   label: '25%',
   loadingMax: { loading: false, data: 1234 },
   percent: 0.25,
-  tokenDecimals: 6,
+  decimals: 6,
 }

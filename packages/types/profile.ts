@@ -2,6 +2,7 @@ export interface PfpkWalletProfile {
   nonce: number
   name: string | null
   nft: {
+    chainId: string
     imageUrl: string
     tokenId: string
     collectionAddress: string
@@ -41,7 +42,6 @@ export interface ProfileSearchHit {
   publicKey: string
   address: string
   profile: {
-    nonce: number
     name: string | null
     nft: {
       chainId: string
@@ -50,4 +50,12 @@ export interface ProfileSearchHit {
       imageUrl: string
     } | null
   }
+}
+
+// Meta info about wallet profile, including loading state and a fallback image.
+export type WalletProfileData = {
+  loading: boolean
+  address: string
+  profile: WalletProfile
+  backupImageUrl: string
 }

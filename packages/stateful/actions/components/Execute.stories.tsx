@@ -26,7 +26,7 @@ Default.args = {
   onRemove: () => alert('remove'),
   errors: {},
   options: {
-    nativeBalances: [
+    balances: [
       {
         token: {
           type: TokenType.Native,

@@ -37,3 +37,10 @@ export interface CodeIdConfig {
 export interface ChainPrefixIdMap {
   juno: string
 }
+
+export type ParametersExceptFirst<F> = F extends (
+  arg0: any,
+  ...rest: infer R
+) => any
+  ? R
+  : never

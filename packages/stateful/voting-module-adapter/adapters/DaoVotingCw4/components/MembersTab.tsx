@@ -70,6 +70,9 @@ export const MembersTab = () => {
       }
       isMember={isMember}
       members={memberCards}
+      topVoters={{
+        show: false,
+      }}
     />
   )
 }

@@ -22,7 +22,7 @@ export const genericTokenSelector = selectorFamily<
     ({ type, denomOrAddress, chainId }) =>
     async ({ get }) => {
       const tokenInfo = get(
-        type === 'cw20'
+        type === TokenType.Cw20
           ? Cw20BaseSelectors.tokenInfoSelector({
               contractAddress: denomOrAddress,
               chainId,
@@ -35,7 +35,7 @@ export const genericTokenSelector = selectorFamily<
       )
       const imageUrl =
         get(
-          type === 'cw20'
+          type === TokenType.Cw20
             ? Cw20BaseSelectors.logoUrlSelector({
                 contractAddress: denomOrAddress,
                 chainId,

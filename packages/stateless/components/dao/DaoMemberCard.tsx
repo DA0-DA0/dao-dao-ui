@@ -11,7 +11,7 @@ import { ProfileImage } from '../profile'
 export const DaoMemberCard = ({
   address,
   votingPowerPercent,
-  profile,
+  profileData: { profile, loading: profileLoading },
 }: DaoMemberCardProps) => {
   const { t } = useTranslation()
 
@@ -20,18 +20,18 @@ export const DaoMemberCard = ({
       <div className="flex flex-col items-center px-6 pt-10 pb-8">
         {/* Image */}
         <ProfileImage
-          imageUrl={profile.loading ? undefined : profile.data.imageUrl}
-          loading={profile.loading}
+          imageUrl={profile.imageUrl}
+          loading={profileLoading}
           size="lg"
         />
         {/* Name */}
         <p
           className={clsx(
             'title-text mt-4 mb-1 text-text-body',
-            profile.loading && 'animate-pulse'
+            profileLoading && 'animate-pulse'
           )}
         >
-          {profile.loading ? '...' : profile.data.name}
+          {profileLoading ? '...' : profile.name}
         </p>
         {/* Address */}
         <div className="flex w-full min-w-0 flex-row items-center justify-center gap-1">

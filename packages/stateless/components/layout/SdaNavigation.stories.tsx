@@ -7,7 +7,7 @@ import {
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { makeAppLayoutContextDecorator } from '@dao-dao/storybook/decorators'
+import { makeAppContextDecorator } from '@dao-dao/storybook/decorators'
 import { DaoTabId, SdaNavigationProps } from '@dao-dao/types'
 
 import { LinkWrapper } from '../LinkWrapper'
@@ -16,7 +16,7 @@ import { SdaNavigation } from './SdaNavigation'
 export default {
   title: 'DAO DAO / packages / stateless / components / layout / SdaNavigation',
   component: SdaNavigation,
-  decorators: [makeAppLayoutContextDecorator(true)],
+  decorators: [makeAppContextDecorator(true)],
   excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof SdaNavigation>
 

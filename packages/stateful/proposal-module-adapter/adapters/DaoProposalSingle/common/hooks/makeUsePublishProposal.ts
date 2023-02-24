@@ -256,11 +256,11 @@ export const makeUsePublishProposal =
               awaitNextBlock().then(refreshBalances)
             } catch (err) {
               throw new Error(
-                `Failed to increase allowance to pay proposal deposit: (${processError(
+                `Failed to increase allowance to pay proposal deposit: ${processError(
                   err,
                   // Don't send to Sentry, but still format SDK errors nicely.
-                  { forceCapture: true }
-                )})`
+                  { forceCapture: false }
+                )}`
               )
             }
           }

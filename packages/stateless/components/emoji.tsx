@@ -161,6 +161,10 @@ export const SuitAndTieEmoji = () => (
   <EmojiWrapper emoji="👔" labelI18nKey="emoji.suitAndTie" />
 )
 
+export const CycleEmoji = () => (
+  <EmojiWrapper emoji="🔄" labelI18nKey="emoji.cycle" />
+)
+
 export const JoystickEmoji = () => (
   <EmojiWrapper emoji="🕹️" labelI18nKey="emoji.joystick" />
 )

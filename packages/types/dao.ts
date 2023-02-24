@@ -232,6 +232,7 @@ export enum DaoTabId {
   Members = 'members',
   Payroll = 'payroll',
   Staked = 'staked',
+  Collection = 'collection',
 }
 
 export type DaoTab = {
@@ -248,4 +249,9 @@ export type DaoTabWithComponent = DaoTab & {
 export enum DaoPageMode {
   Dapp = 'dapp',
   Sda = 'sda',
+}
+
+export type DaoWebSocketChannelInfo = {
+  chainId: string
+  coreAddress: string
 }

@@ -37,15 +37,14 @@ export const DiscordNotifierConfigureModal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const { chainId, coreAddress } = useDaoInfoContext()
-  const { connected, publicKey } = useWallet(chainId)
+  const { connected, publicKey } = useWallet()
 
   const [visible, setVisible] = useState(false)
 
   // Handle discord notifier code redirect.
   const { ready: postRequestReady, postRequest } = useCfWorkerAuthPostRequest(
     DISCORD_NOTIFIER_API_BASE,
-    DISCORD_NOTIFIER_SIGNATURE_TYPE,
-    chainId
+    DISCORD_NOTIFIER_SIGNATURE_TYPE
   )
 
   const setDiscordNotificationSetup = useSetRecoilState(

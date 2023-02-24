@@ -20,7 +20,7 @@ export * from '@dao-dao/types/stateless/ProfileCardWrapper'
 
 export const ProfileCardWrapper = ({
   children,
-  walletProfile,
+  walletProfileData,
   showUpdateProfileNft,
   updateProfileName,
   compact = false,
@@ -29,9 +29,9 @@ export const ProfileCardWrapper = ({
 }: ProfileCardWrapperProps) => {
   // Get average color of image URL if in compact mode.
   const averageImgColorLoadable = useCachedLoadable(
-    !compact || walletProfile.loading
+    !compact || walletProfileData.loading
       ? undefined
-      : averageColorSelector(walletProfile.data.imageUrl)
+      : averageColorSelector(walletProfileData.profile.imageUrl)
   )
   const averageImgColor =
     averageImgColorLoadable.state === 'hasValue' &&
@@ -41,7 +41,8 @@ export const ProfileCardWrapper = ({
         (averageImgColorLoadable.contents.length === 7 ? '33' : '')
       : undefined
 
-  const canEdit = !walletProfile.loading && walletProfile.data.nonce >= 0
+  const canEdit =
+    !walletProfileData.loading && walletProfileData.profile.nonce >= 0
 
   return (
     <div className="relative rounded-lg border border-border-primary">
@@ -54,20 +55,18 @@ export const ProfileCardWrapper = ({
         {compact ? (
           <div className="flex flex-row items-stretch gap-3">
             <ProfileImage
-              imageUrl={
-                walletProfile.loading ? undefined : walletProfile.data.imageUrl
-              }
-              loading={walletProfile.loading}
+              imageUrl={walletProfileData.profile.imageUrl}
+              loading={walletProfileData.loading}
               onEdit={canEdit ? showUpdateProfileNft : undefined}
               size="sm"
             />
 
-            <div className="flex flex-col gap-1">
+            <div className="flex min-w-0 flex-col gap-1">
               <ProfileNameDisplayAndEditor
                 canEdit={canEdit}
                 compact={compact}
                 updateProfileName={updateProfileName}
-                walletProfile={walletProfile}
+                walletProfileData={walletProfileData}
               />
               {underHeaderComponent}
             </div>
@@ -76,10 +75,8 @@ export const ProfileCardWrapper = ({
           <div className="flex flex-col items-center justify-center pt-4">
             <ProfileImage
               className="mb-6"
-              imageUrl={
-                walletProfile.loading ? '' : walletProfile.data.imageUrl
-              }
-              loading={walletProfile.loading}
+              imageUrl={walletProfileData.profile.imageUrl}
+              loading={walletProfileData.loading}
               onEdit={canEdit ? showUpdateProfileNft : undefined}
               size="lg"
             />
@@ -88,7 +85,7 @@ export const ProfileCardWrapper = ({
               className="mb-5"
               compact={compact}
               updateProfileName={updateProfileName}
-              walletProfile={walletProfile}
+              walletProfileData={walletProfileData}
             />
             {underHeaderComponent}
           </div>
@@ -110,7 +107,7 @@ export const ProfileCardWrapper = ({
 interface ProfileNameDisplayAndEditorProps
   extends Pick<
     ProfileCardWrapperProps,
-    'compact' | 'walletProfile' | 'updateProfileName'
+    'compact' | 'walletProfileData' | 'updateProfileName'
   > {
   canEdit: boolean
   className?: string
@@ -118,7 +115,7 @@ interface ProfileNameDisplayAndEditorProps
 
 const ProfileNameDisplayAndEditor = ({
   compact,
-  walletProfile,
+  walletProfileData,
   updateProfileName,
   canEdit,
   className,
@@ -148,7 +145,8 @@ const ProfileNameDisplayAndEditor = ({
     }
   }, [canEdit, editingName, updateProfileName])
 
-  const noNameSet = !walletProfile.loading && walletProfile.data.name === null
+  const noNameSet =
+    !walletProfileData.loading && walletProfileData.profile.name === null
 
   return (
     <div className={className}>
@@ -206,27 +204,27 @@ const ProfileNameDisplayAndEditor = ({
           className="group relative"
           disabled={!canEdit}
           onClick={() =>
-            !walletProfile.loading &&
-            setEditingName(walletProfile.data.name ?? '')
+            !walletProfileData.loading &&
+            setEditingName(walletProfileData.profile.name ?? '')
           }
           variant="none"
         >
           <p
             className={clsx(
               'title-text',
-              walletProfile.loading && 'animate-pulse',
+              walletProfileData.loading && 'animate-pulse',
               noNameSet
                 ? 'font-normal italic text-text-secondary'
                 : 'text-text-body'
             )}
           >
-            {walletProfile.loading
+            {walletProfileData.loading
               ? '...'
               : noNameSet
               ? canEdit
                 ? t('button.setDisplayName')
                 : t('info.noDisplayName')
-              : walletProfile.data.name}
+              : walletProfileData.profile.name}
           </p>
 
           {canEdit && (

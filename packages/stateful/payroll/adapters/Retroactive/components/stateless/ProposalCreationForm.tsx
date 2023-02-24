@@ -137,7 +137,6 @@ export const ProposalCreationForm = ({
                     ratingIndex === completeRatings.ratings.length - 1 &&
                       'rounded-tr-md'
                   )}
-                  walletHexPublicKey={rater.publicKey}
                 />
               ))}
 
@@ -159,7 +158,6 @@ export const ProposalCreationForm = ({
                             completeRatings.contributions.length - 1 &&
                             'rounded-bl-md'
                         )}
-                        walletHexPublicKey={contribution.contributor.publicKey}
                       />
 
                       {completeRatings.ratings.map(
@@ -329,7 +327,6 @@ export const ProposalCreationForm = ({
                           completeRatings.contributions.length - 1 &&
                           'rounded-bl-md'
                       )}
-                      walletHexPublicKey={contributor.publicKey}
                     />
 
                     {/* Attribute averages */}

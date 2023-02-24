@@ -1,5 +1,5 @@
 export * from './AddressInput'
-export * from './AppLayoutContext'
+export * from './AppContext'
 export * from './Breadcrumbs'
 export * from './Buttonifier'
 export * from './ButtonPopup'

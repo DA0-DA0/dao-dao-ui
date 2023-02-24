@@ -21,14 +21,15 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     })
   )
 
+  // Refresh just this proposal.
   const refreshProposal = useCallback(() => {
     setRefreshProposalId((id) => id + 1)
   }, [setRefreshProposalId])
 
+  // Refresh all proposal lists and proposals.
   const refreshProposalAndAll = useCallback(() => {
     setRefreshProposalsId((id) => id + 1)
-    refreshProposal()
-  }, [setRefreshProposalsId, refreshProposal])
+  }, [setRefreshProposalsId])
 
   const loadingProposal = useLoadingProposal()
 

@@ -55,7 +55,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
       })
     ),
     {
-      usdcUnitPrice: undefined,
+      usdUnitPrice: undefined,
       stakingInfo: undefined,
     }
   )

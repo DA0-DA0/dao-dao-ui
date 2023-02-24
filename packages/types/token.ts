@@ -46,7 +46,7 @@ export type TokenStake = {
 }
 
 export type TokenCardLazyInfo = {
-  usdcUnitPrice: AmountWithTimestamp | undefined
+  usdUnitPrice: AmountWithTimestamp | undefined
   stakingInfo:
     | {
         unstakingTasks: UnstakingTask[]

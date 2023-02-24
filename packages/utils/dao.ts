@@ -2,6 +2,7 @@ import {
   BreadcrumbCrumb,
   DaoParentInfo,
   DaoPayrollConfig,
+  DaoWebSocketChannelInfo,
 } from '@dao-dao/types'
 
 export const getParentDaoBreadcrumbs = (
@@ -55,3 +56,8 @@ export const getPayrollConfigFromItemValue = (
     // structure, return undefined.
   }
 }
+
+export const webSocketChannelNameForDao = ({
+  chainId,
+  coreAddress,
+}: DaoWebSocketChannelInfo) => `${chainId}_${coreAddress}`

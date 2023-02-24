@@ -391,19 +391,19 @@ export const VestingPaymentCard = ({
                 />
 
                 {!isJunoIbcUsdc(token.denomOrAddress) &&
-                  (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
                         amount={
                           lazyInfo.loading
                             ? { loading: true }
                             : withdrawableAmount *
-                              lazyInfo.data.usdcUnitPrice!.amount
+                              lazyInfo.data.usdUnitPrice!.amount
                         }
                         dateFetched={
                           lazyInfo.loading
                             ? undefined
-                            : lazyInfo.data.usdcUnitPrice!.timestamp
+                            : lazyInfo.data.usdUnitPrice!.timestamp
                         }
                         estimatedUsdValue
                       />
@@ -433,19 +433,19 @@ export const VestingPaymentCard = ({
                 />
 
                 {!isJunoIbcUsdc(token.denomOrAddress) &&
-                  (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
                         amount={
                           lazyInfo.loading
                             ? { loading: true }
                             : remainingBalanceVesting *
-                              lazyInfo.data.usdcUnitPrice!.amount
+                              lazyInfo.data.usdUnitPrice!.amount
                         }
                         dateFetched={
                           lazyInfo.loading
                             ? undefined
-                            : lazyInfo.data.usdcUnitPrice!.timestamp
+                            : lazyInfo.data.usdUnitPrice!.timestamp
                         }
                         estimatedUsdValue
                       />
@@ -474,18 +474,18 @@ export const VestingPaymentCard = ({
               />
 
               {!isJunoIbcUsdc(token.denomOrAddress) &&
-                (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                   <div className="flex flex-row items-center gap-1">
                     <TokenAmountDisplay
                       amount={
                         lazyInfo.loading
                           ? { loading: true }
-                          : claimedAmount * lazyInfo.data.usdcUnitPrice!.amount
+                          : claimedAmount * lazyInfo.data.usdUnitPrice!.amount
                       }
                       dateFetched={
                         lazyInfo.loading
                           ? undefined
-                          : lazyInfo.data.usdcUnitPrice!.timestamp
+                          : lazyInfo.data.usdUnitPrice!.timestamp
                       }
                       estimatedUsdValue
                     />

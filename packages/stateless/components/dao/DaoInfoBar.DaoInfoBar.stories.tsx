@@ -42,7 +42,7 @@ Default.args = {
       Icon: AccountBalanceOutlined,
       label: 'DAO Treasury',
       tooltip:
-        'The USD value of treasuries is estimated by summing the value of all tokens held in the treasury that have a known price on JunoSwap.',
+        'The USD value of treasuries is estimated by summing the value of all tokens held in the treasury that have a known price on WYND.',
       value: '35.12 est. USD value',
     },
     {

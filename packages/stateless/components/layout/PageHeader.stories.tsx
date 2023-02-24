@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
   DaoPageWrapperDecorator,
-  makeAppLayoutContextDecorator,
+  makeAppContextDecorator,
 } from '@dao-dao/storybook/decorators'
 
 import { PageHeader } from './PageHeader'
@@ -10,7 +10,7 @@ import { PageHeader } from './PageHeader'
 export default {
   title: 'DAO DAO / packages / stateless / components / layout / PageHeader',
   component: PageHeader,
-  decorators: [DaoPageWrapperDecorator, makeAppLayoutContextDecorator(false)],
+  decorators: [DaoPageWrapperDecorator, makeAppContextDecorator(false)],
 } as ComponentMeta<typeof PageHeader>
 
 const Template: ComponentStory<typeof PageHeader> = (args) => (

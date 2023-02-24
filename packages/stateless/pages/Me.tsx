@@ -8,9 +8,10 @@ import { MeProps, MeTab, MeTabId, Theme } from '@dao-dao/types'
 
 import {
   CopyToClipboard,
+  PageHeaderContent,
   ProfileImage,
+  RightSidebarContent,
   SegmentedControls,
-  useAppLayoutContext,
 } from '../components'
 import { useCachedLoadable } from '../hooks'
 import { useThemeContext } from '../theme'
@@ -24,7 +25,6 @@ export const Me = ({
   loadingProfile,
 }: MeProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
   const { isFallback } = useRouter()
 
   const tabs: MeTab[] = [
@@ -122,14 +122,14 @@ export const Me = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader
+      <PageHeaderContent
         className="mx-auto max-w-5xl"
         gradient
         rightNode={<div className="hidden sm:block">{tabSelector}</div>}
         title={t('title.me')}
       />
 
-      <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6 pb-12">
+      <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
         {!loadingProfile.loading && (
           <div className="flex flex-col items-center gap-2 pb-4 text-center">
             <ProfileImage

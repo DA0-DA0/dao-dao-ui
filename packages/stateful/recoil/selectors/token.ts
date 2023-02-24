@@ -1,11 +1,12 @@
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
   nativeBalancesSelector,
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
-  usdcPerMacroTokenSelector,
+  walletCw20BalancesSelector,
+  wyndUsdPriceSelector,
 } from '@dao-dao/state'
 import {
   GenericToken,
@@ -19,6 +20,7 @@ import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
   isValidContractAddress,
+  isValidWalletAddress,
 } from '@dao-dao/utils'
 
 export const tokenCardLazyInfoSelector = selectorFamily<
@@ -34,12 +36,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
     ({ get }) => {
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
 
-      const usdcUnitPrice = get(
-        usdcPerMacroTokenSelector({
-          denom: token.denomOrAddress,
-          decimals: token.decimals,
-        })
-      )
+      const usdUnitPrice = get(wyndUsdPriceSelector(token.denomOrAddress))
 
       // For now, stakingInfo only exists for native token, until ICA.
       if (token.denomOrAddress === NATIVE_DENOM) {
@@ -86,7 +83,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
       }
 
       return {
-        usdcUnitPrice,
+        usdUnitPrice,
         stakingInfo,
       }
     },
@@ -110,20 +107,21 @@ export const genericTokenBalancesSelector = selectorFamily<
         })
       )
 
-      const cw20TokenBalances = isValidContractAddress(
-        address,
-        CHAIN_BECH32_PREFIX
-      )
-        ? get(
-            DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
+      const cw20TokenBalances = get(
+        isValidContractAddress(address, CHAIN_BECH32_PREFIX)
+          ? DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
               contractAddress: address,
               governanceTokenAddress: cw20GovernanceTokenAddress,
               chainId,
             })
-          )
-        : // TODO: Index wallet CW20s and load them here.
-          []
+          : isValidWalletAddress(address, CHAIN_BECH32_PREFIX)
+          ? walletCw20BalancesSelector({
+              walletAddress: address,
+              chainId,
+            })
+          : waitForAll([])
+      )
 
-      return [...(nativeTokenBalances || []), ...(cw20TokenBalances || [])]
+      return [...nativeTokenBalances, ...cw20TokenBalances]
     },
 })

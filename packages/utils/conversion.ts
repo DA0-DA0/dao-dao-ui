@@ -1,4 +1,4 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
+import { fromBech32, toBech32, toHex } from '@cosmjs/encoding'
 import { TFunction } from 'next-i18next'
 import { Loadable } from 'recoil'
 
@@ -145,8 +145,8 @@ export const loadableToLoadingDataWithError = <T>(
     : loadable.state === 'hasValue'
     ? {
         loading: false,
-        updating: 'updating' in loadable ? loadable.updating : undefined,
         errored: false,
+        updating: 'updating' in loadable ? loadable.updating : undefined,
         data: loadable.contents,
       }
     : { loading: false, errored: true, error: loadable.contents }
@@ -234,8 +234,15 @@ export const toValidatorAddress = (address: string, bech32Prefix: string) => {
   try {
     return toBech32(bech32Prefix + 'valoper', fromBech32(address).data)
   } catch (err) {
-    // Silently error.
-    console.error(err)
+    return ''
+  }
+}
+
+// Convert bech32 address to general hex bech32 hash.
+export const toBech32Hash = (address: string) => {
+  try {
+    return toHex(fromBech32(address).data)
+  } catch (err) {
     return ''
   }
 }

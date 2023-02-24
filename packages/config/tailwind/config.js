@@ -29,6 +29,7 @@ const tailwindConfig = {
       // https://mediag.com/blog/popular-screen-resolutions-designing-for-all/
       xs: '410px',
       ...defaultTheme.screens,
+      mdlg: '896px',
       '3xl': '1920px',
     },
     extend: {

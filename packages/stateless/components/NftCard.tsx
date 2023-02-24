@@ -18,6 +18,7 @@ import { MarkdownRenderer } from './MarkdownRenderer'
 import { TooltipLikeDisplay } from './tooltip/TooltipLikeDisplay'
 
 export interface NftCardProps extends NftCardInfo {
+  hideCollection?: boolean
   // Alternative label for Owner address.
   ownerLabel?: string
   checkbox?: {
@@ -32,6 +33,7 @@ export interface NftCardProps extends NftCardInfo {
 export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
   function NftCard(
     {
+      hideCollection,
       ownerLabel,
       collection,
       owner,
@@ -122,52 +124,58 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           />
         )}
 
-        <div className="flex flex-col gap-4 border-b border-border-secondary py-4 px-6">
-          {/* Collection */}
-          <div className="flex flex-row items-start justify-between gap-4">
-            <div className="space-y-1">
-              <p className="secondary-text">{t('title.collection')}</p>
+        {(!hideCollection || (owner && EntityDisplay) || floorPrice) && (
+          <div className="flex flex-col gap-4 border-b border-border-secondary py-4 px-6">
+            {/* Collection */}
+            {!hideCollection && (
+              <div className="flex flex-row items-start justify-between gap-4">
+                <div className="space-y-2">
+                  <p className="secondary-text">{t('title.collection')}</p>
 
-              <CopyToClipboardUnderline
-                takeStartEnd={{ start: 7, end: 5 }}
-                value={collection.address}
-              />
-            </div>
+                  <CopyToClipboardUnderline
+                    takeStartEnd={{ start: 7, end: 5 }}
+                    value={collection.address}
+                  />
+                </div>
 
-            {chainImage && (
-              <Image
-                alt=""
-                className="shrink-0"
-                height={20}
-                src={chainImage}
-                width={20}
-              />
+                {chainImage && (
+                  <Image
+                    alt=""
+                    className="shrink-0"
+                    height={20}
+                    src={chainImage}
+                    width={20}
+                  />
+                )}
+              </div>
+            )}
+
+            {/* Owner */}
+            {owner && EntityDisplay && (
+              <div className="space-y-2">
+                <p className="secondary-text">
+                  {ownerLabel || t('title.owner')}
+                </p>
+
+                <EntityDisplay address={owner} />
+              </div>
+            )}
+
+            {/* Floor price */}
+            {floorPrice && (
+              <div className="space-y-2">
+                <p className="secondary-text">{t('title.floorPrice')}</p>
+
+                <p className="body-text font-mono">
+                  {floorPrice.amount.toLocaleString(undefined, {
+                    maximumSignificantDigits: 3,
+                  })}{' '}
+                  ${floorPrice.denom}
+                </p>
+              </div>
             )}
           </div>
-
-          {/* Owner */}
-          {owner && EntityDisplay && (
-            <div className="space-y-1">
-              <p className="secondary-text">{ownerLabel || t('title.owner')}</p>
-
-              <EntityDisplay address={owner} />
-            </div>
-          )}
-
-          {/* Floor price */}
-          {floorPrice && (
-            <div className="space-y-1">
-              <p className="secondary-text">{t('title.floorPrice')}</p>
-
-              <p className="body-text font-mono">
-                {floorPrice.amount.toLocaleString(undefined, {
-                  maximumSignificantDigits: 3,
-                })}{' '}
-                ${floorPrice.denom}
-              </p>
-            </div>
-          )}
-        </div>
+        )}
 
         <div
           className="flex min-h-[5.5rem] grow flex-col gap-2 py-4 px-6"

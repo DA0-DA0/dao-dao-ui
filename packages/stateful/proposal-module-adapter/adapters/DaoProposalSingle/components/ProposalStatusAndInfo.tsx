@@ -261,6 +261,11 @@ const InnerProposalStatusAndInfo = ({
   })
 
   const [actionLoading, setActionLoading] = useState(false)
+  // On proposal status update, stop loading. This ensures the action button
+  // doesn't stop loading too early, before the status has refreshed.
+  useEffect(() => {
+    setActionLoading(false)
+  }, [proposal.status])
 
   const onExecute = useCallback(async () => {
     if (!connected) return
@@ -276,9 +281,12 @@ const InnerProposalStatusAndInfo = ({
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
-    } finally {
+
+      // Stop loading if errored.
       setActionLoading(false)
     }
+
+    // Loading will stop on success when status refreshes.
   }, [connected, executeProposal, proposalNumber, onExecuteSuccess])
 
   const onClose = useCallback(async () => {
@@ -295,9 +303,12 @@ const InnerProposalStatusAndInfo = ({
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
-    } finally {
+
+      // Stop loading if errored.
       setActionLoading(false)
     }
+
+    // Loading will stop on success when status refreshes.
   }, [connected, closeProposal, proposalNumber, onCloseSuccess])
 
   const awaitNextBlock = useAwaitNextBlock()
@@ -329,17 +340,6 @@ const InnerProposalStatusAndInfo = ({
     refreshProposalAndAll,
     awaitNextBlock,
   ])
-
-  // Refresh proposal every 30 seconds, while voting open. Refreshes status and
-  // votes.
-  useEffect(() => {
-    if (!proposal.votingOpen) {
-      return
-    }
-
-    const interval = setInterval(refreshProposal, 30 * 1000)
-    return () => clearInterval(interval)
-  }, [refreshProposal, proposal.votingOpen])
 
   return (
     <StatelessProposalStatusAndInfo

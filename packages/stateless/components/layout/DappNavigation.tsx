@@ -23,7 +23,7 @@ import { Loader } from '../logo/Loader'
 import { Logo } from '../logo/Logo'
 import { PricePercentChange } from '../token/PricePercentChange'
 import { Tooltip } from '../tooltip/Tooltip'
-import { useAppLayoutContext } from './AppLayoutContext'
+import { useAppContext } from './AppContext'
 import { Footer } from './Footer'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
@@ -70,7 +70,7 @@ export const DappNavigation = ({
       toggle: toggleResponsive,
     },
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
-  } = useAppLayoutContext()
+  } = useAppContext()
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(

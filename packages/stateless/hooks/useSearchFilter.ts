@@ -5,7 +5,7 @@ import { SearchBarProps } from '../components'
 
 interface UseSearchFilterReturn<T> {
   searchBarProps: SearchBarProps
-  filteredData: T[]
+  filteredData: { item: T; originalIndex: number }[]
   setFilter: Dispatch<SetStateAction<string>>
 }
 
@@ -31,7 +31,18 @@ export const useSearchFilter = <T extends unknown>(
 
   const [filter, setFilter] = useState('')
   const filteredData = useMemo(
-    () => (filter ? fuse.search(filter).map(({ item }) => item) : [...data]),
+    () =>
+      filter
+        ? fuse.search(filter).map(({ item, refIndex }) => ({
+            item,
+            originalIndex: refIndex,
+          }))
+        : [
+            ...data.map((item, originalIndex) => ({
+              item,
+              originalIndex,
+            })),
+          ],
     [filter, fuse, data]
   )
 

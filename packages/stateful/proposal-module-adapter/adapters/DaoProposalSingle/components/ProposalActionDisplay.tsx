@@ -77,6 +77,7 @@ const InnerProposalActionDisplay = ({
     <div className="space-y-3">
       <ActionsRenderer
         actionData={actionData}
+        availableActions={availableActions}
         onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
       />
 

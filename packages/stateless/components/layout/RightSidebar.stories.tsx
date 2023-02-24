@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { makeAppLayoutContextDecorator } from '@dao-dao/storybook/decorators'
+import { makeAppContextDecorator } from '@dao-dao/storybook/decorators'
 
 import { RightSidebar, RightSidebarProps } from './RightSidebar'
 import { SidebarWallet, SidebarWalletProps } from './SidebarWallet'
@@ -9,7 +9,7 @@ import { Connected as ConnectedSidebarWalletStory } from './SidebarWallet.Sideba
 export default {
   title: 'DAO DAO / packages / stateless / components / layout / RightSidebar',
   component: RightSidebar,
-  decorators: [makeAppLayoutContextDecorator(true)],
+  decorators: [makeAppContextDecorator(true)],
   excludeStories: ['DefaultArgs'],
 } as ComponentMeta<typeof RightSidebar>
 
@@ -23,7 +23,6 @@ export const DefaultArgs: RightSidebarProps = {
       {...(ConnectedSidebarWalletStory.args as SidebarWalletProps)}
     />
   ),
-  setContentRef: () => {},
 }
 
 export const Default = Template.bind({})

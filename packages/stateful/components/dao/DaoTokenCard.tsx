@@ -217,7 +217,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
           extraSections: extraActionSections,
         }}
         lazyInfo={loadableToLoadingData(lazyInfoLoadable, {
-          usdcUnitPrice: undefined,
+          usdUnitPrice: undefined,
           stakingInfo: undefined,
         })}
         onClaim={onClaim}

@@ -104,7 +104,7 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
     lazyInfo: {
       loading: false,
       data: {
-        usdcUnitPrice: {
+        usdUnitPrice: {
           amount: 5.38,
           timestamp: new Date(),
         },

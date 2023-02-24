@@ -10,7 +10,8 @@ import {
   IconButton,
   Loader,
   NoContent,
-  useAppLayoutContext,
+  PageHeaderContent,
+  RightSidebarContent,
 } from '../components'
 import { useNavHelpers } from '../hooks'
 
@@ -27,7 +28,6 @@ export const Inbox = ({
 }: InboxProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useNavHelpers()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const [refreshSpinning, setRefreshSpinning] = useState(false)
   // Start spinning refresh icon if refreshing sets to true. Turn off once the
@@ -39,7 +39,7 @@ export const Inbox = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader
+      <PageHeaderContent
         className="mx-auto max-w-5xl"
         rightNode={
           <IconButton

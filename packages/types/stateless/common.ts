@@ -17,6 +17,7 @@ export type LoadingDataWithError<D> =
       loading: false
       updating?: boolean
       errored: false
+      updating?: boolean
       data: D
     }
   | {
