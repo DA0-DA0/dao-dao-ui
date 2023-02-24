@@ -18,7 +18,6 @@ import { useThemeContext } from '../theme'
 
 export const Me = ({
   rightSidebarContent,
-  // MeIdentity,
   MeBalances,
   MeTransactionBuilder,
   walletAddress,
@@ -28,11 +27,6 @@ export const Me = ({
   const { isFallback } = useRouter()
 
   const tabs: MeTab[] = [
-    // {
-    //   id: MeTabId.Identity,
-    //   label: t('title.identity'),
-    //   Component: MeIdentity,
-    // },
     {
       id: MeTabId.Balances,
       label: t('title.balances'),

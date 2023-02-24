@@ -5,20 +5,17 @@ import {
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
   queryWalletIndexerSelector,
-  refreshCheckmarkStatusAtom,
   refreshHiddenBalancesAtom,
   refreshSavedTxsAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
-  MeIdentityStatus,
   MeTransactionSave,
   TokenCardInfo,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHECKMARK_API_BASE,
   KVPK_API_BASE,
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
@@ -152,32 +149,6 @@ export const hiddenBalancesSelector = selectorFamily<string[], string>({
       }
     },
 })
-
-// Takes wallet public key as a parameter.
-export const checkmarkStatusSelector = selectorFamily<MeIdentityStatus, string>(
-  {
-    key: 'checkmarkStatus',
-    get:
-      (walletPublicKey) =>
-      async ({ get }) => {
-        get(refreshCheckmarkStatusAtom)
-
-        const response = await fetch(
-          CHECKMARK_API_BASE + `/status/${walletPublicKey}`
-        )
-
-        if (response.ok) {
-          return await response.json()
-        } else {
-          throw new Error(
-            `Failed to fetch checkmark status: ${response.status}/${
-              response.statusText
-            } ${await response.text().catch(() => '')}`.trim()
-          )
-        }
-      },
-  }
-)
 
 type ContractWithBalance = {
   contractAddress: string

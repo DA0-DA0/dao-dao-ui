@@ -160,16 +160,6 @@ export const FOLLOWING_DAOS_API_BASE = process.env
 // KVPK API (https://github.com/DA0-DA0/kvpk)
 export const KVPK_API_BASE = process.env.NEXT_PUBLIC_KVPK_API_BASE as string
 
-// Checkmark API (https://github.com/DA0-DA0/checkmark)
-export const CHECKMARK_API_BASE = process.env
-  .NEXT_PUBLIC_CHECKMARK_API_BASE as string
-export const CHECKMARK_CONTRACT = process.env
-  .NEXT_PUBLIC_CHECKMARK_CONTRACT as string
-export const CHECKMARK_PAYMENT_CONTRACT = process.env
-  .NEXT_PUBLIC_CHECKMARK_PAYMENT_CONTRACT as string
-export const SYNAPS_CLIENT_ID = process.env.SYNAPS_CLIENT_ID as string
-export const SYNAPS_API_KEY = process.env.SYNAPS_API_KEY as string
-
 // The key for the item in the DAO core contract that contains the payroll
 // config.
 export const DAO_CORE_PAYROLL_CONFIG_ITEM_KEY = 'payroll'

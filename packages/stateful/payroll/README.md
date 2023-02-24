@@ -7,7 +7,6 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 | Adapter                               | Summary                         |
 | ------------------------------------- | ------------------------------- |
 | [Retroactive](./adapters/Retroactive) | Retroactive compensation system |
-| [Vesting](./adapters/Vesting)         | Vesting payments system         |
 
 ## Layout
 

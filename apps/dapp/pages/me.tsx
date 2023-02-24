@@ -37,7 +37,6 @@ const MePage: NextPage = () => {
       {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
       <SuspenseLoader fallback={<Loader />} forceFallback={profileData.loading}>
         <Me
-          // MeIdentity={MeIdentity}
           MeBalances={MeBalances}
           MeTransactionBuilder={MeTransactionBuilder}
           profileData={profileData}

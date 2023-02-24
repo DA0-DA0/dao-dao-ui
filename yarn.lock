@@ -6110,11 +6110,6 @@
   dependencies:
     tslib "^2.4.0"
 
-"@synaps-io/react-verify@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@synaps-io/react-verify/-/react-verify-1.0.3.tgz#134ba30a4e4f92e058416752d31ce418b878f44c"
-  integrity sha512-jsZLuHHjjnWz/p/+DpokHkLeMc7/i8N2AhHYA6FFOxT0xuJwMCq6vc8IHREvpAaTMiikvW7CqnAiPMRTI+Nvuw==
-
 "@tailwindcss/line-clamp@^0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@tailwindcss/line-clamp/-/line-clamp-0.3.1.tgz#4d8441b509b87ece84e94f28a4aa9998413ab849"

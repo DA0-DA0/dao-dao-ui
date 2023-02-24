@@ -36,9 +36,6 @@ Default.args = {
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
-  // MeIdentity: () => (
-  //   <MeIdentityStory {...(MeIdentityStory.args as MeIdentityProps)} />
-  // ),
   MeBalances: () => (
     <MeBalancesStory
       {...(MeBalancesStory.args as MeBalancesProps<
