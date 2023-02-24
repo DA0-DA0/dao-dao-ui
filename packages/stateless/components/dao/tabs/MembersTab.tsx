@@ -156,7 +156,7 @@ export const MembersTab = ({
 
                 <TooltipInfoIcon
                   size="sm"
-                  title={t('info.percentagesShownAreVotingPower')}
+                  title={t('info.percentagesRepresentVotingPower')}
                 />
               </div>
 
