@@ -88,7 +88,7 @@ export const MembersTab = ({
           (a.votingPowerPercent.loading ? 0 : a.votingPowerPercent.data)
       )
 
-  // Get members that hold the top x% of voting power.
+  // Get members that hold the top voting power.
   const topMemberUpperIndex =
     topStakerState < 0
       ? -topStakerState
@@ -172,30 +172,16 @@ export const MembersTab = ({
                 <Fragment key={address}>
                   <topVoters.EntityDisplay address={address} />
 
-                  <div className="relative flex h-8 w-full flex-row items-stretch justify-between">
-                    {/* Bar color */}
-                    <div
-                      className="absolute top-0 bottom-0 left-0"
-                      style={{
-                        backgroundColor:
-                          VOTING_POWER_DISTRIBUTION_COLORS_ORDERED[
-                            index %
-                              VOTING_POWER_DISTRIBUTION_COLORS_ORDERED.length
-                          ],
-                        width: votingPowerPercent.loading
-                          ? 0
-                          : formatPercentOf100(votingPowerPercent.data),
-                      }}
-                    ></div>
-
-                    {/* Vertical bars */}
-                    {[...Array(NUM_VERTICAL_BARS)].map((_, index) => (
-                      <div
-                        key={index}
-                        className="-mt-[2px] -mb-[2px] w-[1px] bg-border-secondary"
-                      ></div>
-                    ))}
-                  </div>
+                  <Bar
+                    color={
+                      VOTING_POWER_DISTRIBUTION_COLORS_ORDERED[
+                        index % VOTING_POWER_DISTRIBUTION_COLORS_ORDERED.length
+                      ]
+                    }
+                    percent={
+                      votingPowerPercent.loading ? 0 : votingPowerPercent.data
+                    }
+                  />
 
                   <p className="caption-text text-right font-mono text-text-tertiary">
                     {votingPowerPercent.loading
