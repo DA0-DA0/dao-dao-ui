@@ -22,7 +22,7 @@ export const Me = ({
   MeBalances,
   MeTransactionBuilder,
   walletAddress,
-  loadingProfile,
+  profileData,
 }: MeProps) => {
   const { t } = useTranslation()
   const { isFallback } = useRouter()
@@ -81,9 +81,9 @@ export const Me = ({
   const { setAccentColor, theme } = useThemeContext()
   // Get average color of image URL.
   const averageImgColorLoadable = useCachedLoadable(
-    loadingProfile.loading
+    profileData.loading
       ? undefined
-      : averageColorSelector(loadingProfile.data.imageUrl)
+      : averageColorSelector(profileData.profile.imageUrl)
   )
 
   // Set theme's accentColor.
@@ -130,19 +130,15 @@ export const Me = ({
       />
 
       <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
-        {!loadingProfile.loading && (
+        {!profileData.loading && (
           <div className="flex flex-col items-center gap-2 pb-4 text-center">
             <ProfileImage
-              imageUrl={
-                loadingProfile.loading
-                  ? undefined
-                  : loadingProfile.data.imageUrl
-              }
-              loading={loadingProfile.loading}
+              imageUrl={profileData.profile.imageUrl}
+              loading={profileData.loading}
               size="xl"
             />
 
-            <p className="hero-text mt-4">{loadingProfile.data.name}</p>
+            <p className="hero-text mt-4">{profileData.profile.name}</p>
 
             <CopyToClipboard takeAll value={walletAddress} />
           </div>

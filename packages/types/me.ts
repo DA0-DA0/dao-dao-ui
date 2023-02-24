@@ -4,7 +4,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { Action, ActionKeyAndData, LoadedActions } from './actions'
 import { CosmosMsgFor_Empty } from './contracts'
 import { NftCardInfo } from './dao'
-import { WalletProfile } from './profile'
+import { WalletProfileData } from './profile'
 import {
   LoadingData,
   LoadingDataWithError,
@@ -40,7 +40,7 @@ export type MeProps = {
   MeBalances: ComponentType
   MeTransactionBuilder: ComponentType
   walletAddress: string
-  loadingProfile: LoadingData<WalletProfile>
+  profileData: WalletProfileData
 }
 
 export type MeTransactionBuilderProps = {

@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 import {
   WalletActionsProviderDecorator,
   WalletProviderDecorator,
@@ -51,13 +52,5 @@ Default.args = {
       {...(MeTransactionBuilderStory.args as MeTransactionBuilderProps)}
     />
   ),
-  loadingProfile: {
-    loading: false,
-    data: {
-      name: 'A Very Real Name',
-      imageUrl: '/noah.jpg',
-      nft: null,
-      nonce: 0,
-    },
-  },
+  profileData: WALLET_PROFILE_DATA,
 }
