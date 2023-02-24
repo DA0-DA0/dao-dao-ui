@@ -305,7 +305,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
         }}
         daosGoverned={daosGoverned}
         lazyInfo={loadableToLoadingData(lazyInfoLoadable, {
-          usdcUnitPrice: undefined,
+          usdUnitPrice: undefined,
           stakingInfo: undefined,
         })}
         refreshUnstakingTasks={refreshNativeTokenStakingInfo}
