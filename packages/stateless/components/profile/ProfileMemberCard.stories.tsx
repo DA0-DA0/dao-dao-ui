@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProfileCardMemberInfoTokens } from '@dao-dao/stateful/voting-module-adapter/components/ProfileCardMemberInfoTokens'
 import { makeProps as makeProfileCardMemberInfoTokensProps } from '@dao-dao/stateful/voting-module-adapter/components/ProfileCardMemberInfoTokens.stories'
+import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 
 import { makeProps as makeUnstakingLineProps } from '../token/UnstakingLine.stories'
 import { UnstakingTaskStatus } from '../token/UnstakingStatus'
@@ -23,15 +24,7 @@ const makeProps = (
   ...args: Parameters<typeof makeProfileCardMemberInfoTokensProps>
 ): ProfileMemberCardProps => ({
   daoName: 'A Very Real DAO',
-  walletProfile: {
-    loading: false,
-    data: {
-      nonce: 0,
-      imageUrl: '/noah.jpg',
-      name: 'A Very Real Person',
-      nft: null,
-    },
-  },
+  walletProfileData: WALLET_PROFILE_DATA,
   membershipInfo: (
     <ProfileCardMemberInfoTokens
       {...makeProfileCardMemberInfoTokensProps(...args)}

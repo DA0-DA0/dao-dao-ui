@@ -1,19 +1,13 @@
 import Fuse from 'fuse.js'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import {
-  constSelector,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-  waitForAll,
-} from 'recoil'
+import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
   searchDaosSelector,
   searchProfilesByNamePrefixSelector,
-  walletHexPublicKeyOverridesAtom,
 } from '@dao-dao/state/recoil'
 import {
   AddressInput as StatelessAddressInput,
@@ -24,9 +18,10 @@ import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
   isValidAddress,
+  toBech32Hash,
 } from '@dao-dao/utils'
 
-import { pfpkProfileSelector } from '../recoil/selectors/profile'
+import { walletProfileDataSelector } from '../recoil/selectors/profile'
 import { EntityDisplay } from './EntityDisplay'
 
 export const AddressInput = <
@@ -64,39 +59,15 @@ export const AddressInput = <
       : undefined
   )
 
-  // Cache searched profiles public keys in background so they're ready if
-  // selected. We cannot retrieve the public key for an address without the
-  // account existing on chain. If we're on a chain the user hasn't used before,
-  // their profile won't actually load in the `EntityDisplay` component.
-  // Profile search uses names and public keys, but `EntityDisplay` needs to
-  // extract the public key from the address. Thus, we can precache the searched
-  // profiles even if they don't exist on the current chain.
-  const setWalletHexPublicKeyOverrides = useSetRecoilState(
-    walletHexPublicKeyOverridesAtom
-  )
-  useEffect(() => {
-    if (
-      searchProfilesLoadable.state === 'hasValue' &&
-      searchProfilesLoadable.contents.length > 0
-    ) {
-      setWalletHexPublicKeyOverrides((prev) =>
-        searchProfilesLoadable.contents.reduce(
-          (acc, { publicKey, address }) => ({
-            ...acc,
-            [address]: publicKey,
-          }),
-          prev
-        )
-      )
-    }
-  }, [searchProfilesLoadable, setWalletHexPublicKeyOverrides])
-
-  useRecoilValueLoadable(
-    searchProfilesLoadable.state === 'hasValue' &&
-      searchProfilesLoadable.contents.length > 0
+  // Get wallet profiles for the search results so we can use the correct images
+  // for consistency (the wallet profile selector handles fallback images).
+  const searchedProfilesLoadable = useRecoilValueLoadable(
+    searchProfilesLoadable.state === 'hasValue'
       ? waitForAll(
-          searchProfilesLoadable.contents.map(({ publicKey }) =>
-            pfpkProfileSelector(publicKey)
+          searchProfilesLoadable.contents.map(({ address }) =>
+            walletProfileDataSelector({
+              address,
+            })
           )
         )
       : constSelector(undefined)
@@ -109,18 +80,24 @@ export const AddressInput = <
       ? [
           ...(searchProfilesLoadable.state === 'hasValue'
             ? searchProfilesLoadable.contents.map(
-                ({ publicKey, address, profile }) => ({
+                ({ address, profile: { name, nft } }, index) => ({
                   type: EntityType.Wallet,
                   address,
-                  name: profile.name,
+                  name,
                   imageUrl:
-                    profile.nft?.imageUrl || getFallbackImage(publicKey),
+                    // Use loaded profile image if available, and fallback to
+                    // image from search, and fallback image otherwise.
+                    (searchedProfilesLoadable.state === 'hasValue' &&
+                      searchedProfilesLoadable.contents?.[index]?.profile
+                        .imageUrl) ||
+                    nft?.imageUrl ||
+                    getFallbackImage(toBech32Hash(address)),
                 })
               )
             : []),
           ...(searchDaosLoadable.state === 'hasValue'
             ? searchDaosLoadable.contents
-                .filter(({ value }) => value?.config && value.proposalCount)
+                .filter(({ value }) => value?.config)
                 .map(
                   ({
                     contractAddress,
@@ -145,7 +122,7 @@ export const AddressInput = <
     () => new Fuse(entities, { keys: ['name'] }),
     // Only reinstantiate fuse when entities deeply changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useDeepCompareMemoize(entities)
+    useDeepCompareMemoize([entities])
   )
   const searchedEntities = useMemo(
     () => (hasFormValue ? fuse.search(formValue).map(({ item }) => item) : []),

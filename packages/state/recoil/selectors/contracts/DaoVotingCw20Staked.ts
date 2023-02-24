@@ -241,3 +241,29 @@ export const isActiveSelector = selectorFamily<
       return await client.isActive(...params)
     },
 })
+
+///! Custom selectors
+
+export const topStakersSelector = selectorFamily<
+  | {
+      address: string
+      balance: string
+      votingPowerPercent: number
+    }[]
+  | undefined,
+  QueryClientParams & { limit?: number }
+>({
+  key: 'daoVotingCw20StakedTopStakers',
+  get:
+    ({ limit, ...queryClientParams }) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw20Staked/topStakers',
+          args: {
+            limit,
+          },
+        })
+      ) ?? undefined,
+})

@@ -20,7 +20,7 @@ export const DappLayout = ({
   navigationProps,
   children,
   rightSidebarProps,
-  walletProfile,
+  walletProfileData,
   connect,
   connected,
   connectWalletButton,
@@ -83,12 +83,8 @@ export const DappLayout = ({
                 <ProfileImage
                   className="bg-background-primary transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed"
                   fallbackIconClassName="!text-icon-primary !w-3/5 !h-3/5"
-                  imageUrl={
-                    !walletProfile || walletProfile.loading
-                      ? undefined
-                      : walletProfile.data.imageUrl
-                  }
-                  loading={!!walletProfile?.loading}
+                  imageUrl={walletProfileData?.profile.imageUrl}
+                  loading={walletProfileData?.loading}
                   size="xs"
                 />
               </div>
@@ -133,7 +129,7 @@ export const DappLayout = ({
 
         {/* Make horizontal padding 1 unit more than page header so that the body is not touching the sides of the page header's bottom border when it scrolls. */}
         <div
-          className="no-scrollbar relative grow overflow-y-auto px-7 pt-10 pb-6"
+          className="no-scrollbar relative grow overflow-y-auto px-7 pt-10 pb-12"
           // PageHeader uses this ID to obtain this element and track its
           // scroll position so that it can move the top gradient accordingly
           // to match the underlying gradient on the page.

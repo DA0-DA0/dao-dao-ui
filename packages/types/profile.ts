@@ -51,3 +51,11 @@ export interface ProfileSearchHit {
     } | null
   }
 }
+
+// Meta info about wallet profile, including loading state and a fallback image.
+export type WalletProfileData = {
+  loading: boolean
+  address: string
+  profile: WalletProfile
+  backupImageUrl: string
+}

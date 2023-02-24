@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProposalWalletVote } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ProposalWalletVote'
+import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import { ProfileVoteCard } from './ProfileVoteCard'
@@ -21,15 +22,7 @@ export const Default = Template.bind({})
 Default.args = {
   votingPower: 32.4,
   daoName: 'Dog Dao',
-  walletProfile: {
-    loading: false,
-    data: {
-      nonce: 0,
-      imageUrl: '/noah.jpg',
-      name: '@Modern-Edamame',
-      nft: null,
-    },
-  },
+  walletProfileData: WALLET_PROFILE_DATA,
   vote: <ProposalWalletVote fallback="hasNoVote" vote={Vote.Yes} />,
 }
 

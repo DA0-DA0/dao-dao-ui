@@ -1,11 +1,13 @@
 import { Code, Wallet } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 
 import { AddressInputProps } from '@dao-dao/types'
 import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
+import { useTrackDropdown } from '../../hooks/useTrackDropdown'
 import { EntityDisplay as StatelessEntityDisplay } from '../EntityDisplay'
 import { Loader } from '../logo/Loader'
 
@@ -24,7 +26,7 @@ export const AddressInput = <
   required,
   className,
   containerClassName,
-  type = 'wallet',
+  type,
   EntityDisplay,
   autofillEntities,
   placeholder,
@@ -35,7 +37,8 @@ export const AddressInput = <
     {}
   )
 
-  const Icon = type === 'wallet' ? Wallet : Code
+  // Default to wallet icon.
+  const Icon = type === 'contract' ? Code : Wallet
 
   // Null if not within a FormProvider.
   const formContext = useFormContext<FV>()
@@ -56,6 +59,7 @@ export const AddressInput = <
   })
 
   const [inputFocused, setInputFocused] = useState(false)
+  const autofillEntityContainerRef = useRef<HTMLDivElement | null>(null)
   const [selectedEntityIndex, setSelectedEntityIndex] = useState(0)
   // Ensure selected index stays valid.
   useEffect(() => {
@@ -63,6 +67,29 @@ export const AddressInput = <
       Math.min(prev, autofillEntities?.entities.length ?? 0)
     )
   }, [autofillEntities])
+  // Scroll to selected entity.
+  useEffect(() => {
+    if (!autofillEntityContainerRef.current || selectedEntityIndex === -1) {
+      return
+    }
+
+    const selected = autofillEntityContainerRef.current.children[
+      selectedEntityIndex
+    ] as HTMLDivElement | undefined
+    if (!selected) {
+      return
+    }
+
+    // If selected entity is not in view, scroll to it.
+    if (
+      selected.offsetTop < autofillEntityContainerRef.current.scrollTop ||
+      selected.offsetTop + selected.clientHeight >
+        autofillEntityContainerRef.current.scrollTop +
+          autofillEntityContainerRef.current.clientHeight
+    ) {
+      selected.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [selectedEntityIndex])
 
   // Only show auto fill dropdown if there are entities to show.
   const showEntityAutoFill =
@@ -140,10 +167,17 @@ export const AddressInput = <
   // is probably showing in a readonly form with submitted data.
   const onlyDisplayEntity = disabled && showEntity
 
+  // Track container to position the autofill dropdown.
+  const { onDropdownRef, onTrackRef } = useTrackDropdown({
+    top: (rect) => rect.bottom + 2,
+    left: (rect) => rect.left - 2,
+    width: (rect) => rect.width + 4,
+  })
+
   return (
     <div
       className={clsx(
-        'secondary-text group relative flex min-w-0 items-center gap-3 bg-transparent font-mono text-sm transition-all',
+        'secondary-text group flex min-w-0 items-center gap-3 bg-transparent font-mono text-sm transition-all',
         // If not only displaying entity, add more border.
         onlyDisplayEntity
           ? 'p-2'
@@ -156,6 +190,7 @@ export const AddressInput = <
         showEntityAutoFill && 'rounded-b-none',
         containerClassName
       )}
+      ref={onTrackRef}
     >
       {!onlyDisplayEntity && (
         <>
@@ -208,43 +243,52 @@ export const AddressInput = <
         />
       )}
 
-      {!disabled && !!autofillEntities && (
-        <div
-          className={clsx(
-            'absolute top-full -left-[2px] -right-[2px] z-10 mt-[2px] overflow-hidden rounded-b-md border-2 border-t-0 border-border-primary bg-component-dropdown transition-all',
-            showEntityAutoFill ? 'opacity-100' : 'pointer-events-none opacity-0'
-          )}
-        >
-          <div className="no-scrollbar flex h-full max-h-80 flex-col overflow-y-auto">
-            {autofillEntities.entities.map((entity, index) => (
-              <div
-                key={entity.address}
-                className={clsx(
-                  'cursor-pointer py-3 pl-4 pr-[6px] transition-all hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
-                  selectedEntityIndex === index &&
-                    'bg-background-interactive-selected'
-                )}
-                onClick={() => selectAutofillEntity(index)}
-              >
-                <StatelessEntityDisplay
-                  address={entity.address}
-                  className="!gap-3"
-                  copyToClipboardProps={{
-                    textClassName: 'no-underline',
-                    tooltip: entity.address,
-                  }}
-                  loadingEntity={{
-                    loading: false,
-                    data: entity,
-                  }}
-                  noCopy
-                  noImageTooltip
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {!disabled &&
+        !!autofillEntities &&
+        createPortal(
+          <div
+            className={clsx(
+              'absolute z-10 overflow-hidden rounded-b-md border-2 border-t-0 border-border-primary bg-component-dropdown transition-opacity',
+              showEntityAutoFill
+                ? 'opacity-100'
+                : 'pointer-events-none opacity-0'
+            )}
+            ref={onDropdownRef}
+          >
+            <div
+              className="no-scrollbar flex h-full max-h-80 flex-col overflow-y-auto"
+              ref={autofillEntityContainerRef}
+            >
+              {autofillEntities.entities.map((entity, index) => (
+                <div
+                  key={entity.address}
+                  className={clsx(
+                    'cursor-pointer py-3 pl-4 pr-[6px] transition-all hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
+                    selectedEntityIndex === index &&
+                      'bg-background-interactive-selected'
+                  )}
+                  onClick={() => selectAutofillEntity(index)}
+                >
+                  <StatelessEntityDisplay
+                    address={entity.address}
+                    className="!gap-3"
+                    copyToClipboardProps={{
+                      textClassName: 'no-underline',
+                      tooltip: entity.address,
+                    }}
+                    loadingEntity={{
+                      loading: false,
+                      data: entity,
+                    }}
+                    noCopy
+                    noImageTooltip
+                  />
+                </div>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   )
 }

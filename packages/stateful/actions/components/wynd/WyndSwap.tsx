@@ -56,8 +56,8 @@ export interface WyndSwapData {
 }
 
 export interface WyndSwapOptions {
-  balances: GenericTokenBalance[]
-  wyndTokens: GenericToken[]
+  loadingBalances: LoadingData<GenericTokenBalance[]>
+  loadingWyndTokens: LoadingData<GenericToken[]>
   simulatingValue: 'tokenIn' | 'tokenOut' | undefined
   estUsdPrice: LoadingData<AmountWithTimestamp | undefined>
   AddressInput: ComponentType<AddressInputProps>
@@ -68,7 +68,13 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { balances, wyndTokens, simulatingValue, estUsdPrice, AddressInput },
+  options: {
+    loadingBalances,
+    loadingWyndTokens,
+    simulatingValue,
+    estUsdPrice,
+    AddressInput,
+  },
 }) => {
   const { t } = useTranslation()
   const { context } = useActionOptions()
@@ -85,14 +91,21 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
     | number
     | undefined
 
+  const loadedBalances = loadingBalances.loading
+    ? undefined
+    : loadingBalances.data
+  const loadedWyndTokens = loadingWyndTokens.loading
+    ? undefined
+    : loadingWyndTokens.data
+
   const tokenInBalance = convertMicroDenomToDenomWithDecimals(
-    balances.find(
+    loadedBalances?.find(
       ({ token }) => token.denomOrAddress === tokenIn.denomOrAddress
     )?.balance || '0',
     tokenIn.decimals
   )
   const tokenOutBalance = convertMicroDenomToDenomWithDecimals(
-    balances.find(
+    loadedBalances?.find(
       ({ token }) => token.denomOrAddress === tokenOut.denomOrAddress
     )?.balance || '0',
     tokenOut.decimals
@@ -100,8 +113,8 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
 
   const availableTokenItems = useMemo(
     () =>
-      wyndTokens.map(({ denomOrAddress, symbol, imageUrl }) => {
-        const { token, balance } = balances.find(
+      loadedWyndTokens?.map(({ denomOrAddress, symbol, imageUrl }) => {
+        const { token, balance } = loadedBalances?.find(
           ({ token }) => token.denomOrAddress === denomOrAddress
         ) ?? { token: undefined, balance: '0' }
 
@@ -130,9 +143,11 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           ),
           contentContainerClassName: '!gap-2',
         }
-      }),
-    [balances, t, wyndTokens]
+      }) ?? [],
+    [loadedBalances, t, loadedWyndTokens]
   )
+
+  const dataLoading = loadingBalances.loading || loadingWyndTokens.loading
 
   const makeTokenTrigger = useCallback(
     ({ imageUrl, symbol, decimals }: GenericToken, balance: number) => {
@@ -141,7 +156,8 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
         ...props
       }) => (
         <Button
-          disabled={!isCreating}
+          className={clsx(dataLoading && 'animate-pulse')}
+          disabled={!isCreating || dataLoading}
           pressed={open}
           variant="ghost"
           {...props}
@@ -166,7 +182,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
       )
       return TokenTrigger
     },
-    [isCreating, t]
+    [dataLoading, isCreating, t]
   )
 
   const TokenInTrigger = useMemo(
@@ -215,9 +231,16 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
             Trigger={TokenInTrigger}
             filterableItemKeys={FILTERABLE_KEYS}
             items={availableTokenItems}
-            onSelect={(_, index) =>
-              setValue(fieldNamePrefix + 'tokenIn', wyndTokens[index])
-            }
+            onSelect={(_, index) => {
+              if (loadingWyndTokens.loading) {
+                return
+              }
+
+              setValue(
+                fieldNamePrefix + 'tokenIn',
+                loadingWyndTokens.data[index]
+              )
+            }}
             searchPlaceholder={t('info.searchForToken')}
           />
 
@@ -234,11 +257,11 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
               ghost
               hidePlusMinus
               max={tokenInBalance}
-              min={1 / 10 ** tokenIn.decimals}
+              min={convertMicroDenomToDenomWithDecimals(1, tokenIn.decimals)}
               register={register}
               setValue={setValue}
               sizing="auto"
-              step={1 / 10 ** tokenIn.decimals}
+              step={convertMicroDenomToDenomWithDecimals(1, tokenIn.decimals)}
               textClassName="text-lg"
               validation={[
                 validateRequired,
@@ -246,7 +269,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
                 (value) =>
                   value <= tokenInBalance ||
                   t(insufficientBalanceI18nKey, {
-                    amount: value.toLocaleString(undefined, {
+                    amount: tokenInBalance.toLocaleString(undefined, {
                       maximumFractionDigits: tokenIn.decimals,
                     }),
                     tokenSymbol: tokenIn.symbol,
@@ -307,9 +330,16 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
             Trigger={TokenOutTrigger}
             filterableItemKeys={FILTERABLE_KEYS}
             items={availableTokenItems}
-            onSelect={(_, index) =>
-              setValue(fieldNamePrefix + 'tokenOut', wyndTokens[index])
-            }
+            onSelect={(_, index) => {
+              if (loadingWyndTokens.loading) {
+                return
+              }
+
+              setValue(
+                fieldNamePrefix + 'tokenOut',
+                loadingWyndTokens.data[index]
+              )
+            }}
             searchPlaceholder={t('info.searchForToken')}
           />
 
@@ -325,11 +355,11 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
               fieldName={fieldNamePrefix + 'tokenOutAmount'}
               ghost
               hidePlusMinus
-              min={1 / 10 ** tokenOut.decimals}
+              min={convertMicroDenomToDenomWithDecimals(1, tokenOut.decimals)}
               register={register}
               setValue={setValue}
               sizing="auto"
-              step={1 / 10 ** tokenOut.decimals}
+              step={convertMicroDenomToDenomWithDecimals(1, tokenOut.decimals)}
               textClassName="text-lg"
               validation={[validateRequired, validatePositive]}
               watch={watch}

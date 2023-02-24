@@ -62,9 +62,8 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
       <div
         className={clsx(
           // Center icon.
-          'relative flex shrink-0 items-center justify-center',
-          (!imageUrl || loadingImage) &&
-            'border border-border-interactive-disabled',
+          'relative flex shrink-0 items-center justify-center border border-transparent',
+          (!imageUrl || loadingImage) && 'border-border-interactive-disabled',
           sizingRoundingClassNames,
           // Pulse person placeholder when loading.
           loadingImage &&
