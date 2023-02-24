@@ -934,7 +934,7 @@
     "numTasks_one": "{{count}} task",
     "numTasks_other": "{{count}} tasks",
     "openProposals": "Open proposals",
-    "otherStakers": "Other Stakers",
+    "otherMembers": "Other Members",
     "owner": "Owner",
     "passingThreshold": "Passing threshold",
     "payout": "Payout",

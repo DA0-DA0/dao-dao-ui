@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { DaoVotingCw20StakedSelectors } from '@dao-dao/state/recoil'
@@ -13,7 +12,6 @@ import {
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
 export const MembersTab = () => {
-  const { t } = useTranslation()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const topStakers =
@@ -37,7 +35,7 @@ export const MembersTab = () => {
       isMember={false}
       members={memberCards}
       topVoters={{
-        otherTitle: t('title.otherStakers'),
+        show: true,
         EntityDisplay,
       }}
     />

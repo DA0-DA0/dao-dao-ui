@@ -22,10 +22,14 @@ export interface MembersTabProps {
   addMemberHref?: string
   ButtonLink: ComponentType<ButtonLinkProps>
   // If defined, will show the top voter distribution.
-  topVoters?: {
-    otherTitle: string
-    EntityDisplay: ComponentType<StatefulEntityDisplayProps>
-  }
+  topVoters:
+    | {
+        show: true
+        EntityDisplay: ComponentType<StatefulEntityDisplayProps>
+      }
+    | {
+        show: false
+      }
 }
 
 // Store absolutes as negative numbers and percentages as positive numbers.
@@ -141,7 +145,7 @@ export const MembersTab = ({
         </div>
       )}
 
-      {topVoters && topMembers.length > 0 && (
+      {topVoters.show && topMembers.length > 0 && (
         <div className="mb-6 flex flex-col items-stretch rounded-lg bg-background-tertiary">
           <div className="flex grow flex-col gap-2 overflow-hidden p-6">
             <div className="mb-4 flex flex-row items-stretch justify-between gap-4">
@@ -226,7 +230,7 @@ export const MembersTab = ({
               {otherVotingPowerPercent > 0 && (
                 <>
                   <p className="primary-text font-bold text-text-secondary">
-                    {topVoters.otherTitle}
+                    {t('title.otherMembers')}
                   </p>
 
                   <Bar
