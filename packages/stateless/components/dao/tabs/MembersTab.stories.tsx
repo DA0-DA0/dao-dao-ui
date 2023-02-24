@@ -41,7 +41,6 @@ Default.args = {
   addMemberHref: '#',
   ButtonLink,
   topVoters: {
-    title: 'Top Voters',
     otherTitle: 'Other Voters',
     EntityDisplay,
   },

@@ -37,7 +37,6 @@ export const MembersTab = () => {
       isMember={false}
       members={memberCards}
       topVoters={{
-        title: t('title.topStakers'),
         otherTitle: t('title.otherStakers'),
         EntityDisplay,
       }}

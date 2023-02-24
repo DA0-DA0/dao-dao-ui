@@ -23,7 +23,6 @@ export interface MembersTabProps {
   ButtonLink: ComponentType<ButtonLinkProps>
   // If defined, will show the top voter distribution.
   topVoters?: {
-    title: string
     otherTitle: string
     EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   }
@@ -147,7 +146,9 @@ export const MembersTab = ({
           <div className="flex grow flex-col gap-2 overflow-hidden p-6">
             <div className="mb-4 flex flex-row items-stretch justify-between gap-4">
               <div className="flex flex-row items-center gap-2">
-                <p className="primary-text text-text-body">{topVoters.title}</p>
+                <p className="primary-text text-text-body">
+                  {t('title.whoControlsDaoQuestion')}
+                </p>
 
                 <TooltipInfoIcon
                   size="sm"
@@ -208,7 +209,7 @@ export const MembersTab = ({
                   <div></div>
 
                   <p className="primary-text font-bold text-text-secondary">
-                    {topStakerStateOption?.label ?? topVoters.title}
+                    {topStakerStateOption?.label ?? t('title.total')}
                   </p>
 
                   <Bar
