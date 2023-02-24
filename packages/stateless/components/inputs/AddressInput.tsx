@@ -7,7 +7,7 @@ import { FieldValues, Path, useFormContext } from 'react-hook-form'
 import { AddressInputProps } from '@dao-dao/types'
 import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
 
-import { useTrackElement } from '../../hooks'
+import { useTrackDropdown } from '../../hooks/useTrackDropdown'
 import { EntityDisplay as StatelessEntityDisplay } from '../EntityDisplay'
 import { Loader } from '../logo/Loader'
 
@@ -168,7 +168,11 @@ export const AddressInput = <
   const onlyDisplayEntity = disabled && showEntity
 
   // Track container to position the autofill dropdown.
-  const { rect: addressInputRect, elementRef: containerRef } = useTrackElement()
+  const { onDropdownRef, onTrackRef } = useTrackDropdown({
+    top: (rect) => rect.bottom + 2,
+    left: (rect) => rect.left - 2,
+    width: (rect) => rect.width + 4,
+  })
 
   return (
     <div
@@ -186,7 +190,7 @@ export const AddressInput = <
         showEntityAutoFill && 'rounded-b-none',
         containerClassName
       )}
-      ref={containerRef}
+      ref={onTrackRef}
     >
       {!onlyDisplayEntity && (
         <>
@@ -241,20 +245,15 @@ export const AddressInput = <
 
       {!disabled &&
         !!autofillEntities &&
-        addressInputRect &&
         createPortal(
           <div
             className={clsx(
-              'absolute z-10 overflow-hidden rounded-b-md border-2 border-t-0 border-border-primary bg-component-dropdown transition-all',
+              'absolute z-10 overflow-hidden rounded-b-md border-2 border-t-0 border-border-primary bg-component-dropdown transition-opacity',
               showEntityAutoFill
                 ? 'opacity-100'
                 : 'pointer-events-none opacity-0'
             )}
-            style={{
-              top: addressInputRect.bottom + 2,
-              left: addressInputRect.left - 2,
-              width: addressInputRect.width + 4,
-            }}
+            ref={onDropdownRef}
           >
             <div
               className="no-scrollbar flex h-full max-h-80 flex-col overflow-y-auto"

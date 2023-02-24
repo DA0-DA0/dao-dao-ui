@@ -232,6 +232,7 @@ export enum DaoTabId {
   Members = 'members',
   Payroll = 'payroll',
   Staked = 'staked',
+  Collection = 'collection',
 }
 
 export type DaoTab = {

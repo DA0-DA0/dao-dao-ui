@@ -9,7 +9,11 @@ export const NftCard = (props: Omit<NftCardProps, 'EntityDisplay'>) => (
   <StatelessNftCard {...props} EntityDisplay={EntityDisplay} />
 )
 
+export const NftCardNoCollection = (props: ComponentProps<typeof NftCard>) => (
+  <NftCard hideCollection {...props} />
+)
+
 export const StakedNftCard = (props: ComponentProps<typeof NftCard>) => {
   const { t } = useTranslation()
-  return <NftCard ownerLabel={t('title.staker')} {...props} />
+  return <NftCard hideCollection ownerLabel={t('title.staker')} {...props} />
 }
