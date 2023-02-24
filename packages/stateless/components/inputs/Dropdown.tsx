@@ -1,8 +1,10 @@
 import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
+import { useTrackDropdown } from '../../hooks/useTrackDropdown'
 import { Button } from '../buttons'
 
 export interface DropdownOption<T> {
@@ -35,7 +37,7 @@ export const Dropdown = <T extends unknown>({
 }: DropdownProps<T>) => {
   const { t } = useTranslation()
 
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
   const [open, setOpen] = useState(false)
 
   const selectedOptions =
@@ -68,18 +70,23 @@ export const Dropdown = <T extends unknown>({
     return () => window.removeEventListener('click', closeIfClickOutside)
   }, [open])
 
+  // Track button to position the dropdown.
+  const { onDropdownRef, onTrackRef } = useTrackDropdown()
+
   return (
-    <div
-      className={clsx('relative inline-block', containerClassName)}
-      ref={containerRef}
-    >
+    <>
       <div
         className={clsx(
-          'overflow-hidden rounded-md border border-b-0 transition-all',
+          'inline-block overflow-hidden rounded-md border border-b-0 transition-all',
           open
             ? 'rounded-b-none border-border-primary bg-component-dropdown'
-            : 'border-transparent '
+            : 'border-transparent',
+          containerClassName
         )}
+        ref={(ref) => {
+          containerRef.current = ref
+          onTrackRef(ref)
+        }}
       >
         <Button
           className="rounded-none"
@@ -112,35 +119,36 @@ export const Dropdown = <T extends unknown>({
       </div>
 
       {/* Dropdown */}
-      <div
-        className={clsx(
-          'absolute right-0 left-0 z-10 overflow-hidden rounded-b-md border border-t-0 border-border-primary bg-component-dropdown transition-all',
-          {
-            'pointer-events-none opacity-0': !open,
-            'opacity-100': open,
-          }
-        )}
-      >
-        <div className="no-scrollbar flex h-full max-h-80 flex-col gap-[1px] overflow-y-auto border-t border-t-border-base">
-          {options.map((option, index) => (
-            <Button
-              key={index}
-              className="rounded-none text-left"
-              onClick={() => {
-                onSelect(option.value, index)
+      {createPortal(
+        <div
+          className={clsx(
+            'absolute z-10 overflow-hidden rounded-b-md border border-t-0 border-border-primary bg-component-dropdown transition-opacity',
+            open ? 'opacity-100' : 'pointer-events-none opacity-0'
+          )}
+          ref={onDropdownRef}
+        >
+          <div className="no-scrollbar flex h-full max-h-80 flex-col gap-[1px] overflow-y-auto border-t border-t-border-base">
+            {options.map((option, index) => (
+              <Button
+                key={index}
+                className="rounded-none text-left"
+                onClick={() => {
+                  onSelect(option.value, index)
 
-                if (!keepOpenOnSelect) {
-                  setOpen(false)
-                }
-              }}
-              pressed={selectedOptions.includes(option)}
-              variant="ghost"
-            >
-              {option.label}
-            </Button>
-          ))}
-        </div>
-      </div>
-    </div>
+                  if (!keepOpenOnSelect) {
+                    setOpen(false)
+                  }
+                }}
+                pressed={selectedOptions.includes(option)}
+                variant="ghost"
+              >
+                {option.label}
+              </Button>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   )
 }
