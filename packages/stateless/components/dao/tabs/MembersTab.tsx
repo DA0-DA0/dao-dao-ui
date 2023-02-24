@@ -18,6 +18,7 @@ import { VOTING_POWER_DISTRIBUTION_COLORS_ORDERED } from '../create'
 export interface MembersTabProps {
   DaoMemberCard: ComponentType<StatefulDaoMemberCardProps>
   members: StatefulDaoMemberCardProps[]
+  membersFailedToLoad: boolean
   isMember: boolean
   addMemberHref?: string
   ButtonLink: ComponentType<ButtonLinkProps>
@@ -45,6 +46,7 @@ const NUM_VERTICAL_BARS = 10
 export const MembersTab = ({
   DaoMemberCard,
   members,
+  membersFailedToLoad,
   isMember,
   addMemberHref,
   ButtonLink,
@@ -237,16 +239,23 @@ export const MembersTab = ({
       <div
         className={clsx(
           'pb-6',
-          // header min-height of 3.5rem standardized across all tabs
-          !addMemberHref && 'flex min-h-[3.5rem] flex-row items-center '
+          // header min-height of 3.5rem standardized across all tabs if add
+          // members header is not showing at the top
+          !addMemberHref && 'flex min-h-[3.5rem] flex-row items-center'
         )}
       >
         <p className="title-text text-text-body">
-          {t('title.numMembers', { count: members.length })}
+          {membersFailedToLoad
+            ? t('error.failedToLoadMembersTitle')
+            : t('title.numMembers', { count: members.length })}
         </p>
       </div>
 
-      {members.length ? (
+      {membersFailedToLoad ? (
+        <p className="secondary-text">
+          {t('error.failedToLoadMembersDescription')}
+        </p>
+      ) : members.length ? (
         <GridCardContainer>
           {members.map((props, index) => (
             <DaoMemberCard {...props} key={index} />

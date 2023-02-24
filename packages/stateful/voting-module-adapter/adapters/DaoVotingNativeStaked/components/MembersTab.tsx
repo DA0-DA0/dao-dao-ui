@@ -1,6 +1,6 @@
 import { useRecoilValue } from 'recoil'
 
-import { DaoVotingCw20StakedSelectors } from '@dao-dao/state/recoil'
+import { DaoVotingNativeStakedSelectors } from '@dao-dao/state/recoil'
 import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
 import { StatefulDaoMemberCardProps } from '@dao-dao/types'
 
@@ -15,7 +15,7 @@ export const MembersTab = () => {
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const topStakers = useRecoilValue(
-    DaoVotingCw20StakedSelectors.topStakersSelector({
+    DaoVotingNativeStakedSelectors.topStakersSelector({
       contractAddress: votingModuleAddress,
     })
   )

@@ -26,6 +26,7 @@ export const MembersTab = () => {
   })
   const { members } = useCw4VotingModule(coreAddress, { fetchMembers: true })
 
+  // Should never happen. Type-check.
   if (!members) {
     throw new Error(t('error.loadingData'))
   }
@@ -70,6 +71,7 @@ export const MembersTab = () => {
       }
       isMember={isMember}
       members={memberCards}
+      membersFailedToLoad={false}
       topVoters={{
         show: false,
       }}
