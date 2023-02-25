@@ -16,6 +16,7 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
@@ -85,8 +86,6 @@ export const savedTxsSelector = selectorFamily<MeTransactionSave[], string>({
       }
     },
 })
-
-export const HIDDEN_BALANCE_PREFIX = 'hiddenBalance:'
 
 // This doesn't update right away due to Cloudflare KV Store latency, so this
 // serves to keep track of all successful updates for the current session. This

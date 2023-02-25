@@ -24,6 +24,7 @@ import {
 } from '@dao-dao/stateless'
 import { TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
+  HIDDEN_BALANCE_PREFIX,
   JUNO_USDC_DENOM,
   KVPK_API_BASE,
   NATIVE_DENOM,
@@ -38,7 +39,6 @@ import {
   useWalletInfo,
 } from '../hooks'
 import {
-  HIDDEN_BALANCE_PREFIX,
   hiddenBalancesSelector,
   temporaryHiddenBalancesAtom,
   tokenCardLazyInfoSelector,
