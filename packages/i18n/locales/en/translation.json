@@ -577,6 +577,7 @@
     "manageTreasuryTokensDescription": "Manage Tokens displayed on your DAO's treasury page.",
     "manageVestingDescription": "Create a vesting contract that will release tokens to a recipient over time, or cancel an existing one.",
     "maxSlippageDescription": "As the transaction is executing, the swap price will fluctuate. If the price slips beyond this maximum slippage, the swap will not occur.",
+    "meBalancesNftsDescription": "These are the NFTs you own on Juno and Stargaze.",
     "members": "members",
     "membershipDaoNotMemberInfo_dao": "You are not a member of {{daoName}}. To become a member, existing members must vote to add you.",
     "membershipDaoNotMemberInfo_proposal": "You were not a member of {{daoName}} when this proposal was created, so you cannot vote on it.",

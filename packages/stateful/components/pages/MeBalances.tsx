@@ -1,5 +1,4 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useEffect } from 'react'
 
 import {
   MeBalances as StatelessMeBalances,
@@ -9,42 +8,35 @@ import { loadableToLoadingData } from '@dao-dao/utils'
 
 import {
   hiddenBalancesSelector,
-  walletNftCardInfos,
+  walletNativeAndStargazeNftsSelector,
   walletTokenCardInfosSelector,
 } from '../../recoil'
 import { NftCard } from '../NftCard'
 import { WalletTokenCard } from '../WalletTokenCard'
 
 export const MeBalances = () => {
-  const { address: walletAddress = '', publicKey, chainInfo } = useWallet()
+  const { address: walletAddress, publicKey, chainInfo } = useWallet()
 
-  const tokenCardInfosLoadable = useCachedLoadable(
-    walletTokenCardInfosSelector({
-      walletAddress,
-      chainId: chainInfo?.chainId,
-    })
-  )
-  const nftCardInfosLoadable = useCachedLoadable(
-    walletNftCardInfos({
-      walletAddress,
-      chainId: chainInfo?.chainId,
-    })
+  const tokens = loadableToLoadingData(
+    useCachedLoadable(
+      walletAddress
+        ? walletTokenCardInfosSelector({
+            walletAddress,
+            chainId: chainInfo?.chainId,
+          })
+        : undefined
+    ),
+    []
   )
 
-  //! Loadable errors.
-  useEffect(() => {
-    if (tokenCardInfosLoadable.state === 'hasError') {
-      console.error(tokenCardInfosLoadable.contents)
-    }
-    if (nftCardInfosLoadable.state === 'hasError') {
-      console.error(nftCardInfosLoadable.contents)
-    }
-  }, [
-    nftCardInfosLoadable.contents,
-    nftCardInfosLoadable.state,
-    tokenCardInfosLoadable.contents,
-    tokenCardInfosLoadable.state,
-  ])
+  const nfts = loadableToLoadingData(
+    useCachedLoadable(
+      walletAddress
+        ? walletNativeAndStargazeNftsSelector(walletAddress)
+        : undefined
+    ),
+    []
+  )
 
   const hiddenTokens = loadableToLoadingData(
     useCachedLoadable(
@@ -58,8 +50,8 @@ export const MeBalances = () => {
       NftCard={NftCard}
       TokenCard={WalletTokenCard}
       hiddenTokens={hiddenTokens}
-      nfts={loadableToLoadingData(nftCardInfosLoadable, [])}
-      tokens={loadableToLoadingData(tokenCardInfosLoadable, [])}
+      nfts={nfts}
+      tokens={tokens}
     />
   )
 }

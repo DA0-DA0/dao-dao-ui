@@ -12,6 +12,7 @@ import {
   ProfileImage,
   RightSidebarContent,
   SegmentedControls,
+  useAppContext,
 } from '../components'
 import { useCachedLoadable } from '../hooks'
 import { useThemeContext } from '../theme'
@@ -113,6 +114,9 @@ export const Me = ({
     averageImgColorLoadable.contents,
   ])
 
+  const canEditProfile = !profileData.loading && profileData.profile.nonce >= 0
+  const { updateProfileNft } = useAppContext()
+
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
@@ -129,6 +133,7 @@ export const Me = ({
             <ProfileImage
               imageUrl={profileData.profile.imageUrl}
               loading={profileData.loading}
+              onEdit={canEditProfile ? updateProfileNft.toggle : undefined}
               size="xl"
             />
 

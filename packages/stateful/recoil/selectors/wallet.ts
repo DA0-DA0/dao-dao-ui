@@ -1,3 +1,4 @@
+import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { atomFamily, selectorFamily, waitForAll } from 'recoil'
 
 import {
@@ -11,6 +12,7 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   MeTransactionSave,
+  NftCardInfo,
   TokenCardInfo,
   TokenType,
   WithChainId,
@@ -21,6 +23,12 @@ import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
+
+import {
+  walletNftCardInfos,
+  walletStakedNftCardInfosSelector,
+  walletStargazeNftCardInfosSelector,
+} from './nft'
 
 export const SAVED_TX_PREFIX = 'savedTx:'
 
@@ -243,5 +251,35 @@ export const walletTokenCardInfosSelector = selectorFamily<
       ]
 
       return infos
+    },
+})
+
+export const walletNativeAndStargazeNftsSelector = selectorFamily<
+  NftCardInfo[],
+  string
+>({
+  key: 'walletNativeAndStargazeNfts',
+  get:
+    (walletAddress) =>
+    ({ get }) => {
+      const nativeNfts = get(
+        walletNftCardInfos({
+          walletAddress,
+        })
+      )
+
+      const nativeStakedNfts = get(
+        walletStakedNftCardInfosSelector({
+          walletAddress,
+        })
+      )
+
+      const stargazeNfts = get(
+        walletStargazeNftCardInfosSelector(
+          toBech32('stars', fromBech32(walletAddress).data)
+        )
+      )
+
+      return [...nativeNfts, ...nativeStakedNfts, ...stargazeNfts]
     },
 })

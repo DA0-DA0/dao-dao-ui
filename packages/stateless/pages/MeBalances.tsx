@@ -96,11 +96,17 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
         (nfts.loading || nfts.data.length > 0 ? (
           <div className="flex flex-col gap-2">
             <div className="mb-6 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
-              <p className="title-text">
-                {nfts.loading
-                  ? t('title.nfts')
-                  : t('title.numNfts', { count: nfts.data.length })}
-              </p>
+              <div className="flex flex-row flex-wrap items-end gap-x-4 gap-y-2">
+                <p className="title-text">
+                  {nfts.loading
+                    ? t('title.nfts')
+                    : t('title.numNfts', { count: nfts.data.length })}
+                </p>
+
+                <p className="secondary-text break-words">
+                  {t('info.meBalancesNftsDescription')}
+                </p>
+              </div>
 
               {!nfts.loading && nfts.data.length > 0 && (
                 <div className="flex flex-row items-center justify-between gap-4">

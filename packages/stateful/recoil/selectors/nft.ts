@@ -240,7 +240,7 @@ export const walletNftCardInfos = selectorFamily<
 
 // Retrieve all NFTs a given wallet address has staked with a DAO (via
 // dao-voting-cw721-staked) using the indexer.
-export const walletStakedNftCardInfos = selectorFamily<
+export const walletStakedNftCardInfosSelector = selectorFamily<
   NftCardInfo[],
   WithChainId<{
     walletAddress: string
