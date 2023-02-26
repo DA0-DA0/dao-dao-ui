@@ -55,11 +55,11 @@ class ChainClientRouter<T> {
  *  */
 export const cosmWasmClientRouter = new ChainClientRouter({
   handleConnect: async (rpcEndpoint: string) => {
-    const httpClient = new HttpBatchClient(rpcEndpoint);
-    const tmClient = await Tendermint34Client.create(httpClient);
+    const httpClient = new HttpBatchClient(rpcEndpoint)
+    const tmClient = await Tendermint34Client.create(httpClient)
     // @ts-ignore
-    const cwClient = new CosmWasmClient(tmClient);
-    return cwClient;
+    const cwClient = new CosmWasmClient(tmClient)
+    return cwClient
   },
 })
 
@@ -68,10 +68,10 @@ export const cosmWasmClientRouter = new ChainClientRouter({
  *  */
 export const stargateClientRouter = new ChainClientRouter({
   handleConnect: async (rpcEndpoint: string) => {
-    const httpClient = new HttpBatchClient(rpcEndpoint);
-    const tmClient = await Tendermint34Client.create(httpClient);
+    const httpClient = new HttpBatchClient(rpcEndpoint)
+    const tmClient = await Tendermint34Client.create(httpClient)
     // @ts-ignore
-    const sgClient = new StargateClient(tmClient);
-    return sgClient;
-  }
+    const sgClient = new StargateClient(tmClient)
+    return sgClient
+  },
 })
