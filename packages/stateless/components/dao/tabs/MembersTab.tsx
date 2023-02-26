@@ -266,7 +266,7 @@ export const MembersTab = ({
           </GridCardContainer>
 
           {/* Pagination */}
-          {maxMembersPage > 1 && (
+          {maxMembersPage > MIN_MEMBERS_PAGE && (
             <div className="mx-auto mt-12 flex max-w-md flex-row items-center justify-between">
               <IconButton
                 Icon={ArrowBackRounded}
