@@ -63,7 +63,7 @@ export const getButtonifiedClassNames = ({
   const disabledOrLoading = disabled || loading
 
   return clsx(
-    'relative block rounded-md transition-all focus:outline-2 focus:outline-background-button-disabled',
+    'relative block transition-all focus:outline-2 focus:outline-background-button-disabled',
 
     // No cursor pointer if disabled or loading.
     disabledOrLoading && 'cursor-default',
