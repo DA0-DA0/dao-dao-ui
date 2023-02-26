@@ -27,6 +27,7 @@ export interface ButtonifierProps {
   className?: string
   children?: ReactNode | ReactNode[]
   center?: boolean
+  circular?: boolean
 }
 
 // Get props that should pass through the Buttonifier, such as native button
@@ -41,6 +42,7 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   className: _className,
   children: _children,
   center: _center,
+  circular: _circular,
   disabled,
   loading,
   ...props
@@ -55,15 +57,19 @@ export const getButtonifiedClassNames = ({
   pressed,
   disabled,
   loading,
+  circular,
   className,
 }: ButtonifierProps) => {
   const disabledOrLoading = disabled || loading
 
   return clsx(
-    'relative block rounded-md transition-all focus:outline-2 focus:outline-background-button-disabled',
+    'relative block transition-all focus:outline-2 focus:outline-background-button-disabled',
 
     // No cursor pointer if disabled or loading.
     disabledOrLoading && 'cursor-default',
+
+    // Rounded if circular.
+    circular ? 'rounded-full' : 'rounded-md',
 
     // Pulse if loading for a variant that we don't display the loader.
     loading && variant === PULSE_LOADING_VARIANTS && 'animate-pulse',
