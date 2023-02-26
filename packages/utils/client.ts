@@ -1,5 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { StargateClient } from '@cosmjs/stargate'
+import { HttpBatchClient, Tendermint34Client } from '@cosmjs/tendermint-rpc'
 
 type ChainClientRoutes<T> = {
   [rpcEndpoint: string]: T
@@ -53,12 +54,24 @@ class ChainClientRouter<T> {
  * Router for connecting to `CosmWasmClient`.
  *  */
 export const cosmWasmClientRouter = new ChainClientRouter({
-  handleConnect: (rpcEndpoint: string) => CosmWasmClient.connect(rpcEndpoint),
+  handleConnect: async (rpcEndpoint: string) => {
+    const httpClient = new HttpBatchClient(rpcEndpoint);
+    const tmClient = await Tendermint34Client.create(httpClient);
+    // @ts-ignore
+    const cwClient = new CosmWasmClient(tmClient);
+    return cwClient;
+  },
 })
 
 /*
  * Router for connecting to `StargateClient`.
  *  */
 export const stargateClientRouter = new ChainClientRouter({
-  handleConnect: (rpcEndpoint: string) => StargateClient.connect(rpcEndpoint),
+  handleConnect: async (rpcEndpoint: string) => {
+    const httpClient = new HttpBatchClient(rpcEndpoint);
+    const tmClient = await Tendermint34Client.create(httpClient);
+    // @ts-ignore
+    const sgClient = new StargateClient(tmClient);
+    return sgClient;
+  }
 })
