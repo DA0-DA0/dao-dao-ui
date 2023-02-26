@@ -96,7 +96,7 @@ export const walletProfileDataSelector = selectorFamily<
       const keplrProfileImage = get(
         noWait(
           keplrProfileImageSelector({
-            address: address,
+            address,
             chainId,
           })
         )
