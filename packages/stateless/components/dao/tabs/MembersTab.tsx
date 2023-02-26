@@ -1,4 +1,9 @@
-import { Add, ArrowBackRounded, ArrowForwardRounded } from '@mui/icons-material'
+import {
+  Add,
+  ArrowBackRounded,
+  ArrowForwardRounded,
+  Remove,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, Fragment, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -294,7 +299,7 @@ export const MembersTab = ({
                   {membersPage}
                 </Button>
               ) : (
-                <p className="secondary-text">...</p>
+                <Remove className="!h-5 !w-5" />
               )}
 
               <Button
