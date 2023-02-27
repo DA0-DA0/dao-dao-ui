@@ -122,7 +122,7 @@ export const Dropdown = <T extends unknown>({
       {createPortal(
         <div
           className={clsx(
-            'absolute z-10 overflow-hidden rounded-b-md border border-t-0 border-border-primary bg-component-dropdown transition-opacity',
+            'fixed z-50 overflow-hidden rounded-b-md border border-t-0 border-border-primary bg-component-dropdown transition-opacity',
             open ? 'opacity-100' : 'pointer-events-none opacity-0'
           )}
           ref={onDropdownRef}

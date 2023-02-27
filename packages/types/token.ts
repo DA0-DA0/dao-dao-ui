@@ -1,3 +1,5 @@
+import { ComponentType } from 'react'
+
 import { Validator } from './chain'
 import { AmountWithTimestamp } from './state'
 import { LoadingData } from './stateless'
@@ -64,4 +66,9 @@ export type TokenCardInfo = {
   // Only native tokens load staking info for now, so let's show a nice loader.
   hasStakingInfo: boolean
   lazyInfo: LoadingData<TokenCardLazyInfo>
+}
+
+export type TokenLineProps<T extends TokenCardInfo = TokenCardInfo> = T & {
+  transparentBackground?: boolean
+  TokenCard: ComponentType<T>
 }

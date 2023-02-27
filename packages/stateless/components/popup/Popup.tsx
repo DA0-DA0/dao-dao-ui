@@ -1,7 +1,10 @@
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { PopupProps } from '@dao-dao/types'
+
+import { useTrackDropdown } from '../../hooks/useTrackDropdown'
 
 export const Popup = ({
   Trigger,
@@ -16,7 +19,7 @@ export const Popup = ({
   openRef,
   setOpenRef,
 }: PopupProps) => {
-  const wrapperRef = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
   const [open, setOpen] = useState(false)
 
   // Store open and setOpen in ref so parent can access them.
@@ -100,39 +103,52 @@ export const Popup = ({
     return () => document.removeEventListener('keydown', listener)
   }, [getKeydownEventListener, open])
 
+  // Track button to position the dropdown.
+  const { onDropdownRef, onTrackRef } = useTrackDropdown({
+    // Offset for outline of Trigger.
+    top: (rect) => rect.bottom + 4,
+    left: position === 'right' ? (rect) => rect.left - 2 : null,
+    right:
+      position === 'left' ? (rect) => window.innerWidth - rect.right : null,
+    width: null,
+  })
+
   return (
-    <div
-      className={clsx('relative inline-block', wrapperClassName)}
-      ref={wrapperRef}
-    >
-      <Trigger onClick={() => setOpen((o) => !o)} open={open} />
+    <>
+      <div
+        className={clsx('inline-block', wrapperClassName)}
+        ref={(ref) => {
+          wrapperRef.current = ref
+          onTrackRef(ref)
+        }}
+      >
+        <Trigger onClick={() => setOpen((o) => !o)} open={open} />
+      </div>
 
       {/* Popup */}
-      <div
-        className={clsx(
-          'absolute top-full z-10 mt-1 flex flex-col rounded-lg border border-border-primary bg-component-dropdown shadow-dp8 transition-all',
-          // Position.
-          {
-            // Offset for outline of Trigger.
-            '-right-[2px]': position === 'left',
-            '-left-[2px]': position === 'right',
-          },
-          // Open.
-          {
-            'pointer-events-none scale-95 opacity-0': !open,
-            'scale-100 opacity-100': open,
-          },
-          popupClassName
-        )}
-      >
-        {headerContent && (
-          <div className="mb-4 border-b border-border-base">
-            <div className="p-4">{headerContent}</div>
-          </div>
-        )}
+      {createPortal(
+        <div
+          className={clsx(
+            'fixed z-50 flex flex-col rounded-lg border border-border-primary bg-component-dropdown shadow-dp8 transition-all',
+            // Open.
+            {
+              'pointer-events-none scale-95 opacity-0': !open,
+              'scale-100 opacity-100': open,
+            },
+            popupClassName
+          )}
+          ref={onDropdownRef}
+        >
+          {headerContent && (
+            <div className="mb-4 border-b border-border-base">
+              <div className="p-4">{headerContent}</div>
+            </div>
+          )}
 
-        {children}
-      </div>
-    </div>
+          {children}
+        </div>,
+        document.body
+      )}
+    </>
   )
 }

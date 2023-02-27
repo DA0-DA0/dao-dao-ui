@@ -7,6 +7,7 @@ import { MeBalancesProps, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
 import { JUNO_USDC_DENOM, NATIVE_DENOM } from '@dao-dao/utils'
 
 import {
+  Button,
   Dropdown,
   DropdownIconButton,
   DropdownOption,
@@ -20,6 +21,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   tokens,
   hiddenTokens,
   TokenCard,
+  TokenLine,
   nfts,
   NftCard,
 }: MeBalancesProps<T, N>) => {
@@ -58,17 +60,28 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
         {tokens.loading || hiddenTokens.loading ? (
           <Loader fill={false} />
         ) : tokens.data.length ? (
-          <GridCardContainer cardType="wide">
-            {visibleBalances.map((props) => (
-              <TokenCard {...props} key={props.token.denomOrAddress} />
+          <div className="space-y-1">
+            <div className="secondary-text mb-4 grid grid-cols-[2fr_1fr_1fr] items-center gap-4 px-4">
+              <p>{t('title.token')}</p>
+              <p className="text-right">{t('title.total')}</p>
+              <p className="text-right">{t('title.estUsdValue')}</p>
+            </div>
+
+            {visibleBalances.map((props, index) => (
+              <TokenLine
+                key={props.token.denomOrAddress}
+                TokenCard={TokenCard}
+                transparentBackground={index % 2 !== 0}
+                {...props}
+              />
             ))}
-          </GridCardContainer>
+          </div>
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>
         )}
 
         {hiddenBalances.length > 0 && (
-          <div className="mt-8 space-y-4">
+          <div className="mt-6 space-y-6">
             <div className="link-text ml-2 flex flex-row items-center gap-3 text-text-secondary">
               <DropdownIconButton
                 className="text-icon-primary"
@@ -76,17 +89,25 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
                 toggle={() => setShowingHidden((s) => !s)}
               />
 
-              <p>{t('title.hidden')}</p>
+              <Button
+                className="text-text-secondary"
+                onClick={() => setShowingHidden((s) => !s)}
+                variant="none"
+              >
+                {t('title.hidden')}
+              </Button>
             </div>
 
-            <GridCardContainer
-              cardType="wide"
-              className={clsx(!showingHidden && 'hidden')}
-            >
-              {hiddenBalances.map((props) => (
-                <TokenCard {...props} key={props.token.denomOrAddress} />
+            <div className={clsx('space-y-1', !showingHidden && 'hidden')}>
+              {hiddenBalances.map((props, index) => (
+                <TokenLine
+                  key={props.token.denomOrAddress}
+                  TokenCard={TokenCard}
+                  transparentBackground={index % 2 !== 0}
+                  {...props}
+                />
               ))}
-            </GridCardContainer>
+            </div>
           </div>
         )}
       </div>
