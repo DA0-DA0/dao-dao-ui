@@ -1,3 +1,4 @@
+import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily, waitForAll } from 'recoil'
 
@@ -25,11 +26,19 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
   get:
     (walletAddress: string) =>
     async ({ get }) => {
-      get(refreshWalletStargazeNftsAtom(walletAddress))
+      const stargazeWalletAddress = toBech32(
+        'stars',
+        fromBech32(walletAddress).data
+      )
+
+      get(refreshWalletStargazeNftsAtom(stargazeWalletAddress))
 
       const stargazeNfts: StargazeNft[] = await (
         await fetch(
-          STARGAZE_PROFILE_API_TEMPLATE.replace('ADDRESS', walletAddress)
+          STARGAZE_PROFILE_API_TEMPLATE.replace(
+            'ADDRESS',
+            stargazeWalletAddress
+          )
         )
       ).json()
 

@@ -232,7 +232,7 @@ export const MeTransactionBuilder = ({
 
           {showSubmitErrorNote && (
             <p className="secondary-text max-w-prose self-end text-right text-base text-text-interactive-error">
-              {t('error.meTransactionInvalid')}
+              {t('error.correctErrorsAbove')}
             </p>
           )}
 

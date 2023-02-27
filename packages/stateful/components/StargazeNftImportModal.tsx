@@ -113,7 +113,6 @@ export const InnerStargazeNftImportModal = ({
     <NftSelectionModal
       actionLabel={t('button.import')}
       actionLoading={loading}
-      fallbackError={t('error.stargazeLoadFailedReopenModal')}
       getIdForNft={getIdForNft}
       header={{
         title: t('title.depositNfts'),
