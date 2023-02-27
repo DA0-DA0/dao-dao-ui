@@ -1,4 +1,9 @@
-import { Add } from '@mui/icons-material'
+import {
+  Add,
+  ArrowBackRounded,
+  ArrowForwardRounded,
+  Remove,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, Fragment, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -10,7 +15,9 @@ import {
 } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
+import { Button } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
+import { IconButton } from '../../icon_buttons'
 import { Dropdown, DropdownOption } from '../../inputs/Dropdown'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
 import { VOTING_POWER_DISTRIBUTION_COLORS_ORDERED } from '../create'
@@ -42,6 +49,8 @@ enum TopStakerState {
 }
 
 const NUM_VERTICAL_BARS = 10
+const MEMBERS_PER_PAGE = 100
+const MIN_MEMBERS_PAGE = 1
 
 export const MembersTab = ({
   DaoMemberCard,
@@ -53,6 +62,9 @@ export const MembersTab = ({
   topVoters,
 }: MembersTabProps) => {
   const { t } = useTranslation()
+
+  const [membersPage, setMembersPage] = useState(MIN_MEMBERS_PAGE)
+  const maxMembersPage = Math.ceil(members.length / MEMBERS_PER_PAGE)
 
   const [topStakerState, setTopStakerState] = useState(
     TopStakerState.TenAbsolute
@@ -256,11 +268,71 @@ export const MembersTab = ({
           {t('error.failedToLoadMembersDescription')}
         </p>
       ) : members.length ? (
-        <GridCardContainer>
-          {members.map((props, index) => (
-            <DaoMemberCard {...props} key={index} />
-          ))}
-        </GridCardContainer>
+        <>
+          <GridCardContainer>
+            {members
+              .slice(
+                (membersPage - 1) * MEMBERS_PER_PAGE,
+                membersPage * MEMBERS_PER_PAGE
+              )
+              .map((props, index) => (
+                <DaoMemberCard {...props} key={index} />
+              ))}
+          </GridCardContainer>
+
+          {/* Pagination */}
+          {maxMembersPage > MIN_MEMBERS_PAGE && (
+            <div className="mx-auto mt-12 flex max-w-md flex-row items-center justify-between">
+              <IconButton
+                Icon={ArrowBackRounded}
+                circular
+                disabled={membersPage === MIN_MEMBERS_PAGE}
+                onClick={() => setMembersPage(membersPage - 1)}
+                variant="ghost"
+              />
+
+              <Button
+                circular
+                className="text-lg"
+                disabled={membersPage === MIN_MEMBERS_PAGE}
+                onClick={() => setMembersPage(MIN_MEMBERS_PAGE)}
+                pressed={membersPage === MIN_MEMBERS_PAGE}
+                variant="ghost"
+              >
+                {MIN_MEMBERS_PAGE}
+              </Button>
+
+              {/* Show current page if not first or last. */}
+              {membersPage > MIN_MEMBERS_PAGE &&
+              membersPage < maxMembersPage ? (
+                <Button className="text-lg" disabled pressed variant="ghost">
+                  {membersPage}
+                </Button>
+              ) : (
+                <Remove className="!h-5 !w-5" />
+              )}
+
+              <Button
+                circular
+                className="text-lg"
+                disabled={membersPage === maxMembersPage}
+                onClick={() => setMembersPage(maxMembersPage)}
+                pressed={membersPage === maxMembersPage}
+                variant="ghost"
+              >
+                {maxMembersPage}
+              </Button>
+
+              <IconButton
+                Icon={ArrowForwardRounded}
+                circular
+                disabled={membersPage === maxMembersPage}
+                onClick={() => setMembersPage(membersPage + 1)}
+                variant="ghost"
+              />
+            </div>
+          )}
+        </>
       ) : (
         <p className="secondary-text">{t('error.noMembers')}</p>
       )}

@@ -20,6 +20,7 @@ export interface ButtonifierProps {
   className?: string
   children?: ReactNode | ReactNode[]
   center?: boolean
+  circular?: boolean
 }
 
 export type ButtonProps = ComponentPropsWithoutRef<'button'> & ButtonifierProps
