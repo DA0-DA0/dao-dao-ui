@@ -61,10 +61,12 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
           <Loader fill={false} />
         ) : tokens.data.length ? (
           <div className="space-y-1">
-            <div className="secondary-text mb-4 grid grid-cols-[2fr_1fr_1fr] items-center gap-4 px-4">
+            <div className="secondary-text mb-4 grid grid-cols-2 items-center gap-4 px-4 sm:grid-cols-[2fr_1fr_1fr]">
               <p>{t('title.token')}</p>
               <p className="text-right">{t('title.total')}</p>
-              <p className="text-right">{t('title.estUsdValue')}</p>
+              <p className="hidden text-right sm:block">
+                {t('title.estUsdValue')}
+              </p>
             </div>
 
             {visibleBalances.map((props, index) => (

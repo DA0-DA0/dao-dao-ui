@@ -59,7 +59,7 @@ export const TokenLine = <T extends TokenCardInfo>(
     <>
       <div
         className={clsx(
-          'box-content grid h-8 cursor-pointer grid-cols-[2fr_1fr_1fr] items-center gap-4 rounded-lg py-3 px-4 transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed',
+          'cursor-pointerg box-content grid h-8 grid-cols-2 items-center gap-4 rounded-lg py-3 px-4 transition hover:bg-background-interactive-hover active:bg-background-interactive-pressed sm:grid-cols-[2fr_1fr_1fr]',
           !transparentBackground && 'bg-background-tertiary'
         )}
         onClick={() => setCardVisible(true)}
@@ -85,9 +85,10 @@ export const TokenLine = <T extends TokenCardInfo>(
           showFullAmount
         />
 
+        {/* Only show on larger screen. */}
         {!isJunoIbcUsdc(token.denomOrAddress) &&
         (lazyInfo.loading || lazyInfo.data.usdUnitPrice) ? (
-          <div className="flex flex-row items-center justify-end">
+          <div className="hidden flex-row items-center justify-end sm:flex">
             <TokenAmountDisplay
               amount={
                 // If staking info has not finished loading, don't show until it
