@@ -1,6 +1,6 @@
 import { AccountBalance } from '@mui/icons-material'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
@@ -9,7 +9,6 @@ import {
   DepositEmoji,
   MoneyEmoji,
   TokenCard as StatelessTokenCard,
-  useCachedLoadable,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -18,11 +17,10 @@ import {
   CoreActionKey,
   TokenCardInfo,
 } from '@dao-dao/types'
-import { NATIVE_DENOM, StakeType, loadableToLoadingData } from '@dao-dao/utils'
+import { NATIVE_DENOM, StakeType } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../actions'
 import { useEncodedDaoProposalSinglePrefill } from '../../hooks'
-import { tokenCardLazyInfoSelector } from '../../recoil'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { ButtonLink } from '../ButtonLink'
 import { DaoTokenDepositModal } from './DaoTokenDepositModal'
@@ -32,20 +30,6 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
   const router = useRouter()
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useNavHelpers()
-
-  const lazyInfoLoadable = useCachedLoadable(
-    tokenCardLazyInfoSelector({
-      walletAddress: coreAddress,
-      token: props.token,
-    })
-  )
-
-  //! Loadable errors.
-  useEffect(() => {
-    if (lazyInfoLoadable.state === 'hasError') {
-      console.error(lazyInfoLoadable.contents)
-    }
-  }, [lazyInfoLoadable.contents, lazyInfoLoadable.state])
 
   const {
     hooks: { useCommonGovernanceTokenInfo },
@@ -67,10 +51,9 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     [setRefreshNativeTokenStakingInfo]
   )
 
-  const lazyStakes =
-    lazyInfoLoadable.state !== 'hasValue'
-      ? []
-      : lazyInfoLoadable.contents?.stakingInfo?.stakes ?? []
+  const lazyStakes = props.lazyInfo.loading
+    ? []
+    : props.lazyInfo.data.stakingInfo?.stakes ?? []
 
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
@@ -216,10 +199,6 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
               ],
           extraSections: extraActionSections,
         }}
-        lazyInfo={loadableToLoadingData(lazyInfoLoadable, {
-          usdUnitPrice: undefined,
-          stakingInfo: undefined,
-        })}
         onClaim={onClaim}
         refreshUnstakingTasks={refreshNativeTokenStakingInfo}
       />

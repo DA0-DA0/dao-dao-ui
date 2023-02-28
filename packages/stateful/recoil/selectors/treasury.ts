@@ -1,6 +1,6 @@
 import { parseCoins } from '@cosmjs/proto-signing'
 import { IndexedTx } from '@cosmjs/stargate'
-import { selectorFamily, waitForAll } from 'recoil'
+import { noWait, selectorFamily, waitForAll } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
@@ -13,9 +13,12 @@ import { TokenCardInfo, WithChainId } from '@dao-dao/types'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
+  loadableToLoadingData,
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
+
+import { tokenCardLazyInfoSelector } from './token'
 
 export const treasuryTokenCardInfosSelector = selectorFamily<
   TokenCardInfo[],
@@ -73,7 +76,20 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             unstakedBalance,
             hasStakingInfo,
 
-            lazyInfo: { loading: true },
+            lazyInfo: loadableToLoadingData(
+              get(
+                noWait(
+                  tokenCardLazyInfoSelector({
+                    walletAddress: coreAddress,
+                    token,
+                  })
+                )
+              ),
+              {
+                usdUnitPrice: undefined,
+                stakingInfo: undefined,
+              }
+            ),
           }
 
           return info
@@ -91,7 +107,20 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             // No unstaking info for CW20.
             hasStakingInfo: false,
 
-            lazyInfo: { loading: true },
+            lazyInfo: loadableToLoadingData(
+              get(
+                noWait(
+                  tokenCardLazyInfoSelector({
+                    walletAddress: coreAddress,
+                    token,
+                  })
+                )
+              ),
+              {
+                usdUnitPrice: undefined,
+                stakingInfo: undefined,
+              }
+            ),
           }
 
           return info

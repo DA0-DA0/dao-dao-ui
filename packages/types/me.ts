@@ -6,7 +6,7 @@ import { CosmosMsgFor_Empty } from './contracts'
 import { NftCardInfo } from './dao'
 import { WalletProfileData } from './profile'
 import { LoadingData, SuspenseLoaderProps } from './stateless'
-import { TokenCardInfo, TokenLineProps } from './token'
+import { TokenCardInfo } from './token'
 
 export type MeTransactionForm = {
   actions: ActionKeyAndData[]
@@ -58,7 +58,6 @@ export type MeBalancesProps<T extends TokenCardInfo, N extends NftCardInfo> = {
   // List of token denomOrAddress fields that should be hidden.
   hiddenTokens: LoadingData<string[]>
   TokenCard: ComponentType<T>
-  TokenLine: ComponentType<TokenLineProps<T>>
   nfts: LoadingData<N[]>
   NftCard: ComponentType<N>
 }

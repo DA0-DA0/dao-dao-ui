@@ -5,7 +5,7 @@ import {
   VisibilityOff,
 } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState, waitForAll } from 'recoil'
@@ -29,7 +29,6 @@ import {
   KVPK_API_BASE,
   NATIVE_DENOM,
   cwMsgToEncodeObject,
-  loadableToLoadingData,
   processError,
 } from '@dao-dao/utils'
 
@@ -38,11 +37,7 @@ import {
   useCfWorkerAuthPostRequest,
   useWalletInfo,
 } from '../hooks'
-import {
-  hiddenBalancesSelector,
-  temporaryHiddenBalancesAtom,
-  tokenCardLazyInfoSelector,
-} from '../recoil'
+import { hiddenBalancesSelector, temporaryHiddenBalancesAtom } from '../recoil'
 import { ButtonLink } from './ButtonLink'
 import { EntityDisplay } from './EntityDisplay'
 import { WalletFiatRampModal } from './WalletFiatRampModal'
@@ -55,13 +50,6 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     publicKey,
     signingCosmWasmClient,
   } = useWallet()
-
-  const lazyInfoLoadable = useCachedLoadable(
-    tokenCardLazyInfoSelector({
-      walletAddress,
-      token: props.token,
-    })
-  )
 
   const daosLoadable = useCachedLoadable(
     props.token.type === TokenType.Cw20
@@ -112,16 +100,6 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
               )
           )
       : []
-
-  //! Loadable errors.
-  useEffect(() => {
-    if (lazyInfoLoadable.state === 'hasError') {
-      console.error(lazyInfoLoadable.contents)
-    }
-    if (daosLoadable.state === 'hasError') {
-      console.error(daosLoadable.contents)
-    }
-  }, [daosLoadable, lazyInfoLoadable])
 
   const { refreshBalances } = useWalletInfo()
 
@@ -202,8 +180,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   const awaitNextBlock = useAwaitNextBlock()
 
   const claimReady =
-    lazyInfoLoadable.state === 'hasValue' &&
-    !!lazyInfoLoadable.contents.stakingInfo?.stakes
+    !props.lazyInfo.loading && !!props.lazyInfo.data.stakingInfo?.stakes.length
   const [claimLoading, setClaimLoading] = useState(false)
   const onClaim = async () => {
     if (!claimReady) {
@@ -218,7 +195,10 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     try {
       await signingCosmWasmClient.signAndBroadcast(
         walletAddress,
-        lazyInfoLoadable.contents.stakingInfo!.stakes.map(({ validator }) =>
+        (props.lazyInfo.loading
+          ? []
+          : props.lazyInfo.data.stakingInfo!.stakes
+        ).map(({ validator }) =>
           cwMsgToEncodeObject(
             {
               distribution: {
@@ -304,10 +284,6 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                 ],
         }}
         daosGoverned={daosGoverned}
-        lazyInfo={loadableToLoadingData(lazyInfoLoadable, {
-          usdUnitPrice: undefined,
-          stakingInfo: undefined,
-        })}
         refreshUnstakingTasks={refreshNativeTokenStakingInfo}
       />
 

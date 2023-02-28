@@ -14,6 +14,7 @@ import {
   GridCardContainer,
   Loader,
   NoContent,
+  TokenLine,
 } from '../components'
 import { SortFn, useDropdownSorter } from '../hooks'
 
@@ -21,7 +22,6 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   tokens,
   hiddenTokens,
   TokenCard,
-  TokenLine,
   nfts,
   NftCard,
 }: MeBalancesProps<T, N>) => {

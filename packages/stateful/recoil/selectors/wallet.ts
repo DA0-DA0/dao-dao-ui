@@ -1,5 +1,5 @@
 import { fromBech32, toBech32 } from '@cosmjs/encoding'
-import { atomFamily, selectorFamily, waitForAll } from 'recoil'
+import { atomFamily, noWait, selectorFamily, waitForAll } from 'recoil'
 
 import {
   genericTokenSelector,
@@ -22,6 +22,7 @@ import {
   KVPK_API_BASE,
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
+  loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import {
@@ -29,6 +30,7 @@ import {
   walletStakedNftCardInfosSelector,
   walletStargazeNftCardInfosSelector,
 } from './nft'
+import { tokenCardLazyInfoSelector } from './token'
 
 export const SAVED_TX_PREFIX = 'savedTx:'
 
@@ -225,7 +227,20 @@ export const walletTokenCardInfosSelector = selectorFamily<
             unstakedBalance,
             hasStakingInfo,
 
-            lazyInfo: { loading: true },
+            lazyInfo: loadableToLoadingData(
+              get(
+                noWait(
+                  tokenCardLazyInfoSelector({
+                    walletAddress,
+                    token,
+                  })
+                )
+              ),
+              {
+                usdUnitPrice: undefined,
+                stakingInfo: undefined,
+              }
+            ),
           }
 
           return info
@@ -243,7 +258,20 @@ export const walletTokenCardInfosSelector = selectorFamily<
             // No unstaking info for CW20.
             hasStakingInfo: false,
 
-            lazyInfo: { loading: true },
+            lazyInfo: loadableToLoadingData(
+              get(
+                noWait(
+                  tokenCardLazyInfoSelector({
+                    walletAddress,
+                    token,
+                  })
+                )
+              ),
+              {
+                usdUnitPrice: undefined,
+                stakingInfo: undefined,
+              }
+            ),
           }
 
           return info
