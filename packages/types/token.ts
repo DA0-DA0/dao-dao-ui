@@ -54,8 +54,13 @@ export type TokenCardLazyInfo = {
         unstakingTasks: UnstakingTask[]
         unstakingDurationSeconds: number | undefined
         stakes: TokenStake[]
+        totalStaked: number
+        totalPendingRewards: number
+        totalUnstaking: number
       }
     | undefined
+  // unstakedBalance + totalStaked + totalUnstaking
+  totalBalance: number
 }
 
 export type TokenCardInfo = {

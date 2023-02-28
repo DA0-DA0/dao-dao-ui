@@ -28,11 +28,13 @@ export const tokenCardLazyInfoSelector = selectorFamily<
   WithChainId<{
     walletAddress: string
     token: GenericToken
+    // For calculating totalBalance.
+    unstakedBalance: number
   }>
 >({
   key: 'tokenCardLazyInfo',
   get:
-    ({ walletAddress, token, chainId }) =>
+    ({ walletAddress, token, chainId, unstakedBalance }) =>
     ({ get }) => {
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
 
@@ -51,40 +53,67 @@ export const tokenCardLazyInfoSelector = selectorFamily<
             })
           )
 
+          const unstakingTasks = nativeDelegationInfo.unbondingDelegations.map(
+            ({ balance, finishesAt }) => ({
+              token,
+              status: UnstakingTaskStatus.Unstaking,
+              amount: convertMicroDenomToDenomWithDecimals(
+                balance.amount,
+                token.decimals
+              ),
+              date: finishesAt,
+            })
+          )
+
+          const stakes = nativeDelegationInfo.delegations.map(
+            ({ validator, delegated, pendingReward }) => ({
+              token,
+              validator,
+              amount: convertMicroDenomToDenomWithDecimals(
+                delegated.amount,
+                token.decimals
+              ),
+              rewards: convertMicroDenomToDenomWithDecimals(
+                pendingReward.amount,
+                token.decimals
+              ),
+            })
+          )
+
+          const totalStaked =
+            stakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
+          const totalPendingRewards =
+            stakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0
+          const totalUnstaking =
+            unstakingTasks.reduce(
+              (acc, task) =>
+                acc +
+                // Only include balance of unstaking tasks.
+                (task.status === UnstakingTaskStatus.Unstaking
+                  ? task.amount
+                  : 0),
+              0
+            ) ?? 0
+
           stakingInfo = {
-            unstakingTasks: nativeDelegationInfo.unbondingDelegations.map(
-              ({ balance, finishesAt }) => ({
-                token,
-                status: UnstakingTaskStatus.Unstaking,
-                amount: convertMicroDenomToDenomWithDecimals(
-                  balance.amount,
-                  token.decimals
-                ),
-                date: finishesAt,
-              })
-            ),
+            unstakingTasks,
             unstakingDurationSeconds,
-            stakes: nativeDelegationInfo.delegations.map(
-              ({ validator, delegated, pendingReward }) => ({
-                token,
-                validator,
-                amount: convertMicroDenomToDenomWithDecimals(
-                  delegated.amount,
-                  token.decimals
-                ),
-                rewards: convertMicroDenomToDenomWithDecimals(
-                  pendingReward.amount,
-                  token.decimals
-                ),
-              })
-            ),
+            stakes,
+            totalStaked,
+            totalPendingRewards,
+            totalUnstaking,
           }
         }
       }
 
+      const totalBalance =
+        unstakedBalance +
+        (stakingInfo ? stakingInfo.totalStaked + stakingInfo.totalUnstaking : 0)
+
       return {
         usdUnitPrice,
         stakingInfo,
+        totalBalance,
       }
     },
 })

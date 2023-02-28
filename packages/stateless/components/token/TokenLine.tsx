@@ -2,14 +2,9 @@ import clsx from 'clsx'
 import { useState } from 'react'
 
 import { Modal, TokenAmountDisplay } from '@dao-dao/stateless'
-import {
-  TokenCardInfo,
-  TokenLineProps,
-  UnstakingTaskStatus,
-} from '@dao-dao/types'
+import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 import {
   getFallbackImage,
-  isJunoIbcUsdc,
   toAccessibleImageUrl,
   transformIbcSymbol,
 } from '@dao-dao/utils'
@@ -17,39 +12,7 @@ import {
 export const TokenLine = <T extends TokenCardInfo>(
   props: TokenLineProps<T>
 ) => {
-  const {
-    TokenCard,
-    token,
-    unstakedBalance,
-    hasStakingInfo,
-    transparentBackground,
-    lazyInfo,
-  } = props
-
-  const lazyStakes =
-    lazyInfo.loading || !lazyInfo.data.stakingInfo
-      ? []
-      : lazyInfo.data.stakingInfo.stakes
-  const lazyUnstakingTasks =
-    lazyInfo.loading || !lazyInfo.data.stakingInfo
-      ? []
-      : lazyInfo.data.stakingInfo.unstakingTasks
-
-  const totalStaked =
-    lazyStakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
-  // const pendingRewards =
-  //   lazyStakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0
-  const unstakingBalance =
-    lazyUnstakingTasks.reduce(
-      (acc, task) =>
-        acc +
-        // Only include balance of unstaking tasks.
-        (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
-      0
-    ) ?? 0
-
-  const totalBalance = unstakedBalance + totalStaked + unstakingBalance
-  const waitingForStakingInfo = hasStakingInfo && lazyInfo.loading
+  const { TokenCard, token, transparentBackground, lazyInfo } = props
 
   const { tokenSymbol } = transformIbcSymbol(token.symbol)
 
@@ -78,7 +41,9 @@ export const TokenLine = <T extends TokenCardInfo>(
         </div>
 
         <TokenAmountDisplay
-          amount={waitingForStakingInfo ? { loading: true } : totalBalance}
+          amount={
+            lazyInfo.loading ? { loading: true } : lazyInfo.data.totalBalance
+          }
           className="body-text truncate text-right font-mono"
           decimals={token.decimals}
           hideSymbol
@@ -86,16 +51,14 @@ export const TokenLine = <T extends TokenCardInfo>(
         />
 
         {/* Only show on larger screen. */}
-        {!isJunoIbcUsdc(token.denomOrAddress) &&
-        (lazyInfo.loading || lazyInfo.data.usdUnitPrice) ? (
+        {lazyInfo.loading || lazyInfo.data.usdUnitPrice ? (
           <div className="hidden flex-row items-center justify-end sm:flex">
             <TokenAmountDisplay
               amount={
-                // If staking info has not finished loading, don't show until it
-                // is loaded so this is accurate.
-                waitingForStakingInfo || lazyInfo.loading
+                lazyInfo.loading || !lazyInfo.data.usdUnitPrice
                   ? { loading: true }
-                  : totalBalance * lazyInfo.data.usdUnitPrice!.amount
+                  : lazyInfo.data.totalBalance *
+                    lazyInfo.data.usdUnitPrice.amount
               }
               className="caption-text font-mono"
               dateFetched={

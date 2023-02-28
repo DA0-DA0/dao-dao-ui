@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MeBalancesProps, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
-import { JUNO_USDC_DENOM, NATIVE_DENOM } from '@dao-dao/utils'
 
 import {
   Button,
@@ -27,30 +26,22 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
 }: MeBalancesProps<T, N>) => {
   const { t } = useTranslation()
 
-  const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
-    useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
+  const { sortedData: sortedTokens, dropdownProps: sortTokenDropdownProps } =
+    useDropdownSorter(tokens.loading ? [] : tokens.data, tokenSortOptions)
 
-  const visibleBalances =
-    tokens.loading || hiddenTokens.loading
-      ? []
-      : tokens.data
-          .filter(
-            ({ token }) => !hiddenTokens.data.includes(token.denomOrAddress)
-          )
-          // Sort native first, then USDC.
-          .sort((a) =>
-            a.token.denomOrAddress === NATIVE_DENOM
-              ? -2
-              : a.token.denomOrAddress === JUNO_USDC_DENOM
-              ? -1
-              : 0
-          )
-  const hiddenBalances =
-    tokens.loading || hiddenTokens.loading
-      ? []
-      : tokens.data.filter(({ token }) =>
-          hiddenTokens.data.includes(token.denomOrAddress)
-        )
+  const { sortedData: sortedNfts, dropdownProps: sortNftDropdownProps } =
+    useDropdownSorter(nfts.loading ? [] : nfts.data, nftSortOptions)
+
+  const visibleBalances = hiddenTokens.loading
+    ? []
+    : sortedTokens.filter(
+        ({ token }) => !hiddenTokens.data.includes(token.denomOrAddress)
+      )
+  const hiddenBalances = hiddenTokens.loading
+    ? []
+    : sortedTokens.filter(({ token }) =>
+        hiddenTokens.data.includes(token.denomOrAddress)
+      )
 
   const [showingHidden, setShowingHidden] = useState(false)
 
@@ -61,6 +52,16 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
           <Loader fill={false} />
         ) : tokens.data.length ? (
           <div className="space-y-1">
+            <div className="mb-5 -mt-4 flex flex-row justify-end">
+              <div className="flex flex-row items-center justify-between gap-4">
+                <p className="primary-text text-text-body">
+                  {t('title.sortBy')}
+                </p>
+
+                <Dropdown {...sortTokenDropdownProps} />
+              </div>
+            </div>
+
             <div className="secondary-text mb-4 grid grid-cols-2 items-center gap-4 px-4 sm:grid-cols-[2fr_1fr_1fr]">
               <p>{t('title.token')}</p>
               <p className="text-right">{t('title.total')}</p>
@@ -137,7 +138,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
                     {t('title.sortBy')}
                   </p>
 
-                  <Dropdown {...sortDropdownProps} />
+                  <Dropdown {...sortNftDropdownProps} />
                 </div>
               )}
             </div>
@@ -159,7 +160,54 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   )
 }
 
-const sortOptions: DropdownOption<
+const tokenSortOptions: DropdownOption<
+  SortFn<Pick<TokenCardInfo, 'token' | 'unstakedBalance' | 'lazyInfo'>>
+>[] = [
+  {
+    label: 'Highest value',
+    value: (a, b) => {
+      const aPrice =
+        a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice
+          ? -Infinity
+          : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.amount
+      const bPrice =
+        b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice
+          ? -Infinity
+          : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.amount
+      return bPrice - aPrice
+    },
+  },
+  {
+    label: 'Lowest value',
+    value: (a, b) => {
+      const aPrice =
+        a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice
+          ? Infinity
+          : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.amount
+      const bPrice =
+        b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice
+          ? Infinity
+          : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.amount
+      return aPrice - bPrice
+    },
+  },
+  {
+    label: 'A → Z',
+    value: (a, b) =>
+      a.token.symbol
+        .toLocaleLowerCase()
+        .localeCompare(b.token.symbol.toLocaleLowerCase()),
+  },
+  {
+    label: 'Z → A',
+    value: (a, b) =>
+      b.token.symbol
+        .toLocaleLowerCase()
+        .localeCompare(a.token.symbol.toLocaleLowerCase()),
+  },
+]
+
+const nftSortOptions: DropdownOption<
   SortFn<Pick<NftCardInfo, 'name' | 'floorPrice'>>
 >[] = [
   {

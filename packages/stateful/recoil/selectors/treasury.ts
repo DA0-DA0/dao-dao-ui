@@ -82,12 +82,14 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
                   tokenCardLazyInfoSelector({
                     walletAddress: coreAddress,
                     token,
+                    unstakedBalance,
                   })
                 )
               ),
               {
                 usdUnitPrice: undefined,
                 stakingInfo: undefined,
+                totalBalance: unstakedBalance,
               }
             ),
           }
@@ -113,12 +115,14 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
                   tokenCardLazyInfoSelector({
                     walletAddress: coreAddress,
                     token,
+                    unstakedBalance,
                   })
                 )
               ),
               {
                 usdUnitPrice: undefined,
                 stakingInfo: undefined,
+                totalBalance: unstakedBalance,
               }
             ),
           }

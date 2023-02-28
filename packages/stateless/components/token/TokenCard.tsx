@@ -35,7 +35,6 @@ import { TooltipInfoIcon } from '../tooltip'
 import { Tooltip } from '../tooltip/Tooltip'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 import { UnstakingModal } from './UnstakingModal'
-import { UnstakingTaskStatus } from './UnstakingStatus'
 
 export interface TokenCardProps extends TokenCardInfo {
   refreshUnstakingTasks?: () => void
@@ -74,25 +73,19 @@ export const TokenCard = ({
     lazyInfo.loading || !lazyInfo.data.stakingInfo
       ? []
       : lazyInfo.data.stakingInfo.stakes
-  const lazyUnstakingTasks =
-    lazyInfo.loading || !lazyInfo.data.stakingInfo
-      ? []
-      : lazyInfo.data.stakingInfo.unstakingTasks
 
   const totalStaked =
-    lazyStakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
-  const pendingRewards =
-    lazyStakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0
-  const unstakingBalance =
-    lazyUnstakingTasks.reduce(
-      (acc, task) =>
-        acc +
-        // Only include balance of unstaking tasks.
-        (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
-      0
-    ) ?? 0
-
-  const totalBalance = unstakedBalance + totalStaked + unstakingBalance
+    lazyInfo.loading || !lazyInfo.data.stakingInfo
+      ? 0
+      : lazyInfo.data.stakingInfo.totalStaked
+  const totalPendingRewards =
+    lazyInfo.loading || !lazyInfo.data.stakingInfo
+      ? 0
+      : lazyInfo.data.stakingInfo.totalPendingRewards
+  const totalUnstaking =
+    lazyInfo.loading || !lazyInfo.data.stakingInfo
+      ? 0
+      : lazyInfo.data.stakingInfo.totalUnstaking
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
 
@@ -230,9 +223,9 @@ export const TokenCard = ({
               {/* leading-5 to match link-text's line-height. */}
               <TokenAmountDisplay
                 amount={
-                  // If staking info has not finished loading, don't show until
-                  // it is loaded so this is accurate.
-                  waitingForStakingInfo ? { loading: true } : totalBalance
+                  lazyInfo.loading
+                    ? { loading: true }
+                    : lazyInfo.data.totalBalance
                 }
                 className="leading-5 text-text-body"
                 decimals={token.decimals}
@@ -244,11 +237,10 @@ export const TokenCard = ({
                   <div className="flex flex-row items-center gap-1">
                     <TokenAmountDisplay
                       amount={
-                        // If staking info has not finished loading, don't show
-                        // until it is loaded so this is accurate.
-                        waitingForStakingInfo || lazyInfo.loading
+                        lazyInfo.loading || !lazyInfo.data.usdUnitPrice
                           ? { loading: true }
-                          : totalBalance * lazyInfo.data.usdUnitPrice!.amount
+                          : lazyInfo.data.totalBalance *
+                            lazyInfo.data.usdUnitPrice.amount
                       }
                       dateFetched={
                         lazyInfo.loading
@@ -371,21 +363,19 @@ export const TokenCard = ({
               <Button
                 className={clsx(
                   'caption-text text-right font-mono underline-offset-2',
-                  unstakingBalance > 0 && 'text-text-body',
+                  totalUnstaking > 0 && 'text-text-body',
                   lazyInfo.loading && 'animate-pulse !text-text-body'
                 )}
                 disabled={lazyInfo.loading}
                 onClick={() => setShowUnstakingTokens(true)}
                 variant={
-                  lazyInfo.loading || unstakingBalance === 0
+                  lazyInfo.loading || totalUnstaking === 0
                     ? 'none'
                     : 'underline'
                 }
               >
                 <TokenAmountDisplay
-                  amount={
-                    lazyInfo.loading ? { loading: true } : unstakingBalance
-                  }
+                  amount={lazyInfo.loading ? { loading: true } : totalUnstaking}
                   decimals={token.decimals}
                   symbol={tokenSymbol}
                 />
@@ -396,7 +386,9 @@ export const TokenCard = ({
               <p className="secondary-text">{t('info.pendingRewards')}</p>
 
               <TokenAmountDisplay
-                amount={lazyInfo.loading ? { loading: true } : pendingRewards}
+                amount={
+                  lazyInfo.loading ? { loading: true } : totalPendingRewards
+                }
                 className="caption-text text-right font-mono text-text-body"
                 decimals={token.decimals}
                 symbol={tokenSymbol}
