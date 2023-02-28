@@ -54,6 +54,16 @@ export const pfpkProfileSelector = selectorFamily<
     },
 })
 
+export const makeDefaultWalletProfileData = (
+  address: string,
+  loading = false
+): WalletProfileData => ({
+  loading,
+  address,
+  profile: { ...EMPTY_WALLET_PROFILE },
+  backupImageUrl: getFallbackImage(),
+})
+
 // This selector returns the profile for a wallet with some helpful metadata,
 // such as its loading state and a backup image. It is designed to not wait for
 // any data, returning a default profile immediately and filling in data as it
@@ -69,18 +79,13 @@ export const walletProfileDataSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     ({ get }) => {
-      let profile = { ...EMPTY_WALLET_PROFILE }
-
       if (!address) {
-        return {
-          loading: false,
-          address,
-          profile,
-          backupImageUrl: getFallbackImage(),
-        }
+        return makeDefaultWalletProfileData(address)
       }
 
       get(refreshWalletProfileAtom(address))
+
+      let profile = { ...EMPTY_WALLET_PROFILE }
 
       const pfpkProfileLoadable = get(noWait(pfpkProfileSelector(address)))
       const pfpkProfile =

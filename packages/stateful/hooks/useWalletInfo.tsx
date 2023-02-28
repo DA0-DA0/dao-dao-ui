@@ -108,12 +108,28 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     [setRefreshWalletProfile]
   )
 
-  const walletProfileData = useRecoilValue(
+  const walletProfileDataValue = useRecoilValue(
     walletProfileDataSelector({
       address: address ?? '',
       chainId,
     })
   )
+
+  const [cachedProfileData, setCachedProfileData] = useState<
+    WalletProfileData | undefined
+  >()
+  // Clear cached profile data when address changes.
+  useEffect(() => {
+    setCachedProfileData(undefined)
+  }, [address])
+  // Cache profile data when it's loaded.
+  useEffect(() => {
+    if (!walletProfileDataValue.loading) {
+      setCachedProfileData(walletProfileDataValue)
+    }
+  }, [walletProfileDataValue])
+  const walletProfileData = cachedProfileData || walletProfileDataValue
+
   const {
     loading: profileLoading,
     profile: walletProfile,

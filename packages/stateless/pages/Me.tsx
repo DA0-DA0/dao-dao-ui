@@ -10,6 +10,7 @@ import {
   CopyToClipboard,
   PageHeaderContent,
   ProfileImage,
+  ProfileNameDisplayAndEditor,
   RightSidebarContent,
   SegmentedControls,
   useAppContext,
@@ -23,6 +24,7 @@ export const Me = ({
   MeTransactionBuilder,
   walletAddress,
   profileData,
+  updateProfileName,
 }: MeProps) => {
   const { t } = useTranslation()
   const { isFallback } = useRouter()
@@ -128,20 +130,24 @@ export const Me = ({
       />
 
       <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
-        {!profileData.loading && (
-          <div className="flex flex-col items-center gap-2 pb-4 text-center">
-            <ProfileImage
-              imageUrl={profileData.profile.imageUrl}
-              loading={profileData.loading}
-              onEdit={canEditProfile ? updateProfileNft.toggle : undefined}
-              size="xl"
-            />
+        <div className="flex flex-col items-center gap-2 pb-4 text-center">
+          <ProfileImage
+            imageUrl={profileData.profile.imageUrl}
+            loading={profileData.loading}
+            onEdit={canEditProfile ? updateProfileNft.toggle : undefined}
+            size="xl"
+          />
 
-            <p className="hero-text mt-4">{profileData.profile.name}</p>
+          <ProfileNameDisplayAndEditor
+            className="mt-4"
+            editingContainerClassName="h-8"
+            nameClassName="!hero-text"
+            updateProfileName={updateProfileName}
+            walletProfileData={profileData}
+          />
 
-            <CopyToClipboard takeAll value={walletAddress} />
-          </div>
-        )}
+          <CopyToClipboard takeAll value={walletAddress} />
+        </div>
 
         <div className="mb-4 sm:hidden">{tabSelector}</div>
         <p className="header-text hidden sm:block">{selectedTab?.label}</p>

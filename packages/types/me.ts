@@ -35,6 +35,7 @@ export type MeProps = {
   MeTransactionBuilder: ComponentType
   walletAddress: string
   profileData: WalletProfileData
+  updateProfileName: (name: string | null) => Promise<void>
 }
 
 export type MeTransactionBuilderProps = {

@@ -3,7 +3,6 @@
 
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
-import { useRecoilValue } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
@@ -13,34 +12,25 @@ import {
   ProfileDisconnectedCard,
   ProfileHomeCard,
   SuspenseLoader,
-  walletProfileDataSelector,
+  useWalletInfo,
 } from '@dao-dao/stateful'
 import { WalletActionsProvider } from '@dao-dao/stateful/actions'
 import { Loader, Me, MeDisconnected } from '@dao-dao/stateless'
 
 const MePage: NextPage = () => {
-  const {
-    address: walletAddress = '',
-    connected,
-    status,
-    chainInfo,
-  } = useWallet()
-  const profileData = useRecoilValue(
-    walletProfileDataSelector({
-      address: walletAddress,
-      chainId: chainInfo?.chainId,
-    })
-  )
+  const { address: walletAddress = '', connected, status } = useWallet()
+  const { walletProfileData: profileData, updateProfileName } = useWalletInfo()
 
   return connected ? (
     <WalletActionsProvider>
       {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
-      <SuspenseLoader fallback={<Loader />} forceFallback={profileData.loading}>
+      <SuspenseLoader fallback={<Loader />}>
         <Me
           MeBalances={MeBalances}
           MeTransactionBuilder={MeTransactionBuilder}
           profileData={profileData}
           rightSidebarContent={<ProfileHomeCard />}
+          updateProfileName={updateProfileName}
           walletAddress={walletAddress}
         />
       </SuspenseLoader>
