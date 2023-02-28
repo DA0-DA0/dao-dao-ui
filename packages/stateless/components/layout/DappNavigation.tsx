@@ -239,7 +239,11 @@ export const DappNavigation = ({
                 {!followingDaos.loading && (
                   <div
                     className={clsx(
-                      'relative sm:max-h-[50vh]',
+                      // 42rem is about the absolute height of all other
+                      // elements in the sidebar, so the remaining space is
+                      // used for the following DAOs. This number will need
+                      // tweaking if the sidebar changes.
+                      'relative sm:max-h-[calc(100vh-42rem)]',
                       !followingDaos.loading && 'no-scrollbar overflow-y-auto',
                       compact && 'mt-1 w-min'
                     )}
