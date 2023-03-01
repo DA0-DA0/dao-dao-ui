@@ -1,5 +1,4 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import React from 'react'
 
 import { makeProps as makeTokenCardProps } from './TokenCard.stories'
 import { TokenLine } from './TokenLine'

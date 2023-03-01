@@ -1,8 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { TokenCardProps } from '@dao-dao/types'
+
 import { NftCard, NftCardProps } from '../components/NftCard'
 import { makeProps as makeNftCardProps } from '../components/NftCard.stories'
-import { TokenCard, TokenCardProps } from '../components/token/TokenCard'
+import { TokenCard } from '../components/token/TokenCard'
 import { makeProps as makeTokenCardProps } from '../components/token/TokenCard.stories'
 import { MeBalances } from './MeBalances'
 
