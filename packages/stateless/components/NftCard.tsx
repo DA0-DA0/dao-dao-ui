@@ -141,11 +141,11 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                   <IconButton
                     Icon={ExpandCircleDownOutlined}
                     className={clsx(
-                      '!text-icon-secondary group-hover:opacity-100',
+                      'shadow-dp4 group-hover:opacity-100',
                       !open && 'opacity-0'
                     )}
                     focused={open}
-                    variant="ghost"
+                    variant="primary_inverted"
                     {...props}
                   />
                 )}
