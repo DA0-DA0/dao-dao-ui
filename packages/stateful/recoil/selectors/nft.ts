@@ -14,7 +14,9 @@ import { NftCardInfo, WithChainId } from '@dao-dao/types'
 import { StargazeNft } from '@dao-dao/types/nft'
 import {
   CHAIN_ID,
+  MAINNET,
   STARGAZE_PROFILE_API_TEMPLATE,
+  STARGAZE_TESTNET_CHAIN_ID,
   STARGAZE_URL_BASE,
 } from '@dao-dao/utils'
 
@@ -53,7 +55,9 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
               collection: collection.contractAddress,
               tokenId,
               tokenUri,
-              chainId: ChainInfoID.Stargaze1,
+              chainId: MAINNET
+                ? ChainInfoID.Stargaze1
+                : STARGAZE_TESTNET_CHAIN_ID,
             })
           )
         )

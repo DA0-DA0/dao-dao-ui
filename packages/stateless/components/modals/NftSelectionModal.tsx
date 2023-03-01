@@ -14,6 +14,7 @@ import {
   SortFn,
   TypedOption,
 } from '@dao-dao/types'
+import { STARGAZE_TESTNET_CHAIN_ID } from '@dao-dao/utils'
 
 import {
   useButtonPopupFilter,
@@ -263,10 +264,13 @@ const filterOptions: TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>>[] = [
   },
   {
     label: 'Only Juno',
-    value: (nft) => nft.chainId === ChainInfoID.Juno1,
+    value: (nft) =>
+      nft.chainId === ChainInfoID.Juno1 || nft.chainId === ChainInfoID.Uni6,
   },
   {
     label: 'Only Stargaze',
-    value: (nft) => nft.chainId === ChainInfoID.Stargaze1,
+    value: (nft) =>
+      nft.chainId === ChainInfoID.Stargaze1 ||
+      nft.chainId === STARGAZE_TESTNET_CHAIN_ID,
   },
 ]

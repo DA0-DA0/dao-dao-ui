@@ -13,6 +13,7 @@ import {
   CHAIN_ID,
   CHAIN_RPC_ENDPOINT,
   STARGAZE_RPC_ENDPOINT,
+  STARGAZE_TESTNET_CHAIN_ID,
 } from './constants'
 
 export const getRpcForChainId = (chainId: string): string => {
@@ -63,7 +64,7 @@ export const cosmosValidatorToValidator = ({
 export const getImageUrlForChainId = (chainId: string) =>
   chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni6
     ? '/juno.png'
-    : chainId === ChainInfoID.Stargaze1
+    : chainId === ChainInfoID.Stargaze1 || chainId === STARGAZE_TESTNET_CHAIN_ID
     ? '/stargaze.png'
     : undefined
 
