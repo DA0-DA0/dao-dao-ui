@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { BoxEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { BoxEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
@@ -144,7 +144,7 @@ const Component: ActionComponent = (props) => {
   const tokenId = watch(props.fieldNamePrefix + 'tokenId')
   const collection = watch(props.fieldNamePrefix + 'collection')
 
-  const options = useCachedLoading(
+  const options = useCachedLoadingWithError(
     props.isCreating
       ? context.type === ActionContextType.Dao
         ? nftCardInfosForDaoSelector({

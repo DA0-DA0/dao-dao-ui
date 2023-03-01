@@ -1,12 +1,11 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useEffect } from 'react'
 
 import {
   DaoCard as StatelessDaoCard,
-  useCachedLoadable,
+  useCachedLoading,
 } from '@dao-dao/stateless'
 import { DaoCardInfo } from '@dao-dao/types/stateless/DaoCard'
-import { CHAIN_ID, loadableToLoadingData } from '@dao-dao/utils'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { useFollowingDaos } from '../../hooks'
 import { daoCardInfoLazyDataSelector } from '../../recoil'
@@ -18,20 +17,18 @@ export const DaoCard = (props: DaoCardInfo) => {
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos()
 
-  const lazyDataLoadable = useCachedLoadable(
+  const lazyData = useCachedLoading(
     daoCardInfoLazyDataSelector({
       coreAddress: props.coreAddress,
       chainId: props.chainId,
       walletAddress,
-    })
-  )
-
-  //! Loadable errors.
-  useEffect(() => {
-    if (lazyDataLoadable.state === 'hasError') {
-      console.error(lazyDataLoadable.contents)
+    }),
+    {
+      isMember: false,
+      tokenBalance: NaN,
+      proposalCount: NaN,
     }
-  }, [lazyDataLoadable.contents, lazyDataLoadable.state])
+  )
 
   return (
     <StatelessDaoCard
@@ -54,11 +51,7 @@ export const DaoCard = (props: DaoCardInfo) => {
               hide: true,
             }
       }
-      lazyData={loadableToLoadingData(lazyDataLoadable, {
-        isMember: false,
-        tokenBalance: NaN,
-        proposalCount: NaN,
-      })}
+      lazyData={lazyData}
     />
   )
 }

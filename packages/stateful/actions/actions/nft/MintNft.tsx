@@ -3,14 +3,13 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import { Loader, useCachedLoadable } from '@dao-dao/stateless'
+import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
   CoreActionKey,
   NftCardInfo,
 } from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../components'
 import { nftCardInfoWithUriSelector } from '../../../recoil'
@@ -24,29 +23,27 @@ export const MintNft: ActionComponent = (props) => {
   const data: MintNftData = watch(props.fieldNamePrefix)
   const collectionAddress = data.collectionAddress ?? ''
 
-  const nftInfo = loadableToLoadingData(
-    useCachedLoadable<NftCardInfo>(
-      //  If creating, get info from form data.
-      props.isCreating
-        ? constSelector({
-            collection: {
-              address: collectionAddress,
-              name: data.instantiateMsg?.name ?? '',
-            },
-            tokenId: data.mintMsg.token_id,
-            imageUrl: data.imageUrl,
-            name: data.metadata?.name ?? '',
-            description: data.metadata?.description ?? '',
-            chainId,
-          })
-        : // If viewing, get info from token URI.
-          nftCardInfoWithUriSelector({
-            collection: collectionAddress,
-            tokenId: data.mintMsg.token_id,
-            tokenUri: data.mintMsg.token_uri,
-            chainId,
-          })
-    ),
+  const nftInfo = useCachedLoading<NftCardInfo | undefined>(
+    //  If creating, get info from form data.
+    props.isCreating
+      ? constSelector({
+          collection: {
+            address: collectionAddress,
+            name: data.instantiateMsg?.name ?? '',
+          },
+          tokenId: data.mintMsg.token_id,
+          imageUrl: data.imageUrl,
+          name: data.metadata?.name ?? '',
+          description: data.metadata?.description ?? '',
+          chainId,
+        })
+      : // If viewing, get info from token URI.
+        nftCardInfoWithUriSelector({
+          collection: collectionAddress,
+          tokenId: data.mintMsg.token_id,
+          tokenUri: data.mintMsg.token_uri,
+          chainId,
+        }),
     undefined
   )
 

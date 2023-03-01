@@ -24,10 +24,9 @@ import {
   ProposalCreatedModal,
   DappLayout as StatelessDappLayout,
   useAppContext,
-  useCachedLoadable,
+  useCachedLoading,
   usePlatform,
 } from '@dao-dao/stateless'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
 import { useFollowingDaos, useWalletInfo } from '../hooks'
@@ -154,19 +153,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   ])
 
   //! Following DAOs
-  const followingDaoDropdownInfosLoadable = useCachedLoadable(
-    followingDaoDropdownInfosSelector
+  const followingDaoDropdownInfos = useCachedLoading(
+    followingDaoDropdownInfosSelector,
+    []
   )
-
-  //! Loadable errors.
-  useEffect(() => {
-    if (followingDaoDropdownInfosLoadable.state === 'hasError') {
-      console.error(followingDaoDropdownInfosLoadable.contents)
-    }
-  }, [
-    followingDaoDropdownInfosLoadable.contents,
-    followingDaoDropdownInfosLoadable.state,
-  ])
 
   return (
     <StatelessDappLayout
@@ -190,7 +180,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         setCommandModalVisible: () => setCommandModalVisible(true),
         version: '2.0',
         followingDaos: mountedInBrowser
-          ? loadableToLoadingData(followingDaoDropdownInfosLoadable, [])
+          ? followingDaoDropdownInfos
           : // Prevent hydration errors by loading until mounted.
             { loading: true },
         compact,

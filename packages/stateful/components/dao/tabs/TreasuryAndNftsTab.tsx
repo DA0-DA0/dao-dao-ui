@@ -1,14 +1,12 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useEffect } from 'react'
 
 import {
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
-  useCachedLoadable,
+  useCachedLoading,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { CoreActionKey } from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
 import {
@@ -42,36 +40,23 @@ export const TreasuryAndNftsTab = () => {
   const { denomOrAddress: cw721GovernanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
 
-  const treasuryTokenCardInfosLoadable = useCachedLoadable(
+  const tokens = useCachedLoading(
     treasuryTokenCardInfosSelector({
       coreAddress: daoInfo.coreAddress,
       chainId: daoInfo.chainId,
       cw20GovernanceTokenAddress,
       nativeGovernanceTokenDenom,
-    })
+    }),
+    []
   )
-  const nftCardInfosLoadable = useCachedLoadable(
+  const nfts = useCachedLoading(
     nftCardInfosForDaoSelector({
       coreAddress: daoInfo.coreAddress,
       chainId: daoInfo.chainId,
       governanceCollectionAddress: cw721GovernanceCollectionAddress,
-    })
+    }),
+    []
   )
-
-  //! Loadable errors.
-  useEffect(() => {
-    if (treasuryTokenCardInfosLoadable.state === 'hasError') {
-      console.error(treasuryTokenCardInfosLoadable.contents)
-    }
-    if (nftCardInfosLoadable.state === 'hasError') {
-      console.error(nftCardInfosLoadable.contents)
-    }
-  }, [
-    nftCardInfosLoadable.contents,
-    nftCardInfosLoadable.state,
-    treasuryTokenCardInfosLoadable.contents,
-    treasuryTokenCardInfosLoadable.state,
-  ])
 
   // ManageCw721 action defaults to adding
   const addCw721Action = useActionForKey(CoreActionKey.ManageCw721)
@@ -101,8 +86,8 @@ export const TreasuryAndNftsTab = () => {
           : undefined
       }
       isMember={isMember}
-      nfts={loadableToLoadingData(nftCardInfosLoadable, [])}
-      tokens={loadableToLoadingData(treasuryTokenCardInfosLoadable, [])}
+      nfts={nfts}
+      tokens={tokens}
     />
   )
 }

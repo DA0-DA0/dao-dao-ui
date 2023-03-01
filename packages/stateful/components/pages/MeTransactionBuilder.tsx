@@ -18,7 +18,7 @@ import {
 import { useActions, useLoadActions } from '@dao-dao/stateful/actions'
 import {
   MeTransactionBuilder as StatelessMeTransactionBuilder,
-  useCachedLoadable,
+  useCachedLoading,
 } from '@dao-dao/stateless'
 import {
   MeTransactionBuilderProps,
@@ -28,7 +28,6 @@ import {
 import {
   KVPK_API_BASE,
   cwMsgToEncodeObject,
-  loadableToLoadingData,
   processError,
 } from '@dao-dao/utils'
 
@@ -120,10 +119,8 @@ export const MeTransactionBuilder = () => {
   const setTemporarySaves = useSetRecoilState(
     temporarySavedTxsAtom(publicKey?.hex ?? '')
   )
-  const savesLoading = loadableToLoadingData(
-    useCachedLoadable(
-      publicKey?.hex ? savedTxsSelector(publicKey.hex) : undefined
-    ),
+  const savesLoading = useCachedLoading(
+    publicKey?.hex ? savedTxsSelector(publicKey.hex) : undefined,
     []
   )
   const [saving, setSaving] = useState(false)

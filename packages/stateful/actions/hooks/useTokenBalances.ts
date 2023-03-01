@@ -1,6 +1,5 @@
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoading } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { genericTokenBalancesSelector } from '../../recoil'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../voting-module-adapter'
@@ -16,14 +15,12 @@ export const useTokenBalances = (): LoadingData<GenericTokenBalance[]> => {
   const { denomOrAddress: governanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
-  return loadableToLoadingData(
-    useCachedLoadable(
-      genericTokenBalancesSelector({
-        address,
-        cw20GovernanceTokenAddress: governanceTokenAddress,
-        chainId,
-      })
-    ),
+  return useCachedLoading(
+    genericTokenBalancesSelector({
+      address,
+      cw20GovernanceTokenAddress: governanceTokenAddress,
+      chainId,
+    }),
     []
   )
 }

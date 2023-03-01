@@ -108,7 +108,8 @@ export const convertDurationWithUnitsToHumanReadableString = (
     count: value,
   }).toLocaleLowerCase()}`
 
-// Convert Recoil loadable into our generic data loader type.
+// Convert Recoil loadable into our generic data loader type with a default
+// value on error. See the comment above the LoadingData type for more details.
 export const loadableToLoadingData = <T>(
   loadable: CachedLoadable<T> | Loadable<T>,
   defaultValue: T,
@@ -134,7 +135,8 @@ export const loadableToLoadingData = <T>(
       }
 }
 
-// Convert Recoil loadable into our generic data loader with error type.
+// Convert Recoil loadable into our generic data loader with error type. See the
+// comment above the LoadingData type for more details.
 export const loadableToLoadingDataWithError = <T>(
   loadable: CachedLoadable<T> | Loadable<T>
 ): LoadingDataWithError<T> => {

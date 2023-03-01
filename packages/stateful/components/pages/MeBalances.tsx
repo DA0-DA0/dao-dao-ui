@@ -2,9 +2,8 @@ import { useWallet } from '@noahsaso/cosmodal'
 
 import {
   MeBalances as StatelessMeBalances,
-  useCachedLoadable,
+  useCachedLoading,
 } from '@dao-dao/stateless'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
 import {
   hiddenBalancesSelector,
@@ -17,31 +16,25 @@ import { WalletTokenCard } from '../WalletTokenCard'
 export const MeBalances = () => {
   const { address: walletAddress, publicKey, chainInfo } = useWallet()
 
-  const tokens = loadableToLoadingData(
-    useCachedLoadable(
-      walletAddress
-        ? walletTokenCardInfosSelector({
-            walletAddress,
-            chainId: chainInfo?.chainId,
-          })
-        : undefined
-    ),
+  const tokens = useCachedLoading(
+    walletAddress
+      ? walletTokenCardInfosSelector({
+          walletAddress,
+          chainId: chainInfo?.chainId,
+        })
+      : undefined,
     []
   )
 
-  const nfts = loadableToLoadingData(
-    useCachedLoadable(
-      walletAddress
-        ? walletNativeAndStargazeNftsSelector(walletAddress)
-        : undefined
-    ),
+  const nfts = useCachedLoading(
+    walletAddress
+      ? walletNativeAndStargazeNftsSelector(walletAddress)
+      : undefined,
     []
   )
 
-  const hiddenTokens = loadableToLoadingData(
-    useCachedLoadable(
-      publicKey?.hex ? hiddenBalancesSelector(publicKey.hex) : undefined
-    ),
+  const hiddenTokens = useCachedLoading(
+    publicKey?.hex ? hiddenBalancesSelector(publicKey.hex) : undefined,
     []
   )
 

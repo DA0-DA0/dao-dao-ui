@@ -8,7 +8,7 @@ import {
   ModalProps,
   NftSelectionModal,
   ProfileImage,
-  useCachedLoading,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
@@ -32,7 +32,7 @@ export const InnerPfpkNftSelectionModal = ({
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
 
-  const nfts = useCachedLoading(
+  const nfts = useCachedLoadingWithError(
     walletAddress
       ? walletNativeAndStargazeNftsSelector(walletAddress)
       : undefined

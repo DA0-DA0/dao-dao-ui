@@ -8,8 +8,8 @@ import {
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
-import { claimAvailable, loadableToLoadingData } from '@dao-dao/utils'
+import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
+import { claimAvailable } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
@@ -52,15 +52,13 @@ export const useStakingInfo = ({
   const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
   const refreshClaims = () => _setClaimsId((id) => id + 1)
 
-  const loadingClaims = loadableToLoadingData(
-    useCachedLoadable(
-      fetchClaims && walletAddress
-        ? DaoVotingNativeStakedSelectors.claimsSelector({
-            contractAddress: votingModuleAddress,
-            params: [{ address: walletAddress }],
-          })
-        : constSelector(undefined)
-    ),
+  const loadingClaims = useCachedLoading(
+    fetchClaims && walletAddress
+      ? DaoVotingNativeStakedSelectors.claimsSelector({
+          contractAddress: votingModuleAddress,
+          params: [{ address: walletAddress }],
+        })
+      : constSelector(undefined),
     undefined
   )
   const claims = loadingClaims.loading
@@ -81,28 +79,24 @@ export const useStakingInfo = ({
   )
 
   // Total staked value
-  const loadingTotalStakedValue = loadableToLoadingData(
-    useCachedLoadable(
-      fetchTotalStakedValue
-        ? DaoVotingNativeStakedSelectors.totalPowerAtHeightSelector({
-            contractAddress: votingModuleAddress,
-            params: [{}],
-          })
-        : constSelector(undefined)
-    ),
+  const loadingTotalStakedValue = useCachedLoading(
+    fetchTotalStakedValue
+      ? DaoVotingNativeStakedSelectors.totalPowerAtHeightSelector({
+          contractAddress: votingModuleAddress,
+          params: [{}],
+        })
+      : constSelector(undefined),
     undefined
   )
 
   // Wallet staked value
-  const loadingWalletStakedValue = loadableToLoadingData(
-    useCachedLoadable(
-      fetchWalletStakedValue && walletAddress
-        ? DaoVotingNativeStakedSelectors.votingPowerAtHeightSelector({
-            contractAddress: votingModuleAddress,
-            params: [{ address: walletAddress }],
-          })
-        : constSelector(undefined)
-    ),
+  const loadingWalletStakedValue = useCachedLoading(
+    fetchWalletStakedValue && walletAddress
+      ? DaoVotingNativeStakedSelectors.votingPowerAtHeightSelector({
+          contractAddress: votingModuleAddress,
+          params: [{ address: walletAddress }],
+        })
+      : constSelector(undefined),
     undefined
   )
 

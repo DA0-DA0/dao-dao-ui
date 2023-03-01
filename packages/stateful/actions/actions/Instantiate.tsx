@@ -7,7 +7,7 @@ import { nativeBalancesSelector } from '@dao-dao/state'
 import {
   ActionCardLoader,
   BabyEmoji,
-  useCachedLoadable,
+  useCachedLoading,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -21,7 +21,6 @@ import {
   NATIVE_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  loadableToLoadingData,
   makeWasmMessage,
 } from '@dao-dao/utils'
 
@@ -103,15 +102,13 @@ const Component: ActionComponent = (props) => {
   // This needs to be loaded via a cached loadable to avoid displaying a loader
   // when this data updates on a schedule. Manually trigger a suspense loader
   // the first time when the initial data is still loading.
-  const nativeBalancesLoadable = loadableToLoadingData(
-    useCachedLoadable(
-      address
-        ? nativeBalancesSelector({
-            address,
-            chainId,
-          })
-        : undefined
-    ),
+  const nativeBalancesLoadable = useCachedLoading(
+    address
+      ? nativeBalancesSelector({
+          address,
+          chainId,
+        })
+      : undefined,
     []
   )
 

@@ -9,7 +9,7 @@ import {
   ModalLoader,
   ModalProps,
   NftSelectionModal,
-  useCachedLoading,
+  useCachedLoadingWithError,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
@@ -32,7 +32,7 @@ export const InnerStargazeNftImportModal = ({
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
 
-  const nfts = useCachedLoading(
+  const nfts = useCachedLoadingWithError(
     stargazeWalletAddress
       ? walletStargazeNftCardInfosSelector(stargazeWalletAddress)
       : undefined

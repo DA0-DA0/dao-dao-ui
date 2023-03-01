@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector } from 'recoil'
 
-import { FireEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { FireEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
@@ -81,7 +81,7 @@ const Component: ActionComponent = (props) => {
   const tokenId = watch(props.fieldNamePrefix + 'tokenId')
   const collection = watch(props.fieldNamePrefix + 'collection')
 
-  const options = useCachedLoading(
+  const options = useCachedLoadingWithError(
     props.isCreating
       ? context.type === ActionContextType.Dao
         ? nftCardInfosForDaoSelector({
@@ -95,7 +95,7 @@ const Component: ActionComponent = (props) => {
           })
       : constSelector([])
   )
-  const nftInfo = useCachedLoading(
+  const nftInfo = useCachedLoadingWithError(
     !!tokenId && !!collection
       ? nftCardInfoSelector({ chainId, collection, tokenId })
       : constSelector(undefined)

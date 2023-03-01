@@ -14,9 +14,13 @@ import {
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
+import {
+  useCachedLoadable,
+  useCachedLoading,
+  useCachedLoadingWithError,
+} from '@dao-dao/stateless'
 import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
-import { claimAvailable, loadableToLoadingData } from '@dao-dao/utils'
+import { claimAvailable } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../actions/react'
 import { nftCardInfoSelector } from '../../../../recoil/selectors/nft'
@@ -74,15 +78,13 @@ export const useStakingInfo = ({
     [_setClaimsId]
   )
 
-  const loadingClaims = loadableToLoadingData(
-    useCachedLoadable(
-      fetchClaims && walletAddress
-        ? DaoVotingCw721StakedSelectors.nftClaimsSelector({
-            contractAddress: stakingContractAddress,
-            params: [{ address: walletAddress }],
-          })
-        : constSelector(undefined)
-    ),
+  const loadingClaims = useCachedLoading(
+    fetchClaims && walletAddress
+      ? DaoVotingCw721StakedSelectors.nftClaimsSelector({
+          contractAddress: stakingContractAddress,
+          params: [{ address: walletAddress }],
+        })
+      : constSelector(undefined),
     undefined
   )
   const claims = loadingClaims.loading
@@ -109,32 +111,28 @@ export const useStakingInfo = ({
   const sumClaimsAvailable = claimsAvailable?.length
 
   // Total staked value
-  const loadingTotalStakedValue = loadableToLoadingData(
-    useCachedLoadable(
-      fetchTotalStakedValue
-        ? DaoVotingCw721StakedSelectors.totalPowerAtHeightSelector({
-            contractAddress: stakingContractAddress,
-            params: [{}],
-          })
-        : constSelector(undefined)
-    ),
+  const loadingTotalStakedValue = useCachedLoading(
+    fetchTotalStakedValue
+      ? DaoVotingCw721StakedSelectors.totalPowerAtHeightSelector({
+          contractAddress: stakingContractAddress,
+          params: [{}],
+        })
+      : constSelector(undefined),
     undefined
   )
 
   // Wallet staked value
-  const loadingWalletStakedNftsLoadable = loadableToLoadingData(
-    useCachedLoadable(
-      fetchWalletStakedValue && walletAddress
-        ? DaoVotingCw721StakedSelectors.stakedNftsSelector({
-            contractAddress: stakingContractAddress,
-            params: [{ address: walletAddress }],
-          })
-        : undefined
-    ),
+  const loadingWalletStakedNftsLoadable = useCachedLoading(
+    fetchWalletStakedValue && walletAddress
+      ? DaoVotingCw721StakedSelectors.stakedNftsSelector({
+          contractAddress: stakingContractAddress,
+          params: [{ address: walletAddress }],
+        })
+      : undefined,
     undefined
   )
 
-  const loadingWalletStakedNfts = useCachedLoading(
+  const loadingWalletStakedNfts = useCachedLoadingWithError(
     !loadingWalletStakedNftsLoadable.loading &&
       loadingWalletStakedNftsLoadable.data
       ? waitForAll(
@@ -149,7 +147,7 @@ export const useStakingInfo = ({
       : undefined
   )
 
-  const loadingWalletUnstakedNftsLoadable = useCachedLoading(
+  const loadingWalletUnstakedNftsLoadable = useCachedLoadingWithError(
     fetchWalletUnstakedValue && walletAddress && governanceTokenAddress
       ? Cw721BaseSelectors.allTokensForOwnerSelector({
           contractAddress: governanceTokenAddress,
@@ -158,7 +156,7 @@ export const useStakingInfo = ({
       : undefined
   )
 
-  const loadingWalletUnstakedNfts = useCachedLoading(
+  const loadingWalletUnstakedNfts = useCachedLoadingWithError(
     !loadingWalletUnstakedNftsLoadable.loading &&
       !loadingWalletUnstakedNftsLoadable.errored &&
       loadingWalletUnstakedNftsLoadable.data

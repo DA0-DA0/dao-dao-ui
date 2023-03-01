@@ -22,6 +22,7 @@ import {
   CycleEmoji,
   useCachedLoadable,
   useCachedLoading,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
   AmountWithTimestamp,
@@ -52,7 +53,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
   encodeMessageAsBase64,
   getJunoIbcUsdc,
-  loadableToLoadingData,
   makeWasmMessage,
   nativeTokenLabel,
   nativeTokenLogoURI,
@@ -168,19 +168,17 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
         {} as Record<string, WyndPoolToken>
       )
   )
-  const loadingWyndTokens = loadableToLoadingData(
-    useCachedLoadable(
-      uniqueWyndPoolTokens.length > 0
-        ? waitForAll(
-            uniqueWyndPoolTokens.map((token) =>
-              genericTokenSelector({
-                type: 'native' in token ? TokenType.Native : TokenType.Cw20,
-                denomOrAddress: 'native' in token ? token.native : token.token,
-              })
-            )
+  const loadingWyndTokens = useCachedLoading(
+    uniqueWyndPoolTokens.length > 0
+      ? waitForAll(
+          uniqueWyndPoolTokens.map((token) =>
+            genericTokenSelector({
+              type: 'native' in token ? TokenType.Native : TokenType.Cw20,
+              denomOrAddress: 'native' in token ? token.native : token.token,
+            })
           )
-        : undefined
-    ),
+        )
+      : undefined,
     []
   )
 
@@ -509,7 +507,7 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
   ])
 
   // Get estimated USD price of output token.
-  const tokenOutPrice = useCachedLoading(
+  const tokenOutPrice = useCachedLoadingWithError(
     wyndUsdPriceSelector(tokenOut.denomOrAddress)
   )
   // Use either price depending on which is available.
