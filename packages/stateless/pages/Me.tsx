@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { averageColorSelector } from '@dao-dao/state/recoil'
@@ -27,7 +27,7 @@ export const Me = ({
   updateProfileName,
 }: MeProps) => {
   const { t } = useTranslation()
-  const { isFallback } = useRouter()
+  const router = useRouter()
 
   const tabs: MeTab[] = [
     {
@@ -42,36 +42,22 @@ export const Me = ({
     },
   ]
 
-  const [selectedTabId, setSelectedTabId] = useState<MeTabId>(() => {
-    // Default to tab from URL hash if present and valid.
-    const windowHash =
-      typeof window === 'undefined'
-        ? undefined
-        : window.location.hash.replace('#', '')
-
-    return windowHash && tabs.some(({ id }) => id === windowHash)
-      ? (windowHash as MeTabId)
-      : tabs[0].id
-  })
-
-  // Store selected tab in URL hash.
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    if (window.location.hash.replace('#', '') !== selectedTabId) {
-      window.location.hash = selectedTabId
-    }
-  }, [selectedTabId])
-
+  const tabPath = router.query.tab
+  const selectedTabId = tabs.some(({ id }) => id === tabPath)
+    ? (tabPath as MeTabId)
+    : tabs[0].id
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   const tabSelector = (
     <SegmentedControls
-      onSelect={setSelectedTabId}
+      onSelect={(tab) =>
+        router.push(`/me/${tab}`, undefined, { shallow: true })
+      }
       selected={selectedTabId}
-      tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
+      tabs={tabs.map(({ id, label }) => ({
+        label,
+        value: id,
+      }))}
     />
   )
 
@@ -85,7 +71,7 @@ export const Me = ({
 
   // Set theme's accentColor.
   useEffect(() => {
-    if (isFallback || averageImgColorLoadable.state !== 'hasValue') {
+    if (router.isFallback || averageImgColorLoadable.state !== 'hasValue') {
       return
     }
 
@@ -110,7 +96,7 @@ export const Me = ({
     setAccentColor(accentColor ?? undefined)
   }, [
     setAccentColor,
-    isFallback,
+    router.isFallback,
     theme,
     averageImgColorLoadable.state,
     averageImgColorLoadable.contents,

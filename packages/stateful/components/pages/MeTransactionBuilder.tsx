@@ -1,6 +1,7 @@
 import { toHex } from '@cosmjs/encoding'
 import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
+import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -58,6 +59,19 @@ export const MeTransactionBuilder = () => {
   useEffect(() => {
     formMethods.trigger()
   }, [formMethods])
+
+  // Load from prefill query.
+  const router = useRouter()
+  useEffect(() => {
+    if (router.query.prefill) {
+      try {
+        const prefill = JSON.parse(router.query.prefill as string)
+        formMethods.reset(prefill)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }, [formMethods, router.query])
 
   const meTransaction = formMethods.watch()
   // Debounce saving latest data to atom and thus localStorage every 10 seconds.

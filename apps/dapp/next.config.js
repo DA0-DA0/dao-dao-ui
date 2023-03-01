@@ -60,6 +60,11 @@ const config = {
       destination: '/',
       permanent: false,
     },
+    {
+      source: '/me',
+      destination: '/me/balances',
+      permanent: false,
+    },
     // Redirect legacy multisigs (legacy DAOs redirected in
     // makeGetDaoStaticProps function).
     {

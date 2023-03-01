@@ -11,6 +11,7 @@ import {
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -71,6 +72,7 @@ export const DappNavigation = ({
     },
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
   } = useAppContext()
+  const { asPath } = useRouter()
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
@@ -212,6 +214,7 @@ export const DappNavigation = ({
                 compact={compact}
                 href="/me"
                 label={t('title.me')}
+                selected={asPath.startsWith('/me')}
               />
 
               <Row

@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
-import { GetStaticProps, NextPage } from 'next'
+import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import {
@@ -16,6 +16,7 @@ import {
 } from '@dao-dao/stateful'
 import { WalletActionsProvider } from '@dao-dao/stateful/actions'
 import { Loader, Me, MeDisconnected } from '@dao-dao/stateless'
+import { MeTabId } from '@dao-dao/types'
 
 const MePage: NextPage = () => {
   const { address: walletAddress = '', connected, status } = useWallet()
@@ -54,4 +55,13 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
     ...(await serverSideTranslations(locale, ['translation'])),
   },
+})
+
+export const getStaticPaths: GetStaticPaths = () => ({
+  paths: Object.values(MeTabId).map((tab) => ({
+    params: {
+      tab,
+    },
+  })),
+  fallback: false,
 })
