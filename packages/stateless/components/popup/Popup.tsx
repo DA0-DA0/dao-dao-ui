@@ -65,6 +65,8 @@ export const Popup = ({
     return () => document.removeEventListener('keydown', handleKeyPress)
   }, [open])
 
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
+
   // Listen for click not in bounds, and close if so. Adds listener only when
   // the dropdown is open.
   useEffect(() => {
@@ -77,10 +79,11 @@ export const Popup = ({
 
     const closeIfClickOutside = (event: MouseEvent) => {
       // If clicked on an element that is not a descendant of the popup
-      // wrapper, close it.
+      // wrapper or the dropdown, close it.
       if (
         event.target instanceof Node &&
-        !wrapperRef.current?.contains(event.target)
+        !wrapperRef.current?.contains(event.target) &&
+        !dropdownRef.current?.contains(event.target)
       ) {
         setOpen(false)
       }
@@ -137,7 +140,10 @@ export const Popup = ({
             },
             popupClassName
           )}
-          ref={onDropdownRef}
+          ref={(ref) => {
+            dropdownRef.current = ref
+            onDropdownRef(ref)
+          }}
         >
           {headerContent && (
             <div className="mb-4 border-b border-border-base">
