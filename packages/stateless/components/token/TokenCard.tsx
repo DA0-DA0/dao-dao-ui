@@ -5,20 +5,12 @@ import {
   ExpandCircleDownOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { ButtonPopupSection, TokenCardProps, TokenType } from '@dao-dao/types'
 import {
-  ButtonLinkProps,
-  ButtonPopupSection,
-  ButtonPopupSectionButton,
-  StatefulEntityDisplayProps,
-  TokenCardInfo,
-  TokenType,
-} from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   isJunoIbcUsdc,
   secondsToWdhms,
@@ -37,28 +29,6 @@ import { Tooltip } from '../tooltip/Tooltip'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 import { UnstakingModal } from './UnstakingModal'
 
-export interface TokenCardProps extends TokenCardInfo {
-  refreshUnstakingTasks?: () => void
-  onClaim?: () => void
-  ButtonLink: ComponentType<ButtonLinkProps>
-  // Actions to display in the button popup.
-  actions?: {
-    // Actions to add in the token section. By default, this will include copy
-    // address and add to wallet, if a cw20 token.
-    token?: ButtonPopupSectionButton[]
-    // Extra sections to add to the action popup.
-    extraSections?: ButtonPopupSection[]
-  }
-  // Display DAOs that the token is used as governance in, and optionally an
-  // amount of staked tokens. This is used to display how much a wallet has
-  // staked.
-  daosGoverned?: {
-    coreAddress: string
-    stakedBalance?: number
-  }[]
-  EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
-}
-
 export const TokenCard = ({
   token,
   isGovernanceToken,
@@ -70,7 +40,6 @@ export const TokenCard = ({
   onClaim,
   ButtonLink,
   actions,
-  daosGoverned,
   EntityDisplay,
 }: TokenCardProps) => {
   const { t } = useTranslation()
@@ -265,8 +234,8 @@ export const TokenCard = ({
             </div>
           </div>
 
-          {/* Only display `unstakedBalance` if something is staked, because that means this will differ from `totalBalance` above. */}
-          {hasStakingInfo && (
+          {/* Only display `unstakedBalance` if different from total. */}
+          {!lazyInfo.loading && lazyInfo.data.totalBalance !== unstakedBalance && (
             <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.availableBalance')}</p>
               <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
@@ -403,35 +372,36 @@ export const TokenCard = ({
           </div>
         )}
 
-        {EntityDisplay && daosGoverned && daosGoverned.length > 0 && (
-          <div className="space-y-2 border-t border-border-secondary py-4 px-6">
-            <p className="link-text">{t('title.daos')}</p>
+        {EntityDisplay &&
+          !lazyInfo.loading &&
+          !!lazyInfo.data.daosGoverned?.length && (
+            <div className="space-y-2 border-t border-border-secondary py-4 px-6">
+              <p className="link-text">{t('title.daos')}</p>
 
-            <div className="space-y-1">
-              {daosGoverned.map(({ coreAddress, stakedBalance }) => (
-                <div
-                  key={coreAddress}
-                  className="flex flex-row items-center justify-between"
-                >
-                  <EntityDisplay address={coreAddress} />
+              <div className="space-y-1">
+                {lazyInfo.data.daosGoverned.map(
+                  ({ coreAddress, stakedBalance }) => (
+                    <div
+                      key={coreAddress}
+                      className="flex flex-row items-center justify-between"
+                    >
+                      <EntityDisplay address={coreAddress} />
 
-                  {stakedBalance !== undefined && (
-                    <TokenAmountDisplay
-                      amount={convertMicroDenomToDenomWithDecimals(
-                        stakedBalance,
-                        token.decimals
+                      {stakedBalance !== undefined && (
+                        <TokenAmountDisplay
+                          amount={stakedBalance}
+                          className="caption-text text-right font-mono"
+                          decimals={token.decimals}
+                          hideSymbol
+                          suffix={' ' + t('info.staked')}
+                        />
                       )}
-                      className="text-right font-mono"
-                      decimals={token.decimals}
-                      hideSymbol
-                      suffix={' ' + t('info.staked')}
-                    />
-                  )}
-                </div>
-              ))}
+                    </div>
+                  )
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
 
       {!lazyInfo.loading && lazyInfo.data.stakingInfo && (

@@ -1,7 +1,8 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { noWait, selectorFamily, waitForAll } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
+  cw20TokenDaosWithStakedBalanceSelector,
   nativeBalancesSelector,
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
@@ -12,6 +13,7 @@ import {
   GenericToken,
   GenericTokenBalance,
   TokenCardLazyInfo,
+  TokenType,
   UnstakingTaskStatus,
   WithChainId,
 } from '@dao-dao/types'
@@ -37,6 +39,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
     ({ walletAddress, token, chainId, unstakedBalance }) =>
     ({ get }) => {
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
+      let daosGoverned: TokenCardLazyInfo['daosGoverned'] = undefined
 
       const usdUnitPrice = get(wyndUsdPriceSelector(token.denomOrAddress))
 
@@ -106,14 +109,47 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         }
       }
 
+      if (token.type === TokenType.Cw20 && walletAddress) {
+        const daosGovernedLoading = get(
+          noWait(
+            cw20TokenDaosWithStakedBalanceSelector({
+              cw20Address: token.denomOrAddress,
+              walletAddress,
+            })
+          )
+        )
+
+        if (daosGovernedLoading.state === 'hasValue') {
+          daosGoverned = daosGovernedLoading.contents.map(
+            ({ stakedBalance, ...rest }) => ({
+              ...rest,
+              // Convert to expected denom.
+              stakedBalance: convertMicroDenomToDenomWithDecimals(
+                stakedBalance,
+                token.decimals
+              ),
+            })
+          )
+        }
+      }
+
       const totalBalance =
         unstakedBalance +
-        (stakingInfo ? stakingInfo.totalStaked + stakingInfo.totalUnstaking : 0)
+        // Add staked and unstaking balances.
+        (stakingInfo
+          ? stakingInfo.totalStaked + stakingInfo.totalUnstaking
+          : 0) +
+        // Add balances staked in DAOs.
+        (daosGoverned?.reduce(
+          (acc, { stakedBalance }) => acc + (stakedBalance ?? 0),
+          0
+        ) || 0)
 
       return {
         usdUnitPrice,
         stakingInfo,
         totalBalance,
+        daosGoverned,
       }
     },
 })

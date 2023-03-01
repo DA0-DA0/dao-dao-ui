@@ -2,13 +2,14 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
   GenericToken,
+  TokenCardProps,
   TokenStake,
   TokenType,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
 
 import { ButtonLink } from '../buttons/ButtonLink'
-import { TokenCard, TokenCardProps } from './TokenCard'
+import { TokenCard } from './TokenCard'
 import { makeProps as makeUnstakingModalProps } from './UnstakingModal.stories'
 
 export default {

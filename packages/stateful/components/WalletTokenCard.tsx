@@ -8,11 +8,9 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState, waitForAll } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import {
-  Cw20BaseSelectors,
-  Cw20StakeSelectors,
   refreshHiddenBalancesAtom,
   refreshNativeTokenStakingInfoAtom,
 } from '@dao-dao/state'
@@ -50,51 +48,6 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     publicKey,
     signingCosmWasmClient,
   } = useWallet()
-
-  // Get DAOs that use dao-voting-cw20-staked with this governance token.
-  const daosLoadable = useCachedLoadable(
-    props.token.type === TokenType.Cw20
-      ? Cw20BaseSelectors.daosWithVotingAndStakingContractSelector({
-          contractAddress: props.token.denomOrAddress,
-        })
-      : undefined
-  )
-  // Get balance wallet has staked in each DAO.
-  const daosWalletStakedTokensLoadable = useCachedLoadable(
-    daosLoadable.state === 'hasValue' && walletAddress
-      ? waitForAll(
-          daosLoadable.contents.map(({ stakingContractAddress }) =>
-            Cw20StakeSelectors.stakedValueSelector({
-              contractAddress: stakingContractAddress,
-              params: [
-                {
-                  address: walletAddress,
-                },
-              ],
-            })
-          )
-        )
-      : undefined
-  )
-
-  const daosWithBalances =
-    daosLoadable.state === 'hasValue' &&
-    daosWalletStakedTokensLoadable.state === 'hasValue'
-      ? daosLoadable.contents.map(({ coreAddress }, index) => ({
-          coreAddress,
-          stakedBalance: Number(
-            daosWalletStakedTokensLoadable.contents[index].value
-          ),
-        }))
-      : []
-
-  const daosGoverned =
-    // If only has a staked balance in one DAO, show just that one.
-    daosWithBalances.filter(({ stakedBalance }) => stakedBalance > 0).length ===
-    1
-      ? daosWithBalances.filter(({ stakedBalance }) => stakedBalance > 0)
-      : // Otherwise, sort by staked tokens.
-        [...daosWithBalances].sort((a, b) => b.stakedBalance - a.stakedBalance)
 
   const { refreshBalances } = useWalletInfo()
 
@@ -278,8 +231,12 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                   },
                 ],
         }}
-        daosGoverned={daosGoverned}
-        refreshUnstakingTasks={refreshNativeTokenStakingInfo}
+        refreshUnstakingTasks={
+          props.token.type === TokenType.Native &&
+          props.token.denomOrAddress === NATIVE_DENOM
+            ? refreshNativeTokenStakingInfo
+            : undefined
+        }
       />
 
       {isUsdc && (

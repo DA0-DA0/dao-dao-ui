@@ -9,7 +9,6 @@ import {
   transformIbcSymbol,
 } from '@dao-dao/utils'
 
-// TODO: Add daosGoverned to total.
 export const TokenLine = <T extends TokenCardInfo>(
   props: TokenLineProps<T>
 ) => {
