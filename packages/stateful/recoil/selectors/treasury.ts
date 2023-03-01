@@ -1,6 +1,6 @@
 import { parseCoins } from '@cosmjs/proto-signing'
 import { IndexedTx } from '@cosmjs/stargate'
-import { noWait, selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
@@ -13,13 +13,13 @@ import { TokenCardInfo, WithChainId } from '@dao-dao/types'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
-  loadableToLoadingData,
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
 
-import { tokenCardLazyInfoSelector } from './token'
-
+// lazyInfo must be loaded in the component separately, since it refreshes on a
+// timer and we don't want this whole selector to reevaluate and load when that
+// refreshes. Use `tokenCardLazyInfoSelector`.
 export const treasuryTokenCardInfosSelector = selectorFamily<
   TokenCardInfo[],
   WithChainId<{
@@ -76,22 +76,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             unstakedBalance,
             hasStakingInfo,
 
-            lazyInfo: loadableToLoadingData(
-              get(
-                noWait(
-                  tokenCardLazyInfoSelector({
-                    walletAddress: coreAddress,
-                    token,
-                    unstakedBalance,
-                  })
-                )
-              ),
-              {
-                usdUnitPrice: undefined,
-                stakingInfo: undefined,
-                totalBalance: unstakedBalance,
-              }
-            ),
+            lazyInfo: { loading: true },
           }
 
           return info
@@ -109,22 +94,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
             // No unstaking info for CW20.
             hasStakingInfo: false,
 
-            lazyInfo: loadableToLoadingData(
-              get(
-                noWait(
-                  tokenCardLazyInfoSelector({
-                    walletAddress: coreAddress,
-                    token,
-                    unstakedBalance,
-                  })
-                )
-              ),
-              {
-                usdUnitPrice: undefined,
-                stakingInfo: undefined,
-                totalBalance: unstakedBalance,
-              }
-            ),
+            lazyInfo: { loading: true },
           }
 
           return info

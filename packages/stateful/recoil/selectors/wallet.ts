@@ -1,5 +1,5 @@
 import { fromBech32, toBech32 } from '@cosmjs/encoding'
-import { atomFamily, noWait, selectorFamily, waitForAll } from 'recoil'
+import { atomFamily, selectorFamily, waitForAll } from 'recoil'
 
 import {
   genericTokenSelector,
@@ -22,7 +22,6 @@ import {
   KVPK_API_BASE,
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
-  loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import {
@@ -30,7 +29,6 @@ import {
   walletStakedNftCardInfosSelector,
   walletStargazeNftCardInfosSelector,
 } from './nft'
-import { tokenCardLazyInfoSelector } from './token'
 
 export const SAVED_TX_PREFIX = 'savedTx:'
 
@@ -165,6 +163,9 @@ type ContractWithBalance = {
 }
 
 // TODO: Standardize this with the treasury token cards.
+// lazyInfo must be loaded in the component separately, since it refreshes on a
+// timer and we don't want this whole selector to reevaluate and load when that
+// refreshes. Use `tokenCardLazyInfoSelector`.
 export const walletTokenCardInfosSelector = selectorFamily<
   TokenCardInfo[],
   WithChainId<{
@@ -227,22 +228,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
             unstakedBalance,
             hasStakingInfo,
 
-            lazyInfo: loadableToLoadingData(
-              get(
-                noWait(
-                  tokenCardLazyInfoSelector({
-                    walletAddress,
-                    token,
-                    unstakedBalance,
-                  })
-                )
-              ),
-              {
-                usdUnitPrice: undefined,
-                stakingInfo: undefined,
-                totalBalance: unstakedBalance,
-              }
-            ),
+            lazyInfo: { loading: true },
           }
 
           return info
@@ -260,22 +246,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
             // No unstaking info for CW20.
             hasStakingInfo: false,
 
-            lazyInfo: loadableToLoadingData(
-              get(
-                noWait(
-                  tokenCardLazyInfoSelector({
-                    walletAddress,
-                    token,
-                    unstakedBalance,
-                  })
-                )
-              ),
-              {
-                usdUnitPrice: undefined,
-                stakingInfo: undefined,
-                totalBalance: unstakedBalance,
-              }
-            ),
+            lazyInfo: { loading: true },
           }
 
           return info

@@ -1,12 +1,16 @@
 import { useWallet } from '@noahsaso/cosmodal'
+import { waitForAllSettled } from 'recoil'
 
 import {
   MeBalances as StatelessMeBalances,
   useCachedLoading,
 } from '@dao-dao/stateless'
+import { LoadingData, TokenCardInfo } from '@dao-dao/types'
+import { loadableToLoadingData } from '@dao-dao/utils'
 
 import {
   hiddenBalancesSelector,
+  tokenCardLazyInfoSelector,
   walletNativeAndStargazeNftsSelector,
   walletTokenCardInfosSelector,
 } from '../../recoil'
@@ -16,7 +20,7 @@ import { WalletTokenCard } from '../WalletTokenCard'
 export const MeBalances = () => {
   const { address: walletAddress, publicKey, chainInfo } = useWallet()
 
-  const tokens = useCachedLoading(
+  const tokensWithoutLazyInfo = useCachedLoading(
     walletAddress
       ? walletTokenCardInfosSelector({
           walletAddress,
@@ -25,6 +29,40 @@ export const MeBalances = () => {
       : undefined,
     []
   )
+
+  // Load separately so they cache separately.
+  const tokenLazyInfos = useCachedLoading(
+    !tokensWithoutLazyInfo.loading && walletAddress
+      ? waitForAllSettled(
+          tokensWithoutLazyInfo.data.map(({ token, unstakedBalance }) =>
+            tokenCardLazyInfoSelector({
+              walletAddress,
+              chainId: chainInfo?.chainId,
+              token,
+              unstakedBalance,
+            })
+          )
+        )
+      : undefined,
+    []
+  )
+
+  const tokens: LoadingData<TokenCardInfo[]> =
+    tokensWithoutLazyInfo.loading || tokenLazyInfos.loading
+      ? {
+          loading: true,
+        }
+      : {
+          loading: false,
+          data: tokensWithoutLazyInfo.data.map((token, i) => ({
+            ...token,
+            lazyInfo: loadableToLoadingData(tokenLazyInfos.data[i], {
+              usdUnitPrice: undefined,
+              stakingInfo: undefined,
+              totalBalance: token.unstakedBalance,
+            }),
+          })),
+        }
 
   const nfts = useCachedLoading(
     walletAddress

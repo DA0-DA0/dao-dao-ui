@@ -9,6 +9,7 @@ import {
   DepositEmoji,
   MoneyEmoji,
   TokenCard as StatelessTokenCard,
+  useCachedLoading,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -21,6 +22,7 @@ import { NATIVE_DENOM, StakeType } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../actions'
 import { useEncodedDaoProposalSinglePrefill } from '../../hooks'
+import { tokenCardLazyInfoSelector } from '../../recoil'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { ButtonLink } from '../ButtonLink'
 import { DaoTokenDepositModal } from './DaoTokenDepositModal'
@@ -28,8 +30,22 @@ import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 export const DaoTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress, chainId } = useDaoInfoContext()
   const { getDaoProposalPath } = useNavHelpers()
+
+  const lazyInfo = useCachedLoading(
+    tokenCardLazyInfoSelector({
+      walletAddress: coreAddress,
+      chainId,
+      token: props.token,
+      unstakedBalance: props.unstakedBalance,
+    }),
+    {
+      usdUnitPrice: undefined,
+      stakingInfo: undefined,
+      totalBalance: props.unstakedBalance,
+    }
+  )
 
   const {
     hooks: { useCommonGovernanceTokenInfo },
@@ -51,10 +67,9 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     [setRefreshNativeTokenStakingInfo]
   )
 
-  const lazyStakes = props.lazyInfo.loading
+  const lazyStakes = lazyInfo.loading
     ? []
-    : props.lazyInfo.data.stakingInfo?.stakes ?? []
-
+    : lazyInfo.data.stakingInfo?.stakes ?? []
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
   const stakeAction = useActionForKey(CoreActionKey.StakingActions)
@@ -199,6 +214,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
               ],
           extraSections: extraActionSections,
         }}
+        lazyInfo={lazyInfo}
         onClaim={onClaim}
         refreshUnstakingTasks={refreshNativeTokenStakingInfo}
       />

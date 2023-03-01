@@ -19,6 +19,7 @@ import {
   MoneyEmoji,
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
+  useCachedLoading,
 } from '@dao-dao/stateless'
 import { TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
@@ -35,7 +36,11 @@ import {
   useCfWorkerAuthPostRequest,
   useWalletInfo,
 } from '../hooks'
-import { hiddenBalancesSelector, temporaryHiddenBalancesAtom } from '../recoil'
+import {
+  hiddenBalancesSelector,
+  temporaryHiddenBalancesAtom,
+  tokenCardLazyInfoSelector,
+} from '../recoil'
 import { ButtonLink } from './ButtonLink'
 import { EntityDisplay } from './EntityDisplay'
 import { WalletFiatRampModal } from './WalletFiatRampModal'
@@ -47,9 +52,26 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     address: walletAddress = '',
     publicKey,
     signingCosmWasmClient,
+    chainInfo,
   } = useWallet()
 
   const { refreshBalances } = useWalletInfo()
+
+  const lazyInfo = useCachedLoading(
+    walletAddress
+      ? tokenCardLazyInfoSelector({
+          walletAddress,
+          chainId: chainInfo?.chainId,
+          token: props.token,
+          unstakedBalance: props.unstakedBalance,
+        })
+      : undefined,
+    {
+      usdUnitPrice: undefined,
+      stakingInfo: undefined,
+      totalBalance: props.unstakedBalance,
+    }
+  )
 
   // Refresh staking info.
   const setRefreshNativeTokenStakingInfo = useSetRecoilState(
@@ -128,7 +150,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   const awaitNextBlock = useAwaitNextBlock()
 
   const claimReady =
-    !props.lazyInfo.loading && !!props.lazyInfo.data.stakingInfo?.stakes.length
+    !lazyInfo.loading && !!lazyInfo.data.stakingInfo?.stakes.length
   const [claimLoading, setClaimLoading] = useState(false)
   const onClaim = async () => {
     if (!claimReady) {
@@ -143,20 +165,18 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     try {
       await signingCosmWasmClient.signAndBroadcast(
         walletAddress,
-        (props.lazyInfo.loading
-          ? []
-          : props.lazyInfo.data.stakingInfo!.stakes
-        ).map(({ validator }) =>
-          cwMsgToEncodeObject(
-            {
-              distribution: {
-                withdraw_delegator_reward: {
-                  validator: validator.address,
+        (lazyInfo.loading ? [] : lazyInfo.data.stakingInfo!.stakes).map(
+          ({ validator }) =>
+            cwMsgToEncodeObject(
+              {
+                distribution: {
+                  withdraw_delegator_reward: {
+                    validator: validator.address,
+                  },
                 },
               },
-            },
-            walletAddress
-          )
+              walletAddress
+            )
         ),
         'auto'
       )
@@ -231,6 +251,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                   },
                 ],
         }}
+        lazyInfo={lazyInfo}
         refreshUnstakingTasks={
           props.token.type === TokenType.Native &&
           props.token.denomOrAddress === NATIVE_DENOM
