@@ -1,10 +1,19 @@
-import { ArrowOutwardRounded, ImageNotSupported } from '@mui/icons-material'
+import {
+  ArrowOutwardRounded,
+  ExpandCircleDownOutlined,
+  ImageNotSupported,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import Image from 'next/image'
 import { ComponentType, forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { NftCardInfo, StatefulEntityDisplayProps } from '@dao-dao/types'
+import {
+  ButtonLinkProps,
+  ButtonPopupSection,
+  NftCardInfo,
+  StatefulEntityDisplayProps,
+} from '@dao-dao/types'
 import {
   getImageUrlForChainId,
   getNftName,
@@ -13,8 +22,10 @@ import {
 
 import { Button } from './buttons'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
+import { IconButton } from './icon_buttons'
 import { Checkbox } from './inputs'
 import { MarkdownRenderer } from './MarkdownRenderer'
+import { ButtonPopup } from './popup/ButtonPopup'
 import { TooltipLikeDisplay } from './tooltip/TooltipLikeDisplay'
 
 export interface NftCardProps extends NftCardInfo {
@@ -28,6 +39,11 @@ export interface NftCardProps extends NftCardInfo {
   className?: string
   // Needs to be defined to show the NFT owner.
   EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
+  // If present, will show button popup dropdown.
+  buttonPopup?: {
+    sections: ButtonPopupSection[]
+    ButtonLink: ComponentType<ButtonLinkProps>
+  }
 }
 
 export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
@@ -47,6 +63,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       chainId,
       className,
       EntityDisplay,
+      buttonPopup,
     },
     ref
   ) {
@@ -114,6 +131,30 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                 })}
               />
             </a>
+          )}
+
+          {buttonPopup && buttonPopup.sections.length > 0 && (
+            <div className="absolute top-2 right-2">
+              <ButtonPopup
+                ButtonLink={buttonPopup.ButtonLink}
+                Trigger={({ open, ...props }) => (
+                  <IconButton
+                    Icon={ExpandCircleDownOutlined}
+                    className={clsx(
+                      '!text-icon-secondary group-hover:opacity-100',
+                      !open && 'opacity-0'
+                    )}
+                    focused={open}
+                    variant="ghost"
+                    {...props}
+                  />
+                )}
+                dontCloseOnClick
+                popupClassName="w-[16rem]"
+                position="left"
+                sections={buttonPopup.sections}
+              />
+            </div>
           )}
         </div>
 

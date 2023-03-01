@@ -14,7 +14,7 @@ import {
   walletNativeAndStargazeNftsSelector,
   walletTokenCardInfosSelector,
 } from '../../recoil'
-import { NftCard } from '../NftCard'
+import { WalletNftCard } from '../NftCard'
 import { WalletTokenCard } from '../WalletTokenCard'
 
 export const MeBalances = () => {
@@ -78,7 +78,7 @@ export const MeBalances = () => {
 
   return (
     <StatelessMeBalances
-      NftCard={NftCard}
+      NftCard={WalletNftCard}
       TokenCard={WalletTokenCard}
       hiddenTokens={hiddenTokens}
       nfts={nfts}

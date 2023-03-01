@@ -49,8 +49,11 @@ export const ButtonPopup = ({
             return 'onClick' in buttonProps ? (
               <Button
                 {...commonProps}
-                className={loading ? 'animate-pulse' : undefined}
-                disabled={loading}
+                className={clsx(
+                  loading && 'animate-pulse',
+                  buttonProps.disabled && 'opacity-60'
+                )}
+                disabled={loading || buttonProps.disabled}
                 onClick={() => {
                   buttonProps.onClick()
                   // Close on click.

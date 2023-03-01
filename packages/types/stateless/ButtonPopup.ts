@@ -7,6 +7,7 @@ export type ButtonPopupSectionButton = {
   Icon?: ComponentType<{ className?: string }>
   label: string
   loading?: boolean
+  disabled?: boolean
 } & (
   | {
       onClick: () => void
