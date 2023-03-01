@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector } from 'recoil'
 
-import { FireEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import { FireEmoji, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
@@ -12,11 +12,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import {
-  loadableToLoadingDataWithError,
-  makeWasmMessage,
-  objectMatchesStructure,
-} from '@dao-dao/utils'
+import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import {
   nftCardInfoSelector,
@@ -85,23 +81,21 @@ const Component: ActionComponent = (props) => {
   const tokenId = watch(props.fieldNamePrefix + 'tokenId')
   const collection = watch(props.fieldNamePrefix + 'collection')
 
-  const options = loadableToLoadingDataWithError(
-    useCachedLoadable(
-      props.isCreating
-        ? context.type === ActionContextType.Dao
-          ? nftCardInfosForDaoSelector({
-              coreAddress: address,
-              chainId,
-              governanceCollectionAddress,
-            })
-          : walletNftCardInfos({
-              walletAddress: address,
-              chainId,
-            })
-        : constSelector([])
-    )
+  const options = useCachedLoading(
+    props.isCreating
+      ? context.type === ActionContextType.Dao
+        ? nftCardInfosForDaoSelector({
+            coreAddress: address,
+            chainId,
+            governanceCollectionAddress,
+          })
+        : walletNftCardInfos({
+            walletAddress: address,
+            chainId,
+          })
+      : constSelector([])
   )
-  const nftInfoLoadable = useCachedLoadable(
+  const nftInfo = useCachedLoading(
     !!tokenId && !!collection
       ? nftCardInfoSelector({ chainId, collection, tokenId })
       : constSelector(undefined)
@@ -112,7 +106,7 @@ const Component: ActionComponent = (props) => {
       {...props}
       options={{
         options,
-        nftInfo: loadableToLoadingDataWithError(nftInfoLoadable),
+        nftInfo,
       }}
     />
   )

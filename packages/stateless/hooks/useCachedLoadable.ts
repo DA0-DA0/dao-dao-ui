@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { RecoilValue, constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { CachedLoadable } from '@dao-dao/types'
+import { CachedLoadable, LoadingDataWithError } from '@dao-dao/types'
+import { loadableToLoadingDataWithError } from '@dao-dao/utils'
 
 // Keep cache of previously loaded data until next data is ready. Essentially,
 // memoize a loadable to prevent UI flickering. If recoilValue is undefined,
@@ -102,4 +103,12 @@ export const useCachedLoadable = <T extends unknown>(
   )
 
   return cachedLoadable
+}
+
+// Convert to LoadingDataWithError for convenience, memoized.
+export const useCachedLoading = <T extends unknown>(
+  recoilValue: RecoilValue<T> | undefined
+): LoadingDataWithError<T> => {
+  const loadable = useCachedLoadable(recoilValue)
+  return useMemo(() => loadableToLoadingDataWithError(loadable), [loadable])
 }
