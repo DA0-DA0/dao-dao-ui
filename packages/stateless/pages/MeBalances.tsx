@@ -75,7 +75,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
                 key={props.token.denomOrAddress}
                 TokenCard={TokenCard}
                 transparentBackground={index % 2 !== 0}
-                {...props}
+                {...(props as T)}
               />
             ))}
           </div>
@@ -107,7 +107,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
                   key={props.token.denomOrAddress}
                   TokenCard={TokenCard}
                   transparentBackground={index % 2 !== 0}
-                  {...props}
+                  {...(props as T)}
                 />
               ))}
             </div>
