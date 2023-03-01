@@ -2,13 +2,13 @@ import { DoneOutlineRounded } from '@mui/icons-material'
 import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoCardInfo, LoadingData } from '@dao-dao/types'
+import { DaoCardInfo, LoadingData, SortFn, TypedOption } from '@dao-dao/types'
 
-import { SortFn, useDropdownSorter } from '../../hooks/useDropdownSorter'
+import { useButtonPopupSorter } from '../../hooks'
 import { GridCardContainer } from '../GridCardContainer'
-import { Dropdown, DropdownOption } from '../inputs/Dropdown'
 import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
+import { ButtonPopup } from '../popup/ButtonPopup'
 
 export interface FollowingDaosProps {
   DaoCard: ComponentType<DaoCardInfo>
@@ -27,22 +27,20 @@ export const FollowingDaos = ({
     () => getSortOptions(followingDaos.loading ? [] : followingDaos.data),
     [followingDaos]
   )
-  const { sortedData: sortedFollowingDaos, dropdownProps: sortDropdownProps } =
-    useDropdownSorter(
-      followingDaos.loading ? [] : followingDaos.data,
-      sortOptions
-    )
+  const {
+    sortedData: sortedFollowingDaos,
+    buttonPopupProps: sortButtonPopupProps,
+  } = useButtonPopupSorter({
+    data: followingDaos.loading ? [] : followingDaos.data,
+    options: sortOptions,
+  })
 
   return (
     <>
       <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="title-text">{t('title.following')}</p>
 
-        <div className="flex flex-row items-center justify-between gap-6">
-          <p className="primary-text text-text-body">{t('title.sortBy')}</p>
-
-          <Dropdown {...sortDropdownProps} />
-        </div>
+        <ButtonPopup position="left" {...sortButtonPopupProps} />
       </div>
 
       {followingDaos.loading ? (
@@ -68,7 +66,7 @@ export const FollowingDaos = ({
 
 const getSortOptions = (
   followingDaos: DaoCardInfo[]
-): DropdownOption<SortFn<DaoCardInfo>>[] => [
+): TypedOption<SortFn<DaoCardInfo>>[] => [
   {
     label: 'Date followed (oldest → newest)',
     value: (a, b) => followingDaos.indexOf(a) - followingDaos.indexOf(b),

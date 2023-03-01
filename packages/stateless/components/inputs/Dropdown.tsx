@@ -4,16 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
+import { TypedOption } from '@dao-dao/types'
+
 import { useTrackDropdown } from '../../hooks/useTrackDropdown'
 import { Button } from '../buttons'
 
-export interface DropdownOption<T> {
-  label: string
-  value: T
-}
-
 export interface DropdownProps<T> {
-  options: DropdownOption<T>[]
+  options: TypedOption<T>[]
   placeholder?: string
   selected?: T | T[]
   onSelect: (option: T, index: number) => void

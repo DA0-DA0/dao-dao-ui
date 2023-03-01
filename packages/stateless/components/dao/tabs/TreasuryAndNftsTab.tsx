@@ -2,15 +2,21 @@ import { Image } from '@mui/icons-material'
 import { ComponentType, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
+import {
+  LoadingData,
+  NftCardInfo,
+  SortFn,
+  TokenCardInfo,
+  TypedOption,
+} from '@dao-dao/types'
 
-import { SortFn, useDropdownSorter } from '../../../hooks'
+import { useButtonPopupSorter } from '../../../hooks'
 import { Button } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
-import { Dropdown, DropdownOption } from '../../inputs/Dropdown'
 import { Loader } from '../../logo/Loader'
 import { ModalProps } from '../../modals/Modal'
 import { NoContent } from '../../NoContent'
+import { ButtonPopup } from '../../popup'
 
 export interface TreasuryAndNftsTabProps<
   T extends TokenCardInfo,
@@ -60,8 +66,11 @@ export const TreasuryAndNftsTab = <
     [tokens]
   )
 
-  const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
-    useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
+  const { sortedData: sortedNfts, buttonPopupProps: sortButtonPopupProps } =
+    useButtonPopupSorter({
+      data: nfts.loading ? [] : nfts.data,
+      options: sortOptions,
+    })
 
   const [showDepositFiat, setShowDepositFiat] = useState(false)
 
@@ -103,13 +112,7 @@ export const TreasuryAndNftsTab = <
             </p>
 
             {!nfts.loading && nfts.data.length > 0 && (
-              <div className="flex flex-row items-center justify-between gap-4">
-                <p className="primary-text text-text-body">
-                  {t('title.sortBy')}
-                </p>
-
-                <Dropdown {...sortDropdownProps} />
-              </div>
+              <ButtonPopup position="left" {...sortButtonPopupProps} />
             )}
           </div>
 
@@ -158,7 +161,7 @@ export const TreasuryAndNftsTab = <
   )
 }
 
-const sortOptions: DropdownOption<
+const sortOptions: TypedOption<
   SortFn<Pick<NftCardInfo, 'name' | 'floorPrice'>>
 >[] = [
   {

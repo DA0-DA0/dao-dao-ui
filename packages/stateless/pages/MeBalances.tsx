@@ -1,21 +1,28 @@
 import { Image } from '@mui/icons-material'
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { MeBalancesProps, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
+import {
+  FilterFn,
+  MeBalancesProps,
+  NftCardInfo,
+  SortFn,
+  TokenCardInfo,
+  TypedOption,
+} from '@dao-dao/types'
 
 import {
   Button,
-  Dropdown,
+  ButtonPopup,
   DropdownIconButton,
-  DropdownOption,
   GridCardContainer,
   Loader,
   NoContent,
   TokenLine,
 } from '../components'
-import { SortFn, useDropdownSorter } from '../hooks'
+import { useButtonPopupFilter, useButtonPopupSorter } from '../hooks'
 
 export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   tokens,
@@ -26,11 +33,30 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
 }: MeBalancesProps<T, N>) => {
   const { t } = useTranslation()
 
-  const { sortedData: sortedTokens, dropdownProps: sortTokenDropdownProps } =
-    useDropdownSorter(tokens.loading ? [] : tokens.data, tokenSortOptions)
+  const {
+    sortedData: sortedTokens,
+    buttonPopupProps: sortTokenButtonPopupProps,
+  } = useButtonPopupSorter({
+    data: tokens.loading ? [] : tokens.data,
+    options: tokenSortOptions,
+  })
 
-  const { sortedData: sortedNfts, dropdownProps: sortNftDropdownProps } =
-    useDropdownSorter(nfts.loading ? [] : nfts.data, nftSortOptions)
+  const {
+    filteredData: filteredNfts,
+    buttonPopupProps: filterNftButtonPopupProps,
+    selectedOption: { id: selectedNftChainFilter },
+  } = useButtonPopupFilter({
+    data: nfts.loading ? [] : nfts.data,
+    options: nftFilterOptions,
+  })
+
+  const {
+    sortedData: filteredSortedNfts,
+    buttonPopupProps: sortNftButtonPopupProps,
+  } = useButtonPopupSorter({
+    data: filteredNfts,
+    options: nftSortOptions,
+  })
 
   const visibleBalances = hiddenTokens.loading
     ? []
@@ -52,14 +78,8 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
           <Loader fill={false} />
         ) : tokens.data.length ? (
           <div className="space-y-1">
-            <div className="mb-5 -mt-4 flex flex-row justify-end">
-              <div className="flex flex-row items-center justify-between gap-4">
-                <p className="primary-text text-text-body">
-                  {t('title.sortBy')}
-                </p>
-
-                <Dropdown {...sortTokenDropdownProps} />
-              </div>
+            <div className="mb-6 -mt-4 flex flex-row justify-end">
+              <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
             </div>
 
             <div className="secondary-text mb-4 grid grid-cols-2 items-center gap-4 px-4 sm:grid-cols-[2fr_1fr_1fr]">
@@ -128,17 +148,16 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
                 </p>
 
                 <p className="secondary-text break-words">
-                  {t('info.meBalancesNftsDescription')}
+                  {t('info.meBalancesNftsDescription', {
+                    context: selectedNftChainFilter,
+                  })}
                 </p>
               </div>
 
               {!nfts.loading && nfts.data.length > 0 && (
-                <div className="flex flex-row items-center justify-between gap-4">
-                  <p className="primary-text text-text-body">
-                    {t('title.sortBy')}
-                  </p>
-
-                  <Dropdown {...sortNftDropdownProps} />
+                <div className="flex flex-row items-center gap-4">
+                  <ButtonPopup position="left" {...sortNftButtonPopupProps} />
+                  <ButtonPopup position="left" {...filterNftButtonPopupProps} />
                 </div>
               )}
             </div>
@@ -147,7 +166,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
               <Loader fill={false} />
             ) : (
               <GridCardContainer className="pb-6">
-                {sortedNfts.map((props, index) => (
+                {filteredSortedNfts.map((props, index) => (
                   <NftCard {...(props as N)} key={index} />
                 ))}
               </GridCardContainer>
@@ -160,35 +179,59 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   )
 }
 
-const tokenSortOptions: DropdownOption<
+const tokenSortOptions: TypedOption<
   SortFn<Pick<TokenCardInfo, 'token' | 'unstakedBalance' | 'lazyInfo'>>
 >[] = [
   {
     label: 'Highest value',
     value: (a, b) => {
-      const aPrice =
-        a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice
-          ? -Infinity
-          : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.amount
-      const bPrice =
-        b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice
-          ? -Infinity
-          : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.amount
-      return bPrice - aPrice
+      const aPrice = a.lazyInfo.loading
+        ? // If loading, show at top.
+          Infinity
+        : // If no price, show at bottom.
+        !a.lazyInfo.data.usdUnitPrice
+        ? -Infinity
+        : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.amount
+      const bPrice = b.lazyInfo.loading
+        ? // If loading, show at top.
+          Infinity
+        : // If no price, show at bottom.
+        !b.lazyInfo.data.usdUnitPrice
+        ? -Infinity
+        : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.amount
+
+      // If prices are equal, sort alphabetically by symbol.
+      return aPrice === bPrice
+        ? a.token.symbol
+            .toLocaleLowerCase()
+            .localeCompare(b.token.symbol.toLocaleLowerCase())
+        : bPrice - aPrice
     },
   },
   {
     label: 'Lowest value',
     value: (a, b) => {
-      const aPrice =
-        a.lazyInfo.loading || !a.lazyInfo.data.usdUnitPrice
-          ? Infinity
-          : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.amount
-      const bPrice =
-        b.lazyInfo.loading || !b.lazyInfo.data.usdUnitPrice
-          ? Infinity
-          : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.amount
-      return aPrice - bPrice
+      const aPrice = a.lazyInfo.loading
+        ? // If loading, show at top.
+          -Infinity
+        : !a.lazyInfo.data.usdUnitPrice
+        ? // If no price, show at bottom.
+          Infinity
+        : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.amount
+      const bPrice = b.lazyInfo.loading
+        ? // If loading, show at top.
+          -Infinity
+        : !b.lazyInfo.data.usdUnitPrice
+        ? // If no price, show at bottom.
+          Infinity
+        : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.amount
+
+      // If prices are equal, sort alphabetically by symbol.
+      return aPrice === bPrice
+        ? a.token.symbol
+            .toLocaleLowerCase()
+            .localeCompare(b.token.symbol.toLocaleLowerCase())
+        : aPrice - bPrice
     },
   },
   {
@@ -207,7 +250,7 @@ const tokenSortOptions: DropdownOption<
   },
 ]
 
-const nftSortOptions: DropdownOption<
+const nftSortOptions: TypedOption<
   SortFn<Pick<NftCardInfo, 'name' | 'floorPrice'>>
 >[] = [
   {
@@ -238,4 +281,24 @@ const nftSortOptions: DropdownOption<
   //       ? -1
   //       : b.floorPrice.amount - a.floorPrice.amount,
   // },
+]
+
+const nftFilterOptions: (TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
+  id: string
+})[] = [
+  {
+    id: 'all',
+    label: 'All',
+    value: () => true,
+  },
+  {
+    id: 'juno',
+    label: 'Only Juno',
+    value: (nft) => nft.chainId === ChainInfoID.Juno1,
+  },
+  {
+    id: 'stargaze',
+    label: 'Only Stargaze',
+    value: (nft) => nft.chainId === ChainInfoID.Stargaze1,
+  },
 ]

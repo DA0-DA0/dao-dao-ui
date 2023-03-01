@@ -1,18 +1,31 @@
 /* eslint-disable @next/next/no-img-element */
 import { Image, WarningRounded } from '@mui/icons-material'
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingDataWithError, ModalProps, NftCardInfo } from '@dao-dao/types'
+import {
+  FilterFn,
+  LoadingDataWithError,
+  ModalProps,
+  NftCardInfo,
+  SortFn,
+  TypedOption,
+} from '@dao-dao/types'
 
-import { SortFn, useDropdownSorter, useSearchFilter } from '../../hooks'
+import {
+  useButtonPopupFilter,
+  useButtonPopupSorter,
+  useSearchFilter,
+} from '../../hooks'
 import { Button } from '../buttons/Button'
-import { Dropdown, DropdownOption, SearchBar } from '../inputs'
+import { SearchBar } from '../inputs'
 import { Loader } from '../logo/Loader'
 import { NftCard } from '../NftCard'
 import { NoContent } from '../NoContent'
+import { ButtonPopup } from '../popup'
 import { Modal } from './Modal'
 
 export interface NftSelectionModalProps<T extends NftCardInfo>
@@ -83,14 +96,24 @@ export const NftSelectionModal = <T extends NftCardInfo>({
     })
   }, [nfts, firstSelectedRef, scrolledToFirst])
 
-  const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
-    useDropdownSorter(
-      nfts.loading || nfts.errored ? [] : nfts.data,
-      sortOptions
-    )
+  const {
+    filteredData: filteredNfts,
+    buttonPopupProps: filterNftButtonPopupProps,
+  } = useButtonPopupFilter({
+    data: nfts.loading || nfts.errored ? [] : nfts.data,
+    options: filterOptions,
+  })
+
+  const {
+    sortedData: filteredSortedNfts,
+    buttonPopupProps: sortButtonPopupProps,
+  } = useButtonPopupSorter({
+    data: filteredNfts,
+    options: sortOptions,
+  })
 
   const { searchBarProps, filteredData } = useSearchFilter(
-    sortedNfts,
+    filteredSortedNfts,
     FILTERABLE_KEYS
   )
 
@@ -166,10 +189,9 @@ export const NftSelectionModal = <T extends NftCardInfo>({
               </Button>
             )}
 
-            <div className="flex flex-row items-center justify-between gap-4">
-              <p className="primary-text text-text-body">{t('title.sortBy')}</p>
-
-              <Dropdown {...sortDropdownProps} />
+            <div className="flex flex-row items-center gap-4">
+              <ButtonPopup position="left" {...filterNftButtonPopupProps} />
+              <ButtonPopup position="left" {...sortButtonPopupProps} />
             </div>
           </div>
         </div>
@@ -215,7 +237,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   )
 }
 
-const sortOptions: DropdownOption<SortFn<Pick<NftCardInfo, 'name'>>>[] = [
+const sortOptions: TypedOption<SortFn<Pick<NftCardInfo, 'name'>>>[] = [
   {
     label: 'A → Z',
     value: (a, b) =>
@@ -232,4 +254,19 @@ const FILTERABLE_KEYS: Fuse.FuseOptionKey<NftCardInfo>[] = [
   'name',
   'description',
   'collection.address',
+]
+
+const filterOptions: TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>>[] = [
+  {
+    label: 'All',
+    value: () => true,
+  },
+  {
+    label: 'Only Juno',
+    value: (nft) => nft.chainId === ChainInfoID.Juno1,
+  },
+  {
+    label: 'Only Stargaze',
+    value: (nft) => nft.chainId === ChainInfoID.Stargaze1,
+  },
 ]

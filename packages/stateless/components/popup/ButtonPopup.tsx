@@ -19,7 +19,7 @@ export const ButtonPopup = ({
         <div
           key={index}
           className={clsx(
-            'flex flex-col gap-2 py-3 px-4',
+            'flex flex-col gap-2 p-3',
             index > 0 && 'border-t border-border-secondary'
           )}
         >

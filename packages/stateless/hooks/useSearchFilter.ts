@@ -25,8 +25,12 @@ export const useSearchFilter = <T extends unknown>(
     setFuse(makeFuse(data, filterableKeys, options))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterableKeys, options])
+
+  // Trigger re-filter when collection is updated.
+  const [collectionId, setCollectionId] = useState(0)
   useEffect(() => {
     fuse.setCollection(data)
+    setCollectionId((id) => id + 1)
   }, [data, fuse])
 
   const [filter, setFilter] = useState('')
@@ -43,7 +47,10 @@ export const useSearchFilter = <T extends unknown>(
               originalIndex,
             })),
           ],
-    [filter, fuse, data]
+    // Refilter when new collection is set, since setting fuse collection
+    // doesn't trigger a re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filter, fuse, data, collectionId]
   )
 
   return {

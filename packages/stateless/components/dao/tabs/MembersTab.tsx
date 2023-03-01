@@ -12,13 +12,14 @@ import {
   ButtonLinkProps,
   StatefulDaoMemberCardProps,
   StatefulEntityDisplayProps,
+  TypedOption,
 } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
 import { IconButton } from '../../icon_buttons'
-import { Dropdown, DropdownOption } from '../../inputs/Dropdown'
+import { Dropdown } from '../../inputs/Dropdown'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
 import { VOTING_POWER_DISTRIBUTION_COLORS_ORDERED } from '../create'
 
@@ -69,7 +70,7 @@ export const MembersTab = ({
   const [topStakerState, setTopStakerState] = useState(
     TopStakerState.TenAbsolute
   )
-  const topStakerStateOptions: DropdownOption<TopStakerState>[] = [
+  const topStakerStateOptions: TypedOption<TopStakerState>[] = [
     {
       label: t('title.topAbsolute', { count: -TopStakerState.TenAbsolute }),
       value: TopStakerState.TenAbsolute,
