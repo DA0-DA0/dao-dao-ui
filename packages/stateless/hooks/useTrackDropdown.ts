@@ -85,8 +85,12 @@ export const useTrackDropdown = ({
     const observer = new ResizeObserver(updateRectRef.current)
     observer.observe(trackRef.current)
 
+    // Update on a timer to catch other changes.
+    const timer = setInterval(updateRectRef.current, 1000)
+
     return () => {
       observer.disconnect()
+      clearInterval(timer)
     }
   }, [trackReady])
 
