@@ -1,5 +1,6 @@
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 import { Modal, TokenAmountDisplay } from '@dao-dao/stateless'
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
@@ -17,6 +18,11 @@ export const TokenLine = <T extends TokenCardInfo>(
   const { tokenSymbol } = transformIbcSymbol(token.symbol)
 
   const [cardVisible, setCardVisible] = useState(false)
+  // On route change, close the card.
+  const { asPath } = useRouter()
+  useEffect(() => {
+    setCardVisible(false)
+  }, [asPath])
 
   return (
     <>

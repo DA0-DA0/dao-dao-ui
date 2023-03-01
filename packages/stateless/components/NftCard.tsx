@@ -149,7 +149,6 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                     {...props}
                   />
                 )}
-                dontCloseOnClick
                 popupClassName="w-[16rem]"
                 position="left"
                 sections={buttonPopup.sections}

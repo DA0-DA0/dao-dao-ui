@@ -93,6 +93,7 @@ export const TokenCard = ({
                     {
                       Icon: copied ? Check : CopyAll,
                       label: t('button.copyAddressToClipboard'),
+                      closeOnClick: false,
                       onClick: () => {
                         navigator.clipboard.writeText(token.denomOrAddress)
                         toast.success(t('info.copiedToClipboard'))
@@ -106,6 +107,7 @@ export const TokenCard = ({
                     {
                       Icon: Add,
                       label: t('button.addToKeplr'),
+                      closeOnClick: false,
                       onClick: addCw20Token,
                     },
                   ]
@@ -180,7 +182,6 @@ export const TokenCard = ({
                     {...props}
                   />
                 )}
-                dontCloseOnClick
                 popupClassName="w-[16rem]"
                 position="left"
                 sections={buttonPopupSections}

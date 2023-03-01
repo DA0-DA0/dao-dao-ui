@@ -1,10 +1,14 @@
 import {
+  ArchiveRounded,
   Paid,
+  PaidRounded,
+  PaymentRounded,
   SavingsRounded,
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
+import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -15,19 +19,18 @@ import {
   refreshNativeTokenStakingInfoAtom,
 } from '@dao-dao/state'
 import {
-  DepositEmoji,
-  MoneyEmoji,
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { TokenCardInfo, TokenType } from '@dao-dao/types'
+import { CoreActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
   HIDDEN_BALANCE_PREFIX,
   JUNO_USDC_DENOM,
   KVPK_API_BASE,
   NATIVE_DENOM,
   cwMsgToEncodeObject,
+  getMeTxPrefillPath,
   processError,
 } from '@dao-dao/utils'
 
@@ -54,6 +57,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     signingCosmWasmClient,
     chainInfo,
   } = useWallet()
+  const router = useRouter()
 
   const { refreshBalances } = useWalletInfo()
 
@@ -200,16 +204,42 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
         EntityDisplay={EntityDisplay}
         actions={{
           token: [
+            {
+              Icon: PaymentRounded,
+              label: t('button.spend'),
+              closeOnClick: true,
+              onClick: () =>
+                router.push(
+                  getMeTxPrefillPath({
+                    actions: [
+                      {
+                        key: CoreActionKey.Spend,
+                        data: {
+                          to: '',
+                          amount: 0,
+                          denom: props.token.denomOrAddress,
+                        },
+                      },
+                    ],
+                  }),
+                  undefined,
+                  {
+                    shallow: true,
+                  }
+                ),
+            },
             ...(isUsdc
               ? [
                   {
                     Icon: Paid,
                     label: t('button.depositFiat'),
+                    closeOnClick: true,
                     onClick: () => setFiatRampDefaultModeVisible('buy'),
                   },
                   {
                     Icon: SavingsRounded,
                     label: t('button.withdrawFiat'),
+                    closeOnClick: true,
                     onClick: () => setFiatRampDefaultModeVisible('sell'),
                   },
                 ]
@@ -217,15 +247,17 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
             ...(isNative
               ? [
                   {
-                    Icon: DepositEmoji,
+                    Icon: ArchiveRounded,
                     label: t('button.stakeOrUnstake'),
+                    closeOnClick: true,
                     onClick: () => setStakingModalVisible(true),
                   },
                   ...(claimReady
                     ? [
                         {
-                          Icon: MoneyEmoji,
+                          Icon: PaidRounded,
                           label: t('button.claimStakingRewards'),
+                          closeOnClick: false,
                           onClick: onClaim,
                           loading: claimLoading,
                         },
@@ -244,6 +276,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                       {
                         Icon: isHidden ? Visibility : VisibilityOff,
                         label: isHidden ? t('button.unhide') : t('button.hide'),
+                        closeOnClick: false,
                         onClick: () => setBalanceHidden(!isHidden),
                         loading: savingHidden,
                       },

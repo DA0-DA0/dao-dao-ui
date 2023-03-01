@@ -1,4 +1,8 @@
-import { AccountBalance } from '@mui/icons-material'
+import {
+  AccountBalance,
+  ArchiveRounded,
+  PaidRounded,
+} from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -6,8 +10,6 @@ import { useSetRecoilState } from 'recoil'
 
 import { refreshNativeTokenStakingInfoAtom } from '@dao-dao/state'
 import {
-  DepositEmoji,
-  MoneyEmoji,
   TokenCard as StatelessTokenCard,
   useCachedLoading,
   useDaoInfoContext,
@@ -164,8 +166,9 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
               ...(proposeStakeUnstakeHref
                 ? [
                     {
-                      Icon: DepositEmoji,
+                      Icon: ArchiveRounded,
                       label: t('button.stakeOrUnstake'),
+                      closeOnClick: true,
                       href: proposeStakeUnstakeHref,
                     },
                   ]
@@ -173,8 +176,9 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
               ...(proposeClaimHref
                 ? [
                     {
-                      Icon: MoneyEmoji,
-                      label: t('button.claim'),
+                      Icon: PaidRounded,
+                      label: t('button.claimStakingRewards'),
+                      closeOnClick: true,
                       href: proposeClaimHref,
                     },
                   ]
@@ -199,6 +203,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
                   label: t('button.manageStake', {
                     tokenSymbol: props.token.symbol,
                   }),
+                  closeOnClick: true,
                   onClick: () => setShowCw20StakingModal(true),
                 },
               ]
@@ -209,6 +214,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
                 {
                   Icon: AccountBalance,
                   label: t('button.deposit'),
+                  closeOnClick: true,
                   onClick: showDeposit,
                 },
               ],

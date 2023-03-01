@@ -100,6 +100,7 @@
     "setUpDiscordNotifier": "Set up Discord Notifier",
     "showInstantiateMessage": "Show Instantiate Message",
     "showRawData": "Show raw data",
+    "spend": "Spend",
     "stake": "Stake",
     "stakeAllButProposalDeposit": "Stake all but the {{proposalDeposit}} ${{tokenSymbol}} proposal deposit",
     "stakeOrUnstake": "Stake or unstake",

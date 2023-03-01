@@ -82,6 +82,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
                 label: t('button.setAsProfilePhoto'),
                 loading: updatingProfile,
                 disabled: currentProfilePhoto,
+                closeOnClick: false,
                 onClick: setProfilePhoto,
               },
               {
@@ -89,6 +90,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
                 label: t('button.unsetProfilePhoto'),
                 loading: updatingProfile,
                 disabled: !walletProfileData.profile.nft,
+                closeOnClick: false,
                 onClick: unsetProfilePhoto,
               },
             ],
@@ -103,6 +105,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
               {
                 Icon: SendRounded,
                 label: t('button.transfer'),
+                closeOnClick: true,
                 onClick: () =>
                   router.push(
                     getMeTxPrefillPath({
@@ -127,6 +130,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
               {
                 Icon: LocalFireDepartment,
                 label: t('button.burn'),
+                closeOnClick: true,
                 onClick: () =>
                   router.push(
                     getMeTxPrefillPath({

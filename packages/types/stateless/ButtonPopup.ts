@@ -8,6 +8,8 @@ export type ButtonPopupSectionButton = {
   label: string
   loading?: boolean
   disabled?: boolean
+  // Default: true.
+  closeOnClick?: boolean
 } & (
   | {
       onClick: () => void
@@ -26,6 +28,4 @@ export interface ButtonPopupProps
   extends Omit<PopupProps, 'children' | 'setOpenRef'> {
   sections: ButtonPopupSection[]
   ButtonLink: ComponentType<ButtonLinkProps>
-  // If true, clicking on a button will not close the popup.
-  dontCloseOnClick?: boolean
 }

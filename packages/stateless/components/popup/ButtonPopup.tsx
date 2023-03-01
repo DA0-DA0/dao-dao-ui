@@ -9,7 +9,6 @@ import { Popup } from './Popup'
 export const ButtonPopup = ({
   sections,
   ButtonLink,
-  dontCloseOnClick = false,
   ...props
 }: ButtonPopupProps) => {
   const setOpenRef = useRef<Dispatch<SetStateAction<boolean>> | null>(null)
@@ -26,55 +25,60 @@ export const ButtonPopup = ({
         >
           {label && <p className="link-text text-text-secondary">{label}</p>}
 
-          {buttons.map(({ Icon, label, loading, ...buttonProps }, index) => {
-            const content = (
-              <>
-                {Icon && (
-                  <div className="flex h-6 w-6 items-center justify-center text-lg ">
-                    <Icon className="h-5 w-5 text-icon-primary" />
-                  </div>
-                )}
-                <p className="link-text text-left text-text-body">{label}</p>
-              </>
-            )
+          {buttons.map(
+            (
+              { Icon, label, loading, closeOnClick = true, ...buttonProps },
+              index
+            ) => {
+              const content = (
+                <>
+                  {Icon && (
+                    <div className="flex h-6 w-6 items-center justify-center text-lg ">
+                      <Icon className="h-5 w-5 text-icon-primary" />
+                    </div>
+                  )}
+                  <p className="link-text text-left text-text-body">{label}</p>
+                </>
+              )
 
-            const commonProps = {
-              key: index,
-              // eslint-disable-next-line i18next/no-literal-string
-              contentContainerClassName: 'gap-3',
-              // eslint-disable-next-line i18next/no-literal-string
-              variant: 'ghost',
-            } as const
+              const commonProps = {
+                key: index,
+                // eslint-disable-next-line i18next/no-literal-string
+                contentContainerClassName: 'gap-3',
+                // eslint-disable-next-line i18next/no-literal-string
+                variant: 'ghost',
+              } as const
 
-            return 'onClick' in buttonProps ? (
-              <Button
-                {...commonProps}
-                className={clsx(
-                  loading && 'animate-pulse',
-                  buttonProps.disabled && 'opacity-60'
-                )}
-                disabled={loading || buttonProps.disabled}
-                onClick={() => {
-                  buttonProps.onClick()
-                  // Close on click.
-                  if (!dontCloseOnClick) {
-                    setOpenRef.current?.(false)
-                  }
-                }}
-              >
-                {content}
-              </Button>
-            ) : (
-              //! 'href' in props
-              <ButtonLink
-                {...commonProps}
-                {...buttonProps}
-                href={buttonProps.href}
-              >
-                {content}
-              </ButtonLink>
-            )
-          })}
+              return 'onClick' in buttonProps ? (
+                <Button
+                  {...commonProps}
+                  className={clsx(
+                    loading && 'animate-pulse',
+                    buttonProps.disabled && 'opacity-60'
+                  )}
+                  disabled={loading || buttonProps.disabled}
+                  onClick={() => {
+                    buttonProps.onClick()
+
+                    if (closeOnClick) {
+                      setOpenRef.current?.(false)
+                    }
+                  }}
+                >
+                  {content}
+                </Button>
+              ) : (
+                //! 'href' in props
+                <ButtonLink
+                  {...commonProps}
+                  {...buttonProps}
+                  href={buttonProps.href}
+                >
+                  {content}
+                </ButtonLink>
+              )
+            }
+          )}
         </div>
       ))}
     </Popup>
