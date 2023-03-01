@@ -1,6 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { GenericToken, TokenStake, TokenType } from '@dao-dao/types'
+import {
+  GenericToken,
+  TokenStake,
+  TokenType,
+  UnstakingTaskStatus,
+} from '@dao-dao/types'
 
 import { ButtonLink } from '../buttons/ButtonLink'
 import { TokenCard, TokenCardProps } from './TokenCard'
@@ -92,6 +97,21 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
     },
   ]
 
+  const unstakingTasks = makeUnstakingModalProps('TOKEN').tasks
+  const totalStaked = stakes.reduce((acc, stake) => acc + stake.amount, 0)
+  const totalPendingRewards = stakes.reduce(
+    (acc, stake) => acc + stake.rewards,
+    0
+  )
+  const totalUnstaking =
+    unstakingTasks.reduce(
+      (acc, task) =>
+        acc +
+        // Only include balance of unstaking tasks.
+        (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
+      0
+    ) ?? 0
+
   return {
     token: {
       ...token,
@@ -109,10 +129,14 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
           timestamp: new Date(),
         },
         stakingInfo: {
-          unstakingTasks: makeUnstakingModalProps('TOKEN').tasks,
+          unstakingTasks,
           unstakingDurationSeconds: 28 * 24 * 3600,
           stakes,
+          totalStaked,
+          totalPendingRewards,
+          totalUnstaking,
         },
+        totalBalance: totalStaked + unstakedBalance + totalUnstaking,
       },
     },
     onClaim: () => alert('claim'),
