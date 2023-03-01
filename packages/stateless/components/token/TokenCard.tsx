@@ -18,6 +18,7 @@ import {
   TokenType,
 } from '@dao-dao/types'
 import {
+  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   isJunoIbcUsdc,
   secondsToWdhms,
@@ -48,8 +49,13 @@ export interface TokenCardProps extends TokenCardInfo {
     // Extra sections to add to the action popup.
     extraSections?: ButtonPopupSection[]
   }
-  // Display DAOs that the token is used as governance in.
-  daosGoverned?: string[]
+  // Display DAOs that the token is used as governance in, and optionally an
+  // amount of staked tokens. This is used to display how much a wallet has
+  // staked.
+  daosGoverned?: {
+    coreAddress: string
+    stakedBalance?: number
+  }[]
   EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
 }
 
@@ -402,8 +408,26 @@ export const TokenCard = ({
             <p className="link-text">{t('title.daos')}</p>
 
             <div className="space-y-1">
-              {daosGoverned.map((dao) => (
-                <EntityDisplay key={dao} address={dao} />
+              {daosGoverned.map(({ coreAddress, stakedBalance }) => (
+                <div
+                  key={coreAddress}
+                  className="flex flex-row items-center justify-between"
+                >
+                  <EntityDisplay address={coreAddress} />
+
+                  {stakedBalance !== undefined && (
+                    <TokenAmountDisplay
+                      amount={convertMicroDenomToDenomWithDecimals(
+                        stakedBalance,
+                        token.decimals
+                      )}
+                      className="text-right font-mono"
+                      decimals={token.decimals}
+                      hideSymbol
+                      suffix={' ' + t('info.staked')}
+                    />
+                  )}
+                </div>
               ))}
             </div>
           </div>

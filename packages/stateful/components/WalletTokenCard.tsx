@@ -12,7 +12,7 @@ import { useSetRecoilState, waitForAll } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  DaoCoreV2Selectors,
+  Cw20StakeSelectors,
   refreshHiddenBalancesAtom,
   refreshNativeTokenStakingInfoAtom,
 } from '@dao-dao/state'
@@ -51,20 +51,21 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     signingCosmWasmClient,
   } = useWallet()
 
+  // Get DAOs that use dao-voting-cw20-staked with this governance token.
   const daosLoadable = useCachedLoadable(
     props.token.type === TokenType.Cw20
-      ? Cw20BaseSelectors.daosSelector({
+      ? Cw20BaseSelectors.daosWithVotingAndStakingContractSelector({
           contractAddress: props.token.denomOrAddress,
         })
       : undefined
   )
-  // Get DAOs the wallet has voting power in.
-  const daosVotingPowersLoadable = useCachedLoadable(
+  // Get balance wallet has staked in each DAO.
+  const daosWalletStakedTokensLoadable = useCachedLoadable(
     daosLoadable.state === 'hasValue' && walletAddress
       ? waitForAll(
-          daosLoadable.contents.map((contractAddress) =>
-            DaoCoreV2Selectors.votingPowerAtHeightSelector({
-              contractAddress,
+          daosLoadable.contents.map(({ stakingContractAddress }) =>
+            Cw20StakeSelectors.stakedValueSelector({
+              contractAddress: stakingContractAddress,
               params: [
                 {
                   address: walletAddress,
@@ -76,30 +77,24 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
       : undefined
   )
 
-  const daosGoverned =
+  const daosWithBalances =
     daosLoadable.state === 'hasValue' &&
-    daosVotingPowersLoadable.state === 'hasValue'
-      ? // If wallet has voting power in only one of the DAOs, only use that one.
-        daosVotingPowersLoadable.contents.filter(({ power }) => power !== '0')
-          .length === 1
-        ? daosLoadable.contents.filter(
-            (_, i) => daosVotingPowersLoadable.contents[i].power !== '0'
-          )
-        : // Otherwise, sort by voting power.
-          [...daosLoadable.contents].sort(
-            (a, b) =>
-              Number(
-                daosVotingPowersLoadable.contents[
-                  daosLoadable.contents.indexOf(b)
-                ].power
-              ) -
-              Number(
-                daosVotingPowersLoadable.contents[
-                  daosLoadable.contents.indexOf(a)
-                ].power
-              )
-          )
+    daosWalletStakedTokensLoadable.state === 'hasValue'
+      ? daosLoadable.contents.map(({ coreAddress }, index) => ({
+          coreAddress,
+          stakedBalance: Number(
+            daosWalletStakedTokensLoadable.contents[index].value
+          ),
+        }))
       : []
+
+  const daosGoverned =
+    // If only has a staked balance in one DAO, show just that one.
+    daosWithBalances.filter(({ stakedBalance }) => stakedBalance > 0).length ===
+    1
+      ? daosWithBalances.filter(({ stakedBalance }) => stakedBalance > 0)
+      : // Otherwise, sort by staked tokens.
+        [...daosWithBalances].sort((a, b) => b.stakedBalance - a.stakedBalance)
 
   const { refreshBalances } = useWalletInfo()
 
