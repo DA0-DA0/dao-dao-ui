@@ -71,7 +71,7 @@ export const stargateClientRouter = new ChainClientRouter({
     const httpClient = new HttpBatchClient(rpcEndpoint)
     const tmClient = await Tendermint34Client.create(httpClient)
     // @ts-ignore
-    const sgClient = new StargateClient(tmClient)
+    const sgClient = new StargateClient(tmClient, {})
     return sgClient
   },
 })
