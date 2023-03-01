@@ -18,7 +18,11 @@ import {
   wyndSwapOperationsSelector,
   wyndUsdPriceSelector,
 } from '@dao-dao/state/recoil'
-import { CycleEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import {
+  CycleEmoji,
+  useCachedLoadable,
+  useCachedLoading,
+} from '@dao-dao/stateless'
 import {
   AmountWithTimestamp,
   GenericToken,
@@ -49,7 +53,6 @@ import {
   encodeMessageAsBase64,
   getJunoIbcUsdc,
   loadableToLoadingData,
-  loadableToLoadingDataWithError,
   makeWasmMessage,
   nativeTokenLabel,
   nativeTokenLogoURI,
@@ -506,8 +509,8 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
   ])
 
   // Get estimated USD price of output token.
-  const tokenOutPrice = loadableToLoadingDataWithError(
-    useCachedLoadable(wyndUsdPriceSelector(tokenOut.denomOrAddress))
+  const tokenOutPrice = useCachedLoading(
+    wyndUsdPriceSelector(tokenOut.denomOrAddress)
   )
   // Use either price depending on which is available.
   const estUsdPrice: LoadingData<AmountWithTimestamp | undefined> =

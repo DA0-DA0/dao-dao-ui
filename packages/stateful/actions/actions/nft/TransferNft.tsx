@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { BoxEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import { BoxEmoji, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
@@ -15,7 +15,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
-  loadableToLoadingDataWithError,
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
@@ -145,21 +144,19 @@ const Component: ActionComponent = (props) => {
   const tokenId = watch(props.fieldNamePrefix + 'tokenId')
   const collection = watch(props.fieldNamePrefix + 'collection')
 
-  const options = loadableToLoadingDataWithError(
-    useCachedLoadable(
-      props.isCreating
-        ? context.type === ActionContextType.Dao
-          ? nftCardInfosForDaoSelector({
-              coreAddress: address,
-              chainId,
-              governanceCollectionAddress,
-            })
-          : walletNftCardInfos({
-              walletAddress: address,
-              chainId,
-            })
-        : constSelector([])
-    )
+  const options = useCachedLoading(
+    props.isCreating
+      ? context.type === ActionContextType.Dao
+        ? nftCardInfosForDaoSelector({
+            coreAddress: address,
+            chainId,
+            governanceCollectionAddress,
+          })
+        : walletNftCardInfos({
+            walletAddress: address,
+            chainId,
+          })
+      : constSelector([])
   )
   const nftInfo = useRecoilValue(
     !!tokenId && !!collection

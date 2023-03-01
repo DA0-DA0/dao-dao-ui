@@ -9,11 +9,11 @@ import {
   ModalLoader,
   ModalProps,
   NftSelectionModal,
-  useCachedLoadable,
+  useCachedLoading,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
-import { loadableToLoadingDataWithError, processError } from '@dao-dao/utils'
+import { processError } from '@dao-dao/utils'
 
 import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
@@ -32,12 +32,10 @@ export const InnerStargazeNftImportModal = ({
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
 
-  const nfts = loadableToLoadingDataWithError(
-    useCachedLoadable(
-      stargazeWalletAddress
-        ? walletStargazeNftCardInfosSelector(stargazeWalletAddress)
-        : undefined
-    )
+  const nfts = useCachedLoading(
+    stargazeWalletAddress
+      ? walletStargazeNftCardInfosSelector(stargazeWalletAddress)
+      : undefined
   )
 
   const [loading, setLoading] = useState(false)
