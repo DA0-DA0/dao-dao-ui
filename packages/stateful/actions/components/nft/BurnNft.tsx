@@ -86,28 +86,30 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
         <InputErrorMessage error={errors?.collection} />
       </div>
 
-      <NftSelectionModal
-        actionLabel={t('button.save')}
-        actionLoading={false}
-        getIdForNft={getIdForNft}
-        header={{
-          title: t('title.selectNftToBurn'),
-        }}
-        nfts={options}
-        onAction={() => setShowModal(false)}
-        onClose={() => setShowModal(false)}
-        onNftClick={(nft) => {
-          if (getIdForNft(nft) === selected) {
-            setValue(fieldNamePrefix + 'tokenId', '')
-            setValue(fieldNamePrefix + 'collection', '')
-          } else {
-            setValue(fieldNamePrefix + 'tokenId', nft.tokenId)
-            setValue(fieldNamePrefix + 'collection', nft.collection.address)
-          }
-        }}
-        selectedIds={selected ? [selected] : []}
-        visible={showModal}
-      />
+      {isCreating && (
+        <NftSelectionModal
+          actionLabel={t('button.save')}
+          actionLoading={false}
+          getIdForNft={getIdForNft}
+          header={{
+            title: t('title.selectNftToBurn'),
+          }}
+          nfts={options}
+          onAction={() => setShowModal(false)}
+          onClose={() => setShowModal(false)}
+          onNftClick={(nft) => {
+            if (getIdForNft(nft) === selected) {
+              setValue(fieldNamePrefix + 'tokenId', '')
+              setValue(fieldNamePrefix + 'collection', '')
+            } else {
+              setValue(fieldNamePrefix + 'tokenId', nft.tokenId)
+              setValue(fieldNamePrefix + 'collection', nft.collection.address)
+            }
+          }}
+          selectedIds={selected ? [selected] : []}
+          visible={showModal}
+        />
+      )}
     </ActionCard>
   )
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilCallback } from 'recoil'
+import { useRecoilCallback } from 'recoil'
 
 import { Cw721BaseSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
@@ -19,14 +19,15 @@ export const ChooseExistingNftCollection: ActionComponent = (props) => {
   )
 
   // If in DAO context, get cw721 collections for which the DAO is the minter.
-  // If in wallet context, can't check so use empty array.
+  // If in wallet context, can't check so return undefined to trigger infinite
+  // loading state and load nothing.
   const existingCollectionsLoadable = useCachedLoadable(
     context.type === ActionContextType.Dao
       ? DaoCoreV2Selectors.allCw721CollectionsWithDaoAsMinterSelector({
           contractAddress: address,
           chainId,
         })
-      : constSelector([])
+      : undefined
   )
 
   const [chooseLoading, setChooseLoading] = useState(false)

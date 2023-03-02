@@ -156,7 +156,7 @@ const Component: ActionComponent = (props) => {
             walletAddress: address,
             chainId,
           })
-      : constSelector([])
+      : undefined
   )
   const nftInfo = useRecoilValue(
     !!tokenId && !!collection

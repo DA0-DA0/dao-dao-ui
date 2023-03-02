@@ -1,5 +1,3 @@
-import { constSelector } from 'recoil'
-
 import {
   SubDaosTab as StatelessSubDaosTab,
   useCachedLoading,
@@ -21,7 +19,8 @@ export const SubDaosTab = () => {
 
   const subDaos = useCachedLoading(
     daoInfo.coreVersion === ContractVersion.V1
-      ? constSelector([])
+      ? // Only v2 DAOs have SubDAOs. Passing undefined here returns an infinite loading state, which is fine because it's never used.
+        undefined
       : subDaoCardInfosSelector({ coreAddress: daoInfo.coreAddress }),
     []
   )

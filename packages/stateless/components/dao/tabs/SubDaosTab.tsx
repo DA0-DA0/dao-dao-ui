@@ -27,7 +27,7 @@ export interface SubDaosTabProps {
 
 export const SubDaosTab = ({
   DaoCard,
-  subDaos: subdaos,
+  subDaos,
   isMember,
   daoInfo,
   createSubDaoHref,
@@ -70,18 +70,18 @@ export const SubDaosTab = ({
           buttonLabel={t('button.proposeUpgrade')}
           href={isMember ? upgradeToV2Href : undefined}
         />
-      ) : subdaos.loading ? (
+      ) : subDaos.loading ? (
         <div className="border-t border-border-secondary pt-6">
           <Loader fill={false} />
         </div>
-      ) : subdaos.data.length > 0 ? (
+      ) : subDaos.data.length > 0 ? (
         <>
           <p className="title-text mb-6 border-t border-border-secondary pt-6 text-text-body">
-            {t('title.numSubDaos', { count: subdaos.data.length })}
+            {t('title.numSubDaos', { count: subDaos.data.length })}
           </p>
 
           <GridCardContainer>
-            {subdaos.data.map((props, index) => (
+            {subDaos.data.map((props, index) => (
               <DaoCard {...props} key={index} />
             ))}
           </GridCardContainer>

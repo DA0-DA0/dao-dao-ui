@@ -93,7 +93,7 @@ const Component: ActionComponent = (props) => {
             walletAddress: address,
             chainId,
           })
-      : constSelector([])
+      : undefined
   )
   const nftInfo = useCachedLoadingWithError(
     !!tokenId && !!collection

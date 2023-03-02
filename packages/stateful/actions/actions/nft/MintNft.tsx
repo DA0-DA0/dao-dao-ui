@@ -23,20 +23,10 @@ export const MintNft: ActionComponent = (props) => {
   const data: MintNftData = watch(props.fieldNamePrefix)
   const collectionAddress = data.collectionAddress ?? ''
 
-  const nftInfo = useCachedLoading<NftCardInfo | undefined>(
-    //  If creating, get info from form data.
+  const nftInfoLoading = useCachedLoading<NftCardInfo | undefined>(
+    // Nothing to load if creating.
     props.isCreating
-      ? constSelector({
-          collection: {
-            address: collectionAddress,
-            name: data.instantiateMsg?.name ?? '',
-          },
-          tokenId: data.mintMsg.token_id,
-          imageUrl: data.imageUrl,
-          name: data.metadata?.name ?? '',
-          description: data.metadata?.description ?? '',
-          chainId,
-        })
+      ? undefined
       : // If viewing, get info from token URI.
         nftCardInfoWithUriSelector({
           collection: collectionAddress,
@@ -46,6 +36,23 @@ export const MintNft: ActionComponent = (props) => {
         }),
     undefined
   )
+  // If creating, use the data from the form. Otherwise, use the data loading.
+  // Undefined when loading.
+  const nftInfo: NftCardInfo | undefined = props.isCreating
+    ? {
+        collection: {
+          address: collectionAddress,
+          name: data.instantiateMsg?.name ?? '',
+        },
+        tokenId: data.mintMsg.token_id,
+        imageUrl: data.imageUrl,
+        name: data.metadata?.name ?? '',
+        description: data.metadata?.description ?? '',
+        chainId,
+      }
+    : nftInfoLoading.loading || !nftInfoLoading.data
+    ? undefined
+    : nftInfoLoading.data
 
   // Get all collections in DAO.
   const daoCollections = useRecoilValueLoadable(
@@ -54,7 +61,7 @@ export const MintNft: ActionComponent = (props) => {
           contractAddress: address,
           chainId,
         })
-      : constSelector([])
+      : constSelector(undefined)
   )
 
   // Add action to add collection to DAO treasury if it is not already there.
@@ -71,6 +78,7 @@ export const MintNft: ActionComponent = (props) => {
       context.type === ActionContextType.Dao &&
       // Ensure the collection is not already in the DAO.
       daoCollections.state === 'hasValue' &&
+      daoCollections.contents &&
       !daoCollections.contents.includes(collectionAddress) &&
       // Ensure no action already exists to add this collection.
       !props.allActionsWithData.some(
@@ -98,13 +106,14 @@ export const MintNft: ActionComponent = (props) => {
     props,
   ])
 
-  return nftInfo.loading || !nftInfo.data ? (
+  // `nftInfo` is undefined when loading or if there is no NFT info.
+  return !nftInfo ? (
     <Loader />
   ) : (
     <StatelessMintNft
       {...props}
       options={{
-        nftInfo: nftInfo.data,
+        nftInfo,
         AddressInput,
       }}
     />
