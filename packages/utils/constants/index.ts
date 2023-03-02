@@ -35,6 +35,7 @@ export const NATIVE_TOKEN: GenericToken = {
   decimals: NATIVE_DECIMALS,
   imageUrl: nativeTokenLogoURI(NATIVE_DENOM) || getFallbackImage(NATIVE_DENOM),
 }
+
 export const USDC_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_USDC_DECIMALS || '6',
   10
@@ -55,6 +56,12 @@ export const CHAIN_BECH32_PREFIX = process.env
   .NEXT_PUBLIC_CHAIN_BECH32_PREFIX as string
 export const DAO_DAO_DAO_ADDRESS = process.env
   .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
+
+export const STARGAZE_TESTNET_CHAIN_ID = 'elgafar-1'
+export const STARGAZE_TESTNET_RPC_ENDPOINT =
+  'https://rpc.elgafar-1.stargaze-apis.com:443'
+export const STARGAZE_TESTNET_REST_ENDPOINT =
+  'https://rest.elgafar-1.stargaze-apis.com:443'
 
 export const MICRO_STAKING_DENOM = process.env
   .NEXT_PUBLIC_STAKING_DENOM as string
@@ -141,7 +148,7 @@ export const DISABLED_ACTIONS = (
   process.env.NEXT_PUBLIC_DISABLED_ACTIONS || ''
 ).split(',')
 
-// Discord notifier
+// Discord notifier (https://github.com/DA0-DA0/discord-notifier-cf-worker)
 export const DISCORD_NOTIFIER_CLIENT_ID = process.env
   .NEXT_PUBLIC_DISCORD_NOTIFIER_CLIENT_ID as string
 export const DISCORD_NOTIFIER_REDIRECT_URI = process.env
@@ -150,9 +157,12 @@ export const DISCORD_NOTIFIER_API_BASE = process.env
   .NEXT_PUBLIC_DISCORD_NOTIFIER_API_BASE as string
 export const DISCORD_NOTIFIER_SIGNATURE_TYPE = 'Discord Notifier'
 
-// Following API
+// Following API (https://github.com/DA0-DA0/following-daos-cf-worker)
 export const FOLLOWING_DAOS_API_BASE = process.env
   .NEXT_PUBLIC_FOLLOWING_DAOS_API_BASE as string
+
+// KVPK API (https://github.com/DA0-DA0/kvpk)
+export const KVPK_API_BASE = process.env.NEXT_PUBLIC_KVPK_API_BASE as string
 
 // The key for the item in the DAO core contract that contains the payroll
 // config.
@@ -181,3 +191,6 @@ export const WEB_SOCKET_PUSHER_HOST = process.env
 export const WEB_SOCKET_PUSHER_PORT = Number(
   process.env.NEXT_PUBLIC_WEB_SOCKET_PUSHER_PORT || '6001'
 )
+
+// Me balances page
+export const HIDDEN_BALANCE_PREFIX = 'hiddenBalance:'

@@ -1,4 +1,4 @@
-import { constSelector, selectorFamily } from 'recoil'
+import { constSelector, selectorFamily, waitForAll } from 'recoil'
 
 import { GenericToken, TokenType, WithChainId } from '@dao-dao/types'
 import {
@@ -8,7 +8,7 @@ import {
   nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
-import { Cw20BaseSelectors } from './contracts'
+import { Cw20BaseSelectors, Cw20StakeSelectors } from './contracts'
 
 export const genericTokenSelector = selectorFamily<
   GenericToken,
@@ -50,5 +50,55 @@ export const genericTokenSelector = selectorFamily<
         decimals: tokenInfo.decimals,
         imageUrl,
       }
+    },
+})
+
+// Returns a list of DAOs that use the given cw20 token as their governance
+// token with the staked balance of the given wallet address for each.
+export const cw20TokenDaosWithStakedBalanceSelector = selectorFamily<
+  {
+    coreAddress: string
+    stakedBalance: number
+  }[],
+  WithChainId<{
+    cw20Address: string
+    walletAddress: string
+  }>
+>({
+  key: 'cw20TokenDaosWithStakedBalance',
+  get:
+    ({ cw20Address, walletAddress, chainId }) =>
+    ({ get }) => {
+      const daos = get(
+        Cw20BaseSelectors.daosWithVotingAndStakingContractSelector({
+          contractAddress: cw20Address,
+          chainId,
+        })
+      )
+
+      const daosWalletStakedTokens = get(
+        waitForAll(
+          daos.map(({ stakingContractAddress }) =>
+            Cw20StakeSelectors.stakedValueSelector({
+              contractAddress: stakingContractAddress,
+              params: [
+                {
+                  address: walletAddress,
+                },
+              ],
+            })
+          )
+        )
+      )
+
+      const daosWithBalances = daos
+        .map(({ coreAddress }, index) => ({
+          coreAddress,
+          stakedBalance: Number(daosWalletStakedTokens[index].value),
+        }))
+        // Sort descending by staked tokens.
+        .sort((a, b) => b.stakedBalance - a.stakedBalance)
+
+      return daosWithBalances
     },
 })

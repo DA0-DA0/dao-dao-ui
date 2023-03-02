@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+// Pass `null` to left, right, or width to skip setting that property.
 export type UseTrackDropdownOptions = {
   // Default: rect.bottom
   top?: (rect: DOMRect) => number
   // Default: rect.left
-  left?: (rect: DOMRect) => number
+  left?: null | ((rect: DOMRect) => number)
+  // Default: null
+  right?: null | ((rect: DOMRect) => number)
   // Default: rect.width
-  width?: (rect: DOMRect) => number
+  width?: null | ((rect: DOMRect) => number)
 }
 
 // This hook tracks the rect of an element on the page and positions a dropdown
@@ -18,23 +21,39 @@ export type UseTrackDropdownOptions = {
 export const useTrackDropdown = ({
   top,
   left,
+  right = null,
   width,
 }: UseTrackDropdownOptions = {}) => {
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
 
-  const updateRect = useCallback(() => {
+  const updateRect = () => {
     if (!dropdownRef.current) {
       return
     }
 
+    // On iOS Safari, when the keyboard is open, the entire body is offset,
+    // which makes the dropdown positioned incorrectly since it is fixed above
+    // everything. The body is offset by the height of the keyboard, so we can
+    // use it to fix the position. On desktop browsers, this should be 0.
+    const topOffset = document.body.getBoundingClientRect().top ?? 0
+
     const rect = trackRef.current?.getBoundingClientRect()
     if (rect) {
-      dropdownRef.current.style.top = `${top?.(rect) ?? rect.bottom}px`
-      dropdownRef.current.style.left = `${left?.(rect) ?? rect.left}px`
-      dropdownRef.current.style.width = `${width?.(rect) ?? rect.width}px`
+      dropdownRef.current.style.top = `${
+        (top?.(rect) ?? rect.bottom) - topOffset
+      }px`
+      if (left !== null) {
+        dropdownRef.current.style.left = `${left?.(rect) ?? rect.left}px`
+      }
+      if (right !== null) {
+        dropdownRef.current.style.right = `${right?.(rect) ?? rect.width}px`
+      }
+      if (width !== null) {
+        dropdownRef.current.style.width = `${width?.(rect) ?? rect.width}px`
+      }
     }
-  }, [dropdownRef, top, left, width])
+  }
 
   // Memoize ref to prevent listener from resetting on every render.
   const updateRectRef = useRef(updateRect)
@@ -74,8 +93,12 @@ export const useTrackDropdown = ({
     const observer = new ResizeObserver(updateRectRef.current)
     observer.observe(trackRef.current)
 
+    // Update on a timer to catch other changes.
+    const timer = setInterval(updateRectRef.current, 250)
+
     return () => {
       observer.disconnect()
+      clearInterval(timer)
     }
   }, [trackReady])
 

@@ -43,6 +43,8 @@ export function nativeTokenDecimals(denom: string): number | undefined {
 export const getJunoIbcUsdc = () =>
   ibcAssets.tokens.find(({ id }) => id === 'usd-coin')!
 
+export const JUNO_USDC_DENOM = getJunoIbcUsdc().juno_denom
+
 // Returns true if this denom is the IBC denom for USDC on Juno.
 export const isJunoIbcUsdc = (ibcDenom: string): boolean =>
   getJunoIbcUsdc().juno_denom === ibcDenom

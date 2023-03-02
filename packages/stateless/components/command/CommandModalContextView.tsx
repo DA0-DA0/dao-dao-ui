@@ -127,20 +127,21 @@ export const CommandModalContextView = ({
 
   // Ensure selected action is scrolled into view.
   const onSelectedRef = useCallback((ref: HTMLDivElement | null) => {
-    if (!ref || !ref.parentElement) {
+    const scrollParent = ref?.parentElement?.parentElement
+    if (!ref || !scrollParent) {
       return
     }
 
     // Only scroll if not already visible.
     const { top, bottom } = ref.getBoundingClientRect()
-    const containerRect = ref.parentElement.getBoundingClientRect()
+    const containerRect = scrollParent.getBoundingClientRect()
     if (top >= containerRect.top && bottom <= containerRect.bottom) {
       return
     }
 
-    ref.parentElement.scrollTo({
+    scrollParent.scrollTo({
       behavior: 'smooth',
-      top: ref.offsetTop - ref.parentElement.offsetTop - 24,
+      top: ref.offsetTop - scrollParent.offsetTop - 24,
     })
   }, [])
 

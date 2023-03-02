@@ -5,8 +5,8 @@ import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { FamilyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
-  ActionOptionsContextType,
   ContractVersion,
   CoreActionKey,
   UseDecodedCosmosMsg,
@@ -61,7 +61,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
 }) => {
   // v1 DAOS don't support SubDAOs.
   if (
-    context.type !== ActionOptionsContextType.Dao ||
+    context.type !== ActionContextType.Dao ||
     context.info.coreVersion === ContractVersion.V1
   ) {
     return null

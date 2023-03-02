@@ -7,10 +7,9 @@ import {
   DaoInfoBarLoader,
   DaoInfoBar as StatelessDaoInfoBar,
   TokenAmountDisplay,
-  useCachedLoadable,
+  useCachedLoading,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
 import {
   useCw20CommonGovernanceTokenInfoIfExists,
@@ -35,14 +34,12 @@ const InnerDaoInfoBar = () => {
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
-  const treasuryUsdcValueLoading = loadableToLoadingData(
-    useCachedLoadable(
-      daoTvlSelector({
-        coreAddress,
-        chainId,
-        cw20GovernanceTokenAddress,
-      })
-    ),
+  const treasuryUsdcValueLoading = useCachedLoading(
+    daoTvlSelector({
+      coreAddress,
+      chainId,
+      cw20GovernanceTokenAddress,
+    }),
     {
       amount: -1,
       timestamp: new Date(),

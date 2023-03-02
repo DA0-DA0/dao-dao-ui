@@ -13,8 +13,8 @@ import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { TokenEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
-  ActionOptionsContextType,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -179,7 +179,7 @@ export const makeManageCw20Action: ActionMaker<ManageCw20Data> = ({
   context,
 }) => {
   // Only DAOs.
-  if (context.type !== ActionOptionsContextType.Dao) {
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 

@@ -6,14 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { refreshFollowingDaosAtom } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoading } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
-import {
-  CHAIN_ID,
-  FOLLOWING_DAOS_API_BASE,
-  loadableToLoadingData,
-  processError,
-} from '@dao-dao/utils'
+import { CHAIN_ID, FOLLOWING_DAOS_API_BASE, processError } from '@dao-dao/utils'
 
 import {
   followingDaosSelector,
@@ -44,10 +39,10 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(temporaryFollowingDaosAtom)
-  const followingDaosLoadable = loadableToLoadingData(
-    useCachedLoadable(followingDaosSelector({})),
-    { following: [], pending: [] }
-  )
+  const followingDaosLoadable = useCachedLoading(followingDaosSelector({}), {
+    following: [],
+    pending: [],
+  })
 
   const setRefreshFollowingDaos = useSetRecoilState(refreshFollowingDaosAtom)
   const refreshFollowing = useCallback(

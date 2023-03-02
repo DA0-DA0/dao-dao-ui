@@ -7,7 +7,7 @@ import { toAccessibleImageUrl } from '@dao-dao/utils'
 export interface ProfileImageProps {
   imageUrl?: string
   loading?: boolean
-  size: 'xs' | 'sm' | 'lg'
+  size: 'xs' | 'sm' | 'lg' | 'xl'
   className?: string
   fallbackIconClassName?: string
   onClick?: () => void
@@ -54,6 +54,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         'h-8 w-8 rounded-full': size === 'xs',
         'h-10 w-10 rounded-xl': size === 'sm',
         'h-16 w-16 rounded-2xl': size === 'lg',
+        'h-24 w-24 rounded-full': size === 'xl',
       },
       rounded && '!rounded-full'
     )

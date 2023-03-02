@@ -4,16 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
+import { TypedOption } from '@dao-dao/types'
+
 import { useTrackDropdown } from '../../hooks/useTrackDropdown'
 import { Button } from '../buttons'
 
-export interface DropdownOption<T> {
-  label: string
-  value: T
-}
-
 export interface DropdownProps<T> {
-  options: DropdownOption<T>[]
+  options: TypedOption<T>[]
   placeholder?: string
   selected?: T | T[]
   onSelect: (option: T, index: number) => void
@@ -122,7 +119,7 @@ export const Dropdown = <T extends unknown>({
       {createPortal(
         <div
           className={clsx(
-            'absolute z-10 overflow-hidden rounded-b-md border border-t-0 border-border-primary bg-component-dropdown transition-opacity',
+            'fixed z-50 overflow-hidden rounded-b-md border border-t-0 border-border-primary bg-component-dropdown transition-opacity',
             open ? 'opacity-100' : 'pointer-events-none opacity-0'
           )}
           ref={onDropdownRef}

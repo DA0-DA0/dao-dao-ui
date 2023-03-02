@@ -32,7 +32,6 @@ import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
 import { SuspenseLoader } from './SuspenseLoader'
-import { WalletFiatRampModal } from './WalletFiatRampModal'
 
 export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
@@ -107,7 +106,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
       }}
       rightSidebarProps={{
         wallet: <SidebarWallet />,
-        WalletFiatRampModal: connected ? WalletFiatRampModal : undefined,
       }}
       walletProfileData={
         status === WalletConnectionStatus.Connected

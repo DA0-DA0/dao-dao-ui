@@ -12,10 +12,11 @@ import {
   NftCard,
   Tooltip,
   useCachedLoadable,
+  useCachedLoading,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { WidgetComponentProps } from '@dao-dao/types'
-import { loadableToLoadingData, processError } from '@dao-dao/utils'
+import { processError } from '@dao-dao/utils'
 
 import { nftCardInfoSelector } from '../../../recoil'
 import { MintNftData } from './types'
@@ -44,20 +45,18 @@ export const MintNftComponent = ({
     })
   )
 
-  const first100Cards = loadableToLoadingData(
-    useCachedLoadable(
-      allTokensLoadable.state === 'hasValue'
-        ? waitForAll(
-            allTokensLoadable.contents.slice(0, 100).map((tokenId) =>
-              nftCardInfoSelector({
-                collection: nftCollection,
-                chainId,
-                tokenId,
-              })
-            )
+  const first100Cards = useCachedLoading(
+    allTokensLoadable.state === 'hasValue'
+      ? waitForAll(
+          allTokensLoadable.contents.slice(0, 100).map((tokenId) =>
+            nftCardInfoSelector({
+              collection: nftCollection,
+              chainId,
+              tokenId,
+            })
           )
-        : undefined
-    ),
+        )
+      : undefined,
     []
   )
 

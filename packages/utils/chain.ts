@@ -13,6 +13,8 @@ import {
   CHAIN_ID,
   CHAIN_RPC_ENDPOINT,
   STARGAZE_RPC_ENDPOINT,
+  STARGAZE_TESTNET_CHAIN_ID,
+  STARGAZE_TESTNET_RPC_ENDPOINT,
 } from './constants'
 
 export const getRpcForChainId = (chainId: string): string => {
@@ -22,6 +24,8 @@ export const getRpcForChainId = (chainId: string): string => {
     return CHAIN_RPC_ENDPOINT
   } else if (chainId === ChainInfoID.Stargaze1) {
     return STARGAZE_RPC_ENDPOINT
+  } else if (chainId === STARGAZE_TESTNET_CHAIN_ID) {
+    return STARGAZE_TESTNET_RPC_ENDPOINT
   }
 
   if (!(chainId in ChainInfoMap)) {
@@ -63,7 +67,7 @@ export const cosmosValidatorToValidator = ({
 export const getImageUrlForChainId = (chainId: string) =>
   chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni6
     ? '/juno.png'
-    : chainId === ChainInfoID.Stargaze1
+    : chainId === ChainInfoID.Stargaze1 || chainId === STARGAZE_TESTNET_CHAIN_ID
     ? '/stargaze.png'
     : undefined
 
