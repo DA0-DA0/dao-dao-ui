@@ -1,4 +1,4 @@
-import { Addr, Binary, Expiration, Uint128 } from './common'
+import { Addr, Binary, Expiration, Timestamp, Uint128 } from './common'
 
 export type UncheckedDenom =
   | {
@@ -7,45 +7,31 @@ export type UncheckedDenom =
   | {
       cw20: string
     }
-export type Curve =
+export type Schedule =
+  | 'saturating_linear'
   | {
-      constant: {
-        y: Uint128
-      }
-    }
-  | {
-      saturating_linear: SaturatingLinear
-    }
-  | {
-      piecewise_linear: PiecewiseLinear
+      piecewise_linear: [number, Uint128][]
     }
 export interface InstantiateMsg {
-  owner?: string | null
-  params: UncheckedVestingParams
-}
-export interface UncheckedVestingParams {
-  amount: Uint128
   denom: UncheckedDenom
   description?: string | null
+  owner?: string | null
   recipient: string
-  title?: string | null
-  vesting_schedule: Curve
-}
-export interface SaturatingLinear {
-  max_x: number
-  max_y: Uint128
-  min_x: number
-  min_y: Uint128
-}
-export interface PiecewiseLinear {
-  steps: [number, Uint128][]
+  schedule: Schedule
+  start_time?: Timestamp | null
+  title: string
+  total: Uint128
+  unbonding_duration_seconds: number
+  vesting_duration_seconds: number
 }
 export type ExecuteMsg =
   | {
       receive: Cw20ReceiveMsg
     }
   | {
-      distribute: {}
+      distribute: {
+        amount?: Uint128 | null
+      }
     }
   | {
       cancel: {}
@@ -80,6 +66,19 @@ export type ExecuteMsg =
       }
     }
   | {
+      withdraw_canceled_payment: {
+        amount?: Uint128 | null
+      }
+    }
+  | {
+      register_slash: {
+        amount: Uint128
+        during_unbonding: boolean
+        time: Timestamp
+        validator: string
+      }
+    }
+  | {
       update_ownership: Action
     }
 export type Action =
@@ -98,13 +97,15 @@ export interface Cw20ReceiveMsg {
 }
 export type QueryMsg =
   | {
-      info: {}
-    }
-  | {
       ownership: {}
     }
   | {
-      vested_amount: {}
+      info: {}
+    }
+  | {
+      distributable: {
+        t?: number | null
+      }
     }
 export type CheckedDenom =
   | {
@@ -113,23 +114,44 @@ export type CheckedDenom =
   | {
       cw20: Addr
     }
-export type VestingPaymentStatus =
-  | 'active'
-  | 'canceled'
-  | 'canceled_and_unbonding'
-  | 'fully_vested'
-  | 'unfunded'
-export interface VestingPayment {
-  amount: Uint128
-  canceled_at_time?: number | null
-  claimed_amount: Uint128
+export type Status =
+  | ('unfunded' | 'funded')
+  | {
+      canceled: {
+        owner_withdrawable: Uint128
+      }
+    }
+export type Curve =
+  | {
+      constant: {
+        y: Uint128
+      }
+    }
+  | {
+      saturating_linear: SaturatingLinear
+    }
+  | {
+      piecewise_linear: PiecewiseLinear
+    }
+export interface Vest {
+  claimed: Uint128
   denom: CheckedDenom
   description?: string | null
   recipient: Addr
-  staked_amount: Uint128
-  status: VestingPaymentStatus
-  title?: string | null
-  vesting_schedule: Curve
+  slashed: Uint128
+  start_time: Timestamp
+  status: Status
+  title: string
+  vested: Curve
+}
+export interface SaturatingLinear {
+  max_x: number
+  max_y: Uint128
+  min_x: number
+  min_y: Uint128
+}
+export interface PiecewiseLinear {
+  steps: [number, Uint128][]
 }
 export interface OwnershipForAddr {
   owner?: Addr | null

@@ -1,10 +1,7 @@
 import { selectorFamily } from 'recoil'
 
 import { Uint128, WithChainId } from '@dao-dao/types'
-import {
-  OwnershipForAddr,
-  VestingPayment,
-} from '@dao-dao/types/contracts/CwVesting'
+import { OwnershipForAddr, Vest } from '@dao-dao/types/contracts/CwVesting'
 
 import {
   CwVestingClient,
@@ -49,7 +46,7 @@ export const executeClient = selectorFamily<
 })
 
 export const infoSelector = selectorFamily<
-  VestingPayment,
+  Vest,
   QueryClientParams & {
     params: Parameters<CwVestingQueryClient['info']>
   }
@@ -93,19 +90,19 @@ export const ownershipSelector = selectorFamily<
       return await client.ownership(...params)
     },
 })
-export const vestedAmountSelector = selectorFamily<
+export const distributableSelector = selectorFamily<
   Uint128,
   QueryClientParams & {
-    params: Parameters<CwVestingQueryClient['vestedAmount']>
+    params: Parameters<CwVestingQueryClient['distributable']>
   }
 >({
-  key: 'cwVestingVestedAmount',
+  key: 'cwVestingDistributable',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       get(refreshVestingAtom(''))
       get(refreshVestingAtom(queryClientParams.contractAddress))
       const client = get(queryClient(queryClientParams))
-      return await client.vestedAmount(...params)
+      return await client.distributable(...params)
     },
 })

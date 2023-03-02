@@ -48,4 +48,8 @@ export const useWithdrawDelegatorReward = wrapExecuteHook(
 export const useWithdrawDelegatorRewards = wrapExecuteHook(
   'withdrawDelegatorRewards'
 )
+export const useWithdrawCanceledPayment = wrapExecuteHook(
+  'withdrawCanceledPayment'
+)
+export const useRegisterSlash = wrapExecuteHook('registerSlash')
 export const useUpdateOwnership = wrapExecuteHook('updateOwnership')
