@@ -23,7 +23,7 @@ export const temporaryFollowingDaosAtom = atom<{
 })
 
 export const followingDaosSelector = selectorFamily<
-  { following: string[]; pending: string[]; pendingAddress?: boolean },
+  { following: string[]; pending: string[] },
   WithChainId<{}>
 >({
   key: 'followingDaos',
@@ -37,7 +37,6 @@ export const followingDaosSelector = selectorFamily<
         return {
           following: [],
           pending: [],
-          pendingAddress: true,
         }
       }
 

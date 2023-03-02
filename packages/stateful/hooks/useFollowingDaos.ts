@@ -159,12 +159,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       status === WalletConnectionStatus.Connecting ||
       // Updating if following is loading or update is in progress.
       followingDaosLoading.loading ||
-      updating ||
-      // If wallet is connected but following has not yet been loaded, following
-      // cannot yet be loaded. Wallet address atom is probably about to be set
-      // in `WalletProvider`.
-      (status === WalletConnectionStatus.Connected &&
-        !!followingDaosLoading.data.pendingAddress),
+      updating,
     ready,
   }
 }
