@@ -140,12 +140,14 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
       {!tokens.loading &&
         (nfts.loading || nfts.data.length > 0 ? (
           <div className="flex flex-col gap-2">
-            <div className="mb-6 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
               <div className="flex flex-row flex-wrap items-end gap-x-4 gap-y-2">
                 <p className="title-text">
                   {nfts.loading
                     ? t('title.nfts')
-                    : t('title.numNfts', { count: nfts.data.length })}
+                    : t('title.numNfts', {
+                        count: filteredSortedNfts.length,
+                      })}
                 </p>
 
                 <p className="secondary-text break-words">
@@ -156,9 +158,9 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
               </div>
 
               {!nfts.loading && nfts.data.length > 0 && (
-                <div className="flex flex-row items-center gap-4">
-                  <ButtonPopup position="left" {...sortNftButtonPopupProps} />
+                <div className="flex flex-row items-center justify-end gap-4">
                   <ButtonPopup position="left" {...filterNftButtonPopupProps} />
+                  <ButtonPopup position="left" {...sortNftButtonPopupProps} />
                 </div>
               )}
             </div>

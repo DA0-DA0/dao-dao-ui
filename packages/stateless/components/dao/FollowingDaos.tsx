@@ -37,10 +37,12 @@ export const FollowingDaos = ({
 
   return (
     <>
-      <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-2 flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
         <p className="title-text">{t('title.following')}</p>
 
-        <ButtonPopup position="left" {...sortButtonPopupProps} />
+        <div className="flex grow flex-row justify-end">
+          <ButtonPopup position="left" {...sortButtonPopupProps} />
+        </div>
       </div>
 
       {followingDaos.loading ? (

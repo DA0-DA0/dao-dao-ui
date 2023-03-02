@@ -104,7 +104,7 @@ export const TreasuryAndNftsTab = <
 
       {nfts.loading || nfts.data.length > 0 ? (
         <>
-          <div className="mb-6 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
+          <div className="mb-6 flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
             <p className="title-text">
               {nfts.loading
                 ? t('title.nfts')
@@ -112,7 +112,9 @@ export const TreasuryAndNftsTab = <
             </p>
 
             {!nfts.loading && nfts.data.length > 0 && (
-              <ButtonPopup position="left" {...sortButtonPopupProps} />
+              <div className="flex grow flex-row justify-end">
+                <ButtonPopup position="left" {...sortButtonPopupProps} />
+              </div>
             )}
           </div>
 

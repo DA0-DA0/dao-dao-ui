@@ -113,10 +113,8 @@ export const NftSelectionModal = <T extends NftCardInfo>({
     options: sortOptions,
   })
 
-  const { searchBarProps, filteredData } = useSearchFilter(
-    filteredSortedNfts,
-    FILTERABLE_KEYS
-  )
+  const { searchBarProps, filteredData: filteredSortedSearchedNfts } =
+    useSearchFilter(filteredSortedNfts, FILTERABLE_KEYS)
 
   return (
     <Modal
@@ -165,8 +163,8 @@ export const NftSelectionModal = <T extends NftCardInfo>({
 
           <div
             className={clsx(
-              'flex flex-row items-center gap-12',
-              // Push sort dropdown to the right no matter what.
+              'flex flex-row flex-wrap items-center gap-x-8 gap-y-4',
+              // Push sort/filter to the right no matter what.
               showSelectAll ? 'justify-between' : 'justify-end'
             )}
           >
@@ -190,7 +188,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
               </Button>
             )}
 
-            <div className="flex flex-row items-center gap-4">
+            <div className="flex grow flex-row items-center justify-end gap-4">
               <ButtonPopup position="left" {...filterNftButtonPopupProps} />
               <ButtonPopup position="left" {...sortButtonPopupProps} />
             </div>
@@ -211,7 +209,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
           </pre>
         </>
       ) : nfts.data.length > 0 ? (
-        filteredData.map(({ item: nft }) => (
+        filteredSortedSearchedNfts.map(({ item: nft }) => (
           <NftCard
             key={getIdForNft(nft as T)}
             ref={
