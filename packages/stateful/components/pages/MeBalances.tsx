@@ -15,7 +15,7 @@ import {
   walletTokenCardInfosSelector,
 } from '../../recoil'
 import { WalletNftCard } from '../WalletNftCard'
-import { WalletTokenCard } from '../WalletTokenCard'
+import { WalletTokenLine } from '../WalletTokenLine'
 
 export const MeBalances = () => {
   const { address: walletAddress, publicKey, chainInfo } = useWallet()
@@ -81,7 +81,7 @@ export const MeBalances = () => {
   return (
     <StatelessMeBalances
       NftCard={WalletNftCard}
-      TokenCard={WalletTokenCard}
+      TokenLine={WalletTokenLine}
       hiddenTokens={hiddenTokens}
       nfts={nfts}
       tokens={tokens}

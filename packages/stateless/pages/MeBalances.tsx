@@ -21,7 +21,6 @@ import {
   GridCardContainer,
   Loader,
   NoContent,
-  TokenLine,
   TooltipInfoIcon,
 } from '../components'
 import { useButtonPopupFilter, useButtonPopupSorter } from '../hooks'
@@ -29,7 +28,7 @@ import { useButtonPopupFilter, useButtonPopupSorter } from '../hooks'
 export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   tokens,
   hiddenTokens,
-  TokenCard,
+  TokenLine,
   nfts,
   NftCard,
 }: MeBalancesProps<T, N>) => {
@@ -102,7 +101,6 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
               {visibleBalances.map((props, index) => (
                 <TokenLine
                   key={props.token.denomOrAddress}
-                  TokenCard={TokenCard}
                   transparentBackground={index % 2 !== 0}
                   {...(props as T)}
                 />
@@ -135,7 +133,6 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
               {hiddenBalances.map((props, index) => (
                 <TokenLine
                   key={props.token.denomOrAddress}
-                  TokenCard={TokenCard}
                   transparentBackground={index % 2 !== 0}
                   {...(props as T)}
                 />

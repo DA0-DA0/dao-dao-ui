@@ -1,10 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { WalletTokenLine } from '@dao-dao/stateful'
 import { TokenCardProps } from '@dao-dao/types'
 
 import { NftCard, NftCardProps } from '../components/NftCard'
 import { makeProps as makeNftCardProps } from '../components/NftCard.stories'
-import { TokenCard } from '../components/token/TokenCard'
 import { makeProps as makeTokenCardProps } from '../components/token/TokenCard.stories'
 import { MeBalances } from './MeBalances'
 
@@ -27,7 +27,7 @@ Default.args = {
     loading: false,
     data: [],
   },
-  TokenCard,
+  TokenLine: WalletTokenLine,
   nfts: {
     loading: false,
     data: [
@@ -45,7 +45,7 @@ export const Loading = Template.bind({})
 Loading.args = {
   tokens: { loading: true },
   hiddenTokens: { loading: true },
-  TokenCard,
+  TokenLine: WalletTokenLine,
   nfts: { loading: true },
   NftCard,
 }
