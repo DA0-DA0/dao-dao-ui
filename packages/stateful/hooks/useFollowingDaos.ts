@@ -3,9 +3,9 @@ import uniq from 'lodash.uniq'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
-import { refreshFollowingDaosAtom, walletAddressAtom } from '@dao-dao/state'
+import { refreshFollowingDaosAtom } from '@dao-dao/state'
 import { useCachedLoading } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import { CHAIN_ID, FOLLOWING_DAOS_API_BASE, processError } from '@dao-dao/utils'
@@ -33,16 +33,19 @@ export type UseFollowingDaosReturn = {
 
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const { t } = useTranslation()
-  const { status } = useWallet()
+  const { status, address: walletAddress } = useWallet()
 
   // Following API doesn't update right away, so this serves to keep track of
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(temporaryFollowingDaosAtom)
 
-  const loadedWalletAddress = useRecoilValue(walletAddressAtom)
   const followingDaosLoading = useCachedLoading(
-    loadedWalletAddress ? followingDaosSelector({}) : undefined,
+    walletAddress
+      ? followingDaosSelector({
+          walletAddress,
+        })
+      : undefined,
     {
       following: [],
       pending: [],

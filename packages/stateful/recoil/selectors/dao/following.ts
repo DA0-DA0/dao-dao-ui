@@ -1,9 +1,9 @@
 import uniq from 'lodash.uniq'
-import { atom, selector, selectorFamily, waitForAll } from 'recoil'
+import { atom, selectorFamily, waitForAll } from 'recoil'
 
-import { refreshFollowingDaosAtom, walletAddressAtom } from '@dao-dao/state'
+import { refreshFollowingDaosAtom } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
-import { WithChainId } from '@dao-dao/types'
+import { ProposalModule, WithChainId } from '@dao-dao/types'
 import { CHAIN_ID, FOLLOWING_DAOS_API_BASE } from '@dao-dao/utils'
 
 import { daoDropdownInfoSelector } from './cards'
@@ -24,21 +24,15 @@ export const temporaryFollowingDaosAtom = atom<{
 
 export const followingDaosSelector = selectorFamily<
   { following: string[]; pending: string[] },
-  WithChainId<{}>
+  WithChainId<{
+    walletAddress: string
+  }>
 >({
   key: 'followingDaos',
   get:
-    ({ chainId = CHAIN_ID }) =>
+    ({ walletAddress, chainId = CHAIN_ID }) =>
     async ({ get }) => {
       get(refreshFollowingDaosAtom)
-
-      const walletAddress = get(walletAddressAtom)
-      if (!walletAddress) {
-        return {
-          following: [],
-          pending: [],
-        }
-      }
 
       const temporary = get(temporaryFollowingDaosAtom)
 
@@ -79,33 +73,54 @@ export const followingDaosSelector = selectorFamily<
     },
 })
 
-export const followingDaoDropdownInfosSelector = selector<DaoDropdownInfo[]>({
+export const followingDaoDropdownInfosSelector = selectorFamily<
+  DaoDropdownInfo[],
+  WithChainId<{ walletAddress: string }>
+>({
   key: 'followingDaoDropdownInfos',
-  get: ({ get }) => {
-    const { following } = get(followingDaosSelector({}))
-    return get(
-      waitForAll(
-        following.map((coreAddress) => daoDropdownInfoSelector({ coreAddress }))
-      )
-    ).filter(Boolean) as DaoDropdownInfo[]
-  },
+  get:
+    (params) =>
+    ({ get }) => {
+      const { following } = get(followingDaosSelector(params))
+      return get(
+        waitForAll(
+          following.map((coreAddress) =>
+            daoDropdownInfoSelector({
+              coreAddress,
+              chainId: params.chainId,
+            })
+          )
+        )
+      ).filter(Boolean) as DaoDropdownInfo[]
+    },
 })
 
-export const followingDaosWithProposalModulesSelector = selector({
+export const followingDaosWithProposalModulesSelector = selectorFamily<
+  {
+    coreAddress: string
+    proposalModules: ProposalModule[]
+  }[],
+  WithChainId<{ walletAddress: string }>
+>({
   key: 'followingDaosWithProposalModules',
-  get: ({ get }) => {
-    const { following } = get(followingDaosSelector({}))
-    const proposalModules = get(
-      waitForAll(
-        following.map((coreAddress) =>
-          daoCoreProposalModulesSelector({ coreAddress })
+  get:
+    (params) =>
+    ({ get }) => {
+      const { following } = get(followingDaosSelector(params))
+      const proposalModules = get(
+        waitForAll(
+          following.map((coreAddress) =>
+            daoCoreProposalModulesSelector({
+              coreAddress,
+              chainId: params.chainId,
+            })
+          )
         )
       )
-    )
 
-    return following.map((coreAddress, index) => ({
-      coreAddress,
-      proposalModules: proposalModules[index],
-    }))
-  },
+      return following.map((coreAddress, index) => ({
+        coreAddress,
+        proposalModules: proposalModules[index],
+      }))
+    },
 })
