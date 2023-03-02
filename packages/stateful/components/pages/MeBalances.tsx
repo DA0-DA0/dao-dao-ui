@@ -14,7 +14,7 @@ import {
   walletNativeAndStargazeNftsSelector,
   walletTokenCardInfosSelector,
 } from '../../recoil'
-import { WalletNftCard } from '../NftCard'
+import { WalletNftCard } from '../WalletNftCard'
 import { WalletTokenCard } from '../WalletTokenCard'
 
 export const MeBalances = () => {

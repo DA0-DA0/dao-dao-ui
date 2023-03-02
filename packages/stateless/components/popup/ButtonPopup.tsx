@@ -99,6 +99,11 @@ export const ButtonPopup = ({
                   {...commonProps}
                   {...buttonProps}
                   href={buttonProps.href}
+                  onClick={() => {
+                    if (closeOnClick) {
+                      setOpenRef.current?.(false)
+                    }
+                  }}
                 >
                   {content}
                 </ButtonLink>

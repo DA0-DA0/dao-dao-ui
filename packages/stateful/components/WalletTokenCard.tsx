@@ -8,7 +8,6 @@ import {
   VisibilityOff,
 } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
-import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -57,7 +56,6 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     signingCosmWasmClient,
     chainInfo,
   } = useWallet()
-  const router = useRouter()
 
   const { refreshBalances } = useWalletInfo()
 
@@ -208,25 +206,18 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
               Icon: PaymentRounded,
               label: t('button.spend'),
               closeOnClick: true,
-              onClick: () =>
-                router.push(
-                  getMeTxPrefillPath({
-                    actions: [
-                      {
-                        key: CoreActionKey.Spend,
-                        data: {
-                          to: '',
-                          amount: 0,
-                          denom: props.token.denomOrAddress,
-                        },
-                      },
-                    ],
-                  }),
-                  undefined,
+              href: getMeTxPrefillPath({
+                actions: [
                   {
-                    shallow: true,
-                  }
-                ),
+                    key: CoreActionKey.Spend,
+                    data: {
+                      to: '',
+                      amount: 0,
+                      denom: props.token.denomOrAddress,
+                    },
+                  },
+                ],
+              }),
             },
             ...(isUsdc
               ? [

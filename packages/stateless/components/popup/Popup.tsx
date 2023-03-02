@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -21,6 +22,12 @@ export const Popup = ({
 }: PopupProps) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const [open, setOpen] = useState(false)
+
+  // On route change, close the popup.
+  const { asPath } = useRouter()
+  useEffect(() => {
+    setOpen(false)
+  }, [asPath])
 
   // Store open and setOpen in ref so parent can access them.
   useEffect(() => {

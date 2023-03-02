@@ -42,6 +42,13 @@ export const Me = ({
     },
   ]
 
+  // Pre-fetch tabs.
+  useEffect(() => {
+    Object.values(MeTabId).forEach((tab) => {
+      router.prefetch(`/me/${tab}`)
+    })
+  }, [router])
+
   const tabPath = router.query.tab
   const selectedTabId =
     // If tabPath is not a valid tab, default to first tab. This ensures that
