@@ -27,6 +27,7 @@ import {
   HIDDEN_BALANCE_PREFIX,
   JUNO_USDC_DENOM,
   KVPK_API_BASE,
+  MAINNET,
   NATIVE_DENOM,
   cwMsgToEncodeObject,
   getMeTxPrefillPath,
@@ -219,7 +220,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                 ],
               }),
             },
-            ...(isUsdc
+            ...(isUsdc && MAINNET
               ? [
                   {
                     Icon: Paid,
