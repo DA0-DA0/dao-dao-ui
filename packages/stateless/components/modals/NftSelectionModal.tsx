@@ -259,7 +259,7 @@ const FILTERABLE_KEYS: Fuse.FuseOptionKey<NftCardInfo>[] = [
 
 const filterOptions: TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>>[] = [
   {
-    label: 'All',
+    label: 'Juno and Stargaze',
     value: () => true,
   },
   {

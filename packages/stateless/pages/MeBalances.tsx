@@ -289,7 +289,7 @@ const nftFilterOptions: (TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
 })[] = [
   {
     id: 'all',
-    label: 'All',
+    label: 'Juno and Stargaze',
     value: () => true,
   },
   {
