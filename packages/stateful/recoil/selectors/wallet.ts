@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { atomFamily, selectorFamily, waitForAll } from 'recoil'
 
 import {
@@ -278,9 +277,7 @@ export const walletNativeAndStargazeNftsSelector = selectorFamily<
       )
 
       const stargazeNfts = get(
-        walletStargazeNftCardInfosSelector(
-          toBech32('stars', fromBech32(walletAddress).data)
-        )
+        walletStargazeNftCardInfosSelector(walletAddress)
       )
 
       return [...nativeNfts, ...nativeStakedNfts, ...stargazeNfts]

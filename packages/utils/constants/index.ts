@@ -58,6 +58,10 @@ export const DAO_DAO_DAO_ADDRESS = process.env
   .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
 
 export const STARGAZE_TESTNET_CHAIN_ID = 'elgafar-1'
+export const STARGAZE_TESTNET_RPC_ENDPOINT =
+  'https://rpc.elgafar-1.stargaze-apis.com:443'
+export const STARGAZE_TESTNET_REST_ENDPOINT =
+  'https://rest.elgafar-1.stargaze-apis.com:443'
 
 export const MICRO_STAKING_DENOM = process.env
   .NEXT_PUBLIC_STAKING_DENOM as string
