@@ -48,7 +48,9 @@ export const MeBalances = () => {
   )
 
   const tokens: LoadingData<TokenCardInfo[]> =
-    tokensWithoutLazyInfo.loading || tokenLazyInfos.loading
+    tokensWithoutLazyInfo.loading ||
+    tokenLazyInfos.loading ||
+    tokensWithoutLazyInfo.data.length !== tokenLazyInfos.data.length
       ? {
           loading: true,
         }
