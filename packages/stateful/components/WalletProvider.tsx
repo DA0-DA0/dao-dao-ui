@@ -11,7 +11,7 @@ import { PropsWithChildren, ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { signingCosmWasmClientAtom, walletAddressAtom } from '@dao-dao/state'
+import { signingCosmWasmClientAtom } from '@dao-dao/state'
 import { Loader } from '@dao-dao/stateless'
 import {
   CHAIN_ID,
@@ -118,19 +118,12 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
 
 const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   const setSigningCosmWasmClient = useSetRecoilState(signingCosmWasmClientAtom)
-  const setWalletAddress = useSetRecoilState(walletAddressAtom)
   const { signingCosmWasmClient, address } = useWallet()
 
   // Save address and client in recoil atom so it can be used by selectors.
   useEffect(() => {
     setSigningCosmWasmClient(signingCosmWasmClient)
-    setWalletAddress(address)
-  }, [
-    setSigningCosmWasmClient,
-    signingCosmWasmClient,
-    setWalletAddress,
-    address,
-  ])
+  }, [setSigningCosmWasmClient, signingCosmWasmClient, address])
 
   return <>{children}</>
 }

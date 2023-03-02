@@ -33,16 +33,24 @@ export type UseFollowingDaosReturn = {
 
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const { t } = useTranslation()
-  const { status } = useWallet()
+  const { status, address: walletAddress } = useWallet()
 
   // Following API doesn't update right away, so this serves to keep track of
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(temporaryFollowingDaosAtom)
-  const followingDaosLoadable = useCachedLoading(followingDaosSelector({}), {
-    following: [],
-    pending: [],
-  })
+
+  const followingDaosLoading = useCachedLoading(
+    walletAddress
+      ? followingDaosSelector({
+          walletAddress,
+        })
+      : undefined,
+    {
+      following: [],
+      pending: [],
+    }
+  )
 
   const setRefreshFollowingDaos = useSetRecoilState(refreshFollowingDaosAtom)
   const refreshFollowing = useCallback(
@@ -52,9 +60,9 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
   const isFollowing = useCallback(
     (coreAddress: string) =>
-      !followingDaosLoadable.loading &&
-      followingDaosLoadable.data.following.includes(coreAddress),
-    [followingDaosLoadable]
+      !followingDaosLoading.loading &&
+      followingDaosLoading.data.following.includes(coreAddress),
+    [followingDaosLoading]
   )
 
   const [updating, setUpdating] = useState(false)
@@ -142,7 +150,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   )
 
   return {
-    daos: followingDaosLoadable,
+    daos: followingDaosLoading,
     refreshFollowing,
     isFollowing,
     setFollowing,
@@ -153,13 +161,8 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       status === WalletConnectionStatus.AttemptingAutoConnection ||
       status === WalletConnectionStatus.Connecting ||
       // Updating if following is loading or update is in progress.
-      followingDaosLoadable.loading ||
-      updating ||
-      // If wallet is connected but following has not yet been loaded, following
-      // cannot yet be loaded. Wallet address atom is probably about to be set
-      // in `WalletProvider`.
-      (status === WalletConnectionStatus.Connected &&
-        !!followingDaosLoadable.data.pendingAddress),
+      followingDaosLoading.loading ||
+      updating,
     ready,
   }
 }

@@ -154,7 +154,11 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
 
   //! Following DAOs
   const followingDaoDropdownInfos = useCachedLoading(
-    followingDaoDropdownInfosSelector,
+    walletAddress
+      ? followingDaoDropdownInfosSelector({
+          walletAddress,
+        })
+      : undefined,
     []
   )
 
