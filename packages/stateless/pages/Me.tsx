@@ -43,9 +43,15 @@ export const Me = ({
   ]
 
   const tabPath = router.query.tab
-  const selectedTabId = tabs.some(({ id }) => id === tabPath)
-    ? (tabPath as MeTabId)
-    : tabs[0].id
+  const selectedTabId =
+    // If tabPath is not a valid tab, default to first tab. This ensures that
+    // the default `/me` page will render the first tab, and also that an
+    // invalid tab was not passed, though that should be impossible because Next
+    // will render any invalid tabs (not in the `getStaticPaths` function) with
+    // a 404 page.
+    tabPath && tabs.some(({ id }) => id === tabPath)
+      ? (tabPath as MeTabId)
+      : tabs[0].id
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   const tabSelector = (
