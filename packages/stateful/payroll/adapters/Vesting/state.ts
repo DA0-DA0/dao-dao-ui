@@ -171,20 +171,19 @@ export const vestingInfoSelector = selectorFamily<
 
       const completed = vest.status === 'funded' && vest.claimed === total
 
-      // TODO: What unit is this?
-      const startTime = Number(vest.start_time)
-      // TODO: How to get end time? Use duration_seconds, only for saturating_linear?
-      const endTime =
+      const startTimeNanos = Number(vest.start_time)
+      const durationSeconds =
         'constant' in vest.vested
-          ? startTime
+          ? 0
           : 'saturating_linear' in vest.vested
           ? vest.vested.saturating_linear.max_x
           : 'piecewise_linear' in vest.vested
           ? vest.vested.piecewise_linear.steps.slice(-1)[0][0]
           : -1
+      const endTimeNanos = startTimeNanos + durationSeconds * 1e9
 
-      const startDate = new Date(startTime * 1000)
-      const endDate = new Date(endTime * 1000)
+      const startDate = new Date(startTimeNanos / 1e6)
+      const endDate = new Date(endTimeNanos / 1e6)
 
       return {
         vestingContractAddress,
