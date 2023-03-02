@@ -94,7 +94,7 @@ export const useTrackDropdown = ({
     observer.observe(trackRef.current)
 
     // Update on a timer to catch other changes.
-    const timer = setInterval(updateRectRef.current, 1000)
+    const timer = setInterval(updateRectRef.current, 250)
 
     return () => {
       observer.disconnect()
