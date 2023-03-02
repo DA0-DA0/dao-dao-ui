@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/stateless'
 import { LoadingData, StatefulEntityDisplayProps } from '@dao-dao/types'
 
-import { VestingInfo } from '../types'
+import { VestingInfo } from '../../types'
 import { VestingPaymentLine } from './VestingPaymentLine'
 
 export interface PayrollTabProps {
@@ -33,22 +33,14 @@ export const PayrollTab = ({
 }: PayrollTabProps) => {
   const { t } = useTranslation()
 
-  // Vesting payments that are still vesting or have yet to be funded.
+  // Vesting payments that have not yet been funded or fully claimed.
   const activeVestingPayments = vestingPaymentsLoading.loading
     ? []
-    : vestingPaymentsLoading.data.filter(
-        ({ vestingPayment }) =>
-          vestingPayment.status === 'active' ||
-          vestingPayment.status === 'unfunded'
-      )
-  // Vesting payments that have finished vesting.
+    : vestingPaymentsLoading.data.filter(({ completed }) => !completed)
+  // Vesting payments that have been funded and fully claimed.
   const completedVestingPayments = vestingPaymentsLoading.loading
     ? []
-    : vestingPaymentsLoading.data.filter(
-        ({ vestingPayment }) =>
-          vestingPayment.status !== 'active' &&
-          vestingPayment.status !== 'unfunded'
-      )
+    : vestingPaymentsLoading.data.filter(({ completed }) => completed)
 
   const [showingCompleted, setShowingCompleted] = useState(false)
 

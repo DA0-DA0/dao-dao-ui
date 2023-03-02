@@ -6,11 +6,11 @@ import {
 } from '@cosmjs/cosmwasm-stargate'
 
 import { Binary, Uint128, Uint64 } from '@dao-dao/types'
+import { ArrayOfVestingContract } from '@dao-dao/types/contracts/CwPayrollFactory'
 import {
-  ArrayOfVestingContract,
   InstantiateMsg,
   OwnershipForAddr,
-} from '@dao-dao/types/contracts/CwPayrollFactory'
+} from '@dao-dao/types/contracts/CwVesting'
 
 export interface CwPayrollFactoryReadOnlyInterface {
   contractAddress: string

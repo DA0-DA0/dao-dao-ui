@@ -58,14 +58,6 @@ export const NativeStakingModal = ({
     })
   )
 
-  const vestedAmountLoadable = useCachedLoadable(
-    CwVestingSelectors.vestedAmountSelector({
-      contractAddress: vestingContractAddress,
-      chainId,
-      params: [],
-    })
-  )
-
   const validatorsLoadable = useCachedLoadable(
     validatorsSelector({
       chainId,
@@ -101,7 +93,6 @@ export const NativeStakingModal = ({
 
   if (
     vestingPaymentLoadable.state !== 'hasValue' ||
-    vestedAmountLoadable.state !== 'hasValue' ||
     validatorsLoadable.state !== 'hasValue'
   ) {
     return null

@@ -10,12 +10,7 @@ import {
 import { StatefulEntityDisplayProps } from '@dao-dao/types'
 import { formatDate } from '@dao-dao/utils'
 
-import { VestingInfo } from '../types'
-import {
-  getTotalVestedAmount,
-  getTotalVestingAndVestedAmount,
-  getWithdrawableAmount,
-} from '../utils'
+import { VestingInfo } from '../../types'
 
 export type VestingPaymentLineProps = VestingInfo & {
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
@@ -32,21 +27,15 @@ export const VestingPaymentLine = ({
   const { t } = useTranslation()
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
 
-  const { vestingPayment, token } = vestingInfo
+  const { vest, token, completed } = vestingInfo
 
-  const completed =
-    vestingPayment.status !== 'active' && vestingPayment.status !== 'unfunded'
-
-  const startDate =
-    'saturating_linear' in vestingPayment.vesting_schedule
-      ? new Date(vestingPayment.vesting_schedule.saturating_linear.min_x * 1000)
-      : undefined
+  const startDate = new Date(Number(vest.start_time) * 1000)
   const endDate =
-    'saturating_linear' in vestingPayment.vesting_schedule
-      ? new Date(vestingPayment.vesting_schedule.saturating_linear.max_x * 1000)
+    'saturating_linear' in vest.vesting_schedule
+      ? new Date(vest.vesting_schedule.saturating_linear.max_x * 1000)
       : undefined
 
-  console.log(vestingPayment)
+  console.log(vest)
 
   return (
     <div
@@ -57,7 +46,7 @@ export const VestingPaymentLine = ({
       onClick={onClick}
     >
       <EntityDisplay
-        address={vestingPayment.recipient}
+        address={vest.recipient}
         copyToClipboardProps={{
           textClassName: '!no-underline',
         }}

@@ -1,10 +1,8 @@
 import { selectorFamily } from 'recoil'
 
 import { Uint64, WithChainId } from '@dao-dao/types'
-import {
-  ArrayOfVestingContract,
-  OwnershipForAddr,
-} from '@dao-dao/types/contracts/CwPayrollFactory'
+import { ArrayOfVestingContract } from '@dao-dao/types/contracts/CwPayrollFactory'
+import { OwnershipForAddr } from '@dao-dao/types/contracts/CwVesting'
 
 import {
   CwPayrollFactoryClient,

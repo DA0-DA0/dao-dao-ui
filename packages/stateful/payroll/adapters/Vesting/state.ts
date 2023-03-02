@@ -5,10 +5,11 @@ import {
   CwVestingSelectors,
   DaoCoreV2Selectors,
   genericTokenSelector,
+  nativeDelegatedBalanceSelector,
 } from '@dao-dao/state/recoil'
 import { TokenType, WithChainId } from '@dao-dao/types'
 
-import { VestingInfo } from './components/types'
+import { VestingInfo } from './types'
 
 // Returns the contract address for the cw-payroll-factory if set.
 export const vestingFactorySelector = selectorFamily<
@@ -110,48 +111,93 @@ export const vestingInfoSelector = selectorFamily<
   get:
     ({ vestingContractAddress, chainId }) =>
     ({ get }) => {
-      const vestingPayment = get(
+      const vest = get(
         CwVestingSelectors.infoSelector({
           contractAddress: vestingContractAddress,
-          params: [],
           chainId,
-        })
-      )
-
-      const ownership = get(
-        CwVestingSelectors.ownershipSelector({
-          contractAddress: vestingContractAddress,
           params: [],
-          chainId,
-        })
-      )
-
-      const vestedAmount = get(
-        CwVestingSelectors.vestedAmountSelector({
-          contractAddress: vestingContractAddress,
-          params: [],
-          chainId,
         })
       )
 
       const token = get(
         genericTokenSelector({
-          type:
-            'cw20' in vestingPayment.denom ? TokenType.Cw20 : TokenType.Native,
+          type: 'cw20' in vest.denom ? TokenType.Cw20 : TokenType.Native,
           denomOrAddress:
-            'cw20' in vestingPayment.denom
-              ? vestingPayment.denom.cw20
-              : vestingPayment.denom.native,
+            'cw20' in vest.denom ? vest.denom.cw20 : vest.denom.native,
           chainId,
         })
       )
 
+      const owner =
+        get(
+          CwVestingSelectors.ownershipSelector({
+            contractAddress: vestingContractAddress,
+            chainId,
+            params: [],
+          })
+        ).owner || undefined
+
+      const distributable = get(
+        CwVestingSelectors.distributableSelector({
+          contractAddress: vestingContractAddress,
+          chainId,
+          params: [{}],
+        })
+      )
+
+      const staked = get(
+        nativeDelegatedBalanceSelector({
+          address: vestingContractAddress,
+          chainId,
+        })
+      ).amount
+
+      const total =
+        'constant' in vest.vested
+          ? vest.vested.constant.y
+          : 'saturating_linear' in vest.vested
+          ? vest.vested.saturating_linear.max_y
+          : 'piecewise_linear' in vest.vested
+          ? vest.vested.piecewise_linear.steps.slice(-1)[0][1]
+          : '-1'
+
+      // TODO: Slashing? Just check native bank balance instead?
+      const remaining = (
+        BigInt(total) -
+        BigInt(vest.claimed) -
+        BigInt(staked) -
+        BigInt(vest.slashed)
+      ).toString()
+
+      const completed = vest.status === 'funded' && vest.claimed === total
+
+      // TODO: What unit is this?
+      const startTime = Number(vest.start_time)
+      // TODO: How to get end time? Use duration_seconds, only for saturating_linear?
+      const endTime =
+        'constant' in vest.vested
+          ? startTime
+          : 'saturating_linear' in vest.vested
+          ? vest.vested.saturating_linear.max_x
+          : 'piecewise_linear' in vest.vested
+          ? vest.vested.piecewise_linear.steps.slice(-1)[0][0]
+          : -1
+
+      const startDate = new Date(startTime * 1000)
+      const endDate = new Date(endTime * 1000)
+
       return {
         vestingContractAddress,
-        vestingPayment,
-        vestedAmount: Number(vestedAmount),
+        vest,
         token,
-        owner: ownership.owner || undefined,
+        owner,
+        distributable,
+        total,
+        remaining,
+        staked,
+        completed,
+        startDate,
+        endDate,
       }
     },
 })

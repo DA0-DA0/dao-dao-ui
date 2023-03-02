@@ -25,8 +25,8 @@ import {
   useWithdrawDelegatorRewards,
 } from '../../../../../hooks/contracts/CwVesting'
 import { tokenCardLazyInfoSelector } from '../../../../../recoil'
+import { VestingInfo } from '../../types'
 import { VestingPaymentCard as StatelessVestingPaymentCard } from '../stateless/VestingPaymentCard'
-import { VestingInfo } from '../types'
 import { getWithdrawableAmount } from '../utils'
 import { NativeStakingModal } from './NativeStakingModal'
 
@@ -35,8 +35,12 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { chainId } = useDaoInfoContext()
   const { refreshBalances } = useWalletInfo()
 
-  const { vestingContractAddress, vestingPayment, vestedAmount, token } =
-    vestingInfo
+  const {
+    vestingContractAddress,
+    vest: vestingPayment,
+    vestedAmount,
+    token,
+  } = vestingInfo
 
   const recipientEntity = useEntity({
     address: vestingPayment.recipient,

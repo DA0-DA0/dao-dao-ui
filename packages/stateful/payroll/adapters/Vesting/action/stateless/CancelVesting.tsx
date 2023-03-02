@@ -20,7 +20,7 @@ import {
 
 import { useActionOptions } from '../../../../../actions'
 import { VestingPaymentCard } from '../../components/stateful/VestingPaymentCard'
-import { VestingInfo } from '../../components/types'
+import { VestingInfo } from '../../types'
 
 export type CancelVestingData = {
   address: string
@@ -63,7 +63,7 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
               {cancellableVestingContracts.map(
                 ({
                   vestingContractAddress,
-                  vestingPayment,
+                  vest: vestingPayment,
                   vestedAmount,
                   token,
                 }) => (
