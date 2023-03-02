@@ -176,12 +176,14 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
 
             {nfts.loading ? (
               <Loader fill={false} />
-            ) : (
+            ) : filteredSortedNfts.length > 0 ? (
               <GridCardContainer className="pb-6">
                 {filteredSortedNfts.map((props, index) => (
                   <NftCard {...(props as N)} key={index} />
                 ))}
               </GridCardContainer>
+            ) : (
+              <NoContent Icon={Image} body={t('info.noNftsFound')} />
             )}
           </div>
         ) : (
