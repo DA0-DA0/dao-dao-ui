@@ -32,9 +32,17 @@ export const useTrackDropdown = ({
       return
     }
 
+    // On iOS Safari, when the keyboard is open, the entire body is offset,
+    // which makes the dropdown positioned incorrectly since it is fixed above
+    // everything. The body is offset by the height of the keyboard, so we can
+    // use it to fix the position. On desktop browsers, this should be 0.
+    const topOffset = document.body.getBoundingClientRect().top ?? 0
+
     const rect = trackRef.current?.getBoundingClientRect()
     if (rect) {
-      dropdownRef.current.style.top = `${top?.(rect) ?? rect.bottom}px`
+      dropdownRef.current.style.top = `${
+        (top?.(rect) ?? rect.bottom) - topOffset
+      }px`
       if (left !== null) {
         dropdownRef.current.style.left = `${left?.(rect) ?? rect.left}px`
       }
