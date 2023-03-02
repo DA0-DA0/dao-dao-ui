@@ -237,7 +237,7 @@ export const DappNavigation = ({
                 compact={compact}
                 defaultExpanded
                 label={t('title.following')}
-                loading={followingDaos.loading}
+                loading={followingDaos.loading || followingDaos.updating}
               >
                 {!followingDaos.loading && (
                   <div

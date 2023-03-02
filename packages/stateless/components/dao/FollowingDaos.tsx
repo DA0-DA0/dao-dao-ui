@@ -45,7 +45,7 @@ export const FollowingDaos = ({
         </div>
       </div>
 
-      {followingDaos.loading ? (
+      {followingDaos.loading || followingDaos.updating ? (
         <Loader />
       ) : followingDaos.data.length === 0 ? (
         <NoContent
