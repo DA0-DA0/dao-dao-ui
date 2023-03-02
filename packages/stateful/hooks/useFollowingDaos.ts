@@ -3,9 +3,9 @@ import uniq from 'lodash.uniq'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { refreshFollowingDaosAtom } from '@dao-dao/state'
+import { refreshFollowingDaosAtom, walletAddressAtom } from '@dao-dao/state'
 import { useCachedLoading } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import { CHAIN_ID, FOLLOWING_DAOS_API_BASE, processError } from '@dao-dao/utils'
@@ -39,10 +39,15 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(temporaryFollowingDaosAtom)
-  const followingDaosLoadable = useCachedLoading(followingDaosSelector({}), {
-    following: [],
-    pending: [],
-  })
+
+  const loadedWalletAddress = useRecoilValue(walletAddressAtom)
+  const followingDaosLoading = useCachedLoading(
+    loadedWalletAddress ? followingDaosSelector({}) : undefined,
+    {
+      following: [],
+      pending: [],
+    }
+  )
 
   const setRefreshFollowingDaos = useSetRecoilState(refreshFollowingDaosAtom)
   const refreshFollowing = useCallback(
@@ -52,9 +57,9 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
   const isFollowing = useCallback(
     (coreAddress: string) =>
-      !followingDaosLoadable.loading &&
-      followingDaosLoadable.data.following.includes(coreAddress),
-    [followingDaosLoadable]
+      !followingDaosLoading.loading &&
+      followingDaosLoading.data.following.includes(coreAddress),
+    [followingDaosLoading]
   )
 
   const [updating, setUpdating] = useState(false)
@@ -142,7 +147,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   )
 
   return {
-    daos: followingDaosLoadable,
+    daos: followingDaosLoading,
     refreshFollowing,
     isFollowing,
     setFollowing,
@@ -153,13 +158,13 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       status === WalletConnectionStatus.AttemptingAutoConnection ||
       status === WalletConnectionStatus.Connecting ||
       // Updating if following is loading or update is in progress.
-      followingDaosLoadable.loading ||
+      followingDaosLoading.loading ||
       updating ||
       // If wallet is connected but following has not yet been loaded, following
       // cannot yet be loaded. Wallet address atom is probably about to be set
       // in `WalletProvider`.
       (status === WalletConnectionStatus.Connected &&
-        !!followingDaosLoadable.data.pendingAddress),
+        !!followingDaosLoading.data.pendingAddress),
     ready,
   }
 }
