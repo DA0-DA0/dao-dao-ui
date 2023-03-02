@@ -18,7 +18,7 @@ type UseButtonPopupFilterOptions<T, O> = {
 type UseButtonPopupFilterReturn<T, O> = {
   buttonPopupProps: Pick<
     ButtonPopupProps,
-    'sections' | 'Trigger' | 'ButtonLink'
+    'sections' | 'sectionClassName' | 'Trigger' | 'ButtonLink'
   >
   filteredData: T[]
   selectedOption: O
@@ -45,9 +45,9 @@ export const useButtonPopupFilter = <
   // Memoize so it doesn't flicker on re-renders.
   const Trigger: ButtonPopupProps['Trigger'] = useCallback(
     ({ open, ...props }) => (
-      <Button pressed={open} variant="ghost" {...props}>
+      <Button focused={open} variant="ghost" {...props}>
         <FilterListRounded />
-        <p className="whitespace-nowrap">{selectedOption?.label}</p>
+        <p className="body-text whitespace-nowrap">{selectedOption?.label}</p>
       </Button>
     ),
     [selectedOption?.label]
@@ -56,6 +56,7 @@ export const useButtonPopupFilter = <
   return {
     buttonPopupProps: {
       Trigger,
+      sectionClassName: 'gap-1',
       sections: [
         {
           buttons: options.map(({ label }, index) => ({
@@ -63,6 +64,7 @@ export const useButtonPopupFilter = <
               selectedIndex === index
                 ? RadioButtonChecked
                 : RadioButtonUnchecked,
+            pressed: selectedIndex === index,
             label,
             onClick: () => setSelectedIndex(index),
           })),

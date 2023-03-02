@@ -8,6 +8,7 @@ export type ButtonPopupSectionButton = {
   label: string
   loading?: boolean
   disabled?: boolean
+  pressed?: boolean
   // Default: true.
   closeOnClick?: boolean
 } & (
@@ -26,6 +27,7 @@ export interface ButtonPopupSection {
 
 export interface ButtonPopupProps
   extends Omit<PopupProps, 'children' | 'setOpenRef'> {
+  sectionClassName?: string
   sections: ButtonPopupSection[]
   ButtonLink: ComponentType<ButtonLinkProps>
 }

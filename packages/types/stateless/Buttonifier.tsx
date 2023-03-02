@@ -21,6 +21,7 @@ export interface ButtonifierProps {
   children?: ReactNode | ReactNode[]
   center?: boolean
   circular?: boolean
+  focused?: boolean
 }
 
 export type ButtonProps = ComponentPropsWithoutRef<'button'> & ButtonifierProps

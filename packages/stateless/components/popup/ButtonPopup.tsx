@@ -7,6 +7,7 @@ import { Button } from '../buttons'
 import { Popup } from './Popup'
 
 export const ButtonPopup = ({
+  sectionClassName,
   sections,
   ButtonLink,
   ...props
@@ -20,31 +21,56 @@ export const ButtonPopup = ({
           key={index}
           className={clsx(
             'flex flex-col gap-2 p-3',
-            index > 0 && 'border-t border-border-secondary'
+            index > 0 && 'border-t border-border-secondary',
+            sectionClassName
           )}
         >
           {label && <p className="link-text text-text-secondary">{label}</p>}
 
           {buttons.map(
             (
-              { Icon, label, loading, closeOnClick = true, ...buttonProps },
+              {
+                Icon,
+                label,
+                loading,
+                closeOnClick = true,
+                pressed,
+                ...buttonProps
+              },
               index
             ) => {
               const content = (
                 <>
                   {Icon && (
-                    <div className="flex h-6 w-6 items-center justify-center text-lg ">
-                      <Icon className="h-5 w-5 text-icon-primary" />
+                    <div className="flex h-6 w-6 items-center justify-center text-lg">
+                      <Icon
+                        className={clsx(
+                          'h-5 w-5 transition',
+                          pressed
+                            ? 'text-icon-interactive-active'
+                            : 'text-icon-primary'
+                        )}
+                      />
                     </div>
                   )}
-                  <p className="link-text text-left text-text-body">{label}</p>
+                  <p
+                    className={clsx(
+                      'link-text text-left transition',
+                      pressed
+                        ? 'text-text-interactive-active'
+                        : 'text-text-body'
+                    )}
+                  >
+                    {label}
+                  </p>
                 </>
               )
 
               const commonProps = {
                 key: index,
+                pressed,
                 // eslint-disable-next-line i18next/no-literal-string
-                contentContainerClassName: 'gap-3',
+                contentContainerClassName: 'gap-2',
                 // eslint-disable-next-line i18next/no-literal-string
                 variant: 'ghost',
               } as const

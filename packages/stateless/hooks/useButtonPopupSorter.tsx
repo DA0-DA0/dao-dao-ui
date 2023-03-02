@@ -18,7 +18,7 @@ type UseButtonPopupSorterOptions<T> = {
 type UseButtonPopupSorterReturn<T> = {
   buttonPopupProps: Pick<
     ButtonPopupProps,
-    'sections' | 'Trigger' | 'ButtonLink'
+    'sections' | 'sectionClassName' | 'Trigger' | 'ButtonLink'
   >
   sortedData: T[]
 }
@@ -42,9 +42,9 @@ export const useButtonPopupSorter = <T extends unknown>({
   // Memoize so it doesn't flicker on re-renders.
   const Trigger: ButtonPopupProps['Trigger'] = useCallback(
     ({ open, ...props }) => (
-      <Button pressed={open} variant="ghost" {...props}>
+      <Button focused={open} variant="ghost" {...props}>
         <SortRounded />
-        <p className="whitespace-nowrap">{selectedOption?.label}</p>
+        <p className="body-text whitespace-nowrap">{selectedOption?.label}</p>
       </Button>
     ),
     [selectedOption?.label]
@@ -53,6 +53,7 @@ export const useButtonPopupSorter = <T extends unknown>({
   return {
     buttonPopupProps: {
       Trigger,
+      sectionClassName: 'gap-1',
       sections: [
         {
           buttons: options.map(({ label }, index) => ({
@@ -60,6 +61,7 @@ export const useButtonPopupSorter = <T extends unknown>({
               selectedIndex === index
                 ? RadioButtonChecked
                 : RadioButtonUnchecked,
+            pressed: selectedIndex === index,
             label,
             onClick: () => setSelectedIndex(index),
           })),

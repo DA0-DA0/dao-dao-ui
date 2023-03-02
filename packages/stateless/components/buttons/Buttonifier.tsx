@@ -23,6 +23,7 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   children: _children,
   center: _center,
   circular: _circular,
+  focused: _focused,
   disabled,
   loading,
   ...props
@@ -38,6 +39,7 @@ export const getButtonifiedClassNames = ({
   disabled,
   loading,
   circular,
+  focused,
   className,
 }: ButtonifierProps) => {
   const disabledOrLoading = disabled || loading
@@ -47,6 +49,8 @@ export const getButtonifiedClassNames = ({
 
     // No cursor pointer if disabled or loading.
     disabledOrLoading && 'cursor-default',
+
+    focused && 'ring-2 ring-inset ring-border-interactive-focus',
 
     // Rounded if circular.
     circular ? 'rounded-full' : 'rounded-md',
