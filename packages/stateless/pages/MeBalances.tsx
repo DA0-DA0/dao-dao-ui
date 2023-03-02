@@ -22,6 +22,7 @@ import {
   Loader,
   NoContent,
   TokenLine,
+  TooltipInfoIcon,
 } from '../components'
 import { useButtonPopupFilter, useButtonPopupSorter } from '../hooks'
 
@@ -78,27 +79,35 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
         {tokens.loading || hiddenTokens.loading ? (
           <Loader fill={false} />
         ) : tokens.data.length ? (
-          <div className="space-y-1">
+          <div>
             <div className="mb-6 -mt-4 flex flex-row justify-end">
               <ButtonPopup position="left" {...sortTokenButtonPopupProps} />
             </div>
 
-            <div className="secondary-text mb-4 grid grid-cols-2 items-center gap-4 px-4 sm:grid-cols-[2fr_1fr_1fr]">
+            <div className="secondary-text mb-3 grid grid-cols-2 items-center gap-4 px-4 sm:grid-cols-[2fr_1fr_1fr]">
               <p>{t('title.token')}</p>
+
               <p className="text-right">{t('title.total')}</p>
-              <p className="hidden text-right sm:block">
-                {t('title.estUsdValue')}
-              </p>
+
+              <div className="hidden flex-row items-center justify-end gap-1 sm:flex">
+                <p className="text-right">{t('title.estUsdValue')}</p>
+                <TooltipInfoIcon
+                  size="xs"
+                  title={t('info.estimatedUsdValueTooltip')}
+                />
+              </div>
             </div>
 
-            {visibleBalances.map((props, index) => (
-              <TokenLine
-                key={props.token.denomOrAddress}
-                TokenCard={TokenCard}
-                transparentBackground={index % 2 !== 0}
-                {...(props as T)}
-              />
-            ))}
+            <div className="space-y-1">
+              {visibleBalances.map((props, index) => (
+                <TokenLine
+                  key={props.token.denomOrAddress}
+                  TokenCard={TokenCard}
+                  transparentBackground={index % 2 !== 0}
+                  {...(props as T)}
+                />
+              ))}
+            </div>
           </div>
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>
@@ -186,7 +195,7 @@ const tokenSortOptions: TypedOption<
   SortFn<Pick<TokenCardInfo, 'token' | 'unstakedBalance' | 'lazyInfo'>>
 >[] = [
   {
-    label: 'Highest value',
+    label: 'Highest USD value',
     value: (a, b) => {
       const aPrice = a.lazyInfo.loading
         ? // If loading, show at top.
@@ -212,7 +221,7 @@ const tokenSortOptions: TypedOption<
     },
   },
   {
-    label: 'Lowest value',
+    label: 'Lowest USD value',
     value: (a, b) => {
       const aPrice = a.lazyInfo.loading
         ? // If loading, show at top.
