@@ -6,8 +6,8 @@ import { WrenchEmoji } from '@dao-dao/stateless'
 import { ContractVersion } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
-  ActionOptionsContextType,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -53,7 +53,7 @@ export const makeManageStorageItemsAction: ActionMaker<
   ManageStorageItemsData
 > = ({ t, address, context }) => {
   // Can only set items in a DAO.
-  if (context.type !== ActionOptionsContextType.Dao) {
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 

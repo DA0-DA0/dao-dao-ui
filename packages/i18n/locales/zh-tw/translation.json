@@ -88,7 +88,6 @@
     "connectWalletToCreate": "連接錢包以創立 DAO",
     "couldntFindDAO": "我們找不到這個地址的 DAO，請於主頁搜索此 DAO",
     "couldntFindProposal": "我們找不到這個 ID 的議案，請於主頁查看所有的議案",
-    "createProposalSubmitInvalid": "請先修正以上錯誤以繼續預覽或發表",
     "daoIsPaused": "DAO已暫停，不能提交議案",
     "daoNotFound": "找不到DAO",
     "errorOccurredOnPage": "此頁面發生錯誤",

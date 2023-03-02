@@ -6,8 +6,8 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Action } from '@dao-dao/types/actions'
-import { usePlatform } from '@dao-dao/utils'
 
+import { usePlatform } from '../../hooks'
 import { Button } from '../buttons'
 import { FilterableItemPopup, FilterableItemPopupProps } from '../popup'
 

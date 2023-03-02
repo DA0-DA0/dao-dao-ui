@@ -24,9 +24,9 @@ import {
   ProposalCreatedModal,
   DappLayout as StatelessDappLayout,
   useAppContext,
-  useCachedLoadable,
+  useCachedLoading,
+  usePlatform,
 } from '@dao-dao/stateless'
-import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
 import { useFollowingDaos, useWalletInfo } from '../hooks'
@@ -40,7 +40,6 @@ import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
 import { SyncFollowingModal } from './SyncFollowingModal'
-import { WalletFiatRampModal } from './WalletFiatRampModal'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
@@ -154,19 +153,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   ])
 
   //! Following DAOs
-  const followingDaoDropdownInfosLoadable = useCachedLoadable(
-    followingDaoDropdownInfosSelector
+  const followingDaoDropdownInfos = useCachedLoading(
+    followingDaoDropdownInfosSelector,
+    []
   )
-
-  //! Loadable errors.
-  useEffect(() => {
-    if (followingDaoDropdownInfosLoadable.state === 'hasError') {
-      console.error(followingDaoDropdownInfosLoadable.contents)
-    }
-  }, [
-    followingDaoDropdownInfosLoadable.contents,
-    followingDaoDropdownInfosLoadable.state,
-  ])
 
   return (
     <StatelessDappLayout
@@ -190,7 +180,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         setCommandModalVisible: () => setCommandModalVisible(true),
         version: '2.0',
         followingDaos: mountedInBrowser
-          ? loadableToLoadingData(followingDaoDropdownInfosLoadable, [])
+          ? followingDaoDropdownInfos
           : // Prevent hydration errors by loading until mounted.
             { loading: true },
         compact,
@@ -199,7 +189,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
       }}
       rightSidebarProps={{
         wallet: <SidebarWallet />,
-        WalletFiatRampModal: connected ? WalletFiatRampModal : undefined,
       }}
       walletProfileData={
         status === WalletConnectionStatus.Connected

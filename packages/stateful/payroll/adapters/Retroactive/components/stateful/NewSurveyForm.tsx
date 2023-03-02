@@ -7,15 +7,8 @@ import {
   DaoCoreV2Selectors,
   nativeBalancesSelector,
 } from '@dao-dao/state/recoil'
-import {
-  Loader,
-  useCachedLoadable,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
-import {
-  convertDenomToMicroDenomWithDecimals,
-  loadableToLoadingData,
-} from '@dao-dao/utils'
+import { Loader, useCachedLoading, useDaoInfoContext } from '@dao-dao/stateless'
+import { convertDenomToMicroDenomWithDecimals } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
@@ -49,13 +42,11 @@ export const NewSurveyForm = () => {
   // This needs to be loaded via a cached loadable to avoid displaying a loader
   // when this data updates on a schedule. Manually trigger a suspense loader
   // the first time when the initial data is still loading.
-  const nativeBalancesLoadable = loadableToLoadingData(
-    useCachedLoadable(
-      nativeBalancesSelector({
-        address: coreAddress,
-        chainId,
-      })
-    ),
+  const nativeBalancesLoadable = useCachedLoading(
+    nativeBalancesSelector({
+      address: coreAddress,
+      chainId,
+    }),
     []
   )
 

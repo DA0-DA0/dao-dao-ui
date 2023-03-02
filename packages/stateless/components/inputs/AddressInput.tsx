@@ -248,7 +248,7 @@ export const AddressInput = <
         createPortal(
           <div
             className={clsx(
-              'absolute z-10 overflow-hidden rounded-b-md border-2 border-t-0 border-border-primary bg-component-dropdown transition-opacity',
+              'fixed z-10 overflow-hidden rounded-b-md border-2 border-t-0 border-border-primary bg-component-dropdown transition-opacity',
               showEntityAutoFill
                 ? 'opacity-100'
                 : 'pointer-events-none opacity-0'

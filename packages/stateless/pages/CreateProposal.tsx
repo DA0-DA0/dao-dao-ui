@@ -6,14 +6,10 @@ import {
   DaoTabId,
   ProposalModule,
   ProposalModuleAdapter,
+  TypedOption,
 } from '@dao-dao/types'
 
-import {
-  Dropdown,
-  DropdownOption,
-  PageHeaderContent,
-  RightSidebarContent,
-} from '../components'
+import { Dropdown, PageHeaderContent, RightSidebarContent } from '../components'
 
 export interface CreateProposalProps {
   daoInfo: DaoInfo
@@ -39,7 +35,7 @@ export const CreateProposal = ({
   const proposalModuleItems = useMemo(
     () =>
       daoInfo.proposalModules
-        .map((proposalModule): DropdownOption<ProposalModule> | undefined => {
+        .map((proposalModule): TypedOption<ProposalModule> | undefined => {
           const adapter = matchAdapter(proposalModule.contractName)
           return (
             adapter && {
@@ -48,7 +44,7 @@ export const CreateProposal = ({
             }
           )
         })
-        .filter((item): item is DropdownOption<ProposalModule> => !!item),
+        .filter((item): item is TypedOption<ProposalModule> => !!item),
     [daoInfo.proposalModules, matchAdapter, t]
   )
 

@@ -113,18 +113,18 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   useDecodedCosmosMsg: UseDecodedCosmosMsg<Data>
 }
 
-export enum ActionOptionsContextType {
+export enum ActionContextType {
   Dao = 'dao',
   Wallet = 'wallet',
 }
 
-export type ActionOptionsContext =
+export type ActionContext =
   | {
-      type: ActionOptionsContextType.Dao
+      type: ActionContextType.Dao
       info: DaoInfo
     }
   | {
-      type: ActionOptionsContextType.Wallet
+      type: ActionContextType.Wallet
     }
 
 export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
@@ -134,7 +134,7 @@ export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   // coreAddress if context.type === Dao
   // walletAddress if context.type === Wallet
   address: string
-  context: ActionOptionsContext
+  context: ActionContext
 }
 
 export type ActionMaker<Data extends {} = any, ExtraOptions extends {} = {}> = (

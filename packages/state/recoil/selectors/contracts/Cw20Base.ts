@@ -1,4 +1,4 @@
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   AmountWithTimestamp,
@@ -16,6 +16,7 @@ import {
   TokenInfoResponse,
 } from '@dao-dao/types/contracts/Cw20Base'
 
+import { DaoCoreV2Selectors, DaoVotingCw20StakedSelectors } from '.'
 import {
   Cw20BaseClient,
   Cw20BaseQueryClient,
@@ -364,4 +365,64 @@ export const topAccountBalancesSelector = selectorFamily<
           },
         })
       ) ?? undefined,
+})
+
+// Get DAOs that use this cw20 token as their governance token from the indexer.
+export const daosSelector = selectorFamily<string[], QueryClientParams>({
+  key: 'cw20BaseDaos',
+  get:
+    (queryClientParams) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'cw20/daos',
+        })
+      ) ?? [],
+})
+
+// Get DAOs that use this cw20 token as their governance token from the indexer,
+// and load their dao-voting-cw20-staked and cw20-stake contracts.
+export const daosWithVotingAndStakingContractSelector = selectorFamily<
+  {
+    coreAddress: string
+    votingModuleAddress: string
+    stakingContractAddress: string
+  }[],
+  QueryClientParams
+>({
+  key: 'cw20BaseDaosWithVotingAndStakingContract',
+  get:
+    (queryClientParams) =>
+    ({ get }) => {
+      const daos = get(daosSelector(queryClientParams))
+      const votingModuleAddresses = get(
+        waitForAll(
+          daos.map((contractAddress) =>
+            DaoCoreV2Selectors.votingModuleSelector({
+              ...queryClientParams,
+              contractAddress,
+              params: [],
+            })
+          )
+        )
+      )
+      const stakingContractAddresses = get(
+        waitForAll(
+          votingModuleAddresses.map((contractAddress) =>
+            DaoVotingCw20StakedSelectors.stakingContractSelector({
+              ...queryClientParams,
+              contractAddress,
+              params: [],
+            })
+          )
+        )
+      )
+
+      return daos.map((coreAddress, index) => ({
+        coreAddress,
+        votingModuleAddress: votingModuleAddresses[index],
+        stakingContractAddress: stakingContractAddresses[index],
+      }))
+    },
 })

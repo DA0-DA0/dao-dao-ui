@@ -8,17 +8,8 @@ import {
   cosmWasmClientForChainSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
-  nativeDelegationInfoSelector,
-  nativeUnstakingDurationSecondsSelector,
-  wyndUsdPriceSelector,
 } from '@dao-dao/state'
-import {
-  GenericToken,
-  TokenCardInfo,
-  TokenCardLazyInfo,
-  UnstakingTaskStatus,
-  WithChainId,
-} from '@dao-dao/types'
+import { TokenCardInfo, WithChainId } from '@dao-dao/types'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
@@ -26,6 +17,9 @@ import {
   nativeTokenLabel,
 } from '@dao-dao/utils'
 
+// lazyInfo must be loaded in the component separately, since it refreshes on a
+// timer and we don't want this whole selector to reevaluate and load when that
+// refreshes. Use `tokenCardLazyInfoSelector`.
 export const treasuryTokenCardInfosSelector = selectorFamily<
   TokenCardInfo[],
   WithChainId<{
@@ -108,72 +102,6 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
       ]
 
       return infos
-    },
-})
-
-export const tokenCardLazyInfoSelector = selectorFamily<
-  TokenCardLazyInfo,
-  WithChainId<{
-    walletAddress: string
-    token: GenericToken
-  }>
->({
-  key: 'tokenCardLazyInfo',
-  get:
-    ({ walletAddress, token, chainId }) =>
-    ({ get }) => {
-      let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
-
-      const usdUnitPrice = get(wyndUsdPriceSelector(token.denomOrAddress))
-
-      // For now, stakingInfo only exists for native token, until ICA.
-      if (token.denomOrAddress === NATIVE_DENOM) {
-        const nativeDelegationInfo = get(
-          nativeDelegationInfoSelector({ address: walletAddress, chainId })
-        )
-
-        if (nativeDelegationInfo) {
-          const unstakingDurationSeconds = get(
-            nativeUnstakingDurationSecondsSelector({
-              chainId,
-            })
-          )
-
-          stakingInfo = {
-            unstakingTasks: nativeDelegationInfo.unbondingDelegations.map(
-              ({ balance, finishesAt }) => ({
-                token,
-                status: UnstakingTaskStatus.Unstaking,
-                amount: convertMicroDenomToDenomWithDecimals(
-                  balance.amount,
-                  token.decimals
-                ),
-                date: finishesAt,
-              })
-            ),
-            unstakingDurationSeconds,
-            stakes: nativeDelegationInfo.delegations.map(
-              ({ validator, delegated, pendingReward }) => ({
-                token,
-                validator,
-                amount: convertMicroDenomToDenomWithDecimals(
-                  delegated.amount,
-                  token.decimals
-                ),
-                rewards: convertMicroDenomToDenomWithDecimals(
-                  pendingReward.amount,
-                  token.decimals
-                ),
-              })
-            ),
-          }
-        }
-      }
-
-      return {
-        usdUnitPrice,
-        stakingInfo,
-      }
     },
 })
 

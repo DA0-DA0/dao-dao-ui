@@ -24,7 +24,7 @@ import {
   TokenAmountDisplay,
 } from '@dao-dao/stateless'
 import {
-  ActionOptionsContextType,
+  ActionContextType,
   AddressInputProps,
   AmountWithTimestamp,
   GenericToken,
@@ -196,7 +196,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
   )
 
   const insufficientBalanceI18nKey =
-    context.type === ActionOptionsContextType.Dao
+    context.type === ActionContextType.Dao
       ? 'error.cantSpendMoreThanTreasury'
       : 'error.insufficientWalletBalance'
 

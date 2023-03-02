@@ -149,16 +149,16 @@ export const FireEmoji = () => (
   <EmojiWrapper emoji="🔥" labelI18nKey="emoji.fire" />
 )
 
+export const LockWithPenEmoji = () => (
+  <EmojiWrapper emoji="🔏" labelI18nKey="emoji.lockWithPen" />
+)
+
 export const BeeEmoji = () => (
   <EmojiWrapper emoji="🐝" labelI18nKey="emoji.bee" />
 )
 
 export const SuitAndTieEmoji = () => (
   <EmojiWrapper emoji="👔" labelI18nKey="emoji.suitAndTie" />
-)
-
-export const LockWithPenEmoji = () => (
-  <EmojiWrapper emoji="🔏" labelI18nKey="emoji.lockWithPen" />
 )
 
 export const CycleEmoji = () => (

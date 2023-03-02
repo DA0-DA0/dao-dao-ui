@@ -13,13 +13,12 @@ import {
 import {
   TokenDepositModal,
   TokenDepositModalProps,
-  useCachedLoadable,
+  useCachedLoading,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  loadableToLoadingData,
   processError,
 } from '@dao-dao/utils'
 
@@ -49,22 +48,20 @@ export const DaoTokenDepositModal = ({
     [setRefreshDaoBalancesId]
   )
 
-  const loadingBalance = loadableToLoadingData(
-    useCachedLoadable(
-      !address
-        ? undefined
-        : token.type === 'native'
-        ? nativeDenomBalanceWithTimestampSelector({
-            walletAddress: address,
-            chainId,
-            denom: token.denomOrAddress,
-          })
-        : Cw20BaseSelectors.balanceWithTimestampSelector({
-            contractAddress: token.denomOrAddress,
-            chainId,
-            params: [{ address }],
-          })
-    ),
+  const loadingBalance = useCachedLoading(
+    !address
+      ? undefined
+      : token.type === 'native'
+      ? nativeDenomBalanceWithTimestampSelector({
+          walletAddress: address,
+          chainId,
+          denom: token.denomOrAddress,
+        })
+      : Cw20BaseSelectors.balanceWithTimestampSelector({
+          contractAddress: token.denomOrAddress,
+          chainId,
+          params: [{ address }],
+        }),
     {
       amount: 0,
       timestamp: new Date(),

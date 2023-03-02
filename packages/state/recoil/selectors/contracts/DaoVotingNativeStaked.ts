@@ -252,3 +252,26 @@ export const infoSelector = selectorFamily<
       return await client.info(...params)
     },
 })
+
+///! Custom selectors
+
+export const topStakersSelector = selectorFamily<
+  | {
+      address: string
+      balance: string
+      votingPowerPercent: number
+    }[]
+  | undefined,
+  QueryClientParams
+>({
+  key: 'daoVotingNativeStakedTopStakers',
+  get:
+    (queryClientParams) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingNativeStaked/topStakers',
+        })
+      ) ?? undefined,
+})

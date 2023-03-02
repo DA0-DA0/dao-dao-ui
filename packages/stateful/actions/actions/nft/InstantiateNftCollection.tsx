@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ActionComponent,
-  ActionOptionsContextType,
+  ActionContextType,
   CoreActionKey,
 } from '@dao-dao/types'
 import { CODE_ID_CONFIG, processError } from '@dao-dao/utils'
@@ -58,7 +58,7 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
       toast.success(t('success.nftCollectionContractInstantiated'))
 
       // Add display NFT action if in a DAO.
-      if (props.isCreating && context.type === ActionOptionsContextType.Dao) {
+      if (props.isCreating && context.type === ActionContextType.Dao) {
         props.addAction({
           key: CoreActionKey.ManageCw721,
           data: {
