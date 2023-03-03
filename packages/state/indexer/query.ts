@@ -23,11 +23,11 @@ export const queryIndexer = async <T = any>(
     ...(block ? { block: `${block.height}:${block.timeUnixMs ?? 1}` } : {}),
   })
   // Filter out undefined values.
-  for (const [key, value] of params.entries()) {
+  params.forEach((value, key) => {
     if (value === undefined) {
       params.delete(key)
     }
-  }
+  })
 
   const response = await fetchWithTimeout(
     // Timeout after 10 seconds.
