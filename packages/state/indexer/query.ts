@@ -18,19 +18,21 @@ export const queryIndexer = async <T = any>(
   formula: string,
   { args, block, chainId = CHAIN_ID }: QueryIndexerOptions = {}
 ): Promise<T | undefined> => {
+  const params = new URLSearchParams({
+    ...args,
+    ...(block ? { block: `${block.height}:${block.timeUnixMs ?? 1}` } : {}),
+  })
+  // Filter out undefined values.
+  for (const [key, value] of params.entries()) {
+    if (value === undefined) {
+      params.delete(key)
+    }
+  }
+
   const response = await fetchWithTimeout(
     // Timeout after 10 seconds.
     10 * 1000,
-    INDEXER_URL +
-      `/${chainId}/${type}/${address}/${formula}` +
-      (args
-        ? `?${new URLSearchParams({
-            ...args,
-            ...(block
-              ? { block: `${block.height}:${block.timeUnixMs ?? 1}` }
-              : {}),
-          }).toString()}`
-        : '')
+    `${INDEXER_URL}/${chainId}/${type}/${address}/${formula}?${params.toString()}`
   )
 
   if (!response.ok) {
