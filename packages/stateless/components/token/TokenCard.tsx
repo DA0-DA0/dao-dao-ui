@@ -18,7 +18,7 @@ import {
   transformIbcSymbol,
 } from '@dao-dao/utils'
 
-import { useAddToken } from '../../hooks'
+import { useAddToken, useDaoInfoContextIfAvailable } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { CopyToClipboard } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons/IconButton'
@@ -43,6 +43,10 @@ export const TokenCard = ({
   EntityDisplay,
 }: TokenCardProps) => {
   const { t } = useTranslation()
+  // If in a DAO context, don't show the DAOs governed section if the only DAO
+  // this token governs is the current DAO. See the comment where this is used
+  // for more details.
+  const { coreAddress } = useDaoInfoContextIfAvailable() ?? {}
 
   const lazyStakes =
     lazyInfo.loading || !lazyInfo.data.stakingInfo
@@ -373,34 +377,54 @@ export const TokenCard = ({
           </div>
         )}
 
-        {!lazyInfo.loading && !!lazyInfo.data.daosGoverned?.length && (
-          <div className="space-y-2 border-t border-border-secondary py-4 px-6">
-            <p className="link-text">{t('title.daos')}</p>
+        {!lazyInfo.loading &&
+          !!lazyInfo.data.daosGoverned?.length &&
+          // Only show DAOs if there are more than 1 or if the only DAO in the
+          // list is the current DAO. This prevents the DAO's governance token
+          // from listing only the DAO we're currently viewing as a DAO it
+          // governs, since that would be unhelpful. When there are multiple
+          // DAOs, we show them all, because it would be confusing to not show
+          // the current DAO and it helps provide context.
+          (!coreAddress ||
+            lazyInfo.data.daosGoverned.length > 1 ||
+            lazyInfo.data.daosGoverned[0].coreAddress !== coreAddress) && (
+            <div className="space-y-3 border-t border-border-secondary py-4 px-6">
+              <div className="flex flex-row items-center gap-1">
+                <p className="link-text">{t('title.daosGoverned')}</p>
 
-            <div className="space-y-1">
-              {lazyInfo.data.daosGoverned.map(
-                ({ coreAddress, stakedBalance }) => (
-                  <div
-                    key={coreAddress}
-                    className="flex flex-row items-center justify-between"
-                  >
-                    <EntityDisplay address={coreAddress} />
+                <TooltipInfoIcon
+                  size="xs"
+                  title={t('info.daosGovernedTooltip', {
+                    tokenSymbol,
+                  })}
+                />
+              </div>
 
-                    {stakedBalance !== undefined && (
-                      <TokenAmountDisplay
-                        amount={stakedBalance}
-                        className="caption-text text-right font-mono"
-                        decimals={token.decimals}
-                        hideSymbol
-                        suffix={' ' + t('info.staked')}
-                      />
-                    )}
-                  </div>
-                )
-              )}
+              <div className="space-y-1">
+                {lazyInfo.data.daosGoverned.map(
+                  ({ coreAddress, stakedBalance }) => (
+                    <div
+                      key={coreAddress}
+                      className="flex flex-row items-center justify-between"
+                    >
+                      <EntityDisplay address={coreAddress} />
+
+                      {/* Only show staked balance if defined and nonzero. */}
+                      {!!stakedBalance && (
+                        <TokenAmountDisplay
+                          amount={stakedBalance}
+                          className="caption-text text-right font-mono"
+                          decimals={token.decimals}
+                          hideSymbol
+                          suffix={' ' + t('info.staked')}
+                        />
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
 
       {!lazyInfo.loading && lazyInfo.data.stakingInfo && (
