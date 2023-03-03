@@ -44,6 +44,7 @@ import {
   decodeGovProposalContent,
   getAllRpcResponse,
   getRpcForChainId,
+  isJunoIbcUsdc,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -162,7 +163,7 @@ export const nativeBalancesSelector = selectorFamily<
         })
       }
       // Add USDC if not present and on mainnet.
-      if (MAINNET && !balances.some(({ denom }) => denom === JUNO_USDC_DENOM)) {
+      if (MAINNET && !balances.some(({ denom }) => isJunoIbcUsdc(denom))) {
         balances.push({
           amount: '0',
           denom: JUNO_USDC_DENOM,
