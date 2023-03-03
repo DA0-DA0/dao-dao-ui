@@ -195,52 +195,46 @@ export const TokenCard = ({
         </div>
 
         <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
-          <div className="flex flex-row items-start justify-between gap-8">
-            <p className="link-text">{t('info.totalHoldings')}</p>
+          {/* Don't show if loading, because `unstakedBalance` will show below while loading instead. It will hide if the total loads and is the same. This prevents weird looking relayouts while also showing some balance while the total is loading. */}
+          {!lazyInfo.loading && (
+            <div className="flex flex-row items-start justify-between gap-8">
+              <p className="link-text">{t('info.totalHoldings')}</p>
 
-            {/* leading-5 to match link-text's line-height. */}
-            <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
               {/* leading-5 to match link-text's line-height. */}
-              <TokenAmountDisplay
-                amount={
-                  lazyInfo.loading
-                    ? { loading: true }
-                    : lazyInfo.data.totalBalance
-                }
-                className="leading-5 text-text-body"
-                decimals={token.decimals}
-                symbol={tokenSymbol}
-              />
+              <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
+                {/* leading-5 to match link-text's line-height. */}
+                <TokenAmountDisplay
+                  amount={lazyInfo.data.totalBalance}
+                  className="leading-5 text-text-body"
+                  decimals={token.decimals}
+                  symbol={tokenSymbol}
+                />
 
-              {!isJunoIbcUsdc(token.denomOrAddress) &&
-                (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
-                  <div className="flex flex-row items-center gap-1">
-                    <TokenAmountDisplay
-                      amount={
-                        lazyInfo.loading || !lazyInfo.data.usdUnitPrice
-                          ? { loading: true }
-                          : lazyInfo.data.totalBalance *
-                            lazyInfo.data.usdUnitPrice.amount
-                      }
-                      dateFetched={
-                        lazyInfo.loading
-                          ? undefined
-                          : lazyInfo.data.usdUnitPrice!.timestamp
-                      }
-                      estimatedUsdValue
-                    />
+                {!isJunoIbcUsdc(token.denomOrAddress) &&
+                  lazyInfo.data.usdUnitPrice && (
+                    <div className="flex flex-row items-center gap-1">
+                      <TokenAmountDisplay
+                        amount={
+                          lazyInfo.data.totalBalance *
+                          lazyInfo.data.usdUnitPrice.amount
+                        }
+                        dateFetched={lazyInfo.data.usdUnitPrice!.timestamp}
+                        estimatedUsdValue
+                      />
 
-                    <TooltipInfoIcon
-                      size="xs"
-                      title={t('info.estimatedUsdValueTooltip')}
-                    />
-                  </div>
-                )}
+                      <TooltipInfoIcon
+                        size="xs"
+                        title={t('info.estimatedUsdValueTooltip')}
+                      />
+                    </div>
+                  )}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Only display `unstakedBalance` if different from total. */}
-          {!lazyInfo.loading && lazyInfo.data.totalBalance !== unstakedBalance && (
+          {/* Only display `unstakedBalance` if total is loading or if different from total. While loading, the total above will hide.  */}
+          {(lazyInfo.loading ||
+            lazyInfo.data.totalBalance !== unstakedBalance) && (
             <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.availableBalance')}</p>
               <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
