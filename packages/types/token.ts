@@ -90,6 +90,7 @@ export type TokenCardProps = TokenCardInfo & {
   refreshUnstakingTasks?: () => void
   onClaim?: () => void
   ButtonLink: ComponentType<ButtonLinkProps>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   // Actions to display in the button popup.
   actions?: {
     // Actions to add in the token section. By default, this will include copy
@@ -98,7 +99,6 @@ export type TokenCardProps = TokenCardInfo & {
     // Extra sections to add to the action popup.
     extraSections?: ButtonPopupSection[]
   }
-  EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
 }
 
 export type TokenLineProps<T extends TokenCardInfo = TokenCardInfo> = T & {

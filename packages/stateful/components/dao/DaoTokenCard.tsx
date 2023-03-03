@@ -27,6 +27,7 @@ import { useEncodedDaoProposalSinglePrefill } from '../../hooks'
 import { tokenCardLazyInfoSelector } from '../../recoil'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { ButtonLink } from '../ButtonLink'
+import { EntityDisplay } from '../EntityDisplay'
 import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 
 export const DaoTokenCard = (props: TokenCardInfo) => {
@@ -193,6 +194,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
       <StatelessTokenCard
         {...props}
         ButtonLink={ButtonLink}
+        EntityDisplay={EntityDisplay}
         actions={{
           token: isCw20GovernanceToken
             ? [

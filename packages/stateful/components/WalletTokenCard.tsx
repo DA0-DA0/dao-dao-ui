@@ -25,12 +25,12 @@ import {
 import { CoreActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
   HIDDEN_BALANCE_PREFIX,
-  JUNO_USDC_DENOM,
   KVPK_API_BASE,
   MAINNET,
   NATIVE_DENOM,
   cwMsgToEncodeObject,
   getMeTxPrefillPath,
+  isJunoIbcUsdc,
   processError,
 } from '@dao-dao/utils'
 
@@ -141,7 +141,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     props.token.denomOrAddress === NATIVE_DENOM
   const isUsdc =
     props.token.type === TokenType.Native &&
-    props.token.denomOrAddress === JUNO_USDC_DENOM
+    isJunoIbcUsdc(props.token.denomOrAddress)
 
   // Set this to a value to show the fiat ramp modal defaulted to that option.
   const [fiatRampDefaultModeVisible, setFiatRampDefaultModeVisible] = useState<
