@@ -1,4 +1,4 @@
-import { noWait, selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
@@ -110,27 +110,19 @@ export const tokenCardLazyInfoSelector = selectorFamily<
       }
 
       if (token.type === TokenType.Cw20 && walletAddress) {
-        const daosGovernedLoading = get(
-          noWait(
-            cw20TokenDaosWithStakedBalanceSelector({
-              cw20Address: token.denomOrAddress,
-              walletAddress,
-            })
-          )
-        )
-
-        if (daosGovernedLoading.state === 'hasValue') {
-          daosGoverned = daosGovernedLoading.contents.map(
-            ({ stakedBalance, ...rest }) => ({
-              ...rest,
-              // Convert to expected denom.
-              stakedBalance: convertMicroDenomToDenomWithDecimals(
-                stakedBalance,
-                token.decimals
-              ),
-            })
-          )
-        }
+        daosGoverned = get(
+          cw20TokenDaosWithStakedBalanceSelector({
+            cw20Address: token.denomOrAddress,
+            walletAddress,
+          })
+        ).map(({ stakedBalance, ...rest }) => ({
+          ...rest,
+          // Convert to expected denom.
+          stakedBalance: convertMicroDenomToDenomWithDecimals(
+            stakedBalance,
+            token.decimals
+          ),
+        }))
       }
 
       const totalBalance =
