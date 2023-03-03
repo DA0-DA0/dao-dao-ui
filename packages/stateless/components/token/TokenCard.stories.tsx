@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { EntityDisplay } from '@dao-dao/stateful'
 import {
   GenericToken,
   TokenCardProps,
@@ -142,6 +143,7 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
     },
     onClaim: () => alert('claim'),
     ButtonLink,
+    EntityDisplay,
   }
 }
 
