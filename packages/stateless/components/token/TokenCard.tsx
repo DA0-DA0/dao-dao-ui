@@ -373,36 +373,34 @@ export const TokenCard = ({
           </div>
         )}
 
-        {EntityDisplay &&
-          !lazyInfo.loading &&
-          !!lazyInfo.data.daosGoverned?.length && (
-            <div className="space-y-2 border-t border-border-secondary py-4 px-6">
-              <p className="link-text">{t('title.daos')}</p>
+        {!lazyInfo.loading && !!lazyInfo.data.daosGoverned?.length && (
+          <div className="space-y-2 border-t border-border-secondary py-4 px-6">
+            <p className="link-text">{t('title.daos')}</p>
 
-              <div className="space-y-1">
-                {lazyInfo.data.daosGoverned.map(
-                  ({ coreAddress, stakedBalance }) => (
-                    <div
-                      key={coreAddress}
-                      className="flex flex-row items-center justify-between"
-                    >
-                      <EntityDisplay address={coreAddress} />
+            <div className="space-y-1">
+              {lazyInfo.data.daosGoverned.map(
+                ({ coreAddress, stakedBalance }) => (
+                  <div
+                    key={coreAddress}
+                    className="flex flex-row items-center justify-between"
+                  >
+                    <EntityDisplay address={coreAddress} />
 
-                      {stakedBalance !== undefined && (
-                        <TokenAmountDisplay
-                          amount={stakedBalance}
-                          className="caption-text text-right font-mono"
-                          decimals={token.decimals}
-                          hideSymbol
-                          suffix={' ' + t('info.staked')}
-                        />
-                      )}
-                    </div>
-                  )
-                )}
-              </div>
+                    {stakedBalance !== undefined && (
+                      <TokenAmountDisplay
+                        amount={stakedBalance}
+                        className="caption-text text-right font-mono"
+                        decimals={token.decimals}
+                        hideSymbol
+                        suffix={' ' + t('info.staked')}
+                      />
+                    )}
+                  </div>
+                )
+              )}
             </div>
-          )}
+          </div>
+        )}
       </div>
 
       {!lazyInfo.loading && lazyInfo.data.stakingInfo && (
