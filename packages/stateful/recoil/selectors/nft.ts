@@ -291,6 +291,9 @@ export const walletStakedNftCardInfosSelector = selectorFamily<
         )
       )
 
-      return nftCardInfos
+      return nftCardInfos.map((nftCardInfo) => ({
+        ...nftCardInfo,
+        staked: true,
+      }))
     },
 })

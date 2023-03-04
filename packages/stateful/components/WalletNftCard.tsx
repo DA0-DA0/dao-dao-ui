@@ -81,7 +81,11 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
           },
         ]
       : []),
-    ...(props.chainId === CHAIN_ID && transferActionDefaults
+    ...(props.chainId === CHAIN_ID &&
+    transferActionDefaults &&
+    // If the NFT is staked, don't show the transfer/burn buttons, since the
+    // wallet does not have control.
+    !props.staked
       ? [
           {
             label: t('title.transaction'),
