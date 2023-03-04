@@ -6,9 +6,8 @@ import {
   DaoVotingCw20StakedSelectors,
   wyndUsdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
@@ -47,38 +46,32 @@ export const useGovernanceTokenInfo = ({
   /// Optional
 
   // Wallet balance
-  const loadingWalletBalance = loadableToLoadingData(
-    useCachedLoadable(
-      fetchWalletBalance && walletAddress
-        ? Cw20BaseSelectors.balanceSelector({
-            contractAddress: governanceTokenAddress,
-            params: [{ address: walletAddress }],
-          })
-        : constSelector(undefined)
-    ),
+  const loadingWalletBalance = useCachedLoading(
+    fetchWalletBalance && walletAddress
+      ? Cw20BaseSelectors.balanceSelector({
+          contractAddress: governanceTokenAddress,
+          params: [{ address: walletAddress }],
+        })
+      : constSelector(undefined),
     undefined
   )
 
   // Treasury balance
-  const loadingTreasuryBalance = loadableToLoadingData(
-    useCachedLoadable(
-      fetchTreasuryBalance
-        ? Cw20BaseSelectors.balanceSelector({
-            contractAddress: governanceTokenAddress,
-            params: [{ address: coreAddress }],
-          })
-        : constSelector(undefined)
-    ),
+  const loadingTreasuryBalance = useCachedLoading(
+    fetchTreasuryBalance
+      ? Cw20BaseSelectors.balanceSelector({
+          contractAddress: governanceTokenAddress,
+          params: [{ address: coreAddress }],
+        })
+      : constSelector(undefined),
     undefined
   )
 
   // Price info
-  const loadingPrice = loadableToLoadingData(
-    useCachedLoadable(
-      fetchUsdcPrice
-        ? wyndUsdPriceSelector(governanceTokenAddress)
-        : constSelector(undefined)
-    ),
+  const loadingPrice = useCachedLoading(
+    fetchUsdcPrice
+      ? wyndUsdPriceSelector(governanceTokenAddress)
+      : constSelector(undefined),
     undefined
   )
 

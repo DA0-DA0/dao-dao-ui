@@ -38,7 +38,7 @@ import {
 import {
   ActionComponent,
   ActionComponentProps,
-  ActionOptionsContextType,
+  ActionContextType,
 } from '@dao-dao/types/actions'
 import {
   CHAIN_GOV_PROPOSAL_URL_TEMPLATE,
@@ -279,7 +279,7 @@ const VoteFooter = ({
         <p className="primary-text text-text-secondary">
           {t('info.subjectsVote', {
             subject:
-              context.type === ActionOptionsContextType.Dao
+              context.type === ActionContextType.Dao
                 ? context.info.name
                 : t('info.your'),
           })}
@@ -318,7 +318,7 @@ const VoteFooter = ({
               <p className="primary-text text-text-secondary">
                 {t('info.subjectsCurrentlyCastVote', {
                   subject:
-                    context.type === ActionOptionsContextType.Dao
+                    context.type === ActionContextType.Dao
                       ? context.info.name
                       : t('info.your'),
                 })}
@@ -327,7 +327,7 @@ const VoteFooter = ({
               <TooltipInfoIcon
                 title={t('info.subjectsCurrentlyCastVoteTooltip', {
                   subject:
-                    context.type === ActionOptionsContextType.Dao
+                    context.type === ActionContextType.Dao
                       ? context.info.name
                       : t('info.you'),
                 })}

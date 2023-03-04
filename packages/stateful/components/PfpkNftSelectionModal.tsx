@@ -1,9 +1,5 @@
-import {
-  ChainInfoID,
-  WalletConnectionStatus,
-  useWallet,
-} from '@noahsaso/cosmodal'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -12,17 +8,13 @@ import {
   ModalProps,
   NftSelectionModal,
   ProfileImage,
-  useCachedLoadable,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { LoadingDataWithError, NftCardInfo } from '@dao-dao/types'
-import { loadableToLoadingDataWithError, processError } from '@dao-dao/utils'
+import { NftCardInfo } from '@dao-dao/types'
+import { processError } from '@dao-dao/utils'
 
 import { useWalletInfo } from '../hooks'
-import {
-  walletNftCardInfos,
-  walletStakedNftCardInfos,
-  walletStargazeNftCardInfosSelector,
-} from '../recoil/selectors/nft'
+import { walletNativeAndStargazeNftsSelector } from '../recoil'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export type PfpkNftSelectionModalProps = Pick<Required<ModalProps>, 'onClose'>
@@ -32,66 +24,18 @@ export const InnerPfpkNftSelectionModal = ({
 }: PfpkNftSelectionModalProps) => {
   const { t } = useTranslation()
   const {
-    address: junoWalletAddress,
-    status: junoConnectionStatus,
-    error: junoConnectionError,
-  } = useWallet(ChainInfoID.Juno1)
-  const {
-    address: stargazeWalletAddress,
-    status: stargazeConnectionStatus,
-    error: stargazeConnectionError,
-  } = useWallet(ChainInfoID.Stargaze1)
+    address: walletAddress,
+    status: walletStatus,
+    error: walletError,
+  } = useWallet()
 
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
 
-  const junoNfts = loadableToLoadingDataWithError(
-    useCachedLoadable(
-      junoWalletAddress
-        ? walletNftCardInfos({
-            walletAddress: junoWalletAddress,
-            chainId: ChainInfoID.Juno1,
-          })
-        : undefined
-    )
-  )
-
-  const stakedJunoNfts = loadableToLoadingDataWithError(
-    useCachedLoadable(
-      junoWalletAddress
-        ? walletStakedNftCardInfos({
-            walletAddress: junoWalletAddress,
-            chainId: ChainInfoID.Juno1,
-          })
-        : undefined
-    )
-  )
-
-  const stargazeNfts = loadableToLoadingDataWithError(
-    useCachedLoadable(
-      stargazeWalletAddress
-        ? walletStargazeNftCardInfosSelector(stargazeWalletAddress)
-        : undefined
-    )
-  )
-
-  const nfts: LoadingDataWithError<NftCardInfo[]> = useMemo(
-    () =>
-      stargazeNfts.loading || junoNfts.loading || stakedJunoNfts.loading
-        ? {
-            loading: true,
-            errored: false,
-          }
-        : {
-            loading: false,
-            errored: false,
-            data: [
-              ...(!stargazeNfts.errored ? stargazeNfts.data : []),
-              ...(!junoNfts.errored ? junoNfts.data : []),
-              ...(!stakedJunoNfts.errored ? stakedJunoNfts.data : []),
-            ],
-          },
-    [junoNfts, stakedJunoNfts, stargazeNfts]
+  const nfts = useCachedLoadingWithError(
+    walletAddress
+      ? walletNativeAndStargazeNftsSelector(walletAddress)
+      : undefined
   )
 
   const {
@@ -171,10 +115,8 @@ export const InnerPfpkNftSelectionModal = ({
         subtitle: t('info.chooseNftProfilePictureSubtitle'),
       }}
       nfts={
-        stargazeConnectionStatus === WalletConnectionStatus.Errored
-          ? { loading: false, errored: true, error: stargazeConnectionError }
-          : junoConnectionStatus === WalletConnectionStatus.Errored
-          ? { loading: false, errored: true, error: junoConnectionError }
+        walletStatus === WalletConnectionStatus.Errored
+          ? { loading: false, errored: true, error: walletError }
           : nfts
       }
       onAction={onAction}

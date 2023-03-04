@@ -11,6 +11,7 @@ import {
   nativeBalanceSelector,
   nativeBalancesFetchedAtSelector,
   nativeDelegatedBalanceSelector,
+  refreshNativeTokenStakingInfoAtom,
   refreshWalletBalancesIdAtom,
   refreshWalletProfileAtom,
 } from '@dao-dao/state'
@@ -91,10 +92,13 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
   const setRefreshWalletBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(address ?? '')
   )
-  const refreshBalances = useCallback(
-    () => setRefreshWalletBalancesId((id) => id + 1),
-    [setRefreshWalletBalancesId]
+  const setRefreshStakingId = useSetRecoilState(
+    refreshNativeTokenStakingInfoAtom(address ?? '')
   )
+  const refreshBalances = useCallback(() => {
+    setRefreshWalletBalancesId((id) => id + 1)
+    setRefreshStakingId((id) => id + 1)
+  }, [setRefreshStakingId, setRefreshWalletBalancesId])
 
   const setRefreshWalletProfile = useSetRecoilState(
     refreshWalletProfileAtom(address ?? '')
@@ -104,12 +108,28 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     [setRefreshWalletProfile]
   )
 
-  const walletProfileData = useRecoilValue(
+  const walletProfileDataValue = useRecoilValue(
     walletProfileDataSelector({
       address: address ?? '',
       chainId,
     })
   )
+
+  const [cachedProfileData, setCachedProfileData] = useState<
+    WalletProfileData | undefined
+  >()
+  // Clear cached profile data when address changes.
+  useEffect(() => {
+    setCachedProfileData(undefined)
+  }, [address])
+  // Cache profile data when it's loaded.
+  useEffect(() => {
+    if (!walletProfileDataValue.loading) {
+      setCachedProfileData(walletProfileDataValue)
+    }
+  }, [walletProfileDataValue])
+  const walletProfileData = cachedProfileData || walletProfileDataValue
+
   const {
     loading: profileLoading,
     profile: walletProfile,

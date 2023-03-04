@@ -36,12 +36,15 @@ import {
 import {
   CHAIN_BECH32_PREFIX,
   CHAIN_ID,
+  JUNO_USDC_DENOM,
+  MAINNET,
   NATIVE_DENOM,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
   decodeGovProposalContent,
   getAllRpcResponse,
   getRpcForChainId,
+  isJunoIbcUsdc,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -157,6 +160,13 @@ export const nativeBalancesSelector = selectorFamily<
         balances.push({
           amount: '0',
           denom: NATIVE_DENOM,
+        })
+      }
+      // Add USDC if not present and on mainnet.
+      if (MAINNET && !balances.some(({ denom }) => isJunoIbcUsdc(denom))) {
+        balances.push({
+          amount: '0',
+          denom: JUNO_USDC_DENOM,
         })
       }
 

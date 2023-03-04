@@ -12,7 +12,7 @@ import {
   DaoPageWrapperDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { DaoTabId } from '@dao-dao/types'
+import { DaoTabId, TokenCardProps } from '@dao-dao/types'
 
 import {
   DaoInfoBar,
@@ -24,7 +24,6 @@ import {
   ProfileMemberCardProps,
   ProposalsTabProps,
   SubDaosTabProps,
-  TokenCardProps,
   TreasuryAndNftsTabProps,
 } from '../components'
 import { Default as DaoInfoBarStory } from '../components/dao/DaoInfoBar.DaoInfoBar.stories'

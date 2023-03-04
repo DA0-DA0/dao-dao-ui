@@ -18,7 +18,6 @@ import {
 import {
   refreshOpenProposalsAtom,
   refreshWalletProposalStatsAtom,
-  walletAddressAtom,
 } from '../atoms'
 
 export const queryContractIndexerSelector = selectorFamily<
@@ -168,27 +167,6 @@ export const featuredDaoDumpStatesAtom = atom<
 >({
   key: 'featuredDaoDumpStates',
   default: null,
-})
-
-export const walletMemberOfDaosSelector = selector<string[]>({
-  key: 'walletMemberOfDaos',
-  get: ({ get }) => {
-    const walletAddress = get(walletAddressAtom)
-    if (!walletAddress) {
-      return []
-    }
-
-    const walletMemberOfDaos: string[] = get(
-      queryWalletIndexerSelector({
-        walletAddress,
-        formulaName: 'daos/memberOf',
-      })
-    )
-
-    return walletMemberOfDaos && Array.isArray(walletMemberOfDaos)
-      ? walletMemberOfDaos
-      : []
-  },
 })
 
 export const walletAdminOfDaosSelector = selectorFamily<string[], string>({

@@ -87,7 +87,6 @@
     "connectWalletToCreate": "Połącz portfel aby stworzyć DAO.",
     "couldntFindDAO": "Nie mogliśmy znaleźć DAO z tym adresem. Wyszukaj DAO na <2>home page</2>.",
     "couldntFindProposal": "Nie mogliśmy znaleźć ustawy z tym ID. Zobacz wszystkie ustawy na <2>Stronie głównej</2>.",
-    "createProposalSubmitInvalid": "Popraw błędy powyżej przed podglądem lub publikacją.",
     "daoIsPaused": "Nie możesz utworzyć popozycji ustawy kiedy Organizacja jest zapauzowana.",
     "daoNotFound": "Organizacja nie znaleziona.",
     "failedParsingCoreVersion": "Nie udało się zdeterminować głównej wersji.",

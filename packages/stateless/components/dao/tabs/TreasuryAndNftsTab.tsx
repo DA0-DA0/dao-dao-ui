@@ -2,15 +2,21 @@ import { Image } from '@mui/icons-material'
 import { ComponentType, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
+import {
+  LoadingData,
+  NftCardInfo,
+  SortFn,
+  TokenCardInfo,
+  TypedOption,
+} from '@dao-dao/types'
 
-import { SortFn, useDropdownSorter } from '../../../hooks'
+import { useButtonPopupSorter } from '../../../hooks'
 import { Button } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
-import { Dropdown, DropdownOption } from '../../inputs/Dropdown'
 import { Loader } from '../../logo/Loader'
 import { ModalProps } from '../../modals/Modal'
 import { NoContent } from '../../NoContent'
+import { ButtonPopup } from '../../popup'
 
 export interface TreasuryAndNftsTabProps<
   T extends TokenCardInfo,
@@ -60,8 +66,11 @@ export const TreasuryAndNftsTab = <
     [tokens]
   )
 
-  const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
-    useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
+  const { sortedData: sortedNfts, buttonPopupProps: sortButtonPopupProps } =
+    useButtonPopupSorter({
+      data: nfts.loading ? [] : nfts.data,
+      options: sortOptions,
+    })
 
   const [showDepositFiat, setShowDepositFiat] = useState(false)
 
@@ -95,7 +104,7 @@ export const TreasuryAndNftsTab = <
 
       {nfts.loading || nfts.data.length > 0 ? (
         <>
-          <div className="mb-6 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
+          <div className="mb-6 flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
             <p className="title-text">
               {nfts.loading
                 ? t('title.nfts')
@@ -103,12 +112,8 @@ export const TreasuryAndNftsTab = <
             </p>
 
             {!nfts.loading && nfts.data.length > 0 && (
-              <div className="flex flex-row items-center justify-between gap-4">
-                <p className="primary-text text-text-body">
-                  {t('title.sortBy')}
-                </p>
-
-                <Dropdown {...sortDropdownProps} />
+              <div className="flex grow flex-row justify-end">
+                <ButtonPopup position="left" {...sortButtonPopupProps} />
               </div>
             )}
           </div>
@@ -158,7 +163,7 @@ export const TreasuryAndNftsTab = <
   )
 }
 
-const sortOptions: DropdownOption<
+const sortOptions: TypedOption<
   SortFn<Pick<NftCardInfo, 'name' | 'floorPrice'>>
 >[] = [
   {

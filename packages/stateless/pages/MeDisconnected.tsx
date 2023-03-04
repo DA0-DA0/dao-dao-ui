@@ -7,28 +7,25 @@ import {
   RightSidebarContent,
 } from '../components'
 
-export interface WalletDisconnectedProps {
+export interface MeDisconnectedProps {
   rightSidebarContent: ReactNode
   connectWalletButton: ReactNode
-  autoConnecting: boolean
+  connecting: boolean
 }
 
-export const WalletDisconnected = ({
+export const MeDisconnected = ({
   rightSidebarContent,
   connectWalletButton,
-  autoConnecting,
-}: WalletDisconnectedProps) => {
+  connecting,
+}: MeDisconnectedProps) => {
   const { t } = useTranslation()
 
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeaderContent
-        className="mx-auto max-w-5xl"
-        title={t('title.wallet')}
-      />
+      <PageHeaderContent className="mx-auto max-w-5xl" title={t('title.me')} />
 
-      {autoConnecting ? (
+      {connecting ? (
         <PageLoader />
       ) : (
         <div className="mx-auto max-w-5xl">{connectWalletButton}</div>

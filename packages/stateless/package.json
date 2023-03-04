@@ -33,10 +33,12 @@
     "react-intersection-observer": "^9.4.1",
     "react-markdown": "^8.0.0",
     "react-timeago": "^7.1.0",
-    "remark-gfm": "^3.0.1"
+    "remark-gfm": "^3.0.1",
+    "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
     "@dao-dao/config": "^2.1.0-rc.1",
+    "@noahsaso/cosmodal": "^0.8.3",
     "@storybook/react": "^6.5.10",
     "@types/lodash.clonedeep": "^4.5.0",
     "@types/react": "^17.0.37",

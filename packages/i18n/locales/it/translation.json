@@ -78,7 +78,6 @@
     "connectWalletToCreate": "Connetti il portafoglio per creare una DAO.",
     "couldntFindDAO": "Non abbiamo trovato una DAO con questo indirizzo. Controlla tutte le DAO sulla <2>home page</2>.",
     "couldntFindProposal": "Non abbiamo trovato una proposta con questo ID. Controlla tutte le proposte sulla <2>home page</2>.",
-    "createProposalSubmitInvalid": "Correggi la proposta sopra prima di inviarla.",
     "daoIsPaused": "Non puoi creare una proposta quando la DAO è in pausa.",
     "daoNotFound": "DAO non trovata.",
     "failedToGetTokenInfo": "Impossibile ottenere le informazioni sul token. Inserisci un indirizzo valido di un contratto {{tokenType}}.",

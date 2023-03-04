@@ -9,21 +9,24 @@ import { ComponentType, Fragment, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ButtonLinkProps,
   StatefulDaoMemberCardProps,
   StatefulEntityDisplayProps,
+  TypedOption,
 } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { Button, ButtonLinkProps } from '../../buttons'
+import { Button } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
 import { IconButton } from '../../icon_buttons'
-import { Dropdown, DropdownOption } from '../../inputs/Dropdown'
+import { Dropdown } from '../../inputs/Dropdown'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
 import { VOTING_POWER_DISTRIBUTION_COLORS_ORDERED } from '../create'
 
 export interface MembersTabProps {
   DaoMemberCard: ComponentType<StatefulDaoMemberCardProps>
   members: StatefulDaoMemberCardProps[]
+  membersFailedToLoad: boolean
   isMember: boolean
   addMemberHref?: string
   ButtonLink: ComponentType<ButtonLinkProps>
@@ -53,6 +56,7 @@ const MIN_MEMBERS_PAGE = 1
 export const MembersTab = ({
   DaoMemberCard,
   members,
+  membersFailedToLoad,
   isMember,
   addMemberHref,
   ButtonLink,
@@ -66,7 +70,7 @@ export const MembersTab = ({
   const [topStakerState, setTopStakerState] = useState(
     TopStakerState.TenAbsolute
   )
-  const topStakerStateOptions: DropdownOption<TopStakerState>[] = [
+  const topStakerStateOptions: TypedOption<TopStakerState>[] = [
     {
       label: t('title.topAbsolute', { count: -TopStakerState.TenAbsolute }),
       value: TopStakerState.TenAbsolute,
@@ -248,16 +252,23 @@ export const MembersTab = ({
       <div
         className={clsx(
           'pb-6',
-          // header min-height of 3.5rem standardized across all tabs
-          !addMemberHref && 'flex min-h-[3.5rem] flex-row items-center '
+          // header min-height of 3.5rem standardized across all tabs if add
+          // members header is not showing at the top
+          !addMemberHref && 'flex min-h-[3.5rem] flex-row items-center'
         )}
       >
         <p className="title-text text-text-body">
-          {t('title.numMembers', { count: members.length })}
+          {membersFailedToLoad
+            ? t('error.failedToLoadMembersTitle')
+            : t('title.numMembers', { count: members.length })}
         </p>
       </div>
 
-      {members.length ? (
+      {membersFailedToLoad ? (
+        <p className="secondary-text">
+          {t('error.failedToLoadMembersDescription')}
+        </p>
+      ) : members.length ? (
         <>
           <GridCardContainer>
             {members

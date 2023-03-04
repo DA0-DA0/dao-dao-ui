@@ -37,10 +37,7 @@ import {
   toAccessibleImageUrl,
   validateContractAddress,
 } from '@dao-dao/utils'
-import {
-  FAST_AVERAGE_COLOR_API_TEMPLATE,
-  SITE_URL,
-} from '@dao-dao/utils/constants'
+import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -490,11 +487,7 @@ const daoCoreDumpState = async (
     const indexerDumpedState = await queryIndexer<IndexerDumpState>(
       'contract',
       coreAddress,
-      'daoCore/dumpState',
-      {
-        // Needed for server-side queries.
-        baseUrl: SITE_URL,
-      }
+      'daoCore/dumpState'
     )
 
     // Use data from indexer if present.

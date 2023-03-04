@@ -4,6 +4,7 @@ import TimeAgo from 'react-timeago'
 import { blockHeightSelector, blocksPerYearSelector } from '@dao-dao/state'
 import {
   useCachedLoadable,
+  useCachedLoading,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import { ContractVersion, LoadingData } from '@dao-dao/types'
@@ -12,7 +13,6 @@ import {
   convertExpirationToDate,
   formatDate,
   formatDateTimeTz,
-  loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
@@ -29,7 +29,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     chainId,
   } = useProposalModuleAdapterOptions()
 
-  const proposalCachedLoadable = useCachedLoadable(
+  const loadingProposalResponse = useCachedLoading(
     proposalSelector({
       contractAddress: proposalModuleAddress,
       chainId,
@@ -38,10 +38,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
           proposalId: proposalNumber,
         },
       ],
-    })
-  )
-  const loadingProposalResponse = loadableToLoadingData(
-    proposalCachedLoadable,
+    }),
     undefined,
     // If proposal undefined (due to a selector error), an error will be thrown.
     () => {
@@ -146,8 +143,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   return {
     loading: false,
     updating:
-      proposalCachedLoadable.state === 'hasValue' &&
-      proposalCachedLoadable.updating,
+      !loadingProposalResponse.loading && loadingProposalResponse.updating,
     data: {
       ...proposal,
       timestampInfo,

@@ -32,6 +32,7 @@ export const useLoadingDaoCardInfos = (
     ? { loading: true }
     : {
         loading: false,
+        updating: daoCardInfosLoadable.updating,
         data: daoCardInfosLoadable.contents.filter(Boolean) as DaoCardInfo[],
       }
 }

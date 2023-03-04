@@ -12,7 +12,7 @@ import {
 import {
   ActionCardLoader,
   DepositEmoji,
-  useCachedLoadable,
+  useCachedLoading,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -29,7 +29,6 @@ import {
   StakeType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  loadableToLoadingData,
   makeDistributeMessage,
   makeStakingMessage,
   nativeTokenDecimals,
@@ -132,39 +131,33 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
   // when this data updates on a schedule. Manually trigger a suspense loader
   // the first time when the initial data is still loading.
 
-  const loadingNativeBalances = loadableToLoadingData(
-    useCachedLoadable(
-      address
-        ? nativeBalancesSelector({
-            chainId,
-            address,
-          })
-        : undefined
-    ),
+  const loadingNativeBalances = useCachedLoading(
+    address
+      ? nativeBalancesSelector({
+          chainId,
+          address,
+        })
+      : undefined,
     []
   )
 
-  const loadingNativeDelegationInfo = loadableToLoadingData(
-    useCachedLoadable(
-      address
-        ? nativeDelegationInfoSelector({
-            chainId,
-            address,
-          })
-        : undefined
-    ),
+  const loadingNativeDelegationInfo = useCachedLoading(
+    address
+      ? nativeDelegationInfoSelector({
+          chainId,
+          address,
+        })
+      : undefined,
     {
       delegations: [],
       unbondingDelegations: [],
     }
   )
 
-  const loadingValidators = loadableToLoadingData(
-    useCachedLoadable(
-      validatorsSelector({
-        chainId,
-      })
-    ),
+  const loadingValidators = useCachedLoading(
+    validatorsSelector({
+      chainId,
+    }),
     []
   )
 
@@ -297,15 +290,13 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
   const useDefaults: UseDefaults<StakeData> = () => {
     const stakeActions = useStakeActions()
 
-    const loadingNativeDelegationInfo = loadableToLoadingData(
-      useCachedLoadable(
-        address
-          ? nativeDelegationInfoSelector({
-              chainId,
-              address,
-            })
-          : undefined
-      ),
+    const loadingNativeDelegationInfo = useCachedLoading(
+      address
+        ? nativeDelegationInfoSelector({
+            chainId,
+            address,
+          })
+        : undefined,
       {
         delegations: [],
         unbondingDelegations: [],

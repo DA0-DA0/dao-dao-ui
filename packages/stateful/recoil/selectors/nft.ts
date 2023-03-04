@@ -1,3 +1,4 @@
+import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily, waitForAll } from 'recoil'
 
@@ -13,7 +14,9 @@ import { NftCardInfo, WithChainId } from '@dao-dao/types'
 import { StargazeNft } from '@dao-dao/types/nft'
 import {
   CHAIN_ID,
+  MAINNET,
   STARGAZE_PROFILE_API_TEMPLATE,
+  STARGAZE_TESTNET_CHAIN_ID,
   STARGAZE_URL_BASE,
 } from '@dao-dao/utils'
 
@@ -25,11 +28,19 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
   get:
     (walletAddress: string) =>
     async ({ get }) => {
-      get(refreshWalletStargazeNftsAtom(walletAddress))
+      const stargazeWalletAddress = toBech32(
+        'stars',
+        fromBech32(walletAddress).data
+      )
+
+      get(refreshWalletStargazeNftsAtom(stargazeWalletAddress))
 
       const stargazeNfts: StargazeNft[] = await (
         await fetch(
-          STARGAZE_PROFILE_API_TEMPLATE.replace('ADDRESS', walletAddress)
+          STARGAZE_PROFILE_API_TEMPLATE.replace(
+            'ADDRESS',
+            stargazeWalletAddress
+          )
         )
       ).json()
 
@@ -44,7 +55,9 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
               collection: collection.contractAddress,
               tokenId,
               tokenUri,
-              chainId: ChainInfoID.Stargaze1,
+              chainId: MAINNET
+                ? ChainInfoID.Stargaze1
+                : STARGAZE_TESTNET_CHAIN_ID,
             })
           )
         )
@@ -240,7 +253,7 @@ export const walletNftCardInfos = selectorFamily<
 
 // Retrieve all NFTs a given wallet address has staked with a DAO (via
 // dao-voting-cw721-staked) using the indexer.
-export const walletStakedNftCardInfos = selectorFamily<
+export const walletStakedNftCardInfosSelector = selectorFamily<
   NftCardInfo[],
   WithChainId<{
     walletAddress: string

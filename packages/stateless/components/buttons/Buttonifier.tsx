@@ -1,5 +1,6 @@
 import clsx from 'clsx'
-import { ReactNode } from 'react'
+
+import { ButtonifierProps } from '@dao-dao/types'
 
 import { Loader } from '../logo'
 
@@ -8,27 +9,6 @@ const defaultSize = 'default'
 
 // Pulse for these variants instead of displaying loader.
 const PULSE_LOADING_VARIANTS = 'underline' || 'none'
-
-export interface ButtonifierProps {
-  variant?:
-    | 'primary'
-    | 'primary_outline'
-    | 'secondary'
-    | 'ghost'
-    | 'underline'
-    | 'none'
-  size?: 'sm' | 'lg' | 'default' | 'none'
-  loading?: boolean
-  contentContainerClassName?: string
-  pressed?: boolean
-  hovering?: boolean
-  disabled?: boolean
-  showBadge?: boolean
-  className?: string
-  children?: ReactNode | ReactNode[]
-  center?: boolean
-  circular?: boolean
-}
 
 // Get props that should pass through the Buttonifier, such as native button
 // props. Disable button if disabled or loading.
@@ -43,6 +23,7 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   children: _children,
   center: _center,
   circular: _circular,
+  focused: _focused,
   disabled,
   loading,
   ...props
@@ -58,6 +39,7 @@ export const getButtonifiedClassNames = ({
   disabled,
   loading,
   circular,
+  focused,
   className,
 }: ButtonifierProps) => {
   const disabledOrLoading = disabled || loading
@@ -67,6 +49,8 @@ export const getButtonifiedClassNames = ({
 
     // No cursor pointer if disabled or loading.
     disabledOrLoading && 'cursor-default',
+
+    focused && 'ring-2 ring-inset ring-border-interactive-focus',
 
     // Rounded if circular.
     circular ? 'rounded-full' : 'rounded-md',

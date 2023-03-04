@@ -1,18 +1,32 @@
 /* eslint-disable @next/next/no-img-element */
 import { Image, WarningRounded } from '@mui/icons-material'
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingDataWithError, ModalProps, NftCardInfo } from '@dao-dao/types'
+import {
+  FilterFn,
+  LoadingDataWithError,
+  ModalProps,
+  NftCardInfo,
+  SortFn,
+  TypedOption,
+} from '@dao-dao/types'
+import { STARGAZE_TESTNET_CHAIN_ID } from '@dao-dao/utils'
 
-import { SortFn, useDropdownSorter, useSearchFilter } from '../../hooks'
+import {
+  useButtonPopupFilter,
+  useButtonPopupSorter,
+  useSearchFilter,
+} from '../../hooks'
 import { Button } from '../buttons/Button'
-import { Dropdown, DropdownOption, SearchBar } from '../inputs'
+import { SearchBar } from '../inputs'
 import { Loader } from '../logo/Loader'
 import { NftCard } from '../NftCard'
 import { NoContent } from '../NoContent'
+import { ButtonPopup } from '../popup'
 import { Modal } from './Modal'
 
 export interface NftSelectionModalProps<T extends NftCardInfo>
@@ -27,6 +41,7 @@ export interface NftSelectionModalProps<T extends NftCardInfo>
   onAction: () => void
   actionLoading: boolean
   actionLabel: string
+  fallbackError?: string
   allowSelectingNone?: boolean
   selectedDisplay?: ReactNode
   headerDisplay?: ReactNode
@@ -42,6 +57,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   onAction,
   actionLoading,
   actionLabel,
+  fallbackError,
   containerClassName,
   allowSelectingNone,
   selectedDisplay,
@@ -81,16 +97,24 @@ export const NftSelectionModal = <T extends NftCardInfo>({
     })
   }, [nfts, firstSelectedRef, scrolledToFirst])
 
-  const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
-    useDropdownSorter(
-      nfts.loading || nfts.errored ? [] : nfts.data,
-      sortOptions
-    )
+  const {
+    filteredData: filteredNfts,
+    buttonPopupProps: filterNftButtonPopupProps,
+  } = useButtonPopupFilter({
+    data: nfts.loading || nfts.errored ? [] : nfts.data,
+    options: filterOptions,
+  })
 
-  const { searchBarProps, filteredData } = useSearchFilter(
-    sortedNfts,
-    FILTERABLE_KEYS
-  )
+  const {
+    sortedData: filteredSortedNfts,
+    buttonPopupProps: sortButtonPopupProps,
+  } = useButtonPopupSorter({
+    data: filteredNfts,
+    options: sortOptions,
+  })
+
+  const { searchBarProps, filteredData: filteredSortedSearchedNfts } =
+    useSearchFilter(filteredSortedNfts, FILTERABLE_KEYS)
 
   return (
     <Modal
@@ -139,8 +163,8 @@ export const NftSelectionModal = <T extends NftCardInfo>({
 
           <div
             className={clsx(
-              'flex flex-row items-center gap-12',
-              // Push sort dropdown to the right no matter what.
+              'flex flex-row flex-wrap items-center gap-x-8 gap-y-4',
+              // Push sort/filter to the right no matter what.
               showSelectAll ? 'justify-between' : 'justify-end'
             )}
           >
@@ -164,10 +188,9 @@ export const NftSelectionModal = <T extends NftCardInfo>({
               </Button>
             )}
 
-            <div className="flex flex-row items-center justify-between gap-4">
-              <p className="primary-text text-text-body">{t('title.sortBy')}</p>
-
-              <Dropdown {...sortDropdownProps} />
+            <div className="flex grow flex-row items-center justify-end gap-4">
+              <ButtonPopup position="left" {...filterNftButtonPopupProps} />
+              <ButtonPopup position="left" {...sortButtonPopupProps} />
             </div>
           </div>
         </div>
@@ -178,13 +201,15 @@ export const NftSelectionModal = <T extends NftCardInfo>({
       ) : nfts.errored ? (
         <>
           <WarningRounded className="!h-14 !w-14" />
-          <p className="body-text">{t('error.pfpkStargazeReopenModal')}</p>
+          <p className="body-text">
+            {fallbackError ?? t('error.checkInternetOrTryAgain')}
+          </p>
           <pre className="secondary-text max-w-prose whitespace-pre-wrap text-center text-xs text-text-interactive-error">
             {nfts.error instanceof Error ? nfts.error.message : `${nfts.error}`}
           </pre>
         </>
       ) : nfts.data.length > 0 ? (
-        filteredData.map(({ item: nft }) => (
+        filteredSortedSearchedNfts.map(({ item: nft }) => (
           <NftCard
             key={getIdForNft(nft as T)}
             ref={
@@ -211,7 +236,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   )
 }
 
-const sortOptions: DropdownOption<SortFn<Pick<NftCardInfo, 'name'>>>[] = [
+const sortOptions: TypedOption<SortFn<Pick<NftCardInfo, 'name'>>>[] = [
   {
     label: 'A → Z',
     value: (a, b) =>
@@ -228,4 +253,22 @@ const FILTERABLE_KEYS: Fuse.FuseOptionKey<NftCardInfo>[] = [
   'name',
   'description',
   'collection.address',
+]
+
+const filterOptions: TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>>[] = [
+  {
+    label: 'Juno and Stargaze',
+    value: () => true,
+  },
+  {
+    label: 'Only Juno',
+    value: (nft) =>
+      nft.chainId === ChainInfoID.Juno1 || nft.chainId === ChainInfoID.Uni6,
+  },
+  {
+    label: 'Only Stargaze',
+    value: (nft) =>
+      nft.chainId === ChainInfoID.Stargaze1 ||
+      nft.chainId === STARGAZE_TESTNET_CHAIN_ID,
+  },
 ]
