@@ -1,6 +1,8 @@
 import { Close, CopyAllOutlined } from '@mui/icons-material'
 import CircleIcon from '@mui/icons-material/Circle'
+import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
+import { useState } from 'react'
 import {
   Control,
   FieldArrayMethodProps,
@@ -13,12 +15,12 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { SuspenseLoader } from '@dao-dao/stateful'
 import { NewProposalForm } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalMultiple/types'
 import {
   ActionCardLoader,
   ActionSelector,
   Button,
+  DropdownIconButton,
   InputErrorMessage,
   TextAreaInput,
   TextInput,
@@ -31,6 +33,8 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'
+
+import { SuspenseLoader } from '../../../../../components'
 
 export interface MultipleChoiceOptionData {
   title: string
@@ -90,6 +94,12 @@ export const MultipleChoiceOption = <
     resetField,
   } = useFormContext<NewProposalForm>()
 
+  const [expanded, setExpanded] = useState(true)
+  const toggleExpanded = () => {
+    const newExpanded = !expanded
+    setExpanded(newExpanded)
+  }
+
   const optionActionData = watch(`choices.${optionIndex}.actionData`)
   const { append: appendAction, remove: removeAction } = useFieldArray({
     name: `choices.${optionIndex}.actionData`,
@@ -104,6 +114,11 @@ export const MultipleChoiceOption = <
           <div className="flex grow flex-col">
             <div className="flex flex-row items-center gap-3">
               <div className="h-auto w-12 pt-2">
+                <DropdownIconButton
+                  className="text-icon-primary"
+                  open={expanded}
+                  toggle={toggleExpanded}
+                />
                 <CircleIcon
                   className="h-3 w-3 align-middle"
                   style={{
@@ -136,87 +151,93 @@ export const MultipleChoiceOption = <
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-4 p-6 pt-5">
-          <p className="primary-text text-text-body">
-            {t('form.description')}
-            <span className="text-text-tertiary">
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              {' – '}
-              {t('info.supportsMarkdownFormat')}
-            </span>
-          </p>
+        <div className={clsx(!expanded && 'hidden')}>
+          <div className="flex flex-col gap-4 p-6 pt-5">
+            <p className="primary-text text-text-body">
+              {t('form.description')}
+              <span className="text-text-tertiary">
+                {/* eslint-disable-next-line i18next/no-literal-string */}
+                {' – '}
+                {t('info.supportsMarkdownFormat')}
+              </span>
+            </p>
 
-          <div className="flex flex-col">
-            <TextAreaInput
-              error={errors.choices?.[optionIndex]?.description}
-              fieldName={description}
-              placeholder={t('form.multipleChoiceOptionDescriptionPlaceholder')}
-              register={registerOption}
-              rows={5}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage
-              error={errors.choices?.[optionIndex]?.description}
-            />
-          </div>
-
-          <p className="title-text my-6 text-text-body">
-            {t('title.actions', { count: optionActionData?.length })}
-          </p>
-
-          {optionActionData?.length > 0 && (
-            <div className="mb-4 flex flex-col gap-1">
-              {optionActionData.map((actionData, actionIndex) => {
-                const Component =
-                  actionsWithData[actionData.key]?.action?.Component
-                if (!Component) {
-                  throw new Error(
-                    `Error detecting action type "${actionData.key}".`
-                  )
-                }
-
-                return (
-                  <SuspenseLoader
-                    key={actionIndex}
-                    fallback={<ActionCardLoader />}
-                  >
-                    <Component
-                      addAction={appendAction}
-                      allActionsWithData={optionActionData}
-                      data={actionData.data}
-                      errors={
-                        errors.choices?.[optionIndex]?.actionData?.[actionIndex]
-                          ?.data || {}
-                      }
-                      fieldNamePrefix={`choices.${optionIndex}.actionData.${actionIndex}.data.`}
-                      index={actionIndex}
-                      isCreating
-                      onRemove={() => {
-                        resetField(
-                          `choices.${optionIndex}.actionData.${actionIndex}.data.`,
-                          {
-                            defaultValue: {},
-                          }
-                        )
-                        removeAction(actionIndex)
-                      }}
-                    />
-                  </SuspenseLoader>
-                )
-              })}
-            </div>
-          )}
-          <div className="flex flex-row items-center gap-3">
-            <div className="flex shrink-0">
-              <ActionSelector
-                actions={actions}
-                onSelectAction={({ key }) => {
-                  appendAction({
-                    key,
-                    data: actionsWithData[key]?.defaults ?? {},
-                  })
-                }}
+            <div className="flex flex-col">
+              <TextAreaInput
+                error={errors.choices?.[optionIndex]?.description}
+                fieldName={description}
+                placeholder={t(
+                  'form.multipleChoiceOptionDescriptionPlaceholder'
+                )}
+                register={registerOption}
+                rows={5}
+                validation={[validateRequired]}
               />
+              <InputErrorMessage
+                error={errors.choices?.[optionIndex]?.description}
+              />
+            </div>
+
+            <p className="title-text my-6 text-text-body">
+              {t('title.actions', { count: optionActionData?.length })}
+            </p>
+
+            {optionActionData?.length > 0 && (
+              <div className="mb-4 flex flex-col gap-1">
+                {optionActionData.map((actionData, actionIndex) => {
+                  const Component =
+                    actionsWithData[actionData.key]?.action?.Component
+
+                  if (!Component) {
+                    throw new Error(
+                      `Error detecting action type "${actionData.key}".`
+                    )
+                  }
+
+                  return (
+                    <SuspenseLoader
+                      key={actionIndex}
+                      fallback={<ActionCardLoader />}
+                    >
+                      <Component
+                        addAction={appendAction}
+                        allActionsWithData={optionActionData}
+                        data={actionData.data}
+                        errors={
+                          errors.choices?.[optionIndex]?.actionData?.[
+                            actionIndex
+                          ]?.data || {}
+                        }
+                        fieldNamePrefix={`choices.${optionIndex}.actionData.${actionIndex}.data.`}
+                        index={actionIndex}
+                        isCreating
+                        onRemove={() => {
+                          resetField(
+                            `choices.${optionIndex}.actionData.${actionIndex}.data.`,
+                            {
+                              defaultValue: {},
+                            }
+                          )
+                          removeAction(actionIndex)
+                        }}
+                      />
+                    </SuspenseLoader>
+                  )
+                })}
+              </div>
+            )}
+            <div className="flex flex-row items-center gap-3">
+              <div className="flex shrink-0">
+                <ActionSelector
+                  actions={actions}
+                  onSelectAction={({ key }) => {
+                    appendAction({
+                      key,
+                      data: actionsWithData[key]?.defaults ?? {},
+                    })
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
