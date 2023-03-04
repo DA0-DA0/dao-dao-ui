@@ -74,6 +74,10 @@ export interface NftCardInfo {
   name: string
   description: string | undefined
   chainId: string
+
+  // This indicates whether or not the NFT is staked in a DAO. It is manually
+  // set in `walletStakedNftCardInfosSelector`.
+  staked?: boolean
 }
 
 export interface ProposalModule {
