@@ -100,6 +100,7 @@ export enum CommonError {
   BlockHeightTooLow = 'Block height is too low.',
   TxPageOutOfRange = 'Transaction page is out of range.',
   AuthorizationNotFound = 'Authorization does not exist.',
+  SignatureVerificationFailedLedger = 'Signature verification failed. If you are using a Ledger, this is likely due to unsupported symbols, such as "&", "<", or ">". Please remove these symbols from the proposal title or description and try again.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -155,6 +156,13 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     ['32603', 'page should be within', 'range', 'given'],
   ],
   [CommonError.AuthorizationNotFound]: ['authorization not found'],
+  [CommonError.SignatureVerificationFailedLedger]: [
+    [
+      'Broadcasting transaction failed',
+      'signature verification failed; please verify account number',
+      'unauthorized',
+    ],
+  ],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,
@@ -166,4 +174,6 @@ const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
 // them to Sentry even if we recognize them.
 const captureCommonErrorMap: Partial<Record<CommonError, boolean>> = {
   [CommonError.InvalidJSONResponse]: true,
+  // Send to Sentry so we can tell how much this is happening.
+  [CommonError.SignatureVerificationFailedLedger]: true,
 }
