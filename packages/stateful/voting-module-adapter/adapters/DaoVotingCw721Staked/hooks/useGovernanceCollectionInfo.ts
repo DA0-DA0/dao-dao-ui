@@ -5,9 +5,8 @@ import {
   Cw721BaseSelectors,
   DaoVotingCw721StakedSelectors,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
@@ -46,40 +45,34 @@ export const useGovernanceCollectionInfo = ({
   /// Optional
 
   // Wallet balance
-  const loadingWalletBalance = loadableToLoadingData(
-    useCachedLoadable(
-      fetchWalletBalance && walletAddress
-        ? Cw721BaseSelectors.allTokensForOwnerSelector({
-            contractAddress: collectionAddress,
-            owner: walletAddress,
-          })
-        : constSelector(undefined)
-    ),
+  const loadingWalletBalance = useCachedLoading(
+    fetchWalletBalance && walletAddress
+      ? Cw721BaseSelectors.allTokensForOwnerSelector({
+          contractAddress: collectionAddress,
+          owner: walletAddress,
+        })
+      : constSelector(undefined),
     undefined
   )
 
   // Treasury balance
-  const loadingTreasuryBalance = loadableToLoadingData(
-    useCachedLoadable(
-      fetchTreasuryBalance
-        ? Cw721BaseSelectors.allTokensForOwnerSelector({
-            contractAddress: collectionAddress,
-            owner: coreAddress,
-          })
-        : constSelector(undefined)
-    ),
+  const loadingTreasuryBalance = useCachedLoading(
+    fetchTreasuryBalance
+      ? Cw721BaseSelectors.allTokensForOwnerSelector({
+          contractAddress: collectionAddress,
+          owner: coreAddress,
+        })
+      : constSelector(undefined),
     undefined
   )
 
   // TODO(ICS721): get floor info from marketplace
   /*
   // Price info
-  const loadingPrice = loadableToLoadingData(
-    useCachedLoadable(
-      fetchUsdcPrice && governanceTokenInfo
-        ? wyndUsdPriceSelector(denom)
-        : constSelector(undefined)
-    ),
+  const loadingPrice = useCachedLoading(
+    fetchUsdcPrice && governanceTokenInfo
+      ? wyndUsdPriceSelector(denom)
+      : constSelector(undefined),
     undefined
   )
   */

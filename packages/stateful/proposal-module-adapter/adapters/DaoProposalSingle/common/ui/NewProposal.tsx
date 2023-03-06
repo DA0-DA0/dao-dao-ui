@@ -357,7 +357,7 @@ export const NewProposal = ({
 
         {showSubmitErrorNote && (
           <p className="secondary-text self-end text-right text-text-interactive-error">
-            {t('error.createProposalSubmitInvalid')}
+            {t('error.correctErrorsAbove')}
           </p>
         )}
 

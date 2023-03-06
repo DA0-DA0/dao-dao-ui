@@ -2,9 +2,10 @@ import { Sensors } from '@mui/icons-material'
 import { isMobile } from '@walletconnect/browser-utils'
 import { useTranslation } from 'react-i18next'
 
+import { ButtonProps } from '@dao-dao/types'
 import { MAINNET } from '@dao-dao/utils'
 
-import { Button, ButtonProps } from '../buttons'
+import { Button } from '../buttons'
 import { NoMobileWallet } from './NoMobileWallet'
 
 export interface ConnectWalletProps

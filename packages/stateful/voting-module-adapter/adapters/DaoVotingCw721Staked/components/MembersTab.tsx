@@ -14,14 +14,13 @@ import { useVotingModuleAdapterOptions } from '../../../react/context'
 export const MembersTab = () => {
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
-  const topStakers =
-    useRecoilValue(
-      DaoVotingCw721StakedSelectors.topStakersSelector({
-        contractAddress: votingModuleAddress,
-      })
-    ) ?? []
+  const topStakers = useRecoilValue(
+    DaoVotingCw721StakedSelectors.topStakersSelector({
+      contractAddress: votingModuleAddress,
+    })
+  )
 
-  const memberCards: StatefulDaoMemberCardProps[] = topStakers.map(
+  const memberCards: StatefulDaoMemberCardProps[] = (topStakers ?? []).map(
     ({ address, votingPowerPercent }) => ({
       address,
       votingPowerPercent: { loading: false, data: votingPowerPercent },
@@ -34,6 +33,7 @@ export const MembersTab = () => {
       DaoMemberCard={DaoMemberCard}
       isMember={false}
       members={memberCards}
+      membersFailedToLoad={!topStakers}
       topVoters={{
         show: true,
         EntityDisplay,

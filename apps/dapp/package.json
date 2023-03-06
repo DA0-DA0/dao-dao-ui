@@ -16,6 +16,7 @@
     "ts:watch": "ts --watch"
   },
   "dependencies": {
+    "@cosmjs/encoding": "0.29.3",
     "@dao-dao/i18n": "2.1.0-rc.1",
     "@dao-dao/state": "2.1.0-rc.1",
     "@dao-dao/stateful": "2.1.0-rc.1",

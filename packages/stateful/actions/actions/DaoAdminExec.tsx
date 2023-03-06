@@ -6,8 +6,8 @@ import { DaoCoreV2Selectors, walletAdminOfDaosSelector } from '@dao-dao/state'
 import { JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
-  ActionOptionsContextType,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -100,24 +100,24 @@ const Component: ActionComponent = (props) => {
   ])
 
   const daoSubDaosLoadable = useCachedLoadable(
-    context.type === ActionOptionsContextType.Dao
+    context.type === ActionContextType.Dao
       ? DaoCoreV2Selectors.listAllSubDaosSelector({
           contractAddress: address,
         })
       : undefined
   )
   const walletAdminOfDaosLoadable = useCachedLoadable(
-    context.type === ActionOptionsContextType.Wallet
+    context.type === ActionContextType.Wallet
       ? walletAdminOfDaosSelector(address)
       : undefined
   )
   const childDaosLoadable =
-    context.type === ActionOptionsContextType.Dao
+    context.type === ActionContextType.Dao
       ? daoSubDaosLoadable
       : walletAdminOfDaosLoadable
 
   const daoInfoLoadable = useRecoilValueLoadable(
-    context.type === ActionOptionsContextType.Dao
+    context.type === ActionContextType.Dao
       ? daoInfoSelector({
           coreAddress,
         })
@@ -136,7 +136,7 @@ const Component: ActionComponent = (props) => {
         : { loading: true },
   }
 
-  return context.type === ActionOptionsContextType.Dao ? (
+  return context.type === ActionContextType.Dao ? (
     daoInfoLoadable.state === 'hasValue' ? (
       <SuspenseLoader
         fallback={<InnerComponentLoading {...props} options={options} />}

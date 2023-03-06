@@ -2,9 +2,10 @@ import { InfoOutlined } from '@mui/icons-material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ButtonProps } from '@dao-dao/types'
 import { CHAIN_NAME } from '@dao-dao/utils'
 
-import { Button, ButtonProps } from '../buttons/Button'
+import { Button } from '../buttons/Button'
 import { Modal } from '../modals/Modal'
 
 export const NoMobileWallet = (

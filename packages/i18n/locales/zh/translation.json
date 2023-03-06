@@ -74,7 +74,6 @@
     "connectWalletToCreate": "连接钱包以创建DAO。",
     "couldntFindDAO": "我们找不到这个地址的DAO，在 <2>home page</2> 搜索DAO。",
     "couldntFindProposal": "我们找不到这个ID的提案， 查看所有的提案 <2>DAO's home page</2>",
-    "createProposalSubmitInvalid": "修正错误才能预览或发表。",
     "daoIsPaused": "DAO已暂停，不能创造提案。",
     "daoNotFound": "找不到DAO",
     "failedToGetTokenInfo": "查看代币信息失败。请输入正确的 {{tokenType}} 合约地址",

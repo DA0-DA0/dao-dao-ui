@@ -11,12 +11,8 @@ export interface PfpkWalletProfile {
 
 // Move `imageUrl` out of `NFT` in case we use the Keplr profile image API or a
 // fallback image as backup.
-export interface WalletProfile extends Omit<PfpkWalletProfile, 'nft'> {
+export interface WalletProfile extends PfpkWalletProfile {
   imageUrl: string
-  nft: {
-    tokenId: string
-    collectionAddress: string
-  } | null
 }
 
 export interface WalletProfileUpdate {

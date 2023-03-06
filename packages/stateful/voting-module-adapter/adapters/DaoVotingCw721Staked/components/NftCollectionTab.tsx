@@ -4,8 +4,11 @@ import { constSelector, waitForAll } from 'recoil'
 
 import { Cw721BaseSelectors } from '@dao-dao/state/recoil'
 import { stakerForNftSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoVotingCw721Staked'
-import { NftsTab, useCachedLoadable } from '@dao-dao/stateless'
-import { loadableToLoadingData } from '@dao-dao/utils'
+import {
+  NftsTab,
+  useCachedLoadable,
+  useCachedLoading,
+} from '@dao-dao/stateless'
 
 import { NftCardNoCollection, StakedNftCard } from '../../../../components'
 import { nftCardInfoSelector } from '../../../../recoil/selectors/nft'
@@ -28,59 +31,53 @@ export const NftCollectionTab = () => {
     })
   )
 
-  const nftCardInfosLoading = loadableToLoadingData(
-    useCachedLoadable(
-      allTokens.state === 'hasValue'
-        ? waitForAll(
-            allTokens.contents.map((tokenId) =>
-              nftCardInfoSelector({
-                collection: collectionAddress,
-                tokenId,
-              })
-            )
+  const nftCardInfosLoading = useCachedLoading(
+    allTokens.state === 'hasValue'
+      ? waitForAll(
+          allTokens.contents.map((tokenId) =>
+            nftCardInfoSelector({
+              collection: collectionAddress,
+              tokenId,
+            })
           )
-        : undefined
-    ),
+        )
+      : undefined,
     []
   )
 
-  const tokenOwners = loadableToLoadingData(
-    useCachedLoadable(
-      allTokens.state === 'hasValue'
-        ? waitForAll(
-            allTokens.contents.map((tokenId) =>
-              Cw721BaseSelectors.ownerOfSelector({
-                contractAddress: collectionAddress,
-                params: [
-                  {
-                    tokenId,
-                  },
-                ],
-              })
-            )
+  const tokenOwners = useCachedLoading(
+    allTokens.state === 'hasValue'
+      ? waitForAll(
+          allTokens.contents.map((tokenId) =>
+            Cw721BaseSelectors.ownerOfSelector({
+              contractAddress: collectionAddress,
+              params: [
+                {
+                  tokenId,
+                },
+              ],
+            })
           )
-        : undefined
-    ),
+        )
+      : undefined,
     []
   )
 
   // Show the owner by checking if owner is staking contract and using the
   // staker instead if so. If not staked with staking contract, use owner.
-  const stakerOrOwnerForTokens = loadableToLoadingData(
-    useCachedLoadable(
-      allTokens.state === 'hasValue' && !tokenOwners.loading
-        ? waitForAll(
-            allTokens.contents.map((tokenId, index) =>
-              tokenOwners.data[index].owner === stakingContractAddress
-                ? stakerForNftSelector({
-                    contractAddress: stakingContractAddress,
-                    tokenId,
-                  })
-                : constSelector(tokenOwners.data[index].owner)
-            )
+  const stakerOrOwnerForTokens = useCachedLoading(
+    allTokens.state === 'hasValue' && !tokenOwners.loading
+      ? waitForAll(
+          allTokens.contents.map((tokenId, index) =>
+            tokenOwners.data[index].owner === stakingContractAddress
+              ? stakerForNftSelector({
+                  contractAddress: stakingContractAddress,
+                  tokenId,
+                })
+              : constSelector(tokenOwners.data[index].owner)
           )
-        : undefined
-    ),
+        )
+      : undefined,
     []
   )
 

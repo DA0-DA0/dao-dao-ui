@@ -1,10 +1,6 @@
 import { queryIndexer } from '@dao-dao/state/indexer'
 import { ContractVersion, FetchPreProposeAddressFunction } from '@dao-dao/types'
-import {
-  SITE_URL,
-  cosmWasmClientRouter,
-  getRpcForChainId,
-} from '@dao-dao/utils'
+import { cosmWasmClientRouter, getRpcForChainId } from '@dao-dao/utils'
 
 import { DaoProposalSingleV2QueryClient } from '../contracts/DaoProposalSingle.v2.client'
 
@@ -24,11 +20,7 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
     creationPolicy = await queryIndexer(
       'contract',
       proposalModuleAddress,
-      'daoProposalSingle/creationPolicy',
-      {
-        // Needed for server-side queries.
-        baseUrl: SITE_URL,
-      }
+      'daoProposalSingle/creationPolicy'
     )
   } catch (err) {
     // Ignore error.

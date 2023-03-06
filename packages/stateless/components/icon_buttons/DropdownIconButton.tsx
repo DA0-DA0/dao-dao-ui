@@ -23,7 +23,7 @@ export const DropdownIconButton = forwardRef<
         iconClassName
       )}
       onClick={toggle}
-      size="xs"
+      size="sm"
       variant="ghost"
       {...props}
       ref={ref}

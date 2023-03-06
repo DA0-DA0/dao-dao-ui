@@ -94,3 +94,15 @@ export const refreshVestingAtom = atomFamily<number, string>({
   key: 'refreshVesting',
   default: 0,
 })
+
+// Change this to refresh saved TXs.
+export const refreshSavedTxsAtom = atom({
+  key: 'refreshSavedTxs',
+  default: 0,
+})
+
+// Change this to refresh hidden balances.
+export const refreshHiddenBalancesAtom = atom({
+  key: 'refreshHiddenBalances',
+  default: 0,
+})

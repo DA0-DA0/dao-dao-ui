@@ -11,7 +11,7 @@ import { validatorsSelector } from '@dao-dao/state/recoil'
 import {
   ActionCardLoader,
   LockWithKeyEmoji,
-  useCachedLoadable,
+  useCachedLoading,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -26,7 +26,6 @@ import {
   decodeRawProtobufMsg,
   encodeRawProtobufMsg,
   isDecodedStargateMsg,
-  loadableToLoadingData,
   makeStargateMessage,
 } from '@dao-dao/utils'
 
@@ -87,12 +86,10 @@ const useDefaults: UseDefaults<AuthzExecData> = () => ({
 const Component: ActionComponent = (props) => {
   const { chainId } = useActionOptions()
 
-  const loadingValidators = loadableToLoadingData(
-    useCachedLoadable(
-      validatorsSelector({
-        chainId,
-      })
-    ),
+  const loadingValidators = useCachedLoading(
+    validatorsSelector({
+      chainId,
+    }),
     []
   )
 

@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { WalletFiatRampModal } from '@dao-dao/stateful'
 import { makeAppContextDecorator } from '@dao-dao/storybook/decorators'
 
 import { RightSidebar, RightSidebarProps } from './RightSidebar'
@@ -24,7 +23,6 @@ export const DefaultArgs: RightSidebarProps = {
       {...(ConnectedSidebarWalletStory.args as SidebarWalletProps)}
     />
   ),
-  WalletFiatRampModal,
 }
 
 export const Default = Template.bind({})

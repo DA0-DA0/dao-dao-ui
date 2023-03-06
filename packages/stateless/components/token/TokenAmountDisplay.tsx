@@ -73,7 +73,7 @@ export type TokenAmountDisplayProps = Omit<
     // If USD estimate, disallow symbol and decimals since we'll use USDC's.
     | {
         symbol?: never
-        hideSymbol?: never
+        hideSymbol?: boolean
         decimals?: never
         estimatedUsdValue: true
       }

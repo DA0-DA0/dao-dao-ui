@@ -5,8 +5,7 @@ import toast from 'react-hot-toast'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import { Loader } from '@dao-dao/stateless'
-import { useCachedLoadable } from '@dao-dao/stateless/hooks/useCachedLoadable'
+import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import { ActionComponent, TokenType } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
@@ -16,7 +15,6 @@ import {
   convertDenomToMicroDenomWithDecimals,
   isValidAddress,
   isValidContractAddress,
-  loadableToLoadingData,
   nativeTokenDecimals,
   processError,
 } from '@dao-dao/utils'
@@ -39,7 +37,6 @@ export const InstantiateTokenSwap: ActionComponent<
   const { setValue } = useFormContext()
   const { address: walletAddress, signingCosmWasmClient } = useWallet()
 
-  // Load balances as loadables since they refresh automatically on a timer.
   const selfPartyTokenBalances = useTokenBalances()
 
   const [instantiating, setInstantiating] = useState(false)
@@ -227,21 +224,19 @@ const InnerInstantiateTokenSwap: ActionComponent<
   )
 
   // Load balances as loadables since they refresh automatically on a timer.
-  const counterpartyTokenBalances = loadableToLoadingData(
-    useCachedLoadable(
-      counterpartyAddress &&
-        isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX) &&
-        counterpartyDaoGovernanceTokenAddressLoadable.state !== 'loading'
-        ? genericTokenBalancesSelector({
-            address: counterpartyAddress,
-            cw20GovernanceTokenAddress:
-              counterpartyDaoGovernanceTokenAddressLoadable.state === 'hasValue'
-                ? counterpartyDaoGovernanceTokenAddressLoadable.contents
-                : undefined,
-            chainId,
-          })
-        : undefined
-    ),
+  const counterpartyTokenBalances = useCachedLoading(
+    counterpartyAddress &&
+      isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX) &&
+      counterpartyDaoGovernanceTokenAddressLoadable.state !== 'loading'
+      ? genericTokenBalancesSelector({
+          address: counterpartyAddress,
+          cw20GovernanceTokenAddress:
+            counterpartyDaoGovernanceTokenAddressLoadable.state === 'hasValue'
+              ? counterpartyDaoGovernanceTokenAddressLoadable.contents
+              : undefined,
+          chainId,
+        })
+      : undefined,
     []
   )
 

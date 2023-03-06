@@ -11,7 +11,7 @@ import { PropsWithChildren, ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { signingCosmWasmClientAtom, walletAddressAtom } from '@dao-dao/state'
+import { signingCosmWasmClientAtom } from '@dao-dao/state'
 import { Loader } from '@dao-dao/stateless'
 import {
   CHAIN_ID,
@@ -20,6 +20,9 @@ import {
   SITE_URL,
   STARGAZE_REST_ENDPOINT,
   STARGAZE_RPC_ENDPOINT,
+  STARGAZE_TESTNET_CHAIN_ID,
+  STARGAZE_TESTNET_REST_ENDPOINT,
+  STARGAZE_TESTNET_RPC_ENDPOINT,
   WC_ICON_PATH,
 } from '@dao-dao/utils'
 
@@ -49,6 +52,14 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
           ...ChainInfoMap[ChainInfoID.Stargaze1],
           rpc: STARGAZE_RPC_ENDPOINT,
           rest: STARGAZE_REST_ENDPOINT,
+        },
+        // Stargaze testnet.
+        {
+          ...ChainInfoMap[ChainInfoID.Stargaze1],
+          chainId: STARGAZE_TESTNET_CHAIN_ID,
+          chainName: 'Stargaze Testnet',
+          rpc: STARGAZE_TESTNET_RPC_ENDPOINT,
+          rest: STARGAZE_TESTNET_REST_ENDPOINT,
         },
       ]}
       classNames={{
@@ -107,19 +118,12 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
 
 const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   const setSigningCosmWasmClient = useSetRecoilState(signingCosmWasmClientAtom)
-  const setWalletAddress = useSetRecoilState(walletAddressAtom)
   const { signingCosmWasmClient, address } = useWallet()
 
   // Save address and client in recoil atom so it can be used by selectors.
   useEffect(() => {
     setSigningCosmWasmClient(signingCosmWasmClient)
-    setWalletAddress(address)
-  }, [
-    setSigningCosmWasmClient,
-    signingCosmWasmClient,
-    setWalletAddress,
-    address,
-  ])
+  }, [setSigningCosmWasmClient, signingCosmWasmClient, address])
 
   return <>{children}</>
 }
