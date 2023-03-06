@@ -11,7 +11,7 @@
     "@dao-dao/config": "^2.1.0-rc.1",
     "next-i18next": "^11.0.0",
     "pusher-js": "^7.6.0",
-    "react": "18.1.0",
+    "react": "^18.2.0",
     "react-hook-form": "7.20.4",
     "react-i18next": "^11.0.0",
     "recoil": "^0.7.2",
