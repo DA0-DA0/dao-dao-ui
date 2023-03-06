@@ -33,24 +33,25 @@ import {
   useDelegate,
   useUndelegate,
 } from '../../../../../hooks/contracts/CwVesting'
+import { VestingInfo } from '../../types'
 
 export type NativeStakingModalProps = Pick<
   StakingModalProps,
   'visible' | 'onClose'
 > & {
-  vestingContractAddress: string
+  vestingInfo: VestingInfo
   stakes: TokenStake[] | undefined
 }
 
 export const NativeStakingModal = ({
-  vestingContractAddress,
+  vestingInfo: { vestingContractAddress, remaining },
   stakes,
   ...props
 }: NativeStakingModalProps) => {
   const { t } = useTranslation()
   const { chainId } = useDaoInfoContext()
 
-  const vestingPaymentLoadable = useCachedLoadable(
+  const vestLoadable = useCachedLoadable(
     CwVestingSelectors.infoSelector({
       contractAddress: vestingContractAddress,
       chainId,
@@ -92,7 +93,7 @@ export const NativeStakingModal = ({
   })
 
   if (
-    vestingPaymentLoadable.state !== 'hasValue' ||
+    vestLoadable.state !== 'hasValue' ||
     validatorsLoadable.state !== 'hasValue'
   ) {
     return null
@@ -157,11 +158,7 @@ export const NativeStakingModal = ({
       loading={loading}
       loadingStakableTokens={{
         loading: false,
-        data: convertMicroDenomToDenomWithDecimals(
-          Number(vestingPaymentLoadable.contents.amount) -
-            Number(vestingPaymentLoadable.contents.staked_amount),
-          NATIVE_DECIMALS
-        ),
+        data: convertMicroDenomToDenomWithDecimals(remaining, NATIVE_DECIMALS),
       }}
       onAction={onAction}
       setAmount={setAmount}

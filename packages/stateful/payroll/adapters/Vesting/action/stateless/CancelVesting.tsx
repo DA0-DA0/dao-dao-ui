@@ -49,7 +49,7 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
   const cancellableVestingContracts = vestingInfos.loading
     ? undefined
     : vestingInfos.data.filter(
-        ({ owner, vestedAmount }) => owner === address && vestedAmount > 0
+        ({ owner, vested }) => owner === address && vested !== '0'
       )
 
   return (
@@ -63,9 +63,11 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
               {cancellableVestingContracts.map(
                 ({
                   vestingContractAddress,
-                  vest: vestingPayment,
-                  vestedAmount,
+                  vest,
                   token,
+                  vested,
+                  total,
+                  endDate,
                 }) => (
                   <Button
                     key={vestingContractAddress}
@@ -81,7 +83,7 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
                     <div className="grid auto-rows-auto grid-cols-[auto_1fr] items-center justify-items-start gap-y-2 gap-x-4 p-2">
                       <p className="secondary-text">{t('form.recipient')}:</p>
 
-                      <EntityDisplay address={vestingPayment.recipient} />
+                      <EntityDisplay address={vest.recipient} />
 
                       <p className="secondary-text">
                         {t('info.remainingBalanceVesting')}:
@@ -89,7 +91,7 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
 
                       <TokenAmountDisplay
                         amount={convertMicroDenomToDenomWithDecimals(
-                          vestedAmount,
+                          Number(total) - Number(vested),
                           token.decimals
                         )}
                         decimals={token.decimals}
@@ -97,23 +99,9 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
                         symbol={token.symbol}
                       />
 
-                      {'saturating_linear' in
-                        vestingPayment.vesting_schedule && (
-                        <>
-                          <p className="secondary-text">
-                            {t('form.finishDate')}:
-                          </p>
+                      <p className="secondary-text">{t('form.finishDate')}:</p>
 
-                          <p>
-                            {formatDateTimeTz(
-                              new Date(
-                                vestingPayment.vesting_schedule
-                                  .saturating_linear.max_x * 1000
-                              )
-                            )}
-                          </p>
-                        </>
-                      )}
+                      <p>{formatDateTimeTz(endDate)}</p>
                     </div>
                   </Button>
                 )

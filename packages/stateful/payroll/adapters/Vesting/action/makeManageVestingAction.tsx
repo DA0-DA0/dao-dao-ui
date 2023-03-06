@@ -3,7 +3,10 @@ import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { genericTokenSelector } from '@dao-dao/state/recoil'
+import {
+  genericTokenSelector,
+  nativeUnstakingDurationSecondsSelector,
+} from '@dao-dao/state/recoil'
 import {
   ActionCardLoader,
   MoneyWingsEmoji,
@@ -13,15 +16,18 @@ import {
 import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
-  ActionOptionsContextType,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { InstantiateMsg } from '@dao-dao/types/contracts/CwPayrollFactory'
-import { UncheckedVestingParams } from '@dao-dao/types/contracts/CwVesting'
+import {
+  ExecuteMsg,
+  InstantiateNativePayrollContractMsg,
+} from '@dao-dao/types/contracts/CwPayrollFactory'
+import { InstantiateMsg as VestingInstantiateMsg } from '@dao-dao/types/contracts/CwVesting'
 import {
   CHAIN_BECH32_PREFIX,
   NATIVE_DENOM,
@@ -68,7 +74,9 @@ const useDefaults: UseDefaults<ManageVestingData> = () => ({
     denomOrAddress: NATIVE_DENOM,
     recipient: '',
     startDate: '',
-    finishDate: '',
+    title: '',
+    // Default 1 year.
+    durationSeconds: 365 * 24 * 60 * 60,
   },
   cancel: {
     address: '',
@@ -226,13 +234,20 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
       ? vestingFactoryLoadable.contents
       : null
 
+  const nativeUnstakingDurationSecondsLoadable = useRecoilValueLoadable(
+    nativeUnstakingDurationSecondsSelector({
+      chainId,
+    })
+  )
+
   return useCallback(
     ({ creating, begin, cancel }: ManageVestingData) => {
       if (creating) {
         if (
           loadingTokenBalances.loading ||
           !vestingFactory ||
-          vestingFactoryOwner.loading
+          vestingFactoryOwner.loading ||
+          nativeUnstakingDurationSecondsLoadable.state !== 'hasValue'
         ) {
           return
         }
@@ -249,41 +264,37 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
           token.decimals
         ).toString()
 
-        const instantiateMsg: InstantiateMsg = {
+        const instantiateMsg: VestingInstantiateMsg = {
+          denom:
+            token.type === TokenType.Native
+              ? {
+                  native: token.denomOrAddress,
+                }
+              : {
+                  cw20: token.denomOrAddress,
+                },
+          description: begin.description || undefined,
           owner: vestingFactoryOwner.data,
-          params: {
-            amount,
-            denom:
-              token.type === TokenType.Native
-                ? {
-                    native: token.denomOrAddress,
-                  }
-                : {
-                    cw20: token.denomOrAddress,
-                  },
-            recipient: begin.recipient,
-            title: begin.title || undefined,
-            description: begin.description || undefined,
-            vesting_schedule: {
-              saturating_linear: {
-                min_x: !isNaN(Date.parse(begin.startDate))
-                  ? // milliseconds => seconds
-                    Math.round(new Date(begin.startDate).getTime() / 1000)
-                  : -1,
-                max_x: !isNaN(Date.parse(begin.finishDate))
-                  ? // milliseconds => seconds
-                    Math.round(new Date(begin.finishDate).getTime() / 1000)
-                  : -1,
-                min_y: amount,
-                max_y: '0',
-              },
-            },
-          },
+          recipient: begin.recipient,
+          schedule: 'saturating_linear',
+          start_time:
+            begin.startDate && !isNaN(Date.parse(begin.startDate))
+              ? // milliseconds => nanoseconds
+                Math.round(new Date(begin.startDate).getTime() * 1e6).toString()
+              : '',
+          title: begin.title,
+          total: amount,
+          unbonding_duration_seconds:
+            token.type === TokenType.Native &&
+            token.denomOrAddress === NATIVE_DENOM
+              ? nativeUnstakingDurationSecondsLoadable.contents
+              : 0,
+          vesting_duration_seconds: begin.durationSeconds,
         }
 
-        const msg = {
+        const msg: InstantiateNativePayrollContractMsg = {
           instantiate_msg: instantiateMsg,
-          label: `vest_to_${begin.recipient}`,
+          label: `vest_to_${begin.recipient}_${Date.now()}`,
         }
 
         if (token.type === TokenType.Native) {
@@ -294,7 +305,7 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
                 funds: coins(amount, token.denomOrAddress),
                 msg: {
                   instantiate_native_payroll_contract: msg,
-                },
+                } as ExecuteMsg,
               },
             },
           })
@@ -332,27 +343,24 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
         })
       }
     },
-    [loadingTokenBalances, vestingFactory, vestingFactoryOwner]
+    [
+      loadingTokenBalances,
+      nativeUnstakingDurationSecondsLoadable,
+      vestingFactory,
+      vestingFactoryOwner,
+    ]
   )
 }
 
 const instantiateStructure = {
   instantiate_msg: {
-    params: {
-      amount: {},
-      denom: {},
-      recipient: {},
-      title: {},
-      description: {},
-      vesting_schedule: {
-        saturating_linear: {
-          min_x: {},
-          max_x: {},
-          min_y: {},
-          max_y: {},
-        },
-      },
-    },
+    denom: {},
+    recipient: {},
+    schedule: {},
+    title: {},
+    total: {},
+    unbonding_duration_seconds: {},
+    vesting_duration_seconds: {},
   },
   label: {},
 }
@@ -432,23 +440,20 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
 
   const token = tokenLoadable.contents
   if (isBegin && token) {
-    let params: UncheckedVestingParams
+    let instantiateMsg: VestingInstantiateMsg
     if (isNativeBegin) {
-      params = (
-        msg.wasm.execute.msg.instantiate_native_payroll_contract
-          .instantiate_msg as InstantiateMsg
-      ).params
+      instantiateMsg =
+        msg.wasm.execute.msg.instantiate_native_payroll_contract.instantiate_msg
     }
     // isCw20Begin
     else {
-      // Extract instantiate message params from cw20 send message.
-      params = (
-        parseEncodedMessage(msg.wasm.execute.msg.send.msg)
-          .instantiate_payroll_contract.instantiate_msg as InstantiateMsg
-      ).params
+      // Extract instantiate message from cw20 send message.
+      instantiateMsg = parseEncodedMessage(msg.wasm.execute.msg.send.msg)
+        .instantiate_payroll_contract.instantiate_msg as VestingInstantiateMsg
     }
 
-    if (!('saturating_linear' in params.vesting_schedule)) {
+    // Can only render saturating linear vesting schedules.
+    if (instantiateMsg.schedule !== 'saturating_linear') {
       return { match: false }
     }
 
@@ -458,20 +463,22 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
         ...defaults,
         creating: true,
         begin: {
+          denomOrAddress: token.denomOrAddress,
+          description: instantiateMsg.description || undefined,
+          recipient: instantiateMsg.recipient,
+          schedule: instantiateMsg.schedule,
+          startDate: instantiateMsg.start_time
+            ? new Date(
+                // nanoseconds => milliseconds
+                Number(instantiateMsg.start_time) / 1e6
+              ).toLocaleString()
+            : undefined,
+          title: instantiateMsg.title,
           amount: convertMicroDenomToDenomWithDecimals(
-            params.amount,
+            instantiateMsg.total,
             token.decimals
           ),
-          denomOrAddress: token.denomOrAddress,
-          recipient: params.recipient,
-          title: params.title || undefined,
-          description: params.description || undefined,
-          startDate: new Date(
-            params.vesting_schedule.saturating_linear.min_x * 1000
-          ).toLocaleString(),
-          finishDate: new Date(
-            params.vesting_schedule.saturating_linear.max_x * 1000
-          ).toLocaleString(),
+          durationSeconds: instantiateMsg.vesting_duration_seconds,
         },
       },
     }
@@ -496,7 +503,7 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
   context,
 }) => {
   // Only available in DAO context.
-  if (context.type !== ActionOptionsContextType.Dao) {
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 

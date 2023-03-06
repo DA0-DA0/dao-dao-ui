@@ -10,16 +10,16 @@ import {
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { ContractVersion } from '@dao-dao/types'
+import { ActionContextType, ContractVersion } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionMaker,
-  ActionOptionsContextType,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { InstantiateMsg as VestingFactoryInstantiateMsg } from '@dao-dao/types/contracts/CwPayrollFactory'
 import {
   CODE_ID_CONFIG,
   DAO_CORE_PAYROLL_CONFIG_ITEM_KEY,
@@ -78,7 +78,7 @@ const Component: ActionComponent<undefined, ManagePayrollData> = (props) => {
         {
           owner: address,
           vesting_code_id: CODE_ID_CONFIG.CwVesting,
-        },
+        } as VestingFactoryInstantiateMsg,
         `DAO_${name}_VestingPayrollFactory`,
         'auto'
       )
@@ -125,7 +125,7 @@ export const makeManagePayrollAction: ActionMaker<ManagePayrollData> = ({
   context,
 }) => {
   // Can only manage payments in a DAO.
-  if (context.type !== ActionOptionsContextType.Dao) {
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 

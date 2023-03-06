@@ -1,15 +1,20 @@
 import { Binary, Expiration, Uint128 } from './common'
 import { InstantiateMsg as VestingInstantiateMsg } from './CwVesting'
 
+export type InstantiateMsg = {
+  owner?: string | null
+  vesting_code_id: number
+}
+export type InstantiateNativePayrollContractMsg = {
+  instantiate_msg: VestingInstantiateMsg
+  label: string
+}
 export type ExecuteMsg =
   | {
       receive: Cw20ReceiveMsg
     }
   | {
-      instantiate_native_payroll_contract: {
-        instantiate_msg: VestingInstantiateMsg
-        label: string
-      }
+      instantiate_native_payroll_contract: InstantiateNativePayrollContractMsg
     }
   | {
       update_code_id: {

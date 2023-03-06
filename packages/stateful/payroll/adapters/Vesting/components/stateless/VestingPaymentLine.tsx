@@ -8,7 +8,10 @@ import {
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import { StatefulEntityDisplayProps } from '@dao-dao/types'
-import { formatDate } from '@dao-dao/utils'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  formatDate,
+} from '@dao-dao/utils'
 
 import { VestingInfo } from '../../types'
 
@@ -27,15 +30,16 @@ export const VestingPaymentLine = ({
   const { t } = useTranslation()
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
 
-  const { vest, token, completed } = vestingInfo
-
-  const startDate = new Date(Number(vest.start_time) * 1000)
-  const endDate =
-    'saturating_linear' in vest.vesting_schedule
-      ? new Date(vest.vesting_schedule.saturating_linear.max_x * 1000)
-      : undefined
-
-  console.log(vest)
+  const {
+    vest,
+    token,
+    vested,
+    distributable,
+    total,
+    completed,
+    startDate,
+    endDate,
+  } = vestingInfo
 
   return (
     <div
@@ -60,9 +64,12 @@ export const VestingPaymentLine = ({
 
           <div className="hidden md:block">
             {/* Only show balance available to withdraw if nonzero. */}
-            {getWithdrawableAmount(vestingInfo) > 0 && (
+            {distributable !== '0' && (
               <TokenAmountDisplay
-                amount={getWithdrawableAmount(vestingInfo)}
+                amount={convertMicroDenomToDenomWithDecimals(
+                  distributable,
+                  token.decimals
+                )}
                 className="body-text truncate font-mono"
                 decimals={token.decimals}
                 symbol={token.symbol}
@@ -71,7 +78,7 @@ export const VestingPaymentLine = ({
           </div>
 
           <TokenAmountDisplay
-            amount={getTotalVestingAndVestedAmount(vestingInfo)}
+            amount={convertMicroDenomToDenomWithDecimals(total, token.decimals)}
             className="body-text truncate text-right font-mono"
             decimals={token.decimals}
             symbol={token.symbol}
@@ -93,7 +100,10 @@ export const VestingPaymentLine = ({
 
           <div className="body-text flex flex-row items-center justify-end gap-1 justify-self-end text-right font-mono">
             <TokenAmountDisplay
-              amount={getTotalVestedAmount(vestingInfo)}
+              amount={convertMicroDenomToDenomWithDecimals(
+                vested,
+                token.decimals
+              )}
               className="truncate"
               decimals={token.decimals}
               hideSymbol
@@ -102,7 +112,10 @@ export const VestingPaymentLine = ({
             <p>/</p>
 
             <TokenAmountDisplay
-              amount={getTotalVestingAndVestedAmount(vestingInfo)}
+              amount={convertMicroDenomToDenomWithDecimals(
+                total,
+                token.decimals
+              )}
               className="truncate"
               decimals={token.decimals}
               symbol={token.symbol}

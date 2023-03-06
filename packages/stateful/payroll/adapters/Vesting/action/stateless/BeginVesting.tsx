@@ -19,7 +19,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionOptionsContextType,
+  ActionContextType,
   AddressInputProps,
   GenericTokenBalance,
   LoadingData,
@@ -41,10 +41,10 @@ export type BeginVestingData = {
   amount: number
   denomOrAddress: string
   recipient: string
-  title?: string
+  title: string
   description?: string
-  startDate: string
-  finishDate: string
+  startDate?: string
+  durationSeconds: number
 }
 
 export type BeginVestingOptions = {
@@ -88,7 +88,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   const selectedSymbol = selectedToken?.token?.symbol ?? t('info.tokens')
 
   const insufficientBalanceI18nKey =
-    context.type === ActionOptionsContextType.Dao
+    context.type === ActionContextType.Dao
       ? 'error.cantSpendMoreThanTreasury'
       : 'error.insufficientWalletBalance'
 
@@ -244,12 +244,13 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
       </div>
 
       <div className="space-y-2">
-        <InputLabel name={t('form.titleOptional')} />
+        <InputLabel name={t('form.title')} />
         <TextInput
           disabled={!isCreating}
           error={errors?.title}
           fieldName={fieldNamePrefix + 'title'}
           register={register}
+          required
         />
         <InputErrorMessage error={errors?.title} />
       </div>

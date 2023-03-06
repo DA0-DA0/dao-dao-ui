@@ -419,7 +419,7 @@
     "symbol": "Symbol",
     "tierNameTitle": "Tier name",
     "tierNameTooltip": "The \"class\" of member. For example: \"Core developers\" or \"friends and family.\" These names are only for your reference.",
-    "titleOptional": "Title (optional)",
+    "title": "Title",
     "toValidator": "To validator",
     "tokenAddress": "Token address",
     "tokenContractAddressTitle": "Token contract address",

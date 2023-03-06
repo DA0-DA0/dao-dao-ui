@@ -5,13 +5,16 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { refreshVestingAtom } from '@dao-dao/state/recoil'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  useAddToken,
+  useCachedLoadable,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
   loadableToLoadingData,
   processError,
-  useAddToken,
 } from '@dao-dao/utils'
 
 import { ButtonLink } from '../../../../../components'
@@ -27,7 +30,6 @@ import {
 import { tokenCardLazyInfoSelector } from '../../../../../recoil'
 import { VestingInfo } from '../../types'
 import { VestingPaymentCard as StatelessVestingPaymentCard } from '../stateless/VestingPaymentCard'
-import { getWithdrawableAmount } from '../utils'
 import { NativeStakingModal } from './NativeStakingModal'
 
 export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
@@ -37,13 +39,16 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
 
   const {
     vestingContractAddress,
-    vest: vestingPayment,
-    vestedAmount,
+    vest,
     token,
+    distributable,
+    remaining,
+    startDate,
+    endDate,
   } = vestingInfo
 
   const recipientEntity = useEntity({
-    address: vestingPayment.recipient,
+    address: vest.recipient,
     chainId,
   })
 
@@ -53,11 +58,15 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
         walletAddress: vestingContractAddress,
         token,
         chainId,
+        // Unused. We just want the USD price and staking info.
+        unstakedBalance: 0,
       })
     ),
     {
       usdUnitPrice: undefined,
       stakingInfo: undefined,
+      // Unused. We just want the USD price and staking info.
+      totalBalance: 0,
     }
   )
 
@@ -82,7 +91,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const onWithdraw = async () => {
     setWithdrawing(true)
     try {
-      await distribute()
+      await distribute({})
       toast.success(t('success.withdrewPayment'))
 
       // Give time for indexer to update and then refresh.
@@ -126,12 +135,11 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     })
 
   const addToken = useAddToken()
-  const cw20Address =
-    'cw20' in vestingPayment.denom ? vestingPayment.denom.cw20 : undefined
+  const cw20Address = 'cw20' in vest.denom ? vest.denom.cw20 : undefined
   const onAddToken =
     addToken && cw20Address ? () => addToken(cw20Address) : undefined
 
-  const recipientIsWallet = vestingPayment.recipient === walletAddress
+  const recipientIsWallet = vest.recipient === walletAddress
 
   const [showStakingModal, setShowStakingModal] = useState(false)
 
@@ -140,19 +148,17 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
       <StatelessVestingPaymentCard
         ButtonLink={ButtonLink}
         claimedAmount={convertMicroDenomToDenomWithDecimals(
-          vestingPayment.claimed_amount,
+          vest.claimed,
           token.decimals
         )}
         claiming={claiming}
         cw20Address={cw20Address}
-        description={vestingPayment.description}
-        endDate={
-          'saturating_linear' in vestingPayment.vesting_schedule
-            ? new Date(
-                vestingPayment.vesting_schedule.saturating_linear.max_x * 1000
-              )
-            : undefined
-        }
+        description={vest.description}
+        distributableAmount={convertMicroDenomToDenomWithDecimals(
+          distributable,
+          token.decimals
+        )}
+        endDate={endDate}
         lazyInfo={lazyInfoLoading}
         onAddToken={onAddToken}
         onClaim={onClaim}
@@ -160,23 +166,16 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
           recipientIsWallet ? () => setShowStakingModal(true) : undefined
         }
         onWithdraw={onWithdraw}
-        recipient={vestingPayment.recipient}
+        recipient={vest.recipient}
         recipientEntity={recipientEntity}
         recipientIsWallet={recipientIsWallet}
         remainingBalanceVesting={convertMicroDenomToDenomWithDecimals(
-          vestedAmount,
+          remaining,
           token.decimals
         )}
-        startDate={
-          'saturating_linear' in vestingPayment.vesting_schedule
-            ? new Date(
-                vestingPayment.vesting_schedule.saturating_linear.min_x * 1000
-              )
-            : undefined
-        }
-        title={vestingPayment.title}
+        startDate={startDate}
+        title={vest.title}
         token={token}
-        withdrawableAmount={getWithdrawableAmount(vestingInfo)}
         withdrawing={withdrawing}
       />
 
@@ -188,7 +187,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
               ? undefined
               : lazyInfoLoading.data.stakingInfo?.stakes
           }
-          vestingContractAddress={vestingContractAddress}
+          vestingInfo={vestingInfo}
           visible={showStakingModal}
         />
       )}

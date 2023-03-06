@@ -2,14 +2,12 @@ import { Add } from '@mui/icons-material'
 import { ComponentType, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DropdownIconButton, Loader, Modal, Tooltip } from '@dao-dao/stateless'
 import {
   ButtonLinkProps,
-  DropdownIconButton,
-  Loader,
-  Modal,
-  Tooltip,
-} from '@dao-dao/stateless'
-import { LoadingData, StatefulEntityDisplayProps } from '@dao-dao/types'
+  LoadingData,
+  StatefulEntityDisplayProps,
+} from '@dao-dao/types'
 
 import { VestingInfo } from '../../types'
 import { VestingPaymentLine } from './VestingPaymentLine'

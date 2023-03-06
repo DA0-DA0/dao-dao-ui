@@ -12,9 +12,7 @@ import TimeAgo from 'react-timeago'
 
 import {
   Button,
-  ButtonLinkProps,
   ButtonPopup,
-  ButtonPopupSection,
   ChartEmoji,
   DepositEmoji,
   EntityDisplay,
@@ -30,6 +28,8 @@ import {
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
+  ButtonLinkProps,
+  ButtonPopupSection,
   Entity,
   GenericToken,
   LoadingData,
@@ -56,7 +56,7 @@ export interface VestingPaymentCardProps {
   title: string | undefined | null
   description: string | undefined | null
   remainingBalanceVesting: number
-  withdrawableAmount: number
+  distributableAmount: number
   claimedAmount: number
   startDate?: Date
   endDate?: Date
@@ -86,7 +86,7 @@ export const VestingPaymentCard = ({
   title,
   description,
   remainingBalanceVesting,
-  withdrawableAmount,
+  distributableAmount,
   claimedAmount,
   startDate,
   endDate,
@@ -144,6 +144,7 @@ export const VestingPaymentCard = ({
                 {
                   Icon: MoneyEmoji,
                   label: t('button.withdrawAvailableBalance'),
+                  closeOnClick: false,
                   onClick: onWithdraw,
                   loading: withdrawing,
                 },
@@ -152,6 +153,7 @@ export const VestingPaymentCard = ({
                       {
                         Icon: ChartEmoji,
                         label: t('button.stakeOrUnstake'),
+                        closeOnClick: true,
                         onClick: onManageStake,
                       },
                     ]
@@ -161,6 +163,7 @@ export const VestingPaymentCard = ({
                       {
                         Icon: DepositEmoji,
                         label: t('button.claimStakingRewards'),
+                        closeOnClick: false,
                         onClick: onClaim,
                         loading: claiming,
                       },
@@ -180,6 +183,7 @@ export const VestingPaymentCard = ({
                       {
                         Icon: copied ? Check : CopyAll,
                         label: t('button.copyAddressToClipboard'),
+                        closeOnClick: false,
                         onClick: () => {
                           if (!cw20Address) {
                             return
@@ -197,6 +201,7 @@ export const VestingPaymentCard = ({
                       {
                         Icon: Add,
                         label: t('button.addToKeplr'),
+                        closeOnClick: false,
                         onClick: onAddToken,
                       },
                     ]
@@ -277,7 +282,6 @@ export const VestingPaymentCard = ({
                     {...props}
                   />
                 )}
-                dontCloseOnClick
                 popupClassName="w-[16rem]"
                 position="left"
                 sections={buttonPopupSections}
@@ -376,7 +380,7 @@ export const VestingPaymentCard = ({
         )}
 
         <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
-          {withdrawableAmount > 0 && (
+          {distributableAmount > 0 && (
             <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.availableBalance')}</p>
 
@@ -384,7 +388,7 @@ export const VestingPaymentCard = ({
               <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
                 {/* leading-5 to match link-text's line-height. */}
                 <TokenAmountDisplay
-                  amount={withdrawableAmount}
+                  amount={distributableAmount}
                   className="leading-5 text-text-body"
                   decimals={token.decimals}
                   symbol={token.symbol}
@@ -397,7 +401,7 @@ export const VestingPaymentCard = ({
                         amount={
                           lazyInfo.loading
                             ? { loading: true }
-                            : withdrawableAmount *
+                            : distributableAmount *
                               lazyInfo.data.usdUnitPrice!.amount
                         }
                         dateFetched={

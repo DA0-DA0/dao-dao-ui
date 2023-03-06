@@ -137,6 +137,9 @@ export const vestingInfoSelector = selectorFamily<
           })
         ).owner || undefined
 
+      // TODO: Get
+      const vested = '0'
+
       const distributable = get(
         CwVestingSelectors.distributableSelector({
           contractAddress: vestingContractAddress,
@@ -190,6 +193,7 @@ export const vestingInfoSelector = selectorFamily<
         vest,
         token,
         owner,
+        vested,
         distributable,
         total,
         remaining,

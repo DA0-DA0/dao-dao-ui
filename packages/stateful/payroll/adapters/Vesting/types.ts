@@ -6,6 +6,8 @@ export type VestingInfo = {
   vest: Vest
   token: GenericToken
   owner: string | undefined
+  // Amount vested so far.
+  vested: string
   // Amount available to distribute.
   distributable: string
   // Total amount being vested.

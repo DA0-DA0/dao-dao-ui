@@ -50,7 +50,7 @@ Default.args = {
   onManageStake: () => alert('manage stake'),
   onAddToken: () => alert('add token'),
   remainingBalanceVesting: 401239.5123,
-  withdrawableAmount: 1942.7984,
+  distributableAmount: 1942.7984,
   claimedAmount: 39.234,
   // Started 2 days ago.
   startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
