@@ -100,7 +100,7 @@ export enum CommonError {
   BlockHeightTooLow = 'Block height is too low.',
   TxPageOutOfRange = 'Transaction page is out of range.',
   AuthorizationNotFound = 'Authorization does not exist.',
-  SignatureVerificationFailedLedger = 'Signature verification failed. If you are using a Ledger, this is likely due to unsupported symbols, such as "&", "<", or ">". Please remove these symbols from the proposal title or description and try again.',
+  SignatureVerificationFailedLedger = 'Signature verification failed. If you are using a Ledger, this is likely due to some unsupported symbols, such as "&", "<", or ">". Remove these symbols from the proposal title or description and try again.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
