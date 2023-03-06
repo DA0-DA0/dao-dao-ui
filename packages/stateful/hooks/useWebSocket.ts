@@ -118,14 +118,14 @@ type OnMessageFallback = (
 ) => void
 
 // Listens for messages from the WebSocket on all channels provided and calls
-// the callback if a received message type matches the expected type. Returns
+// the callback if a received message type matches the expected type(s). Returns
 // whether or not the listener is currently active and a fallback function. By
 // default, the fallback function will call the callback function if the
 // listener is not listening, and after waiting for the next block. Its behavior
 // can be customized with its options arguments.
 export const useOnWebSocketMessage = (
   channelNames: string[],
-  expectedType: string,
+  expectedTypeOrTypes: string | string[],
   onMessage: OnMessageCallback,
   // If passed, will be used as the default data for the fallback function
   // returned. The returned fallback function optionally allows passing data
@@ -158,7 +158,10 @@ export const useOnWebSocketMessage = (
           type: {},
           data: {},
         }) &&
-        data.type === expectedType
+        ((typeof expectedTypeOrTypes === 'string' &&
+          data.type === expectedTypeOrTypes) ||
+          (Array.isArray(expectedTypeOrTypes) &&
+            expectedTypeOrTypes.includes(data.type)))
       ) {
         callbackRef.current(data.data)
       }
@@ -172,7 +175,7 @@ export const useOnWebSocketMessage = (
       channels.forEach((channel) => channel.unbind('broadcast', handler))
       setListening(false)
     }
-  }, [channels, expectedType])
+  }, [channels, expectedTypeOrTypes])
 
   const awaitNextBlock = useAwaitNextBlock()
 

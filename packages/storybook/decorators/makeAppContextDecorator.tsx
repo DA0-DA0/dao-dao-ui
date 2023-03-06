@@ -70,6 +70,7 @@ export const EMPTY_INBOX: InboxState = {
   loading: false,
   refreshing: false,
   daosWithItems: [],
-  itemCount: 0,
+  pendingItemCount: 0,
+  totalItemCount: 0,
   refresh: async () => alert('refetch inbox'),
 }

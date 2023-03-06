@@ -25,7 +25,7 @@ export const Default = Template.bind({})
 Default.args = {
   walletProfileData: WALLET_PROFILE_DATA,
   tokenSymbol: 'JUNO',
-  inboxProposalCount: 5,
+  inboxPendingCount: 5,
   lazyData: {
     loading: false,
     data: {

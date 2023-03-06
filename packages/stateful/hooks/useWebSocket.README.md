@@ -37,10 +37,10 @@ and `data` (an object).
 
 This hook accepts two required arguments and 1 optional argument:
 
-- `expectedType` (required, string): The type of message you're expecting to
-  receive.
+- `expectedTypeOrTypes` (required, string or string array): The type or types of
+  message you're expecting to receive.
 - `onMessage` (required, function): A callback function that will be called when
-  a message is received if its contained `type` matches the `expectedType`. It
+  a message is received if its contained `type` matches the expected type(s). It
   will be passed the `data` object from the message payload.
 - `defaultFallbackData` (optional, object): This only makes sense after the
   hook's response is explained, below. Keep reading.

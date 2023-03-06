@@ -39,7 +39,9 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
           })
     )
 
-    // Refresh when any proposal is updated for any of the DAOs.
+    // Refresh when any proposal or vote is updated for any of the DAOs. Once
+    // the wallet votes, the item is no longer pending, so the inbox pending
+    // count needs to be updated.
     useOnWebSocketMessage(
       daosWithItemsLoadable.state === 'hasValue' && chainInfo
         ? daosWithItemsLoadable.contents.map(({ coreAddress }) =>
@@ -49,7 +51,7 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
             })
           )
         : [],
-      'proposal',
+      ['proposal', 'vote'],
       refresh
     )
 
