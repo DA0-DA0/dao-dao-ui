@@ -165,11 +165,9 @@ export const DappNavigation = ({
       >
         <PageHeader
           centerNode={
-            <Link href="/">
-              <a className="flex flex-row items-center gap-2">
-                <Logo size={32} />
-                {!compact && <p className="header-text">{t('meta.title')}</p>}
-              </a>
+            <Link className="flex flex-row items-center gap-2" href="/">
+              <Logo size={32} />
+              {!compact && <p className="header-text">{t('meta.title')}</p>}
             </Link>
           }
           forceCenter={compact}

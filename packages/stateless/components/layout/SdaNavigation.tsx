@@ -143,29 +143,28 @@ export const SdaNavigation = ({
       >
         <PageHeader
           centerNode={
-            <Link href={getDaoPath(daoInfo.coreAddress)}>
-              <a
-                className={clsx(
-                  'flex flex-row items-center gap-2 overflow-hidden',
-                  // Make room for rightNode switch button.
-                  daoDaoPath && !compact && 'px-12 sm:pl-0'
-                )}
-              >
-                <DaoImage
-                  LinkWrapper={LinkWrapper}
-                  coreAddress={daoInfo.coreAddress}
-                  daoName={daoInfo.name}
-                  hideRing
-                  imageUrl={daoInfo.imageUrl}
-                  size="md"
-                />
+            <Link
+              className={clsx(
+                'flex flex-row items-center gap-2 overflow-hidden',
+                // Make room for rightNode switch button.
+                daoDaoPath && !compact && 'px-12 sm:pl-0'
+              )}
+              href={getDaoPath(daoInfo.coreAddress)}
+            >
+              <DaoImage
+                LinkWrapper={LinkWrapper}
+                coreAddress={daoInfo.coreAddress}
+                daoName={daoInfo.name}
+                hideRing
+                imageUrl={daoInfo.imageUrl}
+                size="md"
+              />
 
-                {!compact && (
-                  <Tooltip title={daoInfo.name}>
-                    <p className="header-text truncate">{daoInfo.name}</p>
-                  </Tooltip>
-                )}
-              </a>
+              {!compact && (
+                <Tooltip title={daoInfo.name}>
+                  <p className="header-text truncate">{daoInfo.name}</p>
+                </Tooltip>
+              )}
             </Link>
           }
           forceCenter={compact}
