@@ -74,6 +74,7 @@ export const inboxOpenProposalsSelector = selectorFamily<
                     ({
                       id,
                       proposal: { expiration },
+                      voted,
                     }): InboxSourceItem<ProposalLineProps> => ({
                       props: {
                         chainId: CHAIN_ID,
@@ -86,6 +87,7 @@ export const inboxOpenProposalsSelector = selectorFamily<
                           `${proposalModule.prefix}${id}`
                         ),
                       },
+                      pending: !voted,
                       order: convertExpirationToDate(
                         blocksPerYear,
                         expiration,

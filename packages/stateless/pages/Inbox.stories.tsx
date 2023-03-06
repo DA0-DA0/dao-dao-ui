@@ -40,10 +40,12 @@ Default.args = {
             return {
               Renderer: ProposalLine,
               props: makeProposalLineProps(secondsRemaining),
+              pending: true,
             }
           }),
         })),
-    itemCount: 42,
+    pendingItemCount: 42,
+    totalItemCount: 100,
     refresh: () => {},
   },
   rightSidebarContent: (
@@ -68,7 +70,8 @@ Loading.args = {
     loading: true,
     refreshing: false,
     daosWithItems: [],
-    itemCount: 0,
+    pendingItemCount: 0,
+    totalItemCount: 0,
     refresh: () => {},
   },
 }
@@ -80,7 +83,8 @@ NothingOpen.args = {
     loading: false,
     refreshing: false,
     daosWithItems: [],
-    itemCount: 0,
+    pendingItemCount: 0,
+    totalItemCount: 0,
     refresh: () => {},
   },
 }
@@ -92,7 +96,8 @@ NothingFollowed.args = {
     loading: false,
     refreshing: false,
     daosWithItems: [],
-    itemCount: 0,
+    pendingItemCount: 0,
+    totalItemCount: 0,
     refresh: () => {},
   },
 }

@@ -21,6 +21,8 @@ export const PendingFollowing: InboxSource<{ coreAddress: string }> = {
                 props: { coreAddress },
                 // Order pending following items first in the inbox.
                 order: 0,
+                // All are pending.
+                pending: true,
               },
             ],
           })),
