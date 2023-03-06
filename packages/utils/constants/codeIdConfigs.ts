@@ -19,7 +19,7 @@ const junoTestnet: CodeIdConfig = {
   DaoVotingNativeStaked: 175,
   CwTokenSwap: 161,
   CwPayrollFactory: 160,
-  CwVesting: 162,
+  CwVesting: 521,
 }
 
 // ContractVersion.V2: 2.0.1
@@ -39,8 +39,8 @@ const junoMainnet: CodeIdConfig = {
   DaoVotingCw721Staked: 1697,
   DaoVotingNativeStaked: 1698,
   CwTokenSwap: 1687,
-  CwPayrollFactory: 1770,
-  CwVesting: 1771,
+  CwPayrollFactory: -1,
+  CwVesting: -1,
 }
 
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {
