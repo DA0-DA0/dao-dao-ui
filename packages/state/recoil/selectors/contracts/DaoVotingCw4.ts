@@ -32,6 +32,7 @@ export const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new DaoVotingCw4QueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export type ExecuteClientParams = {

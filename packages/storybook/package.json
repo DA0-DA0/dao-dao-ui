@@ -31,7 +31,7 @@
     "path": "^0.12.7",
     "postcss": "^8.4.16",
     "postcss-loader": "^7.0.1",
-    "react": "18.1.0",
+    "react": "^18.2.0",
     "react-hook-form": "7.20.4",
     "react-i18next": "^11.0.0",
     "recoil": "^0.7.2",
