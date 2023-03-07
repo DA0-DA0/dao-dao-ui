@@ -28,6 +28,7 @@ export const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new Cw4GroupQueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export const adminSelector = selectorFamily<

@@ -32,6 +32,7 @@ const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new DaoVotingCw20StakedQueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export const stakingContractSelector = selectorFamily<
