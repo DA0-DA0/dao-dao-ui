@@ -26,7 +26,7 @@ export const SubDaosTab = () => {
   )
 
   // TODO(v2): Add v1 to v2 migrate action.
-  // const encodedProposalPrefillUpgrade = useEncodedDaoProposalSinglePrefill({
+  // const proposalPrefillUpgrade = useDaoProposalSinglePrefill({
   //   actions: [],
   // })
 
@@ -39,7 +39,7 @@ export const SubDaosTab = () => {
       isMember={isMember}
       subDaos={subDaos}
       // upgradeToV2Href={getDaoProposalPath(daoInfo.coreAddress, 'create', {
-      //   prefill: encodedProposalPrefillUpgrade,
+      //   prefill: proposalPrefillUpgrade,
       // })}
     />
   )

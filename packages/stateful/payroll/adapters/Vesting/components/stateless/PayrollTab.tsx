@@ -1,8 +1,14 @@
-import { Add } from '@mui/icons-material'
+import { Add, WarningRounded } from '@mui/icons-material'
 import { ComponentType, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DropdownIconButton, Loader, Modal, Tooltip } from '@dao-dao/stateless'
+import {
+  DropdownIconButton,
+  Loader,
+  Modal,
+  NoContent,
+  Tooltip,
+} from '@dao-dao/stateless'
 import {
   ButtonLinkProps,
   LoadingData,
@@ -15,7 +21,7 @@ import { VestingPaymentLine } from './VestingPaymentLine'
 export interface PayrollTabProps {
   vestingPaymentsLoading: LoadingData<VestingInfo[]>
   isMember: boolean
-  createVestingPaymentHref: string
+  createVestingPaymentHref: string | undefined
   ButtonLink: ComponentType<ButtonLinkProps>
   VestingPaymentCard: ComponentType<VestingInfo>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
@@ -43,21 +49,27 @@ export const PayrollTab = ({
   const [showingCompleted, setShowingCompleted] = useState(false)
 
   const [vestingPaymentModalOpen, setVestingPaymentModalOpen] = useState(false)
-  const [openVestingPayment, setOpenVestingPayment] = useState<
-    VestingInfo | undefined
+  const [openVestingContract, setOpenVestingContract] = useState<
+    string | undefined
   >()
+  const openVestingPayment = vestingPaymentsLoading.loading
+    ? undefined
+    : vestingPaymentsLoading.data.find(
+        ({ vestingContractAddress }) =>
+          vestingContractAddress === openVestingContract
+      )
   // Wait for modal to close before clearing the open vesting payment to prevent
   // UI flicker.
   useEffect(() => {
     if (!vestingPaymentModalOpen) {
-      const timeout = setTimeout(() => setOpenVestingPayment(undefined), 200)
+      const timeout = setTimeout(() => setOpenVestingContract(undefined), 200)
       return () => clearTimeout(timeout)
     }
   }, [vestingPaymentModalOpen])
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-row items-center justify-between gap-8 border-b border-border-secondary pb-6">
+      <div className="flex flex-row items-center justify-between gap-8">
         <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-1">
           <p className="title-text text-text-body">
             {t('title.vestingPayments')}
@@ -68,29 +80,31 @@ export const PayrollTab = ({
           </p>
         </div>
 
-        <Tooltip
-          title={
-            !isMember
-              ? t('error.mustBeMemberToCreateVestingPayment')
-              : undefined
-          }
-        >
-          <ButtonLink
-            className="shrink-0"
-            disabled={!isMember}
-            href={createVestingPaymentHref}
+        {createVestingPaymentHref && (
+          <Tooltip
+            title={
+              !isMember
+                ? t('error.mustBeMemberToCreateVestingPayment')
+                : undefined
+            }
           >
-            <Add className="!h-4 !w-4" />
-            {t('button.newVestingPayment')}
-          </ButtonLink>
-        </Tooltip>
+            <ButtonLink
+              className="shrink-0"
+              disabled={!isMember}
+              href={createVestingPaymentHref}
+            >
+              <Add className="!h-4 !w-4" />
+              {t('button.newVestingPayment')}
+            </ButtonLink>
+          </Tooltip>
+        )}
       </div>
 
-      <div className="mb-9 space-y-6">
+      <div className="mb-9">
         {vestingPaymentsLoading.loading || !vestingPaymentsLoading.data ? (
           <Loader fill={false} />
         ) : vestingPaymentsLoading.data.length ? (
-          <>
+          <div className="space-y-6 border-t border-border-secondary pt-6">
             {activeVestingPayments.length > 0 && (
               <div className="space-y-1">
                 <div className="secondary-text mb-4 mt-2 grid grid-cols-2 items-center gap-4 px-4 md:grid-cols-[2fr_3fr_3fr_4fr]">
@@ -108,7 +122,7 @@ export const PayrollTab = ({
                     EntityDisplay={EntityDisplay}
                     onClick={() => {
                       setVestingPaymentModalOpen(true)
-                      setOpenVestingPayment(props)
+                      setOpenVestingContract(props.vestingContractAddress)
                     }}
                     transparentBackground={index % 2 !== 0}
                     {...props}
@@ -154,7 +168,7 @@ export const PayrollTab = ({
                         EntityDisplay={EntityDisplay}
                         onClick={() => {
                           setVestingPaymentModalOpen(true)
-                          setOpenVestingPayment(props)
+                          setOpenVestingContract(props.vestingContractAddress)
                         }}
                         transparentBackground={index % 2 !== 0}
                         {...props}
@@ -164,9 +178,15 @@ export const PayrollTab = ({
                 )}
               </div>
             )}
-          </>
+          </div>
         ) : (
-          <p className="secondary-text">{t('info.nothingFound')}</p>
+          <NoContent
+            Icon={WarningRounded}
+            actionNudge={t('info.createFirstOneQuestion')}
+            body={t('info.noVestingPaymentsFound')}
+            buttonLabel={t('button.create')}
+            href={createVestingPaymentHref}
+          />
         )}
       </div>
 

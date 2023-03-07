@@ -58,8 +58,8 @@ export interface VestingPaymentCardProps {
   remainingBalanceVesting: number
   distributableAmount: number
   claimedAmount: number
-  startDate?: Date
-  endDate?: Date
+  startDate: Date
+  endDate: Date
 
   // Defined if using a Cw20 token.
   cw20Address?: string
@@ -238,7 +238,14 @@ export const VestingPaymentCard = ({
 
   const now = new Date()
 
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
+  const startTimeAgoFormatter = useTranslatedTimeDeltaFormatter({
+    words: true,
+    futureMode: 'in',
+  })
+  const endTimeAgoFormatter = useTranslatedTimeDeltaFormatter({
+    words: true,
+    futureMode: 'left',
+  })
 
   return (
     <>
@@ -333,51 +340,45 @@ export const VestingPaymentCard = ({
           </div>
         )}
 
-        {(startDate || endDate) && (
-          <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
-            {startDate && (
-              <div className="flex flex-row items-start justify-between gap-8">
-                <p className="link-text">
-                  {startDate > now ? t('info.startsAt') : t('info.startedAt')}
+        <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
+          <div className="flex flex-row items-start justify-between gap-8">
+            <p className="link-text">
+              {endDate > now ? t('title.start') : t('info.startedAt')}
+            </p>
+
+            {/* leading-5 to match link-text's line-height. */}
+            {endDate > now ? (
+              <Tooltip title={formatDateTimeTz(startDate)}>
+                <p className="caption-text leading-5 text-text-body">
+                  <TimeAgo date={startDate} formatter={startTimeAgoFormatter} />
                 </p>
-
-                {/* leading-5 to match link-text's line-height. */}
-                {endDate && endDate <= now ? (
-                  <p className="caption-text leading-5 text-text-body">
-                    {formatDateTimeTz(startDate)}
-                  </p>
-                ) : (
-                  <Tooltip title={formatDateTimeTz(startDate)}>
-                    <p className="caption-text leading-5 text-text-body">
-                      <TimeAgo date={startDate} formatter={timeAgoFormatter} />
-                    </p>
-                  </Tooltip>
-                )}
-              </div>
-            )}
-
-            {endDate && (
-              <div className="flex flex-row items-start justify-between gap-8">
-                <p className="link-text">
-                  {endDate > now ? t('info.finishesAt') : t('info.finishedAt')}
-                </p>
-
-                {/* leading-5 to match link-text's line-height. */}
-                {endDate > now ? (
-                  <Tooltip title={formatDateTimeTz(endDate)}>
-                    <p className="caption-text leading-5 text-text-body">
-                      <TimeAgo date={endDate} formatter={timeAgoFormatter} />
-                    </p>
-                  </Tooltip>
-                ) : (
-                  <p className="caption-text leading-5 text-text-body">
-                    {formatDateTimeTz(endDate)}
-                  </p>
-                )}
-              </div>
+              </Tooltip>
+            ) : (
+              <p className="caption-text leading-5 text-text-body">
+                {formatDateTimeTz(startDate)}
+              </p>
             )}
           </div>
-        )}
+
+          <div className="flex flex-row items-start justify-between gap-8">
+            <p className="link-text">
+              {endDate > now ? t('title.timeRemaining') : t('info.finishedAt')}
+            </p>
+
+            {/* leading-5 to match link-text's line-height. */}
+            {endDate > now ? (
+              <Tooltip title={formatDateTimeTz(endDate)}>
+                <p className="caption-text leading-5 text-text-body">
+                  <TimeAgo date={endDate} formatter={endTimeAgoFormatter} />
+                </p>
+              </Tooltip>
+            ) : (
+              <p className="caption-text leading-5 text-text-body">
+                {formatDateTimeTz(endDate)}
+              </p>
+            )}
+          </div>
+        </div>
 
         <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
           {distributableAmount > 0 && (

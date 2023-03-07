@@ -13,7 +13,7 @@ import {
   SegmentedControls,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { TokenType } from '@dao-dao/types'
+import { DurationUnits, TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -32,7 +32,9 @@ import {
   CHAIN_BECH32_PREFIX,
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
+  convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
+  convertSecondsToDurationWithUnits,
   encodeMessageAsBase64,
   isValidContractAddress,
   loadableToLoadingData,
@@ -70,13 +72,15 @@ export type ManageVestingData = {
 const useDefaults: UseDefaults<ManageVestingData> = () => ({
   creating: true,
   begin: {
-    amount: 1000000,
+    amount: 1,
     denomOrAddress: NATIVE_DENOM,
     recipient: '',
     startDate: '',
     title: '',
-    // Default 1 year.
-    durationSeconds: 365 * 24 * 60 * 60,
+    duration: {
+      value: 1,
+      units: DurationUnits.Years,
+    },
   },
   cancel: {
     address: '',
@@ -160,7 +164,11 @@ const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
         tokenBalances.loading
       }
     >
-      <ActionCard Icon={MoneyWingsEmoji} title={t('title.manageVesting')}>
+      <ActionCard
+        Icon={MoneyWingsEmoji}
+        onRemove={props.onRemove}
+        title={t('title.manageVesting')}
+      >
         <SegmentedControls<boolean>
           className="mb-2"
           disabled={!props.isCreating}
@@ -289,7 +297,9 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
             token.denomOrAddress === NATIVE_DENOM
               ? nativeUnstakingDurationSecondsLoadable.contents
               : 0,
-          vesting_duration_seconds: begin.durationSeconds,
+          vesting_duration_seconds: convertDurationWithUnitsToSeconds(
+            begin.duration
+          ),
         }
 
         const msg: InstantiateNativePayrollContractMsg = {
@@ -478,7 +488,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
             instantiateMsg.total,
             token.decimals
           ),
-          durationSeconds: instantiateMsg.vesting_duration_seconds,
+          duration: convertSecondsToDurationWithUnits(
+            instantiateMsg.vesting_duration_seconds
+          ),
         },
       },
     }

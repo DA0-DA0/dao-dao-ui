@@ -5,12 +5,14 @@ import TimeAgo from 'react-timeago'
 
 import {
   TokenAmountDisplay,
+  Tooltip,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import { StatefulEntityDisplayProps } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatDate,
+  formatDateTimeTz,
 } from '@dao-dao/utils'
 
 import { VestingInfo } from '../../types'
@@ -28,7 +30,14 @@ export const VestingPaymentLine = ({
   ...vestingInfo
 }: VestingPaymentLineProps) => {
   const { t } = useTranslation()
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
+  const startTimeAgoFormatter = useTranslatedTimeDeltaFormatter({
+    words: true,
+    futureMode: 'in',
+  })
+  const endTimeAgoFormatter = useTranslatedTimeDeltaFormatter({
+    words: true,
+    futureMode: 'left',
+  })
 
   const {
     vest,
@@ -58,9 +67,15 @@ export const VestingPaymentLine = ({
 
       {completed ? (
         <>
-          <p className="hidden md:block">
-            {endDate ? formatDate(endDate, true) : t('info.unknown')}
-          </p>
+          <div className="hidden md:block">
+            {endDate ? (
+              <Tooltip title={endDate && formatDateTimeTz(endDate)}>
+                <p className="inline-block">{formatDate(endDate, true)}</p>
+              </Tooltip>
+            ) : (
+              <p>{t('info.unknown')}</p>
+            )}
+          </div>
 
           <div className="hidden md:block">
             {/* Only show balance available to withdraw if nonzero. */}
@@ -88,15 +103,27 @@ export const VestingPaymentLine = ({
         <>
           <div className="hidden md:block">
             {startDate ? (
-              <TimeAgo date={startDate} formatter={timeAgoFormatter} />
+              <Tooltip title={startDate && formatDateTimeTz(startDate)}>
+                <div className="inline-block">
+                  <TimeAgo date={startDate} formatter={startTimeAgoFormatter} />
+                </div>
+              </Tooltip>
             ) : (
               <p>{t('info.unknown')}</p>
             )}
           </div>
 
-          <p className="hidden md:block">
-            {endDate ? formatDate(endDate, true) : t('info.unknown')}
-          </p>
+          <div className="hidden md:block">
+            {endDate ? (
+              <Tooltip title={endDate && formatDateTimeTz(endDate)}>
+                <div className="inline-block">
+                  <TimeAgo date={endDate} formatter={endTimeAgoFormatter} />
+                </div>
+              </Tooltip>
+            ) : (
+              <p>{t('info.unknown')}</p>
+            )}
+          </div>
 
           <div className="body-text flex flex-row items-center justify-end gap-1 justify-self-end text-right font-mono">
             <TokenAmountDisplay

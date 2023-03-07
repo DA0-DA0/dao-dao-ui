@@ -6,6 +6,7 @@ import {
   DaoCoreV2Selectors,
   genericTokenSelector,
   nativeDelegatedBalanceSelector,
+  refreshVestingAtom,
 } from '@dao-dao/state/recoil'
 import { TokenType, WithChainId } from '@dao-dao/types'
 
@@ -111,6 +112,9 @@ export const vestingInfoSelector = selectorFamily<
   get:
     ({ vestingContractAddress, chainId }) =>
     ({ get }) => {
+      get(refreshVestingAtom(''))
+      get(refreshVestingAtom(vestingContractAddress))
+
       const vest = get(
         CwVestingSelectors.infoSelector({
           contractAddress: vestingContractAddress,
@@ -164,7 +168,7 @@ export const vestingInfoSelector = selectorFamily<
           ? vest.vested.piecewise_linear.steps.slice(-1)[0][1]
           : '-1'
 
-      // TODO: Slashing? Just check native bank balance instead?
+      // TODO: Slashing?
       const remaining = (
         BigInt(total) -
         BigInt(vest.claimed) -

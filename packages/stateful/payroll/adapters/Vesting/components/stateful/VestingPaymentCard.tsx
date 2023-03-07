@@ -4,7 +4,10 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { refreshVestingAtom } from '@dao-dao/state/recoil'
+import {
+  refreshVestingAtom,
+  refreshWalletBalancesIdAtom,
+} from '@dao-dao/state/recoil'
 import {
   useAddToken,
   useCachedLoadable,
@@ -70,10 +73,16 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     }
   )
 
-  const setRefresh = useSetRecoilState(
+  const setRefreshVestingInfo = useSetRecoilState(
     refreshVestingAtom(vestingContractAddress)
   )
-  const refresh = () => setRefresh((r) => r + 1)
+  const setRefreshBalances = useSetRecoilState(
+    refreshWalletBalancesIdAtom(vestingContractAddress)
+  )
+  const refresh = () => {
+    setRefreshVestingInfo((r) => r + 1)
+    setRefreshBalances((r) => r + 1)
+  }
 
   const awaitNextBlock = useAwaitNextBlock(chainId)
 
@@ -92,13 +101,13 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     setWithdrawing(true)
     try {
       await distribute({})
-      toast.success(t('success.withdrewPayment'))
 
       // Give time for indexer to update and then refresh.
       await awaitNextBlock()
 
       refresh()
       refreshBalances()
+      toast.success(t('success.withdrewPayment'))
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -120,12 +129,12 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
         await claim({
           validators,
         })
-        toast.success(t('success.claimedRewards'))
 
         // Give time for indexer to update and then refresh.
         await awaitNextBlock()
 
         refresh()
+        toast.success(t('success.claimedRewards'))
       } catch (err) {
         console.error(err)
         toast.error(processError(err))

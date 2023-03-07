@@ -11,6 +11,7 @@ import {
   CopyToClipboard,
   InputErrorMessage,
   InputLabel,
+  InputThemedText,
   LineGraph,
   NumberInput,
   SelectInput,
@@ -21,12 +22,15 @@ import {
   ActionComponent,
   ActionContextType,
   AddressInputProps,
+  DurationUnitsValues,
+  DurationWithUnits,
   GenericTokenBalance,
   LoadingData,
 } from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
+  convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
   makeValidateDate,
@@ -44,7 +48,7 @@ export type BeginVestingData = {
   title: string
   description?: string
   startDate?: string
-  durationSeconds: number
+  duration: DurationWithUnits
 }
 
 export type BeginVestingOptions = {
@@ -64,17 +68,23 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   const { address, context } = useActionOptions()
 
   const { register, watch, setValue } = useFormContext()
+
   const watchAmount = watch(fieldNamePrefix + 'amount')
   const watchDenomOrAddress = watch(fieldNamePrefix + 'denomOrAddress')
   const parsedStartDate = Date.parse(watch(fieldNamePrefix + 'startDate'))
-  const parsedFinishDate = Date.parse(watch(fieldNamePrefix + 'finishDate'))
+  const duration = watch(fieldNamePrefix + 'duration')
 
-  const formattedStartDate = !isNaN(parsedStartDate)
-    ? formatDateTimeTz(new Date(parsedStartDate))
+  const durationSeconds = !isNaN(duration.value)
+    ? convertDurationWithUnitsToSeconds(duration)
+    : 0
+
+  const startDate = !isNaN(parsedStartDate)
+    ? new Date(parsedStartDate)
     : undefined
-  const formattedFinishDate = !isNaN(parsedFinishDate)
-    ? formatDateTimeTz(new Date(parsedFinishDate))
-    : undefined
+  const formattedStartDate = startDate && formatDateTimeTz(startDate)
+  const finishDate =
+    startDate && new Date(startDate.getTime() + durationSeconds * 1000)
+  const formattedFinishDate = finishDate && formatDateTimeTz(finishDate)
 
   const selectedToken = tokens.find(
     ({ token: { denomOrAddress } }) => denomOrAddress === watchDenomOrAddress
@@ -94,6 +104,29 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="space-y-2">
+        <InputLabel name={t('form.title')} />
+        <TextInput
+          disabled={!isCreating}
+          error={errors?.title}
+          fieldName={fieldNamePrefix + 'title'}
+          register={register}
+          required
+        />
+        <InputErrorMessage error={errors?.title} />
+      </div>
+
+      <div className="space-y-2">
+        <InputLabel name={t('form.descriptionOptional')} />
+        <TextAreaInput
+          disabled={!isCreating}
+          error={errors?.description}
+          fieldName={fieldNamePrefix + 'description'}
+          register={register}
+        />
+        <InputErrorMessage error={errors?.description} />
+      </div>
+
       <div className="space-y-2">
         <InputLabel name={t('form.payment')} />
 
@@ -169,63 +202,76 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
       </div>
 
       {/* Vesting Dates */}
-      <div className="flex flex-col gap-4 sm:flex-row">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
         {/* Start Date */}
-        <div className="grow basis-0 space-y-2">
+        <div className="flex grow basis-0 flex-col gap-2">
           <div className="flex flex-row items-end gap-2">
             <InputLabel name={t('form.startDate')} />
 
             {/* Date Preview */}
-            {formattedStartDate && (
+            {formattedStartDate && isCreating && (
               <p className="caption-text">{formattedStartDate}</p>
             )}
           </div>
 
-          <div>
-            <TextInput
-              disabled={!isCreating}
-              error={errors?.startDate}
-              fieldName={fieldNamePrefix + 'startDate'}
-              // eslint-disable-next-line i18next/no-literal-string
-              placeholder="YYYY-MM-DD HH:mm"
-              register={register}
-              validation={[validateRequired, makeValidateDate(t)]}
-            />
-            <InputErrorMessage error={errors?.startDate} />
-          </div>
+          {isCreating ? (
+            <div className="flex grow flex-col gap-1">
+              <TextInput
+                className="grow"
+                error={errors?.startDate}
+                fieldName={fieldNamePrefix + 'startDate'}
+                // eslint-disable-next-line i18next/no-literal-string
+                placeholder="YYYY-MM-DD HH:mm"
+                register={register}
+                validation={[validateRequired, makeValidateDate(t, true)]}
+              />
+              <InputErrorMessage error={errors?.startDate} />
+            </div>
+          ) : (
+            <InputThemedText className="grow">
+              {formattedStartDate}
+            </InputThemedText>
+          )}
         </div>
 
-        {/* Finish Date */}
-        <div className="grow basis-0 space-y-2">
-          <div className="flex flex-row items-end gap-2">
-            <InputLabel name={t('form.finishDate')} />
+        {/* Duration */}
+        <div className="flex grow basis-0 flex-col gap-2">
+          <InputLabel name={t('form.vestingDuration')} />
 
-            {/* Date Preview */}
-            {formattedFinishDate && (
-              <p className="caption-text">{formattedFinishDate}</p>
-            )}
-          </div>
+          <div className="grow">
+            <div className="flex flex-row gap-2">
+              <NumberInput
+                containerClassName="grow"
+                disabled={!isCreating}
+                error={errors?.duration?.value}
+                fieldName={fieldNamePrefix + 'duration.value'}
+                min={1}
+                register={register}
+                setValue={setValue}
+                sizing="sm"
+                step={1}
+                validation={[validatePositive, validateRequired]}
+                watch={watch}
+              />
 
-          <div>
-            <TextInput
-              disabled={!isCreating}
-              error={errors?.finishDate}
-              fieldName={fieldNamePrefix + 'finishDate'}
-              // eslint-disable-next-line i18next/no-literal-string
-              placeholder="YYYY-MM-DD HH:mm"
-              register={register}
-              validation={[
-                validateRequired,
-                makeValidateDate(t),
-                // Ensure close date is after open date.
-                () =>
-                  // Valid if dates not yet available.
-                  !(!isNaN(parsedStartDate) && !isNaN(parsedFinishDate)) ||
-                  new Date(parsedFinishDate) > new Date(parsedStartDate) ||
-                  t('error.finishDateMustBeAfterStartDate'),
-              ]}
-            />
-            <InputErrorMessage error={errors?.finishDate} />
+              <SelectInput
+                disabled={!isCreating}
+                error={errors?.duration?.units}
+                fieldName={fieldNamePrefix + 'duration.units'}
+                register={register}
+                validation={[validateRequired]}
+              >
+                {DurationUnitsValues.map((type, idx) => (
+                  <option key={idx} value={type}>
+                    {t(`unit.${type}`, {
+                      count: duration.value,
+                    }).toLocaleLowerCase()}
+                  </option>
+                ))}
+              </SelectInput>
+            </div>
+
+            <InputErrorMessage error={errors?.durationSeconds} />
           </div>
         </div>
       </div>
@@ -241,29 +287,6 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
           yTitle={'$' + selectedSymbol}
           yValues={[0, watchAmount]}
         />
-      </div>
-
-      <div className="space-y-2">
-        <InputLabel name={t('form.title')} />
-        <TextInput
-          disabled={!isCreating}
-          error={errors?.title}
-          fieldName={fieldNamePrefix + 'title'}
-          register={register}
-          required
-        />
-        <InputErrorMessage error={errors?.title} />
-      </div>
-
-      <div className="space-y-2">
-        <InputLabel name={t('form.descriptionOptional')} />
-        <TextAreaInput
-          disabled={!isCreating}
-          error={errors?.description}
-          fieldName={fieldNamePrefix + 'description'}
-          register={register}
-        />
-        <InputErrorMessage error={errors?.description} />
       </div>
 
       {!vestingFactoryOwner.loading && (
