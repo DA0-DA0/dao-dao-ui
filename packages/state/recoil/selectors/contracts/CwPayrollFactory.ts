@@ -27,6 +27,7 @@ const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new CwPayrollFactoryQueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export type ExecuteClientParams = {
