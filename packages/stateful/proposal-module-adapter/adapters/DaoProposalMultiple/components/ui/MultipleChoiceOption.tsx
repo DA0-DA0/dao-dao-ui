@@ -1,4 +1,8 @@
-import { Close, CopyAllOutlined } from '@mui/icons-material'
+import {
+  ArrowDropDownRounded,
+  Close,
+  CopyAllOutlined,
+} from '@mui/icons-material'
 import CircleIcon from '@mui/icons-material/Circle'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
@@ -113,20 +117,32 @@ export const MultipleChoiceOption = <
         <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
           <div className="flex grow flex-col">
             <div className="flex flex-row items-center gap-3">
-              <div className="h-auto w-12 pt-2">
-                <DropdownIconButton
-                  className="text-icon-primary"
-                  open={expanded}
-                  toggle={toggleExpanded}
-                />
+              <div className="relative ml-[-0.5rem] h-auto w-12 pt-2">
                 <CircleIcon
-                  className="h-3 w-3 align-middle"
+                  className="absolute right-0 bottom-0 left-0 top-0 align-middle"
                   style={{
                     color:
                       MULTIPLE_CHOICE_OPTION_COLORS[
                         optionIndex % MULTIPLE_CHOICE_OPTION_COLORS.length
                       ],
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
                   }}
+                />
+                <DropdownIconButton
+                  //  top-0 right-0 bottom-0 left-5 align-middle text-icon-primary
+                  Icon={ArrowDropDownRounded}
+                  className="absolute right-0 bottom-0 left-0 top-0 align-middle"
+                  open={expanded}
+                  size="xl"
+                  style={{
+                    zIndex: 1,
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                  toggle={toggleExpanded}
                 />
               </div>
               <TextInput
