@@ -40,7 +40,7 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
 
       const image = new Image()
       image.addEventListener('load', onLoad)
-      image.src = imageUrl
+      image.src = toAccessibleImageUrl(imageUrl)
 
       // Clean up.
       return () => image.removeEventListener('load', onLoad)

@@ -2,6 +2,8 @@ import { ComponentType } from 'react'
 
 export type InboxSourceItem<Props extends unknown = any> = {
   props: Props
+  // If pending, the item will count towards the pending count.
+  pending: boolean
   order?: number
 }
 
@@ -40,6 +42,7 @@ export type InboxState = {
   loading: boolean
   refreshing: boolean
   daosWithItems: InboxDaoWithItems[]
-  itemCount: number
+  pendingItemCount: number
+  totalItemCount: number
   refresh: () => void
 }

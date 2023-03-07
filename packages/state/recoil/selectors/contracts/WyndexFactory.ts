@@ -34,6 +34,7 @@ export const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new WyndexFactoryQueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export const configSelector = selectorFamily<

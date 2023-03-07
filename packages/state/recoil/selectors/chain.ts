@@ -64,6 +64,7 @@ export const stargateClientForChainSelector = selectorFamily<
     await stargateClientRouter.connect(
       chainId ? getRpcForChainId(chainId) : getRpcForChainId(CHAIN_ID)
     ),
+  dangerouslyAllowMutability: true,
 })
 
 export const cosmWasmClientForChainSelector = selectorFamily<
@@ -75,6 +76,7 @@ export const cosmWasmClientForChainSelector = selectorFamily<
     await cosmWasmClientRouter.connect(
       chainId ? getRpcForChainId(chainId) : getRpcForChainId(CHAIN_ID)
     ),
+  dangerouslyAllowMutability: true,
 })
 
 export const cosmosRpcClientForChainSelector = selectorFamily({
@@ -87,6 +89,7 @@ export const cosmosRpcClientForChainSelector = selectorFamily({
           : getRpcForChainId(CHAIN_ID),
       })
     ).cosmos,
+  dangerouslyAllowMutability: true,
 })
 
 export const junoRpcClientSelector = selector({
@@ -97,6 +100,7 @@ export const junoRpcClientSelector = selector({
         rpcEndpoint: getRpcForChainId(ChainInfoID.Juno1),
       })
     ).juno,
+  dangerouslyAllowMutability: true,
 })
 
 export const blockHeightSelector = selectorFamily<number, WithChainId<{}>>({

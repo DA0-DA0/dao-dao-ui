@@ -40,6 +40,7 @@ const queryClient = selectorFamily<Cw20BaseQueryClient, QueryClientParams>({
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new Cw20BaseQueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export type ExecuteClientParams = {
