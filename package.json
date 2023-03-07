@@ -1,6 +1,6 @@
 {
   "name": "dao-dao-ui",
-  "version": "2.1.0-rc.3",
+  "version": "2.2.0",
   "workspaces": [
     "apps/*",
     "packages/*"

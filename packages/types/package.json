@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/types",
-  "version": "2.1.0-rc.3",
+  "version": "2.2.0",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "format": "eslint . --fix",
@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@cosmjs/cosmwasm-stargate": "0.29.3",
-    "@dao-dao/config": "^2.1.0-rc.3",
+    "@dao-dao/config": "2.2.0",
     "next-i18next": "^11.0.0",
     "pusher-js": "^7.6.0",
     "react": "^18.2.0",
