@@ -18,7 +18,7 @@ const junoTestnet: CodeIdConfig = {
   DaoVotingCw721Staked: 174,
   DaoVotingNativeStaked: 175,
   CwTokenSwap: 161,
-  CwPayrollFactory: 160,
+  CwPayrollFactory: 526,
   CwVesting: 521,
 }
 
