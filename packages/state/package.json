@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/state",
-  "version": "2.1.0-rc.1",
+  "version": "2.2.0",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "build": "tsc",
@@ -13,7 +13,7 @@
     "@cosmjs/encoding": "0.29.3",
     "@cosmjs/proto-signing": "0.29.3",
     "@cosmjs/stargate": "0.29.3",
-    "@dao-dao/utils": "^2.1.0-rc.1",
+    "@dao-dao/utils": "2.2.0",
     "cosmjs-types": "^0.5.2",
     "graphql": "^16.6.0",
     "interchain-rpc": "1.5.0",
@@ -23,8 +23,8 @@
     "recoil": "^0.7.2"
   },
   "devDependencies": {
-    "@dao-dao/config": "^2.1.0-rc.1",
-    "@dao-dao/types": "^2.1.0-rc.1",
+    "@dao-dao/config": "2.2.0",
+    "@dao-dao/types": "2.2.0",
     "@noahsaso/cosmodal": "^0.8.3",
     "typescript": "^4.8.3"
   },
