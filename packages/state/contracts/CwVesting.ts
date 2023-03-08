@@ -5,7 +5,12 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Binary, Timestamp, Uint128 } from '@dao-dao/types/contracts/common'
+import {
+  Binary,
+  Timestamp,
+  Uint128,
+  Uint64,
+} from '@dao-dao/types/contracts/common'
 import { OwnershipForAddr, Vest } from '@dao-dao/types/contracts/CwVesting'
 
 export interface CwVestingReadOnlyInterface {
@@ -13,6 +18,10 @@ export interface CwVestingReadOnlyInterface {
   ownership: () => Promise<OwnershipForAddr>
   info: () => Promise<Vest>
   distributable: ({ t }: { t?: number }) => Promise<Uint128>
+  vested: ({ t }: { t?: Timestamp }) => Promise<Uint128>
+  totalToVest: () => Promise<Uint128>
+  vestDuration: () => Promise<Uint64>
+  stake: () => Promise<Uint128>
 }
 export class CwVestingQueryClient implements CwVestingReadOnlyInterface {
   client: CosmWasmClient
@@ -24,6 +33,10 @@ export class CwVestingQueryClient implements CwVestingReadOnlyInterface {
     this.ownership = this.ownership.bind(this)
     this.info = this.info.bind(this)
     this.distributable = this.distributable.bind(this)
+    this.vested = this.vested.bind(this)
+    this.totalToVest = this.totalToVest.bind(this)
+    this.vestDuration = this.vestDuration.bind(this)
+    this.stake = this.stake.bind(this)
   }
 
   ownership = async (): Promise<OwnershipForAddr> => {
@@ -41,6 +54,28 @@ export class CwVestingQueryClient implements CwVestingReadOnlyInterface {
       distributable: {
         t,
       },
+    })
+  }
+  vested = async ({ t }: { t?: Timestamp }): Promise<Uint128> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      vested: {
+        t,
+      },
+    })
+  }
+  totalToVest = async (): Promise<Uint128> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      total_to_vest: {},
+    })
+  }
+  vestDuration = async (): Promise<Uint64> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      vest_duration: {},
+    })
+  }
+  stake = async (): Promise<Uint128> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      stake: {},
     })
   }
 }

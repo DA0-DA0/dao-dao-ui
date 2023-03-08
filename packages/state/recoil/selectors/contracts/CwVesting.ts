@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { Uint128, WithChainId } from '@dao-dao/types'
+import { Uint128, Uint64, WithChainId } from '@dao-dao/types'
 import { OwnershipForAddr, Vest } from '@dao-dao/types/contracts/CwVesting'
 
 import {
@@ -105,5 +105,65 @@ export const distributableSelector = selectorFamily<
       get(refreshVestingAtom(queryClientParams.contractAddress))
       const client = get(queryClient(queryClientParams))
       return await client.distributable(...params)
+    },
+})
+export const vestedSelector = selectorFamily<
+  Uint128,
+  QueryClientParams & {
+    params: Parameters<CwVestingQueryClient['vested']>
+  }
+>({
+  key: 'cwVestingVested',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      get(refreshVestingAtom(''))
+      get(refreshVestingAtom(queryClientParams.contractAddress))
+      const client = get(queryClient(queryClientParams))
+      return await client.vested(...params)
+    },
+})
+export const totalToVestSelector = selectorFamily<
+  Uint128,
+  QueryClientParams & {
+    params: Parameters<CwVestingQueryClient['totalToVest']>
+  }
+>({
+  key: 'cwVestingTotalToVest',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.totalToVest(...params)
+    },
+})
+export const vestDurationSelector = selectorFamily<
+  Uint64,
+  QueryClientParams & {
+    params: Parameters<CwVestingQueryClient['vestDuration']>
+  }
+>({
+  key: 'cwVestingVestDuration',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.vestDuration(...params)
+    },
+})
+export const stakeSelector = selectorFamily<
+  Uint128,
+  QueryClientParams & {
+    params: Parameters<CwVestingQueryClient['stake']>
+  }
+>({
+  key: 'cwVestingStake',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      get(refreshVestingAtom(''))
+      get(refreshVestingAtom(queryClientParams.contractAddress))
+      const client = get(queryClient(queryClientParams))
+      return await client.stake(...params)
     },
 })

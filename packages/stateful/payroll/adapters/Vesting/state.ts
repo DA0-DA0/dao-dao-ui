@@ -123,6 +123,30 @@ export const vestingInfoSelector = selectorFamily<
         })
       )
 
+      const vested = get(
+        CwVestingSelectors.vestedSelector({
+          contractAddress: vestingContractAddress,
+          chainId,
+          params: [{}],
+        })
+      )
+
+      const total = get(
+        CwVestingSelectors.totalToVestSelector({
+          contractAddress: vestingContractAddress,
+          chainId,
+          params: [],
+        })
+      )
+
+      const durationSeconds = get(
+        CwVestingSelectors.vestDurationSelector({
+          contractAddress: vestingContractAddress,
+          chainId,
+          params: [],
+        })
+      )
+
       const token = get(
         genericTokenSelector({
           type: 'cw20' in vest.denom ? TokenType.Cw20 : TokenType.Native,
@@ -141,9 +165,6 @@ export const vestingInfoSelector = selectorFamily<
           })
         ).owner || undefined
 
-      // TODO: Get
-      const vested = '0'
-
       const distributable = get(
         CwVestingSelectors.distributableSelector({
           contractAddress: vestingContractAddress,
@@ -159,17 +180,8 @@ export const vestingInfoSelector = selectorFamily<
         })
       ).amount
 
-      const total =
-        'constant' in vest.vested
-          ? vest.vested.constant.y
-          : 'saturating_linear' in vest.vested
-          ? vest.vested.saturating_linear.max_y
-          : 'piecewise_linear' in vest.vested
-          ? vest.vested.piecewise_linear.steps.slice(-1)[0][1]
-          : '-1'
-
       // TODO: Slashing?
-      const remaining = (
+      const stakable = (
         BigInt(total) -
         BigInt(vest.claimed) -
         BigInt(staked) -
@@ -179,17 +191,8 @@ export const vestingInfoSelector = selectorFamily<
       const completed = vest.status === 'funded' && vest.claimed === total
 
       const startTimeNanos = Number(vest.start_time)
-      const durationSeconds =
-        'constant' in vest.vested
-          ? 0
-          : 'saturating_linear' in vest.vested
-          ? vest.vested.saturating_linear.max_x
-          : 'piecewise_linear' in vest.vested
-          ? vest.vested.piecewise_linear.steps.slice(-1)[0][0]
-          : -1
-      const endTimeNanos = startTimeNanos + durationSeconds * 1e9
-
       const startDate = new Date(startTimeNanos / 1e6)
+      const endTimeNanos = startTimeNanos + Number(durationSeconds) * 1e9
       const endDate = new Date(endTimeNanos / 1e6)
 
       return {
@@ -200,7 +203,7 @@ export const vestingInfoSelector = selectorFamily<
         vested,
         distributable,
         total,
-        remaining,
+        stakable,
         staked,
         completed,
         startDate,

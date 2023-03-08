@@ -44,7 +44,7 @@ export type NativeStakingModalProps = Pick<
 }
 
 export const NativeStakingModal = ({
-  vestingInfo: { vestingContractAddress, remaining },
+  vestingInfo: { vestingContractAddress, stakable },
   stakes,
   ...props
 }: NativeStakingModalProps) => {
@@ -158,7 +158,7 @@ export const NativeStakingModal = ({
       loading={loading}
       loadingStakableTokens={{
         loading: false,
-        data: convertMicroDenomToDenomWithDecimals(remaining, NATIVE_DECIMALS),
+        data: convertMicroDenomToDenomWithDecimals(stakable, NATIVE_DECIMALS),
       }}
       onAction={onAction}
       setAmount={setAmount}

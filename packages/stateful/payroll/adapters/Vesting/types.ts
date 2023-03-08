@@ -12,9 +12,10 @@ export type VestingInfo = {
   distributable: string
   // Total amount being vested.
   total: string
-  // Amount still in the vesting contract. It may be vested or not, but it is
-  // definitely not claimed nor staked. This is the stakable balance.
-  remaining: string
+  // The stakable balance. This is the unstaked amount still in the vesting
+  // contract. It may be vested or not, but it is definitely not claimed nor
+  // staked.
+  stakable: string
   // Total staked with all validators.
   staked: string
   // Whether or not all has been claimed.

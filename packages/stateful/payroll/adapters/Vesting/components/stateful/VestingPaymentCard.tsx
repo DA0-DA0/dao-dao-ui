@@ -43,9 +43,10 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const {
     vestingContractAddress,
     vest,
+    total,
+    vested,
     token,
     distributable,
-    remaining,
     startDate,
     endDate,
   } = vestingInfo
@@ -179,7 +180,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
         recipientEntity={recipientEntity}
         recipientIsWallet={recipientIsWallet}
         remainingBalanceVesting={convertMicroDenomToDenomWithDecimals(
-          remaining,
+          Number(total) - Number(vested),
           token.decimals
         )}
         startDate={startDate}

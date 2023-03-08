@@ -107,6 +107,37 @@ export type QueryMsg =
         t?: number | null
       }
     }
+  | {
+      vested: {
+        t?: Timestamp | null
+      }
+    }
+  | {
+      total_to_vest: {}
+    }
+  | {
+      vest_duration: {}
+    }
+  | {
+      stake: StakeTrackerQuery
+    }
+export type StakeTrackerQuery =
+  | {
+      cardinality: {
+        t: Timestamp
+      }
+    }
+  | {
+      total_staked: {
+        t: Timestamp
+      }
+    }
+  | {
+      validator_staked: {
+        t: Timestamp
+        validator: string
+      }
+    }
 export type CheckedDenom =
   | {
       native: string
