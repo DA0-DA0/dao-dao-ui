@@ -115,36 +115,51 @@ export const vestingInfoSelector = selectorFamily<
       get(refreshVestingAtom(''))
       get(refreshVestingAtom(vestingContractAddress))
 
-      const vest = get(
-        CwVestingSelectors.infoSelector({
-          contractAddress: vestingContractAddress,
-          chainId,
-          params: [],
-        })
-      )
-
-      const vested = get(
-        CwVestingSelectors.vestedSelector({
-          contractAddress: vestingContractAddress,
-          chainId,
-          params: [{}],
-        })
-      )
-
-      const total = get(
-        CwVestingSelectors.totalToVestSelector({
-          contractAddress: vestingContractAddress,
-          chainId,
-          params: [],
-        })
-      )
-
-      const durationSeconds = get(
-        CwVestingSelectors.vestDurationSelector({
-          contractAddress: vestingContractAddress,
-          chainId,
-          params: [],
-        })
+      const [
+        vest,
+        vested,
+        total,
+        distributable,
+        durationSeconds,
+        { owner },
+        { amount: staked },
+      ] = get(
+        waitForAll([
+          CwVestingSelectors.infoSelector({
+            contractAddress: vestingContractAddress,
+            chainId,
+            params: [],
+          }),
+          CwVestingSelectors.vestedSelector({
+            contractAddress: vestingContractAddress,
+            chainId,
+            params: [{}],
+          }),
+          CwVestingSelectors.totalToVestSelector({
+            contractAddress: vestingContractAddress,
+            chainId,
+            params: [],
+          }),
+          CwVestingSelectors.distributableSelector({
+            contractAddress: vestingContractAddress,
+            chainId,
+            params: [{}],
+          }),
+          CwVestingSelectors.vestDurationSelector({
+            contractAddress: vestingContractAddress,
+            chainId,
+            params: [],
+          }),
+          CwVestingSelectors.ownershipSelector({
+            contractAddress: vestingContractAddress,
+            chainId,
+            params: [],
+          }),
+          nativeDelegatedBalanceSelector({
+            address: vestingContractAddress,
+            chainId,
+          }),
+        ])
       )
 
       const token = get(
@@ -155,30 +170,6 @@ export const vestingInfoSelector = selectorFamily<
           chainId,
         })
       )
-
-      const owner =
-        get(
-          CwVestingSelectors.ownershipSelector({
-            contractAddress: vestingContractAddress,
-            chainId,
-            params: [],
-          })
-        ).owner || undefined
-
-      const distributable = get(
-        CwVestingSelectors.distributableSelector({
-          contractAddress: vestingContractAddress,
-          chainId,
-          params: [{}],
-        })
-      )
-
-      const staked = get(
-        nativeDelegatedBalanceSelector({
-          address: vestingContractAddress,
-          chainId,
-        })
-      ).amount
 
       // TODO: Slashing?
       const stakable = (
@@ -199,7 +190,7 @@ export const vestingInfoSelector = selectorFamily<
         vestingContractAddress,
         vest,
         token,
-        owner,
+        owner: owner || undefined,
         vested,
         distributable,
         total,
