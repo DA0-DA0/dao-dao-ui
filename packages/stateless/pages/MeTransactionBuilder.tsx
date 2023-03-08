@@ -293,7 +293,7 @@ export const MeTransactionBuilder = ({
             {saves.data.map((save, index) => (
               <Button
                 key={index}
-                contentContainerClassName="flex flex-col !items-start !gap-0 max-w-[16rem] text-left"
+                contentContainerClassName="flex flex-col !items-stretch !gap-0 max-w-[16rem] text-left"
                 onClick={() =>
                   reset({
                     // Clone the actions to prevent mutating the original
