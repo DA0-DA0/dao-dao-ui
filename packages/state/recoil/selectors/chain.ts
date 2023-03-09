@@ -621,11 +621,11 @@ export const walletHexPublicKeySelector = selectorFamily<
     },
 })
 
-export const validatorSlashesSelector = selectorFamily<
+export const validatorSlashEventsSelector = selectorFamily<
   ValidatorSlashEvent[],
   WithChainId<{ validatorAddress: string }>
 >({
-  key: 'validatorSlashes',
+  key: 'validatorSlashEvents',
   get:
     ({ validatorAddress, chainId }) =>
     async ({ get }) => {

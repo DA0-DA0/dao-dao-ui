@@ -11,7 +11,11 @@ import {
   Uint128,
   Uint64,
 } from '@dao-dao/types/contracts/common'
-import { OwnershipForAddr, Vest } from '@dao-dao/types/contracts/CwVesting'
+import {
+  OwnershipForAddr,
+  StakeTrackerQuery,
+  Vest,
+} from '@dao-dao/types/contracts/CwVesting'
 
 export interface CwVestingReadOnlyInterface {
   contractAddress: string
@@ -21,7 +25,7 @@ export interface CwVestingReadOnlyInterface {
   vested: ({ t }: { t?: Timestamp }) => Promise<Uint128>
   totalToVest: () => Promise<Uint128>
   vestDuration: () => Promise<Uint64>
-  stake: () => Promise<Uint128>
+  stake: (query: StakeTrackerQuery) => Promise<Uint128>
 }
 export class CwVestingQueryClient implements CwVestingReadOnlyInterface {
   client: CosmWasmClient
@@ -73,9 +77,9 @@ export class CwVestingQueryClient implements CwVestingReadOnlyInterface {
       vest_duration: {},
     })
   }
-  stake = async (): Promise<Uint128> => {
+  stake = async (query: StakeTrackerQuery): Promise<Uint128> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      stake: {},
+      stake: query,
     })
   }
 }
