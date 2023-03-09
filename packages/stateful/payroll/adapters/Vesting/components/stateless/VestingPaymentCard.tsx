@@ -505,101 +505,103 @@ export const VestingPaymentCard = ({
           </div>
         </div>
 
-        {!lazyInfo.loading && !!lazyInfo.data.stakingInfo?.stakes?.length && (
-          <div className="flex flex-col gap-2 border-t border-border-secondary px-6 pt-4 pb-6">
-            <p className="link-text mb-1">{t('info.stakes')}</p>
+        {!lazyInfo.loading &&
+          (!!lazyInfo.data.stakingInfo?.stakes?.length ||
+            !!lazyInfo.data.stakingInfo?.unstakingTasks?.length) && (
+            <div className="flex flex-col gap-2 border-t border-border-secondary px-6 pt-4 pb-6">
+              <p className="link-text mb-1">{t('info.stakes')}</p>
 
-            <div className="flex flex-row items-center justify-between gap-8">
-              <p className="secondary-text">{t('title.staked')}</p>
+              <div className="flex flex-row items-center justify-between gap-8">
+                <p className="secondary-text">{t('title.staked')}</p>
 
-              <TokenAmountDisplay
-                amount={lazyInfo.loading ? { loading: true } : totalStaked}
-                className="caption-text text-right font-mono text-text-body"
-                decimals={token.decimals}
-                symbol={token.symbol}
-              />
-            </div>
-
-            <div className="flex flex-row items-center justify-between gap-8">
-              <p className="secondary-text">{t('title.stakedTo')}</p>
-
-              <p
-                className={clsx(
-                  'caption-text text-right font-mono text-text-body',
-                  lazyInfo.loading && 'animate-pulse'
-                )}
-              >
-                {lazyInfo.loading
-                  ? '...'
-                  : lazyStakes.length > 0 && (
-                      <>
-                        {lazyStakes[0].validator.moniker}
-                        {lazyStakes.length > 1 && (
-                          <>
-                            ,{' '}
-                            <Tooltip
-                              title={
-                                <>
-                                  {lazyStakes
-                                    .slice(1)
-                                    .map(({ validator }, index) => (
-                                      <p key={index}>{validator.moniker}</p>
-                                    ))}
-                                </>
-                              }
-                            >
-                              <span className="cursor-pointer underline underline-offset-2">
-                                {t('info.andNumMore', {
-                                  count: lazyStakes.length - 1,
-                                })}
-                              </span>
-                            </Tooltip>
-                          </>
-                        )}
-                      </>
-                    )}
-              </p>
-            </div>
-
-            <div className="flex flex-row items-center justify-between gap-8">
-              <p className="secondary-text">{t('title.unstakingTokens')}</p>
-
-              <Button
-                className={clsx(
-                  'caption-text text-right font-mono underline-offset-2',
-                  unstakingBalance > 0 && 'text-text-body',
-                  lazyInfo.loading && 'animate-pulse !text-text-body'
-                )}
-                disabled={lazyInfo.loading}
-                onClick={() => setShowUnstakingTokens(true)}
-                variant={
-                  lazyInfo.loading || unstakingBalance === 0
-                    ? 'none'
-                    : 'underline'
-                }
-              >
                 <TokenAmountDisplay
-                  amount={
-                    lazyInfo.loading ? { loading: true } : unstakingBalance
-                  }
+                  amount={lazyInfo.loading ? { loading: true } : totalStaked}
+                  className="caption-text text-right font-mono text-text-body"
                   decimals={token.decimals}
                   symbol={token.symbol}
                 />
-              </Button>
-            </div>
+              </div>
 
-            <div className="flex flex-row items-center justify-between gap-8">
-              <p className="secondary-text">{t('info.pendingRewards')}</p>
+              <div className="flex flex-row items-center justify-between gap-8">
+                <p className="secondary-text">{t('title.stakedTo')}</p>
 
-              <TokenAmountDisplay
-                amount={lazyInfo.loading ? { loading: true } : pendingRewards}
-                className="caption-text text-right font-mono text-text-body"
-                decimals={token.decimals}
-                symbol={token.symbol}
-              />
+                <p
+                  className={clsx(
+                    'caption-text text-right font-mono text-text-body',
+                    lazyInfo.loading && 'animate-pulse'
+                  )}
+                >
+                  {lazyInfo.loading
+                    ? '...'
+                    : lazyStakes.length > 0 && (
+                        <>
+                          {lazyStakes[0].validator.moniker}
+                          {lazyStakes.length > 1 && (
+                            <>
+                              ,{' '}
+                              <Tooltip
+                                title={
+                                  <>
+                                    {lazyStakes
+                                      .slice(1)
+                                      .map(({ validator }, index) => (
+                                        <p key={index}>{validator.moniker}</p>
+                                      ))}
+                                  </>
+                                }
+                              >
+                                <span className="cursor-pointer underline underline-offset-2">
+                                  {t('info.andNumMore', {
+                                    count: lazyStakes.length - 1,
+                                  })}
+                                </span>
+                              </Tooltip>
+                            </>
+                          )}
+                        </>
+                      )}
+                </p>
+              </div>
+
+              <div className="flex flex-row items-center justify-between gap-8">
+                <p className="secondary-text">{t('title.unstakingTokens')}</p>
+
+                <Button
+                  className={clsx(
+                    'caption-text text-right font-mono underline-offset-2',
+                    unstakingBalance > 0 && 'text-text-body',
+                    lazyInfo.loading && 'animate-pulse !text-text-body'
+                  )}
+                  disabled={lazyInfo.loading}
+                  onClick={() => setShowUnstakingTokens(true)}
+                  variant={
+                    lazyInfo.loading || unstakingBalance === 0
+                      ? 'none'
+                      : 'underline'
+                  }
+                >
+                  <TokenAmountDisplay
+                    amount={
+                      lazyInfo.loading ? { loading: true } : unstakingBalance
+                    }
+                    decimals={token.decimals}
+                    symbol={token.symbol}
+                  />
+                </Button>
+              </div>
+
+              <div className="flex flex-row items-center justify-between gap-8">
+                <p className="secondary-text">{t('info.pendingRewards')}</p>
+
+                <TokenAmountDisplay
+                  amount={lazyInfo.loading ? { loading: true } : pendingRewards}
+                  className="caption-text text-right font-mono text-text-body"
+                  decimals={token.decimals}
+                  symbol={token.symbol}
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
 
       {!lazyInfo.loading && lazyInfo.data.stakingInfo && (

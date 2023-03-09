@@ -34,7 +34,7 @@ export const TokenCard = ({
   isGovernanceToken,
   subtitle,
   unstakedBalance,
-  hasStakingInfo,
+  hasStakingInfo: _hasStakingInfo,
   lazyInfo,
   refreshUnstakingTasks,
   onClaim,
@@ -124,6 +124,17 @@ export const TokenCard = ({
     ...(actions?.extraSections ?? []),
   ]
 
+  // This has staking info if we have already determined it has staking info, or
+  // if there are any stakes or unstaking tasks once the data is loaded. For
+  // efficiency, we don't load unstaking tasks right away because it depends on
+  // several queries, but we can quickly check if there is anything staked and
+  // preset `hasStakingInfo` if so. This makes sure that unstaking tasks show
+  // even when there is nothing staked.
+  const hasStakingInfo =
+    _hasStakingInfo ||
+    (!lazyInfo.loading &&
+      (!!lazyInfo.data.stakingInfo?.stakes.length ||
+        !!lazyInfo.data.stakingInfo?.unstakingTasks.length))
   const waitingForStakingInfo = hasStakingInfo && lazyInfo.loading
 
   return (
@@ -275,7 +286,7 @@ export const TokenCard = ({
           )}
         </div>
 
-        {hasStakingInfo && (lazyInfo.loading || lazyInfo.data) && (
+        {hasStakingInfo && (
           <div className="flex flex-col gap-2 border-t border-border-secondary px-6 pt-4 pb-6">
             <p className="link-text mb-1">{t('info.stakes')}</p>
 
