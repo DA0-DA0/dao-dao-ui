@@ -146,7 +146,19 @@ const tokenDenomOrAddressFromAssetInfo = (assetInfo: AssetInfo): string =>
   'native' in assetInfo ? assetInfo.native : assetInfo.token
 
 const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
-  const loadingBalances = useTokenBalances()
+  const { watch, setValue, clearErrors, setError } = useFormContext()
+  const tokenIn = watch(props.fieldNamePrefix + 'tokenIn') as GenericToken
+  const tokenInAmount = watch(props.fieldNamePrefix + 'tokenInAmount') as number
+  const tokenOut = watch(props.fieldNamePrefix + 'tokenOut') as GenericToken
+  const tokenOutAmount = watch(
+    props.fieldNamePrefix + 'tokenOutAmount'
+  ) as number
+
+  const loadingBalances = useTokenBalances({
+    // Load selected tokens when not creating, in case they are no longer
+    // returned in the list of all tokens for the given DAO/wallet.
+    additionalTokens: [tokenIn, tokenOut],
+  })
 
   const wyndPoolsLoadable = useCachedLoadable(wyndPoolsSelector)
   if (wyndPoolsLoadable.state === 'hasError') {
@@ -181,14 +193,6 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
       : undefined,
     []
   )
-
-  const { watch, setValue, clearErrors, setError } = useFormContext()
-  const tokenIn = watch(props.fieldNamePrefix + 'tokenIn') as GenericToken
-  const tokenInAmount = watch(props.fieldNamePrefix + 'tokenInAmount') as number
-  const tokenOut = watch(props.fieldNamePrefix + 'tokenOut') as GenericToken
-  const tokenOutAmount = watch(
-    props.fieldNamePrefix + 'tokenOutAmount'
-  ) as number
 
   // If proposal executed, get token output amount from tx.
   const executedTxLoadable = useExecutedProposalTxLoadable()

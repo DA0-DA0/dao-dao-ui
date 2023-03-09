@@ -1,6 +1,7 @@
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
@@ -188,7 +189,19 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
 }
 
 const Component: ActionComponent = (props) => {
-  const tokenBalances = useTokenBalances()
+  // Get the selected tokens if not creating.
+  const { watch } = useFormContext<ExecuteData>()
+  const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
+  const cw20 = watch((props.fieldNamePrefix + 'cw20') as 'cw20')
+
+  const tokenBalances = useTokenBalances({
+    // Load selected tokens when not creating, in case they are no longer
+    // returned in the list of all tokens for the given DAO/wallet.
+    additionalTokens: funds.map(({ denom }) => ({
+      type: cw20 ? TokenType.Cw20 : TokenType.Native,
+      denomOrAddress: denom,
+    })),
+  })
 
   return (
     <SuspenseLoader

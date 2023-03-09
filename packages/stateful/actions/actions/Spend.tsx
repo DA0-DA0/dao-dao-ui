@@ -1,9 +1,14 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
-import { ActionCardLoader, MoneyEmoji } from '@dao-dao/stateless'
+import {
+  ActionCardLoader,
+  MoneyEmoji,
+  useCachedLoading,
+} from '@dao-dao/stateless'
 import { TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -13,9 +18,11 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  CHAIN_BECH32_PREFIX,
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  isValidContractAddress,
   makeBankMessage,
   makeWasmMessage,
   objectMatchesStructure,
@@ -39,7 +46,30 @@ const useDefaults: UseDefaults<SpendData> = () => {
 }
 
 const Component: ActionComponent<undefined, SpendData> = (props) => {
-  const loadingTokens = useTokenBalances()
+  // Get the selected token if not creating.
+  const { watch } = useFormContext<SpendData>()
+  const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
+  const selectedToken = useCachedLoading(
+    props.isCreating
+      ? undefined
+      : genericTokenSelector({
+          // Cw20 denoms are contract addresses, native denoms are not.
+          type: isValidContractAddress(denom, CHAIN_BECH32_PREFIX)
+            ? TokenType.Cw20
+            : TokenType.Native,
+          denomOrAddress: denom,
+        }),
+    undefined
+  )
+
+  const loadingTokens = useTokenBalances({
+    // Load selected token when not creating, in case it is no longer returned
+    // in the list of all tokens for the given DAO/wallet.
+    additionalTokens:
+      selectedToken.loading || !selectedToken.data
+        ? undefined
+        : [selectedToken.data],
+  })
 
   return (
     <SuspenseLoader

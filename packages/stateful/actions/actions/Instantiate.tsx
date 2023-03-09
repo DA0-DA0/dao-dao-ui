@@ -3,12 +3,8 @@ import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { nativeBalancesSelector } from '@dao-dao/state'
-import {
-  ActionCardLoader,
-  BabyEmoji,
-  useCachedLoading,
-} from '@dao-dao/stateless'
+import { ActionCardLoader, BabyEmoji } from '@dao-dao/stateless'
+import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionMaker,
@@ -27,7 +23,7 @@ import {
 import { SuspenseLoader } from '../../components/SuspenseLoader'
 import { useExecutedProposalTxLoadable } from '../../hooks/useExecutedProposalTxLoadable'
 import { InstantiateComponent as StatelessInstantiateComponent } from '../components/Instantiate'
-import { useActionOptions } from '../react'
+import { useTokenBalances } from '../hooks'
 
 interface InstantiateData {
   admin: string
@@ -97,27 +93,25 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
   )
 
 const Component: ActionComponent = (props) => {
-  const { address, chainId } = useActionOptions()
+  // Get the selected tokens if not creating.
+  const { watch } = useFormContext<InstantiateData>()
+  const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
 
-  // This needs to be loaded via a cached loadable to avoid displaying a loader
-  // when this data updates on a schedule. Manually trigger a suspense loader
-  // the first time when the initial data is still loading.
-  const nativeBalancesLoadable = useCachedLoading(
-    address
-      ? nativeBalancesSelector({
-          address,
-          chainId,
-        })
-      : undefined,
-    []
-  )
+  const nativeBalances = useTokenBalances({
+    filter: TokenType.Native,
+    // Load selected tokens when not creating, in case they are no longer
+    // returned in the list of all tokens for the given DAO/wallet.
+    additionalTokens: funds.map(({ denom }) => ({
+      type: TokenType.Native,
+      denomOrAddress: denom,
+    })),
+  })
 
   // If in DAO context, use executed proposal TX events to find instantiated
   // address if already instantiated. If in wallet context, there will be no tx.
   const executedTxLoadable = useExecutedProposalTxLoadable()
 
-  const { watch } = useFormContext()
-  const codeId: number = watch(props.fieldNamePrefix + 'codeId')
+  const codeId: number = watch((props.fieldNamePrefix + 'codeId') as 'codeId')
   // This gets all instantiation actions that instantiate the same codeId
   // and all addresses actually instantiated in the transaction on-chain.
   // If these two lists are not the same length, then another instantiation
@@ -184,15 +178,13 @@ const Component: ActionComponent = (props) => {
       fallback={<ActionCardLoader />}
       forceFallback={
         // Manually trigger loader.
-        nativeBalancesLoadable.loading
+        nativeBalances.loading
       }
     >
       <StatelessInstantiateComponent
         {...props}
         options={{
-          nativeBalances: nativeBalancesLoadable.loading
-            ? []
-            : nativeBalancesLoadable.data,
+          nativeBalances: nativeBalances.loading ? [] : nativeBalances.data,
           instantiatedAddress,
         }}
       />
