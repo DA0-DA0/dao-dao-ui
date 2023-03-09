@@ -155,7 +155,7 @@ export const TokenInput = <
                 loading={tokens.loading}
                 pressed={open}
                 size="lg"
-                variant="secondary"
+                variant="ghost_outline"
                 {...props}
               >
                 {selectedTokenDisplay}
