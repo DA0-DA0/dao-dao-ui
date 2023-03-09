@@ -153,14 +153,16 @@ export const MultipleChoiceOption = <
                 validation={[validateRequired]}
               />
               <InputErrorMessage error={errors.choices?.[optionIndex]?.title} />
-              <Button
-                onClick={() =>
-                  addOption(cloneDeep(watch(`choices.${optionIndex}`)))
-                }
-                variant="ghost"
-              >
-                <CopyAllOutlined className="text-icon-secondary" />
-              </Button>
+              <div className="ml-auto">
+                <Button
+                  onClick={() =>
+                    addOption(cloneDeep(watch(`choices.${optionIndex}`)))
+                  }
+                  variant="ghost"
+                >
+                  <CopyAllOutlined className="text-icon-secondary" />
+                </Button>
+              </div>
               <Button onClick={removeOption} type="button" variant="ghost">
                 <Close className="!h-5 !w-5" />
               </Button>

@@ -196,6 +196,15 @@ const InnerProposalStatusAndInfo = ({
           },
         ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
       : []),
+    ...(proposal.allow_revoting
+      ? ([
+          {
+            Icon: Redo,
+            label: t('title.winningChoice'),
+            Value: (props) => <p {...props}>{t('info.enabled')}</p>,
+          },
+        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+      : []),
   ]
 
   let status: string

@@ -14,8 +14,7 @@ export interface ProposalVoteButtonProps<Vote extends unknown> {
 }
 
 export const ProposalVoteButton = <Vote extends unknown>({
-  option: { label, Icon },
-  style,
+  option: { label, Icon, style },
   onClick,
   pressed = false,
   disabled = false,

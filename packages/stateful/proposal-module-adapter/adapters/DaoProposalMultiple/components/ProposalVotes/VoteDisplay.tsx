@@ -6,6 +6,7 @@ import {
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
 import { useVoteOptions } from '../../hooks/useVoteOptions'
+import { MULTIPLE_CHOICE_OPTION_COLORS } from '../ui/MultipleChoiceOption'
 
 interface VoteDisplayProps {
   vote: MultipleChoiceVote
@@ -33,6 +34,12 @@ export const VoteDisplay = ({ vote, proposal }: VoteDisplayProps) => {
             ? 'text-icon-interactive-valid'
             : 'text-icon-secondary'
         }
+        style={{
+          color:
+            MULTIPLE_CHOICE_OPTION_COLORS[
+              vote.option_id % MULTIPLE_CHOICE_OPTION_COLORS.length
+            ],
+        }}
       >
         {label}
       </p>
