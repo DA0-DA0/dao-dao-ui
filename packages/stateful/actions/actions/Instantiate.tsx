@@ -144,7 +144,8 @@ const Component: ActionComponent = (props) => {
           data.codeId === codeId
       )
       .map(({ data }) => data) as InstantiateData[]
-    // Index of this action in the list of all instantiation actions.
+    // Index of this action in the list of all instantiation actions for this
+    // code ID.
     const innerIndex = instantiateActionsData.indexOf(
       props.allActionsWithData[props.index].data
     )
@@ -155,33 +156,27 @@ const Component: ActionComponent = (props) => {
       )
     }
 
-    // Instantiation events from the transaction data.
-    const instantiationAttributes =
-      executedTxLoadable.contents.events.find(
-        ({ type }) => type === 'instantiate'
-      )?.attributes ?? []
-    // Instantiated addresses for the code ID this action instantiated.
-    const codeIdInstantiations = instantiationAttributes.reduce(
-      (acc, { key, value }, index) => [
-        ...acc,
-        ...(key === '_contract_address' &&
-        instantiationAttributes[index + 1].key === 'code_id' &&
-        Number(instantiationAttributes[index + 1].value) === codeId
-          ? [value]
-          : []),
-      ],
-      [] as string[]
-    )
+    // Instantiated contracts from the transaction data for this code ID.
+    const instantiatedContracts = executedTxLoadable.contents.events
+      .map(({ type, attributes }) =>
+        type === 'instantiate' &&
+        attributes.some(
+          ({ key, value }) => key === 'code_id' && value === codeId.toString()
+        )
+          ? attributes.find(({ key }) => key === '_contract_address')?.value
+          : null
+      )
+      .filter((attr): attr is string => !!attr)
 
-    // If the instantiation action length does not match the actual
+    // If the instantiated contracts length does not match the actual
     // instantiation events from the chain, then another message must've
-    // instantiated the contract, so we cannot definitively locate the
+    // instantiated the same contract, so we cannot definitively locate the
     // address.
-    if (instantiateActionsData.length !== codeIdInstantiations.length) {
+    if (instantiateActionsData.length !== instantiatedContracts.length) {
       return
     }
 
-    return codeIdInstantiations[innerIndex]
+    return instantiatedContracts[innerIndex]
   }, [executedTxLoadable, props, codeId])
 
   return (
