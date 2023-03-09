@@ -167,3 +167,34 @@ export const stakeSelector = selectorFamily<
       return await client.stake(...params)
     },
 })
+
+//! Custom selectors
+
+// Get validators wormhole data from the indexer.
+export const validatorsSelector = selectorFamily<
+  {
+    validator: string
+    timeMs: number
+    amount: string
+  }[],
+  QueryClientParams
+>({
+  key: 'cwVestingValidators',
+  get:
+    ({ contractAddress, chainId }) =>
+    ({ get }) => {
+      const anyId = get(refreshVestingAtom(''))
+      const thisId = get(refreshVestingAtom(contractAddress))
+
+      const validators = get(
+        queryContractIndexerSelector({
+          contractAddress,
+          formulaName: 'cwVesting/validators',
+          chainId,
+          id: anyId + thisId,
+        })
+      )
+
+      return validators && Array.isArray(validators) ? validators : []
+    },
+})

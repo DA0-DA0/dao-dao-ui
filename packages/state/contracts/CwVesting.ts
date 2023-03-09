@@ -17,7 +17,7 @@ export interface CwVestingReadOnlyInterface {
   contractAddress: string
   ownership: () => Promise<OwnershipForAddr>
   info: () => Promise<Vest>
-  distributable: ({ t }: { t?: number }) => Promise<Uint128>
+  distributable: ({ t }: { t?: Timestamp }) => Promise<Uint128>
   vested: ({ t }: { t?: Timestamp }) => Promise<Uint128>
   totalToVest: () => Promise<Uint128>
   vestDuration: () => Promise<Uint64>
@@ -49,7 +49,7 @@ export class CwVestingQueryClient implements CwVestingReadOnlyInterface {
       info: {},
     })
   }
-  distributable = async ({ t }: { t?: number }): Promise<Uint128> => {
+  distributable = async ({ t }: { t?: Timestamp }): Promise<Uint128> => {
     return this.client.queryContractSmart(this.contractAddress, {
       distributable: {
         t,

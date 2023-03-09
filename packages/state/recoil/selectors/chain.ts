@@ -9,7 +9,10 @@ import {
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { cosmos, juno } from 'interchain-rpc'
-import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
+import {
+  DelegationDelegatorReward,
+  ValidatorSlashEvent,
+} from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
 import {
   Proposal as GovProposal,
   WeightedVoteOption,
@@ -615,5 +618,33 @@ export const walletHexPublicKeySelector = selectorFamily<
         return
       }
       return toHex(fromBase64(account.pubkey.value))
+    },
+})
+
+export const validatorSlashesSelector = selectorFamily<
+  ValidatorSlashEvent[],
+  WithChainId<{ validatorAddress: string }>
+>({
+  key: 'validatorSlashes',
+  get:
+    ({ validatorAddress, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      let slashes: ValidatorSlashEvent[]
+      try {
+        slashes = await getAllRpcResponse(
+          client.distribution.v1beta1.validatorSlashes,
+          {
+            validatorAddress,
+          },
+          'slashes'
+        )
+      } catch (err) {
+        console.error(err)
+        return []
+      }
+
+      return slashes
     },
 })
