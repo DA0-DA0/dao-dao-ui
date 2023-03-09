@@ -99,12 +99,15 @@ const Component: ActionComponent = (props) => {
 
   const nativeBalances = useTokenBalances({
     filter: TokenType.Native,
-    // Load selected tokens when not creating, in case they are no longer
-    // returned in the list of all tokens for the given DAO/wallet.
-    additionalTokens: funds.map(({ denom }) => ({
-      type: TokenType.Native,
-      denomOrAddress: denom,
-    })),
+    // Load selected tokens when not creating in case they are no longer
+    // returned in the list of all tokens for the given DAO/wallet after the
+    // proposal is made.
+    additionalTokens: props.isCreating
+      ? undefined
+      : funds.map(({ denom }) => ({
+          type: TokenType.Native,
+          denomOrAddress: denom,
+        })),
   })
 
   // If in DAO context, use executed proposal TX events to find instantiated

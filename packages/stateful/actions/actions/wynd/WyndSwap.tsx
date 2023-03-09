@@ -155,9 +155,10 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
   ) as number
 
   const loadingBalances = useTokenBalances({
-    // Load selected tokens when not creating, in case they are no longer
-    // returned in the list of all tokens for the given DAO/wallet.
-    additionalTokens: [tokenIn, tokenOut],
+    // Load selected tokens when not creating in case they are no longer
+    // returned in the list of all tokens for the given DAO/wallet after the
+    // proposal is made.
+    additionalTokens: props.isCreating ? undefined : [tokenIn, tokenOut],
   })
 
   const wyndPoolsLoadable = useCachedLoadable(wyndPoolsSelector)
