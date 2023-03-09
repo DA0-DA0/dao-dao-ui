@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
-import { ActionCardLoader, SwordsEmoji } from '@dao-dao/stateless'
+import { SwordsEmoji } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -27,7 +27,6 @@ import {
   parseEncodedMessage,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../components/SuspenseLoader'
 import {
   ExecuteData,
   ExecuteComponent as StatelessExecuteComponent,
@@ -193,7 +192,7 @@ const Component: ActionComponent = (props) => {
   const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
   const cw20 = watch((props.fieldNamePrefix + 'cw20') as 'cw20')
 
-  const tokenBalances = useTokenBalances({
+  const balances = useTokenBalances({
     // Load selected tokens when not creating in case they are no longer
     // returned in the list of all tokens for the given DAO/wallet after the
     // proposal is made.
@@ -206,20 +205,12 @@ const Component: ActionComponent = (props) => {
   })
 
   return (
-    <SuspenseLoader
-      fallback={<ActionCardLoader />}
-      forceFallback={
-        // Manually trigger loader.
-        tokenBalances.loading
-      }
-    >
-      <StatelessExecuteComponent
-        {...props}
-        options={{
-          balances: tokenBalances.loading ? [] : tokenBalances.data,
-        }}
-      />
-    </SuspenseLoader>
+    <StatelessExecuteComponent
+      {...props}
+      options={{
+        balances,
+      }}
+    />
   )
 }
 

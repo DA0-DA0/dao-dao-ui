@@ -26,27 +26,31 @@ Default.args = {
   onRemove: () => alert('remove'),
   errors: {},
   options: {
-    nativeBalances: [
-      {
-        token: {
-          type: TokenType.Native,
-          denomOrAddress: NATIVE_DENOM,
-          decimals: 6,
-          symbol: 'JUNO',
-          imageUrl: '',
+    nativeBalances: {
+      loading: false,
+      data: [
+        {
+          token: {
+            type: TokenType.Native,
+            denomOrAddress: NATIVE_DENOM,
+            decimals: 6,
+            symbol: 'JUNO',
+            imageUrl: '/juno.png',
+          },
+          balance: '1231245124',
         },
-        balance: '1231245124',
-      },
-      {
-        token: {
-          type: TokenType.Native,
-          denomOrAddress: 'uatom',
-          decimals: 6,
-          symbol: 'ATOM',
-          imageUrl: '',
+        {
+          token: {
+            type: TokenType.Native,
+            denomOrAddress: 'uatom',
+            decimals: 6,
+            symbol: 'ATOM',
+            imageUrl:
+              'https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/images/atom.png',
+          },
+          balance: '984129741',
         },
-        balance: '984129741',
-      },
-    ],
+      ],
+    },
   },
 }

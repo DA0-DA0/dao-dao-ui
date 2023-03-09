@@ -14,7 +14,7 @@ import {
   NumberInput,
   TextInput,
 } from '@dao-dao/stateless'
-import { GenericTokenBalance } from '@dao-dao/types'
+import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DENOM,
@@ -32,7 +32,7 @@ import {
 } from './NativeCoinSelector'
 
 export interface InstantiateOptions {
-  nativeBalances: GenericTokenBalance[]
+  nativeBalances: LoadingData<GenericTokenBalance[]>
   // Only present once executed.
   instantiatedAddress?: string
 }

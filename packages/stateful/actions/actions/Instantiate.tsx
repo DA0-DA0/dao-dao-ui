@@ -3,7 +3,7 @@ import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { ActionCardLoader, BabyEmoji } from '@dao-dao/stateless'
+import { BabyEmoji } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -20,7 +20,6 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../components/SuspenseLoader'
 import { useExecutedProposalTxLoadable } from '../../hooks/useExecutedProposalTxLoadable'
 import { InstantiateComponent as StatelessInstantiateComponent } from '../components/Instantiate'
 import { useTokenBalances } from '../hooks'
@@ -177,21 +176,13 @@ const Component: ActionComponent = (props) => {
   }, [executedTxLoadable, props, codeId])
 
   return (
-    <SuspenseLoader
-      fallback={<ActionCardLoader />}
-      forceFallback={
-        // Manually trigger loader.
-        nativeBalances.loading
-      }
-    >
-      <StatelessInstantiateComponent
-        {...props}
-        options={{
-          nativeBalances: nativeBalances.loading ? [] : nativeBalances.data,
-          instantiatedAddress,
-        }}
-      />
-    </SuspenseLoader>
+    <StatelessInstantiateComponent
+      {...props}
+      options={{
+        nativeBalances,
+        instantiatedAddress,
+      }}
+    />
   )
 }
 

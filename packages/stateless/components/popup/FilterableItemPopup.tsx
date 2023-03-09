@@ -65,9 +65,10 @@ export const FilterableItemPopup = <T extends FilterableItem>({
   const itemsListRef = useRef<HTMLDivElement>(null)
   const searchBarRef = useRef<HTMLInputElement>(null)
 
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  // When filtered items update, reset selection to top.
-  useEffect(() => setSelectedIndex(0), [filteredData])
+  // Default nothing selected.
+  const [selectedIndex, setSelectedIndex] = useState(-1)
+  // When filtered items update, reset selection.
+  useEffect(() => setSelectedIndex(-1), [filteredData])
   // Ensure selected item is scrolled into view.
   useEffect(() => {
     const item = itemsListRef.current?.children[selectedIndex]
@@ -118,6 +119,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
           break
         case 'ArrowRight':
         case 'ArrowDown':
+        case 'Tab':
           event.preventDefault()
           setSelectedIndex(
             // Just in case for some reason the index is underflowing.
