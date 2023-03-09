@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
-import { ActionCardLoader, MoneyEmoji } from '@dao-dao/stateless'
+import { MoneyEmoji } from '@dao-dao/stateless'
 import { TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -24,7 +24,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { AddressInput, SuspenseLoader } from '../../components'
+import { AddressInput } from '../../components'
 import {
   SpendData,
   SpendComponent as StatelessSpendComponent,
@@ -63,21 +63,13 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
   })
 
   return (
-    <SuspenseLoader
-      fallback={<ActionCardLoader />}
-      forceFallback={
-        // Manually trigger loader.
-        loadingTokens.loading
-      }
-    >
-      <StatelessSpendComponent
-        {...props}
-        options={{
-          tokens: loadingTokens.loading ? [] : loadingTokens.data,
-          AddressInput,
-        }}
-      />
-    </SuspenseLoader>
+    <StatelessSpendComponent
+      {...props}
+      options={{
+        tokens: loadingTokens,
+        AddressInput,
+      }}
+    />
   )
 }
 

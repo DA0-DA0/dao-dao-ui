@@ -128,8 +128,12 @@ export const FilterableItemPopup = <T extends FilterableItem>({
           break
         case 'Enter':
           event.preventDefault()
-          if (selectedIndex >= 0 && selectedIndex < filteredData.length) {
-            const { item, originalIndex } = filteredData[selectedIndex]
+          // If nothing is selected, click the first item. It's confusing when
+          // the first item is highlighted by default, so we don't show it as
+          // selected, but still select it when pressing enter.
+          const index = selectedIndex === -1 ? 0 : selectedIndex
+          if (index >= 0 && index < filteredData.length) {
+            const { item, originalIndex } = filteredData[index]
             onSelectItem(item, originalIndex)
           }
           break

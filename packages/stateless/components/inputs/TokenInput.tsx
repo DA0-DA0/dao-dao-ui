@@ -3,11 +3,13 @@ import clsx from 'clsx'
 import { ReactNode } from 'react'
 import {
   FieldError,
+  FieldPathValue,
   FieldValues,
   Path,
   UseFormRegister,
   UseFormSetValue,
   UseFormWatch,
+  Validate,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -22,7 +24,6 @@ import {
 
 import { Button } from '../buttons'
 import { FilterableItemPopup } from '../popup'
-import { InputThemedText } from './InputThemedText'
 import { NumberInput } from './NumberInput'
 
 export type TokenInputOption = Omit<GenericToken, 'type' | 'decimals'> & {
@@ -43,11 +44,13 @@ export type TokenInputProps<
   amountMin?: number
   amountMax?: number
   amountStep?: number
+  amountValidations?: Validate<FieldPathValue<FV, FieldName>>[]
   // The pair of `type` and `denomOrAddress` must be unique for each token.
   tokens: LoadingData<T[]>
   onSelectToken: (token: T) => void
   selectedToken: Pick<T, 'type' | 'denomOrAddress'> | undefined
   tokenFallback?: ReactNode
+  disabled?: boolean
   readOnly?: boolean
   containerClassName?: string
 }
@@ -65,10 +68,12 @@ export const TokenInput = <
   amountMin,
   amountMax,
   amountStep,
+  amountValidations,
   tokens,
   onSelectToken,
   selectedToken: _selectedToken,
   tokenFallback,
+  disabled,
   readOnly,
   containerClassName,
 }: TokenInputProps<T, FV, FieldName>) => {
@@ -93,7 +98,14 @@ export const TokenInput = <
         }}
       />
 
-      <p>{selectedToken.symbol}</p>
+      <p>
+        {readOnly &&
+          amount.toLocaleString(undefined, {
+            // Show as many decimals as possible (max is 20).
+            maximumFractionDigits: 20,
+          }) + ' '}
+        {selectedToken.symbol}
+      </p>
     </div>
   ) : (
     tokenFallback ?? (
@@ -113,22 +125,12 @@ export const TokenInput = <
       )}
     >
       {readOnly ? (
-        <>
-          <InputThemedText>
-            <p>
-              {amount.toLocaleString(undefined, {
-                // Show as many decimals as possible (max is 20).
-                maximumFractionDigits: 20,
-              })}
-            </p>
-
-            {selectedTokenDisplay}
-          </InputThemedText>
-        </>
+        selectedTokenDisplay
       ) : (
         <>
           <NumberInput
             containerClassName="min-w-[12rem] grow basis-[12rem]"
+            disabled={disabled}
             error={amountError}
             fieldName={amountFieldName}
             max={amountMax}
@@ -139,6 +141,7 @@ export const TokenInput = <
             validation={[
               validateRequired,
               amountMin === 0 ? validateNonNegative : validatePositive,
+              ...(amountValidations ?? []),
             ]}
             watch={watch}
           />
@@ -148,6 +151,7 @@ export const TokenInput = <
               <Button
                 className="min-w-[10rem] grow basis-[10rem]"
                 contentContainerClassName="justify-between text-icon-primary !gap-4"
+                disabled={disabled}
                 loading={tokens.loading}
                 pressed={open}
                 size="lg"
@@ -179,7 +183,7 @@ export const TokenInput = <
                     ...token,
                   }))
             }
-            onSelect={onSelectToken}
+            onSelect={(token) => onSelectToken(token as T)}
             searchPlaceholder={t('info.searchForToken')}
           />
         </>
