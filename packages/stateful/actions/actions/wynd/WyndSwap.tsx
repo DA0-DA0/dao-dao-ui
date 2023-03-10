@@ -45,8 +45,7 @@ import {
 } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
   DAO_DAO_DAO_ADDRESS,
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   WYND_MULTI_HOP_CONTRACT,
   WYND_REFERRAL_COMMISSION,
   convertDenomToMicroDenomWithDecimals,
@@ -54,8 +53,6 @@ import {
   encodeMessageAsBase64,
   getJunoIbcUsdc,
   makeWasmMessage,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
   objectMatchesStructure,
   parseEncodedMessage,
 } from '@dao-dao/utils'
@@ -119,11 +116,7 @@ const useDefaults: UseDefaults<WyndSwapData> = () => {
     },
     tokenInAmount: 0,
     tokenOut: {
-      type: TokenType.Native,
-      denomOrAddress: NATIVE_DENOM,
-      symbol: nativeTokenLabel(NATIVE_DENOM),
-      decimals: NATIVE_DECIMALS,
-      imageUrl: nativeTokenLogoURI(NATIVE_DENOM),
+      ...NATIVE_TOKEN,
     },
     tokenOutAmount: 0,
     minOutAmount: 0,

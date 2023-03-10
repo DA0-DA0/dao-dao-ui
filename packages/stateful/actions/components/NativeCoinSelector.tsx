@@ -7,11 +7,9 @@ import { IconButton, InputErrorMessage, TokenInput } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenLabel,
 } from '@dao-dao/utils'
 
 export type NativeCoinSelectorProps = ComponentProps<
@@ -71,10 +69,10 @@ export const NativeCoinSelector = ({
       }
       // If there are no native tokens in the treasury the native balances
       // query will return an empty list.
-      if (id === NATIVE_DENOM) {
+      if (id === NATIVE_TOKEN.denomOrAddress) {
         return t('error.cantSpendMoreThanTreasury', {
           amount: 0,
-          tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+          tokenSymbol: NATIVE_TOKEN.symbol,
         })
       }
       return 'Unrecognized denom.'
@@ -113,7 +111,7 @@ export const NativeCoinSelector = ({
 
   const minAmount = convertMicroDenomToDenomWithDecimals(
     1,
-    selectedTokenBalance?.token?.decimals ?? NATIVE_DECIMALS
+    selectedTokenBalance?.token?.decimals ?? NATIVE_TOKEN.decimals
   )
 
   return (

@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_DENOM, ibcAssets } from '@dao-dao/utils'
+import { NATIVE_TOKEN, ibcAssets } from '@dao-dao/utils'
 
 import { TokenInput, TokenInputOption } from './TokenInput'
 
@@ -42,12 +42,7 @@ Default.args = {
   tokens: {
     loading: false,
     data: [
-      {
-        type: TokenType.Native,
-        denomOrAddress: NATIVE_DENOM,
-        symbol: 'JUNO',
-        imageUrl: '/juno.png',
-      },
+      NATIVE_TOKEN,
       ...ibcAssets.tokens.map(
         ({ juno_denom, symbol, name, logoURI }): TokenInputOption => ({
           type: TokenType.Native,

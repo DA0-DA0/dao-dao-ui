@@ -15,7 +15,7 @@ import {
 } from '@dao-dao/types/actions'
 import {
   CHAIN_BECH32_PREFIX,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   isValidContractAddress,
@@ -37,7 +37,7 @@ const useDefaults: UseDefaults<SpendData> = () => {
   return {
     to: walletAddress,
     amount: 1,
-    denom: NATIVE_DENOM,
+    denom: NATIVE_TOKEN.denomOrAddress,
   }
 }
 

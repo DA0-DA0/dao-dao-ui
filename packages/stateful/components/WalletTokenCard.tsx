@@ -27,7 +27,7 @@ import {
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
   MAINNET,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   cwMsgToEncodeObject,
   getMeTxPrefillPath,
   isJunoIbcUsdc,
@@ -138,7 +138,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
 
   const isNative =
     props.token.type === TokenType.Native &&
-    props.token.denomOrAddress === NATIVE_DENOM
+    props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
   const isUsdc =
     props.token.type === TokenType.Native &&
     isJunoIbcUsdc(props.token.denomOrAddress)
@@ -279,7 +279,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
         lazyInfo={lazyInfo}
         refreshUnstakingTasks={
           props.token.type === TokenType.Native &&
-          props.token.denomOrAddress === NATIVE_DENOM
+          props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
             ? refreshNativeTokenStakingInfo
             : undefined
         }

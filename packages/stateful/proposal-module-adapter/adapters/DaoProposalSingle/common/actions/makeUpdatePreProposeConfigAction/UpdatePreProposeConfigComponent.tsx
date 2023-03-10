@@ -22,12 +22,10 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
   ibcAssets,
   isValidContractAddress,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
   validateContractAddress,
   validateRequired,
 } from '@dao-dao/utils'
@@ -91,10 +89,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
       : []),
     // Then native.
     {
-      type: TokenType.Native,
-      denomOrAddress: NATIVE_DENOM,
-      symbol: nativeTokenLabel(NATIVE_DENOM),
-      imageUrl: nativeTokenLogoURI(NATIVE_DENOM),
+      ...NATIVE_TOKEN,
     },
     // Then the IBC assets.
     ...ibcAssets.tokens.map(({ juno_denom, symbol, name, logoURI }) => ({

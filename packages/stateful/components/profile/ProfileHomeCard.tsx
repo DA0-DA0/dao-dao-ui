@@ -4,7 +4,7 @@ import {
   useAppContext,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
+import { NATIVE_TOKEN } from '@dao-dao/utils'
 
 import { useWalletInfo } from '../../hooks'
 
@@ -61,8 +61,8 @@ export const ProfileHomeCard = () => {
             }
       }
       showUpdateProfileNft={updateProfileNft.toggle}
-      tokenDecimals={NATIVE_DECIMALS}
-      tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
+      tokenDecimals={NATIVE_TOKEN.decimals}
+      tokenSymbol={NATIVE_TOKEN.symbol}
       updateProfileName={updateProfileName}
       walletProfileData={walletProfileData}
     />

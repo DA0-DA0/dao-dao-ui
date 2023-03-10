@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_DENOM, getFallbackImage } from '@dao-dao/utils'
+import { NATIVE_TOKEN, getFallbackImage } from '@dao-dao/utils'
 
 import { ExecuteComponent } from './Execute'
 
@@ -30,13 +30,7 @@ Default.args = {
       loading: false,
       data: [
         {
-          token: {
-            type: TokenType.Native,
-            denomOrAddress: NATIVE_DENOM,
-            decimals: 6,
-            symbol: 'JUNO',
-            imageUrl: '/juno.png',
-          },
+          token: NATIVE_TOKEN,
           balance: '1231245124',
         },
         {

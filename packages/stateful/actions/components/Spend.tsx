@@ -14,10 +14,9 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenLabel,
   validateAddress,
   validateRequired,
 } from '@dao-dao/utils'
@@ -85,10 +84,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       }
 
       // Just in case native denom not in list.
-      if (id === NATIVE_DENOM) {
+      if (id === NATIVE_TOKEN.denomOrAddress) {
         return t(insufficientBalanceI18nKey, {
           amount: 0,
-          tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+          tokenSymbol: NATIVE_TOKEN.symbol,
         })
       }
 

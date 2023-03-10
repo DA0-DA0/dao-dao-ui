@@ -7,7 +7,7 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_DENOM } from '@dao-dao/utils'
+import { NATIVE_TOKEN } from '@dao-dao/utils'
 
 import { SpendComponent, SpendData } from './Spend'
 
@@ -18,7 +18,7 @@ export default {
     makeReactHookFormDecorator<SpendData>({
       to: '',
       amount: 1,
-      denom: NATIVE_DENOM,
+      denom: NATIVE_TOKEN.denomOrAddress,
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
   ],
@@ -38,13 +38,7 @@ Default.args = {
       loading: false,
       data: [
         {
-          token: {
-            type: TokenType.Native,
-            denomOrAddress: NATIVE_DENOM,
-            decimals: 6,
-            symbol: 'JUNO',
-            imageUrl: '',
-          },
+          token: NATIVE_TOKEN,
           balance: '46252349169321',
         },
         {

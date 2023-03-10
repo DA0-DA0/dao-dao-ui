@@ -17,7 +17,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   decodeRawProtobufMsg,
   encodeRawProtobufMsg,
   isDecodedStargateMsg,
@@ -120,7 +120,7 @@ export const makeValidatorActions: ActionMaker<ValidatorActionsData> = ({
           },
         },
         value: {
-          denom: NATIVE_DENOM,
+          denom: NATIVE_TOKEN.denomOrAddress,
           amount: '1000000',
         },
       },

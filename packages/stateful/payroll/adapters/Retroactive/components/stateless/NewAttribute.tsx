@@ -13,7 +13,7 @@ import {
 } from '@dao-dao/stateless'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   nativeTokenDecimals,
   nativeTokenLabel,
   validatePositive,
@@ -145,7 +145,7 @@ export const NewAttribute = ({
                 />
 
                 <SelectInput
-                  defaultValue={NATIVE_DENOM}
+                  defaultValue={NATIVE_TOKEN.denomOrAddress}
                   error={
                     errors?.attributes?.[attributeIndex]?.tokens?.[tokenIndex]
                       ?.denomOrAddress

@@ -16,7 +16,7 @@ import {
 import { GenericTokenBalance, LoadingData, TokenType } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
   validateContractAddress,
@@ -208,7 +208,10 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                   <Button
                     className="self-start"
                     onClick={() =>
-                      appendCoin({ amount: 1, denom: NATIVE_DENOM })
+                      appendCoin({
+                        amount: 1,
+                        denom: NATIVE_TOKEN.denomOrAddress,
+                      })
                     }
                     variant="secondary"
                   >

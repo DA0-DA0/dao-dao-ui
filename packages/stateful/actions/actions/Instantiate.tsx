@@ -14,7 +14,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_DECIMALS,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
@@ -51,7 +51,7 @@ const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
             denom,
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
-              NATIVE_DECIMALS
+              NATIVE_TOKEN.decimals
             ).toString(),
           })),
           label,
@@ -80,7 +80,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
                   amount: Number(
                     convertMicroDenomToDenomWithDecimals(
                       amount,
-                      NATIVE_DECIMALS
+                      NATIVE_TOKEN.decimals
                     )
                   ),
                 })

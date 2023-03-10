@@ -17,7 +17,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_DECIMALS,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   encodeMessageAsBase64,
@@ -93,7 +93,7 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
                 denom,
                 amount: convertDenomToMicroDenomWithDecimals(
                   amount,
-                  nativeTokenDecimals(denom) ?? NATIVE_DECIMALS
+                  nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
                 ).toString(),
               })),
               msg,
@@ -178,7 +178,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
                 denom,
                 amount: convertMicroDenomToDenomWithDecimals(
                   amount,
-                  nativeTokenDecimals(denom) ?? NATIVE_DECIMALS
+                  nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
                 ),
               })),
           cw20: isCw20,

@@ -26,14 +26,12 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   ibcAssets,
   isValidContractAddress,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
   toAccessibleImageUrl,
   validateContractAddress,
   validatePositive,
@@ -173,10 +171,7 @@ export const ProposalDepositInput = ({
       : []),
     // Then native.
     {
-      key: NATIVE_DENOM,
-      type: 'native' as const,
-      label: nativeTokenLabel(NATIVE_DENOM),
-      imageUrl: nativeTokenLogoURI(NATIVE_DENOM),
+      ...NATIVE_TOKEN,
     },
     // Then the IBC assets.
     ...ibcAssets.tokens.map(({ juno_denom, symbol, name, logoURI }) => ({

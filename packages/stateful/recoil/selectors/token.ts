@@ -22,7 +22,7 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
   isValidContractAddress,
   isValidWalletAddress,
@@ -47,7 +47,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
       const usdUnitPrice = get(wyndUsdPriceSelector(token.denomOrAddress))
 
       // For now, stakingInfo only exists for native token, until ICA.
-      if (token.denomOrAddress === NATIVE_DENOM) {
+      if (token.denomOrAddress === NATIVE_TOKEN.denomOrAddress) {
         const nativeDelegationInfo = get(
           nativeDelegationInfoSelector({ address: walletAddress, chainId })
         )

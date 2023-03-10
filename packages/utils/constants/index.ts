@@ -28,13 +28,13 @@ export const NATIVE_DECIMALS = parseInt(
   10
 )
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
-export const NATIVE_TOKEN: GenericToken = {
+export const NATIVE_TOKEN: GenericToken = Object.freeze({
   type: TokenType.Native,
   denomOrAddress: NATIVE_DENOM,
   symbol: nativeTokenLabel(NATIVE_DENOM),
   decimals: NATIVE_DECIMALS,
   imageUrl: nativeTokenLogoURI(NATIVE_DENOM) || getFallbackImage(NATIVE_DENOM),
-}
+})
 
 export const USDC_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_USDC_DECIMALS || '6',

@@ -17,7 +17,7 @@ import {
 import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   makeWasmMessage,
   validateAddress,
   validateCosmosMsg,
@@ -171,7 +171,9 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           {isCreating && (
             <Button
               className="mb-2 self-start"
-              onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
+              onClick={() =>
+                appendCoin({ amount: 1, denom: NATIVE_TOKEN.denomOrAddress })
+              }
               variant="secondary"
             >
               {t('button.addPayment')}
