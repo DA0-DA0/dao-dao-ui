@@ -52,25 +52,30 @@ export const ActionSelector = ({
     [isMac]
   )
 
+  const Trigger: FilterableItemPopupProps['Trigger'] = useCallback(
+    ({ open, ...props }) => (
+      <Button pressed={open} variant="secondary" {...props}>
+        <Add
+          className={clsx(
+            'h-4 w-4',
+            open ? 'text-icon-brand' : 'text-icon-primary'
+          )}
+        />{' '}
+        {t('button.addAnAction')}
+        {!isMobile() && (
+          <>
+            {' '}
+            <p className="text-text-tertiary">{isMac ? '⌘' : '⌃'}A</p>
+          </>
+        )}
+      </Button>
+    ),
+    [isMac, t]
+  )
+
   return (
     <FilterableItemPopup
-      Trigger={({ open, ...props }) => (
-        <Button pressed={open} variant="secondary" {...props}>
-          <Add
-            className={clsx(
-              'h-4 w-4',
-              open ? 'text-icon-brand' : 'text-icon-primary'
-            )}
-          />{' '}
-          {t('button.addAnAction')}
-          {!isMobile() && (
-            <>
-              {' '}
-              <p className="text-text-tertiary">{isMac ? '⌘' : '⌃'}A</p>
-            </>
-          )}
-        </Button>
-      )}
+      Trigger={Trigger}
       filterableItemKeys={FILTERABLE_KEYS}
       getKeydownEventListener={getKeydownEventListener}
       items={actions}
