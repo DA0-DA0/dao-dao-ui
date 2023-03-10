@@ -2,6 +2,7 @@ import {
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
+import clsx from 'clsx'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -10,6 +11,7 @@ import {
   InputErrorMessage,
   InputLabel,
   TextInput,
+  useDetectWrap,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import { validateAddress, validateRequired } from '@dao-dao/utils'
@@ -26,6 +28,9 @@ export const MintNft: ActionComponent<MintNftOptions> = ({
   const { t } = useTranslation()
   const { register } = useFormContext()
 
+  const { containerRef, childRef, wrapped } = useDetectWrap()
+  const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded
+
   return (
     <div className="flex flex-col gap-4">
       {isCreating && (
@@ -35,7 +40,10 @@ export const MintNft: ActionComponent<MintNftOptions> = ({
       <HorizontalNftCard {...nftInfo} />
 
       <InputLabel className="-mb-3" name={t('form.uniqueTokenId')} />
-      <div className="flex flex-col gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
+      <div
+        className="flex flex-row flex-wrap items-stretch gap-x-3 gap-y-2"
+        ref={containerRef}
+      >
         <TextInput
           className="w-auto"
           disabled={!isCreating}
@@ -45,10 +53,14 @@ export const MintNft: ActionComponent<MintNftOptions> = ({
           validation={[validateRequired]}
         />
 
-        <div className="flex grow flex-row items-stretch gap-2 sm:gap-3">
-          <div className="flex flex-row items-center pl-1 sm:pl-0">
-            <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
-            <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
+        <div
+          className="flex grow flex-row items-stretch gap-2 sm:gap-3"
+          ref={childRef}
+        >
+          <div
+            className={clsx('flex flex-row items-center', wrapped && 'pl-1')}
+          >
+            <Icon className="!h-6 !w-6 text-text-secondary" />
           </div>
 
           <AddressInput

@@ -139,7 +139,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
       <div className="flex flex-col gap-1">
         <InputLabel name={t('form.funds')} />
 
-        <div className="flex flex-row items-end justify-between gap-6">
+        <div className="flex flex-row flex-wrap items-end justify-between gap-6">
           <div className="flex grow flex-col gap-1">
             {cw20 ? (
               <TokenInput
