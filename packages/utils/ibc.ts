@@ -38,6 +38,13 @@ export function nativeTokenDecimals(denom: string): number | undefined {
   if (denom === NATIVE_TOKEN.denomOrAddress) {
     return NATIVE_TOKEN.decimals
   }
+  // Fallback so that the testnet and mainnet know how much the other token has.
+  // Before this fix, this function would return 0 for the native token on the
+  // other chain because neither JUNO nor JUNOX are in the ibcAssets list.
+  if (denom === 'ujuno' || denom === 'ujunox') {
+    return 6
+  }
+
   const asset = denom.startsWith('ibc')
     ? ibcAssets.tokens.find(({ juno_denom }) => juno_denom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)

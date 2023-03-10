@@ -201,6 +201,7 @@ export const daoTvlSelector = selectorFamily<
           chainId,
         })
       )
+
       const nativeDelegatedToken = get(
         genericTokenSelector({
           type: TokenType.Native,
