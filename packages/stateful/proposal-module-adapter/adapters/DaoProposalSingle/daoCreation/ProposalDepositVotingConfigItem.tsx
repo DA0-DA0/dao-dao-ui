@@ -177,8 +177,9 @@ export const ProposalDepositInput = ({
     {
       type: TokenType.Cw20,
       denomOrAddress: 'other_cw20',
-      symbol: t('form.cw20Token'),
-      imageUrl: undefined,
+      symbol:
+        (type === TokenType.Cw20 && tokenLoaded?.symbol) || t('form.cw20Token'),
+      imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
     },
   ]
   const selectedToken = availableTokens.find(

@@ -83,7 +83,10 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
             ...governanceToken,
             type: 'voting_module_token',
             description: t('title.governanceToken'),
-            imageUrl: undefined,
+            imageUrl:
+              (depositInfo.type === 'voting_module_token' &&
+                depositInfo.token?.imageUrl) ||
+              undefined,
           },
         ]
       : []),
@@ -103,8 +106,12 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
     {
       type: TokenType.Cw20,
       denomOrAddress: 'other_cw20',
-      symbol: t('form.cw20Token'),
-      imageUrl: undefined,
+      symbol:
+        (depositInfo.type === TokenType.Cw20 && depositInfo.token?.symbol) ||
+        t('form.cw20Token'),
+      imageUrl:
+        (depositInfo.type === TokenType.Cw20 && depositInfo.token?.imageUrl) ||
+        undefined,
     },
   ]
   const selectedToken = availableTokens.find(
