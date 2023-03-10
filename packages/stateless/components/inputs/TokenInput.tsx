@@ -52,14 +52,21 @@ export type TokenInputProps<
   tokenFallback?: ReactNode
   disabled?: boolean
   readOnly?: boolean
+  required?: boolean
   containerClassName?: string
 }
 
+/**
+ * A component for specifying an amount and a token. This should be used
+ * whenever an amount of a variable choice token is needed. See example usage in
+ * the Spend action component.
+ */
 export const TokenInput = <
   T extends TokenInputOption,
   FV extends FieldValues = FieldValues,
   FieldName extends Path<FV> = Path<FV>
 >({
+  // The form fields that register the amount field and watch for changes.
   register,
   watch,
   setValue,
@@ -69,12 +76,25 @@ export const TokenInput = <
   amountMax,
   amountStep,
   amountValidations,
+  // The available tokens and selection handlers for the token. Various
+  // use-cases exist for this component, so the token selection is left up to
+  // the caller instead of being handled internally like the amount field.
   tokens,
   onSelectToken,
   selectedToken: _selectedToken,
+  // Fallback when no token is selected. If nothing is provided, a placeholder
+  // text will be shown instead ("Select token").
   tokenFallback,
+  // Whether or not the inputs are editable. This is different from read-only
+  // below. Disabled is a more temporary input state, potentially due to a
+  // dependency on some other field, for example.
   disabled,
+  // If read-only, the inputs will be replaced with a nice display of the
+  // selected token and amount.
   readOnly,
+  // This only applies to the amount field.
+  required = true,
+  // Optional additional class names for the container.
   containerClassName,
 }: TokenInputProps<T, FV, FieldName>) => {
   const { t } = useTranslation()
@@ -139,8 +159,9 @@ export const TokenInput = <
             setValue={(fieldName, value) => setValue(fieldName, value as any)}
             step={amountStep}
             validation={[
-              validateRequired,
-              amountMin === 0 ? validateNonNegative : validatePositive,
+              amountMin ? validatePositive : validateNonNegative,
+
+              ...(required ? [validateRequired] : []),
               ...(amountValidations ?? []),
             ]}
             watch={watch}
@@ -170,16 +191,17 @@ export const TokenInput = <
                 : tokens.data.map((token, index) => ({
                     key: index + token.denomOrAddress,
                     label: token.symbol,
-                    Icon: token.imageUrl
-                      ? () => (
-                          <div
-                            className="h-8 w-8 rounded-full bg-cover bg-center"
-                            style={{
-                              backgroundImage: `url(${token.imageUrl})`,
-                            }}
-                          />
-                        )
-                      : undefined,
+                    Icon: () => (
+                      <div
+                        className="h-8 w-8 rounded-full bg-cover bg-center"
+                        style={{
+                          backgroundImage: `url(${
+                            token.imageUrl ||
+                            getFallbackImage(token.denomOrAddress)
+                          })`,
+                        }}
+                      />
+                    ),
                     ...token,
                   }))
             }
