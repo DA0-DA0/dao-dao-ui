@@ -1,6 +1,6 @@
 import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ReactNode, useCallback, useMemo } from 'react'
+import { ReactNode, useMemo } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -22,8 +22,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { Button } from '../buttons'
-import { FilterableItemPopup, FilterableItemPopupProps } from '../popup'
+import { FilterableItemPopup } from '../popup'
 import { NumberInput } from './NumberInput'
 
 export type TokenInputOption = Omit<GenericToken, 'type' | 'decimals'> & {
@@ -141,26 +140,6 @@ export const TokenInput = <
     [amount, readOnly, selectedToken, t, tokenFallback]
   )
 
-  const Trigger: FilterableItemPopupProps['Trigger'] = useCallback(
-    ({ open, ...props }) => (
-      <Button
-        className="min-w-[10rem] grow basis-[10rem]"
-        contentContainerClassName="justify-between text-icon-primary !gap-4"
-        disabled={disabled}
-        loading={tokens.loading}
-        pressed={open}
-        size="lg"
-        variant="ghost_outline"
-        {...props}
-      >
-        {selectedTokenDisplay}
-
-        <ArrowDropDown className="!h-6 !w-6" />
-      </Button>
-    ),
-    [disabled, selectedTokenDisplay, tokens.loading]
-  )
-
   return (
     <div
       className={clsx(
@@ -192,7 +171,6 @@ export const TokenInput = <
           />
 
           <FilterableItemPopup
-            Trigger={Trigger}
             filterableItemKeys={FILTERABLE_KEYS}
             items={
               tokens.loading
@@ -207,6 +185,25 @@ export const TokenInput = <
             }
             onSelect={(token) => onSelectToken(token as T)}
             searchPlaceholder={t('info.searchForToken')}
+            trigger={{
+              type: 'button',
+              props: {
+                className: 'min-w-[10rem] grow basis-[10rem]',
+                contentContainerClassName:
+                  'justify-between text-icon-primary !gap-4',
+                disabled: disabled,
+                loading: tokens.loading,
+                size: 'lg',
+                variant: 'ghost_outline',
+                children: (
+                  <>
+                    {selectedTokenDisplay}
+
+                    <ArrowDropDown className="!h-6 !w-6" />
+                  </>
+                ),
+              },
+            }}
           />
         </>
       )}

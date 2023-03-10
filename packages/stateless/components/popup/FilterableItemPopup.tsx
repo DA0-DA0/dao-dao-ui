@@ -13,11 +13,14 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { PopupTrigger } from '@dao-dao/types'
+
 import { useSearchFilter } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { SearchBar } from '../inputs/SearchBar'
 import { Modal } from '../modals'
 import { NoContent } from '../NoContent'
+import { TriggerRenderer } from './Popup'
 
 export interface FilterableItem {
   key: string | number
@@ -34,7 +37,7 @@ export interface FilterableItem {
 export interface FilterableItemPopupProps<
   T extends FilterableItem = FilterableItem
 > {
-  Trigger: ComponentType<{ onClick: () => void; open: boolean }>
+  trigger: PopupTrigger
   items: T[]
   filterableItemKeys: Fuse.FuseOptionKey<T>[]
   onSelect: (item: T, index: number) => void
@@ -48,7 +51,7 @@ export interface FilterableItemPopupProps<
 }
 
 export const FilterableItemPopup = <T extends FilterableItem>({
-  Trigger,
+  trigger,
   items,
   filterableItemKeys,
   onSelect,
@@ -185,7 +188,10 @@ export const FilterableItemPopup = <T extends FilterableItem>({
 
   return (
     <>
-      <Trigger onClick={() => setOpen((o) => !o)} open={open} />
+      <TriggerRenderer
+        options={{ open, onClick: () => setOpen((o) => !o) }}
+        trigger={trigger}
+      />
 
       <Modal
         containerClassName="!w-[24rem] !max-w-[96vw] !h-[32rem] !max-h-[96vh]"

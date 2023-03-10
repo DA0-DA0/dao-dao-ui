@@ -435,11 +435,6 @@ export const NewProposal = ({
           <>
             {drafts.length > 0 && (
               <FilterableItemPopup
-                Trigger={({ open, ...props }) => (
-                  <Button pressed={open} variant="secondary" {...props}>
-                    {t('button.loadDraft')}
-                  </Button>
-                )}
                 filterableItemKeys={FILTERABLE_KEYS}
                 items={drafts.map(
                   ({ name, createdAt, lastUpdatedAt }, index) => ({
@@ -471,6 +466,13 @@ export const NewProposal = ({
                 )}
                 onSelect={(_, index) => loadDraft(index)}
                 searchPlaceholder={t('info.searchDraftPlaceholder')}
+                trigger={{
+                  type: 'button',
+                  props: {
+                    variant: 'secondary',
+                    children: t('button.loadDraft'),
+                  },
+                }}
               />
             )}
 

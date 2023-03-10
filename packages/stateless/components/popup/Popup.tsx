@@ -3,12 +3,14 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-import { PopupProps } from '@dao-dao/types'
+import { PopupProps, PopupTrigger, PopupTriggerOptions } from '@dao-dao/types'
 
 import { useTrackDropdown } from '../../hooks/useTrackDropdown'
+import { Button } from '../buttons'
+import { IconButton } from '../icon_buttons'
 
 export const Popup = ({
-  Trigger,
+  trigger,
   position,
   children,
   wrapperClassName,
@@ -132,7 +134,10 @@ export const Popup = ({
           onTrackRef(ref)
         }}
       >
-        <Trigger onClick={() => setOpen((o) => !o)} open={open} />
+        <TriggerRenderer
+          options={{ open, onClick: () => setOpen((o) => !o) }}
+          trigger={trigger}
+        />
       </div>
 
       {/* Popup */}
@@ -165,3 +170,32 @@ export const Popup = ({
     </>
   )
 }
+
+export type TriggerRendererProps = {
+  trigger: PopupTrigger
+  options: PopupTriggerOptions
+}
+
+export const TriggerRenderer = ({ trigger, options }: TriggerRendererProps) => (
+  <>
+    {trigger.type === 'button' ? (
+      <Button
+        {...(typeof trigger.props === 'function'
+          ? trigger.props(options)
+          : trigger.props)}
+        onClick={options.onClick}
+        pressed={options.open}
+      />
+    ) : trigger.type === 'icon_button' ? (
+      <IconButton
+        {...(typeof trigger.props === 'function'
+          ? trigger.props(options)
+          : trigger.props)}
+        focused={options.open}
+        onClick={options.onClick}
+      />
+    ) : trigger.type === 'custom' ? (
+      <trigger.Renderer {...options} />
+    ) : null}
+  </>
+)

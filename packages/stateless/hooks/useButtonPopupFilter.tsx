@@ -3,11 +3,11 @@ import {
   RadioButtonChecked,
   RadioButtonUnchecked,
 } from '@mui/icons-material'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { ButtonPopupProps, FilterFn, TypedOption } from '@dao-dao/types'
 
-import { Button, ButtonLink } from '../components'
+import { ButtonLink } from '../components'
 
 type UseButtonPopupFilterOptions<T, O> = {
   data: T[]
@@ -18,7 +18,7 @@ type UseButtonPopupFilterOptions<T, O> = {
 type UseButtonPopupFilterReturn<T, O> = {
   buttonPopupProps: Pick<
     ButtonPopupProps,
-    'sections' | 'sectionClassName' | 'Trigger' | 'ButtonLink'
+    'sections' | 'sectionClassName' | 'trigger' | 'ButtonLink'
   >
   filteredData: T[]
   selectedOption: O
@@ -42,20 +42,22 @@ export const useButtonPopupFilter = <
     [data, selectedOption]
   )
 
-  // Memoize so it doesn't flicker on re-renders.
-  const Trigger: ButtonPopupProps['Trigger'] = useCallback(
-    ({ open, ...props }) => (
-      <Button focused={open} variant="ghost" {...props}>
-        <FilterListRounded />
-        <p className="body-text whitespace-nowrap">{selectedOption?.label}</p>
-      </Button>
-    ),
-    [selectedOption?.label]
-  )
-
   return {
     buttonPopupProps: {
-      Trigger,
+      trigger: {
+        type: 'button',
+        props: {
+          variant: 'ghost',
+          children: (
+            <>
+              <FilterListRounded />
+              <p className="body-text whitespace-nowrap">
+                {selectedOption?.label}
+              </p>
+            </>
+          ),
+        },
+      },
       sectionClassName: 'gap-1',
       sections: [
         {
