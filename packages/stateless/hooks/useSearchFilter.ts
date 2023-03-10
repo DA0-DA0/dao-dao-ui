@@ -1,5 +1,12 @@
 import Fuse from 'fuse.js'
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import { SearchBarProps } from '../components'
 
@@ -11,11 +18,32 @@ interface UseSearchFilterReturn<T> {
 
 // Pass an array of data and filterable keys, and get `searchBarProps` (for
 // passing to `SearchBar`) and memoized `filteredData`.
+//
+// NOTE: `data` is often un-memoized, so it is very important not to update any
+// state when `data` changes. Doing so could lead to an infinite loop, in the
+// event that the state update causes `data` to change again, which is not
+// uncommon. This is due to the variety of input data sources. Ideally, all data
+// comes from a state selector that is memoized, but often data must be updated
+// on-the-fly based on various display conditions; memoizing all the inputs to
+// this hook would require a bunch of extra `useMemo` hooks that would probably
+// reduce performance beyond what would be worth it, and it would require all
+// contributors to have an in-depth understanding of the nuances of React hooks,
+// references, Fuse.js, etc. The solution here is to simply update the Fuse.js
+// collection before filtering, which should be a relatively cheap (linear time)
+// operation because most lists being filtered are short. We are not filtering
+// thousands of items from an arbitrary database—typically we are just filtering
+// a handful of actions or NFTs. Previously, this hook was trying to be clever
+// and only update the Fuse.js collection when the data deeply changed, but that
+// required extra state updates and logic that often led to infinite loops. If
+// this becomes a performance issue, we can revisit this.
 export const useSearchFilter = <T extends unknown>(
   data: T[],
   filterableKeys: Fuse.FuseOptionKey<T>[],
   options?: Fuse.IFuseOptions<T>
 ): UseSearchFilterReturn<T> => {
+  // Store latest data in a ref so we can compare it to the current data.
+  const dataRef = useRef(data)
+
   const [fuse, setFuse] = useState<Fuse<T>>(() =>
     makeFuse(data, filterableKeys, options)
   )
@@ -26,30 +54,28 @@ export const useSearchFilter = <T extends unknown>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterableKeys, options])
 
-  // Trigger re-filter when collection is updated.
-  const [collectionId, setCollectionId] = useState(0)
-  useEffect(() => {
-    fuse.setCollection(data)
-    setCollectionId((id) => id + 1)
-  }, [fuse, data])
-
   const [filter, setFilter] = useState('')
-  const filteredData = useMemo(
-    () =>
-      filter
-        ? fuse.search(filter).map(({ item, refIndex }) => ({
-            item,
-            originalIndex: refIndex,
-          }))
-        : data.map((item, originalIndex) => ({
-            item,
-            originalIndex,
-          })),
-    // collectionId is manually updated when the data changes, so no need to
-    // depend on data here.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filter, fuse, collectionId]
-  )
+
+  // When collection or filter is updated, re-filter.
+  const filteredData: UseSearchFilterReturn<T>['filteredData'] = useMemo(() => {
+    if (filter) {
+      // If data has changed, update fuse collection before filtering.
+      if (dataRef.current !== data) {
+        fuse.setCollection(data)
+        dataRef.current = data
+      }
+
+      return fuse.search(filter).map(({ item, refIndex }) => ({
+        item,
+        originalIndex: refIndex,
+      }))
+    } else {
+      return data.map((item, originalIndex) => ({
+        item,
+        originalIndex,
+      }))
+    }
+  }, [fuse, filter, data])
 
   return {
     searchBarProps: {
