@@ -2,6 +2,7 @@ import { Close } from '@mui/icons-material'
 import { ComponentProps, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import { IconButton, InputErrorMessage, TokenInput } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
@@ -77,7 +78,12 @@ export const NativeCoinSelector = ({
       }
       return 'Unrecognized denom.'
     },
-    [nativeBalances, t]
+    // Deeply compare nativeBalances since they may change on every render, but
+    // the validation function should only be updated when the balances change.
+    // Since this validation function reference is used in the effect below that
+    // updates errors, deeploy compare prevents an infinite loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useDeepCompareMemoize([nativeBalances, t])
   )
 
   // Update amount+denom combo error each time either field is updated
@@ -87,20 +93,28 @@ export const NativeCoinSelector = ({
   // denom was changed.
   useEffect(() => {
     if (!watchAmount || !watchDenom) {
-      clearErrors(fieldNamePrefix + '_error')
+      if (errors?._error) {
+        clearErrors(fieldNamePrefix + '_error')
+      }
       return
     }
 
     const validation = validatePossibleSpend(watchDenom, watchAmount)
     if (validation === true) {
-      clearErrors(fieldNamePrefix + '_error')
-    } else if (typeof validation === 'string') {
+      if (errors?._error) {
+        clearErrors(fieldNamePrefix + '_error')
+      }
+    } else if (
+      typeof validation === 'string' &&
+      errors?._error?.message !== validation
+    ) {
       setError(fieldNamePrefix + '_error', {
         type: 'custom',
         message: validation,
       })
     }
   }, [
+    errors,
     setError,
     clearErrors,
     validatePossibleSpend,
@@ -118,7 +132,7 @@ export const NativeCoinSelector = ({
     <div className={className}>
       <div className="flex flex-row items-stretch gap-2">
         <TokenInput
-          amountError={errors?.amount}
+          amountError={errors?.amount || errors?._error}
           amountFieldName={fieldNamePrefix + 'amount'}
           amountMax={
             selectedTokenBalance &&

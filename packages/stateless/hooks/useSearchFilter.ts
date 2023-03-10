@@ -1,5 +1,6 @@
 import Fuse from 'fuse.js'
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { SearchBarProps } from '../components'
 
@@ -26,12 +27,15 @@ export const useSearchFilter = <T extends unknown>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterableKeys, options])
 
-  // Trigger re-filter when collection is updated.
+  // Trigger re-filter when collection is updated. Use deep compare to prevent
+  // unnecessary re-renders when the collection is updated with the same data,
+  // since data will often be passed in un-memoized. We want to prevent
+  // re-renders due to reference changes, but not due to deep changes.
   const [collectionId, setCollectionId] = useState(0)
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     fuse.setCollection(data)
     setCollectionId((id) => id + 1)
-  }, [data, fuse])
+  }, [fuse, data])
 
   const [filter, setFilter] = useState('')
   const filteredData = useMemo(
@@ -41,16 +45,14 @@ export const useSearchFilter = <T extends unknown>(
             item,
             originalIndex: refIndex,
           }))
-        : [
-            ...data.map((item, originalIndex) => ({
-              item,
-              originalIndex,
-            })),
-          ],
-    // Refilter when new collection is set, since setting fuse collection
-    // doesn't trigger a re-render.
+        : data.map((item, originalIndex) => ({
+            item,
+            originalIndex,
+          })),
+    // Data is deep-compared above, and collectionId is manually updated when
+    // the data deeply changes, so we can safely not depend on data here.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filter, fuse, data, collectionId]
+    [filter, fuse, collectionId]
   )
 
   return {

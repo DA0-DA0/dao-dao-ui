@@ -1,6 +1,6 @@
 import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ReactNode } from 'react'
+import { ReactNode, useCallback, useMemo } from 'react'
 import {
   FieldError,
   FieldPathValue,
@@ -23,7 +23,7 @@ import {
 } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
-import { FilterableItemPopup } from '../popup'
+import { FilterableItemPopup, FilterableItemPopupProps } from '../popup'
 import { NumberInput } from './NumberInput'
 
 export type TokenInputOption = Omit<GenericToken, 'type' | 'decimals'> & {
@@ -106,35 +106,59 @@ export const TokenInput = <
 
   const amount = Number(watch(amountFieldName))
 
-  const selectedTokenDisplay = selectedToken ? (
-    <div className="flex flex-row items-center gap-2">
-      <div
-        className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${toAccessibleImageUrl(
-            selectedToken.imageUrl ||
-              getFallbackImage(selectedToken.denomOrAddress)
-          )})`,
-        }}
-      />
+  const selectedTokenDisplay = useMemo(
+    () =>
+      selectedToken ? (
+        <div className="flex flex-row items-center gap-2">
+          <div
+            className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${toAccessibleImageUrl(
+                selectedToken.imageUrl ||
+                  getFallbackImage(selectedToken.denomOrAddress)
+              )})`,
+            }}
+          />
 
-      <p>
-        {readOnly &&
-          amount.toLocaleString(undefined, {
-            // Show as many decimals as possible (max is 20).
-            maximumFractionDigits: 20,
-          }) + ' '}
-        {selectedToken.symbol}
-      </p>
-    </div>
-  ) : (
-    tokenFallback ?? (
-      <p className="text-text-secondary">
-        {readOnly
-          ? t('info.token', { count: amount })
-          : t('button.selectToken')}
-      </p>
-    )
+          <p>
+            {readOnly &&
+              amount.toLocaleString(undefined, {
+                // Show as many decimals as possible (max is 20).
+                maximumFractionDigits: 20,
+              }) + ' '}
+            {selectedToken.symbol}
+          </p>
+        </div>
+      ) : (
+        tokenFallback ?? (
+          <p className="text-text-secondary">
+            {readOnly
+              ? t('info.token', { count: amount })
+              : t('button.selectToken')}
+          </p>
+        )
+      ),
+    [amount, readOnly, selectedToken, t, tokenFallback]
+  )
+
+  const Trigger: FilterableItemPopupProps['Trigger'] = useCallback(
+    ({ open, ...props }) => (
+      <Button
+        className="min-w-[10rem] grow basis-[10rem]"
+        contentContainerClassName="justify-between text-icon-primary !gap-4"
+        disabled={disabled}
+        loading={tokens.loading}
+        pressed={open}
+        size="lg"
+        variant="ghost_outline"
+        {...props}
+      >
+        {selectedTokenDisplay}
+
+        <ArrowDropDown className="!h-6 !w-6" />
+      </Button>
+    ),
+    [disabled, selectedTokenDisplay, tokens.loading]
   )
 
   return (
@@ -168,22 +192,7 @@ export const TokenInput = <
           />
 
           <FilterableItemPopup
-            Trigger={({ open, ...props }) => (
-              <Button
-                className="min-w-[10rem] grow basis-[10rem]"
-                contentContainerClassName="justify-between text-icon-primary !gap-4"
-                disabled={disabled}
-                loading={tokens.loading}
-                pressed={open}
-                size="lg"
-                variant="ghost_outline"
-                {...props}
-              >
-                {selectedTokenDisplay}
-
-                <ArrowDropDown className="!h-6 !w-6" />
-              </Button>
-            )}
+            Trigger={Trigger}
             filterableItemKeys={FILTERABLE_KEYS}
             items={
               tokens.loading
@@ -191,17 +200,8 @@ export const TokenInput = <
                 : tokens.data.map((token, index) => ({
                     key: index + token.denomOrAddress,
                     label: token.symbol,
-                    Icon: () => (
-                      <div
-                        className="h-8 w-8 rounded-full bg-cover bg-center"
-                        style={{
-                          backgroundImage: `url(${
-                            token.imageUrl ||
-                            getFallbackImage(token.denomOrAddress)
-                          })`,
-                        }}
-                      />
-                    ),
+                    iconUrl:
+                      token.imageUrl || getFallbackImage(token.denomOrAddress),
                     ...token,
                   }))
             }

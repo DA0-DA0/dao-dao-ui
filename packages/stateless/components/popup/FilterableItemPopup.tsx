@@ -22,6 +22,8 @@ import { NoContent } from '../NoContent'
 export interface FilterableItem {
   key: string | number
   Icon?: ComponentType
+  iconUrl?: string
+  iconClassName?: string
   label: ReactNode
   description?: ReactNode
   rightNode?: ReactNode
@@ -88,15 +90,19 @@ export const FilterableItemPopup = <T extends FilterableItem>({
     })
   }, [selectedIndex])
 
+  // Memoize reference so that it doesn't change on every render.
+  const onSelectRef = useRef(onSelect)
+  onSelectRef.current = onSelect
+
   const onSelectItem = useCallback(
     (item: T, originalIndex: number) => {
-      onSelect(item, originalIndex)
+      onSelectRef.current(item, originalIndex)
       // Close.
       if (closeOnSelect) {
         setOpen(false)
       }
     },
-    [closeOnSelect, onSelect]
+    [closeOnSelect]
   )
 
   const handleKeyPress = useCallback(
@@ -217,17 +223,27 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                     'bg-background-interactive-selected'
                 )}
                 contentContainerClassName={clsx(
-                  'gap-4',
+                  'gap-3',
                   item.contentContainerClassName
                 )}
                 onClick={() => onSelectItem(item, originalIndex)}
                 variant="ghost"
               >
-                {item.Icon && (
+                {item.Icon ? (
                   <p className="text-2xl">
                     <item.Icon />
                   </p>
-                )}
+                ) : item.iconUrl ? (
+                  <div
+                    className={clsx(
+                      'h-7 w-7 rounded-full bg-cover bg-center',
+                      item.iconClassName
+                    )}
+                    style={{
+                      backgroundImage: `url(${item.iconUrl})`,
+                    }}
+                  />
+                ) : null}
 
                 <div className="min-w-0 space-y-1 text-left">
                   <div className="flex flex-row items-center gap-2">
