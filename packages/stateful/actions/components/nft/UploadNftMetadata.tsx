@@ -184,7 +184,10 @@ export const UploadNftMetadata: ActionComponent = ({
             </div>
 
             <div className="flex flex-col gap-1">
-              <InputLabel name={t('form.customJson')} />
+              <InputLabel
+                name={t('form.customJson')}
+                tooltip={t('form.nftMetadataCustomJsonTooltip')}
+              />
 
               <CodeMirrorInput
                 control={control}

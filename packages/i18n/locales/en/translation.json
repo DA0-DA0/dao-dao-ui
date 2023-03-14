@@ -374,6 +374,7 @@
     "migrateMessage": "Migrate message",
     "name": "Name",
     "nftCollectionAddress": "NFT collection address",
+    "nftMetadataCustomJsonTooltip": "Custom JSON inputted below will get merged with the NFT metadata derived from the above fields and appear in the NFT's `metadata.json` file.",
     "nftMintInstructions": "Create a unique token ID for the NFT and enter the address of the initial owner below.",
     "nftUploadMetadataInstructions": "Input the NFT's metadata, and then press 'Upload' to store it on IPFS.",
     "onlyMembersExecuteTitle": "Only members execute",
