@@ -151,8 +151,7 @@ export const listVestingContractsByInstantiatorReverseSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula:
-            'cwPayrollFactory/listVestingContractsByInstantiatorReverse',
+          formula: 'cwPayrollFactory/listVestingContractsByInstantiatorReverse',
           args: params[0],
         })
       )
@@ -208,8 +207,7 @@ export const listVestingContractsByRecipientReverseSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula:
-            'cwPayrollFactory/listVestingContractsByRecipientReverse',
+          formula: 'cwPayrollFactory/listVestingContractsByRecipientReverse',
           args: params[0],
         })
       )
