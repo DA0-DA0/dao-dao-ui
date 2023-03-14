@@ -26,6 +26,8 @@ export interface MintNftData {
     name: string
     description: string
     includeExtra: boolean
+    audio: string | undefined
+    video: string | undefined
     extra: string
   }
   // Set after uploading metadata to IPFS by UploadNftMetadata component, for

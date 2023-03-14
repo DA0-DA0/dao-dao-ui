@@ -149,6 +149,8 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({ t, address }) => {
       name: '',
       description: '',
       includeExtra: false,
+      audio: undefined,
+      video: undefined,
       extra: '{}',
     },
   })

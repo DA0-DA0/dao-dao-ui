@@ -18,6 +18,7 @@ export * from './token'
 export * from './tooltip'
 export * from './wallet'
 
+export * from './AudioPlayer'
 export * from './Collapsible'
 export * from './CopyToClipboard'
 export * from './CornerGradient'

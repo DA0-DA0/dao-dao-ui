@@ -58,6 +58,10 @@ export const nftUriDataSelector = selectorFamily<
       }
 
       return {
+        // Include all metadata.
+        ...data,
+
+        // Override specifics.
         name,
         description,
         imageUrl,
