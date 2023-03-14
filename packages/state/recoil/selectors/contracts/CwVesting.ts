@@ -9,7 +9,7 @@ import {
 } from '../../../contracts/CwVesting'
 import { refreshVestingAtom, signingCosmWasmClientAtom } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { queryContractIndexerSelector } from '../indexer'
+import { QueryIndexerParams, queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -62,7 +62,7 @@ export const infoSelector = selectorFamily<
       const info = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cwVesting/info',
+          formula: 'cwVesting/info',
           id: anyId + thisId,
         })
       )
@@ -170,16 +170,21 @@ export const stakeSelector = selectorFamily<
 
 //! Custom selectors
 
-// Get validators wormhole data from the indexer.
-export const validatorsSelector = selectorFamily<
-  {
-    validator: string
-    timeMs: number
-    amount: string
-  }[],
-  QueryClientParams
+export type CwVestingValidatorAmount = {
+  // Validator operator address.
+  validator: string
+  // Unix timestamp in milliseconds.
+  timeMs: number
+  // Amount of tokens staked and unstaking.
+  amount: string
+}
+
+// Get validator stakes wormhole data from the indexer.
+export const validatorStakesSelector = selectorFamily<
+  CwVestingValidatorAmount[],
+  QueryClientParams & Pick<QueryIndexerParams, 'block'>
 >({
-  key: 'cwVestingValidators',
+  key: 'cwVestingValidatorStakes',
   get:
     ({ contractAddress, chainId }) =>
     ({ get }) => {
@@ -189,12 +194,17 @@ export const validatorsSelector = selectorFamily<
       const validators = get(
         queryContractIndexerSelector({
           contractAddress,
-          formulaName: 'cwVesting/validators',
+          formula: 'cwVesting/validatorStakes',
           chainId,
           id: anyId + thisId,
         })
       )
 
-      return validators && Array.isArray(validators) ? validators : []
+      return validators && Array.isArray(validators)
+        ? // Sort descending by time.
+          (validators as CwVestingValidatorAmount[]).sort(
+            (a, b) => b.timeMs - a.timeMs
+          )
+        : []
     },
 })

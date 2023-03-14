@@ -185,7 +185,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
           queryWalletIndexerSelector({
             chainId,
             walletAddress,
-            formulaName: 'tokens/list',
+            formula: 'tokens/list',
             id,
           })
         ) ?? []

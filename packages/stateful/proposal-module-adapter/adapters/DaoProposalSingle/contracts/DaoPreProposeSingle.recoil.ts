@@ -70,7 +70,7 @@ export const proposalModuleSelector = selectorFamily<
       const proposalModule = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoPreProposeSingle/proposalModule',
+          formula: 'daoPreProposeSingle/proposalModule',
         })
       )
       if (proposalModule) {
@@ -95,7 +95,7 @@ export const daoSelector = selectorFamily<
       const dao = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoPreProposeSingle/dao',
+          formula: 'daoPreProposeSingle/dao',
         })
       )
       if (dao) {
@@ -120,7 +120,7 @@ export const configSelector = selectorFamily<
       const config = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoPreProposeSingle/config',
+          formula: 'daoPreProposeSingle/config',
         })
       )
       if (config) {
@@ -145,7 +145,7 @@ export const depositInfoSelector = selectorFamily<
       const depositInfo = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoPreProposeSingle/depositInfo',
+          formula: 'daoPreProposeSingle/depositInfo',
           args: params[0],
         })
       )

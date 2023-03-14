@@ -44,7 +44,7 @@ export const adminSelector = selectorFamily<
       const admin = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw4Group/admin',
+          formula: 'cw4Group/admin',
         })
       )
       // Null when indexer fails. Undefined if no admin.
@@ -70,7 +70,7 @@ export const totalWeightSelector = selectorFamily<
       const weight = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw4Group/totalWeight',
+          formula: 'cw4Group/totalWeight',
         })
       )
       if (typeof weight === 'number') {
@@ -110,7 +110,7 @@ export const memberSelector = selectorFamily<
       const weight = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw4Group/member',
+          formula: 'cw4Group/member',
           args: {
             address: params[0].addr,
           },
@@ -154,7 +154,7 @@ export const listAllMembersSelector = selectorFamily<
       const membersList = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw4Group/listMembers',
+          formula: 'cw4Group/listMembers',
         })
       )
       if (membersList) {

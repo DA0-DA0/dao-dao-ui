@@ -9,10 +9,7 @@ import {
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { cosmos, juno } from 'interchain-rpc'
-import {
-  DelegationDelegatorReward,
-  ValidatorSlashEvent,
-} from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
+import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
 import {
   Proposal as GovProposal,
   WeightedVoteOption,
@@ -56,6 +53,7 @@ import {
   refreshNativeTokenStakingInfoAtom,
   refreshWalletBalancesIdAtom,
 } from '../atoms/refresh'
+import { queryValidatorIndexerSelector } from './indexer'
 import { genericTokenSelector } from './token'
 
 export const stargateClientForChainSelector = selectorFamily<
@@ -621,30 +619,27 @@ export const walletHexPublicKeySelector = selectorFamily<
     },
 })
 
-export const validatorSlashEventsSelector = selectorFamily<
-  ValidatorSlashEvent[],
-  WithChainId<{ validatorAddress: string }>
+export type ValidatorSlash = {
+  registeredBlockHeight: string
+  registeredBlockTimeUnixMs: string
+  infractionBlockHeight: string
+  slashFactor: string
+  amountSlashed: string
+}
+
+export const validatorSlashesSelector = selectorFamily<
+  ValidatorSlash[],
+  WithChainId<{ validatorOperatorAddress: string }>
 >({
-  key: 'validatorSlashEvents',
+  key: 'validatorSlashes',
   get:
-    ({ validatorAddress, chainId }) =>
-    async ({ get }) => {
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-
-      let slashes: ValidatorSlashEvent[]
-      try {
-        slashes = await getAllRpcResponse(
-          client.distribution.v1beta1.validatorSlashes,
-          {
-            validatorAddress,
-          },
-          'slashes'
-        )
-      } catch (err) {
-        console.error(err)
-        return []
-      }
-
-      return slashes
-    },
+    ({ validatorOperatorAddress, chainId }) =>
+    async ({ get }) =>
+      (await get(
+        queryValidatorIndexerSelector({
+          validatorOperatorAddress,
+          chainId,
+          formula: 'staking/slashes',
+        })
+      )) ?? [],
 })

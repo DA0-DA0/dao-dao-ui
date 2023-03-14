@@ -66,7 +66,7 @@ export const _listVestingContractsSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cwPayrollFactory/listVestingContracts',
+          formula: 'cwPayrollFactory/listVestingContracts',
           args: params[0],
           id,
         })
@@ -95,7 +95,7 @@ export const listVestingContractsReverseSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cwPayrollFactory/listVestingContractsReverse',
+          formula: 'cwPayrollFactory/listVestingContractsReverse',
           args: params[0],
         })
       )
@@ -123,7 +123,7 @@ export const listVestingContractsByInstantiatorSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cwPayrollFactory/listVestingContractsByInstantiator',
+          formula: 'cwPayrollFactory/listVestingContractsByInstantiator',
           args: params[0],
         })
       )
@@ -151,7 +151,7 @@ export const listVestingContractsByInstantiatorReverseSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName:
+          formula:
             'cwPayrollFactory/listVestingContractsByInstantiatorReverse',
           args: params[0],
         })
@@ -180,7 +180,7 @@ export const listVestingContractsByRecipientSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cwPayrollFactory/listVestingContractsByRecipient',
+          formula: 'cwPayrollFactory/listVestingContractsByRecipient',
           args: params[0],
         })
       )
@@ -208,7 +208,7 @@ export const listVestingContractsByRecipientReverseSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName:
+          formula:
             'cwPayrollFactory/listVestingContractsByRecipientReverse',
           args: params[0],
         })
@@ -235,7 +235,7 @@ export const ownershipSelector = selectorFamily<
       const ownership = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cwPayrollFactory/ownership',
+          formula: 'cwPayrollFactory/ownership',
         })
       )
       if (ownership) {
@@ -260,7 +260,7 @@ export const codeIdSelector = selectorFamily<
       const codeId = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cwPayrollFactory/codeId',
+          formula: 'cwPayrollFactory/codeId',
         })
       )
       if (codeId) {
@@ -287,7 +287,7 @@ export const allVestingContractsSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cwPayrollFactory/listVestingContracts',
+          formula: 'cwPayrollFactory/listVestingContracts',
           id,
         })
       )
