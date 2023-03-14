@@ -15,6 +15,7 @@ import {
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 
+import { Trans } from '../../../../../components'
 import { VestingInfo } from '../../types'
 import { VestingPaymentLine } from './VestingPaymentLine'
 
@@ -22,6 +23,7 @@ export interface PayrollTabProps {
   vestingPaymentsLoading: LoadingData<VestingInfo[]>
   isMember: boolean
   createVestingPaymentHref: string | undefined
+  registerSlashesHref: string | undefined
   ButtonLink: ComponentType<ButtonLinkProps>
   VestingPaymentCard: ComponentType<VestingInfo>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
@@ -31,11 +33,19 @@ export const PayrollTab = ({
   vestingPaymentsLoading,
   isMember,
   createVestingPaymentHref,
+  registerSlashesHref,
   ButtonLink,
   VestingPaymentCard,
   EntityDisplay,
 }: PayrollTabProps) => {
   const { t } = useTranslation()
+
+  // Vesting payments that need a slash registered.
+  const vestingPaymentsNeedingSlashRegistration = vestingPaymentsLoading.loading
+    ? []
+    : vestingPaymentsLoading.data.filter(
+        ({ hasUnregisteredSlashes }) => hasUnregisteredSlashes
+      )
 
   // Vesting payments that have not yet been funded or fully claimed.
   const activeVestingPayments = vestingPaymentsLoading.loading
@@ -92,6 +102,13 @@ export const PayrollTab = ({
               className="shrink-0"
               disabled={!isMember}
               href={createVestingPaymentHref}
+              variant={
+                // If slashes need to be registered, the button should be
+                // secondary so it stands out less than the warning.
+                vestingPaymentsNeedingSlashRegistration.length > 0
+                  ? 'secondary'
+                  : 'primary'
+              }
             >
               <Add className="!h-4 !w-4" />
               {t('button.newVestingPayment')}
@@ -105,6 +122,66 @@ export const PayrollTab = ({
           <Loader fill={false} />
         ) : vestingPaymentsLoading.data.length ? (
           <div className="space-y-6 border-t border-border-secondary pt-6">
+            {vestingPaymentsNeedingSlashRegistration.length > 0 && (
+              <div className="mb-12 space-y-4 rounded-md border border-border-primary bg-background-secondary p-4">
+                <div className="flex flex-row flex-wrap items-center justify-between gap-x-6 gap-y-2">
+                  <div className="flex flex-row items-center gap-2">
+                    <WarningRounded className="!h-6 !w-6 text-icon-primary" />
+                    <p className="title-text text-text-body">
+                      {t('info.vestingPaymentsNeedSlashRegistration')}
+                    </p>
+                  </div>
+
+                  {registerSlashesHref && (
+                    <ButtonLink
+                      className="shrink-0"
+                      disabled={!isMember}
+                      href={registerSlashesHref}
+                      variant="primary"
+                    >
+                      {t('button.registerSlashes')}
+                    </ButtonLink>
+                  )}
+                </div>
+
+                <div className="body-text mb-4 max-w-prose">
+                  <Trans i18nKey="info.registerSlashVestingExplanation">
+                    <p className="inline">
+                      When a slash occurs against a validator with whom a
+                      vesting contract is currently staking or unstaking tokens,
+                      the slash needs to be registered with the vesting
+                      contract. For more information, see the Slashing section
+                      of the vesting contract&apos;s
+                    </p>
+                    <ButtonLink
+                      className="!body-text"
+                      containerClassName="inline-block"
+                      href="https://github.com/DA0-DA0/dao-contracts/blob/main/contracts/external/cw-vesting/SECURITY.md#slashing"
+                      variant="underline"
+                    >
+                      security documentation
+                    </ButtonLink>
+                    <p className="inline">.</p>
+                  </Trans>
+                </div>
+
+                <div className="space-y-1">
+                  {activeVestingPayments.map((props, index) => (
+                    <VestingPaymentLine
+                      key={index}
+                      EntityDisplay={EntityDisplay}
+                      onClick={() => {
+                        setVestingPaymentModalOpen(true)
+                        setOpenVestingContract(props.vestingContractAddress)
+                      }}
+                      transparentBackground={index % 2 !== 0}
+                      {...props}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
             {activeVestingPayments.length > 0 && (
               <div className="space-y-1">
                 <div className="secondary-text mb-4 mt-2 grid grid-cols-2 items-center gap-4 px-4 md:grid-cols-[2fr_3fr_3fr_4fr]">

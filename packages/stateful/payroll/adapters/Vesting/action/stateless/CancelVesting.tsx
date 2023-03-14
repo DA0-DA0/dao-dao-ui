@@ -123,7 +123,10 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
           </p>
         )}
 
-        <InputErrorMessage error={errors?.address} />
+        {/* Only show error if there are vests to choose from. If no vests, other error will show. */}
+        {isCreating && !!cancellableVestingContracts?.length && (
+          <InputErrorMessage error={errors?.address} />
+        )}
       </div>
     </>
   )

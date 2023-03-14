@@ -1,5 +1,4 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -46,7 +45,12 @@ const useDefaults: UseDefaults<ManagePayrollData> = () => {
 
   return payrollConfigSelector.state === 'hasValue' &&
     payrollConfigSelector.contents
-    ? cloneDeep(payrollConfigSelector.contents)
+    ? {
+        // Copy over type from existing payroll config but wipe data so it can
+        // be reset.
+        type: payrollConfigSelector.contents.type,
+        data: undefined,
+      }
     : {
         type: undefined,
         data: undefined,

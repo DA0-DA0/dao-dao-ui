@@ -39,6 +39,8 @@ export type VestingInfo = {
   stakable: string
   // Slashes on staked or unstaked tokens that have occurred during the vest.
   slashes: VestingValidatorWithSlashes[]
+  // Whether or not all slashes have been registered.
+  hasUnregisteredSlashes: boolean
   // Whether or not all has been claimed.
   completed: boolean
   // Dates.

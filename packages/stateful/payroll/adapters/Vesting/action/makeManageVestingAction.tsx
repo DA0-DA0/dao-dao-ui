@@ -11,7 +11,9 @@ import {
   ActionCardLoader,
   MoneyWingsEmoji,
   SegmentedControls,
+  SegmentedControlsProps,
   useCachedLoadable,
+  useCachedLoading,
 } from '@dao-dao/stateless'
 import { DurationUnits, TokenType } from '@dao-dao/types'
 import {
@@ -56,21 +58,27 @@ import {
   vestingInfoSelector,
   vestingInfosSelector,
 } from '../state'
+import { VestingInfo } from '../types'
 import {
   BeginVesting,
   BeginVestingData,
   CancelVesting,
   CancelVestingData,
+  RegisterSlash,
+  RegisterSlashData,
 } from './stateless'
 
 export type ManageVestingData = {
-  creating: boolean
+  mode: 'begin' | 'cancel' | 'registerSlash'
   begin: BeginVestingData
   cancel: CancelVestingData
+  registerSlash: RegisterSlashData
+  // For transforming to cosmos msg.
+  selectedVest?: VestingInfo
 }
 
 const useDefaults: UseDefaults<ManageVestingData> = () => ({
-  creating: true,
+  mode: 'begin',
   begin: {
     amount: 1,
     denomOrAddress: NATIVE_DENOM,
@@ -85,14 +93,26 @@ const useDefaults: UseDefaults<ManageVestingData> = () => ({
   cancel: {
     address: '',
   },
+  registerSlash: {
+    address: '',
+  },
 })
 
 const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
   const { t, address, chainId } = useActionOptions()
 
-  const { setValue, watch, setError, clearErrors } = useFormContext()
-  const creating = watch(props.fieldNamePrefix + 'creating')
-  const cancelledAddress = watch(props.fieldNamePrefix + 'cancel.address')
+  const { setValue, watch, setError, clearErrors } =
+    useFormContext<ManageVestingData>()
+  const mode = watch((props.fieldNamePrefix + 'mode') as 'mode')
+  const selectedAddress =
+    mode === 'registerSlash'
+      ? watch(
+          (props.fieldNamePrefix +
+            'registerSlash.address') as 'registerSlash.address'
+        )
+      : mode === 'cancel'
+      ? watch((props.fieldNamePrefix + 'cancel.address') as 'cancel.address')
+      : undefined
 
   const tokenBalances = useTokenBalances()
 
@@ -106,7 +126,7 @@ const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
     undefined
   )
 
-  const vestingContracts = loadableToLoadingData(
+  const vestingInfos = loadableToLoadingData(
     useCachedLoadable(
       vestingInfosSelector({
         coreAddress: address,
@@ -116,45 +136,83 @@ const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
     []
   )
 
-  const cancelledVestingContract = loadableToLoadingData(
-    useRecoilValueLoadable(
-      !props.isCreating && !creating && cancelledAddress
-        ? vestingInfoSelector({
-            vestingContractAddress: cancelledAddress,
-            chainId,
-          })
-        : constSelector(undefined)
-    ),
+  const selectedVest = useCachedLoading(
+    !props.isCreating &&
+      (mode === 'registerSlash' || mode === 'cancel') &&
+      selectedAddress
+      ? vestingInfoSelector({
+          vestingContractAddress: selectedAddress,
+          chainId,
+        })
+      : constSelector(undefined),
     undefined
   )
+  // Update the selected vest in the form so that the transformer can use it.
+  useEffect(() => {
+    setValue(
+      (props.fieldNamePrefix + 'selectedVest') as 'selectedVest',
+      selectedVest.loading ? undefined : selectedVest.data
+    )
+  }, [selectedVest, setValue, props.fieldNamePrefix])
 
   // Prevent action from being submitted if no address is selected while we're
-  // cancelling.
+  // registering slash or cancelling.
   useEffect(() => {
-    if (creating) {
-      clearErrors(props.fieldNamePrefix + 'cancel.address')
+    if (mode !== 'registerSlash' && mode !== 'cancel') {
+      clearErrors(
+        (props.fieldNamePrefix +
+          'registerSlash.address') as 'registerSlash.address'
+      )
+      clearErrors(
+        (props.fieldNamePrefix + 'cancel.address') as 'cancel.address'
+      )
       return
+    }
+    // Make sure to clear errors for other modes on switch.
+    else if (mode === 'registerSlash') {
+      clearErrors(
+        (props.fieldNamePrefix + 'cancel.address') as 'cancel.address'
+      )
+    } else if (mode === 'cancel') {
+      clearErrors(
+        (props.fieldNamePrefix +
+          'registerSlash.address') as 'registerSlash.address'
+      )
     }
 
     if (
-      !cancelledAddress ||
-      !isValidContractAddress(cancelledAddress, CHAIN_BECH32_PREFIX)
+      !selectedAddress ||
+      !isValidContractAddress(selectedAddress, CHAIN_BECH32_PREFIX)
     ) {
-      setError(props.fieldNamePrefix + 'cancel.address', {
-        type: 'manual',
-        message: t('error.noVestingContractSelected'),
-      })
+      setError(
+        (props.fieldNamePrefix + `${mode}.address`) as `${typeof mode}.address`,
+        {
+          type: 'manual',
+          message: t('error.noVestingContractSelected'),
+        }
+      )
     } else {
-      clearErrors(props.fieldNamePrefix + 'cancel.address')
+      clearErrors(
+        (props.fieldNamePrefix + `${mode}.address`) as `${typeof mode}.address`
+      )
     }
-  }, [
-    setError,
-    clearErrors,
-    creating,
-    cancelledAddress,
-    props.fieldNamePrefix,
-    t,
-  ])
+  }, [setError, clearErrors, props.fieldNamePrefix, t, mode, selectedAddress])
+
+  const tabs: SegmentedControlsProps<ManageVestingData['mode']>['tabs'] = [
+    {
+      label: t('title.beginVesting'),
+      value: 'begin',
+    },
+    {
+      label: t('title.cancelVesting'),
+      value: 'cancel',
+    },
+    {
+      label: t('title.registerSlash'),
+      value: 'registerSlash',
+    },
+  ]
+  const selectedTab = tabs.find((tab) => tab.value === mode)
 
   return (
     <SuspenseLoader
@@ -169,26 +227,20 @@ const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
         onRemove={props.onRemove}
         title={t('title.manageVesting')}
       >
-        <SegmentedControls<boolean>
-          className="mb-2"
-          disabled={!props.isCreating}
-          onSelect={(value) =>
-            setValue(props.fieldNamePrefix + 'creating', value)
-          }
-          selected={creating}
-          tabs={[
-            {
-              label: t('title.beginVesting'),
-              value: true,
-            },
-            {
-              label: t('title.cancelVesting'),
-              value: false,
-            },
-          ]}
-        />
+        {props.isCreating ? (
+          <SegmentedControls<ManageVestingData['mode']>
+            className="mb-2"
+            onSelect={(value) =>
+              setValue((props.fieldNamePrefix + 'mode') as 'mode', value)
+            }
+            selected={mode}
+            tabs={tabs}
+          />
+        ) : (
+          <p className="title-text mb-2">{selectedTab?.label}</p>
+        )}
 
-        {creating ? (
+        {mode === 'begin' ? (
           <BeginVesting
             {...props}
             errors={props.errors?.begin}
@@ -199,18 +251,29 @@ const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
               AddressInput,
             }}
           />
-        ) : (
+        ) : mode === 'registerSlash' ? (
+          <RegisterSlash
+            {...props}
+            errors={props.errors?.registerSlash}
+            fieldNamePrefix={props.fieldNamePrefix + 'registerSlash.'}
+            options={{
+              vestingInfos,
+              selectedVest,
+              EntityDisplay,
+            }}
+          />
+        ) : mode === 'cancel' ? (
           <CancelVesting
             {...props}
             errors={props.errors?.cancel}
             fieldNamePrefix={props.fieldNamePrefix + 'cancel.'}
             options={{
-              vestingInfos: vestingContracts,
-              cancelledVestingContract,
+              vestingInfos,
+              cancelledVestingContract: selectedVest,
               EntityDisplay,
             }}
           />
-        )}
+        ) : null}
       </ActionCard>
     </SuspenseLoader>
   )
@@ -249,8 +312,14 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
   )
 
   return useCallback(
-    ({ creating, begin, cancel }: ManageVestingData) => {
-      if (creating) {
+    ({
+      mode,
+      begin,
+      registerSlash,
+      cancel,
+      selectedVest,
+    }: ManageVestingData) => {
+      if (mode === 'begin') {
         if (
           loadingTokenBalances.loading ||
           !vestingFactory ||
@@ -339,7 +408,35 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
             },
           })
         }
-      } else {
+      } else if (mode === 'registerSlash') {
+        return makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: registerSlash.address,
+              funds: [],
+              msg: {
+                register_slashes: {
+                  slashes: selectedVest?.slashes.flatMap(
+                    ({ validatorOperatorAddress, slashes }) =>
+                      slashes
+                        .filter(
+                          ({ unregisteredAmount }) => unregisteredAmount > 0
+                        )
+                        .map(({ unregisteredAmount, timeMs }) => ({
+                          validator: validatorOperatorAddress,
+                          // milliseconds to nanoseconds
+                          time: (timeMs * 1e6).toString(),
+                          amount: unregisteredAmount.toString(),
+                          // TODO ???
+                          during_unbonding: true,
+                        })) ?? []
+                  ),
+                },
+              },
+            },
+          },
+        })
+      } else if (mode === 'cancel') {
         return makeWasmMessage({
           wasm: {
             execute: {
@@ -418,6 +515,18 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
       instantiate_payroll_contract: instantiateStructure,
     })
 
+  const isRegisterSlash = objectMatchesStructure(msg, {
+    wasm: {
+      execute: {
+        contract_addr: {},
+        funds: {},
+        msg: {
+          register_slash: {},
+        },
+      },
+    },
+  })
+
   const isCancel = objectMatchesStructure(msg, {
     wasm: {
       execute: {
@@ -471,7 +580,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
       match: true,
       data: {
         ...defaults,
-        creating: true,
+        mode: 'begin',
         begin: {
           denomOrAddress: token.denomOrAddress,
           description: instantiateMsg.description || undefined,
@@ -494,12 +603,23 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
         },
       },
     }
+  } else if (isRegisterSlash) {
+    return {
+      match: true,
+      data: {
+        ...defaults,
+        mode: 'registerSlash',
+        registerSlash: {
+          address: msg.wasm.execute.contract_addr,
+        },
+      },
+    }
   } else if (isCancel) {
     return {
       match: true,
       data: {
         ...defaults,
-        creating: false,
+        mode: 'cancel',
         cancel: {
           address: msg.wasm.execute.contract_addr,
         },

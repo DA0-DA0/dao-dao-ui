@@ -306,6 +306,11 @@ export const vestingInfoSelector = selectorFamily<
         }
       )
 
+      const hasUnregisteredSlashes = vestingValidatorSlashes.some(
+        ({ slashes }) =>
+          slashes.some(({ unregisteredAmount }) => unregisteredAmount > 0)
+      )
+
       const actualSlashed = vestingValidatorSlashes.reduce(
         (slashed, { slashes }) =>
           slashed +
@@ -337,6 +342,7 @@ export const vestingInfoSelector = selectorFamily<
         total,
         stakable,
         slashes: vestingValidatorSlashes,
+        hasUnregisteredSlashes,
         completed,
         startDate,
         endDate,

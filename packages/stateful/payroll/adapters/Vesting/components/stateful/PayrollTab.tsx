@@ -45,6 +45,7 @@ export const PayrollTab = () => {
 
   const vestingAction = useActionForKey(CoreActionKey.ManageVesting)
   const vestingActionDefaults = vestingAction?.useDefaults()
+
   const createVestingPaymentPrefill = useDaoProposalSinglePrefill({
     actions: vestingAction
       ? [
@@ -53,6 +54,29 @@ export const PayrollTab = () => {
             data: vestingActionDefaults,
           },
         ]
+      : [],
+  })
+
+  // Vesting payments that need a slash registered.
+  const vestingPaymentsNeedingSlashRegistration = vestingPaymentsLoading.loading
+    ? []
+    : vestingPaymentsLoading.data.filter(
+        ({ hasUnregisteredSlashes }) => hasUnregisteredSlashes
+      )
+  const registerSlashesPrefill = useDaoProposalSinglePrefill({
+    actions: vestingAction
+      ? vestingPaymentsNeedingSlashRegistration.map(
+          ({ vestingContractAddress }) => ({
+            action: vestingAction,
+            data: {
+              ...vestingActionDefaults,
+              mode: 'registerSlash',
+              registerSlash: {
+                address: vestingContractAddress,
+              },
+            },
+          })
+        )
       : [],
   })
 
@@ -69,6 +93,13 @@ export const PayrollTab = () => {
           : undefined
       }
       isMember={isMember}
+      registerSlashesHref={
+        vestingAction && registerSlashesPrefill
+          ? getDaoProposalPath(coreAddress, 'create', {
+              prefill: registerSlashesPrefill,
+            })
+          : undefined
+      }
       vestingPaymentsLoading={vestingPaymentsLoading}
     />
   )
