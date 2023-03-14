@@ -202,7 +202,7 @@ export const validatorStakesSelector = selectorFamily<
 
       return validators && Array.isArray(validators)
         ? // Sort descending by time.
-          (validators as CwVestingValidatorAmount[]).sort(
+          ([...validators] as CwVestingValidatorAmount[]).sort(
             (a, b) => b.timeMs - a.timeMs
           )
         : []
