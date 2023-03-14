@@ -218,6 +218,8 @@ export const vestingInfoSelector = selectorFamily<
           validator: validatorOperatorAddress,
           slashes: _slashes,
         }): VestingValidatorWithSlashes => {
+          // Get the validator stakes at the time of each slash using historical
+          // indexer queries.
           const vestingValidatorStakes = get(
             waitForAll(
               _slashes.map(
