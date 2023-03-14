@@ -26,6 +26,8 @@ export default {
         name: '',
         description: '',
         includeExtra: false,
+        audio: undefined,
+        video: undefined,
         extra: '',
       },
     }),
