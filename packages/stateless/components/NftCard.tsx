@@ -17,6 +17,7 @@ import {
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import {
+  NFT_VIDEO_EXTENSIONS,
   getImageUrlForChainId,
   getNftName,
   objectMatchesStructure,
@@ -83,12 +84,15 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
     const [descriptionCollapsed, setDescriptionCollapsed] = useState(true)
 
     const video =
-      metadata &&
-      objectMatchesStructure(metadata, {
-        properties: {
-          video: {},
-        },
-      })
+      // If image contains a video, treat it as a video.
+      imageUrl && NFT_VIDEO_EXTENSIONS.includes(imageUrl.split('.').pop() || '')
+        ? imageUrl
+        : metadata &&
+          objectMatchesStructure(metadata, {
+            properties: {
+              video: {},
+            },
+          })
         ? metadata.properties.video
         : null
 
@@ -128,7 +132,13 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           <div className="relative aspect-square">
             <div className="absolute top-0 right-0 bottom-0 left-0">
               {video ? (
-                <ReactPlayer controls height="100%" url={video} width="100%" />
+                <ReactPlayer
+                  controls
+                  height="100%"
+                  onReady={() => setImageLoading(false)}
+                  url={video}
+                  width="100%"
+                />
               ) : imageUrl ? (
                 <Image
                   alt={t('info.nftImage')}

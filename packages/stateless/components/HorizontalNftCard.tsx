@@ -7,6 +7,7 @@ import ReactPlayer from 'react-player'
 
 import { NftCardInfo } from '@dao-dao/types'
 import {
+  NFT_VIDEO_EXTENSIONS,
   getImageUrlForChainId,
   getNftName,
   objectMatchesStructure,
@@ -49,12 +50,30 @@ export const HorizontalNftCard = forwardRef<
     />
   )
 
+  const video =
+    // If image contains a video, treat it as a video.
+    imageUrl && NFT_VIDEO_EXTENSIONS.includes(imageUrl.split('.').pop() || '')
+      ? imageUrl
+      : metadata &&
+        objectMatchesStructure(metadata, {
+          properties: {
+            video: {},
+          },
+        })
+      ? metadata.properties.video
+      : null
+
   const [imageLoading, setImageLoading] = useState(!!imageUrl)
   const [imageLoadErrored, setImageLoadErrored] = useState(false)
   // Load image in background so we can listen for loading complete.
   const [loadedImageSrc, setLoadedImgSrc] = useState<string>()
   useEffect(() => {
-    if (!imageUrl || loadedImageSrc === toAccessibleImageUrl(imageUrl)) {
+    if (
+      // If showing a video, don't load image.
+      video ||
+      !imageUrl ||
+      loadedImageSrc === toAccessibleImageUrl(imageUrl)
+    ) {
       return
     }
 
@@ -72,17 +91,7 @@ export const HorizontalNftCard = forwardRef<
       setImageLoadErrored(true)
     }
     img.src = toAccessibleImageUrl(imageUrl)
-  }, [imageUrl, loadedImageSrc])
-
-  const video =
-    metadata &&
-    objectMatchesStructure(metadata, {
-      properties: {
-        video: {},
-      },
-    })
-      ? metadata.properties.video
-      : null
+  }, [imageUrl, loadedImageSrc, video])
 
   const audio =
     metadata &&
@@ -108,7 +117,13 @@ export const HorizontalNftCard = forwardRef<
       <div className="relative aspect-square sm:h-36 sm:w-36">
         <div className="absolute top-0 right-0 bottom-0 left-0">
           {video ? (
-            <ReactPlayer controls height="100%" url={video} width="100%" />
+            <ReactPlayer
+              controls
+              height="100%"
+              onReady={() => setImageLoading(false)}
+              url={video}
+              width="100%"
+            />
           ) : showingImageUrl ? (
             <div
               className={clsx(
