@@ -46,6 +46,7 @@ export enum AuthzExecActionTypes {
   Redelegate = '/cosmos.staking.v1beta1.MsgBeginRedelegate',
   ClaimRewards = '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
   Vote = '/cosmos.gov.v1beta1.MsgVote',
+  Spend = '/cosmos.bank.v1beta1.MsgSend',
   Execute = '/cosmwasm.wasm.v1.MsgExecuteContract',
   Migrate = '/cosmwasm.wasm.v1.MsgMigrateContract',
   Custom = 'custom',
