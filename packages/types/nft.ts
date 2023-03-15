@@ -45,4 +45,5 @@ export type NftUriData = {
   description: string | undefined
   imageUrl: string | undefined
   externalLink: { href: string; name: string } | undefined
+  [key: string]: any
 }
