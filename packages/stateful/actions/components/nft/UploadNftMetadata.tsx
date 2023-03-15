@@ -157,6 +157,8 @@ export const UploadNftMetadata: ActionComponent = ({
                 register={register}
                 validation={[(v) => !v || validateUrlWithIpfs(v)]}
               />
+
+              <InputErrorMessage error={errors?.metadata?.audio} />
             </div>
 
             <div className="space-y-1">
@@ -170,6 +172,8 @@ export const UploadNftMetadata: ActionComponent = ({
                 register={register}
                 validation={[(v) => !v || validateUrlWithIpfs(v)]}
               />
+
+              <InputErrorMessage error={errors?.metadata?.video} />
             </div>
           </div>
         )}
