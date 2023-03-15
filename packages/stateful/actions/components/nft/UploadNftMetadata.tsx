@@ -54,21 +54,17 @@ export const UploadNftMetadata: ActionComponent = ({
     setUploading(true)
     try {
       const extra =
-        !showAdvanced || (!metadata.audio && !metadata.video)
+        !showAdvanced || !metadata.properties
           ? undefined
           : {
-              properties:
-                metadata.audio || metadata.video
-                  ? {
-                      // Override properties with audio and video if specified.
-                      ...(metadata.audio && {
-                        audio: metadata.audio,
-                      }),
-                      ...(metadata.video && {
-                        video: metadata.video,
-                      }),
-                    }
-                  : undefined,
+              properties: {
+                ...(metadata.properties.audio && {
+                  audio: metadata.properties.audio,
+                }),
+                ...(metadata.properties.video && {
+                  video: metadata.properties.video,
+                }),
+              },
             }
 
       const { metadataUrl, imageUrl } = await uploadNft(
@@ -83,6 +79,15 @@ export const UploadNftMetadata: ActionComponent = ({
         metadataUrl
       )
       setValue((fieldNamePrefix + 'imageUrl') as 'imageUrl', imageUrl)
+
+      // If not showing advanced, clear properties if set, since we copy the
+      // metadata over to the final Mint NFT step to show a preview.
+      if (!showAdvanced) {
+        setValue(
+          (fieldNamePrefix + 'metadata.properties') as 'metadata.properties',
+          undefined
+        )
+      }
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -138,7 +143,20 @@ export const UploadNftMetadata: ActionComponent = ({
           containerClassName="self-start"
           enabled={showAdvanced}
           label={t('form.showAdvancedNftFields')}
-          onClick={() => setShowAdvanced((s) => !s)}
+          onClick={() => {
+            setShowAdvanced((s) => !s)
+            // If was just showing, clear properties because now it is hiding.
+            if (showAdvanced) {
+              setValue(
+                (fieldNamePrefix +
+                  'metadata.properties') as 'metadata.properties',
+                undefined,
+                {
+                  shouldValidate: true,
+                }
+              )
+            }
+          }}
           sizing="sm"
           tooltip={t('form.showAdvancedNftFieldsTooltip')}
           tooltipIconSize="sm"
@@ -150,30 +168,32 @@ export const UploadNftMetadata: ActionComponent = ({
               <InputLabel name={t('form.audioUrl')} />
 
               <TextInput
-                error={errors?.metadata?.audio}
+                error={errors?.metadata?.properties?.audio}
                 fieldName={
-                  (fieldNamePrefix + 'metadata.audio') as 'metadata.audio'
+                  (fieldNamePrefix +
+                    'metadata.properties.audio') as 'metadata.properties.audio'
                 }
                 register={register}
                 validation={[(v) => !v || validateUrlWithIpfs(v)]}
               />
 
-              <InputErrorMessage error={errors?.metadata?.audio} />
+              <InputErrorMessage error={errors?.metadata?.properties?.audio} />
             </div>
 
             <div className="space-y-1">
               <InputLabel name={t('form.videoUrl')} />
 
               <TextInput
-                error={errors?.metadata?.video}
+                error={errors?.metadata?.properties?.video}
                 fieldName={
-                  (fieldNamePrefix + 'metadata.video') as 'metadata.video'
+                  (fieldNamePrefix +
+                    'metadata.properties.video') as 'metadata.properties.video'
                 }
                 register={register}
                 validation={[(v) => !v || validateUrlWithIpfs(v)]}
               />
 
-              <InputErrorMessage error={errors?.metadata?.video} />
+              <InputErrorMessage error={errors?.metadata?.properties?.video} />
             </div>
           </div>
         )}
