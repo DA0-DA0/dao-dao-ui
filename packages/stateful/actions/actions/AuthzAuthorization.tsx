@@ -1,19 +1,4 @@
 import type { MsgGrant, MsgRevoke } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
-import {
-  GenericAuthorization,
-  GrantAuthorization,
-} from 'cosmjs-types/cosmos/authz/v1beta1/authz'
-import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz'
-import {
-  ContractExecutionAuthorization,
-  ContractGrant,
-  ContractMigrationAuthorization,
-  MaxCallsLimit,
-  MaxFundsLimit,
-  AllowAllMessagesFilter,
-  AcceptedMessageKeysFilter,
-  AcceptedMessagesFilter,
-} from 'cosmjs-types/cosmwasm/wasm/v1/authz'
 import { useCallback, useMemo } from 'react'
 
 import { ActionCardLoader, KeyEmoji } from '@dao-dao/stateless'
@@ -43,7 +28,6 @@ const TYPE_URL_MSG_REVOKE = '/cosmos.authz.v1beta1.MsgRevoke'
 const TYPE_URL_GENERIC_AUTHORIZATION =
   '/cosmos.authz.v1beta1.GenericAuthorization'
 
-// TODO fix me, maybe rename?
 export enum AuthorizationTypeUrl {
   Generic = '/cosmos.authz.v1beta1.GenericAuthorization',
   ContractExecution = '/cosmwasm.wasm.v1.ContractExecutitonAuthorization',
@@ -57,40 +41,33 @@ export enum FilterTypes {
   Msg = '/cosmwasm.wasm.v1.AcceptedMessagesFilter',
 }
 
-export enum LimitOptions {}
+// TODO?
+/* export enum LimitOptions {} */
 
 export interface AuthzData {
-  funds?: { denom: string; amount: number }[]
-  authorizationTypeUrl: AuthorizationTypeUrl
-  custom?: boolean
+  authorizationTypeUrl?: AuthorizationTypeUrl
+  customTypeUrl?: boolean
   typeUrl: string
-  // TODO maybe this doesn't actually make sense?
-  value: MsgGrant | MsgRevoke
+  grantee: string
+  contract?: string
+  funds?: { denom: string; amount: number }[]
   msgTypeUrl?: string
-  filterType: FilterTypes
+  filterType?: FilterTypes
   filterKeys?: string[]
   filterMsg?: string
 }
 
 const useDefaults: UseDefaults<AuthzData> = () => ({
-  funds: [],
   authorizationTypeUrl: AuthorizationTypeUrl.Generic,
-  custom: false,
+  customTypeUrl: false,
   typeUrl: TYPE_URL_MSG_GRANT,
-  value: {
-    grantee: '',
-    granter: '',
-    grant: {
-      authorization: {
-        typeUrl: TYPE_URL_GENERIC_AUTHORIZATION,
-        value: {
-          msg: '/cosmos.staking.v1beta1.MsgDelegate',
-        },
-      },
-    },
-    msgTypeUrl: '',
-  },
+  grantee: '',
   filterType: FilterTypes.All,
+  filterKeys: [],
+  filterMsg: '[]',
+  funds: [],
+  contract: '',
+  msgTypeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
 })
 
 const Component: ActionComponent = (props) => {
@@ -152,30 +129,31 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         return { match: false }
       }
 
+      // TODO check other authorization types
+
       return msg.stargate.typeUrl === TYPE_URL_MSG_GRANT &&
         isMsgGrantGenericAuthorization(msg)
         ? {
             match: true,
             data: {
-              custom: false,
+              // TODO check this
+              authorizationTypeUrl:
+                msg.stargate.value.grant!.authorization!.typeUrl,
+              customTypeUrl: false,
               typeUrl: msg.stargate.typeUrl,
-              value: {
-                authorization: {
-                  typeUrl: msg.stargate.value.grant!.authorization!.typeUrl,
-                  value: decodeRawProtobufMsg(
-                    msg.stargate.value.grant!.authorization!
-                  ).value,
-                },
-                grantee: msg.stargate.value.grantee,
-                granter: msg.stargate.value.granter,
-              },
+              // TODO check
+              msgTypeUrl: decodeRawProtobufMsg(
+                msg.stargate.value.grant!.authorization!
+              ).value.msg,
+              grantee: msg.stargate.value.grantee,
+              // granter: msg.stargate.value.granter,
             },
           }
         : msg.stargate.typeUrl === TYPE_URL_MSG_REVOKE
         ? {
             match: true,
             data: {
-              custom: false,
+              customTypeUrl: false,
               ...(msg as DecodedStargateMsg<MsgRevoke>).stargate,
             },
           }
@@ -184,7 +162,17 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
 
   const useTransformToCosmos: UseTransformToCosmos<AuthzData> = () =>
     useCallback(
-      ({ typeUrl, value: { grantee, grant, msgTypeUrl } }: AuthzData) =>
+      ({
+        authorizationTypeUrl,
+        typeUrl,
+        grantee,
+        msgTypeUrl,
+        filterKeys,
+        filterMsg,
+        filterType,
+        funds,
+        contract,
+      }: AuthzData) =>
         makeStargateMessage({
           stargate: {
             typeUrl,
@@ -193,7 +181,12 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 ? {
                     grant: {
                       // TODO switch accordingly?
-                      authorization: encodeRawProtobufMsg(grant.authorization),
+                      authorization: encodeRawProtobufMsg({
+                        typeUrl: authorizationTypeUrl as string,
+                        value: {
+                          msg: msgTypeUrl,
+                        },
+                      }),
                     },
                   }
                 : {

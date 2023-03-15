@@ -23,8 +23,8 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  makeWasmMessage,
   NATIVE_DENOM,
+  makeWasmMessage,
   validateAddress,
   validateContractAddress,
   validateCosmosMsg,
@@ -48,12 +48,6 @@ export interface AuthzOptions {
 }
 
 /*
-   TODO now:
-   - [] Hide authorization type on revoke
-   - [] Wire up and test encoders
-   - [] Check errors and validation work
-   - [] Support revoking contract related authorizations
-
    TODO later:
    - [] Max calls limits?
    - [] Expires time?
@@ -82,11 +76,9 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
     name: fieldNamePrefix + 'funds',
   })
 
-  // TODO rename?
-  const grantOrRevoke = watch(fieldNamePrefix + 'typeUrl')
+  const typeUrl = watch(fieldNamePrefix + 'typeUrl')
   const authorizationTypeUrl = watch(fieldNamePrefix + 'authorizationTypeUrl')
-  const custom = watch(fieldNamePrefix + 'custom')
-
+  const customTypeUrl = watch(fieldNamePrefix + 'customTypeUrl')
   const filterType = watch(fieldNamePrefix + 'filterType')
 
   return (
@@ -100,7 +92,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
           className="mb-4"
           disabled={!isCreating}
           onSelect={(value) => setValue(fieldNamePrefix + 'typeUrl', value)}
-          selected={grantOrRevoke}
+          selected={typeUrl}
           tabs={[
             {
               label: t('form.grantAuthorizationOption'),
@@ -113,7 +105,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
           ]}
         />
 
-        {grantOrRevoke === '/cosmos.authz.v1beta1.MsgGrant' && (
+        {typeUrl === '/cosmos.authz.v1beta1.MsgGrant' && (
           <Warning>
             USE WITH CAUTION! Granting an Authorization allows another account
             to perform actions on behalf of your account.
@@ -128,8 +120,8 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         />
         <AddressInput
           disabled={!isCreating}
-          error={errors?.value?.grantee}
-          fieldName={fieldNamePrefix + 'value.grant.grantee'}
+          error={errors?.grantee}
+          fieldName={fieldNamePrefix + 'grantee'}
           placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
           validation={[
@@ -137,10 +129,10 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               validateAddress(v) || validateContractAddress(v, false),
           ]}
         />
-        <InputErrorMessage error={errors?.value?.grantee} />
+        <InputErrorMessage error={errors?.grantee} />
       </div>
 
-      {grantOrRevoke === '/cosmos.authz.v1beta1.MsgGrant' && (
+      {typeUrl === '/cosmos.authz.v1beta1.MsgGrant' && (
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel
             name={'Authorization Type'}
@@ -165,9 +157,10 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         </div>
       )}
 
-      {authorizationTypeUrl === AuthorizationTypeUrl.Generic && (
+      {(authorizationTypeUrl === AuthorizationTypeUrl.Generic ||
+        typeUrl === '/cosmos.authz.v1beta1.MsgRevoke') && (
         <>
-          {!custom ? (
+          {!customTypeUrl ? (
             <div className="flex flex-col items-stretch gap-1">
               <InputLabel
                 name={t('form.messageType')}
@@ -177,7 +170,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               />
               <SelectInput
                 disabled={!isCreating}
-                fieldName={fieldNamePrefix + 'value.msgTypeUrl'}
+                fieldName={fieldNamePrefix + 'msgTypeUrl'}
                 register={register}
               >
                 <option value={AuthzExecActionTypes.Delegate}>
@@ -193,7 +186,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
                   {t('info.withdrawStakingRewards')}
                 </option>
                 <option value={AuthzExecActionTypes.Vote}>Vote</option>
-                {grantOrRevoke !== '/cosmos.authz.v1beta1.MsgGrant' && (
+                {typeUrl !== '/cosmos.authz.v1beta1.MsgGrant' && (
                   <>
                     <option value={AuthzExecActionTypes.Spend}>Spend</option>
                     <option value={AuthorizationTypeUrl.ContractExecution}>
@@ -211,29 +204,29 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               <InputLabel name={t('form.messageType')} />
               <TextInput
                 disabled={!isCreating}
-                error={errors?.value?.msgTypeUrl}
-                fieldName={fieldNamePrefix + 'value.msgTypeUrl'}
+                error={errors?.msgTypeUrl}
+                fieldName={fieldNamePrefix + 'msgTypeUrl'}
                 placeholder={
                   !isCreating ? t('info.none') : t('form.messageType')
                 }
                 register={register}
                 validation={[(v: string) => validateRequired(v)]}
               />
-              <InputErrorMessage error={errors?.value?.msgTypeUrl} />
+              <InputErrorMessage error={errors?.msgTypeUrl} />
             </div>
           )}
 
-          {(isCreating || custom) && (
+          {(isCreating || customTypeUrl) && (
             <FormSwitchCard
               containerClassName="self-start"
-              fieldName={fieldNamePrefix + 'custom'}
+              fieldName={fieldNamePrefix + 'customTypeUrl'}
               label={t('form.authzUseCustomMessageType')}
               onToggle={
-                // Set message type URL back to delegate if custom is disabled.
-                (custom) =>
-                  !custom &&
+                // Set message type URL back to delegate if customTypeUrl is disabled.
+                (customTypeUrl) =>
+                  !customTypeUrl &&
                   setValue(
-                    fieldNamePrefix + 'value.msgTypeUrl',
+                    fieldNamePrefix + 'msgTypeUrl',
                     AuthzExecActionTypes.Delegate
                   )
               }
@@ -242,179 +235,184 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               sizing="sm"
               tooltip={t('form.authzCustomMessageTypeTooltip')}
               tooltipIconSize="sm"
-              value={watch(fieldNamePrefix + 'custom')}
+              value={watch(fieldNamePrefix + 'customTypeUrl')}
             />
           )}
         </>
       )}
 
-      {authorizationTypeUrl === AuthorizationTypeUrl.Spend && (
-        <div className="flex flex-col gap-1">
-          <InputLabel name={'Spend Authorization'} />
-          <div className="flex flex-col items-stretch gap-2">
-            {coins.map(({ id }, index) => (
-              <NativeCoinSelector
-                key={id}
-                {...({
-                  ...props,
-                  options: {
-                    nativeBalances: props.options.balances.filter(
-                      ({ token }) => token.type === TokenType.Native
-                    ),
-                  },
-                  onRemove: props.isCreating
-                    ? () => removeCoin(index)
-                    : undefined,
-                } as NativeCoinSelectorProps)}
-                errors={errors?.funds?.[index]}
-                fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
-              />
-            ))}
-            {!isCreating && coins.length === 0 && (
-              <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
-                {t('info.none')}
-              </p>
-            )}
-            {isCreating && (
-              <Button
-                className="self-start"
-                onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
-                variant="secondary"
-              >
-                {t('button.addPayment')}
-              </Button>
-            )}
+      {authorizationTypeUrl === AuthorizationTypeUrl.Spend &&
+        typeUrl === '/cosmos.authz.v1beta1.MsgGrant' && (
+          <div className="flex flex-col gap-1">
+            <InputLabel name={'Spend Authorization'} />
+            <div className="flex flex-col items-stretch gap-2">
+              {coins.map(({ id }, index) => (
+                <NativeCoinSelector
+                  key={id}
+                  {...({
+                    ...props,
+                    options: {
+                      nativeBalances: balances.filter(
+                        ({ token }) => token.type === TokenType.Native
+                      ),
+                    },
+                    onRemove: isCreating ? () => removeCoin(index) : undefined,
+                  } as NativeCoinSelectorProps)}
+                  errors={errors?.funds?.[index]}
+                  fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+                />
+              ))}
+              {!isCreating && coins.length === 0 && (
+                <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
+                  {t('info.none')}
+                </p>
+              )}
+              {isCreating && (
+                <Button
+                  className="self-start"
+                  onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
+                  variant="secondary"
+                >
+                  {t('button.addPayment')}
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {(authorizationTypeUrl === AuthorizationTypeUrl.ContractExecution ||
-        authorizationTypeUrl === AuthorizationTypeUrl.ContractMigration) && (
-        <>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={'Contract Address'} />
-            <AddressInput
-              disabled={!isCreating}
-              error={errors?.value?.grantee}
-              fieldName={fieldNamePrefix + 'value.grant.grantee'}
-              placeholder={!isCreating ? t('info.none') : undefined}
-              register={register}
-              validation={[
-                (v: string) =>
-                  validateAddress(v) || validateContractAddress(v, false),
-              ]}
-            />
-            <InputErrorMessage error={errors?.value?.grantee} />
-          </div>
-
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={'Msg Keys'} />
-
-            <RadioInput
-              fieldName={fieldNamePrefix + 'filterType'}
-              options={[
-                { label: 'All', value: FilterTypes.All },
-                { label: 'Keys', value: FilterTypes.Keys },
-                { label: 'Msg', value: FilterTypes.Msg },
-              ]}
-              setValue={setValue}
-              watch={watch}
-            />
-          </div>
-
-          {filterType === FilterTypes.Keys && (
+        authorizationTypeUrl === AuthorizationTypeUrl.ContractMigration) &&
+        typeUrl === '/cosmos.authz.v1beta1.MsgGrant' && (
+          <>
             <div className="flex flex-col items-stretch gap-1">
-              <InputLabel name={'Msg Keys'} />
-
-              <TextInput
+              <InputLabel name={'Contract Address'} />
+              <AddressInput
                 disabled={!isCreating}
-                error={errors?.key}
-                fieldName={fieldNamePrefix + 'key'}
+                error={errors?.contract}
+                fieldName={fieldNamePrefix + 'contract'}
+                placeholder={!isCreating ? t('info.none') : undefined}
                 register={register}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors?.key} />
-            </div>
-          )}
-
-          {filterType === FilterTypes.Msg && (
-            <div className="flex flex-col items-stretch gap-1">
-              <InputLabel name={'Message'} tooltip={'The message to execute'} />
-
-              <CodeMirrorInput
-                control={control}
-                error={errors?.message}
-                fieldName={fieldNamePrefix + 'filterMsg'}
-                readOnly={!isCreating}
                 validation={[
-                  (v: string) => {
-                    let msg
-                    try {
-                      msg = JSON5.parse(v)
-                    } catch (err) {
-                      return err instanceof Error ? err.message : `${err}`
-                    }
-                    msg = makeWasmMessage({
-                      wasm: {
-                        execute: {
-                          contract_addr: '',
-                          funds: [],
-                          msg,
-                        },
-                      },
-                    })
-                    return (
-                      validateCosmosMsg(msg).valid ||
-                      t('error.invalidExecuteMessage')
-                    )
-                  },
+                  (v: string) =>
+                    validateAddress(v) || validateContractAddress(v, false),
                 ]}
               />
+              <InputErrorMessage error={errors?.value?.grantee} />
             </div>
-          )}
 
-          <InputLabel
-            name={'Spending limit'}
-            tooltip={
-              'The amount of funds to be spendable with smart contract calls'
-            }
-          />
-          <div className="flex flex-col items-stretch gap-2">
-            {coins.map(({ id }, index) => (
-              <NativeCoinSelector
-                key={id}
-                {...({
-                  ...props,
-                  options: {
-                    nativeBalances: props.options.balances.filter(
-                      ({ token }) => token.type === TokenType.Native
-                    ),
-                  },
-                  onRemove: props.isCreating
-                    ? () => removeCoin(index)
-                    : undefined,
-                } as NativeCoinSelectorProps)}
-                errors={errors?.funds?.[index]}
-                fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+            <div className="flex flex-col items-stretch gap-1">
+              <InputLabel
+                name={'Permissions'}
+                tooltip={
+                  'The contract permissions this authorization grants the grantee.'
+                }
               />
-            ))}
-            {!isCreating && coins.length === 0 && (
-              <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
-                {t('info.none')}
-              </p>
+              <RadioInput
+                fieldName={fieldNamePrefix + 'filterType'}
+                options={[
+                  { label: 'All', value: FilterTypes.All },
+                  { label: 'Keys', value: FilterTypes.Keys },
+                  { label: 'Only Message', value: FilterTypes.Msg },
+                ]}
+                setValue={setValue}
+                watch={watch}
+              />
+            </div>
+
+            {filterType === FilterTypes.Keys && (
+              <div className="flex flex-col items-stretch gap-1">
+                <InputLabel name={'Msg Keys'} />
+
+                <TextInput
+                  disabled={!isCreating}
+                  error={errors?.filterKeys}
+                  fieldName={fieldNamePrefix + 'filterKeys'}
+                  register={register}
+                  validation={[validateRequired]}
+                />
+                <InputErrorMessage error={errors?.filterKeys} />
+              </div>
             )}
-            {isCreating && (
-              <Button
-                className="self-start"
-                onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
-                variant="secondary"
-              >
-                {t('button.addPayment')}
-              </Button>
+
+            {filterType === FilterTypes.Msg && (
+              <div className="flex flex-col items-stretch gap-1">
+                <InputLabel
+                  name={'Message'}
+                  tooltip={'The message to execute'}
+                />
+
+                <CodeMirrorInput
+                  control={control}
+                  error={errors?.filterMsg}
+                  fieldName={fieldNamePrefix + 'filterMsg'}
+                  readOnly={!isCreating}
+                  validation={[
+                    (v: string) => {
+                      let msg
+                      try {
+                        msg = JSON5.parse(v)
+                      } catch (err) {
+                        return err instanceof Error ? err.message : `${err}`
+                      }
+                      msg = makeWasmMessage({
+                        wasm: {
+                          execute: {
+                            contract_addr: '',
+                            funds: [],
+                            msg,
+                          },
+                        },
+                      })
+                      return (
+                        validateCosmosMsg(msg).valid ||
+                        t('error.invalidExecuteMessage')
+                      )
+                    },
+                  ]}
+                />
+              </div>
             )}
-          </div>
-        </>
-      )}
+
+            <InputLabel
+              name={'Spending limit'}
+              tooltip={
+                'The amount of funds to be spendable with smart contract calls'
+              }
+            />
+            <div className="flex flex-col items-stretch gap-2">
+              {coins.map(({ id }, index) => (
+                <NativeCoinSelector
+                  key={id}
+                  {...({
+                    ...props,
+                    options: {
+                      nativeBalances: balances.filter(
+                        ({ token }) => token.type === TokenType.Native
+                      ),
+                    },
+                    onRemove: isCreating ? () => removeCoin(index) : undefined,
+                  } as NativeCoinSelectorProps)}
+                  errors={errors?.funds?.[index]}
+                  fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+                />
+              ))}
+              {!isCreating && coins.length === 0 && (
+                <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
+                  {t('info.none')}
+                </p>
+              )}
+              {isCreating && (
+                <Button
+                  className="self-start"
+                  onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
+                  variant="secondary"
+                >
+                  {t('button.addPayment')}
+                </Button>
+              )}
+            </div>
+          </>
+        )}
     </ActionCard>
   )
 }

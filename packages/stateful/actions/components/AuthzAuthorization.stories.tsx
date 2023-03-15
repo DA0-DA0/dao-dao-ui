@@ -6,6 +6,8 @@ import {
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
+import { TokenType } from '@dao-dao/types'
+import { NATIVE_DENOM } from '@dao-dao/utils'
 
 import {
   AuthorizationTypeUrl,
@@ -13,8 +15,6 @@ import {
   FilterTypes,
 } from '../actions/AuthzAuthorization'
 import { AuthzAuthorizationComponent } from './AuthzAuthorization'
-import { TokenType } from '@dao-dao/types'
-import { NATIVE_DENOM } from '@dao-dao/utils'
 
 export default {
   title:
@@ -23,18 +23,15 @@ export default {
   decorators: [
     makeReactHookFormDecorator<AuthzData>({
       authorizationTypeUrl: AuthorizationTypeUrl.Generic,
-      custom: false,
+      customTypeUrl: false,
       typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
-      value: {
-        grantee: 'juno1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8lyv94w',
-        granter: '',
-        grant: {
-          authorization: {
-            msg: '/cosmos.staking.v1beta1.MsgDelegate' as any,
-          },
-        },
-      },
+      grantee: 'juno1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8lyv94w',
+      msgTypeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
+      contract: '',
       filterType: FilterTypes.All,
+      filterKeys: [],
+      filterMsg: '[]',
+      funds: [],
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
   ],
