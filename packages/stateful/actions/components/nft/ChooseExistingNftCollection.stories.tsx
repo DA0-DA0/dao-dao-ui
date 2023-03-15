@@ -25,10 +25,6 @@ export default {
       metadata: {
         name: '',
         description: '',
-        includeExtra: false,
-        audio: undefined,
-        video: undefined,
-        extra: '',
       },
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),

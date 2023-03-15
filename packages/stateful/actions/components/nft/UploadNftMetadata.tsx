@@ -1,5 +1,3 @@
-import { Check, Close } from '@mui/icons-material'
-import JSON5 from 'json5'
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -7,19 +5,17 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
-  CodeMirrorInput,
   CopyToClipboard,
-  FormSwitchCard,
   ImageDropInput,
   InputErrorMessage,
   InputLabel,
+  SwitchCard,
   TextInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import {
   processError,
   uploadNft,
-  validateJSON,
   validateRequired,
   validateUrlWithIpfs,
 } from '@dao-dao/utils'
@@ -34,15 +30,14 @@ export const UploadNftMetadata: ActionComponent = ({
 }) => {
   const { t } = useTranslation()
 
-  const { register, watch, setValue, trigger, control } =
-    useFormContext<MintNftData>()
+  const { register, watch, setValue, trigger } = useFormContext<MintNftData>()
 
   const collectionAddress = watch(
     (fieldNamePrefix + 'collectionAddress') as 'collectionAddress'
   )
-  const watchMetadata = watch((fieldNamePrefix + 'metadata') as 'metadata')
-  const includeExtraMetadata = !!watchMetadata?.includeExtra
+  const metadata = watch((fieldNamePrefix + 'metadata') as 'metadata')
 
+  const [showAdvanced, setShowAdvanced] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [file, setFile] = useState<File>()
 
@@ -51,38 +46,36 @@ export const UploadNftMetadata: ActionComponent = ({
       toast.error(t('error.noImageSelected'))
       return
     }
-    if (!watchMetadata) {
+    if (!metadata) {
       toast.error(t('error.loadingData'))
       return
     }
 
     setUploading(true)
     try {
-      const customExtra = watchMetadata.extra
-        ? JSON5.parse(watchMetadata.extra)
-        : {}
-      const extra = !includeExtraMetadata
-        ? undefined
-        : {
-            ...customExtra,
-            properties:
-              customExtra.properties ||
-              watchMetadata.audio ||
-              watchMetadata.video
-                ? {
-                    ...customExtra.properties,
-                    // Override properties with audio and video if specified.
-                    ...(watchMetadata.audio && { audio: watchMetadata.audio }),
-                    ...(watchMetadata.video && { video: watchMetadata.video }),
-                  }
-                : undefined,
-          }
+      const extra =
+        !showAdvanced || (!metadata.audio && !metadata.video)
+          ? undefined
+          : {
+              properties:
+                metadata.audio || metadata.video
+                  ? {
+                      // Override properties with audio and video if specified.
+                      ...(metadata.audio && {
+                        audio: metadata.audio,
+                      }),
+                      ...(metadata.video && {
+                        video: metadata.video,
+                      }),
+                    }
+                  : undefined,
+            }
 
       const { metadataUrl, imageUrl } = await uploadNft(
-        watchMetadata.name,
-        watchMetadata.description,
+        metadata.name,
+        metadata.description,
         file,
-        includeExtraMetadata ? JSON.stringify(extra) : undefined
+        extra && JSON.stringify(extra)
       )
 
       setValue(
@@ -141,21 +134,17 @@ export const UploadNftMetadata: ActionComponent = ({
       </div>
 
       <div className="flex flex-col gap-1">
-        <FormSwitchCard
+        <SwitchCard
           containerClassName="self-start"
-          fieldName={
-            (fieldNamePrefix +
-              'metadata.includeExtra') as 'metadata.includeExtra'
-          }
-          label={t('form.includeExtraMetadata')}
-          setValue={setValue}
+          enabled={showAdvanced}
+          label={t('form.showAdvancedNftFields')}
+          onClick={() => setShowAdvanced((s) => !s)}
           sizing="sm"
-          tooltip={t('form.includeExtraMetadataTooltip')}
+          tooltip={t('form.showAdvancedNftFieldsTooltip')}
           tooltipIconSize="sm"
-          value={includeExtraMetadata}
         />
 
-        {includeExtraMetadata && (
+        {showAdvanced && (
           <div className="mt-2 space-y-4">
             <div className="space-y-1">
               <InputLabel name={t('form.audioUrl')} />
@@ -181,33 +170,6 @@ export const UploadNftMetadata: ActionComponent = ({
                 register={register}
                 validation={[(v) => !v || validateUrlWithIpfs(v)]}
               />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <InputLabel
-                name={t('form.customJson')}
-                tooltip={t('form.nftMetadataCustomJsonTooltip')}
-              />
-
-              <CodeMirrorInput
-                control={control}
-                error={errors?.metadata?.extra}
-                fieldName={
-                  (fieldNamePrefix + 'metadata.extra') as 'metadata.extra'
-                }
-                validation={[(v) => !v || validateJSON(v)]}
-              />
-
-              {errors?.metadata?.extra?.message ? (
-                <p className="flex items-center gap-1 text-sm text-text-interactive-error">
-                  <Close className="!h-5 !w-5" />{' '}
-                  <span>{errors.metadata.extra.message}</span>
-                </p>
-              ) : (
-                <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
-                  <Check className="!h-5 !w-5" /> {t('info.jsonIsValid')}
-                </p>
-              )}
             </div>
           </div>
         )}
