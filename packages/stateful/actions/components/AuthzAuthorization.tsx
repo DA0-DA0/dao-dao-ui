@@ -7,6 +7,7 @@ import {
   InputErrorMessage,
   InputLabel,
   KeyEmoji,
+  SegmentedControls,
   SelectInput,
   TextInput,
 } from '@dao-dao/stateless'
@@ -25,6 +26,20 @@ export interface AuthzOptions {
   AddressInput: ComponentType<AddressInputProps>
 }
 
+/*
+   TODO now:
+   - [] Hide custom message type switch
+   - [] Attach funding limits
+   - [] Msg filter (keys)
+   - [] Accepted Msgs (json)
+   - [] Warning
+
+   TODO later:
+   - [] Tabs for grant / revoke?
+   - [] Max calls limits?
+   - [] Expires time?
+ */
+
 export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
   props
 ) => {
@@ -39,6 +54,8 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
   } = props
   const { register, setValue, watch } = useFormContext()
 
+  const grantOrRevoke = watch(fieldNamePrefix + 'typeUrl')
+
   return (
     <ActionCard
       Icon={KeyEmoji}
@@ -46,19 +63,36 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
       title={t('title.authzAuthorization')}
     >
       <div className="flex flex-col items-stretch gap-1">
-        <InputLabel name={t('form.grantOrRevokeAuthz')} />
-        <SelectInput
+        <SegmentedControls<string>
+          className="mb-4"
           disabled={!isCreating}
-          fieldName={fieldNamePrefix + 'typeUrl'}
-          register={register}
-        >
-          <option value="/cosmos.authz.v1beta1.MsgGrant">
-            {t('form.grantAuthorizationOption')}
-          </option>
-          <option value="/cosmos.authz.v1beta1.MsgRevoke">
-            {t('form.revokeAuthorizationOption')}
-          </option>
-        </SelectInput>
+          onSelect={(value) => setValue(fieldNamePrefix + 'typeUrl', value)}
+          selected={grantOrRevoke}
+          tabs={[
+            {
+              label: t('form.grantAuthorizationOption'),
+              value: '/cosmos.authz.v1beta1.MsgGrant',
+            },
+            {
+              label: t('form.revokeAuthorizationOption'),
+              value: '/cosmos.authz.v1beta1.MsgRevoke',
+            },
+          ]}
+        />
+
+        {/* <InputLabel name={t('form.grantOrRevokeAuthz')} />
+              <SelectInput
+              disabled={!isCreating}
+              fieldName={fieldNamePrefix + 'typeUrl'}
+              register={register}
+              >
+              <option value="/cosmos.authz.v1beta1.MsgGrant">
+              {t('form.grantAuthorizationOption')}
+              </option>
+              <option value="/cosmos.authz.v1beta1.MsgRevoke">
+              {t('form.revokeAuthorizationOption')}
+              </option>
+              </SelectInput> */}
       </div>
 
       <div className="flex flex-col items-stretch gap-1">
@@ -100,6 +134,16 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
             <option value={AuthzExecActionTypes.ClaimRewards}>
               {t('info.withdrawStakingRewards')}
             </option>
+            <option value={AuthzExecActionTypes.Vote}>Vote</option>
+            <option value={AuthzExecActionTypes.Execute}>
+              Execute Smart Contract
+            </option>
+            <option value={AuthzExecActionTypes.Migrate}>
+              Migrate Smart Contract
+            </option>
+            {/* <option value={AuthzExecActionTypes.Custom}>
+                Custom SDK Message
+                </option> */}
           </SelectInput>
         </div>
       ) : (

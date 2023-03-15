@@ -1,9 +1,14 @@
 import type { MsgWithdrawDelegatorReward } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
+import type { MsgVote } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
 import type {
   MsgBeginRedelegate,
   MsgDelegate,
   MsgUndelegate,
 } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
+import type {
+  MsgExecuteContract,
+  MsgMigrateContract,
+} from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useMemo } from 'react'
 
@@ -40,6 +45,9 @@ export enum AuthzExecActionTypes {
   Undelegate = '/cosmos.staking.v1beta1.MsgUndelegate',
   Redelegate = '/cosmos.staking.v1beta1.MsgBeginRedelegate',
   ClaimRewards = '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+  Vote = '/cosmos.gov.v1beta1.MsgVote',
+  Execute = '/cosmwasm.wasm.v1.MsgExecuteContract',
+  Migrate = '/cosmwasm.wasm.v1.MsgMigrateContract',
   Custom = 'custom',
 }
 
@@ -49,6 +57,9 @@ interface AuthzExecData {
   undelegate: MsgUndelegate
   redelegate: MsgBeginRedelegate
   claimRewards: MsgWithdrawDelegatorReward
+  vote: MsgVote
+  execute: MsgExecuteContract
+  migrate: MsgMigrateContract
   custom: string
 }
 
@@ -79,6 +90,18 @@ const useDefaults: UseDefaults<AuthzExecData> = () => ({
   claimRewards: {
     delegatorAddress: '',
     validatorAddress: '',
+  },
+  execute: {
+    sender: '',
+    contract: '',
+    msg: '',
+    funds: [],
+  },
+  migrate: {
+    sender: '',
+    contract: '',
+    codeId: '',
+    msg: '',
   },
   custom: '[]',
 })
