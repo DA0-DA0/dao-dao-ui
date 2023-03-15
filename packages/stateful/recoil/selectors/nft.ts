@@ -87,12 +87,9 @@ export const nftCardInfoWithUriSelector = selectorFamily<
         })
       )
 
-      const {
-        name = '',
-        description,
-        imageUrl,
-        externalLink,
-      } = (tokenUri && get(nftUriDataSelector(tokenUri))) || {}
+      const metadata =
+        (tokenUri && get(nftUriDataSelector(tokenUri))) || undefined
+      const { name = '', description, imageUrl, externalLink } = metadata || {}
 
       const info: NftCardInfo = {
         collection: {
@@ -111,6 +108,7 @@ export const nftCardInfoWithUriSelector = selectorFamily<
         // Default to tokenUri; this gets overwritten if tokenUri contains valid
         // metadata and has an image.
         imageUrl: imageUrl || tokenUri || undefined,
+        metadata,
         name,
         description,
         chainId,

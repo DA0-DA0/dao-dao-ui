@@ -48,6 +48,10 @@ export const MintNft: ActionComponent = (props) => {
         imageUrl: data.imageUrl,
         name: data.metadata?.name ?? '',
         description: data.metadata?.description ?? '',
+        // Show audio/video in preview when creating.
+        metadata: {
+          properties: data.metadata?.properties,
+        },
         chainId,
       }
     : nftInfoLoading.loading || !nftInfoLoading.data
