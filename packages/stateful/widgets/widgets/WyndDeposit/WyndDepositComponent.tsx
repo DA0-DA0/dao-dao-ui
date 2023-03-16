@@ -5,11 +5,17 @@ import clsx from 'clsx'
 import { useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
+import {
+  constSelector,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+  waitForAll,
+} from 'recoil'
 
 import {
   WyndexMultiHopSelectors,
   genericTokenSelector,
+  refreshWalletBalancesIdAtom,
   wyndPoolsSelector,
   wyndSwapOperationsSelector,
 } from '@dao-dao/state/recoil'
@@ -62,6 +68,20 @@ export const WyndDepositComponent = ({
     connected,
   } = useWallet()
   const { coreAddress, chainId } = useDaoInfoContext()
+
+  // Default to the DAO's treasury if no output specified.
+  outputAddress ||= coreAddress
+
+  const setRefreshWalletBalances = useSetRecoilState(
+    refreshWalletBalancesIdAtom(walletAddress)
+  )
+  const setRefreshOutputBalances = useSetRecoilState(
+    refreshWalletBalancesIdAtom(outputAddress)
+  )
+  const refreshBalances = () => {
+    setRefreshWalletBalances((id) => id + 1)
+    setRefreshOutputBalances((id) => id + 1)
+  }
 
   const walletBalances = useCachedLoading(
     walletAddress
@@ -196,8 +216,13 @@ export const WyndDepositComponent = ({
   )
   const swapSimulationInput =
     swapSimulation.state === 'hasValue' && swapSimulation.contents
-      ? Number(swapSimulation.contents.amount)
+      ? // Add 1% so the minimum output received can be equal to output amount.
+        Math.round(Number(swapSimulation.contents.amount) * 1.01)
       : 0
+
+  const requiredInput = inTokenIsOutToken
+    ? Number(outputAmount)
+    : swapSimulationInput
 
   const TokenTrigger: FilterableItemPopupProps['Trigger'] = useCallback(
     ({ open, ...props }) => (
@@ -277,45 +302,57 @@ export const WyndDepositComponent = ({
     setTxHash('')
 
     try {
-      const msg: ExecuteSwapOperationsMsg = {
-        execute_swap_operations: {
-          operations: swapOperationsLoadable.contents!,
-          minimum_receive: outputAmount,
-          // 1% slippage
-          max_spread: '0.01',
-          referral_address: DAO_DAO_DAO_ADDRESS,
-          referral_commission: loadingMaxReferralCommission.data,
-          // Default to the DAO's treasury if no output specified.
-          receiver: outputAddress || coreAddress,
-        },
-      }
-
       let tx
-      if (token.type === TokenType.Native) {
-        tx = await signingCosmWasmClient.execute(
+
+      if (inTokenIsOutToken) {
+        tx = await signingCosmWasmClient.sendTokens(
           walletAddress,
-          WYND_MULTI_HOP_CONTRACT,
-          msg,
-          'auto',
-          undefined,
-          coins(swapSimulationInput, token.denomOrAddress)
-        )
-      } else {
-        // Cw20
-        tx = await signingCosmWasmClient.execute(
-          walletAddress,
-          token.denomOrAddress,
-          {
-            amount: swapSimulationInput.toString(),
-            contract: WYND_MULTI_HOP_CONTRACT,
-            msg: JSON.stringify(msg),
-          },
+          outputAddress,
+          coins(outputAmount, token.denomOrAddress),
           'auto'
         )
+      } else {
+        // Swap
+        const msg: ExecuteSwapOperationsMsg = {
+          execute_swap_operations: {
+            operations: swapOperationsLoadable.contents!,
+            minimum_receive: outputAmount,
+            // 1% slippage
+            max_spread: '0.01',
+            referral_address: DAO_DAO_DAO_ADDRESS,
+            referral_commission: loadingMaxReferralCommission.data,
+            receiver: outputAddress,
+          },
+        }
+
+        if (token.type === TokenType.Native) {
+          tx = await signingCosmWasmClient.execute(
+            walletAddress,
+            WYND_MULTI_HOP_CONTRACT,
+            msg,
+            'auto',
+            undefined,
+            coins(requiredInput, token.denomOrAddress)
+          )
+        } else {
+          // Cw20
+          tx = await signingCosmWasmClient.execute(
+            walletAddress,
+            token.denomOrAddress,
+            {
+              amount: requiredInput.toString(),
+              contract: WYND_MULTI_HOP_CONTRACT,
+              msg: JSON.stringify(msg),
+            },
+            'auto'
+          )
+        }
       }
 
       toast.success(t('success.transactionExecuted'))
       setTxHash(tx.transactionHash)
+
+      refreshBalances()
     } catch (err) {
       console.error(err)
 
@@ -326,9 +363,6 @@ export const WyndDepositComponent = ({
     }
   }
 
-  const requiredInput = inTokenIsOutToken
-    ? Number(outputAmount)
-    : swapSimulationInput
   const insufficientFunds = requiredInput > 0 && tokenBalance < requiredInput
 
   // If input and output tokens are the same, then we don't need to load
@@ -421,7 +455,7 @@ export const WyndDepositComponent = ({
 
       {txHash && (
         <div className="flex flex-col items-end gap-2 self-end text-text-interactive-valid">
-          <CopyToClipboard takeAll value={txHash} />
+          <CopyToClipboard value={txHash} />
 
           <ButtonLink href={CHAIN_TXN_URL_PREFIX + txHash} variant="ghost">
             {t('button.openInChainExplorer')}{' '}
