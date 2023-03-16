@@ -131,11 +131,23 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         (stakingInfo
           ? stakingInfo.totalStaked + stakingInfo.totalUnstaking
           : 0) +
-        // Add balances staked in DAOs.
-        (daosGoverned?.reduce(
-          (acc, { stakedBalance }) => acc + (stakedBalance ?? 0),
-          0
-        ) || 0)
+        // Add balances staked in DAOs, grouped by their
+        // `stakingContractAddress` so we don't double-count tokens staked with
+        // the same staking contract if that staking contract is used in
+        // different DAOs in the list.
+        Object.values(
+          daosGoverned?.reduce(
+            (acc, { stakingContractAddress, stakedBalance = 0 }) => ({
+              ...acc,
+              // If the staking contract address is already in the accumulator,
+              // overwrite so we don't double-count. All staked balances for the
+              // same staking contract should be the same, so overwriting should
+              // do nothing.
+              [stakingContractAddress]: stakedBalance,
+            }),
+            {} as Record<string, number>
+          ) || {}
+        ).reduce((acc, stakedBalance) => acc + stakedBalance, 0)
 
       return {
         usdUnitPrice,
