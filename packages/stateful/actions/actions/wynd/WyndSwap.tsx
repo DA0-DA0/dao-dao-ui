@@ -45,8 +45,7 @@ import {
 } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
   DAO_DAO_DAO_ADDRESS,
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   WYND_MULTI_HOP_CONTRACT,
   WYND_REFERRAL_COMMISSION,
   convertDenomToMicroDenomWithDecimals,
@@ -54,8 +53,6 @@ import {
   encodeMessageAsBase64,
   getJunoIbcUsdc,
   makeWasmMessage,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
   objectMatchesStructure,
   parseEncodedMessage,
 } from '@dao-dao/utils'
@@ -119,11 +116,7 @@ const useDefaults: UseDefaults<WyndSwapData> = () => {
     },
     tokenInAmount: 0,
     tokenOut: {
-      type: TokenType.Native,
-      denomOrAddress: NATIVE_DENOM,
-      symbol: nativeTokenLabel(NATIVE_DENOM),
-      decimals: NATIVE_DECIMALS,
-      imageUrl: nativeTokenLogoURI(NATIVE_DENOM),
+      ...NATIVE_TOKEN,
     },
     tokenOutAmount: 0,
     minOutAmount: 0,
@@ -146,7 +139,20 @@ const tokenDenomOrAddressFromAssetInfo = (assetInfo: AssetInfo): string =>
   'native' in assetInfo ? assetInfo.native : assetInfo.token
 
 const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
-  const loadingBalances = useTokenBalances()
+  const { watch, setValue, clearErrors, setError } = useFormContext()
+  const tokenIn = watch(props.fieldNamePrefix + 'tokenIn') as GenericToken
+  const tokenInAmount = watch(props.fieldNamePrefix + 'tokenInAmount') as number
+  const tokenOut = watch(props.fieldNamePrefix + 'tokenOut') as GenericToken
+  const tokenOutAmount = watch(
+    props.fieldNamePrefix + 'tokenOutAmount'
+  ) as number
+
+  const loadingBalances = useTokenBalances({
+    // Load selected tokens when not creating in case they are no longer
+    // returned in the list of all tokens for the given DAO/wallet after the
+    // proposal is made.
+    additionalTokens: props.isCreating ? undefined : [tokenIn, tokenOut],
+  })
 
   const wyndPoolsLoadable = useCachedLoadable(wyndPoolsSelector)
   if (wyndPoolsLoadable.state === 'hasError') {
@@ -181,14 +187,6 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
       : undefined,
     []
   )
-
-  const { watch, setValue, clearErrors, setError } = useFormContext()
-  const tokenIn = watch(props.fieldNamePrefix + 'tokenIn') as GenericToken
-  const tokenInAmount = watch(props.fieldNamePrefix + 'tokenInAmount') as number
-  const tokenOut = watch(props.fieldNamePrefix + 'tokenOut') as GenericToken
-  const tokenOutAmount = watch(
-    props.fieldNamePrefix + 'tokenOutAmount'
-  ) as number
 
   // If proposal executed, get token output amount from tx.
   const executedTxLoadable = useExecutedProposalTxLoadable()

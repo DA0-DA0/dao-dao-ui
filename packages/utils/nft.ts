@@ -37,6 +37,12 @@ export const uploadNft = async (
     const data = await response.json()
     return data
   } else {
+    // Vercel limits file size to 4.5MB and responds with 413 if exceeded. Add
+    // some buffer to make room for the other fields.
+    if (response.status === 413) {
+      throw new Error('File too large. Max 4MB.')
+    }
+
     const { error } = await response
       .json()
       .catch(() => ({ error: 'Unknown error' }))

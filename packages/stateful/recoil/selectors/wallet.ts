@@ -19,7 +19,7 @@ import {
 import {
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
@@ -210,7 +210,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
 
           // For now, stakingInfo only exists for native token, until ICA.
           const hasStakingInfo =
-            token.denomOrAddress === NATIVE_DENOM &&
+            token.denomOrAddress === NATIVE_TOKEN.denomOrAddress &&
             // Check if anything staked.
             Number(
               get(

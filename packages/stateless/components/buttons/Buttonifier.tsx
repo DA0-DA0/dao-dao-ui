@@ -101,10 +101,14 @@ export const getButtonifiedClassNames = ({
       'bg-background-interactive-active text-text-interactive-active': pressed,
     },
     // Ghost variant
-    variant === 'ghost' && {
+    (variant === 'ghost' || variant === 'ghost_outline') && {
       // Default
       'hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
         !disabledOrLoading,
+      // Outline
+      'ring-1 ring-inset ring-border-primary':
+        variant === 'ghost_outline' || loading,
+      'hover:ring-0': variant === 'ghost_outline' && !disabledOrLoading,
       // Default, not pressed
       'bg-transparent text-text-secondary': !disabledOrLoading && !pressed,
       // Disabled, not pressed

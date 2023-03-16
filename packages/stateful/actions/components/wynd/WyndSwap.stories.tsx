@@ -6,13 +6,7 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
 import { TokenType } from '@dao-dao/types'
-import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
-  getJunoIbcUsdc,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
-} from '@dao-dao/utils'
+import { NATIVE_TOKEN, getJunoIbcUsdc } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../components'
 import { WyndSwapComponent, WyndSwapData } from './WyndSwap'
@@ -26,11 +20,7 @@ export default {
   decorators: [
     makeReactHookFormDecorator<WyndSwapData>({
       tokenIn: {
-        type: TokenType.Native,
-        denomOrAddress: NATIVE_DENOM,
-        symbol: nativeTokenLabel(NATIVE_DENOM),
-        decimals: NATIVE_DECIMALS,
-        imageUrl: nativeTokenLogoURI(NATIVE_DENOM),
+        ...NATIVE_TOKEN,
       },
       tokenInAmount: 0,
       tokenOut: {

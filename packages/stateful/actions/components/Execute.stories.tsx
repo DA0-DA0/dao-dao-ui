@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_DENOM } from '@dao-dao/utils'
+import { NATIVE_TOKEN, getFallbackImage } from '@dao-dao/utils'
 
 import { ExecuteComponent } from './Execute'
 
@@ -26,27 +26,45 @@ Default.args = {
   onRemove: () => alert('remove'),
   errors: {},
   options: {
-    balances: [
-      {
-        token: {
-          type: TokenType.Native,
-          denomOrAddress: NATIVE_DENOM,
-          decimals: 6,
-          symbol: 'JUNO',
-          imageUrl: '',
+    balances: {
+      loading: false,
+      data: [
+        {
+          token: NATIVE_TOKEN,
+          balance: '1231245124',
         },
-        balance: '1231245124',
-      },
-      {
-        token: {
-          type: TokenType.Native,
-          denomOrAddress: 'uatom',
-          decimals: 6,
-          symbol: 'ATOM',
-          imageUrl: '',
+        {
+          token: {
+            type: TokenType.Native,
+            denomOrAddress: 'uatom',
+            decimals: 6,
+            symbol: 'ATOM',
+            imageUrl:
+              'https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/images/atom.png',
+          },
+          balance: '984129741',
         },
-        balance: '984129741',
-      },
-    ],
+        {
+          token: {
+            type: TokenType.Cw20,
+            denomOrAddress: 'junoCw20DaoAddress',
+            decimals: 6,
+            symbol: 'DAO',
+            imageUrl: '/daodao.png',
+          },
+          balance: '87345102989851',
+        },
+        {
+          token: {
+            type: TokenType.Cw20,
+            denomOrAddress: 'junoAnotherCw20',
+            decimals: 6,
+            symbol: 'SOME-CW20',
+            imageUrl: getFallbackImage(),
+          },
+          balance: '87345102989851',
+        },
+      ],
+    },
   },
 }

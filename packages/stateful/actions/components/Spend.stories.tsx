@@ -7,7 +7,7 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_DENOM } from '@dao-dao/utils'
+import { NATIVE_TOKEN } from '@dao-dao/utils'
 
 import { SpendComponent, SpendData } from './Spend'
 
@@ -18,7 +18,7 @@ export default {
     makeReactHookFormDecorator<SpendData>({
       to: '',
       amount: 1,
-      denom: NATIVE_DENOM,
+      denom: NATIVE_TOKEN.denomOrAddress,
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
   ],
@@ -34,38 +34,35 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   options: {
-    tokens: [
-      {
-        token: {
-          type: TokenType.Native,
-          denomOrAddress: NATIVE_DENOM,
-          decimals: 6,
-          symbol: 'JUNO',
-          imageUrl: '',
+    tokens: {
+      loading: false,
+      data: [
+        {
+          token: NATIVE_TOKEN,
+          balance: '46252349169321',
         },
-        balance: '46252349169321',
-      },
-      {
-        token: {
-          type: TokenType.Cw20,
-          denomOrAddress: 'cw20_1',
-          decimals: 6,
-          symbol: 'ATKN',
-          imageUrl: '',
+        {
+          token: {
+            type: TokenType.Cw20,
+            denomOrAddress: 'cw20_1',
+            decimals: 6,
+            symbol: 'ATKN',
+            imageUrl: '',
+          },
+          balance: '1284135723893',
         },
-        balance: '1284135723893',
-      },
-      {
-        token: {
-          type: TokenType.Cw20,
-          denomOrAddress: 'cw20_2',
-          decimals: 6,
-          symbol: 'DIFF',
-          imageUrl: '',
+        {
+          token: {
+            type: TokenType.Cw20,
+            denomOrAddress: 'cw20_2',
+            decimals: 6,
+            symbol: 'DIFF',
+            imageUrl: '',
+          },
+          balance: '102948124125',
         },
-        balance: '102948124125',
-      },
-    ],
+      ],
+    },
     AddressInput,
   },
   isCreating: true,
