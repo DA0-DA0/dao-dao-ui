@@ -17,6 +17,7 @@ import {
   SelectInput,
   TextAreaInput,
   TextInput,
+  TokenInput,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -29,7 +30,6 @@ import {
 } from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
-  NATIVE_DENOM,
   convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
@@ -131,49 +131,43 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         <InputLabel name={t('form.payment')} />
 
         <div className="flex min-w-0 flex-col flex-wrap gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
-          <div className="flex grow flex-row items-stretch gap-2">
-            <NumberInput
-              containerClassName="grow"
-              disabled={!isCreating}
-              error={errors?.amount}
-              fieldName={fieldNamePrefix + 'amount'}
-              min={1 / 10 ** selectedDecimals}
-              register={register}
-              setValue={setValue}
-              sizing="auto"
-              step={1 / 10 ** selectedDecimals}
-              validation={[
-                validateRequired,
-                validatePositive,
-                (amount) =>
-                  amount <= selectedBalance ||
-                  t(insufficientBalanceI18nKey, {
-                    amount: selectedBalance.toLocaleString(undefined, {
-                      maximumFractionDigits: selectedDecimals,
-                    }),
-                    tokenSymbol:
-                      selectedToken?.token.symbol ??
-                      t('info.token').toLocaleUpperCase(),
+          <TokenInput
+            amountError={errors?.amount}
+            amountFieldName={fieldNamePrefix + 'amount'}
+            amountMax={selectedBalance}
+            amountMin={convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedDecimals
+            )}
+            amountStep={convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedDecimals
+            )}
+            amountValidations={[
+              (amount) =>
+                amount <= selectedBalance ||
+                t(insufficientBalanceI18nKey, {
+                  amount: selectedBalance.toLocaleString(undefined, {
+                    maximumFractionDigits: selectedDecimals,
                   }),
-              ]}
-              watch={watch}
-            />
-
-            <SelectInput
-              defaultValue={NATIVE_DENOM}
-              disabled={!isCreating}
-              error={errors?.denomOrAddress}
-              fieldName={fieldNamePrefix + 'denomOrAddress'}
-              register={register}
-              style={{ maxWidth: '8.2rem' }}
-            >
-              {tokens.map(({ token: { denomOrAddress, symbol } }) => (
-                <option key={denomOrAddress} value={denomOrAddress}>
-                  ${symbol}
-                </option>
-              ))}
-            </SelectInput>
-          </div>
+                  tokenSymbol:
+                    selectedToken?.token.symbol ??
+                    t('info.token').toLocaleUpperCase(),
+                }),
+            ]}
+            onSelectToken={({ denomOrAddress }) =>
+              setValue(fieldNamePrefix + 'denomOrAddress', denomOrAddress)
+            }
+            readOnly={!isCreating}
+            register={register}
+            selectedToken={selectedToken?.token}
+            setValue={setValue}
+            tokens={{
+              loading: false,
+              data: tokens.map(({ token }) => token),
+            }}
+            watch={watch}
+          />
 
           <div className="flex min-w-0 grow flex-row items-stretch gap-2 sm:gap-3">
             <div className="flex flex-row items-center pl-1 sm:pl-0">

@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import { ReactNode, useMemo } from 'react'
 import {
   FieldError,
-  FieldPathValue,
   FieldValues,
   Path,
   UseFormRegister,
@@ -43,7 +42,7 @@ export type TokenInputProps<
   amountMin?: number
   amountMax?: number
   amountStep?: number
-  amountValidations?: Validate<FieldPathValue<FV, FieldName>>[]
+  amountValidations?: Validate<number>[]
   // The pair of `type` and `denomOrAddress` must be unique for each token.
   tokens: LoadingData<T[]>
   onSelectToken: (token: T) => void
