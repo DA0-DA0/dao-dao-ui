@@ -67,6 +67,8 @@ export interface NftCardInfo {
     name: string
   }
   imageUrl?: string
+  // Metadata loaded from the token URI.
+  metadata?: Record<string, any>
   floorPrice?: {
     amount: number
     denom: string

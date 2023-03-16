@@ -1,12 +1,8 @@
-import { ArrowDropDown } from '@mui/icons-material'
-import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
   AddressInput,
-  Button,
-  FilterableItemPopup,
   FormSwitchCard,
   GearEmoji,
   InputErrorMessage,
@@ -14,26 +10,23 @@ import {
   Loader,
   LockWithPenEmoji,
   MoneyEmoji,
-  NumberInput,
   SegmentedControls,
+  TokenInput,
+  TokenInputOption,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
   DepositRefundPolicy,
   GenericToken,
+  TokenType,
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
-  getFallbackImage,
   ibcAssets,
   isValidContractAddress,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
-  toAccessibleImageUrl,
   validateContractAddress,
-  validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -71,67 +64,64 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
   options: { governanceToken, cw20AddressError },
 }) => {
   const { t } = useTranslation()
-  const { register, setValue, watch } = useFormContext()
+  const { register, setValue, watch } =
+    useFormContext<UpdatePreProposeConfigData>()
 
-  const depositRequired: UpdatePreProposeConfigData['depositRequired'] = watch(
-    fieldNamePrefix + 'depositRequired'
+  const depositRequired = watch(
+    (fieldNamePrefix + 'depositRequired') as 'depositRequired'
   )
-  const depositInfo: UpdatePreProposeConfigData['depositInfo'] = watch(
-    fieldNamePrefix + 'depositInfo'
+  const depositInfo = watch((fieldNamePrefix + 'depositInfo') as 'depositInfo')
+  const anyoneCanPropose = watch(
+    (fieldNamePrefix + 'anyoneCanPropose') as 'anyoneCanPropose'
   )
-  const anyoneCanPropose: UpdatePreProposeConfigData['anyoneCanPropose'] =
-    watch(fieldNamePrefix + 'anyoneCanPropose')
 
-  const availableTokens: {
-    key: string
-    type: 'native' | 'cw20' | 'voting_module_token'
-    label: string
-    description?: string
-    Icon?: ComponentType
-  }[] = [
+  const availableTokens: TokenInputOption[] = [
     // Governance token first.
     ...(governanceToken
       ? [
           {
-            key: 'voting_module_token',
-            type: 'voting_module_token' as const,
-            label: '$' + governanceToken.symbol,
-            imageUrl: governanceToken.imageUrl,
+            ...governanceToken,
+            type: 'voting_module_token',
+            description: t('title.governanceToken'),
+            imageUrl:
+              (depositInfo.type === 'voting_module_token' &&
+                depositInfo.token?.imageUrl) ||
+              undefined,
           },
         ]
       : []),
     // Then native.
     {
-      key: NATIVE_DENOM,
-      type: 'native' as const,
-      label: nativeTokenLabel(NATIVE_DENOM),
-      imageUrl: nativeTokenLogoURI(NATIVE_DENOM),
+      ...NATIVE_TOKEN,
     },
     // Then the IBC assets.
     ...ibcAssets.tokens.map(({ juno_denom, symbol, name, logoURI }) => ({
-      key: juno_denom,
-      type: 'native' as const,
-      label: symbol,
+      type: TokenType.Native,
+      denomOrAddress: juno_denom,
+      symbol,
       description: symbol === name ? undefined : name,
       imageUrl: logoURI,
     })),
     // Then other CW20.
     {
-      key: 'other_cw20',
-      type: 'cw20' as const,
-      label: t('form.cw20Token'),
+      type: TokenType.Cw20,
+      denomOrAddress: 'other_cw20',
+      symbol:
+        (depositInfo.type === TokenType.Cw20 && depositInfo.token?.symbol) ||
+        t('form.cw20Token'),
+      imageUrl:
+        (depositInfo.type === TokenType.Cw20 && depositInfo.token?.imageUrl) ||
+        undefined,
     },
-  ].map(({ imageUrl, ...rest }) => ({
-    ...rest,
-    Icon: imageUrl
-      ? () => (
-          <div
-            className="h-8 w-8 rounded-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-          />
-        )
-      : undefined,
-  }))
+  ]
+  const selectedToken = availableTokens.find(
+    (token) =>
+      // `voting_module_token` and `cw20` only correspond to one token above.
+      // `native` can be multiple, so match on denom.
+      token.type === depositInfo.type &&
+      (depositInfo.type !== TokenType.Native ||
+        token.denomOrAddress === depositInfo.denomOrAddress)
+  )
 
   const minimumDeposit = convertMicroDenomToDenomWithDecimals(
     1,
@@ -170,11 +160,13 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
             </p>
 
             <FormSwitchCard
-              fieldName={fieldNamePrefix + 'depositRequired'}
+              fieldName={
+                (fieldNamePrefix + 'depositRequired') as 'depositRequired'
+              }
               readOnly={!isCreating}
               setValue={setValue}
               sizing="sm"
-              value={watch(fieldNamePrefix + 'depositRequired')}
+              value={depositRequired}
             />
           </div>
           <p className="secondary-text max-w-prose">
@@ -183,83 +175,66 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         </div>
 
         {depositRequired && (
-          <div className="flex grow flex-col gap-1">
-            <div className="flex grow flex-col gap-1 xs:flex-row xs:items-stretch">
-              <NumberInput
-                containerClassName="grow"
-                disabled={!isCreating}
-                error={errors?.depositInfo?.amount}
-                fieldName={fieldNamePrefix + 'depositInfo.amount'}
-                min={minimumDeposit}
-                register={register}
-                setValue={setValue}
-                step={minimumDeposit}
-                validation={[validateRequired, validatePositive]}
-                watch={watch}
-              />
+          <div className="flex max-w-md grow flex-col gap-1">
+            <TokenInput
+              amountError={errors?.depositInfo?.amount}
+              amountFieldName={
+                (fieldNamePrefix + 'depositInfo.amount') as 'depositInfo.amount'
+              }
+              amountMin={minimumDeposit}
+              amountStep={minimumDeposit}
+              onSelectToken={({ type, denomOrAddress }) => {
+                // Type-check, should never happen.
+                if (
+                  type !== 'voting_module_token' &&
+                  type !== TokenType.Native &&
+                  type !== TokenType.Cw20
+                ) {
+                  return
+                }
 
-              <FilterableItemPopup
-                Trigger={({ open, ...props }) => (
-                  <Button
-                    contentContainerClassName="justify-between text-icon-primary"
-                    disabled={!isCreating}
-                    pressed={open}
-                    variant="secondary"
-                    {...props}
-                  >
-                    {depositInfo.token ? (
-                      <div className="flex flex-row items-center gap-2">
-                        <div
-                          className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-                          style={{
-                            backgroundImage: `url(${toAccessibleImageUrl(
-                              depositInfo.token.imageUrl ||
-                                getFallbackImage(
-                                  depositInfo.token.denomOrAddress
-                                )
-                            )})`,
-                          }}
-                        />
+                setValue(
+                  (fieldNamePrefix + 'depositInfo.type') as 'depositInfo.type',
+                  type
+                )
 
-                        <p>${depositInfo.token.symbol}</p>
-                      </div>
-                    ) : (
-                      depositInfo.type === 'cw20' &&
-                      // If valid cw20 address, show loader since deposit token
-                      // hasn't yet loaded.
-                      (isValidContractAddress(
-                        depositInfo.denomOrAddress,
-                        CHAIN_BECH32_PREFIX
-                      ) && !cw20AddressError ? (
-                        <Loader size={24} />
-                      ) : (
-                        t('form.cw20Token')
-                      ))
-                    )}
-
-                    {isCreating && <ArrowDropDown className="ml-2 !h-6 !w-6" />}
-                  </Button>
-                )}
-                filterableItemKeys={FILTERABLE_KEYS}
-                items={availableTokens}
-                onSelect={({ key, type }) => {
-                  setValue(fieldNamePrefix + 'depositInfo.type', type)
-
-                  // `key` for native tokens is the denom.
-                  if (type === 'native') {
-                    setValue(
-                      fieldNamePrefix + 'depositInfo.denomOrAddress',
-                      key
-                    )
-                  } else {
-                    // `voting_module_token` doesn't need one set, and `cw20`
-                    // shows an address input, so clear for both.
-                    setValue(fieldNamePrefix + 'depositInfo.denomOrAddress', '')
-                  }
-                }}
-                searchPlaceholder={t('info.searchForToken')}
-              />
-            </div>
+                if (type === TokenType.Native) {
+                  setValue(
+                    (fieldNamePrefix +
+                      'depositInfo.denomOrAddress') as 'depositInfo.denomOrAddress',
+                    denomOrAddress
+                  )
+                } else {
+                  // `voting_module_token` doesn't need one set, and cw20 shows
+                  // an address input, so clear for both.
+                  setValue(
+                    (fieldNamePrefix +
+                      'depositInfo.denomOrAddress') as 'depositInfo.denomOrAddress',
+                    ''
+                  )
+                }
+              }}
+              readOnly={!isCreating}
+              register={register}
+              selectedToken={selectedToken}
+              setValue={setValue}
+              tokenFallback={
+                depositInfo.type === 'cw20' ? (
+                  // If valid cw20 address, show loader since deposit token
+                  // hasn't yet loaded.
+                  isValidContractAddress(
+                    depositInfo.denomOrAddress,
+                    CHAIN_BECH32_PREFIX
+                  ) && !cw20AddressError ? (
+                    <Loader size={24} />
+                  ) : (
+                    t('form.cw20Token')
+                  )
+                ) : undefined
+              }
+              tokens={{ loading: false, data: availableTokens }}
+              watch={watch}
+            />
             <InputErrorMessage error={errors?.depositInfo?.amount} />
 
             {depositInfo.type === 'cw20' && (
@@ -269,7 +244,10 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                 <AddressInput
                   disabled={!isCreating}
                   error={errors?.depositInfo?.denomOrAddress}
-                  fieldName={fieldNamePrefix + 'depositInfo.denomOrAddress'}
+                  fieldName={
+                    (fieldNamePrefix +
+                      'depositInfo.denomOrAddress') as 'depositInfo.denomOrAddress'
+                  }
                   register={register}
                   type="contract"
                   validation={[
@@ -295,11 +273,15 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
               disabled={!isCreating}
               onSelect={(refundPolicy) =>
                 setValue(
-                  fieldNamePrefix + 'depositInfo.refundPolicy',
+                  (fieldNamePrefix +
+                    'depositInfo.refundPolicy') as 'depositInfo.refundPolicy',
                   refundPolicy
                 )
               }
-              selected={watch(fieldNamePrefix + 'depositInfo.refundPolicy')}
+              selected={watch(
+                (fieldNamePrefix +
+                  'depositInfo.refundPolicy') as 'depositInfo.refundPolicy'
+              )}
               tabs={DepositRefundPolicyValues.map((depositRefundPolicy) => ({
                 label: t(`depositRefundPolicy.${depositRefundPolicy}`),
                 value: depositRefundPolicy,
@@ -323,7 +305,10 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
           className="grow"
           disabled={!isCreating}
           onSelect={(value) =>
-            setValue(fieldNamePrefix + 'anyoneCanPropose', value)
+            setValue(
+              (fieldNamePrefix + 'anyoneCanPropose') as 'anyoneCanPropose',
+              value
+            )
           }
           selected={anyoneCanPropose}
           tabs={[
@@ -341,5 +326,3 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
     </ActionCard>
   )
 }
-
-const FILTERABLE_KEYS = ['key', 'label', 'description']

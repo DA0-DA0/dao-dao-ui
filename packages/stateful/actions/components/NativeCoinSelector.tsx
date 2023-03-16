@@ -2,27 +2,21 @@ import { Close } from '@mui/icons-material'
 import { ComponentProps, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
-import {
-  IconButton,
-  InputErrorMessage,
-  NumberInput,
-  SelectInput,
-} from '@dao-dao/stateless'
-import { GenericTokenBalance } from '@dao-dao/types'
+import { IconButton, InputErrorMessage, TokenInput } from '@dao-dao/stateless'
+import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenLabel,
-  validatePositive,
-  validateRequired,
 } from '@dao-dao/utils'
 
 export type NativeCoinSelectorProps = ComponentProps<
-  ActionComponent<{ nativeBalances: GenericTokenBalance[] }>
+  ActionComponent<{
+    nativeBalances: LoadingData<GenericTokenBalance[]>
+  }>
 > & {
   className?: string
 }
@@ -41,9 +35,19 @@ export const NativeCoinSelector = ({
   const watchAmount = watch(fieldNamePrefix + 'amount')
   const watchDenom = watch(fieldNamePrefix + 'denom')
 
+  const selectedTokenBalance = nativeBalances.loading
+    ? undefined
+    : nativeBalances.data.find(
+        ({ token }) => token.denomOrAddress === watchDenom
+      )
+
   const validatePossibleSpend = useCallback(
     (id: string, amount: string): string | boolean => {
-      const native = nativeBalances.find(
+      if (nativeBalances.loading) {
+        return true
+      }
+
+      const native = nativeBalances.data.find(
         ({ token }) => token.denomOrAddress === id
       )
       if (native) {
@@ -66,15 +70,20 @@ export const NativeCoinSelector = ({
       }
       // If there are no native tokens in the treasury the native balances
       // query will return an empty list.
-      if (id === NATIVE_DENOM) {
+      if (id === NATIVE_TOKEN.denomOrAddress) {
         return t('error.cantSpendMoreThanTreasury', {
           amount: 0,
-          tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+          tokenSymbol: NATIVE_TOKEN.symbol,
         })
       }
       return 'Unrecognized denom.'
     },
-    [nativeBalances, t]
+    // Deeply compare nativeBalances since they may change on every render, but
+    // the validation function should only be updated when the balances change.
+    // Since this validation function reference is used in the effect below that
+    // updates errors, deeploy compare prevents an infinite loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useDeepCompareMemoize([nativeBalances, t])
   )
 
   // Update amount+denom combo error each time either field is updated
@@ -84,20 +93,28 @@ export const NativeCoinSelector = ({
   // denom was changed.
   useEffect(() => {
     if (!watchAmount || !watchDenom) {
-      clearErrors(fieldNamePrefix + '_error')
+      if (errors?._error) {
+        clearErrors(fieldNamePrefix + '_error')
+      }
       return
     }
 
     const validation = validatePossibleSpend(watchDenom, watchAmount)
     if (validation === true) {
-      clearErrors(fieldNamePrefix + '_error')
-    } else if (typeof validation === 'string') {
+      if (errors?._error) {
+        clearErrors(fieldNamePrefix + '_error')
+      }
+    } else if (
+      typeof validation === 'string' &&
+      errors?._error?.message !== validation
+    ) {
       setError(fieldNamePrefix + '_error', {
         type: 'custom',
         message: validation,
       })
     }
   }, [
+    errors,
     setError,
     clearErrors,
     validatePossibleSpend,
@@ -106,35 +123,43 @@ export const NativeCoinSelector = ({
     watchDenom,
   ])
 
+  const minAmount = convertMicroDenomToDenomWithDecimals(
+    1,
+    selectedTokenBalance?.token?.decimals ?? NATIVE_TOKEN.decimals
+  )
+
   return (
     <div className={className}>
       <div className="flex flex-row items-stretch gap-2">
-        <NumberInput
-          disabled={!isCreating}
-          error={errors?.amount}
-          fieldName={fieldNamePrefix + 'amount'}
-          min={1 / Math.pow(10, NATIVE_DECIMALS)}
+        <TokenInput
+          amountError={errors?.amount || errors?._error}
+          amountFieldName={fieldNamePrefix + 'amount'}
+          amountMax={
+            selectedTokenBalance &&
+            convertMicroDenomToDenomWithDecimals(
+              selectedTokenBalance.balance,
+              selectedTokenBalance.token.decimals
+            )
+          }
+          amountMin={minAmount}
+          amountStep={minAmount}
+          onSelectToken={({ denomOrAddress }) =>
+            setValue(fieldNamePrefix + 'denom', denomOrAddress)
+          }
+          readOnly={!isCreating}
           register={register}
+          selectedToken={selectedTokenBalance?.token}
           setValue={setValue}
-          sizing="auto"
-          step={1 / 10 ** NATIVE_DECIMALS}
-          validation={[validateRequired, validatePositive]}
+          tokens={
+            nativeBalances.loading
+              ? { loading: true }
+              : {
+                  loading: false,
+                  data: nativeBalances.data.map(({ token }) => token),
+                }
+          }
           watch={watch}
         />
-
-        <SelectInput
-          defaultValue={NATIVE_DENOM}
-          disabled={!isCreating}
-          error={errors?.denom}
-          fieldName={fieldNamePrefix + 'denom'}
-          register={register}
-        >
-          {nativeBalances.map(({ token: { denomOrAddress, symbol } }) => (
-            <option key={denomOrAddress} value={denomOrAddress}>
-              ${symbol}
-            </option>
-          ))}
-        </SelectInput>
 
         {isCreating && (
           <IconButton

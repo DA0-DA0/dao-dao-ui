@@ -21,7 +21,7 @@ export const TokenSwapStatus = ({
   return (
     <div
       className={clsx(
-        'flex flex-col items-center justify-center gap-x-6 gap-y-4 sm:flex-row',
+        'flex flex-col items-center justify-center gap-x-6 gap-y-4 sm:flex-row sm:flex-wrap',
         className
       )}
     >

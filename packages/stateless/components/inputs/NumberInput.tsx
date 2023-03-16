@@ -100,7 +100,7 @@ export const NumberInput = <
       className={clsx(
         'flex flex-row items-center gap-2 bg-transparent transition',
         // Padding and outline
-        !ghost && 'rounded-md py-3 px-4 ring-1 focus-within:ring-2',
+        !ghost && 'rounded-md py-3 px-4 ring-1 ring-inset focus-within:ring-2',
         // Outline color
         error
           ? 'ring-border-interactive-error'

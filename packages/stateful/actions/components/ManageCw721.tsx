@@ -107,6 +107,7 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
           error={errors?.address}
           fieldName={fieldNamePrefix + 'address'}
           register={register}
+          type="contract"
           validation={[
             validateRequired,
             validateContractAddress,

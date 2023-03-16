@@ -3,11 +3,11 @@ import {
   RadioButtonUnchecked,
   SortRounded,
 } from '@mui/icons-material'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { ButtonPopupProps, SortFn, TypedOption } from '@dao-dao/types'
 
-import { Button, ButtonLink } from '../components'
+import { ButtonLink } from '../components'
 
 type UseButtonPopupSorterOptions<T> = {
   data: T[]
@@ -18,7 +18,7 @@ type UseButtonPopupSorterOptions<T> = {
 type UseButtonPopupSorterReturn<T> = {
   buttonPopupProps: Pick<
     ButtonPopupProps,
-    'sections' | 'sectionClassName' | 'Trigger' | 'ButtonLink'
+    'sections' | 'sectionClassName' | 'trigger' | 'ButtonLink'
   >
   sortedData: T[]
 }
@@ -39,20 +39,22 @@ export const useButtonPopupSorter = <T extends unknown>({
     [data, selectedOption]
   )
 
-  // Memoize so it doesn't flicker on re-renders.
-  const Trigger: ButtonPopupProps['Trigger'] = useCallback(
-    ({ open, ...props }) => (
-      <Button focused={open} variant="ghost" {...props}>
-        <SortRounded />
-        <p className="body-text whitespace-nowrap">{selectedOption?.label}</p>
-      </Button>
-    ),
-    [selectedOption?.label]
-  )
-
   return {
     buttonPopupProps: {
-      Trigger,
+      trigger: {
+        type: 'button',
+        props: {
+          variant: 'ghost',
+          children: (
+            <>
+              <SortRounded />
+              <p className="body-text whitespace-nowrap">
+                {selectedOption?.label}
+              </p>
+            </>
+          ),
+        },
+      },
       sectionClassName: 'gap-1',
       sections: [
         {

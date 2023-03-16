@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 
 import {
-  nativeBalancesSelector,
+  nativeBalanceSelector,
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
   validatorsSelector,
@@ -23,15 +23,12 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
   NATIVE_TOKEN,
   StakeType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeDistributeMessage,
   makeStakingMessage,
-  nativeTokenDecimals,
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
@@ -44,21 +41,21 @@ import {
 import { useActionOptions } from '../react'
 
 const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
-  useCallback((data: StakeData) => {
-    if (data.stakeType === StakeType.WithdrawDelegatorReward) {
-      return makeDistributeMessage(data.validator)
+  useCallback(({ stakeType, amount, validator, toValidator }: StakeData) => {
+    if (stakeType === StakeType.WithdrawDelegatorReward) {
+      return makeDistributeMessage(validator)
     }
 
-    // NOTE: Does not support TOKEN staking at this point, however it could be
-    // implemented here!
-    const decimals = nativeTokenDecimals(data.denom)!
-    const amount = convertDenomToMicroDenomWithDecimals(data.amount, decimals)
+    const microAmount = convertDenomToMicroDenomWithDecimals(
+      amount,
+      NATIVE_TOKEN.decimals
+    )
     return makeStakingMessage(
-      data.stakeType,
-      amount.toString(),
-      data.denom,
-      data.validator,
-      data.toValidator
+      stakeType,
+      microAmount.toString(),
+      NATIVE_TOKEN.denomOrAddress,
+      validator,
+      toValidator
     )
   }, [])
 
@@ -80,7 +77,6 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
         // Default values, not needed for displaying this type of message.
         toValidator: '',
         amount: 1,
-        denom: NATIVE_DENOM,
       },
     }
   } else if ('staking' in msg) {
@@ -97,9 +93,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
         (stakeType !== StakeType.Redelegate && 'validator' in data)) &&
       'amount' in data &&
       'amount' in data.amount &&
-      'denom' in data.amount
+      'denom' in data.amount &&
+      data.amount.denom === NATIVE_TOKEN.denomOrAddress
     ) {
-      const { amount, denom } = data.amount
+      const { amount } = data.amount
 
       return {
         match: true,
@@ -113,9 +110,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
             stakeType === StakeType.Redelegate ? data.dst_validator : '',
           amount: convertMicroDenomToDenomWithDecimals(
             amount,
-            nativeTokenDecimals(denom)!
+            NATIVE_TOKEN.decimals
           ),
-          denom,
         },
       }
     }
@@ -131,14 +127,14 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
   // when this data updates on a schedule. Manually trigger a suspense loader
   // the first time when the initial data is still loading.
 
-  const loadingNativeBalances = useCachedLoading(
+  const loadingNativeBalance = useCachedLoading(
     address
-      ? nativeBalancesSelector({
+      ? nativeBalanceSelector({
           chainId,
           address,
         })
       : undefined,
-    []
+    undefined
   )
 
   const loadingNativeDelegationInfo = useCachedLoading(
@@ -223,13 +219,13 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
       const coin = parseCoins(
         claimValidatorRewardsEvents[innerIndex].attributes.find(
           ({ key }) => key === 'amount'
-        )?.value ?? '0' + NATIVE_DENOM
+        )?.value ?? '0' + NATIVE_TOKEN.denomOrAddress
       )[0]
 
       if (coin) {
         claimedRewards = convertMicroDenomToDenomWithDecimals(
           coin.amount ?? 0,
-          nativeTokenDecimals(coin.denom) ?? NATIVE_DECIMALS
+          NATIVE_TOKEN.decimals
         )
       }
     }
@@ -240,7 +236,8 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
       fallback={<ActionCardLoader />}
       forceFallback={
         // Manually trigger loader.
-        loadingNativeBalances.loading ||
+        loadingNativeBalance.loading ||
+        !loadingNativeBalance.data ||
         loadingNativeDelegationInfo.loading ||
         !loadingNativeDelegationInfo.data ||
         loadingValidators.loading
@@ -249,9 +246,10 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
       <StatelessStakeComponent
         {...props}
         options={{
-          nativeBalances: loadingNativeBalances.loading
-            ? []
-            : loadingNativeBalances.data,
+          nativeBalance:
+            loadingNativeBalance.loading || !loadingNativeBalance.data
+              ? '0'
+              : loadingNativeBalance.data.amount,
           stakes:
             loadingNativeDelegationInfo.loading ||
             !loadingNativeDelegationInfo.data
@@ -262,11 +260,11 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
                     validator,
                     amount: convertMicroDenomToDenomWithDecimals(
                       delegated.amount,
-                      NATIVE_DECIMALS
+                      NATIVE_TOKEN.decimals
                     ),
                     rewards: convertMicroDenomToDenomWithDecimals(
                       pendingReward.amount,
-                      NATIVE_DECIMALS
+                      NATIVE_TOKEN.decimals
                     ),
                   })
                 ),
@@ -313,7 +311,6 @@ export const makeStakeAction: ActionMaker<StakeData> = ({
         '',
       toValidator: '',
       amount: 1,
-      denom: NATIVE_DENOM,
     }
   }
 

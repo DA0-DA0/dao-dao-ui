@@ -38,7 +38,7 @@ import {
   CHAIN_ID,
   JUNO_USDC_DENOM,
   MAINNET,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
   decodeGovProposalContent,
@@ -161,10 +161,12 @@ export const nativeBalancesSelector = selectorFamily<
 
       const balances = [...(await client.getAllBalances(address))]
       // Add native denom if not present.
-      if (!balances.some(({ denom }) => denom === NATIVE_DENOM)) {
+      if (
+        !balances.some(({ denom }) => denom === NATIVE_TOKEN.denomOrAddress)
+      ) {
         balances.push({
           amount: '0',
-          denom: NATIVE_DENOM,
+          denom: NATIVE_TOKEN.denomOrAddress,
         })
       }
       // Add USDC if not present and on mainnet.
@@ -220,7 +222,7 @@ export const nativeBalanceSelector = selectorFamily<
 
       get(refreshWalletBalancesIdAtom(address))
 
-      return await client.getBalance(address, NATIVE_DENOM)
+      return await client.getBalance(address, NATIVE_TOKEN.denomOrAddress)
     },
 })
 
@@ -276,10 +278,10 @@ export const nativeDelegatedBalanceSelector = selectorFamily<
       const balance = await client.getBalanceStaked(address)
 
       // Only allow native denom
-      if (!balance || balance.denom !== NATIVE_DENOM) {
+      if (!balance || balance.denom !== NATIVE_TOKEN.denomOrAddress) {
         return {
           amount: '0',
-          denom: NATIVE_DENOM,
+          denom: NATIVE_TOKEN.denomOrAddress,
         }
       }
 
@@ -520,8 +522,8 @@ export const nativeDelegationInfoSelector = selectorFamily<
               delegation: { validatorAddress: address },
               balance: delegationBalance,
             }): Delegation | undefined => {
-              // Only allow NATIVE_DENOM.
-              if (delegationBalance.denom !== NATIVE_DENOM) {
+              // Only allow NATIVE_TOKEN.denomOrAddress.
+              if (delegationBalance.denom !== NATIVE_TOKEN.denomOrAddress) {
                 return
               }
 
@@ -530,7 +532,9 @@ export const nativeDelegationInfoSelector = selectorFamily<
               )
               let pendingReward = rewards
                 .find(({ validatorAddress }) => validatorAddress === address)
-                ?.reward.find(({ denom }) => denom === NATIVE_DENOM)
+                ?.reward.find(
+                  ({ denom }) => denom === NATIVE_TOKEN.denomOrAddress
+                )
 
               if (!validator || !pendingReward) {
                 return
@@ -575,7 +579,7 @@ export const nativeDelegationInfoSelector = selectorFamily<
                 validator,
                 balance: {
                   amount: balance,
-                  denom: NATIVE_DENOM,
+                  denom: NATIVE_TOKEN.denomOrAddress,
                 },
                 startedAtHeight: creationHeight.toNumber(),
                 finishesAt: completionTime,

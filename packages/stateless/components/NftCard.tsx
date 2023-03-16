@@ -1,5 +1,6 @@
 import {
   ArrowOutwardRounded,
+  AudiotrackRounded,
   ExpandCircleDownOutlined,
   ImageNotSupported,
 } from '@mui/icons-material'
@@ -7,6 +8,7 @@ import clsx from 'clsx'
 import Image from 'next/image'
 import { ComponentType, forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import ReactPlayer from 'react-player'
 
 import {
   ButtonLinkProps,
@@ -15,14 +17,16 @@ import {
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import {
+  NFT_VIDEO_EXTENSIONS,
   getImageUrlForChainId,
   getNftName,
+  objectMatchesStructure,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
+import { AudioPlayer } from './AudioPlayer'
 import { Button } from './buttons'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
-import { IconButton } from './icon_buttons'
 import { Checkbox } from './inputs'
 import { MarkdownRenderer } from './MarkdownRenderer'
 import { ButtonPopup } from './popup/ButtonPopup'
@@ -56,6 +60,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       externalLink,
       checkbox,
       imageUrl,
+      metadata,
       floorPrice,
       name,
       description,
@@ -77,6 +82,29 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
     const [descriptionCollapsible, setDescriptionCollapsible] = useState(false)
     const [descriptionCollapsed, setDescriptionCollapsed] = useState(true)
 
+    const video =
+      // If image contains a video, treat it as a video.
+      imageUrl && NFT_VIDEO_EXTENSIONS.includes(imageUrl.split('.').pop() || '')
+        ? imageUrl
+        : metadata &&
+          objectMatchesStructure(metadata, {
+            properties: {
+              video: {},
+            },
+          })
+        ? metadata.properties.video
+        : null
+
+    const audio =
+      metadata &&
+      objectMatchesStructure(metadata, {
+        properties: {
+          audio: {},
+        },
+      })
+        ? metadata.properties.audio
+        : null
+
     return (
       <div
         className={clsx(
@@ -87,7 +115,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             'outline-[transparent]': !checkbox?.checked,
             'outline-border-interactive-active': checkbox?.checked,
           },
-          imageLoading && imageUrl && 'animate-pulse',
+          imageLoading && !video && imageUrl && 'animate-pulse',
           className
         )}
         ref={ref}
@@ -100,20 +128,49 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           )}
           onClick={checkbox?.onClick}
         >
-          {imageUrl ? (
-            <Image
-              alt={t('info.nftImage')}
-              className="aspect-square object-cover"
-              height={500}
-              onLoadingComplete={() => setImageLoading(false)}
-              src={toAccessibleImageUrl(imageUrl, { proxy: true })}
-              width={500}
-            />
-          ) : (
-            <div className="flex aspect-square items-center justify-center">
-              <ImageNotSupported className="!h-14 !w-14 text-icon-tertiary" />
+          <div className="relative aspect-square">
+            <div className="absolute top-0 right-0 bottom-0 left-0">
+              {video ? (
+                <ReactPlayer
+                  controls
+                  height="100%"
+                  onReady={() => setImageLoading(false)}
+                  url={video}
+                  width="100%"
+                />
+              ) : imageUrl ? (
+                <Image
+                  alt={t('info.nftImage')}
+                  className="h-full w-full object-cover"
+                  height={500}
+                  onLoadingComplete={() => setImageLoading(false)}
+                  src={toAccessibleImageUrl(imageUrl, { proxy: true })}
+                  width={500}
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  {audio ? (
+                    <AudiotrackRounded className="!h-14 !w-14 text-icon-tertiary" />
+                  ) : (
+                    <ImageNotSupported className="!h-14 !w-14 text-icon-tertiary" />
+                  )}
+                </div>
+              )}
             </div>
-          )}
+
+            {audio && !video && (
+              <AudioPlayer
+                className="absolute bottom-0 left-0 right-0 bg-transparent"
+                iconClassName="text-icon-primary"
+                progressClassName="text-text-primary"
+                src={audio}
+                style={{
+                  background:
+                    'linear-gradient(to bottom, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 0.8) 50%, rgba(var(--color-background-base), 1) 100%)',
+                }}
+              />
+            )}
+          </div>
 
           {externalLink && (
             <a
@@ -137,21 +194,20 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             <div className="absolute top-2 right-2">
               <ButtonPopup
                 ButtonLink={buttonPopup.ButtonLink}
-                Trigger={({ open, ...props }) => (
-                  <IconButton
-                    Icon={ExpandCircleDownOutlined}
-                    className={clsx(
-                      'shadow-dp4 group-hover:opacity-100',
-                      !open && 'opacity-0'
-                    )}
-                    focused={open}
-                    variant="primary_inverted"
-                    {...props}
-                  />
-                )}
                 popupClassName="w-[16rem]"
                 position="left"
                 sections={buttonPopup.sections}
+                trigger={{
+                  type: 'icon_button',
+                  props: ({ open }) => ({
+                    Icon: ExpandCircleDownOutlined,
+                    className: clsx(
+                      'shadow-dp4 group-hover:opacity-100',
+                      !open && 'opacity-0'
+                    ),
+                    variant: 'primary_inverted',
+                  }),
+                }}
               />
             </div>
           )}
