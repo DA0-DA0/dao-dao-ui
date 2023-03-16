@@ -16,7 +16,6 @@ import {
   ChartEmoji,
   DepositEmoji,
   EntityDisplay,
-  IconButton,
   Loader,
   MarkdownRenderer,
   MoneyEmoji,
@@ -280,18 +279,17 @@ export const VestingPaymentCard = ({
             <div className="absolute top-1 right-1">
               <ButtonPopup
                 ButtonLink={ButtonLink}
-                Trigger={({ open, ...props }) => (
-                  <IconButton
-                    Icon={ExpandCircleDownOutlined}
-                    className="!text-icon-secondary"
-                    focused={open}
-                    variant="ghost"
-                    {...props}
-                  />
-                )}
                 popupClassName="w-[16rem]"
                 position="left"
                 sections={buttonPopupSections}
+                trigger={{
+                  type: 'icon_button',
+                  props: {
+                    Icon: ExpandCircleDownOutlined,
+                    className: '!text-icon-secondary',
+                    variant: 'ghost',
+                  },
+                }}
               />
             </div>
           )}
