@@ -1,6 +1,11 @@
 import type { MsgGrant, MsgRevoke } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
+import {
+  ContractGrant,
+  AllowAllMessagesFilter,
+} from 'juno-network/main/codegen/cosmwasm/wasm/v1/authz'
+
 import { ActionCardLoader, KeyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -208,18 +213,22 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 typeUrl: authorizationTypeUrl as string,
                 value: {
                   grants: [
-                    encodeRawProtobufMsg({
+                    {
                       typeUrl: '/cosmwasm.wasm.v1.ContractGrant',
-                      value: {
+                      /* value: {
+                       *   contract,
+                       *   // TODO add limit?
+                       *   // TODO switch for filter
+                       *   filter: encodeRawProtobufMsg({
+                       *     typeUrl: filterType as string,
+                       *     value: {},
+                       *   }),
+                       * }, */
+                      value: ContractGrant.encode({
                         contract,
-                        // TODO add limit?
-                        // TODO switch for filter
-                        filter: encodeRawProtobufMsg({
-                          typeUrl: filterType as string,
-                          value: {},
-                        }),
-                      },
-                    }),
+                        filter: AllowAllMessagesFilter.encode({}).finish(),
+                      }).finish(),
+                    },
                   ],
                 },
               })
