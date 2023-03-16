@@ -20,7 +20,7 @@ import {
   CoreActionKey,
   TokenCardInfo,
 } from '@dao-dao/types'
-import { NATIVE_DENOM, StakeType } from '@dao-dao/utils'
+import { NATIVE_TOKEN, StakeType } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../actions'
 import { useEncodedDaoProposalSinglePrefill } from '../../hooks'
@@ -130,7 +130,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     stakesWithRewards.length > 0 &&
     // ...if there is a valid prefill (meaning proposal module adapter exists)
     encodedProposalPrefillClaim &&
-    props.token.denomOrAddress === NATIVE_DENOM
+    props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: encodedProposalPrefillClaim,
         })
@@ -143,7 +143,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
     // ...if there is a valid prefill (meaning proposal module adapter exists)
     encodedProposalPrefillStakeUnstake &&
-    props.token.denomOrAddress === NATIVE_DENOM
+    props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: encodedProposalPrefillStakeUnstake,
         })

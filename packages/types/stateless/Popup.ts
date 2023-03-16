@@ -6,8 +6,11 @@ import {
   SetStateAction,
 } from 'react'
 
+import { ButtonProps } from './Buttonifier'
+import { IconButtonProps } from './IconButtonifier'
+
 export interface PopupProps {
-  Trigger: ComponentType<{ onClick: () => void; open: boolean }>
+  trigger: PopupTrigger
   position: 'left' | 'right'
   children: ReactNode | ReactNode[]
   wrapperClassName?: string
@@ -23,3 +26,35 @@ export interface PopupProps {
   openRef?: MutableRefObject<boolean | null>
   setOpenRef?: MutableRefObject<Dispatch<SetStateAction<boolean>> | null>
 }
+
+export type PopupTriggerOptions = {
+  open: boolean
+  onClick: () => void
+}
+
+export type PopupTriggerCustomComponent = ComponentType<{
+  onClick: () => void
+  open: boolean
+}>
+
+export type PopupTrigger =
+  | {
+      type: 'button'
+      props:
+        | Omit<ButtonProps, 'onClick' | 'pressed'>
+        | ((
+            options: PopupTriggerOptions
+          ) => Omit<ButtonProps, 'onClick' | 'pressed'>)
+    }
+  | {
+      type: 'icon_button'
+      props:
+        | Omit<IconButtonProps, 'onClick' | 'focused'>
+        | ((
+            options: PopupTriggerOptions
+          ) => Omit<IconButtonProps, 'onClick' | 'focused'>)
+    }
+  | {
+      type: 'custom'
+      Renderer: PopupTriggerCustomComponent
+    }

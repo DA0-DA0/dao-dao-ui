@@ -3,7 +3,6 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ButtonLink } from '../buttons/ButtonLink'
 import { DepositEmoji } from '../emoji'
-import { IconButton } from '../icon_buttons'
 import { ButtonPopup } from './ButtonPopup'
 
 export default {
@@ -17,15 +16,14 @@ const Template: ComponentStory<typeof ButtonPopup> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  Trigger: ({ open, ...props }) => (
-    <IconButton
-      Icon={ExpandCircleDownOutlined}
-      className="!text-icon-secondary"
-      focused={open}
-      variant="ghost"
-      {...props}
-    />
-  ),
+  trigger: {
+    type: 'icon_button',
+    props: {
+      Icon: ExpandCircleDownOutlined,
+      className: '!text-icon-secondary',
+      variant: 'ghost',
+    },
+  },
   position: 'right',
   sections: [
     {

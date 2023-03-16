@@ -12,10 +12,7 @@ import { Cw20BaseSelectors, Cw20StakeSelectors } from './contracts'
 
 export const genericTokenSelector = selectorFamily<
   GenericToken,
-  WithChainId<{
-    type: TokenType
-    denomOrAddress: string
-  }>
+  WithChainId<Pick<GenericToken, 'type' | 'denomOrAddress'>>
 >({
   key: 'genericToken',
   get:

@@ -1,5 +1,6 @@
 import { ArrowOutwardRounded } from '@mui/icons-material'
 import clsx from 'clsx'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -11,7 +12,10 @@ import {
   TokenAmountDisplay,
   Tooltip,
 } from '@dao-dao/stateless'
-import { ValidatorPickerProps } from '@dao-dao/types'
+import {
+  PopupTriggerCustomComponent,
+  ValidatorPickerProps,
+} from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
@@ -66,38 +70,42 @@ export const ValidatorPicker = ({
     return b.tokens - a.tokens
   })
 
+  const TriggerRenderer: PopupTriggerCustomComponent = useCallback(
+    ({ open, ...props }) => (
+      <div className={clsx('flex', displayClassName)}>
+        {selectedAddress ? (
+          <InputThemedText className="min-w-0 grow">
+            <CopyToClipboard
+              label={selectedValidator?.moniker}
+              tooltip={t('button.clickToCopyAddress')}
+              value={selectedAddress}
+            />
+
+            {!readOnly && (
+              <Button pressed={open} variant="ghost" {...props}>
+                {t('button.change')}
+              </Button>
+            )}
+          </InputThemedText>
+        ) : !readOnly ? (
+          <Button
+            center
+            className="grow"
+            pressed={open}
+            size="lg"
+            variant="primary"
+            {...props}
+          >
+            {t('button.selectValidator')}
+          </Button>
+        ) : null}
+      </div>
+    ),
+    [displayClassName, readOnly, selectedAddress, selectedValidator?.moniker, t]
+  )
+
   return (
     <FilterableItemPopup
-      Trigger={({ open, ...props }) => (
-        <div className={clsx('flex', displayClassName)}>
-          {selectedAddress ? (
-            <InputThemedText className="min-w-0 grow">
-              <CopyToClipboard
-                label={selectedValidator?.moniker}
-                tooltip={t('button.clickToCopyAddress')}
-                value={selectedAddress}
-              />
-
-              {!readOnly && (
-                <Button pressed={open} variant="ghost" {...props}>
-                  {t('button.change')}
-                </Button>
-              )}
-            </InputThemedText>
-          ) : !readOnly ? (
-            <Button
-              center
-              className="grow"
-              pressed={open}
-              size="lg"
-              variant="primary"
-              {...props}
-            >
-              {t('button.selectValidator')}
-            </Button>
-          ) : null}
-        </div>
-      )}
       filterableItemKeys={FILTERABLE_KEYS}
       items={sortedValidators.map((validator) => {
         const {
@@ -195,6 +203,10 @@ export const ValidatorPicker = ({
       })}
       onSelect={({ validator }) => onSelect(validator)}
       searchPlaceholder={t('info.searchValidatorsPlaceholder')}
+      trigger={{
+        type: 'custom',
+        Renderer: TriggerRenderer,
+      }}
     />
   )
 }

@@ -18,7 +18,7 @@ import {
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
 import {
-  NATIVE_DECIMALS,
+  NATIVE_TOKEN,
   PFPK_API_BASE,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
@@ -51,13 +51,18 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     state: walletNativeBalanceState,
     contents: walletNativeBalanceContents,
   } = useCachedLoadable(
-    address ? nativeBalanceSelector({ address, chainId }) : undefined
+    address
+      ? nativeBalanceSelector({
+          address,
+          chainId,
+        })
+      : undefined
   )
   const walletBalance =
     walletNativeBalanceState === 'hasValue' && walletNativeBalanceContents
       ? convertMicroDenomToDenomWithDecimals(
           walletNativeBalanceContents.amount,
-          NATIVE_DECIMALS
+          NATIVE_TOKEN.decimals
         )
       : undefined
 
@@ -73,7 +78,7 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     walletStakedNativeBalanceContents
       ? convertMicroDenomToDenomWithDecimals(
           walletStakedNativeBalanceContents.amount,
-          NATIVE_DECIMALS
+          NATIVE_TOKEN.decimals
         )
       : undefined
 

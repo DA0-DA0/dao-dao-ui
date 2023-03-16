@@ -11,11 +11,10 @@ import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
   CHAIN_BECH32_PREFIX,
   CODE_ID_CONFIG,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   isValidAddress,
   isValidContractAddress,
-  nativeTokenDecimals,
   processError,
 } from '@dao-dao/utils'
 
@@ -186,20 +185,20 @@ const InnerInstantiateTokenSwap: ActionComponent<
         type: selfPartyDefaultCw20 ? TokenType.Cw20 : TokenType.Native,
         denomOrAddress: selfPartyDefaultCw20
           ? selfPartyDefaultCw20.token.denomOrAddress
-          : NATIVE_DENOM,
+          : NATIVE_TOKEN.denomOrAddress,
         amount: 0,
         decimals: selfPartyDefaultCw20
           ? selfPartyDefaultCw20.token.decimals
-          : nativeTokenDecimals(NATIVE_DENOM) ?? 0,
+          : NATIVE_TOKEN.decimals,
       },
     })
     resetField(props.fieldNamePrefix + 'counterparty', {
       defaultValue: {
         address: '',
         type: 'native',
-        denomOrAddress: NATIVE_DENOM,
+        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
         amount: 0,
-        decimals: nativeTokenDecimals(NATIVE_DENOM) ?? 0,
+        decimals: NATIVE_TOKEN.decimals,
       },
     })
 
