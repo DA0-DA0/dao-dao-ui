@@ -1,5 +1,5 @@
 import { coins } from '@cosmjs/amino'
-import { ArrowDropDown } from '@mui/icons-material'
+import { ArrowDropDown, ArrowOutwardRounded } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { useCallback, useMemo, useState } from 'react'
@@ -15,6 +15,8 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   Button,
+  ButtonLink,
+  CopyToClipboard,
   FilterableItemPopup,
   FilterableItemPopupProps,
   MarkdownRenderer,
@@ -31,6 +33,7 @@ import {
 } from '@dao-dao/types'
 import { ExecuteSwapOperationsMsg } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
+  CHAIN_TXN_URL_PREFIX,
   DAO_DAO_DAO_ADDRESS,
   NATIVE_TOKEN,
   WYND_MULTI_HOP_CONTRACT,
@@ -246,6 +249,9 @@ export const WyndDepositComponent = ({
   )
 
   const [depositing, setDepositing] = useState(false)
+  const [error, setError] = useState('')
+  const [txHash, setTxHash] = useState('')
+
   const necessaryDataLoaded =
     !loadingMaxReferralCommission.loading &&
     // Don't need any simulation data if the input token is the output token.
@@ -255,6 +261,7 @@ export const WyndDepositComponent = ({
         swapOperationsLoadable.state === 'hasValue' &&
         !!swapOperationsLoadable.contents &&
         swapSimulationInput > 0))
+
   const deposit = async () => {
     if (!signingCosmWasmClient || !walletAddress) {
       toast.error(t('error.connectWalletToContinue'))
@@ -266,20 +273,26 @@ export const WyndDepositComponent = ({
     }
 
     setDepositing(true)
+    setError('')
+    setTxHash('')
+
     try {
-      const msg: ExecuteSwapOperationsMsg['execute_swap_operations'] = {
-        operations: swapOperationsLoadable.contents!,
-        minimum_receive: outputAmount,
-        // 1% slippage
-        max_spread: '0.01',
-        referral_address: DAO_DAO_DAO_ADDRESS,
-        referral_commission: loadingMaxReferralCommission.data,
-        // Default to the DAO's treasury if no output specified.
-        receiver: outputAddress || coreAddress,
+      const msg: ExecuteSwapOperationsMsg = {
+        execute_swap_operations: {
+          operations: swapOperationsLoadable.contents!,
+          minimum_receive: outputAmount,
+          // 1% slippage
+          max_spread: '0.01',
+          referral_address: DAO_DAO_DAO_ADDRESS,
+          referral_commission: loadingMaxReferralCommission.data,
+          // Default to the DAO's treasury if no output specified.
+          receiver: outputAddress || coreAddress,
+        },
       }
 
+      let tx
       if (token.type === TokenType.Native) {
-        await signingCosmWasmClient.execute(
+        tx = await signingCosmWasmClient.execute(
           walletAddress,
           WYND_MULTI_HOP_CONTRACT,
           msg,
@@ -289,7 +302,7 @@ export const WyndDepositComponent = ({
         )
       } else {
         // Cw20
-        await signingCosmWasmClient.execute(
+        tx = await signingCosmWasmClient.execute(
           walletAddress,
           token.denomOrAddress,
           {
@@ -300,13 +313,14 @@ export const WyndDepositComponent = ({
           'auto'
         )
       }
+
+      toast.success(t('success.transactionExecuted'))
+      setTxHash(tx.transactionHash)
     } catch (err) {
       console.error(err)
-      toast.error(
-        processError(err, {
-          forceCapture: false,
-        })
-      )
+
+      const error = processError(err)
+      setError(error)
     } finally {
       setDepositing(false)
     }
@@ -394,6 +408,23 @@ export const WyndDepositComponent = ({
             showFullAmount
             symbol={token.symbol}
           />
+        </div>
+      )}
+
+      {error && (
+        <p className="secondary-text max-w-prose self-end text-right text-sm text-text-interactive-error">
+          {error}
+        </p>
+      )}
+
+      {txHash && (
+        <div className="flex flex-col items-end gap-2 self-end text-text-interactive-valid">
+          <CopyToClipboard takeAll value={txHash} />
+
+          <ButtonLink href={CHAIN_TXN_URL_PREFIX + txHash} variant="ghost">
+            {t('button.openInChainExplorer')}{' '}
+            <ArrowOutwardRounded className="!h-4 !w-4" />
+          </ButtonLink>
         </div>
       )}
     </div>
