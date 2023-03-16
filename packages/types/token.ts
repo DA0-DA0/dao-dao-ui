@@ -72,6 +72,7 @@ export type TokenCardLazyInfo = {
   // staked.
   daosGoverned?: {
     coreAddress: string
+    stakingContractAddress: string
     stakedBalance?: number
   }[]
 }
