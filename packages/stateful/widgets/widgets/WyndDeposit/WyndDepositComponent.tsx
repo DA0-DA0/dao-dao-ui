@@ -374,7 +374,7 @@ export const WyndDepositComponent = ({
         </Button>
       </div>
 
-      {insufficientFunds ? (
+      {insufficientFunds && !walletBalances.loading ? (
         <p className="-mt-4 self-end text-right text-text-interactive-error">
           {t('error.insufficientForDeposit', {
             amount: depositAmountLoading
@@ -389,26 +389,28 @@ export const WyndDepositComponent = ({
           })}
         </p>
       ) : (
-        <div className="-mt-4 flex flex-row items-center justify-end gap-2 self-end">
-          <p className="caption-text">{t('title.deposit')}:</p>
+        !insufficientFunds && (
+          <div className="-mt-4 flex flex-row items-center justify-end gap-2 self-end">
+            <p className="caption-text">{t('title.deposit')}:</p>
 
-          <TokenAmountDisplay
-            amount={
-              depositAmountLoading
-                ? { loading: true }
-                : {
-                    loading: false,
-                    data: convertMicroDenomToDenomWithDecimals(
-                      requiredInput,
-                      token.decimals
-                    ),
-                  }
-            }
-            decimals={token.decimals}
-            showFullAmount
-            symbol={token.symbol}
-          />
-        </div>
+            <TokenAmountDisplay
+              amount={
+                depositAmountLoading
+                  ? { loading: true }
+                  : {
+                      loading: false,
+                      data: convertMicroDenomToDenomWithDecimals(
+                        requiredInput,
+                        token.decimals
+                      ),
+                    }
+              }
+              decimals={token.decimals}
+              showFullAmount
+              symbol={token.symbol}
+            />
+          </div>
+        )
       )}
 
       {error && (
