@@ -30,7 +30,7 @@ const TYPE_URL_GENERIC_AUTHORIZATION =
 
 export enum AuthorizationTypeUrl {
   Generic = '/cosmos.authz.v1beta1.GenericAuthorization',
-  ContractExecution = '/cosmwasm.wasm.v1.ContractExecutitonAuthorization',
+  ContractExecution = '/cosmwasm.wasm.v1.ContractExecutionAuthorization',
   ContractMigration = '/cosmwasm.wasm.v1.ContractMigrationAuthorization',
   Spend = '/cosmos.bank.v1beta1.SendAuthorization',
 }
@@ -129,6 +129,8 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         return { match: false }
       }
 
+      console.log('decoded: ' + msg)
+
       // TODO check other authorization types
 
       return msg.stargate.typeUrl === TYPE_URL_MSG_GRANT &&
@@ -172,8 +174,62 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         filterType,
         funds,
         contract,
-      }: AuthzData) =>
-        makeStargateMessage({
+      }: AuthzData) => {
+        let authorization
+        if (typeUrl === TYPE_URL_MSG_GRANT) {
+          switch (authorizationTypeUrl) {
+            case AuthorizationTypeUrl.Generic:
+              authorization = encodeRawProtobufMsg({
+                typeUrl: authorizationTypeUrl as string,
+                value: {
+                  msg: msgTypeUrl,
+                },
+              })
+              break
+            case AuthorizationTypeUrl.Spend:
+              authorization = encodeRawProtobufMsg({
+                typeUrl: authorizationTypeUrl as string,
+                value: {
+                  spendLimit: funds?.map((c) =>
+                    encodeRawProtobufMsg({
+                      typeUrl: '/cosmos.base.v1beta1.Coin',
+                      value: {
+                        amount: c.amount,
+                        denom: c.denom,
+                      },
+                    })
+                  ),
+                  /* spendLimit: funds, */
+                },
+              })
+              break
+            case AuthorizationTypeUrl.ContractExecution:
+              authorization = encodeRawProtobufMsg({
+                typeUrl: authorizationTypeUrl as string,
+                value: {
+                  grants: [
+                    encodeRawProtobufMsg({
+                      typeUrl: '/cosmwasm.wasm.v1.ContractGrant',
+                      value: {
+                        contract,
+                        // TODO add limit?
+                        // TODO switch for filter
+                        filter: encodeRawProtobufMsg({
+                          typeUrl: filterType as string,
+                          value: {},
+                        }),
+                      },
+                    }),
+                  ],
+                },
+              })
+              break
+            default:
+              console.error('Unrecognized type')
+          }
+        }
+
+        return makeStargateMessage({
           stargate: {
             typeUrl,
             value: {
@@ -181,12 +237,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 ? {
                     grant: {
                       // TODO switch accordingly?
-                      authorization: encodeRawProtobufMsg({
-                        typeUrl: authorizationTypeUrl as string,
-                        value: {
-                          msg: msgTypeUrl,
-                        },
-                      }),
+                      authorization,
                     },
                   }
                 : {
@@ -196,7 +247,8 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               granter: address,
             },
           },
-        }),
+        })
+      },
       []
     )
 

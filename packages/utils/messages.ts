@@ -3,8 +3,18 @@ import { fromBase64, fromUtf8, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { GeneratedType, Registry } from '@cosmjs/proto-signing'
 import { defaultRegistryTypes } from '@cosmjs/stargate'
 import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
+import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
+import {
+  AcceptedMessageKeysFilter,
+  AcceptedMessagesFilter,
+  MaxFundsLimit,
+  AllowAllMessagesFilter,
+  ContractGrant,
+  ContractExecutionAuthorization,
+  ContractMigrationAuthorization,
+} from 'cosmjs-types/cosmwasm/wasm/v1/authz'
 import { Any } from 'cosmjs-types/google/protobuf/any'
 import { cosmos } from 'interchain-rpc'
 
@@ -181,6 +191,20 @@ export const typesRegistry = new Registry([
     ['/cosmos.slashing.v1beta1.MsgUnjail', MsgUnjail],
     ['/cosmos.authz.v1beta1.GenericAuthorization', GenericAuthorization],
     ['/cosmos.crypto.ed25519.PubKey', PubKey],
+    ['/cosmos.bank.v1beta1.SendAuthorization', SendAuthorization],
+    ['/cosmwasm.wasm.v1.AcceptedMessageKeysFilter', AcceptedMessageKeysFilter],
+    ['/cosmwasm.wasm.v1.AcceptedMessagesFilter', AcceptedMessagesFilter],
+    ['/cosmwasm.wasm.v1.MaxFundsLimit', MaxFundsLimit],
+    ['/cosmwasm.wasm.v1.AllowAllMessagesFilter', AllowAllMessagesFilter],
+    ['/cosmwasm.wasm.v1.ContractGrant', ContractGrant],
+    [
+      '/cosmwasm.wasm.v1.ContractExecutionAuthorization',
+      ContractExecutionAuthorization,
+    ],
+    [
+      '/cosmwasm.wasm.v1.ContractMigrationAuthorization',
+      ContractMigrationAuthorization,
+    ],
   ] as ReadonlyArray<[string, GeneratedType]>),
 ])
 
@@ -194,8 +218,9 @@ export const encodeProtobufValue = (
   if (!type) {
     throw new Error(`Type ${typeUrl} not found in registry.`)
   }
-
+  console.log(typeUrl, value)
   const encodedValue = type.encode(value).finish()
+  console.log(encodedValue)
   return encodedValue
 }
 
