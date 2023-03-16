@@ -1,4 +1,7 @@
+import { Loader } from '@dao-dao/stateless'
+
 import { useWidgets } from '../../widgets'
+import { SuspenseLoader } from '../SuspenseLoader'
 
 export const DaoWidgets = () => {
   const loadingWidgets = useWidgets()
@@ -7,7 +10,9 @@ export const DaoWidgets = () => {
     <div className="flex flex-col gap-2">
       {loadingWidgets.data.map((Widget, index) => (
         <div key={index}>
-          <Widget />
+          <SuspenseLoader fallback={<Loader />}>
+            <Widget />
+          </SuspenseLoader>
         </div>
       ))}
     </div>

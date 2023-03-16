@@ -227,6 +227,7 @@
     "failedToLoadMembersTitle": "Failed to load members.",
     "finishDateMustBeAfterStartDate": "Finish date must be after start date.",
     "govTokenBalancesDoNotSumTo100": "Total token distribution percentage must equal 100%, but it currently sums to {{totalPercent}}.",
+    "insufficientForDeposit": "You do not have enough funds to cover a deposit of {{amount}} ${{tokenSymbol}}.",
     "insufficientWalletBalance": "Insufficient wallet balance (total: {{amount}} ${{tokenSymbol}}).",
     "invalidCosmosMessage": "Invalid <2>Cosmos message</2>",
     "invalidDate": "Invalid date format. Please use YYYY-MM-DD.",
