@@ -9,11 +9,11 @@ import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
 import {
   AcceptedMessageKeysFilter,
   AcceptedMessagesFilter,
-  MaxFundsLimit,
   AllowAllMessagesFilter,
-  ContractGrant,
   ContractExecutionAuthorization,
+  ContractGrant,
   ContractMigrationAuthorization,
+  MaxFundsLimit,
 } from 'cosmjs-types/cosmwasm/wasm/v1/authz'
 import { Any } from 'cosmjs-types/google/protobuf/any'
 import { cosmos } from 'interchain-rpc'

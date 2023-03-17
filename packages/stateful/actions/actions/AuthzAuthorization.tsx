@@ -1,11 +1,6 @@
 import type { MsgGrant, MsgRevoke } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
-import {
-  ContractGrant,
-  AllowAllMessagesFilter,
-} from 'juno-network/main/codegen/cosmwasm/wasm/v1/authz'
-
 import { ActionCardLoader, KeyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -18,7 +13,6 @@ import {
 import {
   DecodedStargateMsg,
   decodeRawProtobufMsg,
-  encodeRawProtobufMsg,
   isDecodedStargateMsg,
   makeStargateMessage,
   objectMatchesStructure,
@@ -180,58 +174,74 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         funds,
         contract,
       }: AuthzData) => {
+        let filter
+        switch (filterType) {
+          case FilterTypes.All:
+            filter = {
+              typeUrl: filterType as string,
+              value: {},
+            }
+            break
+          case FilterTypes.Keys:
+            filter = {
+              typeUrl: filterType as string,
+              value: {
+                keys: filterKeys,
+              },
+            }
+            break
+          // TODO this probably won't work?
+          case FilterTypes.Msg:
+            filter = {
+              typeUrl: filterType as string,
+              value: {
+                msg: filterMsg,
+              },
+            }
+            break
+        }
+
         let authorization
         if (typeUrl === TYPE_URL_MSG_GRANT) {
           switch (authorizationTypeUrl) {
             case AuthorizationTypeUrl.Generic:
-              authorization = encodeRawProtobufMsg({
+              authorization = {
                 typeUrl: authorizationTypeUrl as string,
                 value: {
                   msg: msgTypeUrl,
                 },
-              })
+              }
               break
             case AuthorizationTypeUrl.Spend:
-              authorization = encodeRawProtobufMsg({
+              authorization = {
                 typeUrl: authorizationTypeUrl as string,
                 value: {
-                  spendLimit: funds?.map((c) =>
-                    encodeRawProtobufMsg({
-                      typeUrl: '/cosmos.base.v1beta1.Coin',
-                      value: {
-                        amount: c.amount,
-                        denom: c.denom,
-                      },
-                    })
-                  ),
-                  /* spendLimit: funds, */
+                  spendLimit: funds?.map((c) => ({
+                    typeUrl: '/cosmos.base.v1beta1.Coin',
+                    value: {
+                      amount: c.amount,
+                      denom: c.denom,
+                    },
+                  })),
                 },
-              })
+              }
               break
             case AuthorizationTypeUrl.ContractExecution:
-              authorization = encodeRawProtobufMsg({
+              authorization = {
                 typeUrl: authorizationTypeUrl as string,
                 value: {
                   grants: [
                     {
                       typeUrl: '/cosmwasm.wasm.v1.ContractGrant',
-                      /* value: {
-                       *   contract,
-                       *   // TODO add limit?
-                       *   // TODO switch for filter
-                       *   filter: encodeRawProtobufMsg({
-                       *     typeUrl: filterType as string,
-                       *     value: {},
-                       *   }),
-                       * }, */
-                      value: ContractGrant.encode({
+                      value: {
+                        // TODO add limit?
                         contract,
-                        filter: AllowAllMessagesFilter.encode({}).finish(),
-                      }).finish(),
+                        filter,
+                      },
                     },
                   ],
                 },
-              })
+              }
               break
             default:
               console.error('Unrecognized type')
@@ -245,7 +255,6 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               ...(typeUrl === TYPE_URL_MSG_GRANT
                 ? {
                     grant: {
-                      // TODO switch accordingly?
                       authorization,
                     },
                   }
