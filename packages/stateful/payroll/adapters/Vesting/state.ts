@@ -6,7 +6,7 @@ import {
   CwVestingSelectors,
   DaoCoreV2Selectors,
   genericTokenSelector,
-  nativeDelegatedBalanceSelector,
+  nativeDelegationInfoSelector,
   refreshVestingAtom,
   validatorSlashesSelector,
 } from '@dao-dao/state/recoil'
@@ -129,7 +129,7 @@ export const vestingInfoSelector = selectorFamily<
         durationSeconds,
         { owner },
         currentValidatorStakes,
-        { amount: actualStaked },
+        actualDelegationInfo,
       ] = get(
         waitForAll([
           CwVestingSelectors.infoSelector({
@@ -166,7 +166,7 @@ export const vestingInfoSelector = selectorFamily<
             contractAddress: vestingContractAddress,
             chainId,
           }),
-          nativeDelegatedBalanceSelector({
+          nativeDelegationInfoSelector({
             address: vestingContractAddress,
             chainId,
           }),
@@ -318,10 +318,22 @@ export const vestingInfoSelector = selectorFamily<
         BigInt(0)
       )
 
+      const actualStaked =
+        actualDelegationInfo?.delegations.reduce(
+          (acc, { delegated }) => acc + BigInt(delegated.amount),
+          BigInt(0)
+        ) ?? BigInt(0)
+      const actualUnstaking =
+        actualDelegationInfo?.unbondingDelegations.reduce(
+          (acc, { balance }) => acc + BigInt(balance.amount),
+          BigInt(0)
+        ) ?? BigInt(0)
+
       const stakable = (
         BigInt(total) -
         BigInt(vest.claimed) -
         BigInt(actualStaked) -
+        BigInt(actualUnstaking) -
         actualSlashed
       ).toString()
 
