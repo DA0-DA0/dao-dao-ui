@@ -194,6 +194,7 @@ export type CwVestingStakeEvent = {
 
 export type CwVestingSlashRegistration = {
   validator: string
+  // Nanoseconds.
   time: string
   amount: string
   duringUnbonding: boolean

@@ -96,7 +96,7 @@ export const getVestingValidatorSlashes = (
     validator: string
     slashes: ValidatorSlash[]
   }[]
-) =>
+): VestingValidatorWithSlashes[] =>
   // For each validator slash, get the total amount staked and unstaking at the
   // time of the slash and then compute the slashed amount using the slash
   // factor.
