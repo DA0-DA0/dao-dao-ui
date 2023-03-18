@@ -220,12 +220,12 @@ export const encodeProtobufValue = (
   typeUrl: string,
   value: any
 ): Uint8Array => {
-  console.log(typeUrl)
   const type = typesRegistry.lookupType(typeUrl)
   if (!type) {
     throw new Error(`Type ${typeUrl} not found in registry.`)
   }
   const encodedValue = type.encode(value).finish()
+  console.log(typeUrl, encodedValue)
   return encodedValue
 }
 
