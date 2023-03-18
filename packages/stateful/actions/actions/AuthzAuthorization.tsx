@@ -23,8 +23,6 @@ import { AddressInput, SuspenseLoader } from '../../components'
 import { AuthzAuthorizationComponent as StatelessAuthzComponent } from '../components/AuthzAuthorization'
 import { useTokenBalances } from '../hooks'
 
-import { SendAuthorization } from 'juno-network/main/codegen/cosmos/bank/v1beta1/authz'
-
 const TYPE_URL_MSG_GRANT = '/cosmos.authz.v1beta1.MsgGrant'
 const TYPE_URL_MSG_REVOKE = '/cosmos.authz.v1beta1.MsgRevoke'
 const TYPE_URL_GENERIC_AUTHORIZATION =
@@ -193,7 +191,6 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               },
             }
             break
-          // TODO this probably won't work?
           case FilterTypes.Msg:
             filter = {
               typeUrl: filterType as string,
@@ -207,7 +204,6 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         let authorization
         if (typeUrl === TYPE_URL_MSG_GRANT) {
           switch (authorizationTypeUrl) {
-            // WORKS
             case AuthorizationTypeUrl.Generic:
               authorization = {
                 typeUrl: authorizationTypeUrl as string,
@@ -216,46 +212,19 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 },
               }
               break
-            // BROKEN
             case AuthorizationTypeUrl.Spend:
               authorization = {
                 typeUrl: authorizationTypeUrl as string,
                 value: {
-                  // BROKEN
                   spendLimit: funds?.map((c) => {
-                    return encodeRawProtobufMsg({
-                      typeUrl: '/cosmos.base.v1beta1.Coin',
-                      value: {
-                        amount: c.amount.toString(),
-                        denom: c.denom,
-                      },
-                    })
+                    return {
+                      amount: c.amount.toString(),
+                      denom: c.denom,
+                    }
                   }),
-                  // BROKEN
-                  /* spendLimit: funds?.map((c) => {
-                   *   return {
-                   *     typeUrl: '/cosmos.base.v1beta1.Coin',
-                   *     value: {
-                   *       amount: c.amount.toString(),
-                   *       denom: c.denom,
-                   *     },
-                   *   }
-                   * }), */
-                  // BROKEN
-                  /* spendLimit: funds, */
-                  // BROKEN
-                  /* spendLimit: [], */
                 },
               }
-              // BROKEN
-              /* authorization = {
-               *   typeUrl: authorizationTypeUrl,
-               *   value: SendAuthorization.encode({
-               *     spendLimit: funds,
-               *   }).finish(),
-               * } */
               break
-            // BROKEN
             case AuthorizationTypeUrl.ContractExecution:
               authorization = {
                 typeUrl: authorizationTypeUrl as string,
@@ -263,23 +232,15 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                   grants: [
                     {
                       contract,
-                      // WORKS
                       filter: encodeRawProtobufMsg(filter),
-                      // BROKEN
                       limit: encodeRawProtobufMsg({
                         typeUrl: '/cosmwasm.wasm.v1.MaxFundsLimit',
                         value: {
-                          // BROKEN
-                          /* amounts: funds, */
-                          // BROKEN
                           amounts: funds?.map((c) => {
-                            return encodeRawProtobufMsg({
-                              typeUrl: '/cosmos.base.v1beta1.Coin',
-                              value: {
-                                amount: c.amount.toString(),
-                                denom: c.denom,
-                              },
-                            })
+                            return {
+                              amount: c.amount.toString(),
+                              denom: c.denom,
+                            }
                           }),
                         },
                       }),
@@ -288,22 +249,44 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 },
               }
               break
+            case AuthorizationTypeUrl.ContractMigration:
+              authorization = {
+                typeUrl: authorizationTypeUrl as string,
+                value: {
+                  grants: [
+                    {
+                      contract,
+                      filter: encodeRawProtobufMsg(filter),
+                      limit: encodeRawProtobufMsg({
+                        typeUrl: '/cosmwasm.wasm.v1.MaxFundsLimit',
+                        value: {
+                          amounts: funds?.map((c) => {
+                            return {
+                              amount: c.amount.toString(),
+                              denom: c.denom,
+                            }
+                          }),
+                        },
+                      }),
+                    },
+                  ],
+                },
+              }
+              break
+
             default:
               console.error('Unrecognized type')
           }
         }
 
-        console.log(authorization)
-
-        let unencoded = {
+        return makeStargateMessage({
           stargate: {
             typeUrl,
             value: {
               ...(typeUrl === TYPE_URL_MSG_GRANT
                 ? {
                     grant: {
-                      /* authorization: encodeRawProtobufMsg(authorization), */
-                      authorization,
+                      authorization: encodeRawProtobufMsg(authorization),
                     },
                   }
                 : {
@@ -313,15 +296,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               granter: address,
             },
           },
-        }
-
-        console.log(unencoded)
-
-        let msg = makeStargateMessage(unencoded)
-
-        console.log(msg)
-
-        return msg
+        })
       },
       []
     )

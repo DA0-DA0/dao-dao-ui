@@ -225,7 +225,6 @@ export const encodeProtobufValue = (
     throw new Error(`Type ${typeUrl} not found in registry.`)
   }
   const encodedValue = type.encode(value).finish()
-  console.log(typeUrl, encodedValue)
   return encodedValue
 }
 
