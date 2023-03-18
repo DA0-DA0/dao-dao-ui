@@ -16,7 +16,7 @@ export const getSlashedStakedUnstaking = (
     registeredBlockTimeUnixMs,
     slashFactor,
   }: ValidatorSlash
-): { staked: number; unstaking: number } | null => {
+): { staked: number; unstaking: number } => {
   // Slashes before the current slash.
   const previousSlashes = validatorSlashes.filter(
     (slash) =>
@@ -64,9 +64,11 @@ export const getSlashedStakedUnstaking = (
       return acc * (1 - Number(event.slashFactor))
       // Apply stake event.
     } else {
-      // Add unstakes that start after the infraction and have not yet
-      // finished by the time the slash was registered.
+      // Add unstakes that start after the infraction but before the slash was
+      // registered and have not yet finished by the time the slash was
+      // registered.
       return Number(event.blockHeight) >= Number(infractionBlockHeight) &&
+        Number(event.blockHeight) <= Number(registeredBlockHeight) &&
         Number(event.blockTimeUnixMs) + unbondingDurationSeconds * 1000 >
           Number(registeredBlockTimeUnixMs) &&
         ((event.type === 'undelegate' && event.validator === validator) ||
@@ -111,9 +113,6 @@ export const getVestingValidatorSlashes = (
           _slashes,
           slash
         )
-        if (!slashed) {
-          return []
-        }
 
         // Actual amount slashed.
         const { staked: stakedSlashed, unstaking: unstakingSlashed } = slashed

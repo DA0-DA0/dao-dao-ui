@@ -65,17 +65,28 @@ export const PayrollTab = () => {
       )
   const registerSlashesPrefill = useDaoProposalSinglePrefill({
     actions: vestingAction
-      ? vestingPaymentsNeedingSlashRegistration.map(
-          ({ vestingContractAddress }) => ({
-            action: vestingAction,
-            data: {
-              ...vestingActionDefaults,
-              mode: 'registerSlash',
-              registerSlash: {
-                address: vestingContractAddress,
-              },
-            },
-          })
+      ? vestingPaymentsNeedingSlashRegistration.flatMap(
+          ({ vestingContractAddress, slashes: validatorsWithSlashes }) =>
+            validatorsWithSlashes.flatMap(
+              ({ validatorOperatorAddress, slashes }) =>
+                slashes
+                  .filter((slash) => slash.unregisteredAmount > 0)
+                  .map((slash) => ({
+                    action: vestingAction,
+                    data: {
+                      ...vestingActionDefaults,
+                      mode: 'registerSlash',
+                      registerSlash: {
+                        address: vestingContractAddress,
+                        validator: validatorOperatorAddress,
+                        // Milliseconds to nanoseconds.
+                        time: (slash.timeMs * 1e6).toString(),
+                        amount: slash.unregisteredAmount.toString(),
+                        duringUnbonding: slash.duringUnbonding,
+                      },
+                    },
+                  }))
+            )
         )
       : [],
   })

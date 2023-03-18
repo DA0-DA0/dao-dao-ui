@@ -166,18 +166,20 @@ export const PayrollTab = ({
                 </div>
 
                 <div className="space-y-1">
-                  {activeVestingPayments.map((props, index) => (
-                    <VestingPaymentLine
-                      key={index}
-                      EntityDisplay={EntityDisplay}
-                      onClick={() => {
-                        setVestingPaymentModalOpen(true)
-                        setOpenVestingContract(props.vestingContractAddress)
-                      }}
-                      transparentBackground={index % 2 !== 0}
-                      {...props}
-                    />
-                  ))}
+                  {vestingPaymentsNeedingSlashRegistration.map(
+                    (props, index) => (
+                      <VestingPaymentLine
+                        key={index}
+                        EntityDisplay={EntityDisplay}
+                        onClick={() => {
+                          setVestingPaymentModalOpen(true)
+                          setOpenVestingContract(props.vestingContractAddress)
+                        }}
+                        transparentBackground={index % 2 !== 0}
+                        {...props}
+                      />
+                    )
+                  )}
                 </div>
               </div>
             )}
