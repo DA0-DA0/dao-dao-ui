@@ -2,7 +2,11 @@ import { wasmTypes } from '@cosmjs/cosmwasm-stargate/build/modules'
 import { fromBase64, fromUtf8, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { GeneratedType, Registry } from '@cosmjs/proto-signing'
 import { defaultRegistryTypes } from '@cosmjs/stargate'
-import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
+import {
+  GenericAuthorization,
+  Grant,
+} from 'cosmjs-types/cosmos/authz/v1beta1/authz'
+import { MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
@@ -189,7 +193,9 @@ export const typesRegistry = new Registry([
   // Custom types not in @cosmjs/stargate default registry.
   ...([
     ['/cosmos.slashing.v1beta1.MsgUnjail', MsgUnjail],
+    ['/cosmos.authz.v1beta1.MsgGrant', MsgGrant],
     ['/cosmos.authz.v1beta1.GenericAuthorization', GenericAuthorization],
+    ['/cosmos.authz.v1beta1.Grant', Grant],
     ['/cosmos.crypto.ed25519.PubKey', PubKey],
     ['/cosmos.bank.v1beta1.SendAuthorization', SendAuthorization],
     ['/cosmwasm.wasm.v1.AcceptedMessageKeysFilter', AcceptedMessageKeysFilter],
@@ -214,13 +220,12 @@ export const encodeProtobufValue = (
   typeUrl: string,
   value: any
 ): Uint8Array => {
+  console.log(typeUrl)
   const type = typesRegistry.lookupType(typeUrl)
   if (!type) {
     throw new Error(`Type ${typeUrl} not found in registry.`)
   }
-  console.log(typeUrl, value)
   const encodedValue = type.encode(value).finish()
-  console.log(encodedValue)
   return encodedValue
 }
 
