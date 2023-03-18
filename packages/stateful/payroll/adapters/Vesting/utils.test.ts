@@ -111,15 +111,13 @@ const makeVestingValidatorSlash = ({
 })
 
 describe('getSlashedStakedUnstaking', () => {
+  // 1 slash, no stake events
   it('returns 0 when no events', () => {
     const slash = makeSlash()
 
     expect(
       getSlashedStakedUnstaking(
-        {
-          stakeEvents: [],
-          slashRegistrations: [],
-        },
+        [],
         UNBONDING_DURATION_SECONDS,
         VALIDATOR1,
         [slash],
@@ -128,6 +126,279 @@ describe('getSlashedStakedUnstaking', () => {
     ).toEqual({
       staked: 0,
       unstaking: 0,
+    })
+  })
+
+  // 1. delegate
+  // 2. infraction
+  // 3. slash infraction at 2
+  it('returns delegated slash', () => {
+    const slash = makeSlash({
+      registeredBlock: 3,
+      infractionBlock: 2,
+      slashFactor: 0.1,
+    })
+
+    expect(
+      getSlashedStakedUnstaking(
+        [
+          makeDelegation({
+            block: 1,
+            amount: 100,
+          }),
+        ],
+        UNBONDING_DURATION_SECONDS,
+        VALIDATOR1,
+        [slash],
+        slash
+      )
+    ).toEqual({
+      staked: 10,
+      unstaking: 0,
+    })
+  })
+
+  // 1. delegate
+  // 2. infraction
+  // 3. undelegate
+  // 4. slash infraction at 2
+  it('returns undelegating slash', () => {
+    const slash = makeSlash({
+      registeredBlock: 3,
+      infractionBlock: 2,
+      slashFactor: 0.1,
+    })
+
+    expect(
+      getSlashedStakedUnstaking(
+        [
+          makeDelegation({
+            block: 1,
+            amount: 100,
+          }),
+          makeUndelegation({
+            block: 3,
+            amount: 100,
+          }),
+        ],
+        UNBONDING_DURATION_SECONDS,
+        VALIDATOR1,
+        [slash],
+        slash
+      )
+    ).toEqual({
+      staked: 0,
+      unstaking: 10,
+    })
+  })
+
+  // 1. delegate
+  // 2. infraction
+  // 3. undelegate some
+  // 4. slash infraction at 2
+  it('returns delegated and undelegating slash', () => {
+    const slash = makeSlash({
+      registeredBlock: 3,
+      infractionBlock: 2,
+      slashFactor: 0.1,
+    })
+
+    expect(
+      getSlashedStakedUnstaking(
+        [
+          makeDelegation({
+            block: 1,
+            amount: 100,
+          }),
+          makeUndelegation({
+            block: 3,
+            amount: 30,
+          }),
+        ],
+        UNBONDING_DURATION_SECONDS,
+        VALIDATOR1,
+        [slash],
+        slash
+      )
+    ).toEqual({
+      staked: 7,
+      unstaking: 3,
+    })
+  })
+
+  // 1. delegate
+  // 2. infraction
+  // 3. undelegate some
+  // 4. redelegate some
+  // 5. slash infraction at 2
+  it('returns delegated and undelegating slash with a redelegation', () => {
+    const slash = makeSlash({
+      registeredBlock: 4,
+      infractionBlock: 2,
+      slashFactor: 0.1,
+    })
+
+    expect(
+      getSlashedStakedUnstaking(
+        [
+          makeDelegation({
+            block: 1,
+            amount: 100,
+          }),
+          makeUndelegation({
+            block: 3,
+            amount: 30,
+          }),
+          makeRedelegation({
+            block: 4,
+            amount: 10,
+          }),
+        ],
+        UNBONDING_DURATION_SECONDS,
+        VALIDATOR1,
+        [slash],
+        slash
+      )
+    ).toEqual({
+      staked: 6,
+      unstaking: 4,
+    })
+  })
+
+  // 1. delegate
+  // 2. undelegate some
+  // 3. redelegate the rest
+  // 4. infraction
+  // 5. slash infraction at 4
+  it('returns no slash if undelegate and redelegate before slash', () => {
+    const slash = makeSlash({
+      registeredBlock: 5,
+      infractionBlock: 4,
+      slashFactor: 0.1,
+    })
+
+    expect(
+      getSlashedStakedUnstaking(
+        [
+          makeDelegation({
+            block: 1,
+            amount: 100,
+          }),
+          makeUndelegation({
+            block: 2,
+            amount: 30,
+          }),
+          makeRedelegation({
+            block: 3,
+            amount: 70,
+          }),
+        ],
+        UNBONDING_DURATION_SECONDS,
+        VALIDATOR1,
+        [slash],
+        slash
+      )
+    ).toEqual({
+      staked: 0,
+      unstaking: 0,
+    })
+  })
+
+  // 1. delegate
+  // 2. undelegate some
+  // 3. redelegate the rest
+  // 4. infraction after undelegation and redelegation are finished
+  // 5. slash infraction at 4
+  it('returns no slash if undelegate and redelegate finish before slash', () => {
+    const slash = makeSlash({
+      registeredBlock: UNBONDING_DURATION_SECONDS * 1000 * 2,
+      infractionBlock: 2,
+      slashFactor: 0.1,
+    })
+
+    expect(
+      getSlashedStakedUnstaking(
+        [
+          makeDelegation({
+            block: 1,
+            amount: 100,
+          }),
+          makeUndelegation({
+            block: 3,
+            amount: 30,
+          }),
+          makeRedelegation({
+            block: 4,
+            amount: 70,
+          }),
+        ],
+        UNBONDING_DURATION_SECONDS,
+        VALIDATOR1,
+        [slash],
+        slash
+      )
+    ).toEqual({
+      staked: 0,
+      unstaking: 0,
+    })
+  })
+
+  // 1. delegate
+  // 2. infraction
+  // 3. infraction
+  // 4. undelegate some
+  // 5. redelegate some
+  // 6. slash infraction at 2 of 10%
+  // 7. delegate more
+  // 8. slash infraction at 3 of 50%
+  it('returns delegated and undelegating slashes taking into account previous slashes', () => {
+    const slash = makeSlash({
+      registeredBlock: 8,
+      infractionBlock: 3,
+      slashFactor: 0.5,
+    })
+
+    // First 60 delegated and 40 un/re-delegating get slashed 10%, bringing them
+    // to 54 and 36. Then, 200 delegated makes it 254 delegated and 36
+    // un/re-delegating, which get slashed 50%. The total delegated slashed due
+    // to the second slash is 254 * 0.5 = 127, and the total unstaking slashed
+    // is 36 * 0.5 = 18.
+
+    expect(
+      getSlashedStakedUnstaking(
+        [
+          makeDelegation({
+            block: 1,
+            amount: 100,
+          }),
+          makeUndelegation({
+            block: 4,
+            amount: 30,
+          }),
+          makeRedelegation({
+            block: 5,
+            amount: 10,
+          }),
+          makeDelegation({
+            block: 7,
+            amount: 200,
+          }),
+        ],
+        UNBONDING_DURATION_SECONDS,
+        VALIDATOR1,
+        [
+          makeSlash({
+            registeredBlock: 6,
+            infractionBlock: 2,
+            slashFactor: 0.1,
+          }),
+          slash,
+        ],
+        slash
+      )
+    ).toEqual({
+      staked: 127,
+      unstaking: 18,
     })
   })
 })
@@ -753,6 +1024,143 @@ describe('getVestingValidatorSlashes', () => {
       {
         validatorOperatorAddress: VALIDATOR1,
         slashes: [],
+      },
+    ])
+  })
+
+  // 1. delegate
+  // 2. undelegate some
+  // 3. redelegate the rest
+  // 4. infraction after undelegation and redelegation are finished
+  // 5. slash infraction at 4
+  it('returns no slash if undelegate and redelegate finish before slash', () => {
+    expect(
+      getVestingValidatorSlashes(
+        {
+          stakeEvents: [
+            makeDelegation({
+              block: 1,
+              amount: 100,
+            }),
+            makeUndelegation({
+              block: 3,
+              amount: 40,
+            }),
+            makeRedelegation({
+              block: 4,
+              amount: 60,
+            }),
+          ],
+          slashRegistrations: [],
+        },
+        UNBONDING_DURATION_SECONDS,
+        [
+          {
+            validator: VALIDATOR1,
+            slashes: [
+              makeSlash({
+                registeredBlock: UNBONDING_DURATION_SECONDS * 1000 * 2,
+                infractionBlock: 2,
+                slashFactor: 0.1,
+              }),
+            ],
+          },
+        ]
+      )
+    ).toEqual([
+      {
+        validatorOperatorAddress: VALIDATOR1,
+        slashes: [],
+      },
+    ])
+  })
+
+  // 1. delegate
+  // 2. infraction
+  // 3. infraction
+  // 4. undelegate some
+  // 5. redelegate some
+  // 6. slash infraction at 2 of 10%
+  // 7. delegate more
+  // 8. slash infraction at 3 of 50%
+  it('returns delegated and undelegating unregistered slashes taking into account previous slashes', () => {
+    // First 60 delegated and 40 un/re-delegating get slashed 10%, bringing them
+    // to 54 and 36. Then, 200 delegated makes it 254 delegated and 36
+    // un/re-delegating, which get slashed 50%. The total slashed due to the
+    // first slash is 6 delegated and 4 undelegating. The total slashed due to
+    // the second second slash is 127 delegated and 18 undelegating.
+
+    expect(
+      getVestingValidatorSlashes(
+        {
+          stakeEvents: [
+            makeDelegation({
+              block: 1,
+              amount: 100,
+            }),
+            makeUndelegation({
+              block: 4,
+              amount: 30,
+            }),
+            makeRedelegation({
+              block: 5,
+              amount: 10,
+            }),
+            makeDelegation({
+              block: 7,
+              amount: 200,
+            }),
+          ],
+          slashRegistrations: [],
+        },
+        UNBONDING_DURATION_SECONDS,
+        [
+          {
+            validator: VALIDATOR1,
+            slashes: [
+              makeSlash({
+                registeredBlock: 6,
+                infractionBlock: 2,
+                slashFactor: 0.1,
+              }),
+              makeSlash({
+                registeredBlock: 8,
+                infractionBlock: 3,
+                slashFactor: 0.5,
+              }),
+            ],
+          },
+        ]
+      )
+    ).toEqual([
+      {
+        validatorOperatorAddress: VALIDATOR1,
+        slashes: [
+          makeVestingValidatorSlash({
+            timeMs: 6,
+            amount: 6,
+            unregisteredAmount: 6,
+            duringUnbonding: false,
+          }),
+          makeVestingValidatorSlash({
+            timeMs: 6,
+            amount: 4,
+            unregisteredAmount: 4,
+            duringUnbonding: true,
+          }),
+          makeVestingValidatorSlash({
+            timeMs: 8,
+            amount: 127,
+            unregisteredAmount: 127,
+            duringUnbonding: false,
+          }),
+          makeVestingValidatorSlash({
+            timeMs: 8,
+            amount: 18,
+            unregisteredAmount: 18,
+            duringUnbonding: true,
+          }),
+        ],
       },
     ])
   })

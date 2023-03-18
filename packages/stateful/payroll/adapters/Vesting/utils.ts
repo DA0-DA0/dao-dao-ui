@@ -1,12 +1,15 @@
 import { ValidatorSlash } from '@dao-dao/state/recoil'
-import { CwVestingStakeHistory } from '@dao-dao/state/recoil/selectors/contracts/CwVesting'
+import {
+  CwVestingStakeEvent,
+  CwVestingStakeHistory,
+} from '@dao-dao/state/recoil/selectors/contracts/CwVesting'
 
 import { VestingValidatorSlash, VestingValidatorWithSlashes } from './types'
 
 // Get the slashed staked and unstaking amounts for a validator based on
 // a slash event.
 export const getSlashedStakedUnstaking = (
-  stakeHistory: CwVestingStakeHistory,
+  stakeEvents: CwVestingStakeEvent[],
   unbondingDurationSeconds: number,
   validator: string,
   validatorSlashes: ValidatorSlash[],
@@ -25,20 +28,19 @@ export const getSlashedStakedUnstaking = (
 
   // Combine stake events and slashes, and sort ascending by block height,
   // so they are applied in order of occurrence.
-  const stakeEventsAndSlashes = [
-    ...stakeHistory.stakeEvents,
-    ...previousSlashes,
-  ].sort((a, b) => {
-    const aBlockHeight =
-      'registeredBlockHeight' in a ? a.registeredBlockHeight : a.blockHeight
-    const bBlockHeight =
-      'registeredBlockHeight' in b ? b.registeredBlockHeight : b.blockHeight
-    return Number(aBlockHeight) - Number(bBlockHeight)
-  })
+  const stakeEventsAndSlashes = [...stakeEvents, ...previousSlashes].sort(
+    (a, b) => {
+      const aBlockHeight =
+        'registeredBlockHeight' in a ? a.registeredBlockHeight : a.blockHeight
+      const bBlockHeight =
+        'registeredBlockHeight' in b ? b.registeredBlockHeight : b.blockHeight
+      return Number(aBlockHeight) - Number(bBlockHeight)
+    }
+  )
 
   // Total staked
   const staked = stakeEventsAndSlashes.reduce((acc, event) => {
-    // Apply slash.
+    // Apply past slash.
     if ('registeredBlockHeight' in event) {
       return acc * (1 - Number(event.slashFactor))
       // Apply stake event.
@@ -59,7 +61,7 @@ export const getSlashedStakedUnstaking = (
 
   // Total unstaking/redelegating.
   const unstaking = stakeEventsAndSlashes.reduce((acc, event) => {
-    // Apply slash.
+    // Apply past slash.
     if ('registeredBlockHeight' in event) {
       return acc * (1 - Number(event.slashFactor))
       // Apply stake event.
@@ -88,7 +90,7 @@ export const getSlashedStakedUnstaking = (
 }
 
 // Get the slash events for a vesting contract, calculating actual slash and
-// registered slash amounts.
+// un/registered slash amounts.
 export const getVestingValidatorSlashes = (
   stakeHistory: CwVestingStakeHistory,
   unbondingDurationSeconds: number,
@@ -107,7 +109,7 @@ export const getVestingValidatorSlashes = (
     }): VestingValidatorWithSlashes => {
       const slashes = _slashes.flatMap((slash): VestingValidatorSlash[] => {
         const slashed = getSlashedStakedUnstaking(
-          stakeHistory,
+          stakeHistory.stakeEvents,
           unbondingDurationSeconds,
           validatorOperatorAddress,
           _slashes,
@@ -122,7 +124,7 @@ export const getVestingValidatorSlashes = (
 
         // Registered slashes.
         const registeredSlashes =
-          stakeHistory?.slashRegistrations.filter(
+          stakeHistory.slashRegistrations.filter(
             (registration) =>
               registration.validator === validatorOperatorAddress &&
               registration.time ===
