@@ -199,11 +199,13 @@ export type CwVestingSlashRegistration = {
   duringUnbonding: boolean
 }
 
+export type CwVestingStakeHistory = {
+  stakeEvents: CwVestingStakeEvent[]
+  slashRegistrations: CwVestingSlashRegistration[]
+}
+
 export const stakeHistorySelector = selectorFamily<
-  {
-    stakeEvents: CwVestingStakeEvent[]
-    slashRegistrations: CwVestingSlashRegistration[]
-  } | null,
+  CwVestingStakeHistory | null,
   QueryClientParams & Pick<QueryIndexerParams, 'block'>
 >({
   key: 'cwVestingValidatorStakeHistory',
