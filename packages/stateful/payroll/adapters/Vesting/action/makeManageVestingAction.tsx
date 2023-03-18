@@ -58,7 +58,6 @@ import {
   vestingInfoSelector,
   vestingInfosSelector,
 } from '../state'
-import { VestingInfo } from '../types'
 import {
   BeginVesting,
   BeginVestingData,
@@ -73,8 +72,6 @@ export type ManageVestingData = {
   begin: BeginVestingData
   cancel: CancelVestingData
   registerSlash: RegisterSlashData
-  // For transforming to cosmos msg.
-  selectedVest?: VestingInfo
 }
 
 const useDefaults: UseDefaults<ManageVestingData> = () => ({
@@ -95,6 +92,10 @@ const useDefaults: UseDefaults<ManageVestingData> = () => ({
   },
   registerSlash: {
     address: '',
+    validator: '',
+    time: '',
+    amount: '',
+    duringUnbonding: false,
   },
 })
 
@@ -147,13 +148,6 @@ const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
       : constSelector(undefined),
     undefined
   )
-  // Update the selected vest in the form so that the transformer can use it.
-  useEffect(() => {
-    setValue(
-      (props.fieldNamePrefix + 'selectedVest') as 'selectedVest',
-      selectedVest.loading ? undefined : selectedVest.data
-    )
-  }, [selectedVest, setValue, props.fieldNamePrefix])
 
   // Prevent action from being submitted if no address is selected while we're
   // registering slash or cancelling.
@@ -312,13 +306,7 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
   )
 
   return useCallback(
-    ({
-      mode,
-      begin,
-      registerSlash,
-      cancel,
-      selectedVest,
-    }: ManageVestingData) => {
+    ({ mode, begin, registerSlash, cancel }: ManageVestingData) => {
       if (mode === 'begin') {
         if (
           loadingTokenBalances.loading ||
@@ -415,22 +403,11 @@ const useTransformToCosmos: UseTransformToCosmos<ManageVestingData> = () => {
               contract_addr: registerSlash.address,
               funds: [],
               msg: {
-                register_slashes: {
-                  slashes: selectedVest?.slashes.flatMap(
-                    ({ validatorOperatorAddress, slashes }) =>
-                      slashes
-                        .filter(
-                          ({ unregisteredAmount }) => unregisteredAmount > 0
-                        )
-                        .map(({ unregisteredAmount, timeMs }) => ({
-                          validator: validatorOperatorAddress,
-                          // milliseconds to nanoseconds
-                          time: (timeMs * 1e6).toString(),
-                          amount: unregisteredAmount.toString(),
-                          // TODO ???
-                          during_unbonding: true,
-                        })) ?? []
-                  ),
+                register_slash: {
+                  validator: registerSlash.validator,
+                  time: registerSlash.time,
+                  amount: registerSlash.amount,
+                  during_unbonding: registerSlash.duringUnbonding,
                 },
               },
             },
@@ -521,7 +498,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
         contract_addr: {},
         funds: {},
         msg: {
-          register_slash: {},
+          register_slash: {
+            validator: {},
+            time: {},
+            amount: {},
+            during_unbonding: {},
+          },
         },
       },
     },
@@ -611,6 +593,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
         mode: 'registerSlash',
         registerSlash: {
           address: msg.wasm.execute.contract_addr,
+          validator: msg.wasm.execute.msg.register_slash.validator,
+          time: msg.wasm.execute.msg.register_slash.time,
+          amount: msg.wasm.execute.msg.register_slash.amount,
+          duringUnbonding: msg.wasm.execute.msg.register_slash.during_unbonding,
         },
       },
     }

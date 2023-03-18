@@ -170,41 +170,73 @@ export const stakeSelector = selectorFamily<
 
 //! Custom selectors
 
-export type CwVestingValidatorAmount = {
-  // Validator operator address.
+export type CwVestingStakeEvent = {
+  blockHeight: string
+  blockTimeUnixMs: string
+} & (
+  | {
+      type: 'delegate'
+      validator: string
+      amount: string
+    }
+  | {
+      type: 'undelegate'
+      validator: string
+      amount: string
+    }
+  | {
+      type: 'redelegate'
+      fromValidator: string
+      toValidator: string
+      amount: string
+    }
+)
+
+export type CwVestingSlashRegistration = {
   validator: string
-  // Unix timestamp in milliseconds.
-  timeMs: number
-  // Amount of tokens staked and unstaking.
+  time: string
   amount: string
+  duringUnbonding: boolean
 }
 
-// Get validator stakes wormhole data from the indexer.
-export const validatorStakesSelector = selectorFamily<
-  CwVestingValidatorAmount[],
+export const stakeHistorySelector = selectorFamily<
+  {
+    stakeEvents: CwVestingStakeEvent[]
+    slashRegistrations: CwVestingSlashRegistration[]
+  } | null,
   QueryClientParams & Pick<QueryIndexerParams, 'block'>
 >({
-  key: 'cwVestingValidatorStakes',
+  key: 'cwVestingValidatorStakeHistory',
   get:
     ({ contractAddress, chainId }) =>
     ({ get }) => {
       const anyId = get(refreshVestingAtom(''))
       const thisId = get(refreshVestingAtom(contractAddress))
 
-      const validators = get(
+      return get(
         queryContractIndexerSelector({
           contractAddress,
-          formula: 'cwVesting/validatorStakes',
+          formula: 'cwVesting/stakeHistory',
           chainId,
           id: anyId + thisId,
         })
       )
-
-      return validators && Array.isArray(validators)
-        ? // Sort descending by time.
-          ([...validators] as CwVestingValidatorAmount[]).sort(
-            (a, b) => b.timeMs - a.timeMs
-          )
-        : []
     },
+})
+
+export const unbondingDurationSecondsSelector = selectorFamily<
+  number | null,
+  QueryClientParams
+>({
+  key: 'cwVestingValidatorUnbondingDurationSeconds',
+  get:
+    ({ contractAddress, chainId }) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          contractAddress,
+          formula: 'cwVesting/unbondingDurationSeconds',
+          chainId,
+        })
+      ),
 })

@@ -5,6 +5,7 @@ import {
   CwPayrollFactorySelectors,
   CwVestingSelectors,
   DaoCoreV2Selectors,
+  ValidatorSlash,
   genericTokenSelector,
   nativeDelegationInfoSelector,
   refreshVestingAtom,
@@ -128,7 +129,8 @@ export const vestingInfoSelector = selectorFamily<
         distributable,
         durationSeconds,
         { owner },
-        currentValidatorStakes,
+        stakeHistory,
+        unbondingDurationSeconds,
         actualDelegationInfo,
       ] = get(
         waitForAll([
@@ -162,7 +164,11 @@ export const vestingInfoSelector = selectorFamily<
             chainId,
             params: [],
           }),
-          CwVestingSelectors.validatorStakesSelector({
+          CwVestingSelectors.stakeHistorySelector({
+            contractAddress: vestingContractAddress,
+            chainId,
+          }),
+          CwVestingSelectors.unbondingDurationSecondsSelector({
             contractAddress: vestingContractAddress,
             chainId,
           }),
@@ -183,7 +189,9 @@ export const vestingInfoSelector = selectorFamily<
       )
 
       const uniqueValidators = uniq(
-        currentValidatorStakes.map(({ validator }) => validator)
+        stakeHistory?.stakeEvents.flatMap((event) =>
+          event.type === 'redelegate' ? event.toValidator : event.validator
+        ) ?? []
       )
       // Get all the slashes for each validator from the indexer.
       const validatorSlashes = get(
@@ -199,6 +207,104 @@ export const vestingInfoSelector = selectorFamily<
         validator: uniqueValidators[index],
         slashes,
       }))
+
+      // Get the slashed staked and unstaking amounts for a validator based on
+      // a slash event.
+      const slashedStakedUnstaking = (
+        validator: string,
+        {
+          infractionBlockHeight,
+          registeredBlockHeight,
+          registeredBlockTimeUnixMs,
+          slashFactor,
+        }: ValidatorSlash
+      ): { staked: number; unstaking: number } | null => {
+        // If no stake history or unbonding duration, we can't compute.
+        if (!stakeHistory || unbondingDurationSeconds === null) {
+          return null
+        }
+
+        // Slashes before the current slash.
+        const previousSlashes =
+          validatorSlashes
+            .find(
+              (validatorSlashes) => validatorSlashes.validator === validator
+            )
+            ?.slashes.filter(
+              (slash) =>
+                Number(slash.registeredBlockHeight) <
+                Number(registeredBlockHeight)
+            ) ?? []
+
+        // Combine stake events and slashes, and sort ascending by block height,
+        // so they are applied in order of occurrence.
+        const stakeEventsAndSlashes = [
+          ...stakeHistory.stakeEvents,
+          ...previousSlashes,
+        ].sort((a, b) => {
+          const aBlockHeight =
+            'registeredBlockHeight' in a
+              ? a.registeredBlockHeight
+              : a.blockHeight
+          const bBlockHeight =
+            'registeredBlockHeight' in b
+              ? b.registeredBlockHeight
+              : b.blockHeight
+          return Number(aBlockHeight) - Number(bBlockHeight)
+        })
+
+        // Total staked
+        const staked = stakeEventsAndSlashes.reduce((acc, event) => {
+          // Apply slash.
+          if ('registeredBlockHeight' in event) {
+            return acc * (1 - Number(event.slashFactor))
+            // Apply stake event.
+          } else {
+            return Number(event.blockTimeUnixMs) <=
+              Number(registeredBlockTimeUnixMs)
+              ? (event.type === 'delegate' && event.validator === validator) ||
+                (event.type === 'redelegate' && event.toValidator === validator)
+                ? // Add stakes that occur before the slash was registered.
+                  acc + Number(event.amount)
+                : (event.type === 'undelegate' &&
+                    event.validator === validator) ||
+                  (event.type === 'redelegate' &&
+                    event.fromValidator === validator)
+                ? // Subtract unstakes that start before the slash was registered.
+                  acc - Number(event.amount)
+                : acc
+              : acc
+          }
+        }, 0)
+
+        // Total unstaking/redelegating.
+        const unstaking = stakeEventsAndSlashes.reduce((acc, event) => {
+          // Apply slash.
+          if ('registeredBlockHeight' in event) {
+            return acc * (1 - Number(event.slashFactor))
+            // Apply stake event.
+          } else {
+            // Add unstakes that start after the infraction and have not yet
+            // finished by the time the slash was registered.
+            return Number(event.blockHeight) >= Number(infractionBlockHeight) &&
+              Number(event.blockTimeUnixMs) + unbondingDurationSeconds * 1000 >
+                Number(registeredBlockTimeUnixMs) &&
+              ((event.type === 'undelegate' && event.validator === validator) ||
+                (event.type === 'redelegate' &&
+                  event.fromValidator === validator))
+              ? acc + Number(event.amount)
+              : acc
+          }
+        }, 0)
+
+        // Calculate the amount slashed of the staked and unstaking amounts. The
+        // Cosmos SDK truncates the slashed amount after the slash factor is
+        // applied, so we do the same here.
+        return {
+          staked: Math.trunc(staked * Number(slashFactor)),
+          unstaking: Math.trunc(unstaking * Number(slashFactor)),
+        }
+      }
 
       // These are the *actual* amounts that got slashed, based on the slashes
       // that occurred and the amounts the vesting contract had staked and
@@ -218,86 +324,67 @@ export const vestingInfoSelector = selectorFamily<
           validator: validatorOperatorAddress,
           slashes: _slashes,
         }): VestingValidatorWithSlashes => {
-          // Get the validator stakes at the time of each slash using historical
-          // indexer queries.
-          const vestingValidatorStakes = get(
-            waitForAll(
-              _slashes.map(
-                ({ registeredBlockHeight, registeredBlockTimeUnixMs }) =>
-                  CwVestingSelectors.validatorStakesSelector({
-                    contractAddress: vestingContractAddress,
-                    chainId,
-                    block: {
-                      height: registeredBlockHeight,
-                      timeUnixMs: registeredBlockTimeUnixMs,
+          const slashes = _slashes.flatMap((slash): VestingValidatorSlash[] => {
+            const slashed = slashedStakedUnstaking(
+              validatorOperatorAddress,
+              slash
+            )
+            if (!slashed) {
+              return []
+            }
+
+            // Actual amount slashed.
+            const { staked, unstaking } = slashed
+            if (staked === 0 && unstaking === 0) {
+              return []
+            }
+
+            // Registered slashes.
+            const registeredSlashes =
+              stakeHistory?.slashRegistrations.filter(
+                (registration) =>
+                  registration.validator === validatorOperatorAddress &&
+                  registration.time ===
+                    // milliseconds to nanoseconds
+                    (Number(slash.registeredBlockTimeUnixMs) * 1e6).toString()
+              ) ?? []
+            const registeredStaked = registeredSlashes.reduce(
+              (acc, slash) =>
+                acc + (!slash.duringUnbonding ? Number(slash.amount) : 0),
+              0
+            )
+            const registeredUnstaking = registeredSlashes.reduce(
+              (acc, slash) =>
+                acc + (slash.duringUnbonding ? Number(slash.amount) : 0),
+              0
+            )
+
+            const unregisteredStaked = staked - registeredStaked
+            const unregisteredUnstaking = unstaking - registeredUnstaking
+
+            return [
+              ...(unregisteredStaked > 0
+                ? [
+                    {
+                      timeMs: Number(slash.registeredBlockTimeUnixMs),
+                      amount: staked,
+                      unregisteredAmount: unregisteredStaked,
+                      duringUnbonding: false,
                     },
-                  })
-              )
-            )
-          )
-
-          const slashes = _slashes
-            .map(
-              (
-                { registeredBlockTimeUnixMs, slashFactor },
-                index
-              ): VestingValidatorSlash => {
-                // Validator stakes are storted descending by time, so find the
-                // first validator stake that is at or before the slash
-                // registration time to get the value at the slash.
-                const pastValidatorStake = vestingValidatorStakes[index].find(
-                  ({ validator, timeMs }) =>
-                    validator === validatorOperatorAddress &&
-                    timeMs <= Number(registeredBlockTimeUnixMs)
-                )
-
-                // Staked and unstaking amount at the time of the slash, without
-                // any registered slash amount deducted.
-                const pastStakedAndUnstaking = Number(
-                  pastValidatorStake?.amount ?? '0'
-                )
-
-                // Calculate the amount slashed of the staked and unstaking
-                // amount at the time of the slash. The cosmos SDK truncates the
-                // slashed amount after the slash factor is applied, so we do
-                // the same here.
-                const amount = Math.trunc(
-                  pastStakedAndUnstaking * Number(slashFactor)
-                )
-
-                // Get current validator stake so we can compare to see if the
-                // slash amount has been registered.
-                const currentValidatorStake = currentValidatorStakes.find(
-                  ({ validator, timeMs }) =>
-                    validator === validatorOperatorAddress &&
-                    timeMs <= Number(registeredBlockTimeUnixMs)
-                )
-
-                // Staked and unstaking amount at the time of the slash, with
-                // all registered slash amounts deducted.
-                const currentStakedAndUnstaking = Number(
-                  currentValidatorStake?.amount ?? '0'
-                )
-
-                // This is the amount that was slashed but not registered. If
-                // `amount` were registered, `currentStakedAndUnstaking` would
-                // be equal to `pastStakedAndUnstaking` - `amount`, since
-                // registering the slash will make the current stakes reflect
-                // the slash amount subtracted from the staked and unstaking
-                // amount at the time of the slash. The unregistered amount is
-                // the difference between the current and the original/past with
-                // the actual slashed amount removed. This is actual - expected.
-                const unregisteredAmount =
-                  currentStakedAndUnstaking - (pastStakedAndUnstaking - amount)
-
-                return {
-                  timeMs: Number(registeredBlockTimeUnixMs),
-                  amount,
-                  unregisteredAmount,
-                }
-              }
-            )
-            .filter(({ amount }) => amount > 0)
+                  ]
+                : []),
+              ...(unregisteredUnstaking > 0
+                ? [
+                    {
+                      timeMs: Number(slash.registeredBlockTimeUnixMs),
+                      amount: unstaking,
+                      unregisteredAmount: unregisteredUnstaking,
+                      duringUnbonding: true,
+                    },
+                  ]
+                : []),
+            ]
+          })
 
           return {
             validatorOperatorAddress,

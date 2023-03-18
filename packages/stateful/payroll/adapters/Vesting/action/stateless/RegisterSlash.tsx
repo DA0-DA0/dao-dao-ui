@@ -22,10 +22,14 @@ import {
 
 import { useActionOptions } from '../../../../../actions'
 import { Trans } from '../../../../../components'
-import { VestingInfo } from '../../types'
+import { VestingInfo, VestingValidatorSlash } from '../../types'
 
 export type RegisterSlashData = {
   address: string
+  validator: string
+  time: string
+  amount: string
+  duringUnbonding: boolean
 }
 
 export type RegisterSlashOptions = {
@@ -43,8 +47,7 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
   const { t } = useTranslation()
   const { address } = useActionOptions()
 
-  const { watch, setValue } = useFormContext<RegisterSlashData>()
-  const watchAddress = watch((fieldNamePrefix + 'address') as 'address')
+  const { setValue } = useFormContext<RegisterSlashData>()
 
   // Only vesting contracts with unregistered slashes where the owner is set.
   const registerableVests = vestingInfos.loading
@@ -53,6 +56,24 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
         ({ owner, hasUnregisteredSlashes }) =>
           address === owner && hasUnregisteredSlashes
       )
+
+  const onSelectSlash = (
+    validator: string,
+    { timeMs, unregisteredAmount, duringUnbonding }: VestingValidatorSlash
+  ) => {
+    setValue((fieldNamePrefix + 'validator') as 'validator', validator)
+    // Milliseconds to nanoseconds.
+    setValue((fieldNamePrefix + 'time') as 'time', (timeMs * 1e6).toString())
+    setValue(
+      (fieldNamePrefix + 'amount') as 'amount',
+      unregisteredAmount.toString()
+    )
+    // While staked.
+    setValue(
+      (fieldNamePrefix + 'duringUnbonding') as 'duringUnbonding',
+      duringUnbonding
+    )
+  }
 
   return (
     <>
@@ -83,24 +104,16 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
           ) : registerableVests.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {registerableVests.map((info) => (
-                <div
+                <RenderVest
                   key={info.vestingContractAddress}
-                  className="flex cursor-pointer flex-row items-start gap-2 transition hover:opacity-80 active:opacity-70"
-                  onClick={() =>
-                    setValue(
-                      (fieldNamePrefix + 'address') as 'address',
-                      info.vestingContractAddress
-                    )
+                  EntityDisplay={EntityDisplay}
+                  fieldNamePrefix={fieldNamePrefix}
+                  info={info}
+                  isCreating={isCreating}
+                  onSelectSlash={(slash) =>
+                    onSelectSlash(info.vestingContractAddress, slash)
                   }
-                >
-                  <SelectCircle
-                    selected={watchAddress === info.vestingContractAddress}
-                  />
-
-                  <div className="rounded-md border border-border-primary">
-                    <RenderVest EntityDisplay={EntityDisplay} info={info} />
-                  </div>
-                </div>
+                />
               ))}
             </div>
           ) : (
@@ -112,7 +125,12 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
         selectedVest.loading ? (
           <Loader />
         ) : selectedVest.data ? (
-          <RenderVest EntityDisplay={EntityDisplay} info={selectedVest.data} />
+          <RenderVest
+            EntityDisplay={EntityDisplay}
+            fieldNamePrefix={fieldNamePrefix}
+            info={selectedVest.data}
+            isCreating={isCreating}
+          />
         ) : (
           <p className="text-text-interactive-error">
             {t('error.loadingData')}
@@ -130,25 +148,33 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
 
 type RenderVestProps = {
   info: VestingInfo
+  isCreating: boolean
+  fieldNamePrefix: string
+  selectedSlash?: VestingValidatorSlash
+  onSelectSlash?: (slash: VestingValidatorSlash) => void
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
 const RenderVest = ({
-  info: { vest, slashes },
+  info: { vestingContractAddress, vest, slashes },
+  isCreating,
+  fieldNamePrefix,
+  onSelectSlash,
   EntityDisplay,
 }: RenderVestProps) => {
   const { t } = useTranslation()
 
+  const { watch } = useFormContext()
+  const data = watch(fieldNamePrefix) as RegisterSlashData
+
   const unregisteredSlashes = slashes
-    .filter(({ slashes }) =>
-      slashes.some(({ unregisteredAmount }) => unregisteredAmount > 0)
-    )
     .flatMap(({ validatorOperatorAddress, slashes }) =>
-      slashes.map(({ unregisteredAmount }) => ({
+      slashes.map((slash) => ({
         validatorOperatorAddress,
-        unregisteredAmount,
+        slash,
       }))
     )
+    .filter(({ slash }) => slash.unregisteredAmount > 0)
 
   return (
     <div className="space-y-2 p-4">
@@ -159,22 +185,50 @@ const RenderVest = ({
       </div>
 
       <Table
-        headers={[t('form.validator'), t('title.unregisteredSlashAmount')]}
-        rows={unregisteredSlashes.map(
-          ({ validatorOperatorAddress, unregisteredAmount }, index) => [
-            validatorOperatorAddress,
-            <TokenAmountDisplay
-              key={index}
-              amount={convertMicroDenomToDenomWithDecimals(
-                unregisteredAmount,
-                NATIVE_TOKEN.decimals
-              )}
-              decimals={NATIVE_TOKEN.decimals}
-              iconUrl={NATIVE_TOKEN.imageUrl}
-              symbol={NATIVE_TOKEN.symbol}
-            />,
-          ]
-        )}
+        headers={['', t('form.validator'), t('title.unregisteredSlashAmount')]}
+        rows={
+          isCreating
+            ? unregisteredSlashes.map(
+                ({ validatorOperatorAddress, slash }, index) => [
+                  <SelectCircle
+                    key={`${index}-select`}
+                    onSelect={() => onSelectSlash?.(slash)}
+                    selected={
+                      data.address === vestingContractAddress &&
+                      data.time === (slash.timeMs * 1e6).toString() &&
+                      data.duringUnbonding === slash.duringUnbonding
+                    }
+                  />,
+                  validatorOperatorAddress,
+                  <TokenAmountDisplay
+                    key={`${index}-token`}
+                    amount={convertMicroDenomToDenomWithDecimals(
+                      slash.unregisteredAmount,
+                      NATIVE_TOKEN.decimals
+                    )}
+                    decimals={NATIVE_TOKEN.decimals}
+                    iconUrl={NATIVE_TOKEN.imageUrl}
+                    symbol={NATIVE_TOKEN.symbol}
+                  />,
+                ]
+              )
+            : [
+                [
+                  <SelectCircle key="select" selected />,
+                  data.validator,
+                  <TokenAmountDisplay
+                    key="token"
+                    amount={convertMicroDenomToDenomWithDecimals(
+                      data.amount,
+                      NATIVE_TOKEN.decimals
+                    )}
+                    decimals={NATIVE_TOKEN.decimals}
+                    iconUrl={NATIVE_TOKEN.imageUrl}
+                    symbol={NATIVE_TOKEN.symbol}
+                  />,
+                ],
+              ]
+        }
       />
     </div>
   )
