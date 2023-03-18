@@ -109,8 +109,8 @@ export const NewProposal = ({
             newProposalData,
             {
               // On failed simulation, allow the user to bypass the simulation
-              // and create the proposal anyway for 10 seconds.
-              failedSimulationBypassSeconds: 10,
+              // and create the proposal anyway for 3 seconds.
+              failedSimulationBypassSeconds: 3,
             }
           )
 
