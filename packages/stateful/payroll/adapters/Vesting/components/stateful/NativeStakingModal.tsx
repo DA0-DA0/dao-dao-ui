@@ -9,6 +9,7 @@ import {
   nativeUnstakingDurationSecondsSelector,
   refreshNativeTokenStakingInfoAtom,
   refreshVestingAtom,
+  refreshWalletBalancesIdAtom,
   validatorsSelector,
 } from '@dao-dao/state/recoil'
 import {
@@ -71,6 +72,10 @@ export const NativeStakingModal = ({
     })
   )
 
+  // Refreshes validator balances.
+  const setRefreshValidatorBalances = useSetRecoilState(
+    refreshWalletBalancesIdAtom('')
+  )
   const setRefreshVesting = useSetRecoilState(
     refreshVestingAtom(vestingContractAddress)
   )
@@ -132,6 +137,7 @@ export const NativeStakingModal = ({
 
       // Wait a block for balances to update.
       await awaitNextBlock()
+      setRefreshValidatorBalances((id) => id + 1)
       setRefreshVesting((id) => id + 1)
       setRefreshStaking((id) => id + 1)
 

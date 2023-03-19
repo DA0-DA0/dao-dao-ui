@@ -341,6 +341,9 @@ export const validatorSelector = selectorFamily<
   get:
     ({ address: validatorAddr, chainId }) =>
     async ({ get }) => {
+      get(refreshWalletBalancesIdAtom(''))
+      get(refreshWalletBalancesIdAtom(validatorAddr))
+
       const client = get(cosmosRpcClientForChainSelector(chainId))
 
       const { validator } = await client.staking.v1beta1.validator({
@@ -445,6 +448,8 @@ export const validatorsSelector = selectorFamily<Validator[], WithChainId<{}>>({
   get:
     ({ chainId }) =>
     async ({ get }) => {
+      get(refreshWalletBalancesIdAtom(''))
+
       const client = get(cosmosRpcClientForChainSelector(chainId))
 
       let validators: RpcValidator[]
