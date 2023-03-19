@@ -51,27 +51,30 @@ Default.args = {
   errors: {},
   options: {
     AddressInput,
-    balances: [
-      {
-        token: {
-          type: TokenType.Native,
-          denomOrAddress: NATIVE_DENOM,
-          decimals: 6,
-          symbol: 'JUNO',
-          imageUrl: '',
+    balances: {
+      loading: false,
+      data: [
+        {
+          token: {
+            type: TokenType.Native,
+            denomOrAddress: NATIVE_DENOM,
+            decimals: 6,
+            symbol: 'JUNO',
+            imageUrl: '',
+          },
+          balance: '1231245124',
         },
-        balance: '1231245124',
-      },
-      {
-        token: {
-          type: TokenType.Native,
-          denomOrAddress: 'uatom',
-          decimals: 6,
-          symbol: 'ATOM',
-          imageUrl: '',
+        {
+          token: {
+            type: TokenType.Native,
+            denomOrAddress: 'uatom',
+            decimals: 6,
+            symbol: 'ATOM',
+            imageUrl: '',
+          },
+          balance: '984129741',
         },
-        balance: '984129741',
-      },
-    ],
+      ],
+    },
   },
 }

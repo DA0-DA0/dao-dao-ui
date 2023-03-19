@@ -1,14 +1,9 @@
 import type { MsgWithdrawDelegatorReward } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
-import type { MsgVote } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
 import type {
   MsgBeginRedelegate,
   MsgDelegate,
   MsgUndelegate,
 } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
-import type {
-  MsgExecuteContract,
-  MsgMigrateContract,
-} from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useMemo } from 'react'
 
@@ -18,6 +13,7 @@ import {
   LockWithKeyEmoji,
   useCachedLoading,
 } from '@dao-dao/stateless'
+import { Coin } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionMaker,
@@ -37,6 +33,7 @@ import {
 import { AddressInput, SuspenseLoader } from '../../components'
 import { AuthzExecComponent as StatelessAuthzComponent } from '../components'
 import { useActionOptions } from '../react'
+/* import { VoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov' */
 
 const TYPE_URL_MSG_EXEC = '/cosmos.authz.v1beta1.MsgExec'
 
@@ -58,9 +55,19 @@ interface AuthzExecData {
   undelegate: MsgUndelegate
   redelegate: MsgBeginRedelegate
   claimRewards: MsgWithdrawDelegatorReward
-  vote: MsgVote
-  execute: MsgExecuteContract
-  migrate: MsgMigrateContract
+  /* vote: MsgVote */
+  execute: {
+    sender: string
+    contract: string
+    msg: string
+    funds: Coin[]
+  }
+  migrate: {
+    sender: string
+    contract: string
+    codeId: string
+    msg: string
+  }
   custom: string
 }
 
@@ -88,6 +95,11 @@ const useDefaults: UseDefaults<AuthzExecData> = () => ({
       amount: '0',
     },
   },
+  /* vote: {
+   *   voter: '',
+   *   option: VoteOption.VOTE_OPTION_YES,
+   *   proposalId: Long.fromString('1'),
+   * }, */
   claimRewards: {
     delegatorAddress: '',
     validatorAddress: '',

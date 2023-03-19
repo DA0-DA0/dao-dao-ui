@@ -19,6 +19,7 @@ import {
 import {
   AddressInputProps,
   GenericTokenBalance,
+  LoadingData,
   TokenType,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -44,7 +45,7 @@ import {
 
 export interface AuthzOptions {
   AddressInput: ComponentType<AddressInputProps>
-  balances: GenericTokenBalance[]
+  balances: LoadingData<GenericTokenBalance[]>
 }
 
 /*
@@ -58,7 +59,6 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
 ) => {
   const { t } = useTranslation()
   const {
-    data,
     fieldNamePrefix,
     onRemove,
     errors,
@@ -252,9 +252,14 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
                   {...({
                     ...props,
                     options: {
-                      nativeBalances: balances.filter(
-                        ({ token }) => token.type === TokenType.Native
-                      ),
+                      nativeBalances: balances.loading
+                        ? { loading: true }
+                        : {
+                            loading: false,
+                            data: balances.data.filter(
+                              ({ token }) => token.type === TokenType.Native
+                            ),
+                          },
                     },
                     onRemove: isCreating ? () => removeCoin(index) : undefined,
                   } as NativeCoinSelectorProps)}
@@ -386,9 +391,14 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
                   {...({
                     ...props,
                     options: {
-                      nativeBalances: balances.filter(
-                        ({ token }) => token.type === TokenType.Native
-                      ),
+                      nativeBalances: balances.loading
+                        ? { loading: true }
+                        : {
+                            loading: false,
+                            data: balances.data.filter(
+                              ({ token }) => token.type === TokenType.Native
+                            ),
+                          },
                     },
                     onRemove: isCreating ? () => removeCoin(index) : undefined,
                   } as NativeCoinSelectorProps)}

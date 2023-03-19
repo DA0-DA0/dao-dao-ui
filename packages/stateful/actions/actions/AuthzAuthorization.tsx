@@ -1,4 +1,3 @@
-import type { MsgGrant, MsgRevoke } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { useCallback, useMemo } from 'react'
 
 import { ActionCardLoader, KeyEmoji } from '@dao-dao/stateless'
@@ -11,12 +10,10 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  DecodedStargateMsg,
   decodeRawProtobufMsg,
   encodeRawProtobufMsg,
   isDecodedStargateMsg,
   makeStargateMessage,
-  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { AddressInput, SuspenseLoader } from '../../components'
@@ -25,8 +22,6 @@ import { useTokenBalances } from '../hooks'
 
 const TYPE_URL_MSG_GRANT = '/cosmos.authz.v1beta1.MsgGrant'
 const TYPE_URL_MSG_REVOKE = '/cosmos.authz.v1beta1.MsgRevoke'
-const TYPE_URL_GENERIC_AUTHORIZATION =
-  '/cosmos.authz.v1beta1.GenericAuthorization'
 
 export enum AuthorizationTypeUrl {
   Generic = '/cosmos.authz.v1beta1.GenericAuthorization',
@@ -71,44 +66,26 @@ const useDefaults: UseDefaults<AuthzData> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  const tokenBalances = useTokenBalances()
+  const balances = useTokenBalances()
 
   return (
     <SuspenseLoader
       fallback={<ActionCardLoader />}
       forceFallback={
         // Manually trigger loader.
-        tokenBalances.loading
+        balances.loading
       }
     >
       <StatelessAuthzComponent
         {...props}
         options={{
           AddressInput,
-          balances: tokenBalances.loading ? [] : tokenBalances.data,
+          balances,
         }}
       />
     </SuspenseLoader>
   )
 }
-
-const isMsgGrantGenericAuthorization = (
-  msg: DecodedStargateMsg
-): msg is DecodedStargateMsg<MsgGrant> =>
-  objectMatchesStructure(msg, {
-    stargate: {
-      typeUrl: {},
-      value: {
-        grant: {
-          authorization: {},
-        },
-      },
-    },
-  }) &&
-  !!msg.stargate.value.grant &&
-  !!msg.stargate.value.grant.authorization &&
-  (msg.stargate.value as MsgGrant).grant!.authorization!.typeUrl ===
-    TYPE_URL_GENERIC_AUTHORIZATION
 
 export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
   t,
@@ -129,37 +106,82 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         return { match: false }
       }
 
-      console.log('decoded: ' + msg)
+      if (msg.stargate.typeUrl === TYPE_URL_MSG_GRANT) {
+        let authorizationTypeUrl =
+          msg.stargate.value.grant!.authorization!.typeUrl
 
-      // TODO check other authorization types
+        // If no authorization type, this is not a match
+        if (!authorizationTypeUrl) {
+          return { match: false }
+        }
 
-      return msg.stargate.typeUrl === TYPE_URL_MSG_GRANT &&
-        isMsgGrantGenericAuthorization(msg)
-        ? {
-            match: true,
-            data: {
-              // TODO check this
-              authorizationTypeUrl:
-                msg.stargate.value.grant!.authorization!.typeUrl,
-              customTypeUrl: false,
-              typeUrl: msg.stargate.typeUrl,
-              // TODO check
-              msgTypeUrl: decodeRawProtobufMsg(
-                msg.stargate.value.grant!.authorization!
-              ).value.msg,
-              grantee: msg.stargate.value.grantee,
-              // granter: msg.stargate.value.granter,
-            },
-          }
-        : msg.stargate.typeUrl === TYPE_URL_MSG_REVOKE
-        ? {
-            match: true,
-            data: {
-              customTypeUrl: false,
-              ...(msg as DecodedStargateMsg<MsgRevoke>).stargate,
-            },
-          }
-        : { match: false }
+        switch (authorizationTypeUrl) {
+          case AuthorizationTypeUrl.Generic:
+            return {
+              match: true,
+              data: {
+                authorizationTypeUrl,
+                customTypeUrl: false,
+                typeUrl: msg.stargate.typeUrl,
+                msgTypeUrl: decodeRawProtobufMsg(
+                  msg.stargate.value.grant!.authorization!
+                ).value.msg,
+                grantee: msg.stargate.value.grantee,
+              },
+            }
+          case AuthorizationTypeUrl.Spend:
+            let { spendLimit } = decodeRawProtobufMsg(
+              msg.stargate.value.grant!.authorization!
+            ).value
+            return {
+              match: true,
+              data: {
+                authorizationTypeUrl,
+                customTypeUrl: false,
+                typeUrl: msg.stargate.typeUrl,
+                grantee: msg.stargate.value.grantee,
+                funds: spendLimit,
+              },
+            }
+          case AuthorizationTypeUrl.ContractExecution:
+            let { contract, filter, limit } = decodeRawProtobufMsg(
+              msg.stargate.value.grant!.authorization!
+            ).value.grants[0]
+            let decodedLimit = decodeRawProtobufMsg(limit)
+            console.log(decodedLimit)
+            let decodedFilter = decodeRawProtobufMsg(filter)
+            console.log(decodedFilter)
+            return {
+              match: true,
+              data: {
+                authorizationTypeUrl,
+                customTypeUrl: false,
+                typeUrl: msg.stargate.typeUrl,
+                grantee: msg.stargate.value.grantee,
+                funds: decodedLimit.value.amounts,
+                contract,
+                filterType: decodedFilter.typeUrl as FilterTypes,
+              },
+            }
+          /* case AuthorizationTypeUrl.ContractMigration:
+           *   // TODO
+           *   return { match: false } */
+          default:
+            return { match: false }
+        }
+      } else if (msg.stargate.typeUrl === TYPE_URL_MSG_REVOKE) {
+        return {
+          match: true,
+          data: {
+            customTypeUrl: false,
+            typeUrl: msg.stargate.typeUrl,
+            grantee: msg.stargate.value.grantee,
+            msgTypeUrl: msg.stargate.value.msgTypeUrl,
+          },
+        }
+      } else {
+        return { match: false }
+      }
     }, [msg])
 
   const useTransformToCosmos: UseTransformToCosmos<AuthzData> = () =>
@@ -232,7 +254,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                   grants: [
                     {
                       contract,
-                      filter: encodeRawProtobufMsg(filter),
+                      filter: encodeRawProtobufMsg(filter as any),
                       limit: encodeRawProtobufMsg({
                         typeUrl: '/cosmwasm.wasm.v1.MaxFundsLimit',
                         value: {
@@ -256,7 +278,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                   grants: [
                     {
                       contract,
-                      filter: encodeRawProtobufMsg(filter),
+                      filter: encodeRawProtobufMsg(filter as any),
                       limit: encodeRawProtobufMsg({
                         typeUrl: '/cosmwasm.wasm.v1.MaxFundsLimit',
                         value: {
@@ -286,7 +308,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               ...(typeUrl === TYPE_URL_MSG_GRANT
                 ? {
                     grant: {
-                      authorization: encodeRawProtobufMsg(authorization),
+                      authorization: encodeRawProtobufMsg(authorization as any),
                     },
                   }
                 : {
