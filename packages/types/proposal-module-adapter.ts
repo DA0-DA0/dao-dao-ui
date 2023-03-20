@@ -185,13 +185,6 @@ export interface BaseProposalInnerContentDisplayProps<D extends any = any> {
   availableActions: Action[]
 }
 
-// Represents one instance of {title; description; actions[]} (multiple choice will have an array of these, single choice will have one.)
-export interface ProposalInnerContent {
-  title: string
-  description: string
-  actions: Action[]
-}
-
 export interface BaseProposalWalletVoteProps<T> {
   vote: T | undefined
   fallback: 'pending' | 'hasNoVote'
