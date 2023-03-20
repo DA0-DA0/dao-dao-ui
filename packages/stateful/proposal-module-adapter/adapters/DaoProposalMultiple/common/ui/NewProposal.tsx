@@ -181,7 +181,6 @@ export const NewProposal = ({
   )
 
   const proposalName = watch('title')
-  const choices = watch('choices')
 
   return (
     <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
@@ -285,9 +284,9 @@ export const NewProposal = ({
                   ? t('error.notEnoughForDeposit')
                   : isPaused
                   ? t('error.daoIsPaused')
-                  : choices.length < 2
+                  : multipleChoiceFields.length < 2
                   ? t('error.tooFewChoices')
-                  : choices.length > MAX_NUM_PROPOSAL_CHOICES
+                  : multipleChoiceFields.length > MAX_NUM_PROPOSAL_CHOICES
                   ? t('error.tooManyChoices', {
                       count: MAX_NUM_PROPOSAL_CHOICES,
                     })
@@ -300,8 +299,8 @@ export const NewProposal = ({
                   (!anyoneCanPropose && !isMember) ||
                   depositUnsatisfied ||
                   isPaused ||
-                  choices.length < 2 ||
-                  choices.length > MAX_NUM_PROPOSAL_CHOICES
+                  multipleChoiceFields.length < 2 ||
+                  multipleChoiceFields.length > MAX_NUM_PROPOSAL_CHOICES
                 }
                 loading={loading}
                 type="submit"
