@@ -22,7 +22,7 @@ import { NewSurveyFormData } from '../../types'
 import { NewAttribute, NewAttributeProps } from './NewAttribute'
 
 export interface NewSurveyFormProps
-  extends Pick<NewAttributeProps, 'nativeDenoms' | 'cw20TokenInfos'> {
+  extends Pick<NewAttributeProps, 'availableTokens'> {
   onCreate: (newCompensationCycle: NewSurveyFormData) => Promise<void>
   loading: boolean
 }

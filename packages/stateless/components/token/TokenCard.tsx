@@ -21,7 +21,6 @@ import {
 import { useAddToken, useDaoInfoContextIfAvailable } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { CopyToClipboard } from '../CopyToClipboard'
-import { IconButton } from '../icon_buttons/IconButton'
 import { CrownIcon } from '../icons/CrownIcon'
 import { ButtonPopup } from '../popup'
 import { TooltipInfoIcon } from '../tooltip'
@@ -172,23 +171,20 @@ export const TokenCard = ({
             <div className="absolute top-3 right-3">
               <ButtonPopup
                 ButtonLink={ButtonLink}
-                Trigger={({ open, ...props }) => (
-                  <IconButton
-                    Icon={ExpandCircleDownOutlined}
-                    className={
-                      !waitingForStakingInfo
-                        ? '!text-icon-secondary'
-                        : undefined
-                    }
-                    disabled={waitingForStakingInfo}
-                    focused={open}
-                    variant="ghost"
-                    {...props}
-                  />
-                )}
                 popupClassName="w-[16rem]"
                 position="left"
                 sections={buttonPopupSections}
+                trigger={{
+                  type: 'icon_button',
+                  props: {
+                    Icon: ExpandCircleDownOutlined,
+                    className: !waitingForStakingInfo
+                      ? '!text-icon-secondary'
+                      : undefined,
+                    disabled: waitingForStakingInfo,
+                    variant: 'ghost',
+                  },
+                }}
               />
             </div>
           )}

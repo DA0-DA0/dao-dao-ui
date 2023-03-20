@@ -5,8 +5,7 @@ import {
   Button,
   InputErrorMessage,
   InputLabel,
-  NumberInput,
-  SelectInput,
+  TokenInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import {
@@ -14,7 +13,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
   isValidAddress,
   validateAddress,
-  validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -108,65 +106,41 @@ export const InstantiateTokenSwap: ActionComponent<
           </Trans>
         </InputLabel>
 
-        <div className="flex flex-row items-stretch gap-2">
-          {/* Allow to enter value for counterparty greater than what they currently have in the treasury, since they could accept it at a future time when they do have the amount. */}
-          <NumberInput
-            containerClassName="grow"
-            error={errors?.counterparty?.amount}
-            fieldName={fieldNamePrefix + 'counterparty.amount'}
-            min={counterpartyMin}
-            register={register}
-            setValue={setValue}
-            sizing="auto"
-            step={counterpartyMin}
-            validation={[validateRequired, validatePositive]}
-            watch={watch}
-          />
-
-          <SelectInput
-            className={
-              counterpartyTokenBalances.loading ? 'animate-pulse' : undefined
-            }
-            disabled={
-              !counterpartyAddressValid || counterpartyTokenBalances.loading
-            }
-            error={errors?.counterparty?.denomOrAddress}
-            fieldName={fieldNamePrefix + 'counterparty.denomOrAddress'}
-            onChange={(denomOrAddress) => {
-              if (counterpartyTokenBalances.loading) {
-                return
-              }
-
-              const foundToken = counterpartyTokenBalances.data.find(
-                ({ token }) => denomOrAddress === token.denomOrAddress
-              )
-              if (!foundToken) {
-                return
-              }
-
-              // Update type and decimals.
-              setValue(
-                fieldNamePrefix + 'counterparty.type',
-                foundToken.token.type
-              )
-              setValue(
-                fieldNamePrefix + 'counterparty.decimals',
-                foundToken.token.decimals
-              )
-            }}
-            register={register}
-            style={{ maxWidth: '8.2rem' }}
-          >
-            {!counterpartyTokenBalances.loading &&
-              counterpartyTokenBalances.data.map(
-                ({ token: { denomOrAddress, symbol } }) => (
-                  <option key={denomOrAddress} value={denomOrAddress}>
-                    ${symbol}
-                  </option>
-                )
-              )}
-          </SelectInput>
-        </div>
+        {/* Allow to enter value for counterparty greater than what they currently have in the treasury, since they could accept it at a future time when they do have the amount. In other words, don't set a max. */}
+        <TokenInput
+          amountError={errors?.counterparty?.amount}
+          amountFieldName={fieldNamePrefix + 'counterparty.amount'}
+          amountMin={counterpartyMin}
+          amountStep={counterpartyMin}
+          disabled={!counterpartyAddressValid}
+          onSelectToken={({ type, denomOrAddress, decimals }) => {
+            // Update type, denomOrAddress, and decimals.
+            setValue(fieldNamePrefix + 'counterparty.type', type)
+            setValue(
+              fieldNamePrefix + 'counterparty.denomOrAddress',
+              denomOrAddress
+            )
+            setValue(fieldNamePrefix + 'counterparty.decimals', decimals)
+          }}
+          register={register}
+          selectedToken={counterpartyToken?.token}
+          setValue={setValue}
+          tokens={
+            // Don't load when counterparty address is not yet valid, because
+            // these will be perpetually loading until the address is entered.
+            !counterpartyAddressValid
+              ? { loading: false, data: [] }
+              : counterpartyTokenBalances.loading
+              ? { loading: true }
+              : {
+                  loading: false,
+                  data: counterpartyTokenBalances.data.map(
+                    ({ token }) => token
+                  ),
+                }
+          }
+          watch={watch}
+        />
 
         {/* Warn if counterparty does not have the requested amount. */}
         {counterparty.amount > counterpartyMax && (
@@ -193,65 +167,40 @@ export const InstantiateTokenSwap: ActionComponent<
           </Trans>
         </InputLabel>
 
-        <div className="flex flex-row items-stretch gap-2">
-          <NumberInput
-            containerClassName="grow"
-            error={errors?.selfParty?.amount}
-            fieldName={fieldNamePrefix + 'selfParty.amount'}
-            max={selfMax}
-            min={selfMin}
-            register={register}
-            setValue={setValue}
-            sizing="auto"
-            step={selfMin}
-            validation={[
-              validateRequired,
-              validatePositive,
-              (value) =>
-                value <= selfMax ||
-                t('error.treasuryInsufficient', {
-                  amount: selfMax.toLocaleString(undefined, {
-                    maximumFractionDigits: selfDecimals,
-                  }),
-                  tokenSymbol: selfSymbol,
+        <TokenInput
+          amountError={errors?.selfParty?.amount}
+          amountFieldName={fieldNamePrefix + 'selfParty.amount'}
+          amountMax={selfMax}
+          amountMin={selfMin}
+          amountStep={selfMin}
+          amountValidations={[
+            (value) =>
+              value <= selfMax ||
+              t('error.treasuryInsufficient', {
+                amount: selfMax.toLocaleString(undefined, {
+                  maximumFractionDigits: selfDecimals,
                 }),
-            ]}
-            watch={watch}
-          />
-
-          <SelectInput
-            error={errors?.selfParty?.denomOrAddress}
-            fieldName={fieldNamePrefix + 'selfParty.denomOrAddress'}
-            onChange={(denomOrAddress) => {
-              const foundToken = selfPartyTokenBalances.find(
-                ({ token }) => denomOrAddress === token.denomOrAddress
-              )
-              if (!foundToken) {
-                return
-              }
-
-              // Update type and decimals.
-              setValue(
-                fieldNamePrefix + 'selfParty.type',
-                foundToken.token.type
-              )
-              setValue(
-                fieldNamePrefix + 'selfParty.decimals',
-                foundToken.token.decimals
-              )
-            }}
-            register={register}
-            style={{ maxWidth: '8.2rem' }}
-          >
-            {selfPartyTokenBalances.map(
-              ({ token: { denomOrAddress, symbol } }) => (
-                <option key={denomOrAddress} value={denomOrAddress}>
-                  ${symbol}
-                </option>
-              )
-            )}
-          </SelectInput>
-        </div>
+                tokenSymbol: selfSymbol,
+              }),
+          ]}
+          onSelectToken={({ type, denomOrAddress, decimals }) => {
+            // Update type, denomOrAddress, and decimals.
+            setValue(fieldNamePrefix + 'selfParty.type', type)
+            setValue(
+              fieldNamePrefix + 'selfParty.denomOrAddress',
+              denomOrAddress
+            )
+            setValue(fieldNamePrefix + 'selfParty.decimals', decimals)
+          }}
+          register={register}
+          selectedToken={selfToken?.token}
+          setValue={setValue}
+          tokens={{
+            loading: false,
+            data: selfPartyTokenBalances.map(({ token }) => token),
+          }}
+          watch={watch}
+        />
 
         <InputErrorMessage error={errors?.selfParty?.amount} />
         <InputErrorMessage error={errors?.selfParty?.denomOrAddress} />

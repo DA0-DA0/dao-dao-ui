@@ -6,7 +6,7 @@ import {
   WarningRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useCallback, useMemo, useState } from 'react'
+import { ComponentType, useMemo, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -14,7 +14,6 @@ import {
   Button,
   CycleEmoji,
   FilterableItemPopup,
-  FilterableItemPopupProps,
   IconButton,
   InputErrorMessage,
   InputThemedText,
@@ -30,6 +29,7 @@ import {
   GenericToken,
   GenericTokenBalance,
   LoadingData,
+  PopupTrigger,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { SwapOperation } from '@dao-dao/types/contracts/WyndexMultiHop'
@@ -149,25 +149,23 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
 
   const dataLoading = loadingBalances.loading || loadingWyndTokens.loading
 
-  const makeTokenTrigger = useCallback(
-    ({ imageUrl, symbol, decimals }: GenericToken, balance: number) => {
-      const TokenTrigger: FilterableItemPopupProps['Trigger'] = ({
-        open,
-        ...props
-      }) => (
-        <Button
-          className={clsx(dataLoading && 'animate-pulse')}
-          disabled={!isCreating || dataLoading}
-          pressed={open}
-          variant="ghost"
-          {...props}
-        >
+  const makeTokenTrigger = (
+    { imageUrl, symbol, decimals }: GenericToken,
+    balance: number
+  ): PopupTrigger => ({
+    type: 'button',
+    props: {
+      className: clsx(dataLoading && 'animate-pulse'),
+      disabled: !isCreating || dataLoading,
+      variant: 'ghost',
+      children: (
+        <>
           <div
             className="mr-1 h-10 w-10 shrink-0 rounded-full bg-cover bg-center"
             style={{ backgroundImage: `url(${imageUrl})` }}
           />
           <div className="flex max-w-[10rem] flex-col items-start gap-1 overflow-hidden text-left">
-            <p className="title-text max-w-full truncate">${symbol}</p>
+            <p className="title-text max-w-full truncate">{symbol}</p>
             {isCreating && (
               <p className="caption-text">
                 {t('title.balance')}:{' '}
@@ -178,22 +176,13 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
             )}
           </div>
           {isCreating && <ArrowDropDown className="ml-2 !h-6 !w-6" />}
-        </Button>
-      )
-      return TokenTrigger
+        </>
+      ),
     },
-    [dataLoading, isCreating, t]
-  )
+  })
 
-  const TokenInTrigger = useMemo(
-    () => makeTokenTrigger(tokenIn, tokenInBalance),
-    [makeTokenTrigger, tokenIn, tokenInBalance]
-  )
-
-  const TokenOutTrigger = useMemo(
-    () => makeTokenTrigger(tokenOut, tokenOutBalance),
-    [makeTokenTrigger, tokenOut, tokenOutBalance]
-  )
+  const tokenInTrigger = makeTokenTrigger(tokenIn, tokenInBalance)
+  const tokenOutTrigger = makeTokenTrigger(tokenOut, tokenOutBalance)
 
   const insufficientBalanceI18nKey =
     context.type === ActionContextType.Dao
@@ -228,7 +217,6 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           )}
         >
           <FilterableItemPopup
-            Trigger={TokenInTrigger}
             filterableItemKeys={FILTERABLE_KEYS}
             items={availableTokenItems}
             onSelect={(_, index) => {
@@ -242,6 +230,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
               )
             }}
             searchPlaceholder={t('info.searchForToken')}
+            trigger={tokenInTrigger}
           />
 
           {simulatingValue === 'tokenIn' ? (
@@ -327,7 +316,6 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
           )}
         >
           <FilterableItemPopup
-            Trigger={TokenOutTrigger}
             filterableItemKeys={FILTERABLE_KEYS}
             items={availableTokenItems}
             onSelect={(_, index) => {
@@ -341,6 +329,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
               )
             }}
             searchPlaceholder={t('info.searchForToken')}
+            trigger={tokenOutTrigger}
           />
 
           {simulatingValue === 'tokenOut' || loadingOutputPriceFromExecution ? (

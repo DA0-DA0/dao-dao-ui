@@ -135,9 +135,9 @@ export const SdaNavigation = ({
           'sm:relative sm:left-0 sm:shadow-none sm:transition-[padding-left]',
           compact ? 'sm:w-min' : 'sm:w-[264px]',
 
-          // Dim if responsive right sidebar is open. Right sidebar can be responsive up to xl size. After that, it automatically displays.
+          // Dim if responsive right sidebar is open. Right sidebar can be responsive up to 2xl size. After that, it automatically displays.
           responsiveRightSidebarEnabled
-            ? 'opacity-30 xl:opacity-100'
+            ? 'opacity-30 2xl:opacity-100'
             : 'opacity-100'
         )}
       >

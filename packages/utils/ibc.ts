@@ -1,10 +1,12 @@
-import { NATIVE_DECIMALS, NATIVE_DENOM } from './constants'
+import { NATIVE_TOKEN } from './constants'
 import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
 import ibcAssets from './ibc_assets.json'
 
 export { ibcAssets }
 
+// NATIVE_TOKEN depends on this function, so don't use it inside this function
+// or it will create a circular dependency.
 export function nativeTokenLabel(denom: string): string {
   // Search IBC asset strings (juno_denom) if denom is in IBC format.
   // Otherwise just check microdenoms.
@@ -18,6 +20,8 @@ export function nativeTokenLabel(denom: string): string {
   )
 }
 
+// NATIVE_TOKEN depends on this function, so don't use it inside this function
+// or it will create a circular dependency.
 export function nativeTokenLogoURI(denom: string): string | undefined {
   if (denom === 'ujuno' || denom === 'ujunox') {
     return '/juno.png'
@@ -31,9 +35,16 @@ export function nativeTokenLogoURI(denom: string): string | undefined {
 }
 
 export function nativeTokenDecimals(denom: string): number | undefined {
-  if (denom === NATIVE_DENOM) {
-    return NATIVE_DECIMALS
+  if (denom === NATIVE_TOKEN.denomOrAddress) {
+    return NATIVE_TOKEN.decimals
   }
+  // Fallback so that the testnet and mainnet know how much the other token has.
+  // Before this fix, this function would return 0 for the native token on the
+  // other chain because neither JUNO nor JUNOX are in the ibcAssets list.
+  if (denom === 'ujuno' || denom === 'ujunox') {
+    return 6
+  }
+
   const asset = denom.startsWith('ibc')
     ? ibcAssets.tokens.find(({ juno_denom }) => juno_denom === denom)
     : ibcAssets.tokens.find(({ denom: d }) => d === denom)
