@@ -22,10 +22,9 @@ export interface ProposalVote<Vote extends unknown = any> {
 export interface ProposalVotesProps<Vote extends unknown = any> {
   votes: LoadingData<ProposalVote<Vote>[]>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
-  VoteDisplay: ComponentType<{ vote: Vote; proposal?: any }>
+  VoteDisplay: ComponentType<{ vote: Vote }>
   // Only allows refreshing when voting is open.
   votingOpen: boolean
-  proposal?: any
 }
 
 export const ProposalVotes = <Vote extends unknown = any>({
@@ -33,7 +32,6 @@ export const ProposalVotes = <Vote extends unknown = any>({
   EntityDisplay,
   VoteDisplay,
   votingOpen,
-  proposal,
 }: ProposalVotesProps<Vote>) => {
   const { t } = useTranslation()
 
@@ -149,7 +147,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
                 />
                 <Tooltip title={rationale || undefined}>
                   <div>
-                    <VoteDisplay proposal={proposal} vote={vote} />
+                    <VoteDisplay vote={vote} />
                   </div>
                 </Tooltip>
                 <p className="caption-text justify-self-right text-right font-mono text-text-body">

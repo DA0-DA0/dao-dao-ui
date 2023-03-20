@@ -1,25 +1,27 @@
+import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import {
-  MultipleChoiceProposal,
-  MultipleChoiceVote,
-} from '@dao-dao/types/contracts/DaoProposalMultiple'
+import { Loader } from '@dao-dao/stateless'
+import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-import { useVoteOptions } from '../../hooks/useVoteOptions'
+import { useLoadingVoteOptions } from '../../hooks/useLoadingVoteOptions'
 import { MULTIPLE_CHOICE_OPTION_COLORS } from '../ui/MultipleChoiceOption'
 
 interface VoteDisplayProps {
   vote: MultipleChoiceVote
-  proposal?: MultipleChoiceProposal
 }
 
-export const VoteDisplay = ({ vote, proposal }: VoteDisplayProps) => {
+export const VoteDisplay = ({ vote }: VoteDisplayProps) => {
   const { t } = useTranslation()
-  const voteOptions = useVoteOptions(proposal!)
-  const voteOption = voteOptions.find(
+  const voteOptions = useLoadingVoteOptions()
+
+  if (voteOptions.loading) {
+    return <Loader fill={false} size={20} />
+  }
+
+  const voteOption = voteOptions.data.find(
     ({ value }) => value.option_id === vote.option_id
   )
-
   if (!voteOption) {
     throw new Error(t('error.loadingData'))
   }
@@ -27,13 +29,9 @@ export const VoteDisplay = ({ vote, proposal }: VoteDisplayProps) => {
   const { label } = voteOption
 
   return (
-    <div className="inline-flex w-full flex-row items-center gap-3 font-sans text-xs font-medium">
+    <div className="inline-flex w-full flex-row items-center font-sans text-xs font-medium">
       <p
-        className={
-          voteOption.style
-            ? 'text-icon-interactive-valid'
-            : 'text-icon-secondary'
-        }
+        className={clsx(!voteOption.color && 'text-icon-secondary')}
         style={{
           color:
             MULTIPLE_CHOICE_OPTION_COLORS[

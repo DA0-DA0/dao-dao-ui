@@ -1,9 +1,10 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
+import { Loader } from '@dao-dao/stateless'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
-import { useVoteOptions } from '../../hooks/useVoteOptions'
+import { useLoadingVoteOptions } from '../../hooks/useLoadingVoteOptions'
 
 interface VoteDisplayProps {
   vote: Vote
@@ -12,9 +13,12 @@ interface VoteDisplayProps {
 export const VoteDisplay = ({ vote }: VoteDisplayProps) => {
   const { t } = useTranslation()
 
-  const voteOptions = useVoteOptions()
-  const voteOption = voteOptions.find(({ value }) => value === vote)
+  const voteOptions = useLoadingVoteOptions()
+  if (voteOptions.loading) {
+    return <Loader fill={false} size={20} />
+  }
 
+  const voteOption = voteOptions.data.find(({ value }) => value === vote)
   if (!voteOption) {
     throw new Error(t('error.loadingData'))
   }

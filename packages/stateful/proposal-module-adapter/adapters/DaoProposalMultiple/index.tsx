@@ -24,9 +24,9 @@ import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
   useLoadingProposalExecutionTxHash,
+  useLoadingVoteOptions,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
-  useVoteOptions,
 } from './hooks'
 import { DaoCreationConfig, NewProposalForm } from './types'
 
@@ -106,7 +106,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       useCastVote,
       useProposalRefreshers,
       useLoadingProposalExecutionTxHash,
-      useVoteOptions,
+      useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
     },
 

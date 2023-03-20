@@ -55,7 +55,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
   hooks: {
     useProposalRefreshers: () => ProposalRefreshers
     useLoadingProposalExecutionTxHash: () => LoadingData<string | undefined>
-    useVoteOptions: (proposal?: any) => ProposalVoteOption<Vote>[]
+    useLoadingVoteOptions: () => LoadingData<ProposalVoteOption<Vote>[]>
     // Return when no wallet connected.
     useLoadingWalletVoteInfo: () =>
       | undefined

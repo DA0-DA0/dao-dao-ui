@@ -58,10 +58,10 @@ import {
   useLoadingDepositInfo,
   useLoadingProposal,
   useLoadingProposalExecutionTxHash,
+  useLoadingVoteOptions,
   useLoadingVotesInfo,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
-  useVoteOptions,
 } from '../hooks'
 import { ProposalWithMetadata, VotesInfo } from '../types'
 
@@ -245,7 +245,7 @@ const InnerProposalStatusAndInfo = ({
               : '',
         })
 
-  const voteOptions = useVoteOptions()
+  const voteOptions = useLoadingVoteOptions()
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
   const executeProposal = (
@@ -372,12 +372,13 @@ const InnerProposalStatusAndInfo = ({
       vote={
         loadingWalletVoteInfo &&
         !loadingWalletVoteInfo.loading &&
-        loadingWalletVoteInfo.data.canVote
+        loadingWalletVoteInfo.data.canVote &&
+        !voteOptions.loading
           ? {
               loading: castingVote,
               currentVote: loadingWalletVoteInfo.data.vote,
               onCastVote: castVote,
-              options: voteOptions,
+              options: voteOptions.data,
             }
           : undefined
       }
