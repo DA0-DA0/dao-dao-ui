@@ -1,7 +1,7 @@
-import { ComponentType } from 'react'
+import { ComponentPropsWithoutRef, ComponentType } from 'react'
 
 export interface IconButtonifierProps {
-  variant: 'primary' | 'secondary' | 'ghost' | 'none'
+  variant: 'primary' | 'primary_inverted' | 'secondary' | 'ghost' | 'none'
   // Custom size requires manual setting of sizes.
   size?: 'default' | 'xl' | 'lg' | 'sm' | 'xs' | 'custom'
   circular?: boolean
@@ -12,3 +12,6 @@ export interface IconButtonifierProps {
   className?: string
   iconClassName?: string
 }
+
+export type IconButtonProps = ComponentPropsWithoutRef<'button'> &
+  IconButtonifierProps

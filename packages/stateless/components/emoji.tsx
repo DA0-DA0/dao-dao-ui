@@ -43,6 +43,14 @@ export const MoneyEmoji = () => (
   <EmojiWrapper emoji="💵" labelI18nKey="emoji.money" />
 )
 
+export const MoneyBagEmoji = () => (
+  <EmojiWrapper emoji="💰" labelI18nKey="emoji.moneyBag" />
+)
+
+export const MoneyWingsEmoji = () => (
+  <EmojiWrapper emoji="💸" labelI18nKey="emoji.moneyWings" />
+)
+
 export const DepositEmoji = () => (
   <EmojiWrapper emoji="📥" labelI18nKey="emoji.deposit" />
 )
@@ -139,4 +147,24 @@ export const WrenchEmoji = () => (
 
 export const FireEmoji = () => (
   <EmojiWrapper emoji="🔥" labelI18nKey="emoji.fire" />
+)
+
+export const LockWithPenEmoji = () => (
+  <EmojiWrapper emoji="🔏" labelI18nKey="emoji.lockWithPen" />
+)
+
+export const BeeEmoji = () => (
+  <EmojiWrapper emoji="🐝" labelI18nKey="emoji.bee" />
+)
+
+export const SuitAndTieEmoji = () => (
+  <EmojiWrapper emoji="👔" labelI18nKey="emoji.suitAndTie" />
+)
+
+export const CycleEmoji = () => (
+  <EmojiWrapper emoji="🔄" labelI18nKey="emoji.cycle" />
+)
+
+export const JoystickEmoji = () => (
+  <EmojiWrapper emoji="🕹️" labelI18nKey="emoji.joystick" />
 )

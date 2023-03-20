@@ -1,7 +1,9 @@
-import { DaoEmoji } from '@dao-dao/stateless'
-import { DurationUnits, VotingModuleAdapter } from '@dao-dao/types'
+import { PeopleAltOutlined } from '@mui/icons-material'
 
-import { ProfileCardMemberInfo } from './components'
+import { DaoEmoji } from '@dao-dao/stateless'
+import { DaoTabId, DurationUnits, VotingModuleAdapter } from '@dao-dao/types'
+
+import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
 import {
   GovernanceConfigurationInput,
   GovernanceConfigurationReview,
@@ -10,10 +12,9 @@ import {
 } from './daoCreation'
 import {
   useActions,
+  useCommonGovernanceTokenInfo,
   useDaoInfoBarItems,
-  useGovernanceTokenInfo,
   useProfileNewProposalCardAddresses,
-  useStakingInfo,
 } from './hooks'
 import { DaoCreationConfig, GovernanceTokenType } from './types'
 
@@ -34,13 +35,22 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> 
         useActions,
         useDaoInfoBarItems,
         useProfileNewProposalCardAddresses,
-        useGovernanceTokenInfo,
-        useStakingInfo,
+        useCommonGovernanceTokenInfo,
       },
 
       // Components
       components: {
         ProfileCardMemberInfo,
+        StakingModal,
+
+        extraTabs: [
+          {
+            id: DaoTabId.Members,
+            labelI18nKey: 'title.members',
+            Component: MembersTab,
+            Icon: PeopleAltOutlined,
+          },
+        ],
       },
     }),
 

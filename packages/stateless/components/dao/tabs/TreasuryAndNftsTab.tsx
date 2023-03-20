@@ -2,14 +2,21 @@ import { Image } from '@mui/icons-material'
 import { ComponentType, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData, NftCardInfo, TokenCardInfo } from '@dao-dao/types'
+import {
+  LoadingData,
+  NftCardInfo,
+  SortFn,
+  TokenCardInfo,
+  TypedOption,
+} from '@dao-dao/types'
 
-import { SortFn, useDropdownSorter } from '../../../hooks'
+import { useButtonPopupSorter } from '../../../hooks'
+import { Button } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
-import { Dropdown, DropdownOption } from '../../inputs/Dropdown'
 import { Loader } from '../../logo/Loader'
 import { ModalProps } from '../../modals/Modal'
 import { NoContent } from '../../NoContent'
+import { ButtonPopup } from '../../popup'
 
 export interface TreasuryAndNftsTabProps<
   T extends TokenCardInfo,
@@ -22,6 +29,7 @@ export interface TreasuryAndNftsTabProps<
   isMember: boolean
   addCollectionHref?: string
   StargazeNftImportModal: ComponentType<Pick<ModalProps, 'onClose'>>
+  FiatDepositModal?: ComponentType<Pick<ModalProps, 'onClose' | 'visible'>>
 }
 
 export const TreasuryAndNftsTab = <
@@ -35,30 +43,50 @@ export const TreasuryAndNftsTab = <
   isMember,
   addCollectionHref,
   StargazeNftImportModal,
+  FiatDepositModal,
 }: TreasuryAndNftsTabProps<T, N>) => {
   const [showImportStargazeNftsModal, setShowImportStargazeNftsModal] =
     useState(false)
 
   const { t } = useTranslation()
 
-  // Sort crowned tokens first.
+  // Sort governance token first.
   const sortedTokens = useMemo(
     () =>
       tokens.loading
         ? []
         : // `sort` mutates, so let's make a copy of the array first.
           [...tokens.data].sort((a, b) =>
-            !!a.crown === !!b.crown ? 0 : a.crown ? -1 : 1
+            !!a.isGovernanceToken === !!b.isGovernanceToken
+              ? 0
+              : a.isGovernanceToken
+              ? -1
+              : 1
           ),
     [tokens]
   )
 
-  const { sortedData: sortedNfts, dropdownProps: sortDropdownProps } =
-    useDropdownSorter(nfts.loading ? [] : nfts.data, sortOptions)
+  const { sortedData: sortedNfts, buttonPopupProps: sortButtonPopupProps } =
+    useButtonPopupSorter({
+      data: nfts.loading ? [] : nfts.data,
+      options: sortOptions,
+    })
+
+  const [showDepositFiat, setShowDepositFiat] = useState(false)
 
   return (
     <>
-      <p className="title-text mb-6 text-text-body">{t('title.treasury')}</p>
+      {/* header min-height of 3.5rem standardized across all tabs */}
+      <div className="flex min-h-[3.5rem] flex-row items-center justify-between pb-6">
+        <p className="title-text text-text-body">{t('title.treasury')}</p>
+
+        {/* Only show if defined, which indicates wallet connected. */}
+        {FiatDepositModal && (
+          <Button onClick={() => setShowDepositFiat(true)} variant="secondary">
+            {t('button.depositFiat')}
+          </Button>
+        )}
+      </div>
 
       <div className="mb-9">
         {tokens.loading || !tokens.data ? (
@@ -76,7 +104,7 @@ export const TreasuryAndNftsTab = <
 
       {nfts.loading || nfts.data.length > 0 ? (
         <>
-          <div className="mb-6 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
+          <div className="mb-6 flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
             <p className="title-text">
               {nfts.loading
                 ? t('title.nfts')
@@ -84,12 +112,8 @@ export const TreasuryAndNftsTab = <
             </p>
 
             {!nfts.loading && nfts.data.length > 0 && (
-              <div className="flex flex-row items-center justify-between gap-4">
-                <p className="primary-text text-text-body">
-                  {t('title.sortBy')}
-                </p>
-
-                <Dropdown {...sortDropdownProps} />
+              <div className="flex grow flex-row justify-end">
+                <ButtonPopup position="left" {...sortButtonPopupProps} />
               </div>
             )}
           </div>
@@ -128,11 +152,18 @@ export const TreasuryAndNftsTab = <
           onClose={() => setShowImportStargazeNftsModal(false)}
         />
       )}
+
+      {FiatDepositModal && (
+        <FiatDepositModal
+          onClose={() => setShowDepositFiat(false)}
+          visible={showDepositFiat}
+        />
+      )}
     </>
   )
 }
 
-const sortOptions: DropdownOption<
+const sortOptions: TypedOption<
   SortFn<Pick<NftCardInfo, 'name' | 'floorPrice'>>
 >[] = [
   {
@@ -145,22 +176,22 @@ const sortOptions: DropdownOption<
     value: (a, b) =>
       b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase()),
   },
-  {
-    label: 'Lowest floor',
-    value: (a, b) =>
-      !a.floorPrice
-        ? 1
-        : !b.floorPrice
-        ? -1
-        : a.floorPrice.amount - b.floorPrice.amount,
-  },
-  {
-    label: 'Highest floor',
-    value: (a, b) =>
-      !a.floorPrice
-        ? 1
-        : !b.floorPrice
-        ? -1
-        : b.floorPrice.amount - a.floorPrice.amount,
-  },
+  // {
+  //   label: 'Lowest floor',
+  //   value: (a, b) =>
+  //     !a.floorPrice
+  //       ? 1
+  //       : !b.floorPrice
+  //       ? -1
+  //       : a.floorPrice.amount - b.floorPrice.amount,
+  // },
+  // {
+  //   label: 'Highest floor',
+  //   value: (a, b) =>
+  //     !a.floorPrice
+  //       ? 1
+  //       : !b.floorPrice
+  //       ? -1
+  //       : b.floorPrice.amount - a.floorPrice.amount,
+  // },
 ]

@@ -8,17 +8,16 @@ import {
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
-import { UseStakingInfoOptions, UseStakingInfoResponse } from '@dao-dao/types'
-import { claimAvailable, loadableToLoadingData } from '@dao-dao/utils'
+import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
+import { claimAvailable } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 
 export const useStakingInfo = ({
   fetchClaims = false,
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
-  fetchLoadingWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
@@ -53,14 +52,20 @@ export const useStakingInfo = ({
   const _setClaimsId = useSetRecoilState(refreshClaimsIdAtom(walletAddress))
   const refreshClaims = () => _setClaimsId((id) => id + 1)
 
-  const claims = useRecoilValue(
+  const loadingClaims = useCachedLoading(
     fetchClaims && walletAddress
       ? DaoVotingNativeStakedSelectors.claimsSelector({
           contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
         })
-      : constSelector(undefined)
-  )?.claims
+      : constSelector(undefined),
+    undefined
+  )
+  const claims = loadingClaims.loading
+    ? []
+    : !loadingClaims.data
+    ? undefined
+    : loadingClaims.data.claims
 
   const claimsPending = blockHeight
     ? claims?.filter((c) => !claimAvailable(c, blockHeight))
@@ -74,33 +79,24 @@ export const useStakingInfo = ({
   )
 
   // Total staked value
-  const totalStakedValue = useRecoilValue(
+  const loadingTotalStakedValue = useCachedLoading(
     fetchTotalStakedValue
       ? DaoVotingNativeStakedSelectors.totalPowerAtHeightSelector({
           contractAddress: votingModuleAddress,
           params: [{}],
         })
-      : constSelector(undefined)
-  )?.power
+      : constSelector(undefined),
+    undefined
+  )
 
   // Wallet staked value
-  const walletStakedValue = useRecoilValue(
+  const loadingWalletStakedValue = useCachedLoading(
     fetchWalletStakedValue && walletAddress
       ? DaoVotingNativeStakedSelectors.votingPowerAtHeightSelector({
           contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
         })
-      : constSelector(undefined)
-  )?.power
-  const loadingWalletStakedValue = loadableToLoadingData(
-    useCachedLoadable(
-      fetchLoadingWalletStakedValue && walletAddress
-        ? DaoVotingNativeStakedSelectors.votingPowerAtHeightSelector({
-            contractAddress: votingModuleAddress,
-            params: [{ address: walletAddress }],
-          })
-        : constSelector(undefined)
-    ),
+      : constSelector(undefined),
     undefined
   )
 
@@ -117,18 +113,22 @@ export const useStakingInfo = ({
     claimsAvailable,
     sumClaimsAvailable,
     // Total staked value
-    totalStakedValue: totalStakedValue ? Number(totalStakedValue) : undefined,
+    loadingTotalStakedValue: loadingTotalStakedValue.loading
+      ? { loading: true }
+      : !loadingTotalStakedValue.data
+      ? undefined
+      : {
+          loading: false,
+          data: Number(loadingTotalStakedValue.data.power),
+        },
     // Wallet staked value
-    walletStakedValue: walletStakedValue
-      ? Number(walletStakedValue)
-      : undefined,
     loadingWalletStakedValue: loadingWalletStakedValue.loading
       ? { loading: true }
       : !loadingWalletStakedValue.data
       ? undefined
       : {
           loading: false,
-          data: Number(loadingWalletStakedValue.data.value),
+          data: Number(loadingWalletStakedValue.data.power),
         },
   }
 }

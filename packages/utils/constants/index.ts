@@ -1,3 +1,7 @@
+import { GenericToken, TokenType } from '@dao-dao/types'
+
+import { getFallbackImage } from '../getFallbackImage'
+import { nativeTokenLabel, nativeTokenLogoURI } from '../ibc'
 import { ChainPrefixIdMaps } from './chainPrefixIdMaps'
 import { CodeIdConfigs } from './codeIdConfigs'
 
@@ -12,16 +16,26 @@ export const SITE_URL =
 
 export const SITE_IMAGE = process.env.NEXT_PUBLIC_SITE_IMAGE as string
 export const WC_ICON_PATH = process.env.NEXT_PUBLIC_WC_ICON_PATH as string
-export const LEGACY_URL_PREFIX = process.env
-  .NEXT_PUBLIC_LEGACY_URL_PREFIX as string
+export const SDA_URL_PREFIX = process.env.NEXT_PUBLIC_SDA_URL_PREFIX as string
+export const DAPP_URL_PREFIX = process.env.NEXT_PUBLIC_DAPP_URL_PREFIX as string
 export const CHAIN_GOV_PROPOSAL_URL_TEMPLATE = process.env
   .NEXT_PUBLIC_CHAIN_GOV_PROPOSAL_URL_TEMPLATE as string
+export const LEGACY_URL_PREFIX = process.env
+  .NEXT_PUBLIC_LEGACY_URL_PREFIX as string
 
 export const NATIVE_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_NATIVE_DECIMALS || '6',
   10
 )
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
+export const NATIVE_TOKEN: GenericToken = Object.freeze({
+  type: TokenType.Native,
+  denomOrAddress: NATIVE_DENOM,
+  symbol: nativeTokenLabel(NATIVE_DENOM),
+  decimals: NATIVE_DECIMALS,
+  imageUrl: nativeTokenLogoURI(NATIVE_DENOM) || getFallbackImage(NATIVE_DENOM),
+})
+
 export const USDC_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_USDC_DECIMALS || '6',
   10
@@ -40,13 +54,17 @@ export const CHAIN_REST_ENDPOINT = process.env
   .NEXT_PUBLIC_CHAIN_REST_ENDPOINT as string
 export const CHAIN_BECH32_PREFIX = process.env
   .NEXT_PUBLIC_CHAIN_BECH32_PREFIX as string
+export const DAO_DAO_DAO_ADDRESS = process.env
+  .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
+
+export const STARGAZE_TESTNET_CHAIN_ID = 'elgafar-1'
+export const STARGAZE_TESTNET_RPC_ENDPOINT =
+  'https://rpc.elgafar-1.stargaze-apis.com:443'
+export const STARGAZE_TESTNET_REST_ENDPOINT =
+  'https://rest.elgafar-1.stargaze-apis.com:443'
 
 export const MICRO_STAKING_DENOM = process.env
   .NEXT_PUBLIC_STAKING_DENOM as string
-
-export const USDC_SWAP_ADDRESS = process.env
-  .NEXT_PUBLIC_USDC_SWAP_ADDRESS as string
-export const POOLS_LIST_URL = process.env.NEXT_PUBLIC_POOLS_LIST_URL as string
 
 export const CI = process.env.CI === 'true'
 
@@ -60,8 +78,8 @@ export const CODE_ID_CONFIG = CodeIdConfigs[CHAIN_ID]!
 export const CHAIN_PREFIX_ID_MAP =
   ChainPrefixIdMaps[MAINNET ? 'mainnet' : 'testnet']
 
-export const V1_FACTORY_CONTRACT_ADDRESS = process.env
-  .NEXT_PUBLIC_V1_FACTORY_CONTRACT_ADDRESS as string
+export const FACTORY_CONTRACT_ADDRESS = process.env
+  .NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as string
 
 // DAO name min/max and description max defined in core.
 export const MIN_DAO_NAME_LENGTH = parseInt(
@@ -70,10 +88,6 @@ export const MIN_DAO_NAME_LENGTH = parseInt(
 )
 export const MAX_DAO_NAME_LENGTH = parseInt(
   process.env.NEXT_PUBLIC_MAX_DAO_NAME_LENGTH || '50',
-  10
-)
-export const MAX_DAO_DESCRIPTION_LENGTH = parseInt(
-  process.env.NEXT_PUBLIC_MAX_DAO_DESCRIPTION_LENGTH || '130',
   10
 )
 
@@ -118,7 +132,7 @@ export const STARGAZE_URL_BASE = process.env
 export const PFPK_API_BASE = process.env.NEXT_PUBLIC_PFPK_API_BASE as string
 
 // Indexer
-export const INDEXER_API_KEY = process.env.INDEXER_API_KEY
+export const INDEXER_URL = process.env.NEXT_PUBLIC_INDEXER_URL
 
 // Search
 export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string
@@ -137,7 +151,7 @@ export const DISABLED_ACTIONS = (
   process.env.NEXT_PUBLIC_DISABLED_ACTIONS || ''
 ).split(',')
 
-// Discord notifier
+// Discord notifier (https://github.com/DA0-DA0/discord-notifier-cf-worker)
 export const DISCORD_NOTIFIER_CLIENT_ID = process.env
   .NEXT_PUBLIC_DISCORD_NOTIFIER_CLIENT_ID as string
 export const DISCORD_NOTIFIER_REDIRECT_URI = process.env
@@ -146,6 +160,44 @@ export const DISCORD_NOTIFIER_API_BASE = process.env
   .NEXT_PUBLIC_DISCORD_NOTIFIER_API_BASE as string
 export const DISCORD_NOTIFIER_SIGNATURE_TYPE = 'Discord Notifier'
 
-// Following API
+// Following API (https://github.com/DA0-DA0/following-daos-cf-worker)
 export const FOLLOWING_DAOS_API_BASE = process.env
   .NEXT_PUBLIC_FOLLOWING_DAOS_API_BASE as string
+
+// KVPK API (https://github.com/DA0-DA0/kvpk)
+export const KVPK_API_BASE = process.env.NEXT_PUBLIC_KVPK_API_BASE as string
+
+// The key for the item in the DAO core contract that contains the payroll
+// config.
+export const DAO_CORE_PAYROLL_CONFIG_ITEM_KEY = 'payroll'
+
+// Single DAO Mode
+export const SINGLE_DAO_MODE =
+  process.env.NEXT_PUBLIC_SINGLE_DAO_MODE === 'true'
+
+// Kado API (https://docs.kado.money)
+export const KADO_API_KEY = process.env.NEXT_PUBLIC_KADO_API_KEY as string
+
+// WYND
+export const WYND_MULTI_HOP_CONTRACT = process.env
+  .NEXT_PUBLIC_WYND_MULTI_HOP_CONTRACT as string
+export const WYND_API_BASE = process.env.NEXT_PUBLIC_WYND_API_BASE as string
+export const WYND_REFERRAL_COMMISSION = Number(
+  process.env.NEXT_PUBLIC_WYND_REFERRAL_COMMISSION || '0.01'
+)
+
+// WebSockets API
+export const WEB_SOCKET_PUSHER_APP_KEY = process.env
+  .NEXT_PUBLIC_WEB_SOCKET_PUSHER_APP_KEY as string
+export const WEB_SOCKET_PUSHER_HOST = process.env
+  .NEXT_PUBLIC_WEB_SOCKET_PUSHER_HOST as string
+export const WEB_SOCKET_PUSHER_PORT = Number(
+  process.env.NEXT_PUBLIC_WEB_SOCKET_PUSHER_PORT || '6001'
+)
+
+// Me balances page
+export const HIDDEN_BALANCE_PREFIX = 'hiddenBalance:'
+
+// Supported NFT video extensions. If an NFT image is a video, we'll try to
+// render a video player instead of an image.
+export const NFT_VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'avi']

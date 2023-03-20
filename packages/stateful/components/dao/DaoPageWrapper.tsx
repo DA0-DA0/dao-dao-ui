@@ -3,23 +3,20 @@ import { useRouter } from 'next/router'
 import { PropsWithChildren, useEffect } from 'react'
 
 import {
-  DaoInfoContext,
   DaoNotFound,
   ErrorPage500,
   PageLoader,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
-  ActionOptionsContextType,
   CommonProposalInfo,
   DaoInfo,
   DaoInfoSerializable,
 } from '@dao-dao/types'
+import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
-import { ActionsProvider } from '../../actions'
-import { VotingModuleAdapterProvider } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { Trans } from '../Trans'
+import { DaoProviders } from './DaoProviders'
 
 export type DaoPageWrapperProps = PropsWithChildren<{
   url?: string | null
@@ -28,6 +25,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
   accentColor?: string | null
   serializedInfo?: DaoInfoSerializable
   error?: string
+  setIcon?: (icon: string | undefined) => void
 }>
 
 export interface DaoProposalPageWrapperProps extends DaoPageWrapperProps {
@@ -41,8 +39,8 @@ export const DaoPageWrapper = ({
   accentColor,
   serializedInfo,
   error,
+  setIcon,
   children,
-  ...innerProps
 }: DaoPageWrapperProps) => {
   const { isReady, isFallback } = useRouter()
   const { setAccentColor, theme } = useThemeContext()
@@ -77,6 +75,17 @@ export const DaoPageWrapper = ({
       : undefined,
   }
 
+  // Set icon for the page from info if setIcon is present.
+  useEffect(() => {
+    if (setIcon) {
+      setIcon(
+        info?.imageUrl
+          ? transformIpfsUrlToHttpsIfNecessary(info.imageUrl)
+          : undefined
+      )
+    }
+  }, [setIcon, info?.imageUrl])
+
   return (
     <>
       <NextSeo
@@ -86,7 +95,11 @@ export const DaoPageWrapper = ({
           type: 'website',
           title,
           description,
-          ...(!!info?.imageUrl && { images: [{ url: info.imageUrl }] }),
+          ...(!!info?.imageUrl && {
+            images: [
+              { url: transformIpfsUrlToHttpsIfNecessary(info.imageUrl) },
+            ],
+          }),
         }}
         title={title}
       />
@@ -94,55 +107,18 @@ export const DaoPageWrapper = ({
       {/* On fallback page (waiting for static props), `info` is not yet present. Let's just display a loader until `info` is loaded. We can't access translations until static props are loaded anyways. */}
       <SuspenseLoader fallback={<PageLoader />}>
         {info ? (
-          <InnerDaoPageWrapper info={info} {...innerProps}>
+          <DaoProviders info={info}>
             {/* Suspend children to prevent unmounting and remounting InnerDaoPageWrapper and the context providers inside it every time something needs to suspend (which causes a lot of flickering loading states). */}
             <SuspenseLoader fallback={<PageLoader />}>
               {children}
             </SuspenseLoader>
-          </InnerDaoPageWrapper>
+          </DaoProviders>
         ) : error ? (
           <ErrorPage500 error={error} />
         ) : (
-          <DaoNotFound Trans={Trans} />
+          <DaoNotFound />
         )}
       </SuspenseLoader>
     </>
   )
 }
-
-interface InnerDaoPageWrapperProps
-  extends Pick<DaoPageWrapperProps, 'children'> {
-  info: DaoInfo
-}
-
-const InnerDaoPageWrapper = ({ info, children }: InnerDaoPageWrapperProps) => (
-  // Add a unique key here to tell React to re-render everything when the
-  // `coreAddress` is changed, since for some insane reason, Next.js does not
-  // reset state when navigating between dynamic rotues. Even though the
-  // `info` value passed below changes, somehow no re-render occurs... unless
-  // the `key` prop is unique. See the issue below for more people compaining
-  // about this to no avail. https://github.com/vercel/next.js/issues/9992
-  <DaoInfoContext.Provider key={info.coreAddress} value={info}>
-    <VotingModuleAdapterProvider
-      contractName={info.votingModuleContractName}
-      options={{
-        votingModuleAddress: info.votingModuleAddress,
-        coreAddress: info.coreAddress,
-      }}
-    >
-      <ActionsProvider
-        options={{
-          chainId: info.chainId,
-          bech32Prefix: info.bech32Prefix,
-          address: info.coreAddress,
-          context: {
-            type: ActionOptionsContextType.Dao,
-            info,
-          },
-        }}
-      >
-        {children}
-      </ActionsProvider>
-    </VotingModuleAdapterProvider>
-  </DaoInfoContext.Provider>
-)

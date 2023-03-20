@@ -6,11 +6,8 @@ import toast from 'react-hot-toast'
 import { waitForAll } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
-import {
-  loadableToLoadingData,
-  secp256k1PublicKeyToBech32Address,
-} from '@dao-dao/utils'
+import { useCachedLoading, useDaoInfoContext } from '@dao-dao/stateless'
+import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
 
 import { IconButtonLink } from '../../../../../components'
 import { useMembership } from '../../../../../hooks'
@@ -24,50 +21,44 @@ import { OpenSurveySection } from './OpenSurveySection'
 export const PayrollTab = () => {
   const { chainId, coreAddress, bech32Prefix } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
-    useWallet(chainId)
+    useWallet()
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,
   })
 
-  const loadingStatus = loadableToLoadingData(
-    useCachedLoadable(
-      statusSelector({
-        daoAddress: coreAddress,
-        walletPublicKey: walletPublicKey?.hex ?? '_',
-      })
-    ),
+  const loadingStatus = useCachedLoading(
+    statusSelector({
+      daoAddress: coreAddress,
+      walletPublicKey: walletPublicKey?.hex ?? '_',
+    }),
     undefined
   )
-  const loadingCompletedSurveys = loadableToLoadingData(
-    useCachedLoadable(
-      listCompletedSurveysSelector({
-        daoAddress: coreAddress,
-      })
-    ),
+  const loadingCompletedSurveys = useCachedLoading(
+    listCompletedSurveysSelector({
+      daoAddress: coreAddress,
+    }),
     []
   )
   // Get voting power at time of each completed survey creation to determine if
   // we can download the CSV or not.
-  const loadingMembershipDuringCompletedSurveys = loadableToLoadingData(
-    useCachedLoadable(
-      loadingCompletedSurveys.loading || !walletAddress
-        ? undefined
-        : waitForAll(
-            loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
-              DaoCoreV2Selectors.votingPowerAtHeightSelector({
-                contractAddress: coreAddress,
-                chainId,
-                params: [
-                  {
-                    address: walletAddress,
-                    height: createdAtBlockHeight,
-                  },
-                ],
-              })
-            )
+  const loadingMembershipDuringCompletedSurveys = useCachedLoading(
+    loadingCompletedSurveys.loading || !walletAddress
+      ? undefined
+      : waitForAll(
+          loadingCompletedSurveys.data.map(({ createdAtBlockHeight }) =>
+            DaoCoreV2Selectors.votingPowerAtHeightSelector({
+              contractAddress: coreAddress,
+              chainId,
+              params: [
+                {
+                  address: walletAddress,
+                  height: createdAtBlockHeight,
+                },
+              ],
+            })
           )
-    ),
+        ),
     []
   )
 

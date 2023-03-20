@@ -1,7 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { RecoilValue, constSelector, useRecoilValueLoadable } from 'recoil'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
-import { CachedLoadable } from '@dao-dao/types'
+import {
+  CachedLoadable,
+  LoadingData,
+  LoadingDataWithError,
+} from '@dao-dao/types'
+import {
+  loadableToLoadingData,
+  loadableToLoadingDataWithError,
+} from '@dao-dao/utils'
 
 // Keep cache of previously loaded data until next data is ready. Essentially,
 // memoize a loadable to prevent UI flickering. If recoilValue is undefined,
@@ -65,23 +74,76 @@ export const useCachedLoadable = <T extends unknown>(
     }
   }, [loadable, loadableLoadingOrNotReady, recoilValue])
 
-  return initialLoading ||
-    !recoilValue ||
-    // Keep loading until contents has first value set. However if an error is
-    // present, override and return the error.
-    (loadable.state !== 'hasError' && !contentsHasValue)
-    ? {
-        state: 'loading',
-        contents: undefined,
-      }
-    : loadable.state === 'hasError'
-    ? {
-        state: 'hasError',
-        contents: loadable.contents,
-      }
-    : {
-        state: 'hasValue',
-        contents: contents as T,
-        updating,
-      }
+  // Memoize the loadable so it can be used in `useEffect` dependencies to
+  // prevent causing infinite loops. If this is not memoized, it will change on
+  // every render, which may cause infinite loops if the `useEffect` sets some
+  // state that causes additional re-renders.
+  const cachedLoadable = useMemo(
+    (): CachedLoadable<T> =>
+      initialLoading ||
+      !recoilValue ||
+      // Keep loading until contents has first value set. However if an error is
+      // present, override and return the error.
+      (loadable.state !== 'hasError' && !contentsHasValue)
+        ? {
+            state: 'loading',
+            contents: undefined,
+          }
+        : loadable.state === 'hasError'
+        ? {
+            state: 'hasError',
+            contents: loadable.contents,
+          }
+        : {
+            state: 'hasValue',
+            contents: contents as T,
+            updating,
+          },
+    [
+      contents,
+      contentsHasValue,
+      initialLoading,
+      loadable.contents,
+      loadable.state,
+      recoilValue,
+      updating,
+    ]
+  )
+
+  return cachedLoadable
+}
+
+// The following hooks are convenience hooks that use the above hook to
+// cache loaded data and then convert the loadable to our convenience loading
+// types, which are more useful in UI components. Read why they are useful
+// in the comment above the LoadingData types.
+
+// Convert to LoadingDataWithError for convenience, memoized.
+export const useCachedLoadingWithError = <T extends unknown>(
+  recoilValue: RecoilValue<T> | undefined
+): LoadingDataWithError<T> => {
+  const loadable = useCachedLoadable(recoilValue)
+  return useMemo(() => loadableToLoadingDataWithError(loadable), [loadable])
+}
+
+// Convert to LoadingData for convenience, memoized.
+export const useCachedLoading = <T extends unknown>(
+  recoilValue: RecoilValue<T> | undefined,
+  defaultValue: T,
+  onError?: (error: any) => void
+): LoadingData<T> => {
+  const loadable = useCachedLoadable(recoilValue)
+
+  const onErrorRef = useRef(onError)
+  onErrorRef.current = onError
+
+  // Use deep compare to prevent memoize on every re-render if an object is
+  // passed as the default value.
+  const memoizedDefaultValue = useDeepCompareMemoize(defaultValue)
+
+  return useMemo(
+    () =>
+      loadableToLoadingData(loadable, memoizedDefaultValue, onErrorRef.current),
+    [loadable, memoizedDefaultValue]
+  )
 }

@@ -20,6 +20,7 @@ export const VotingDurationInput = ({
   data: { votingDuration },
   register,
   setValue,
+  watch,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
@@ -30,19 +31,9 @@ export const VotingDurationInput = ({
         containerClassName="grow"
         error={errors?.votingDuration?.value}
         fieldName="votingDuration.value"
-        onMinus={() =>
-          setValue(
-            'votingDuration.value',
-            Math.max(votingDuration.value - 1, 1)
-          )
-        }
-        onPlus={() =>
-          setValue(
-            'votingDuration.value',
-            Math.max(votingDuration.value + 1, 1)
-          )
-        }
+        min={1}
         register={register}
+        setValue={setValue}
         sizing="sm"
         step={1}
         validation={[
@@ -55,6 +46,7 @@ export const VotingDurationInput = ({
             value >= 60 ||
             'Cannot be shorter than 60 seconds.',
         ]}
+        watch={watch}
       />
 
       <SelectInput

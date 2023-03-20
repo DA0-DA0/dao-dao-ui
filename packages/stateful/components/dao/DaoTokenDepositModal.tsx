@@ -13,37 +13,31 @@ import {
 import {
   TokenDepositModal,
   TokenDepositModalProps,
-  useCachedLoadable,
+  useCachedLoading,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  loadableToLoadingData,
   processError,
 } from '@dao-dao/utils'
 
 import { Cw20BaseHooks, useWalletInfo } from '../../hooks'
+import { ConnectWallet } from '../ConnectWallet'
 
-export type DaoTokenDepositModalProps = Omit<
+export type DaoTokenDepositModalProps = Pick<
   TokenDepositModalProps,
-  'loadingBalance' | 'onDeposit' | 'loading' | 'amount' | 'setAmount'
-> & {
-  tokenType: 'native' | 'cw20'
-  tokenDenomOrAddress: string
-}
+  'token' | 'onClose' | 'visible'
+>
 
 export const DaoTokenDepositModal = ({
-  tokenType,
-  tokenDenomOrAddress,
+  token,
   onClose,
-  tokenDecimals,
-  tokenSymbol,
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
-  const { address, signingCosmWasmClient } = useWallet()
+  const { connected, address, signingCosmWasmClient } = useWallet()
   const { refreshBalances: refreshWalletBalances } = useWalletInfo()
 
   const setRefreshDaoBalancesId = useSetRecoilState(
@@ -54,33 +48,31 @@ export const DaoTokenDepositModal = ({
     [setRefreshDaoBalancesId]
   )
 
-  const loadingBalance = loadableToLoadingData(
-    useCachedLoadable(
-      !address
-        ? undefined
-        : tokenType === 'native'
-        ? nativeDenomBalanceWithTimestampSelector({
-            walletAddress: address,
-            chainId,
-            denom: tokenDenomOrAddress,
-          })
-        : Cw20BaseSelectors.balanceWithTimestampSelector({
-            contractAddress: tokenDenomOrAddress,
-            chainId,
-            params: [{ address }],
-          })
-    ),
+  const loadingBalance = useCachedLoading(
+    !address
+      ? undefined
+      : token.type === 'native'
+      ? nativeDenomBalanceWithTimestampSelector({
+          walletAddress: address,
+          chainId,
+          denom: token.denomOrAddress,
+        })
+      : Cw20BaseSelectors.balanceWithTimestampSelector({
+          contractAddress: token.denomOrAddress,
+          chainId,
+          params: [{ address }],
+        }),
     {
       amount: 0,
       timestamp: new Date(),
     }
   )
 
-  const [amount, setAmount] = useState(1)
+  const [amount, setAmount] = useState(0)
   const [loading, setLoading] = useState(false)
 
   const transferCw20 = Cw20BaseHooks.useTransfer({
-    contractAddress: tokenType === 'cw20' ? tokenDenomOrAddress : '',
+    contractAddress: token.type === 'cw20' ? token.denomOrAddress : '',
     sender: address ?? '',
   })
 
@@ -95,17 +87,17 @@ export const DaoTokenDepositModal = ({
       try {
         const microAmount = convertDenomToMicroDenomWithDecimals(
           amount,
-          tokenDecimals
+          token.decimals
         ).toString()
 
-        if (tokenType === 'native') {
+        if (token.type === 'native') {
           await signingCosmWasmClient.sendTokens(
             address,
             coreAddress,
-            coins(microAmount, tokenDenomOrAddress),
+            coins(microAmount, token.denomOrAddress),
             'auto'
           )
-        } else if (tokenType === 'cw20') {
+        } else if (token.type === 'cw20') {
           await transferCw20({
             amount: microAmount,
             recipient: coreAddress,
@@ -118,9 +110,9 @@ export const DaoTokenDepositModal = ({
         toast.success(
           t('success.depositedTokenIntoDao', {
             amount: amount.toLocaleString(undefined, {
-              maximumFractionDigits: tokenDecimals,
+              maximumFractionDigits: token.decimals,
             }),
-            tokenSymbol,
+            tokenSymbol: token.symbol,
             daoName,
           })
         )
@@ -145,17 +137,16 @@ export const DaoTokenDepositModal = ({
       setAmount,
       signingCosmWasmClient,
       t,
-      tokenDecimals,
-      tokenDenomOrAddress,
-      tokenSymbol,
-      tokenType,
+      token,
       transferCw20,
     ]
   )
 
   return (
     <TokenDepositModal
+      ConnectWallet={ConnectWallet}
       amount={amount}
+      connected={connected}
       loading={loading}
       loadingBalance={
         loadingBalance.loading
@@ -165,7 +156,7 @@ export const DaoTokenDepositModal = ({
               data: {
                 amount: convertMicroDenomToDenomWithDecimals(
                   loadingBalance.data.amount,
-                  tokenDecimals
+                  token.decimals
                 ),
                 timestamp: loadingBalance.data.timestamp,
               },
@@ -174,8 +165,8 @@ export const DaoTokenDepositModal = ({
       onClose={onClose}
       onDeposit={onDeposit}
       setAmount={setAmount}
-      tokenDecimals={tokenDecimals}
-      tokenSymbol={tokenSymbol}
+      token={token}
+      warning={t('info.depositTokenWarning')}
       {...props}
     />
   )

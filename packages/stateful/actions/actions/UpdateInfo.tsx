@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { InfoEmoji } from '@dao-dao/stateless'
-import { ActionMaker, ActionOptionsContextType } from '@dao-dao/types'
+import { ActionContextType, ActionMaker } from '@dao-dao/types'
 import {
   CoreActionKey,
   UseDecodedCosmosMsg,
@@ -67,7 +67,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
   context,
 }) => {
   // Only DAOs.
-  if (context.type !== ActionOptionsContextType.Dao) {
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 

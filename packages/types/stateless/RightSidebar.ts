@@ -1,8 +1,7 @@
-import { ReactNode, RefCallback } from 'react'
+import { ReactNode } from 'react'
 
 export interface RightSidebarProps {
   wallet: ReactNode
-  setContentRef: RefCallback<HTMLDivElement>
 }
 
 export interface RightSidebarContentProps {

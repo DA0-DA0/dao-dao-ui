@@ -6,12 +6,12 @@ import {
   InboxOutlined,
 } from '@mui/icons-material'
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { navigatingToHrefAtom } from '@dao-dao/state'
+import { useNavHelpers } from '@dao-dao/stateless'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,
@@ -26,9 +26,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
 }> = ({ dao: { chainId = CHAIN_ID, coreAddress, name, imageUrl } }) => {
   const useSections = () => {
     const { t } = useTranslation()
-    const router = useRouter()
+    const { getDaoPath, getDaoProposalPath, router } = useNavHelpers()
 
-    const { status } = useWallet(chainId)
+    const { status } = useWallet()
     const { isMember } = useMembership({
       coreAddress,
       chainId,
@@ -47,10 +47,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
 
     const [navigatingToHref, setNavigatingToHref] =
       useRecoilState(navigatingToHrefAtom)
-    const daoPageHref = `${getUrlBaseForChainId(chainId)}/dao/${coreAddress}`
-    const createProposalHref = `${getUrlBaseForChainId(
-      chainId
-    )}/dao/${coreAddress}/proposals/create`
+    const daoPageHref = getUrlBaseForChainId(chainId) + getDaoPath(coreAddress)
+    const createProposalHref =
+      getUrlBaseForChainId(chainId) + getDaoProposalPath(coreAddress, 'create')
 
     // Pre-fetch routes.
     useEffect(() => {

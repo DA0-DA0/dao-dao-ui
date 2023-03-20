@@ -8,13 +8,18 @@ import {
 } from '@dao-dao/types/stateless/RightSidebar'
 
 import { IconButton } from '../icon_buttons'
-import { useAppLayoutContext } from './AppLayoutContext'
+import { useAppContext } from './AppContext'
 
 export * from '@dao-dao/types/stateless/RightSidebar'
 
-export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
-  const { enabled: responsiveEnabled, toggle: toggleResponsive } =
-    useAppLayoutContext().responsiveRightSidebar
+export const RightSidebar = ({ wallet }: RightSidebarProps) => {
+  const {
+    setRightSidebarRef,
+    responsiveRightSidebar: {
+      enabled: responsiveEnabled,
+      toggle: toggleResponsive,
+    },
+  } = useAppContext()
 
   return (
     <>
@@ -54,55 +59,39 @@ export const RightSidebar = ({ wallet, setContentRef }: RightSidebarProps) => {
 
         <div className="mt-1">
           {/* Content gets inserted here when the portal <RightSidebarContent> below is used. */}
-          <div ref={setContentRef}></div>
+          <div ref={setRightSidebarRef}></div>
         </div>
       </div>
     </>
   )
 }
 
-// This is a function that generates a function component, used in pages to
-// render content in the right sidebar (which is located in a separate React
-// tree due to the nature of `AppLayout` managing the layout of the navigation
-// bar, main page content, and right sidebar). This function uses a reference to
-// the container `div` (seen above with property `ref={setContentRef}`) and
-// provides a function component that will funnel its `children` into a React
-// portal (https://reactjs.org/docs/portals.html). More specifically,
-// `AppLayout` passes a ref callback to the `RightSidebar` component defined
-// above. In this callback, `AppLayout` calls this maker function and stores the
-// result (the `RightSidebarContent` function component) in a `useState` hook.
-// The `useState` hook is initialized to the result of this maker function with
-// an argument of `null`, which safely renders nothing before the ref callback
-// executes (letting the pages use consistent syntax and removing the need to
-// listen for any state/event updates). This state value is passed into the
-// `AppLayoutContext.Provider` so that descendants of the context provider (such
-// as page components) can retrieve the `RightSidebarContent` component via
-// `useAppLayoutContext` in `AppLayoutContext.tsx` and specify what renders in
-// the sidebar. When the `useState` hook is updated with the result of this
-// maker function called with a valid container element reference (which occurs
-// when the container `div` above renders), the `RightSidebarContent` value
-// located in the `useState` hook in `AppLayout` and retrieved via the context
-// hook in pages is updated with a component that is able to create the portal,
-// and the page re-renders, displaying the content. The API for a page is as
-// simple as:
+// This is a portal that teleports content, used in pages to render content in
+// the right sidebar (which is located in a separate React tree due to the
+// nature of `DappLayout`/`SdaLayout` managing the layout of the navigation bar,
+// main page content, and right sidebar). This component uses a reference to the
+// container `div` (seen above with property `ref={setRightSidebarRef}`) and
+// provides a component that will funnel its `children` into a React portal
+// (https://reactjs.org/docs/portals.html). `AppContext` provides a ref which
+// the `RightSidebar` component above uses and the `RightSidebarContent` below
+// uses. This ref is accessible via the `useAppContext` hook so that descendants
+// of the context provider (such as page components) can use the
+// `RightSidebarContent` component below and specify what renders in the
+// sidebar. The API for a page is as simple as:
 //
-// export const Page = () => { const { RightSidebarContent } =
-//   useAppLayoutContext()
+// export const Page = () => (
+//   <>
+//     <RightSidebarContent>
+//       <ProfileCard title="@Modern-Edamame" />
+//     </RightSidebarContent>
 
-//   return (
-//     <>
-//       <RightSidebarContent>
-//         <ProfileCard title="@Modern-Edamame" />
-//       </RightSidebarContent>
-
-//       {/* ... Page content here ... */}
-//     </>
-//   )
-// }
+//     {/* ... Page content here ... */}
+//   </>
+// )
 //
 // See https://malcolmkee.com/blog/portal-to-subtree/ for an example using
 // portals to render components across subtrees with similar syntax.
-export const makeRightSidebarContent = (container: HTMLDivElement | null) =>
-  function RightSidebarContent({ children }: RightSidebarContentProps) {
-    return container ? createPortal(children, container) : null
-  }
+export const RightSidebarContent = ({ children }: RightSidebarContentProps) => {
+  const container = useAppContext().rightSidebarRef
+  return container.current ? createPortal(children, container.current) : null
+}

@@ -4,20 +4,19 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   Cw20BaseSelectors,
   DaoVotingCw20StakedSelectors,
-  usdcPerMacroTokenSelector,
+  wyndUsdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoading } from '@dao-dao/stateless'
+import { TokenType } from '@dao-dao/types'
+
+import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
   UseGovernanceTokenInfoOptions,
   UseGovernanceTokenInfoResponse,
-} from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
-
-import { useVotingModuleAdapterOptions } from '../../../react/context'
+} from '../types'
 
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
-  fetchLoadingWalletBalance = false,
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
@@ -47,53 +46,48 @@ export const useGovernanceTokenInfo = ({
   /// Optional
 
   // Wallet balance
-  const walletBalance = useRecoilValue(
+  const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? Cw20BaseSelectors.balanceSelector({
           contractAddress: governanceTokenAddress,
           params: [{ address: walletAddress }],
         })
-      : constSelector(undefined)
-  )?.balance
-  const loadingWalletBalance = loadableToLoadingData(
-    useCachedLoadable(
-      fetchLoadingWalletBalance && walletAddress
-        ? Cw20BaseSelectors.balanceSelector({
-            contractAddress: governanceTokenAddress,
-            params: [{ address: walletAddress }],
-          })
-        : constSelector(undefined)
-    ),
+      : constSelector(undefined),
     undefined
   )
 
   // Treasury balance
-  const treasuryBalance = useRecoilValue(
+  const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? Cw20BaseSelectors.balanceSelector({
           contractAddress: governanceTokenAddress,
           params: [{ address: coreAddress }],
         })
-      : constSelector(undefined)
-  )?.balance
+      : constSelector(undefined),
+    undefined
+  )
 
   // Price info
-  const price = useRecoilValue(
+  const loadingPrice = useCachedLoading(
     fetchUsdcPrice
-      ? usdcPerMacroTokenSelector({
-          denom: governanceTokenAddress,
-          decimals: governanceTokenInfo.decimals,
-        })
-      : constSelector(undefined)
-  )?.amount
+      ? wyndUsdPriceSelector(governanceTokenAddress)
+      : constSelector(undefined),
+    undefined
+  )
 
   return {
     stakingContractAddress,
     governanceTokenAddress,
     governanceTokenInfo,
+    token: {
+      type: TokenType.Cw20,
+      denomOrAddress: governanceTokenAddress,
+      symbol: governanceTokenInfo.symbol,
+      decimals: governanceTokenInfo.decimals,
+      imageUrl: undefined,
+    },
     /// Optional
     // Wallet balance
-    walletBalance: walletBalance ? Number(walletBalance) : undefined,
     loadingWalletBalance: loadingWalletBalance.loading
       ? { loading: true }
       : !loadingWalletBalance.data
@@ -103,8 +97,22 @@ export const useGovernanceTokenInfo = ({
           data: Number(loadingWalletBalance.data.balance),
         },
     // Treasury balance
-    treasuryBalance: treasuryBalance ? Number(treasuryBalance) : undefined,
+    loadingTreasuryBalance: loadingTreasuryBalance.loading
+      ? { loading: true }
+      : !loadingTreasuryBalance.data
+      ? undefined
+      : {
+          loading: false,
+          data: Number(loadingTreasuryBalance.data.balance),
+        },
     // Price
-    price,
+    loadingPrice: loadingPrice.loading
+      ? { loading: true }
+      : !loadingPrice.data
+      ? undefined
+      : {
+          loading: false,
+          data: loadingPrice.data,
+        },
   }
 }

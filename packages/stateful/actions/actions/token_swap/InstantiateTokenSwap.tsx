@@ -4,86 +4,39 @@ import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import {
-  DaoCoreV2Selectors,
-  nativeBalancesSelector,
-} from '@dao-dao/state/recoil'
-import { Loader } from '@dao-dao/stateless'
-import { useCachedLoadable } from '@dao-dao/stateless/hooks/useCachedLoadable'
-import { ActionComponent, ActionOptionsContextType } from '@dao-dao/types'
+import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { Loader, useCachedLoading } from '@dao-dao/stateless'
+import { ActionComponent, TokenType } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
   CHAIN_BECH32_PREFIX,
   CODE_ID_CONFIG,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   isValidAddress,
   isValidContractAddress,
-  loadableToLoadingData,
-  nativeTokenDecimals,
   processError,
 } from '@dao-dao/utils'
 
 import { AddressInput, Trans } from '../../../components'
-import { useCw20GovernanceTokenInfoResponseIfExists } from '../../../voting-module-adapter/react/hooks/useCw20GovernanceTokenInfoResponseIfExists'
+import { genericTokenBalancesSelector } from '../../../recoil/selectors/token'
 import {
   InstantiateTokenSwapOptions,
   PerformTokenSwapData,
   InstantiateTokenSwap as StatelessInstantiateTokenSwap,
 } from '../../components/token_swap'
+import { useTokenBalances } from '../../hooks/useTokenBalances'
 import { useActionOptions } from '../../react'
 
 export const InstantiateTokenSwap: ActionComponent<
   undefined,
   PerformTokenSwapData
 > = (props) => {
-  const { address: selfAddress, context, chainId, t } = useActionOptions()
+  const { address: selfAddress, t } = useActionOptions()
   const { setValue } = useFormContext()
   const { address: walletAddress, signingCosmWasmClient } = useWallet()
 
-  // Get CW20 governance token address from voting module adapter if exists,
-  // so we can make sure to load it with all cw20 balances, even if it has not
-  // been explicitly added to the DAO.
-  const { governanceTokenAddress } =
-    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
-
-  // Load balances as loadables since they refresh automatically on a timer.
-  const selfPartyNativeBalancesLoadable = useCachedLoadable(
-    nativeBalancesSelector({
-      address: selfAddress,
-      chainId,
-    })
-  )
-  const selfPartyNativeBalances =
-    selfPartyNativeBalancesLoadable.state === 'hasValue'
-      ? selfPartyNativeBalancesLoadable.contents.map(({ amount, denom }) => ({
-          amount,
-          denom,
-        }))
-      : undefined
-  const selfPartyCw20BalancesLoadable = useCachedLoadable(
-    context.type === ActionOptionsContextType.Dao
-      ? // Get DAO's cw20 balances and infos.
-        DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
-          contractAddress: selfAddress,
-          chainId,
-          governanceTokenAddress,
-        })
-      : undefined
-  )
-  const selfPartyCw20Balances =
-    context.type === ActionOptionsContextType.Dao
-      ? selfPartyCw20BalancesLoadable.state === 'hasValue'
-        ? selfPartyCw20BalancesLoadable.contents.map(
-            ({ addr, balance, info }) => ({
-              address: addr,
-              balance,
-              info,
-            })
-          )
-        : undefined
-      : // If not a DAO, just use empty array. Can't fetch all CW20s for a wallet without an indexer.
-        []
+  const selfPartyTokenBalances = useTokenBalances()
 
   const [instantiating, setInstantiating] = useState(false)
   const onInstantiate = useCallback(async () => {
@@ -189,15 +142,13 @@ export const InstantiateTokenSwap: ActionComponent<
     walletAddress,
   ])
 
-  return selfPartyNativeBalances === undefined ||
-    selfPartyCw20Balances === undefined ? (
+  return selfPartyTokenBalances.loading ? (
     <Loader />
   ) : (
     <InnerInstantiateTokenSwap
       {...props}
       options={{
-        selfPartyCw20Balances,
-        selfPartyNativeBalances,
+        selfPartyTokenBalances: selfPartyTokenBalances.data,
         instantiating,
         onInstantiate,
         AddressInput,
@@ -208,10 +159,7 @@ export const InstantiateTokenSwap: ActionComponent<
 }
 
 const InnerInstantiateTokenSwap: ActionComponent<
-  Omit<
-    InstantiateTokenSwapOptions,
-    'counterpartyNativeBalances' | 'counterpartyCw20Balances'
-  >
+  Omit<InstantiateTokenSwapOptions, 'counterpartyTokenBalances'>
 > = (props) => {
   const { chainId } = useActionOptions()
   const { resetField, watch } = useFormContext()
@@ -228,31 +176,29 @@ const InnerInstantiateTokenSwap: ActionComponent<
     }
 
     // Default selfParty to first CW20 if present. Otherwise, native.
-    const selfPartyDefaultCw20 =
-      props.options.selfPartyCw20Balances &&
-      props.options.selfPartyCw20Balances.length > 0
-        ? props.options.selfPartyCw20Balances[0]
-        : undefined
+    const selfPartyDefaultCw20 = props.options.selfPartyTokenBalances.find(
+      (tokenBalance) => tokenBalance.token.type === TokenType.Cw20
+    )
 
     resetField(props.fieldNamePrefix + 'selfParty', {
       defaultValue: {
-        type: selfPartyDefaultCw20 ? 'cw20' : 'native',
+        type: selfPartyDefaultCw20 ? TokenType.Cw20 : TokenType.Native,
         denomOrAddress: selfPartyDefaultCw20
-          ? selfPartyDefaultCw20.address
-          : NATIVE_DENOM,
+          ? selfPartyDefaultCw20.token.denomOrAddress
+          : NATIVE_TOKEN.denomOrAddress,
         amount: 0,
         decimals: selfPartyDefaultCw20
-          ? selfPartyDefaultCw20.info.decimals
-          : nativeTokenDecimals(NATIVE_DENOM) ?? 0,
+          ? selfPartyDefaultCw20.token.decimals
+          : NATIVE_TOKEN.decimals,
       },
     })
     resetField(props.fieldNamePrefix + 'counterparty', {
       defaultValue: {
         address: '',
         type: 'native',
-        denomOrAddress: NATIVE_DENOM,
+        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
         amount: 0,
-        decimals: nativeTokenDecimals(NATIVE_DENOM) ?? 0,
+        decimals: NATIVE_TOKEN.decimals,
       },
     })
 
@@ -265,52 +211,31 @@ const InnerInstantiateTokenSwap: ActionComponent<
     props.fieldNamePrefix + 'counterparty.address'
   )
 
-  // Load balances as loadables since they refresh automatically on a timer.
-  const counterpartyNativeBalances = loadableToLoadingData(
-    useCachedLoadable(
-      counterpartyAddress &&
-        isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
-        ? nativeBalancesSelector({
-            address: counterpartyAddress,
-            chainId,
-          })
-        : undefined
-    ),
-    []
-  )
-
-  //! Try to get CW20s assuming it's a DAO.
-  const counterpartyAddressIsContract =
-    counterpartyAddress &&
-    isValidContractAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
-
   // Try to retrieve governance token address, failing if not a cw20-based DAO.
-  const counterpartyDaoGovernanceTokenAddress = useRecoilValueLoadable(
-    counterpartyAddressIsContract
+  const counterpartyDaoGovernanceTokenAddressLoadable = useRecoilValueLoadable(
+    counterpartyAddress &&
+      isValidContractAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
       ? DaoCoreV2Selectors.tryFetchGovernanceTokenAddressSelector({
           contractAddress: counterpartyAddress,
           chainId,
         })
       : constSelector(undefined)
   )
-  // Try to get cw20 balances, failing if not a DAO.
-  const counterpartyDaoCw20Balances = loadableToLoadingData(
-    useCachedLoadable(
-      counterpartyAddressIsContract &&
-        counterpartyDaoGovernanceTokenAddress.state !== 'loading'
-        ? // Get DAO's cw20 balances and infos.
-          DaoCoreV2Selectors.allCw20BalancesAndInfosSelector({
-            contractAddress: counterpartyAddress,
-            chainId,
-            governanceTokenAddress:
-              // If did not error.
-              counterpartyDaoGovernanceTokenAddress.state === 'hasValue'
-                ? counterpartyDaoGovernanceTokenAddress.contents
-                : undefined,
-          })
-        : undefined
-    ),
-    // Default to empty array if errors.
+
+  // Load balances as loadables since they refresh automatically on a timer.
+  const counterpartyTokenBalances = useCachedLoading(
+    counterpartyAddress &&
+      isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX) &&
+      counterpartyDaoGovernanceTokenAddressLoadable.state !== 'loading'
+      ? genericTokenBalancesSelector({
+          address: counterpartyAddress,
+          cw20GovernanceTokenAddress:
+            counterpartyDaoGovernanceTokenAddressLoadable.state === 'hasValue'
+              ? counterpartyDaoGovernanceTokenAddressLoadable.contents
+              : undefined,
+          chainId,
+        })
+      : undefined,
     []
   )
 
@@ -320,37 +245,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
       {...props}
       options={{
         ...props.options,
-        // Can only get balances for DAO contract, not wallet. Non-DAO contracts
-        // will error which defaults to empty array.
-        counterpartyCw20Balances: !counterpartyAddressIsContract
-          ? {
-              loading: false,
-              data: [],
-            }
-          : counterpartyDaoCw20Balances.loading
-          ? { loading: true }
-          : {
-              loading: false,
-              data: counterpartyDaoCw20Balances.data.map(
-                ({ addr, balance, info }) => ({
-                  address: addr,
-                  balance,
-                  info,
-                })
-              ),
-            },
-        counterpartyNativeBalances: counterpartyNativeBalances.loading
-          ? // When loading, show native token placeholder. This prevents the denom select input from appearing empty.
-            {
-              loading: false,
-              data: [
-                {
-                  amount: '0',
-                  denom: NATIVE_DENOM,
-                },
-              ],
-            }
-          : counterpartyNativeBalances,
+        counterpartyTokenBalances,
       }}
     />
   ) : (

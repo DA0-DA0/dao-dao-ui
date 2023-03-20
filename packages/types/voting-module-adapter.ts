@@ -1,21 +1,20 @@
 import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 
-import { Action } from './actions'
-import { Duration } from './contracts/common'
-import { TokenInfoResponse } from './contracts/Cw20Base'
-import { Claim } from './contracts/stake-cw20'
+import { Action, ActionOptions } from './actions'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationGovernanceConfigInputProps,
   DaoCreationGovernanceConfigReviewProps,
   DaoCreationVotingConfigItem,
+  DaoTabWithComponent,
 } from './dao'
-import { DaoInfoBarItem, LoadingData, StakingMode } from './stateless'
+import { DaoInfoBarItem, StakingMode } from './stateless'
 import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
+import { GenericToken } from './token'
 
 export interface BaseProfileCardMemberInfoProps {
-  deposit: string | undefined
+  maxGovernanceTokenDeposit: string | undefined
   // True if wallet cannot vote on a proposal being shown.
   cantVoteOnProposal?: boolean
 }
@@ -26,69 +25,22 @@ export interface BaseStakingModalProps {
   maxDeposit?: string
 }
 
-export interface UseGovernanceTokenInfoOptions {
-  fetchWalletBalance?: boolean
-  fetchLoadingWalletBalance?: boolean
-  fetchTreasuryBalance?: boolean
-  fetchUsdcPrice?: boolean
-}
-
-export interface UseGovernanceTokenInfoResponse {
-  stakingContractAddress: string
-  governanceTokenAddress: string
-  governanceTokenInfo: TokenInfoResponse
-  /// Optional
-  // Wallet balance
-  walletBalance?: number
-  loadingWalletBalance?: LoadingData<number>
-  // Treasury balance
-  treasuryBalance?: number
-  // Price
-  price?: number
-}
-
-export interface UseStakingInfoOptions {
-  fetchClaims?: boolean
-  fetchTotalStakedValue?: boolean
-  fetchWalletStakedValue?: boolean
-  fetchLoadingWalletStakedValue?: boolean
-}
-
-export interface UseStakingInfoResponse {
-  stakingContractAddress: string
-  unstakingDuration?: Duration
-  refreshTotals: () => void
-  /// Optional
-  // Claims
-  blockHeight?: number
-  refreshClaims?: () => void
-  claims?: Claim[]
-  claimsPending?: Claim[]
-  claimsAvailable?: Claim[]
-  sumClaimsAvailable?: number
-  // Total staked value
-  totalStakedValue?: number
-  // Wallet staked value
-  walletStakedValue?: number
-  loadingWalletStakedValue?: LoadingData<number>
-}
-
 export interface IVotingModuleAdapter {
   // Hooks
   hooks: {
-    useActions: () => Action[]
+    useActions: (options: ActionOptions) => Action[]
     useDaoInfoBarItems: () => DaoInfoBarItem[]
     useProfileNewProposalCardAddresses: () => ProfileNewProposalCardAddress[]
-    useGovernanceTokenInfo?: (
-      options?: UseGovernanceTokenInfoOptions
-    ) => UseGovernanceTokenInfoResponse
-    useStakingInfo?: (options?: UseStakingInfoOptions) => UseStakingInfoResponse
+    useCommonGovernanceTokenInfo?: () => GenericToken
   }
 
   // Components
   components: {
-    MembersTab?: ComponentType
+    extraTabs?: (Omit<DaoTabWithComponent, 'label'> & {
+      labelI18nKey: string
+    })[]
     ProfileCardMemberInfo: ComponentType<BaseProfileCardMemberInfoProps>
+    StakingModal?: ComponentType<BaseStakingModalProps>
   }
 }
 

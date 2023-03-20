@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { DaoDropdownProps } from '@dao-dao/types/stateless/DaoDropdown'
 import { toAccessibleImageUrl } from '@dao-dao/utils'
 
+import { useNavHelpers } from '../../hooks'
 import { Collapsible } from '../Collapsible'
 import { Tooltip } from '../tooltip/Tooltip'
 
@@ -15,10 +16,14 @@ export const DaoDropdown = ({
   indent = 0,
   compact = false,
   LinkWrapper,
+  defaultCollapsed,
 }: DaoDropdownProps) => {
   const { asPath } = useRouter()
 
-  const selected = asPath.startsWith(`/dao/${coreAddress}`)
+  const { getDaoPath } = useNavHelpers()
+  const href = getDaoPath(coreAddress)
+
+  const selected = asPath.startsWith(href)
 
   // If compact, just show image.
   return compact ? (
@@ -27,7 +32,7 @@ export const DaoDropdown = ({
         'box-content flex h-8 w-8 flex-row items-center justify-center py-1.5 px-6 transition-opacity hover:opacity-70 active:opacity-60',
         selected && 'bg-background-interactive-selected'
       )}
-      href={`/dao/${coreAddress}`}
+      href={href}
     >
       <Tooltip title={name}>
         <div
@@ -39,6 +44,7 @@ export const DaoDropdown = ({
   ) : (
     <Collapsible
       containerClassName="!gap-0"
+      defaultCollapsed={defaultCollapsed}
       headerClassName={clsx(
         'rounded-md',
         selected && 'bg-background-interactive-selected'
@@ -47,7 +53,7 @@ export const DaoDropdown = ({
       indentDropdownSize={indent}
       label={name}
       link={{
-        href: `/dao/${coreAddress}`,
+        href,
         LinkWrapper,
       }}
       noContentIndent
@@ -63,6 +69,7 @@ export const DaoDropdown = ({
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 dao={dao}
+                defaultCollapsed
                 indent={indent + 1}
               />
             ))}

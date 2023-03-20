@@ -2,6 +2,7 @@ export interface PfpkWalletProfile {
   nonce: number
   name: string | null
   nft: {
+    chainId: string
     imageUrl: string
     tokenId: string
     collectionAddress: string
@@ -10,12 +11,8 @@ export interface PfpkWalletProfile {
 
 // Move `imageUrl` out of `NFT` in case we use the Keplr profile image API or a
 // fallback image as backup.
-export interface WalletProfile extends Omit<PfpkWalletProfile, 'nft'> {
+export interface WalletProfile extends PfpkWalletProfile {
   imageUrl: string
-  nft: {
-    tokenId: string
-    collectionAddress: string
-  } | null
 }
 
 export interface WalletProfileUpdate {
@@ -41,7 +38,6 @@ export interface ProfileSearchHit {
   publicKey: string
   address: string
   profile: {
-    nonce: number
     name: string | null
     nft: {
       chainId: string
@@ -50,4 +46,12 @@ export interface ProfileSearchHit {
       imageUrl: string
     } | null
   }
+}
+
+// Meta info about wallet profile, including loading state and a fallback image.
+export type WalletProfileData = {
+  loading: boolean
+  address: string
+  profile: WalletProfile
+  backupImageUrl: string
 }

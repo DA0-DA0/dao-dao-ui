@@ -6,19 +6,11 @@ import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalSingle.
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   CODE_ID_CONFIG,
-  NATIVE_DENOM,
-  NEW_DAO_CW20_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
-  nativeTokenDecimals,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
-import { DaoVotingCw20StakedAdapter } from '../../../../voting-module-adapter/adapters/DaoVotingCw20Staked'
-import {
-  DaoCreationConfig as DaoVotingCw20StakedConfig,
-  GovernanceTokenType,
-} from '../../../../voting-module-adapter/adapters/DaoVotingCw20Staked/types'
 import { DaoProposalSingleAdapter } from '../../index'
 import { DaoCreationConfig, ThresholdValue } from '../types'
 import instantiateSchema from './instantiate_schema.json'
@@ -27,35 +19,19 @@ import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationConfig
 > = (
-  { name, votingModuleAdapter },
+  { name },
   {
     threshold,
     quorumEnabled,
     quorum,
     votingDuration,
     proposalDeposit,
+    anyoneCanPropose,
     allowRevoting,
   },
   t
 ) => {
-  const isDaoVotingCw20StakedAdapter =
-    votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id
-  const cw20StakedBalanceVotingAdapterData =
-    votingModuleAdapter.data as DaoVotingCw20StakedConfig
-
-  const cw20GovernanceTokenDecimals = isDaoVotingCw20StakedAdapter
-    ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
-      ? NEW_DAO_CW20_DECIMALS
-      : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.decimals
-    : undefined
-
-  const decimals =
-    proposalDeposit.type === 'native'
-      ? nativeTokenDecimals(NATIVE_DENOM) ?? 0
-      : proposalDeposit.type === 'voting_module_token'
-      ? cw20GovernanceTokenDecimals ?? 0
-      : // type === 'cw20'
-        proposalDeposit.cw20TokenInfo?.decimals ?? 0
+  const decimals = proposalDeposit.token?.decimals ?? 0
 
   const preProposeSingleInstantiateMsg: CwPreProposeSingleInstantiateMsg = {
     deposit_info: proposalDeposit.enabled
@@ -74,11 +50,11 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
                     denom:
                       proposalDeposit.type === 'native'
                         ? {
-                            native: NATIVE_DENOM,
+                            native: proposalDeposit.denomOrAddress,
                           }
                         : // proposalDeposit.type === 'cw20'
                           {
-                            cw20: proposalDeposit.cw20Address,
+                            cw20: proposalDeposit.denomOrAddress,
                           },
                   },
                 },
@@ -86,8 +62,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         }
       : null,
     extension: {},
-    // Only allow members with voting power to propose.
-    open_proposal_submission: false,
+    open_proposal_submission: anyoneCanPropose,
   }
 
   // Validate and throw error if invalid according to JSON schema.

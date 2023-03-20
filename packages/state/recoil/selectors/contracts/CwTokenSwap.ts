@@ -22,6 +22,7 @@ export const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new CwTokenSwapQueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 export const statusSelector = selectorFamily<
   StatusResponse,

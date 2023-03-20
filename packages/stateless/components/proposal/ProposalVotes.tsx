@@ -48,8 +48,8 @@ export const ProposalVotes = <Vote extends unknown = any>({
           (a.votedAt?.getTime() ?? -Infinity)
       )
 
-  // If a new vote is added and the window is scrolled to the bottom, scroll to
-  // the bottom again to show the new vote.
+  // If a new vote is added to existing votes and the window is scrolled to the
+  // bottom, scroll to the bottom again to show the new vote.
   const [prevVoteCount, setPrevVoteCount] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -76,7 +76,11 @@ export const ProposalVotes = <Vote extends unknown = any>({
 
     const wasScrolledNearBottom =
       parent.scrollHeight - parent.scrollTop - parent.clientHeight < 100
-    if (wasScrolledNearBottom && newVoteCount > prevVoteCount) {
+    if (
+      wasScrolledNearBottom &&
+      prevVoteCount > 0 &&
+      newVoteCount > prevVoteCount
+    ) {
       parent.scrollTo({
         top: parent.scrollHeight,
         behavior: 'smooth',

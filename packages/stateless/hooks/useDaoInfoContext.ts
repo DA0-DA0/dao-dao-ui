@@ -12,3 +12,5 @@ export const useDaoInfoContext = () => {
 
   return context
 }
+
+export const useDaoInfoContextIfAvailable = () => useContext(DaoInfoContext)

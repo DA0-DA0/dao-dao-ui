@@ -2,11 +2,11 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ProfileNewProposalCard as StatelessProfileNewProposalCard,
-  useAppLayoutContext,
+  useAppContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
-import { useWalletInfo } from '../../hooks'
+import { useMembership, useWalletInfo } from '../../hooks'
 import { matchAndLoadCommon } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -17,8 +17,8 @@ export interface ProfileNewProposalCardProps {
 
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
   const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { walletProfile, updateProfileName } = useWalletInfo()
-  const { updateProfileNft } = useAppLayoutContext()
+  const { walletProfileData, updateProfileName } = useWalletInfo()
+  const { updateProfileNft } = useAppContext()
 
   return (
     <SuspenseLoader
@@ -26,9 +26,10 @@ export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
         <StatelessProfileNewProposalCard
           daoName={daoName}
           info={{ loading: true }}
+          isMember={{ loading: true }}
           showUpdateProfileNft={updateProfileNft.toggle}
           updateProfileName={updateProfileName}
-          walletProfile={walletProfile}
+          walletProfileData={walletProfileData}
         />
       }
     >
@@ -47,15 +48,20 @@ export const InnerProfileNewProposalCard = ({
   },
 }: ProfileNewProposalCardProps) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { walletProfile, updateProfileName } = useWalletInfo()
-  const { updateProfileNft } = useAppLayoutContext()
+  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
+  const { walletProfileData, updateProfileName } = useWalletInfo()
+  const { updateProfileNft } = useAppContext()
   const {
     hooks: { useProfileNewProposalCardAddresses },
   } = useVotingModuleAdapter()
 
   const lines = useProfileNewProposalCardInfoLines()
   const addresses = useProfileNewProposalCardAddresses()
+
+  const { isMember } = useMembership({
+    coreAddress,
+    chainId,
+  })
 
   return (
     <StatelessProfileNewProposalCard
@@ -73,9 +79,14 @@ export const InnerProfileNewProposalCard = ({
           ],
         },
       }}
+      isMember={
+        isMember === undefined
+          ? { loading: true }
+          : { loading: false, data: isMember }
+      }
       showUpdateProfileNft={updateProfileNft.toggle}
       updateProfileName={updateProfileName}
-      walletProfile={walletProfile}
+      walletProfileData={walletProfileData}
     />
   )
 }

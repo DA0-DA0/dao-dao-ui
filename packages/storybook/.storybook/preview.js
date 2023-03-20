@@ -3,7 +3,12 @@ import '@dao-dao/stateless/styles/index.css'
 import { MINIMAL_VIEWPORTS } from '@storybook/addon-viewport'
 
 import i18n from './i18next'
-import { NotificationsDecorator, RecoilDecorator, ThemeDecorator } from '../decorators'
+import {
+  NotificationsDecorator,
+  RecoilDecorator,
+  ThemeDecorator,
+  makeAppContextDecorator,
+} from '../decorators'
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -26,7 +31,7 @@ export const parameters = {
   // https://github.com/storybookjs/storybook/issues/12747
   docs: {
     source: {
-      type: 'code'
+      type: 'code',
     },
   },
   viewport: {
@@ -40,10 +45,15 @@ export const parameters = {
         type: 'mobile',
       },
       ...MINIMAL_VIEWPORTS,
-    }
-  }
+    },
+  },
   // No need to enable `darkMode.stylePreview` because we handle theme manually
   // in `ThemeDecorator`.
 }
 
-export const decorators = [ThemeDecorator, RecoilDecorator, NotificationsDecorator]
+export const decorators = [
+  ThemeDecorator,
+  RecoilDecorator,
+  NotificationsDecorator,
+  makeAppContextDecorator(),
+]

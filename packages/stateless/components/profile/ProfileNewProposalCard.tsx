@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProfileNewProposalCardProps } from '@dao-dao/types/stateless/ProfileNewProposalCard'
+import { concatAddressStartEnd } from '@dao-dao/utils'
 
-import { concatAddressStartEnd } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { MembershipPill } from './MembershipPill'
@@ -16,6 +16,7 @@ export * from '@dao-dao/types/stateless/ProfileNewProposalCard'
 export const ProfileNewProposalCard = ({
   daoName,
   info,
+  isMember,
   ...wrapperProps
 }: ProfileNewProposalCardProps) => {
   const { t } = useTranslation()
@@ -32,7 +33,14 @@ export const ProfileNewProposalCard = ({
     <ProfileCardWrapper
       childContainerClassName="p-0"
       compact
-      underHeaderComponent={<MembershipPill daoName={daoName} ghost isMember />}
+      underHeaderComponent={
+        <MembershipPill
+          daoName={daoName}
+          ghost
+          isMember={isMember.loading ? false : isMember.data}
+          loadingIsMember={isMember.loading}
+        />
+      }
       {...wrapperProps}
     >
       <div className="space-y-4 p-6">

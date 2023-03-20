@@ -2,12 +2,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from '@dao-dao/stateless'
 import {
-  makeActionsProviderDecorator,
   makeDaoInfo,
+  makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType } from '@dao-dao/types'
-import { NATIVE_DENOM } from '@dao-dao/utils'
+import { TokenType } from '@dao-dao/types'
+import { NATIVE_TOKEN } from '@dao-dao/utils'
 
 import { Trans } from '../../../components'
 import { InstantiateTokenSwap } from './InstantiateTokenSwap'
@@ -21,28 +21,20 @@ export default {
     makeReactHookFormDecorator<PerformTokenSwapData>({
       contractChosen: false,
       selfParty: {
-        type: 'cw20',
+        type: TokenType.Cw20,
         denomOrAddress: 'cw20_1',
         amount: 0,
         decimals: 6,
       },
       counterparty: {
         address: '',
-        type: 'native',
-        denomOrAddress: NATIVE_DENOM,
+        type: NATIVE_TOKEN.type,
+        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
         amount: 0,
-        decimals: 6,
+        decimals: NATIVE_TOKEN.decimals,
       },
     }),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionOptionsContextType.Dao,
-        info: makeDaoInfo(),
-      },
-    }),
+    makeDaoProvidersDecorator(makeDaoInfo()),
   ],
 } as ComponentMeta<typeof InstantiateTokenSwap>
 
@@ -62,65 +54,70 @@ Default.args = {
   onRemove: () => alert('remove'),
   errors: {},
   options: {
-    selfPartyNativeBalances: [
+    selfPartyTokenBalances: [
       {
-        denom: NATIVE_DENOM,
-        amount: '46252349169321',
-      },
-    ],
-    selfPartyCw20Balances: [
-      {
-        address: 'cw20_1',
-        balance: '1284135723893',
-        info: {
+        token: {
+          type: TokenType.Native,
+          denomOrAddress: 'ujuno',
           decimals: 6,
-          name: 'A token',
+          symbol: 'JUNO',
+          imageUrl: '',
+        },
+        balance: '46252349169321',
+      },
+      {
+        token: {
+          type: TokenType.Cw20,
+          denomOrAddress: 'cw20_1',
+          decimals: 6,
           symbol: 'ATKN',
-          total_supply: '10238192471284128',
+          imageUrl: '',
         },
+        balance: '1284135723893',
       },
       {
-        address: 'cw20_2',
-        balance: '102948124125',
-        info: {
+        token: {
+          type: TokenType.Cw20,
+          denomOrAddress: 'cw20_2',
           decimals: 6,
-          name: 'A different token',
           symbol: 'DIFF',
-          total_supply: '6212378128495812',
+          imageUrl: '',
         },
+        balance: '102948124125',
       },
     ],
-    counterpartyNativeBalances: {
+    counterpartyTokenBalances: {
       loading: false,
       data: [
         {
-          denom: NATIVE_DENOM,
-          amount: '46252349169321',
-        },
-      ],
-    },
-    counterpartyCw20Balances: {
-      loading: false,
-      data: [
-        {
-          address: 'cw20_1',
-          balance: '1284135723893',
-          info: {
+          token: {
+            type: TokenType.Native,
+            denomOrAddress: 'ujuno',
             decimals: 6,
-            name: 'A token',
+            symbol: 'JUNO',
+            imageUrl: '',
+          },
+          balance: '46252349169321',
+        },
+        {
+          token: {
+            type: TokenType.Cw20,
+            denomOrAddress: 'cw20_1',
+            decimals: 6,
             symbol: 'ATKN',
-            total_supply: '10238192471284128',
+            imageUrl: '',
           },
+          balance: '1284135723893',
         },
         {
-          address: 'cw20_2',
-          balance: '102948124125',
-          info: {
+          token: {
+            type: TokenType.Cw20,
+            denomOrAddress: 'cw20_2',
             decimals: 6,
-            name: 'A different token',
             symbol: 'DIFF',
-            total_supply: '6212378128495812',
+            imageUrl: '',
           },
+          balance: '102948124125',
         },
       ],
     },

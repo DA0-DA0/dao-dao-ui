@@ -2,23 +2,14 @@
 
 import { atom } from 'recoil'
 
-import { WalletTransactionForm } from '@dao-dao/types'
+import { MeTransactionForm } from '@dao-dao/types'
 
 import { localStorageEffectJSON } from '../effects'
 
-// empty string.
-export const walletTransactionAtom = atom<WalletTransactionForm>({
-  key: 'walletTransaction',
+export const meTransactionAtom = atom<MeTransactionForm>({
+  key: 'meTransaction',
   default: {
-    title: '',
-    description: '',
-    actionData: [],
+    actions: [],
   },
   effects: [localStorageEffectJSON],
-})
-
-// Save signed in wallet so its accessible by selectors.
-export const walletAddressAtom = atom<string | undefined>({
-  key: 'walletAddress',
-  default: undefined,
 })

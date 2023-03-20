@@ -1,7 +1,10 @@
 import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { MembersTab as StatelessMembersTab } from '@dao-dao/stateless'
+import {
+  MembersTab as StatelessMembersTab,
+  useNavHelpers,
+} from '@dao-dao/stateless'
 
 import { useActionOptions } from '../../../../actions'
 import { ButtonLink, DaoMemberCard } from '../../../../components'
@@ -16,12 +19,14 @@ import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
 export const MembersTab = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
+  const { getDaoProposalPath } = useNavHelpers()
 
   const { isMember = false, totalVotingWeight } = useMembership({
     coreAddress,
   })
   const { members } = useCw4VotingModule(coreAddress, { fetchMembers: true })
 
+  // Should never happen. Type-check.
   if (!members) {
     throw new Error(t('error.loadingData'))
   }
@@ -59,11 +64,17 @@ export const MembersTab = () => {
       DaoMemberCard={DaoMemberCard}
       addMemberHref={
         prefillValid && encodedProposalPrefill
-          ? `/dao/${coreAddress}/proposals/create?prefill=${encodedProposalPrefill}`
+          ? getDaoProposalPath(coreAddress, 'create', {
+              prefill: encodedProposalPrefill,
+            })
           : undefined
       }
       isMember={isMember}
       members={memberCards}
+      membersFailedToLoad={false}
+      topVoters={{
+        show: false,
+      }}
     />
   )
 }

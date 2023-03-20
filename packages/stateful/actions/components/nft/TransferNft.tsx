@@ -55,7 +55,8 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
     }
   }, [selected, setError, clearErrors, t, fieldNamePrefix])
 
-  const [showModal, setShowModal] = useState<boolean>(isCreating)
+  // Show modal initially if creating and no NFT already selected.
+  const [showModal, setShowModal] = useState<boolean>(isCreating && !selected)
 
   return (
     <ActionCard
@@ -74,7 +75,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
 
             <AddressInput
               disabled={!isCreating}
-              error={errors?.to}
+              error={errors?.recipient}
               fieldName={fieldNamePrefix + 'recipient'}
               register={register}
               validation={[
@@ -162,28 +163,30 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
         </div>
       </div>
 
-      <NftSelectionModal
-        actionLabel={t('button.save')}
-        actionLoading={false}
-        getIdForNft={getIdForNft}
-        header={{
-          title: t('title.selectNftToTransfer'),
-        }}
-        nfts={options}
-        onAction={() => setShowModal(false)}
-        onClose={() => setShowModal(false)}
-        onNftClick={(nft) => {
-          if (getIdForNft(nft) === selected) {
-            setValue(fieldNamePrefix + 'tokenId', '')
-            setValue(fieldNamePrefix + 'collection', '')
-          } else {
-            setValue(fieldNamePrefix + 'tokenId', nft.tokenId)
-            setValue(fieldNamePrefix + 'collection', nft.collection.address)
-          }
-        }}
-        selectedIds={[selected]}
-        visible={showModal}
-      />
+      {isCreating && (
+        <NftSelectionModal
+          actionLabel={t('button.save')}
+          actionLoading={false}
+          getIdForNft={getIdForNft}
+          header={{
+            title: t('title.selectNftToTransfer'),
+          }}
+          nfts={options}
+          onAction={() => setShowModal(false)}
+          onClose={() => setShowModal(false)}
+          onNftClick={(nft) => {
+            if (getIdForNft(nft) === selected) {
+              setValue(fieldNamePrefix + 'tokenId', '')
+              setValue(fieldNamePrefix + 'collection', '')
+            } else {
+              setValue(fieldNamePrefix + 'tokenId', nft.tokenId)
+              setValue(fieldNamePrefix + 'collection', nft.collection.address)
+            }
+          }}
+          selectedIds={selected ? [selected] : []}
+          visible={showModal}
+        />
+      )}
     </ActionCard>
   )
 }

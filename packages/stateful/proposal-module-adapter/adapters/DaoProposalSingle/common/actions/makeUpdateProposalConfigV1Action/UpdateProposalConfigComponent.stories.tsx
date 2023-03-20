@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
+import { TokenType } from '@dao-dao/types'
 
 import { UpdateProposalConfigData } from '.'
 import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
@@ -40,6 +41,12 @@ Default.args = {
   data: {},
   isCreating: true,
   options: {
-    governanceTokenSymbol: 'GOV',
+    commonGovernanceTokenInfo: {
+      type: TokenType.Cw20,
+      denomOrAddress: 'gov',
+      symbol: 'GOV',
+      decimals: 6,
+      imageUrl: undefined,
+    },
   },
 }

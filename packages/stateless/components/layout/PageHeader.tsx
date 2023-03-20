@@ -7,7 +7,7 @@ import { PageHeaderProps } from '@dao-dao/types/stateless/PageHeader'
 
 import { IconButton } from '../icon_buttons'
 import { TopGradient } from '../TopGradient'
-import { useAppLayoutContext } from './AppLayoutContext'
+import { useAppContext, useAppContextIfAvailable } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
 
 export const PAGE_HEADER_HEIGHT_CLASS_NAMES = 'h-20'
@@ -23,7 +23,7 @@ export const PageHeader = ({
   rightNode,
   gradient,
 }: PageHeaderProps) => {
-  const { toggle } = useAppLayoutContext().responsiveNavigation
+  const { toggle } = useAppContext().responsiveNavigation
 
   // Intelligently move gradient to match scroll of page.
   const [scrollableScrollTop, setScrollableScrollTop] = useState(0)
@@ -71,15 +71,13 @@ export const PageHeader = ({
             !forceCenter && 'sm:justify-start',
             // When showing title or breadcrumbs, add padding. The `sm`
             // breakpoint is when the UI switches from responsive to desktop
-            // mode, and on DAO pages, this is when the pin toggle displays its
-            // text instead of just its icon. On these larger views, add more
-            // padding to compensate.
-            (title || breadcrumbs) && {
-              'px-24 sm:px-48': true,
+            // mode.
+            (title || breadcrumbs) && [
+              'px-12',
               // Centered on small screen or if forceCenter is true. If not
               // centered, no left padding.
-              'sm:!pl-0': !forceCenter,
-            }
+              !forceCenter && 'sm:pl-0',
+            ]
           )}
         >
           {title ? (
@@ -114,10 +112,25 @@ export const PageHeader = ({
   )
 }
 
-// This is a function that generates a function component, used in pages to
-// render the page header. See the `makeRightSidebarContent` function comment in
-// `RightSidebar.tsx` for more information on how this works.
-export const makePageHeader = (container: HTMLDivElement | null) =>
-  function PageHeaderPortal(props: PageHeaderProps) {
-    return container ? createPortal(<PageHeader {...props} />, container) : null
-  }
+// This is a portal that inserts a PageHeader wherever the AppContext's
+// `pageHeaderRef` is placed. This is handled by the layout components. See the
+// `ReactSidebarContent` comment in `RightSidebar.tsx` for more information on
+// how this works.
+//
+// If not in an AppContext, this component will render a PageHeader normally
+// instead of using the portal.
+export const PageHeaderContent = (props: PageHeaderProps) => {
+  const appContext = useAppContextIfAvailable()
+
+  // If app context is available, but the page header ref is not, render nothing
+  // until the ref is available. If not in an app context, render the element
+  // directly. The direct render is useful when outside the AppContext, such as
+  // error pages in the SDA.
+  return appContext ? (
+    appContext.pageHeaderRef.current ? (
+      createPortal(<PageHeader {...props} />, appContext.pageHeaderRef.current)
+    ) : null
+  ) : (
+    <PageHeader {...props} />
+  )
+}

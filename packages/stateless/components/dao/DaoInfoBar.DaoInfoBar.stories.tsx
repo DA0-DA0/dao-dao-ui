@@ -15,7 +15,9 @@ export default {
 } as ComponentMeta<typeof DaoInfoBar>
 
 const Template: ComponentStory<typeof DaoInfoBar> = (args) => (
-  <DaoInfoBar {...args} className="max-w-2xl" />
+  <div className="max-w-2xl">
+    <DaoInfoBar {...args} />
+  </div>
 )
 
 export const Default = Template.bind({})
@@ -40,7 +42,7 @@ Default.args = {
       Icon: AccountBalanceOutlined,
       label: 'DAO Treasury',
       tooltip:
-        'The USD value of treasuries is estimated by summing the value of all tokens held in the treasury that have a known price on JunoSwap.',
+        'The USD value of treasuries is estimated by summing the value of all tokens held in the treasury that have a known price on WYND.',
       value: '35.12 est. USD value',
     },
     {

@@ -6,6 +6,11 @@ import {
 } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import {
+  WALLET_PROFILE_DATA,
+  WALLET_PROFILE_DATA_LOADING,
+} from '@dao-dao/storybook'
+
 import { ProfileNewProposalCard } from './ProfileNewProposalCard'
 
 export default {
@@ -23,15 +28,11 @@ const Template: ComponentStory<typeof ProfileNewProposalCard> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   daoName: 'Dog Dao',
-  walletProfile: {
+  isMember: {
     loading: false,
-    data: {
-      nonce: 0,
-      imageUrl: '/noah.jpg',
-      name: '@Modern-Edamame',
-      nft: null,
-    },
+    data: true,
   },
+  walletProfileData: WALLET_PROFILE_DATA,
   info: {
     loading: false,
     data: {
@@ -88,10 +89,11 @@ Default.parameters = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...Default.args,
-  walletProfile: {
+  walletProfileData: WALLET_PROFILE_DATA_LOADING,
+  info: {
     loading: true,
   },
-  info: {
+  isMember: {
     loading: true,
   },
 }

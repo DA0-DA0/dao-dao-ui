@@ -1,13 +1,10 @@
+import { PeopleAltOutlined } from '@mui/icons-material'
 import { useMemo } from 'react'
 
-import { VotingModuleAdapter } from '@dao-dao/types'
+import { DaoTabId, VotingModuleAdapter } from '@dao-dao/types'
 
-import { ProfileCardMemberInfo } from './components'
-import {
-  useDaoInfoBarItems,
-  useGovernanceTokenInfo,
-  useStakingInfo,
-} from './hooks'
+import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
+import { useCommonGovernanceTokenInfo, useDaoInfoBarItems } from './hooks'
 
 export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
   id: 'DaoVotingNativeStaked',
@@ -25,13 +22,22 @@ export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
       useActions: () => useMemo(() => [], []),
       useDaoInfoBarItems,
       useProfileNewProposalCardAddresses: () => [],
-      useGovernanceTokenInfo,
-      useStakingInfo,
+      useCommonGovernanceTokenInfo,
     },
 
     // Components
     components: {
       ProfileCardMemberInfo,
+      StakingModal,
+
+      extraTabs: [
+        {
+          id: DaoTabId.Members,
+          labelI18nKey: 'title.members',
+          Component: MembersTab,
+          Icon: PeopleAltOutlined,
+        },
+      ],
     },
   }),
 }

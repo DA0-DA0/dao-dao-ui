@@ -9,7 +9,7 @@ import { NewProposalProps } from '@dao-dao/stateful/proposal-module-adapter/adap
 import { Default as NewProposalStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/common/ui/NewProposal.stories'
 import {
   DaoPageWrapperDecorator,
-  makeAppLayoutDecorator,
+  makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
 
 import {
@@ -26,7 +26,7 @@ export default {
   decorators: [
     // Direct ancestor of rendered story.
     DaoPageWrapperDecorator,
-    makeAppLayoutDecorator(),
+    makeDappLayoutDecorator(),
   ],
 } as ComponentMeta<typeof CreateProposal>
 
@@ -57,7 +57,6 @@ const Template: ComponentStory<typeof CreateProposal> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  notMember: false,
   rightSidebarContent: (
     <ProfileNewProposalCard
       {...(ProfileNewProposalCardStory.args as ProfileNewProposalCardProps)}

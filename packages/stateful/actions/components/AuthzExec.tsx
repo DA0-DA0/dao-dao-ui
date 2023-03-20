@@ -10,13 +10,13 @@ import {
   LockWithKeyEmoji,
   NumberInput,
   SelectInput,
+  ValidatorPicker,
 } from '@dao-dao/stateless'
 import { AddressInputProps, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
-  nativeTokenLabel,
+  NATIVE_TOKEN,
+  convertMicroDenomToDenomWithDecimals,
   validateAddress,
   validateJSON,
   validatePositive,
@@ -25,7 +25,6 @@ import {
 
 import { AuthzExecActionTypes } from '../actions/AuthzExec'
 import { ActionCard } from './ActionCard'
-import { ValidatorPicker } from './ValidatorPicker'
 
 export interface AuthzExecOptions {
   AddressInput: ComponentType<AddressInputProps>
@@ -76,11 +75,10 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
 
   const authzExecActionType = watch(fieldNamePrefix + 'authzExecActionType')
 
-  const minAmount = 1 / Math.pow(10, NATIVE_DECIMALS)
-
-  const delegateAmount = watch(fieldNamePrefix + 'delegate.amount.amount')
-  const redelegateAmount = watch(fieldNamePrefix + 'redelegate.amount.amount')
-  const undelegateAmount = watch(fieldNamePrefix + 'undelegate.amount.amount')
+  const minAmount = convertMicroDenomToDenomWithDecimals(
+    1,
+    NATIVE_TOKEN.decimals
+  )
 
   const claimRewardsValidator = watch(
     fieldNamePrefix + 'claimRewards.validatorAddress'
@@ -140,8 +138,8 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
             <InputLabel name={t('form.validator')} />
             <ValidatorPicker
               displayClassName="grow min-w-0"
-              nativeDecimals={NATIVE_DECIMALS}
-              nativeDenom={NATIVE_DENOM}
+              nativeDecimals={NATIVE_TOKEN.decimals}
+              nativeDenom={NATIVE_TOKEN.denomOrAddress}
               onSelect={({ address }) =>
                 setValue(fieldNamePrefix + 'delegate.validatorAddress', address)
               }
@@ -157,22 +155,12 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               error={errors?.delegate?.amount?.amount}
               fieldName={fieldNamePrefix + 'delegate.amount.amount'}
               min={minAmount}
-              onMinus={() =>
-                setValue(
-                  fieldNamePrefix + 'delegate.amount.amount',
-                  Math.max(delegateAmount - 1, minAmount)
-                )
-              }
-              onPlus={() =>
-                setValue(
-                  fieldNamePrefix + 'delegate.amount.amount',
-                  Math.max(delegateAmount + 1, minAmount)
-                )
-              }
               register={register}
+              setValue={setValue}
               step={minAmount}
-              unit={'$' + nativeTokenLabel(NATIVE_DENOM)}
+              unit={'$' + NATIVE_TOKEN.symbol}
               validation={[validatePositive, validateRequired]}
+              watch={watch}
             />
             <InputErrorMessage error={errors?.delegate?.amount?.amount} />
           </div>
@@ -196,8 +184,8 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
             <InputLabel name={t('form.validator')} />
             <ValidatorPicker
               displayClassName="grow min-w-0"
-              nativeDecimals={NATIVE_DECIMALS}
-              nativeDenom={NATIVE_DENOM}
+              nativeDecimals={NATIVE_TOKEN.decimals}
+              nativeDenom={NATIVE_TOKEN.denomOrAddress}
               onSelect={({ address }) =>
                 setValue(
                   fieldNamePrefix + 'undelegate.validatorAddress',
@@ -216,22 +204,12 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               error={errors?.undelegate?.amount?.amount}
               fieldName={fieldNamePrefix + 'undelegate.amount.amount'}
               min={minAmount}
-              onMinus={() =>
-                setValue(
-                  fieldNamePrefix + 'undelegate.amount.amount',
-                  Math.max(undelegateAmount - 1, minAmount)
-                )
-              }
-              onPlus={() =>
-                setValue(
-                  fieldNamePrefix + 'undelegate.amount.amount',
-                  Math.max(undelegateAmount + 1, minAmount)
-                )
-              }
               register={register}
+              setValue={setValue}
               step={minAmount}
-              unit={'$' + nativeTokenLabel(NATIVE_DENOM)}
+              unit={'$' + NATIVE_TOKEN.symbol}
               validation={[validatePositive, validateRequired]}
+              watch={watch}
             />
             <InputErrorMessage error={errors?.undelegate?.amount?.amount} />
           </div>
@@ -258,8 +236,8 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
             />
             <ValidatorPicker
               displayClassName="grow min-w-0"
-              nativeDecimals={NATIVE_DECIMALS}
-              nativeDenom={NATIVE_DENOM}
+              nativeDecimals={NATIVE_TOKEN.decimals}
+              nativeDenom={NATIVE_TOKEN.denomOrAddress}
               onSelect={({ address }) =>
                 setValue(
                   fieldNamePrefix + 'redelegate.validatorSrcAddress',
@@ -278,8 +256,8 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
             />
             <ValidatorPicker
               displayClassName="grow min-w-0"
-              nativeDecimals={NATIVE_DECIMALS}
-              nativeDenom={NATIVE_DENOM}
+              nativeDecimals={NATIVE_TOKEN.decimals}
+              nativeDenom={NATIVE_TOKEN.denomOrAddress}
               onSelect={({ address }) =>
                 setValue(
                   fieldNamePrefix + 'redelegate.validatorDstAddress',
@@ -298,22 +276,12 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
               error={errors?.redelegate?.amount?.amount}
               fieldName={fieldNamePrefix + 'redelegate.amount.amount'}
               min={minAmount}
-              onMinus={() =>
-                setValue(
-                  fieldNamePrefix + 'redelegate.amount.amount',
-                  Math.max(redelegateAmount - 1, minAmount)
-                )
-              }
-              onPlus={() =>
-                setValue(
-                  fieldNamePrefix + 'redelegate.amount.amount',
-                  Math.max(redelegateAmount + 1, minAmount)
-                )
-              }
               register={register}
+              setValue={setValue}
               step={minAmount}
-              unit={'$' + nativeTokenLabel(NATIVE_DENOM)}
+              unit={'$' + NATIVE_TOKEN.symbol}
               validation={[validatePositive, validateRequired]}
+              watch={watch}
             />
             <InputErrorMessage error={errors?.redelegate?.amount?.amount} />
           </div>
@@ -337,8 +305,8 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
             <InputLabel name={t('form.validator')} />
             <ValidatorPicker
               displayClassName="grow min-w-0"
-              nativeDecimals={NATIVE_DECIMALS}
-              nativeDenom={NATIVE_DENOM}
+              nativeDecimals={NATIVE_TOKEN.decimals}
+              nativeDenom={NATIVE_TOKEN.denomOrAddress}
               onSelect={({ address }) =>
                 setValue(
                   fieldNamePrefix + 'claimRewards.validatorAddress',

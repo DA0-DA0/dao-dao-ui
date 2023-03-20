@@ -1,7 +1,12 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { WithChainId } from '@dao-dao/types'
+import {
+  DaoPayrollConfig,
+  GenericTokenBalance,
+  TokenType,
+  WithChainId,
+} from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
@@ -9,7 +14,6 @@ import {
   AdminNominationResponse,
   AdminResponse,
   ConfigResponse,
-  Cw20BalanceResponse,
   Cw20BalancesResponse,
   Cw20TokenListResponse,
   Cw721TokenListResponse,
@@ -25,7 +29,11 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
-import { CHAIN_ID } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  DAO_CORE_PAYROLL_CONFIG_ITEM_KEY,
+  getPayrollConfigFromItemValue,
+} from '@dao-dao/utils'
 
 import { Cw721BaseSelectors, DaoVotingCw20StakedSelectors } from '.'
 import {
@@ -43,6 +51,7 @@ import {
   featuredDaoDumpStatesAtom,
   queryContractIndexerSelector,
 } from '../indexer'
+import { genericTokenSelector } from '../token'
 import * as Cw20BaseSelectors from './Cw20Base'
 
 type QueryClientParams = WithChainId<{
@@ -60,6 +69,7 @@ export const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new DaoCoreV2QueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export type ExecuteClientParams = {
@@ -160,7 +170,7 @@ export const configSelector = selectorFamily<
       return await client.config(...params)
     },
 })
-// Use allCw20BalancesAndInfosSelector as it uses the indexer and implements
+// Use allCw20TokensWithBalancesSelector as it uses the indexer and implements
 // pagination for chain queries.
 export const _cw20BalancesSelector = selectorFamily<
   Cw20BalancesResponse,
@@ -640,17 +650,13 @@ export const allCw20InfosSelector = selectorFamily<
 })
 
 const CW20_BALANCES_LIMIT = 10
-export const allCw20BalancesAndInfosSelector = selectorFamily<
-  (Cw20BalanceResponse & {
-    info: TokenInfoResponse
-    imageUrl: string | undefined
-    isGovernanceToken: boolean
-  })[],
+export const allCw20TokensWithBalancesSelector = selectorFamily<
+  GenericTokenBalance[],
   QueryClientParams & {
     governanceTokenAddress?: string
   }
 >({
-  key: 'daoCoreV2AllCw20Balances',
+  key: 'daoCoreV2AllCw20TokensWithBalances',
   get:
     ({ governanceTokenAddress, ...queryClientParams }) =>
     async ({ get }) => {
@@ -721,38 +727,24 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
         })
       }
 
-      const infos = get(
+      const tokens = get(
         waitForAll(
           balances.map(({ addr }) =>
-            Cw20BaseSelectors.tokenInfoSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-
-              contractAddress: addr,
-              params: [],
+            genericTokenSelector({
+              type: TokenType.Cw20,
+              denomOrAddress: addr,
+              chainId: queryClientParams.chainId,
             })
           )
         )
       )
 
-      const cw20LogoUrls = get(
-        waitForAll(
-          balances.map(({ addr }) =>
-            Cw20BaseSelectors.logoUrlSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-              contractAddress: addr,
-            })
-          )
-        )
-      )
-
-      return balances.map((balance, index) => ({
-        ...balance,
-        info: infos[index],
-        imageUrl: cw20LogoUrls[index],
+      return tokens.map((token, index) => ({
+        token,
+        balance: balances![index].balance,
         isGovernanceToken:
-          !!governanceTokenAddress && governanceTokenAddress === balance.addr,
+          !!governanceTokenAddress &&
+          governanceTokenAddress === token.denomOrAddress,
       }))
     },
 })
@@ -760,19 +752,31 @@ export const allCw20BalancesAndInfosSelector = selectorFamily<
 const CW721_TOKEN_LIST_LIMIT = 30
 export const allCw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse,
-  QueryClientParams
+  QueryClientParams & {
+    governanceCollectionAddress?: string
+  }
 >({
   key: 'daoCoreV2AllCw721TokenList',
   get:
-    (queryClientParams) =>
+    ({ governanceCollectionAddress, ...queryClientParams }) =>
     async ({ get }) => {
-      const list = get(
+      let list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
           formulaName: 'daoCore/cw721List',
         })
       )
-      if (list) {
+      if (list && Array.isArray(list)) {
+        // Copy to new array so we can mutate it below.
+        list = [...list]
+        // Add governance collection to beginning of list if not present.
+        if (
+          governanceCollectionAddress &&
+          !list.includes(governanceCollectionAddress)
+        ) {
+          list.splice(0, 0, governanceCollectionAddress)
+        }
+
         return list
       }
 
@@ -799,6 +803,14 @@ export const allCw721TokenListSelector = selectorFamily<
         if (response.length < CW721_TOKEN_LIST_LIMIT) {
           break
         }
+      }
+
+      // Add governance collection to beginning of list if not present.
+      if (
+        governanceCollectionAddress &&
+        !tokenList.includes(governanceCollectionAddress)
+      ) {
+        tokenList.splice(0, 0, governanceCollectionAddress)
       }
 
       return tokenList
@@ -1007,5 +1019,29 @@ export const listAllItemsSelector = selectorFamily<
       }
 
       return items
+    },
+})
+
+export const payrollConfigSelector = selectorFamily<
+  DaoPayrollConfig | undefined,
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'daoCoreV2PayrollConfig',
+  get:
+    ({ coreAddress, chainId }) =>
+    async ({ get }) => {
+      const item = get(
+        getItemSelector({
+          contractAddress: coreAddress,
+          chainId,
+          params: [
+            {
+              key: DAO_CORE_PAYROLL_CONFIG_ITEM_KEY,
+            },
+          ],
+        })
+      )?.item
+
+      return getPayrollConfigFromItemValue(item)
     },
 })

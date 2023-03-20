@@ -1,16 +1,22 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import toast from 'react-hot-toast'
 
-import { TokenStake } from '@dao-dao/types'
+import { EntityDisplay } from '@dao-dao/stateful'
+import {
+  GenericToken,
+  TokenCardProps,
+  TokenStake,
+  TokenType,
+  UnstakingTaskStatus,
+} from '@dao-dao/types'
 
 import { ButtonLink } from '../buttons/ButtonLink'
-import { TokenCard, TokenCardProps } from './TokenCard'
+import { TokenCard } from './TokenCard'
 import { makeProps as makeUnstakingModalProps } from './UnstakingModal.stories'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / token / TokenCard',
   component: TokenCard,
-  excludeStories: ['makeProps'],
+  excludeStories: ['token', 'makeProps'],
 } as ComponentMeta<typeof TokenCard>
 
 const Template: ComponentStory<typeof TokenCard> = (args) => (
@@ -19,17 +25,20 @@ const Template: ComponentStory<typeof TokenCard> = (args) => (
   </div>
 )
 
-const denomProps = {
-  denom: 'ujuno',
+export const token: GenericToken = {
+  type: TokenType.Native,
+  denomOrAddress: 'ujuno',
   symbol: 'JUNO',
   decimals: 6,
+  imageUrl: '/juno.png',
 }
 
-export const makeProps = (crown = false): TokenCardProps => {
+export const makeProps = (isGovernanceToken = false): TokenCardProps => {
   // Random price between 0 and 10000 with up to 6 decimals.
   const unstakedBalance = Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6
   const stakes: TokenStake[] = [
     {
+      token,
       // Random price between 0 and 10000 with up to 6 decimals.
       amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
       validator: {
@@ -42,9 +51,9 @@ export const makeProps = (crown = false): TokenCardProps => {
         tokens: 7,
       },
       rewards: 1.23,
-      ...denomProps,
     },
     {
+      token,
       // Random price between 0 and 10000 with up to 6 decimals.
       amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
       validator: {
@@ -57,9 +66,9 @@ export const makeProps = (crown = false): TokenCardProps => {
         tokens: 7,
       },
       rewards: 4.56,
-      ...denomProps,
     },
     {
+      token,
       // Random price between 0 and 10000 with up to 6 decimals.
       amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
       validator: {
@@ -72,9 +81,9 @@ export const makeProps = (crown = false): TokenCardProps => {
         tokens: 7,
       },
       rewards: 7.89,
-      ...denomProps,
     },
     {
+      token,
       // Random price between 0 and 10000 with up to 6 decimals.
       amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
       validator: {
@@ -87,38 +96,54 @@ export const makeProps = (crown = false): TokenCardProps => {
         tokens: 7,
       },
       rewards: 10.11,
-      ...denomProps,
     },
   ]
 
+  const unstakingTasks = makeUnstakingModalProps('TOKEN').tasks
+  const totalStaked = stakes.reduce((acc, stake) => acc + stake.amount, 0)
+  const totalPendingRewards = stakes.reduce(
+    (acc, stake) => acc + stake.rewards,
+    0
+  )
+  const totalUnstaking =
+    unstakingTasks.reduce(
+      (acc, task) =>
+        acc +
+        // Only include balance of unstaking tasks.
+        (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
+      0
+    ) ?? 0
+
   return {
-    crown,
-    imageUrl: `/placeholders/${Math.floor(Math.random() * 5) + 1}.svg`,
-    tokenSymbol: 'JUNO',
-    tokenDenom: 'ujuno',
-    subtitle: 'Juno Network',
+    token: {
+      ...token,
+      imageUrl: `/placeholders/${Math.floor(Math.random() * 5) + 1}.svg`,
+    },
+    isGovernanceToken,
+    subtitle: '',
     unstakedBalance,
-    tokenDecimals: 6,
     hasStakingInfo: true,
     lazyInfo: {
       loading: false,
       data: {
-        usdcUnitPrice: {
+        usdUnitPrice: {
           amount: 5.38,
           timestamp: new Date(),
         },
         stakingInfo: {
-          unstakingTasks: makeUnstakingModalProps('JUNO').tasks,
+          unstakingTasks,
           unstakingDurationSeconds: 28 * 24 * 3600,
           stakes,
+          totalStaked,
+          totalPendingRewards,
+          totalUnstaking,
         },
+        totalBalance: totalStaked + unstakedBalance + totalUnstaking,
       },
     },
-    onAddToken: () => toast.success('added'),
-    proposeClaimHref: '#',
-    proposeStakeUnstakeHref: '#',
     onClaim: () => alert('claim'),
     ButtonLink,
+    EntityDisplay,
   }
 }
 

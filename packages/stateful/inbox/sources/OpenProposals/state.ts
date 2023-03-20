@@ -1,4 +1,4 @@
-import { atom, selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   blockHeightSelector,
@@ -6,19 +6,19 @@ import {
   openProposalsSelector,
 } from '@dao-dao/state/recoil'
 import {
+  DaoPageMode,
   InboxSourceDaoWithItems,
   InboxSourceItem,
   WithChainId,
 } from '@dao-dao/types'
-import { CHAIN_ID, convertExpirationToDate } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  convertExpirationToDate,
+  getDaoProposalPath,
+} from '@dao-dao/utils'
 
 import { ProposalLineProps } from '../../../components/ProposalLine'
 import { followingDaosWithProposalModulesSelector } from '../../../recoil'
-
-export const refreshInboxOpenProposalsAtom = atom<number>({
-  key: 'refreshInboxOpenProposals',
-  default: 0,
-})
 
 export const inboxOpenProposalsSelector = selectorFamily<
   InboxSourceDaoWithItems[],
@@ -28,15 +28,18 @@ export const inboxOpenProposalsSelector = selectorFamily<
   get:
     ({ walletAddress, chainId }) =>
     ({ get }) => {
-      get(refreshInboxOpenProposalsAtom)
-
       const blocksPerYear = get(blocksPerYearSelector({}))
       const currentBlockHeight = get(blockHeightSelector({}))
 
       // Need proposal modules for the proposal line props.
-      const followingDaosWithProposalModules = get(
-        followingDaosWithProposalModulesSelector
-      )
+      const followingDaosWithProposalModules = walletAddress
+        ? get(
+            followingDaosWithProposalModulesSelector({
+              walletAddress,
+              chainId,
+            })
+          )
+        : []
 
       const openProposalsPerDao = get(
         waitForAll(
@@ -71,14 +74,20 @@ export const inboxOpenProposalsSelector = selectorFamily<
                     ({
                       id,
                       proposal: { expiration },
+                      voted,
                     }): InboxSourceItem<ProposalLineProps> => ({
                       props: {
                         chainId: CHAIN_ID,
                         coreAddress,
                         proposalId: `${proposalModule.prefix}${id}`,
                         proposalModules,
-                        proposalViewUrl: `/dao/${coreAddress}/proposals/${proposalModule.prefix}${id}`,
+                        proposalViewUrl: getDaoProposalPath(
+                          DaoPageMode.Dapp,
+                          coreAddress,
+                          `${proposalModule.prefix}${id}`
+                        ),
                       },
+                      pending: !voted,
                       order: convertExpirationToDate(
                         blocksPerYear,
                         expiration,

@@ -4,40 +4,20 @@
 import { GetStaticPaths, NextPage } from 'next'
 
 import {
-  CreateDaoForm,
+  CreateSubDao,
   DaoPageWrapper,
   DaoPageWrapperProps,
 } from '@dao-dao/stateful'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
-import { useDaoInfoContext } from '@dao-dao/stateless'
-import { SITE_URL, getFallbackImage } from '@dao-dao/utils'
-
-const InnerCreateSubDaoPage = () => {
-  const { coreAddress, coreVersion, name, imageUrl, parentDao } =
-    useDaoInfoContext()
-
-  return (
-    <CreateDaoForm
-      parentDao={{
-        coreAddress,
-        coreVersion,
-        name,
-        imageUrl: imageUrl || getFallbackImage(coreAddress),
-        parentDao,
-
-        // If creating a SubDao, it is not yet registered.
-        registeredSubDao: false,
-      }}
-    />
-  )
-}
+import { DaoPageMode } from '@dao-dao/types'
+import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const CreateSubDaoPage: NextPage<DaoPageWrapperProps> = ({
   children: _,
   ...props
 }) => (
   <DaoPageWrapper {...props}>
-    <InnerCreateSubDaoPage />
+    <CreateSubDao />
   </DaoPageWrapper>
 )
 
@@ -51,7 +31,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps = makeGetDaoStaticProps({
   getProps: async ({ t, coreAddress }) => ({
-    url: `${SITE_URL}/dao/${coreAddress}/create`,
+    url: SITE_URL + getDaoPath(DaoPageMode.Dapp, coreAddress) + '/create',
     followingTitle: t('title.createASubDao'),
   }),
 })

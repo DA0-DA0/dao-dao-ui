@@ -21,10 +21,11 @@ export default {
       depositInfo: {
         amount: Math.pow(10, 6),
         type: 'native',
-        cw20Address: '',
-        cw20Decimals: 6,
+        denomOrAddress: '',
+        token: undefined,
         refundPolicy: DepositRefundPolicy.OnlyPassed,
       },
+      anyoneCanPropose: false,
     }),
     DaoPageWrapperDecorator,
   ],
@@ -42,13 +43,7 @@ Default.args = {
   data: {},
   isCreating: true,
   options: {
-    cw20: {
-      governanceTokenSymbol: 'GOV',
-      formattedJsonDisplayProps: {
-        jsonLoadable: {
-          state: 'loading',
-        },
-      } as any,
-    },
+    governanceToken: undefined,
+    cw20AddressError: undefined,
   },
 }

@@ -6,25 +6,26 @@ import {
   DaoVotingNativeStakedSelectors,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
-  usdcPerMacroTokenSelector,
+  wyndUsdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
-import {
-  UseGovernanceTokenInfoOptions,
-  UseGovernanceTokenInfoResponse,
-} from '@dao-dao/types'
+import { useCachedLoading } from '@dao-dao/stateless'
+import { TokenType } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
-  loadableToLoadingData,
+  getFallbackImage,
   nativeTokenDecimals,
   nativeTokenLabel,
+  nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
+import {
+  UseGovernanceTokenInfoOptions,
+  UseGovernanceTokenInfoResponse,
+} from '../types'
 
 export const useGovernanceTokenInfo = ({
   fetchWalletBalance = false,
-  fetchLoadingWalletBalance = false,
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
@@ -55,53 +56,48 @@ export const useGovernanceTokenInfo = ({
   /// Optional
 
   // Wallet balance
-  const walletBalance = useRecoilValue(
+  const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? nativeDenomBalanceSelector({
           walletAddress,
           denom,
         })
-      : constSelector(undefined)
-  )?.amount
-  const loadingWalletBalance = loadableToLoadingData(
-    useCachedLoadable(
-      fetchLoadingWalletBalance && walletAddress
-        ? nativeDenomBalanceSelector({
-            walletAddress,
-            denom,
-          })
-        : constSelector(undefined)
-    ),
+      : constSelector(undefined),
     undefined
   )
 
   // Treasury balance
-  const treasuryBalance = useRecoilValue(
+  const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? nativeDenomBalanceSelector({
           walletAddress: coreAddress,
           denom,
         })
-      : constSelector(undefined)
-  )?.amount
+      : constSelector(undefined),
+    undefined
+  )
 
   // Price info
-  const price = useRecoilValue(
+  const loadingPrice = useCachedLoading(
     fetchUsdcPrice && governanceTokenInfo
-      ? usdcPerMacroTokenSelector({
-          denom,
-          decimals: governanceTokenInfo.decimals,
-        })
-      : constSelector(undefined)
-  )?.amount
+      ? wyndUsdPriceSelector(denom)
+      : constSelector(undefined),
+    undefined
+  )
 
   return {
     stakingContractAddress: '',
     governanceTokenAddress: denom,
     governanceTokenInfo,
+    token: {
+      type: TokenType.Native,
+      denomOrAddress: denom,
+      symbol: governanceTokenInfo.symbol,
+      decimals,
+      imageUrl: nativeTokenLogoURI(denom) || getFallbackImage(denom),
+    },
     /// Optional
     // Wallet balance
-    walletBalance: walletBalance ? Number(walletBalance) : undefined,
     loadingWalletBalance: loadingWalletBalance.loading
       ? { loading: true }
       : !loadingWalletBalance.data
@@ -111,8 +107,22 @@ export const useGovernanceTokenInfo = ({
           data: Number(loadingWalletBalance.data.amount),
         },
     // Treasury balance
-    treasuryBalance: treasuryBalance ? Number(treasuryBalance) : undefined,
+    loadingTreasuryBalance: loadingTreasuryBalance.loading
+      ? { loading: true }
+      : !loadingTreasuryBalance.data
+      ? undefined
+      : {
+          loading: false,
+          data: Number(loadingTreasuryBalance.data.amount),
+        },
     // Price
-    price,
+    loadingPrice: loadingPrice.loading
+      ? { loading: true }
+      : !loadingPrice.data
+      ? undefined
+      : {
+          loading: false,
+          data: loadingPrice.data,
+        },
   }
 }

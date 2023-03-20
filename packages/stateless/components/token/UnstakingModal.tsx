@@ -13,7 +13,7 @@ import { UnstakingTaskStatus } from './UnstakingStatus'
 export interface UnstakingModalProps extends Omit<ModalProps, 'children'> {
   unstakingDuration?: string
   tasks: UnstakingTask[]
-  onClaim?: (tokenSymbol: string) => void
+  onClaim?: () => void
   refresh?: () => void
 }
 
@@ -50,7 +50,7 @@ export const UnstakingModal = ({
         )
         .reduce((combinedTasks, task) => {
           const existingTask = combinedTasks.find(
-            ({ tokenSymbol }) => tokenSymbol === task.tokenSymbol
+            ({ token }) => token.symbol === task.token.symbol
           )
           // If found, just modify existing by increasing amount. No need to
           // worry about the date since it will be replaced by a claim button.
@@ -91,18 +91,20 @@ export const UnstakingModal = ({
 
   // Refresh when the soonest task completes if refresh provided.
   useEffect(() => {
-    if (!refresh || unstaking.length === 0) {
+    if (!refresh || unstaking.length === 0 || !unstaking[0].date) {
       return
     }
 
-    // unstaking is sorted so that the first one is next to finish.
-    const msUntilNextTaskCompletion = unstaking[0].date
-      ? unstaking[0].date.getTime() - Date.now()
-      : 1000
+    // Unstaking is sorted so that the first one is next to finish.
+    const msUntilNextTaskCompletion = unstaking[0].date.getTime() - Date.now()
 
-    const timeout = setTimeout(refresh, msUntilNextTaskCompletion)
-    // Clean up on unmount.
-    return () => clearTimeout(timeout)
+    // `setTimeout` uses 32-bit integers, so we need to check if the number is
+    // too large. Why JavaScript...
+    if (msUntilNextTaskCompletion < 2 ** 31) {
+      const timeout = setTimeout(refresh, msUntilNextTaskCompletion)
+      // Clean up on unmount.
+      return () => clearTimeout(timeout)
+    }
   }, [unstaking, refresh])
 
   return (
@@ -122,9 +124,7 @@ export const UnstakingModal = ({
                 key={index}
                 dateReplacement={
                   onClaim && (
-                    <Button onClick={() => onClaim(task.tokenSymbol)}>
-                      {t('button.claim')}
-                    </Button>
+                    <Button onClick={onClaim}>{t('button.claim')}</Button>
                   )
                 }
                 task={task}

@@ -31,7 +31,7 @@ export const DaoHeader = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col items-center gap-4 py-10">
+    <div className="flex flex-col items-center gap-4 pt-4 pb-6">
       <DaoImage
         LinkWrapper={LinkWrapper}
         coreAddress={coreAddress}
@@ -51,7 +51,7 @@ export const DaoHeader = ({
       </div>
 
       <MarkdownRenderer
-        className="body-text whitespace-pre-wrap"
+        className="body-text max-w-[min(100%,65ch)] whitespace-pre-wrap"
         markdown={description}
       />
 

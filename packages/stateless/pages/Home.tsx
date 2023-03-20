@@ -3,15 +3,20 @@ import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  FeaturedDaos,
-  FeaturedDaosProps,
+  DaoCardInfo,
   FollowingDaos,
   FollowingDaosProps,
-  useAppLayoutContext,
+  HorizontalScroller,
+  HorizontalScrollerProps,
+  PageHeaderContent,
+  RightSidebarContent,
 } from '../components'
 
 export type HomeProps = {
-  featuredDaosProps: FeaturedDaosProps
+  featuredDaosProps: Pick<
+    HorizontalScrollerProps<DaoCardInfo>,
+    'Component' | 'items'
+  >
   followingDaosProps: FollowingDaosProps
   rightSidebarContent: ReactNode
   connected: boolean
@@ -24,15 +29,15 @@ const widthOfSidePadding = 'w-[max((100%-64rem)/2,1.5rem)]'
 export const Home = ({
   featuredDaosProps,
   rightSidebarContent,
-  ...props
+  followingDaosProps,
+  connected,
 }: HomeProps) => {
   const { t } = useTranslation()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader className={maxWidth} title={t('title.home')} />
+      <PageHeaderContent className={maxWidth} title={t('title.home')} />
 
       <div className="flex flex-col items-center gap-8">
         <p className={clsx('title-text', maxWidth)}>
@@ -40,42 +45,27 @@ export const Home = ({
         </p>
 
         {/* Featured DAOs container */}
-        {/* Margin offsets container padding. */}
-        <div className="relative -mx-6 self-stretch px-[1px]">
-          {/* Left shadow */}
-          <div
-            className={clsx(
-              'absolute top-0 bottom-0 left-0 z-10',
-              widthOfSidePadding
-            )}
-            style={{
-              background:
-                'linear-gradient(to left, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
-            }}
-          ></div>
-
-          <FeaturedDaos {...featuredDaosProps} />
-
-          {/* Right shadow */}
-          <div
-            className={clsx(
-              'absolute top-0 right-0 bottom-0 z-10',
-              widthOfSidePadding
-            )}
-            style={{
-              background:
-                'linear-gradient(to right, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
-            }}
-          ></div>
-        </div>
-
-        {/* Divider */}
-        <div className={clsx('h-[1px] bg-border-secondary', maxWidth)}></div>
+        <HorizontalScroller
+          {...featuredDaosProps}
+          // Margin offsets container padding.
+          containerClassName="-mx-6 self-stretch px-[1px]"
+          itemClassName="w-64"
+          shadowClassName={widthOfSidePadding}
+        />
 
         {/* Following DAOs */}
-        <div className={clsx('flex flex-col gap-8', maxWidth)}>
-          <FollowingDaos {...props.followingDaosProps} />
-        </div>
+        {connected && (
+          <>
+            {/* Divider */}
+            <div
+              className={clsx('h-[1px] bg-border-secondary', maxWidth)}
+            ></div>
+
+            <div className={clsx('flex flex-col gap-8', maxWidth)}>
+              <FollowingDaos {...followingDaosProps} />
+            </div>
+          </>
+        )}
       </div>
     </>
   )

@@ -60,6 +60,14 @@ export const getIconButtonifiedClassNames = ({
       // Disabled
       'bg-background-button-disabled text-icon-button-disabled': disabled,
     },
+    // Inverted primary variant
+    variant === 'primary_inverted' && {
+      // Default
+      'bg-icon-button-primary text-background-button hover:bg-text-button-disabled active:bg-icon-button-disabled':
+        !disabled,
+      // Disabled
+      'bg-icon-button-disabled text-background-button-disabled': disabled,
+    },
     // Secondary variant
     variant === 'secondary' && {
       // Default

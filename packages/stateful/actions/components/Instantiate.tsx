@@ -1,4 +1,3 @@
-import { Coin } from '@cosmjs/stargate'
 import { Check, Close } from '@mui/icons-material'
 import JSON5 from 'json5'
 import { useFieldArray, useFormContext } from 'react-hook-form'
@@ -15,11 +14,12 @@ import {
   NumberInput,
   TextInput,
 } from '@dao-dao/stateless'
+import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   makeWasmMessage,
-  validateContractAddress,
+  validateAddress,
   validateCosmosMsg,
   validatePositive,
   validateRequired,
@@ -32,7 +32,7 @@ import {
 } from './NativeCoinSelector'
 
 export interface InstantiateOptions {
-  nativeBalances: readonly Coin[]
+  nativeBalances: LoadingData<GenericTokenBalance[]>
   // Only present once executed.
   instantiatedAddress?: string
 }
@@ -171,7 +171,9 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           {isCreating && (
             <Button
               className="mb-2 self-start"
-              onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
+              onClick={() =>
+                appendCoin({ amount: 1, denom: NATIVE_TOKEN.denomOrAddress })
+              }
               variant="secondary"
             >
               {t('button.addPayment')}
@@ -189,7 +191,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
           type="contract"
-          validation={[(v: string) => validateContractAddress(v, false)]}
+          validation={[(v: string) => validateAddress(v, false)]}
         />
         <InputErrorMessage error={errors?.admin} />
       </div>

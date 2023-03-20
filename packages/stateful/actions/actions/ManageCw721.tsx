@@ -13,8 +13,8 @@ import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { ImageEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
-  ActionOptionsContextType,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -125,6 +125,7 @@ const Component: ActionComponent = (props) => {
         additionalAddressError,
         existingTokens,
         formattedJsonDisplayProps: {
+          title: t('form.tokenInfo'),
           jsonLoadable: tokenInfoLoadable,
         },
       }}
@@ -179,7 +180,7 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
   context,
 }) => {
   // Only DAOs.
-  if (context.type !== ActionOptionsContextType.Dao) {
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 

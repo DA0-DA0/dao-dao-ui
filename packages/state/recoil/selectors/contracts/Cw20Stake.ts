@@ -36,6 +36,7 @@ const queryClient = selectorFamily<Cw20StakeQueryClient, QueryClientParams>({
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new Cw20StakeQueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export type ExecuteClientParams = {

@@ -9,7 +9,7 @@ import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
-import { ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
@@ -19,8 +19,18 @@ import {
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
-import { ApolloGqlProvider, AppLayout, WalletProvider } from '@dao-dao/stateful'
-import { Theme, ThemeProvider, ToastNotifications } from '@dao-dao/stateless'
+import {
+  AppContextProvider,
+  DappLayout,
+  WalletProvider,
+} from '@dao-dao/stateful'
+import {
+  PageLoader,
+  Theme,
+  ThemeProvider,
+  ToastNotifications,
+} from '@dao-dao/stateless'
+import { DaoPageMode } from '@dao-dao/types'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 type DappProps = AppProps<{ featuredDaoDumpStates?: any[] } | {}>
@@ -31,12 +41,8 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
   const [navigatingToHref, setNavigatingToHref] =
     useRecoilState(navigatingToHrefAtom)
-  const [_theme, setTheme] = useRecoilState(activeThemeAtom)
+  const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
-
-  const isHomepage = router.pathname === '/'
-  // Always display the homepage with dark theme.
-  const theme = isHomepage ? Theme.Dark : _theme
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -68,32 +74,24 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      <ApolloGqlProvider>
-        {/* Don't mount wallet or load AppLayout while static page data is still loading. Things look weird and broken, and the wallet connects twice. AppLayout uses wallet hook, which depends on WalletProvider, so use placeholder Layout during fallback. */}
-        {router.isFallback ? (
-          <LayoutLoading>
-            <Component {...pageProps} />
-          </LayoutLoading>
-        ) : isHomepage ? (
-          <Component {...pageProps} />
-        ) : (
-          <WalletProvider>
-            <AppLayout>
+      {/* Show loader on fallback page when loading static props. */}
+      {router.isFallback ? (
+        <PageLoader />
+      ) : (
+        <WalletProvider>
+          {/* AppContextProvider uses wallet context. */}
+          <AppContextProvider mode={DaoPageMode.Dapp}>
+            <DappLayout>
               <Component {...pageProps} />
-            </AppLayout>
-          </WalletProvider>
-        )}
+            </DappLayout>
+          </AppContextProvider>
+        </WalletProvider>
+      )}
 
-        <ToastNotifications />
-      </ApolloGqlProvider>
+      <ToastNotifications />
     </ThemeProvider>
   )
 }
-
-// Plain layout while layout is loading (fallback page).
-const LayoutLoading = ({ children }: { children: ReactNode }) => (
-  <main className="h-full min-h-screen w-full overflow-hidden">{children}</main>
-)
 
 const DApp = (props: DappProps) => {
   const { t } = useTranslation()
@@ -106,18 +104,6 @@ const DApp = (props: DappProps) => {
             href: '/apple-touch-icon.png',
             rel: 'apple-touch-icon',
             sizes: '180x180',
-            type: 'image/png',
-          },
-          {
-            href: '/favicon-32x32.png',
-            rel: 'icon',
-            sizes: '32x32',
-            type: 'image/png',
-          },
-          {
-            href: '/favicon-16x16.png',
-            rel: 'icon',
-            sizes: '16x16',
             type: 'image/png',
           },
           {

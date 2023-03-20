@@ -13,23 +13,31 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { PopupTrigger } from '@dao-dao/types'
+
 import { useSearchFilter } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { SearchBar } from '../inputs/SearchBar'
 import { Modal } from '../modals'
 import { NoContent } from '../NoContent'
+import { TriggerRenderer } from './Popup'
 
 export interface FilterableItem {
   key: string | number
   Icon?: ComponentType
+  iconUrl?: string
+  iconClassName?: string
   label: ReactNode
   description?: ReactNode
   rightNode?: ReactNode
   selected?: boolean
+  contentContainerClassName?: string
 }
 
-export interface FilterableItemPopupProps<T extends FilterableItem> {
-  Trigger: ComponentType<{ onClick: () => void; open: boolean }>
+export interface FilterableItemPopupProps<
+  T extends FilterableItem = FilterableItem
+> {
+  trigger: PopupTrigger
   items: T[]
   filterableItemKeys: Fuse.FuseOptionKey<T>[]
   onSelect: (item: T, index: number) => void
@@ -43,7 +51,7 @@ export interface FilterableItemPopupProps<T extends FilterableItem> {
 }
 
 export const FilterableItemPopup = <T extends FilterableItem>({
-  Trigger,
+  trigger,
   items,
   filterableItemKeys,
   onSelect,
@@ -62,9 +70,10 @@ export const FilterableItemPopup = <T extends FilterableItem>({
   const itemsListRef = useRef<HTMLDivElement>(null)
   const searchBarRef = useRef<HTMLInputElement>(null)
 
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  // When filtered items update, reset selection to top.
-  useEffect(() => setSelectedIndex(0), [filteredData])
+  // Default nothing selected.
+  const [selectedIndex, setSelectedIndex] = useState(-1)
+  // When filtered items update, reset selection.
+  useEffect(() => setSelectedIndex(-1), [filteredData])
   // Ensure selected item is scrolled into view.
   useEffect(() => {
     const item = itemsListRef.current?.children[selectedIndex]
@@ -84,15 +93,19 @@ export const FilterableItemPopup = <T extends FilterableItem>({
     })
   }, [selectedIndex])
 
+  // Memoize reference so that it doesn't change on every render.
+  const onSelectRef = useRef(onSelect)
+  onSelectRef.current = onSelect
+
   const onSelectItem = useCallback(
-    (item: T, index: number) => {
-      onSelect(item, index)
+    (item: T, originalIndex: number) => {
+      onSelectRef.current(item, originalIndex)
       // Close.
       if (closeOnSelect) {
         setOpen(false)
       }
     },
-    [closeOnSelect, onSelect]
+    [closeOnSelect]
   )
 
   const handleKeyPress = useCallback(
@@ -115,6 +128,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
           break
         case 'ArrowRight':
         case 'ArrowDown':
+        case 'Tab':
           event.preventDefault()
           setSelectedIndex(
             // Just in case for some reason the index is underflowing.
@@ -123,8 +137,13 @@ export const FilterableItemPopup = <T extends FilterableItem>({
           break
         case 'Enter':
           event.preventDefault()
-          if (selectedIndex >= 0 && selectedIndex < filteredData.length) {
-            onSelectItem(filteredData[selectedIndex], selectedIndex)
+          // If nothing is selected, click the first item. It's confusing when
+          // the first item is highlighted by default, so we don't show it as
+          // selected, but still select it when pressing enter.
+          const index = selectedIndex === -1 ? 0 : selectedIndex
+          if (index >= 0 && index < filteredData.length) {
+            const { item, originalIndex } = filteredData[index]
+            onSelectItem(item, originalIndex)
           }
           break
       }
@@ -169,7 +188,10 @@ export const FilterableItemPopup = <T extends FilterableItem>({
 
   return (
     <>
-      <Trigger onClick={() => setOpen((o) => !o)} open={open} />
+      <TriggerRenderer
+        options={{ open, onClick: () => setOpen((o) => !o) }}
+        trigger={trigger}
+      />
 
       <Modal
         containerClassName="!w-[24rem] !max-w-[96vw] !h-[32rem] !max-h-[96vh]"
@@ -198,7 +220,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
           ref={itemsListRef}
         >
           {filteredData.length > 0 ? (
-            filteredData.map((item, index) => (
+            filteredData.map(({ item, originalIndex }, index) => (
               <Button
                 key={item.key}
                 className={clsx(
@@ -206,15 +228,28 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                   selectedIndex === index &&
                     'bg-background-interactive-selected'
                 )}
-                contentContainerClassName="gap-4"
-                onClick={() => onSelectItem(item, index)}
+                contentContainerClassName={clsx(
+                  'gap-3',
+                  item.contentContainerClassName
+                )}
+                onClick={() => onSelectItem(item, originalIndex)}
                 variant="ghost"
               >
-                {item.Icon && (
+                {item.Icon ? (
                   <p className="text-2xl">
                     <item.Icon />
                   </p>
-                )}
+                ) : item.iconUrl ? (
+                  <div
+                    className={clsx(
+                      'h-7 w-7 rounded-full bg-cover bg-center',
+                      item.iconClassName
+                    )}
+                    style={{
+                      backgroundImage: `url(${item.iconUrl})`,
+                    }}
+                  />
+                ) : null}
 
                 <div className="min-w-0 space-y-1 text-left">
                   <div className="flex flex-row items-center gap-2">

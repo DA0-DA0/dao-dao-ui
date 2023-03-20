@@ -2,25 +2,24 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector } from 'recoil'
 
-import { FireEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import { FireEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import {
-  loadableToLoadingDataWithError,
-  makeWasmMessage,
-  objectMatchesStructure,
-} from '@dao-dao/utils'
+import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import {
   nftCardInfoSelector,
-  nftCardInfosSelector,
+  nftCardInfosForDaoSelector,
+  walletNftCardInfos,
 } from '../../../recoil/selectors/nft'
+import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../voting-module-adapter'
 import { BurnNft, BurnNftData } from '../../components/nft'
 import { useActionOptions } from '../../react'
 
@@ -74,23 +73,29 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<BurnNftData> = (
     : { match: false }
 
 const Component: ActionComponent = (props) => {
-  const { address, chainId } = useActionOptions()
+  const { context, address, chainId } = useActionOptions()
   const { watch } = useFormContext()
+  const { denomOrAddress: governanceCollectionAddress } =
+    useCw721CommonGovernanceTokenInfoIfExists() ?? {}
 
   const tokenId = watch(props.fieldNamePrefix + 'tokenId')
   const collection = watch(props.fieldNamePrefix + 'collection')
 
-  const options = loadableToLoadingDataWithError(
-    useCachedLoadable(
-      props.isCreating
-        ? nftCardInfosSelector({
+  const options = useCachedLoadingWithError(
+    props.isCreating
+      ? context.type === ActionContextType.Dao
+        ? nftCardInfosForDaoSelector({
             coreAddress: address,
             chainId,
+            governanceCollectionAddress,
           })
-        : constSelector([])
-    )
+        : walletNftCardInfos({
+            walletAddress: address,
+            chainId,
+          })
+      : undefined
   )
-  const nftInfoLoadable = useCachedLoadable(
+  const nftInfo = useCachedLoadingWithError(
     !!tokenId && !!collection
       ? nftCardInfoSelector({ chainId, collection, tokenId })
       : constSelector(undefined)
@@ -101,7 +106,7 @@ const Component: ActionComponent = (props) => {
       {...props}
       options={{
         options,
-        nftInfo: loadableToLoadingDataWithError(nftInfoLoadable),
+        nftInfo,
       }}
     />
   )

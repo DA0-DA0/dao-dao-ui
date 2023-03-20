@@ -1,72 +1,65 @@
-import { useEffect } from 'react'
+import { useWallet } from '@noahsaso/cosmodal'
 
 import {
-  NftCard,
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
-  useCachedLoadable,
+  useCachedLoading,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
 import { CoreActionKey } from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { useCoreActionForKey } from '../../../actions'
+import { useActionForKey } from '../../../actions'
 import {
   useEncodedDaoProposalSinglePrefill,
   useMembership,
 } from '../../../hooks'
 import {
-  nftCardInfosSelector,
+  nftCardInfosForDaoSelector,
   treasuryTokenCardInfosSelector,
 } from '../../../recoil'
 import {
-  useCw20GovernanceTokenInfoResponseIfExists,
-  useNativeGovernanceTokenInfoResponseIfExists,
+  useCw20CommonGovernanceTokenInfoIfExists,
+  useCw721CommonGovernanceTokenInfoIfExists,
+  useNativeCommonGovernanceTokenInfoIfExists,
 } from '../../../voting-module-adapter'
+import { NftCard } from '../../NftCard'
 import { StargazeNftImportModal } from '../../StargazeNftImportModal'
-import { TokenCard } from '../TokenCard'
+import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
+import { DaoTokenCard } from '../DaoTokenCard'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
+  const { connected } = useWallet()
+  const { getDaoProposalPath } = useNavHelpers()
   const { isMember = false } = useMembership(daoInfo)
-  const { governanceTokenAddress: cw20GovernanceTokenAddress } =
-    useCw20GovernanceTokenInfoResponseIfExists() ?? {}
-  const { governanceTokenAddress: nativeGovernanceTokenDenom } =
-    useNativeGovernanceTokenInfoResponseIfExists() ?? {}
 
-  const treasuryTokenCardInfosLoadable = useCachedLoadable(
+  const { denomOrAddress: cw20GovernanceTokenAddress } =
+    useCw20CommonGovernanceTokenInfoIfExists() ?? {}
+  const { denomOrAddress: nativeGovernanceTokenDenom } =
+    useNativeCommonGovernanceTokenInfoIfExists() ?? {}
+  const { denomOrAddress: cw721GovernanceCollectionAddress } =
+    useCw721CommonGovernanceTokenInfoIfExists() ?? {}
+
+  const tokens = useCachedLoading(
     treasuryTokenCardInfosSelector({
       coreAddress: daoInfo.coreAddress,
       chainId: daoInfo.chainId,
       cw20GovernanceTokenAddress,
       nativeGovernanceTokenDenom,
-    })
+    }),
+    []
   )
-  const nftCardInfosLoadable = useCachedLoadable(
-    nftCardInfosSelector({
+  const nfts = useCachedLoading(
+    nftCardInfosForDaoSelector({
       coreAddress: daoInfo.coreAddress,
       chainId: daoInfo.chainId,
-    })
+      governanceCollectionAddress: cw721GovernanceCollectionAddress,
+    }),
+    []
   )
 
-  //! Loadable errors.
-  useEffect(() => {
-    if (treasuryTokenCardInfosLoadable.state === 'hasError') {
-      console.error(treasuryTokenCardInfosLoadable.contents)
-    }
-    if (nftCardInfosLoadable.state === 'hasError') {
-      console.error(nftCardInfosLoadable.contents)
-    }
-  }, [
-    nftCardInfosLoadable.contents,
-    nftCardInfosLoadable.state,
-    treasuryTokenCardInfosLoadable.contents,
-    treasuryTokenCardInfosLoadable.state,
-  ])
-
   // ManageCw721 action defaults to adding
-  const addCw721Action = useCoreActionForKey(CoreActionKey.ManageCw721)
-  // Prefill URL only valid if action exists.
-  const prefillValid = !!addCw721Action
+  const addCw721Action = useActionForKey(CoreActionKey.ManageCw721)
   const encodedProposalPrefill = useEncodedDaoProposalSinglePrefill({
     actions: addCw721Action
       ? [
@@ -80,17 +73,21 @@ export const TreasuryAndNftsTab = () => {
 
   return (
     <StatelessTreasuryAndNftsTab
+      FiatDepositModal={connected ? DaoFiatDepositModal : undefined}
       NftCard={NftCard}
       StargazeNftImportModal={StargazeNftImportModal}
-      TokenCard={TokenCard}
+      TokenCard={DaoTokenCard}
       addCollectionHref={
-        prefillValid && encodedProposalPrefill
-          ? `/dao/${daoInfo.coreAddress}/proposals/create?prefill=${encodedProposalPrefill}`
+        // Prefill URL only valid if action exists.
+        !!addCw721Action && encodedProposalPrefill
+          ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
+              prefill: encodedProposalPrefill,
+            })
           : undefined
       }
       isMember={isMember}
-      nfts={loadableToLoadingData(nftCardInfosLoadable, [])}
-      tokens={loadableToLoadingData(treasuryTokenCardInfosLoadable, [])}
+      nfts={nfts}
+      tokens={tokens}
     />
   )
 }

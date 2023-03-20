@@ -10,6 +10,7 @@ import {
   CommonProposalInfo,
   ContractVersion,
   ContractVersionInfo,
+  DaoPageMode,
   DaoParentInfo,
   IndexerDumpState,
   InfoResponse,
@@ -28,6 +29,7 @@ import {
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   cosmWasmClientRouter,
+  getDaoPath,
   getRpcForChainId,
   isValidWalletAddress,
   parseContractVersion,
@@ -35,10 +37,7 @@ import {
   toAccessibleImageUrl,
   validateContractAddress,
 } from '@dao-dao/utils'
-import {
-  FAST_AVERAGE_COLOR_API_TEMPLATE,
-  SITE_URL,
-} from '@dao-dao/utils/constants'
+import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -256,7 +255,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       ) {
         return {
           redirect: {
-            destination: LEGACY_URL_PREFIX + `/dao/${coreAddress}`,
+            destination:
+              LEGACY_URL_PREFIX + getDaoPath(DaoPageMode.Dapp, coreAddress),
             permanent: false,
           },
         }
@@ -269,7 +269,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         (error.message.includes('contract: not found') ||
           error.message.includes('Error parsing into type') ||
           error.message.includes('decoding bech32 failed') ||
-          error.message.includes('/dao/dumpState reason: Unexpected token'))
+          error.message.includes('dumpState reason: Unexpected token'))
       ) {
         // Excluding `info` will render DAONotFound.
         return {
@@ -483,73 +483,77 @@ const daoCoreDumpState = async (
   // Prevent cycles by ensuring admin has not already been seen.
   previousParentAddresses?: string[]
 ): Promise<DaoCoreDumpState> => {
-  let indexerDumpedState: IndexerDumpState | undefined
-
   try {
-    indexerDumpedState = await queryIndexer<IndexerDumpState>(
+    const indexerDumpedState = await queryIndexer<IndexerDumpState>(
       'contract',
       coreAddress,
-      'daoCore/dumpState',
-      {
-        // Needed for server-side queries.
-        baseUrl: SITE_URL,
+      'daoCore/dumpState'
+    )
+
+    // Use data from indexer if present.
+    if (indexerDumpedState) {
+      if (
+        LEGACY_DAO_CONTRACT_NAMES.includes(indexerDumpedState.version?.contract)
+      ) {
+        throw new LegacyDaoError()
       }
-    )
+
+      const coreVersion = parseContractVersion(
+        indexerDumpedState.version.version
+      )
+      if (!coreVersion) {
+        throw new Error(serverT('error.failedParsingCoreVersion'))
+      }
+
+      const parentDaoInfo = await loadParentDaoInfo(
+        chainId,
+        bech32Prefix,
+        coreAddress,
+        indexerDumpedState.admin,
+        serverT,
+        [...(previousParentAddresses ?? []), coreAddress]
+      )
+
+      return {
+        ...indexerDumpedState,
+        version: coreVersion,
+        votingModule: {
+          address: indexerDumpedState.voting_module,
+          info: indexerDumpedState.votingModuleInfo,
+        },
+        activeProposalModules: indexerDumpedState.proposal_modules.filter(
+          ({ status }) => status === 'enabled' || status === 'Enabled'
+        ),
+        created: indexerDumpedState.createdAt
+          ? new Date(indexerDumpedState.createdAt)
+          : undefined,
+        parentDao: parentDaoInfo
+          ? {
+              ...parentDaoInfo,
+              // Whether or not this parent has registered its child as a SubDAO.
+              registeredSubDao:
+                indexerDumpedState.adminInfo?.registeredSubDao ?? false,
+            }
+          : null,
+      }
+    }
   } catch (error) {
+    // Rethrow if legacy DAO.
+    if (error instanceof LegacyDaoError) {
+      throw error
+    }
+
     // Ignore error. Fallback to querying chain below.
-    console.error(error)
-  }
-
-  // Use data from indexer if present.
-  if (indexerDumpedState) {
-    if (
-      LEGACY_DAO_CONTRACT_NAMES.includes(indexerDumpedState.version?.contract)
-    ) {
-      throw new LegacyDaoError()
-    }
-
-    const coreVersion = parseContractVersion(indexerDumpedState.version.version)
-    if (!coreVersion) {
-      throw new Error(serverT('error.failedParsingCoreVersion'))
-    }
-
-    const parentDaoInfo = await loadParentDaoInfo(
-      chainId,
-      bech32Prefix,
-      coreAddress,
-      indexerDumpedState.admin,
-      serverT,
-      [...(previousParentAddresses ?? []), coreAddress]
-    )
-
-    return {
-      ...indexerDumpedState,
-      version: coreVersion,
-      votingModule: {
-        address: indexerDumpedState.voting_module,
-        info: indexerDumpedState.votingModuleInfo,
-      },
-      activeProposalModules: indexerDumpedState.proposal_modules.filter(
-        ({ status }) => status === 'enabled' || status === 'Enabled'
-      ),
-      created: indexerDumpedState.createdAt
-        ? new Date(indexerDumpedState.createdAt)
-        : undefined,
-      parentDao: parentDaoInfo
-        ? {
-            ...parentDaoInfo,
-            // Whether or not this parent has registered its child as a SubDAO.
-            registeredSubDao:
-              indexerDumpedState.adminInfo?.registeredSubDao ?? false,
-          }
-        : null,
-    }
+    console.error(error, processError(error))
   }
 
   const cwClient = await cosmWasmClientRouter.connect(getRpcForChainId(chainId))
   const daoCoreClient = new DaoCoreV2QueryClient(cwClient, coreAddress)
 
   const dumpedState = await daoCoreClient.dumpState()
+  if (LEGACY_DAO_CONTRACT_NAMES.includes(dumpedState.version.contract)) {
+    throw new LegacyDaoError()
+  }
 
   const coreVersion = parseContractVersion(dumpedState.version.version)
   if (!coreVersion) {

@@ -1,7 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { token } from '@dao-dao/stateless/components/token/TokenCard.stories'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
-import { NATIVE_DENOM, StakeType } from '@dao-dao/utils'
+import { TokenStake } from '@dao-dao/types'
+import { StakeType } from '@dao-dao/utils'
 
 import { StakeComponent, StakeData } from './StakingActions'
 
@@ -14,7 +16,6 @@ export default {
       validator: '',
       toValidator: '',
       amount: 1,
-      denom: NATIVE_DENOM,
     }),
   ],
 } as ComponentMeta<typeof StakeComponent>
@@ -23,14 +24,9 @@ const Template: ComponentStory<typeof StakeComponent> = (args) => (
   <StakeComponent {...args} />
 )
 
-const denomProps = {
-  denom: NATIVE_DENOM,
-  symbol: 'JUNOX',
-  decimals: 6,
-}
-
-const stakes = [
+const stakes: TokenStake[] = [
   {
+    token,
     // Random price between 0 and 10000 with up to 6 decimals.
     amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
     validator: {
@@ -43,9 +39,9 @@ const stakes = [
       tokens: 5,
     },
     rewards: 1.23,
-    ...denomProps,
   },
   {
+    token,
     // Random price between 0 and 10000 with up to 6 decimals.
     amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
     validator: {
@@ -58,9 +54,9 @@ const stakes = [
       tokens: 6.2,
     },
     rewards: 4.56,
-    ...denomProps,
   },
   {
+    token,
     // Random price between 0 and 10000 with up to 6 decimals.
     amount: Math.floor(Math.random() * (10000 * 1e6) + 1e6) / 1e6,
     validator: {
@@ -73,7 +69,6 @@ const stakes = [
       tokens: 7,
     },
     rewards: 7.89,
-    ...denomProps,
   },
 ]
 
@@ -83,12 +78,7 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   options: {
-    nativeBalances: [
-      {
-        denom: NATIVE_DENOM,
-        amount: '1234567890',
-      },
-    ],
+    nativeBalance: '46252349169321',
     stakes,
     validators: [
       ...stakes.map(({ validator }) => validator),

@@ -10,7 +10,7 @@ export interface PercentButtonProps {
   percent: number
   amount: number
   setAmount: (newAmount: number) => void
-  tokenDecimals: number
+  decimals: number
   className?: string
   absoluteOffset?: number
 }
@@ -21,7 +21,7 @@ export const PercentButton = ({
   percent,
   amount,
   setAmount,
-  tokenDecimals,
+  decimals,
   className,
   absoluteOffset,
 }: PercentButtonProps) => (
@@ -36,20 +36,24 @@ export const PercentButton = ({
           Math.max(
             Number(
               (loadingMax.data * percent + (absoluteOffset ?? 0)).toFixed(
-                tokenDecimals
+                decimals
               )
             ),
-            1 / Math.pow(10, tokenDecimals)
+            1 / Math.pow(10, decimals)
           ),
           loadingMax.data
         )
       )
     }
     pressed={
+      // Only show as pressed if percent and amount are both zero or nonzero. If
+      // one is zero and the other is nonzero, the button should not be pressed.
+      // This ensures that the button doesn't show as pressed when the max is 0,
+      // since all percents of 0 are 0.
+      (percent === 0) === (amount === 0) &&
       !loadingMax.loading &&
-      (loadingMax.data * percent + (absoluteOffset ?? 0)).toFixed(
-        tokenDecimals
-      ) === amount.toFixed(tokenDecimals)
+      (loadingMax.data * percent + (absoluteOffset ?? 0)).toFixed(decimals) ===
+        amount.toFixed(decimals)
     }
     variant="secondary"
   >

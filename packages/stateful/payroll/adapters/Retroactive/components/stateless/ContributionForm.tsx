@@ -85,7 +85,7 @@ export const ContributionForm = ({
           markdown={survey.contributionInstructions}
         />
 
-        <div className="flex grow flex-col gap-4 pb-10">
+        <div className="flex min-w-[18rem] grow flex-col gap-4 pb-10">
           <div className="flex flex-col gap-2">
             <p className="primary-text text-text-body">
               {t('title.yourSubmission')}

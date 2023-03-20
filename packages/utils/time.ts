@@ -37,3 +37,7 @@ export const secondsToWdhms = (
 //          dateToWdhms(new Date(Date.now() - 1000)) === '1 second'
 export const dateToWdhms = (date: Date, numUnits = 2) =>
   secondsToWdhms(Math.abs(date.getTime() - Date.now()) / 1000, numUnits)
+
+// Converts number in seconds to time format mm:ss. Clock format.
+export const secondsToMmSs = (seconds: number) =>
+  `${Math.floor(seconds / 60)}:${`0${Math.floor(seconds % 60)}`.slice(-2)}`

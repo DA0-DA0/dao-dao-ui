@@ -20,7 +20,7 @@ export interface UnstakingLineProps {
 const sharedClassNames = 'bg-background-secondary rounded-md'
 
 export const UnstakingLine = ({
-  task: { status, amount, tokenSymbol, tokenDecimals, date },
+  task: { status, amount, token, date },
   dateReplacement,
 }: UnstakingLineProps) => {
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
@@ -42,13 +42,15 @@ export const UnstakingLine = ({
           'box-content hidden h-8 grid-cols-[auto_1fr_auto] items-center gap-8 py-3 px-4 md:grid'
         )}
       >
-        <UnstakingStatus status={status} />
+        <div className="pr-4">
+          <UnstakingStatus status={status} />
+        </div>
 
         <TokenAmountDisplay
           amount={amount}
           className="body-text truncate"
-          decimals={tokenDecimals}
-          symbol={tokenSymbol}
+          decimals={token.decimals}
+          symbol={token.symbol}
         />
 
         {dateReplacement || (
@@ -73,8 +75,8 @@ export const UnstakingLine = ({
           <TokenAmountDisplay
             amount={amount}
             className="body-text break-words"
-            decimals={tokenDecimals}
-            symbol={tokenSymbol}
+            decimals={token.decimals}
+            symbol={token.symbol}
           />
 
           {dateReplacement ||

@@ -1,5 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import {
+  WALLET_PROFILE_DATA,
+  WALLET_PROFILE_DATA_LOADING,
+} from '@dao-dao/storybook'
+
 import { ProfileHomeCard } from './ProfileHomeCard'
 
 export default {
@@ -16,19 +21,11 @@ const Template: ComponentStory<typeof ProfileHomeCard> = (args) => (
 
 export const Default = Template.bind({})
 // Wallet details are used in other story files, like `SidebarWallet` and
-// `makeAppLayoutDecorator`.
+// `makeDappLayoutDecorator`.
 Default.args = {
-  walletProfile: {
-    loading: false,
-    data: {
-      nonce: 0,
-      imageUrl: '/noah.jpg',
-      name: '@Modern-Edamame',
-      nft: null,
-    },
-  },
+  walletProfileData: WALLET_PROFILE_DATA,
   tokenSymbol: 'JUNO',
-  inboxProposalCount: 5,
+  inboxPendingCount: 5,
   lazyData: {
     loading: false,
     data: {
@@ -54,12 +51,10 @@ Default.parameters = {
 
 export const Loading = Template.bind({})
 // Wallet details are used in other story files, like `SidebarWallet` and
-// `makeAppLayoutDecorator`.
+// `makeDappLayoutDecorator`.
 Loading.args = {
   ...Default.args,
-  walletProfile: {
-    loading: true,
-  },
+  walletProfileData: WALLET_PROFILE_DATA_LOADING,
   lazyData: {
     loading: true,
   },

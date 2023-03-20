@@ -33,4 +33,5 @@ export enum ContractVersion {
   V2Alpha = '0.2.0',
   V2Beta = '2.0.0-beta',
   V2 = '2.0.1',
+  V203 = '2.0.3',
 }

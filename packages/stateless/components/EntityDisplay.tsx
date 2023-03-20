@@ -4,8 +4,13 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { EntityDisplayProps, EntityType } from '@dao-dao/types'
-import { getFallbackImage, toAccessibleImageUrl } from '@dao-dao/utils'
+import {
+  getFallbackImage,
+  toAccessibleImageUrl,
+  toBech32Hash,
+} from '@dao-dao/utils'
 
+import { useNavHelpers } from '../hooks'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
 import { IconButtonLink } from './icon_buttons'
 import { Tooltip } from './tooltip/Tooltip'
@@ -22,6 +27,7 @@ export const EntityDisplay = ({
   noCopy,
 }: EntityDisplayProps) => {
   const { t } = useTranslation()
+  const { getDaoPath } = useNavHelpers()
 
   imageSize ??= size === 'lg' ? 28 : 24
 
@@ -44,7 +50,7 @@ export const EntityDisplay = ({
             style={{
               backgroundImage: `url(${
                 loadingEntity.loading
-                  ? getFallbackImage(address)
+                  ? getFallbackImage(toBech32Hash(address))
                   : toAccessibleImageUrl(loadingEntity.data.imageUrl)
               })`,
               width: imageSize,
@@ -62,7 +68,7 @@ export const EntityDisplay = ({
         }}
         tooltip={
           // If displaying name, show tooltip to copy address.
-          !loadingEntity.loading && loadingEntity.data.name
+          !loadingEntity.loading && loadingEntity.data.name && !noCopy
             ? t('button.clickToCopyAddress')
             : undefined
         }
@@ -90,7 +96,7 @@ export const EntityDisplay = ({
       {!loadingEntity.loading && loadingEntity.data.type === EntityType.Dao && (
         <IconButtonLink
           Icon={ArrowOutwardRounded}
-          href={`/dao/${address}`}
+          href={getDaoPath(address)}
           iconClassName="text-icon-tertiary"
           openInNewTab
           size="xs"

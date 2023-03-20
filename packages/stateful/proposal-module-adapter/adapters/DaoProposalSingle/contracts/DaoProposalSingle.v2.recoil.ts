@@ -45,6 +45,7 @@ export const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new DaoProposalSingleV2QueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export type ExecuteClientParams = {
@@ -100,12 +101,14 @@ export const proposalSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const id = get(
-        refreshProposalIdAtom({
-          address: queryClientParams.contractAddress,
-          proposalId: params[0].proposalId,
-        })
-      )
+      const id =
+        get(refreshProposalsIdAtom) +
+        get(
+          refreshProposalIdAtom({
+            address: queryClientParams.contractAddress,
+            proposalId: params[0].proposalId,
+          })
+        )
 
       const proposalResponse = get(
         queryContractIndexerSelector({
@@ -220,12 +223,14 @@ export const getVoteSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const id = get(
-        refreshProposalIdAtom({
-          address: queryClientParams.contractAddress,
-          proposalId: params[0].proposalId,
-        })
-      )
+      const id =
+        get(refreshProposalsIdAtom) +
+        get(
+          refreshProposalIdAtom({
+            address: queryClientParams.contractAddress,
+            proposalId: params[0].proposalId,
+          })
+        )
 
       const vote = get(
         queryContractIndexerSelector({
@@ -255,12 +260,14 @@ export const listVotesSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const id = get(
-        refreshProposalIdAtom({
-          address: queryClientParams.contractAddress,
-          proposalId: params[0].proposalId,
-        })
-      )
+      const id =
+        get(refreshProposalsIdAtom) +
+        get(
+          refreshProposalIdAtom({
+            address: queryClientParams.contractAddress,
+            proposalId: params[0].proposalId,
+          })
+        )
 
       const votes = get(
         queryContractIndexerSelector({

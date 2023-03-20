@@ -7,16 +7,13 @@ import {
   IconButton,
   InputErrorMessage,
   InputLabel,
-  NumberInput,
-  SelectInput,
   TextInput,
+  TokenInput,
 } from '@dao-dao/stateless'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
+import { GenericToken } from '@dao-dao/types'
 import {
-  NATIVE_DENOM,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-  validatePositive,
+  NATIVE_TOKEN,
+  convertMicroDenomToDenomWithDecimals,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -25,18 +22,13 @@ import { NewSurveyFormData } from '../../types'
 export interface NewAttributeProps {
   index: number
   onRemove: () => void
-  nativeDenoms: string[]
-  cw20TokenInfos: {
-    address: string
-    info: TokenInfoResponse
-  }[]
+  availableTokens: GenericToken[]
 }
 
 export const NewAttribute = ({
   index: attributeIndex,
   onRemove,
-  nativeDenoms,
-  cw20TokenInfos,
+  availableTokens,
 }: NewAttributeProps) => {
   const { t } = useTranslation()
   const {
@@ -58,14 +50,12 @@ export const NewAttribute = ({
 
   // Returns the decimals for the given native denom or CW20 address.
   const getDecimalsForDenomOrAddress = (denomOrAddress: string) =>
-    cw20TokenInfos.find(({ address }) => address === denomOrAddress)?.info
-      ?.decimals ??
-    nativeTokenDecimals(denomOrAddress) ??
-    0
+    availableTokens.find((token) => token.denomOrAddress === denomOrAddress)
+      ?.decimals ?? 0
   // Returns a label for the given native denom or CW20 address.
   const getLabelForDenomOrAddress = (denomOrAddress: string) =>
-    cw20TokenInfos.find(({ address }) => address === denomOrAddress)?.info
-      .symbol ?? nativeTokenLabel(denomOrAddress)
+    availableTokens.find((token) => token.denomOrAddress === denomOrAddress)
+      ?.symbol ?? t('info.token')
 
   // Combine tokens into readable list.
   const stringifiedTokens = (watch(`attributes.${attributeIndex}.tokens`) || [])
@@ -122,72 +112,35 @@ export const NewAttribute = ({
               `attributes.${attributeIndex}.tokens.${tokenIndex}.denomOrAddress` as const
             const denomOrAddress = watch(denomOrAddressFieldName)
 
-            const decimals = getDecimalsForDenomOrAddress(denomOrAddress)
+            const selectedToken = availableTokens.find(
+              (token) => token.denomOrAddress === denomOrAddress
+            )
 
             return (
               <div
                 key={token.id}
                 className="flex flex-row gap-2 rounded-lg bg-background-tertiary p-4"
               >
-                <NumberInput
-                  containerClassName="grow"
-                  error={
+                <TokenInput
+                  amountError={
                     errors?.attributes?.[attributeIndex]?.tokens?.[tokenIndex]
                       ?.amount
                   }
-                  fieldName={`attributes.${attributeIndex}.tokens.${tokenIndex}.amount`}
-                  onMinus={() =>
-                    setValue(
-                      `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`,
-                      Math.max(
-                        (Number(
-                          watch(
-                            `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`
-                          )
-                        ) || 0) - 1,
-                        Math.pow(10, -decimals)
-                      ).toString()
-                    )
-                  }
-                  onPlus={() =>
-                    setValue(
-                      `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`,
-                      Math.max(
-                        (Number(
-                          watch(
-                            `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`
-                          )
-                        ) || 0) + 1,
-                        Math.pow(10, -decimals)
-                      ).toString()
-                    )
+                  amountFieldName={`attributes.${attributeIndex}.tokens.${tokenIndex}.amount`}
+                  amountStep={convertMicroDenomToDenomWithDecimals(
+                    1,
+                    selectedToken?.decimals ?? 0
+                  )}
+                  onSelectToken={({ denomOrAddress }) =>
+                    setValue(denomOrAddressFieldName, denomOrAddress)
                   }
                   register={register}
-                  sizing="auto"
-                  step={Math.pow(10, -decimals)}
-                  validation={[validateRequired, validatePositive]}
+                  required={false}
+                  selectedToken={selectedToken}
+                  setValue={setValue}
+                  tokens={{ loading: false, data: availableTokens }}
+                  watch={watch}
                 />
-
-                <SelectInput
-                  defaultValue={NATIVE_DENOM}
-                  error={
-                    errors?.attributes?.[attributeIndex]?.tokens?.[tokenIndex]
-                      ?.denomOrAddress
-                  }
-                  fieldName={denomOrAddressFieldName}
-                  register={register}
-                >
-                  {nativeDenoms.map((denom) => (
-                    <option key={denom} value={denom}>
-                      ${nativeTokenLabel(denom)}
-                    </option>
-                  ))}
-                  {cw20TokenInfos.map(({ address, info: { symbol } }) => (
-                    <option key={address} value={address}>
-                      ${symbol}
-                    </option>
-                  ))}
-                </SelectInput>
 
                 <div className="flex flex-row items-center">
                   <IconButton
@@ -214,7 +167,7 @@ export const NewAttribute = ({
           className="self-start"
           onClick={() =>
             appendToken({
-              denomOrAddress: nativeDenoms[0],
+              denomOrAddress: NATIVE_TOKEN.denomOrAddress,
             })
           }
           variant="ghost"

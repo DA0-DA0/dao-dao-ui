@@ -14,7 +14,7 @@ import {
   RecycleEmoji,
   SelectInput,
 } from '@dao-dao/stateless'
-import { ActionComponent } from '@dao-dao/types'
+import { ActionComponent, GenericToken } from '@dao-dao/types'
 import {
   validatePercent,
   validatePositive,
@@ -25,7 +25,7 @@ import { ActionCard } from '../../../../../../actions'
 import { Trans } from '../../../../../../components/Trans'
 
 export interface UpdateProposalConfigOptions {
-  governanceTokenSymbol?: string
+  commonGovernanceTokenInfo?: GenericToken
 }
 
 export const UpdateProposalConfigComponent: ActionComponent<
@@ -35,19 +35,16 @@ export const UpdateProposalConfigComponent: ActionComponent<
   errors,
   onRemove,
   isCreating,
-  options: { governanceTokenSymbol },
+  options: { commonGovernanceTokenInfo },
 }) => {
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
-  const deposit = watch(fieldNamePrefix + 'depositInfo.deposit')
   const depositRequired = watch(fieldNamePrefix + 'depositRequired')
   const thresholdType = watch(fieldNamePrefix + 'thresholdType')
   const quorumType = watch(fieldNamePrefix + 'quorumType')
   const proposalDuration = watch(fieldNamePrefix + 'proposalDuration')
   const proposalDurationUnits = watch(fieldNamePrefix + 'proposalDurationUnits')
-  const thresholdPercentage = watch(fieldNamePrefix + 'thresholdPercentage')
-  const quorumPercentage = watch(fieldNamePrefix + 'quorumPercentage')
   const quorumEnabled = watch(fieldNamePrefix + 'quorumEnabled')
 
   const percentageThresholdSelected = thresholdType === '%'
@@ -78,7 +75,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
       </p>
 
       <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
-        {governanceTokenSymbol !== undefined && (
+        {/* If governance token info, allow specifying deposit. */}
+        {commonGovernanceTokenInfo && (
           <FormSwitchCard
             containerClassName="grow"
             fieldName={fieldNamePrefix + 'depositRequired'}
@@ -105,7 +103,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         />
       </div>
 
-      {depositRequired && (
+      {depositRequired && commonGovernanceTokenInfo && (
         <div className="flex flex-col gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
           <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
             <h3 className="primary-text">
@@ -121,21 +119,10 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 disabled={!isCreating}
                 error={errors?.depositInfo?.deposit}
                 fieldName={fieldNamePrefix + 'depositInfo.deposit'}
-                onMinus={() =>
-                  setValue(
-                    fieldNamePrefix + 'depositInfo.deposit',
-                    Math.max(deposit - 1, 0.000001)
-                  )
-                }
-                onPlus={() =>
-                  setValue(
-                    fieldNamePrefix + 'depositInfo.deposit',
-                    Math.max(deposit + 1, 0.000001)
-                  )
-                }
+                min={1 / 10 ** commonGovernanceTokenInfo.decimals}
                 register={register}
-                step={0.000001}
-                unit={`$${governanceTokenSymbol}`}
+                step={1 / 10 ** commonGovernanceTokenInfo.decimals}
+                unit={'$' + commonGovernanceTokenInfo.symbol}
                 validation={[validateRequired, validatePositive]}
               />
               <InputErrorMessage error={errors?.depositInfo?.deposit} />
@@ -174,21 +161,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 disabled={!isCreating}
                 error={errors?.thresholdPercentage}
                 fieldName={fieldNamePrefix + 'thresholdPercentage'}
-                onMinus={() =>
-                  setValue(
-                    fieldNamePrefix + 'thresholdPercentage',
-                    Math.max(thresholdPercentage - 1, 1)
-                  )
-                }
-                onPlus={() =>
-                  setValue(
-                    fieldNamePrefix + 'thresholdPercentage',
-                    Math.max(thresholdPercentage + 1, 1)
-                  )
-                }
+                min={1}
                 register={register}
+                setValue={setValue}
                 sizing="sm"
                 validation={[validateRequired, validatePercent]}
+                watch={watch}
               />
               <InputErrorMessage error={errors?.thresholdPercentage} />
             </div>
@@ -230,21 +208,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
                   disabled={!isCreating}
                   error={errors?.quorumPercentage}
                   fieldName={fieldNamePrefix + 'quorumPercentage'}
-                  onMinus={() =>
-                    setValue(
-                      fieldNamePrefix + 'quorumPercentage',
-                      Math.max(quorumPercentage - 1, 1)
-                    )
-                  }
-                  onPlus={() =>
-                    setValue(
-                      fieldNamePrefix + 'quorumPercentage',
-                      Math.max(quorumPercentage + 1, 1)
-                    )
-                  }
+                  min={1}
                   register={register}
+                  setValue={setValue}
                   sizing="sm"
                   validation={[validateRequired, validatePercent]}
+                  watch={watch}
                 />
                 <InputErrorMessage error={errors?.quorumPercentage} />
               </div>
@@ -276,19 +245,9 @@ export const UpdateProposalConfigComponent: ActionComponent<
               disabled={!isCreating}
               error={errors?.proposalDuration}
               fieldName={fieldNamePrefix + 'proposalDuration'}
-              onMinus={() =>
-                setValue(
-                  fieldNamePrefix + 'proposalDuration',
-                  Math.max(proposalDuration - 1, 1)
-                )
-              }
-              onPlus={() =>
-                setValue(
-                  fieldNamePrefix + 'proposalDuration',
-                  Math.max(proposalDuration + 1, 1)
-                )
-              }
+              min={1}
               register={register}
+              setValue={setValue}
               sizing="sm"
               step={1}
               validation={[
@@ -301,6 +260,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
                   value >= 60 ||
                   'Cannot be shorter than 60 seconds.',
               ]}
+              watch={watch}
             />
             <InputErrorMessage error={errors?.proposalDuration} />
           </div>

@@ -1,21 +1,17 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState, waitForAll } from 'recoil'
 
-import {
-  Cw20BaseSelectors,
-  usdcPerMacroTokenSelector,
-} from '@dao-dao/state/recoil'
+import { Cw20BaseSelectors, wyndUsdPriceSelector } from '@dao-dao/state/recoil'
 import {
   Loader,
   useCachedLoadable,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
 import { AmountWithTimestampAndDenom } from '@dao-dao/types'
-import { nativeTokenDecimals } from '@dao-dao/utils'
 
 import { EntityDisplay, SuspenseLoader } from '../../../../../components'
 import {
@@ -38,10 +34,10 @@ interface ProposalCreationFormProps {
 
 export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
-  const router = useRouter()
+  const { goToDaoProposal } = useNavHelpers()
   const { coreAddress, chainId } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
-    useWallet(chainId)
+    useWallet()
 
   const postRequest = usePostRequest()
 
@@ -93,7 +89,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
         setRefreshStatus((id) => id + 1)
 
         // Navigate to proposal.
-        router.push(`/dao/${coreAddress}/proposals/${proposalId}`)
+        goToDaoProposal(coreAddress, proposalId)
 
         // Don't stop loading on success since we are now navigating.
       } catch (err) {
@@ -104,12 +100,12 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
     },
     [
       data,
-      coreAddress,
-      postRequest,
       publishProposal,
-      router,
-      setRefreshStatus,
       t,
+      postRequest,
+      coreAddress,
+      setRefreshStatus,
+      goToDaoProposal,
     ]
   )
 
@@ -136,23 +132,8 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
       ? waitForAll(
           statusLoadable.contents.survey.attributes.flatMap(
             ({ nativeTokens, cw20Tokens }) => [
-              ...nativeTokens.map(({ denom }) => {
-                const decimals = nativeTokenDecimals(denom)
-                if (decimals === undefined) {
-                  throw new Error(`Unknown denom: ${denom}`)
-                }
-                return usdcPerMacroTokenSelector({
-                  denom,
-                  decimals,
-                })
-              }),
-              ...cw20Tokens.map(({ address }, cw20TokenIndex) =>
-                usdcPerMacroTokenSelector({
-                  denom: address,
-                  decimals:
-                    loadingCw20TokenInfos.contents[cw20TokenIndex].decimals,
-                })
-              ),
+              ...nativeTokens.map(({ denom }) => wyndUsdPriceSelector(denom)),
+              ...cw20Tokens.map(({ address }) => wyndUsdPriceSelector(address)),
             ]
           )
         )
@@ -161,7 +142,6 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
 
   const walletEntity = useEntity({
     address: walletAddress,
-    walletHexPublicKey: walletPublicKey?.hex,
     chainId,
   })
 

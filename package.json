@@ -1,19 +1,20 @@
 {
   "name": "dao-dao-ui",
-  "version": "2.1.0-rc.1",
+  "version": "2.2.0",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
     "build": "turbo run build --continue --filter=\"!@dao-dao/storybook\"",
-    "build:no-dapp": "turbo run build --continue --filter=\"!@dao-dao/storybook\" --filter=\"!@dao-dao/dapp\"",
+    "build:no-apps": "turbo run build --continue --filter=\"!@dao-dao/storybook\" --filter=\"!@dao-dao/dapp\" --filter=\"!@dao-dao/sda\"",
     "dev": "yarn dapp dev",
     "start": "yarn dapp start",
     "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue --parallel",
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
     "test": "turbo run test",
     "dapp": "yarn workspace @dao-dao/dapp",
+    "sda": "yarn workspace @dao-dao/sda",
     "i18n": "yarn workspace @dao-dao/i18n",
     "state": "yarn workspace @dao-dao/state",
     "stateless": "yarn workspace @dao-dao/stateless",
@@ -21,11 +22,12 @@
     "storybook": "yarn workspace @dao-dao/storybook",
     "types": "yarn workspace @dao-dao/types",
     "utils": "yarn workspace @dao-dao/utils",
-    "publish-all": "lerna publish --no-private"
+    "publish-all": "lerna publish --no-private from-package"
   },
   "devDependencies": {
     "lerna": "^6.4.1",
-    "turbo": "latest"
+    "turbo": "latest",
+    "turbo-ignore": "latest"
   },
   "engines": {
     "npm": ">=7.0.0",

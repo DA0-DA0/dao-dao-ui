@@ -4,7 +4,7 @@ import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { ArrowBack } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
-import { useRouter } from 'next/router'
+import merge from 'lodash.merge'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -18,14 +18,19 @@ import {
   DaoCreateSidebarCard,
   DaoHeader,
   ImageSelector,
-  useAppLayoutContext,
+  PageHeaderContent,
+  RightSidebarContent,
+  useAppContext,
   useCachedLoadable,
+  useNavHelpers,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
   CreateDaoContext,
   CreateDaoCustomValidator,
+  DaoPageMode,
   DaoParentInfo,
+  DaoTabId,
   NewDao,
   ProposalModuleAdapter,
 } from '@dao-dao/types'
@@ -34,15 +39,12 @@ import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_s
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
+  FACTORY_CONTRACT_ADDRESS,
+  NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
-  V1_FACTORY_CONTRACT_ADDRESS,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
-  getParentDaoBreadcrumbs,
   makeValidateMsg,
-  nativeTokenLabel,
   processError,
 } from '@dao-dao/utils'
 
@@ -93,10 +95,10 @@ export const CreateDaoForm = ({
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
-  const router = useRouter()
+  const { goToDao } = useNavHelpers()
   const { setFollowing } = useFollowingDaos()
 
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { mode } = useAppContext()
 
   const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
     daoCreatedCardPropsAtom
@@ -109,7 +111,9 @@ export const CreateDaoForm = ({
   // Verify cached value is still valid, and fix if not.
   const defaultForm = useMemo(() => {
     const defaultNewDao = makeDefaultNewDao()
+
     const cached = cloneDeep(_newDaoAtom)
+
     // Verify that the voting module adapter is still valid, since the IDs have
     // been renamed a couple times.
     if (
@@ -134,10 +138,33 @@ export const CreateDaoForm = ({
       }
     }
 
-    return {
-      ...cached,
-      ...defaults,
-    }
+    // Merge defaults in case there are any new fields.
+    const votingModuleAdapter = getVotingModuleAdapterById(
+      cached.votingModuleAdapter.id
+    )
+    merge(
+      // Merges into this object.
+      cached.votingModuleAdapter.data,
+      // Start with defaults.
+      votingModuleAdapter?.daoCreation?.defaultConfig,
+      // Overwrite with existing values.
+      cached.votingModuleAdapter.data
+    )
+
+    cached.proposalModuleAdapters.forEach((adapter) => {
+      const proposalModuleAdapter = getProposalModuleAdapterById(adapter.id)
+      merge(
+        // Merges into this object.
+        adapter.data,
+        // Start with defaults.
+        proposalModuleAdapter?.daoCreation?.defaultConfig,
+        // Overwrite with existing values.
+        adapter.data
+      )
+    })
+
+    // Merge defaults passed into component, if any.
+    return merge(cached, defaults)
   }, [_newDaoAtom, defaults])
 
   const form = useForm<NewDao>({
@@ -297,7 +324,7 @@ export const CreateDaoForm = ({
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
-      contractAddress: V1_FACTORY_CONTRACT_ADDRESS,
+      contractAddress: FACTORY_CONTRACT_ADDRESS,
       sender: walletAddress ?? '',
     })
 
@@ -358,20 +385,19 @@ export const CreateDaoForm = ({
         if (connected) {
           setCreating(true)
           try {
-            const coreAddress = await toast.promise(
-              createDaoWithFactory().then(
-                // New wallet balances will not appear until the next block.
-                (address) => awaitNextBlock().then(() => address)
-              ),
-              {
-                loading: t('info.creatingDao'),
-                success: t('success.daoCreatedPleaseWait'),
-                error: (err) => processError(err),
-              }
-            )
+            const coreAddress = await toast.promise(createDaoWithFactory(), {
+              loading: t('info.creatingDao'),
+              success: t('success.daoCreatedPleaseWait'),
+              error: (err) => processError(err),
+            })
 
-            setFollowing(coreAddress)
-            refreshBalances()
+            // Don't set following on SDA. Only dApp.
+            if (mode !== DaoPageMode.Sda) {
+              setFollowing(coreAddress)
+            }
+
+            // New wallet balances will not appear until the next block.
+            awaitNextBlock().then(refreshBalances)
 
             //! Show DAO created modal.
 
@@ -402,10 +428,10 @@ export const CreateDaoForm = ({
                         ? cw20StakedBalanceVotingData.newInfo.symbol
                         : // If using existing token but no token info loaded (should
                         // be impossible), the tokenBalance above will be set to
-                        // 0, so use NATIVE_DENOM here so this value is
+                        // 0, so use the native token here so this value is
                         // accurate.
                         !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                        ? nativeTokenLabel(NATIVE_DENOM)
+                        ? NATIVE_TOKEN.symbol
                         : cw20StakedBalanceVotingData
                             .existingGovernanceTokenInfo?.symbol ||
                           t('info.token').toLocaleUpperCase(),
@@ -423,8 +449,8 @@ export const CreateDaoForm = ({
                 : //! Otherwise display native token, which has a balance of 0 initially.
                   {
                     tokenBalance: 0,
-                    tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
-                    tokenDecimals: NATIVE_DECIMALS,
+                    tokenSymbol: NATIVE_TOKEN.symbol,
+                    tokenDecimals: NATIVE_TOKEN.decimals,
                   }
 
             // Set card props to show modal.
@@ -455,7 +481,7 @@ export const CreateDaoForm = ({
             setNewDaoAtom(makeDefaultNewDao())
 
             // Navigate to DAO page (underneath the creation modal).
-            router.push(`/dao/${coreAddress}`)
+            goToDao(coreAddress)
           } catch (err) {
             // toast.promise above will handle displaying the error
             console.error(err)
@@ -495,7 +521,7 @@ export const CreateDaoForm = ({
       connected,
       createDaoWithFactory,
       t,
-      setFollowing,
+      mode,
       refreshBalances,
       votingModuleAdapter.id,
       cw20StakedBalanceVotingData,
@@ -504,8 +530,9 @@ export const CreateDaoForm = ({
       description,
       imageUrl,
       parentDao,
-      router,
+      goToDao,
       awaitNextBlock,
+      setFollowing,
     ]
   )
 
@@ -577,12 +604,15 @@ export const CreateDaoForm = ({
           pageIndex={daoCreatedCardProps ? 4 : pageIndex}
         />
       </RightSidebarContent>
-      <PageHeader
+      <PageHeaderContent
         breadcrumbs={{
-          crumbs: [
-            { href: '/home', label: 'Home' },
-            ...getParentDaoBreadcrumbs(parentDao),
-          ],
+          // Use the SubDAOs tab as the home breadcrumb if making a SubDAO.
+          homeTab: makingSubDao
+            ? {
+                id: DaoTabId.Subdaos,
+                sdaLabel: t('title.subDaos'),
+              }
+            : undefined,
           current:
             name.trim() ||
             (makingSubDao ? t('title.newSubDao') : t('title.newDao')),

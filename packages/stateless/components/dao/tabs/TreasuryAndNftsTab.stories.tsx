@@ -1,10 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { DaoFiatDepositModal } from '@dao-dao/stateful'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
+import { TokenCardProps } from '@dao-dao/types'
 
 import { NftCard, NftCardProps } from '../../NftCard'
 import { makeProps as makeNftCardProps } from '../../NftCard.stories'
-import { TokenCard, TokenCardProps } from '../../token/TokenCard'
+import { TokenCard } from '../../token/TokenCard'
 import { makeProps as makeTokenCardProps } from '../../token/TokenCard.stories'
 import { TreasuryAndNftsTab } from './TreasuryAndNftsTab'
 
@@ -39,6 +41,7 @@ Default.args = {
   NftCard,
   isMember: true,
   addCollectionHref: '#',
+  FiatDepositModal: DaoFiatDepositModal,
 }
 
 export const Loading = Template.bind({})
@@ -49,4 +52,5 @@ Loading.args = {
   NftCard,
   isMember: true,
   addCollectionHref: '#',
+  FiatDepositModal: DaoFiatDepositModal,
 }

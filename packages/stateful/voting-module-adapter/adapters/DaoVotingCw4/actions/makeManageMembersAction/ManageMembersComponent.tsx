@@ -4,6 +4,7 @@ import {
   Close,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
+import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -16,6 +17,7 @@ import {
   NumberInput,
   PeopleEmoji,
   TooltipInfoIcon,
+  useDetectWrap,
 } from '@dao-dao/stateless'
 import { ActionComponent, AddressInputProps } from '@dao-dao/types'
 import { Member } from '@dao-dao/types/contracts/Cw4Group'
@@ -69,6 +71,9 @@ export const ManageMembersComponent: ActionComponent<
     name: (fieldNamePrefix + 'toRemove') as 'toRemove',
   })
 
+  const { containerRef, childRef, wrapped } = useDetectWrap()
+  const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded
+
   return (
     <ActionCard
       Icon={PeopleEmoji}
@@ -96,37 +101,38 @@ export const ManageMembersComponent: ActionComponent<
                 key={id}
                 className="flex flex-row items-center gap-3 rounded-lg bg-background-secondary p-4"
               >
-                <div className="flex grow flex-col items-stretch gap-x-3 gap-y-2 sm:flex-row">
+                <div
+                  className="flex grow flex-row flex-wrap items-stretch gap-x-3 gap-y-2"
+                  ref={containerRef}
+                >
                   <div className="flex flex-col gap-1">
                     <InputLabel name={t('form.votingWeightPlaceholder')} />
                     <NumberInput
                       disabled={!isCreating}
                       error={errors?.toAdd?.[index]?.weight}
                       fieldName={weightFieldName}
-                      onMinus={() =>
-                        setValue(
-                          weightFieldName,
-                          Math.max((watch(weightFieldName) || 0) - 1, 0)
-                        )
-                      }
-                      onPlus={() =>
-                        setValue(
-                          weightFieldName,
-                          Math.max((watch(weightFieldName) || 0) + 1, 0)
-                        )
-                      }
+                      min={0}
                       placeholder={t('form.votingWeightPlaceholder')}
                       register={register}
+                      setValue={setValue}
                       sizing="fill"
                       validation={[validateRequired, validateNonNegative]}
+                      watch={watch}
                     />
                     <InputErrorMessage error={errors?.toAdd?.[index]?.weight} />
                   </div>
 
-                  <div className="flex grow flex-row items-stretch justify-center gap-2 sm:gap-3">
-                    <div className="flex flex-row items-center pl-1 sm:pl-0">
-                      <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
-                      <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
+                  <div
+                    className="flex grow flex-row items-stretch justify-center gap-2 sm:gap-3"
+                    ref={childRef}
+                  >
+                    <div
+                      className={clsx(
+                        'flex flex-row items-center pt-4',
+                        wrapped && 'pl-1'
+                      )}
+                    >
+                      <Icon className="!h-6 !w-6 text-text-secondary" />
                     </div>
 
                     <div className="flex grow flex-col gap-1">

@@ -5,7 +5,7 @@ import { BaseProfileCardMemberInfoProps, LoadingData } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 export interface ProfileCardMemberInfoProps
-  extends Omit<BaseProfileCardMemberInfoProps, 'deposit'> {
+  extends Omit<BaseProfileCardMemberInfoProps, 'maxGovernanceTokenDeposit'> {
   daoName: string
   votingPower: LoadingData<number>
 }

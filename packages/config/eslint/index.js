@@ -145,6 +145,19 @@ const eslintConfig = {
               message:
                 "Using React's FunctionComponent is discouraged. Type the props explicitly: `export const Component = (props: ComponentProps) => { ... }`",
             },
+            // Make sure GNU AGPLv3 header is not in the packages. This may
+            // happen if code gets copied from an app to a package. The packages
+            // use a different license than the apps.
+            {
+              regex:
+                '// GNU AFFERO GENERAL PUBLIC LICENSE Version 3\\. Copyright \\(C\\) 2022 DAO DAO Contributors\\.\n// See the "LICENSE" file in the root directory of this package for more copyright information\\.\n?\n?',
+              replacement: '',
+              files: {
+                // Only in packages.
+                inspect: 'packages\\/.+',
+              },
+              message: 'Do not include the GNU AGPLv3 header in package files.',
+            },
           ],
         ],
       },

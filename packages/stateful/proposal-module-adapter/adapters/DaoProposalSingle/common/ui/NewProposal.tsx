@@ -4,6 +4,7 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
@@ -31,7 +32,7 @@ import {
   TextInput,
   Tooltip,
 } from '@dao-dao/stateless'
-import { Action, ActionsWithData, BaseNewProposalProps } from '@dao-dao/types'
+import { Action, BaseNewProposalProps, LoadedActions } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import {
   decodedMessagesString,
@@ -65,10 +66,11 @@ export interface NewProposalProps
   loading: boolean
   isPaused: boolean
   isMember: boolean
+  anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   connected: boolean
   actions: Action[]
-  actionsWithData: ActionsWithData
+  loadedActions: LoadedActions
   simulationBypassExpiration?: Date
 }
 
@@ -77,10 +79,11 @@ export const NewProposal = ({
   loading,
   isPaused,
   isMember,
+  anyoneCanPropose,
   depositUnsatisfied,
   connected,
   actions,
-  actionsWithData,
+  loadedActions,
   draft,
   saveDraft,
   drafts,
@@ -107,7 +110,8 @@ export const NewProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { walletAddress = '', walletProfile } = useWalletInfo()
+  const { status: walletStatus } = useWallet()
+  const { walletAddress = '', walletProfileData } = useWalletInfo()
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -138,7 +142,7 @@ export const NewProposal = ({
       let msgs
       try {
         msgs = actionData
-          .map(({ key, data }) => actionsWithData[key]?.transform(data))
+          .map(({ key, data }) => loadedActions[key]?.transform(data))
           // Filter out undefined messages.
           .filter(Boolean) as CosmosMsgFor_Empty[]
       } catch (err) {
@@ -156,7 +160,7 @@ export const NewProposal = ({
         msgs,
       })
     },
-    [createProposal, actionsWithData]
+    [createProposal, loadedActions]
   )
 
   const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(
@@ -215,12 +219,10 @@ export const NewProposal = ({
 
       {actionDataFields.length > 0 && (
         <div className="mb-4 flex flex-col gap-2">
-          {actionDataFields.map(({ id, ...actionData }, index) => {
-            const Component = actionsWithData[actionData.key]?.action?.Component
+          {actionDataFields.map(({ id, key, data }, index) => {
+            const Component = loadedActions[key]?.action?.Component
             if (!Component) {
-              throw new Error(
-                `Error detecting action type "${actionData.key}".`
-              )
+              return null
             }
 
             return (
@@ -228,7 +230,7 @@ export const NewProposal = ({
                 <Component
                   addAction={appendAction}
                   allActionsWithData={actionDataFields}
-                  data={actionData.data}
+                  data={data}
                   errors={errors.actionData?.[index]?.data || {}}
                   fieldNamePrefix={`actionData.${index}.data.`}
                   index={index}
@@ -258,7 +260,7 @@ export const NewProposal = ({
           appendAction({
             key,
             // Clone to prevent the form from mutating the original object.
-            data: cloneDeep(actionsWithData[key]?.defaults ?? {}),
+            data: cloneDeep(loadedActions[key]?.defaults ?? {}),
           })
         }}
       />
@@ -293,8 +295,6 @@ export const NewProposal = ({
               title={
                 !connected
                   ? t('error.connectWalletToContinue')
-                  : !isMember
-                  ? t('error.mustBeMemberToCreateProposal')
                   : depositUnsatisfied
                   ? t('error.notEnoughForDeposit')
                   : isPaused
@@ -304,7 +304,10 @@ export const NewProposal = ({
             >
               <Button
                 disabled={
-                  !connected || !isMember || depositUnsatisfied || isPaused
+                  !connected ||
+                  (!anyoneCanPropose && !isMember) ||
+                  depositUnsatisfied ||
+                  isPaused
                 }
                 loading={loading}
                 type="submit"
@@ -336,6 +339,16 @@ export const NewProposal = ({
           </div>
         </div>
 
+        {!anyoneCanPropose &&
+          !isMember &&
+          walletStatus !== WalletConnectionStatus.Initializing &&
+          walletStatus !== WalletConnectionStatus.AttemptingAutoConnection &&
+          walletStatus !== WalletConnectionStatus.Connecting && (
+            <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
+              {t('error.mustBeMemberToCreateProposal')}
+            </p>
+          )}
+
         {simulationBypassExpiration && (
           <p className="secondary-text max-w-prose self-end text-right text-text-interactive-warning-body">
             {t('info.bypassSimulationExplanation')}
@@ -344,7 +357,7 @@ export const NewProposal = ({
 
         {showSubmitErrorNote && (
           <p className="secondary-text self-end text-right text-text-interactive-error">
-            {t('error.createProposalSubmitInvalid')}
+            {t('error.correctErrorsAbove')}
           </p>
         )}
 
@@ -360,9 +373,9 @@ export const NewProposal = ({
               createdAt={new Date()}
               creator={{
                 address: walletAddress,
-                name: walletProfile.loading
-                  ? walletProfile
-                  : { loading: false, data: walletProfile.data.name },
+                name: walletProfileData.loading
+                  ? { loading: true }
+                  : { loading: false, data: walletProfileData.profile.name },
               }}
               description={proposalDescription}
               proposalInnerContentDisplay={
@@ -372,7 +385,7 @@ export const NewProposal = ({
                       actionDataFields
                         .map(({ key, data }) => {
                           try {
-                            return actionsWithData[key]?.transform(data)
+                            return loadedActions[key]?.transform(data)
                           } catch (err) {
                             console.error(err)
                           }
@@ -422,11 +435,6 @@ export const NewProposal = ({
           <>
             {drafts.length > 0 && (
               <FilterableItemPopup
-                Trigger={({ open, ...props }) => (
-                  <Button pressed={open} variant="secondary" {...props}>
-                    {t('button.loadDraft')}
-                  </Button>
-                )}
                 filterableItemKeys={FILTERABLE_KEYS}
                 items={drafts.map(
                   ({ name, createdAt, lastUpdatedAt }, index) => ({
@@ -458,6 +466,13 @@ export const NewProposal = ({
                 )}
                 onSelect={(_, index) => loadDraft(index)}
                 searchPlaceholder={t('info.searchDraftPlaceholder')}
+                trigger={{
+                  type: 'button',
+                  props: {
+                    variant: 'secondary',
+                    children: t('button.loadDraft'),
+                  },
+                }}
               />
             )}
 

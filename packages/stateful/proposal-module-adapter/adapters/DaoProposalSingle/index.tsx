@@ -4,6 +4,7 @@ import {
   ProposalModuleAdapter,
 } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { NATIVE_TOKEN } from '@dao-dao/utils'
 
 import {
   NewProposal,
@@ -24,6 +25,7 @@ import {
 import {
   AllowRevotingVotingConfigItem,
   ProposalDepositVotingConfigItem,
+  ProposalSubmissionPolicyVotingConfigItem,
   QuorumVotingConfigItem,
   ThresholdVotingConfigItem,
   VotingDurationVotingConfigItem,
@@ -172,10 +174,11 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
         enabled: false,
         amount: 10,
         type: 'native',
-        cw20Address: '',
-        cw20TokenInfo: undefined,
+        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+        token: undefined,
         refundPolicy: DepositRefundPolicy.OnlyPassed,
       },
+      anyoneCanPropose: false,
       allowRevoting: false,
     },
 
@@ -185,6 +188,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
         AllowRevotingVotingConfigItem,
         ThresholdVotingConfigItem,
         QuorumVotingConfigItem,
+        ProposalSubmissionPolicyVotingConfigItem,
       ],
       advancedWarningI18nKeys: [
         'daoCreationAdapter.DaoProposalSingle.advancedWarning',

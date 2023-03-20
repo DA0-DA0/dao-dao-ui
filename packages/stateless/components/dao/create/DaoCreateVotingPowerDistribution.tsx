@@ -227,3 +227,16 @@ export const VOTING_POWER_DISTRIBUTION_COLORS = [
   '#DE73C0', // 6
   '#F4925A', // 9
 ]
+
+export const VOTING_POWER_DISTRIBUTION_COLORS_ORDERED = [
+  '#5B58E2', // 1
+  '#4744AC', // 2
+  '#6642CE', // 3
+  '#954FE7', // 4
+  '#BA73DD', // 5
+  '#DE73C0', // 6
+  '#FC81A4', // 7
+  '#EE7969', // 8
+  '#F4925A', // 9
+  '#F1B671', // 10
+]

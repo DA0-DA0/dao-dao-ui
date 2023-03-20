@@ -1,6 +1,7 @@
-import { Claim } from '@dao-dao/types/contracts/stake-cw20'
+import { Claim } from '@dao-dao/types/contracts/Cw20Stake'
+import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 
-export function claimAvailable(claim: Claim, blockHeight: number) {
+export function claimAvailable(claim: Claim | NftClaim, blockHeight: number) {
   if ('at_height' in claim.release_at) {
     return blockHeight >= claim.release_at.at_height
   } else if ('at_time' in claim.release_at) {

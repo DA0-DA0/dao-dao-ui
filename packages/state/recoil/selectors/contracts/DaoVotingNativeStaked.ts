@@ -35,6 +35,7 @@ export const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new DaoVotingNativeStakedQueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export type ExecuteClientParams = {
@@ -251,4 +252,27 @@ export const infoSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       return await client.info(...params)
     },
+})
+
+///! Custom selectors
+
+export const topStakersSelector = selectorFamily<
+  | {
+      address: string
+      balance: string
+      votingPowerPercent: number
+    }[]
+  | undefined,
+  QueryClientParams
+>({
+  key: 'daoVotingNativeStakedTopStakers',
+  get:
+    (queryClientParams) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingNativeStaked/topStakers',
+        })
+      ) ?? undefined,
 })

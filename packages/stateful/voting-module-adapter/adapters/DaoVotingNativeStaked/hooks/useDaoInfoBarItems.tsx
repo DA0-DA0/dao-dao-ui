@@ -9,9 +9,11 @@ import { useStakingInfo } from './useStakingInfo'
 
 export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
   const { t } = useTranslation()
-  const { totalStakedValue } = useStakingInfo({ fetchTotalStakedValue: true })
+  const { loadingTotalStakedValue } = useStakingInfo({
+    fetchTotalStakedValue: true,
+  })
 
-  if (totalStakedValue === undefined) {
+  if (loadingTotalStakedValue === undefined) {
     throw new Error(t('error.loadingData'))
   }
 
@@ -36,10 +38,17 @@ export const useDaoInfoBarItems = (): DaoInfoBarItem[] => {
       label: t('title.totalStaked'),
       value: (
         <TokenAmountDisplay
-          amount={convertMicroDenomToDenomWithDecimals(
-            totalStakedValue,
-            decimals
-          )}
+          amount={
+            loadingTotalStakedValue.loading
+              ? { loading: true }
+              : {
+                  loading: false,
+                  data: convertMicroDenomToDenomWithDecimals(
+                    loadingTotalStakedValue.data,
+                    decimals
+                  ),
+                }
+          }
           decimals={decimals}
           symbol={symbol}
         />

@@ -5,21 +5,9 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { CopyToClipboardProps } from '@dao-dao/types/stateless/CopyToClipboard'
+import { concatAddressBoth, concatAddressStartEnd } from '@dao-dao/utils'
 
 import { Tooltip } from './tooltip/Tooltip'
-
-export const concatAddressStartEnd = (
-  address: string,
-  takeStart: number,
-  takeEnd: number
-) => {
-  const first = address.substring(0, takeStart)
-  const last = address.substring(address.length - takeEnd, address.length)
-  return [first, last].filter(Boolean).join('..')
-}
-
-export const concatAddressBoth = (address: string, takeN = 7): string =>
-  address && concatAddressStartEnd(address, takeN, takeN)
 
 export const CopyToClipboard = ({
   value,
@@ -103,8 +91,8 @@ export const CopyToClipboardUnderline = ({
     <Tooltip title={tooltip}>
       <p
         className={clsx(
-          'truncate font-mono text-xs text-text-body underline transition-opacity hover:opacity-80 active:opacity-70',
-          !noCopy && 'cursor-pointer',
+          'truncate font-mono text-xs text-text-body transition-opacity hover:opacity-80 active:opacity-70',
+          !noCopy && 'cursor-pointer underline',
           className,
           textClassName
         )}
