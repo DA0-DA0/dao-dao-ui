@@ -48,6 +48,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { EntityDisplay } from '../../../components'
 import { useLoadingWyndReferralCommission } from '../../../hooks'
 import { genericTokenBalancesSelector } from '../../../recoil'
 import { WyndDepositData } from './types'
@@ -305,12 +306,27 @@ export const WyndDepositComponent = ({
       let tx
 
       if (inTokenIsOutToken) {
-        tx = await signingCosmWasmClient.sendTokens(
-          walletAddress,
-          outputAddress,
-          coins(outputAmount, token.denomOrAddress),
-          'auto'
-        )
+        if (token.type === TokenType.Native) {
+          tx = await signingCosmWasmClient.sendTokens(
+            walletAddress,
+            outputAddress,
+            coins(outputAmount, token.denomOrAddress),
+            'auto'
+          )
+        } else {
+          // Cw20
+          tx = await signingCosmWasmClient.execute(
+            walletAddress,
+            token.denomOrAddress,
+            {
+              transfer: {
+                recipient: outputAddress,
+                amount: outputAmount,
+              },
+            },
+            'auto'
+          )
+        }
       } else {
         // Swap
         const msg: ExecuteSwapOperationsMsg = {
@@ -340,9 +356,11 @@ export const WyndDepositComponent = ({
             walletAddress,
             token.denomOrAddress,
             {
-              amount: requiredInput.toString(),
-              contract: WYND_MULTI_HOP_CONTRACT,
-              msg: JSON.stringify(msg),
+              send: {
+                contract: WYND_MULTI_HOP_CONTRACT,
+                amount: requiredInput.toString(),
+                msg: JSON.stringify(msg),
+              },
             },
             'auto'
           )
@@ -379,6 +397,7 @@ export const WyndDepositComponent = ({
         <MarkdownRenderer className="text-base" markdown={markdown} />
       )}
 
+      <p className="caption-text -mb-6">{t('info.chooseTokenToPayWith')}:</p>
       <div className="flex flex-row items-center justify-between gap-2">
         <FilterableItemPopup
           Trigger={TokenTrigger}
@@ -424,25 +443,35 @@ export const WyndDepositComponent = ({
         </p>
       ) : (
         !insufficientFunds && (
-          <div className="-mt-4 flex flex-row items-center justify-end gap-2 self-end">
-            <p className="caption-text">{t('title.deposit')}:</p>
+          <div className="-mt-4 justify-end gap-2 self-end">
+            <div className="flex flex-row items-center gap-3">
+              <p className="caption-text">{t('title.deposits')}</p>
 
-            <TokenAmountDisplay
-              amount={
-                depositAmountLoading
-                  ? { loading: true }
-                  : {
-                      loading: false,
-                      data: convertMicroDenomToDenomWithDecimals(
-                        requiredInput,
-                        token.decimals
-                      ),
-                    }
-              }
-              decimals={token.decimals}
-              showFullAmount
-              symbol={token.symbol}
-            />
+              <TokenAmountDisplay
+                amount={
+                  depositAmountLoading
+                    ? { loading: true }
+                    : {
+                        loading: false,
+                        data: convertMicroDenomToDenomWithDecimals(
+                          requiredInput,
+                          token.decimals
+                        ),
+                      }
+                }
+                decimals={token.decimals}
+                showFullAmount
+                symbol={token.symbol}
+              />
+            </div>
+
+            {coreAddress !== outputAddress && (
+              <div className="flex flex-row items-center gap-3">
+                <p className="caption-text">{t('info.to')}</p>
+
+                <EntityDisplay address={outputAddress} />
+              </div>
+            )}
           </div>
         )
       )}
