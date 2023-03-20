@@ -632,8 +632,16 @@ export type ValidatorSlash = {
   registeredBlockHeight: string
   registeredBlockTimeUnixMs: string
   infractionBlockHeight: string
+  // Slash fraction applied to validator's undelegating and redelegating tokens.
   slashFactor: string
   amountSlashed: string
+  // Slash fraction applied to validator's current delegations. It may be less
+  // than `slashFactor`.
+  effectiveFraction: string
+  // Amount of tokens slashed from delegations. This should be `amountSlashed`
+  // minus the amount slashed from the validator's undelegating and redelegating
+  // tokens.
+  stakedTokensBurned: string
 }
 
 export const validatorSlashesSelector = selectorFamily<

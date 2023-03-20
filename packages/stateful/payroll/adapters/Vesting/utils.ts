@@ -18,6 +18,7 @@ export const getSlashedStakedUnstaking = (
     registeredBlockHeight,
     registeredBlockTimeUnixMs,
     slashFactor,
+    effectiveFraction,
   }: ValidatorSlash
 ): { staked: number; unstaking: number } => {
   // Slashes before the current slash.
@@ -42,7 +43,7 @@ export const getSlashedStakedUnstaking = (
   const staked = stakeEventsAndSlashes.reduce((acc, event) => {
     // Apply past slash.
     if ('registeredBlockHeight' in event) {
-      return acc * (1 - Number(event.slashFactor))
+      return acc * (1 - Number(event.effectiveFraction))
       // Apply stake event.
     } else {
       return Number(event.blockTimeUnixMs) <= Number(registeredBlockTimeUnixMs)
@@ -59,32 +60,31 @@ export const getSlashedStakedUnstaking = (
     }
   }, 0)
 
-  // Total unstaking/redelegating.
-  const unstaking = stakeEventsAndSlashes.reduce((acc, event) => {
-    // Apply past slash.
-    if ('registeredBlockHeight' in event) {
-      return acc * (1 - Number(event.slashFactor))
-      // Apply stake event.
-    } else {
-      // Add unstakes that start after the infraction but before the slash was
+  // Total undelegating/redelegating. These do not take into account past
+  // slashes because slashes are applied to the initial balance of an
+  // undelegation or redelegation, not the current balance.
+  const unstaking = stakeEvents.reduce(
+    (acc, event) =>
+      // Add those that start after the infraction but before the slash was
       // registered and have not yet finished by the time the slash was
       // registered.
-      return Number(event.blockHeight) >= Number(infractionBlockHeight) &&
-        Number(event.blockHeight) <= Number(registeredBlockHeight) &&
-        Number(event.blockTimeUnixMs) + unbondingDurationSeconds * 1000 >
-          Number(registeredBlockTimeUnixMs) &&
-        ((event.type === 'undelegate' && event.validator === validator) ||
-          (event.type === 'redelegate' && event.fromValidator === validator))
+      Number(event.blockHeight) >= Number(infractionBlockHeight) &&
+      Number(event.blockHeight) <= Number(registeredBlockHeight) &&
+      Number(event.blockTimeUnixMs) + unbondingDurationSeconds * 1000 >
+        Number(registeredBlockTimeUnixMs) &&
+      ((event.type === 'undelegate' && event.validator === validator) ||
+        (event.type === 'redelegate' && event.fromValidator === validator))
         ? acc + Number(event.amount)
-        : acc
-    }
-  }, 0)
+        : acc,
+    0
+  )
 
   // Calculate the amount slashed of the staked and unstaking amounts. The
-  // Cosmos SDK truncates the slashed amount after the slash factor is
-  // applied, so we do the same here.
+  // Cosmos SDK truncates the slashed amount after the slash fraction is
+  // applied, so we do the same here. Staked tokens use the `effectiveFraction`,
+  // whereas unstaking tokens use the `slashFactor`.
   return {
-    staked: Math.trunc(staked * Number(slashFactor)),
+    staked: Math.trunc(staked * Number(effectiveFraction)),
     unstaking: Math.trunc(unstaking * Number(slashFactor)),
   }
 }

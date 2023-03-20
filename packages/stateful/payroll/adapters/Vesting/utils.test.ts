@@ -96,6 +96,8 @@ const makeSlash = ({
   infractionBlockHeight: infractionBlock.toString(),
   slashFactor: slashFactor.toString(),
   amountSlashed: amountSlashed.toString(),
+  effectiveFraction: slashFactor.toString(),
+  stakedTokensBurned: amountSlashed.toString(),
 })
 
 const makeVestingValidatorSlash = ({
@@ -362,7 +364,8 @@ describe('getSlashedStakedUnstaking', () => {
     // to 54 and 36. Then, 200 delegated makes it 254 delegated and 36
     // un/re-delegating, which get slashed 50%. The total delegated slashed due
     // to the second slash is 254 * 0.5 = 127, and the total unstaking slashed
-    // is 36 * 0.5 = 18.
+    // is 40 * 0.5 = 20 (since unstaking slashes use the initial balance, not
+    // taking into account other slashes).
 
     expect(
       getSlashedStakedUnstaking(
@@ -398,7 +401,7 @@ describe('getSlashedStakedUnstaking', () => {
       )
     ).toEqual({
       staked: 127,
-      unstaking: 18,
+      unstaking: 20,
     })
   })
 })
@@ -1088,7 +1091,9 @@ describe('getVestingValidatorSlashes', () => {
     // to 54 and 36. Then, 200 delegated makes it 254 delegated and 36
     // un/re-delegating, which get slashed 50%. The total slashed due to the
     // first slash is 6 delegated and 4 undelegating. The total slashed due to
-    // the second second slash is 127 delegated and 18 undelegating.
+    // the second second slash is 127 delegated and 20 undelegating (since
+    // slashes on undelegations only take into account initial balance
+    // unstaking, not current balance unstaking).
 
     expect(
       getVestingValidatorSlashes(
@@ -1156,8 +1161,8 @@ describe('getVestingValidatorSlashes', () => {
           }),
           makeVestingValidatorSlash({
             timeMs: 8,
-            amount: 18,
-            unregisteredAmount: 18,
+            amount: 20,
+            unregisteredAmount: 20,
             duringUnbonding: true,
           }),
         ],
