@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import {
   ButtonLink,
   InputErrorMessage,
+  InputThemedText,
   Loader,
   SelectCircle,
   Table,
@@ -177,59 +178,72 @@ const RenderVest = ({
     .filter(({ slash }) => slash.unregisteredAmount > 0)
 
   return (
-    <div className="space-y-2 p-4">
+    <div className="space-y-4 p-4">
       <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-2">
         <p className="secondary-text">{t('form.recipient')}:</p>
 
         <EntityDisplay address={vest.recipient} />
       </div>
 
-      <Table
-        headers={['', t('form.validator'), t('title.unregisteredSlashAmount')]}
-        rows={
-          isCreating
-            ? unregisteredSlashes.map(
-                ({ validatorOperatorAddress, slash }, index) => [
-                  <SelectCircle
-                    key={`${index}-select`}
-                    onSelect={() => onSelectSlash?.(slash)}
-                    selected={
-                      data.address === vestingContractAddress &&
-                      data.time === (slash.timeMs * 1e6).toString() &&
-                      data.duringUnbonding === slash.duringUnbonding
-                    }
-                  />,
-                  validatorOperatorAddress,
-                  <TokenAmountDisplay
-                    key={`${index}-token`}
-                    amount={convertMicroDenomToDenomWithDecimals(
-                      slash.unregisteredAmount,
-                      NATIVE_TOKEN.decimals
-                    )}
-                    decimals={NATIVE_TOKEN.decimals}
-                    iconUrl={NATIVE_TOKEN.imageUrl}
-                    symbol={NATIVE_TOKEN.symbol}
-                  />,
-                ]
-              )
-            : [
-                [
-                  <SelectCircle key="select" selected />,
-                  data.validator,
-                  <TokenAmountDisplay
-                    key="token"
-                    amount={convertMicroDenomToDenomWithDecimals(
-                      data.amount,
-                      NATIVE_TOKEN.decimals
-                    )}
-                    decimals={NATIVE_TOKEN.decimals}
-                    iconUrl={NATIVE_TOKEN.imageUrl}
-                    symbol={NATIVE_TOKEN.symbol}
-                  />,
-                ],
-              ]
-        }
-      />
+      {isCreating ? (
+        <Table
+          headers={[
+            '',
+            t('form.validator'),
+            t('title.unregisteredSlashAmount'),
+          ]}
+          rows={unregisteredSlashes.map(
+            ({ validatorOperatorAddress, slash }, index) => [
+              <SelectCircle
+                key={`${index}-select`}
+                onSelect={() => onSelectSlash?.(slash)}
+                selected={
+                  data.address === vestingContractAddress &&
+                  data.time === (slash.timeMs * 1e6).toString() &&
+                  data.duringUnbonding === slash.duringUnbonding
+                }
+              />,
+              validatorOperatorAddress,
+              <TokenAmountDisplay
+                key={`${index}-token`}
+                amount={convertMicroDenomToDenomWithDecimals(
+                  slash.unregisteredAmount,
+                  NATIVE_TOKEN.decimals
+                )}
+                decimals={NATIVE_TOKEN.decimals}
+                iconUrl={NATIVE_TOKEN.imageUrl}
+                symbol={NATIVE_TOKEN.symbol}
+              />,
+            ]
+          )}
+        />
+      ) : (
+        <>
+          <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-2">
+            <p className="secondary-text">{t('form.validator')}:</p>
+            <InputThemedText className="break-all">
+              {data.validator}
+            </InputThemedText>
+          </div>
+
+          <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-2">
+            <p className="secondary-text">
+              {t('title.slashAmountToRegister')}:
+            </p>
+
+            <TokenAmountDisplay
+              key="token"
+              amount={convertMicroDenomToDenomWithDecimals(
+                data.amount,
+                NATIVE_TOKEN.decimals
+              )}
+              decimals={NATIVE_TOKEN.decimals}
+              iconUrl={NATIVE_TOKEN.imageUrl}
+              symbol={NATIVE_TOKEN.symbol}
+            />
+          </div>
+        </>
+      )}
     </div>
   )
 }
