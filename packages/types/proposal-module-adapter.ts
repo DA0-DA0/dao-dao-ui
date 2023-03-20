@@ -1,4 +1,4 @@
-import { ComponentType } from 'react'
+import { CSSProperties, ComponentType } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
@@ -229,10 +229,10 @@ export interface ProposalRefreshers {
 }
 
 export interface ProposalVoteOption<Vote> {
-  Icon: ComponentType<{ className: string; style?: object }>
+  Icon: ComponentType<{ className: string; style?: CSSProperties }>
   label: string
   value: Vote
-  style?: object
+  color?: string
 }
 
 export interface ProfileNewProposalCardInfoLine {

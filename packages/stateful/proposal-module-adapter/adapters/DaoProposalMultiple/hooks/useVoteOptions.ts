@@ -12,8 +12,8 @@ import { MULTIPLE_CHOICE_OPTION_COLORS } from '../components/ui/MultipleChoiceOp
 
 export const useVoteOptions = (
   proposal: MultipleChoiceProposal
-): ProposalVoteOption<MultipleChoiceVote>[] => {
-  return proposal.choices?.map((option, index) => {
+): ProposalVoteOption<MultipleChoiceVote>[] =>
+  proposal.choices?.map((option, index) => {
     // The last choice will always be "None of the Above",
     const isNoneOption = index === proposal.choices.length - 1
     return {
@@ -21,14 +21,10 @@ export const useVoteOptions = (
       Icon: isNoneOption ? PanToolOutlined : CircleIcon,
       label: option.title,
       value: { option_id: index },
-      style: isNoneOption
+      color: isNoneOption
         ? undefined
-        : {
-            color:
-              MULTIPLE_CHOICE_OPTION_COLORS[
-                index % MULTIPLE_CHOICE_OPTION_COLORS.length
-              ],
-          },
+        : MULTIPLE_CHOICE_OPTION_COLORS[
+            index % MULTIPLE_CHOICE_OPTION_COLORS.length
+          ],
     }
   })
-}

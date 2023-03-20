@@ -138,9 +138,7 @@ export const ProposalVoteTally = ({
         </div>
 
         <div className="secondary-text flex flex-row items-center justify-between gap-2">
-          <div className="flex flex-row items-center gap-1">
-            <p className="text-text-tertiary">{t('title.passingThreshold')}</p>
-          </div>
+          <p className="text-text-tertiary">{t('title.passingThreshold')}</p>
 
           {/* Threshold config display */}
           <p className="flex flex-row items-center gap-1">

@@ -43,7 +43,7 @@ export const ProposalStatus = ({
             dimmed ? 'text-text-tertiary' : textClassName
           )}
         >
-          {t(`proposalStatusTitle.${status}`)}
+          {t(`proposalStatusTitleShort.${status}`)}
         </p>
       }
     />

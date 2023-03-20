@@ -441,7 +441,7 @@ export const ProposalCreationForm = ({
                     : { loading: false, data: entity.data.name },
                 }}
                 description={proposalDescription}
-                proposalInnerContentDisplay={
+                innerContentDisplay={
                   <CosmosMessageDisplay
                     value={decodedMessagesString(completeRatings.cosmosMsgs)}
                   />

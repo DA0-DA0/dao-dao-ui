@@ -337,7 +337,7 @@ export const NewProposal = ({
                   : { loading: false, data: walletProfileData.profile.name },
               }}
               description={proposalDescription}
-              proposalInnerContentDisplay={
+              innerContentDisplay={
                 <div>
                   <p className="primary-text pb-5 text-text-body">
                     {t('title.voteOptions')}

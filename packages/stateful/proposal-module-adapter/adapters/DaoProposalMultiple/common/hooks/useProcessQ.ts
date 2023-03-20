@@ -11,7 +11,7 @@ export const useProcessQ = () => {
   return useCallback(
     (data: VotingStrategy): ProcessedQuorum => {
       if (!('single_choice' in data)) {
-        console.error('unrecognized voting_strategy')
+        throw new Error('unrecognized voting_strategy')
       }
 
       // Multiple choice does not have thresholds

@@ -92,8 +92,8 @@ export const Proposal = ({
               }
               creator={creator}
               description={description}
+              innerContentDisplay={proposalInnerContentDisplay}
               onRefresh={onRefresh}
-              proposalInnerContentDisplay={proposalInnerContentDisplay}
               refreshing={refreshing}
               title={title}
             />

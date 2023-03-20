@@ -7,14 +7,13 @@ import { Button } from '../buttons'
 export interface ProposalVoteButtonProps<Vote extends unknown> {
   option: ProposalVoteOption<Vote>
   onClick?: () => void
-  style?: object
   pressed?: boolean
   disabled?: boolean
   className?: string
 }
 
 export const ProposalVoteButton = <Vote extends unknown>({
-  option: { label, Icon, style },
+  option: { label, Icon, color },
   onClick,
   pressed = false,
   disabled = false,
@@ -38,6 +37,6 @@ export const ProposalVoteButton = <Vote extends unknown>({
     variant="secondary"
   >
     <p>{label}</p>
-    <Icon className="!h-6 !w-6" style={style} />
+    <Icon className="!h-6 !w-6" style={{ color }} />
   </Button>
 )

@@ -378,7 +378,7 @@ export const NewProposal = ({
                   : { loading: false, data: walletProfileData.profile.name },
               }}
               description={proposalDescription}
-              proposalInnerContentDisplay={
+              innerContentDisplay={
                 actionDataFields.length ? (
                   <CosmosMessageDisplay
                     value={decodedMessagesString(
